@@ -6322,6 +6322,12 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set oxodeliverystate=? where cwb=? and state = 1";
 		this.jdbcTemplate.update(sql,state,cwb);
 	}
-	
+	public void updateMapByCwb(String city,String area ,String cwb ) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("update express_ops_cwb_detail set city = ? ,area = ?  ");
+		
+		sql.append(" where state = 1 and cwb = ?");
+		this.jdbcTemplate.update(sql.toString(), city, area, cwb);
+	}
 
 }

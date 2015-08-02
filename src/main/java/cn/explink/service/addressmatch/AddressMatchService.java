@@ -45,6 +45,9 @@ import cn.explink.service.SystemConfigChangeListner;
 import cn.explink.service.SystemInstallService;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.ResourceBundleUtil;
+import cn.explink.util.baiduAPI.GeoCoder;
+import cn.explink.util.baiduAPI.GeoPoint;
+import cn.explink.util.baiduAPI.ReGeoCoderResult;
 
 @Component
 @DependsOn({ "systemInstallService" })
@@ -106,6 +109,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					public void configure() throws Exception {
 						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=matchAddress").routeId("地址匹配");
+						this.from("jms:queue:VirtualTopicConsumers.cwbbaiduMap.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						.to("bean:addressMatchService?method=matchAddressMap").routeId("地址百度匹配");
 						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=addZhanDian").routeId("创建地址库中的站点");
 					}
@@ -117,6 +122,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					public void configure() throws Exception {
 						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=empty").routeId("地址匹配");
+						this.from("jms:queue:VirtualTopicConsumers.cwbbaiduMap.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						.to("bean:addressMatchService?method=matchAddressMap").routeId("地址百度匹配");
 						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=empty").routeId("创建地址库中的站点");
 					}
@@ -246,6 +253,32 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			// e.printStackTrace();
 			this.logger.error("error while doing address match for {}", cwb);
 		}
+	}
+	public void matchAddressMap(@Header("userid") long userid, @Header("cwb") String cwb) {
+		this.logger.info("start addressMAP match for {}", cwb);
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			if(cwbOrder == null){
+				return ;
+			}
+				// TODO 启用新地址库 调用webservice
+				try {
+					GeoPoint position = GeoCoder.getInstance().getGeoCoder().GetLocationDetails(cwbOrder.getConsigneeaddress());
+					if(position != null){
+							ReGeoCoderResult reG = GeoCoder.getInstance().getGeoCoder().GetAddress(position.getLng(),position.getLat());
+							if(reG != null ){
+									this.cwbDAO.updateMapByCwb(reG.getAddressComponent().getCity(), reG.getAddressComponent().getDistrict(), cwb);
+							}
+							else{
+								logger.info("订单地址在百度API没有匹配到省市区,cwb:{}",cwb);
+							}
+					}
+					else {
+						logger.info("订单地址在百度API没有匹配到省市区,cwb:{}",cwb);
+					}
+				} catch (Exception e) {
+					this.logger.error("error while doing addressMAPAPI match for {}", cwb);
+					e.printStackTrace();
+				}
 	}
 
 	/**

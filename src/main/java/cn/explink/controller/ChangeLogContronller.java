@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -44,12 +46,16 @@ import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.UserService;
 import cn.explink.util.DateDayUtil;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
+import cn.explink.util.baiduAPI.GeoCoder;
+import cn.explink.util.baiduAPI.GeoPoint;
+import cn.explink.util.baiduAPI.ReGeoCoderResult;
 
 @Controller
 @RequestMapping("/changeLog")
@@ -93,7 +99,12 @@ public class ChangeLogContronller {
 
 	@RequestMapping("/stop")
 	public String stop(Model model) {
-		changeCheck = false;
+		GeoPoint position = GeoCoder.getInstance().getGeoCoder().GetLocationDetails("海南海口市龙华区南沙路61号海南电视台住宅区5栋302");
+		System.out.println(position.getLat());
+		System.out.println(position.getLng());
+		ReGeoCoderResult reG = GeoCoder.getInstance().getGeoCoder().GetAddress(position.getLng(),position.getLat());
+		System.out.println(reG.getAddressComponent().getCity());
+		System.out.println(reG.getAddressComponent().getDistrict());
 		model.addAttribute("msg", "迁移数据,已停止");
 		return "/changeLog/tuotouChange";
 	}
@@ -177,40 +188,51 @@ public class ChangeLogContronller {
 	 * @return
 	 */
 	@RequestMapping("/outWareHouse")
-	public String add(Model model, @RequestParam(value = "startTime", defaultValue = "", required = false) String startTime,
-			@RequestParam(value = "endTime", defaultValue = "", required = false) String endTime) {
-		String msg = "";
-		if (startTime.length() > 0 && endTime.length() > 0) {
-			List<EmailDate> emaildateList = emailDateDAO.getEmailDateByEmaildate(startTime, endTime);
-			logger.info("开始迁移数据,emaildate时间从：{}到{}", startTime, endTime);
-			if (emaildateList != null && emaildateList.size() > 0) {
-				for (EmailDate e : emaildateList) {
-					logger.info("迁移数据,时间从：{}到{},emaildateid个数：" + emaildateList.size() + ",开始第" + (emaildateList.indexOf(e) + 1) + "个,emaildateid:" + e.getEmaildateid(), startTime, endTime);
-					String sql = "SELECT of.* FROM `express_ops_order_flow` AS of LEFT JOIN `express_ops_cwb_detail` AS de ON of.cwb=de.cwb  WHERE " + "de.emaildateid =" + e.getEmaildateid()
-							+ " AND de.state=1 AND of.flowordertype =" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + " ";
-					jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
-						@Override
-						public void processRow(ResultSet rs) throws SQLException {
-							try {
-								// {"cwbOrder":{"opscwbid":21810,"startbranchid":0,"currentbranchid":0,"nextbranchid":189,"deliverybranchid":192,"backtocustomer_awb":"","cwbflowflag":"1","carrealweight":25.000,"cartype":"家电","carwarehouse":"189","carsize":"11*10*10","backcaramount":0.00,"sendcarnum":1,"backcarnum":0,"caramount":11111.11,"backcarname":"取回商品T1","sendcarname":"发出商品T1","deliverid":0,"deliverystate":0,"emailfinishflag":0,"reacherrorflag":0,"orderflowid":0,"flowordertype":1,"cwbreachbranchid":0,"cwbreachdeliverbranchid":0,"podfeetoheadflag":"0","podfeetoheadtime":null,"podfeetoheadchecktime":null,"podfeetoheadcheckflag":"0","leavedreasonid":0,"deliversubscribeday":null,"customerwarehouseid":"4","emaildateid":258,"emaildate":"2013-07-09 09:50:54","serviceareaid":4,"customerid":126,"shipcwb":"LG123456789","consigneeno":"CustomerID1","consigneename":"王旸","consigneeaddress":"中国北京北京市朝阳区,建国门外大街甲12号新华保险大厦10层","consigneepostcode":"100022","consigneephone":"15901169883","cwbremark":"备注T1","customercommand":"客户要求T1","transway":"航空","cwbprovince":"北京","cwbcity":"北京市","cwbcounty":"朝阳区","receivablefee":11111.11,"paybackfee":0.00,"cwb":"7901","shipperid":0,"cwbordertypeid":1,"consigneemobile":"15901169883","transcwb":"LG123456789","destination":"北京","cwbdelivertypeid":"1","exceldeliver":"","excelbranch":"朝阳站","excelimportuserid":1001,"state":1,"printtime":"","commonid":5,"commoncwb":"","signtypeid":0,"podrealname":"","podtime":"","podsignremark":"","modelname":null,"scannum":0,"isaudit":0,"backreason":"","leavedreason":"","paywayid":1,"newpaywayid":"1","tuihuoid":189,"cwbstate":1,"remark1":"自定义1T1","remark2":"自定义2T1","remark3":"自定义3T1","remark4":"自定义4T1","remark5":"自定义5T1","backreasonid":0,"multi_shipcwb":null,"packagecode":"","backreturnreasonid":0,"backreturnreason":"","handleresult":0,"handleperson":0,"handlereason":"","addresscodeedittype":0},"deliveryState":null}
-								String floworderdetail = rs.getString("floworderdetail");
-								String nextbranchid = floworderdetail.substring(floworderdetail.indexOf("\"nextbranchid\":") + 15, floworderdetail.indexOf(",\"deliverybranchid\""));
-								cwbOrderService.updateOrInsertWareHouseToBranch(rs.getLong("branchid"), rs.getString("cwb"), Long.parseLong(nextbranchid),
-										new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("credate")));
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					});
-					logger.info("迁移数据,时间从：{}到{},emaildateid个数：" + emaildateList.size() + ",完成第" + (emaildateList.indexOf(e) + 1) + "个,emaildateid:" + e.getEmaildateid(), startTime, endTime);
-				}
-			}
-			msg += "迁移完成了发货时间：" + startTime + "到" + endTime + "的数据";
+    public String add(Model model,
+	    @RequestParam(value="startTime",defaultValue="",required=false)String startTime,
+	    @RequestParam(value="endTime",defaultValue="",required=false)String endTime) {
+	String msg="";
+	if(startTime.length()>0 && endTime.length()>0){
+	    List<EmailDate> emaildateList =  emailDateDAO.getEmailDateByEmaildate(startTime, endTime);
+	    logger.info("开始迁移数据,emaildate时间从：{}到{}",startTime,endTime);
+	    if(emaildateList != null && emaildateList.size()>0){
+		for(EmailDate e:emaildateList){
+		    logger.info("迁移数据,时间从：{}到{},emaildateid个数："+emaildateList.size()+",开始第"+(emaildateList.indexOf(e)+1)+"个,emaildateid:"+e.getEmaildateid(),startTime,endTime);
+		    String sql ="SELECT of.* FROM `express_ops_order_flow`  WHERE  isnow =1 ";
+		    jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler(){
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+			    try {
+			    	String flowDetail = rs.getString("floworderdetail");
+			    	CwbOrderWithDeliveryState cwbOrderWithDeliveryState=om.readValue(flowDetail, CwbOrderWithDeliveryState.class);
+					final CwbOrder cwbOrderDTO = cwbOrderWithDeliveryState.getCwbOrder();
+					
+					jdbcTemplate.update(
+							"update `express_ops_cwb_detail` set ", new PreparedStatementSetter() {
+
+								@Override
+								public void setValues(PreparedStatement ps) throws SQLException {
+
+									
+								}
+
+							});
+			    	
+			    	
+			    
+			       } catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			    }
+			}});
+		    logger.info("迁移数据,时间从：{}到{},emaildateid个数："+emaildateList.size()+",完成第"+(emaildateList.indexOf(e)+1)+"个,emaildateid:"+e.getEmaildateid(),startTime,endTime);
 		}
-		model.addAttribute("msg", msg);
-		return "/changeLog/outWareHouse";
+	    }
+	    msg +="迁移完成了发货时间："+startTime+"到"+endTime+"的数据";
 	}
+	model.addAttribute("msg", msg);
+	return "/changeLog/outWareHouse";
+    }
 
 	@RequestMapping("/tuotouChange")
 	public String tuotouChange(Model model, @RequestParam(value = "startTimeid", defaultValue = "0", required = false) long startTimeid,
