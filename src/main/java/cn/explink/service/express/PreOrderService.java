@@ -8,13 +8,13 @@ import cn.explink.service.AccountDeductRecordService;
 
 /**
  * 预订单处理Service
- * @author 王志宇
+ * @author wangzy
  */
 
 @Service
-public class AdvanceOrderService {
+public class PreOrderService {
 
-	private Logger logger = LoggerFactory.getLogger(AdvanceOrderService.class);
+	private Logger logger = LoggerFactory.getLogger(PreOrderService.class);
 	
 	
 	

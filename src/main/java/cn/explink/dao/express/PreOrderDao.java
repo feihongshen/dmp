@@ -4,12 +4,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * 预订单处理Dao
- * @author 王志宇
+ * @author wangzy
  */
 
 
 @Component
-public class AdvanceOrderDao {
+public class PreOrderDao {
 
 	
 }
