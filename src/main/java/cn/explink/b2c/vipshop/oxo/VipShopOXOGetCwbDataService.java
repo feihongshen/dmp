@@ -97,6 +97,7 @@ public class VipShopOXOGetCwbDataService {
 		vipshop.setGetCwb_URL(request.getParameter("getCwb_URL"));
 		vipshop.setSendCwb_URL(request.getParameter("sendCwb_URL"));
 		vipshop.setCustomerids(request.getParameter("customerids"));
+		vipshop.setIsopendownload(Integer.parseInt(request.getParameter("isopendownload")));
 		vipshop.setVipshop_seq(Long.parseLong(request.getParameter("vipshop_seq")));
 		String customerids = request.getParameter("customerids");
 			
@@ -133,7 +134,7 @@ public class VipShopOXOGetCwbDataService {
 		vip.setCustomerids(vipshop.getCustomerids());
 		vip.setVipshop_seq(vipshop.getVipshop_seq());
 		vip.setWarehouseid(vipshop.getWarehouseid());
-
+		vip.setIsopendownload(vipshop.getIsopendownload());
 		JSONObject jsonObj = JSONObject.fromObject(vip);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		jointEntity.setJoint_num(joint_num);
