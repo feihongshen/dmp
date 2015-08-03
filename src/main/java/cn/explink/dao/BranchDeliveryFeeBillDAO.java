@@ -470,6 +470,11 @@ public class BranchDeliveryFeeBillDAO {
 				+ cwbs + ")";
 		return this.jdbcTemplate.update(sql);
 	}
+	
+	public int deleteBranchDeliveryFeeBillDetailByBillIds(String billIds) {
+		String sql = "delete from express_set_branch_delivery_fee_bill_detail where billId in (" + billIds + ")";
+		return this.jdbcTemplate.update(sql);
+	}
 
 	public List<ExpressSetBranchDeliveryFeeBill> getBranchDeliveryFeeBillList() {
 		String sql = "select * from express_set_branch_delivery_fee_bill";
@@ -479,6 +484,11 @@ public class BranchDeliveryFeeBillDAO {
 	public List<ExpressSetBranchDeliveryFeeBillDetail> getBranchDeliveryFeeBillDetailList(int billId) {
 		String sql = "select * from express_set_branch_delivery_fee_bill_detail where billId=?";
 		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailMapper(), billId);
+	}
+	
+	public List<ExpressSetBranchDeliveryFeeBillDetail> getBranchDeliveryFeeBillDetailListByBillIds(String billIds) {
+		String sql = "select * from express_set_branch_delivery_fee_bill_detail where billId in (" + billIds + ")";
+		return jdbcTemplate.query(sql, new BranchDeliveryFeeBillDetailMapper());
 	}
 	
 	public List<ExpressSetBranchDeliveryFeeBillDetail> getBranchDeliveryFeeBillDetailList() {

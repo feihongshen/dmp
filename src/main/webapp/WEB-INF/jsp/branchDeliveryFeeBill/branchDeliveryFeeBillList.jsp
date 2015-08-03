@@ -107,10 +107,17 @@ function deleteCwbOrder(){
 		if ($(this)[0].checked == true){
 			tds = $(this).parent().parent().children();
 			$(tds).each(function(){
-				if($(this)[0].attributes[1].value == 'sumFee'){
+				sumFee = $(this)[0].textContent;
+				$($(this)[0].attributes).each(function() {
+					if($(this)[0].value == 'sumFee'){
+						deliveryFee = (parseFloat(deliveryFee)-parseFloat(sumFee)).toFixed(2);
+					}
+				});
+				
+				/* if($(this)[0].attributes[1].value == 'sumFee'){
 					sumFee = $(this)[0].textContent;
 					deliveryFee = (parseFloat(deliveryFee)-parseFloat(sumFee)).toFixed(2);
-				}
+				} */
 			});
 			cwbCount = parseInt(cwbCount)-1;
 			$(this).parent().parent().remove();
@@ -554,341 +561,366 @@ function deleteBranchDeliveryFeeBill(){
 						var customerDeliveryFeeObj = data.customerDeliveryFee;
 						var count = 0;
 						var tdCount = 0;
-						rowSpanSize = parseInt(customerDeliveryFeeObj.length)*3+1;
 						for(var i in customerDeliveryFeeObj){
+							if(customerDeliveryFeeObj[i].length >= 1){
 								count = parseInt(count) + 1;
 								customerName = i;
-								
-								if(count == 1){
-									firstReceiveTr = "<tr style=\'mso-yfti-irow: 1; height: 19.95pt\' id='branchFeeTr" + count + "'>"+
-									"				<td width=23 rowspan=7 "+
-									"					style=\'width: 16.95pt; border-top: none; border-left: solid black 1.5pt; mso-border-left-themecolor: text1; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-left-alt: solid black 1.5pt; mso-border-left-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal align=center style=\'text-align: center\'>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>1<o:p></o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=50 rowspan=7 "+
-									"					style=\'width: 37.85pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>派送费<span"+
-									"							lang=EN-US><o:p></o:p></span></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=34 rowspan=3 "+
-									"					style=\'width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>客户1<span"+
-									"							lang=EN-US><o:p></o:p></span></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=60"+
-									"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>代收订单<span"+
-									"							lang=EN-US><o:p></o:p></span></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=28"+
-									"					style=\'width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>单量</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=47"+
-									"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>基本派费</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=56"+
-									"					style=\'width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>代收补助费</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=75"+
-									"					style=\'width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>区域属性补助费</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=47"+
-									"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>超区补助</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=56"+
-									"					style=\'width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>业务补助</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=47"+
-									"					style=\'width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>拖单补助</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=81 "+
-									"					style=\'width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>合计</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=54"+
-									"					style=\'width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"			</tr>";
-									$("#branchFeeTr" + (parseInt(count)-1)).after(firstReceiveTr); 
-								} else {
-									anotherReceiveTr = "<tr style=\'mso-yfti-irow: 4; height: 19.95pt\' id='branchFeeTr" + count + "'>"+
-									"				<td width=34 rowspan=3 "+
-									"					style=\'width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>客户B<span"+
-									"							lang=EN-US>B<o:p></o:p></span></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=60"+
-									"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>代收订单<span"+
-									"							lang=EN-US><o:p></o:p></span></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=28"+
-									"					style=\'width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>单量</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=47"+
-									"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>基本派费</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=56"+
-									"					style=\'width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>代收补助费</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=75"+
-									"					style=\'width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>区域属性补助费</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=47"+
-									"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>超区补助</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=56"+
-									"					style=\'width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>业务补助</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=47"+
-									"					style=\'width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>拖单补助</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=81 "+
-									"					style=\'width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>合计</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"				<td width=54"+
-									"					style=\'width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-									"					<p class=MsoNormal>"+
-									"						<span lang=EN-US"+
-									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-									"					</p>"+
-									"				</td>"+
-									"			</tr>";
-									$("#branchFeeTr" + (parseInt(count)-1)).after(anotherReceiveTr); 
+								// 代收订单行
+								if((customerDeliveryFeeObj[i][0] && customerDeliveryFeeObj[i][0].isReceived == 1) || (customerDeliveryFeeObj[i][1] && customerDeliveryFeeObj[i][1].isReceived == 1)){
+									if(customerDeliveryFeeObj[i][0] && customerDeliveryFeeObj[i][0].isReceived == 1){
+										j = 0;
+									} else {
+										j = 1;
+									}
+									// 表格第一行
+									if(count == 1){
+										firstReceiveTr = "<tr style=\'mso-yfti-irow: 1; height: 19.95pt\' id='branchFeeTr" + count + "'>"+
+										"				<td width=23 rowspan=7 "+
+										"					style=\'width: 16.95pt; border-top: none; border-left: solid black 1.5pt; mso-border-left-themecolor: text1; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-left-alt: solid black 1.5pt; mso-border-left-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal align=center style=\'text-align: center\'>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>1<o:p></o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=50 rowspan=7 "+
+										"					style=\'width: 37.85pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>派送费<span"+
+										"							lang=EN-US><o:p></o:p></span></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=34 rowspan=3 "+
+										"					style=\'width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>"+customerName+"<span"+
+										"							lang=EN-US><o:p></o:p></span></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=60"+
+										"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>代收订单<span"+
+										"							lang=EN-US><o:p></o:p></span></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=28"+
+										"					style=\'width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].cwbOrderCount +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=47"+
+										"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryBasicFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=56"+
+										"					style=\'width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryCollectionSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=75"+
+										"					style=\'width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryAreaSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=47"+
+										"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryExceedSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=56"+
+										"					style=\'width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryBusinessSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=47"+
+										"					style=\'width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryAttachSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=81 "+
+										"					style=\'width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliverySumFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=54"+
+										"					style=\'width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"			</tr>";
+										$("#branchFeeTr" + (parseInt(count)-1)).after(firstReceiveTr); 
+									} else {
+										// 表格第四行、第七行、第十行，以此类推等等
+										anotherReceiveTr = "<tr style=\'mso-yfti-irow: 4; height: 19.95pt\' id='branchFeeTr" + count + "'>"+
+										"				<td width=34 rowspan=3 "+
+										"					style=\'width: 25.7pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>"+customerName+"<span"+
+										"							lang=EN-US>B<o:p></o:p></span></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=60"+
+										"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>代收订单<span"+
+										"							lang=EN-US><o:p></o:p></span></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=28"+
+										"					style=\'width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].cwbOrderCount +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=47"+
+										"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryBasicFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=56"+
+										"					style=\'width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryCollectionSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=75"+
+										"					style=\'width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryAreaSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=47"+
+										"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryExceedSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=56"+
+										"					style=\'width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryBusinessSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=47"+
+										"					style=\'width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliveryAttachSubsidyFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=81 "+
+										"					style=\'width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][j].deliverySumFee +"</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"				<td width=54"+
+										"					style=\'width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+										"					<p class=MsoNormal>"+
+										"						<span lang=EN-US"+
+										"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
+										"					</p>"+
+										"				</td>"+
+										"			</tr>";
+										$("#branchFeeTr" + (parseInt(count)-1)).after(anotherReceiveTr); 
+									}
 								}
-								notReceiveTr = "<tr style=\'mso-yfti-irow: 2; height: 19.95pt\' id='branchFeeTr" + parseInt(count)+1 + "'>"+
-								"				<td width=60"+
-								"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>非代收订单<span"+
-								"							lang=EN-US><o:p></o:p></span></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=28"+
-								"					style=\'width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=47"+
-								"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=56"+
-								"					style=\'width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=75"+
-								"					style=\'width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=47"+
-								"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=56"+
-								"					style=\'width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=47"+
-								"					style=\'width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=81 "+
-								"					style=\'width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=54"+
-								"					style=\'width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"			</tr>";
-								$("#branchFeeTr" + count).after(notReceiveTr); 
-								totalTr = "			<tr style=\'mso-yfti-irow: 3; height: 19.95pt\' id='branchFeeTr" + parseInt(count)+2 + "'>"+
-								"				<td width=60"+
-								"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-bottom-alt: solid black .5pt; mso-border-bottom-themecolor: text1; mso-border-right-alt: solid black .5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>计<span"+
-								"							lang=EN-US><o:p></o:p></span></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=28"+
-								"					style=\'width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=47"+
-								"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=56"+
-								"					style=\'width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=75"+
-								"					style=\'width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=47"+
-								"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=56"+
-								"					style=\'width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=47"+
-								"					style=\'width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=81 "+
-								"					style=\'width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"				<td width=54"+
-								"					style=\'width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
-								"					<p class=MsoNormal>"+
-								"						<span lang=EN-US"+
-								"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
-								"					</p>"+
-								"				</td>"+
-								"			</tr>";
-								$("#branchFeeTr" + (parseInt(count)+1)).after(totalTr); 
+								// 非代收订单行
+								if((customerDeliveryFeeObj[i][0] && customerDeliveryFeeObj[i][0].isReceived == 0) || (customerDeliveryFeeObj[i][1] && customerDeliveryFeeObj[i][1].isReceived == 0)){
+									if(customerDeliveryFeeObj[i][0] && customerDeliveryFeeObj[i][0].isReceived == 0){
+										k = 0;
+									} else {
+										k = 1;
+									}
+									notReceiveTr = "<tr style=\'mso-yfti-irow: 2; height: 19.95pt\' id='branchFeeTr" + parseInt(count)+1 + "'>"+
+									"				<td width=60"+
+									"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>非代收订单<span"+
+									"							lang=EN-US><o:p></o:p></span></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=28"+
+									"					style=\'width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][k].cwbOrderCount +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=47"+
+									"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][k].deliveryBasicFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=56"+
+									"					style=\'width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][k].deliveryCollectionSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=75"+
+									"					style=\'width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][k].deliveryAreaSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=47"+
+									"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][k].deliveryExceedSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=56"+
+									"					style=\'width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][k].deliveryBusinessSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=47"+
+									"					style=\'width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][k].deliveryAttachSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=81 "+
+									"					style=\'width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][k].deliverySumFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=54"+
+									"					style=\'width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"			</tr>";
+									$("#branchFeeTr" + count).after(notReceiveTr); 
+								}
+								// 小计行
+								if((customerDeliveryFeeObj[i][2] && customerDeliveryFeeObj[i][2].isReceived == 2) || customerDeliveryFeeObj[i][0]){
+									if(customerDeliveryFeeObj[i][2] && customerDeliveryFeeObj[i][2].isReceived == 2){
+										l = 2;
+									} else {
+										l = 0;
+									}
+									totalTr = "			<tr style=\'mso-yfti-irow: 3; height: 19.95pt\' id='branchFeeTr" + parseInt(count)+2 + "'>"+
+									"				<td width=60"+
+									"					style=\'width: 44.95pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-bottom-alt: solid black .5pt; mso-border-bottom-themecolor: text1; mso-border-right-alt: solid black .5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast; mso-font-kerning: 0pt\'>计<span"+
+									"							lang=EN-US><o:p></o:p></span></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=28"+
+									"					style=\'width: 21.2pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][l].cwbOrderCount +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=47"+
+									"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][l].deliveryBasicFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=56"+
+									"					style=\'width: 42.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][l].deliveryCollectionSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=75"+
+									"					style=\'width: 56.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][l].deliveryAreaSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=47"+
+									"					style=\'width: 35.3pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][l].deliveryExceedSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=56"+
+									"					style=\'width: 42.35pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][l].deliveryBusinessSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=47"+
+									"					style=\'width: 35.25pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][l].deliveryAttachSubsidyFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=81 "+
+									"					style=\'width: 60.75pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.0pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>"+customerDeliveryFeeObj[i][l].deliverySumFee +"</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"				<td width=54"+
+									"					style=\'width: 40.45pt; border-top: none; border-left: none; border-bottom: solid black 1.0pt; mso-border-bottom-themecolor: text1; border-right: solid black 1.5pt; mso-border-right-themecolor: text1; mso-border-top-alt: solid black .5pt; mso-border-top-themecolor: text1; mso-border-left-alt: solid black .5pt; mso-border-left-themecolor: text1; mso-border-alt: solid black .5pt; mso-border-themecolor: text1; mso-border-right-alt: solid black 1.5pt; mso-border-right-themecolor: text1; padding: 0cm 1.4pt 0cm 1.4pt; height: 19.95pt\'>"+
+									"					<p class=MsoNormal>"+
+									"						<span lang=EN-US"+
+									"							style=\'font-size: 7.5pt; font-family: 宋体; mso-ascii-theme-font: minor-fareast; mso-fareast-font-family: 宋体; mso-fareast-theme-font: minor-fareast; mso-hansi-theme-font: minor-fareast\'><o:p>&nbsp;</o:p></span>"+
+									"					</p>"+
+									"				</td>"+
+									"			</tr>";
+									$("#branchFeeTr" + (parseInt(count)+1)).after(totalTr); 
+								}
 							   feeObj = customerDeliveryFeeObj[i];
 							   for(var j in feeObj){
 								   ++tdCount;
@@ -908,6 +940,7 @@ function deleteBranchDeliveryFeeBill(){
 								   feeObj[j].deliveryAttachSubsidyFee;
 								   
 							   }
+							}
 						}
 						
 						sumTotalTr = "<tr style=\'mso-yfti-irow: 7; height: 19.95pt\' id='branchFeeTr" + parseInt(count)*3+1 + "'>"+

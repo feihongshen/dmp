@@ -69,7 +69,7 @@ public class BranchDeliveryFeeBillService {
 				String cwbs = StringUtil.removalDuplicateString(billVO.getCwbs());
 				billVO.setCwbs(cwbs);
 				cwbs = StringUtil.getStringsByStringList(Arrays.asList(billVO.getCwbs().split(",")));
-				this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetail(bill.getId(), cwbs);
+				this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetail(billVO.getId(), cwbs);
 				int branchfeebillexportflag = 0;
 				if(billVO.getBillState() == DeliveryFeeBillStateEnum.WeiShenHe.getValue()){
 					this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, cwbs);
@@ -87,6 +87,24 @@ public class BranchDeliveryFeeBillService {
 	public void deleteBranchDeliveryFeeBill(String ids) {
 		List<String> list = Arrays.asList(ids.split(","));
 		ids = StringUtil.getStringsByStringList(list);
+		
+		List<ExpressSetBranchDeliveryFeeBillDetail> detailList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailListByBillIds(ids);
+		if(detailList != null && !detailList.isEmpty()){
+			String cwbs = "";
+			for(int i = 0; i < detailList.size(); i++){
+				if(detailList.get(i) != null && StringUtils.isNotBlank(detailList.get(i).getCwb())){
+					cwbs = detailList.get(i).getCwb() + "," + cwbs;
+				}
+			}
+			if(StringUtils.isNotBlank(cwbs)){
+				// 更新订单表加盟商派费账单导出标志
+				int branchfeebillexportflag = 0;
+				this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, StringUtil.getStringsByStringList(Arrays.asList(cwbs.split(","))));
+			}
+		}
+		// 删除加盟商派费账单子表
+		this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetailByBillIds(ids);
+		// 删除加盟商派费账单主表
 		this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBill(ids);
 	}
 
@@ -231,6 +249,9 @@ public class BranchDeliveryFeeBillService {
 		if (StringUtils.isNotBlank(cwbs)) {
 			cwbs = cwbs.substring(0, cwbs.length() - 1);
 //			cwbs = StringUtil.removalDuplicateString(cwbs);
+			// 更新订单表加盟商派费账单导出标志
+			int branchfeebillexportflag = 1;
+			this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, StringUtil.getStringsByStringList(Arrays.asList(cwbs.split(","))));
 		}
 		branchDeliveryFeeBill.setCwbs(cwbs);
 		branchDeliveryFeeBill.setCwbCount(cwbCount);

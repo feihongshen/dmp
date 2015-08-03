@@ -133,10 +133,16 @@ function deletePenalizeInside(){
 		if ($(this)[0].checked == true){
 			penalizeInsideTds = $(this).parent().parent().children();
 			$(penalizeInsideTds).each(function(){
-				if($(this)[0].attributes[1].value == 'punishInsideprice'){
+				cwbPriceVal = $(this)[0].textContent;
+				$($(this)[0].attributes).each(function() {
+					if($(this)[0].value == 'punishInsideprice'){
+						sumPrice = (parseFloat(sumPrice)-parseFloat(cwbPriceVal)).toFixed(2);
+					}
+				});
+				/* if($(this)[0].attributes[1].value == 'punishInsideprice'){
 					cwbPriceVal = $(this)[0].textContent;
 					sumPrice = (parseFloat(sumPrice)-parseFloat(cwbPriceVal)).toFixed(2);
-				}
+				} */
 			});
 			$(this).parent().parent().remove();
 		}
@@ -937,6 +943,7 @@ function changeBillState(state){
 
 <div class="jg_10"></div>
 <div class="jg_10"></div>
+<c:if test="${page_obj.maxpage>1}">
 <div class="iframe_bottom"> 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr>
@@ -955,6 +962,7 @@ function changeBillState(state){
 		</tr>
 	</table>
 </div>
+</c:if>
 <div>
 	<form action="<%=request.getContextPath()%>/punishinsideBill/punishinsideBillList/1" method="post" id="punishinsideBillListForm">
 		<input type="hidden" name="billBatch" value="${queryConditionVO.billBatch}"/> 
