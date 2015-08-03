@@ -7,10 +7,10 @@ public enum ExcuteStateEnum {
 	NotAllocatedStation(0, "未分配站点"), AllocatedStation(1, "已分配站点"), AllocatedDeliveryman(2, "已分配快递员"), DelayedEmbrace(3, "延迟揽件"), fail(4, "失败"), StationSuperzone(5, "站点超区"), EmbraceSuperzone(6, "揽件超区"), Succeed(
 			7, "成功");
 
-	private long value;
+	private int value;
 	private String text;
 
-	private ExcuteStateEnum(long value, String text) {
+	private ExcuteStateEnum(int value, String text) {
 		this.value = value;
 		this.text = text;
 	}
