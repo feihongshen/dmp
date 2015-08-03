@@ -19,7 +19,6 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.PreOrderVO;
 import cn.explink.enumutil.BranchEnum;
-import cn.explink.enumutil.express.ExcuteTypeEnum;
 import cn.explink.service.ExplinkUserDetail;
 
 @Controller
@@ -116,7 +115,7 @@ public class PreOrderOperationController {
 	 */
 	public List<Map<String, Object>> getExcuteType() {
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		List<ExcuteTypeEnum> infolist = ExcuteTypeEnum.getAllStatus();
+		/*List<ExcuteTypeEnum> infolist = ExcuteTypeEnum.getAllStatus();
 		for (int i = 0; i < infolist.size(); i++) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			ExcuteTypeEnum enmu = infolist.get(i);
@@ -127,7 +126,7 @@ public class PreOrderOperationController {
 			map.put("key", enmu.getValue());
 			map.put("value", enmu.getText());
 			list.add(map);
-		}
+		}*/
 		return list;
 	}
 
