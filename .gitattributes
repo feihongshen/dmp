@@ -2265,6 +2265,7 @@ src/main/webapp/WEB-INF/jsp/exportwarhousesummary/list.jsp -text
 src/main/webapp/WEB-INF/jsp/exportwarhousesummary/search.jsp -text
 src/main/webapp/WEB-INF/jsp/express/advanceorderquery/advanceOrderQuery.jsp -text
 src/main/webapp/WEB-INF/jsp/express/preOrderAudit/PreOrderDeal.jsp -text
+src/main/webapp/WEB-INF/jsp/express/preorderquery/preOrderQuery.jsp -text
 src/main/webapp/WEB-INF/jsp/express/stationOperation/assignDlg.jsp -text
 src/main/webapp/WEB-INF/jsp/express/stationOperation/takeExpressAssign.jsp -text
 src/main/webapp/WEB-INF/jsp/funds/payamount/DeliveryView.jsp -text
