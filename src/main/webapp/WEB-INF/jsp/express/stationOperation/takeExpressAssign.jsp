@@ -274,6 +274,25 @@ $(function() {
 	});
 
 });
+$(function() {
+	$("#superzone_button").click(function() {
+		$.ajax({
+			type : "POST",
+			url : $("#superzone").val(),
+			dataType : "html",
+			success : function(data) {
+				$("#alert_box", parent.document).html(data);
+				
+			},
+			complete : function() {
+// 				addInit();// 初始化某些ajax弹出页面
+				viewBox();
+			}
+		});
+		
+	});
+
+});
 function viewBox() {
 	$("#alert_box", parent.document).show();
 	$("#dress_box", parent.document).css("visibility", "hidden");
@@ -285,6 +304,7 @@ function viewBox() {
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">
 
 	<div class="inputselect_box">
+		<span><input name="" type="button" value="站点超区" class="input_button1" id="superzone_button" /> </span>
 		<span><input name="" type="button" value="分配" class="input_button1" id="assign_button" /> </span>
 		<form action="<%=request.getAttribute("page") == null ? "1" : request.getAttribute("page")%>"
 			method="post" id="searchForm">
@@ -314,6 +334,9 @@ function viewBox() {
 						<td width="10%" height="26" align="left" valign="top">
 							<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 								<tr>
+								    <td width="2" align="center" bgcolor="#f1f1f1">
+								    	<input id="machbranch" name="machbranch" type="checkbox" />
+								    </td>
 									<td width="50" align="center" bgcolor="#f1f1f1">预订单编号</td>
 									<td width="50" align="center" bgcolor="#f1f1f1">寄件人</td>
 									<td width="50" align="center" bgcolor="#f1f1f1">手机号</td>
@@ -331,6 +354,8 @@ function viewBox() {
 									%>
 									<tr id="TR<%=todayToTake.getCwb()%>" cwb="<%=todayToTake.getCwb()%>"
 										customerid="<%=todayToTake.getCustomerid()%>" deliverid="<%=todayToTake.getDeliverid()%>">
+										<td width="120" align="center">
+										<input id="machbranch" name="machbranch" type="checkbox" value="" /></td>
 										<td width="120" align="center"><%=todayToTake.getCwb()%></td>
 										<td width="140"><%=todayToTake.getInSitetime()%></td>
 										<td width="100"><%=todayToTake.getConsigneename()%></td>
@@ -368,5 +393,7 @@ function viewBox() {
 	</div>
 	<!-- 分配的ajax地址 -->
     <input type="hidden" id="assign" value="<%=request.getContextPath()%>/stationOperation/openAssignDlg" />
+    <!-- 站点超区的ajax地址 -->
+    <input type="hidden" id="superzone" value="<%=request.getContextPath()%>/stationOperation/openSuperzoneDlg" />
 </body>
 </html>

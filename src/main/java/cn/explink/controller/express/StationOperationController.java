@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,9 +47,6 @@ public class StationOperationController extends ExpressCommonController {
 	@Autowired
 	private CustomerDAO customerDAO;
 
-	@Autowired
-	private SecurityContextHolderStrategy securityContextHolderStrategy;
-
 	/**
 	 * 进入揽件分配/调整的功能页面
 	 *
@@ -75,11 +71,30 @@ public class StationOperationController extends ExpressCommonController {
 		return "express/stationOperation/takeExpressAssign";
 	}
 
+	/**
+	 * 打开分配小件员对话框
+	 *
+	 * @param model
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping("/openAssignDlg")
 	public String openAssignDlg(Model model, HttpServletRequest request) {
 		List<User> deliverList = this.getDeliverList();
 		model.addAttribute("deliverList", deliverList);
 		return "express/stationOperation/assignDlg";
+	}
+
+	/**
+	 * 打开站点超区对话框
+	 *
+	 * @param model
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/openSuperzoneDlg")
+	public String openSuperzoneDlg(Model model, HttpServletRequest request) {
+		return "express/stationOperation/superzoneDlg";
 	}
 
 	/**
