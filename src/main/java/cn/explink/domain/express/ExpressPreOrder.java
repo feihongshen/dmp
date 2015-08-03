@@ -10,7 +10,7 @@ public class ExpressPreOrder {
 	/*
 	 * 预订单编号(not null)
 	 */
-	private String pre_order_no;
+	private String preOrderNo;
 	/*
 	 *预订单状态（0：正常，1：关闭，2：退回）
 	 */
@@ -18,11 +18,11 @@ public class ExpressPreOrder {
 	/*
 	 * 执行状态(0未匹配站点、1已匹配站点、2已分配小件员、3延迟揽件、4揽件失败、5站点超区、6揽件超区、7揽件成功)
 	 */
-	private int excute_state;
+	private int excuteState;
 	/*
 	 *
 	 */
-	private String send_person;
+	private String sendPerson;
 	/*
 	 * 手机号码
 	 */
@@ -34,7 +34,7 @@ public class ExpressPreOrder {
 	/*
 	 * 取件地址
 	 */
-	private String collect_address;
+	private String collectAddress;
 	/*
 	 * 原因
 	 */
@@ -42,127 +42,90 @@ public class ExpressPreOrder {
 	/*
 	 * 分配站点id
 	 */
-	private int branch_id;
+	private int branchId;
 	/*
 	 * 分配站点名称
 	 */
-	private String branch_name;
+	private String branchName;
 	/*
 	 * 省公司处理预订单时间
 	 */
-	private Date handle_time;
+	private Date handleTime;
 	/*
 	 * 处理人id
 	 */
-	private int handle_user_id;
+	private int handleUserId;
 	/*
 	 * 处理人姓名
 	 */
-	private String handle_user_name;
+	private String handleUserName;
 	/*
 	 * 分配小件员的时间
 	 */
-	private Date distribute_deliverman_time;
+	private Date distributeDelivermanTime;
 	/*
 	 * 生成时间
 	 */
-	private Date create_time;
+	private Date createTime;
 	/*
 	 * 预约时间
 	 */
-	private Date arrange_time;
+	private Date arrangeTime;
 	/*
 	 * 小件员id
 	 */
-	private int deliverman_id;
+	private int delivermanId;
 	/*
 	 * 小件员姓名
 	 */
-	private String deliverman_name;
+	private String delivermanName;
 	/*
 	 * 分配小件员的操作人id
 	 */
-	private int distribute_user_id;
+	private int distributeUserId;
 	/*
 	 * 分配小件员的操作人姓名
 	 */
-	private String distribute_user_name;
+	private String distributeUserName;
 	/*
 	 * 快递单号（也是订单表中的订单号）
 	 */
-	private String order_no;
+	private String orderNo;
 	/*
 	 * 一级原因id
 	 */
-	private int feedback_first_reason_id;
+	private int feedbackFirstReasonId;
 	/*
 	 * 一级原因
 	 */
-	private String feedback_first_reason;
+	private String feedbackFirstReason;
 	/*
 	 * 二级原因id
 	 */
-	private int feedback_second_reason_id;
+	private int feedbackSecondReasonId;
 	/*
 	 * 二级原因
 	 */
-	private String feedback_second_reason;
+	private String feedbackSecondReason;
 	/*
 	 * 反馈备注
 	 */
-	private String feedback_remark;
+	private String feedbackRemark;
 	/*
 	 * 反馈人id
 	 */
-	private int feedback_user_id;
+	private int feedbackUserId;
 	/*
 	 * 反馈人姓名
 	 */
-	private String feedback_user_name;
+	private String feedbackUserName;
 	/*
 	 * 反馈时间
 	 */
-	private Date feedback_time;
+	private Date feedbackTime;
 
 	public ExpressPreOrder() {
 		super();
-	}
-
-	public ExpressPreOrder(int id, String pre_order_no, int status, int excute_state, String send_person, String cellphone, String telephone, String collect_address, String reason, int branch_id,
-			String branch_name, Date handle_time, int handle_user_id, String handle_user_name, Date distribute_deliverman_time, Date create_time, Date arrange_time, int deliverman_id,
-			String deliverman_name, int distribute_user_id, String distribute_user_name, String order_no, int feedback_first_reason_id, String feedback_first_reason, int feedback_second_reason_id,
-			String feedback_second_reason, String feedback_remark, int feedback_user_id, String feedback_user_name, Date feedback_time) {
-		super();
-		this.id = id;
-		this.pre_order_no = pre_order_no;
-		this.status = status;
-		this.excute_state = excute_state;
-		this.send_person = send_person;
-		this.cellphone = cellphone;
-		this.telephone = telephone;
-		this.collect_address = collect_address;
-		this.reason = reason;
-		this.branch_id = branch_id;
-		this.branch_name = branch_name;
-		this.handle_time = handle_time;
-		this.handle_user_id = handle_user_id;
-		this.handle_user_name = handle_user_name;
-		this.distribute_deliverman_time = distribute_deliverman_time;
-		this.create_time = create_time;
-		this.arrange_time = arrange_time;
-		this.deliverman_id = deliverman_id;
-		this.deliverman_name = deliverman_name;
-		this.distribute_user_id = distribute_user_id;
-		this.distribute_user_name = distribute_user_name;
-		this.order_no = order_no;
-		this.feedback_first_reason_id = feedback_first_reason_id;
-		this.feedback_first_reason = feedback_first_reason;
-		this.feedback_second_reason_id = feedback_second_reason_id;
-		this.feedback_second_reason = feedback_second_reason;
-		this.feedback_remark = feedback_remark;
-		this.feedback_user_id = feedback_user_id;
-		this.feedback_user_name = feedback_user_name;
-		this.feedback_time = feedback_time;
 	}
 
 	public int getId() {
@@ -173,12 +136,12 @@ public class ExpressPreOrder {
 		this.id = id;
 	}
 
-	public String getPre_order_no() {
-		return this.pre_order_no;
+	public String getPreOrderNo() {
+		return this.preOrderNo;
 	}
 
-	public void setPre_order_no(String pre_order_no) {
-		this.pre_order_no = pre_order_no;
+	public void setPreOrderNo(String preOrderNo) {
+		this.preOrderNo = preOrderNo;
 	}
 
 	public int getStatus() {
@@ -189,20 +152,20 @@ public class ExpressPreOrder {
 		this.status = status;
 	}
 
-	public int getExcute_state() {
-		return this.excute_state;
+	public int getExcuteState() {
+		return this.excuteState;
 	}
 
-	public void setExcute_state(int excute_state) {
-		this.excute_state = excute_state;
+	public void setExcuteState(int excuteState) {
+		this.excuteState = excuteState;
 	}
 
-	public String getSend_person() {
-		return this.send_person;
+	public String getSendPerson() {
+		return this.sendPerson;
 	}
 
-	public void setSend_person(String send_person) {
-		this.send_person = send_person;
+	public void setSendPerson(String sendPerson) {
+		this.sendPerson = sendPerson;
 	}
 
 	public String getCellphone() {
@@ -221,12 +184,12 @@ public class ExpressPreOrder {
 		this.telephone = telephone;
 	}
 
-	public String getCollect_address() {
-		return this.collect_address;
+	public String getCollectAddress() {
+		return this.collectAddress;
 	}
 
-	public void setCollect_address(String collect_address) {
-		this.collect_address = collect_address;
+	public void setCollectAddress(String collectAddress) {
+		this.collectAddress = collectAddress;
 	}
 
 	public String getReason() {
@@ -237,172 +200,172 @@ public class ExpressPreOrder {
 		this.reason = reason;
 	}
 
-	public int getBranch_id() {
-		return this.branch_id;
+	public int getBranchId() {
+		return this.branchId;
 	}
 
-	public void setBranch_id(int branch_id) {
-		this.branch_id = branch_id;
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
 	}
 
-	public String getBranch_name() {
-		return this.branch_name;
+	public String getBranchName() {
+		return this.branchName;
 	}
 
-	public void setBranch_name(String branch_name) {
-		this.branch_name = branch_name;
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
 	}
 
-	public Date getHandle_time() {
-		return this.handle_time;
+	public Date getHandleTime() {
+		return this.handleTime;
 	}
 
-	public void setHandle_time(Date handle_time) {
-		this.handle_time = handle_time;
+	public void setHandleTime(Date handleTime) {
+		this.handleTime = handleTime;
 	}
 
-	public int getHandle_user_id() {
-		return this.handle_user_id;
+	public int getHandleUserId() {
+		return this.handleUserId;
 	}
 
-	public void setHandle_user_id(int handle_user_id) {
-		this.handle_user_id = handle_user_id;
+	public void setHandleUserId(int handleUserId) {
+		this.handleUserId = handleUserId;
 	}
 
-	public String getHandle_user_name() {
-		return this.handle_user_name;
+	public String getHandleUserName() {
+		return this.handleUserName;
 	}
 
-	public void setHandle_user_name(String handle_user_name) {
-		this.handle_user_name = handle_user_name;
+	public void setHandleUserName(String handleUserName) {
+		this.handleUserName = handleUserName;
 	}
 
-	public Date getDistribute_deliverman_time() {
-		return this.distribute_deliverman_time;
+	public Date getDistributeDelivermanTime() {
+		return this.distributeDelivermanTime;
 	}
 
-	public void setDistribute_deliverman_time(Date distribute_deliverman_time) {
-		this.distribute_deliverman_time = distribute_deliverman_time;
+	public void setDistributeDeliverman_time(Date distributeDelivermanTime) {
+		this.distributeDelivermanTime = distributeDelivermanTime;
 	}
 
-	public Date getCreate_time() {
-		return this.create_time;
+	public Date getCreateTime() {
+		return this.createTime;
 	}
 
-	public void setCreate_time(Date create_time) {
-		this.create_time = create_time;
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 
-	public Date getArrange_time() {
-		return this.arrange_time;
+	public Date getArrangeTime() {
+		return this.arrangeTime;
 	}
 
-	public void setArrange_time(Date arrange_time) {
-		this.arrange_time = arrange_time;
+	public void setArrangeTime(Date arrangeTime) {
+		this.arrangeTime = arrangeTime;
 	}
 
-	public int getDeliverman_id() {
-		return this.deliverman_id;
+	public int getDelivermanId() {
+		return this.delivermanId;
 	}
 
-	public void setDeliverman_id(int deliverman_id) {
-		this.deliverman_id = deliverman_id;
+	public void setDelivermanId(int delivermanId) {
+		this.delivermanId = delivermanId;
 	}
 
-	public String getDeliverman_name() {
-		return this.deliverman_name;
+	public String getDelivermanName() {
+		return this.delivermanName;
 	}
 
-	public void setDeliverman_name(String deliverman_name) {
-		this.deliverman_name = deliverman_name;
+	public void setDelivermanName(String delivermanName) {
+		this.delivermanName = delivermanName;
 	}
 
-	public int getDistribute_user_id() {
-		return this.distribute_user_id;
+	public int getDistributeUserId() {
+		return this.distributeUserId;
 	}
 
-	public void setDistribute_user_id(int distribute_user_id) {
-		this.distribute_user_id = distribute_user_id;
+	public void setDistributeUserId(int distributeUserId) {
+		this.distributeUserId = distributeUserId;
 	}
 
-	public String getDistribute_user_name() {
-		return this.distribute_user_name;
+	public String getDistributeUserName() {
+		return this.distributeUserName;
 	}
 
-	public void setDistribute_user_name(String distribute_user_name) {
-		this.distribute_user_name = distribute_user_name;
+	public void setDistributeUserName(String distributeUserName) {
+		this.distributeUserName = distributeUserName;
 	}
 
-	public String getOrder_no() {
-		return this.order_no;
+	public String getOrderNo() {
+		return this.orderNo;
 	}
 
-	public void setOrder_no(String order_no) {
-		this.order_no = order_no;
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
 	}
 
-	public int getFeedback_first_reason_id() {
-		return this.feedback_first_reason_id;
+	public int getFeedbackFirstReasonId() {
+		return this.feedbackFirstReasonId;
 	}
 
-	public void setFeedback_first_reason_id(int feedback_first_reason_id) {
-		this.feedback_first_reason_id = feedback_first_reason_id;
+	public void setFeedbackFirstReasonId(int feedbackFirstReasonId) {
+		this.feedbackFirstReasonId = feedbackFirstReasonId;
 	}
 
-	public String getFeedback_first_reason() {
-		return this.feedback_first_reason;
+	public String getFeedbackFirstReason() {
+		return this.feedbackFirstReason;
 	}
 
-	public void setFeedback_first_reason(String feedback_first_reason) {
-		this.feedback_first_reason = feedback_first_reason;
+	public void setFeedbackFirstReason(String feedbackFirstReason) {
+		this.feedbackFirstReason = feedbackFirstReason;
 	}
 
-	public int getFeedback_second_reason_id() {
-		return this.feedback_second_reason_id;
+	public int getFeedbackSecondReasonId() {
+		return this.feedbackSecondReasonId;
 	}
 
-	public void setFeedback_second_reason_id(int feedback_second_reason_id) {
-		this.feedback_second_reason_id = feedback_second_reason_id;
+	public void setFeedbackSecondReasonId(int feedbackSecondReasonId) {
+		this.feedbackSecondReasonId = feedbackSecondReasonId;
 	}
 
-	public String getFeedback_second_reason() {
-		return this.feedback_second_reason;
+	public String getFeedbackSecondReason() {
+		return this.feedbackSecondReason;
 	}
 
-	public void setFeedback_second_reason(String feedback_second_reason) {
-		this.feedback_second_reason = feedback_second_reason;
+	public void setFeedbackSecondReason(String feedbackSecondReason) {
+		this.feedbackSecondReason = feedbackSecondReason;
 	}
 
-	public String getFeedback_remark() {
-		return this.feedback_remark;
+	public String getFeedbackRemark() {
+		return this.feedbackRemark;
 	}
 
-	public void setFeedback_remark(String feedback_remark) {
-		this.feedback_remark = feedback_remark;
+	public void setFeedbackRemark(String feedbackRemark) {
+		this.feedbackRemark = feedbackRemark;
 	}
 
-	public int getFeedback_user_id() {
-		return this.feedback_user_id;
+	public int getFeedbackUserId() {
+		return this.feedbackUserId;
 	}
 
-	public void setFeedback_user_id(int feedback_user_id) {
-		this.feedback_user_id = feedback_user_id;
+	public void setFeedbackUserId(int feedbackUserId) {
+		this.feedbackUserId = feedbackUserId;
 	}
 
-	public String getFeedback_user_name() {
-		return this.feedback_user_name;
+	public String getFeedbackUserName() {
+		return this.feedbackUserName;
 	}
 
-	public void setFeedback_user_name(String feedback_user_name) {
-		this.feedback_user_name = feedback_user_name;
+	public void setFeedbackUserName(String feedbackUserName) {
+		this.feedbackUserName = feedbackUserName;
 	}
 
-	public Date getFeedback_time() {
-		return this.feedback_time;
+	public Date getFeedbackTime() {
+		return this.feedbackTime;
 	}
 
-	public void setFeedback_time(Date feedback_time) {
-		this.feedback_time = feedback_time;
+	public void setFeedbackTime(Date feedbackTime) {
+		this.feedbackTime = feedbackTime;
 	}
 
 }
