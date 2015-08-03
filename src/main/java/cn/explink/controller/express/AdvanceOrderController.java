@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import cn.explink.dao.BranchDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.PreOrderVO;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.express.ExcuteTypeEnum;
 import cn.explink.service.ExplinkUserDetail;
@@ -62,6 +63,30 @@ public class AdvanceOrderController {
 
 		//model.addAttribute("page_obj", new Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()), page, Page.ONE_PAGE_NUMBER));
 		return "express/advanceorderquery/advanceOrderQuery";
+	}
+
+	/**
+	 * 进入预订单处理页面
+	 * @author 王志宇
+	 * @return
+	 */
+	@RequestMapping("/toPreOrderDeal/{page}")
+	public String PreOrderDeal(@PathVariable("page") long page, Model model) {
+		List<PreOrderVO> list = new ArrayList<PreOrderVO>();
+		for(int a = 0;a < 10;a++){
+			PreOrderVO preOrderVO = new PreOrderVO();
+			preOrderVO.setId(""+a);
+			preOrderVO.setPreOrderNum("1111111");
+			preOrderVO.setCreatTime("2015-7-31");
+			preOrderVO.setSendPerson("江宇");
+			preOrderVO.setCellPhone("17025879654");
+			preOrderVO.setTelePhone("0451-56982145");
+			preOrderVO.setTakeAddress("黑龙江省尚志市");
+			preOrderVO.setReason("想拿走");
+			list.add(preOrderVO);
+		}
+		model.addAttribute("preOrderList", list);
+		return "express/preOrderAudit/PreOrderDeal";
 	}
 
 	/**

@@ -1048,6 +1048,7 @@ src/main/java/cn/explink/dao/WorkOrderDAO.java -text
 src/main/java/cn/explink/dao/YpdjHandleRecordDAO.java -text
 src/main/java/cn/explink/dao/ZhiFuApplyDao.java -text
 src/main/java/cn/explink/dao/contractManagement/CustomerContractDAO.java -text
+src/main/java/cn/explink/dao/express/AdvanceOrderDao.java -text
 src/main/java/cn/explink/dao/searchEditCwbInfoDao.java -text
 src/main/java/cn/explink/dao/support/BasicJdbcTemplateDaoSupport.java -text
 src/main/java/cn/explink/dao/support/LockOptions.java -text
@@ -1288,6 +1289,7 @@ src/main/java/cn/explink/domain/VO/ExpressSetBranchContractVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchDeliveryFeeBillDetailVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchDeliveryFeeBillVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetExceedSubsidyApplyVO.java -text
+src/main/java/cn/explink/domain/VO/PreOrderVO.java -text
 src/main/java/cn/explink/domain/VO/SerachCustomerBillContractVO.java -text
 src/main/java/cn/explink/domain/WarehouseKey.java -text
 src/main/java/cn/explink/domain/WarehouseToBranch.java -text
@@ -1760,6 +1762,7 @@ src/main/java/cn/explink/service/addressmatch/AddressSyncService.java -text
 src/main/java/cn/explink/service/addressmatch/KeyWordMatchProcessor.java -text
 src/main/java/cn/explink/service/addressmatch/MatchResult.java -text
 src/main/java/cn/explink/service/contractManagement/ContractManagementService.java -text
+src/main/java/cn/explink/service/express/AdvanceOrderService.java -text
 src/main/java/cn/explink/service/validator/BackCargoAmountShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/BackCargoNumShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/CargoAmountShouldAboveZeroAndBelowBillon.java -text
@@ -2260,6 +2263,7 @@ src/main/webapp/WEB-INF/jsp/exportwarhousesummary/detail.jsp -text
 src/main/webapp/WEB-INF/jsp/exportwarhousesummary/list.jsp -text
 src/main/webapp/WEB-INF/jsp/exportwarhousesummary/search.jsp -text
 src/main/webapp/WEB-INF/jsp/express/advanceorderquery/advanceOrderQuery.jsp -text
+src/main/webapp/WEB-INF/jsp/express/preOrderAudit/PreOrderDeal.jsp -text
 src/main/webapp/WEB-INF/jsp/express/stationOperation/assignDlg.jsp -text
 src/main/webapp/WEB-INF/jsp/express/stationOperation/takeExpressAssign.jsp -text
 src/main/webapp/WEB-INF/jsp/funds/payamount/DeliveryView.jsp -text
