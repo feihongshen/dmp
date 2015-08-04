@@ -466,7 +466,7 @@ function verify(){
 				<c:if test="${bill.billstate==state.value}">${state.text }</c:if>
 			</c:forEach>
 		</td>
-		<td align="center" valign="middle" >
+		<td align="left" valign="middle" style="width:200px;">
 			<c:forEach items="${customerList}" var="customer">
    				<c:if test="${bill.customerid==customer.customerid}">
 					${customer.customername}

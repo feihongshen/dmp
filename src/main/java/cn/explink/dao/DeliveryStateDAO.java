@@ -1542,8 +1542,8 @@ public class DeliveryStateDAO {
 			sql.append(" and deliveryid='" + diliverymanid + "'");
 		}
 		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
-			sql.append(" and deliverytime >= '" + startDate + "'");
-			sql.append(" and deliverytime <= '" + endDate + "'");
+			sql.append(" and deliverytime >= '" + startDate + " 00:00:00'");
+			sql.append(" and deliverytime <= '" + endDate + " 59:59:59'");
 		}
 		sql.append(" and gcaid > 0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");
@@ -1567,8 +1567,8 @@ public class DeliveryStateDAO {
 			sql.append(" and d.deliveryid='" + diliverymanid + "'");
 		}
 		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
-			sql.append(" and c.emaildate >= '" + startDate + "'");
-			sql.append(" and c.emaildate <= '" + endDate + "'");
+			sql.append(" and c.emaildate >= '" + startDate + " 00:00:00'");
+			sql.append(" and c.emaildate <= '" + endDate + " 59:59:59'");
 		}
 		sql.append(" and d.gcaid >0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");
@@ -1592,8 +1592,8 @@ public class DeliveryStateDAO {
 			sql.append(" and d.deliveryid='" + diliverymanid + "'");
 		}
 		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
-			sql.append(" and i.credate >= '" + startDate + "'");
-			sql.append(" and i.credate <= '" + endDate + "'");
+			sql.append(" and i.credate >= '" + startDate + " 00:00:00'");
+			sql.append(" and i.credate <= '" + endDate + " 59:59:59'");
 		}
 		sql.append(" and d.gcaid >0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");

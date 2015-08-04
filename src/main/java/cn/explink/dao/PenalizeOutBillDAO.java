@@ -70,12 +70,12 @@ public class PenalizeOutBillDAO {
 				querySql.append(" and billstate ='" + bill.getBillstate() + "'");
 			}
 			if ((billCreationStartDate != null) && (billCreationStartDate != "") && (billCreationEndDate != null) && (billCreationEndDate != "")) {
-				querySql.append(" and createddate >='" + billCreationStartDate + "'");
-				querySql.append(" and createddate <= '" + billCreationEndDate + "'");
+				querySql.append(" and createddate >='" + billCreationStartDate + " 00:00:00'");
+				querySql.append(" and createddate <= '" + billCreationEndDate + " 59:59:59'");
 			}
 			if ((billVerificationStrartDate != null) && (billVerificationStrartDate != "") && (billVerificationEndDate != null) && (billVerificationEndDate != "")) {
-				querySql.append(" and verificationdate >='" + billVerificationStrartDate + "'");
-				querySql.append(" and verificationdate <= '" + billVerificationEndDate + "'");
+				querySql.append(" and verificationdate >='" + billVerificationStrartDate + " 00:00:00'");
+				querySql.append(" and verificationdate <= '" + billVerificationEndDate + " 59:59:59'");
 			}
 			if ((bill.getCustomerid() != null) && (bill.getCustomerid() != "")) {
 				querySql.append(" and customerid = '" + bill.getCustomerid() + "'");

@@ -249,10 +249,10 @@ public class PenalizeOutDAO {
 			sql.append(" and penalizeOutNO in (" + str + ")");
 		}
 		if ((CreationStartDate != null) && (CreationStartDate != "")) {
-			sql.append(" and '" + CreationStartDate + "'<= createrdate");
+			sql.append(" and createrdate >='" + CreationStartDate + " 00:00:00'");
 		}
 		if ((CreationEndDate != null) && (CreationEndDate != "")) {
-			sql.append(" and createrdate <= '" + CreationEndDate + "'");
+			sql.append(" and createrdate <= '" + CreationEndDate + " 59:59:59'");
 		}
 		if(customerid!=null && customerid !="" ){
 			sql.append(" and customerid = '"+customerid+"'");

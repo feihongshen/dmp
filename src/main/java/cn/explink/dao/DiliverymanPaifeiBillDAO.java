@@ -110,16 +110,16 @@ public class DiliverymanPaifeiBillDAO {
 			querySql.append(" and billbatch = '" + bill.getBillbatch() + "'");
 		}
 		if (StringUtils.isNotBlank(bill.getBillCreationStartDate())) {
-			querySql.append(" and billestablishdate >='" + bill.getBillCreationStartDate() + "'");
+			querySql.append(" and billestablishdate >='" + bill.getBillCreationStartDate() + " 00:00:00'");
 		}
 		if (StringUtils.isNotBlank(bill.getBillCreationEndDate())) {
-			querySql.append(" and billestablishdate <= '" + bill.getBillCreationEndDate() + "'");
+			querySql.append(" and billestablishdate <= '" + bill.getBillCreationEndDate() + " 59:59:59'");
 		}
 		if (StringUtils.isNotBlank(bill.getBillVerificationStrartDate())) {
-			querySql.append(" and billverificationdate >= '" + bill.getBillVerificationStrartDate() + "'");
+			querySql.append(" and billverificationdate >= '" + bill.getBillVerificationStrartDate() + " 00:00:00'");
 		}
 		if (StringUtils.isNotBlank(bill.getBillVerificationEndDate())) {
-			querySql.append(" and billverificationdate <= '" + bill.getBillVerificationEndDate() + "'");
+			querySql.append(" and billverificationdate <= '" + bill.getBillVerificationEndDate() + " 59:59:59'");
 		}
 		if ((bill.getTheirsite() != null) && (bill.getTheirsite() != 0)) {
 			querySql.append(" and theirsite = '" + bill.getTheirsite() + "'");
