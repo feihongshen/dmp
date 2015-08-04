@@ -144,13 +144,14 @@ $(function() {
 	<div class="right_title">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 			<tr class="font_1">
-			   <td width="14%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
-	           <td width="14%" align="center" valign="middle" bgcolor="#eef6ff">供应商</td>
-	           <td width="14%" align="center" valign="middle" bgcolor="#eef6ff">生成时间</td>
-	           <td width="14%" align="center" valign="middle" bgcolor="#eef6ff">执行状态</td>
-	           <td width="14%" align="center" valign="middle" bgcolor="#eef6ff">应收金额</td>
-	           <td width="14%" align="center" valign="middle" bgcolor="#eef6ff">揽件/配送站点</td>
-	           <td width="14%" align="center" valign="middle" bgcolor="#eef6ff">支付方式</td>
+			   <td width="12%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+	           <td width="12%" align="center" valign="middle" bgcolor="#eef6ff">供应商</td>
+	           <td width="12%" align="center" valign="middle" bgcolor="#eef6ff">生成时间</td>
+	           <td width="12%" align="center" valign="middle" bgcolor="#eef6ff">执行状态</td>
+	           <td width="12%" align="center" valign="middle" bgcolor="#eef6ff">应收金额</td>
+	           <td width="12%" align="center" valign="middle" bgcolor="#eef6ff">揽件/配送站点</td>
+	           <td width="12%" align="center" valign="middle" bgcolor="#eef6ff">支付方式</td>
+	           <td width="12%" align="center" valign="middle" bgcolor="#eef6ff">执行类型</td>
 			</tr>
 			<% for(CwbOXODetailBean c : cwboxodetailList){ %>
 		    <tr>
@@ -161,6 +162,7 @@ $(function() {
 		       <td  align="center" valign="middle"><%=c.getReceivablefee()%></td>
 		       <td  align="center" valign="middle"><%=c.getBranchName()%></td>
 		       <td  align="center" valign="middle"><%=c.getPayWay()%></td>
+		       <td  align="center" valign="middle"><%=c.getOxoType()%></td>
 		    </tr>
 		    <%} %>
 		</table>
