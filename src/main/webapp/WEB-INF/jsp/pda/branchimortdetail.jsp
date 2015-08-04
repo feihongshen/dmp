@@ -891,7 +891,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 				</table>
 			</li>
 			<!-- 揽件未到站table view-->
-			<li>
+			<li style="display: none">
 				<input type ="button" id="btnval" value="导出Excel" class="input_button1" onclick='exportField(6);'/>
 				<table width="100%" border="0" cellspacing="10" cellpadding="0">
 					<tbody>
@@ -905,7 +905,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 										<td width="100" align="center" bgcolor="#f1f1f1">订单类型</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>	
-										<td width="140" align="center" bgcolor="#f1f1f1">收件地址</td>								
+										<td width="250" align="center" bgcolor="#f1f1f1">收件地址</td>								
 										<td  align="center" bgcolor="#f1f1f1">揽件地址</td>
 			
 									</tr>
@@ -920,7 +920,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 											<td width="100"><%=co.getCwbordertype() %></td>
 											<td width="100"><%=co.getReceivablefee().doubleValue() %></td>
 											<td width="100"><%=co.getConsigneename() %></td>
-											<td align="140"><%=co.getConsigneeaddress() %></td>
+											<td width="250" align="left"><%=co.getConsigneeaddress() %></td>
 											<td align="left"><%=co.getPickaddress() %></td>
 										</tr>
 										<%} %>

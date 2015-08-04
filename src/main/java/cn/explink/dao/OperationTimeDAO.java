@@ -418,6 +418,27 @@ public class OperationTimeDAO {
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate >=" + time + " and flowordertype in(" + flowordertypes + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
+	
+	/**
+	 * 小件员领货 今日未领
+	 *
+	 * @param branchid 站点id
+	 * @param cwbordertypeids 订单类型
+	 * @param flowordertypes 订单状态
+	 * @param currentDayZeroTime
+	 * @return
+	 */
+	public List<String> getOrderFlowLingHuoList(long branchid,String cwbordertypeids, String flowordertypes, String currentDayZeroTime) {
+		long time = 0l;
+		try {
+			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate >=" + time + " and flowordertype in(" + flowordertypes + ") "
+				+ " and cwbordertypeid in(" + cwbordertypeids + ") ";
+		return this.jdbcTemplate.queryForList(sql, String.class);
+	}
 
 	/**
 	 * 小件员领货 今日未领
@@ -471,6 +492,27 @@ public class OperationTimeDAO {
 			e.printStackTrace();
 		}
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate <" + time + " and flowordertype in(" + flowordertypes + ") ";
+		return this.jdbcTemplate.queryForList(sql, String.class);
+	}
+	
+	/**
+	 *  历史未领货
+	 *
+	 * @param branchid 站点id
+	 * @param cwbordertypeids 订单类型
+	 * @param flowordertypes 订单状态
+	 * @param currentDayZeroTime
+	 * @return
+	 */
+	public List<String> getlishidaohuo(long branchid,String cwbordertypeids, String flowordertypes, String currentDayZeroTime) {
+		long time = 0l;
+		try {
+			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate <" + time + " and flowordertype in(" + flowordertypes + ") "
+				+ " and cwbordertypeid in(" + cwbordertypeids + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 

@@ -1589,8 +1589,13 @@ public class PDAController {
 		List<CwbOrder> historydaohuolist = new ArrayList<CwbOrder>();
 		List<CwbDetailView> historyweilinghuolist = new ArrayList<CwbDetailView>();// 历史待领货list
 		// 今日待领货
-		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+//		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+//				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
+		
+		//OXO: 过滤JIT类型的订单统计 by jinghui.pan on 20150804
+		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(),getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
+		
 		// orderFlowDAO.getOrderFlowLingHuoList(getSessionUser().getBranchid(),
 		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
 		// DateTimeUtil.getCurrentDayZeroTime(), "");
@@ -1606,8 +1611,12 @@ public class PDAController {
 		// FlowOrderTypeEnum.YiShenHe.getValue()+"",
 		// DateTimeUtil.getCurrentDayZeroTime(), "");
 		// 历史到货
-		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
+//		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
+//				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
+		//OXO: 过滤JIT类型的订单统计 by jinghui.pan on 20150804
+		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
+		
 		// cwbDAO.getHistoryyWeiLingDaohuobyBranchid(getSessionUser().getBranchid(),getStrings(todaydaohuocwbs));
 
 		if (historycwbs.size() > 0) {
@@ -5444,7 +5453,11 @@ public class PDAController {
 		// orderFlowDAO.getOrderFlowLingHuoList(getSessionUser().getBranchid(),
 		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
 		// DateTimeUtil.getCurrentDayZeroTime(), "");
-		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+//		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+//				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
+
+		//OXO: 过滤JIT类型的订单统计 by jinghui.pan on 20150804
+		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(), getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
 
 		// 今日滞留订单数
@@ -5464,7 +5477,11 @@ public class PDAController {
 		// 历史到货订单
 		// List<CwbOrder> historydaohuolist =
 		// cwbDAO.getHistoryyWeiLingDaohuobyBranchid(getSessionUser().getBranchid(),getStrings(todaydaohuocwbs));
-		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
+//		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
+//				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
+		
+		//OXO: 过滤JIT类型的订单统计 by jinghui.pan on 20150804
+		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
 
 		if (historycwbs.size() > 0) {
@@ -9205,6 +9222,20 @@ public class PDAController {
 
 		return lanjianweidaohuoViewlist;
 
+	}
+	
+	private String getCwbOrderTypeIdsWithoutJIT(){
+		String typdIds = "";
+		
+		for(CwbOrderTypeIdEnum cwbOrderTypeIdEnum: CwbOrderTypeIdEnum.values()){
+			if(!cwbOrderTypeIdEnum.equals(CwbOrderTypeIdEnum.OXO_JIT)){
+				typdIds += "," + cwbOrderTypeIdEnum.getValue() ;
+			}
+		}
+		if(StringUtils.isNotBlank(typdIds)){
+			typdIds = typdIds.substring(1); //remove the last comma
+		}
+		return typdIds;
 	}
 
 }
