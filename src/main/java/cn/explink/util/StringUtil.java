@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -273,14 +274,14 @@ public class StringUtil {
 	}
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		/*String str = "张鹏凯";
-		System.out.println(str.getBytes("GBK").length);*/
-
+		/*
+		 * String str = "张鹏凯"; System.out.println(str.getBytes("GBK").length);
+		 */
 
 		String str1 = "1,2,3,4,5,6";
 		String str2 = "5,6,7,8";
 
-		System.out.println(StringUtil.removalDuplicateString(str1,str2));
+		System.out.println(StringUtil.removalDuplicateString(str1, str2));
 	}
 
 	public static String getStringsByLongList(List<Long> strArr) {
@@ -335,27 +336,45 @@ public class StringUtil {
 		return str2;
 	}
 
-	public static String removalDuplicateString(String strs){
+	public static String removalDuplicateString(String strs) {
 		List list = Arrays.asList(strs.split(","));
 		Set set = new HashSet(list);
-		String [] strArr=(String [])set.toArray(new String[0]);
+		String[] strArr = (String[]) set.toArray(new String[0]);
 		String rtnStr = StringUtil.getStringsToString(strArr);
 		return rtnStr;
 	}
 
-	public static String removalDuplicateString(String srcStr, String destStr){
+	public static String removalDuplicateString(String srcStr, String destStr) {
 		List<String> list = Arrays.asList(srcStr.split(","));
 		List<String> rtnList = new ArrayList<String>();
-		for(int i = 0; i < list.size(); i++){
-			if(destStr.indexOf(list.get(i)) < 0){
+		for (int i = 0; i < list.size(); i++) {
+			if (destStr.indexOf(list.get(i)) < 0) {
 				rtnList.add(list.get(i));
 			}
 		}
 		String rtnStr = StringUtils.join(rtnList, ",");
 		return rtnStr;
 	}
+
 	public static BigDecimal nullOrEmptyConvertToBigDecimal(String bd) {
-		BigDecimal lastusername = ((bd == null)||((null!=bd)&&bd.equals("")) )? BigDecimal.ZERO : new BigDecimal(bd);
+		BigDecimal lastusername = ((bd == null) || ((null != bd) && bd.equals(""))) ? BigDecimal.ZERO : new BigDecimal(bd);
 		return lastusername;
+	}
+
+	/**
+	 *
+	 * 根据正则表达式分割字符串
+	 *
+	 * @param str
+	 *            源字符串
+	 * @param ms
+	 *            正则表达式
+	 * @return 目标字符串组
+	 */
+	public static String[] splitString(String str, String ms) {
+		String regEx = ms;
+		Pattern p = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
+		String[] sp = p.split(str);
+		return sp;
 	}
 }

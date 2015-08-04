@@ -2,6 +2,7 @@ package cn.explink.dao.express;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,13 @@ public class PreOrderDao {
 		}
 	}
 
+	/**
+	 * 根据执行状态和小件员查询
+	 *
+	 * @param excuteStateList
+	 * @param delivermanId
+	 * @return
+	 */
 	public List<ExpressPreOrder> getPreOrderByExcuteStateAndDelivermanId(List<Integer> excuteStateList, Integer delivermanId) {
 		StringBuffer sql = new StringBuffer("select id,pre_order_no,send_person,cellphone,telephone,arrange_time,collect_address from express_ops_preorder where 1=1");
 		if ((excuteStateList != null) && !excuteStateList.isEmpty()) {
@@ -61,6 +69,26 @@ public class PreOrderDao {
 			sql.append(" and deliverman_id =" + delivermanId);
 		}
 		return this.jdbcTemplate.query(sql.toString(), new ExpressPreOrderRowMapper());
+	}
+
+	public boolean updateDeliverByIdList(List<Integer> idList, int delivermanId, String delivermanName, long distributeUserId, String distributeUserName) {
+		if ((idList == null) || idList.isEmpty()) {
+			return false;
+		}
+		StringBuffer sql = new StringBuffer(" update express_ops_preorder set");
+		sql.append(" deliverman_id=" + delivermanId + ",");
+		sql.append(" deliverman_name=" + delivermanName + ",");
+		sql.append(" distribute_user_id=" + distributeUserId + ",");
+		sql.append(" distribute_user_name=" + distributeUserName + ",");
+		sql.append(" distribute_deliverman_time=" + new Date());
+		sql.append(" where id  ");
+		sql.append(this.assembleInByIntegerList(idList));
+
+		int updateCount = this.jdbcTemplate.update(sql.toString());
+		if (updateCount == idList.size()) {
+			return true;
+		}
+		return false;
 	}
 
 	private String assembleInByIntegerList(List<Integer> integerList) {

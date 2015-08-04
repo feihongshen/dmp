@@ -33,6 +33,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.express.ExpressPreOrder;
 import cn.explink.enumutil.express.DistributeConditionEnum;
 import cn.explink.enumutil.express.ExcuteStateEnum;
+import cn.explink.util.StringUtil;
 
 /**
  * 揽件分配/调整
@@ -97,8 +98,22 @@ public class StationOperationController extends ExpressCommonController {
 	@RequestMapping("/doAssign")
 	public String doAssign(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders,
 			@RequestParam(value = "deliverid", required = false) Integer deliverid) {
+		List<Integer> preOrderIdList = this.convertToIdList(selectedPreOrders);
+		User deliverman = this.userDAO.getUserByUserid(deliverid);
+		User operateUser = this.getSessionUser();
 
-		return "express/stationOperation/assignDlg";
+		this.preOrderDao.updateDeliverByIdList(preOrderIdList, deliverid, deliverman.getRealname(), operateUser.getUserid(), operateUser.getRealname());
+
+		return "express/stationOperation/takeExpressAssign";
+	}
+
+	private List<Integer> convertToIdList(String selectedPreOrders) {
+		List<Integer> preOrderIdList = new ArrayList<Integer>();
+		String[] selectedPreOrderArr = StringUtil.splitString(selectedPreOrders, ",");
+		for (String selectedPreOrder : selectedPreOrderArr) {
+			preOrderIdList.add(Integer.parseInt(selectedPreOrder));
+		}
+		return preOrderIdList;
 	}
 
 	/**

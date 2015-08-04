@@ -29,7 +29,6 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<script language="javascript" src="<%=request.getContextPath()%>/js/express/takeExpressAssign.js"></script>
 <script type="text/javascript">
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");
@@ -58,10 +57,6 @@ $(function(){
 	});
 })
 
-$(function(){
-	getExpressCount("<%=request.getContextPath()%>",$("#deliverid").val());
-	 $("#preOrderNo").focus();
-});
 
 function tabView(tab){
 	$("#"+tab).click();
@@ -174,9 +169,9 @@ function morePreOrder(){
 			$('input[name="selectedPreOrder"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 				selectedPreOrders += $(this).val()+",";
 			});
-			if(selectedPreOrders==null||selectedPreOrders==""){
-				return;
-			}
+// 			if(selectedPreOrders==null||selectedPreOrders==""){
+// 				return;
+// 			}
 			$.ajax({
 				type : "POST",
 				url : $("#assign").val(),
@@ -251,7 +246,9 @@ function morePreOrder(){
 </script>
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">
-
+	<!-- 弹出对话框-->
+	<div id="assign_box"></div>
+	
 	<div class="inputselect_box">
 		<span><input name="" type="button" value="站点超区" class="input_button1" id="superzone_button" />
 		</span> <span><input name="" type="button" value="分配" class="input_button1" id="assign_button" />

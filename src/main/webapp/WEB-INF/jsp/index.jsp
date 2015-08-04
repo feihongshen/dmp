@@ -28,6 +28,7 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js"	type="text/javascript"></script>
 <script type="text/javascript"	src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript"	src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
+<script type="text/javascript"	src="<%=request.getContextPath()%>/js/express/takeExpressAssign.js"></script>
 
 <style type="text/css">
 .navbar {
