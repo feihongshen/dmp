@@ -146,6 +146,11 @@ public class BranchContractDAO {
 		return jdbcTemplate.query(sql, new BranchContractMapper());
 	}
 	
+	public List<ExpressSetBranchContract> getBranchContractListByBranchId(int branchId) {
+		String sql = "select * from express_set_branch_contract where branchId = ?";
+		return jdbcTemplate.query(sql, new BranchContractMapper(), branchId);
+	}
+	
 	public List<ExpressSetBranchContract> getBranchContractListById(int id) {
 		String sql = "select * from express_set_branch_contract where id=?";
 		return jdbcTemplate.query(sql, new BranchContractMapper(), id);

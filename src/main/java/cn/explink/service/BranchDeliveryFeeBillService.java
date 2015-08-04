@@ -314,8 +314,8 @@ public class BranchDeliveryFeeBillService {
 
 	public String joinHtml(String content, String contextPath, String rootPath) {
 		rootPath = rootPath.replaceAll("\\\\", "/");
-		String path = rootPath + "/exportBranchDeliveryFeeBillList";
-		content = content.replaceAll(contextPath + "/exportBranchDeliveryFeeBillList/image002.jpg", path + "/image001.png");
+		String path = rootPath;
+		content = content.replaceAll(contextPath + "/images/image002.jpg", path + "/images/image001.png");
 		content = "<html>"
 				+ "<head>"
 				+ "<meta http-equiv=Content-Type content=\'text/html; charset=gb2312\'>"
@@ -840,16 +840,16 @@ public class BranchDeliveryFeeBillService {
 				+ "	mso-page-border-surround-footer:no;"
 				+ "	mso-footnote-separator:url(\'"
 				+ path
-				+ "/header.htm\') fs;"
+				+ "/html/header.htm\') fs;"
 				+ "	mso-footnote-continuation-separator:url(\'"
 				+ path
-				+ "/header.htm\') fcs;"
+				+ "/html/header.htm\') fcs;"
 				+ "	mso-endnote-separator:url(\'"
 				+ path
-				+ "/header.htm\') es;"
+				+ "/html/header.htm\') es;"
 				+ "	mso-endnote-continuation-separator:url(\'"
 				+ path
-				+ "/header.htm\') ecs;}"
+				+ "/html/header.htm\') ecs;}"
 				+ "@page Section1"
 				+ "	{size:595.3pt 841.9pt;"
 				+ "	margin:53.85pt 51.05pt 53.85pt 51.05pt;"

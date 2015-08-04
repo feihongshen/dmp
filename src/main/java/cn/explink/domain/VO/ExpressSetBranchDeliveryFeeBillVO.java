@@ -39,6 +39,7 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 	private ExpressSetBranchDeliveryFeeBillDetailVO deliveryFeeObj;
 	private ExpressSetBranchDeliveryFeeBillDetailVO pickupFeeObj;
 	private String qualityControlClause;
+	private String payableFee;
 
 	public void setId(int id) {
 		this.id = id;
@@ -297,6 +298,14 @@ public class ExpressSetBranchDeliveryFeeBillVO {
 	public void setBillDetailList(
 			List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList) {
 		this.billDetailList = billDetailList;
+	}
+
+	public String getPayableFee() {
+		return payableFee;
+	}
+
+	public void setPayableFee(String payableFee) {
+		this.payableFee = payableFee;
 	}
 
 }

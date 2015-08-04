@@ -502,7 +502,7 @@ function changeBillState(state){
 		         	</c:if>
 	         	</td>
 	         	<c:choose>
-	         	<c:when test="${jiesuanAuthority==1}">
+	         	<%-- <c:when test="${jiesuanAuthority==1}">
 	         		<c:choose>
 			         	<c:when test="${weiShenHeState==punishinsideBillVO.billState}">
 			         		<td align="right" colspan="3"> 
@@ -516,8 +516,19 @@ function changeBillState(state){
 			         		</td>
 			         	</c:when>
 		         	</c:choose>
+	         	</c:when> --%>
+	         	<c:when test="${weiShenHeState==punishinsideBillVO.billState}">
+	         		<td align="right" colspan="3"> 
+	         			<input type="button" class="input_button2" onclick="updatePunishinsideBill('ShenHe')" value="审核"/>
+	         		</td>
 	         	</c:when>
-	         	<c:when test="${jiesuanAdvanceAuthority==1 && yiHeXiaoState==punishinsideBillVO.billState}">
+	         	<c:when test="${yiShenHeState==punishinsideBillVO.billState}">
+	         		<td align="right" colspan="3">
+	         			<input type="button" class="input_button2" onclick="updatePunishinsideBill('QuXiaoShenHe')" value="取消审核"/>
+	         			<input type="button" class="input_button2" onclick="updatePunishinsideBill('HeXiaoWanCheng')" value="核销完成"/>
+	         		</td>
+	         	</c:when>
+	         	<c:when test="${yiHeXiaoState==punishinsideBillVO.billState && jiesuanAdvanceAuthority==1}">
 		         	<td align="right" colspan="3"> 
 		         		<input type="button" class="input_button2" onclick="updatePunishinsideBill('QuXiaoHeXiao')" value="取消核销"/>
 		         	</td>

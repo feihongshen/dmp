@@ -1,6 +1,7 @@
 package cn.explink.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.dao.BranchContractDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.BranchDeliveryFeeBillDAO;
 import cn.explink.dao.CustomerDAO;
@@ -36,6 +38,7 @@ import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
+import cn.explink.domain.ExpressSetBranchContract;
 import cn.explink.domain.ExpressSetBranchDeliveryFeeBill;
 import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
 import cn.explink.domain.Role;
@@ -80,6 +83,8 @@ public class BranchDeliveryFeeBillController {
 	CustomerDAO customerDAO;
 	@Autowired
 	ExportService exportService;
+	@Autowired
+	BranchContractDAO branchContractDAO;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -391,6 +396,7 @@ public class BranchDeliveryFeeBillController {
 				if(billDetailVO != null){
 					if(billDetailVO.getCustomerid() != 0){
 						if(rtnMap.get(cMap.get((long)billDetailVO.getCustomerid()).getCustomername()) == null){
+							// 代收订单
 							rtnList = new ArrayList<ExpressSetBranchDeliveryFeeBillDetailVO>();
 							rtnList.add(billDetailVO);
 							rtnMap.put(cMap.get((long)billDetailVO.getCustomerid()).getCustomername(),rtnList);
@@ -405,9 +411,11 @@ public class BranchDeliveryFeeBillController {
 							billDetailVOByCustomer.setDeliveryBusinessSubsidyFee(billDetailVO.getDeliveryBusinessSubsidyFee());
 							billDetailVOByCustomer.setDeliveryAttachSubsidyFee(billDetailVO.getDeliveryAttachSubsidyFee());
 						} else {
+							// 非代收订单
 							rtnList = (List<ExpressSetBranchDeliveryFeeBillDetailVO>)rtnMap.get(cMap.get((long)billDetailVO.getCustomerid()).getCustomername());
 							rtnList.add(billDetailVO);
 							
+							// 代收订单、非代收订单之和(即小计)
 							billDetailVOByCustomer.setCwbOrderCount(billDetailVO.getCwbOrderCount() + billDetailVOByCustomer.getCwbOrderCount());
 							billDetailVOByCustomer.setDeliverySumFee(billDetailVO.getDeliverySumFee().add(billDetailVOByCustomer.getDeliverySumFee()));
 							billDetailVOByCustomer.setDeliveryBasicFee(billDetailVO.getDeliveryBasicFee().add(billDetailVOByCustomer.getDeliveryBasicFee()));
@@ -423,10 +431,37 @@ public class BranchDeliveryFeeBillController {
 			}
 		}
 		rtnVO.setCustomerDeliveryFee(rtnMap);
+		
+		BigDecimal payableFeeBD = new BigDecimal(0);
+		// 派送费总和
 		ExpressSetBranchDeliveryFeeBillDetailVO deliveryFeeObj = this.branchDeliveryFeeBillDAO.getDeliveryFee(cwbs);
+		if(deliveryFeeObj != null){
+			payableFeeBD = payableFeeBD.add(deliveryFeeObj.getDeliverySumFee());
+		}
 		rtnVO.setDeliveryFeeObj(deliveryFeeObj);
+		// 提货费总和
 		ExpressSetBranchDeliveryFeeBillDetailVO pickupFeeObj = this.branchDeliveryFeeBillDAO.getPickupFee(cwbs);
+		if(pickupFeeObj != null){
+			payableFeeBD = payableFeeBD.add(pickupFeeObj.getPickupSumFee());
+		}
 		rtnVO.setPickupFeeObj(pickupFeeObj);
+		// 质控条款
+		List<ExpressSetBranchDeliveryFeeBillDetail> detailList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailList(cwbs);
+		if(detailList != null && !detailList.isEmpty() && detailList.get(0) != null){
+			int billId = detailList.get(0).getBillId();
+			ExpressSetBranchDeliveryFeeBill bill = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillListById(billId);
+			if(bill != null){
+				List<ExpressSetBranchContract>  branchContractList = this.branchContractDAO.getBranchContractListByBranchId(bill.getBranchId());
+				if(branchContractList != null && !branchContractList.isEmpty() && branchContractList.get(0) != null){
+					rtnVO.setQualityControlClause(branchContractList.get(0).getQualityControlClause());
+				}
+			}
+		}
+		
+		// 应付配送费金额(目前扣减项目无法取值，所以暂由'-扣减项目'代替)
+		String payableFee = payableFeeBD + "-扣减项目";
+		rtnVO.setPayableFee(payableFee);
+		
 		return rtnVO;
 	}
 }

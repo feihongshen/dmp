@@ -5267,6 +5267,7 @@ src/main/webapp/dmp40/plug-in/webOffice/main.js -text
 src/main/webapp/dmp40/plug-in/webOffice/style.css -text
 src/main/webapp/dmp40/plug-in/webOffice/webOffice-sample.html -text
 src/main/webapp/dmp40/plug-in/webOffice/weboffice_v6.0.5.0.cab -text
+src/main/webapp/html/header.htm -text
 src/main/webapp/images/400dianhua.jpg -text
 src/main/webapp/images/400dianhua2.jpg -text
 src/main/webapp/images/DD_LOGO.jpg -text
@@ -5390,6 +5391,8 @@ src/main/webapp/images/hwcx.png -text
 src/main/webapp/images/hwdscl.png -text
 src/main/webapp/images/hwdsclq.png -text
 src/main/webapp/images/hwlxsz.png -text
+src/main/webapp/images/image001.png -text
+src/main/webapp/images/image002.jpg -text
 src/main/webapp/images/indexbg.png -text
 src/main/webapp/images/indexbg.psd -text
 src/main/webapp/images/jcsz.png -text
