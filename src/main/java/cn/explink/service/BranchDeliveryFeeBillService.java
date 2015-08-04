@@ -3,6 +3,7 @@ package cn.explink.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -173,18 +174,54 @@ public class BranchDeliveryFeeBillService {
 		if (orderList != null && orderList.size() > 0) {
 			//配送费
 			Map<String, BigDecimal> deliveryBasicFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, orderList);
+			if(deliveryBasicFeeMap == null){
+				deliveryBasicFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> deliveryCollectionSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, orderList);
+			if(deliveryCollectionSubsidyFeeMap == null){
+				deliveryCollectionSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> deliveryAreaSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, orderList);
+			if(deliveryAreaSubsidyFeeMap == null){
+				deliveryAreaSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> deliveryExceedSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Overarea, orderList);
+			if(deliveryExceedSubsidyFeeMap == null){
+				deliveryExceedSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> deliveryBusinessSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business, orderList);
+			if(deliveryBusinessSubsidyFeeMap == null){
+				deliveryBusinessSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> deliveryAttachSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion, orderList);
+			if(deliveryAttachSubsidyFeeMap == null){
+				deliveryAttachSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			//提货费
 			Map<String, BigDecimal> pickupCollectionSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Collection, orderList);
+			if(pickupCollectionSubsidyFeeMap == null){
+				pickupCollectionSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> pickupAreaSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Area, orderList);
+			if(pickupAreaSubsidyFeeMap == null){
+				pickupAreaSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> pickupExceedSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Overarea, orderList);
+			if(pickupExceedSubsidyFeeMap == null){
+				pickupExceedSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> pickupAttachSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Insertion, orderList);
+			if(pickupAttachSubsidyFeeMap == null){
+				pickupAttachSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> pickupBasicFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Basic, orderList);
+			if(pickupBasicFeeMap == null){
+				pickupBasicFeeMap = new HashMap<String, BigDecimal>();
+			}
 			Map<String, BigDecimal> pickupBusinessSubsidyFeeMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(branch.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, PaiFeiBuZhuTypeEnum.Business, orderList);
+			if(pickupBusinessSubsidyFeeMap == null){
+				pickupBusinessSubsidyFeeMap = new HashMap<String, BigDecimal>();
+			}
 			for (CwbOrder order : orderList) {
 				if (StringUtils.isNotBlank(order.getCwb())) {
 					billDetail = new ExpressSetBranchDeliveryFeeBillDetail();
