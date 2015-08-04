@@ -149,10 +149,10 @@ public class CustomerBillContractDao {
 					sb.append(" and bill_state="+billState);
 				}
 				if(!crestartdate.equals("")&&!creenddate.equals("")){
-					sb.append(" and date_create_bill>='"+crestartdate+"' and date_create_bill<='"+creenddate+"'");
+					sb.append(" and date_create_bill>='"+crestartdate+" 00:00:00' and date_create_bill<='"+creenddate+" 23:59:59'");
 				}
 				if(!verificationstratdate.equals("")&&!verificationenddate.equals("")){
-					sb.append(" and date_create_bill>='"+verificationstratdate+"' and date_create_bill<='"+verificationenddate+"'");
+					sb.append(" and date_create_bill>='"+verificationstratdate+" 00:00:00' and date_create_bill<='"+verificationenddate+" 23:59:59'");
 				}
 				if(customerId>0){
 					sb.append(" and customer_id="+customerId);

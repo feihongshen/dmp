@@ -642,11 +642,11 @@
 				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_pj_42_wzy?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_pj_42?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
-				<expressurl.password>explink</expressurl.password>
+				<expressurl.password>root</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>tcp://192.168.0.217:61616</jms.brokerURL>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
 				<wavPath>D:\file\wav\</wavPath>
 				<filePath>D:\file\moule\</filePath>
@@ -659,7 +659,7 @@
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
