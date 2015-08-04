@@ -189,16 +189,16 @@ public class BranchContractDAO {
 						+ branchContractVO.getContractBeginDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractBeginDateTo())){
-				sql += " and DATE_FORMAT(contractBeginDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchContractVO.getContractBeginDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(contractBeginDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchContractVO.getContractBeginDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractEndDateFrom())){
 				sql += " and DATE_FORMAT(contractEndDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
 						+ branchContractVO.getContractEndDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractEndDateTo())){
-				sql += " and DATE_FORMAT(contractEndDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchContractVO.getContractEndDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(contractEndDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchContractVO.getContractEndDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractColumn())){
 				sql += " order by " + branchContractVO.getContractColumn();
@@ -249,16 +249,16 @@ public class BranchContractDAO {
 						+ branchContractVO.getContractBeginDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractBeginDateTo())){
-				sql += " and DATE_FORMAT(contractBeginDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchContractVO.getContractBeginDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(contractBeginDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchContractVO.getContractBeginDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractEndDateFrom())){
 				sql += " and DATE_FORMAT(contractEndDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
 						+ branchContractVO.getContractEndDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractEndDateTo())){
-				sql += " and DATE_FORMAT(contractEndDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchContractVO.getContractEndDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(contractEndDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchContractVO.getContractEndDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if(StringUtils.isNotBlank(branchContractVO.getContractColumn())){
 				sql += " order by " + branchContractVO.getContractColumn();

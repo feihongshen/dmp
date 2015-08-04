@@ -466,8 +466,10 @@ public class BranchDeliveryFeeBillDAO {
 	}
 	
 	public int deleteBranchDeliveryFeeBillDetail(int billId, String cwbs) {
-		String sql = "delete from express_set_branch_delivery_fee_bill_detail where billId= " + billId + " and cwb not in ("
-				+ cwbs + ")";
+		String sql = "delete from express_set_branch_delivery_fee_bill_detail where billId= " + billId;
+		if(StringUtils.isNotBlank(cwbs)){
+			sql += " and cwb not in (" + cwbs + ")";
+		}
 		return this.jdbcTemplate.update(sql);
 	}
 	
@@ -563,8 +565,8 @@ public class BranchDeliveryFeeBillDAO {
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getCreateDateTo())) {
-				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchDeliveryFeeBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getHeXiaoDateFrom())) {
@@ -573,8 +575,8 @@ public class BranchDeliveryFeeBillDAO {
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getHeXiaoDateTo())) {
-				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO.getBranchName())) {
 				sql += " and b.branchname like '%"
@@ -631,8 +633,8 @@ public class BranchDeliveryFeeBillDAO {
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getCreateDateTo())) {
-				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchDeliveryFeeBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getHeXiaoDateFrom())) {
@@ -641,8 +643,8 @@ public class BranchDeliveryFeeBillDAO {
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO
 					.getHeXiaoDateTo())) {
-				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchDeliveryFeeBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBillVO.getBranchName())) {
 				sql += " and b.branchname like '%"
@@ -690,8 +692,8 @@ public class BranchDeliveryFeeBillDAO {
 			}
 			if (StringUtils.isNotBlank(branchDeliveryFeeBill
 					.getEndDate())) {
-				sql += " and DATE_FORMAT(" + dateColumn + ",'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ branchDeliveryFeeBill.getEndDate() + "','%Y-%m-%d %H:%i:%s') ";
+				sql += " and DATE_FORMAT(" + dateColumn + ",'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ branchDeliveryFeeBill.getEndDate() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY) ";
 			}
 			if (branchDeliveryFeeBill.getBranchId() != 0) {
 				sql += " and d.deliverybranchid = "

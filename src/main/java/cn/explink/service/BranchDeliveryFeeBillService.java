@@ -63,21 +63,24 @@ public class BranchDeliveryFeeBillService {
 	@Transactional
 	public void updateBranchDeliveryFeeBill(
 			ExpressSetBranchDeliveryFeeBillVO billVO) {
-		ExpressSetBranchDeliveryFeeBill bill = new ExpressSetBranchDeliveryFeeBill();
 		if (billVO != null) {
-			if(StringUtils.isNotBlank(billVO.getCwbs())){
-				String cwbs = StringUtil.removalDuplicateString(billVO.getCwbs());
-				billVO.setCwbs(cwbs);
-				cwbs = StringUtil.getStringsByStringList(Arrays.asList(billVO.getCwbs().split(",")));
-				this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetail(billVO.getId(), cwbs);
-				int branchfeebillexportflag = 0;
-				if(billVO.getBillState() == DeliveryFeeBillStateEnum.WeiShenHe.getValue()){
-					this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, cwbs);
-				} else if(billVO.getBillState() == DeliveryFeeBillStateEnum.YiShenHe.getValue()){
-					branchfeebillexportflag = 1;
-					this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, cwbs);
-				}
+			String cwbsRetained = billVO.getCwbs();
+			if(StringUtils.isNotBlank(cwbsRetained)){
+				cwbsRetained = StringUtil.removalDuplicateString(cwbsRetained);
+				billVO.setCwbs(cwbsRetained);
+				cwbsRetained = StringUtil.getStringsByStringList(Arrays.asList(cwbsRetained.split(",")));
 			}
+			ExpressSetBranchDeliveryFeeBill bill = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillListById(billVO.getId());
+			if(bill != null && StringUtils.isNotBlank(bill.getCwbs())){
+				String cwbsRemoved = bill.getCwbs();
+				if(StringUtils.isNotBlank(cwbsRetained)){
+					cwbsRemoved = StringUtil.removalDuplicateString(bill.getCwbs(), cwbsRetained);
+				}
+				int branchfeebillexportflag = 0;
+				this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, cwbsRemoved);
+			}
+			this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetail(billVO.getId(), cwbsRetained);
+			bill = new ExpressSetBranchDeliveryFeeBill();
 			BeanUtilsSelfDef.copyPropertiesIgnoreException(bill, billVO);
 			this.branchDeliveryFeeBillDAO.updateBranchDeliveryFeeBill(bill);
 		}

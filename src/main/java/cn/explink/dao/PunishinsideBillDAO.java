@@ -300,16 +300,16 @@ public class PunishinsideBillDAO {
 						+ punishinsideBillVO.getCreateDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getCreateDateTo())) {
-				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ punishinsideBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ punishinsideBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateFrom())) {
 				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
 						+ punishinsideBillVO.getHeXiaoDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateTo())) {
-				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ punishinsideBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ punishinsideBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getContractColumn())) {
 				if(punishinsideBillVO.getContractColumn().equalsIgnoreCase("dutybranchname")){
@@ -375,16 +375,16 @@ public class PunishinsideBillDAO {
 						+ punishinsideBillVO.getCreateDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getCreateDateTo())) {
-				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ punishinsideBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(pb.createDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ punishinsideBillVO.getCreateDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateFrom())) {
 				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"
 						+ punishinsideBillVO.getHeXiaoDateFrom() + "','%Y-%m-%d %H:%i:%s')";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getHeXiaoDateTo())) {
-				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"
-						+ punishinsideBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s')";
+				sql += " and DATE_FORMAT(pb.heXiaoDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"
+						+ punishinsideBillVO.getHeXiaoDateTo() + "','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 			}
 			if (StringUtils.isNotBlank(punishinsideBillVO.getContractColumn())) {
 				if(punishinsideBillVO.getContractColumn().equalsIgnoreCase("dutybranchname")){
@@ -430,7 +430,7 @@ public class PunishinsideBillDAO {
 			sql += " And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+punishNoCreateBeginDate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		if (StringUtils.isNotBlank(punishNoCreateEndDate)) {
-			sql += " And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+punishNoCreateEndDate+"','%Y-%m-%d %H:%i:%s')";
+			sql += " And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"+punishNoCreateEndDate+"','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 		}
 		if (punishcwbstate != -1) {
 			sql += " And punishcwbstate=" + punishcwbstate;
@@ -472,7 +472,7 @@ public class PunishinsideBillDAO {
 			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+begindate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		if (!enddate.equals("")) {
-			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s')";
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 		}
 		if(StringUtils.isNotBlank(existedPunishNos)){
 			sql+=" And punishNo not in ("+existedPunishNos+") ";
@@ -512,7 +512,7 @@ public class PunishinsideBillDAO {
 			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT('"+begindate+"','%Y-%m-%d %H:%i:%s')";
 		}
 		if (!enddate.equals("")) {
-			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s')";
+			sql+=" And DATE_FORMAT(creDate,'%Y-%m-%d %H:%i:%s') <= DATE_ADD(DATE_FORMAT('"+enddate+"','%Y-%m-%d %H:%i:%s'),INTERVAL 1 DAY)";
 		}
 		if(StringUtils.isNotBlank(existedPunishNos)){
 			sql+=" And punishNo not in ("+existedPunishNos+") ";
