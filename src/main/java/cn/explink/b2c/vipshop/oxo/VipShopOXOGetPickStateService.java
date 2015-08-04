@@ -194,9 +194,9 @@ public class VipShopOXOGetPickStateService {
 		try {
 			String soapActionString = nameSpace + "/" + methodName;
 			StringBuffer paramXml = new StringBuffer();
-			paramXml.append("<arg0>" + readXMLHandler.parse(requestXML) + "</arg0>");
-			paramXml.append("<arg1>" + sign.toLowerCase() + "</arg1>");
-			paramXml.append("<arg2>S203</arg2>");
+			paramXml.append("<content>" + readXMLHandler.parse(requestXML) + "</content>");
+			paramXml.append("<sign>" + sign.toLowerCase() + "</sign>");
+			paramXml.append("<serviceCode>S203</serviceCode>");
 
 			String soap = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><" + methodName + " xmlns:tps=\"" + nameSpace + "\">" + paramXml + "</" + methodName
 					+ "></soapenv:Body></soapenv:Envelope>";
