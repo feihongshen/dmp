@@ -71,6 +71,16 @@ public class PreOrderDao {
 		return this.jdbcTemplate.query(sql.toString(), new ExpressPreOrderRowMapper());
 	}
 
+	/**
+	 * 通过id更新小件员等信息
+	 *
+	 * @param idList
+	 * @param delivermanId
+	 * @param delivermanName
+	 * @param distributeUserId
+	 * @param distributeUserName
+	 * @return
+	 */
 	public boolean updateDeliverByIdList(List<Integer> idList, int delivermanId, String delivermanName, long distributeUserId, String distributeUserName) {
 		if ((idList == null) || idList.isEmpty()) {
 			return false;
@@ -81,6 +91,30 @@ public class PreOrderDao {
 		sql.append(" distribute_user_id=" + distributeUserId + ",");
 		sql.append(" distribute_user_name=" + distributeUserName + ",");
 		sql.append(" distribute_deliverman_time=" + new Date());
+		sql.append(" where id  ");
+		sql.append(this.assembleInByIntegerList(idList));
+
+		int updateCount = this.jdbcTemplate.update(sql.toString());
+		if (updateCount == idList.size()) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 更加执行状态和原因
+	 * 
+	 * @param idList
+	 * @param note
+	 * @return
+	 */
+	public boolean updateExcuteStateByIdList(List<Integer> idList, int excuteState, String note) {
+		if ((idList == null) || idList.isEmpty()) {
+			return false;
+		}
+		StringBuffer sql = new StringBuffer(" update express_ops_preorder set");
+		sql.append(" excute_state=" + excuteState + ",");
+		sql.append(" reason=" + note);
 		sql.append(" where id  ");
 		sql.append(this.assembleInByIntegerList(idList));
 

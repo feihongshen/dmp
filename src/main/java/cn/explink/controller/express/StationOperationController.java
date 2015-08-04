@@ -129,6 +129,25 @@ public class StationOperationController extends ExpressCommonController {
 	}
 
 	/**
+	 * 站点超区
+	 *
+	 * @param model
+	 * @param request
+	 * @param selectedPreOrders
+	 * @param deliverid
+	 * @return
+	 */
+	@RequestMapping("/doSuperzone")
+	public String doSuperzone(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders,
+			@RequestParam(value = "note", required = false) String note) {
+		List<Integer> preOrderIdList = this.convertToIdList(selectedPreOrders);
+
+		this.preOrderDao.updateExcuteStateByIdList(preOrderIdList, ExcuteStateEnum.StationSuperzone.getValue(), note);
+
+		return "express/stationOperation/takeExpressAssign";
+	}
+
+	/**
 	 * 查询
 	 *
 	 * @param model

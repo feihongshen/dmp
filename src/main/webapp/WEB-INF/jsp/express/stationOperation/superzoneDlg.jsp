@@ -12,19 +12,19 @@
 			<div id="close_box" onclick="closeBox()"></div>
 			站点超区
 		</h1>
-		<form id="customerwarehouses_cre_Form" name="customerwarehouses_cre_Form"
-			onSubmit="if(check_customerwarehouses()){submitCreateForm(this);}return false;"
-			action="<%=request.getContextPath()%>/customerwarehouses/create" method="post">
 			<div id="box_form">
 				<table>
 					<tr>
 						<td>备注：</td>
-						<td><textarea cols="3"></textarea></td>
+						<td><textarea id="note" cols="3"></textarea></td>
 					</tr>
 				</table>
 			</div>
-			<input type="submit" value="确认" class="button" /> <input type="submit" value="关闭" class="button" />
-		</form>
+			<input type="button" value="确认" class="button" onclick="doSuperzone();"/> 
+			<input type="submit" value="关闭" class="button" />
 	</div>
 </div>
 <div id="box_yy"></div>
+<!-- 站点超区的ajax地址 -->
+	<input type="hidden" id="doSuperzone" value="<%=request.getContextPath()%>/stationOperation/doSuperzone" />
+	<input type="hidden" id="selectedPreOrders" value="<%=selectedPreOrders%>" />

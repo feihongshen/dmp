@@ -17,4 +17,23 @@ function doAssign() {
 		}
 	});
 };
+function doSuperzone() {
+	if ($("#note").val() == null||$("#note").val() =="") {
+		return;
+	}
+	$.ajax({
+		type : "POST",
+		url : $("#doSuperzone").val(),
+		data : {
+			"selectedPreOrders" : $("#selectedPreOrders").val(),
+			"note" : $("#note").val()
+		},
+		success : function(data) {
+		},
+		complete : function() {
+			// addInit();// 初始化某些ajax弹出页面
+			viewBox();
+		}
+	});
+};
 
