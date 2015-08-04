@@ -760,7 +760,7 @@
 			</tr>
 			<c:if test="${area.typeid!=2 }">
 			<tr id="overbigflagtrno">
-			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked:checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
+			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked=checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
 			<td align="left"><input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','overbigflag')" /></td>
 			</tr>
 			</c:if>
@@ -981,7 +981,7 @@
 									</div></td>
 							</tr>
 							<tr id="th_area_tr">
-								<td><input type="checkbox" id="th_area_flag" />区域属性补助费</td>
+								<td><input type="checkbox" id="th_area_flag" ${pfareaListTH!=null||fn:length(pfareaListTH)>0?'checked=checked':'' } />区域属性补助费</td>
 								<td>
 									<div>
 										<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
@@ -1024,7 +1024,7 @@
 			</tr>
 			<c:if test="${area.typeid!=2 }">
 			<tr id="overbigflagtr">
-			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked:checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
+			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked=checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
 			<td align="left"><input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','overbigflag')" /></td>
 			</tr>
 			</c:if>
@@ -1247,7 +1247,7 @@
 									</div></td>
 							</tr>
 							<tr id="zz_area_tr">
-								<td><input type="checkbox" id="zz_area_flag" />区域属性补助费</td>
+								<td><input type="checkbox" id="zz_area_flag" ${pfareaListZZ!=null||fn:length(pfareaListZZ)>0?'checked=checked':'' }  />区域属性补助费</td>
 								<td>
 									<div>
 										<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
@@ -1290,7 +1290,7 @@
 			</tr id="overbigflagtrno">
 			<c:if test="${area.typeid!=2 }">
 			<tr>
-			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked:checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
+			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked=checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
 			<td align="left"><input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','overbigflag')" /></td>
 			</tr>
 			</c:if>
