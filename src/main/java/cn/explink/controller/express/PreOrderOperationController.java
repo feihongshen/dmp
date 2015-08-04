@@ -35,45 +35,48 @@ public class PreOrderOperationController {
 	 * @Title: CallerArchivalRepository
 	 * @description 预订单查询的主方法
 	 * @author 刘武强
-	 * @date  2015年7月30日下午4:37:27
-	 * @param  @param model
-	 * @param  @param start:查询不需要time，只要date
-	 * @param  @param end:查询不需要time，只要date
-	 * @param  @param advanceOrdercode
-	 * @param  @param excuteType
-	 * @param  @param sender
-	 * @param  @param mobile
-	 * @param  @param station：如果是0的话，就代表的是全部；如果不为0，则是对应的站点id
-	 * @param  @param page
-	 * @param  @return
-	 * @return  String
+	 * @date 2015年7月30日下午4:37:27
+	 * @param @param model
+	 * @param @param start:查询不需要time，只要date
+	 * @param @param end:查询不需要time，只要date
+	 * @param @param advanceOrdercode
+	 * @param @param excuteType
+	 * @param @param sender
+	 * @param @param mobile
+	 * @param @param station：如果是0的话，就代表的是全部；如果不为0，则是对应的站点id
+	 * @param @param page
+	 * @param @return
+	 * @return String
 	 * @throws
 	 */
 	@RequestMapping("/query/{page}")
 	public String CallerArchivalRepository(Model model, String start_name, String end_name, String advanceordercode_name, String excuteType_name, String sender_name, String mobile_name,
 			String station_name, @PathVariable(value = "page") long page) {
 		long branchid = this.getSessionUser().getBranchid();
-		//branchid是1的话，那么就是省公司，否则是站点
+		// branchid是1的话，那么就是省公司，否则是站点
 		model.addAttribute("userType", branchid);
 		model.addAttribute("page", page);
 		model.addAttribute("excuteTypelist", this.getExcuteType());
 		model.addAttribute("stationlist", this.getBranchStations(branchid));
 
-		//model.addAttribute("page_obj", new Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()), page, Page.ONE_PAGE_NUMBER));
+		// model.addAttribute("page_obj", new
+		// Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()),
+		// page, Page.ONE_PAGE_NUMBER));
 		return "express/preorderquery/preOrderQuery";
 	}
 
 	/**
 	 * 进入预订单处理页面
+	 *
 	 * @author 王志宇
 	 * @return
 	 */
 	@RequestMapping("/toPreOrderDeal/{page}")
 	public String PreOrderDeal(@PathVariable("page") long page, Model model) {
 		List<PreOrderVO> list = new ArrayList<PreOrderVO>();
-		for(int a = 0;a < 10;a++){
+		for (int a = 0; a < 10; a++) {
 			PreOrderVO preOrderVO = new PreOrderVO();
-			preOrderVO.setId(""+a);
+			preOrderVO.setId("" + a);
 			preOrderVO.setPreOrderNum("1111111");
 			preOrderVO.setCreatTime("2015-7-31");
 			preOrderVO.setSendPerson("江宇");
@@ -87,15 +90,14 @@ public class PreOrderOperationController {
 		return "express/preOrderAudit/PreOrderDeal";
 	}
 
-	
 	/**
 	 *
 	 * @Title: getSessionUser
 	 * @description 获取登录用户信息
 	 * @author 刘武强
-	 * @date  2015年7月30日下午4:13:05
-	 * @param  @return
-	 * @return  User
+	 * @date 2015年7月30日下午4:13:05
+	 * @param @return
+	 * @return User
 	 * @throws
 	 */
 	private User getSessionUser() {
@@ -108,9 +110,9 @@ public class PreOrderOperationController {
 	 * @Title: getDateSelectType
 	 * @description 获取执行状态（不包括“未分配站点”这个状态）
 	 * @author 刘武强
-	 * @date  2015年7月30日下午4:13:22
-	 * @param  @return
-	 * @return  List
+	 * @date 2015年7月30日下午4:13:22
+	 * @param @return
+	 * @return List
 	 * @throws
 	 */
 	public List<Map<String, Object>> getExcuteType() {
@@ -119,7 +121,7 @@ public class PreOrderOperationController {
 		for (int i = 0; i < infolist.size(); i++) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			ExcuteTypeEnum enmu = infolist.get(i);
-			//将“未分配站点”去掉
+			// 将“未分配站点”去掉
 			if (enmu.getValue() == 1) {
 				continue;
 			}
@@ -135,16 +137,17 @@ public class PreOrderOperationController {
 	 * @Title: getBranchStations
 	 * @description 获取站点
 	 * @author 刘武强
-	 * @date  2015年7月30日下午4:17:57
-	 * @param  branchid=1时，获取所有的站点；否则获取当前branchid对应的站点信息
-	 * @return  List
+	 * @date 2015年7月30日下午4:17:57
+	 * @param branchid
+	 *            =1时，获取所有的站点；否则获取当前branchid对应的站点信息
+	 * @return List
 	 * @throws
 	 */
 	public List<Map<String, String>> getBranchStations(long branchid) {
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		if (branchid == 1) {
 			List<Branch> branchListinfo = this.branchDAO.getAllBranches();
-			//把“全部”拼接进去
+			// 把“全部”拼接进去
 			Map<String, String> mapall = new HashMap<String, String>();
 			mapall.put("key", "0");
 			mapall.put("value", "全部");
@@ -169,7 +172,7 @@ public class PreOrderOperationController {
 		return list;
 	}
 
-	//public List getTableInfo(){
+	// public List getTableInfo(){
 
-	//}
+	// }
 }

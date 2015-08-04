@@ -24,11 +24,15 @@ import cn.explink.controller.ExplinkResponse;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.express.PreOrderDao;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbDetailView;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Role;
 import cn.explink.domain.User;
+import cn.explink.domain.express.ExpressPreOrder;
+import cn.explink.enumutil.express.DistributeConditionEnum;
+import cn.explink.enumutil.express.ExcuteStateEnum;
 
 /**
  * 揽件分配/调整
@@ -47,6 +51,9 @@ public class StationOperationController extends ExpressCommonController {
 	@Autowired
 	private CustomerDAO customerDAO;
 
+	@Autowired
+	private PreOrderDao preOrderDao;
+
 	/**
 	 * 进入揽件分配/调整的功能页面
 	 *
@@ -57,17 +64,10 @@ public class StationOperationController extends ExpressCommonController {
 	 */
 	@RequestMapping("/takeExpressAssign")
 	public String branchdeliverdetail(Model model) {
-		// TODO 今日待揽收列表
-		List<CwbDetailView> todayToTakeList = new ArrayList<CwbDetailView>();
-		// TO 今日已揽收列表
-		List<CwbDetailView> todayTakedList = new ArrayList<CwbDetailView>();
-		List<Customer> cList = new ArrayList<Customer>();
-
 		List<User> deliverList = this.getDeliverList();
-
-		model.addAttribute("todayToTakeList", todayToTakeList);
-		model.addAttribute("todayTakedList", todayTakedList);
+		List<DistributeConditionEnum> distributeConditionList = DistributeConditionEnum.getAllStatus();
 		model.addAttribute("deliverList", deliverList);
+		model.addAttribute("distributeConditionList", distributeConditionList);
 		return "express/stationOperation/takeExpressAssign";
 	}
 
@@ -79,9 +79,25 @@ public class StationOperationController extends ExpressCommonController {
 	 * @return
 	 */
 	@RequestMapping("/openAssignDlg")
-	public String openAssignDlg(Model model, HttpServletRequest request) {
+	public String openAssignDlg(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders) {
 		List<User> deliverList = this.getDeliverList();
 		model.addAttribute("deliverList", deliverList);
+		model.addAttribute("selectedPreOrders", selectedPreOrders);
+		return "express/stationOperation/assignDlg";
+	}
+
+	/**
+	 * 分配
+	 *
+	 * @param model
+	 * @param request
+	 * @param selectedPreOrders
+	 * @return
+	 */
+	@RequestMapping("/doAssign")
+	public String doAssign(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders,
+			@RequestParam(value = "deliverid", required = false) Integer deliverid) {
+
 		return "express/stationOperation/assignDlg";
 	}
 
@@ -95,6 +111,43 @@ public class StationOperationController extends ExpressCommonController {
 	@RequestMapping("/openSuperzoneDlg")
 	public String openSuperzoneDlg(Model model, HttpServletRequest request) {
 		return "express/stationOperation/superzoneDlg";
+	}
+
+	/**
+	 * 查询
+	 *
+	 * @param model
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/search")
+	public String search(Model model, HttpServletRequest request, @RequestParam(value = "distributeCondition", required = false) Integer distributeCondition,
+			@RequestParam(value = "deliverid", required = false) Integer deliverid) {
+		List<ExpressPreOrder> preOrderList = this.preOrderDao.getPreOrderByExcuteStateAndDelivermanId(this.getExecuteStateByDistributeCondition(distributeCondition), deliverid);
+
+		List<User> deliverList = this.getDeliverList();
+		List<DistributeConditionEnum> distributeConditionList = DistributeConditionEnum.getAllStatus();
+		model.addAttribute("deliverList", deliverList);
+		model.addAttribute("distributeConditionList", distributeConditionList);
+		model.addAttribute("preOrderList", preOrderList);
+
+		return "express/stationOperation/takeExpressAssign";
+	}
+
+	private List<Integer> getExecuteStateByDistributeCondition(Integer distributeCondition) {
+		List<Integer> executeStateList = new ArrayList<Integer>();
+		if (DistributeConditionEnum.NotDistribute.getValue() == distributeCondition) {
+			executeStateList.add(ExcuteStateEnum.NotAllocatedStation.getValue());
+			executeStateList.add(ExcuteStateEnum.AllocatedStation.getValue());
+		} else if (DistributeConditionEnum.Distributed.getValue() == distributeCondition) {
+			executeStateList.add(ExcuteStateEnum.AllocatedDeliveryman.getValue());
+			executeStateList.add(ExcuteStateEnum.DelayedEmbrace.getValue());
+			executeStateList.add(ExcuteStateEnum.fail.getValue());
+			executeStateList.add(ExcuteStateEnum.StationSuperzone.getValue());
+			executeStateList.add(ExcuteStateEnum.EmbraceSuperzone.getValue());
+			executeStateList.add(ExcuteStateEnum.Succeed.getValue());
+		}
+		return executeStateList;
 	}
 
 	/**

@@ -15,7 +15,7 @@ public enum ExcuteStateEnum {
 		this.text = text;
 	}
 
-	public long getValue() {
+	public int getValue() {
 		return this.value;
 	}
 
