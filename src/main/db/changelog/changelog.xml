@@ -8036,4 +8036,10 @@ CREATE TABLE `cs_complaint_accept` (
 			MODIFY COLUMN `maxcount`  decimal(18,2) NULL DEFAULT 0 COMMENT '截至超重数(kg)	' AFTER `mincount`;
 	   	</sql>
 	</changeSet>
+	<changeSet id="zhouguoting-2015-08-04-01" author="zhouguoting">
+	   	<sql>
+			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `pickoperator` varchar(32) DEFAULT '' COMMENT '揽件人' AFTER `oxodeliverystate`,
+                                                 ADD COLUMN `pickoperatertime` varchar(20) DEFAULT '' COMMENT '揽件操作时间' AFTER `pickoperator`;
+	   	</sql>
+	</changeSet>
 </databaseChangeLog>
