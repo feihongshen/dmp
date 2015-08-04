@@ -339,12 +339,12 @@ public class CustomerContractDAO {
 				whereSql.append(" and Loansandsettlementway=" + contractManagement.getLoansandsettlementway());
 			}
 			if ((createStatrtTime != null) && (createStatrtTime != "") && ((createEndTime != null) && (createEndTime != ""))) {
-				whereSql.append(" and contractstartdate >='"+createStatrtTime+" 00:00:00'");
-				whereSql.append(" and contractstartdate <= '" + createEndTime + " 59:59:59'");
+				whereSql.append(" and contractstartdate >='"+createStatrtTime+"'");
+				whereSql.append(" and contractstartdate <= '" + createEndTime + "'");
 			}
 			if ((overStartTime != null) && ((overEndTime != null) & (overStartTime != "")) && (overEndTime != "")) {
-				whereSql.append(" and contractenddate >='" + overStartTime + " 00:00:00'");
-				whereSql.append(" and contractenddate <= '" + overEndTime + " 59:59:59'");
+				whereSql.append(" and contractenddate >='" + overStartTime + "'");
+				whereSql.append(" and contractenddate <= '" + overEndTime + "'");
 			}
 			if ((contractManagement.getWhetherhavedeposit() != null) && (contractManagement.getWhetherhavedeposit() != 0)) {
 				whereSql.append(" and whetherhavedeposit=" + contractManagement.getWhetherhavedeposit());
