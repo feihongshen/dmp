@@ -14,6 +14,7 @@ import java.util.Set;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
+import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
@@ -6316,6 +6318,23 @@ public class CwbDAO {
 	public void updateOXOPickState(int state,String cwb) {
 		String sql = "update express_ops_cwb_detail set oxopickstate=? where cwb=? and state = 1";
 		this.jdbcTemplate.update(sql,state,cwb);
+	}
+	
+	public void updateOXOPickState(TpsOxoPickStateVo.Binds.Bind stateVo,long customerid) {
+		int pickState = 0;
+		String pickoperator = "";
+		String pickoperatertime = "";
+		if("41".equals(stateVo.getOperaterType())){
+			pickState = CwbOXOStateEnum.Processed.getValue();
+		}
+		if(StringUtils.isNotBlank(stateVo.getOperator())){
+			pickoperator = stateVo.getOperator();
+		}
+		if(StringUtils.isNotBlank(stateVo.getOperaterTime())){
+			pickoperatertime = stateVo.getOperaterTime();
+		}
+		String sql = "update express_ops_cwb_detail set oxopickstate=? pickoperator=? pickoperatertime=? where cwb=? and customerid=? and state = 1";
+		this.jdbcTemplate.update(sql, pickState, pickoperator, pickoperatertime, stateVo.getTransportNo(), customerid);
 	}
 	
 	public void updateOXODeliveryState(int state,String cwb) {

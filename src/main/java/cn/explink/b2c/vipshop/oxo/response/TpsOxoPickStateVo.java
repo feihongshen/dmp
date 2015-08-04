@@ -8,7 +8,6 @@
 
 package cn.explink.b2c.vipshop.oxo.response;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -78,8 +77,8 @@ import javax.xml.bind.annotation.XmlType;
  *                         &lt;complexContent>
  *                           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                             &lt;sequence>
- *                               &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}byte"/>
- *                               &lt;element name="transport_no" type="{http://www.w3.org/2001/XMLSchema}long"/>
+ *                               &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}String"/>
+ *                               &lt;element name="transport_no" type="{http://www.w3.org/2001/XMLSchema}String"/>
  *                               &lt;element name="operator">
  *                                 &lt;simpleType>
  *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -94,7 +93,7 @@ import javax.xml.bind.annotation.XmlType;
  *                                   &lt;/restriction>
  *                                 &lt;/simpleType>
  *                               &lt;/element>
- *                               &lt;element name="operater_type" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+ *                               &lt;element name="operater_type" type="{http://www.w3.org/2001/XMLSchema}String"/>
  *                               &lt;element name="remark">
  *                                 &lt;simpleType>
  *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -198,8 +197,8 @@ public class TpsOxoPickStateVo {
      *             &lt;complexContent>
      *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *                 &lt;sequence>
-     *                   &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}byte"/>
-     *                   &lt;element name="transport_no" type="{http://www.w3.org/2001/XMLSchema}long"/>
+     *                   &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}String"/>
+     *                   &lt;element name="transport_no" type="{http://www.w3.org/2001/XMLSchema}String"/>
      *                   &lt;element name="operator">
      *                     &lt;simpleType>
      *                       &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -214,7 +213,7 @@ public class TpsOxoPickStateVo {
      *                       &lt;/restriction>
      *                     &lt;/simpleType>
      *                   &lt;/element>
-     *                   &lt;element name="operater_type" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+     *                   &lt;element name="operater_type" type="{http://www.w3.org/2001/XMLSchema}String"/>
      *                   &lt;element name="remark">
      *                     &lt;simpleType>
      *                       &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -284,8 +283,8 @@ public class TpsOxoPickStateVo {
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
          *       &lt;sequence>
-         *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}byte"/>
-         *         &lt;element name="transport_no" type="{http://www.w3.org/2001/XMLSchema}long"/>
+         *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}String"/>
+         *         &lt;element name="transport_no" type="{http://www.w3.org/2001/XMLSchema}String"/>
          *         &lt;element name="operator">
          *           &lt;simpleType>
          *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -300,7 +299,7 @@ public class TpsOxoPickStateVo {
          *             &lt;/restriction>
          *           &lt;/simpleType>
          *         &lt;/element>
-         *         &lt;element name="operater_type" type="{http://www.w3.org/2001/XMLSchema}byte"/>
+         *         &lt;element name="operater_type" type="{http://www.w3.org/2001/XMLSchema}String"/>
          *         &lt;element name="remark">
          *           &lt;simpleType>
          *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -327,15 +326,15 @@ public class TpsOxoPickStateVo {
         })
         public static class Bind {
 
-            protected byte id;
+            protected String id;
             @XmlElement(name = "transport_no")
-            protected long transportNo;
+            protected String transportNo;
             @XmlElement(required = true)
             protected String operator;
             @XmlElement(name = "operater_time", required = true)
             protected String operaterTime;
             @XmlElement(name = "operater_type")
-            protected byte operaterType;
+            protected String operaterType;
             @XmlElement(required = true)
             protected String remark;
 
@@ -343,7 +342,7 @@ public class TpsOxoPickStateVo {
              * Gets the value of the id property.
              * 
              */
-            public byte getId() {
+            public String getId() {
                 return id;
             }
 
@@ -351,7 +350,7 @@ public class TpsOxoPickStateVo {
              * Sets the value of the id property.
              * 
              */
-            public void setId(byte value) {
+            public void setId(String value) {
                 this.id = value;
             }
 
@@ -359,7 +358,7 @@ public class TpsOxoPickStateVo {
              * Gets the value of the transportNo property.
              * 
              */
-            public long getTransportNo() {
+            public String getTransportNo() {
                 return transportNo;
             }
 
@@ -367,7 +366,7 @@ public class TpsOxoPickStateVo {
              * Sets the value of the transportNo property.
              * 
              */
-            public void setTransportNo(long value) {
+            public void setTransportNo(String value) {
                 this.transportNo = value;
             }
 
@@ -423,7 +422,7 @@ public class TpsOxoPickStateVo {
              * Gets the value of the operaterType property.
              * 
              */
-            public byte getOperaterType() {
+            public String getOperaterType() {
                 return operaterType;
             }
 
@@ -431,7 +430,7 @@ public class TpsOxoPickStateVo {
              * Sets the value of the operaterType property.
              * 
              */
-            public void setOperaterType(byte value) {
+            public void setOperaterType(String value) {
                 this.operaterType = value;
             }
 
@@ -522,7 +521,7 @@ public class TpsOxoPickStateVo {
     public static class Head {
 
         @XmlElement(required = true)
-        protected BigDecimal version;
+        protected String version;
         @XmlElement(name = "request_time", required = true)
         protected String requestTime;
         @XmlElement(name = "cust_code", required = true)
@@ -537,10 +536,10 @@ public class TpsOxoPickStateVo {
          * 
          * @return
          *     possible object is
-         *     {@link BigDecimal }
+         *     {@link String }
          *     
          */
-        public BigDecimal getVersion() {
+        public String getVersion() {
             return version;
         }
 
@@ -549,10 +548,10 @@ public class TpsOxoPickStateVo {
          * 
          * @param value
          *     allowed object is
-         *     {@link BigDecimal }
+         *     {@link String }
          *     
          */
-        public void setVersion(BigDecimal value) {
+        public void setVersion(String value) {
             this.version = value;
         }
 

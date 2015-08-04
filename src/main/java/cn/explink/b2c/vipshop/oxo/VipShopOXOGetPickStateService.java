@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.List;
 
 
-
 import net.sf.json.JSONObject;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -73,9 +72,9 @@ public class VipShopOXOGetPickStateService {
 
 
 	/**
-	 * 获取唯品会订单信息
+	 * 获取唯品会OXO订单状态(由定时器调用)
 	 */
-	public long getOrdersByVipShopOXO(int vipshop_key) {
+	public long getVipShopOXOPickState(int vipshop_key) {
 		VipShop vipshop = this.getVipShop(vipshop_key);
 		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
 		if (isOpenFlag == 0) {
@@ -87,7 +86,7 @@ public class VipShopOXOGetPickStateService {
 		TpsOxoPickStateVo responseVo = this.requestHttpAndCallBackAnaly(vipshop);
 
 		if ((responseVo == null)) {
-			this.logger.error("VipShop_OXO提货状态下发接口返回xml字符串为空或解析xml失败！");
+			this.logger.error("VipShop_OXO订单状态下发接口返回xml字符串为空或解析xml失败！");
 			return -1;
 		}
 		
@@ -96,7 +95,7 @@ public class VipShopOXOGetPickStateService {
 		try {
 			VipShopExceptionHandler.respValidateMessage(sys_response_code, sys_response_msg, vipshop);
 		} catch (Exception e) {
-			this.logger.error("返回VipShop_OXO提货状态下发接口响应信息验证失败！异常原因:", e);
+			this.logger.error("返回VipShop_OXO订单状态下发接口响应信息验证失败！异常原因:", e);
 			return -1;
 		}
 		if (!"S00".equals(sys_response_code)) {
@@ -104,10 +103,10 @@ public class VipShopOXOGetPickStateService {
 			return -1;
 		}
 
-		this.logger.info("请求VipShop_OXO提货状态下发信息-返回码：[S00],success ,sys_response_msg={}", sys_response_msg);
+		this.logger.info("请求VipShop_OXO订单状态下发信息-返回码：[S00],success ,sys_response_msg={}", sys_response_msg);
 			
 		if(responseVo.getBinds() == null || CollectionUtils.isEmpty(responseVo.getBinds().getBind())){
-			this.logger.info("请求VipShop_OXO提货状态下发接口-没有获取到提货状态信息！,当前SEQ={}", vipshop.getVipshop_seq());
+			this.logger.info("请求VipShop_OXO订单状态下发接口-没有获取到提货状态信息！,当前SEQ={}", vipshop.getVipshop_seq());
 			return -1;
 		}
 		
@@ -129,9 +128,14 @@ public class VipShopOXOGetPickStateService {
 	public void updateCwbPickState(List<TpsOxoPickStateVo.Binds.Bind> stateRecords,VipShop vipshop){
 		
 		long customerid = Long.valueOf(vipshop.getCustomerids()); //客户id
-		
+				
 		for(TpsOxoPickStateVo.Binds.Bind pickState : stateRecords){
-			//TODO 更新揽收状态
+			//目前仅处理 operater_type=41（取件成功）的记录，其他的不处理
+			if(!"41".equals(pickState.getOperaterType())){
+				logger.warn("VipShop_OXO订单状态下发接口返回的operater_type="+pickState.getOperaterType()+",系统暂不接受该状态值的处理");
+				continue;
+			}
+			this.cwbDAO.updateOXOPickState(pickState, customerid);
 		}
 	}
 	
@@ -155,7 +159,7 @@ public class VipShopOXOGetPickStateService {
 		try {
 			response_XML = this.HTTPInvokeWs(endpointUrl, VipShopOXOConfig.nameSpace, VipShopOXOConfig.requestMethodName, requestXML, sign);
 		} catch (Exception e) {
-			this.logger.error("处理唯品会OXO提货状态下发接口请求异常！返回信息：" + response_XML + ",异常原因：" + e.getMessage(), e);
+			this.logger.error("处理唯品会OXO订单状态下发接口请求异常！返回信息：" + response_XML + ",异常原因：" + e.getMessage(), e);
 			return null;
 		}
 
@@ -166,7 +170,7 @@ public class VipShopOXOGetPickStateService {
 			obj = XmlUtil.toObject(TpsOxoPickStateVo.class, orderXML);
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			this.logger.error("转换唯品会OXO提货状态下发接口响应报文为TpsOxoPickStateVo实体类异常。响应报文内容为："+orderXML ,e1);
+			this.logger.error("转换唯品会OXO订单状态下发接口响应报文为TpsOxoPickStateVo实体类异常。响应报文内容为："+orderXML ,e1);
 
 		}
 		
