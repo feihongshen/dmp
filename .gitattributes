@@ -1439,6 +1439,7 @@ src/main/java/cn/explink/enumutil/coutracManagementEnum/SettlementPeriodEnum.jav
 src/main/java/cn/explink/enumutil/coutracManagementEnum/WhetherHaveDepositEnum.java -text
 src/main/java/cn/explink/enumutil/express/DistributeConditionEnum.java -text
 src/main/java/cn/explink/enumutil/express/ExcuteStateEnum.java -text
+src/main/java/cn/explink/enumutil/express/ExpressSettleWayEnum.java -text
 src/main/java/cn/explink/enumutil/switchs/SwitchEnum.java -text
 src/main/java/cn/explink/exception/BadExcelException.java -text
 src/main/java/cn/explink/exception/CwbException.java -text
