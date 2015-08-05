@@ -76,7 +76,9 @@ public class UserDAO {
 			user.setFixedadvance(rs.getBigDecimal("fixedadvance"));//固定预付款
 			user.setBasicadvance(rs.getBigDecimal("basicadvance"));//基础预付款
 			user.setFallbacknum(rs.getLong("fallbacknum"));//保底单量
-			user.setLateradvance(rs.getBigDecimal("lateradvance"));
+			user.setLateradvance(rs.getBigDecimal("lateradvance"));//后期预付款
+			user.setBasicfee(rs.getBigDecimal("basicfee"));//基本派费
+			user.setAreafee(rs.getBigDecimal("areafee"));//区域派费
 			return user;
 		}
 
@@ -231,7 +233,8 @@ public class UserDAO {
 
 	public void creUser(final User user) {
 		this.jdbcTemplate.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,"
-				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,fixedadvance,basicadvance,fallbacknum,lateradvance) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,"
+				+ "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -264,6 +267,8 @@ public class UserDAO {
 						ps.setBigDecimal(27, user.getBasicadvance());
 						ps.setLong(28, user.getFallbacknum());
 						ps.setBigDecimal(29, user.getLateradvance());
+						ps.setBigDecimal(30, user.getBasicfee());//基本派费
+						ps.setBigDecimal(31, user.getAreafee());//区域派费
 					}
 
 				});
@@ -274,7 +279,8 @@ public class UserDAO {
 		this.jdbcTemplate.update("update express_set_user set username=?,password=?,realname=?,idcardno=?,"
 				+ "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?,"
 				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?,"
-				+ "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?,basicadvance=?,fallbacknum=?,lateradvance=?" + " where userid=? and userDeleteFlag=1 ",
+				+ "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?,"
+				+ "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?" + " where userid=? and userDeleteFlag=1 ",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -307,7 +313,9 @@ public class UserDAO {
 						ps.setBigDecimal(27, user.getBasicadvance());
 						ps.setLong(28, user.getFallbacknum());
 						ps.setBigDecimal(29, user.getLateradvance());
-						ps.setLong(30, user.getUserid());
+						ps.setBigDecimal(30, user.getBasicfee());//基本派费
+						ps.setBigDecimal(31, user.getAreafee());//区域派费
+						ps.setLong(32, user.getUserid());
 					}
 
 				});

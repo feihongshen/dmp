@@ -95,6 +95,8 @@ public class UserService {
 		user.setBasicadvance(new BigDecimal((request.getParameter("basicadvance")==null||"".equals(request.getParameter("basicadvance")))?"0.00":request.getParameter("basicadvance")));//基础预付款
 		user.setFallbacknum(Long.parseLong((request.getParameter("fallbacknum")==null||"".equals(request.getParameter("fallbacknum")))?"0":request.getParameter("fallbacknum")));//保底单量
 		user.setLateradvance(new BigDecimal((request.getParameter("lateradvance")==null||"".equals(request.getParameter("lateradvance")))?"0.00":request.getParameter("lateradvance")));//后期补入预付款（结算中获取）
+		user.setBasicfee(new BigDecimal((request.getParameter("basicfee")==null||"".equals(request.getParameter("basicfee")))?"0.00":request.getParameter("basicfee")));//基本派费
+		user.setAreafee(new BigDecimal((request.getParameter("areafee")==null||"".equals(request.getParameter("areafee")))?"0.00":request.getParameter("areafee")));//区域派费
 		user.setPassword(StringUtil.nullConvertToEmptyString(request.getParameter("password")));
 		user.setBranchid(branchid);
 		user.setUsercustomerid(Long.parseLong(request.getParameter("usercustomerid")));

@@ -53,7 +53,25 @@ public class User implements Serializable {
 	private BigDecimal basicadvance;//基础预付款
 	private long fallbacknum;//保底单量
 	private BigDecimal lateradvance;//后期预付款
+	private BigDecimal basicfee;//基本派费
+	private BigDecimal areafee;//区域派费
 
+	public BigDecimal getBasicfee() {
+		return basicfee;
+	}
+
+	public void setBasicfee(BigDecimal basicfee) {
+		this.basicfee = basicfee;
+	}
+
+	public BigDecimal getAreafee() {
+		return areafee;
+	}
+
+	public void setAreafee(BigDecimal areafee) {
+		this.areafee = areafee;
+	}
+	
 	public BigDecimal getLateradvance() {
 		return lateradvance;
 	}

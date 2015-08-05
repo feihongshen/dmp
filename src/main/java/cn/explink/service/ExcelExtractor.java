@@ -1615,63 +1615,30 @@ public abstract class ExcelExtractor {
 				bd1 = bdecList.get(0);
 				bd2 = bdecList.get(1);
 			}
-			/*if(list!=null&&!list.isEmpty()){
-				for(Map m : list){
-					if(m.size()>0){
-						int mLong = (Integer)(m.get(1));
-						double mDouble = (Double)(m.get(2));
-						bd1 = bd1.add(new BigDecimal(mDouble).multiply(new BigDecimal(mLong)));
-						BigDecimal dbbdc =  (BigDecimal)(m.get(3));
-						bd2 = bd2.add(dbbdc.multiply(new BigDecimal(mLong)));
-					}
-				}
-			}*/
 
 			//cwbsStr
-			
 			if("".equals(cwbsStr)){
 				cwbsStr = "''";
 			}
 			List<CwbOrder> cwbList =  this.cwbDAO.getCwbsBycwbs(cwbsStr);
-			//返回（list(0):基本+区域 总和    list(1):减去kpi+其他派费总和 ）
-			List<BigDecimal> bdLists = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
-			BigDecimal basicfee = BigDecimal.ZERO;
-			BigDecimal bds = BigDecimal.ZERO;
-			if(bdLists!=null&&!bdLists.isEmpty()){
-				basicfee = bdLists.get(0);
-				bds = bdLists.get(1);
-			}
-			//bds寄件配送费(多个单件之和)
-
-			/*//标准费用(总量)
-			BigDecimal basicfee = BigDecimal.ZERO;
-			if((dsList!=null)&&!dsList.isEmpty()){
-				for(DeliveryState ds : dsList){
-					//单件配送费
-					BigDecimal salarypushbd = BigDecimal.ZERO;
-					//单件(标准费用)
-					BigDecimal bdbasicarea = BigDecimal.ZERO;
-					List<BigDecimal> bbList = this.salaryGatherService.getSalarypush(user.getPfruleid(), ds.getCwb());
-					if((bbList!=null)&&!bbList.isEmpty()){
-						salarypushbd = bbList.get(0);
-						bdbasicarea = bbList.get(1);
-					}
-					bds = bds.add(salarypushbd);
-					basicfee = basicfee.add(bdbasicarea);
-
-				}
-			}*/
 			
-			//最终计件配送费
-			BigDecimal bdss = bds.add(bd1).add(bd2);
-
-			//标准费用(平均值)
-			BigDecimal average = BigDecimal.ZERO;
+			//基本派费+区域派费总和
+			BigDecimal basicareafee = BigDecimal.ZERO;
+			BigDecimal bds = BigDecimal.ZERO;
 			if(dsList!=null&&!dsList.isEmpty()){
-				average = basicfee.divide(new BigDecimal(new DecimalFormat("0").format(new BigDecimal(dsList.size()))));
+				BigDecimal basicfe = user.getBasicfee();//人员信息设置的基本派费
+				BigDecimal areafe = user.getAreafee();//人员信息设置的区域派费
+				basicareafee = (basicfe.add(areafe)).multiply(new BigDecimal(dsList.size()));//（基本+区域）总量
 			}
+			
+			//减去基本+区域+kpi+其他派费总和之外的总和
+			bds = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
+			//最终计件配送费
+			//bds+基本派费+区域派费+业务kpi+其他派费
+			BigDecimal bdss = bds.add(basicareafee).add(bd1).add(bd2);
+
 			//调整额度
-			BigDecimal tiaozheng = average.multiply(new BigDecimal(user.getFallbacknum())).subtract(salarybasic);//单件标准费用*保底单量-基本工资
+			BigDecimal tiaozheng = (user.getBasicfee().add(user.getAreafee())).multiply(new BigDecimal(user.getFallbacknum())).subtract(salarybasic);//单件标准费用*保底单量-基本工资
 
 			//提成
 			BigDecimal salarypush = BigDecimal.ZERO;

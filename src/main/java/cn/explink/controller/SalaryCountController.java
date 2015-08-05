@@ -355,9 +355,9 @@ public class SalaryCountController {
 			//根据小件员的id来删除相关的信息
 			int influencecount=salaryGatherDao.removeDeliveryUserSalaryData(userids,batchid);
 			if (influencecount>0) {
-				return "{\"errorCode\":0,\"error\":\"删除成功\"}";
+				return "{\"errorCode\":0,\"error\":\"移除成功\"}";
 			}else {
-				return "{\"errorCode\":0,\"error\":\"删除失败\"}";
+				return "{\"errorCode\":0,\"error\":\"移除失败\"}";
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

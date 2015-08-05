@@ -276,7 +276,7 @@ function restData(){
 								<tr>
 									<td align="right">审核状态:</td>
 									<td align="left">
-										<select name ="shenhestate" id ="shenhestate" <!-- onchange="displayorno($(this).val()); -->">
+										<select name ="shenhestate" id ="shenhestate" ><!-- onchange="displayorno($(this).val()); -->
 											<option value = "<%=ApplyStateEnum.daishenhe.getValue()%>"><%=ApplyStateEnum.daishenhe.getText() %></option>
 											<option value ="<%=ApplyStateEnum.yishenhe.getValue() %>"><%=ApplyStateEnum.yishenhe.getText() %></option>
 										</select>

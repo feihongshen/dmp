@@ -212,7 +212,7 @@ function sumitForm(){
 							<tr height="30">
 								<td width="150" align="center" valign="middle"><%=abnormalOrder.getCwb() %></td>
 								<td width="100" align="center" valign="middle"><%if(customerlist!=null)for(Customer c : customerlist){if(abnormalOrder.getCustomerid()==c.getCustomerid()){ %><%=c.getCustomername() %><%}} %></td>
-								<td width="110" align="center" valign="middle"><%=abnormalOrder.getEmaildata()%></td>
+								<td width="110" align="center" valign="middle"><%=abnormalOrder.getEmaildate()%></td>
 								<td width="100" align="center" valign="middle"><%if(abnormalTypeList!=null)for(AbnormalType at : abnormalTypeList){if(abnormalOrder.getAbnormaltypeid()==at.getId()){ %><%=at.getName() %><%}} %></td>
 								<td width="110" align="center" valign="middle"><%=abnormalOrder.getCredatetime().substring(0, 19) %></td>
 								<td width="100" align="center" valign="middle"><%=abnormalOrder.getDescribe() %></td>

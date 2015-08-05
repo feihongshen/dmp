@@ -91,7 +91,7 @@
 	             			<option value="<%=JiesuanstateEnum.ZhengchangJiesuan.getValue()%>"><%=JiesuanstateEnum.ZhengchangJiesuan.getText() %></option>
 				        </select>*
 	             	</li>
-				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="" maxlength="50"/></li>
+				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="" maxlength="50"/>*</li>
 				    <!-- <li><span>基本工资：</span><input type="text"  id="usersalary" name="usersalary" value="" /></li> -->
 					
 					 <!-- <li><span>电话：</span><input type="text" id="userphone"  name="userphone" value="" /></li> -->
@@ -107,6 +107,8 @@
 	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="" maxlength="50"/></li>
 	                 <li><span>固定预付款：</span><input type="text"  id="fixedadvance" name="fixedadvance" value="" maxlength="50"/></li>
 	                 <li><span>保底单量：</span><input type="text"  id="fallbacknum" name="fallbacknum" value="" maxlength="50"/></li>
+	                 <li><span>基本派费：</span><input type="text"  id="basicfee" name="basicfee" value="" maxlength="50"/></li>
+	                 <li><span>区域派费：</span><input type="text"  id="areafee" name="areafee" value="" maxlength="50"/></li>
 	         </ul>
 		</div>
 		<div align="center">
