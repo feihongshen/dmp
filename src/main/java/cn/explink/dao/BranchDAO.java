@@ -475,7 +475,7 @@ public class BranchDAO {
 	private String getBranchByPageWhereSql(String sql, String branchname, String branchaddress) {
 
 		if ((branchname.length() > 0) || (branchaddress.length() > 0)) {
-			sql += " and ";
+			sql += " where";
 			if ((branchname.length() > 0) && (branchaddress.length() > 0)) {
 				sql += " branchname like '%" + branchname + "%' and branchaddress like '%" + branchaddress + "%'";
 			} else {
@@ -491,20 +491,52 @@ public class BranchDAO {
 	}
 
 	public List<Branch> getBranchByPage(long page, String branchname, String branchaddress) {
-		String sql = "select * from express_set_branch where contractflag in ("
-					+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
-					+ BranchTypeEnum.JiaMengSanJi.getValue() + ")";
+		String sql = "select * from express_set_branch";
 		sql = this.getBranchByPageWhereSql(sql, branchname, branchaddress);
-//		sql += " order by branchid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " order by branchid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
 		return branchlist;
 	}
 
 	public long getBranchCount(String branchname, String branchaddress) {
-		String sql = "select count(1) from express_set_branch where contractflag in ("
-					+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
-					+ BranchTypeEnum.JiaMengSanJi.getValue() + ")";
+		String sql = "select count(1) from express_set_branch";
 		sql = this.getBranchByPageWhereSql(sql, branchname, branchaddress);
+		return this.jdbcTemplate.queryForInt(sql);
+	}
+	
+	private String getJoinBranchByPageWhereSql(String sql, String branchname, String branchaddress) {
+		
+		if ((branchname.length() > 0) || (branchaddress.length() > 0)) {
+			sql += " and ";
+			if ((branchname.length() > 0) && (branchaddress.length() > 0)) {
+				sql += " branchname like '%" + branchname + "%' and branchaddress like '%" + branchaddress + "%'";
+			} else {
+				if (branchname.length() > 0) {
+					sql += " branchname like '%" + branchname + "%' ";
+				}
+				if (branchaddress.length() > 0) {
+					sql += " branchaddress like '%" + branchaddress + "%' ";
+				}
+			}
+		}
+		return sql;
+	}
+	
+	public List<Branch> getJoinBranchByPage(long page, String branchname, String branchaddress) {
+		String sql = "select * from express_set_branch where contractflag in ("
+				+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
+				+ BranchTypeEnum.JiaMengSanJi.getValue() + ")";
+		sql = this.getJoinBranchByPageWhereSql(sql, branchname, branchaddress);
+//		sql += " order by branchid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
+		return branchlist;
+	}
+	
+	public long getJoinBranchCount(String branchname, String branchaddress) {
+		String sql = "select count(1) from express_set_branch where contractflag in ("
+				+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
+				+ BranchTypeEnum.JiaMengSanJi.getValue() + ")";
+		sql = this.getJoinBranchByPageWhereSql(sql, branchname, branchaddress);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 

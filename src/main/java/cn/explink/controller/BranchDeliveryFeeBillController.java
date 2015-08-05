@@ -98,7 +98,7 @@ public class BranchDeliveryFeeBillController {
 	public String branchDeliveryFeeBillList(@PathVariable("page") long page, Model model,
 			ExpressSetBranchDeliveryFeeBillVO queryConditionVO) {
 		
-		List<Branch> branchList = this.branchDAO.getAllBranches();
+		List<Branch> branchList = this.branchDAO.getJoinBranchByPage(1, "", "");
 		// 订单状态枚举
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
 		// 订单类型枚举
@@ -134,7 +134,7 @@ public class BranchDeliveryFeeBillController {
 		}
 		int id = this.branchDeliveryFeeBillService.createBranchDeliveryFeeBill(branchDeliveryFeeBill);
 		
-		List<Branch> branchList = this.branchDAO.getAllBranches();
+		List<Branch> branchList = this.branchDAO.getJoinBranchByPage(1, "", "");
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
 		// 订单类型枚举
 		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
@@ -187,7 +187,7 @@ public class BranchDeliveryFeeBillController {
 	@RequestMapping("/updateBranchDeliveryFeeBillPage")
 	public String updateBranchDeliveryFeeBillPage(int id, Model model) {
 
-		List<Branch> branchList = this.branchDAO.getAllBranches();
+		List<Branch> branchList = this.branchDAO.getJoinBranchByPage(1, "", "");
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
 		// 订单类型枚举
