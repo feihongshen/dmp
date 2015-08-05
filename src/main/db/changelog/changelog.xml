@@ -8042,4 +8042,11 @@ CREATE TABLE `cs_complaint_accept` (
                                                  ADD COLUMN `pickoperatertime` varchar(20) DEFAULT '' COMMENT '揽件操作时间' AFTER `pickoperator`;
 	   	</sql>
 	</changeSet>
+	
+	<changeSet id="liuxiao-2015-08-05-01" author="liuxiao">
+	   	<sql>
+			ALTER TABLE `express_set_user` ADD COLUMN `basicfee` decimal(18,2) DEFAULT '0.00',
+										   ADD COLUMN `areafee` decimal(18,2) DEFAULT '0.00';
+	   	</sql>
+	</changeSet>
 </databaseChangeLog>
