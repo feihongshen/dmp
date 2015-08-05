@@ -54,9 +54,12 @@ function allchecked(){
 		success:function(data){
 			if(data.counts>0){
 				alert("成功移除"+data.counts+"记录");
-				}
-			$("#find form").submit();
+			}else{
+				alert("已核销的批次无法删除!");
 			}
+			
+			$("#find form").submit();
+		}
 		});
 	}
 }
@@ -265,6 +268,7 @@ function saveform(){
 	$("#saveform").submit(); --%>
 	alert("保存完成!");
 	$('#save').dialog('close');
+	window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
 }
 function submitform(){
 	$("#batchid").removeAttr("disabled");

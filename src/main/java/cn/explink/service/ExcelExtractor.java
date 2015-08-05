@@ -34,6 +34,7 @@ import cn.explink.dao.PenalizeTypeDAO;
 import cn.explink.dao.PunishDAO;
 import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.PunishTypeDAO;
+import cn.explink.dao.SalaryCountDAO;
 import cn.explink.dao.SalaryErrorDAO;
 import cn.explink.dao.SalaryFixedDAO;
 import cn.explink.dao.SalaryGatherDao;
@@ -147,6 +148,8 @@ public abstract class ExcelExtractor {
 	DeliveryStateDAO deliveryStateDAO;
 	@Autowired
 	PaybusinessbenefitsDao paybusinessbenefitsDao;
+	@Autowired
+	SalaryCountDAO salaryCountDAO;
 
 
 	public String strtovalid(String str) {
@@ -1457,11 +1460,14 @@ public abstract class ExcelExtractor {
 	 * @return
 	 */
 	@SuppressWarnings("unused")
-	private SalaryGather getSalaryGatherAccordingtoConf(Object row, Map<String, User> userMap, long importflag,Map<String,Integer> map,Map<String,SalaryFixed> fixedMap,SalaryCount sc) {
+	private SalaryGather getSalaryGatherAccordingtoConf(Object row, Map<String, User> userMap, long importflag,Map<String,Integer> map,Map<String,SalaryFixed> fixedMap,SalaryCount sc) throws Exception {
 		SalaryGather salary = new SalaryGather();
 		String realname = this.getXRowCellData(row, 1);
 		String idcard = this.getXRowCellData(row, 2);
 		User user = userMap.get(realname);
+		if(sc.getBatchstate()==1){
+			return null;
+		}
 		if (user == null) {
 			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"不存在！", importflag);
 			return null;
@@ -1480,6 +1486,11 @@ public abstract class ExcelExtractor {
 				return null;
 			}
 		}
+		long count = this.salaryGatherDao.getSalarygatherByuidandbid(user.getUserid(),sc.getBatchid());
+		if(count>0){
+			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"存在已导入工资条信息!", importflag);
+			return null;
+		}
 		salary.setUserid(user.getUserid());//配送员id
 		salary.setBatchid(sc.getBatchid());//批次编号
 		salary.setBranchid(sc.getBranchid());//直营站点
@@ -1487,551 +1498,544 @@ public abstract class ExcelExtractor {
 		salary.setIdcard(idcard);//身份证号
 		SalaryFixed sf = fixedMap.get(idcard);
 		List<BigDecimal> bdList = new ArrayList<BigDecimal>();
-		try{
-			//结算单量
-			//小件员在期间内的成功单量(配送，上门退，上门换)
-			long accountSingle = this.deliveryStateDAO.getDeliverysCountBytime(sc.getStarttime(), sc.getEndtime(), user.getUserid());
-			salary.setAccountSingle(accountSingle);
+		//结算单量
+		//小件员在期间内的成功单量(配送，上门退，上门换)
+		long accountSingle = this.deliveryStateDAO.getDeliverysCountBytime(sc.getStarttime(), sc.getEndtime(), user.getUserid());
+		salary.setAccountSingle(accountSingle);
 
-			BigDecimal salarybasic = BigDecimal.ZERO;
-			if((null!=map.get("salarybasic"))&&(map.get("salarybasic")==1)) {//基本工资
-				salarybasic = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 3));
-			}else{
-				salarybasic = sf.getSalarybasic();
-			}
-			salary.setSalarybasic(salarybasic);
-			bdList.add(salarybasic);
-
-			BigDecimal salaryjob = BigDecimal.ZERO;
-			if((null!=map.get("salaryjob"))&&(map.get("salaryjob")==1)) {//岗位工资
-				salaryjob = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 4));
-			}else{
-				salaryjob = sf.getSalaryjob();
-			}
-			salary.setSalaryjob(salaryjob);
-			bdList.add(salaryjob);
-
-			BigDecimal pushcash = BigDecimal.ZERO;
-			if((null!=map.get("pushcash"))&&(map.get("pushcash")==1)) {//绩效奖金pushcash
-				pushcash = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 5));
-			}else{
-				pushcash = sf.getPushcash();
-			}
-			salary.setPushcash(pushcash);
-			bdList.add(pushcash);
-
-			BigDecimal jobpush = BigDecimal.ZERO;
-			if((null!=map.get("jobpush"))&&(map.get("jobpush")==1)) {//岗位津贴
-				jobpush = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 6));
-			}else{
-				jobpush = sf.getJobpush();
-			}
-			salary.setJobpush(jobpush);
-			bdList.add(jobpush);
-
-			List<DeliveryState> dsList = this.deliveryStateDAO.getDeliverysBytime(sc.getStarttime(), sc.getEndtime(), user.getUserid());
-
-			String cwbsStr = "";
-			if((dsList!=null)&&!dsList.isEmpty()){
-				for(DeliveryState ds : dsList){
-					cwbsStr += "'"+ds.getCwb()+"',";
-				}
-			}
-			if(cwbsStr.length()>0){
-				cwbsStr = cwbsStr.substring(0, cwbsStr.length()-1);
-			}
-
-			//妥投率
-			/*List<Map> list = new ArrayList<Map>();
-			List<Map> intemapList = this.salaryGatherService.getCount(user.getUserid(), sc.getStarttime(), sc.getEndtime());
-			if(intemapList!=null&&!intemapList.isEmpty()&&dsList!=null&&!dsList.isEmpty()){
-				for(Map lists:intemapList){
-					Map maps = new HashMap();
-					int customerint = 0;
-					double dbl = 0;
-					BigDecimal bdc = BigDecimal.ZERO;
-					long customerid = (Long)lists.get(1);
-					double bili = (Double)lists.get(2);
-					for(DeliveryState ds : dsList){
-						if(customerid == ds.getCustomerid()){
-							//获取格式化对象
-						    NumberFormat nt = NumberFormat.getPercentInstance();
-						    //设置百分数精确度2即保留两位小数
-						    nt.setMinimumFractionDigits(2);
-						    String biliStr = nt.format(bili);
-						    String[] biliArray  = biliStr.split("%");
-						    double dble = Double.parseDouble(biliArray[0]);
-						    Paybusinessbenefits pbbf = this.paybusinessbenefitsDao.getpbbfBycustomerid(customerid);
-						    bdc = pbbf.getOthersubsidies();
-						    String pbbfStr = pbbf.getPaybusinessbenefits();
-						    String[] strArray = pbbfStr.split("\\|");
-						    for(String str : strArray){
-						    	String[] strarr = str.substring(0,str.indexOf("=")).split("~");
-						    	String starr = str.substring(str.indexOf("=")+1, str.length()).replace(" ", "");
-						    	if(dble>=Double.parseDouble(strarr[0].replace(" ", ""))&&dble<=Double.parseDouble(strarr[1].replace(" ", ""))){
-						    		dbl = Double.parseDouble(starr);
-						    	}else{
-						    		continue;
-						    	}
-						    }
-						    customerint++;
-						}else{
-							continue;
-						}
-					}
-					maps.put(1, customerint);
-					maps.put(2, dbl);
-					maps.put(3, bdc);
-					list.add(maps);
-					customerint = 0;
-					dbl = 0;
-					bdc = BigDecimal.ZERO;
-				}
-			}
-			//kpi业务补助(总和)
-			BigDecimal bd1 = BigDecimal.ZERO;
-			//其他补助(总和)
-			BigDecimal bd2 = BigDecimal.ZERO;
-			if(list!=null&&!list.isEmpty()){
-				for(Map m : list){
-					if(m.size()>0){
-						int mLong = (Integer)(m.get(1));
-						double mDouble = (Double)(m.get(2));
-						bd1 = bd1.add(new BigDecimal(mDouble).multiply(new BigDecimal(mLong)));
-						BigDecimal dbbdc =  (BigDecimal)(m.get(3));
-						bd2 = bd2.add(dbbdc.multiply(new BigDecimal(mLong)));
-					}
-				}
-			}*/
-
-
-			List<Map> list = new ArrayList<Map>();
-			List<BigDecimal> bdecList = this.salaryGatherService.getKpiOthers(user.getUserid(), sc.getStarttime(), sc.getEndtime());
-			//kpi业务补助(总和)
-			BigDecimal bd1 = BigDecimal.ZERO;
-			//其他补助(总和)
-			BigDecimal bd2 = BigDecimal.ZERO;
-			if((bdecList!=null)&&!bdecList.isEmpty()){
-				bd1 = bdecList.get(0);
-				bd2 = bdecList.get(1);
-			}
-
-			//cwbsStr
-			if("".equals(cwbsStr)){
-				cwbsStr = "''";
-			}
-			List<CwbOrder> cwbList =  this.cwbDAO.getCwbsBycwbs(cwbsStr);
-			
-			//基本派费+区域派费总和
-			BigDecimal basicareafee = BigDecimal.ZERO;
-			BigDecimal bds = BigDecimal.ZERO;
-			if(dsList!=null&&!dsList.isEmpty()){
-				BigDecimal basicfe = user.getBasicfee();//人员信息设置的基本派费
-				BigDecimal areafe = user.getAreafee();//人员信息设置的区域派费
-				basicareafee = (basicfe.add(areafe)).multiply(new BigDecimal(dsList.size()));//（基本+区域）总量
-			}
-			
-			//减去基本+区域+kpi+其他派费总和之外的总和
-			bds = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
-			//最终计件配送费
-			//bds+基本派费+区域派费+业务kpi+其他派费
-			BigDecimal bdss = bds.add(basicareafee).add(bd1).add(bd2);
-
-			//调整额度
-			BigDecimal tiaozheng = (user.getBasicfee().add(user.getAreafee())).multiply(new BigDecimal(user.getFallbacknum())).subtract(salarybasic);//单件标准费用*保底单量-基本工资
-
-			//提成
-			BigDecimal salarypush = BigDecimal.ZERO;
-			salarypush = bdss.subtract(salarybasic.add(tiaozheng));//提成=寄件配送费-（基本工资+调整额度）
-			salary.setSalarypush(salarypush);
-			bdList.add(salarypush);
-
-
-			BigDecimal agejob = BigDecimal.ZERO;
-			if((null!=map.get("agejob"))&&(map.get("agejob")==1)) {//工龄
-				agejob = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 7));
-			}else{
-				agejob = sf.getAgejob();
-			}
-			salary.setAgejob(agejob);
-			bdList.add(agejob);
-
-			BigDecimal bonusroom = BigDecimal.ZERO;
-			if((null!=map.get("bonusroom"))&&(map.get("bonusroom")==1)) {//住房补贴
-				bonusroom = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 8));
-			}else{
-				bonusroom = sf.getBonusroom();
-			}
-			salary.setBonusroom(bonusroom);
-			bdList.add(bonusroom);
-
-			BigDecimal bonusallday = BigDecimal.ZERO;
-			if((null!=map.get("bonusallday"))&&(map.get("bonusallday")==1)) {//全勤补贴
-				bonusallday = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 9));
-			}else{
-				bonusallday = sf.getBonusallday();
-			}
-			salary.setBonusallday(bonusallday);
-			bdList.add(bonusallday);
-
-			BigDecimal bonusfood = BigDecimal.ZERO;
-			if((null!=map.get("bonusfood"))&&(map.get("bonusfood")==1)) {//餐费补贴
-				bonusfood = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 10));
-			}else{
-				bonusfood = sf.getBonusfood();
-			}
-			salary.setBonusfood(bonusfood);
-			bdList.add(bonusfood);
-
-			BigDecimal bonustraffic = BigDecimal.ZERO;
-			if((null!=map.get("bonustraffic"))&&(map.get("bonustraffic")==1)) {//交通补贴
-				bonustraffic = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 11));
-			}else{
-				bonustraffic = sf.getBonustraffic();
-			}
-			salary.setBonustraffic(bonustraffic);
-			bdList.add(bonustraffic);
-
-			BigDecimal bonusphone = BigDecimal.ZERO;
-			if((null!=map.get("bonusphone"))&&(map.get("bonusphone")==1)) {//通讯补贴
-				bonusphone = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 12));
-			}else{
-				bonusphone = sf.getBonusphone();
-			}
-			salary.setBonusphone(bonusphone);
-			bdList.add(bonusphone);
-
-			BigDecimal bonusweather = BigDecimal.ZERO;
-			if((null!=map.get("bonusweather"))&&(map.get("bonusweather")==1)) {//高温寒冷补贴
-				bonusweather = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 13));
-			}else{
-				bonusweather = sf.getBonusweather();
-			}
-			salary.setBonusweather(bonusweather);
-			bdList.add(bonusweather);
-
-			//扣款撤销
-			BigDecimal penalizecancel = BigDecimal.ZERO;
-			penalizecancel = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 1);
-			salary.setPenalizecancel(penalizecancel);
-			bdList.add(penalizecancel);
-
-			BigDecimal penalizecancel_import = BigDecimal.ZERO;
-			if((null!=map.get("penalizecancel_import"))&&(map.get("penalizecancel_import")==1)) {//扣款撤销(导入)
-				penalizecancel_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 14));
-			}else{
-				penalizecancel_import = sf.getPenalizecancel_import();
-			}
-			salary.setPenalizecancel_import(penalizecancel_import);
-			bdList.add(penalizecancel_import);
-
-			BigDecimal bonusother1 = BigDecimal.ZERO;
-			if((null!=map.get("bonusother1"))&&(map.get("bonusother1")==1)) {//其他补贴
-				bonusother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 15));
-			}else{
-				bonusother1 = sf.getBonusother1();
-			}
-			salary.setBonusother1(bonusother1);
-			bdList.add(bonusother1);
-
-			BigDecimal bonusother2 = BigDecimal.ZERO;
-			if((null!=map.get("bonusother2"))&&(map.get("bonusother2")==1)) {//其他补贴2
-				bonusother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 16));
-			}else{
-				bonusother2 = sf.getBonusother2();
-			}
-			salary.setBonusother2(bonusother2);
-			bdList.add(bonusother2);
-
-			BigDecimal bonusother3 = BigDecimal.ZERO;
-			if((null!=map.get("bonusother3"))&&(map.get("bonusother3")==1)) {//其他补贴3
-				bonusother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 17));
-			}else{
-				bonusother3 = sf.getBonusother3();
-			}
-			salary.setBonusother3(bonusother3);
-			bdList.add(bonusother3);
-
-			BigDecimal bonusother4 = BigDecimal.ZERO;
-			if((null!=map.get("bonusother4"))&&(map.get("bonusother4")==1)) {//其他补贴4
-				bonusother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 18));
-			}else{
-				bonusother4 = sf.getBonusother4();
-			}
-			salary.setBonusother4(bonusother4);
-			bdList.add(bonusother4);
-
-			BigDecimal bonusother5 = BigDecimal.ZERO;
-			if((null!=map.get("bonusother5"))&&(map.get("bonusother5")==1)) {//其他补贴5
-				bonusother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 19));
-			}else{
-				bonusother5 = sf.getBonusother5();
-			}
-			salary.setBonusother5(bonusother5);
-			bdList.add(bonusother5);
-
-			BigDecimal bonusother6 = BigDecimal.ZERO;
-			if((null!=map.get("bonusother6"))&&(map.get("bonusother6")==1)) {//其他补贴6
-				bonusother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 20));
-			}else{
-				bonusother6 = sf.getBonusother6();
-			}
-			salary.setBonusother6(bonusother6);
-			bdList.add(bonusother6);
-
-			BigDecimal overtimework = BigDecimal.ZERO;
-			if((null!=map.get("overtimework"))&&(map.get("overtimework")==1)) {//加班费
-				overtimework = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 21));
-			}else{
-				overtimework = sf.getOvertimework();
-			}
-			salary.setOvertimework(overtimework);
-			bdList.add(overtimework);
-
-			BigDecimal attendance = BigDecimal.ZERO;
-			if((null!=map.get("attendance"))&&(map.get("attendance")==1)) {//考勤扣款
-				attendance = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 22));
-			}else{
-				attendance = sf.getAttendance();
-			}
-			salary.setAttendance(attendance);
-			bdList.add(attendance.multiply(new BigDecimal(-1)));
-
-			BigDecimal security = BigDecimal.ZERO;
-			if((null!=map.get("security"))&&(map.get("security")==1)) {//个人社保扣款
-				security = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 23));
-			}else{
-				security = sf.getSecurity();
-			}
-			salary.setSecurity(security);
-			bdList.add(security.multiply(new BigDecimal(-1)));
-
-			BigDecimal gongjijin = BigDecimal.ZERO;
-			if((null!=map.get("gongjijin"))&&(map.get("gongjijin")==1)) {//个人公积金扣款
-				gongjijin = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 24));
-			}else{
-				gongjijin = sf.getGongjijin();
-			}
-			salary.setGongjijin(gongjijin);
-			bdList.add(gongjijin.multiply(new BigDecimal(-1)));
-
-			//违纪扣款扣罚
-			BigDecimal foul = BigDecimal.ZERO;
-			foul = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 3);
-			salary.setFoul(foul);
-			bdList.add(foul.multiply(new BigDecimal(-1)));
-
-			BigDecimal foul_import = BigDecimal.ZERO;
-			if((null!=map.get("foul_import"))&&(map.get("foul_import")==1)) {//违纪扣款扣罚(导入)
-				foul_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 25));
-			}else{
-				foul_import = sf.getFoul_import();
-			}
-			salary.setFoul_import(foul_import);
-			bdList.add(foul_import.multiply(new BigDecimal(-1)));
-
-			//货损赔偿
-			BigDecimal goods = BigDecimal.ZERO;
-			goods = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 2);
-			salary.setGoods(goods);
-			bdList.add(goods.multiply(new BigDecimal(-1)));
-
-			BigDecimal dorm = BigDecimal.ZERO;
-			if((null!=map.get("dorm"))&&(map.get("dorm")==1)) {//宿舍费用
-				dorm = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 26));
-			}else{
-				dorm = sf.getDorm();
-			}
-			salary.setDorm(dorm);
-			bdList.add(dorm.multiply(new BigDecimal(-1)));
-
-			BigDecimal penalizeother1 = BigDecimal.ZERO;
-			if((null!=map.get("penalizeother1"))&&(map.get("penalizeother1")==1)) {//其他扣罚
-				penalizeother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 27));
-			}else{
-				penalizeother1 = sf.getPenalizeother1();
-			}
-			salary.setPenalizeother1(penalizeother1);
-			bdList.add(penalizeother1.multiply(new BigDecimal(-1)));
-
-			BigDecimal penalizeother2 = BigDecimal.ZERO;
-			if((null!=map.get("penalizeother2"))&&(map.get("penalizeother2")==1)) {//其他扣罚2
-				penalizeother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 28));
-			}else{
-				penalizeother2 = sf.getPenalizeother2();
-			}
-			salary.setPenalizeother2(penalizeother2);
-			bdList.add(penalizeother2.multiply(new BigDecimal(-1)));
-
-			BigDecimal penalizeother3 = BigDecimal.ZERO;
-			if((null!=map.get("penalizeother3"))&&(map.get("penalizeother3")==1)) {//其他扣罚3
-				penalizeother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 29));
-			}else{
-				penalizeother3 = sf.getPenalizeother3();
-			}
-			salary.setPenalizeother3(penalizeother3);
-			bdList.add(penalizeother3.multiply(new BigDecimal(-1)));
-
-			BigDecimal penalizeother4 = BigDecimal.ZERO;
-			if((null!=map.get("penalizeother4"))&&(map.get("penalizeother4")==1)) {//其他扣罚4
-				penalizeother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 30));
-			}else{
-				penalizeother4 = sf.getPenalizeother4();
-			}
-			salary.setPenalizeother4(penalizeother4);
-			bdList.add(penalizeother4.multiply(new BigDecimal(-1)));
-
-			BigDecimal penalizeother5 = BigDecimal.ZERO;
-			if((null!=map.get("penalizeother5"))&&(map.get("penalizeother5")==1)) {//其他扣罚5
-				penalizeother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 31));
-			}else{
-				penalizeother5 = sf.getPenalizeother5();
-			}
-			salary.setPenalizeother5(penalizeother5);
-			bdList.add(penalizeother5.multiply(new BigDecimal(-1)));
-
-			BigDecimal penalizeother6 = BigDecimal.ZERO;
-			if((null!=map.get("penalizeother6"))&&(map.get("penalizeother6")==1)) {//其他扣罚6
-				penalizeother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 32));
-			}else{
-				penalizeother6 = sf.getPenalizeother6();
-			}
-			salary.setPenalizeother6(penalizeother6);
-			bdList.add(penalizeother6.multiply(new BigDecimal(-1)));
-
-			BigDecimal imprestother1 = BigDecimal.ZERO;
-			if((null!=map.get("imprestother1"))&&(map.get("imprestother1")==1)) {//其他预付款
-				imprestother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 33));
-			}else{
-				imprestother1 = sf.getImprestother1();
-			}
-			salary.setImprestother1(imprestother1);
-			bdList.add(imprestother1.multiply(new BigDecimal(-1)));
-
-			BigDecimal imprestother2 = BigDecimal.ZERO;
-			if((null!=map.get("imprestother2"))&&(map.get("imprestother2")==1)) {//其他预付款2
-				imprestother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 34));
-			}else{
-				imprestother2 = sf.getImprestother2();
-			}
-			salary.setImprestother2(imprestother2);
-			bdList.add(imprestother2.multiply(new BigDecimal(-1)));
-
-			BigDecimal imprestother3 = BigDecimal.ZERO;
-			if((null!=map.get("imprestother3"))&&(map.get("imprestother3")==1)) {//其他预付款3
-				imprestother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 35));
-			}else{
-				imprestother3 = sf.getImprestother3();
-			}
-			salary.setImprestother3(imprestother3);
-			bdList.add(imprestother3.multiply(new BigDecimal(-1)));
-
-			BigDecimal imprestother4 = BigDecimal.ZERO;
-			if((null!=map.get("imprestother4"))&&(map.get("imprestother4")==1)) {//其他预付款4
-				imprestother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 36));
-			}else{
-				imprestother4 = sf.getImprestother5();
-			}
-			salary.setImprestother4(imprestother4);
-			bdList.add(imprestother4.multiply(new BigDecimal(-1)));
-
-			BigDecimal imprestother5 = BigDecimal.ZERO;
-			if((null!=map.get("imprestother5"))&&(map.get("imprestother5")==1)) {//其他预付款5
-				imprestother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 37));
-			}else{
-				imprestother5 = sf.getImprestother5();
-			}
-			salary.setImprestother5(imprestother5);
-			bdList.add(imprestother5.multiply(new BigDecimal(-1)));
-
-			BigDecimal imprestother6 = BigDecimal.ZERO;
-			if((null!=map.get("imprestother6"))&&(map.get("imprestother6")==1)) {//其他预付款6
-				imprestother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 38));
-			}else{
-				imprestother6 = sf.getImprestother6();
-			}
-			salary.setImprestother6(imprestother6);
-			bdList.add(imprestother6.multiply(new BigDecimal(-1)));
-
-			BigDecimal carrent = BigDecimal.ZERO;
-			if((null!=map.get("carrent"))&&(map.get("carrent")==1)) {//租用车辆费用
-				carrent = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 39));
-			}else{
-				carrent = sf.getCarrent();
-			}
-			salary.setCarrent(carrent);
-			bdList.add(carrent);
-
-			BigDecimal carmaintain = BigDecimal.ZERO;
-			if((null!=map.get("carmaintain"))&&(map.get("carmaintain")==1)) {//车子维修给用
-				carmaintain = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 40));
-			}else{
-				carmaintain = sf.getCarmaintain();
-			}
-			salary.setCarmaintain(carmaintain);
-			bdList.add(carmaintain);
-
-			BigDecimal carfuel = BigDecimal.ZERO;
-			if((null!=map.get("carfuel"))&&(map.get("carfuel")==1)) {//油/电费用
-				carfuel = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 41));
-			}else{
-				carfuel = sf.getCarfuel();
-			}
-			salary.setCarfuel(carfuel);
-			bdList.add(carfuel);
-
-			//应发金额
-			BigDecimal salaryaccrual = BigDecimal.ZERO;
-			if((bdList!=null)&&!bdList.isEmpty()){
-				for(BigDecimal bd : bdList){
-					salaryaccrual = salaryaccrual.add(bd);
-				}
-			}
-
-			//货物预付款
-			BigDecimal imprestgoods = BigDecimal.ZERO;
-			//bdList.add(imprestgoods.multiply(new BigDecimal(-1)));
-			int value = salaryaccrual.compareTo(new BigDecimal(1000));
-			if(value!=-1){
-				BigDecimal bmb = user.getMaxcutpayment().subtract(user.getBasicadvance().add(user.getLateradvance()));
-				double dbmb = bmb.doubleValue();
-				double fixed = user.getFixedadvance().doubleValue();
-				if(dbmb>=fixed){
-					BigDecimal bddown = new BigDecimal(fixed);
-					salary.setImprestgoods(bddown);
-					salaryaccrual = salaryaccrual.subtract(bddown);
-					salary.setSalaryaccrual(salaryaccrual);
-				}else if(dbmb<=0){
-					salary.setImprestgoods(imprestgoods);
-					salary.setSalaryaccrual(salaryaccrual);
-				}else{
-					salary.setImprestgoods(bmb);
-					salaryaccrual = salaryaccrual.subtract(bmb);
-					salary.setSalaryaccrual(salaryaccrual);
-				}
-			}
-			//当工资金额小于1000时
-			else{
-				salary.setImprestgoods(imprestgoods);//货物预付款
-				salary.setSalaryaccrual(salaryaccrual);//应发工资
-			}
-
-			//个税
-			BigDecimal tax = BigDecimal.ZERO;
-			tax = this.salaryGatherService.getTax(salaryaccrual);
-			salary.setTax(tax);
-
-			//实发金额
-			BigDecimal salarys = BigDecimal.ZERO;
-			salarys = salaryaccrual.subtract(tax);
-			salary.setSalary(salarys);
-
-		}catch(Exception e){
-			e.printStackTrace();
-			this.salaryErrorDAO.creSalaryError(realname, idcard, "数据格式有误", importflag);
-			ExcelExtractor.logger.error("人事数据导入异常",e);
-			return null;
+		BigDecimal salarybasic = BigDecimal.ZERO;
+		if((null!=map.get("salarybasic"))&&(map.get("salarybasic")==1)) {//基本工资
+			salarybasic = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 3));
+		}else{
+			salarybasic = sf.getSalarybasic();
 		}
+		salary.setSalarybasic(salarybasic);
+		bdList.add(salarybasic);
+
+		BigDecimal salaryjob = BigDecimal.ZERO;
+		if((null!=map.get("salaryjob"))&&(map.get("salaryjob")==1)) {//岗位工资
+			salaryjob = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 4));
+		}else{
+			salaryjob = sf.getSalaryjob();
+		}
+		salary.setSalaryjob(salaryjob);
+		bdList.add(salaryjob);
+
+		BigDecimal pushcash = BigDecimal.ZERO;
+		if((null!=map.get("pushcash"))&&(map.get("pushcash")==1)) {//绩效奖金pushcash
+			pushcash = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 5));
+		}else{
+			pushcash = sf.getPushcash();
+		}
+		salary.setPushcash(pushcash);
+		bdList.add(pushcash);
+
+		BigDecimal jobpush = BigDecimal.ZERO;
+		if((null!=map.get("jobpush"))&&(map.get("jobpush")==1)) {//岗位津贴
+			jobpush = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 6));
+		}else{
+			jobpush = sf.getJobpush();
+		}
+		salary.setJobpush(jobpush);
+		bdList.add(jobpush);
+
+		List<DeliveryState> dsList = this.deliveryStateDAO.getDeliverysBytime(sc.getStarttime(), sc.getEndtime(), user.getUserid());
+
+		String cwbsStr = "";
+		if((dsList!=null)&&!dsList.isEmpty()){
+			for(DeliveryState ds : dsList){
+				cwbsStr += "'"+ds.getCwb()+"',";
+			}
+		}
+		if(cwbsStr.length()>0){
+			cwbsStr = cwbsStr.substring(0, cwbsStr.length()-1);
+		}
+
+		//妥投率
+		/*List<Map> list = new ArrayList<Map>();
+		List<Map> intemapList = this.salaryGatherService.getCount(user.getUserid(), sc.getStarttime(), sc.getEndtime());
+		if(intemapList!=null&&!intemapList.isEmpty()&&dsList!=null&&!dsList.isEmpty()){
+			for(Map lists:intemapList){
+				Map maps = new HashMap();
+				int customerint = 0;
+				double dbl = 0;
+				BigDecimal bdc = BigDecimal.ZERO;
+				long customerid = (Long)lists.get(1);
+				double bili = (Double)lists.get(2);
+				for(DeliveryState ds : dsList){
+					if(customerid == ds.getCustomerid()){
+						//获取格式化对象
+					    NumberFormat nt = NumberFormat.getPercentInstance();
+					    //设置百分数精确度2即保留两位小数
+					    nt.setMinimumFractionDigits(2);
+					    String biliStr = nt.format(bili);
+					    String[] biliArray  = biliStr.split("%");
+					    double dble = Double.parseDouble(biliArray[0]);
+					    Paybusinessbenefits pbbf = this.paybusinessbenefitsDao.getpbbfBycustomerid(customerid);
+					    bdc = pbbf.getOthersubsidies();
+					    String pbbfStr = pbbf.getPaybusinessbenefits();
+					    String[] strArray = pbbfStr.split("\\|");
+					    for(String str : strArray){
+					    	String[] strarr = str.substring(0,str.indexOf("=")).split("~");
+					    	String starr = str.substring(str.indexOf("=")+1, str.length()).replace(" ", "");
+					    	if(dble>=Double.parseDouble(strarr[0].replace(" ", ""))&&dble<=Double.parseDouble(strarr[1].replace(" ", ""))){
+					    		dbl = Double.parseDouble(starr);
+					    	}else{
+					    		continue;
+					    	}
+					    }
+					    customerint++;
+					}else{
+						continue;
+					}
+				}
+				maps.put(1, customerint);
+				maps.put(2, dbl);
+				maps.put(3, bdc);
+				list.add(maps);
+				customerint = 0;
+				dbl = 0;
+				bdc = BigDecimal.ZERO;
+			}
+		}
+		//kpi业务补助(总和)
+		BigDecimal bd1 = BigDecimal.ZERO;
+		//其他补助(总和)
+		BigDecimal bd2 = BigDecimal.ZERO;
+		if(list!=null&&!list.isEmpty()){
+			for(Map m : list){
+				if(m.size()>0){
+					int mLong = (Integer)(m.get(1));
+					double mDouble = (Double)(m.get(2));
+					bd1 = bd1.add(new BigDecimal(mDouble).multiply(new BigDecimal(mLong)));
+					BigDecimal dbbdc =  (BigDecimal)(m.get(3));
+					bd2 = bd2.add(dbbdc.multiply(new BigDecimal(mLong)));
+				}
+			}
+		}*/
+
+
+		List<Map> list = new ArrayList<Map>();
+		List<BigDecimal> bdecList = this.salaryGatherService.getKpiOthers(user.getUserid(), sc.getStarttime(), sc.getEndtime());
+		//kpi业务补助(总和)
+		BigDecimal bd1 = BigDecimal.ZERO;
+		//其他补助(总和)
+		BigDecimal bd2 = BigDecimal.ZERO;
+		if((bdecList!=null)&&!bdecList.isEmpty()){
+			bd1 = bdecList.get(0);
+			bd2 = bdecList.get(1);
+		}
+
+		//cwbsStr
+		if("".equals(cwbsStr)){
+			cwbsStr = "''";
+		}
+		List<CwbOrder> cwbList =  this.cwbDAO.getCwbsBycwbs(cwbsStr);
+		
+		//基本派费+区域派费总和
+		BigDecimal basicareafee = BigDecimal.ZERO;
+		BigDecimal bds = BigDecimal.ZERO;
+		if(dsList!=null&&!dsList.isEmpty()){
+			BigDecimal basicfe = user.getBasicfee();//人员信息设置的基本派费
+			BigDecimal areafe = user.getAreafee();//人员信息设置的区域派费
+			basicareafee = (basicfe.add(areafe)).multiply(new BigDecimal(dsList.size()));//（基本+区域）总量
+		}
+		
+		//减去基本+区域+kpi+其他派费总和之外的总和
+		bds = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
+		//最终计件配送费
+		//bds+基本派费+区域派费+业务kpi+其他派费
+		BigDecimal bdss = bds.add(basicareafee).add(bd1).add(bd2);
+
+		//调整额度
+		BigDecimal tiaozheng = (user.getBasicfee().add(user.getAreafee())).multiply(new BigDecimal(user.getFallbacknum())).subtract(salarybasic);//单件标准费用*保底单量-基本工资
+
+		//提成
+		BigDecimal salarypush = BigDecimal.ZERO;
+		salarypush = bdss.subtract(salarybasic.add(tiaozheng));//提成=寄件配送费-（基本工资+调整额度）
+		salary.setSalarypush(salarypush);
+		bdList.add(salarypush);
+
+
+		BigDecimal agejob = BigDecimal.ZERO;
+		if((null!=map.get("agejob"))&&(map.get("agejob")==1)) {//工龄
+			agejob = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 7));
+		}else{
+			agejob = sf.getAgejob();
+		}
+		salary.setAgejob(agejob);
+		bdList.add(agejob);
+
+		BigDecimal bonusroom = BigDecimal.ZERO;
+		if((null!=map.get("bonusroom"))&&(map.get("bonusroom")==1)) {//住房补贴
+			bonusroom = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 8));
+		}else{
+			bonusroom = sf.getBonusroom();
+		}
+		salary.setBonusroom(bonusroom);
+		bdList.add(bonusroom);
+
+		BigDecimal bonusallday = BigDecimal.ZERO;
+		if((null!=map.get("bonusallday"))&&(map.get("bonusallday")==1)) {//全勤补贴
+			bonusallday = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 9));
+		}else{
+			bonusallday = sf.getBonusallday();
+		}
+		salary.setBonusallday(bonusallday);
+		bdList.add(bonusallday);
+
+		BigDecimal bonusfood = BigDecimal.ZERO;
+		if((null!=map.get("bonusfood"))&&(map.get("bonusfood")==1)) {//餐费补贴
+			bonusfood = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 10));
+		}else{
+			bonusfood = sf.getBonusfood();
+		}
+		salary.setBonusfood(bonusfood);
+		bdList.add(bonusfood);
+
+		BigDecimal bonustraffic = BigDecimal.ZERO;
+		if((null!=map.get("bonustraffic"))&&(map.get("bonustraffic")==1)) {//交通补贴
+			bonustraffic = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 11));
+		}else{
+			bonustraffic = sf.getBonustraffic();
+		}
+		salary.setBonustraffic(bonustraffic);
+		bdList.add(bonustraffic);
+
+		BigDecimal bonusphone = BigDecimal.ZERO;
+		if((null!=map.get("bonusphone"))&&(map.get("bonusphone")==1)) {//通讯补贴
+			bonusphone = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 12));
+		}else{
+			bonusphone = sf.getBonusphone();
+		}
+		salary.setBonusphone(bonusphone);
+		bdList.add(bonusphone);
+
+		BigDecimal bonusweather = BigDecimal.ZERO;
+		if((null!=map.get("bonusweather"))&&(map.get("bonusweather")==1)) {//高温寒冷补贴
+			bonusweather = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 13));
+		}else{
+			bonusweather = sf.getBonusweather();
+		}
+		salary.setBonusweather(bonusweather);
+		bdList.add(bonusweather);
+
+		//扣款撤销
+		BigDecimal penalizecancel = BigDecimal.ZERO;
+		penalizecancel = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 1);
+		salary.setPenalizecancel(penalizecancel);
+		bdList.add(penalizecancel);
+
+		BigDecimal penalizecancel_import = BigDecimal.ZERO;
+		if((null!=map.get("penalizecancel_import"))&&(map.get("penalizecancel_import")==1)) {//扣款撤销(导入)
+			penalizecancel_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 14));
+		}else{
+			penalizecancel_import = sf.getPenalizecancel_import();
+		}
+		salary.setPenalizecancel_import(penalizecancel_import);
+		bdList.add(penalizecancel_import);
+
+		BigDecimal bonusother1 = BigDecimal.ZERO;
+		if((null!=map.get("bonusother1"))&&(map.get("bonusother1")==1)) {//其他补贴
+			bonusother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 15));
+		}else{
+			bonusother1 = sf.getBonusother1();
+		}
+		salary.setBonusother1(bonusother1);
+		bdList.add(bonusother1);
+
+		BigDecimal bonusother2 = BigDecimal.ZERO;
+		if((null!=map.get("bonusother2"))&&(map.get("bonusother2")==1)) {//其他补贴2
+			bonusother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 16));
+		}else{
+			bonusother2 = sf.getBonusother2();
+		}
+		salary.setBonusother2(bonusother2);
+		bdList.add(bonusother2);
+
+		BigDecimal bonusother3 = BigDecimal.ZERO;
+		if((null!=map.get("bonusother3"))&&(map.get("bonusother3")==1)) {//其他补贴3
+			bonusother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 17));
+		}else{
+			bonusother3 = sf.getBonusother3();
+		}
+		salary.setBonusother3(bonusother3);
+		bdList.add(bonusother3);
+
+		BigDecimal bonusother4 = BigDecimal.ZERO;
+		if((null!=map.get("bonusother4"))&&(map.get("bonusother4")==1)) {//其他补贴4
+			bonusother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 18));
+		}else{
+			bonusother4 = sf.getBonusother4();
+		}
+		salary.setBonusother4(bonusother4);
+		bdList.add(bonusother4);
+
+		BigDecimal bonusother5 = BigDecimal.ZERO;
+		if((null!=map.get("bonusother5"))&&(map.get("bonusother5")==1)) {//其他补贴5
+			bonusother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 19));
+		}else{
+			bonusother5 = sf.getBonusother5();
+		}
+		salary.setBonusother5(bonusother5);
+		bdList.add(bonusother5);
+
+		BigDecimal bonusother6 = BigDecimal.ZERO;
+		if((null!=map.get("bonusother6"))&&(map.get("bonusother6")==1)) {//其他补贴6
+			bonusother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 20));
+		}else{
+			bonusother6 = sf.getBonusother6();
+		}
+		salary.setBonusother6(bonusother6);
+		bdList.add(bonusother6);
+
+		BigDecimal overtimework = BigDecimal.ZERO;
+		if((null!=map.get("overtimework"))&&(map.get("overtimework")==1)) {//加班费
+			overtimework = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 21));
+		}else{
+			overtimework = sf.getOvertimework();
+		}
+		salary.setOvertimework(overtimework);
+		bdList.add(overtimework);
+
+		BigDecimal attendance = BigDecimal.ZERO;
+		if((null!=map.get("attendance"))&&(map.get("attendance")==1)) {//考勤扣款
+			attendance = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 22));
+		}else{
+			attendance = sf.getAttendance();
+		}
+		salary.setAttendance(attendance);
+		bdList.add(attendance.multiply(new BigDecimal(-1)));
+
+		BigDecimal security = BigDecimal.ZERO;
+		if((null!=map.get("security"))&&(map.get("security")==1)) {//个人社保扣款
+			security = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 23));
+		}else{
+			security = sf.getSecurity();
+		}
+		salary.setSecurity(security);
+		bdList.add(security.multiply(new BigDecimal(-1)));
+
+		BigDecimal gongjijin = BigDecimal.ZERO;
+		if((null!=map.get("gongjijin"))&&(map.get("gongjijin")==1)) {//个人公积金扣款
+			gongjijin = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 24));
+		}else{
+			gongjijin = sf.getGongjijin();
+		}
+		salary.setGongjijin(gongjijin);
+		bdList.add(gongjijin.multiply(new BigDecimal(-1)));
+
+		//违纪扣款扣罚
+		BigDecimal foul = BigDecimal.ZERO;
+		foul = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 3);
+		salary.setFoul(foul);
+		bdList.add(foul.multiply(new BigDecimal(-1)));
+
+		BigDecimal foul_import = BigDecimal.ZERO;
+		if((null!=map.get("foul_import"))&&(map.get("foul_import")==1)) {//违纪扣款扣罚(导入)
+			foul_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 25));
+		}else{
+			foul_import = sf.getFoul_import();
+		}
+		salary.setFoul_import(foul_import);
+		bdList.add(foul_import.multiply(new BigDecimal(-1)));
+
+		//货损赔偿
+		BigDecimal goods = BigDecimal.ZERO;
+		goods = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 2);
+		salary.setGoods(goods);
+		bdList.add(goods.multiply(new BigDecimal(-1)));
+
+		BigDecimal dorm = BigDecimal.ZERO;
+		if((null!=map.get("dorm"))&&(map.get("dorm")==1)) {//宿舍费用
+			dorm = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 26));
+		}else{
+			dorm = sf.getDorm();
+		}
+		salary.setDorm(dorm);
+		bdList.add(dorm.multiply(new BigDecimal(-1)));
+
+		BigDecimal penalizeother1 = BigDecimal.ZERO;
+		if((null!=map.get("penalizeother1"))&&(map.get("penalizeother1")==1)) {//其他扣罚
+			penalizeother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 27));
+		}else{
+			penalizeother1 = sf.getPenalizeother1();
+		}
+		salary.setPenalizeother1(penalizeother1);
+		bdList.add(penalizeother1.multiply(new BigDecimal(-1)));
+
+		BigDecimal penalizeother2 = BigDecimal.ZERO;
+		if((null!=map.get("penalizeother2"))&&(map.get("penalizeother2")==1)) {//其他扣罚2
+			penalizeother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 28));
+		}else{
+			penalizeother2 = sf.getPenalizeother2();
+		}
+		salary.setPenalizeother2(penalizeother2);
+		bdList.add(penalizeother2.multiply(new BigDecimal(-1)));
+
+		BigDecimal penalizeother3 = BigDecimal.ZERO;
+		if((null!=map.get("penalizeother3"))&&(map.get("penalizeother3")==1)) {//其他扣罚3
+			penalizeother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 29));
+		}else{
+			penalizeother3 = sf.getPenalizeother3();
+		}
+		salary.setPenalizeother3(penalizeother3);
+		bdList.add(penalizeother3.multiply(new BigDecimal(-1)));
+
+		BigDecimal penalizeother4 = BigDecimal.ZERO;
+		if((null!=map.get("penalizeother4"))&&(map.get("penalizeother4")==1)) {//其他扣罚4
+			penalizeother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 30));
+		}else{
+			penalizeother4 = sf.getPenalizeother4();
+		}
+		salary.setPenalizeother4(penalizeother4);
+		bdList.add(penalizeother4.multiply(new BigDecimal(-1)));
+
+		BigDecimal penalizeother5 = BigDecimal.ZERO;
+		if((null!=map.get("penalizeother5"))&&(map.get("penalizeother5")==1)) {//其他扣罚5
+			penalizeother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 31));
+		}else{
+			penalizeother5 = sf.getPenalizeother5();
+		}
+		salary.setPenalizeother5(penalizeother5);
+		bdList.add(penalizeother5.multiply(new BigDecimal(-1)));
+
+		BigDecimal penalizeother6 = BigDecimal.ZERO;
+		if((null!=map.get("penalizeother6"))&&(map.get("penalizeother6")==1)) {//其他扣罚6
+			penalizeother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 32));
+		}else{
+			penalizeother6 = sf.getPenalizeother6();
+		}
+		salary.setPenalizeother6(penalizeother6);
+		bdList.add(penalizeother6.multiply(new BigDecimal(-1)));
+
+		BigDecimal imprestother1 = BigDecimal.ZERO;
+		if((null!=map.get("imprestother1"))&&(map.get("imprestother1")==1)) {//其他预付款
+			imprestother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 33));
+		}else{
+			imprestother1 = sf.getImprestother1();
+		}
+		salary.setImprestother1(imprestother1);
+		bdList.add(imprestother1.multiply(new BigDecimal(-1)));
+
+		BigDecimal imprestother2 = BigDecimal.ZERO;
+		if((null!=map.get("imprestother2"))&&(map.get("imprestother2")==1)) {//其他预付款2
+			imprestother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 34));
+		}else{
+			imprestother2 = sf.getImprestother2();
+		}
+		salary.setImprestother2(imprestother2);
+		bdList.add(imprestother2.multiply(new BigDecimal(-1)));
+
+		BigDecimal imprestother3 = BigDecimal.ZERO;
+		if((null!=map.get("imprestother3"))&&(map.get("imprestother3")==1)) {//其他预付款3
+			imprestother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 35));
+		}else{
+			imprestother3 = sf.getImprestother3();
+		}
+		salary.setImprestother3(imprestother3);
+		bdList.add(imprestother3.multiply(new BigDecimal(-1)));
+
+		BigDecimal imprestother4 = BigDecimal.ZERO;
+		if((null!=map.get("imprestother4"))&&(map.get("imprestother4")==1)) {//其他预付款4
+			imprestother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 36));
+		}else{
+			imprestother4 = sf.getImprestother5();
+		}
+		salary.setImprestother4(imprestother4);
+		bdList.add(imprestother4.multiply(new BigDecimal(-1)));
+
+		BigDecimal imprestother5 = BigDecimal.ZERO;
+		if((null!=map.get("imprestother5"))&&(map.get("imprestother5")==1)) {//其他预付款5
+			imprestother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 37));
+		}else{
+			imprestother5 = sf.getImprestother5();
+		}
+		salary.setImprestother5(imprestother5);
+		bdList.add(imprestother5.multiply(new BigDecimal(-1)));
+
+		BigDecimal imprestother6 = BigDecimal.ZERO;
+		if((null!=map.get("imprestother6"))&&(map.get("imprestother6")==1)) {//其他预付款6
+			imprestother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 38));
+		}else{
+			imprestother6 = sf.getImprestother6();
+		}
+		salary.setImprestother6(imprestother6);
+		bdList.add(imprestother6.multiply(new BigDecimal(-1)));
+
+		BigDecimal carrent = BigDecimal.ZERO;
+		if((null!=map.get("carrent"))&&(map.get("carrent")==1)) {//租用车辆费用
+			carrent = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 39));
+		}else{
+			carrent = sf.getCarrent();
+		}
+		salary.setCarrent(carrent);
+		bdList.add(carrent);
+
+		BigDecimal carmaintain = BigDecimal.ZERO;
+		if((null!=map.get("carmaintain"))&&(map.get("carmaintain")==1)) {//车子维修给用
+			carmaintain = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 40));
+		}else{
+			carmaintain = sf.getCarmaintain();
+		}
+		salary.setCarmaintain(carmaintain);
+		bdList.add(carmaintain);
+
+		BigDecimal carfuel = BigDecimal.ZERO;
+		if((null!=map.get("carfuel"))&&(map.get("carfuel")==1)) {//油/电费用
+			carfuel = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 41));
+		}else{
+			carfuel = sf.getCarfuel();
+		}
+		salary.setCarfuel(carfuel);
+		bdList.add(carfuel);
+
+		//应发金额
+		BigDecimal salaryaccrual = BigDecimal.ZERO;
+		if((bdList!=null)&&!bdList.isEmpty()){
+			for(BigDecimal bd : bdList){
+				salaryaccrual = salaryaccrual.add(bd);
+			}
+		}
+
+		//货物预付款
+		BigDecimal imprestgoods = BigDecimal.ZERO;
+		//bdList.add(imprestgoods.multiply(new BigDecimal(-1)));
+		int value = salaryaccrual.compareTo(new BigDecimal(1000));
+		if(value!=-1){
+			BigDecimal bmb = user.getMaxcutpayment().subtract(user.getBasicadvance().add(user.getLateradvance()));
+			double dbmb = bmb.doubleValue();
+			double fixed = user.getFixedadvance().doubleValue();
+			if(dbmb>=fixed){
+				BigDecimal bddown = new BigDecimal(fixed);
+				salary.setImprestgoods(bddown);
+				salaryaccrual = salaryaccrual.subtract(bddown);
+				salary.setSalaryaccrual(salaryaccrual);
+			}else if(dbmb<=0){
+				salary.setImprestgoods(imprestgoods);
+				salary.setSalaryaccrual(salaryaccrual);
+			}else{
+				salary.setImprestgoods(bmb);
+				salaryaccrual = salaryaccrual.subtract(bmb);
+				salary.setSalaryaccrual(salaryaccrual);
+			}
+		}
+		//当工资金额小于1000时
+		else{
+			salary.setImprestgoods(imprestgoods);//货物预付款
+			salary.setSalaryaccrual(salaryaccrual);//应发工资
+		}
+
+		//个税
+		BigDecimal tax = BigDecimal.ZERO;
+		tax = this.salaryGatherService.getTax(salaryaccrual);
+		salary.setTax(tax);
+
+		//实发金额
+		BigDecimal salarys = BigDecimal.ZERO;
+		salarys = salaryaccrual.subtract(tax);
+		salary.setSalary(salarys);
+		
 		return salary;
 	}
 

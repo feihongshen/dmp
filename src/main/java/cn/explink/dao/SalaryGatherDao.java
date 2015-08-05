@@ -216,5 +216,15 @@ public class SalaryGatherDao {
 			return 0;
 		}
 	}
+
+	public long getSalarygatherByuidandbid(long userid, String batchid) {
+		try{
+			String sql = "select count(1) from express_ops_salarygather_detail where userid=? and batchid=?";
+			return this.jdbcTemplate.queryForLong(sql,userid,batchid);
+		}catch(Exception e){
+			e.printStackTrace();
+			return 0;
+		}
+	}
 	
 }

@@ -229,12 +229,19 @@ public class SalaryCountController {
 	@RequestMapping("/delete")
 	public  @ResponseBody
 	Map<String, Long> delete(@RequestParam(value = "ids",required = false,defaultValue = "") String ids) throws Exception {
+		Map<String, Long> map=new HashMap<String, Long>();
 		long counts=0;
 		if((ids!=null)&&(ids.length()>0)){
+			
 			String str = "";
 			String[] strArray = ids.split(",");
 			for(String st : strArray){
 				str += "'"+st+"',";
+				long lon = this.salaryCountDAO.deleteSalarCountyByid(st);
+				if(lon==0){
+					map.put("count", lon);
+					return map;
+				}
 			}
 			String strs = "";
 			if(str.length()>0){
@@ -242,7 +249,6 @@ public class SalaryCountController {
 			}
 			counts=this.salaryCountDAO.deleteSalarCountyByids(strs);
 		}
-		Map<String, Long> map=new HashMap<String, Long>();
 		map.put("counts", counts);
 		return map;
 	}
@@ -310,7 +316,6 @@ public class SalaryCountController {
 		List<SalaryGather> sgList = new ArrayList<SalaryGather>();
 		List<Branch> branchList=this.branchDAO.getBranchssBycontractflag(BranchTypeEnum.ZhiYing.getValue()+"",BranchEnum.ZhanDian.getValue());
 		if (excelExtractor != null) {
-			
 			//数据导入并计算工资
 			this.processFile(excelExtractor, inputStream,importflag,user,sc);
 			//导入之后进行查询

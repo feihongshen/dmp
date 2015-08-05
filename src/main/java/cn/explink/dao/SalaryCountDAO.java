@@ -210,4 +210,17 @@ public class SalaryCountDAO {
 		}
 	}
 
+	public long deleteSalarCountyByid(String id) {
+		String sql="delete from express_ops_salaryCount_detail where batchid=? and batchstate=?";
+		return this.jdbcTemplate.update(sql,id,BatchSateEnum.Weihexiao.getValue());
+	}
+	/*public long getSalarycountByuidandbid(long userid, String batchid) {
+		try{
+			String sql = "select count(1) from express_ops_salaryCount_detail where userid=? and batchid=?";
+			return this.jdbcTemplate.queryForLong(sql,userid,batchid);
+		}catch(Exception e){
+			e.printStackTrace();
+			return 0;
+		}
+	}*/
 }
