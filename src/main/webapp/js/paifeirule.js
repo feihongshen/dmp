@@ -109,7 +109,8 @@ function addTR(pf, type) {
 	var customerid = "customerid" + i;
 	// var customername="customername";
 	var customer = "<input type='text'  id='" + customerid + "' name='customerid'  class='easyui-validatebox' style='width: 100%;'"
-			+ "initDataType='TABLE'" + "initDataKey='Customer' afterSelect='checkCustomer' " + "viewField='customername'" + "saveField='customerid'" + "/>";
+			+ "initDataType='TABLE'" + "initDataKey='Customer' afterSelect='checkCustomer' " + "viewField='customername'" + "saveField='customerid'"
+			+ "/>";
 	var PFfee = "<input " + fee_check + " style='width: 100%;' type='text'  id='" + type + "PFfee' name='" + type + "PFfee'/>";
 	var remark = "<input style='width: 100%;' type='text'  id='remark' name='remark'/>";
 	var tr = "<tr><input type='hidden' name='showflag' value='1'/>" + "<td  align='center'><input type='checkbox'/></td>" + "<td  align='center'>"
@@ -373,7 +374,7 @@ function getJsonOfArea(tab, ruleType) {
 				var mincountVal = $(this).find("[name=mincount]").val();
 				var maxcountVal = $(this).find("[name=maxcount]").val();
 				if (mincountVal != '' && maxcountVal != '') {
-					
+
 					overweight.push($(this).serializeObject());
 				}
 			});
@@ -478,8 +479,8 @@ function subEidt(formId, tab, edittype) {
 				var maxcountVal = $(this).find("[name=maxcount]").val();
 				if (edittype == "overbig" || edittype == "overweight") {
 					var areaid = formId.split("_")[2];// .substr(formId.split("_")[1].indexOf()
-														// + edittype.length +
-														// 1);
+					// + edittype.length +
+					// 1);
 					$(this).append("<input type='hidden' name='areaid' value=" + areaid + " />");
 				}
 
@@ -566,6 +567,16 @@ function showArea(tr, id, areaname) {
 		 * $("#"+tab+"_area_table_"+areaid).find("#overbig_remove").parent().append(subbig);
 		 * $("#"+tab+"_area_table_"+areaid).find("#overweight_remove").parent().append(subweight);
 		 */
+		if ($(tr).find("#isareafee").val() == 0) {
+			$("#" + tab + "_area_table_" + areaid).find("#isareafeetr").remove();
+		}
+		if ($(tr).find("#isoverbig").val() == 0) {
+			$("#" + tab + "_area_table_" + areaid).find("#overbigflagtr").remove();
+			$("#" + tab + "_area_table_" + areaid).find("#overbigflagtrno").remove();
+		}
+		if ($(tr).find("#isoverweight").val() == 0) {
+			$("#" + tab + "_area_table_" + areaid).find("#isoverweighttr").remove();
+		}
 	} else {
 		if ($(tr)[0].style.background.toLowerCase().indexOf('yellow') >= 0) {
 			$(tr).parent().find("tr").each(function() {
@@ -582,22 +593,23 @@ function showArea(tr, id, areaname) {
 			$("#" + id).show();
 			$("#" + id + " *").show();
 		}
+		if ($(tr).find("#isareafee").val() == 0) {
+			$("#edit_area_" + tab + "_" + areaid).find("#isareafeetr").remove();
+		}
+		if ($(tr).find("#isoverbig").val() == 0) {
+			$("#edit_area_" + tab + "_" + areaid).find("#overbigflagtr").remove();
+			$("#edit_area_" + tab + "_" + areaid).find("#overbigflagtrno").remove();
+		}
+		if ($(tr).find("#isoverweight").val() == 0) {
+			$("#edit_area_" + tab + "_" + areaid).find("#isoverweighttr").remove();
+		}
 	}
-	if ($(tr).find("#isareafee").val() == 0) {
-		$("#" + tab + "_area_table_" + areaid).find("#isareafeetr").remove();
-	}
-	if ($(tr).find("#isoverbig").val() == 0) {
-		$("#" + tab + "_area_table_" + areaid).find("#overbigflagtr").remove();
-		$("#" + tab + "_area_table_" + areaid).find("#overbigflagtrno").remove();
-	}
-	if ($(tr).find("#isoverweight").val() == 0) {
-		$("#" + tab + "_area_table_" + areaid).find("#isoverweighttr").remove();
-	}
+
 }
 function validate(e) {
 	var exp = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
 	return exp.test(nums);
-	
+
 	if (!reg.test($(e).val())) {
 		$(e).val('0');
 	}
@@ -687,7 +699,7 @@ function subArea(tablename, tab) {
 		},
 		dataType : "json",
 		success : function(obj) {
-				alert(obj.error);
+			alert(obj.error);
 		}
 	});
 }
@@ -722,7 +734,7 @@ function getJsonOfAreaEdit(tablename, ruleType) {
 		}
 	}
 	var overweight = new Array();
-	var max=-1;
+	var max = -1;
 	$("#" + tablename).find("[id*=" + tab + "_overweight] tr[id!=thead]").each(function() {
 		var mincountVal = $(this).find("[name=mincount]").val();
 		var maxcountVal = $(this).find("[name=maxcount]").val();
@@ -745,8 +757,8 @@ function subAreaEidt(e, areaid, type) {
 	var areafee = '';
 	var overbigflag = '';
 	if (type == 'areafee') {
-		areafee = $(e).parent().find("areafee").val();
-		overbigflag = -1;
+		areafee = $(e).parent().find("#areafee").val();
+		overbigflag = -2;
 	} else if (type == 'overbigflag') {
 		var flag = $(e).parent().parent().find("#overbigflag").checked;
 		if (flag) {
@@ -772,19 +784,72 @@ function subAreaEidt(e, areaid, type) {
 	});
 }
 
-function checkCustomer(obj,e)
-{   var count=0;
-	e.parent().parent().parent().find("[name=customerid]").each(
-			function(){
-				if($(this).val()==obj.id)
-				{
-					count++;
-				}
-			});
-	if(count>1)
-		{
+function checkCustomer(obj, e) {
+	var count = 0;
+	e.parent().parent().parent().find("[name=customerid]").each(function() {
+		if ($(this).val() == obj.id) {
+			count++;
+		}
+	});
+	if (count > 1) {
 		alert("供货商已经存在！");
 		e.combobox('clear');
-		return ;
+		return;
+	}
+}
+function saveAllData() {
+	subEidt('edit_rule_from', '', 'rule');
+	var ruletype = $("#edit_ruletype").val();
+	var tabs=new Array();
+	if (ruletype == 1) {
+		 tabs = new Array("ps", "th");
+	}
+	if (ruletype == 2) {
+		 tabs = new Array("ps", "th", "zz");
+	}
+	if (ruletype == 3) {
+		 tabs = new Array("ps");
+	}
+	for (var i = 0; i < tabs.length; i++) {
+		creDate(tabs[i],ruletype);
+	}
+
+}
+function creDate(tab,ruletype)
+{
+	var basic_flag = $("#"+tab+"_basic_flag")[0].checked;
+	var collection_flag = $("#"+tab+"_collection_flag")[0].checked;
+	var area_flag = $("#"+tab+"_area_flag")[0].checked;
+	var business_flag = $("#"+tab+"_business_flag")[0].checked;
+	var insertion_flag = $("#"+tab+"_insertion_flag")[0].checked;
+
+	if (basic_flag) {
+		if ($("#"+tab+"_showflag_basic").val() == 'yes') {
+			subEidt("edit_"+tab+"_basic_from", tab, 'basic');
+		} else {
+			subEidt("edit_"+tab+"_basicno_from", tab, 'basicno');
 		}
 	}
+	if (collection_flag) {
+		if ($("#"+tab+"_showflag_collection").val() == 'yes') {
+			subEidt("edit_"+tab+"_collection_from", tab, 'collection');
+		} else {
+			subEidt("edit_"+tab+"_collectionno_from", tab, 'collectionno');
+		}
+	}
+	if (area_flag) {
+
+	}
+	if (ruletype == 3) {
+		var overarea_flag = $("#"+tab+"_overarea_tr #edit_"+tab+"_state_checkbox")[0].checked;
+		if (overarea_flag) {
+			subEidt("edit_"+tab+"_overarea_from", tab, 'overarea');
+		}
+	}
+	if (business_flag) {
+		subEidt("edit_"+tab+"_business_from",tab,'business');
+	}
+	if (insertion_flag) {
+		subEidt("edit_"+tab+"_insertion_from",tab,'insertion');
+	}	
+}
