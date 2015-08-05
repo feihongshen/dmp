@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Branch;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -474,7 +475,7 @@ public class BranchDAO {
 	private String getBranchByPageWhereSql(String sql, String branchname, String branchaddress) {
 
 		if ((branchname.length() > 0) || (branchaddress.length() > 0)) {
-			sql += " where";
+			sql += " and ";
 			if ((branchname.length() > 0) && (branchaddress.length() > 0)) {
 				sql += " branchname like '%" + branchname + "%' and branchaddress like '%" + branchaddress + "%'";
 			} else {
@@ -490,15 +491,19 @@ public class BranchDAO {
 	}
 
 	public List<Branch> getBranchByPage(long page, String branchname, String branchaddress) {
-		String sql = "select * from express_set_branch";
+		String sql = "select * from express_set_branch where contractflag in ("
+					+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
+					+ BranchTypeEnum.JiaMengSanJi.getValue() + ")";
 		sql = this.getBranchByPageWhereSql(sql, branchname, branchaddress);
-		sql += " order by branchid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+//		sql += " order by branchid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
 		return branchlist;
 	}
 
 	public long getBranchCount(String branchname, String branchaddress) {
-		String sql = "select count(1) from express_set_branch";
+		String sql = "select count(1) from express_set_branch where contractflag in ("
+					+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
+					+ BranchTypeEnum.JiaMengSanJi.getValue() + ")";
 		sql = this.getBranchByPageWhereSql(sql, branchname, branchaddress);
 		return this.jdbcTemplate.queryForInt(sql);
 	}

@@ -23,6 +23,7 @@ import cn.explink.domain.ExpressSetBranchDeliveryFeeBill;
 import cn.explink.domain.ExpressSetBranchDeliveryFeeBillDetail;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillDetailVO;
 import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillVO;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -682,7 +683,10 @@ public class BranchDeliveryFeeBillDAO {
 				+ " on cwb.cwb = d.cwb "	
 				+ leftJoinSql
 				+ onSql
-				+ " where branchfeebillexportflag=0 ";
+				+ " where cwb.state=1 and d.state=1 and cwb.branchfeebillexportflag=0 "
+				+ " and d.gcaid>0 and d.deliverystate in (" 
+				+ DeliveryStateEnum.PeiSongChengGong.getValue() + "," + DeliveryStateEnum.ShangMenTuiChengGong.getValue() + ","
+				+ DeliveryStateEnum.ShangMenHuanChengGong.getValue() + ")";
 
 		if (branchDeliveryFeeBill != null) {
 			if (StringUtils.isNotBlank(branchDeliveryFeeBill
