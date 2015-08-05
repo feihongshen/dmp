@@ -677,7 +677,7 @@ public class BranchDeliveryFeeBillDAO {
 			ExpressSetBranchDeliveryFeeBill branchDeliveryFeeBill, String leftJoinSql,
 			String onSql, String dateColumn, String cwbs) {
 
-		String sql = "select cwb.* from express_ops_cwb_detail cwb "
+		String sql = "select distinct cwb.* from express_ops_cwb_detail cwb "
 				+ " left join express_ops_delivery_state d "
 				+ " on cwb.cwb = d.cwb "	
 				+ leftJoinSql
