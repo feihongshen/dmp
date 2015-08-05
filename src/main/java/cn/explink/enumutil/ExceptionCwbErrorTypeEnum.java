@@ -70,7 +70,9 @@ public enum ExceptionCwbErrorTypeEnum {
 	Tuihuoquerensuccess(133,"审核确认退货的订单不可以进行领货操作！！"),
 	DaizhongzhuanCannotlinghuo(134,"反馈待中转的订单不允许领货"),
 	OXO_JIT_DISALLOW_RECEIVEGOODS(135,"OXO_JIT类型的订单不允许领货"),
-	OXO_JIT_DISALLOW_TRANSFER_STATION_OUTBOUND(136,"OXO_JIT类型的订单不允许中转出站或站点出站")
+	OXO_JIT_DISALLOW_TRANSFER_STATION_OUTBOUND(136,"OXO_JIT类型的订单不允许中转出站或站点出站"), 
+	
+	Not_Express_CWB(137,"单号{0}不是快递单，不允许揽件出站")
 	;
 
 	private int value;
