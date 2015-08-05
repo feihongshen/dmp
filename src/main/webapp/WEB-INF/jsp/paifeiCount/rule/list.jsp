@@ -568,9 +568,10 @@
 				<table width="85%" border="0" cellspacing="1" cellpadding="0"
 					style="margin-top: 10px; margin-left: 25px; font-size: 10px;">
 					<tr>
-						<td></td>
 						<td><input type="button" class="input_button2" value="返回"
 							onclick="$('#edit_rule').dialog('close');" /></td>
+							<td><input type="button" class="input_button2" value="保存"
+								onclick="saveAllData()" /></td>
 					</tr>
 					<tr>
 						<td style="line-height: 30px" align="right">规则类型：</td>
@@ -609,10 +610,6 @@
 						<td id="edit_remark" colspan="5"><textarea rows="3" name="remark"
 								style="width: 100%; resize: none;">${rule.remark }</textarea></td>
 					</tr>
-					<tr>
-						<td><td><input type="button" class="input_button2" value="保存"
-								onclick="subEidt('edit_rule_from','','rule')" /></td>
-					</tr>
 				</table>
 			</form>
 			<div id="tt" class="easyui-tabs" style="height: 450px; overflow: scroll;">
@@ -622,13 +619,17 @@
 						<tr id="ps_basic_tr">
 							<td style="width: 14%;"><input type="checkbox" id="ps_basic_flag"
 								${basicPS!=null||fn:length(basicListPS)>0?'checked=checked':'' } />基本派费</td>
-							<td><span id="edit_ps_basicno_from"> <input type='hidden' name='showflag'
-									value='0' /> <select onchange="showflag('ps_basic',$(this).val())" id="ps_showflag_basic">
+							<td>
+							<span id="edit_ps_basicno_from"> 
+							 <input type='hidden' name='showflag' value='0' /> 
+								<select onchange="showflag('ps_basic',$(this).val())" id="ps_showflag_basic">
 										<option ${ps_showflag_basic=="yes" ? 'selected=selected' : '' } value="yes">按供货商区分</option>
 										<option ${ps_showflag_basic=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
-								</select><span id="ps_basic_no"> <input type="text" style="margin-top: -5px" name="basicPFfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
-										id="ps_basicPFfee" value="${basicPS.basicPFfee }" />元 <input type="button" value="保存"
-										onclick="subEidt('edit_ps_basicno_from','ps','basicno')" />
+								</select>
+								<span id="ps_basic_no"> 
+								<input type="text" style="margin-top: -5px" name="basicPFfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
+										id="ps_basicPFfee" value="${basicPS.basicPFfee }" />元
+										 <input type="button" value="保存" onclick="subEidt('edit_ps_basicno_from','ps','basicno')" style="display: none;" />
 								</span>
 								
 							</span>
@@ -663,7 +664,7 @@
 										</table>
 										<input type="button" value="添加" onclick="addTR('ps','basic')" /> <input type="button"
 											value="移除" onclick="removeTR('ps','basic')" /> <input type="button" value="保存"
-											onclick="subEidt('edit_ps_basic_from','ps','basic')" />
+											onclick="subEidt('edit_ps_basic_from','ps','basic')" style="display: none;"/>
 									</form>
 								</div></td>
 						</tr>
@@ -678,7 +679,7 @@
 								</select><span id="ps_collection_no"> <input type="text" id="ps_collectionPFfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 										name="collectionPFfee" value="${collectionPS.collectionPFfee }" style="margin-top: -5px" />元
 										<input type="button" value="保存"
-										onclick="subEidt('edit_ps_collectionno_from','ps','collectionno')" />
+										onclick="subEidt('edit_ps_collectionno_from','ps','collectionno')" style="display: none;"/>
 								</span>
 							</span>
 
@@ -712,7 +713,7 @@
 										</table>
 										<input type="button" value="添加" onclick="addTR('ps','collection')" /> <input
 											type="button" value="移除" onclick="removeTR('ps','collection')" /> <input type="button"
-											value="保存" onclick="subEidt('edit_ps_collection_from','ps','collection')" />
+											value="保存" onclick="subEidt('edit_ps_collection_from','ps','collection')" style="display: none;" />
 								</div>
 								</form></td>
 						</tr>
@@ -820,7 +821,7 @@
 					onclick="addTROfOverAreaEdit('ps','overweight_${area.id}')" /> <input id="overweight_add"
 					onclick="removeTR('ps','overweight_${area.id}')" type="button" value="移除" />
 							<input type="button" value="保存"
-										onclick="subEidt('ps_overweight_${area.id }_table','ps','overweight')" />
+									onclick="subEidt('ps_overweight_${area.id }_table','ps','overweight')" />
 					</td>
 			</tr>
 		</table>
@@ -830,21 +831,23 @@
 								</div>
 							</td>
 						</tr>
+						<c:if test="${rule.type==3 }">
 						<tr id="ps_overarea_tr">
 							<td><input type="checkbox" id="edit_ps_state_checkbox" value="1"
 								${overareaPS!=null&&overareaPS.state==1?'checked=checked':'' } />超区补助</td>
 							<td><form id="edit_ps_overarea_from">
 									<input name="state" type="hidden" id="edit_ps_state" /> <input type="button" value="保存"
-										onclick="subEidt('edit_ps_overarea_from','ps','overarea')" />
+									style="display: none;"	onclick="subEidt('edit_ps_overarea_from','ps','overarea')" />
 								</form></td>
 						</tr>
+						</c:if>
 						<tr id="ps_business_tr">
 							<td><input type="checkbox" id="ps_business_flag"
 								${buFbusinessPS!=null?'checked=checked':''  } />业务补助</td>
 							<td><form id="edit_ps_business_from">
 									<input value="${buFbusinessPS.subsidyfee}" type="text" id="edit_ps_business_subsidyfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 										name="subsidyfee" /> <input type="button" value="保存"
-										onclick="subEidt('edit_ps_business_from','ps','business')" />
+										onclick="subEidt('edit_ps_business_from','ps','business')" style="display: none;" />
 								</form></td>
 						</tr>
 						<tr id="ps_insertion_tr">
@@ -879,7 +882,7 @@
 										</table>
 								</div> <input type="button" value="添加" onclick="addTROfinsertion('ps','insertion')" /> <input
 								type="button" onclick="removeTR('ps','insertion')" value="移除" /> <input type="button"
-								value="保存" onclick="subEidt('edit_ps_insertion_from','ps','insertion')" />
+								value="保存" onclick="subEidt('edit_ps_insertion_from','ps','insertion')" style="display: none;" />
 								</form>
 							</td>
 						</tr>
@@ -898,7 +901,7 @@
 											<option ${th_showflag_basic=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
 									</select><span id="th_basic_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 											name="basicPFfee" id="th_basicPFfee" value="${basicTH.basicPFfee }" />元 <input 
-											type="button" value="保存" onclick="subEidt('edit_th_basicno_from','th','basicno')" />
+											type="button" value="保存" onclick="subEidt('edit_th_basicno_from','th','basicno')" style="display: none;" />
 									</span>
 								</span>
 									<div id="th_basic_yes">
@@ -931,12 +934,12 @@
 											</table>
 											<input type="button" value="添加" onclick="addTR('th','basic')" /> <input type="button"
 												value="移除" onclick="removeTR('th','basic')" /> <input type="button" value="保存"
-												onclick="subEidt('edit_th_basic_from','th','basic')" />
+												onclick="subEidt('edit_th_basic_from','th','basic')" style="display: none;"/>
 										</form>
 									</div></td>
 							</tr>
 							<tr id="th_collection_tr">
-								<td style="width: 14%;"><input type="checkbox" id="th_basic_flag"
+								<td style="width: 14%;"><input type="checkbox" id="th_collection_flag"
 									${collectionTH!=null||fn:length(collectionListTH)>0?'checked=checked':'' } />代收补助费</td>
 								<td><span id="edit_th_collectionno_from"> <input type='hidden' name='showflag'
 										value='0' /> <select onchange="showflag('th_collection',$(this).val())" id="th_showflag_collection">
@@ -944,7 +947,7 @@
 											<option ${th_showflag_collection=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
 									</select><span id="th_collection_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 											name="collectionPFfee" id="th_collectionPFfee" value="${collectionTH.collectionPFfee }" />元 <input
-											type="button" value="保存" onclick="subEidt('edit_th_collectionno_from','th','collectionno')" />
+										style="display: none;"	type="button" value="保存" onclick="subEidt('edit_th_collectionno_from','th','collectionno')" />
 									</span>
 								</span>
 									<div id="th_collection_yes">
@@ -976,7 +979,7 @@
 											</table>
 											<input type="button" value="添加" onclick="addTR('th','collection')" /> <input
 												type="button" value="移除" onclick="removeTR('th','collection')" /> <input type="button"
-												value="保存" onclick="subEidt('edit_th_collection_from','th','collection')" />
+											style="display: none;"	value="保存" onclick="subEidt('edit_th_collection_from','th','collection')" />
 										</form>
 									</div></td>
 							</tr>
@@ -1094,25 +1097,27 @@
 									</div>
 								</td>
 							</tr>
+							<c:if test="${rule.type==3}">
 							<tr id="th_overarea_tr">
 								<td><input type="checkbox" id="edit_th_state_checkbox" value="1"
 									${overareaTH!=null&&overareaTH.state==1?'checked=checked':'' } />超区补助</td>
 								<td><form id="edit_th_overarea_from">
 										<input name="state" type="hidden" id="edit_th_state" /> <input type="button" value="保存"
-											onclick="subEidt('edit_th_overarea_from','th','overarea')" />
+									style="display: none;" onclick="subEidt('edit_th_overarea_from','th','overarea')" />
 									</form></td>
 							</tr>
+							</c:if>
 							<tr id="th_business_tr">
 								<td><input type="checkbox" id="th_business_flag"
 									${buFbusinessTH!=null?'checked=checked':''  } />业务补助</td>
 								<td><form id="edit_th_business_from">
 										<input value="${buFbusinessTH.subsidyfee}" type="text" id="edit_th_business_subsidyfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 											name="subsidyfee" /> <input type="button" value="保存" 
-											onclick="subEidt('edit_th_business_from','th','business')" />
+										style="display: none;"	onclick="subEidt('edit_th_business_from','th','business')" />
 									</form></td>
 							</tr>
 							<tr id="th_insertion_tr">
-								<td><input type="checkbox" id="ps_insertion_flag"
+								<td><input type="checkbox" id="th_insertion_flag"
 									${fn:length(insertionListTH)>0&&(insertionListTH!=null)?'checked=checked':''  } />托单补助</td>
 								<td>
 									<div>
@@ -1143,7 +1148,7 @@
 											</table>
 									</div> <input type="button" value="添加" onclick="addTROfinsertion('th','insertion')" /> <input
 									type="button" onclick="removeTR('th','insertion')" value="移除" /> <input type="button"
-									value="保存" onclick="subEidt('edit_th_insertion_from','th','insertion')" />
+								style="display: none;"	value="保存" onclick="subEidt('edit_th_insertion_from','th','insertion')" />
 									</form>
 								</td>
 							</tr>
@@ -1163,7 +1168,7 @@
 											<option ${zz_showflag_basic=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
 									</select><span id="zz_basic_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 											name="basicPFfee" id="zz_basicPFfee" value="${basicZZ.basicPFfee }" />元 <input
-											type="button" value="保存" onclick="subEidt('edit_zz_basicno_from','zz','basicno')" />
+										style="display: none;"	type="button" value="保存" onclick="subEidt('edit_zz_basicno_from','zz','basicno')" />
 									</span>
 								</span>
 									<div id="zz_basic_yes">
@@ -1196,12 +1201,12 @@
 											</table>
 											<input type="button" value="添加" onclick="addTR('zz','basic')" /> <input type="button"
 												value="移除" onclick="removeTR('zz','basic')" /> <input type="button" value="保存"
-												onclick="subEidt('edit_zz_basic_from','zz','basic')" />
+											style="display: none;"	onclick="subEidt('edit_zz_basic_from','zz','basic')" />
 										</form>
 									</div></td>
 							</tr>
 							<tr id="zz_collection_tr">
-								<td style="width: 14%;"><input type="checkbox" id="zz_basic_flag"
+								<td style="width: 14%;"><input type="checkbox" id="zz_collection_flag"
 									${collectionZZ!=null||fn:length(collectionListZZ)>0?'checked=checked':'' } />代收补助费</td>
 								<td><span id="edit_zz_collectionno_from"> <input type='hidden' name='showflag'
 										value='0' /> <select onchange="showflag('zz_collection',$(this).val())" id="zz_showflag_collection">
@@ -1209,7 +1214,7 @@
 											<option ${zz_showflag_collection=="no" ? 'selected=selected' : '' } value="no">不按供货商区分</option>
 									</select><span id="zz_collection_no"> <input type="text" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 											name="collectionPFfee" id="zz_collectionPFfee" value="${collectionZZ.collectionPFfee }" />元 <input
-											type="button" value="保存" onclick="subEidt('edit_zz_collectionno_from','zz','collectionno')" />
+										style="display: none;"	type="button" value="保存" onclick="subEidt('edit_zz_collectionno_from','zz','collectionno')" />
 									</span>
 								</span>
 									<div id="zz_collection_yes">
@@ -1242,7 +1247,7 @@
 											</table>
 											<input type="button" value="添加" onclick="addTR('zz','collection')" /> <input
 												type="button" value="移除" onclick="removeTR('zz','collection')" /> <input type="button"
-												value="保存" onclick="subEidt('edit_zz_collection_from','zz','collection')" />
+											style="display: none;"	value="保存" onclick="subEidt('edit_zz_collection_from','zz','collection')" />
 										</form>
 									</div></td>
 							</tr>
@@ -1360,6 +1365,7 @@
 									</div>
 								</td>
 							</tr>
+							<c:if test="${rule.type==3 }">
 							<tr id="zz_overarea_tr">
 								<td><input type="checkbox" id="edit_zz_state_checkbox" value="1"
 									${overareaZZ!=null&&overareaZZ.state==1?'checked=checked':'' } />超区补助</td>
@@ -1368,18 +1374,19 @@
 											onclick="subEidt('edit_th_overarea_from','zz','overarea')" />
 									</form></td>
 							</tr>
+							</c:if>
 							<tr id="zz_business_tr">
 								<td><input type="checkbox" id="zz_business_flag"
 									${buFbusinessZZ!=null?'checked=checked':''  } />业务补助</td>
 								<td><form id="edit_zz_business_from">
 										<input value="${buFbusinessZZ.subsidyfee}" type="text" id="edit_zz_business_subsidyfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
 											name="subsidyfee" /> <input type="button" value="保存"
-											onclick="subEidt('edit_zz_business_from','zz','business')" />
+										style="display: none;"	onclick="subEidt('edit_zz_business_from','zz','business')" />
 									</form></td>
 							</tr>
 							<tr id="zz_insertion_tr">
 								<td><input type="checkbox" id="zz_insertion_flag"
-									${fn:length(insertionListTH)>0&&(insertionListTH!=null)?'checked=checked':''  } />托单补助</td>
+									${fn:length(insertionListZZ)>0&&(insertionListZZ!=null)?'checked=checked':''  } />托单补助</td>
 								<td>
 									<div>
 										<form id="edit_zz_insertion_from">
@@ -1409,7 +1416,7 @@
 											</table>
 									</div> <input type="button" value="添加" onclick="addTROfinsertion('zz','insertion')" /> <input
 									type="button" onclick="removeTR('zz','insertion')" value="移除" /> <input type="button"
-									value="保存" onclick="subEidt('edit_zz_insertion_from','zz','insertion')" />
+								style="display: none;"	value="保存" onclick="subEidt('edit_zz_insertion_from','zz','insertion')" />
 									</form>
 								</td>
 							</tr>
