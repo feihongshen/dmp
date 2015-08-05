@@ -1050,11 +1050,11 @@ public class JobUtil {
 	 */
 	public void getVipShopOXOTask(){
 		System.out.println("-----getVipShopOXOTask启动执行");
-		String sysValue = this.getSysOpenValue();
-		if ("yes".equals(sysValue)) {
-			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
-			return;
-		}
+//		String sysValue = this.getSysOpenValue();
+//		if ("yes".equals(sysValue)) {
+//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+//			return;
+//		}
 
 		if (JobUtil.threadMap.get("vipshop_OXO") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXO");
@@ -1083,11 +1083,11 @@ public class JobUtil {
 	 */
 	public void getVipShopOXOPickStateTask(){
 		System.out.println("-----getVipShopOXOPickStateTask启动执行");
-		String sysValue = this.getSysOpenValue();
-		if ("yes".equals(sysValue)) {
-			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
-			return;
-		}
+//		String sysValue = this.getSysOpenValue();
+//		if ("yes".equals(sysValue)) {
+//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+//			return;
+//		}
 
 		if (JobUtil.threadMap.get("vipshop_OXO_pickstate") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXO_pickstate");

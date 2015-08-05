@@ -221,8 +221,8 @@ public class VipShopOXOGetCwbDataService {
 		cwbOrder.setRemark5(order.getWarehouse()+"&"+order.getWarehouseAddr());//仓库+仓库地址 
 	
 		cwbOrder.setCustomercommand(order.getRequiredTime());//要求提货时间
-		cwbOrder.setTranscwb(order.getCustOrderNo());//TMS订单号
-		cwbOrder.setCwb(order.getOrderSn()); //订单号，tps运单号
+		cwbOrder.setTranscwb(order.getOrderSn());//TMS订单号
+		cwbOrder.setCwb(order.getCustOrderNo()); //订单号，tps运单号
 		cwbOrder.setConsigneename(order.getBuyerName());//收件人
 		cwbOrder.setConsigneeaddress(order.getBuyerAddress());//收件人地址
 		cwbOrder.setConsigneephone(order.getTel());//收件人电话
@@ -232,19 +232,26 @@ public class VipShopOXOGetCwbDataService {
 		if(StringUtils.isNotBlank(order.getExtPayType())){
 			if(order.getExtPayType().equals("-1")){ //非货到付款
 				cwbOrder.setPaywayid(PaytypeEnum.Qita.getValue());
+				cwbOrder.setNewpaywayid(PaytypeEnum.Qita.getValue()+"");
 			}
 			
 			if(order.getExtPayType().equals("0")){//货到付款现金支付
 				cwbOrder.setPaywayid(PaytypeEnum.Xianjin.getValue());
+				cwbOrder.setNewpaywayid(PaytypeEnum.Xianjin.getValue()+"");
 			}
 			
 			if(order.getExtPayType().equals("1")){//货到付款刷卡支付
 				cwbOrder.setPaywayid(PaytypeEnum.Pos.getValue());
+				cwbOrder.setNewpaywayid(PaytypeEnum.Pos.getValue()+"");
 			}
 			
 			if(order.getExtPayType().equals("2")){//货到付款支付宝 支付
 				cwbOrder.setPaywayid(PaytypeEnum.CodPos.getValue());
+				cwbOrder.setNewpaywayid(PaytypeEnum.CodPos.getValue()+"");
 			}
+		}else{
+			cwbOrder.setPaywayid(PaytypeEnum.Xianjin.getValue());
+			cwbOrder.setNewpaywayid(PaytypeEnum.Xianjin.getValue()+"");
 		}
 		cwbOrder.setConsigneepostcode(order.getPostCode());//收件人邮政编码
 		cwbOrder.setCargorealweight(order.getOriginalWeight());//重量

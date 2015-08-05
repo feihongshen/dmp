@@ -1276,5 +1276,34 @@ public class JobUtilController {
 		}
 
 	}
+	@RequestMapping("/vipOXO")
+	public void getVipShopOXOTask(){
+		System.out.println("-----getVipShopOXOTask启动执行");
+//		String sysValue = this.getSysOpenValue();
+//		if ("yes".equals(sysValue)) {
+//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+//			return;
+//		}
+
+		if (JobUtil.threadMap.get("vipshop_OXO") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXO");
+			return;
+		}
+		JobUtil.threadMap.put("vipshop_OXO", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.vipShopService.excuteVipshopOxoDownLoadTask();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行vipshop_OXO定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("vipshop_OXO", 0);
+		}
+
+		this.logger.info("执行了获取vipshop_OXO订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
 
 }

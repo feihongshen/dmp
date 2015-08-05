@@ -47,7 +47,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL" value="<%=vipshop.getSendCwb_URL() %>"  maxlength="300">*
 						</li>
 						<li><span>当前SEQ：</span>
-							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')" readonly="true" value="<%=vipshop.getVipshop_seq() %>"  maxlength="11">
+							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')"  value="<%=vipshop.getVipshop_seq() %>"  maxlength="11">
 						</li>
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')" value="<%=vipshop.getCustomerids() %>"  maxlength="11">*
@@ -88,7 +88,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL"  maxlength="300"/>*
 						</li>
 						<li><span>当前SEQ：</span>
-							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')" readonly="true" value="0"  maxlength="11">
+							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')"  value="0"  maxlength="11">
 						</li>
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')"  maxlength="11">*
