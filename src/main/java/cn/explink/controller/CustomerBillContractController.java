@@ -212,38 +212,72 @@ public class CustomerBillContractController {
 			Map<String,BigDecimal>	map=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, col);
 			Map<String,BigDecimal>	map1=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, col);
 			Map<String,BigDecimal>	map2=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, col);
+			List<CustomerBillContract> billlist=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid),Long.valueOf(dateState));
 			if(col!=null){
 				StringBuilder sb = new StringBuilder();
 				/*List<SerachCustomerBillContractVO> svlist=new ArrayList<SerachCustomerBillContractVO>();*/
-				for(CwbOrder str:col){					
-					distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
-					deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
-					transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
-					refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
-					sb.append(str.getCwb()+",");
-					
-					//--------------------------
-					
-					SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
-					sv.setCwb(str.getCwb());
-					sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
-					sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
-					sv.setDeliveryMoney(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
-					sv.setDistributionMoney(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
-					sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
-					sv.setTransferMoney(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
-					sv.setRefuseMoney(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
-					sv.setTotalCharge(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb())
-							.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()))
-							.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()))
-							.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee())
-							);
-					sv.setBillBatches(BillBatches);				
-					customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单    
+				for(CwbOrder str:col){		
+					if(billlist.size()>0){
+					for(CustomerBillContract c: billlist){
+							if(!c.getCwbs().contains(str.getCwb())){
+								distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
+								deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
+								transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
+								refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
+								sb.append(str.getCwb()+",");
+				         				
+								//--------------------------
+								
+								SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
+								sv.setCwb(str.getCwb());
+								sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
+								sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
+								sv.setDeliveryMoney(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
+								sv.setDistributionMoney(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
+								sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
+								sv.setTransferMoney(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
+								sv.setRefuseMoney(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
+								sv.setTotalCharge(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb())
+										.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()))
+										.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()))
+										.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee())
+										);
+								sv.setBillBatches(BillBatches);				
+								customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单    
+							}
+							
+						
+						}
+					}else{
+						distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
+						deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
+						transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
+						refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
+						sb.append(str.getCwb()+",");
+						
+						//--------------------------
+						
+						SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
+						sv.setCwb(str.getCwb());
+						sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
+						sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
+						sv.setDeliveryMoney(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
+						sv.setDistributionMoney(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
+						sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
+						sv.setTransferMoney(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
+						sv.setRefuseMoney(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
+						sv.setTotalCharge(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb())
+								.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()))
+								.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()))
+								.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee())
+								);
+						sv.setBillBatches(BillBatches);				
+						customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单  
+					}
 				}
 				String cwbsOfOneBill=null;
 				if(sb.length()>0){
-				cwbsOfOneBill=sb.substring(0,sb.length()-1);
+					cwbsOfOneBill=sb.substring(0,sb.length()-1);
 				}
 				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney);
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
@@ -693,7 +727,6 @@ public class CustomerBillContractController {
 				}	
 			}
 		}
-		System.out.println(sb.length());
 		if(sb!=null&&!sb.equals("")&&sb.length()>0){
 			ccwbs="导入多余订单"+":"+sb.substring(0,sb.length()-1).toString();
 		}else if(sb1!=null&&!sb1.equals("")&&sb1.length()>0){
@@ -723,6 +756,7 @@ public class CustomerBillContractController {
 		for(String s:cwbgetChYi){			
 				SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
 				sv.setCwb(s);
+				sv.setZhongLei(zhongLei);
 				sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(s).getCwbordertypeid()));
 				sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(s).getCwbstate()).getText());
 				sv.setDeliveryMoney(map1.get(s)==null?BigDecimal.ZERO:map1.get(s));

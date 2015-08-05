@@ -426,9 +426,9 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 				$('#dga').datagrid({    
 					method: "POST",
 				    url:'${pageContext.request.contextPath}/CustomerBillContract/editAboutContent?billBatches='+row.billBatches, 
-				  /*   fit : true, */
+			/* 	    fit : true,  */
 					fitColumns : true,
-					border : true,
+					border : true,  
 					striped:true,
 					idField : 'id',
 					pagination:true,
