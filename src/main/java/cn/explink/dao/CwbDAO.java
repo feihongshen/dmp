@@ -6302,9 +6302,9 @@ public class CwbDAO {
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append(" WHERE 1 = 1")
 		.append(" AND flowordertype =").append(FlowOrderTypeEnum.DaoRuShuJu.getValue())
-		.append(" AND cwbordertypeid in (").append(CwbOrderTypeIdEnum.OXO.getValue() + "," + CwbOrderTypeIdEnum.OXO_JIT.getValue()).append(")")
-		.append(" AND oxopickstate =").append(CwbOXOStateEnum.Processed.getValue())
-		.append(" AND oxodeliverystate =").append(CwbOXOStateEnum.UnProcessed.getValue())
+		.append(" AND cwbordertypeid =").append(CwbOrderTypeIdEnum.OXO.getValue())
+//		.append(" AND oxopickstate =").append(CwbOXOStateEnum.Processed.getValue())
+//		.append(" AND oxodeliverystate =").append(CwbOXOStateEnum.UnProcessed.getValue())
 		.append(" and pickbranchid = " + branchid + " and state=1");
 		return sqlBuilder.toString() ;
 	}
