@@ -247,7 +247,7 @@ public class CustomerBillContractDao {
 			
 			//查出所有账单
 			public List<CustomerBillContract> dateAllbillBatche(int start,int pageSize) {	
-				String sql="select * from customerbillcontract desc limit "+start+","+pageSize;
+				String sql="select * from customerbillcontract order by date_create_bill desc limit "+start+","+pageSize;
 				List<CustomerBillContract> cbc=null;
 				try {
 					
