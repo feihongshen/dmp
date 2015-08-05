@@ -576,6 +576,8 @@ public class CwbApplyController {
 		List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Branch> branchLists = this.branchDAO.getAllBranches();
 		List<Customer> customerList = this.customerDao.getAllCustomers();
+		Branch nowBranch = branchDAO.getBranchById(getSessionUser().getBranchid());
+		model.addAttribute("branchType",nowBranch.getSitetype());
 		List<CwbApplyZhongZhuan> cwbApplyZhongZhuanlist = new ArrayList<CwbApplyZhongZhuan>();
 		String cwbStr = getCwbs(cwbs);	
 		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();

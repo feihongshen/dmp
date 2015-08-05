@@ -11,6 +11,7 @@
 	//List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 	Page page_obj = (Page)request.getAttribute("page_obj");
 	String cwbStr = request.getParameter("cwbStr")==null?"":request.getParameter("cwbStr");
+	int branchtype = Integer.parseInt(request.getAttribute("branchType") == null ?"0":request.getAttribute("branchType").toString());
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
@@ -303,8 +304,10 @@ function restData(){
 										<input type="button"  onclick="restData();" value="重置" class="input_button2">&nbsp;&nbsp;
 									</td>
 									<td width="20%">
+									<%if(branchtype != 2){ %>
 										<input type="button" id="submitF" value="确认退货" onclick="sub()" class="input_button2">&nbsp;&nbsp;
 										<input type="button" id="submitZ" value="站点配送" onclick="sub2()" class="input_button2">&nbsp;&nbsp;
+										<%} %>
 										<input name="" type="button" id="btnval" value="导出" class="input_button2" onclick="exportField();"/>
 									</td>
 								</tr>

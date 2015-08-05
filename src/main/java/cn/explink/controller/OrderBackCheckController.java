@@ -272,6 +272,8 @@ public class OrderBackCheckController {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<Branch> branchList = branchDAO.getQueryBranchByBranchidAndUserid(getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Branch> branchLists = branchDAO.getAllBranches();
+		Branch nowBranch = branchDAO.getBranchById(getSessionUser().getBranchid());
+		model.addAttribute("branchType",nowBranch.getSitetype());
 		List<OrderBackCheck> orderbackList = null;
 		String cwbsStr = this.getCwbs(cwbs);
 		if(isnow>0){	
