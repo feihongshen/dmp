@@ -6172,7 +6172,7 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> findCwbByCustomerid(long customerid){
-		String sql="select * from express_ops_cwb_detail AS d LEFT JOIN express_ops_delivery_state AS s ON d.cwb=s.cwb AND (s.state = 1 OR s.state is NULL) WHERE d.state=1 and d.customerid="+customerid+" and s.deliverystate <> 6";
+		String sql="select * from express_ops_cwb_detail AS d LEFT JOIN express_ops_delivery_state AS s ON d.cwb=s.cwb AND (s.state = 1 OR s.state is NULL) WHERE d.state=1 and d.customerid="+customerid+" and s.deliverystate in(1,2,3)";
 
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
