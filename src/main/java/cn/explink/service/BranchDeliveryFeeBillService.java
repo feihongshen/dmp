@@ -77,6 +77,7 @@ public class BranchDeliveryFeeBillService {
 				if(StringUtils.isNotBlank(cwbsRetained)){
 					cwbsRemoved = StringUtil.removalDuplicateString(bill.getCwbs(), cwbsRetained);
 				}
+				cwbsRemoved = StringUtil.getStringsByStringList(Arrays.asList(cwbsRemoved.split(",")));
 				int branchfeebillexportflag = 0;
 				this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, cwbsRemoved);
 			}
