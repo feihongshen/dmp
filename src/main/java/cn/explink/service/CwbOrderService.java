@@ -416,7 +416,7 @@ public class CwbOrderService {
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
 						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?)", new PreparedStatementSetter() {
+						+ "values(?,?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?)", new PreparedStatementSetter() {
 
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -483,6 +483,13 @@ public class CwbOrderService {
 						ps.setString(60, cwbOrderDTO.getPrinttime());
 						ps.setString(61, cwbOrderDTO.getCommoncwb());
 						ps.setFloat(62, cwbOrderDTO.getShouldfare().floatValue());
+						
+						//如果是OXO_JIT类型的订单，则订单状态设为CwbOrderTypeIdEnum.OXO_JIT  add by zhouguoting 2015-08-05
+						if(cwbOrderDTO.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue()){
+							ps.setLong(63, CwbStateEnum.OXO_JIT.getValue());
+						}else{//其他类型的订单默认为配送状态
+							ps.setLong(63, CwbStateEnum.PeiShong.getValue());
+						}
 					}
 
 				});
