@@ -8049,4 +8049,10 @@ CREATE TABLE `cs_complaint_accept` (
 										   ADD COLUMN `areafee` decimal(18,2) DEFAULT '0.00';
 	   	</sql>
 	</changeSet>
+	<changeSet id="zhouguoting-2015-08-05-02" author="zhouguoting">
+	   	<sql>
+			ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD COLUMN `oxojitfeedbackflag` int(4) DEFAULT '0' COMMENT 'OXOJIT反馈标识。0标识未反馈，1标识已反馈',
+			ADD INDEX `detail_oxojitfeedbackflag_idx` (`oxojitfeedbackflag`);
+	   	</sql>
+	</changeSet>
 </databaseChangeLog>
