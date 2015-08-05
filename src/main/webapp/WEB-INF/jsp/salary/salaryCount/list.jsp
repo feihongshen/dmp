@@ -104,11 +104,11 @@ function check(flag){
 			alert("请选择开始时间");
 			return ;
 		}
-		if(startime==""){
+		if(endtime==""){
 			alert("请选择结束时间");
 			return ;
 		}
-		if($("#"+flag+" [name=branchid]").val()==''){
+		if($("#"+flag+" [name=branchid]").val()==-1){
 			alert("请选择站点！");
 			return ;
 		}
@@ -473,7 +473,7 @@ function returntolist(){
         			<option value="1">已核销</option>
         		</select>
        		</td>
-       		<td nowrap="nowrap" align="right" style="width: 10%;" >站点：</td>
+       		<td nowrap="nowrap" align="right" style="width: 10%;" >*站点：</td>
        		<td nowrap="nowrap" style="width: 20%;">
 	       		<select name="branchid" style="width: 100%">
 	       		 	<option value="-1"></option>
@@ -492,7 +492,7 @@ function returntolist(){
        		</td>
        	</tr>
        	<tr>
-       		<td nowrap="nowrap" align="right">期间：</td>
+       		<td nowrap="nowrap" align="right">*期间：</td>
        		<td nowrap="nowrap">
 	        	<input type="text" name="starttime" id="starttime_add" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '起始时间'"/> 到 
 	 	        <input type="text" name="endtime" id="endtime_add" class="easyui-my97" datefmt="yyyy/MM/dd" data-options="width:95,prompt: '终止时间'"/>
@@ -582,7 +582,7 @@ function returntolist(){
 		         		 </c:forEach>
 	         		</select>
          		</td>
-         		<td nowrap="nowrap" align="right" style="width: 10%;" >站点：</td>
+         		<td nowrap="nowrap" align="right" style="width: 10%;" >*站点：</td>
          		<td nowrap="nowrap" style="width: 20%;">
          	 	<select id="branchname" name="branchnam" style="width: 100%" >
 	         		 <option value="-1"></option>
@@ -603,7 +603,7 @@ function returntolist(){
          		 </td>
          	</tr>
          	<tr>
-         		<td nowrap="nowrap" align="right">期间：</td>
+         		<td nowrap="nowrap" align="right">*期间：</td>
          		<td nowrap="nowrap">
 		         	<input type="text" id="starttime" name="starttime"  value="${salary.isnow!=-1?(salary.starttime):(salarycount.starttime)}"/> 到 
 		   	       	<input type="text" id="endtime" name="endtime" value="${salary.isnow!=-1?(salary.endtime):(salarycount.endtime)}"/>
