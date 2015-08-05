@@ -23,7 +23,15 @@ function getall(){
 	$("[name='ischeck']").attr("checked",true);	
 }
 function cancelall(){
-	$("[name='ischeck']").attr("checked",false);
+	//$("[name='ischeck']").attr("checked",false);
+	$("[name='ischeck']").each(function(index){
+		if($(this).attr("checked")=='true'||$(this).attr("checked")=='checked'){
+			$(this).attr("checked",false);
+		}else{
+			$(this).attr("checked","checked");
+		}
+		
+	});
 }
 
 function saveForm(){
