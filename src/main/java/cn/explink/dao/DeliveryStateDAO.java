@@ -1547,7 +1547,7 @@ public class DeliveryStateDAO {
 		}
 		sql.append(" and gcaid > 0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");
-		sql.append(" and deliverystate not in ('6','9');");
+		sql.append(" and deliverystate in ('1','2','3');");
 		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
 	}
 
@@ -1572,7 +1572,7 @@ public class DeliveryStateDAO {
 		}
 		sql.append(" and d.gcaid >0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");
-		sql.append(" and d.deliverystate not in ('6','9');");
+		sql.append(" and d.deliverystate not in ('1','2','3');");
 		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
 	}
 
@@ -1597,7 +1597,7 @@ public class DeliveryStateDAO {
 		}
 		sql.append(" and d.gcaid >0");
 		sql.append(" and whethergeneratedeliverymanbill = 0");
-		sql.append(" and d.deliverystate not in ('6','9');");
+		sql.append(" and d.deliverystate not in ('1','2','3');");
 		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
 	}
 
