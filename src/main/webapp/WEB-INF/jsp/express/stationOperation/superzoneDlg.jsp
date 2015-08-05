@@ -1,9 +1,8 @@
 <%@page import="cn.explink.util.StringUtil"%>
-<%@page import="cn.explink.domain.Customer"%>
-<%@page import="cn.explink.domain.CustomWareHouse"%>
-<%@page import="cn.explink.domain.User"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-
+<%
+  String selectedPreOrders = (String)request.getAttribute("selectedPreOrders");
+%>
 <div id="box_bg"></div>
 <div id="box_contant">
 	<div id="box_top_bg"></div>
@@ -21,10 +20,10 @@
 				</table>
 			</div>
 			<input type="button" value="确认" class="button" onclick="doSuperzone();"/> 
-			<input type="submit" value="关闭" class="button" />
+			<input type="button" value="关闭" class="button" onclick="closeBox()"/>
 	</div>
 </div>
 <div id="box_yy"></div>
 <!-- 站点超区的ajax地址 -->
-	<input type="hidden" id="doSuperzone" value="<%=request.getContextPath()%>/stationOperation/doSuperzone" />
-	<input type="hidden" id="selectedPreOrders" value="<%=selectedPreOrders%>" />
+<input type="hidden" id="doSuperzone" value="<%=request.getContextPath()%>/stationOperation/doSuperzone" />
+<input type="hidden" id="selectedPreOrders" value="<%=selectedPreOrders%>"/>

@@ -6,7 +6,7 @@
 
 <%
 	List<User> deliverList = (List<User>)request.getAttribute("deliverList");
- String selectedPreOrders = (String)request.getAttribute("selectedPreOrders");
+    String selectedPreOrders = (String)request.getAttribute("selectedPreOrders");
 %>
 	<div id="box_bg"></div>
 	<div id="box_contant">
@@ -30,12 +30,14 @@
 					</select></li>
 				</ul>
 			</div>
-			<input type="button" value="分配" id="doAssign_button" class="button" onclick="doAssign();"/> 
-			<input type="submit"
-				value="分配并导出" class="button" /> <input type="submit" value="关闭" class="button" />
+			<input type="button" value="分配"  class="button" onclick="doAssign();"/> 
+			<input type="button" value="分配并导出" class="button" onclick="doAssignAndExport();"/>
+		    <input type="button" value="关闭" class="button"  onclick="closeBox()"/>
 		</div>
 	</div>
 	<div id="box_yy"></div>
 	<!-- 分配的ajax地址 -->
 	<input type="hidden" id="doAssign" value="<%=request.getContextPath()%>/stationOperation/doAssign" />
+	<!-- 导出的ajax地址 -->
+	<input type="hidden" id="exportExcel" value="<%=request.getContextPath()%>/stationOperation/exportExcel" />
 	<input type="hidden" id="selectedPreOrders" value="<%=selectedPreOrders%>" />

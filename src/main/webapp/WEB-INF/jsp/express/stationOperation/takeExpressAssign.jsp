@@ -10,14 +10,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%
+	Page page_obj = (Page)request.getAttribute("page_obj");
 	//今日待揽收
 	List<ExpressPreOrder> preOrderList = (List<ExpressPreOrder>)request.getAttribute("preOrderList");
     //分配情况
 	List<DistributeConditionEnum> distributeConditionList = (List<DistributeConditionEnum>)request.getAttribute("distributeConditionList");
     
 	List<User> deliverList = (List<User>)request.getAttribute("deliverList");
-	String did=request.getParameter("deliverid")==null?"0":request.getParameter("deliverid");
-	long deliverid=Long.parseLong(did);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -113,70 +112,17 @@ function exportField(flag,deliverid){
 	}
 }
 
-var todayToTakePage=1;var todayTakedPage=1;var yipage=1;
-//查看更多今日待揽收
-function morePreOrder(){
-	todayToTakePage+=1;
-	$.ajax({
-		type:"post",
-		url:"<%=request.getContextPath()%>/stationOperation/getMoreTodayToTakeList",
-					data : {
-						"page" : todayToTakePage,
-						"deliverid" : $("#deliverid").val()
-					},
-					success : function(data) {
-						if (data.length > 0) {
-							var optionstring = "";
-							for (var i = 0; i < data.length; i++) {
-								optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
-										+ "<td width='120' align='center'>"
-										+ data[i].cwb
-										+ "</td>"
-										+ "<td width='100' align='center'> "
-										+ data[i].customername
-										+ "</td>"
-										+ "<td width='140' align='center'> "
-										+ data[i].emaildate
-										+ "</td>"
-										+ "<td width='100' align='center'> "
-										+ data[i].consigneename
-										+ "</td>"
-										+ "<td width='100' align='center'> "
-										+ data[i].receivablefee
-										+ "</td>"
-										+ "<td  align='left'> "
-										+ data[i].consigneeaddress
-										+ "</td>"
-										+ "</tr>";
-							}
-							$("#morePreOrder").remove();
-							$("#todayToTakeTable").append(optionstring);
-							if (data.length ==
-<%=Page.DETAIL_PAGE_NUMBER%>
-	) {
-								var more = '<tr align="center"  ><td  colspan="6" style="cursor:pointer" onclick="morePreOrder();" id="morePreOrder">查看更多</td></tr>';
-								$("#todayToTakeTable").append(more);
-							}
-						}
-					}
-				});
-
-	}
-
 	$(function() {
 		$("#assign_button").click(function() {
-			var selectedPreOrders;
-			$('input[name="selectedPreOrder"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
-				selectedPreOrders += $(this).val()+",";
-			});
-// 			if(selectedPreOrders==null||selectedPreOrders==""){
-// 				return;
-// 			}
+			var selectedPreOrders= getSelectedPreOrders();
+			if(selectedPreOrders==null||selectedPreOrders==""){
+				return;
+			}
 			$.ajax({
 				type : "POST",
 				url : $("#assign").val(),
 				dataType : "html",
-				date:{
+				data:{
 					"selectedPreOrders":selectedPreOrders
 				},
 				success : function(data) {
@@ -194,13 +140,19 @@ function morePreOrder(){
 	});
 	$(function() {
 		$("#superzone_button").click(function() {
+		    var selectedPreOrders= getSelectedPreOrders();
+			if(selectedPreOrders==null||selectedPreOrders==""){
+				return;
+			}
 			$.ajax({
 				type : "POST",
 				url : $("#superzone").val(),
 				dataType : "html",
+				data:{
+					"selectedPreOrders":selectedPreOrders
+				},
 				success : function(data) {
 					$("#alert_box", parent.document).html(data);
-
 				},
 				complete : function() {
 					// 				addInit();// 初始化某些ajax弹出页面
@@ -215,6 +167,13 @@ function morePreOrder(){
 		$("#alert_box", parent.document).show();
 		$("#dress_box", parent.document).css("visibility", "hidden");
 		window.parent.centerBox();
+	}
+	function getSelectedPreOrders(){
+		var selectedPreOrders="";
+		$('input[name="selectedPreOrder"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
+			selectedPreOrders += $(this).val()+",";
+		});
+		return selectedPreOrders;
 	}
 
 	$(function() {
@@ -235,26 +194,23 @@ function morePreOrder(){
 	});
 	
 	function selectAll(){
-		if($('input[name="selectAll"]:checked').size()>0){
-			$('input[name="selectAll"]').each(function(){
+		if($('input[name="selectedPreOrder"]:checked').size()>0){
+			$('input[name="selectedPreOrder"]').each(function(){
 				$(this).attr("checked",false);
 			});
 		}else{
-			$('input[name="selectAll"]').attr("checked",true);
+			$('input[name="selectedPreOrder"]').attr("checked",true);
 		}
 	}
 </script>
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">
-	<!-- 弹出对话框-->
-	<div id="assign_box"></div>
-	
 	<div class="inputselect_box">
 		<span><input name="" type="button" value="站点超区" class="input_button1" id="superzone_button" />
 		</span> <span><input name="" type="button" value="分配" class="input_button1" id="assign_button" />
 		</span>
-		<form action="" method="post" id="searchForm">
-			分配情况：<select id="distributeCondition" name="distributeCondition" class="select1">
+		<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
+		        分配情况：<select id="distributeCondition" name="distributeCondition" class="select1">
 				<option value=-1>全部</option>
 				<%
 					for (DistributeConditionEnum distributeCondition : distributeConditionList) {
@@ -272,8 +228,11 @@ function morePreOrder(){
 				<%
 					}
 				%>
-			</select> <input type="submit" id="search_button" value="查询" class="input_button2" />
-		</form>
+			<input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;" value="查询" class="input_button2" />
+	</form>
+		
+		
+		
 	</div>
 	<div class="saomiao_box2">
 		<div>
@@ -285,8 +244,7 @@ function morePreOrder(){
 						<td width="10%" height="26" align="left" valign="top">
 							<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5">
 								<tr>
-									<td width="2" align="center" bgcolor="#f1f1f1"><input id="selectAll"
-										name="selectAll" type="checkbox" onclick="selectAll();"/></td>
+									<td width="2" align="center" bgcolor="#f1f1f1"><input type="checkbox" onclick="selectAll();"/></td>
 									<td width="50" align="center" bgcolor="#f1f1f1">预订单编号</td>
 									<td width="50" align="center" bgcolor="#f1f1f1">寄件人</td>
 									<td width="50" align="center" bgcolor="#f1f1f1">手机号</td>
@@ -295,52 +253,54 @@ function morePreOrder(){
 									<td width="100" align="center" bgcolor="#f1f1f1">取件地址</td>
 								</tr>
 							</table>
-							<div style="height: 160px; overflow-y: scroll">
-								<table id="todayToTakeTable" width="100%" border="0" cellspacing="1" cellpadding="2"
+							
+								<table id="todayToTakeTable"  width="100%" border="0" cellspacing="1" cellpadding="2"
 									class="table_2">
-									<%
-										if (preOrderList != null && !preOrderList.isEmpty()) 
-											for (ExpressPreOrder preOrder : preOrderList) {
+									<%  
+									    if(preOrderList!=null&&!preOrderList.isEmpty())
+										for (ExpressPreOrder preOrder : preOrderList) {
 									%>
 									<tr>
 										<td width="2" align="center"><input id="selectedPreOrder" name="selectedPreOrder" type="checkbox"
-											value="" /></td>
+											value="<%=preOrder.getId()%>" /></td>
 										<td width="50" align="center"><%=preOrder.getPreOrderNo()%></td>
-										<td width="50"><%=preOrder.getSendPerson()%></td>
-										<td width="50"><%=preOrder.getCellphone()%></td>
-										<td width="50"><%=preOrder.getTelephone()%></td>
-										<td width="50"><%=preOrder.getArrangeTime()%></td>
-										<td width="100" align="center"><%=preOrder.getCollectAddress()%></td>
-									</tr>
-									<%
-										}
-									%>
-
-									<%
-										if (preOrderList != null && preOrderList.size() == Page.DETAIL_PAGE_NUMBER) {
-									%>
-									<tr align="center">
-										<td colspan="6" style="cursor: pointer" onclick="morePreOrder();" id="morePreOrder">查看更多</td>
+										<td width="50"><%=preOrder.getSendPerson()==null?"":preOrder.getSendPerson()%></td>
+										<td width="50"><%=preOrder.getCellphone()==null?"":preOrder.getCellphone()%></td>
+										<td width="50"><%=preOrder.getTelephone()==null?"":preOrder.getTelephone()%></td>
+										<td width="50"><%=preOrder.getArrangeTime()==null?"":preOrder.getArrangeTime()%></td>
+										<td width="100" align="center"><%=preOrder.getCollectAddress()==null?"":preOrder.getArrangeTime()%></td>
 									</tr>
 									<%
 										}
 									%>
 								</table>
-							</div>
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		<form action="<%=request.getContextPath()%>/PDA/exportExcle" method="post" id="searchForm2">
-			<input type="hidden" name="cwbs" id="cwbs" value="" /> <input type="hidden" name="exportmould2"
-				id="exportmould2" />
-		</form>
-		<form action="<%=request.getContextPath()%>/PDA/exportByDeliverid" method="post" id="searchForm3">
-			<input type="hidden" name="deliverid"
-				value="<%=request.getParameter("deliverid") == null ? "0" : request.getParameter("deliverid")%>"
-				id="deliverid" /> <input type="hidden" name="type" value="" id="type" />
-		</form>
+		
+		<%if(page_obj.getMaxpage()>1){ %>
+	<div class="iframe_bottom">
+	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
+	<tr>
+		<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+			<a href="javascript:$('#searchForm').attr('action','1');$('#searchForm').submit();" >第一页</a>　
+			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#searchForm').submit();">上一页</a>　
+			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#searchForm').submit();" >下一页</a>　
+			<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#searchForm').submit();" >最后一页</a>
+			　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
+					id="selectPg"
+					onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
+					<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
+					<option value="<%=i %>"><%=i %></option>
+					<% } %>
+				</select>页
+		</td>
+	</tr>
+	</table>
+	</div>
+<%} %>
 	</div>
 	<!-- 查询的ajax地址 -->
 	<input type="hidden" id="search" value="<%=request.getContextPath()%>/stationOperation/search" />

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.controller.ExplinkResponse;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.PreOrderDao;
@@ -33,6 +34,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.express.ExpressPreOrder;
 import cn.explink.enumutil.express.DistributeConditionEnum;
 import cn.explink.enumutil.express.ExcuteStateEnum;
+import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 /**
@@ -55,6 +57,9 @@ public class StationOperationController extends ExpressCommonController {
 	@Autowired
 	private PreOrderDao preOrderDao;
 
+	@Autowired
+	private ExportmouldDAO exportmouldDAO;
+
 	/**
 	 * 进入揽件分配/调整的功能页面
 	 *
@@ -63,13 +68,20 @@ public class StationOperationController extends ExpressCommonController {
 	 * @param customerid
 	 * @return
 	 */
-	@RequestMapping("/takeExpressAssign")
-	public String branchdeliverdetail(Model model) {
+	@RequestMapping("/takeExpressAssign/{page}")
+	public String branchdeliverdetail(@PathVariable("page") long page, Model model) {
+		this.initViewByPage(page, model);
+		return "express/stationOperation/takeExpressAssign";
+	}
+
+	private void initViewByPage(long page, Model model) {
 		List<User> deliverList = this.getDeliverList();
 		List<DistributeConditionEnum> distributeConditionList = DistributeConditionEnum.getAllStatus();
+		List<ExpressPreOrder> preOrderList = this.preOrderDao.getPreOrderByExcuteStateAndDelivermanId(page, null, -1);
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("distributeConditionList", distributeConditionList);
-		return "express/stationOperation/takeExpressAssign";
+		model.addAttribute("preOrderList", preOrderList);
+		model.addAttribute("page_obj", new Page(this.preOrderDao.getPreOrderCountByExcuteStateAndDelivermanId(page, null, -1), page, Page.ONE_PAGE_NUMBER));
 	}
 
 	/**
@@ -96,15 +108,16 @@ public class StationOperationController extends ExpressCommonController {
 	 * @return
 	 */
 	@RequestMapping("/doAssign")
-	public String doAssign(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders,
+	@ResponseBody
+	public Boolean doAssign(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders,
 			@RequestParam(value = "deliverid", required = false) Integer deliverid) {
 		List<Integer> preOrderIdList = this.convertToIdList(selectedPreOrders);
 		User deliverman = this.userDAO.getUserByUserid(deliverid);
 		User operateUser = this.getSessionUser();
 
-		this.preOrderDao.updateDeliverByIdList(preOrderIdList, deliverid, deliverman.getRealname(), operateUser.getUserid(), operateUser.getRealname());
+		this.initViewByPage(1, model);
 
-		return "express/stationOperation/takeExpressAssign";
+		return this.preOrderDao.updateDeliverByIdList(preOrderIdList, deliverid, deliverman.getRealname(), operateUser.getUserid(), operateUser.getRealname());
 	}
 
 	private List<Integer> convertToIdList(String selectedPreOrders) {
@@ -124,7 +137,8 @@ public class StationOperationController extends ExpressCommonController {
 	 * @return
 	 */
 	@RequestMapping("/openSuperzoneDlg")
-	public String openSuperzoneDlg(Model model, HttpServletRequest request) {
+	public String openSuperzoneDlg(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders) {
+		model.addAttribute("selectedPreOrders", selectedPreOrders);
 		return "express/stationOperation/superzoneDlg";
 	}
 
@@ -138,13 +152,13 @@ public class StationOperationController extends ExpressCommonController {
 	 * @return
 	 */
 	@RequestMapping("/doSuperzone")
-	public String doSuperzone(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders,
+	@ResponseBody
+	public Boolean doSuperzone(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders,
 			@RequestParam(value = "note", required = false) String note) {
 		List<Integer> preOrderIdList = this.convertToIdList(selectedPreOrders);
 
-		this.preOrderDao.updateExcuteStateByIdList(preOrderIdList, ExcuteStateEnum.StationSuperzone.getValue(), note);
-
-		return "express/stationOperation/takeExpressAssign";
+		this.initViewByPage(1, model);
+		return this.preOrderDao.updateExcuteStateByIdList(preOrderIdList, ExcuteStateEnum.StationSuperzone.getValue(), note);
 	}
 
 	/**
@@ -157,13 +171,17 @@ public class StationOperationController extends ExpressCommonController {
 	@RequestMapping("/search")
 	public String search(Model model, HttpServletRequest request, @RequestParam(value = "distributeCondition", required = false) Integer distributeCondition,
 			@RequestParam(value = "deliverid", required = false) Integer deliverid) {
-		List<ExpressPreOrder> preOrderList = this.preOrderDao.getPreOrderByExcuteStateAndDelivermanId(this.getExecuteStateByDistributeCondition(distributeCondition), deliverid);
-
-		List<User> deliverList = this.getDeliverList();
-		List<DistributeConditionEnum> distributeConditionList = DistributeConditionEnum.getAllStatus();
-		model.addAttribute("deliverList", deliverList);
-		model.addAttribute("distributeConditionList", distributeConditionList);
-		model.addAttribute("preOrderList", preOrderList);
+		// List<ExpressPreOrder> preOrderList =
+		// this.preOrderDao.getPreOrderByExcuteStateAndDelivermanId(this.getExecuteStateByDistributeCondition(distributeCondition),
+		// deliverid);
+		//
+		// List<User> deliverList = this.getDeliverList();
+		// List<DistributeConditionEnum> distributeConditionList =
+		// DistributeConditionEnum.getAllStatus();
+		// model.addAttribute("deliverList", deliverList);
+		// model.addAttribute("distributeConditionList",
+		// distributeConditionList);
+		// model.addAttribute("preOrderList", preOrderList);
 
 		return "express/stationOperation/takeExpressAssign";
 	}
@@ -182,6 +200,44 @@ public class StationOperationController extends ExpressCommonController {
 			executeStateList.add(ExcuteStateEnum.Succeed.getValue());
 		}
 		return executeStateList;
+	}
+
+	@RequestMapping("/exportExcel")
+	public void exportExcel(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders) {
+
+		// String[] cloumnName1 = {}; // 导出的列名
+		// String[] cloumnName2 = {}; // 导出的英文列名
+		// String[] cloumnName3 = {}; // 导出的数据类型
+		//
+		// List<SetExportField> listSetExportField =
+		// this.exportmouldDAO.getSetExportFieldByStrs("0");
+		// cloumnName1 = new String[listSetExportField.size()];
+		// cloumnName2 = new String[listSetExportField.size()];
+		// cloumnName3 = new String[listSetExportField.size()];
+		// for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
+		// cloumnName1[k] = listSetExportField.get(j).getFieldname();
+		// cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
+		// cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
+		// }
+		// final String[] cloumnName4 = cloumnName1;
+		// final String[] cloumnName5 = cloumnName2;
+		// final String[] cloumnName6 = cloumnName3;
+		// String sheetName = "预订单信息"; // sheet的名称
+		// SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		// String fileName = "PreOrder_" + df.format(new Date()) + ".xlsx"; //
+		// 文件名
+		// ExcelUtils excelUtil = new ExcelUtils() {
+		// @Override
+		// public void fillData(Sheet sheet, CellStyle style) {
+		//
+		// }
+		// };
+		// try {
+		// excelUtil.excel(response, cloumnName4, sheetName, fileName);
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+
 	}
 
 	/**
