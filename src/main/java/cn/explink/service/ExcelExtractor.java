@@ -1638,20 +1638,20 @@ public abstract class ExcelExtractor {
 		}
 		List<CwbOrder> cwbList =  this.cwbDAO.getCwbsBycwbs(cwbsStr);
 		
-		//基本派费+区域派费总和
-		BigDecimal basicareafee = BigDecimal.ZERO;
-		BigDecimal bds = BigDecimal.ZERO;
-		if(dsList!=null&&!dsList.isEmpty()){
-			BigDecimal basicfe = user.getBasicfee();//人员信息设置的基本派费
+		//（基本派费+区域派费）*保底单量
+		//BigDecimal basicareafee = BigDecimal.ZERO;
+		/*if(dsList!=null&&!dsList.isEmpty()){
+			BigDecimal basicfe = user.getBasicfee();//人员信息设置的基础派费
 			BigDecimal areafe = user.getAreafee();//人员信息设置的区域派费
-			basicareafee = (basicfe.add(areafe)).multiply(new BigDecimal(dsList.size()));//（基本+区域）总量
-		}
+			basicareafee = (basicfe.add(areafe)).multiply(new BigDecimal(user.getFallbacknum()));//（基本+区域）*保底单量
+		}*/
 		
+		BigDecimal bds = BigDecimal.ZERO;
 		//减去基本+区域+kpi+其他派费总和之外的总和
 		bds = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
 		//最终计件配送费
-		//bds+基本派费+区域派费+业务kpi+其他派费
-		BigDecimal bdss = bds.add(basicareafee).add(bd1).add(bd2);
+		//bds+业务kpi+其他派费
+		BigDecimal bdss = bds.add(bd1).add(bd2);
 
 		//调整额度
 		BigDecimal tiaozheng = (user.getBasicfee().add(user.getAreafee())).multiply(new BigDecimal(user.getFallbacknum())).subtract(salarybasic);//单件标准费用*保底单量-基本工资

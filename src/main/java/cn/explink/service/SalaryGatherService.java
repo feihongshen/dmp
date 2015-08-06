@@ -100,33 +100,33 @@ public class SalaryGatherService {
 		BigDecimal bd6 = BigDecimal.ZERO;
 		//超重补助 
 		BigDecimal bd7 = BigDecimal.ZERO;*/
-		//Map<String, BigDecimal> strBig1 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic,cwbList);
-		//Map<String, BigDecimal> strBig2 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area,cwbList);
+		Map<String, BigDecimal> strBig1 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic,cwbList);
+		Map<String, BigDecimal> strBig2 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area,cwbList);
 		Map<String, BigDecimal> strBig3 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Overarea,cwbList);
 		Map<String, BigDecimal> strBig4 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion,cwbList);
 		Map<String, BigDecimal> strBig5 = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Business,cwbList);
 		Map<String, BigDecimal> strBig6 = this.paiFeiRuleService.getOverbigFeeOfBatch(pfruleid, PaiFeiRuleTabEnum.Paisong,cwbList);
 		Map<String, BigDecimal> strBig7 = this.paiFeiRuleService.getOverweightFeeOfBacth(pfruleid, PaiFeiRuleTabEnum.Paisong,cwbList);
 		List<BigDecimal> bdList = new ArrayList<BigDecimal>();
-		/*if(strBig1!=null&&strBig1.size()>0){
-			Set<String> list =  strBig1.keySet();
+		if(strBig1!=null&&strBig1.size()>0){
+			/*Set<String> list =  strBig1.keySet();
 			Iterator iter = list.iterator();
 			while(iter.hasNext()){
 				String str = (String)iter.next();
-			}
+			}*/
 			Collection<BigDecimal> bdcolls = strBig1.values();
 			for(BigDecimal bde : bdcolls){
-				bdbasicareaList.add(bde);
+				//bdbasicareaList.add(bde);
 				bdList.add(bde);
 			}
 		}
 		if(strBig2!=null&&strBig2.size()>0){
 			Collection<BigDecimal> bdcolls = strBig2.values();
 			for(BigDecimal bde : bdcolls){
-				bdbasicareaList.add(bde);
+				//bdbasicareaList.add(bde);
 				bdList.add(bde);
 			}
-		}*/
+		}
 		if(strBig3!=null&&strBig3.size()>0){
 			Collection<BigDecimal> bdcolls = strBig3.values();
 			for(BigDecimal bde : bdcolls){
@@ -158,15 +158,6 @@ public class SalaryGatherService {
 			}
 		}
 		
-		List<BigDecimal> lsit = new ArrayList<BigDecimal>();
-		/*//（基本派费+区域派费）总和
-		BigDecimal bdbasicarea = BigDecimal.ZERO;
-		if(bdbasicareaList!=null&&!bdbasicareaList.isEmpty()){
-			for(BigDecimal bd : bdbasicareaList){
-				bdbasicarea = bdbasicarea.add(bd);
-			}
-		}
-		lsit.add(bdbasicarea);*/
 		//计件配送费总和（kpi补助和其他补助排除）
 		BigDecimal salaryfee = BigDecimal.ZERO;
 		if(bdList!=null&&!bdList.isEmpty()){
