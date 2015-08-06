@@ -153,11 +153,11 @@ function openUpdatePage()
 	}); 
 	billIds = billIds.substring(0,billIds.length-1);
 	if(!billIds){
-		alert("请选择需要查看/修改的账单！");
+		$.messager.alert("请选择需要查看/修改的账单！");
 		return false;
 	}
 	if(billIds.indexOf(",") > 0){
-		alert("请只选择一条需要查看/修改的账单")
+		$.messager.alert("请只选择一条需要查看/修改的账单！");
 		return false;
 	}
 	$("#updatePageForm input[name='id']").val(billIds);
@@ -211,23 +211,23 @@ function Days(day1,day2){
 function addbill()
 {
 	if($("#creationfrom select[name='site']").val() == "0"){
-		alert("请选择所属站点！");
+		$.messager.alert("请选择所属站点！");
 		return false;
 	}
 	if($("#creationfrom input[name='startDate']").val() == ""){
-		alert("请选择开始时间！");
+		$.messager.alert("请选择开始时间！");
 		return false;
 	}
 	if($("#creationfrom input[name='endDate']").val() == ""){
-		alert("请选择结束时间！");
+		$.messager.alert("请选择结束时间！");
 		return false;
 	}
 	if($("#creationfrom input[name='startDate']").val()>$("#creationfrom input[name='endDate']").val()){
-		alert("开始日期不能大于结束日期");
+		$.messager.alert("开始日期不能大于结束日期！");
 		return false;
 	}
 	if(!Days($("#creationfrom input[name='startDate']").val(),$("#creationfrom input[name='endDate']").val())||($("#creationfrom input[name='startDate']").val()=='' &&$("#creationfrom input[name='endDate']").val()!='')||($("#creationfrom input[name='startDate']").val()!='' &&$("#creationfrom input[name='endDate']").val()=='')){
-		alert("时间跨度不能大于两个月！");
+		$.messager.alert("时间跨度不能大于两个月！");
 		return false;
 	}
 
