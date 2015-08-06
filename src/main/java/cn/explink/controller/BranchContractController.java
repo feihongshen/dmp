@@ -109,9 +109,12 @@ public class BranchContractController {
 	public String branchContractList(@PathVariable("page") long page, Model model,
 			ExpressSetBranchContractVO branchContractVO) {
 		
+		// 加盟商合同列表
 		List<ExpressSetBranchContract> list = this.branchContractDAO.queryBranchContract(page, branchContractVO);
+		// 加盟商合同列表记录条数
 		int count = this.branchContractDAO.queryBranchContractCount(branchContractVO);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		// 加盟商列表
 		List<Branch> branchList = this.branchDAO.getBranchEffectAllzhandian(String.valueOf(BranchEnum.ZhanDian.getValue()));
 		
 		model.addAttribute("page", page);
@@ -125,15 +128,16 @@ public class BranchContractController {
 	@RequestMapping("/addBranchContract")
 	@ResponseBody
 	public String addBranchContract(ExpressSetBranchContract branchContract){
-		
+		// 新增加盟商合同，不上传附件时调用此方法
+		// 获取当前用户
 		User user = getSessionUser();
 		if(user != null){
 			long userId = user.getUserid();
 			branchContract.setCreator(new Long(userId).intValue());
 		}
 		branchContract.setCreateTime(DateTimeUtil.getNowTime());
-		
-		if("[自动生成]".equals(branchContract.getContractNo())){
+		// 若用户没有填写合同编号，则由系统自动生成
+		if("[自动生成]".equals(branchContract.getContractNo()) || StringUtils.isBlank(branchContract.getContractNo())){
 			String contractNo = this.branchContractService.generateContractNo();
 			branchContract.setContractNo(contractNo);
 		}
@@ -145,6 +149,7 @@ public class BranchContractController {
 	@RequestMapping("/addBranchContractfile")
 	@ResponseBody
 	public String addBranchContractfile(@RequestParam(value = "Filedata", required = false) MultipartFile file,ExpressSetBranchContract branchContract){
+		// 新增加盟商合同，上传附件时调用此方法
 		String filepath = this.branchContractService.loadexceptfile(file);
 		branchContract.setContractAttachment(filepath);
 		User user = getSessionUser();
@@ -153,8 +158,8 @@ public class BranchContractController {
 			branchContract.setCreator(new Long(userId).intValue());
 		}
 		branchContract.setCreateTime(DateTimeUtil.getNowTime());
-		
-		if("[自动生成]".equals(branchContract.getContractNo())){
+		// 若用户没有填写合同编号，则由系统自动生成
+		if("[自动生成]".equals(branchContract.getContractNo()) || StringUtils.isBlank(branchContract.getContractNo())){
 			String contractNo = this.branchContractService.generateContractNo();
 			branchContract.setContractNo(contractNo);
 		}
@@ -166,14 +171,12 @@ public class BranchContractController {
 	@RequestMapping("/updateBranchContractPage")
 	@ResponseBody
 	public ExpressSetBranchContractVO updateBranchContractPage(HttpServletRequest req){
-//		String res = "";
+		// 返回要修改或者查看的VO
 		ExpressSetBranchContractVO branchContractVO = null;
 		String id = req.getParameter("id");
 		if(StringUtils.isNotBlank(id)){
 			branchContractVO = this.branchContractService.getBranchContractVO(Integer.valueOf(id));
-//			res = JsonUtil.fromObject(branchContractVO);
 		}
-//		return res;
 		return branchContractVO;
 	}
 

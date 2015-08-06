@@ -41,12 +41,15 @@ public class BranchContractService {
 	BranchContractDetailDAO branchContractDetailDAO;
 
 	public ExpressSetBranchContractVO getBranchContractVO(int id) {
-		// 返回值
+		// 返回加盟商合同主表VO的list
 		List<ExpressSetBranchContractVO> rtnVOList = new ArrayList<ExpressSetBranchContractVO>();
+		// 返回加盟商合同主表VO
 		ExpressSetBranchContractVO rtnVO = null;
+		// 返回加盟商合同子表VO的list
 		List<ExpressSetBranchContractDetailVO> rtnDetailVOList = null;
+		// 返回加盟商合同子表VO
 		ExpressSetBranchContractDetailVO rtnDetailVO = null;
-
+		// 加盟商合同主表list
 		List<ExpressSetBranchContract> branchContractList = this.branchContractDAO
 				.getBranchContractListById(id);
 		if (branchContractList != null && !branchContractList.isEmpty()) {
@@ -57,6 +60,7 @@ public class BranchContractService {
 				branchContract = branchContractList.get(i);
 				if (branchContract != null) {
 					rtnVO = new ExpressSetBranchContractVO();
+					// 将主表实体数据复制到主表VO
 					BeanUtilsSelfDef.copyPropertiesIgnoreException(rtnVO,
 							branchContract);
 					branchContractDetailList = this.branchContractDetailDAO
@@ -75,6 +79,7 @@ public class BranchContractService {
 								rtnDetailVOList.add(rtnDetailVO);
 							}
 						}
+						// 子表数据VO的list作为一个属性添加到主表VO，方便前台获取
 						rtnVO.setBranchContractDetailVOList(rtnDetailVOList);
 					}
 					rtnVOList.add(rtnVO);
@@ -99,6 +104,7 @@ public class BranchContractService {
 					branchContractVO);
 			this.branchContractDAO.updateBranchContract(branchContract);
 			String idStr = "'" + branchContract.getId() + "'";
+			// 修改主表信息时，先删除子表所有相关信息
 			this.branchContractDetailDAO.deleteBranchContractDetailByBranchId(idStr);
 			
 			String branchContractDetailVOStr = branchContractVO.getBranchContractDetailVOStr();
@@ -115,6 +121,7 @@ public class BranchContractService {
 						branchContractDetail.setCreateTime(branchContractVO.getModifyTime());
 						branchContractDetail.setModifyPerson(branchContractVO.getModifyPerson());
 						branchContractDetail.setModifyTime(branchContractVO.getModifyTime());
+						// 然后根据前台返回数据，逐一生成子表信息
 						this.branchContractDetailDAO
 								.createBranchContractDetail(branchContractDetail);
 					}
@@ -131,6 +138,7 @@ public class BranchContractService {
 	}
 
 	public String generateContractNo(){
+		// 系统默认生成“C_J”+8位年月日+三位流水
 		String contractNo = "";
 		List<ExpressSetBranchContract> contractList = this.branchContractDAO.getMaxContractNo();
 		if(contractList != null && !contractList.isEmpty()){

@@ -525,7 +525,7 @@ public class BranchDAO {
 	public List<Branch> getJoinBranchByPage(long page, String branchname, String branchaddress) {
 		String sql = "select * from express_set_branch where contractflag in ("
 				+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
-				+ BranchTypeEnum.JiaMengSanJi.getValue() + ")";
+				+ BranchTypeEnum.JiaMengSanJi.getValue() + ") and brancheffectflag='1'";
 		sql = this.getJoinBranchByPageWhereSql(sql, branchname, branchaddress);
 //		sql += " order by branchid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
@@ -535,7 +535,7 @@ public class BranchDAO {
 	public long getJoinBranchCount(String branchname, String branchaddress) {
 		String sql = "select count(1) from express_set_branch where contractflag in ("
 				+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
-				+ BranchTypeEnum.JiaMengSanJi.getValue() + ")";
+				+ BranchTypeEnum.JiaMengSanJi.getValue() + ") and brancheffectflag='1'";
 		sql = this.getJoinBranchByPageWhereSql(sql, branchname, branchaddress);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
