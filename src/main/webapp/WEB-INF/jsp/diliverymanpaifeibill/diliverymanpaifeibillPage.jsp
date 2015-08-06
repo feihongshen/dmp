@@ -243,7 +243,7 @@ function addbill()
 	$.messager.show({
 		title:'提示消息',
 		msg:'正在新增账单，请稍后...',
-		timeout:1000,
+		timeout:2000,
 		showType:'show'
 	});
 
@@ -261,7 +261,6 @@ function addbill()
 				$.messager.show({
 					title:'错误',
 					msg:'没有查到指定条件下的订单或者未绑定派费规则！',
-					timeout:2000,
 					showType:'show'
 				});
 			}

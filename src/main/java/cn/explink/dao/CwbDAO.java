@@ -2545,10 +2545,10 @@ public class CwbDAO {
 	public long getcwborderDaoHuoCount(String customerids, String cwbordertypeids, String orderflowcwbs, String kufangids, String flowordertypes) {
 		String sql = "select count(1) from express_ops_cwb_detail where cwb in (" + orderflowcwbs + ") and state=1 ";
 
-		if ((customerids.length() > 0) || (cwbordertypeids.length() > 0) || (kufangids.length() > 0) || (flowordertypes.length() > 0)) {
+		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0) || (flowordertypes.length() > 0)) {
 
 			StringBuffer w = new StringBuffer();
-			if (customerids.length() > 0) {
+			if (!customerids.equals("0")) {
 				w.append(" and customerid in(" + customerids + ")");
 			}
 
@@ -2769,10 +2769,10 @@ public class CwbDAO {
 	public CwbOrder getcwborderDaoHuoSum(String customerids, String cwbordertypeids, String orderflowcwbs, String kufangids, String flowordertypes) {
 		String sql = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where cwb in (" + orderflowcwbs + ") and state=1 ";
 
-		if ((customerids.length() > 0) || (cwbordertypeids.length() > 0) || (kufangids.length() > 0) || (flowordertypes.length() > 0)) {
+		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0) || (flowordertypes.length() > 0)) {
 
 			StringBuffer w = new StringBuffer();
-			if (customerids.length() > 0) {
+			if (!customerids.equals("0")) {
 				w.append(" and customerid in(" + customerids + ")");
 			}
 
@@ -3076,10 +3076,10 @@ public class CwbDAO {
 	public List<CwbOrder> getDaoHuocwbOrderByPage(long page, String customerids, String cwbordertypeids, String orderflowcwbs, String kufangids, String flowordertypes) {
 		String sql = "select * from express_ops_cwb_detail where cwb in (" + orderflowcwbs + ") and state=1 ";
 
-		if ((customerids.length() > 0) || (cwbordertypeids.length() > 0) || (kufangids.length() > 0) || (flowordertypes.length() > 0)) {
+		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0) || (flowordertypes.length() > 0)) {
 
 			StringBuffer w = new StringBuffer();
-			if (customerids.length() > 0) {
+			if (!customerids.equals("0")) {
 				w.append(" and customerid in(" + customerids + ")");
 			}
 
