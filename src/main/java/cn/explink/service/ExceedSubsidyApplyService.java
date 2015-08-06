@@ -102,6 +102,7 @@ public class ExceedSubsidyApplyService {
 		return deliveryUserList;
 	}
 	public String generateApplyNo() {
+		// REQ + YYYYMMDD + 四位流水
 		String rule = "REQ";
 		String nowTime = DateTimeUtil.getNowTime("yyyyMMdd");
 		String applyNo = rule + nowTime;
