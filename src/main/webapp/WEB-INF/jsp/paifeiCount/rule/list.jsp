@@ -756,18 +756,19 @@
 				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
 			</tr>
 			<tr id="isareafeetr">
-				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
-				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元<input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','areafee')" /></span></td>
+				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" id="areafee_flag" ${area.areafee>0?"checked=checked":""} />区域补助金额</td>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元
+				<input type="hidden" id="areafee_sub" value="保存"  areaid="${area.id }" /></span></td>
 			</tr>
 			<c:if test="${area.typeid!=2 }">
 			<tr id="overbigflagtrno">
 			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked=checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
-			<td align="left"><input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','overbigflag')" /></td>
+			<td align="left"><input type="hidden"   id="overbigflag_sub" value="保存" areaid="${area.id }"  /></td>
 			</tr>
 			</c:if>
 			<c:if test="${area.typeid==2 }">
 			<tr id="overbigflagtr">
-				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
+				<td align="left" valign="bottom"><input type="checkbox" id="overbigflag" ${fn:length(overbigMapPS[area.id])>0?"checked=checked":"" }/>超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="ps_overbig_${area.id }_table">
 						<tr id="thead">
@@ -790,13 +791,13 @@
 						</c:forEach>
 					</table> <input type="button" id="overbig_add" value="添加" onclick="addTROfOverAreaEdit('ps','overbig_${area.id}')" />
 					<input id="overbig_remove" onclick="removeTR('ps','overbig_${area.id}')" type="button" value="移除" />
-					<input type="button" value="保存"
-										onclick="subEidt('ps_overbig_${area.id }_table','ps','overbig')" />
+					<input type="hidden" value="保存" id="overbig_sub"
+										areaid=${area.id } />
 					</td>
 			</tr>
 			</c:if>
 			<tr id="isoverweighttr">
-				<td align="left"><input type="checkbox" />超重补助</td>
+				<td align="left"><input type="checkbox" id="overweightflag" ${fn:length(overweightMapPS[area.id])>0?"checked=checked":"" } />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="ps_overweight_${area.id}_table">
 						<tr id="thead">
@@ -820,8 +821,8 @@
 					</table> <input type="button" id="overweight_add" value="添加"
 					onclick="addTROfOverAreaEdit('ps','overweight_${area.id}')" /> <input id="overweight_add"
 					onclick="removeTR('ps','overweight_${area.id}')" type="button" value="移除" />
-							<input type="button" value="保存"
-									onclick="subEidt('ps_overweight_${area.id }_table','ps','overweight')" />
+							<input type="hidden" value="保存" id="overweight_sub"
+									areaid=${area.id } />
 					</td>
 			</tr>
 		</table>
@@ -1022,18 +1023,18 @@
 				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
 			</tr>
 			<tr id="isareafeetr">
-				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
-				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元<input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','areafee')" /></span></td>
+				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" id="areafee_flag" ${area.areafee>0?"checked=checked":""}  />区域补助金额</td>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元<input type="hidden" id="areafee_sub" value="保存"  areaid="${area.id }" /></span></td></span></td>
 			</tr>
 			<c:if test="${area.typeid!=2 }">
 			<tr id="overbigflagtr">
-			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked=checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
-			<td align="left"><input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','overbigflag')" /></td>
+			<td align="left"><input type="checkbox"  ${area.overbigflag==1?'checked=checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
+			<td align="left"><input type="hidden"   id="overbigflag_sub" value="保存" areaid="${area.id }"  /></td>
 			</tr>
 			</c:if>
 			<c:if test="${area.typeid==2 }">
 			<tr id="overbigflagtrno">
-				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
+				<td align="left" valign="bottom"><input type="checkbox" id="overbigflag" ${fn:length(overbigMapTH[area.id])>0?"checked=checked":"" } />超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="th_overbig_${area.id }_table">
 						<tr id="thead">
@@ -1056,13 +1057,13 @@
 						</c:forEach>
 					</table> <input type="button" id="overbig_add" value="添加" onclick="addTROfOverAreaEdit('th','overbig_${area.id}')" />
 					<input id="overbig_remove" onclick="removeTR('th','overbig_${area.id}')" type="button" value="移除" />
-					<input type="button" value="保存"
-										onclick="subEidt('th_overbig_${area.id }_table','th','overbig')" />
+					<input type="hidden" value="保存" id="overbig_sub"
+										areaid=${area.id } />
 					</td>
 			</tr>
 			</c:if>
 			<tr id="isoverweighttr">
-				<td align="left"><input type="checkbox" />超重补助</td>
+				<td align="left"><input type="checkbox"  id="overweightflag" ${fn:length(overweightMapTH[area.id])>0?"checked=checked":"" }  />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="th_overweight_${area.id}_table">
 						<tr id="thead">
@@ -1086,8 +1087,8 @@
 					</table> <input type="button" id="overweight_add" value="添加"
 					onclick="addTROfOverAreaEdit('th','overweight_${area.id}')" /> <input id="overweight_add"
 					onclick="removeTR('th','overweight_${area.id}')" type="button" value="移除" />
-							<input type="button" value="保存"
-										onclick="subEidt('th_overweight_${area.id }_table','th','overweight')" />
+						<input type="hidden" value="保存" id="overweight_sub"
+									areaid=${area.id } />
 					</td>
 			</tr>
 		</table>
@@ -1290,18 +1291,18 @@
 				<td align="left"><span id="areaname">${area.areaname }</span><input type="hidden" id="areaid" value="${areafee.areaid}" /></td>
 			</tr>
 			<tr id="isareafeetr">
-				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
-				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元<input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','areafee')" /></span></td>
+				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" id="areafee_flag" ${area.areafee>0?"checked=checked":""}  />区域补助金额</td>
+				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元<input type="hidden" id="areafee_sub" value="保存"  areaid="${area.id }" /></span></td>
 			</tr id="overbigflagtrno">
 			<c:if test="${area.typeid!=2 }">
 			<tr>
 			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked=checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
-			<td align="left"><input type="button" value="保存" onclick="subAreaEidt($(this),'${area.id }','overbigflag')" /></td>
+			<td align="left"><input type="hidden"   id="overbigflag_sub" value="保存" areaid="${area.id }"  /></td>
 			</tr>
 			</c:if>
 			<c:if test="${area.typeid==2 }">
 			<tr id="overbigflagtr">
-				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
+				<td align="left" valign="bottom"><input type="checkbox" id="overbigflag" ${fn:length(overbigMapZZ[area.id])>0?"checked=checked":"" }/>超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="zz_overbig_${area.id }_table">
 						<tr id="thead">
@@ -1324,13 +1325,13 @@
 						</c:forEach>
 					</table> <input type="button" id="overbig_add" value="添加" onclick="addTROfOverAreaEdit('zz','overbig_${area.id}')" />
 					<input id="overbig_remove" onclick="removeTR('zz','overbig_${area.id}')" type="button" value="移除" />
-					<input type="button" value="保存"
-										onclick="subEidt('zz_overbig_${area.id }_table','zz','overbig')" />
+					<input type="hidden" value="保存" id="overbig_sub"
+										areaid=${area.id } />
 					</td>
 			</tr>
 			</c:if>
 			<tr id="isoverweighttr">
-				<td align="left"><input type="checkbox" />超重补助</td>
+				<td align="left"><input type="checkbox" type="checkbox" id="overweightflag" ${fn:length(overweightMapZZ[area.id])>0?"checked=checked":"" }  />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="zz_overweight_${area.id}_table">
 						<tr id="thead">
@@ -1354,8 +1355,8 @@
 					</table> <input type="button" id="overweight_add" value="添加"
 					onclick="addTROfOverAreaEdit('zz','overweight_${area.id}')" /> <input id="overweight_add"
 					onclick="removeTR('zz','overweight_${area.id}')" type="button" value="移除" />
-							<input type="button" value="保存"
-									onclick="subEidt('zz_overweight_${area.id }_table','zz','overweight')" />
+								<input type="hidden" value="保存" id="overweight_sub"
+									areaid=${area.id } />
 					</td>
 			</tr>
 		</table>
