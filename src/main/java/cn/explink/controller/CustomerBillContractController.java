@@ -37,6 +37,7 @@ import cn.explink.domain.ImportBillExcel;
 import cn.explink.domain.VO.BillMoneyDuiBiChaYiVO;
 import cn.explink.domain.VO.CustomerBillContractFindConditionVO;
 import cn.explink.domain.VO.CustomerBillContractVO;
+import cn.explink.domain.VO.ImportAndDmpCwbVO;
 import cn.explink.domain.VO.SerachCustomerBillContractVO;
 import cn.explink.enumutil.BillStateEnum;
 import cn.explink.enumutil.CwbDateEnum;
@@ -788,9 +789,6 @@ public class CustomerBillContractController {
 		CustomerBillContract cc=customerbillcontractdao.findCustomerBillContractByBillBatches(batches);		
 		Customer customer=customerdao.getCustomerById(cc.getCustomerId());
 		List<ImportBillExcel> lbe=customerbillcontractdao.findImportBillExcelByBatches(batches);
-		StringBuilder sb = new StringBuilder();   //导入的多
-		StringBuilder sb1 = new StringBuilder();  //系统的多
-		String ccwbs="";
 		String cwbs[]=cc.getCwbs().split(",");
 		List<CwbOrder> c = new ArrayList<CwbOrder>();
 		for(String s:cwbs){
@@ -798,46 +796,53 @@ public class CustomerBillContractController {
 				cb.setCwb(s);
 				c.add(cb);
 		}
-		String cwbs1=customerbillcontractservice.listImportBillExcelToString(lbe);
+		List<CwbOrder> c1 = new ArrayList<CwbOrder>();
 		if(cwbs!=null&&!cwbs.equals("")){
-			if(cc.getCorrespondingCwbNum()<lbe.size()){  
+		 for(CwbOrder co:c){
 				for(ImportBillExcel i:lbe){
-						if(!cc.getCwbs().contains(i.getCwb())){
-							sb.append(i.getCwb()+",");
-							
-						}
+					if(co.getCwb().equals(i.getCwb())){
+						CwbOrder cb1 = new CwbOrder();
+						cb1.setCwb(co.getCwb());
+						c1.add(cb1);
+					}	
+				
 				}
-			
-			}else{
-				for(CwbOrder cwborder:c){
-					if(!cwbs1.contains(cwborder.getCwb())){
-						sb1.append(cwborder.getCwb()+",");
-					}
-				}	
+		 }
+		} 
+		List<ImportAndDmpCwbVO> lid= new ArrayList<ImportAndDmpCwbVO>();
+		 for(CwbOrder cx:c){
+			for(CwbOrder cx1:c1){
+				if(!cx.getCwb().equals(cx1.getCwb())){
+					ImportAndDmpCwbVO i = new ImportAndDmpCwbVO();
+					i.setCwb(cx.getCwb());
+					i.setZhongLei("DMP多余订单");
+					lid.add(i);
+				}
 			}
-		}
-		if(sb!=null&&!sb.equals("")&&sb.length()>0){
-			ccwbs="导入多余订单"+":"+sb.substring(0,sb.length()-1).toString();
-		}else if(sb1!=null&&!sb1.equals("")&&sb1.length()>0){
-			ccwbs="DMP多余订单"+":"+sb1.substring(0,sb1.length()-1).toString();
-		}
-		String ccwbs1[]=ccwbs.trim().split(":");
-		String zhongLei="";
-		if(ccwbs1[0].equals("导入多余订单")){
-			zhongLei="导入多余订单";
-		}else if(ccwbs1[0].equals("DMP多余订单")){
-			zhongLei="DMP多余订单";
-		}
-		String cwbgetChYi[]=ccwbs1[1].trim().split(",");
-		String chayicwbs=customerbillcontractservice.listToStrings(cwbgetChYi);
-		List<CwbOrder> co=cwbdao.getCwbByCwbs(chayicwbs);	
+		 }
+		 
+		 for(ImportBillExcel i:lbe){
+			 for(CwbOrder cx1:c1){
+				 if(!i.getCwb().equals(cx1.getCwb())){
+					 ImportAndDmpCwbVO i1 = new ImportAndDmpCwbVO();
+						i1.setCwb(i.getCwb());
+						i1.setZhongLei("导入多余订单");
+						lid.add(i1);
+					} 
+			 }
+		 }
+		 
+		String cwbss1s=customerbillcontractservice.ImportAndDmpCwbVOlistToString(lid);	
+		
+	
+		List<CwbOrder> co=cwbdao.getCwbByCwbs(cwbss1s);	
 		Map<String,BigDecimal>	map=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, co);
 		Map<String,BigDecimal>	map1=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, co);
 		Map<String,BigDecimal>	map2=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, co);
 		List<SerachCustomerBillContractVO> ls= new ArrayList<SerachCustomerBillContractVO>();
-		for(CwbOrder s:co){							
+		for(ImportAndDmpCwbVO s:lid){							
 				SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
-				sv.setZhongLei(zhongLei);
+				sv.setZhongLei(s.getZhongLei());
 				sv.setCwb(s.getCwb());
 				sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(s.getCwb()).getCwbordertypeid()));
 				sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(s.getCwb()).getCwbstate()).getText());

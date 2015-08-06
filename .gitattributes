@@ -1306,6 +1306,7 @@ src/main/java/cn/explink/domain/VO/ExpressSetBranchContractVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchDeliveryFeeBillDetailVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchDeliveryFeeBillVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetExceedSubsidyApplyVO.java -text
+src/main/java/cn/explink/domain/VO/ImportAndDmpCwbVO.java -text
 src/main/java/cn/explink/domain/VO/PreOrderVO.java -text
 src/main/java/cn/explink/domain/VO/SerachCustomerBillContractVO.java -text
 src/main/java/cn/explink/domain/WarehouseKey.java -text

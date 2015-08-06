@@ -28,6 +28,7 @@ import cn.explink.domain.DeliveryState;
 import cn.explink.domain.ImportBillExcel;
 import cn.explink.domain.VO.CustomerBillContractFindConditionVO;
 import cn.explink.domain.VO.CustomerBillContractVO;
+import cn.explink.domain.VO.ImportAndDmpCwbVO;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -59,6 +60,7 @@ public class CustomerBillContractService {
 		return null;
 	}
 	
+
 	public String listToStrings(String[] cwborderlist){
 		StringBuilder sb = new StringBuilder();
 		String cwbs="";	
@@ -363,6 +365,19 @@ public class CustomerBillContractService {
 	        ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));  
 	        String last = format.format(ca.getTime());
 	        return last;
+	}
+
+	public String ImportAndDmpCwbVOlistToString(List<ImportAndDmpCwbVO> lid) {
+		StringBuilder sb = new StringBuilder();
+		String cwbs="";	
+		if(lid!=null&&lid.size()>0){
+			for(ImportAndDmpCwbVO str:lid){
+				sb=sb.append("'"+str.getCwb()+"',");
+			}
+			cwbs=sb.substring(0, sb.length()-1);	
+			return cwbs;	
+		}
+		return null;
 	}
 	
 }
