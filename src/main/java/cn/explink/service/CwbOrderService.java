@@ -1115,9 +1115,11 @@ public class CwbOrderService {
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
 
+		// 对oxo和oxo_jit的订单不用中转审核 by jinghui.pan on 20150806
+		if(isOxoAndJitType(co) == false){
+			this.validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);//中转校验
+		}
 
-
-		this.validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);//中转校验
 
 
 		if (!isauto) {
