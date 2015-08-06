@@ -49,9 +49,11 @@ function addInit() {
 }
 function allchecked() {
 	var ids = "";
+	var num=0;
 	$("[id=id]").each(function() {
 		if ($(this)[0].checked == true) {
 			ids += "," + $(this).val();
+			num++;
 		}
 	});
 	if (ids.indexOf(',') != -1) {
@@ -69,6 +71,9 @@ function allchecked() {
 			success : function(data) {
 				if (data.counts > 0) {
 					alert("成功删除" + data.counts + "条");
+				}
+				if(data.counts!=num){
+					alert("已经启用的规则不能删除！");
 				}
 				$("#find form").submit();
 			}

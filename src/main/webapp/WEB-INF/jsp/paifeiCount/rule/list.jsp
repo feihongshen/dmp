@@ -123,7 +123,7 @@
 							</c:forEach>
 					</select></td>
 					<td align="right">拒收派费(元)：</td>
-					<td><input type="text" name="jushouPFfee" id="jushouPFfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
+					<td><input type="text" name="jushouPFfee" disabled="disabled" value="0.00" id="jushouPFfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
 				</tr>
 				<tr>
 					<td style="line-height: 30px" align="right">结算规则名称：</td>
