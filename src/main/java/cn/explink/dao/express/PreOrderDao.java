@@ -17,7 +17,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.VO.PreOrderQueryDateVO;
 import cn.explink.domain.express.ExpressPreOrder;
 import cn.explink.util.Page;
 
@@ -88,7 +87,7 @@ public class PreOrderDao implements Serializable {
 	 * @author  刘武强
 	 * @data   2015年8月3日
 	 */
-	private final class PreOrderQueryRowMapper implements RowMapper<PreOrderQueryDateVO> {
+	/*private final class PreOrderQueryRowMapper implements RowMapper<PreOrderQueryDateVO> {
 		@Override
 		public PreOrderQueryDateVO mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PreOrderQueryDateVO preOrderQueryDateVO = new PreOrderQueryDateVO();
@@ -103,11 +102,11 @@ public class PreOrderDao implements Serializable {
 			preOrderQueryDateVO.setBranchName(rs.getString("branch_name"));
 			return preOrderQueryDateVO;
 		}
-	}
+	}*/
 
 	public Map<String, Object> getPreOrderQueryInfo(String start, String end, String excuteType, String mobile, String preordercode, String sender, String station, long page, int pageNumber) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<PreOrderQueryDateVO> list = new ArrayList<PreOrderQueryDateVO>();
+		/*List<PreOrderQueryDateVO> list = new ArrayList<PreOrderQueryDateVO>();*/
 		StringBuffer sql = new StringBuffer();
 		StringBuffer countsql = new StringBuffer();
 		StringBuffer where = new StringBuffer();
@@ -167,10 +166,10 @@ public class PreOrderDao implements Serializable {
 			args[i] = params.get(i);
 		}
 		//查询页面数据
-		list = this.jdbcTemplate.query(sql.toString(), args, new PreOrderQueryRowMapper());
+		/*list = this.jdbcTemplate.query(sql.toString(), args, new PreOrderQueryRowMapper());
 		//查询数据总量--前面参数已经绑定，所以不需要再次绑定
 		count = this.jdbcTemplate.queryForInt(countsql.toString(), args);
-		map.put("list", list);
+		map.put("list", list);*/
 		map.put("count", count);
 		return map;
 	}
