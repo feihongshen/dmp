@@ -77,6 +77,16 @@ public class OrderExportHeaderDto implements Serializable {
 
 	/** 送货要求 (expectedDeliveryInfo) */
 	private String expectedDeliveryInfo = "";
+	/**订单来源 **/
+	private String fromCompany;
+
+	public String getFromCompany() {
+		return fromCompany;
+	}
+
+	public void setFromCompany(String fromCompany) {
+		this.fromCompany = fromCompany;
+	}
 
 	/** 结算单号 */
 	private String groupNo;

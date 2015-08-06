@@ -12,6 +12,14 @@ public class Yihaodian {
 	private String updatePayResult_URL; // 订单支付信息修改URL
 	private long callBackCount; // 每次回调数量
 	private int isopenDataDownload; // 是否开启订单导入接口 0关闭 1打开
+	private String ywcustomerid; //一号店药网customerid,如果 ywcustomerid=customerids,则指定同一个供货商
+	public String getYwcustomerid() {
+		return ywcustomerid;
+	}
+
+	public void setYwcustomerid(String ywcustomerid) {
+		this.ywcustomerid = ywcustomerid;
+	}
 
 	private int loopcount = 20; // 每次下载循环次数
 

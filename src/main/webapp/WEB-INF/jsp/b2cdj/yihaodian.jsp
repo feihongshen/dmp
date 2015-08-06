@@ -58,6 +58,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>在配送公司中id：</span>
 	 						<input type ="text" id="customerids" name ="customerids"  maxlength="300"  value="<%=yihaodian.getCustomerids()%>"  size="15" > 
 						</li>
+						<li><span>药网customerid：</span>
+	 						<input type ="text" id="ywcustomerid" name ="ywcustomerid"  maxlength="300"  value="<%=yihaodian.getYwcustomerid()%>"  size="15" > 
+						</li>
 						<li><span>是否开启订单下载：</span>
 	 						<input type="radio" name="isopenDataDownload" value="1" <%if(yihaodian.getIsopenDataDownload()==1){%>checked<%}%>/> 开启
 	 						<input type="radio" name="isopenDataDownload" value="0"  <%if(yihaodian.getIsopenDataDownload()==0){%>checked<%}%> /> 关闭
@@ -109,6 +112,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						<li><span>在配送公司中id：</span>
 	 						<input type ="text" id="customerids" name ="customerids"  maxlength="300"  value=""  size="15" > 
+						</li>
+						<li><span>药网customerid：</span>
+	 						<input type ="text" id="ywcustomerid" name ="ywcustomerid"  maxlength="300"  value=""  size="15" > 
 						</li>
 						<li><span>是否开启订单下载：</span>
 	 						<input type="radio" name="isopenDataDownload" value="1" checked/> 开启

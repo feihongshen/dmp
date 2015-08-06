@@ -67,6 +67,7 @@ public class YihaodianService {
 
 		yihaodian.setIsopenDataDownload(Integer.parseInt(request.getParameter("isopenDataDownload")));
 		yihaodian.setLoopcount(Integer.parseInt(request.getParameter("loopcount")));
+		yihaodian.setYwcustomerid(request.getParameter("ywcustomerid"));
 
 		String customerids = request.getParameter("customerids");
 		String oldCustomerids = "";

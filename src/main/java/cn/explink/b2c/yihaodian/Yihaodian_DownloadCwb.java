@@ -43,21 +43,28 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 				logger.info("Invoke export cwb detail interface business exception!errCode={},errMsg={},yhd_key=" + yhd_key + ",loopcount=" + loopcount, exportDto.getErrCode(), exportDto.getErrMsg());
 				return 0;
 			}
-			List<Map<String, String>> cwbOrderList = parseCwbArrByOrderDto(exportDto); // 返回一个封装好的List
+			List<Map<String, String>> cwbOrderList = parseCwbArrByOrderDto(exportDto,yihaodian); // 返回一个封装好的List
 			if (cwbOrderList == null) {
 				logger.warn("请求一号店没有下载到订单数据!errCode={},errMsg={},yhd_key=" + yhd_key + ",loopcount=" + loopcount, exportDto.getErrCode(), exportDto.getErrMsg());
 				return 0;
 			}
 			try {
-				long warehouseid = yihaodian.getWarehouseid(); // 订单导入的库房Id
-				dataImportInterface.Analizy_DataDealByB2c(Long.parseLong(yihaodian.getCustomerids()), B2cEnum.Yihaodian.getMethod(), cwbOrderList, warehouseid, true);
-				logger.info("[一号店]下载订单信息调用数据导入接口-插入数据库成功!loopcount=" + loopcount);
-				return cwbOrderList.size();
+				for(Map<String, String> data:cwbOrderList){
+					long customerid = Long.valueOf(data.get("customerid"));
+					List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
+					onelist.add(data);
+				
+						long warehouseid = yihaodian.getWarehouseid(); // 订单导入的库房Id
+						dataImportInterface.Analizy_DataDealByB2c(customerid, B2cEnum.Yihaodian.getMethod(), onelist, warehouseid, true);
+						logger.info("[一号店]下载订单信息调用数据导入接口-插入数据库成功!loopcount=" + loopcount);
+				}
+				return 1;
 			} catch (Exception e) {
 				logger.error("[一号店]调用数据导入接口异常!,订单List信息:" + cwbOrderList + "exptMessage=:" + e);
 				e.printStackTrace();
 				return 0;
 			}
+			
 
 		} catch (Exception e) {
 			logger.error("error info by request yihaodian download cwb detail interface!,loopcount=" + loopcount, e);
@@ -87,7 +94,7 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 	/**
 	 * 返回一个转化为导入接口可识别的对象
 	 */
-	private List<Map<String, String>> parseCwbArrByOrderDto(OrderExportResultDto exportDto) {
+	private List<Map<String, String>> parseCwbArrByOrderDto(OrderExportResultDto exportDto,Yihaodian yhd) {
 		List<Map<String, String>> cwbList = null;
 		List<OrderExportHeaderDto> orderHeaderList = exportDto.getOrderHeaderList();
 		if (orderHeaderList != null && orderHeaderList.size() > 0) {
@@ -116,6 +123,13 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 				cwbMap = parseCwbArrByOrderCarton(order, cwbMap);
 
 				// multi_shipcwb 存入 一票多箱 多个箱号逗号隔开，存入主表时插入 transcwb列 20130606
+				String fromcompany=order.getFromCompany();
+				if(fromcompany!=null&&fromcompany.contains("药网")){
+					cwbMap.put("customerid",yhd.getYwcustomerid()); //公司来源
+				}else{
+					cwbMap.put("customerid",yhd.getCustomerids()); //公司来源
+				}
+				
 
 				cwbMap.put("transcwb", cwbMap.get("multi_shipcwb"));
 				cwbList.add(cwbMap);
