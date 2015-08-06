@@ -3,6 +3,7 @@ package cn.explink.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.CwbOXODetailBean;
 import cn.explink.enumutil.CwbOXOTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -40,8 +42,17 @@ public class CwbOXODetailDAO {
 			cwbOXODetail.setCwbState(rs.getString("cwbstate"));
 			cwbOXODetail.setReceivablefee(rs.getDouble("receivablefee"));
 			cwbOXODetail.setCustomerName(rs.getString("customername"));
-			cwbOXODetail.setPayWay(rs.getString("payway"));
 			cwbOXODetail.setOxoType(rs.getString("oxotype"));
+			
+			int payWayId = rs.getInt("paywayid");
+			String payWay = "";
+			Map<Integer, String> paywayMap = PaytypeEnum.getMap();
+			for (Integer key : paywayMap.keySet()) {
+				if (key == payWayId) {
+					payWay = paywayMap.get(key);
+				}
+			}
+			cwbOXODetail.setPayWay(payWay);
 			return cwbOXODetail;
 		}
 	}
@@ -105,7 +116,7 @@ public class CwbOXODetailDAO {
 		}
 
 		StringBuilder sql = new StringBuilder();
-		sql.append("select case when oxotypeid = 1 then '揽收' when oxotypeid = 2 then '配送' end as oxotype,case when cwbstate = 0 then '未处理' when cwbstate= 1 then '处理中' when cwbstate=2 then '已处理' end as cwbstate ,cwb.cwb,cus.customername,date_format(cwb.credate,'%Y-%m-%d %H:%i:%s') as credate,cwb.receivablefee,bra.branchname,pay.payway  FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(");
+		sql.append("select case when oxotypeid = 1 then '揽收' when oxotypeid = 2 then '配送' end as oxotype,case when cwbstate = 0 then '未处理' when cwbstate= 1 then '处理中' when cwbstate=2 then '已处理' end as cwbstate ,cwb.cwb,cus.customername,date_format(cwb.credate,'%Y-%m-%d %H:%i:%s') as credate,cwb.receivablefee,bra.branchname,cwb.paywayid  FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(");
 		if ("".equals(cwbOXOTypeId) || "0".equals(cwbOXOTypeId)) { // 揽收、配送
 			sql.append(pickSql + " union " + deliverySql);
 		} else {
