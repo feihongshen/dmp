@@ -235,37 +235,82 @@ function deleteBranchDeliveryFeeBill(){
 			alert("加盟商站点为必填项!");
 			return false;
 		}
-		var beginDate = $("#addForm input[name='beginDate']").val();
-		var endDate = $("#addForm input[name='endDate']").val();
-		if (beginDate && endDate) {
-			if (!compareDate(beginDate, endDate)) {
-				alert("开始日期必须小于等于结束日期!");
-				return false;
-			}
-			var afterDate = addDate(beginDate, 2);
-			if (!compareDate(endDate, afterDate)) {
-				alert("时间跨度不能超过两个月!");
-				return false;
-			}
-		} else {
-			alert("日期范围为必填项且时间跨度不能超过两个月!");
+		/* var isExist = 1;
+		validateBranch(isExist);
+		if(isExist == 0){
+			alert("未关联派费规则!");
 			return false;
+		} */
+		var branchId = $("#addForm input[name='branchId']").val();
+		if(!branchId){
+			return;
 		}
+		$.ajax({
+			type:"post",
+			url:"<%=request.getContextPath()%>/branchDeliveryFeeBill/validateBranch",
+			data:{"branchId":branchId},
+			dataType:"json",
+			success:function(data){
+				if(data){
+					if(data.isExist==0){
+						alert("加盟商站点未关联派费规则!");
+						return false;
+					} else {
+						var beginDate = $("#addForm input[name='beginDate']").val();
+						var endDate = $("#addForm input[name='endDate']").val();
+						if (beginDate && endDate) {
+							if (!compareDate(beginDate, endDate)) {
+								alert("开始日期必须小于等于结束日期!");
+								return false;
+							}
+							var afterDate = addDate(beginDate, 2);
+							if (!compareDate(endDate, afterDate)) {
+								alert("时间跨度不能超过两个月!");
+								return false;
+							}
+						} else {
+							alert("日期范围为必填项且时间跨度不能超过两个月!");
+							return false;
+						}
 
-		var remark = $("#addForm textarea[name='remark']").val();
-		if (remark) {
-			if (remark == "不超过100字") {
-				$("#addForm textarea[name='remark']").val('');
-			} else {
-				if (remark.length > 100) {
-					alert("备注不超过100字!");
-					return false;
+						var remark = $("#addForm textarea[name='remark']").val();
+						if (remark) {
+							if (remark == "不超过100字") {
+								$("#addForm textarea[name='remark']").val('');
+							} else {
+								if (remark.length > 100) {
+									alert("备注不超过100字!");
+									return false;
+								}
+							}
+						}
+						$("#addForm").submit();
+					}
 				}
 			}
-		}
-		$("#addForm").submit();
+		});
 	}
 
+	function validateBranch(isExist){
+		var branchId = $("#addForm input[name='branchId']").val();
+		if(!branchId){
+			return;
+		}
+		$.ajax({
+			type:"post",
+			url:"<%=request.getContextPath()%>/branchDeliveryFeeBill/validateBranch",
+			data:{"branchId":branchId},
+			dataType:"json",
+			success:function(data){
+				if(data){
+					if(data.isExist==0){
+						isExist = 0;
+					}
+				}
+			}
+		});
+	}
+	
 	function addDate(date, months) {
 		var d = new Date(date);
 		d.setMonth(d.getMonth() + months);

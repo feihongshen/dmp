@@ -464,4 +464,17 @@ public class BranchDeliveryFeeBillController {
 		
 		return rtnVO;
 	}
+	
+	@RequestMapping("/validateBranch")
+	@ResponseBody
+	public String validateBranch(
+			@RequestParam(value = "branchId", defaultValue = "", required = true) int branchId) {
+		// 判断加盟商站点是否关联派费规则
+		String rtnStr = "{\"isExist\":0}";
+		Branch branch = this.branchDAO.getBranchByBranchid(branchId);
+		if(branch != null && branch.getPfruleid() != 0){
+			rtnStr = "{\"isExist\":1}";
+		}
+		return rtnStr;
+	}
 }

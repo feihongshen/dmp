@@ -55,87 +55,113 @@ function updateExceedSubsidyApply(state,form,type,page){
 	updateExceedSubsidyApplyFun(form,type,page);
 }
 function updateExceedSubsidyApplyFun(form,type,page){
-	var cwbExist = 1;
+	/* var cwbExist = 1;
 	validateCwbOrder(form,cwbExist);
 	if(cwbExist == 0){
 		alert("订单号不存在!");
 		return false;
+	} */
+	var cwb = $("#"+form+" input[name='cwbOrder']").val();
+	if(!cwb){
+		alert("订单号为必填项!");
+		return false;
 	}
-	if($("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").is(':checked') == true){
-		$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("value",1);
-		if(!$("#"+form+" input[name='exceedAreaSubsidyRemark']").val()){
-			alert("超区补助为必填项!");
-			return false;
-		}
-	}
-	if($("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").is(':checked') == true){
-		$("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").attr("value",1);
-		if(!$("#"+form+" input[name='bigGoodsSubsidyRemark']").val()){
-			alert("大件补助为必填项!");
-			return false;
-		}
-	}
-	var remark = $("#"+form+" textarea[name='remark']").val();
-	if (remark) {
-		if (remark == "不超过100字") {
-			$("#"+form+" textarea[name='remark']").val('');
-		} else {
-			if (remark.length > 100) {
-				alert("备注不超过100字!");
-				return false;
-			}
-		}
-	}
-	if(type == "check"){
-		var exceedAreaSubsidyAmount = $("#"+form+" input[name='exceedAreaSubsidyAmount']").val();
-		if(exceedAreaSubsidyAmount && !isFloat(exceedAreaSubsidyAmount)){
-			alert("超区补助金额请输入数字!");
-			$("#"+form+" input[name='exceedAreaSubsidyAmount']").val('');
-			return false;
-		}
-		var bigGoodsSubsidyAmount = $("#"+form+" input[name='bigGoodsSubsidyAmount']").val();
-		if(bigGoodsSubsidyAmount && !isFloat(bigGoodsSubsidyAmount)){
-			alert("大件补助金额请输入数字!");
-			$("#"+form+" input[name='bigGoodsSubsidyAmount']").val('');
-			return false;
-		}
-		var shenHeIdea = $("#"+form+" textarea[name='shenHeIdea']").val();
-		if (shenHeIdea) {
-			if (shenHeIdea == "不超过100字") {
-				$("#"+form+" textarea[name='shenHeIdea']").val('');
-			} else {
-				if (shenHeIdea.length > 100) {
-					alert("审核意见不超过100字!");
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/exceedSubsidyApply/validateCwbOrder",
+		data:{"cwb":cwb},
+		dataType:"json",
+		success:function(data){
+			if(data){
+				if(data.isExist==0){
+					alert("订单号不存在!");
+					return false;
+				} else if(data.isExist==1){
+					$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
+					$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
+					
+					if($("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").is(':checked') == true){
+						$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("value",1);
+						if(!$("#"+form+" input[name='exceedAreaSubsidyRemark']").val()){
+							alert("超区补助为必填项!");
+							return false;
+						}
+					}
+					if($("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").is(':checked') == true){
+						$("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").attr("value",1);
+						if(!$("#"+form+" input[name='bigGoodsSubsidyRemark']").val()){
+							alert("大件补助为必填项!");
+							return false;
+						}
+					}
+					var remark = $("#"+form+" textarea[name='remark']").val();
+					if (remark) {
+						if (remark == "不超过100字") {
+							$("#"+form+" textarea[name='remark']").val('');
+						} else {
+							if (remark.length > 100) {
+								alert("备注不超过100字!");
+								return false;
+							}
+						}
+					}
+					if(type == "check"){
+						var exceedAreaSubsidyAmount = $("#"+form+" input[name='exceedAreaSubsidyAmount']").val();
+						if(exceedAreaSubsidyAmount && !isFloat(exceedAreaSubsidyAmount)){
+							alert("超区补助金额请输入数字!");
+							$("#"+form+" input[name='exceedAreaSubsidyAmount']").val('');
+							return false;
+						}
+						var bigGoodsSubsidyAmount = $("#"+form+" input[name='bigGoodsSubsidyAmount']").val();
+						if(bigGoodsSubsidyAmount && !isFloat(bigGoodsSubsidyAmount)){
+							alert("大件补助金额请输入数字!");
+							$("#"+form+" input[name='bigGoodsSubsidyAmount']").val('');
+							return false;
+						}
+						var shenHeIdea = $("#"+form+" textarea[name='shenHeIdea']").val();
+						if (shenHeIdea) {
+							if (shenHeIdea == "不超过100字") {
+								$("#"+form+" textarea[name='shenHeIdea']").val('');
+							} else {
+								if (shenHeIdea.length > 100) {
+									alert("审核意见不超过100字!");
+									return false;
+								}
+							}
+						}
+					}
+					$("#"+form+" select[name='applyState']").attr("disabled",false);
+					$("#"+form+" select[name='cwbOrderState']").attr("disabled",false);
+					$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("disabled",false);
+					$("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").attr("disabled",false);
+					//$("#updateForm").submit();
+					$.ajax({
+						type : "POST",
+						data : $("#"+form).serialize(),
+						url : $("#"+form).attr('action'),
+						dataType : "json",
+						success : function(data) {
+								if(data && data.errorCode==0){
+									if(type == "save"){
+										alert("保存成功!");
+									} else if(type == "submit"){
+										alert("提交成功!");
+									} else if(type == "check"){
+										alert("审批成功!");
+									}
+								  	$("#"+page).dialog('close');
+								  	//document.location.reload(true);
+						   			window.location.href='<%=request.getContextPath()%>/exceedSubsidyApply/exceedSubsidyApplyList/1';
+								}
+							}
+						});
+				} else if(data.isExist==2){
+					alert("订单号重复!");
 					return false;
 				}
 			}
 		}
-	}
-	$("#"+form+" select[name='applyState']").attr("disabled",false);
-	$("#"+form+" select[name='cwbOrderState']").attr("disabled",false);
-	$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("disabled",false);
-	$("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").attr("disabled",false);
-	//$("#updateForm").submit();
-	$.ajax({
-		type : "POST",
-		data : $("#"+form).serialize(),
-		url : $("#"+form).attr('action'),
-		dataType : "json",
-		success : function(data) {
-				if(data && data.errorCode==0){
-					if(type == "save"){
-						alert("保存成功!");
-					} else if(type == "submit"){
-						alert("提交成功!");
-					} else if(type == "check"){
-						alert("审批成功!");
-					}
-				  	$("#"+page).dialog('close');
-				  	//document.location.reload(true);
-		   			window.location.href='<%=request.getContextPath()%>/exceedSubsidyApply/exceedSubsidyApplyList/1';
-				}
-			}
-		});
+	});
 }
 function validateCwbOrder(form,cwbExist){
 	var cwb = $("#"+form+" input[name='cwbOrder']").val();
@@ -221,7 +247,10 @@ function deleteExceedSubsidyApply(){
 			dataType:"json",
 			success:function(data){
 				if(data){
-					if(data.isExist==1){
+					if(data.isExist==0){
+						alert("订单号不存在!");
+						return false;
+					} else if(data.isExist==1){
 						$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
 						$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
 						if(!$("#"+form+" select[name='deliveryPerson']").val()){
@@ -256,8 +285,8 @@ function deleteExceedSubsidyApply(){
 						$("#"+form+" select[name='applyState']").attr("disabled",false);
 						$("#"+form+" select[name='cwbOrderState']").attr("disabled",false);
 						$("#"+form).submit();
-					} else {
-						alert("订单号不存在!");
+					} else if(data.isExist==2){
+						alert("订单号重复!");
 						return false;
 					}
 				}
@@ -412,7 +441,7 @@ function deleteExceedSubsidyApply(){
 						<font color="red">*</font>订单号
 					</td>
 					<td>
-						<input type="text" name="cwbOrder">
+						<input type="text" name="cwbOrder" value="">
 					</td>
 					<td align="left">
 						<font color="red">*</font>订单状态

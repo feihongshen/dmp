@@ -310,9 +310,15 @@ public class ExceedSubsidyApplyController {
 			@RequestParam(value = "cwb", defaultValue = "", required = true) String cwb) {
 		// 判断订单号是否存在，若存在，则返回订单状态和收货地址
 		String rtnStr = "{\"isExist\":0}";
-		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-		if(cwbOrder != null){
-			rtnStr = "{\"isExist\":1,\"cwbOrderState\":" + cwbOrder.getFlowordertype() + ",\"receiveAddress\":\"" + cwbOrder.getConsigneeaddress() +"\"}";
+		int count = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwbOrderCount(cwb);
+		if(count > 0){
+			// 订单号重复
+			rtnStr = "{\"isExist\":2}";
+		} else {
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			if(cwbOrder != null){
+				rtnStr = "{\"isExist\":1,\"cwbOrderState\":" + cwbOrder.getFlowordertype() + ",\"receiveAddress\":\"" + cwbOrder.getConsigneeaddress() +"\"}";
+			}
 		}
 		return rtnStr;
 	}
