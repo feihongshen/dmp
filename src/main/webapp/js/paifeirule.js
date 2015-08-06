@@ -145,7 +145,11 @@ function addTROfinsertion(pf, type) {
 			var fee = $(this).find("[id=insertionfee]").val();
 			if (fee == '' || mincountVal == '' || maxcountVal == '') {
 				flag = false;
-			} else {
+			} 
+			else if(parseInt(mincountVal)>parseInt(maxcountVal)){
+				flag = false;
+			}
+			else {
 				max = maxcountVal;
 			}
 		} else {
@@ -177,7 +181,11 @@ function addTROfOverArea(pf, type) {
 			var fee = $(this).find("[id=insertionfee]").val();
 			if (fee == '' || mincountVal == '' || maxcountVal == '') {
 				flag = false;
-			} else {
+			} 
+			else if(parseInt(mincountVal)>parseInt(maxcountVal)){
+				flag = false;
+			}
+			else {
 				max = maxcountVal;
 			}
 		} else {
@@ -192,8 +200,8 @@ function addTROfOverArea(pf, type) {
 }
 function addTROfOverAreaEdit(pf, type) {
 
-	var mincount = "<input style='width: 100%;' type='text'  id='mincount' name='mincount'/>";
-	var maxcount = "<input style='width: 100%;' type='text'  id='maxcount' name='maxcount'/>";
+	var mincount = "<input style='width: 100%;' type='text' onblur='comparaTo($(this),\"min\")'  id='mincount' name='mincount'/>";
+	var maxcount = "<input style='width: 100%;' type='text' onblur='comparaTo($(this),\"max\")' id='maxcount' name='maxcount'/>";
 	var subsidyfee = "<input " + fee_check + " style='width: 100%;' type='text'  id='subsidyfee' name='subsidyfee'/>";
 	var remark = "<input style='width: 100%;' type='text'  id='remark' name='remark'/>";
 	var tr = "<tr>" + "<td  align='center'><input type='checkbox'/><input style='width: 100%;' type='hidden'  id='areaid' name='areaid' value='"
@@ -209,7 +217,11 @@ function addTROfOverAreaEdit(pf, type) {
 			var fee = $(this).find("[id=insertionfee]").val();
 			if (fee == '' || mincountVal == '' || maxcountVal == '') {
 				flag = false;
-			} else {
+			} 
+			else if(parseInt(mincountVal)>parseInt(maxcountVal)){
+				flag = false;
+			}
+			else {
 				max = maxcountVal;
 			}
 		} else {
@@ -484,7 +496,10 @@ function subEidt(formId, tab, edittype) {
 					// 1);
 					$(this).append("<input type='hidden' name='areaid' value=" + areaid + " />");
 				}
-
+				if (mincountVal>maxcountVal) {
+					alert("输入数据有误！");
+					return 0;
+				}
 				if (mincountVal != '' && maxcountVal != '') {
 					objs.push($(this).serializeObject());
 				}
@@ -511,6 +526,7 @@ function subEidt(formId, tab, edittype) {
 	// alert(JSON.stringify(json));
 	$.ajax({
 		type : "post",
+		async: false,
 		url : dmpurl + "/paifeirule/edittype",
 		data : {
 			"json" : JSON.stringify(json),
@@ -595,14 +611,14 @@ function showArea(tr, id, areaname) {
 }
 function validate(e) {
 	var exp = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
-	return exp.test(nums);
+//	return exp.test(nums);
 
-	if (!reg.test($(e).val())) {
+	if (!exp.test($(e).val())) {
 		$(e).val('0');
 	}
-	if (!/^[0-9]*$/.test($(e).val())) {
+/*	if (!/^[0-9]*$/.test($(e).val())) {
 		$(e).val('0');
-	}
+	}*/
 }
 function comparaTo(e, type) {
 	validate(e);
@@ -680,6 +696,7 @@ function subArea(tablename, tab) {
 	$.ajax({
 		type : "post",
 		url : dmpurl + "/paifeirule/saveArea",
+		async: false,
 		data : {
 			"tab" : tab,
 			"areajson" : JSON.stringify(areajson),
@@ -761,6 +778,7 @@ function subAreaEidt(e, areaid, type) {
 	$.ajax({
 		type : "post",
 		url : dmpurl + "/paifeirule/updateArea",
+		async: false,
 		data : {
 			"areaid" : areaid,
 			"areafee" : areafee,
@@ -813,11 +831,14 @@ function saveAllData() {
 	}
 	if(flag==1)
 		{alert("已经修改完成！");}
+	else {
+		alert("修改失败！请检查数据");
+	}
 
 }
 function creDate(tab, ruletype) {
 	var flag=0;
-	
+	var ruleid=$("#edit_rule_from").find("#edit_rule_id").val();
 	var basic_flag = $("#" + tab + "_basic_flag")[0].checked;
 	var collection_flag = $("#" + tab + "_collection_flag")[0].checked;
 	var area_flag = $("#" + tab + "_area_flag")[0].checked;
@@ -838,6 +859,11 @@ function creDate(tab, ruletype) {
 			return ;
 			}
 		}
+	}else{
+		flag=deleteData(ruleid,tab,'basic');
+		if (flag == 0) {
+			return;
+		}
 	}
 	if (collection_flag) {
 		if ($("#" + tab + "_showflag_collection").val() == 'yes') {
@@ -854,19 +880,26 @@ function creDate(tab, ruletype) {
 			}
 		}
 	}
+	else{
+		flag=deleteData(ruleid,tab,'collection');
+		if (flag == 0) {
+			return;
+		}
+	}
 	if (area_flag) {
+		var aflag=1;
 		$("div[id^=edit_area_"+tab+"_][style*=block]").each(function() {
 			if ($(this).find("#areafee_flag").length>0&&$(this).find("#areafee_flag")[0].checked) {
-				flag=subAreaEidt($(this).find("#areafee_sub"),$(this).find("#areafee_sub").attr('areaid'),'areafee');
-				if(flag==0)
+				aflag=subAreaEidt($(this).find("#areafee_sub"),$(this).find("#areafee_sub").attr('areaid'),'areafee');
+				if(aflag==0)
 				{
 				return ;
 				}
 			}
 			if(ruletype!=2){
 				if ($(this).find("#overbigflag").length>0&&$(this).find("#overbigflag")[0].checked) {
-					flag=subAreaEidt($(this).find("#overbigflag_sub"),$(this).find("#overbigflag_sub").attr('areaid'),'overbigflag');
-					if(flag==0)
+					aflag=subAreaEidt($(this).find("#overbigflag_sub"),$(this).find("#overbigflag_sub").attr('areaid'),'overbigflag');
+					if(aflag==0)
 					{
 					return ;
 					}
@@ -874,28 +907,42 @@ function creDate(tab, ruletype) {
 			}
 			if(ruletype==2){
 				if ($(this).find("#overbigflag").length>0&&$(this).find("#overbigflag")[0].checked) {
-					flag=subEidt(tab+"_overbig_"+$(this).find("#overbig_sub").attr('areaid')+"_table",tab,'overbig');
-					if(flag==0)
+					aflag=subEidt(tab+"_overbig_"+$(this).find("#overbig_sub").attr('areaid')+"_table",tab,'overbig');
+					if(aflag==0)
 					{
 					return ;
 					}
 				}
 			}
-			if ($(this).find("#overweightflag").length>0&&(this).find("#overweightflag")[0].checked) {
-				flag=subEidt(tab+"_overweight_"+$(this).find("#overweight_sub").attr('areaid')+"_table",tab,'overweight');
-				if(flag==0)
+			if ($(this).find("#overweightflag").length>0&&$(this).find("#overweightflag")[0].checked) {
+				aflag=subEidt(tab+"_overweight_"+$(this).find("#overweight_sub").attr('areaid')+"_table",tab,'overweight');
+				if(aflag==0)
 				{
 				return ;
 				}
 			}
 		});
+		if(aflag==0)
+		{
+		return ;
+		}
+		var bflag=1;
 		$("table[id^="+tab+"_area_table_]").each(function(){
-			flag=subArea($(this)[0].id,tab);
-			if(flag==0)
-			{
-			return ;
+			bflag=subArea($(this)[0].id,tab);
+			if (bflag == 0) {
+				return;
 			}
 		});
+		if(bflag==0)
+		{
+		return ;
+		}
+	}
+	else{
+		flag=deleteData(ruleid,tab,'area');
+		if (flag == 0) {
+			return;
+		}
 	}
 	if (ruletype == 3) {
 		var overarea_flag = $("#" + tab + "_overarea_tr #edit_" + tab + "_state_checkbox")[0].checked;
@@ -906,12 +953,24 @@ function creDate(tab, ruletype) {
 			return ;
 			}
 		}
+		else{
+			flag=deleteData(ruleid,tab,'overarea');
+			if (flag == 0) {
+				return;
+			}
+		}
 	}
 	if (business_flag) {
 		flag=subEidt("edit_" + tab + "_business_from", tab, 'business');
 		if(flag==0)
 		{
 		return ;
+		}
+	}
+	else{
+		flag=deleteData(ruleid,tab,'business');
+		if (flag == 0) {
+			return;
 		}
 	}
 	if (insertion_flag) {
@@ -921,4 +980,41 @@ function creDate(tab, ruletype) {
 		return ;
 		}
 	}
+	else{
+		flag=deleteData(ruleid,tab,'insertion');
+		if (flag == 0) {
+			return;
+		}
+	}
+	return flag;
+}
+function deleteData(ruleid,tab,type)
+{   var errorcode=0;
+	var dmpurl = $("#dmpurl").val();
+	$.ajax({
+		type : "post",
+		url : dmpurl + "/paifeirule/deleteData",
+		async: false,
+		data : {
+			"ruleid" : ruleid,
+			"tab" : tab,
+			"type" : type
+		},
+		dataType : "json",
+		success : function(obj) {
+			//alert(obj.error);
+			errorcode=obj.errorcode;
+
+		}
+	});
+	return errorcode;
+	}
+
+function isshowjspf(e){
+	$("#credatafrom").find("#jushouPFfee").val('0.00');
+	$("#credatafrom").find("#jushouPFfee").removeAttr('disabled');
+	if($(e).val()==1||$(e).val()==3)
+		{
+			$("#credatafrom").find("#jushouPFfee").attr('disabled','disabled');
+		}
 }

@@ -198,7 +198,7 @@ public class PaiFeiRuleService {
 			this.savedata(pf);
 		}
 		// 超区补助
-		if (tab.getOverarea() == 1) {
+		if ((pfruletypeid==3)&&(tab.getOverarea() == 1)) {
 			PFoverarea pf = new PFoverarea();
 			pf.setPfruleid(pfruleid);
 			pf.setTabid(pfenum.getValue());
@@ -1531,5 +1531,48 @@ public class PaiFeiRuleService {
 		 * this.savedata(area);
 		 */
 		return id;
+	}
+
+	/**
+	 * @param ruleid
+	 * @param tabVal
+	 * @param type
+	 * @return
+	 */
+	public int  deleteData(long pfruleid, int tabid, String type) {
+
+		if(type.equals("basic"))
+		{
+			return this.pFbasicDAO.deletePFbasicByPfRuleidAndTabid(pfruleid, tabid);
+		}
+		else if(type.equals("collection"))
+		{
+			return this.pFcollectionDAO.deletePFcollectionByPfRuleidAndTabid(pfruleid, tabid);
+		}
+		else if(type.equals("area"))
+		{
+			List<PFarea> areas=this.pFareaDAO.getPFareaByPfruleidAndTabid(pfruleid, tabid);
+			if(areas!=null) {
+				for(PFarea pf:areas)
+				{
+					this.pFoverbigDAO.deletePFoverbigByAreaid(pf.getAreaid());
+					this.pFoverweightDAO.deletePFoverweightByAreaid(pf.getAreaid());
+				}
+			}
+			return	this.pFareaDAO.deleteAreaByPfruleidAndTabid(pfruleid,tabid);
+		}
+		else if(type.equals("overarea"))
+		{
+			return	this.pFoverareaDAO.deletePFoverareaByPfRuleidAndTabid(pfruleid, tabid);
+		}
+		else if(type.equals("business"))
+		{
+			return	this.pFbusinessDAO.deleteBusinessByPfruleidAndTabid(pfruleid, tabid);
+		}
+		else if(type.equals("insertion"))
+		{
+			return	this.pFinsertionDAO.deletePFinsertionByPfRuleidAndTabid(pfruleid, tabid);
+		}
+		return 0;
 	}
 }

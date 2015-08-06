@@ -110,7 +110,7 @@
 				</tr>
 				<tr>
 					<td style="line-height: 30px" align="right">规则类型：</td>
-					<td><select style="width: 100%;" name="type">
+					<td><select style="width: 100%;" name="type" onchange="isshowjspf($(this))">
 							<!-- <option value="0">-全部-</option> -->
 							<c:forEach items="${PaiFeiRuleTypeEnum}" var="type">
 								<option value="${type.value}">${type.text}</option>
@@ -123,7 +123,7 @@
 							</c:forEach>
 					</select></td>
 					<td align="right">拒收派费(元)：</td>
-					<td><input type="text" name="jushouPFfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
+					<td><input type="text" name="jushouPFfee" id="jushouPFfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/></td>
 				</tr>
 				<tr>
 					<td style="line-height: 30px" align="right">结算规则名称：</td>
@@ -305,9 +305,11 @@
 									</div>
 								</td>
 							</tr>
+							<c:if test="${rule.type==3}">
 							<tr id="ps_overarea_tr">
 								<td><input type="checkbox" value="1" />超区补助</td>
 							</tr>
+							</c:if>
 							<tr id="ps_business_tr">
 								<td><input type="checkbox" id="ps_business_flag" />业务补助</td>
 								<td><input type="text" id="ps_business_subsidyfee" /></td>
@@ -381,6 +383,7 @@
 												type="button" onclick="removeTR('th','collection')" value="移除" />
 										</div></td>
 								</tr>
+								
 								<tr id="th_area_tr">
 									<td><input type="checkbox" id="th_area_flag" />区域属性补助费</td>
 									<td>
@@ -413,9 +416,7 @@
 										</div>
 									</td>
 								</tr>
-								<tr id="th_overarea_tr">
-									<td><input type="checkbox" value="1" />超区补助</td>
-								</tr>
+								
 								<tr id="th_business_tr">
 									<td><input type="checkbox" id="th_business_flag" />业务补助</td>
 									<td><input type="text" id="th_business_subsidyfee" /></td>
@@ -522,10 +523,7 @@
 										</div>
 									</td>
 								</tr>
-								<tr id="zz_overarea_tr">
-									<td><input type="checkbox" value="1" />超区补助</td>
-
-								</tr>
+								
 								<tr id="zz_business_tr">
 									<td><input type="checkbox" id="zz_business_flag" />业务补助</td>
 									<td><input type="text" id="zz_business_subsidyfee" /></td>
@@ -598,7 +596,7 @@
 						</td>
 						<td align="right">拒收派费(元)：</td>
 						<td><input type="text" id="edit_jushouPFfee" name="jushouPFfee" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"
-							value="${rule.jushouPFfee }" /></td>
+							${rule.type==1||rule.type==3?'disabled=disabled':''}" 	value="${rule.jushouPFfee }" /></td>
 					</tr>
 					<tr>
 						<td style="line-height: 30px" align="right">结算规则名称：</td>
@@ -718,7 +716,7 @@
 								</form></td>
 						</tr>
 						<tr id="ps_area_tr">
-							<td><input type="checkbox" id="ps_area_flag" ${pfareaListPS!=null||fn:length(pfareaListPS)>0?'checked=checked':'' }  />区域属性补助费</td>
+							<td><input type="checkbox" id="ps_area_flag" ${pfareaListPS!=null&&fn:length(pfareaListPS)>0?'checked=checked':'' }  />区域属性补助费</td>
 							<td>
 								<div>
 									<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
@@ -985,7 +983,7 @@
 									</div></td>
 							</tr>
 							<tr id="th_area_tr">
-								<td><input type="checkbox" id="th_area_flag" ${pfareaListTH!=null||fn:length(pfareaListTH)>0?'checked=checked':'' } />区域属性补助费</td>
+								<td><input type="checkbox" id="th_area_flag" ${pfareaListTH!=null&&fn:length(pfareaListTH)>0?'checked=checked':'' } />区域属性补助费</td>
 								<td>
 									<div>
 										<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"
@@ -1253,7 +1251,7 @@
 									</div></td>
 							</tr>
 							<tr id="zz_area_tr">
-								<td><input type="checkbox" id="zz_area_flag" ${pfareaListZZ!=null||fn:length(pfareaListZZ)>0?'checked=checked':'' }  />区域属性补助费</td>
+								<td><input type="checkbox" id="zz_area_flag" ${pfareaListZZ!=null&&fn:length(pfareaListZZ)>0?'checked=checked':'' }  />区域属性补助费</td>
 								<td>
 									<div>
 										<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2"

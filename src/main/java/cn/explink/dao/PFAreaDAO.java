@@ -177,6 +177,11 @@ public class PFAreaDAO {
 		this.jdbcTemplate.update(sql, pfruleid);
 
 	}
+	public int deleteAreaByPfruleidAndTabid(long pfruleid,int tabid) {
+		String sql = "delete from paifeirule_area where  pfruleid=? and tabid=?  ";
+		return this.jdbcTemplate.update(sql, pfruleid,tabid);
+
+	}
 
 	public PFarea getPFareaById(long id) {
 

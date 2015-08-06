@@ -164,5 +164,13 @@ public class PFbusinessDAO {
 
 		}
 	}
+	public int deleteBusinessByPfruleidAndTabid(long pfruleid,int tabid) {
+		String sql = "delete from paifeirule_business where  pfruleid=?  and tabid=?";
+		try {
+		return 	this.jdbcTemplate.update(sql,  pfruleid,tabid);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
 
 }

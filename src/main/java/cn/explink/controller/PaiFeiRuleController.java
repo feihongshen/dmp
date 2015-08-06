@@ -42,6 +42,7 @@ import cn.explink.domain.PaiFeiRule;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleStateEnum;
+import cn.explink.enumutil.PaiFeiRuleTabEnum;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.PaiFeiRuleService;
@@ -210,6 +211,32 @@ public class PaiFeiRuleController {
 		}
 	}
 
+	@RequestMapping("/deleteData")
+	public @ResponseBody
+	String deleteData(@RequestParam(value = "ruleid", required = false, defaultValue = "0") long ruleid, @RequestParam(value = "tab", required = false, defaultValue = "") String tab, @RequestParam(
+			value = "type",
+			required = false,
+			defaultValue = "") String type, Model model, HttpServletRequest request) {
+		int tabVal = 0;
+		if (tab.equals("ps")) {
+			tabVal = PaiFeiRuleTabEnum.Paisong.getValue();
+		}else if(tab.equals("th")){
+			tabVal = PaiFeiRuleTabEnum.Tihuo.getValue();
+		}else if(tab.equals("zz")){
+			tabVal = PaiFeiRuleTabEnum.Zhongzhuan.getValue();
+		}
+		try{
+		long count = this.paiFeiRuleService.deleteData(ruleid, tabVal, type);
+		if (count >= 0) {
+			return "{\"errorcode\":1,\"error\":\"修改成功！\"}";
+		}
+		}catch(Exception e)
+		{
+			return "{\"errorcode\":0,\"error\":\"修改失败！\"}";
+		}
+		return "{\"errorcode\":0,\"error\":\"修改失败！\"}";
+	}
+
 	@RequestMapping("/check")
 	public @ResponseBody
 	Map<String, Object> check(@RequestParam(value = "name", required = false, defaultValue = "") String name, Model model) {
@@ -242,11 +269,11 @@ public class PaiFeiRuleController {
 			if (overbigflag >= -1) {
 				area.setOverbigflag(overbigflag);
 			}
-			count=this.pFareaDAO.updatePFarea(area);
+			count = this.pFareaDAO.updatePFarea(area);
 		}
 		String error = "";
 		int errorcode = 0;
-		if (count >0) {
+		if (count > 0) {
 			error = "修改成功";
 			errorcode = 1;
 		}
