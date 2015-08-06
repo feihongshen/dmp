@@ -146,9 +146,9 @@ public class PaiFeiRuleController {
 		try {
 			this.paiFeiRuleService.save(object, pfruletypeid, pfruleid);
 		} catch (Exception e) {
-			return "{\"errorCode\":0,\"error\":\"增加异常！\"}";
+			return "{\"errorcode\":0,\"error\":\"增加异常！\"}";
 		}
-		return "{\"errorCode\":1,\"error\":\"增加成功！\"}";
+		return "{\"errorcode\":1,\"error\":\"增加成功！\"}";
 	}
 
 	@RequestMapping("/credata")
@@ -191,9 +191,9 @@ public class PaiFeiRuleController {
 
 		int count = this.paiFeiRuleService.editType(json, rulejson, type, areaid, model);
 		if (count > 0) {
-			return "{\"errorCode\":1,\"error\":\"修改成功！\"}";
+			return "{\"errorcode\":1,\"error\":\"修改成功！\"}";
 		} else {
-			return "{\"errorCode\":0,\"error\":\"修改失败！\"}";
+			return "{\"errorcode\":0,\"error\":\"修改失败！\"}";
 		}
 	}
 
@@ -204,9 +204,9 @@ public class PaiFeiRuleController {
 
 		long count = this.paiFeiRuleService.saveArea(areajson, rulejson, tab);
 		if (count > 0) {
-			return "{\"errorCode\":1,\"error\":\"修改成功！\"}";
+			return "{\"errorcode\":1,\"error\":\"修改成功！\"}";
 		} else {
-			return "{\"errorCode\":0,\"error\":\"修改失败！\"}";
+			return "{\"errorcode\":0,\"error\":\"修改失败！\"}";
 		}
 	}
 
@@ -239,7 +239,7 @@ public class PaiFeiRuleController {
 			if ((areafee != null) && (areafee.length() > 0)) {
 				area.setAreafee(new BigDecimal(areafee));
 			}
-			if (overbigflag > -1) {
+			if (overbigflag >= -1) {
 				area.setOverbigflag(overbigflag);
 			}
 			count=this.pFareaDAO.updatePFarea(area);
