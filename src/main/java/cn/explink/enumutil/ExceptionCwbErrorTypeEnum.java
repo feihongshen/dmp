@@ -72,7 +72,10 @@ public enum ExceptionCwbErrorTypeEnum {
 	OXO_JIT_DISALLOW_RECEIVEGOODS(135,"OXO_JIT类型的订单不允许领货"),
 	OXO_JIT_DISALLOW_TRANSFER_STATION_OUTBOUND(136,"OXO_JIT类型的订单不允许中转出站或站点出站"), 
 	
-	NOT_EXPRESS_CWB(137,"单号{0}不是快递单，不允许揽件出站")
+	NOT_EXPRESS_CWB(137,"单号{0}不是快递单，不允许揽件出站"),
+	CURRENT_BRANCH_NOT_MATCH(138,"不是这个站点的运单/包号,下一站为{0}站"),
+	REPEATED_OUT_STATION(139,"运单/包号重复出站,下一站为{0}站"),
+	NEXT_BRANCH_NOT_MATCH(139,"页面所选下一站{0}和运单/包的下一站{1}不一致")
 	;
 
 	private int value;
