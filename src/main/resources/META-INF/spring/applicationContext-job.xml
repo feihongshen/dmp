@@ -85,7 +85,9 @@
 							 <ref bean="doTime_wenxuan" />
 							 <ref bean="doTime_deleteFlow" />
 							 <ref bean="doTime_vipshopOXO" />
-							 <ref bean="doTime_vipshopOXOPickState" />							 
+							 <ref bean="doTime_vipshopOXOPickState" />
+							 <ref bean="doTime_vipshopOXOJITFeedback" />	
+							 						 
 							 
 			           </list>                 
 	               </property>         
@@ -833,6 +835,26 @@
          </property>
      </bean>
      <!-- 抓取唯品会OXO订单揽件状态定时器   结束-->
+     
+       <!-- 请求唯品会OXO提货任务反馈接口定时器 开始 -->
+     <bean id="doTime_vipshopOXOJITFeedback" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="sendVipShopOXOJITFeedback" />
+           </property>
+             <property name="cronExpression">
+               <value>0 0/30 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="sendVipShopOXOJITFeedback" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>sendVipShopOXOJITFeedbackTask</value>
+         </property>
+     </bean>
+     <!-- 请求唯品会OXO提货任务反馈接口定时器   结束-->
      
 <!-- ===================================自动生成HTML定时器 结束========================================== -->
 </beans>
