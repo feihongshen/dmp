@@ -211,8 +211,13 @@ public class SalaryCountDAO {
 	}
 
 	public long getSalarCountyByid(String id) {
-		String sql="select count(1) from express_ops_salaryCount_detail where batchid=? and batchstate=?";
-		return this.jdbcTemplate.queryForLong(sql,id,BatchSateEnum.Weihexiao.getValue());
+		try{
+			String sql="select count(1) from express_ops_salaryCount_detail where batchid=? and batchstate=?";
+			return this.jdbcTemplate.queryForLong(sql,id,BatchSateEnum.Weihexiao.getValue());
+		}catch(Exception e){
+			e.printStackTrace();
+			return 0;
+		}
 	}
 	/*public long getSalarycountByuidandbid(long userid, String batchid) {
 		try{
@@ -223,4 +228,13 @@ public class SalaryCountDAO {
 			return 0;
 		}
 	}*/
+	public SalaryCount getSalaryCountByid(String batchid) {
+		try{
+			String sql = "select * from express_ops_salaryCount_detail where batchid=?";
+			return this.jdbcTemplate.queryForObject(sql,new SalaryCountRowMapper(),batchid);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

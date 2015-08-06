@@ -358,6 +358,12 @@ public class UserDAO {
 		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
 		return userList;
 	}
+	
+	public List<User> getAllUsers() {
+		String sql = "select * from express_set_user where userDeleteFlag=1";
+		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
+		return userList;
+	}
 
 	public List<User> getAllUserByuserDeleteFlag() {
 		String sql = "select * from express_set_user where userDeleteFlag=1 order by CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";

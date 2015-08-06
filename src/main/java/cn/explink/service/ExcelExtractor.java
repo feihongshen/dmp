@@ -1403,7 +1403,7 @@ public abstract class ExcelExtractor {
 	@Transactional
 	public void extractSalaryGather(InputStream input, long importflag, User user,SalaryCount sc) {
 		List<SalaryGather> salaryList = new ArrayList<SalaryGather>();
-		List<User> userList = this.userDAO.getAllUser();
+		List<User> userList = this.userDAO.getAllUsers();
 		List<SalaryFixed> fixedList = this.salaryFixedDAO.getAllFixed();
 		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryImports();//固定值设置描述
 		Map<String,Integer> improtMap=this.SetMapImport(salaryImports);

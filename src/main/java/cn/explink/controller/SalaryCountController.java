@@ -261,6 +261,10 @@ public class SalaryCountController {
 			@RequestParam(value = "batchid",required = false,defaultValue = "") String batchid){
 		
 		try{
+			SalaryCount sc = this.salaryCountDAO.getSalaryCountByid(batchid);
+			if(sc.getBatchstate()==1){
+				return "{\"errorCode\":2,\"error\":\"已核销的批次不能再次核销！\"}";
+			}
 			User use = this.getSessionUser();
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

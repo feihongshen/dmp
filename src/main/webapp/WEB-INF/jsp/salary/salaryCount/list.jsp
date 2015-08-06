@@ -294,24 +294,29 @@ function hexiao(){
 	if(userids.length==0){
 		alert("请选择需要核销的信息!");
 	}else{
-		userids = userids.substring(0,userids.length-1);
-		$.ajax({
-		   type: "POST",
-		   url: actionvar,
-		   async:false,
-		   data: {userids:userids,
-			   batchid:batchid	   
-		   },
-		   dataType : 'json',
-		   success: function (data){
-			     if(data.errorCode==0){
-			    	 alert("成功核销"+data.error+"名配送员工资信息!");
-		 			window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
-			     }else{
-			    	 $.messager.alert("提示",data.error,"info");
-			     } 
-		   }
-		});
+		if(confirm("核销时请务必勾选所有配送员工资单,一个批次只能核销一次!")){
+			userids = userids.substring(0,userids.length-1);
+			$.ajax({
+			   type: "POST",
+			   url: actionvar,
+			   async:false,
+			   data: {userids:userids,
+				   batchid:batchid	   
+			   },
+			   dataType : 'json',
+			   success: function (data){
+				     if(data.errorCode==0){
+				    	 alert("成功核销"+data.error+"名配送员工资信息!");
+			 			window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
+				     }else if(data.errorCode==2){
+				    	 alert(data.error);
+				    	 window.location.href="<%=request.getContextPath()%>/salaryCount/list/1";
+				     }else{
+				    	 $.messager.alert("提示",data.error,"info");
+				     } 
+			   }
+			});
+		}
 	}
 }
 function removeDeliveryUserData(){
