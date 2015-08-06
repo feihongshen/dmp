@@ -2338,9 +2338,12 @@ public class CwbOrderService {
 			boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, boolean iszhongzhuanout, boolean aflag, Long credate,
 			boolean anbaochuku, Branch userbranch) {
 		this.validateCwbState(co, flowOrderTypeEnum);
-
-		this.validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);
-
+		
+		// 对oxo和oxo_jit的订单不用中转审核 by jinghui.pan on 20150806
+		if(isOxoAndJitType(co) == false){
+			this.validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);//中转校验
+		}
+		
 		if ((co.getFlowordertype() != flowOrderTypeEnum.getValue()) || (co.getStartbranchid() != currentbranchid)) {
 			this.validateStateTransfer(co, flowOrderTypeEnum);
 		}
