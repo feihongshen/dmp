@@ -398,7 +398,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	  					neweditbill1(billBatches);	 
 					}else{
 							$.messager.progress('close');
-						  $.messager.alert('提示','没有查询到相关订单，不能创建账单！','info');  
+						  $.messager.alert('提示','没有查询到相关订单，或未绑定派费规则！','info');  
 					}
 	  			}
 	  		});
@@ -984,8 +984,8 @@ function changeImportToDmpMoney(){
 								msg: result.successdata
 							});// reload the data
 							duiBiBillMoneyChaYi();
-							$('#dgMoneyChaYi').datagrid("reload");
 							MoneyChaYi();
+							$('#dgMoneyChaYi').datagrid("reload");
 						} 
 						
 					},'json');
@@ -1007,8 +1007,8 @@ function changeImportToDmpAllMoney(){
 								msg: result.successdata
 							});// reload the data
 							duiBiBillMoneyChaYi();
-							$('#dgMoneyChaYi').datagrid("reload");
 							MoneyChaYi();
+							$('#dgMoneyChaYi').datagrid("reload");
 						} 
 						
 					},'json');

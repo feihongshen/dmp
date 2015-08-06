@@ -116,7 +116,6 @@ public class CustomerBillContractDao {
 			BigDecimal refuseMoney, BigDecimal transferMoney, BigDecimal totalCharge
 			
 			){
-				StringBuilder sb = new StringBuilder();
 				String sql="update customerbillcontract set cwbs=?,corresponding_cwb_num=?,delivery_money=?,distribution_money=?,transfer_money=?,refuse_money=?,total_charge=? where bill_batches='"+billBatches+"'";				
 				
 				this.jdbcTemplate.update(sql,cwbs,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge);
@@ -171,6 +170,12 @@ public class CustomerBillContractDao {
 			 * 
 			 * @param id 账单id
 			 */
+	
+			public void updateTotalValueByBatches(BigDecimal newValue,String batches){
+				String sql="update customerbillcontract set total_charge="+newValue+" where bill_batches='"+batches+"'";
+				this.jdbcTemplate.update(sql);
+				System.out.println(sql);
+			}
 			public void removebill(long id) {
 				String sql="delete from customerbillcontract where id="+id;
 				this.jdbcTemplate.update(sql);
