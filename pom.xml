@@ -463,7 +463,12 @@
 		    <artifactId>commons-codec</artifactId> 
 		    <version>20041127.091804</version> 
 		</dependency>
-		
+			<!-- JAXB eclipselink impl -->
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<version>2.5.2</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>
