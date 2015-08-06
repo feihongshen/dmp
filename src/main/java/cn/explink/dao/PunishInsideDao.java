@@ -363,11 +363,11 @@ public class PunishInsideDao {
 		try {
 		StringBuffer buffer=new StringBuffer();
 		if (flag==1) {//扣款撤销
-			buffer.append("select SUM(a.shenhepunishprice) as price   ");
+			buffer.append("select SUM(a.shenhepunishprice) as price ");
 		}else if (flag==2) {//货损赔偿
-			buffer.append("select SUM(a.lastgoodpunishprice) as price  ");
+			buffer.append("select SUM(a.lastgoodpunishprice) as price ");
 		}else if (flag==3) {//违纪违规扣罚
-			buffer.append("select SUM(a.lastqitapunishprice) as price  ");
+			buffer.append("select SUM(a.lastqitapunishprice) as price ");
 		}
 		buffer.append("from express_ops_punishInside_detail as a where a.cwb IN("+ cwbs +") and a.dutypersonid=?");
 		if (flag==1) {

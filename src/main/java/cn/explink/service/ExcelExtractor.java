@@ -1719,12 +1719,36 @@ public abstract class ExcelExtractor {
 		}
 		salary.setBonusweather(bonusweather);
 		bdList.add(bonusweather);
-
+		
+		//扣款撤销，违纪扣款扣罚，货损赔偿部分取值
+		List<DeliveryState> deliList = this.deliveryStateDAO.getLinghuoDeliveryStates(sc.getStarttime(),sc.getEndtime(),user.getUserid());
+		String cwbsStrs = "";
+		if(deliList!=null&&!deliList.isEmpty()){
+			for(DeliveryState ds : deliList){
+				cwbsStrs += "'"+ds.getCwb()+"',";
+			}
+		}
+		if(cwbsStrs.length()>0){
+			cwbsStrs = cwbsStrs.substring(0,cwbsStrs.length()-1);
+		}else{
+			cwbsStrs = "''";
+		}
 		//扣款撤销
 		BigDecimal penalizecancel = BigDecimal.ZERO;
-		penalizecancel = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 1);
+		penalizecancel = this.punishInsideDao.getKouFaPrice(cwbsStrs, user.getUserid(), 1);
 		salary.setPenalizecancel(penalizecancel);
 		bdList.add(penalizecancel);
+		//违纪扣款扣罚
+		BigDecimal foul = BigDecimal.ZERO;
+		foul = this.punishInsideDao.getKouFaPrice(cwbsStrs, user.getUserid(), 3);
+		salary.setFoul(foul);
+		bdList.add(foul.multiply(new BigDecimal(-1)));
+		//货损赔偿
+		BigDecimal goods = BigDecimal.ZERO;
+		goods = this.punishInsideDao.getKouFaPrice(cwbsStrs, user.getUserid(), 2);
+		salary.setGoods(goods);
+		bdList.add(goods.multiply(new BigDecimal(-1)));
+
 
 		BigDecimal penalizecancel_import = BigDecimal.ZERO;
 		if((null!=map.get("penalizecancel_import"))&&(map.get("penalizecancel_import")==1)) {//扣款撤销(导入)
@@ -1825,12 +1849,6 @@ public abstract class ExcelExtractor {
 		salary.setGongjijin(gongjijin);
 		bdList.add(gongjijin.multiply(new BigDecimal(-1)));
 
-		//违纪扣款扣罚
-		BigDecimal foul = BigDecimal.ZERO;
-		foul = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 3);
-		salary.setFoul(foul);
-		bdList.add(foul.multiply(new BigDecimal(-1)));
-
 		BigDecimal foul_import = BigDecimal.ZERO;
 		if((null!=map.get("foul_import"))&&(map.get("foul_import")==1)) {//违纪扣款扣罚(导入)
 			foul_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 25));
@@ -1840,11 +1858,6 @@ public abstract class ExcelExtractor {
 		salary.setFoul_import(foul_import);
 		bdList.add(foul_import.multiply(new BigDecimal(-1)));
 
-		//货损赔偿
-		BigDecimal goods = BigDecimal.ZERO;
-		goods = this.punishInsideDao.getKouFaPrice(cwbsStr, user.getUserid(), 2);
-		salary.setGoods(goods);
-		bdList.add(goods.multiply(new BigDecimal(-1)));
 
 		BigDecimal dorm = BigDecimal.ZERO;
 		if((null!=map.get("dorm"))&&(map.get("dorm")==1)) {//宿舍费用

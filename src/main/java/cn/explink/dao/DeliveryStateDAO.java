@@ -1660,5 +1660,16 @@ public class DeliveryStateDAO {
 		String sql = "select * from express_ops_delivery_state where deliveryid=? and auditingtime>='"+starttime+" 00:00:00' and auditingtime<='"+endtime+" 23:59:59' and deliverystate in(1,2,3) and state=1";
 		return this.jdbcTemplate.query(sql,new DeliveryStateRowMapper(),userid);
 	}
+
+	public List<DeliveryState> getLinghuoDeliveryStates(String starttime,
+			String endtime, long userid) {
+		try{
+			String sql = "select * from express_ops_delivery_state where deliveryid=? and createtime>='"+starttime+" 00:00:00' and createtime<='"+endtime+" 23:59:59' and state=1";
+			return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper(),userid);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 }
