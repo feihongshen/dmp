@@ -8055,4 +8055,16 @@ CREATE TABLE `cs_complaint_accept` (
 			ADD INDEX `detail_oxojitfeedbackflag_idx` (`oxojitfeedbackflag`);
 	   	</sql>
 	</changeSet>
+	<changeSet id="zhouguoting-2015-08-06-01" author="zhouguoting">
+		<sql>
+			delete from express_set_system_install where name in('OXOJITFeedback.pickPerson','OXOJITFeedback.pickPersonTel','OXOJITFeedback.pickCarNo','OXOJITFeedback.pickQty','OXOJITFeedback.expectedPickTime','OXOJITFeedback.picUrl','OXOJITFeedback.idNumber');
+			insert into `express_set_system_install` (`name`, `value`,`chinesename`) values('OXOJITFeedback.pickPerson','张三','OXOJIT提货人');
+			insert into `express_set_system_install` (`name`, `value`,`chinesename`) values('OXOJITFeedback.pickPersonTel','15937482382','OXOJIT提货人电话');
+			insert into `express_set_system_install` (`name`, `value`,`chinesename`) values('OXOJITFeedback.pickCarNo','粤A888888','OXOJIT提货车牌号');
+			insert into `express_set_system_install` (`name`, `value`,`chinesename`) values('OXOJITFeedback.pickQty','10','OXOJIT提货数量');
+			insert into `express_set_system_install` (`name`, `value`,`chinesename`) values('OXOJITFeedback.expectedPickTime','2015-08-09 15:40:00','OXOJIT预期提货时间');
+			insert into `express_set_system_install` (`name`, `value`,`chinesename`) values('OXOJITFeedback.picUrl','','OXOJIT提货人照片url');
+			insert into `express_set_system_install` (`name`, `value`,`chinesename`) values('OXOJITFeedback.idNumber','441434583392348285','OXOJIT提货人身份证号码');		
+		</sql>
+ 	</changeSet>
 </databaseChangeLog>
