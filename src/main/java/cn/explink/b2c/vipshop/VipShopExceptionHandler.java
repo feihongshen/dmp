@@ -25,4 +25,36 @@ public class VipShopExceptionHandler {
 		}
 
 	}
+	
+	/**
+	 * 校验 唯品会的业务响应编码
+	 *  B00	数据处理无异常	
+	 *	B01	找不到订单	order_sn对应的记录不存在时返回
+	 *	B02	Bind节点中字段校验	如：当请求的不为空字段，传空值时返回。
+	 *	B03	数据重复异常	当同一承运商传递的cust_data_id重复时返回
+	 *  B04	非承运商承运的订单	当相应的单据不是该承运商承运时返回此编码
+	 *	B99	数据处理出现不可预见异常	处理某数据出现异常时返回
+	 * @param biz_response_code
+	 * @param biz_response_msg
+	 * @param vipShop
+	 */
+	public static void validateBizResponseCode(String biz_response_code,String biz_response_msg, VipShop vipShop){
+		String expt_event = null;
+		if("B01".equals(biz_response_code)){
+			expt_event = "后台打印：返回码：[B01],原因：[找不到订单]，说明：[order_sn对应的记录不存在时返回]，biz_response_msg："+biz_response_msg;
+		} else if("B02".equals(biz_response_code)){
+			expt_event = "后台打印：返回码：[B02],原因：[Bind节点中字段校验]，说明：[如：当请求的不为空字段，传空值时返回]，biz_response_msg："+biz_response_msg;
+		} else if("B03".equals(biz_response_code)){
+			expt_event = "后台打印：返回码：[B03],原因：[数据重复异常]，说明：[	当同一承运商传递的cust_data_id重复时返回]，biz_response_msg："+biz_response_msg;
+		} else if("B04".equals(biz_response_code)){
+			expt_event = "后台打印：返回码：[B04],原因：[非承运商承运的订单]，说明：[当相应的单据不是该承运商承运时返回此编码]，当前承运商编码为：[" + vipShop.getShipper_no() + "]，biz_response_msg："+biz_response_msg;
+		} else if("B99".equals(biz_response_code)){
+			expt_event = "后台打印：返回码：[B99],原因：[数据处理出现不可预见异常]，说明：[处理某数据出现异常时返回]，biz_response_msg："+biz_response_msg;
+		}
+		
+		if (!"B00".equals(biz_response_code)) {
+			throw new RuntimeException(expt_event);
+		}
+		
+	}
 }

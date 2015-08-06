@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.EmailFinishFlagEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.DataImportService;
@@ -529,6 +530,37 @@ public class DataImportDAO_B2c {
 			}
 		});
 
+	}
+	
+	/**
+	 * 获取未反馈给TPS的OXOJIT订单号
+	 * @param count 获取的条数
+	 * @param customerid 客户id
+	 * @return
+	 */
+	public List<String> getUnfeedbackOXOJITOrders(int count,long customerid){
+		String sql = "select transcwb from express_ops_cwb_detail_b2ctemp where customerid=? and cwbordertypeid=? and getDataFlag<>0 and oxojitfeedbackflag=0 and state=1 order by credate limit ?";
+		return jdbcTemplate.query(sql, new RowMapper<String>(){
+
+			@Override
+			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getString("transcwb");
+			}
+			
+		}, customerid, CwbOrderTypeIdEnum.OXO_JIT.getValue(), count);
+		
+	}
+	
+	/**
+	 * 批量更新oxojitfeedbackflag的值为1
+	 * @param cwbs
+	 * @param customerid
+	 */
+	public void updateOXOJITfeedbackflag(String transcwbs,long customerid){
+		
+		String sql = "update express_ops_cwb_detail_b2ctemp set oxojitfeedbackflag=1 where transcwb in("+ transcwbs +") and customerid=? and cwbordertypeid=? and state=1";
+		jdbcTemplate.update(sql, customerid, CwbOrderTypeIdEnum.OXO_JIT.getValue());
+		
 	}
 
 }

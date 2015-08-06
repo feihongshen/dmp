@@ -53,6 +53,7 @@ import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
 import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.b2c.vipshop.VipShopService;
 import cn.explink.b2c.vipshop.oxo.VipShopOXOGetPickStateService;
+import cn.explink.b2c.vipshop.oxo.VipShopOXOJITFeedbackService;
 import cn.explink.b2c.wangjiu.WangjiuInsertCwbDetailTimmer;
 import cn.explink.b2c.wenxuan.WenxuanInsertCwbDetailTimmer;
 import cn.explink.b2c.wenxuan.WenxuanService_getOrder;
@@ -198,6 +199,8 @@ public class JobUtil {
 	FloworderLogService floworderLogService;
 	@Autowired
 	VipShopOXOGetPickStateService vipShopOXOGetPickStateService;
+	@Autowired
+	VipShopOXOJITFeedbackService vipShopOXOJITFeedbackService;
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 
@@ -225,6 +228,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("guangzhoutonglu", 0);
 		JobUtil.threadMap.put("vipshop_OXO", 0);
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
+		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 
 	}
 
@@ -253,6 +257,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("guangzhoutonglu", 0);
 		JobUtil.threadMap.put("vipshop_OXO", 0);
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
+		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1109,6 +1114,35 @@ public class JobUtil {
 		this.logger.info("执行了获取vipshop_OXO_pickstate订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 
 		
+	}
+	
+	
+	public void sendVipShopOXOJITFeedbackTask(){
+		System.out.println("-----sendVipShopOXOJITFeedbackTask启动执行");
+//		String sysValue = this.getSysOpenValue();
+//		if ("yes".equals(sysValue)) {
+//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+//			return;
+//		}
+
+		if (JobUtil.threadMap.get("vipshop_OXOJIT_feedback") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXOJIT_feedback");
+			return;
+		}
+		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 1);
+		long starttime = 0;
+		long endtime = 0;
+		try{
+			starttime = System.currentTimeMillis();
+			this.vipShopOXOJITFeedbackService.sendVipShopOXOJITFeedback(B2cEnum.VipShop_OXO.getKey());
+			endtime = System.currentTimeMillis();
+
+		}catch(Exception e){
+			this.logger.error("执行vipshop_OXOJIT_feedback定时器异常", e);
+		}finally{
+			JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
+		}
+		this.logger.info("执行了获取vipshop_OXOJIT_feedback订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 	
 	

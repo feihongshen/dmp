@@ -6333,7 +6333,7 @@ public class CwbDAO {
 		if(StringUtils.isNotBlank(stateVo.getOperaterTime())){
 			pickoperatertime = stateVo.getOperaterTime();
 		}
-		String sql = "update express_ops_cwb_detail set oxopickstate=? pickoperator=? pickoperatertime=? where cwb=? and customerid=? and state = 1";
+		String sql = "update express_ops_cwb_detail set oxopickstate=? pickoperator=? pickoperatertime=? where transcwb=? and customerid=? and state = 1";
 		this.jdbcTemplate.update(sql, pickState, pickoperator, pickoperatertime, stateVo.getTransportNo(), customerid);
 	}
 	

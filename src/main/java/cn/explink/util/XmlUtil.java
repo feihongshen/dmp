@@ -37,24 +37,24 @@ public class XmlUtil {
         return (T) returnObject;
     }
     
-//	public static <T> String toXml(Class<T> clazz, T obj) throws Exception {
-//		String ret = "";
-//		JAXBContext context = null;
-//		Marshaller marshaller;
-//		try {
-//			//context = JAXBContext.newInstance(clazz);
-//			 Map<String, Object> props = new HashMap<String, Object>(1);
-//			 props.put(" javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
-//			 context=org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {clazz}, props,Thread.currentThread().getContextClassLoader() );
-//			marshaller = context.createMarshaller();
-//			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//			StringWriter stringWriter = new StringWriter();
-//			marshaller.marshal(obj, stringWriter);
-//			ret = stringWriter.getBuffer().toString();
-//		} catch (Exception e) {
-//			throw e;
-//		}
-//		return ret;
-//	}
+	public static <T> String toXml(Class<T> clazz, T obj) throws Exception {
+		String ret = "";
+		JAXBContext context = null;
+		Marshaller marshaller;
+		try {
+			//context = JAXBContext.newInstance(clazz);
+			Map<String, Object> props = new HashMap<String, Object>(1);
+			props.put(" javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
+			context=org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {clazz}, props,Thread.currentThread().getContextClassLoader() );
+			marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			StringWriter stringWriter = new StringWriter();
+			marshaller.marshal(obj, stringWriter);
+			ret = stringWriter.getBuffer().toString();
+		} catch (Exception e) {
+			throw e;
+		}
+		return ret;
+	}
 
 }
