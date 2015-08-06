@@ -1647,7 +1647,7 @@ public abstract class ExcelExtractor {
 		}*/
 		
 		BigDecimal bds = BigDecimal.ZERO;
-		//减去基本+区域+kpi+其他派费总和之外的总和
+		//减去kpi+其他派费总和之外的总和
 		bds = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
 		//最终计件配送费
 		//bds+业务kpi+其他派费
@@ -1741,17 +1741,17 @@ public abstract class ExcelExtractor {
 		}
 		//扣款撤销
 		BigDecimal penalizecancel = BigDecimal.ZERO;
-		penalizecancel = this.punishInsideDao.getKouFaPrice(cwbsStrs, user.getUserid(), 1);
+		penalizecancel = this.punishInsideDao.getKouFaPrice(sc.getStarttime(),sc.getEndtime(), user.getUserid(), 1);
 		salary.setPenalizecancel(penalizecancel);
 		bdList.add(penalizecancel);
 		//违纪扣款扣罚
 		BigDecimal foul = BigDecimal.ZERO;
-		foul = this.punishInsideDao.getKouFaPrice(cwbsStrs, user.getUserid(), 3);
+		foul = this.punishInsideDao.getKouFaPrice(sc.getStarttime(),sc.getEndtime(), user.getUserid(), 3);
 		salary.setFoul(foul);
 		bdList.add(foul.multiply(new BigDecimal(-1)));
 		//货损赔偿
 		BigDecimal goods = BigDecimal.ZERO;
-		goods = this.punishInsideDao.getKouFaPrice(cwbsStrs, user.getUserid(), 2);
+		goods = this.punishInsideDao.getKouFaPrice(sc.getStarttime(),sc.getEndtime(), user.getUserid(), 2);
 		salary.setGoods(goods);
 		bdList.add(goods.multiply(new BigDecimal(-1)));
 

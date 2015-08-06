@@ -369,7 +369,9 @@ public class PunishInsideDao {
 	 * @param cwbs
 	 * @param userid
 	 */
-	public BigDecimal getKouFaPrice(String cwbs,long userid,long flag){
+	public BigDecimal getKouFaPrice(String starttime,String endtime,long userid,long flag){
+		starttime=starttime+"00:00:00";
+		endtime=endtime+"23:59:59";
 		Double sumprices=null;
 		try {
 		StringBuffer buffer=new StringBuffer();
@@ -380,14 +382,14 @@ public class PunishInsideDao {
 		}else if (flag==3) {//违纪违规扣罚
 			buffer.append("select SUM(a.lastqitapunishprice) as price ");
 		}
-		buffer.append("from express_ops_punishInside_detail as a where a.cwb IN("+ cwbs +") and a.dutypersonid=?");
+		buffer.append("from express_ops_punishInside_detail as a where   a.dutypersonid=? and shenhedate>=? and shenhedate<=?");
 		if (flag==1) {
 			buffer.append(" and a.punishcwbstate="+PunishInsideStateEnum.koufachexiao.getValue());
 		}else {
 			buffer.append(" and a.punishcwbstate="+PunishInsideStateEnum.koufachengli.getValue());
 		}
 			
-			sumprices = this.jdbcTemplate.queryForObject(buffer.toString(), new SumPriceROwMapper(),userid);
+			sumprices = this.jdbcTemplate.queryForObject(buffer.toString(), new SumPriceROwMapper(),userid,starttime,endtime);
 /*			sumprices=this.jdbcTemplate.query(buffer.toString(), new SumPriceROwMapper(),userid);
 */		} catch (DataAccessException e) {
 			this.logger.error("在对内扣罚表中查询扣款撤销或货损赔偿或违纪违规扣罚时出现异常",e);
