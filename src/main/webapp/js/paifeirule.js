@@ -463,6 +463,7 @@ function joineditRule() {
 }
 
 function subEidt(formId, tab, edittype) {
+	var errorcode=0;
 	var dmpurl = $("#dmpurl").val();
 	var json = {};
 	var ruleid = $("#edit_rule_id").val();
@@ -519,21 +520,21 @@ function subEidt(formId, tab, edittype) {
 		},
 		dataType : "json",
 		success : function(obj) {
-			alert(obj.error);
+			errorcode=obj.errorcode;
 		}
 	});
+	return errorcode;
 }
 function showArea(tr, id, areaname) {
 
 	var disabled = "disabled='true'";
 	var tab = id.split("_")[2];
 	var flag = $("#" + tab + "_area_flag")[0].checked;
-
 	var areaid = id.split("_")[3];
 
-	$("#" + tab + "_area_div table").hide();
+	// $("#" + tab + "_area_div table").hide();
 	$(tr).parent().find("tr").each(function() {
-		$(this)[0].style.background = '';
+		// $(this)[0].style.background = '';
 	});
 	if ($("#" + id).length == 0) {
 		$("#" + tab + "_area_table_" + areaid).remove();
@@ -547,7 +548,7 @@ function showArea(tr, id, areaname) {
 			$("#overbigflagtrno").remove();
 		}
 		var tabname = tab + "_area_table_" + areaid;
-		var sub = "<input type='button' value='保存' " + disabled + " onclick='subArea(\"" + tabname + "\",\"" + tab + "\")'/>";
+		var sub = "<input type='hidden' value='保存' " + disabled + " onclick='subArea(\"" + tabname + "\",\"" + tab + "\")'/>";
 		$("#" + tab + "_area_table_" + areaid).find("#areaid").parent().append(sub);
 
 		if (flag) {
@@ -558,15 +559,6 @@ function showArea(tr, id, areaname) {
 			$("#" + tab + "_area_table_" + areaid).find("#overweight_remove").removeAttr('disabled');
 		}
 
-		/*
-		 * var subbig= "<input type='button' value='保存' "+disabled+"
-		 * onclick='subEidt(\""+tab+"_overbig"+areaid+"_table\",\""+tab+"\",\"overbig\")'/>";
-		 * var subweight= "<input type='button' value='保存' "+disabled+"
-		 * onclick='subEidt(\""+tab+"_overweight"+areaid+"_table\",\""+tab+"\",\"overweight\")'/>";
-		 * 
-		 * $("#"+tab+"_area_table_"+areaid).find("#overbig_remove").parent().append(subbig);
-		 * $("#"+tab+"_area_table_"+areaid).find("#overweight_remove").parent().append(subweight);
-		 */
 		if ($(tr).find("#isareafee").val() == 0) {
 			$("#" + tab + "_area_table_" + areaid).find("#isareafeetr").remove();
 		}
@@ -579,15 +571,10 @@ function showArea(tr, id, areaname) {
 		}
 	} else {
 		if ($(tr)[0].style.background.toLowerCase().indexOf('yellow') >= 0) {
-			$(tr).parent().find("tr").each(function() {
-				$(this)[0].style.background = '';
-			});
-
+			$("#" + id).hide();
 			$(tr)[0].style.background = '';
 		} else {
-			$(tr).parent().find("tr").each(function() {
-				$(this)[0].style.background = '';
-			});
+
 			$(tr)[0].style.background = 'yellow';
 
 			$("#" + id).show();
@@ -680,6 +667,7 @@ function credatafrom() {
 	});
 }
 function subArea(tablename, tab) {
+	var	errorcode=0;
 	var areajson = getJsonOfAreaEdit(tablename, $("#edit_rule_from [name=type]").val());
 	var dmpurl = $("#dmpurl").val();
 	/*
@@ -699,9 +687,10 @@ function subArea(tablename, tab) {
 		},
 		dataType : "json",
 		success : function(obj) {
-			alert(obj.error);
+			errorcode=obj.errorcode;
 		}
 	});
+return errorcode;
 }
 function getJsonOfAreaEdit(tablename, ruleType) {
 	var tab = tablename.split("_")[0];
@@ -753,6 +742,7 @@ function getJsonOfAreaEdit(tablename, ruleType) {
 	return json;
 }
 function subAreaEidt(e, areaid, type) {
+	var errorcode=0;
 	var dmpurl = $("#dmpurl").val();
 	var areafee = '';
 	var overbigflag = '';
@@ -760,7 +750,7 @@ function subAreaEidt(e, areaid, type) {
 		areafee = $(e).parent().find("#areafee").val();
 		overbigflag = -2;
 	} else if (type == 'overbigflag') {
-		var flag = $(e).parent().parent().find("#overbigflag").checked;
+		var flag = $(e).parent().parent().find("#overbigflag")[0].checked;
 		if (flag) {
 			overbigflag = 1;
 		} else {
@@ -778,10 +768,12 @@ function subAreaEidt(e, areaid, type) {
 		},
 		dataType : "json",
 		success : function(obj) {
-			alert(obj.error);
+			//alert(obj.error);
+			errorcode=obj.errorcode;
 
 		}
 	});
+	return errorcode;
 }
 
 function checkCustomer(obj, e) {
@@ -798,58 +790,135 @@ function checkCustomer(obj, e) {
 	}
 }
 function saveAllData() {
-	subEidt('edit_rule_from', '', 'rule');
+	var flag=0;
+	
+	flag=subEidt('edit_rule_from', '', 'rule');
 	var ruletype = $("#edit_ruletype").val();
-	var tabs=new Array();
+	var tabs = new Array();
 	if (ruletype == 1) {
-		 tabs = new Array("ps", "th");
+		tabs = new Array("ps", "th");
 	}
 	if (ruletype == 2) {
-		 tabs = new Array("ps", "th", "zz");
+		tabs = new Array("ps", "th", "zz");
 	}
 	if (ruletype == 3) {
-		 tabs = new Array("ps");
+		tabs = new Array("ps");
 	}
 	for (var i = 0; i < tabs.length; i++) {
-		creDate(tabs[i],ruletype);
+		flag=creDate(tabs[i], ruletype);
+		if(flag==0)
+			{
+			return ;
+			}
 	}
+	if(flag==1)
+		{alert("已经修改完成！");}
 
 }
-function creDate(tab,ruletype)
-{
-	var basic_flag = $("#"+tab+"_basic_flag")[0].checked;
-	var collection_flag = $("#"+tab+"_collection_flag")[0].checked;
-	var area_flag = $("#"+tab+"_area_flag")[0].checked;
-	var business_flag = $("#"+tab+"_business_flag")[0].checked;
-	var insertion_flag = $("#"+tab+"_insertion_flag")[0].checked;
+function creDate(tab, ruletype) {
+	var flag=0;
+	
+	var basic_flag = $("#" + tab + "_basic_flag")[0].checked;
+	var collection_flag = $("#" + tab + "_collection_flag")[0].checked;
+	var area_flag = $("#" + tab + "_area_flag")[0].checked;
+	var business_flag = $("#" + tab + "_business_flag")[0].checked;
+	var insertion_flag = $("#" + tab + "_insertion_flag")[0].checked;
 
 	if (basic_flag) {
-		if ($("#"+tab+"_showflag_basic").val() == 'yes') {
-			subEidt("edit_"+tab+"_basic_from", tab, 'basic');
+		if ($("#" + tab + "_showflag_basic").val() == 'yes') {
+			flag=subEidt("edit_" + tab + "_basic_from", tab, 'basic');
+			if(flag==0)
+			{
+			return ;
+			}
 		} else {
-			subEidt("edit_"+tab+"_basicno_from", tab, 'basicno');
+			flag=subEidt("edit_" + tab + "_basicno_from", tab, 'basicno');
+			if(flag==0)
+			{
+			return ;
+			}
 		}
 	}
 	if (collection_flag) {
-		if ($("#"+tab+"_showflag_collection").val() == 'yes') {
-			subEidt("edit_"+tab+"_collection_from", tab, 'collection');
+		if ($("#" + tab + "_showflag_collection").val() == 'yes') {
+			flag=subEidt("edit_" + tab + "_collection_from", tab, 'collection');
+			if(flag==0)
+			{
+			return ;
+			}
 		} else {
-			subEidt("edit_"+tab+"_collectionno_from", tab, 'collectionno');
+			flag=subEidt("edit_" + tab + "_collectionno_from", tab, 'collectionno');
+			if(flag==0)
+			{
+			return ;
+			}
 		}
 	}
 	if (area_flag) {
-
+		$("div[id^=edit_area_"+tab+"_][style*=block]").each(function() {
+			if ($(this).find("#areafee_flag").length>0&&$(this).find("#areafee_flag")[0].checked) {
+				flag=subAreaEidt($(this).find("#areafee_sub"),$(this).find("#areafee_sub").attr('areaid'),'areafee');
+				if(flag==0)
+				{
+				return ;
+				}
+			}
+			if(ruletype!=2){
+				if ($(this).find("#overbigflag").length>0&&$(this).find("#overbigflag")[0].checked) {
+					flag=subAreaEidt($(this).find("#overbigflag_sub"),$(this).find("#overbigflag_sub").attr('areaid'),'overbigflag');
+					if(flag==0)
+					{
+					return ;
+					}
+				}
+			}
+			if(ruletype==2){
+				if ($(this).find("#overbigflag").length>0&&$(this).find("#overbigflag")[0].checked) {
+					flag=subEidt(tab+"_overbig_"+$(this).find("#overbig_sub").attr('areaid')+"_table",tab,'overbig');
+					if(flag==0)
+					{
+					return ;
+					}
+				}
+			}
+			if ($(this).find("#overweightflag").length>0&&(this).find("#overweightflag")[0].checked) {
+				flag=subEidt(tab+"_overweight_"+$(this).find("#overweight_sub").attr('areaid')+"_table",tab,'overweight');
+				if(flag==0)
+				{
+				return ;
+				}
+			}
+		});
+		$("table[id^="+tab+"_area_table_]").each(function(){
+			flag=subArea($(this)[0].id,tab);
+			if(flag==0)
+			{
+			return ;
+			}
+		});
 	}
 	if (ruletype == 3) {
-		var overarea_flag = $("#"+tab+"_overarea_tr #edit_"+tab+"_state_checkbox")[0].checked;
+		var overarea_flag = $("#" + tab + "_overarea_tr #edit_" + tab + "_state_checkbox")[0].checked;
 		if (overarea_flag) {
-			subEidt("edit_"+tab+"_overarea_from", tab, 'overarea');
+			flag=subEidt("edit_" + tab + "_overarea_from", tab, 'overarea');
+			if(flag==0)
+			{
+			return ;
+			}
 		}
 	}
 	if (business_flag) {
-		subEidt("edit_"+tab+"_business_from",tab,'business');
+		flag=subEidt("edit_" + tab + "_business_from", tab, 'business');
+		if(flag==0)
+		{
+		return ;
+		}
 	}
 	if (insertion_flag) {
-		subEidt("edit_"+tab+"_insertion_from",tab,'insertion');
-	}	
+		flag=subEidt("edit_" + tab + "_insertion_from", tab, 'insertion');
+		if(flag==0)
+		{
+		return ;
+		}
+	}
 }
