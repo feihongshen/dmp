@@ -237,9 +237,9 @@ public class SalaryCountController {
 			String[] strArray = ids.split(",");
 			for(String st : strArray){
 				str += "'"+st+"',";
-				long lon = this.salaryCountDAO.deleteSalarCountyByid(st);
+				long lon = this.salaryCountDAO.getSalarCountyByid(st);
 				if(lon==0){
-					map.put("count", lon);
+					map.put("counts", lon);
 					return map;
 				}
 			}

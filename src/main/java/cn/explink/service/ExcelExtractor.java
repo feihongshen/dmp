@@ -4,10 +4,13 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.JSONObject;
 
@@ -1428,12 +1431,15 @@ public abstract class ExcelExtractor {
 			}
 		}
 		if((salaryList!=null)&&(salaryList.size()>0)&&!salaryList.isEmpty()){
+			//Set<SalaryGather> sgSet = new HashSet<SalaryGather>();
+			Map<Long, SalaryGather> lsMap = new HashMap<Long, SalaryGather>();
 			for(SalaryGather sg : salaryList){
-				try{
+				lsMap.put(sg.getUserid(), sg);
+			}
+			if(lsMap!=null&&lsMap.size()>0){
+				Collection<SalaryGather> sgColl = lsMap.values();
+				for(SalaryGather sg : sgColl){
 					this.salaryGatherDao.cresalaryGather(sg);
-				}catch(Exception e){
-					e.printStackTrace();
-					continue;
 				}
 			}
 		}

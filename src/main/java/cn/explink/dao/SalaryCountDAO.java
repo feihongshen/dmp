@@ -169,9 +169,9 @@ public class SalaryCountDAO {
 		String sql="delete from express_ops_salaryCount_detail where batchid in(?) and batchstate=? ";
 		return this.jdbcTemplate.update(sql,ids,BatchSateEnum.Weihexiao.getValue());
 	}*/
-	public long deleteSalarCountyByids(String ids) {
-		String sql="delete from express_ops_salaryCount_detail where batchid in("+ids+") and batchstate=?";
-		return this.jdbcTemplate.update(sql,BatchSateEnum.Weihexiao.getValue());
+	public int deleteSalarCountyByids(String ids) {
+		String sql="delete from express_ops_salaryCount_detail where batchid in("+ids+") and batchstate="+BatchSateEnum.Weihexiao.getValue();
+		return this.jdbcTemplate.update(sql);
 	}
 	public void updatesalaryCount(SalaryCount salaryCount) {
 		String sql = "update express_ops_salaryCount_detail set remark=? where batchid=?";
@@ -210,9 +210,9 @@ public class SalaryCountDAO {
 		}
 	}
 
-	public long deleteSalarCountyByid(String id) {
-		String sql="delete from express_ops_salaryCount_detail where batchid=? and batchstate=?";
-		return this.jdbcTemplate.update(sql,id,BatchSateEnum.Weihexiao.getValue());
+	public long getSalarCountyByid(String id) {
+		String sql="select count(1) from express_ops_salaryCount_detail where batchid=? and batchstate=?";
+		return this.jdbcTemplate.queryForLong(sql,id,BatchSateEnum.Weihexiao.getValue());
 	}
 	/*public long getSalarycountByuidandbid(long userid, String batchid) {
 		try{
