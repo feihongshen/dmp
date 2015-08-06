@@ -660,7 +660,7 @@ public class CustomerBillContractController {
 			long importDateCount=lbe.size();
 			long chaYi=systemDateCount-importDateCount;
 			BigDecimal systemAllMoney=cc.getTotalCharge();
-			BigDecimal importAllMoney = new BigDecimal("0");
+			BigDecimal importAllMoney =BigDecimal.ZERO ;
 			
 			for(ImportBillExcel l:lbe){
 				//求出导入的数据总和
@@ -678,7 +678,7 @@ public class CustomerBillContractController {
 			String cwbss="";
 			for(String s:cwbs){
 				SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOBycwb(s);
-				
+			if(c!=null){	
 				for(ImportBillExcel l:lbe){   //订单相同，总额却不同的，对比不上的不比对
 					if(s.equals(l.getCwb())){
 						if(!c.getTotalCharge().setScale(2,BigDecimal.ROUND_HALF_DOWN).equals(l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()).setScale(2,BigDecimal.ROUND_HALF_DOWN))){
@@ -687,6 +687,7 @@ public class CustomerBillContractController {
 					}
 				}
 			}
+		}
 			if(sb.length()>0){
 				cwbss=sb.substring(0,sb.length()-1).trim().toString(); //订单相同，总额却不同的cwbs
 			}

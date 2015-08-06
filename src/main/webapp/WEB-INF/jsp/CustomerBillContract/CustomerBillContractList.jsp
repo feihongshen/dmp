@@ -1016,11 +1016,11 @@ function changeImportToDmpAllMoney(){
 }
 
 
-function importAllMoney(a){			
+function importAllMoney(value){			
 		$('#importAllMoneydiv').dialog('open').dialog('setTitle','导入详情 ');
 		$.ajax({
 			type:'POST',			
-			url:'${pageContext.request.contextPath}/CustomerBillContract/findImportBillExcelByCwb?cwb='+a,
+			url:'${pageContext.request.contextPath}/CustomerBillContract/findImportBillExcelByCwb?cwb='+value,
 			dataType:'json',
 			async:false,
 			success:function(data){
