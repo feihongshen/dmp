@@ -8067,4 +8067,22 @@ CREATE TABLE `cs_complaint_accept` (
 			insert into `express_set_system_install` (`name`, `value`,`chinesename`) values('OXOJITFeedback.idNumber','441434583392348285','OXOJIT提货人身份证号码');		
 		</sql>
  	</changeSet>
+ 	<changeSet id="wukong-2015-08-06-01" author="wukong">
+ 		<sql>
+ 			 DROP TABLE IF EXISTS `express_ops_punishinside_operationinfo`;
+			 CREATE TABLE `express_ops_punishinside_operationinfo` (
+ 			 `id` int(11) NOT NULL AUTO_INCREMENT,
+ 			 `detailid` int(11) DEFAULT '0',
+ 			 `operationuserid` int(10) DEFAULT '0',
+  			 `operationtype` int(10) DEFAULT '0',
+ 			 `operationdescribe` varchar(100) COLLATE utf8_bin DEFAULT '',
+ 		     `shensutype` int(10) DEFAULT '0',
+ 		     `shensudate` VARCHAR(100) NULL DEFAULT '',
+  		      PRIMARY KEY (`id`),
+ 		      KEY `detailid_idx` (`detailid`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+			ALTER TABLE `express_ops_punishinside_detail`
+			MODIFY COLUMN `shensufileposition`  VARCHAR(20000)  DEFAULT '';
+ 		</sql>
+ 	</changeSet>
 </databaseChangeLog>
