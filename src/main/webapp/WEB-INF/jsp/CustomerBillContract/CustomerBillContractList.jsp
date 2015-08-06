@@ -985,6 +985,7 @@ function changeImportToDmpMoney(){
 							});// reload the data
 							duiBiBillMoneyChaYi();
 							$('#dgMoneyChaYi').datagrid("reload");
+							MoneyChaYi();
 						} 
 						
 					},'json');
@@ -1007,6 +1008,7 @@ function changeImportToDmpAllMoney(){
 							});// reload the data
 							duiBiBillMoneyChaYi();
 							$('#dgMoneyChaYi').datagrid("reload");
+							MoneyChaYi();
 						} 
 						
 					},'json');

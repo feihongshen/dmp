@@ -790,7 +790,7 @@ public class CustomerBillContractController {
 		/*BigDecimal allmoney=new BigDecimal("0");*/
 		for(String s:cwbs){
 			SerachCustomerBillContractVO c=customerbillcontractdao.findSerachCustomerBillContractVOBycwb(s);
-			
+			if(c!=null){
 			for(ImportBillExcel l:lbe){   //订单相同，总额却不同的，对比不上的不比对
 					if(s.equals(l.getCwb())){
 						int a=c.getTotalCharge().compareTo(l.getJijiaMoney().add(l.getXuzhongMoney()).add(l.getFandanMoney()).add(l.getFanchengMoney()).add(l.getDaishoukuanshouxuMoney()).add(l.getPosShouxuMoney()).add(l.getBaojiaMoney()).add(l.getBaozhuangMoney()).add(l.getGanxianbutieMoney()));
@@ -798,6 +798,7 @@ public class CustomerBillContractController {
 						    	sb.append(l.getCwb()+",");
 						    }
 					}
+			}
 			}
 		}
 		List<SerachCustomerBillContractVO> ls= new ArrayList<SerachCustomerBillContractVO>();
