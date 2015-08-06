@@ -1,11 +1,12 @@
 package cn.explink.service;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.controller.AbnormalPunishView;
 import cn.explink.controller.PenalizeInsideView;
+import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.AbnormalOrderDAO;
 import cn.explink.dao.AbnormalTypeDAO;
 import cn.explink.dao.BranchDAO;
@@ -25,6 +27,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.PenalizeTypeDAO;
 import cn.explink.dao.PunishInsideDao;
+import cn.explink.dao.PunishInsideOperationinfoDao;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
@@ -36,9 +39,11 @@ import cn.explink.domain.CsComplaintAccept;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.PenalizeInside;
+import cn.explink.domain.PenalizeInsideFilepath;
 import cn.explink.domain.PenalizeInsideShenhe;
 import cn.explink.domain.PenalizeType;
 import cn.explink.domain.PunishGongdanView;
+import cn.explink.domain.PunishInsideOperationinfo;
 import cn.explink.domain.Reason;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
@@ -80,6 +85,8 @@ public class PunishInsideService {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	PunishInsideDao punishInsideDao;
+	@Autowired
+	PunishInsideOperationinfoDao punishInsideOperationinfoDao;
 	public static final String DUINEIKOUFASHIXIAO="punishinsideshixiao";
 	private static final String ZHAOHUI="找回";
 	private static final String WEIZHAOHUI="未找回";
@@ -441,9 +448,9 @@ public class PunishInsideService {
 							name=file.getOriginalFilename();
 							if (name.indexOf(".")!=-1) {
 								String suffix=name.substring(name.lastIndexOf("."));
-								 name = System.currentTimeMillis() + suffix;
+								 name = DateTimeUtil.getNowTime().replaceAll("-", "").replaceAll(":", "").replaceAll(" ", "") + suffix;
 							}else {
-								 name = System.currentTimeMillis()+"";
+								 name = DateTimeUtil.getNowTime().replaceAll("-", "").replaceAll(":", "").replaceAll(" ", "")+"";
 							}
 							ServiceUtil.uploadWavFile(file, filePath, name);
 						}
@@ -594,5 +601,92 @@ public class PunishInsideService {
 				koufajine=price;
 			}
 			return koufajine;
+		}
+		/**
+		 * 获得新的filepath
+		 * @param filepathMaps
+		 * @param id
+		 * @param newFilepath
+		 * @return
+		 */
+		public String getNewFilePath(Map<Long,String> filepathMaps,String id,String newFilepath){
+			String lastfilePath="";
+			String oldFilePath=filepathMaps.get(Long.parseLong(id));
+			if(!StringUtils.isEmpty(oldFilePath)){
+				lastfilePath=newFilepath+","+oldFilePath;
+				return lastfilePath;
+			}else{
+				return newFilepath;
+			}
+		}
+		/**
+		 * 获得从ids查询到的filepath的Map
+		 * @param ids
+		 * @return
+		 */
+		public Map<Long, String> getFilePathMapByIds(String ids){
+			List<PenalizeInsideFilepath> filePaths=punishInsideDao.findPenalizeById(ids);
+			Map<Long, String> filepathMap=new HashMap<Long, String>();
+			for (PenalizeInsideFilepath penalizeInsideFilepath : filePaths) {
+				filepathMap.put(penalizeInsideFilepath.getId(), penalizeInsideFilepath.getFilepath());
+			}
+			return filepathMap;
+		}
+		/**
+		 * 当前记录的是申诉操作的记录，后续可以添加其它操作
+		 * @param id
+		 * @param shensutype
+		 * @param describe
+		 * @param userid
+		 * @param punishinsidestate
+		 */
+		public void inserIntoOpertionInfo(long id,int shensutype,String describe,long userid,long punishinsidestate,String shensuTime){
+			PunishInsideOperationinfo punishInsideOperationinfo=new PunishInsideOperationinfo();
+			punishInsideOperationinfo.setDetailid(id);
+			punishInsideOperationinfo.setOperationdescribe(describe);
+			punishInsideOperationinfo.setOperationtype(punishinsidestate);
+			punishInsideOperationinfo.setOperationuserid(userid);
+			punishInsideOperationinfo.setShensutype(shensutype);
+			punishInsideOperationinfo.setShensudate(shensuTime);
+			punishInsideOperationinfoDao.insertIntoOperationInfo(punishInsideOperationinfo);
+		}
+		/**
+		 * 通过对内扣罚单的主键来查询申诉的操作
+		 * @param id
+		 * @return
+		 */
+		public List<PunishInsideOperationinfo> getOperationRecord(long id){
+			List<PunishInsideOperationinfo> punishInsideOperationinfos=punishInsideOperationinfoDao.findByDetailId(id);
+			Map<Integer, String> punishInsideStateEnumMap=new HashMap<Integer, String>();
+			for (PunishInsideStateEnum punishInsideStateEnum: PunishInsideStateEnum.values()) {
+				if(1==punishInsideStateEnum.getValue()){
+					punishInsideStateEnumMap.put(punishInsideStateEnum.getValue(), "创建");
+					continue;
+				}else if(2==punishInsideStateEnum.getValue()){
+					punishInsideStateEnumMap.put(punishInsideStateEnum.getValue(), "申诉");
+					continue;
+				}
+				punishInsideStateEnumMap.put(punishInsideStateEnum.getValue(), punishInsideStateEnum.getText());
+
+			}
+			Map<Long, String> userMap=this.getUsersMap();
+			for (PunishInsideOperationinfo punishInsideOperationinfo : punishInsideOperationinfos) {
+				punishInsideOperationinfo.setOperationusername(userMap.get(punishInsideOperationinfo.getOperationuserid()));
+				punishInsideOperationinfo.setOperationtypename(punishInsideStateEnumMap.get((int)punishInsideOperationinfo.getOperationtype()));
+				punishInsideOperationinfo.setShensutypeName(this.getShenSuType(punishInsideOperationinfo.getShensutype()));
+			}
+			return punishInsideOperationinfos;
+		}
+		/**
+		 * 获得user的Map集合
+		 * @return
+		 */
+		public Map<Long,String> getUsersMap(){
+			List<User> users=this.userDAO.getAllUser();
+			Map<Long, String> userMap=new HashMap<Long, String>();
+			for (User user : users) {
+				userMap.put(user.getUserid(), user.getRealname());
+			}
+			return userMap;
 		}
 }

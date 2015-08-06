@@ -262,12 +262,12 @@ function editSuccess(data){
 
 
 function isgetallcheck(){
-	if($('input[name="id"]:checked').size()>0){
-		$('input[name="id"]').each(function(){
+	if($('input[name="wentid"]:checked').size()>0){
+		$('input[name="wentid"]').each(function(){
 			$(this).attr("checked",false);
 		});
 	}else{
-		$('input[name="id"]').attr("checked",true);
+		$('input[name="wentid"]').attr("checked",true);
 	}
 }
 function createinpunishbycwb(){

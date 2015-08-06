@@ -1,11 +1,11 @@
 package cn.explink.controller;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +34,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.PenalizeOutImportErrorRecordDAO;
 import cn.explink.dao.PenalizeTypeDAO;
 import cn.explink.dao.PunishInsideDao;
+import cn.explink.dao.PunishInsideOperationinfoDao;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
@@ -47,6 +48,7 @@ import cn.explink.domain.PenalizeInsideShenhe;
 import cn.explink.domain.PenalizeOutImportErrorRecord;
 import cn.explink.domain.PenalizeType;
 import cn.explink.domain.PunishGongdanView;
+import cn.explink.domain.PunishInsideOperationinfo;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
 import cn.explink.enumutil.PunishInsideStateEnum;
@@ -101,6 +103,8 @@ public class PunishInsideController {
 	UserDAO userDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	PunishInsideOperationinfoDao punishInsideOperationinfoDao;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -286,24 +290,30 @@ public class PunishInsideController {
 			@RequestParam(value="ids",required=false,defaultValue="")String ids,
 			@RequestParam(value = "Filedata", required = false) MultipartFile file
 			){
+		String shensuTime=punishInsideService.getNowtime();
 		long punishinsidestate=PunishInsideStateEnum.daishenhe.getValue();
 		User user=this.getSessionUser();
 		long count=0;
 		String filepath=punishInsideService.loadexceptfile(file);
 		String[] arrayIds = ids.split(",");
+		String punishinsideids=StringUtil.getStringsToString(arrayIds);
+		Map<Long,String> filePathMaps=punishInsideService.getFilePathMapByIds(punishinsideids);
 		if (arrayIds.length==1) {
 			if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[0]))) {
-				return "{\"errorCode\":0,\"error\":\"当前状态为已申诉状态或审核状态不允许操作噢！！\"}";
+				return "{\"errorCode\":0,\"error\":\"当前状态为已审核状态不允许操作噢！！\"}";
 			}else if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[0]))) {
 				
 				return "{\"errorCode\":0,\"error\":\"抱歉，该订单已经超过时效！！\"}";
 			}else {
-				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,filepath,user.getUserid(),punishinsidestate);
+				String lastFilePath=punishInsideService.getNewFilePath(filePathMaps, arrayIds[0], filepath);
+				punishInsideService.inserIntoOpertionInfo(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,user.getUserid(),punishinsidestate,shensuTime);
+				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,lastFilePath,user.getUserid(),punishinsidestate,shensuTime);
 				return "{\"errorCode\":0,\"error\":\"申诉操作成功\"}";
 			}
 			
 		}else {
 			for (int i = 0; i < arrayIds.length; i++) {
+				String lastFilePath=punishInsideService.getNewFilePath(filePathMaps, arrayIds[0], filepath);
 				try {
 					if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[i]))) {
 						count++;
@@ -313,7 +323,8 @@ public class PunishInsideController {
 						count++;
 						continue;
 					}
-					punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,filepath,user.getUserid(),punishinsidestate);
+					punishInsideService.inserIntoOpertionInfo(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,user.getUserid(),punishinsidestate,shensuTime);
+					punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,lastFilePath,user.getUserid(),punishinsidestate,shensuTime);
 				} catch (NumberFormatException e) {
 					count++;
 				}
@@ -321,10 +332,10 @@ public class PunishInsideController {
 			if (count==0) {
 				return "{\"errorCode\":0,\"error\":\"申诉操作全部成功\"}";
 			}else if (count==arrayIds.length) {
-				return "{\"errorCode\":1,\"error\":\"申诉操作全部失败(可能由于订单已经超出时效或者已经操作审核或者已经申诉过)\"}";
+				return "{\"errorCode\":1,\"error\":\"申诉操作全部失败(可能由于订单已经超出时效或者已经操作审核)\"}";
 
 			}else {
-				return "{\"errorCode\":1,\"error\":\"申诉操作部分成功（可能由于订单已经超出时效或者已经操作审核或者已经申诉过）\"}";
+				return "{\"errorCode\":1,\"error\":\"申诉操作部分成功（可能由于订单已经超出时效或者已经操作审核）\"}";
 			}
 		}
 		
@@ -337,17 +348,19 @@ public class PunishInsideController {
 			@RequestParam(value="describe",required=false,defaultValue="")String describe,
 			@RequestParam(value="ids",required=false,defaultValue="")String ids
 			){
+		String shensuTime=punishInsideService.getNowtime();
 		long punishinsidestate=PunishInsideStateEnum.daishenhe.getValue();
 		User user=this.getSessionUser();
 		long count=0;
 		String[] arrayIds = ids.split(",");
 		if (arrayIds.length==1) {
 			if (punishInsideService.checkisshenhe(Long.parseLong(arrayIds[0]))) {
-				return "{\"errorCode\":0,\"error\":\"当前状态为已申诉状态或审核状态不允许操作噢！！\"}";
+				return "{\"errorCode\":0,\"error\":\"当前状态为审核状态不允许操作噢！！\"}";
 			}else if (!punishInsideService.switchhourTomill(Long.parseLong(arrayIds[0]))) {
 				return "{\"errorCode\":0,\"error\":\"抱歉，该订单已经超过时效！！\"}";
 			}else {
-				punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,"",user.getUserid(),punishinsidestate);
+				punishInsideService.inserIntoOpertionInfo(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,user.getUserid(),punishinsidestate,shensuTime);
+				punishInsideDao.updateShensuPunishInsideAdd(Integer.parseInt(arrayIds[0]),Integer.parseInt(shensutype),describe,user.getUserid(),punishinsidestate,shensuTime);
 				return "{\"errorCode\":0,\"error\":\"申诉操作成功\"}";
 
 			}
@@ -363,7 +376,8 @@ public class PunishInsideController {
 						count++;
 						continue;
 					}
-					punishInsideDao.updateShensuPunishInside(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,"",user.getUserid(),punishinsidestate);
+					punishInsideService.inserIntoOpertionInfo(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,user.getUserid(),punishinsidestate,shensuTime);
+					punishInsideDao.updateShensuPunishInsideAdd(Integer.parseInt(arrayIds[i]),Integer.parseInt(shensutype),describe,user.getUserid(),punishinsidestate,shensuTime);
 				} catch (NumberFormatException e) {
 					count++;
 				}
@@ -371,10 +385,10 @@ public class PunishInsideController {
 			if (count==0) {
 				return "{\"errorCode\":0,\"error\":\"申诉操作全部成功\"}";
 			}else if (count==arrayIds.length) {
-				return "{\"errorCode\":1,\"error\":\"申诉操作全部失败(可能由于订单已经超出时效或者已经操作审核或者已经申诉过)\"}";
+				return "{\"errorCode\":1,\"error\":\"申诉操作全部失败(可能由于订单已经超出时效或者已经操作审核)\"}";
 
 			}else {
-				return "{\"errorCode\":1,\"error\":\"申诉操作部分成功（可能由于订单已经超出时效或者已经操作审核或者已经申诉过）\"}";
+				return "{\"errorCode\":1,\"error\":\"申诉操作部分成功（可能由于订单已经超出时效或者已经操作审核）\"}";
 			}
 		}
 		
@@ -448,11 +462,13 @@ public class PunishInsideController {
 	@RequestMapping("/shenhepage")
 	public String shenhepage(Model model,@RequestParam(value="id",defaultValue="",required=false)long id){
 		PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
+		List<PunishInsideOperationinfo> punishInsideOperationinfos=punishInsideService.getOperationRecord(id);
 		PenalizeInsideView penPunishinsideView=punishInsideService.changedatatoshehe(penalizeInside);
 		model.addAttribute("chuangjianfilepath", penPunishinsideView.getCreateFileposition());
 		model.addAttribute("shensuposition", penPunishinsideView.getShensufileposition());
 		model.addAttribute("id", id);
 		model.addAttribute("penPunishinsideView", penPunishinsideView);
+		model.addAttribute("punishInsideOperationinfos", punishInsideOperationinfos);
 		return "penalize/penalizeIn/shenhe";
 	}
 	/**
@@ -465,11 +481,13 @@ public class PunishInsideController {
 	public String findthisValue(Model model,@RequestParam(value="id",defaultValue="",required=false)long id){
 		PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
 		PenalizeInsideView penPunishinsideView=punishInsideService.changedatatoshehe(penalizeInside);
+		List<PunishInsideOperationinfo> punishInsideOperationinfos=punishInsideService.getOperationRecord(id);
 		model.addAttribute("chuangjianfilepath", penPunishinsideView.getCreateFileposition());
 		model.addAttribute("shensuposition", penPunishinsideView.getShensufileposition());
 		model.addAttribute("shensuposition", penPunishinsideView.getShenhefileposition());
 		model.addAttribute("id", id);
 		model.addAttribute("penPunishinsideView", penPunishinsideView);
+		model.addAttribute("punishInsideOperationinfos",punishInsideOperationinfos);
 		return "penalize/penalizeIn/finddetail";
 	}
 	/**

@@ -11,6 +11,7 @@ PenalizeInsideView penalizeInsideview=(PenalizeInsideView)request.getAttribute("
 String chuangjianfilepath=request.getAttribute("chuangjianfilepath").toString();
 String shensuposition=request.getAttribute("shensuposition").toString();
 String id=request.getAttribute("id").toString();
+List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOperationinfo>)request.getAttribute("punishInsideOperationinfos");
 %>
 
 <div id="box_bg"></div>
@@ -69,12 +70,13 @@ String id=request.getAttribute("id").toString();
 							</td>
 						</tr>
 							<tr class="font_1">
-							<td colspan="2" align="left" valign="top">申诉类型：<strong><%=penalizeInsideview.getShensutype()%></strong>
-							&nbsp;&nbsp;申诉人：<strong><%=penalizeInsideview.getShensuUsername() %></strong>
+							<td colspan="2" align="left" valign="top">最后申诉类型：<strong><%=penalizeInsideview.getShensutype()%></strong>
+							&nbsp;&nbsp;最后申诉人：<strong><%=penalizeInsideview.getShensuUsername() %></strong>
 							</td>
 						</tr>
 							<tr class="font_1">
-							<td  align="left" valign="top">申诉说明：<strong><%=penalizeInsideview.getShensudescribe() %></strong>
+							<td  align="left" valign="top">最后申诉说明：<strong><%=penalizeInsideview.getShensudescribe() %></strong>
+							<input name="" type="button" value="查看申诉交流记录" id="showchatlist" onclick='$("#right_chatlist").show();$("#chatlist_alertbox").width(900);'/>
 							&nbsp;&nbsp;附件下载:<%if(!shensuposition.equals("")){if(shensuposition.split(",").length>=1){ %>
 							
 								&nbsp;&nbsp;&nbsp;&nbsp;<a href="<%=request.getContextPath()%>/abnormalOrder/download?filepathurl=<%=shensuposition.split(",")[0] %>" style="color: blue;">申诉附件<%=shensuposition.split(",")[0] %></a><!-- &nbsp;&nbsp;<em id="morefilebutton"><a href="javascript:filedownloadwithquestionfile();" style="color: blue;">更多附件</a></em> -->
@@ -114,6 +116,24 @@ String id=request.getAttribute("id").toString();
 						</tr>
 				
 					</table>
+					</td>
+					<td valign="top">
+						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="right_chatlist" style="height:520px; display:none">
+							<tr>
+								<td><div class="chat_listbox" >
+									<div class="chat_listclose" onclick='$("#right_chatlist").hide();$("#chatlist_alertbox").width(600);'>>></div>
+									<div class="chat_listtxt">
+									<%if(punishInsideOperationinfos!=null&&punishInsideOperationinfos.size()>0)
+										for(PunishInsideOperationinfo aw : punishInsideOperationinfos){ %>
+									
+										<p><%
+												 out.print(aw.getOperationusername()+"-"+aw.getOperationtypename()+"  ("+aw.getShensutypeName()+")");%>&nbsp;&nbsp;
+												<%=aw.getShensudate() %>：<%=aw.getOperationdescribe() %></p>
+									<%} %>
+									</div>
+								</div></td>
+							</tr>
+						</table>
 					</td>
 				</tr>
 			</table>

@@ -1019,6 +1019,7 @@ src/main/java/cn/explink/dao/PosPayMoneyDAO.java -text
 src/main/java/cn/explink/dao/PrintcwbDetailDAO.java -text
 src/main/java/cn/explink/dao/PunishDAO.java -text
 src/main/java/cn/explink/dao/PunishInsideDao.java -text
+src/main/java/cn/explink/dao/PunishInsideOperationinfoDao.java -text
 src/main/java/cn/explink/dao/PunishTypeDAO.java -text
 src/main/java/cn/explink/dao/PunishinsideBillDAO.java -text
 src/main/java/cn/explink/dao/ReasonDao.java -text
@@ -1235,6 +1236,7 @@ src/main/java/cn/explink/domain/PayWay.java -text
 src/main/java/cn/explink/domain/PaybusinessbenefitDetail.java -text
 src/main/java/cn/explink/domain/Paybusinessbenefits.java -text
 src/main/java/cn/explink/domain/PenalizeInside.java -text
+src/main/java/cn/explink/domain/PenalizeInsideFilepath.java -text
 src/main/java/cn/explink/domain/PenalizeInsideShenhe.java -text
 src/main/java/cn/explink/domain/PenalizeOut.java -text
 src/main/java/cn/explink/domain/PenalizeOutBill.java -text
@@ -1246,6 +1248,7 @@ src/main/java/cn/explink/domain/PrintView.java -text
 src/main/java/cn/explink/domain/PrintcwbDetail.java -text
 src/main/java/cn/explink/domain/Punish.java -text
 src/main/java/cn/explink/domain/PunishGongdanView.java -text
+src/main/java/cn/explink/domain/PunishInsideOperationinfo.java -text
 src/main/java/cn/explink/domain/PunishType.java -text
 src/main/java/cn/explink/domain/Reason.java -text
 src/main/java/cn/explink/domain/Remark.java -text

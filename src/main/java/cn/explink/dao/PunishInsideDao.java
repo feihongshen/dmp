@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,8 +17,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PenalizeInside;
+import cn.explink.domain.PenalizeInsideFilepath;
 import cn.explink.domain.PenalizeInsideShenhe;
-import cn.explink.domain.SumPrice;
 import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.service.PunishInsideService;
 import cn.explink.util.Page;
@@ -128,7 +129,17 @@ public class PunishInsideDao {
 		}
 		
 	}
-	
+	private final class FilePathRowMapper implements RowMapper<PenalizeInsideFilepath>{
+
+		@Override
+		public PenalizeInsideFilepath mapRow(ResultSet rs, int rowNum) throws SQLException {
+			PenalizeInsideFilepath filepath=new PenalizeInsideFilepath();
+			filepath.setId(rs.getLong("id"));
+			filepath.setFilepath(rs.getString("shensufileposition"));
+			return filepath;
+		}
+		
+	}
 	//查询所有的对内扣罚单
 	public List<PenalizeInside> getAllPunishInside(){
 		String sql="select * from express_ops_punishInside_detail";
@@ -266,7 +277,7 @@ public class PunishInsideDao {
 		}
 	}
 	
-	public void updateShensuPunishInside(final long id,final long shensutype,final String describe,final String fileposition,final long userid,final long punishcwbstate){
+	public void updateShensuPunishInside(final long id,final long shensutype,final String describe,final String fileposition,final long userid,final long punishcwbstate,final String shensuTime){
 		this.jdbcTemplate.update("update express_ops_punishInside_detail set shensutype=?,shensudescribe=?,shensufileposition=?,shensuuserid=?,punishcwbstate=?,shensudate=? where id=?", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
@@ -275,7 +286,7 @@ public class PunishInsideDao {
 					ps.setString(3, fileposition);
 					ps.setLong(4, userid);
 					ps.setLong(5, punishcwbstate);
-					ps.setString(6, punishInsideService.getNowtime());
+					ps.setString(6, shensuTime);
 					ps.setLong(7, id);
 			}
 		});
@@ -383,6 +394,29 @@ public class PunishInsideDao {
 		}
 		return sumprices==null?new BigDecimal("0.00"):new  BigDecimal(sumprices);
 
+	}
+	
+	public List<PenalizeInsideFilepath> findPenalizeById(String ids){
+		String sql="select id,shensufileposition from express_ops_punishInside_detail where id IN("+ids+")";
+		try {
+			return this.jdbcTemplate.query(sql,new  FilePathRowMapper());
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			return new ArrayList<PenalizeInsideFilepath>();
+		}
+	}
+	public void updateShensuPunishInsideAdd(final long id,final long shensutype,final String describe,final long userid,final long punishcwbstate,final String shensuTime){
+		this.jdbcTemplate.update("update express_ops_punishInside_detail set shensutype=?,shensudescribe=?,shensuuserid=?,punishcwbstate=?,shensudate=? where id=?", new PreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+					ps.setLong(1, shensutype);
+					ps.setString(2, describe);
+					ps.setLong(3, userid);
+					ps.setLong(4, punishcwbstate);
+					ps.setString(5, shensuTime);
+					ps.setLong(6, id);
+			}
+		});
 	}
 	
 }

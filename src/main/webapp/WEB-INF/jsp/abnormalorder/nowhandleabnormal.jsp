@@ -57,8 +57,8 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 								<a href="<%=request.getContextPath()%>/abnormalOrder/download?filepathurl=<%=filepathsum.split(",")[1] %>" style="color: blue;"><%=filepathsum.split(",")[1] %></a>
 								<%}else{ %>
 								<%for(int i=0;i<filepathsum.split(",").length;i++){ %>
-								<%if(i>1){ %>
-									<a  href="<%=request.getContextPath()%>/abnormalOrder/download?filepathurl=<%=filepathsum.split(",")[i] %>" style="color: blue;"><%=filepathsum.split(",")[1] %></a>
+								<%if(i>=1){ %>
+									<a  href="<%=request.getContextPath()%>/abnormalOrder/download?filepathurl=<%=filepathsum.split(",")[i] %>" style="color: blue;"><%=filepathsum.split(",")[i] %></a>
 								<%} %>
 								<%} %>
 								<%}%>
