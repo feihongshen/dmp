@@ -243,7 +243,7 @@ function addbill()
 	$.messager.show({
 		title:'提示消息',
 		msg:'正在新增账单，请稍后...',
-		timeout:2000,
+		timeout:1000,
 		showType:'show'
 	});
 
@@ -253,9 +253,18 @@ function addbill()
 		data : $("#creationfrom").serialize(),
 		dataType : "json",
 		success : function(data) {
+			if(data != 0){
 				$('#add').dialog('close');
-				alert("成功创建 "+data+" 个配送员派费账单")
+				$.messager.alert("成功创建 "+data+" 个配送员派费账单！");
 				$("#searchForm").submit();
+			}else{
+				$.messager.show({
+					title:'错误',
+					msg:'没有查到指定条件下的订单或者未绑定派费规则！',
+					timeout:2000,
+					showType:'show'
+				});
+			}
 		}
 	});
 }
@@ -272,7 +281,7 @@ function deleteorder(){
 	}); 
 	ordernumber = ordernumber.substring(0,ordernumber.length-1);
 	if(ordernumber == ""){
-		alert("请选择要移除的订单！");
+		$.messager.alert("请选择要移除的订单！");
 		return false;
 	}
 	if(confirm("确定要移除吗？")){
@@ -332,10 +341,10 @@ function deleteBill()
 		}
 	}); 
 	if(sign == 1){
-		alert("只有未审核状态才能进行删除!");
+		$.messager.alert("只有未审核状态才能进行删除！");
 	}
 	if(!billIds){
-		alert("请选择要删除的账单");
+		$.messager.alert("请选择要删除的账单！");
 		return false;
 	}
 	
@@ -350,8 +359,8 @@ function deleteBill()
 			dataType : "json",
 			success : function(data) 
 			{
-					alert("成功删除"+data+"条账单");
-					$("#searchForm").submit();
+				$.messager.alert("成功删除"+data+"条账单！");
+				$("#searchForm").submit();
 			}
 		});
 	}
@@ -406,11 +415,11 @@ function verify(){
 	var flag = true;
 	var pattern = new RegExp("[`'~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&mdash;|{}【】‘；：”“'。，、？\"]");
 	if($("#explain").val().length >100){
-		alert("备注长度不允许超过100位字符！");
+		$.messager.alert("备注长度不允许超过100位字符！");
 		return false;
 	}
 	if($("#explain").val().length >100){
-		alert("备注说明长度不允许超过100位字符！");
+		$.messager.alert("备注说明长度不允许超过100位字符！");
 		return false;
 	}
 	return flag;

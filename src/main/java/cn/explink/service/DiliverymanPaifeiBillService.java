@@ -98,31 +98,33 @@ public class DiliverymanPaifeiBillService {
 				bill = new DiliverymanPaifeiBill();
 				Integer diliverymanid = Integer.parseInt(diliveryman[i]);
 				User deliveryUser=userDAO.getUserByUserid(diliverymanid);
-				/* 根据小件员id 查询出该小件员所有的订单 */
-				if (dateType == DateTypeEnum.FanKuiRiQi.getValue()) {
-					/* 日期类型为反馈时间时执行这个方法 */
-					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByDeliveryid(site, orderType, diliverymanid, startDate, endDate);
-
-					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
-				} else if (dateType == DateTypeEnum.FaHuoRiQi.getValue()) {
-					/* 日期类型为发货时间时执行这个方法 */
-					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByFaHuo(site, orderType, diliverymanid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
-				} else if (dateType == DateTypeEnum.RuKuRiQi.getValue()) {
-					/* 日期类型为入库时间时执行这个方法 */
-					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, diliverymanid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+				if(deliveryUser.getPfruleid()!=0){
+					/* 根据小件员id 查询出该小件员所有的订单 */
+					if (dateType == DateTypeEnum.FanKuiRiQi.getValue()) {
+						/* 日期类型为反馈时间时执行这个方法 */
+						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByDeliveryid(site, orderType, diliverymanid, startDate, endDate);
+	
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+					} else if (dateType == DateTypeEnum.FaHuoRiQi.getValue()) {
+						/* 日期类型为发货时间时执行这个方法 */
+						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByFaHuo(site, orderType, diliverymanid, startDate, endDate);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+					} else if (dateType == DateTypeEnum.RuKuRiQi.getValue()) {
+						/* 日期类型为入库时间时执行这个方法 */
+						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, diliverymanid, startDate, endDate);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+					}
+					bill.setBillbatch(this.generateBillBatch());
+					bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
+					bill.setDiliveryman(diliverymanid);
+					bill.setTheirsite(site);
+					bill.setBillestablishdate(DateTimeUtil.getNowDate());
+					bill.setDaterange(startDate + " 至 " + endDate);
+					bill.setOrdertype(orderType);
+					bill.setRemarks(explain);
+					this.diliverymanPaifeiBillDAO.addDiliverymanBill(bill);
+					billcount++;
 				}
-				bill.setBillbatch(this.generateBillBatch());
-				bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
-				bill.setDiliveryman(diliverymanid);
-				bill.setTheirsite(site);
-				bill.setBillestablishdate(DateTimeUtil.getNowDate());
-				bill.setDaterange(startDate + " 至 " + endDate);
-				bill.setOrdertype(orderType);
-				bill.setRemarks(explain);
-				this.diliverymanPaifeiBillDAO.addDiliverymanBill(bill);
-				billcount++;
 			}
 		} else {
 			/* 当用户选择站点，但是没有选择站点所属小件员的时候，执行此方法 */
@@ -134,38 +136,37 @@ public class DiliverymanPaifeiBillService {
 				user = list.get(i);
 				Integer userid = (int) user.getUserid();
 				User deliveryUser=userDAO.getUserByUserid(userid);
-				/* 根据小件员id 查询出该小件员所有的订单 */
-				if (dateType == DateTypeEnum.FanKuiRiQi.getValue()) {
-					/* 日期类型为反馈时间时执行这个方法 */
-					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByDeliveryid(site, orderType, userid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
-				} else if (dateType == DateTypeEnum.FaHuoRiQi.getValue()) {
-					/* 日期类型为发货时间时执行这个方法 */
-					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByFaHuo(site, orderType, userid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
-				} else if (dateType == DateTypeEnum.RuKuRiQi.getValue()) {
-					/* 日期类型为入库时间时执行这个方法 */
-					List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, userid, startDate, endDate);
-					bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+				if(deliveryUser.getPfruleid()!=0){
+					/* 根据小件员id 查询出该小件员所有的订单 */
+					if (dateType == DateTypeEnum.FanKuiRiQi.getValue()) {
+						/* 日期类型为反馈时间时执行这个方法 */
+						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByDeliveryid(site, orderType, userid, startDate, endDate);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+					} else if (dateType == DateTypeEnum.FaHuoRiQi.getValue()) {
+						/* 日期类型为发货时间时执行这个方法 */
+						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByFaHuo(site, orderType, userid, startDate, endDate);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+					} else if (dateType == DateTypeEnum.RuKuRiQi.getValue()) {
+						/* 日期类型为入库时间时执行这个方法 */
+						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, userid, startDate, endDate);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+					}
+					bill.setBillbatch(this.generateBillBatch());
+					bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
+					bill.setDiliveryman(userid);
+					bill.setTheirsite(site);
+					bill.setBillestablishdate(DateTimeUtil.getNowTime());
+					bill.setDaterange(startDate + " 至 " + endDate);
+					bill.setOrdertype(orderType);
+					bill.setRemarks(explain);
+					this.diliverymanPaifeiBillDAO.addDiliverymanBill(bill);
+					billcount++;
 				}
-				bill.setBillbatch(this.generateBillBatch());
-				bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
-				bill.setDiliveryman(userid);
-				bill.setTheirsite(site);
-				bill.setBillestablishdate(DateTimeUtil.getNowTime());
-				bill.setDaterange(startDate + " 至 " + endDate);
-				bill.setOrdertype(orderType);
-				bill.setRemarks(explain);
-				this.diliverymanPaifeiBillDAO.addDiliverymanBill(bill);
-				billcount++;
 			}
-
 		}
 		if(bill == null){
 			bill = new DiliverymanPaifeiBill();
 		}
-		bill.setBillbatch(this.generateBillBatch());
-		bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
 		return billcount;
 	}
 
