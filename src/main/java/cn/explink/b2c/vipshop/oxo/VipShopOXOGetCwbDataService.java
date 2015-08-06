@@ -347,6 +347,9 @@ public class VipShopOXOGetCwbDataService {
 		for(TpsOrderVo.Orders.Order order : orders){
 			try{
 				long id =  Long.valueOf(order.getId()).longValue();
+				if(maxSeq < id){ //把每次请求返回的最大id作为下次请求的seq.
+					maxSeq = id;
+				}
 				
 				/**
 				 * 处理新增命令 逻辑
@@ -429,10 +432,6 @@ public class VipShopOXOGetCwbDataService {
 					dataImportDAO_B2c.dataLoseB2ctempByCwb(order.getCustOrderNo());
 					this.cwbDAO.dataLoseByCwb(order.getCustOrderNo());
 					cwbOrderService.datalose_vipshop(order.getCustOrderNo());
-				}
-				
-				if(maxSeq < id){ //把每次请求返回的最大id作为下次请求的seq.
-					maxSeq = id;
 				}
 			
 			}catch(Exception e){

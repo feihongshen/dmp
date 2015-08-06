@@ -22,7 +22,6 @@ import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.vipshop.ReaderXMLHandler;
 import cn.explink.b2c.vipshop.VipShop;
-import cn.explink.b2c.vipshop.VipShopConfig;
 import cn.explink.b2c.vipshop.VipShopExceptionHandler;
 import cn.explink.b2c.vipshop.oxo.request.OXOJITFeedbackVo;
 import cn.explink.b2c.vipshop.oxo.response.OXOJITFeedbackResponseVo;
@@ -210,6 +209,10 @@ public class VipShopOXOJITFeedbackService {
 	private OXOJITFeedbackResponseVo requestHttpAndCallBackAnaly(VipShop vipshop) {
 		
 		OXOJITFeedbackVo feedbackVo = this.buildRequestVo(vipshop);
+		if(CollectionUtils.isEmpty(feedbackVo.getBinds().getBind())){
+			logger.info("在系统中未找到需要进行OXO提货任务反馈的数据,放弃本次请求VipShop_OXO提货任务反馈接口。同时返回null作为结果。");
+			return null;
+		}
 		String MD5Str = vipshop.getPrivate_key() + this.generateSign(feedbackVo);
 		String sign = MD5Util.md5(MD5Str, "UTF-8").toLowerCase();
 		String endpointUrl = vipshop.getSendCwb_URL();
@@ -244,19 +247,6 @@ public class VipShopOXOJITFeedbackService {
 		
 		return obj;
 		
-	}
-
-	private String StringXMLRequest(VipShop vipshop, String request_time) {
-		StringBuffer sub = new StringBuffer();
-		sub.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		sub.append("<request>");
-		sub.append("<head>");
-		sub.append("<version>" + VipShopConfig.version + "</version>");
-		sub.append("<request_time>" + request_time + "</request_time>");
-		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
-		sub.append("</head>");
-		sub.append("</request>");
-		return sub.toString();
 	}
 
 	private String HTTPInvokeWs(String endpointUrl, String nameSpace, String methodName, String requestXML, String sign) throws Exception {

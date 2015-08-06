@@ -842,7 +842,7 @@
                <ref bean="sendVipShopOXOJITFeedback" />
            </property>
              <property name="cronExpression">
-               <value>0 0/30 * * * ?</value>
+               <value>0 0/15 * * * ?</value>
            </property>
      </bean>
      
