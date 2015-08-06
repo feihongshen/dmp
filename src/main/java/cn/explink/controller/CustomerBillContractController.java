@@ -215,12 +215,18 @@ public class CustomerBillContractController {
 			List<CustomerBillContract> billlist=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid),Long.valueOf(dateState));
 			if(col!=null){
 				StringBuilder sb = new StringBuilder();
-				/*List<SerachCustomerBillContractVO> svlist=new ArrayList<SerachCustomerBillContractVO>();*/
+				List<CwbOrder> lv=new ArrayList<CwbOrder>();
+				boolean b = false;
+				if(billlist.size()>0){
+					b=true;
+				}
 				for(CwbOrder str:col){		
-					if(billlist.size()>0){
+					if(b==true){
 					for(CustomerBillContract c: billlist){
 							if(!c.getCwbs().contains(str.getCwb())){
-						
+								CwbOrder ce = new CwbOrder();
+								ce.setCwb(str.getCwb());
+								lv.add(ce);
 								distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
 								deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
 								transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
@@ -281,6 +287,9 @@ public class CustomerBillContractController {
 					cwbsOfOneBill=sb.substring(0,sb.length()-1);
 				}
 				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney);
+				if(b==true){
+					correspondingCwbNum=lv.size();
+				}
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
 
 				
