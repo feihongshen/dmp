@@ -457,6 +457,7 @@ public class VipShopGetCwbDataService {
 			
 			String last_fetch_time = VipShopGetCwbDataService.convertEmptyString("last_fetch_time", datamap); // 简易最迟配送时间
 			
+			String go_get_return_time = VipShopGetCwbDataService.convertEmptyString("go_get_return_time", datamap); //预约上门揽退时间
 			// : 新建
 			// edit:修改
 			// cancel
@@ -503,7 +504,9 @@ public class VipShopGetCwbDataService {
 			dataMap.put("consigneeaddress", buyer_address);
 			dataMap.put("receivablefee", money);
 			
-			dataMap.put("customercommand", "送货时间要求:" + transport_day + ",订单配送批次:" + order_delivery_batch + "," + remarkFreight + "  建议最晚揽件时间:" + last_fetch_time);
+//			dataMap.put("customercommand", "送货时间要求:" + transport_day + ",订单配送批次:" + order_delivery_batch + "," + remarkFreight + "  建议最晚揽件时间:" + last_fetch_time);
+			dataMap.put("customercommand", "建议最晚揽件时间:" + last_fetch_time+",预约揽收时间："+go_get_return_time);
+			
 			
 			dataMap.put("sendcargoname", "[发出商品]");
 			dataMap.put("customerid", customerid);
