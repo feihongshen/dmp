@@ -319,7 +319,7 @@ public class VipShopOXOGetCwbDataService {
 		orderMap.put("cargotype", order.getTransportType());
 		orderMap.put("cwbordertypeid", "" + Long.valueOf(order.getBusinessType()));
 		orderMap.put("shouldfare", order.getFreight());
-		orderMap.put("cwb", order.getOrderSn());
+		orderMap.put("cwb", order.getCustOrderNo());
 		
 		return orderMap;
 		
@@ -347,17 +347,14 @@ public class VipShopOXOGetCwbDataService {
 		for(TpsOrderVo.Orders.Order order : orders){
 			try{
 				long id =  Long.valueOf(order.getId()).longValue();
-				if(maxSeq < id){ //把每次请求返回的最大id作为下次请求的seq.
-					maxSeq = id;
-				}
-			
+				
 				/**
 				 * 处理新增命令 逻辑
 				 */
 				if("new".equalsIgnoreCase(order.getCmdType())){
 					//如果临时表中已存在对应记录 则 continue
-					if(dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getOrderSn()) != null){
-						logger.warn("接收到VipShop_OXO发来cmd_type='new'指令，cwb="+order.getOrderSn()+"。但express_ops_cwb_detail_b2ctemp表中已存在对应记录，系统将不做任何操作。");
+					if(dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCustOrderNo()) != null){
+						logger.warn("接收到VipShop_OXO发来cmd_type='new'指令，cwb="+order.getCustOrderNo()+"。但express_ops_cwb_detail_b2ctemp表中已存在对应记录，系统将不做任何操作。");
 						continue;
 					}
 					CwbOrderDTO cwbOrder = new CwbOrderDTO();
@@ -369,9 +366,9 @@ public class VipShopOXOGetCwbDataService {
 				 * 处理编码命令 逻辑
 				 */
 				else if("edit".equalsIgnoreCase(order.getCmdType())){
-					CwbOrderDTO cwbOrder_temp = dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getOrderSn());
+					CwbOrderDTO cwbOrder_temp = dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCustOrderNo());
 					if(cwbOrder_temp == null ){//如果临时表还不存在 指定 cwb的订单数据 ，则continue
-						logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getOrderSn()+"。但未在express_ops_cwb_detail_b2ctemp表中找到对应记录，系统将不做任何操作。");
+						logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getCustOrderNo()+"。但未在express_ops_cwb_detail_b2ctemp表中找到对应记录，系统将不做任何操作。");
 						continue;
 					}
 					
@@ -382,11 +379,11 @@ public class VipShopOXOGetCwbDataService {
 					}
 					
 					if(cwbOrder_temp.getGetDataFlag() != 0){//如果临时表数据已经同步到了主表,修改主表数据
-						CwbOrder cwbOrder_biz = cwbDAO.getCwbByCwb(order.getOrderSn());
+						CwbOrder cwbOrder_biz = cwbDAO.getCwbByCwb(order.getCustOrderNo());
 						if(cwbOrder_biz != null){
 							//如果已揽收成功，不允编辑
 							if(cwbOrder_biz.getOxopickstate() == CwbOXOStateEnum.Processed.getValue()){
-								logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getOrderSn()+"。但express_ops_cwb_detail表中该记录的揽收状态为 已处理，系统将不做修改操作。");
+								logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getCustOrderNo()+"。但express_ops_cwb_detail表中该记录的揽收状态为 已处理，系统将不做修改操作。");
 								continue;
 							}
 							Map<String,String> orderMap  = this.convertOrderVoToMap(order);
@@ -421,21 +418,25 @@ public class VipShopOXOGetCwbDataService {
 				 * 处理取消命令 逻辑
 				 */
 				else if("cancel".equalsIgnoreCase(order.getCmdType())){
-					CwbOrder cwbOrder_biz = cwbDAO.getCwbByCwb(order.getOrderSn());
+					CwbOrder cwbOrder_biz = cwbDAO.getCwbByCwb(order.getCustOrderNo());
 					if(cwbOrder_biz != null){
 						//如果已揽收成功，不允取消
 						if(cwbOrder_biz.getOxopickstate() == CwbOXOStateEnum.Processed.getValue()){
-							logger.warn("接收到VipShop_OXO发来cmd_type='cancel'指令，cwb="+order.getOrderSn()+"。但express_ops_cwb_detail表中该记录的揽收状态为 已处理，系统将不做取消操作。");
+							logger.warn("接收到VipShop_OXO发来cmd_type='cancel'指令，cwb="+order.getCustOrderNo()+"。但express_ops_cwb_detail表中该记录的揽收状态为 已处理，系统将不做取消操作。");
 							continue;
 						}
 					}
-					dataImportDAO_B2c.dataLoseB2ctempByCwb(order.getOrderSn());
-					this.cwbDAO.dataLoseByCwb(order.getOrderSn());
-					cwbOrderService.datalose_vipshop(order.getOrderSn());
+					dataImportDAO_B2c.dataLoseB2ctempByCwb(order.getCustOrderNo());
+					this.cwbDAO.dataLoseByCwb(order.getCustOrderNo());
+					cwbOrderService.datalose_vipshop(order.getCustOrderNo());
+				}
+				
+				if(maxSeq < id){ //把每次请求返回的最大id作为下次请求的seq.
+					maxSeq = id;
 				}
 			
 			}catch(Exception e){
-				logger.error("VIP_OXO数据插入临时表发生未知异常cwb=" + order.getOrderSn(), e);
+				logger.error("VIP_OXO数据插入临时表发生未知异常cwb=" + order.getCustOrderNo(), e);
 			}
 			
 		}
