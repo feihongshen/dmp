@@ -41,6 +41,7 @@ $(function(){
 		$(this).css("backgroundColor","yellow");
 		$(this).siblings().css("backgroundColor","#ffffff");
 	});
+	// 删除记录
 	$('#delete_button').click(function(){
 		var xinjian = "<%=ContractStateEnum.XinJian.getValue()%>";
 		

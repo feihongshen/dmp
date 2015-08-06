@@ -71,40 +71,27 @@ public class PunishinsideBillController {
 		return userDetail.getUser();
 	}
 
-	// @RequestMapping("/CallerArchivalRepository/{page}")
-	// public String CallerArchivalRepository(Model model,CsConsigneeInfo
-	// cci,@PathVariable(value="page") long page){
-	// model.addAttribute("page", page);
-	// model.addAttribute("page_obj", new
-	// Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()),
-	// page, Page.ONE_PAGE_NUMBER));
-	// model.addAttribute("ccilist",
-	// workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()));
-	// return "workorder/CallerArchivalRepository";
-	// }
-
 	@RequestMapping("/punishinsideBillList/{page}")
 	public String punishinsideBillList(@PathVariable("page") long page, Model model,
 			ExpressOpsPunishinsideBillVO queryConditionVO) {
-		// public String punishinsideBillList(Model
-		// model,ExpressOpsPunishinsideBill
-		// punishinsideBill,@PathVariable(value="page") long page){
-		// model.addAttribute("page", page);
-		// model.addAttribute("page_obj", new
-		// Page(workorderdao.getCsConsigneeInfocount(cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()),
-		// page, Page.ONE_PAGE_NUMBER));
-		// model.addAttribute("ccilist",
-		// workorderdao.queryAllCsConsigneeInfo(page,cci.getName(),cci.getPhoneonOne(),cci.getConsigneeType()));
+		// 获取所有责任机构
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		// 获取所有用户
 		List<User> userList = this.userDAO.getAllUser();
+		// 获取所有责任人
 		List<User> dutyPersonList = this.userDAO.getAllUserOrderByBranchid();
+		// 获取对内扣罚对外赔付账单状态枚举
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
+		// 获取所有对内扣罚账单列表
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
 				.queryPunishinsideBill(page, queryConditionVO);
+		// 获取所有对内扣罚账单列表条数
 		int count = this.punishinsideBillDAO
 				.queryPunishinsideBillCount(queryConditionVO);
+		// 获取所有扣罚大类
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
+		// 获取所有扣罚小类
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
@@ -127,7 +114,7 @@ public class PunishinsideBillController {
 	@RequestMapping("/addPunishinsideBill")
 	public String addPunishinsideBill(
 			ExpressOpsPunishinsideBill punishinsideBill, Model model) {
-
+		// 获取当前登录用户
 		User user = getSessionUser();
 		if (user != null) {
 			long userId = user.getUserid();
@@ -135,24 +122,38 @@ public class PunishinsideBillController {
 		}
 		int id = this.punishinsideBillService.createPunishinsideBill(punishinsideBill);
 		
+		// 责任机构
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		// 用户
 		List<User> userList = this.userDAO.getAllUser();
+		// 责任人
 		List<User> dutyPersonList = this.userDAO.getAllUserOrderByBranchid();
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
+		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		// 账单列表
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
 				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		// 账单列表条数
 		int count = this.punishinsideBillDAO
 				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
+		// 扣罚大类
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
+		// 扣罚小类
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
+		// 当前创建的账单信息
 		ExpressOpsPunishinsideBillVO punishinsideBillVO = this.punishinsideBillService
 				.getPunishinsideBillVO(id);
+		// 普通权限
 		int jiesuanAuthority = 0;
+		// 高级权限
 		int jiesuanAdvanceAuthority = 0;
+		// 当前登录用户id
 		long userid = 0;
+		// 当前登录用户真实姓名
 		String realname = "";
 		if(user != null){
 			long roleid = user.getRoleid();
@@ -166,6 +167,7 @@ public class PunishinsideBillController {
 			userid = user.getUserid();
 			realname = user.getRealname();
 		}
+		// 当前日期
 		String nowDate = DateTimeUtil.getNowDate();
 		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
 		
@@ -194,26 +196,39 @@ public class PunishinsideBillController {
 
 	@RequestMapping("/updatePunishinsideBillPage")
 	public String updatePunishinsideBillPage(int id, Model model) {
-
+		// 责任机构
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		// 用户
 		List<User> userList = this.userDAO.getAllUser();
+		// 责任人
 		List<User> dutyPersonList = this.userDAO.getAllUserOrderByBranchid();
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
+		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		// 账单列表
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
 				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		// 账单列表条数
 		int count = this.punishinsideBillDAO
 				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
+		// 扣罚大类
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
+		// 扣罚小类
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
+		// 要修改或者查看的账单信息
 		ExpressOpsPunishinsideBillVO punishinsideBillVO = this.punishinsideBillService
 				.getPunishinsideBillVO(id);
 		User user = getSessionUser();
+		// 普通权限
 		int jiesuanAuthority = 0;
+		// 高级权限
 		int jiesuanAdvanceAuthority = 0;
+		// 当前登录用户id
 		long userid = 0;
+		// 当前登录用户的真实姓名
 		String realname = "";
 		if(user != null){
 			long roleid = user.getRoleid();
@@ -227,6 +242,7 @@ public class PunishinsideBillController {
 			userid = user.getUserid();
 			realname = user.getRealname();
 		}
+		// 当前日期
 		String nowDate = DateTimeUtil.getNowDate();
 		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
 		
@@ -255,26 +271,40 @@ public class PunishinsideBillController {
 
 	@RequestMapping("/penalizeInsidePage")
 	public String penalizeInsidePage(int id, Model model) {
-
+		// 责任机构
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		// 用户
 		List<User> userList = this.userDAO.getAllUser();
+		// 责任人
 		List<User> dutyPersonList = this.userDAO.getAllUserOrderByBranchid();
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
+		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		// 账单列表
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
 				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		// 账单列表条数
 		int count = this.punishinsideBillDAO
 				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
+		// 扣罚大类
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
+		// 扣罚小类
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
+		// 修改或者查看的账单信息
 		ExpressOpsPunishinsideBillVO punishinsideBillVO = this.punishinsideBillService
 				.getPunishinsideBillVO(id);
+		// 当前登录用户
 		User user = getSessionUser();
+		// 普通权限
 		int jiesuanAuthority = 0;
+		// 高级权限
 		int jiesuanAdvanceAuthority = 0;
+		// 当前登录用户id
 		long userid = 0;
+		// 当前登陆用户的真实姓名
 		String realname = "";
 		if(user != null){
 			long roleid = user.getRoleid();
@@ -288,6 +318,7 @@ public class PunishinsideBillController {
 			userid = user.getUserid();
 			realname = user.getRealname();
 		}
+		// 当前日期
 		String nowDate = DateTimeUtil.getNowDate();
 		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
 		
@@ -319,45 +350,63 @@ public class PunishinsideBillController {
 	@RequestMapping("/penalizeInsideList/{page}")
 	public String penalizeInsideList(@PathVariable("page") long page, ExpressOpsPunishinsideBillVO billVO,
 			Model model) {
-
+		// 责任机构
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		// 用户
 		List<User> userList = this.userDAO.getAllUser();
+		// 责任人
 		List<User> dutyPersonList = this.userDAO.getAllUserOrderByBranchid();
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
+		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = CwbStateEnum.getMap();
+		// 账单列表
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
 				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		// 账单列表条数
 		int count = this.punishinsideBillDAO
 				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
+		// 扣罚大类
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
+		// 扣罚小类
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
+		// 修改或者查看的账单信息
 		ExpressOpsPunishinsideBillVO punishinsideBillVO = this.punishinsideBillService
 				.getPunishinsideBillVO(billVO.getId());
+		// 对内扣罚弹出层页面，查询条件:订单号
 		String cwbs = "";
 		if(StringUtils.isNotBlank(billVO.getCwbs())){
 			List<String> cwbList = Arrays.asList(billVO.getCwbs().split(","));
 			cwbs = StringUtil.getStringsByStringList(cwbList);
 		}
+		// 对内扣罚账单表中已经存在的扣罚单号
 		String existedPunishNos = this.punishinsideBillService.getExistedPunishNos(billVO.getId());
 		if(StringUtils.isNotBlank(existedPunishNos)){
 			existedPunishNos = StringUtil.getStringsByStringList(Arrays.asList(existedPunishNos.split(",")));
 		}
+		// 对内扣罚列表
 		List<PenalizeInside> penalizeInsideList = this.punishinsideBillDAO
 				.findByCondition(page, cwbs, 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
 						billVO.getPunishNoCreateEndDate(), existedPunishNos);
+		// 对内扣罚列表条数
 		int penalizeInsideCount = this.punishinsideBillDAO
 				.findByConditionSum(cwbs, 0, PunishInsideStateEnum.koufachengli.getValue(), 0, 0,
 						billVO.getPunishbigsort(), billVO.getPunishsmallsort(),
 						billVO.getPunishNoCreateBeginDate(),
 						billVO.getPunishNoCreateEndDate(), existedPunishNos);
+		// 当前登录用户
 		User user = getSessionUser();
+		// 普通权限
 		int jiesuanAuthority = 0;
+		// 高级权限
 		int jiesuanAdvanceAuthority = 0;
+		// 当前登录用户id
 		long userid = 0;
+		// 当前登录用户的真实姓名
 		String realname = "";
 		if(user != null){
 			long roleid = user.getRoleid();
@@ -371,8 +420,11 @@ public class PunishinsideBillController {
 			userid = user.getUserid();
 			realname = user.getRealname();
 		}
+		// 当前日期
 		String nowDate = DateTimeUtil.getNowDate();
+		// 对内扣罚账单列表分页信息
 		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
+		// 对内扣罚列表分页信息
 		Page page_obj_penalize = new Page(penalizeInsideCount, page, Page.ONE_PAGE_NUMBER);
 		
 		model.addAttribute("page", 1);
@@ -406,26 +458,42 @@ public class PunishinsideBillController {
 	@RequestMapping("/addPenalizeInsideList")
 	public String addPenalizeInsideList(ExpressOpsPunishinsideBillVO billVO,
 			Model model) {
-		
+		// 修改对内扣罚账单表信息
 		this.punishinsideBillService.updatePunishinsideBill(billVO);
-		
+		// 责任机构
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		// 用户
 		List<User> userList = this.userDAO.getAllUser();
+		// 责任人
 		List<User> dutyPersonList = this.userDAO.getAllUserOrderByBranchid();
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = PunishBillStateEnum.getMap();
+		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		// 账单列表
 		List<ExpressOpsPunishinsideBill> list = this.punishinsideBillDAO
 				.queryPunishinsideBill(1, new ExpressOpsPunishinsideBillVO());
+		// 账单列表条数
+		int count = this.punishinsideBillDAO
+				.queryPunishinsideBillCount(new ExpressOpsPunishinsideBillVO());
+		// 扣罚大类
 		List<PenalizeType> punishbigsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(1);
+		// 扣罚小类
 		List<PenalizeType> punishsmallsortList = this.penalizeTypeDAO
 				.getPenalizeTypeByType(2);
+		// 所修改或者查看的账单信息
 		ExpressOpsPunishinsideBillVO punishinsideBillVO = this.punishinsideBillService
 				.getPunishinsideBillVO(billVO.getId());
+		// 当前登录用户
 		User user = getSessionUser();
+		// 普通权限
 		int jiesuanAuthority = 0;
+		// 高级权限
 		int jiesuanAdvanceAuthority = 0;
+		// 当前登录用户id
 		long userid = 0;
+		// 当前登录用户的真实姓名
 		String realname = "";
 		if(user != null){
 			long roleid = user.getRoleid();
@@ -439,8 +507,12 @@ public class PunishinsideBillController {
 			userid = user.getUserid();
 			realname = user.getRealname();
 		}
+		// 当前日期
 		String nowDate = DateTimeUtil.getNowDate();
+		Page page_obj = new Page(count, 1, Page.ONE_PAGE_NUMBER);
 
+		model.addAttribute("page", 1);
+		model.addAttribute("page_obj", page_obj);
 		model.addAttribute("jiesuanAuthority", jiesuanAuthority);
 		model.addAttribute("jiesuanAdvanceAuthority", jiesuanAdvanceAuthority);
 		model.addAttribute("weiShenHeState", PunishBillStateEnum.WeiShenHe.getValue());

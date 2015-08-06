@@ -108,12 +108,14 @@ public class PunishinsideBillService {
 		}
 		List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO
 				.getPunishinsideBillList();
+		// 对内扣罚账单表中已存在的扣罚单记录
 		String punishNosSaved = "";
 		if (billList != null && !billList.isEmpty()) {
 			for (int i = 0; i < billList.size(); i++) {
 				punishNosSaved += billList.get(i).getPunishNos() + ",";
 			}
 		}
+		// 获取对内扣罚列表
 		List<PenalizeInside> penalizeInsideList = this.punishinsideBillDAO
 				.findByCondition(punishinsideBill.getPunishbigsort(),
 						punishinsideBill.getPunishsmallsort(),
@@ -130,6 +132,7 @@ public class PunishinsideBillService {
 			for (int i = 0; i < penalizeInsideList.size(); i++) {
 				penalizeInside = penalizeInsideList.get(i);
 				if (StringUtils.isNotBlank(penalizeInside.getPunishNo())) {
+					// 过滤到对内扣罚账单表中已存在的扣罚单
 					if(StringUtils.isBlank(punishNosSaved) || punishNosSaved.indexOf(penalizeInside.getPunishNo()) == -1){
 						punishNos += penalizeInside.getPunishNo() + ",";
 						if (penalizeInside.getPunishInsideprice() != null) {
@@ -220,6 +223,7 @@ public class PunishinsideBillService {
 					.getPunishNos());
 			List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO
 					.getPunishinsideBillList();
+			// 对内扣罚账单表中已存在的扣罚单号
 			String punishNosSaved = "";
 			if (billList != null && !billList.isEmpty()) {
 				for (int i = 0; i < billList.size(); i++) {
@@ -228,6 +232,7 @@ public class PunishinsideBillService {
 					}
 				}
 				if (StringUtils.isNotBlank(punishNosSaved)) {
+					// 移除表中已存在的扣罚单号
 					punishNos = StringUtil.removalDuplicateString(punishNos,
 							punishNosSaved);
 				}
@@ -246,7 +251,7 @@ public class PunishinsideBillService {
 		// 所有已存在的赔付单号
 		String existedPunishNos = "";
 		List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO.getPunishinsideBillList();
-		// 已审核或已核销的赔付单号
+	/*	// 已审核或已核销的赔付单号
 		String punishNosAudited = "";
 		if (billList != null && !billList.isEmpty()) {
 			for (int i = 0; i < billList.size(); i++) {
@@ -264,7 +269,15 @@ public class PunishinsideBillService {
 				currentExistedPunishNos = punishinsideBill.getPunishNos();
 			}
 		}
-		existedPunishNos = punishNosAudited + currentExistedPunishNos;
+		existedPunishNos = punishNosAudited + currentExistedPunishNos;*/
+		if (billList != null && !billList.isEmpty()) {
+			for (int i = 0; i < billList.size(); i++) {
+				if (StringUtils.isNotBlank(billList.get(i).getPunishNos())) {
+					existedPunishNos = billList.get(i).getPunishNos() + "," + existedPunishNos;
+				}
+			}
+		}
+		existedPunishNos = existedPunishNos.substring(0, existedPunishNos.length()-1);
 		return existedPunishNos;
 	}
 }
