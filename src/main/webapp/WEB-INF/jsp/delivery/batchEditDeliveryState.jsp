@@ -100,6 +100,7 @@ function changeTag(id){
 		$("#firstlevelreasonid").parent().hide();
 		$("#resendtime").parent().hide();
 		$("#zhiliuremark").parent().hide();
+		$("#deliverremark").parent().hide();
 		
 		$("#backreasonid").parent().show();
 		$("#deliverstateremark").parent().show();
@@ -125,6 +126,7 @@ function changeTag(id){
 		$("#deliverstateremark").parent().hide();
 		$("#paytype").parent().hide();
 		$("#losereasonid").parent().hide();
+		$("#deliverremark").parent().hide();
 
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
@@ -144,6 +146,7 @@ function changeTag(id){
 		$("#resendtime").parent().hide();
 		$("#zhiliuremark").parent().hide();
 		$("#losereasonid").parent().hide();
+		$("#deliverremark").parent().hide();
 
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
@@ -159,6 +162,7 @@ function changeTag(id){
 		<%}%>
 	}else if(id==<%=DeliveryStateEnum.DaiZhongZhuan.getValue()%>){
 		$("#firstchangereasonid").parent().show();
+		$("#deliverremark").parent().show();
 		$("#firstlevelreasonid").parent().hide();
 		$("#changereasonid").parent().show();
 		$("#resendtime").parent().hide();
@@ -166,10 +170,12 @@ function changeTag(id){
 		$("#deliverstateremark").parent().hide();
 		$("#paytype").parent().hide();
 		$("#leavedreasonid").parent().hide();
+		$("#losereasonid").parent().hide();
 	
 		$("#zhiliuremark").parent().hide();
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
+		$("#deliverremark").val("");
 		$("#leavedreasonid").val(0);
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
@@ -183,6 +189,7 @@ function changeTag(id){
 		$("#paytype").parent().hide();
 		$("#backreasonid").parent().hide();
 		$("#deliverstateremark").parent().hide();
+		$("#deliverremark").parent().hide();
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
 		$("#leavedreasonid").val(0);
@@ -438,6 +445,9 @@ function resub(form){
 	           						<option value="<%=r.getReasonid()%>"  title="<%=r.getReasoncontent() %>"><%if(r.getReasoncontent()!=null&&r.getReasoncontent().length()>10){ %><%=r.getReasoncontent().substring(0,10) %>...<%}else{ %><%=r.getReasoncontent()%><%} %></option>
 	           				<%} %>
 			      			  </select>
+						</em>
+						<em style="display:none">待中转备注输入内容：
+							<input type="text" name="deliverstateremark" class="input_text1" id="deliverremark" value ="<%=request.getParameter("deliverstateremark")==null?"":request.getParameter("deliverstateremark")%>" maxlength="50" />
 						</em>
 						</td>
 					</tr>
