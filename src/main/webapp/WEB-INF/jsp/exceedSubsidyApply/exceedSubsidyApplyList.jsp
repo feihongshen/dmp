@@ -134,6 +134,7 @@ function updateExceedSubsidyApplyFun(form,type,page){
 							}
 						}
 					}
+					$("#"+form+" select[name='deliveryPerson']").attr("disabled",false);
 					$("#"+form+" select[name='applyState']").attr("disabled",false);
 					$("#"+form+" select[name='cwbOrderState']").attr("disabled",false);
 					$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("disabled",false);
@@ -286,6 +287,7 @@ function deleteExceedSubsidyApply(){
 								}
 							}
 						}
+						$("#"+form+" select[name='deliveryPerson']").attr("disabled",false);
 						$("#"+form+" select[name='applyState']").attr("disabled",false);
 						$("#"+form+" select[name='cwbOrderState']").attr("disabled",false);
 						$("#"+form).submit();

@@ -201,6 +201,7 @@ public class ExceedSubsidyApplyController {
 		model.addAttribute("cwbStateMap", cwbStateMap);
 		model.addAttribute("exceedSubsidyApplyVO", exceedSubsidyApplyVO);
 		model.addAttribute("deliveryUserList", deliveryUserList);
+		model.addAttribute("currentUser", user);
 		return "exceedSubsidyApply/exceedSubsidyApplyList";
 	}
 
