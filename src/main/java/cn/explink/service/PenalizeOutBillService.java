@@ -325,7 +325,9 @@ public class PenalizeOutBillService {
 				}
 			}
 			String order = sBuffer.toString();
-			order = order.substring(0, order.length() - 1);
+			if(StringUtils.isNotBlank(order)){
+				order = order.substring(0, order.length() - 1);
+			}
 			PenalizeOutBill bill2 = new PenalizeOutBill();
 			bill2.setId(id);
 			bill2.setCompensateodd(order);
