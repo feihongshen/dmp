@@ -511,7 +511,7 @@ public class PaiFeiRuleService {
 							carsize = Long.parseLong(co.getCarsize());
 						} catch (Exception e) {
 						}
-						PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize);
+						PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize,pFarea.getId());
 						if (pFoverbig != null) {
 							fee=fee.add(pFoverbig.getSubsidyfee());
 						}
@@ -520,7 +520,7 @@ public class PaiFeiRuleService {
 					if (carrealweight == null) {
 						carrealweight = new BigDecimal("0");
 					}
-					PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight);
+					PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight,pFarea.getId());
 					if (pFoverweight != null) {
 						fee=fee.add(pFoverweight.getSubsidyfee());
 					}
@@ -571,10 +571,10 @@ public class PaiFeiRuleService {
 	 * @param carrealweight
 	 * @return
 	 */
-	private PFoverweight getPFoverweightByCount(List<PFoverweight> pFoverweights, BigDecimal carrealweight) {
+	private PFoverweight getPFoverweightByCount(List<PFoverweight> pFoverweights, BigDecimal carrealweight,long areaid) {
 		if (pFoverweights != null) {
 			for (PFoverweight pf : pFoverweights) {
-				if ((carrealweight.compareTo(pf.getMincount()) >= 0) && (carrealweight.compareTo(pf.getMaxcount()) < 0)) {
+				if ((pf.getAreaid()==areaid)&&(carrealweight.compareTo(pf.getMincount()) >= 0) && (carrealweight.compareTo(pf.getMaxcount()) < 0)) {
 					return pf;
 				}
 			}
@@ -587,10 +587,10 @@ public class PaiFeiRuleService {
 	 * @param carsize
 	 * @return
 	 */
-	private PFoverbig getPFoverbigByCount(List<PFoverbig> pFoverbigs, long carsize) {
+	private PFoverbig getPFoverbigByCount(List<PFoverbig> pFoverbigs, long carsize,long areaid) {
 		if (pFoverbigs != null) {
 			for (PFoverbig pf : pFoverbigs) {
-				if ((carsize >= pf.getMincount()) && (carsize < pf.getMaxcount())) {
+				if ((pf.getAreaid()==areaid)&&(carsize >= pf.getMincount()) && (carsize < pf.getMaxcount())) {
 					return pf;
 				}
 			}
@@ -858,7 +858,7 @@ public class PaiFeiRuleService {
 								carsize = Long.parseLong(co.getCarsize());
 							} catch (Exception e) {
 							}
-							PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize);
+							PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize,pFarea.getId());
 							if (pFoverbig != null) {
 								areafee=areafee.add(pFoverbig.getSubsidyfee());
 							}
@@ -868,7 +868,7 @@ public class PaiFeiRuleService {
 						if (carrealweight == null) {
 							carrealweight = new BigDecimal("0");
 						}
-						PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight);
+						PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight,pFarea.getId());
 						if (pFoverweight != null) {
 							areafee=areafee.add(pFoverweight.getSubsidyfee());
 						}
@@ -1028,7 +1028,7 @@ public class PaiFeiRuleService {
 								carsize = Long.parseLong(co.getCarsize());
 							} catch (Exception e) {
 							}
-							PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize);
+							PFoverbig pFoverbig = this.getPFoverbigByCount(pFoverbigs, carsize,pFarea.getId());
 							if (pFoverbig != null) {
 								areafee=areafee.add(pFoverbig.getSubsidyfee());
 							}
@@ -1067,7 +1067,7 @@ public class PaiFeiRuleService {
 						if (carrealweight == null) {
 							carrealweight = new BigDecimal("0");
 						}
-						PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight);
+						PFoverweight pFoverweight = this.getPFoverweightByCount(pFoverweights, carrealweight,pFarea.getId());
 						if (pFoverweight != null) {
 							areafee=areafee.add(pFoverweight.getSubsidyfee());
 						}

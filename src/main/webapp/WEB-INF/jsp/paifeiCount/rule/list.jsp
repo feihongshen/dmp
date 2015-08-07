@@ -1437,16 +1437,16 @@
 				<input type="hidden" id="areaid" name="areaid" /></td>
 			</tr>
 			<tr id="isareafeetr">
-				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" />区域补助金额</td>
+				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" id="areafee_flag" />区域补助金额</td>
 				<td align="left"><span><input type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元</span></td>
 			</tr>
 			<tr id="overbigflagtrno">
-				<td align="left" valign="bottom"><input type="checkbox" />超大补助</td>
+				<td align="left" valign="bottom"><input type="checkbox" id="overbigflag" />超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="overbig_table">
 						<tr id="thead">
-							<td style="width: 10%" align="center"><input type="checkbox" id="overbig_checbox"
-								onclick="AllTR('ps','overbig')" /></td>
+							<td style="width: 10%" align="center"><input type="checkbox" id="overbigflag"
+								onclick="AllTR('ps','overbig')" /></td>  <!-- id="overbig_checbox" -->
 							<td style="width: 20%" align="center">开始体积数(cm3)</td>
 							<td style="width: 15%" align="center">截至体积数(cm3)</td>
 							<td style="width: 15%" align="center">补助金额(元)</td>
@@ -1459,7 +1459,7 @@
 				<td align="left" valign="bottom"><input type="checkbox"  id="overbigflag"/>超大补助</td>
 			</tr>
 			<tr id="isoverweighttr">
-				<td align="left"><input type="checkbox" />超重补助</td>
+				<td align="left"><input type="checkbox" id="overweightflag" />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
 						cellpadding="0" class="table_2" id="overweight_table">
 						<tr id="thead">

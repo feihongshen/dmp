@@ -3,6 +3,7 @@
  */
 package cn.explink.dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -191,5 +192,23 @@ public class PFAreaDAO {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	/**
+	 * @param zero
+	 */
+	public int updatePFareaOFareafee(long id,BigDecimal fee) {
+		String sql = "update `paifeirule_area` set `areafee`=? where id=?";
+		return this.jdbcTemplate.update(sql,fee,id);
+	}
+
+	/**
+	 * @param areaid
+	 * @param i
+	 */
+	public int updatePFareaOFOverbigflag(long id, int overbigflag) {
+		String sql = "update `paifeirule_area` set `overbigflag`=? where id=?";
+		return this.jdbcTemplate.update(sql,overbigflag,id);
+
 	}
 }

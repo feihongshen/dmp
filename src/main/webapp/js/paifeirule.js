@@ -49,7 +49,7 @@ function addInit() {
 }
 function allchecked() {
 	var ids = "";
-	var num=0;
+	var num = 0;
 	$("[id=id]").each(function() {
 		if ($(this)[0].checked == true) {
 			ids += "," + $(this).val();
@@ -72,7 +72,7 @@ function allchecked() {
 				if (data.counts > 0) {
 					alert("成功删除" + data.counts + "条");
 				}
-				if(data.counts!=num){
+				if (data.counts != num) {
 					alert("已经启用的规则不能删除！");
 				}
 				$("#find form").submit();
@@ -150,11 +150,9 @@ function addTROfinsertion(pf, type) {
 			var fee = $(this).find("[id=insertionfee]").val();
 			if (fee == '' || mincountVal == '' || maxcountVal == '') {
 				flag = false;
-			} 
-			else if(parseInt(mincountVal)>parseInt(maxcountVal)){
+			} else if (parseInt(mincountVal) > parseInt(maxcountVal)) {
 				flag = false;
-			}
-			else {
+			} else {
 				max = maxcountVal;
 			}
 		} else {
@@ -186,11 +184,9 @@ function addTROfOverArea(pf, type) {
 			var fee = $(this).find("[id=insertionfee]").val();
 			if (fee == '' || mincountVal == '' || maxcountVal == '') {
 				flag = false;
-			} 
-			else if(parseInt(mincountVal)>parseInt(maxcountVal)){
+			} else if (parseInt(mincountVal) > parseInt(maxcountVal)) {
 				flag = false;
-			}
-			else {
+			} else {
 				max = maxcountVal;
 			}
 		} else {
@@ -222,11 +218,9 @@ function addTROfOverAreaEdit(pf, type) {
 			var fee = $(this).find("[id=insertionfee]").val();
 			if (fee == '' || mincountVal == '' || maxcountVal == '') {
 				flag = false;
-			} 
-			else if(parseInt(mincountVal)>parseInt(maxcountVal)){
+			} else if (parseInt(mincountVal) > parseInt(maxcountVal)) {
 				flag = false;
-			}
-			else {
+			} else {
 				max = maxcountVal;
 			}
 		} else {
@@ -302,10 +296,12 @@ function sub(ruletype) {
 	});
 }
 function getOverarea(tab, type) {
-	if ($("#" + tab + "_" + type + "_tr input[type='checkbox']")[0].checked == true) {
-		return "1";
-	} else {
-		return "";
+	if ($("#" + tab + "_" + type + "_tr input[type='checkbox']").length > 0) {
+		if ($("#" + tab + "_" + type + "_tr input[type='checkbox']")[0].checked == true) {
+			return "1";
+		} else {
+			return "";
+		}
 	}
 }
 function getJson(tab, type) {
@@ -480,7 +476,7 @@ function joineditRule() {
 }
 
 function subEidt(formId, tab, edittype) {
-	var errorcode=0;
+	var errorcode = 0;
 	var dmpurl = $("#dmpurl").val();
 	var json = {};
 	var ruleid = $("#edit_rule_id").val();
@@ -500,8 +496,9 @@ function subEidt(formId, tab, edittype) {
 					// + edittype.length +
 					// 1);
 					$(this).append("<input type='hidden' name='areaid' value=" + areaid + " />");
+
 				}
-				if (mincountVal>maxcountVal) {
+				if (mincountVal > maxcountVal) {
 					alert("输入数据有误！");
 					return 0;
 				}
@@ -531,7 +528,7 @@ function subEidt(formId, tab, edittype) {
 	// alert(JSON.stringify(json));
 	$.ajax({
 		type : "post",
-		async: false,
+		async : false,
 		url : dmpurl + "/paifeirule/edittype",
 		data : {
 			"json" : JSON.stringify(json),
@@ -541,7 +538,7 @@ function subEidt(formId, tab, edittype) {
 		},
 		dataType : "json",
 		success : function(obj) {
-			errorcode=obj.errorcode;
+			errorcode = obj.errorcode;
 		}
 	});
 	return errorcode;
@@ -616,14 +613,14 @@ function showArea(tr, id, areaname) {
 }
 function validate(e) {
 	var exp = /^([1-9][\d]{0,7}|0)(\.[\d]{1,2})?$/;
-//	return exp.test(nums);
+	// return exp.test(nums);
 
 	if (!exp.test($(e).val())) {
 		$(e).val('0');
 	}
-/*	if (!/^[0-9]*$/.test($(e).val())) {
-		$(e).val('0');
-	}*/
+	/*
+	 * if (!/^[0-9]*$/.test($(e).val())) { $(e).val('0'); }
+	 */
 }
 function comparaTo(e, type) {
 	validate(e);
@@ -688,7 +685,7 @@ function credatafrom() {
 	});
 }
 function subArea(tablename, tab) {
-	var	errorcode=0;
+	var errorcode = 0;
 	var areajson = getJsonOfAreaEdit(tablename, $("#edit_rule_from [name=type]").val());
 	var dmpurl = $("#dmpurl").val();
 	/*
@@ -698,63 +695,86 @@ function subArea(tablename, tab) {
 	 * #overbigflag").length > 0) { overbigflag = $("#" + tablename + "
 	 * #overbigflag").checked; }
 	 */
-	$.ajax({
-		type : "post",
-		url : dmpurl + "/paifeirule/saveArea",
-		async: false,
-		data : {
-			"tab" : tab,
-			"areajson" : JSON.stringify(areajson),
-			"rulejson" : JSON.stringify($("#edit_rule_from").serializeObject())
-		},
-		dataType : "json",
-		success : function(obj) {
-			errorcode=obj.errorcode;
-		}
-	});
-return errorcode;
-}
-function getJsonOfAreaEdit(tablename, ruleType) {
-	var tab = tablename.split("_")[0];
-	var json = {};
-	var areafee = $("#" + tablename).find("#areafee").val();
-	var areaid = $("#" + tablename).find("#areaid").val();
-	var areaname = $("#" + tablename).find("#areaname").text();
-	if (ruleType == 2) {
-		var overbig = new Array();
-		$("#" + tablename).find("[id*=" + tab + "_overbig] tr[id!=thead]").each(function() {
-			var mincountVal = $(this).find("[name=mincount]").val();
-			var maxcountVal = $(this).find("[name=maxcount]").val();
-			if (mincountVal != '' && maxcountVal != '') {
-				overbig.push($(this).serializeObject());
+	if (areajson.areafee != undefined || areajson.overbigflag != undefined || areajson.overbig != undefined || areajson.overweight != undefined) {
+		$.ajax({
+			type : "post",
+			url : dmpurl + "/paifeirule/saveArea",
+			async : false,
+			data : {
+				"tab" : tab,
+				"areajson" : JSON.stringify(areajson),
+				"rulejson" : JSON.stringify($("#edit_rule_from").serializeObject())
+			},
+			dataType : "json",
+			success : function(obj) {
+				errorcode = obj.errorcode;
 			}
 		});
-		if (overbig.length > 0) {
-			json.overbig = overbig;
-		}
-	} else {
-		if ($("#" + tablename).find("#overbigflag")[0] == undefined) {
-			json.overbigflag = -1;
+	}
+	return errorcode;
+}
+function getJsonOfAreaEdit(tablename, ruleType) {
+
+	var tab = tablename.split("_")[0];
+	var json = {};
+	var areaid = $("#" + tablename).find("#areaid").val();
+	var areaname = $("#" + tablename).find("#areaname").text();
+	var areafeeflag = false;
+	if ($("#" + tablename).find("#areafee_flag").length > 0) {
+		areafeeflag = $("#" + tablename).find("#areafee_flag")[0].checked;
+	}
+	var overweightflag = false;
+	if ($("#" + tablename).find("#overweightflag").length > 0) {
+		overweightflag = $("#" + tablename).find("#overweightflag")[0].checked;
+	}
+	var overbigflag = false;
+	if ($("#" + tablename).find("#overbigflag").length > 0) {
+		overbigflag = $("#" + tablename).find("#overbigflag")[0].checked;
+	}
+	var areafee = '';
+	if (areafeeflag) {
+		areafee = $("#" + tablename).find("#areafee").val();
+		json.areafee = areafee;
+	}
+
+	if (overbigflag) {
+		if (ruleType == 2) {
+			var overbig = new Array();
+			$("#" + tablename).find("[id*=" + tab + "_overbig] tr[id!=thead]").each(function() {
+				var mincountVal = $(this).find("[name=mincount]").val();
+				var maxcountVal = $(this).find("[name=maxcount]").val();
+				if (mincountVal != '' && maxcountVal != '') {
+					overbig.push($(this).serializeObject());
+				}
+			});
+			if (overbig.length > 0) {
+				json.overbig = overbig;
+			}
 		} else {
-			var flag = $("#" + tablename).find("#overbigflag")[0].checked;
-			if (flag) {
-				json.overbigflag = 1;
-			} else {
+			if ($("#" + tablename).find("#overbigflag")[0] == undefined) {
 				json.overbigflag = -1;
+			} else {
+				var flag = $("#" + tablename).find("#overbigflag")[0].checked;
+				if (flag) {
+					json.overbigflag = 1;
+				} else {
+					json.overbigflag = -1;
+				}
 			}
 		}
 	}
+
 	var overweight = new Array();
-	var max = -1;
-	$("#" + tablename).find("[id*=" + tab + "_overweight] tr[id!=thead]").each(function() {
-		var mincountVal = $(this).find("[name=mincount]").val();
-		var maxcountVal = $(this).find("[name=maxcount]").val();
-		if (mincountVal != '' && maxcountVal != '') {
-			max = maxcountVal;
-			overweight.push($(this).serializeObject());
-		}
-	});
-	json.areafee = areafee;
+	if (overweightflag) {
+		$("#" + tablename).find("[id*=" + tab + "_overweight] tr[id!=thead]").each(function() {
+			var mincountVal = $(this).find("[name=mincount]").val();
+			var maxcountVal = $(this).find("[name=maxcount]").val();
+			if (mincountVal != '' && maxcountVal != '') {
+				overweight.push($(this).serializeObject());
+			}
+		});
+	}
+
 	json.areaid = areaid;
 	json.areaname = areaname;
 	if (overweight.length > 0) {
@@ -763,8 +783,9 @@ function getJsonOfAreaEdit(tablename, ruleType) {
 
 	return json;
 }
+
 function subAreaEidt(e, areaid, type) {
-	var errorcode=0;
+	var errorcode = 0;
 	var dmpurl = $("#dmpurl").val();
 	var areafee = '';
 	var overbigflag = '';
@@ -783,7 +804,7 @@ function subAreaEidt(e, areaid, type) {
 	$.ajax({
 		type : "post",
 		url : dmpurl + "/paifeirule/updateArea",
-		async: false,
+		async : false,
 		data : {
 			"areaid" : areaid,
 			"areafee" : areafee,
@@ -791,8 +812,8 @@ function subAreaEidt(e, areaid, type) {
 		},
 		dataType : "json",
 		success : function(obj) {
-			//alert(obj.error);
-			errorcode=obj.errorcode;
+			// alert(obj.error);
+			errorcode = obj.errorcode;
 
 		}
 	});
@@ -813,9 +834,9 @@ function checkCustomer(obj, e) {
 	}
 }
 function saveAllData() {
-	var flag=0;
-	
-	flag=subEidt('edit_rule_from', '', 'rule');
+	var flag = 0;
+
+	flag = subEidt('edit_rule_from', '', 'rule');
 	var ruletype = $("#edit_ruletype").val();
 	var tabs = new Array();
 	if (ruletype == 1) {
@@ -828,22 +849,21 @@ function saveAllData() {
 		tabs = new Array("ps");
 	}
 	for (var i = 0; i < tabs.length; i++) {
-		flag=creDate(tabs[i], ruletype);
-		if(flag==0)
-			{
-			return ;
-			}
+		flag = creDate(tabs[i], ruletype);
+		if (flag == 0) {
+			return;
+		}
 	}
-	if(flag==1)
-		{alert("已经修改完成！");}
-	else {
+	if (flag == 1) {
+		alert("已经修改完成！");
+	} else {
 		alert("修改失败！请检查数据");
 	}
 
 }
 function creDate(tab, ruletype) {
-	var flag=0;
-	var ruleid=$("#edit_rule_from").find("#edit_rule_id").val();
+	var flag = 0;
+	var ruleid = $("#edit_rule_from").find("#edit_rule_id").val();
 	var basic_flag = $("#" + tab + "_basic_flag")[0].checked;
 	var collection_flag = $("#" + tab + "_collection_flag")[0].checked;
 	var area_flag = $("#" + tab + "_area_flag")[0].checked;
@@ -852,99 +872,105 @@ function creDate(tab, ruletype) {
 
 	if (basic_flag) {
 		if ($("#" + tab + "_showflag_basic").val() == 'yes') {
-			flag=subEidt("edit_" + tab + "_basic_from", tab, 'basic');
-			if(flag==0)
-			{
-			return ;
+			flag = subEidt("edit_" + tab + "_basic_from", tab, 'basic');
+			if (flag == 0) {
+				return;
 			}
 		} else {
-			flag=subEidt("edit_" + tab + "_basicno_from", tab, 'basicno');
-			if(flag==0)
-			{
-			return ;
+			flag = subEidt("edit_" + tab + "_basicno_from", tab, 'basicno');
+			if (flag == 0) {
+				return;
 			}
 		}
-	}else{
-		flag=deleteData(ruleid,tab,'basic');
+	} else {
+		flag = deleteData(ruleid, tab, 'basic');
 		if (flag == 0) {
 			return;
 		}
 	}
 	if (collection_flag) {
 		if ($("#" + tab + "_showflag_collection").val() == 'yes') {
-			flag=subEidt("edit_" + tab + "_collection_from", tab, 'collection');
-			if(flag==0)
-			{
-			return ;
+			flag = subEidt("edit_" + tab + "_collection_from", tab, 'collection');
+			if (flag == 0) {
+				return;
 			}
 		} else {
-			flag=subEidt("edit_" + tab + "_collectionno_from", tab, 'collectionno');
-			if(flag==0)
-			{
-			return ;
+			flag = subEidt("edit_" + tab + "_collectionno_from", tab, 'collectionno');
+			if (flag == 0) {
+				return;
 			}
 		}
-	}
-	else{
-		flag=deleteData(ruleid,tab,'collection');
+	} else {
+		flag = deleteData(ruleid, tab, 'collection');
 		if (flag == 0) {
 			return;
 		}
 	}
 	if (area_flag) {
-		var aflag=1;
-		$("div[id^=edit_area_"+tab+"_][style*=block]").each(function() {
-			if ($(this).find("#areafee_flag").length>0&&$(this).find("#areafee_flag")[0].checked) {
-				aflag=subAreaEidt($(this).find("#areafee_sub"),$(this).find("#areafee_sub").attr('areaid'),'areafee');
-				if(aflag==0)
-				{
-				return ;
+		var aflag = 1;
+		$("div[id^=edit_area_" + tab + "_][style*=block]").each(function() {
+			if ($(this).find("#areafee_flag").length > 0) {
+				if ($(this).find("#areafee_flag")[0].checked) {
+
+					aflag = subAreaEidt($(this).find("#areafee_sub"), $(this).find("#areafee_sub").attr('areaid'), 'areafee');
+					if (aflag == 0) {
+						return;
+					}
+				} else {
+					deleteAreaDate($(this).find("#areafee_sub").attr('areaid'), 'areafee', ruletype);
 				}
 			}
-			if(ruletype!=2){
-				if ($(this).find("#overbigflag").length>0&&$(this).find("#overbigflag")[0].checked) {
-					aflag=subAreaEidt($(this).find("#overbigflag_sub"),$(this).find("#overbigflag_sub").attr('areaid'),'overbigflag');
-					if(aflag==0)
-					{
-					return ;
+			if (ruletype != 2) {
+				if ($(this).find("#overbigflag").length > 0) {
+					if ($(this).find("#overbigflag")[0].checked) {
+						aflag = subAreaEidt($(this).find("#overbigflag_sub"), $(this).find("#overbigflag_sub").attr('areaid'), 'overbigflag');
+						if (aflag == 0) {
+							return;
+						}
+					} else {
+						deleteAreaDate($(this).find("#areafee_sub").attr('areaid'), 'overbig', ruletype);
 					}
 				}
 			}
-			if(ruletype==2){
-				if ($(this).find("#overbigflag").length>0&&$(this).find("#overbigflag")[0].checked) {
-					aflag=subEidt(tab+"_overbig_"+$(this).find("#overbig_sub").attr('areaid')+"_table",tab,'overbig');
-					if(aflag==0)
-					{
-					return ;
+
+			if (ruletype == 2) {
+				if ($(this).find("#overbigflag").length > 0) {
+					if ($(this).find("#overbigflag")[0].checked) {
+						aflag = subEidt(tab + "_overbig_" + $(this).find("#overbig_sub").attr('areaid') + "_table", tab, 'overbig');
+						if (aflag == 0) {
+							return;
+						}
+					} else {
+						deleteAreaDate($(this).find("#areafee_sub").attr('areaid'), 'overbig', ruletype);
 					}
 				}
 			}
-			if ($(this).find("#overweightflag").length>0&&$(this).find("#overweightflag")[0].checked) {
-				aflag=subEidt(tab+"_overweight_"+$(this).find("#overweight_sub").attr('areaid')+"_table",tab,'overweight');
-				if(aflag==0)
-				{
-				return ;
+			if ($(this).find("#overweightflag").length > 0) {
+				if ($(this).find("#overweightflag")[0].checked) {
+					aflag = subEidt(tab + "_overweight_" + $(this).find("#overweight_sub").attr('areaid') + "_table", tab, 'overweight');
+					if (aflag == 0) {
+						return;
+					}
+				} else {
+					deleteAreaDate($(this).find("#areafee_sub").attr('areaid'), 'overweight', ruletype);
 				}
 			}
 		});
-		if(aflag==0)
-		{
-		return ;
+		if (aflag == 0) {
+			return;
 		}
-		var bflag=1;
-		$("table[id^="+tab+"_area_table_]").each(function(){
-			bflag=subArea($(this)[0].id,tab);
+		var bflag = 1;
+		$("table[id^=" + tab + "_area_table_]").each(function() {
+			bflag = subArea($(this)[0].id, tab);
 			if (bflag == 0) {
 				return;
 			}
 		});
-		if(bflag==0)
-		{
-		return ;
+		if (bflag == 0) {
+			return;
 		}
-	}
-	else{
-		flag=deleteData(ruleid,tab,'area');
+	} else {
+		flag = deleteData(ruleid, tab, 'area');
 		if (flag == 0) {
 			return;
 		}
@@ -952,54 +978,48 @@ function creDate(tab, ruletype) {
 	if (ruletype == 3) {
 		var overarea_flag = $("#" + tab + "_overarea_tr #edit_" + tab + "_state_checkbox")[0].checked;
 		if (overarea_flag) {
-			flag=subEidt("edit_" + tab + "_overarea_from", tab, 'overarea');
-			if(flag==0)
-			{
-			return ;
+			flag = subEidt("edit_" + tab + "_overarea_from", tab, 'overarea');
+			if (flag == 0) {
+				return;
 			}
-		}
-		else{
-			flag=deleteData(ruleid,tab,'overarea');
+		} else {
+			flag = deleteData(ruleid, tab, 'overarea');
 			if (flag == 0) {
 				return;
 			}
 		}
 	}
 	if (business_flag) {
-		flag=subEidt("edit_" + tab + "_business_from", tab, 'business');
-		if(flag==0)
-		{
-		return ;
+		flag = subEidt("edit_" + tab + "_business_from", tab, 'business');
+		if (flag == 0) {
+			return;
 		}
-	}
-	else{
-		flag=deleteData(ruleid,tab,'business');
+	} else {
+		flag = deleteData(ruleid, tab, 'business');
 		if (flag == 0) {
 			return;
 		}
 	}
 	if (insertion_flag) {
-		flag=subEidt("edit_" + tab + "_insertion_from", tab, 'insertion');
-		if(flag==0)
-		{
-		return ;
+		flag = subEidt("edit_" + tab + "_insertion_from", tab, 'insertion');
+		if (flag == 0) {
+			return;
 		}
-	}
-	else{
-		flag=deleteData(ruleid,tab,'insertion');
+	} else {
+		flag = deleteData(ruleid, tab, 'insertion');
 		if (flag == 0) {
 			return;
 		}
 	}
 	return flag;
 }
-function deleteData(ruleid,tab,type)
-{   var errorcode=0;
+function deleteData(ruleid, tab, type) {
+	var errorcode = 0;
 	var dmpurl = $("#dmpurl").val();
 	$.ajax({
 		type : "post",
 		url : dmpurl + "/paifeirule/deleteData",
-		async: false,
+		async : false,
 		data : {
 			"ruleid" : ruleid,
 			"tab" : tab,
@@ -1007,19 +1027,35 @@ function deleteData(ruleid,tab,type)
 		},
 		dataType : "json",
 		success : function(obj) {
-			//alert(obj.error);
-			errorcode=obj.errorcode;
+			// alert(obj.error);
+			errorcode = obj.errorcode;
 
 		}
 	});
 	return errorcode;
-	}
+}
 
-function isshowjspf(e){
+function isshowjspf(e) {
 	$("#credatafrom").find("#jushouPFfee").val('0.00');
 	$("#credatafrom").find("#jushouPFfee").removeAttr('disabled');
-	if($(e).val()==1||$(e).val()==3)
-		{
-			$("#credatafrom").find("#jushouPFfee").attr('disabled','disabled');
+	if ($(e).val() == 1 || $(e).val() == 3) {
+		$("#credatafrom").find("#jushouPFfee").attr('disabled', 'disabled');
+	}
+}
+function deleteAreaDate(areaid, areatype, ruleType) {
+	var dmpurl = $("#dmpurl").val();
+	$.ajax({
+		type : "post",
+		url : dmpurl + "/paifeirule/deleteAreaDate",
+		async : false,
+		data : {
+			"areaid" : areaid,
+			"areatype" : areatype,
+			"ruleType" : ruleType
+		},
+		dataType : "json",
+		success : function(obj) {
+
 		}
+	});
 }

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.explink.dao.AreaDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbDAO;
 import cn.explink.dao.PFAreaDAO;
 import cn.explink.dao.PFbasicDAO;
 import cn.explink.dao.PFbusinessDAO;
@@ -37,10 +38,12 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.Area;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.PFarea;
 import cn.explink.domain.PaiFeiRule;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchTypeEnum;
+import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleStateEnum;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
@@ -85,6 +88,8 @@ public class PaiFeiRuleController {
 	PFoverweightDAO pFoverweightDAO;
 	@Autowired
 	AreaDAO areaDAO;
+	@Autowired
+	CwbDAO cwbDAO;
 
 	// private Logger logger = LoggerFactory.getLogger(this.getClass());
 	User getSessionUser() {
@@ -253,6 +258,15 @@ public class PaiFeiRuleController {
 		map.put("errorcode", errorcode);
 		return map;
 	}
+	@RequestMapping("/test")
+	public @ResponseBody
+	Map<String, BigDecimal> test(@RequestParam(value = "name", required = false, defaultValue = "") String name, Model model) {
+		String cwbs="'zff15001','zff15002','zff15003','zff15004','zff15005'";
+		List<CwbOrder> cwbOrders = this.cwbDAO.getCwbOrderByCwbs(cwbs);
+		User user = this.userDAO.getUserByRealname("dc1#");
+		Map<String, BigDecimal> map = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, cwbOrders);
+		return map;
+	}
 
 	@RequestMapping("/updateArea")
 	public @ResponseBody
@@ -281,4 +295,36 @@ public class PaiFeiRuleController {
 		map.put("errorcode", errorcode);
 		return map;
 	}
+	@RequestMapping("/deleteAreaDate")
+	public @ResponseBody
+	Map<String, Object> deleteAreaDate(@RequestParam(value = "areaid", required = false, defaultValue = "0") long areaid,
+			@RequestParam(value = "areatype", required = false, defaultValue = "") String areatype, @RequestParam(value = "ruleType", required = false, defaultValue = "-1") int ruleType,
+			Model model) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		int count=0;
+		if(areatype.equals("areafee")){
+			count=this.pFareaDAO.updatePFareaOFareafee(areaid,BigDecimal.ZERO);
+		}
+		else if(areatype.equals("overbig"))
+		{
+			if(ruleType==2)
+			{
+				count=this.pFoverbigDAO.deletePFoverbigByAreaid(areaid);
+			}
+			else {
+				count=this.pFareaDAO.updatePFareaOFOverbigflag(areaid, -1);
+			}
+		}
+		else if(areatype.equals("overweight"))
+		{
+			count=this.pFoverweightDAO.deletePFoverweightByAreaid(areaid);
+		}
+		if (count > 0) {
+			map.put("error", "修改成功");
+			map.put("errorcode", 1);
+		}
+		return map;
+	}
+
+
 }
