@@ -756,15 +756,16 @@
 			<tr id="isareafeetr">
 				<td align="left" nowrap="nowrap" valign="bottom"><input type="checkbox" id="areafee_flag" ${area.areafee>0?"checked=checked":""} />区域补助金额</td>
 				<td align="left"><span><input value="${area.areafee }" type="text" id="areafee" style="margin-top: -5px" onblur="javascript:if(!isFee($(this).val())){alert('输入有误');$(this).val('0.00');}"/>元
-				<input type="hidden" id="areafee_sub" value="保存"  areaid="${area.id }" /></span></td>
+				<input type="hidden" id="areafee_sub" value="保存"  areaid="${area.id }" /> </span></td>
 			</tr>
-			<c:if test="${area.typeid!=2 }">
+			<c:choose>
+			<c:when test="${area.typeid!=2 }">
 			<tr id="overbigflagtrno">
 			<td align="left"><input type="checkbox" ${area.overbigflag==1?'checked=checked':''}  id="overbigflag" name="overbigflag"/>超大补助</td>
 			<td align="left"><input type="hidden"   id="overbigflag_sub" value="保存" areaid="${area.id }"  /></td>
 			</tr>
-			</c:if>
-			<c:if test="${area.typeid==2 }">
+			</c:when>
+			<c:otherwise>
 			<tr id="overbigflagtr">
 				<td align="left" valign="bottom"><input type="checkbox" id="overbigflag" ${fn:length(overbigMapPS[area.id])>0?"checked=checked":"" }/>超大补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
@@ -793,7 +794,7 @@
 										areaid=${area.id } />
 					</td>
 			</tr>
-			</c:if>
+			</c:otherwise></c:choose>
 			<tr id="isoverweighttr">
 				<td align="left"><input type="checkbox" id="overweightflag" ${fn:length(overweightMapPS[area.id])>0?"checked=checked":"" } />超重补助</td>
 				<td align="left"><table align="left" width="100%" border="0" cellspacing="1"
