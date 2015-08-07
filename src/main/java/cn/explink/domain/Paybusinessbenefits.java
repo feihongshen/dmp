@@ -1,13 +1,12 @@
 package cn.explink.domain;
 
-import java.math.BigDecimal;
 
 public class Paybusinessbenefits {
 	private long id;
 	private long customerid;
 	private String lower;//下限
 	private String upper;//上限 
-	private BigDecimal kpifee;//业务补助
+	private String kpifee;//业务补助
  	public String getLower() {
 		return lower;
 	}
@@ -24,14 +23,8 @@ public class Paybusinessbenefits {
 	//业务KPI补助规则各个阶段范围
 	private String paybusinessbenefits;
 	//其他补助
-	private BigDecimal othersubsidies;
+	private String othersubsidies;
 	private String remark;
-	public BigDecimal getKpifee() {
-		return kpifee;
-	}
-	public void setKpifee(BigDecimal kpifee) {
-		this.kpifee = kpifee;
-	}
 	
 	public long getId() {
 		return id;
@@ -57,17 +50,24 @@ public class Paybusinessbenefits {
 	public void setPaybusinessbenefits(String paybusinessbenefits) {
 		this.paybusinessbenefits = paybusinessbenefits;
 	}
-	public BigDecimal getOthersubsidies() {
-		return othersubsidies;
-	}
-	public void setOthersubsidies(BigDecimal othersubsidies) {
-		this.othersubsidies = othersubsidies;
-	}
 	public String getRemark() {
 		return remark;
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+	public String getOthersubsidies() {
+		return othersubsidies;
+	}
+	public void setOthersubsidies(String othersubsidies) {
+		this.othersubsidies = othersubsidies;
+	}
+	public String getKpifee() {
+		return kpifee;
+	}
+	public void setKpifee(String kpifee) {
+		this.kpifee = kpifee;
+	}
+	
 	
 }

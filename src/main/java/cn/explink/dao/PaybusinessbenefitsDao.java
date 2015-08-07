@@ -26,9 +26,9 @@ public class PaybusinessbenefitsDao {
 			paybusinessbenefits.setId(rs.getLong("id"));
 			paybusinessbenefits.setCustomerid(rs.getLong("customerid"));
 			paybusinessbenefits.setPaybusinessbenefits(rs.getString("paybusinessbenefits"));
-			paybusinessbenefits.setOthersubsidies(rs.getBigDecimal("othersubsidies"));
+			paybusinessbenefits.setOthersubsidies(rs.getString("othersubsidies"));
 			paybusinessbenefits.setRemark(rs.getString("remark"));
-			paybusinessbenefits.setKpifee(rs.getBigDecimal("kpifee"));
+			paybusinessbenefits.setKpifee(rs.getString("kpifee"));
 			paybusinessbenefits.setLower(rs.getString("lower"));
 			paybusinessbenefits.setUpper(rs.getString("upper"));
 			return paybusinessbenefits;
@@ -68,10 +68,10 @@ public class PaybusinessbenefitsDao {
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setLong(1, paybusinessbenefits.getCustomerid());
 				ps.setString(2, paybusinessbenefits.getPaybusinessbenefits());
-				ps.setBigDecimal(3, paybusinessbenefits.getOthersubsidies());
+				ps.setString(3, paybusinessbenefits.getOthersubsidies());
 				ps.setString(4, paybusinessbenefits.getLower());
 				ps.setString(5, paybusinessbenefits.getUpper());
-				ps.setBigDecimal(6, paybusinessbenefits.getKpifee());
+				ps.setString(6, paybusinessbenefits.getKpifee());
 			}
 		});
 	}

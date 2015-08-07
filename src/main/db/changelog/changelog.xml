@@ -8091,4 +8091,12 @@ CREATE TABLE `cs_complaint_accept` (
 			UPDATE `dmp40_function` AS es SET es.`functionname` = '应付甲方报表' WHERE es.`functionname` = '应付客户报表'
 	   	</sql>
 	</changeSet>
+ 	<changeSet id="wukong-2015-08-07-01" author="wukong">
+	   	<sql>
+			ALTER TABLE `express_ops_paybusiness_benefits`
+			  MODIFY COLUMN `kpifee`  VARCHAR(100)  DEFAULT '',
+			  MODIFY COLUMN `othersubsidies`  VARCHAR(100)  DEFAULT '';		   
+	   </sql>
+	</changeSet>
+	
 </databaseChangeLog>

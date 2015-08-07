@@ -1,6 +1,5 @@
 package cn.explink.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +79,7 @@ public class PaybusinessbenefitsService {
 	 */
 	public List<Paybusinessbenefits> updateAndAddPaybusinessbenefitsValue(Paybusinessbenefits paybusinessbenefits){
 		long customerid=paybusinessbenefits.getCustomerid();
-		BigDecimal othersubsidies=paybusinessbenefits.getOthersubsidies();
+		String othersubsidies=paybusinessbenefits.getOthersubsidies();
 		String paybusiness=paybusinessbenefits.getPaybusinessbenefits();
 		String[]  updatePayDatas=paybusinessbenefits.getPaybusinessbenefits().split("\\|");
 		List<Paybusinessbenefits> list=new ArrayList<Paybusinessbenefits>();
@@ -91,7 +90,7 @@ public class PaybusinessbenefitsService {
 			paybusinessbenefits2.setPaybusinessbenefits(paybusiness);
 			paybusinessbenefits2.setLower(string.split("~")[0]);
 			paybusinessbenefits2.setUpper(string.split("~")[1].split("=")[0]);
-			paybusinessbenefits2.setKpifee(BigDecimal.valueOf(Long.parseLong(string.split("=")[1])));
+			paybusinessbenefits2.setKpifee(string.split("=")[1]);
 			list.add(paybusinessbenefits2);
 		}
 		return list;

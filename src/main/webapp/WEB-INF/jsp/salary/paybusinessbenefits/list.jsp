@@ -26,7 +26,7 @@
              	<th field="id"  checkbox="true" ></th>  
                 <th field="customername" width="200"  formatter="go">客户名称</th>  
                 <th field="paybusinessbenefits" width="500" >业务KPI补助</th>  
-                <th field="othersubsidies" width="200" >其他补助</th>  
+                <th field="othersubsidies" width="500" >其他补助</th>  
                 <th field="customerid" width="200" hidden="true"  >客户名称id</th>  
             </tr>
             </thead>
