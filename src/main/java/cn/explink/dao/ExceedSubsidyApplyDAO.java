@@ -339,8 +339,11 @@ public class ExceedSubsidyApplyDAO {
 		}
 	}
 	
-	public int getExceedSubsidyApplyByCwbOrderCount(String cwb) {
+	public int getExceedSubsidyApplyByCwbOrderCount(Integer id, String cwb) {
 		String sql = "select count(*) from express_set_exceed_subsidy_apply where cwbOrder='" + cwb + "'";
+		if(id != null && id != 0){
+			sql += " and id!='" + id + "'";
+		}
 		return jdbcTemplate.queryForInt(sql);
 	}
 	

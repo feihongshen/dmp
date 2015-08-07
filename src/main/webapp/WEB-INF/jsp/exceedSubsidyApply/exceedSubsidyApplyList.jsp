@@ -66,10 +66,11 @@ function updateExceedSubsidyApplyFun(form,type,page){
 		alert("订单号为必填项!");
 		return false;
 	}
+	var applyId = $("#"+form+" input[name='id']").val();
 	$.ajax({
 		type:"post",
 		url:"<%=request.getContextPath()%>/exceedSubsidyApply/validateCwbOrder",
-		data:{"cwb":cwb},
+		data:{"cwb":cwb,"id":applyId},
 		dataType:"json",
 		success:function(data){
 			if(data){
@@ -79,7 +80,10 @@ function updateExceedSubsidyApplyFun(form,type,page){
 				} else if(data.isExist==1){
 					$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
 					$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
-					
+					if(!$("#"+form+" select[name='deliveryPerson']").val()){
+						alert("配送员为必填项!");
+						return false;
+					}
 					if($("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").is(':checked') == true){
 						$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("value",1);
 						if(!$("#"+form+" input[name='exceedAreaSubsidyRemark']").val()){

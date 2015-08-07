@@ -307,10 +307,10 @@ public class ExceedSubsidyApplyController {
 	@RequestMapping("/validateCwbOrder")
 	@ResponseBody
 	public String validateCwbOrder(
-			@RequestParam(value = "cwb", defaultValue = "", required = true) String cwb) {
+			@RequestParam(value = "cwb", defaultValue = "", required = true) String cwb, @RequestParam(value = "id", defaultValue = "", required = false) Integer id) {
 		// 判断订单号是否存在，若存在，则返回订单状态和收货地址
 		String rtnStr = "{\"isExist\":0}";
-		int count = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwbOrderCount(cwb);
+		int count = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwbOrderCount(id, cwb);
 		if(count > 0){
 			// 订单号重复
 			rtnStr = "{\"isExist\":2}";
