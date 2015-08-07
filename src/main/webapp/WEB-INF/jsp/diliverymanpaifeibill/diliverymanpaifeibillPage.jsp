@@ -47,19 +47,9 @@ $(function(){
 	$("#searchForm select[name='orderingMethod'] ").val("${orderingMethod}");
 	$("#updateForm select[name='billstate']").val("${bill.billstate}");
 	
-	//站点与配送员下拉框联动
-	var $orgId = $("#orgId");
-	$orgId.change(function() {
-		var orgId = $orgId.val();
-		fillStationDeliver(orgId);
-	});
-	var $theirsite = $("#theirsite");
-	$theirsite.change(function() {
-		var theirsite = $theirsite.val();
-		filltheirsite(theirsite);
-	});
-	
 });
+
+
 function fillStationDeliver(stationId) {
 	$.ajax({
 		type : "post",
@@ -67,7 +57,7 @@ function fillStationDeliver(stationId) {
 		url : "${ctx}/diliverymanpaifeibill/getstationdeliver?"
 				+ Math.random(),
 		data : {
-			stationId : stationId
+			stationId : stationId.id
 		},
 		success : function(data) {
 			fillDeliverInfo(data);
@@ -75,6 +65,7 @@ function fillStationDeliver(stationId) {
 	});
 }
 //查询时的站点
+
 function filltheirsite(stationId) {
 	$.ajax({
 		type : "post",
@@ -82,7 +73,7 @@ function filltheirsite(stationId) {
 		url : "${ctx}/diliverymanpaifeibill/getstationdeliver?"
 				+ Math.random(),
 		data : {
-			stationId : stationId
+			stationId : stationId.id
 		},
 		success : function(data) {
 			fillDeliver(data);
@@ -528,13 +519,19 @@ function verify(){
          		<tr colspan="4">
 	         		<td align="right" nowrap="nowrap" style="width: 10%;"><font color="red">*</font>所属站点：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
-	         			<select id="orgId"
+	         			<input type="text" id="orgId" name="site" class="easyui-validatebox" style="width: 180px;"initDataType="TABLE"
+						initDataKey="Branch" 
+						filterField="sitetype" 
+						filterVal="2" 
+						afterSelect="fillStationDeliver"
+						viewField="branchname" saveField="branchid"  value="${entry.value}"/>
+	         			<%-- <select id="orgId"
 							name="site" class="select1">
 							<option value="0">请选择</option>
 							<c:forEach items="${orgMap}" var="entry">
 								<option value="${entry.key}" <c:if test="${cond.orgId == entry.key}">selected</c:if>>${entry.value}</option>
 							</c:forEach>
-						</select> 
+						</select> --%> 
          			</td>
 	         		<td nowrap="nowrap" align="right" style="width: 12%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;订单类型：</td>
 	         		<td nowrap="nowrap" style="width: 20%;">
@@ -819,12 +816,19 @@ function verify(){
          	<tr>
          		<td nowrap="nowrap" align="right" >配送员所属站点：</td>
          		<td nowrap="nowrap">
-         			<select id="theirsite" name="theirsite" style="width: 214px;" >
+         			<input type="text" id="theirsite" name="theirsite" class="easyui-validatebox" style="width: 214px;"initDataType="TABLE"
+						initDataKey="Branch" 
+						filterField="sitetype" 
+						filterVal="2" 
+						afterSelect="filltheirsite"
+						viewField="branchname" saveField="branchid"  value="${theirsite}"/>
+         		
+         			<%-- <select id="theirsite" name="theirsite" style="width: 214px;" >
 						<option value="0" >---全部---</option>
 						<c:forEach items="${orgMap}" var="entry">
 							<option value="${entry.key}" <c:if test="${cond.orgId == entry.key}">selected</c:if>>${entry.value}</option>
 						</c:forEach>
-					</select>
+					</select> --%>
          		</td>
          		<td nowrap="nowrap" align="right" >订单类型：</td>
          		<td nowrap="nowrap">
