@@ -129,8 +129,16 @@ function initTABLESelect(data){
 	$.each(entityData,function(index,valObj){
 		//条件初始化
 		if( !isNull(filterField) && !isNull(filterVal) ){
-			if(valObj[filterField] != filterVal){
-				return;
+			var filterValArr = filterVal.split(",");
+			var viewFlag = false;
+			$.each(filterValArr,function(filterIndex,filterValObj){
+				if(valObj[filterField]+"" == filterValObj){
+					viewFlag = true;
+					return false;
+				}
+			});
+			if(!viewFlag){
+				return true;
 			}
 		}
 		var tmp = {};
@@ -138,7 +146,7 @@ function initTABLESelect(data){
 		tmp['id'] = valObj[saveField];
 		var valueText = "";
 		$.each(viewNameArr,function(indexx,valObjj){
-			valueText += valObj[valObjj] + "_";
+			valueText += valObj[valObjj] + "_";	
 		});
 		valueText = valueText.substring(0,valueText.length-1);
 		tmp['value'] = valueText; 
@@ -331,4 +339,20 @@ function callFunByName(fnName,arg1,arg2){
     if (typeof fnName === 'function'){
     	fnName.call(this,arg1,arg2); 
     }    
+}
+
+/**
+ * 判断数组（字符串）是否包含
+ * @param array
+ * @param tarStr
+ */
+function isContain(array,tarStr){
+	var resultFlag = false;
+	$.each(array,function(filterIndex,filterValObj){
+		if(tarStr+"" == filterValObj){
+			resultFlag = true;
+			break;
+		}
+	});
+	return resultFlag;
 }
