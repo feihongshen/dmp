@@ -236,8 +236,10 @@ public class PaiFeiRuleService {
 					List<PFoverweight> weights = (List<PFoverweight>) JSONArray.toCollection(JSONArray.fromObject(areajson.getOverweight()), PFoverweight.class);
 					if (weights != null) {
 						for (PFoverweight weight : weights) {
+							if(weight!=null){
 							weight.setAreaid(id);
 							this.savedata(weight);
+							}
 						}
 					}
 				}
