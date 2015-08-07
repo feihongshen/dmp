@@ -29,14 +29,16 @@
 					data-options="width:150,prompt: '责任人'"
 			/>
 	        <span class="toolbar-item dialog-tool-separator"></span>
+	        <span class="toolbar-item dialog-tool-separator"></span> -->
    	        <input type="text" name="filter_EQL_complianBranchId" class="easyui-validatebox" 
 					initDataType="TABLE" 
 					initDataKey="Branch" 
 					viewField="branchid,branchname" 
       	        	saveField="branchid"
+      	        	filterField="sitetype"
+      	        	filterVal="1,8"
 					data-options="width:150,prompt: '责任机构'"
 			/>
-	        <span class="toolbar-item dialog-tool-separator"></span> -->
    	        <input type="text" name="filter_EQL_complaintState" class="easyui-validatebox" 
       	        	initDataType="ENUM" 
       	        	initDataKey="cn.explink.enumutil.ComplaintStateEnum"
