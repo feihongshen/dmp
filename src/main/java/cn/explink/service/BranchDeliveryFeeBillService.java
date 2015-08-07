@@ -46,16 +46,21 @@ public class BranchDeliveryFeeBillService {
 		// 返回值
 		ExpressSetBranchDeliveryFeeBillVO rtnVO = null;
 		List<ExpressSetBranchDeliveryFeeBillDetail> billDetailList = new ArrayList<ExpressSetBranchDeliveryFeeBillDetail>();
+		// 获取要返回的加盟商信息
 		ExpressSetBranchDeliveryFeeBill branchDeliveryFeeBill = this.branchDeliveryFeeBillDAO
 				.getBranchDeliveryFeeBillListById(id);
 		if (branchDeliveryFeeBill != null) {
 			rtnVO = new ExpressSetBranchDeliveryFeeBillVO();
+			// 将实体数据复制到VO
 			BeanUtilsSelfDef.copyPropertiesIgnoreException(rtnVO,
 					branchDeliveryFeeBill);
 		}
+		// 返回的加盟商实体信息
 		Branch branch = this.branchDAO
 				.getBranchByBranchid(branchDeliveryFeeBill.getBranchId());
+		// 设置加盟商名称
 		rtnVO.setBranchName(branch.getBranchname());
+		// 设置加盟商派费账单子表信息
 		billDetailList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailList(id);
 		rtnVO.setBillDetailList(billDetailList);
 		return rtnVO;
@@ -65,6 +70,7 @@ public class BranchDeliveryFeeBillService {
 	public void updateBranchDeliveryFeeBill(
 			ExpressSetBranchDeliveryFeeBillVO billVO) {
 		if (billVO != null) {
+			// 账单所保存的订单号
 			String cwbsRetained = billVO.getCwbs();
 			if(StringUtils.isNotBlank(cwbsRetained)){
 				cwbsRetained = StringUtil.removalDuplicateString(cwbsRetained);
@@ -73,17 +79,21 @@ public class BranchDeliveryFeeBillService {
 			}
 			ExpressSetBranchDeliveryFeeBill bill = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillListById(billVO.getId());
 			if(bill != null && StringUtils.isNotBlank(bill.getCwbs())){
+				// 账单所移除的订单号
 				String cwbsRemoved = bill.getCwbs();
 				if(StringUtils.isNotBlank(cwbsRetained)){
 					cwbsRemoved = StringUtil.removalDuplicateString(bill.getCwbs(), cwbsRetained);
 				}
 				cwbsRemoved = StringUtil.getStringsByStringList(Arrays.asList(cwbsRemoved.split(",")));
+				// 更新订单表加盟商派费账单导出标志
 				int branchfeebillexportflag = 0;
 				this.branchDeliveryFeeBillDAO.updateCwbOrder(branchfeebillexportflag, cwbsRemoved);
 			}
+			// 删除加盟商派费账单子表所移除的记录
 			this.branchDeliveryFeeBillDAO.deleteBranchDeliveryFeeBillDetail(billVO.getId(), cwbsRetained);
 			bill = new ExpressSetBranchDeliveryFeeBill();
 			BeanUtilsSelfDef.copyPropertiesIgnoreException(bill, billVO);
+			// 更新加盟商派费账单主表
 			this.branchDeliveryFeeBillDAO.updateBranchDeliveryFeeBill(bill);
 		}
 	}
@@ -148,29 +158,46 @@ public class BranchDeliveryFeeBillService {
 			List<String> list = Arrays.asList(cwbs.split(","));
 			cwbs = StringUtil.getStringsByStringList(list);
 		}
+		// 订单列表
 		List<CwbOrder> orderList = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(branchDeliveryFeeBill, leftJoinSql,
 						onSql, dateColumn, cwbs);
+		// 加盟商实体
 		Branch branch = this.branchDAO.getBranchByBranchid(branchDeliveryFeeBill.getBranchId());
 		cwbs = "";
+		// 订单数
 		int cwbCount = 0;
+		// 派送费总和
 		BigDecimal deliverySumFee = new BigDecimal(0.0);
+		// 派送费基本派费
 		BigDecimal deliveryBasicFee = new BigDecimal(0.0);
+		// 派送费代收补助费
 		BigDecimal deliveryCollectionSubsidyFee = new BigDecimal(0.0);
+		// 派送费区域属性补助费
 		BigDecimal deliveryAreaSubsidyFee = new BigDecimal(0.0);
+		// 派送费超区补助
 		BigDecimal deliveryExceedSubsidyFee = new BigDecimal(0.0);
+		// 派送费业务补助
 		BigDecimal deliveryBusinessSubsidyFee = new BigDecimal(0.0);
+		// 派送费拖单补助
 		BigDecimal deliveryAttachSubsidyFee = new BigDecimal(0.0);
+		// 提货费总和
 		BigDecimal pickupSumFee = new BigDecimal(0.0);
+		// 提货费代收补助费
 		BigDecimal pickupCollectionSubsidyFee = new BigDecimal(0.0);
+		// 提货费区域属性补助费
 		BigDecimal pickupAreaSubsidyFee = new BigDecimal(0.0);
+		// 提货费超区补助
 		BigDecimal pickupExceedSubsidyFee = new BigDecimal(0.0);
+		// 提货费拖单补助
 		BigDecimal pickupAttachSubsidyFee = new BigDecimal(0.0);
+		// 提货费基本派费
 		BigDecimal pickupBasicFee = new BigDecimal(0.0);
+		// 提货费业务补助
 		BigDecimal pickupBusinessSubsidyFee = new BigDecimal(0.0);
 		List<ExpressSetBranchDeliveryFeeBillDetail> detaiList = new ArrayList<ExpressSetBranchDeliveryFeeBillDetail>();
 		ExpressSetBranchDeliveryFeeBillDetail billDetail = null;
-
+		// 加盟商费用总和(派费合计)
 		BigDecimal deliveryFee = new BigDecimal(0.0);
 		if (orderList != null && orderList.size() > 0) {
 			//配送费
@@ -309,15 +336,15 @@ public class BranchDeliveryFeeBillService {
 				.setHeXiaoDate(StringUtil
 						.nullConvertToEmptyString(branchDeliveryFeeBill
 								.getHeXiaoDate()));
-
+		// 创建加盟商派费主表
 		long id = this.branchDeliveryFeeBillDAO
 				.createBranchDeliveryFeeBill(branchDeliveryFeeBill);
-
 		if(detaiList != null){
 			for(int i = 0; i < detaiList.size(); i++){
 				billDetail = detaiList.get(i);
 				if(billDetail != null){
 					billDetail.setBillId(new Long(id).intValue());
+					// 创建加盟商派费子表
 					this.branchDeliveryFeeBillDAO.createBranchDeliveryFeeBillDetail(billDetail);
 				}
 			}
@@ -326,6 +353,7 @@ public class BranchDeliveryFeeBillService {
 	}
 
 	public String generateBillBatch() {
+		// B+8位年月日+5位流水
 		String rule = "B";
 		String nowTime = DateTimeUtil.getNowTime("yyyyMMdd");
 		String billBatch = rule + nowTime;

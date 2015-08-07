@@ -97,16 +97,18 @@ public class BranchDeliveryFeeBillController {
 	@RequestMapping("/branchDeliveryFeeBillList/{page}")
 	public String branchDeliveryFeeBillList(@PathVariable("page") long page, Model model,
 			ExpressSetBranchDeliveryFeeBillVO queryConditionVO) {
-		
+		// 加盟商站点列表
 		List<Branch> branchList = this.branchDAO.getJoinBranchByPage(1, "", "");
-		// 订单状态枚举
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
-		// 订单类型枚举
+		// 账单的订单类型枚举
 		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
-		// 日期类型枚举
+		// 账单的日期类型枚举
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
+		// 加盟商派费账单列表
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(page, queryConditionVO);
+		// 加盟商派费账单列表条数
 		int count = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBillCount(queryConditionVO);
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
@@ -126,34 +128,45 @@ public class BranchDeliveryFeeBillController {
 	@RequestMapping("/addBranchDeliveryFeeBill")
 	public String addBranchDeliveryFeeBill(
 			ExpressSetBranchDeliveryFeeBill branchDeliveryFeeBill, Model model) {
-
+		// 当前登录用户
 		User user = getSessionUser();
 		if (user != null) {
 			long userId = user.getUserid();
 			branchDeliveryFeeBill.setCreator(new Long(userId).intValue());
 		}
+		// 创建加盟商派费账单
 		int id = this.branchDeliveryFeeBillService.createBranchDeliveryFeeBill(branchDeliveryFeeBill);
-		
+		// 加盟商站点列表
 		List<Branch> branchList = this.branchDAO.getJoinBranchByPage(1, "", "");
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
-		// 订单类型枚举
+		// 账单的订单类型枚举
 		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
-		// 日期类型枚举
+		// 账单的日期类型枚举
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
+		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
+		// 订单类型枚举
 		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
+		// 支付方式枚举
 		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
-		//支付方式
+		// 账单列表
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
+		// 账单列表条数
 		int count = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBillCount(new ExpressSetBranchDeliveryFeeBillVO());
+		// 创建的账单信息
 		ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO = this.branchDeliveryFeeBillService
 				.getBranchDeliveryFeeBillVO(id);
+		// 普通权限
 		int jiesuanAuthority = 0;
+		// 高级权限
 		int jiesuanAdvanceAuthority = 0;
 		if(user != null){
+			// 当前登录所属的角色id
 			long roleid = user.getRoleid();
+			// 当前登录所属的角色
 			Role role = this.roleDAO.getRolesByRoleid(roleid);
 			if(role != null){
 				if("结算".equals(role.getRolename())){
@@ -186,27 +199,39 @@ public class BranchDeliveryFeeBillController {
 
 	@RequestMapping("/updateBranchDeliveryFeeBillPage")
 	public String updateBranchDeliveryFeeBillPage(int id, Model model) {
-
+		// 加盟商站点列表
 		List<Branch> branchList = this.branchDAO.getJoinBranchByPage(1, "", "");
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
+		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
-		// 订单类型枚举
+		// 账单的订单类型枚举
 		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
-		// 日期类型枚举
+		// 账单的日期类型枚举
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
+		// 订单类型枚举
 		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
+		// 支付方式枚举
 		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
+		// 账单列表
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
+		// 账单列表条数
 		int count = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBillCount(new ExpressSetBranchDeliveryFeeBillVO());
+		// 所要修改或者查看的账单信息
 		ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO = this.branchDeliveryFeeBillService
 				.getBranchDeliveryFeeBillVO(id);
+		// 当前登录用户
 		User user = getSessionUser();
+		// 普通权限
 		int jiesuanAuthority = 0;
+		// 高级权限
 		int jiesuanAdvanceAuthority = 0;
 		if(user != null){
+			// 当前登录用户的角色id
 			long roleid = user.getRoleid();
+			// 当前登录用户的角色
 			Role role = this.roleDAO.getRolesByRoleid(roleid);
 			if(role != null){
 				if("结算".equals(role.getRolename())){
@@ -240,28 +265,39 @@ public class BranchDeliveryFeeBillController {
 	@RequestMapping("/branchList/{page}")
 	public String branchList(@PathVariable("page") long page, ExpressSetBranchDeliveryFeeBillVO billVO,
 			Model model) {
-
+		// 账单状态枚举
 		Map<Integer, String> billStateMap = DeliveryFeeBillStateEnum.getMap();
+		// 订单状态枚举
 		Map<Integer, String> cwbStateMap = FlowOrderTypeEnum.getMap();
-		// 订单类型枚举
+		// 账单的订单类型枚举
 		Map<Integer, String> cwbTypeMap = DeliveryFeeBillCwbTypeEnum.getMap();
-		// 日期类型枚举
+		// 账单的日期类型枚举
 		Map<Integer, String> dateTypeMap = DeliveryFeeBillDateTypeEnum.getMap();
+		// 订单类型枚举
 		Map<Integer, String> cwbOrderTypeMap = CwbOrderTypeIdEnum.getMap();
+		// 支付方式枚举
 		Map<Integer, String> payTypeMap = PaytypeEnum.getMap();
+		// 账单列表
 		List<ExpressSetBranchDeliveryFeeBill> list = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBill(1, new ExpressSetBranchDeliveryFeeBillVO());
+		// 账单列表条数
 		int count = this.branchDeliveryFeeBillDAO
 				.queryBranchDeliveryFeeBillCount(new ExpressSetBranchDeliveryFeeBillVO());
+		// 根据加盟商名称和加盟商地址查询的加盟商列表
 		List<Branch> branches= this.branchDAO.getBranchByPage(page, billVO.getBranchname(), billVO.getBranchaddress());
 //		int count = new Long(this.branchDAO.getBranchCount(billVO.getBranchname(), billVO.getBranchaddress())).intValue();
-		
+		// 分页信息
 		Page page_obj = new Page(count, page, Page.ONE_PAGE_NUMBER);
+		// 当前登录用户
 		User user = getSessionUser();
+		// 普通权限
 		int jiesuanAuthority = 0;
+		// 高级权限
 		int jiesuanAdvanceAuthority = 0;
 		if(user != null){
+			// 当前登录用户的角色id
 			long roleid = user.getRoleid();
+			// 当前登录用户的角色
 			Role role = this.roleDAO.getRolesByRoleid(roleid);
 			if(role != null){
 				if("结算".equals(role.getRolename())){
@@ -296,15 +332,21 @@ public class BranchDeliveryFeeBillController {
 	@ResponseBody
 	public String updateBranchDeliveryFeeBill(
 			ExpressSetBranchDeliveryFeeBillVO branchDeliveryFeeBillVO) {
+		// 当前登录用户
 		User user = getSessionUser();
+		// 当前登录用户id
 		int userId = 0;
 		if (user != null) {
 			userId = new Long(user.getUserid()).intValue();
 		}
 		if(branchDeliveryFeeBillVO.getBillState() == DeliveryFeeBillStateEnum.YiShenHe.getValue()){
+			// 账单已审核状态
+			// 设置审核人、审核日期
 			branchDeliveryFeeBillVO.setShenHePerson(userId);
 			branchDeliveryFeeBillVO.setShenHeDate(DateTimeUtil.getNowDate());
 		} else if(branchDeliveryFeeBillVO.getBillState() == DeliveryFeeBillStateEnum.YiHeXiao.getValue()){
+			// 账单已核销状态
+			// 设置核销人、核销日期
 			branchDeliveryFeeBillVO.setHeXiaoPerson(userId);;
 			branchDeliveryFeeBillVO.setHeXiaoDate(DateTimeUtil.getNowDate());
 		}
@@ -367,9 +409,10 @@ public class BranchDeliveryFeeBillController {
 	@ResponseBody
 	public String exportByCustomer(
 			@RequestParam(value = "content", defaultValue = "", required = true) String content, HttpServletRequest request) throws IOException {
-//		File directory = new File("");// 参数为空
+		// 按客户导出
+		// 上下文路径
         String contextPath = request.getContextPath();
-		
+		// 根路径
 		String rootPath  = request.getSession().getServletContext().getRealPath("/");
 		this.branchDeliveryFeeBillService.exportByCustomer(content, contextPath, rootPath);
 		return "{\"errorCode\":0,\"error\":\"导出成功\"}";
@@ -379,15 +422,20 @@ public class BranchDeliveryFeeBillController {
 	@ResponseBody
 	public ExpressSetBranchDeliveryFeeBillVO getExportData(
 			@RequestParam(value = "cwbs", defaultValue = "", required = true) String cwbs, HttpServletRequest request) throws IOException {
+		// 返回值VO
 		ExpressSetBranchDeliveryFeeBillVO rtnVO = new ExpressSetBranchDeliveryFeeBillVO();
+		// 返回值Map，key为客户id，value为返回值list
 		Map<Object, Object> rtnMap = new HashMap<Object, Object>();
+		// 返回值list，元素为按客户分组的派送费记录，理论上每个list应该包含三个元素，分别是，代收订单、非代收订单、小计(代收订单和非代收订单相应项相加之和)
 		List<ExpressSetBranchDeliveryFeeBillDetailVO> rtnList = null;
 		cwbs = StringUtil.getStringsByStringList(Arrays.asList(cwbs.split(",")));
-		
+		// 客户Map
 		final Map<Long, Customer> cMap = this.customerDAO.getAllCustomersToMap();
+		// 获取按客户分组的派送费列表
 		List<ExpressSetBranchDeliveryFeeBillDetailVO> billDetailVOList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailVOList(cwbs);
+		// 每个客户对应的小计VO
 		ExpressSetBranchDeliveryFeeBillDetailVO billDetailVOByCustomer = new ExpressSetBranchDeliveryFeeBillDetailVO();
-		// 小计
+		// 设置是否代收标志，0为非代收、1为代收、2为小计
 		billDetailVOByCustomer.setIsReceived(2);
 		ExpressSetBranchDeliveryFeeBillDetailVO billDetailVO = null;
 		if(billDetailVOList != null && !billDetailVOList.isEmpty()){
@@ -395,12 +443,14 @@ public class BranchDeliveryFeeBillController {
 				billDetailVO = billDetailVOList.get(i);
 				if(billDetailVO != null){
 					if(billDetailVO.getCustomerid() != 0){
+						// 首先判断返回值Map中是否包含相应的客户id
+						// 若不包含，则添加key、value对；若包含，则根据客户id，获取返回值list，并添加当前按客户分组的派送费记录
 						if(rtnMap.get(cMap.get((long)billDetailVO.getCustomerid()).getCustomername()) == null){
-							// 代收订单
+							// 代收订单或者非代收订单
 							rtnList = new ArrayList<ExpressSetBranchDeliveryFeeBillDetailVO>();
 							rtnList.add(billDetailVO);
 							rtnMap.put(cMap.get((long)billDetailVO.getCustomerid()).getCustomername(),rtnList);
-							
+							// 小计
 							billDetailVOByCustomer.setCustomerid(billDetailVO.getCustomerid());
 							billDetailVOByCustomer.setCwbOrderCount(billDetailVO.getCwbOrderCount());
 							billDetailVOByCustomer.setDeliverySumFee(billDetailVO.getDeliverySumFee());
@@ -411,11 +461,10 @@ public class BranchDeliveryFeeBillController {
 							billDetailVOByCustomer.setDeliveryBusinessSubsidyFee(billDetailVO.getDeliveryBusinessSubsidyFee());
 							billDetailVOByCustomer.setDeliveryAttachSubsidyFee(billDetailVO.getDeliveryAttachSubsidyFee());
 						} else {
-							// 非代收订单
+							// 非代收订单或者代收订单
 							rtnList = (List<ExpressSetBranchDeliveryFeeBillDetailVO>)rtnMap.get(cMap.get((long)billDetailVO.getCustomerid()).getCustomername());
 							rtnList.add(billDetailVO);
-							
-							// 代收订单、非代收订单之和(即小计)
+							// 小计
 							billDetailVOByCustomer.setCwbOrderCount(billDetailVO.getCwbOrderCount() + billDetailVOByCustomer.getCwbOrderCount());
 							billDetailVOByCustomer.setDeliverySumFee(billDetailVO.getDeliverySumFee().add(billDetailVOByCustomer.getDeliverySumFee()));
 							billDetailVOByCustomer.setDeliveryBasicFee(billDetailVO.getDeliveryBasicFee().add(billDetailVOByCustomer.getDeliveryBasicFee()));
@@ -430,22 +479,25 @@ public class BranchDeliveryFeeBillController {
 				}
 			}
 		}
+		// 返回值VO设置按客户分组的派送费数据
 		rtnVO.setCustomerDeliveryFee(rtnMap);
-		
+		// 应付配送费金额BD
 		BigDecimal payableFeeBD = new BigDecimal(0);
 		// 派送费总和
 		ExpressSetBranchDeliveryFeeBillDetailVO deliveryFeeObj = this.branchDeliveryFeeBillDAO.getDeliveryFee(cwbs);
 		if(deliveryFeeObj != null){
 			payableFeeBD = payableFeeBD.add(deliveryFeeObj.getDeliverySumFee());
 		}
+		// 返回值VO设置总派送费数据
 		rtnVO.setDeliveryFeeObj(deliveryFeeObj);
 		// 提货费总和
 		ExpressSetBranchDeliveryFeeBillDetailVO pickupFeeObj = this.branchDeliveryFeeBillDAO.getPickupFee(cwbs);
 		if(pickupFeeObj != null){
 			payableFeeBD = payableFeeBD.add(pickupFeeObj.getPickupSumFee());
 		}
+		// 返回值VO设置总提货费数据
 		rtnVO.setPickupFeeObj(pickupFeeObj);
-		// 质控条款
+		// 获取当前加盟商的质控条款(从加盟商合同中获取)
 		List<ExpressSetBranchDeliveryFeeBillDetail> detailList = this.branchDeliveryFeeBillDAO.getBranchDeliveryFeeBillDetailList(cwbs);
 		if(detailList != null && !detailList.isEmpty() && detailList.get(0) != null){
 			int billId = detailList.get(0).getBillId();
@@ -457,11 +509,9 @@ public class BranchDeliveryFeeBillController {
 				}
 			}
 		}
-		
 		// 应付配送费金额(目前扣减项目无法取值，所以暂由'-扣减项目'代替)
 		String payableFee = payableFeeBD + "-扣减项目";
 		rtnVO.setPayableFee(payableFee);
-		
 		return rtnVO;
 	}
 	
@@ -469,7 +519,7 @@ public class BranchDeliveryFeeBillController {
 	@ResponseBody
 	public String validateBranch(
 			@RequestParam(value = "branchId", defaultValue = "", required = true) int branchId) {
-		// 判断加盟商站点是否关联派费规则
+		// 判断加盟商站点是否关联派费规则，默认不关联
 		String rtnStr = "{\"isExist\":0}";
 		Branch branch = this.branchDAO.getBranchByBranchid(branchId);
 		if(branch != null && branch.getPfruleid() != 0){
