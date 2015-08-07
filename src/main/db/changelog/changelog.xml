@@ -8055,6 +8055,7 @@ CREATE TABLE `cs_complaint_accept` (
 			ADD INDEX `detail_oxojitfeedbackflag_idx` (`oxojitfeedbackflag`);
 	   	</sql>
 	</changeSet>
+	
 	<changeSet id="zhouguoting-2015-08-06-01" author="zhouguoting">
 		<sql>
 			delete from express_set_system_install where name in('OXOJITFeedback.pickPerson','OXOJITFeedback.pickPersonTel','OXOJITFeedback.pickCarNo','OXOJITFeedback.pickQty','OXOJITFeedback.expectedPickTime','OXOJITFeedback.picUrl','OXOJITFeedback.idNumber');
@@ -8085,4 +8086,9 @@ CREATE TABLE `cs_complaint_accept` (
 			MODIFY COLUMN `shensufileposition`  VARCHAR(20000)  DEFAULT '';
  		</sql>
  	</changeSet>
+ 	<changeSet id="gaoliangliang-2015-08-07-01" author="gaoliangliang">
+	   	<sql>
+			UPDATE `dmp40_function` AS es SET es.`functionname` = '应付甲方报表' WHERE es.`functionname` = '应付客户报表'
+	   	</sql>
+	</changeSet>
 </databaseChangeLog>
