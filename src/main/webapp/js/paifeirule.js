@@ -560,10 +560,10 @@ function showArea(tr, id, areaname) {
 		var type = $(tr).find("#pftype").val();
 		// var ruletype = $("#edit_ruletype1").val();
 		if (type == 2) {
-			$("#overbigflagtr").remove();
+			$("#"+tab+"_area_table_"+areaid).find("#overbigflagtr").remove();
 
 		} else {
-			$("#overbigflagtrno").remove();
+			$("#"+tab+"_area_table_"+areaid).find("#overbigflagtrno").remove();
 		}
 		var tabname = tab + "_area_table_" + areaid;
 		var sub = "<input type='hidden' value='保存' " + disabled + " onclick='subArea(\"" + tabname + "\",\"" + tab + "\")'/>";
