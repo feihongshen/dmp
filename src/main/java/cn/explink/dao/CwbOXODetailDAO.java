@@ -98,11 +98,11 @@ public class CwbOXODetailDAO {
 						+ " and cwbordertypeid =" + OXOValue);
 
 		if (startDate.length() > 0) {
-			pickSql.append(" and credate >= str_to_date('" + startDate
+			deliverySql.append(" and credate >= str_to_date('" + startDate
 					+ "','%Y-%m-%d %H:%i:%s')");
 		}
 		if (endDate.length() > 0) {
-			pickSql.append(" and credate <= str_to_date('" + endDate
+			deliverySql.append(" and credate <= str_to_date('" + endDate
 					+ "','%Y-%m-%d %H:%i:%s')");
 		}
 		if (customerId.length() > 0 && !"0".equals(customerId)) {
@@ -174,11 +174,11 @@ public class CwbOXODetailDAO {
 						+ " and cwbordertypeid =" + OXOValue);
 
 		if (startDate.length() > 0) {
-			pickSql.append(" and credate >= str_to_date('" + startDate
+			deliverySql.append(" and credate >= str_to_date('" + startDate
 					+ "','%Y-%m-%d %H:%i:%s')");
 		}
 		if (endDate.length() > 0) {
-			pickSql.append(" and credate <= str_to_date('" + endDate
+			deliverySql.append(" and credate <= str_to_date('" + endDate
 					+ "','%Y-%m-%d %H:%i:%s')");
 		}
 		if (customerId.length() > 0 && !"0".equals(customerId)) {
