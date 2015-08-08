@@ -16,6 +16,13 @@ public class SerachCustomerBillContractVO {
 	private String billBatches;
 	private String zhongLei;
 	private BigDecimal importtotalCharge;
+	private long CwbInBatchType;  //账单中的订单明细，1是可用，0是不可用
+	public long getCwbInBatchType() {
+		return CwbInBatchType;
+	}
+	public void setCwbInBatchType(long cwbInBatchType) {
+		CwbInBatchType = cwbInBatchType;
+	}
 	public BigDecimal getImporttotalCharge() {
 		return importtotalCharge;
 	}

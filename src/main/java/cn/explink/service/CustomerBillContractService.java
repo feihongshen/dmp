@@ -216,13 +216,13 @@ public class CustomerBillContractService {
 	public void addBill(String billBatches, long initbillState, long customerid,
 			String dateRange, long correspondingCwbNum, BigDecimal deliveryMoney,
 			BigDecimal distributionMoney, BigDecimal transferMoney, BigDecimal refuseMoney,
-			BigDecimal totalCharge, String remark,String cwbtype, long dateState,String cwbs) {
+			BigDecimal totalCharge, String remark,String cwbtype, long dateState) {
 			String createBillDate=DateTimeUtil.getNowTime();
 		long cwbType=-1;
 		if(cwbtype!=null&&!cwbtype.equals("")){
 			cwbType=Long.valueOf(cwbtype);
 		}
-		customerbillCcontractdao.addBill(billBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,createBillDate,cwbType,dateState,cwbs);
+		customerbillCcontractdao.addBill(billBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,createBillDate,cwbType,dateState);
 		
 	}
 

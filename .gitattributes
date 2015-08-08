@@ -1375,6 +1375,7 @@ src/main/java/cn/explink/enumutil/ConfirmStateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDiuShiIsHandleEnum.java -text
 src/main/java/cn/explink/enumutil/CwbFlowOrderTypeEnum.java -text
+src/main/java/cn/explink/enumutil/CwbInBatchTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOXOStateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOXOTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderAddressCodeEditTypeEnum.java -text

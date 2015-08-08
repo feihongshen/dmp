@@ -20,17 +20,12 @@ public class CustomerBillContract {
 		private String dateVerificationBill; //核销日期
 		private long cwbOrderType; //订单类型
 		private long dateState;
-		private String cwbs;
+	
 		
 		
 		
 		
-		public String getCwbs() {
-			return cwbs;
-		}
-		public void setCwbs(String cwbs) {
-			this.cwbs = cwbs;
-		}
+		
 		public long getDateState() {
 			return dateState;
 		}

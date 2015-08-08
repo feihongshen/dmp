@@ -838,7 +838,12 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 				border : true,
 				striped:true,
 				idField : 'id',
+				loadMsg : '正在加载，请稍后！',
+				pagination:true,
 				rownumbers:true,
+				pageNumber:1,
+				pageSize : 10,
+				pageList : [ 10, 20, 30, 40, 50 ],
 				singleSelect:true,
 				columns:[[         
 					        {field:'ck',checkbox:"true"},

@@ -43,9 +43,7 @@ public class CustomerBillContractDao {
 			c.setDateVerificationBill(rs.getString("date_verification_bill"));
 			c.setCwbOrderType(rs.getLong("cwb_order_type"));
 			c.setDateState(rs.getLong("date_state"));
-			c.setCwbs(rs.getString("cwbs"));
-		
-			
+
 			return c;
 		}
 	}
@@ -111,14 +109,14 @@ public class CustomerBillContractDao {
 	
 	
 	
-	public void updateCustomerBillContract(String cwbs,String billBatches,long correspondingCwbNum,
+	public void updateCustomerBillContract(String billBatches,long correspondingCwbNum,
 			BigDecimal deliveryMoney, BigDecimal distributionMoney,
 			BigDecimal refuseMoney, BigDecimal transferMoney, BigDecimal totalCharge
 			
 			){
-				String sql="update customerbillcontract set cwbs=?,corresponding_cwb_num=?,delivery_money=?,distribution_money=?,transfer_money=?,refuse_money=?,total_charge=? where bill_batches='"+billBatches+"'";				
+				String sql="update customerbillcontract set corresponding_cwb_num=?,delivery_money=?,distribution_money=?,transfer_money=?,refuse_money=?,total_charge=? where bill_batches='"+billBatches+"'";				
 				
-				this.jdbcTemplate.update(sql,cwbs,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge);
+				this.jdbcTemplate.update(sql,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge);
 			}
 	/**
 	 * 
@@ -162,7 +160,6 @@ public class CustomerBillContractDao {
 				/*sb.append(" ORDER BY '"+condition+"'");
 				sb.append(" '"+sequence+"'");*/
 				sql+=sb.toString();
-				System.out.println(sql);
 				return jdbcTemplate.queryForLong(sql);
 			}
 	
@@ -174,7 +171,6 @@ public class CustomerBillContractDao {
 			public void updateTotalValueByBatches(BigDecimal newValue,String batches){
 				String sql="update customerbillcontract set total_charge="+newValue+" where bill_batches='"+batches+"'";
 				this.jdbcTemplate.update(sql);
-				System.out.println(sql);
 			}
 			public void removebill(long id) {
 				String sql="delete from customerbillcontract where id="+id;
@@ -217,9 +213,9 @@ public class CustomerBillContractDao {
 					long customerid, String dateRange, long correspondingCwbNum,
 					BigDecimal deliveryMoney, BigDecimal distributionMoney,
 					BigDecimal transferMoney, BigDecimal refuseMoney, BigDecimal totalCharge,
-					String remark,String createBillDate,long cwbtype, long dateState,String cwbs) {
-				String sql="insert into customerbillcontract(bill_batches,bill_state,customer_id,date_range,corresponding_cwb_num,delivery_money,distribution_money,transfer_money,refuse_money,total_charge,remark,date_create_bill,cwb_order_type,date_state,cwbs) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-				this.jdbcTemplate.update(sql,billBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,createBillDate,cwbtype,dateState,cwbs);
+					String remark,String createBillDate,long cwbtype, long dateState) {
+				String sql="insert into customerbillcontract(bill_batches,bill_state,customer_id,date_range,corresponding_cwb_num,delivery_money,distribution_money,transfer_money,refuse_money,total_charge,remark,date_create_bill,cwb_order_type,date_state) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				this.jdbcTemplate.update(sql,billBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,createBillDate,cwbtype,dateState);
 			}
 			//查出所有账单按照账单批次
 			public CustomerBillContract datebillBatche(String BillBatches) {	
@@ -331,6 +327,7 @@ public class CustomerBillContractDao {
 					sv.setTotalCharge(rs.getBigDecimal("total_charge"));
 					sv.setTransferMoney(rs.getBigDecimal("transfer_money"));
 					sv.setBillBatches(rs.getString("bill_batches"));
+					sv.setCwbInBatchType(rs.getLong("cwbInbatchtype"));
 					return sv;
 				}
 				
@@ -338,12 +335,12 @@ public class CustomerBillContractDao {
 			
 			
 			public void addBillVo(SerachCustomerBillContractVO s){
-				String sql="insert into customerbillcontractvo(cwb,cwb_order_type,cwb_state,delivery_money,distribution_money,pay_way_id,refuse_money,total_charge,transfer_money,bill_batches) values(?,?,?,?,?,?,?,?,?,?)";
-				this.jdbcTemplate.update(sql,s.getCwb(),s.getCwbOrderType(),s.getCwbstate(),s.getDeliveryMoney(),s.getDistributionMoney(),s.getPaywayid(),s.getRefuseMoney(),s.getTotalCharge(),s.getTransferMoney(),s.getBillBatches());
+				String sql="insert into customerbillcontractvo(cwb,cwb_order_type,cwb_state,delivery_money,distribution_money,pay_way_id,refuse_money,total_charge,transfer_money,bill_batches,cwbInbatchtype) values(?,?,?,?,?,?,?,?,?,?,?)";
+				this.jdbcTemplate.update(sql,s.getCwb(),s.getCwbOrderType(),s.getCwbstate(),s.getDeliveryMoney(),s.getDistributionMoney(),s.getPaywayid(),s.getRefuseMoney(),s.getTotalCharge(),s.getTransferMoney(),s.getBillBatches(),s.getCwbInBatchType());
 			}
 			
-			public List<SerachCustomerBillContractVO> findSerachCustomerBillContractVOByBillBatches(String BillBatches, int start, int number){
-					String sql="select * from customerbillcontractvo where bill_batches=? limit "+start+","+number;
+			public List<SerachCustomerBillContractVO> findSerachCustomerBillContractVOByBillBatches(long cwbstate,String BillBatches, int start, int number){
+					String sql="select * from customerbillcontractvo where bill_batches=? and cwbInbatchtype="+cwbstate+" limit "+start+","+number;
 					return this.jdbcTemplate.query(sql,new CustomerBillContractVOmapper(),BillBatches);
 			}
 			
@@ -363,7 +360,7 @@ public class CustomerBillContractDao {
 			
 			
 			public List<SerachCustomerBillContractVO> findSerachCustomerBillContractVOByBatches(String batches){			
-				String sql="select * from customerbillcontractvo where bill_batches='"+batches+"'";
+				String sql="select * from customerbillcontractvo where cwbInbatchtype=1 and bill_batches='"+batches+"'";
 				List<SerachCustomerBillContractVO> cbc=null;
 				try {
 					
@@ -377,7 +374,7 @@ public class CustomerBillContractDao {
 			}
 			
 			public long findSerachCustomerBillContractVOByBillBatchesCount(String BillBatches){
-				String sql="select count(1) from customerbillcontractvo where bill_batches=?";
+				String sql="select count(1) from customerbillcontractvo where bill_batches=? and cwbInbatchtype=1";
 				return this.jdbcTemplate.queryForLong(sql,BillBatches);
 			}
 			
@@ -397,8 +394,22 @@ public class CustomerBillContractDao {
 				 this.jdbcTemplate.update(sql);
 			}
 			
+			public void changecwbdetailstate(String cwb,String billBatches,long state){
+				 String sql="update customerbillcontractvo set cwbInbatchtype="+state+" where cwb='"+cwb+"' and bill_batches='"+billBatches+"'";
+				System.out.println(sql);
+				 this.jdbcTemplate.update(sql);
+			}
+			public List<SerachCustomerBillContractVO> findcwbByBatchesAndState(String batches,long cwbstate,int start,int number){
+				String sql="select * from customerbillcontractvo where bill_batches='"+batches+"' and cwbInbatchtype="+cwbstate+" limit "+start+","+number;
+				return this.jdbcTemplate.query(sql, new CustomerBillContractVOmapper());
+			}
+			public long findcwbByBatchesAndStateCount(String batches,long cwbstate){
+				String sql="select count(1) from customerbillcontractvo where bill_batches='"+batches+"' and cwbInbatchtype="+cwbstate;
+				return this.jdbcTemplate.queryForLong(sql);
+			}
+			
 			public SerachCustomerBillContractVO queryCustomerbillcontractvo(String cwb,String batches){
-				String sql="select * from customerbillcontractvo where cwb='"+cwb+"' and bill_batches='"+batches+"'";
+				String sql="select * from customerbillcontractvo where cwbInbatchtype=1 and cwb='"+cwb+"' and bill_batches='"+batches+"'";
 				SerachCustomerBillContractVO l;
 				try {
 					l = this.jdbcTemplate.queryForObject(sql, new CustomerBillContractVOmapper());
@@ -414,6 +425,11 @@ public class CustomerBillContractDao {
 			public void changeBillState(long state,String batches){
 				String sql="update customerbillcontract set bill_state="+state+" where bill_batches='"+batches+"'";
 				 this.jdbcTemplate.update(sql);
+			}
+			
+			public List<SerachCustomerBillContractVO> findcwbByBatches(String batches){
+				String sql="select * from customerbillcontractvo where bill_batches in("+batches+") and cwbInbatchtype=1";
+				return this.jdbcTemplate.query(sql, new CustomerBillContractVOmapper());
 			}
 			
 		private final class BillloadExcelmapper implements RowMapper<ImportBillExcel>{
@@ -445,8 +461,7 @@ public class CustomerBillContractDao {
 		}
 		
 		public List<ImportBillExcel> findImportBillExcelByBatches(String batches){
-				String sql="select * from importbillexcel where bill_batches='"+batches+"'";
-				
+				String sql="select * from importbillexcel where bill_batches='"+batches+"'";				
 			return this.jdbcTemplate.query(sql, new BillloadExcelmapper());		
 		}
 		

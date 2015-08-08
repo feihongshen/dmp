@@ -24,7 +24,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.Customer;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.User;
@@ -1671,5 +1670,39 @@ public class DeliveryStateDAO {
 			return null;
 		}
 	}
+	
+	public List<DeliveryState> getCwbOrderByShenHeDate(long customerid,String start,String end,String type){
+		String sql="SELECT * FROM express_ops_delivery_state WHERE deliverystate IN(1,2,3,4) AND `auditingtime` >='"+start+"' AND auditingtime <='"+end+"' AND customerid="+customerid+" AND state=1";
+		if(Integer.valueOf(type)>0){
+			sql+=" AND cwbordertypeid =1";
+		}
+		return this.jdbcTemplate.query(sql,  new DeliveryStateRowMapper());
+	}
+	
+	public List<DeliveryState> getCwbOrderByFanKuiDate(long customerid,String start,String end,String type){
+		String sql="SELECT * FROM express_ops_delivery_state WHERE deliverystate IN(1,2,3,4) AND `deliverytime` >='"+start+"' AND deliverytime <='"+end+"' AND customerid="+customerid+" AND state=1";
+		if(Integer.valueOf(type)>0){
+			sql+=" AND `cwbordertypeid` =1";
+		}
+		return this.jdbcTemplate.query(sql,  new DeliveryStateRowMapper());
+	}
+	public List<DeliveryState> getCwbOrderByShenHeDate(long customerid,String start,String end,String type,int spage,int pageSize){
+		String sql="SELECT * FROM express_ops_delivery_state WHERE deliverystate IN(1,2,3,4) AND `auditingtime` >='"+start+"' AND auditingtime <='"+end+"' AND customerid="+customerid+" AND state=1";
+		if(Integer.valueOf(type)>0){
+			sql+=" AND `cwbordertypeid` =1";
+		}
+		sql+=" limit "+spage+","+pageSize;
+		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
+	}
+	
+	public List<DeliveryState> getCwbOrderByFanKuiDate(long customerid,String start,String end,String type,int spage,int pageSize){
+		String sql="SELECT * FROM express_ops_delivery_state WHERE deliverystate IN(1,2,3,4) AND `deliverytime` >='"+start+"' AND deliverytime <='"+end+"' AND customerid="+customerid+" AND state=1";
+		if(Integer.valueOf(type)>0){
+			sql+=" AND `cwbordertypeid` =1";
+		}
+		sql+=" limit "+spage+","+pageSize;
+		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
+	}
+	
 	
 }
