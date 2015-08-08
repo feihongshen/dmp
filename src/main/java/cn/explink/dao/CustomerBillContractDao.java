@@ -194,6 +194,18 @@ public class CustomerBillContractDao {
 			}
 		}
 			
+			public List<CustomerBillContract> findbillByCustomerid(long customerid) {
+				String sql="select * from customerbillcontract where customer_id="+customerid;
+				List<CustomerBillContract> l=null;
+			try{	
+				l=this.jdbcTemplate.query(sql,new CustomerBillContractmapper());
+				return l;
+			} catch (DataAccessException e) {
+				// TODO Auto-generated catch block
+				return null;
+			}
+		}
+			
 			/**
 			 * 
 			 * @param billBatches
@@ -403,8 +415,17 @@ public class CustomerBillContractDao {
 				String sql="select * from customerbillcontractvo where bill_batches='"+batches+"' and cwbInbatchtype="+cwbstate+" limit "+start+","+number;
 				return this.jdbcTemplate.query(sql, new CustomerBillContractVOmapper());
 			}
+			
+			public List<SerachCustomerBillContractVO> findcwbByBatchesAndStateMoHu(String cwb,String batches,long cwbstate,int start,int number){
+				String sql="select * from customerbillcontractvo where cwb like '%"+cwb+"%' and bill_batches='"+batches+"' and cwbInbatchtype="+cwbstate+" limit "+start+","+number;
+				return this.jdbcTemplate.query(sql, new CustomerBillContractVOmapper());
+			}
 			public long findcwbByBatchesAndStateCount(String batches,long cwbstate){
 				String sql="select count(1) from customerbillcontractvo where bill_batches='"+batches+"' and cwbInbatchtype="+cwbstate;
+				return this.jdbcTemplate.queryForLong(sql);
+			}
+			public long findcwbByBatchesAndStateMoHuCount(String cwb,String batches,long cwbstate){
+				String sql="select count(1) from customerbillcontractvo where cwb like '%"+cwb+"%' and bill_batches='"+batches+"' and cwbInbatchtype="+cwbstate;
 				return this.jdbcTemplate.queryForLong(sql);
 			}
 			

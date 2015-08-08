@@ -6360,37 +6360,39 @@ public class CwbDAO {
 		sql.append(" where state = 1 and cwb = ?");
 		this.jdbcTemplate.update(sql.toString(), city, area, cwb);
 	}
-	
-	public List<CwbOrder>   getCwbOrderByEmailDate(long customerid,String start,  String end,  String type){
+	public List<CwbOrder>   getCwbOrderByEmailDate(long customerid,String start,  String end, String type,long s,long e){
 		String sql="SELECT * FROM express_ops_cwb_detail WHERE emaildate >='"+start+"' AND emaildate <='"+end+"' AND deliverystate IN(1,2,3,4) AND flowordertype=36 AND customerid="+customerid+" AND state=1";
 		if(!type.equals("")&&Integer.valueOf(type)>0){
 			sql+=" AND `cwbordertypeid`=1";
 		}
+		sql+=" limit "+s+","+e;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	
-	public List<CwbOrder> getCwbOrderByShenHeDate(long customerid,String start,String end,String type){
+	public List<CwbOrder> getCwbOrderByShenHeDate(long customerid,String start,String end,String type,long s,long e){
 		String sql="SELECT de.* FROM express_ops_delivery_state AS ds LEFT JOIN express_ops_cwb_detail AS de ON ds.cwb =de.cwb WHERE ds.`auditingtime` >='"+start+"' AND ds.auditingtime <='"+end+"' AND ds.deliverystate IN(1,2,3,4) AND ds.customerid="+customerid+" AND ds.state=1 AND de.flowordertype=36";
 		if(!type.equals("")&&Integer.valueOf(type)>0){
 			sql+=" AND ds.cwbordertypeid=1";
 		}
+		sql+=" limit "+s+","+e;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	
-	public List<CwbOrder> getCwbOrderByFanKuiDate(long customerid,String start,String end,String type){
+	public List<CwbOrder> getCwbOrderByFanKuiDate(long customerid,String start,String end,String type,long s,long e){
 		String sql="SELECT de.* FROM express_ops_delivery_state AS ds LEFT JOIN express_ops_cwb_detail AS de ON ds.cwb=de.cwb WHERE  ds.`deliverytime` >='"+start+"' AND ds.deliverytime <='"+end+"' AND ds.deliverystate IN(1,2,3,4) AND ds.customerid="+customerid+" AND ds.state=1 AND de.flowordertype=36";
 		if(!type.equals("")&&Integer.valueOf(type)>0){
 			sql+=" AND ds.`cwbordertypeid`=1";
 		}
+		sql+=" limit "+s+","+e;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	
-	public List<CwbOrder> getCwbOrderByRuKuDate(long customerid,String start,String end,String type){
+	public List<CwbOrder> getCwbOrderByRuKuDate(long customerid,String start,String end,String type,long s,long e){
 		String sql="SELECT de.* FROM `express_ops_order_intowarhouse` AS eu  LEFT JOIN express_ops_cwb_detail AS de ON eu.cwb=de.cwb WHERE  eu.`credate` >='"+start+"' AND eu.`credate`<='"+end+"' AND de.customerid="+customerid+" AND de.state=1 AND de.`deliverystate` IN(1,2,3,4) AND de.flowordertype=36";
 		if(!type.equals("")&&Integer.valueOf(type)>0){
 			sql+=" AND `cwbordertypeid`=1";
 		}
-		System.out.println(sql);
+		sql+=" limit "+s+","+e;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 	
@@ -6461,5 +6463,4 @@ public class CwbDAO {
 		}
 		return this.jdbcTemplate.queryForLong(sql);
 	}
-	
 }

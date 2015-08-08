@@ -683,7 +683,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 			
 			}
 			
-			$('#dlgAddofEdit').dialog('close');
+			
 		}
 	
 	function SerachAddofEdit(){
