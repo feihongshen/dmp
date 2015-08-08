@@ -145,42 +145,67 @@ function check(){
 	 if($.trim($("#cwb").val()).length==0)
 	{ 
 	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.daichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>){
-	if($("#strtime").val()==""){
+	/* if($("#strtime").val()==""){
 		alert("请选择开始时间");
 		return false;
 	}
 	if($("#endtime").val()==""){
 		alert("请选择结束时间");
 		return false;
-	}
-	if(!Days($("#strtime").val(),$("#endtime").val())||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
+	} */
+	
+		if($("#strtime").val()!=""||$("#endtime").val()!=""){
+			if($("#strtime").val()==""){
+				alert("请选择开始时间！！");
+				return;
+			}
+			if($("#endtime").val()==""){
+				alert("请选择结束时间！！");
+				return;
+			}
+			if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
+				alert("开始时间不能大于结束时间");
+				return;
+			}
+		}
+	
+	/* if(!Days($("#strtime").val(),$("#endtime").val())||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
 		alert("时间跨度不能大于31天！");
 		return false;
-	}
-	if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
-		alert("开始时间不能大于结束时间");
-		return;
-	}
+	} */
+
 	}
 	else{
 		
-			if($("#chuangjianstrtime").val()==""){
+		/* 	if($("#chuangjianstrtime").val()==""){
 				alert("请选择开始时间");
 				return false;
 			}
 			if($("#chuangjianendtime").val()==""){
 				alert("请选择结束时间");
 				return false;
-			}
+			}*/
 			/* if(!Days($("#chuangjianstrtime").val(),$("#chuangjianendtime").val())||($("#chuangjianstrtime").val()=='' &&$("#chuangjianendtime").val()!='')||($("#chuangjianstrtime").val()!='' &&$("#chuangjianendtime").val()=='')){
 				alert("时间跨度不能大于3天！");
 				return false;
 			} */
-			if($("#chuangjianstrtime").val()>$("#chuangjianendtime").val() && $("#chuangjianendtime").val() !=''){
-				alert("开始时间不能大于结束时间");
+		
+			
+		if($("#chuangjianstrtime").val()!=""||$("#chuangjianendtime").val()!=""){
+			if($("#chuangjianstrtime").val()==""){
+				alert("请选择开始时间！！");
 				return;
 			}
-		
+			if($("#chuangjianendtime").val()==""){
+				alert("请选择结束时间！！");
+				return;
+			}
+			 if($("#chuangjianstrtime").val()>$("#chuangjianendtime").val() && $("#chuangjianendtime").val() !=''){
+					alert("开始时间不能大于结束时间");
+					return;
+				}  
+		}
+
 		
 	}
 	}else{
@@ -193,6 +218,10 @@ function check(){
 				alert("请选择结束时间！！");
 				return;
 			}
+			 if($("#chuangjianstrtime").val()>$("#chuangjianendtime").val() && $("#chuangjianendtime").val() !=''){
+					alert("开始时间不能大于结束时间");
+					return;
+				}  
 		}
 	 } 
 	
@@ -253,6 +282,9 @@ function checkstate(){
 		$("#strtime").show();
 		$("#endtime").show();
 		$("#chuli").html("处理时间：");
+	}
+	if($("#ishandle").val()!=<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>){
+		$("#dealresult").val(0);
 	}
 }
 
@@ -524,7 +556,7 @@ function resultdatadeal(id)
 function checkdealresult(){
 	if($("#ishandle").val()!=5){
 		$("#dealresult").val(0);
-		alert("请先选择处理状态未结案处理！！");
+		alert("请先选择处理状态为结案处理！！");
 		return;
 	}
 }
