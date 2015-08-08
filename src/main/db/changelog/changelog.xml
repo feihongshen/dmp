@@ -8101,6 +8101,7 @@ CREATE TABLE `cs_complaint_accept` (
 	
 	<changeSet id="liuxiao-2015-08-08-01" author="liuxiao">
 	   	<sql>
+	   		DELETE FROM express_set_salary;
 			insert  into `express_set_salary`(`id`,`filename`,`filetext`,`whichvalue`,`ischecked`,`addordeduct`,`addordeductimport`) 
 			values (1,'accountSingle','结算单量',0,1,1,2),(2,'salarybasic','基本工资',0,1,1,1),(3,'salaryjob','岗位工资',0,1,1,1),(4,'pushcash','绩效奖金',0,1,1,1),
 			(5,'jobpush','岗位津贴',0,1,1,1),(6,'salarypush','提成',0,1,1,2),(7,'agejob','工龄',0,1,1,1),(8,'bonusroom','住房补贴',0,1,1,1),
