@@ -328,13 +328,13 @@ public class CustomerBillContractController {
 				
 		
 				if(dateState==CwbDateEnum.ShenHeRiQi.getValue()){	
-					long shenhecount=cwbdao.getCwbOrderByShenHeDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+			/*		long shenhecount=cwbdao.getCwbOrderByShenHeDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
 					long yushu=shenhecount%5000;
 					long duoyushuliang=shenhecount-yushu*5000;
 					for(int i=5000;i<yushu;i+=5000){
 					col=cwbdao.getCwbOrderByShenHeDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);			
 						
-					}
+					}*/
 					col=cwbdao.getCwbOrderByShenHeDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
 				}else if(dateState==CwbDateEnum.FaHuoRiQi.getValue()){					
 /*					long fahuocount=cwbdao.getCwbOrderByEmailDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
