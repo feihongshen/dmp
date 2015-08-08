@@ -21,7 +21,6 @@ public class DiliverymanPaifeiBill {
 	private Integer ordersum;// 对应订单数
 	private BigDecimal paifeimoney;// 派费金额
 	private String remarks;// 备注
-	private String orderids;// 对应所有订单
 	private String daterange;// 日期范围
 
 	// 只作为查询条件，不与数据库关联
@@ -40,13 +39,6 @@ public class DiliverymanPaifeiBill {
 		// TODO Auto-generated constructor stub
 	}
 
-	public String getOrderids() {
-		return this.orderids;
-	}
-
-	public void setOrderids(String orderids) {
-		this.orderids = orderids;
-	}
 
 	public String getDaterange() {
 		return this.daterange;

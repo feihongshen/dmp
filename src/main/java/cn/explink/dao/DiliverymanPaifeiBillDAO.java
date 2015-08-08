@@ -49,7 +49,6 @@ public class DiliverymanPaifeiBillDAO {
 			diliverymanPaifeiBill.setPaifeimoney(rs.getBigDecimal("paifeimoney"));
 			diliverymanPaifeiBill.setRemarks(rs.getString("remarks"));
 			diliverymanPaifeiBill.setDaterange(rs.getString("daterange"));
-			diliverymanPaifeiBill.setOrderids(rs.getString("orderids"));
 			return diliverymanPaifeiBill;
 		}
 
@@ -62,6 +61,7 @@ public class DiliverymanPaifeiBillDAO {
 			order.setId(rs.getInt("id"));
 			order.setOrdernumber(rs.getString("ordernumber"));
 			order.setOrderstatus(rs.getInt("orderstatus"));
+			order.setBillbatch(rs.getString("billbatch"));
 			order.setOrdertype(rs.getInt("ordertype"));
 			order.setTimeofdelivery(rs.getString("timeofdelivery"));
 			order.setDeliverytime(rs.getString("deliverytime"));
@@ -171,7 +171,7 @@ public class DiliverymanPaifeiBillDAO {
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_diliveryman_paifei_bill(billstate,billbatch,diliveryman,"
-						+ "theirsite,billestablishdate,billverificationdate,ordertype,ordersum,paifeimoney,remarks,daterange,orderids) values(?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
+						+ "theirsite,billestablishdate,billverificationdate,ordertype,ordersum,paifeimoney,remarks,daterange) values(?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
 				int i = 1;
 				ps.setInt(i++, bill.getBillstate());
 				ps.setString(i++, bill.getBillbatch());
@@ -184,7 +184,6 @@ public class DiliverymanPaifeiBillDAO {
 				ps.setBigDecimal(i++, bill.getPaifeimoney());
 				ps.setString(i++, bill.getRemarks());
 				ps.setString(i++, bill.getDaterange());
-				ps.setString(i++, bill.getOrderids());
 				return ps;
 			}
 		}, key);
@@ -218,15 +217,15 @@ public class DiliverymanPaifeiBillDAO {
 	/**
 	 * 查询指定账单下的订单
 	 */
-	public List<DiliverymanPaifeiOrder> queryorderdedail(String cwbs, Long page) {
-		String sql = "select * from express_ops_diliveryman_paifei_order where ordernumber in (" + cwbs + ")";
+	public List<DiliverymanPaifeiOrder> queryorderdedail(String billbatch, Long page) {
+		String sql = "select * from express_ops_diliveryman_paifei_order where billbatch = '" + billbatch + "'";
 		sql += " order by ordernumber";
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER + "";
 		return this.jdbcTemplate.query(sql, new DiliverymanPaiFeiOrderRowMapper());
 	}
 
-	public int queryorderdedailcount(String cwbs) {
-		String sql = "select count(1) from express_ops_diliveryman_paifei_order where ordernumber in (" + cwbs + ")";
+	public int queryorderdedailcount(String billbatch) {
+		String sql = "select count(1) from express_ops_diliveryman_paifei_order where billbatch = '" + billbatch + "'";
 
 		return this.jdbcTemplate.queryForInt(sql);
 	}
@@ -237,31 +236,42 @@ public class DiliverymanPaifeiBillDAO {
 		String sql = "select * from express_ops_diliveryman_paifei_order where ordernumber in (" + cwbs + ")";
 		return this.jdbcTemplate.query(sql, new DiliverymanPaiFeiOrderRowMapper());
 	}
+	/**
+	 * 根据账单号查询订单明细
+	 */
+	public List<DiliverymanPaifeiOrder> queryByBillbatchList(String billbatch){
+		String sql = "select * from express_ops_diliveryman_paifei_order where billbatch = '" + billbatch + "'";
+		return this.jdbcTemplate.query(sql, new DiliverymanPaiFeiOrderRowMapper());
+	}
 
 	/**
 	 * 新增订单
 	 */
 	public void addOrder(DiliverymanPaifeiOrder order) {
 		String sql = "insert into express_ops_diliveryman_paifei_order(ordernumber,orderstatus,ordertype," + "timeofdelivery,deliverytime,paymentmode,dateoflodgment,paifeicombined,basicpaifei,"
-				+ "subsidiesfee,areasubsidies,beyondareasubsidies,businesssubsidies,delaysubsidies)" + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "subsidiesfee,areasubsidies,beyondareasubsidies,businesssubsidies,delaysubsidies,billbatch)" + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		this.jdbcTemplate.update(sql, order.getOrdernumber(), order.getOrderstatus(), order.getOrdertype(), order.getTimeofdelivery(), order.getDeliverytime(), order.getPaymentmode(),
 				order.getDateoflodgment(), order.getPaifeicombined(), order.getBasicpaifei(), order.getSubsidiesfee(), order.getAreasubsidies(), order.getBeyondareasubsidies(),
-				order.getBusinesssubsidies(), order.getDelaysubsidies());
+				order.getBusinesssubsidies(), order.getDelaysubsidies(),order.getBillbatch());
 	}
 
 	/**
 	 * 移除订单
 	 */
-	public void deleteorder(String orderString) {
-		String sql = "delete from  express_ops_diliveryman_paifei_order where ordernumber in (" + orderString + ")";
+	public void deleteorder(String orderString,String billbatch) {
+		String sql = "delete from  express_ops_diliveryman_paifei_order where ordernumber in (" + orderString + ") and billbatch = '"+billbatch+"'";
+		this.jdbcTemplate.update(sql);
+	}
+	public void deleteordernumber(String billbatch) {
+		String sql = "delete from  express_ops_diliveryman_paifei_order where  billbatch = '"+billbatch+"'";
 		this.jdbcTemplate.update(sql);
 	}
 
 	/**
 	 * 修改账单中的订单号
 	 */
-	public void updateBillForOrder(Integer i, String order, Integer id,BigDecimal sum) {
-		String sql = "update express_ops_diliveryman_paifei_bill set orderids='" + order + "', ordersum = '" + i + "', paifeimoney='" +sum+ "' where id = '" + id + "'";
+	public void updateBillForOrder(Integer i,Integer id,BigDecimal sum) {
+		String sql = "update express_ops_diliveryman_paifei_bill set  ordersum = '" + i + "', paifeimoney='" +sum+ "' where id = '" + id + "'";
 		this.jdbcTemplate.update(sql);
 	}
 	/**

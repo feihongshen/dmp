@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 public class DiliverymanPaifeiOrder {
 	private Integer id;
 	private String ordernumber;// 订单号
+	private String billbatch;//账单编号
 	private Integer orderstatus;// 订单状态
 	private Integer ordertype;// 订单类型
 	private String timeofdelivery;// 到货时间
@@ -48,6 +49,15 @@ public class DiliverymanPaifeiOrder {
 
 	public void setOrdernumber(String ordernumber) {
 		this.ordernumber = ordernumber;
+	}
+
+	
+	public String getBillbatch() {
+		return billbatch;
+	}
+
+	public void setBillbatch(String billbatch) {
+		this.billbatch = billbatch;
 	}
 
 	public Integer getOrderstatus() {

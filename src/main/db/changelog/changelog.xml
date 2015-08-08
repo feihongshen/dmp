@@ -8116,5 +8116,11 @@ CREATE TABLE `cs_complaint_accept` (
 			(45,'imprestother6','其它预付款6',0,1,0,0),(46,'tax','个税',0,1,0,2);	   
 	   </sql>
 	</changeSet>
+	<changeSet id="wangqiang-2015-08-08-01" author="wangqiang">
+	   	<sql>
+			ALTER TABLE `express_ops_diliveryman_paifei_bill`   
+			DROP COLUMN `orderids`;		   
+	   </sql>
+	</changeSet>
 	
 </databaseChangeLog>

@@ -1530,7 +1530,7 @@ public class DeliveryStateDAO {
 	 */
 	public List<DeliveryState> queryOrderByDeliveryid(Integer site, Integer orderType, Integer diliverymanid, String startDate, String endDate) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT * FROM express_ops_delivery_state where 1=1");
+		sql.append("SELECT * FROM express_ops_delivery_state  where 1=1");
 		if (site != null) {
 			sql.append(" and deliverybranchid = '" + site + "'");
 		}
@@ -1570,7 +1570,7 @@ public class DeliveryStateDAO {
 			sql.append(" and c.emaildate <= '" + endDate + " 59:59:59'");
 		}
 		sql.append(" and d.gcaid >0");
-		sql.append(" and whethergeneratedeliverymanbill = 0");
+		sql.append(" and d.whethergeneratedeliverymanbill = 0");
 		sql.append(" and d.deliverystate  in ('1','2','3');");
 		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
 	}
@@ -1595,7 +1595,7 @@ public class DeliveryStateDAO {
 			sql.append(" and i.credate <= '" + endDate + " 59:59:59'");
 		}
 		sql.append(" and d.gcaid >0");
-		sql.append(" and whethergeneratedeliverymanbill = 0");
+		sql.append(" and d.whethergeneratedeliverymanbill = 0");
 		sql.append(" and d.deliverystate in ('1','2','3');");
 		return this.jdbcTemplate.query(sql.toString(), new DeliveryStateRowMapper());
 	}

@@ -68,21 +68,15 @@ public class DiliverymanPaifeiBillService {
 	 */
 	public DiliverymanPaifeiBill queryById(Integer id, Long page) {
 		DiliverymanPaifeiBill diliverymanPaifeiBill = this.diliverymanPaifeiBillDAO.queryById(id);
-		if (org.apache.commons.lang3.StringUtils.isNotBlank(diliverymanPaifeiBill.getOrderids())) {
-			String cwbs = DiliverymanPaifeiBillService.spiltString(diliverymanPaifeiBill.getOrderids());
-			List<DiliverymanPaifeiOrder> diliverymanPaifeiOrderList = this.diliverymanPaifeiBillDAO.queryorderdedail(cwbs, page);
-			diliverymanPaifeiBill.setDiliverymanPaifeiOrderList(diliverymanPaifeiOrderList);
-		}
+		List<DiliverymanPaifeiOrder> diliverymanPaifeiOrderList = this.diliverymanPaifeiBillDAO.queryorderdedail(diliverymanPaifeiBill.getBillbatch(), page);
+		diliverymanPaifeiBill.setDiliverymanPaifeiOrderList(diliverymanPaifeiOrderList);
 		return diliverymanPaifeiBill;
 	}
 
 	public int queryByIdCount(Integer id) {
 		int ordercount = 0;
 		DiliverymanPaifeiBill diliverymanPaifeiBill = this.diliverymanPaifeiBillDAO.queryById(id);
-		if (org.apache.commons.lang3.StringUtils.isNotBlank(diliverymanPaifeiBill.getOrderids())) {
-			String cwbs = DiliverymanPaifeiBillService.spiltString(diliverymanPaifeiBill.getOrderids());
-			ordercount = this.diliverymanPaifeiBillDAO.queryorderdedailcount(cwbs);
-		}
+		ordercount = this.diliverymanPaifeiBillDAO.queryorderdedailcount(diliverymanPaifeiBill.getBillbatch());
 		return ordercount;
 	}
 
@@ -92,6 +86,7 @@ public class DiliverymanPaifeiBillService {
 	public int createBill(Integer site, Integer orderType, String[] diliveryman, Integer dateType, String startDate, String endDate, String explain) {
 		DiliverymanPaifeiBill bill = null;
 		Integer billcount = 0;
+		String billbatch = this.generateBillBatch();
 		// 当用户选择站点，并且选择 了小件员的时候，执行此方法
 		if ((diliveryman != null) && (diliveryman.length != 0)) {
 			for (int i = 0; i < diliveryman.length; i++) {
@@ -103,18 +98,17 @@ public class DiliverymanPaifeiBillService {
 					if (dateType == DateTypeEnum.FanKuiRiQi.getValue()) {
 						/* 日期类型为反馈时间时执行这个方法 */
 						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByDeliveryid(site, orderType, diliverymanid, startDate, endDate);
-	
-						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser,billbatch);
 					} else if (dateType == DateTypeEnum.FaHuoRiQi.getValue()) {
 						/* 日期类型为发货时间时执行这个方法 */
 						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByFaHuo(site, orderType, diliverymanid, startDate, endDate);
-						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser,billbatch);
 					} else if (dateType == DateTypeEnum.RuKuRiQi.getValue()) {
 						/* 日期类型为入库时间时执行这个方法 */
 						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, diliverymanid, startDate, endDate);
-						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser,billbatch);
 					}
-					bill.setBillbatch(this.generateBillBatch());
+					bill.setBillbatch(billbatch);
 					bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
 					bill.setDiliveryman(diliverymanid);
 					bill.setTheirsite(site);
@@ -141,17 +135,17 @@ public class DiliverymanPaifeiBillService {
 					if (dateType == DateTypeEnum.FanKuiRiQi.getValue()) {
 						/* 日期类型为反馈时间时执行这个方法 */
 						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByDeliveryid(site, orderType, userid, startDate, endDate);
-						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser,billbatch);
 					} else if (dateType == DateTypeEnum.FaHuoRiQi.getValue()) {
 						/* 日期类型为发货时间时执行这个方法 */
 						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByFaHuo(site, orderType, userid, startDate, endDate);
-						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser,billbatch);
 					} else if (dateType == DateTypeEnum.RuKuRiQi.getValue()) {
 						/* 日期类型为入库时间时执行这个方法 */
 						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, userid, startDate, endDate);
-						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser);
+						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser,billbatch);
 					}
-					bill.setBillbatch(this.generateBillBatch());
+					bill.setBillbatch(billbatch);
 					bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
 					bill.setDiliveryman(userid);
 					bill.setTheirsite(site);
@@ -233,11 +227,16 @@ public class DiliverymanPaifeiBillService {
 			Integer id = Integer.parseInt(id1[i]);
 			DiliverymanPaifeiBill bills = this.diliverymanPaifeiBillDAO.queryById(id);
 			String ordernumber = "";
-			ordernumber = bills.getOrderids();
 			// 删除该账单下所有订单
+			List<DiliverymanPaifeiOrder> order= this.diliverymanPaifeiBillDAO.queryByBillbatchList(bills.getBillbatch());
+			for(int j=0;j<order.size();j++){
+				DiliverymanPaifeiOrder order2  = new DiliverymanPaifeiOrder();
+				order2 = order.get(j);
+				ordernumber = order2.getOrdernumber() + ",";
+			}
 			if (org.apache.commons.lang3.StringUtils.isNotBlank(ordernumber)) {
 				ordernumber = DiliverymanPaifeiBillService.spiltString(ordernumber);
-				this.diliverymanPaifeiBillDAO.deleteorder(ordernumber);
+				this.diliverymanPaifeiBillDAO.deleteordernumber(bills.getBillbatch());
 				this.deliveryStateDao.setWhetherGenerateDeliveryBill(ordernumber);
 			}
 			this.diliverymanPaifeiBillDAO.deleteBill(id);
@@ -249,8 +248,9 @@ public class DiliverymanPaifeiBillService {
 	/**
 	 * 根据查出来的订单信息 再调用相关规则计算派费
 	 */
-	public DiliverymanPaifeiBill calculatePaFei(DiliverymanPaifeiBill bill, List<DeliveryState> deliveryStateList,User user) {
+	public DiliverymanPaifeiBill calculatePaFei(DiliverymanPaifeiBill bill, List<DeliveryState> deliveryStateList,User user,String billbatch) {
 		StringBuffer ordernumber = new StringBuffer();
+		StringBuffer cwbs = new StringBuffer();
 		Integer ordersum = 0;
 		BigDecimal orderfee = new BigDecimal(0);
 		DiliverymanPaifeiOrder order = null;
@@ -259,7 +259,6 @@ public class DiliverymanPaifeiBillService {
 		for (int i = 0; i < deliveryStateList.size(); i++) {
 			DeliveryState deliveryState = deliveryStateList.get(i);
 			ordernumber.append(deliveryState.getCwb() + ",");
-			ordersum++;
 		}
 		
 		String orderString = "";
@@ -269,7 +268,7 @@ public class DiliverymanPaifeiBillService {
 			/* 生成查询条件的字符串 */
 			String ordernumberString = DiliverymanPaifeiBillService.spiltString(orderString);
 			/* 根据订单号查出对应的数据 */
-			List<CwbOrder> cwborderList = this.cwbDAO.getCwbByCwbs(ordernumberString);
+			List<CwbOrder> cwborderList = this.cwbDAO.getCwbOrderList(ordernumberString);
 			Map<String,BigDecimal> basicMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, cwborderList);
 			Map<String,BigDecimal> collectionMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, cwborderList);
 			Map<String,BigDecimal> areaMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, cwborderList);
@@ -278,9 +277,13 @@ public class DiliverymanPaifeiBillService {
 			Map<String,BigDecimal> insertionMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Insertion, cwborderList);
 			Map<String, String> orderFlowMap = this.orderFlowDAO.getOrderFlowByCwbs(ordernumberString);
 			for (int i = 0; i < cwborderList.size(); i++) {
+				ordersum++;
 				BigDecimal sum = new BigDecimal(0);
 				order = new DiliverymanPaifeiOrder();
 				CwbOrder cwbOrder = cwborderList.get(i);
+				
+				cwbs.append(cwbOrder.getCwb()+",");
+				
 				/* 通过订单号查出到货时间 */
 				order.setOrdernumber(cwbOrder.getCwb());
 				order.setOrdertype(cwbOrder.getCwbordertypeid());
@@ -332,14 +335,17 @@ public class DiliverymanPaifeiBillService {
 					}
 				}
 				order.setPaifeicombined(sum);
+				order.setBillbatch(billbatch);
 				orderfee = orderfee.add(sum);
 				this.diliverymanPaifeiBillDAO.addOrder(order);
 			}
-			this.deliveryStateDao.setWhetherGenerateDeliveryManBill(ordernumberString);
+			if(StringUtils.isNotBlank(cwbs)){
+				String cwbString = DiliverymanPaifeiBillService.spiltString(cwbs.toString());
+				this.deliveryStateDao.setWhetherGenerateDeliveryManBill(cwbString);
+			}
 		}
 		
 		bill.setPaifeimoney(orderfee);
-		bill.setOrderids(orderString);
 		bill.setOrdersum(ordersum);
 		return bill;
 	}
@@ -358,13 +364,16 @@ public class DiliverymanPaifeiBillService {
 			this.deliveryStateDao.setWhetherGenerateDeliveryBill(cwb);
 			BigDecimal fee = new BigDecimal(0);
 			BigDecimal sum = new BigDecimal(0);
+			int i = 0;
 			for(int k=0;k<orderlist.size();k++){
 				DiliverymanPaifeiOrder order = orderlist.get(k);
 				fee = fee.add(order.getPaifeicombined());
+				i++;
 			}
 			DiliverymanPaifeiBill bill = this.diliverymanPaifeiBillDAO.queryById(id);
 			sum = bill.getPaifeimoney().subtract(fee);
-			/* 将选中的订单号与账单表中的订单号做对比，去掉选中的订单号 */
+			i = bill.getOrdersum() - i;
+			/* 将选中的订单号与账单表中的订单号做对比，去掉选中的订单号 
 			String[] arr1 = ordernumber.split(",");
 			String[] arr2 = bill.getOrderids().split(",");
 			for (int i = 0; i < arr1.length; i++) {
@@ -385,10 +394,10 @@ public class DiliverymanPaifeiBillService {
 			String order = sBuffer.toString();
 			if(StringUtils.isNotBlank(order)){
 				order = order.substring(0, order.length() - 1);
-			}
-			this.diliverymanPaifeiBillDAO.updateBillForOrder(i, order, id,sum);
+			}*/
+			this.diliverymanPaifeiBillDAO.updateBillForOrder(i, id,sum);
 			orderString = DiliverymanPaifeiBillService.spiltString(ordernumber);
-			this.diliverymanPaifeiBillDAO.deleteorder(orderString);
+			this.diliverymanPaifeiBillDAO.deleteorder(orderString,bill.getBillbatch());
 		}
 	}
 

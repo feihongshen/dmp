@@ -59,7 +59,7 @@ public class DiliverymanPaifeiBillController {
 	}
 
 	/**
-	 * 查询出所有订单
+	 * 查询出所有帐单
 	 *
 	 * @param model
 	 * @param bill
