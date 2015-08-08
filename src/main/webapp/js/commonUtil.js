@@ -341,18 +341,3 @@ function callFunByName(fnName,arg1,arg2){
     }    
 }
 
-/**
- * 判断数组（字符串）是否包含
- * @param array
- * @param tarStr
- */
-function isContain(array,tarStr){
-	var resultFlag = false;
-	$.each(array,function(filterIndex,filterValObj){
-		if(tarStr+"" == filterValObj){
-			resultFlag = true;
-			break;
-		}
-	});
-	return resultFlag;
-}
