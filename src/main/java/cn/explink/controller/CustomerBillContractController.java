@@ -327,14 +327,24 @@ public class CustomerBillContractController {
 				List<CwbOrder> col=null;
 				
 		
-				if(dateState==CwbDateEnum.ShenHeRiQi.getValue()){				
+				if(dateState==CwbDateEnum.ShenHeRiQi.getValue()){	
+					long shenhecount=cwbdao.getCwbOrderByShenHeDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+					long yushu=shenhecount%5000;
+					long duoyushuliang=shenhecount-yushu*5000;
+					for(int i=5000;i<yushu;i+=5000){
 					col=cwbdao.getCwbOrderByShenHeDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);			
+						
+					}
+					col=cwbdao.getCwbOrderByShenHeDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
 				}else if(dateState==CwbDateEnum.FaHuoRiQi.getValue()){					
-					col=cwbdao.getCwbOrderByEmailDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);					
+/*					long fahuocount=cwbdao.getCwbOrderByEmailDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+*/					col=cwbdao.getCwbOrderByEmailDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);					
 				}else if(dateState==CwbDateEnum.RUKuRiQi.getValue()){
-					col=cwbdao.getCwbOrderByRuKuDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+/*					long rukucount=cwbdao.getCwbOrderByRuKuDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+*/					col=cwbdao.getCwbOrderByRuKuDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
 				}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
-					col=cwbdao.getCwbOrderByFanKuiDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+/*					long fankuicount=cwbdao.getCwbOrderByFanKuiDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+*/					col=cwbdao.getCwbOrderByFanKuiDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
 				}	
 				long correspondingCwbNum=col.size();
 				String dateRange=startdate+"至"+enddate;   //日期范围
