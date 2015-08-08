@@ -8122,5 +8122,11 @@ CREATE TABLE `cs_complaint_accept` (
 			DROP COLUMN `orderids`;		   
 	   </sql>
 	</changeSet>
+	<changeSet id="wangqiang-2015-08-08-02" author="wangqiang">
+	   	<sql>
+			ALTER TABLE `express_ops_diliveryman_paifei_order`   
+  				ADD COLUMN `billbatch` VARCHAR(40) NULL  COMMENT '账单批次' AFTER `ordernumber`	   
+	   </sql>
+	</changeSet>
 	
 </databaseChangeLog>
