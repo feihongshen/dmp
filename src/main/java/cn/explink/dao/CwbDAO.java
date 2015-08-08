@@ -1526,7 +1526,10 @@ public class CwbDAO {
 		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC",
 				new CwbMapper());
 	}
-	
+	public List<CwbOrder> getCwbOrderList(String cwbs) {
+		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1  and flowordertype = 36 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC",
+				new CwbMapper());
+	}
 	public List<CwbOrder> getCwbByCwbsbyPage(String cwbs,int start,int pageSize) {
 		return this.jdbcTemplate.query("SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ORDER BY CONVERT( consigneeaddress USING gbk ) COLLATE gbk_chinese_ci ASC limit "+start+","+pageSize,
 				new CwbMapper());
