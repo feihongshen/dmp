@@ -108,6 +108,9 @@ public class DiliverymanPaifeiBillService {
 						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, diliverymanid, startDate, endDate);
 						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser,billbatch);
 					}
+					if(bill == null){
+						return billcount;
+					}
 					bill.setBillbatch(billbatch);
 					bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
 					bill.setDiliveryman(diliverymanid);
@@ -145,6 +148,9 @@ public class DiliverymanPaifeiBillService {
 						List<DeliveryState> deliveryStateList = this.deliveryStateDao.queryOrderByRuKu(site, orderType, userid, startDate, endDate);
 						bill = this.calculatePaFei(bill, deliveryStateList,deliveryUser,billbatch);
 					}
+					if(bill == null){
+						return billcount;
+					}
 					bill.setBillbatch(billbatch);
 					bill.setBillstate(PunishBillStateEnum.WeiShenHe.getValue());
 					bill.setDiliveryman(userid);
@@ -157,9 +163,6 @@ public class DiliverymanPaifeiBillService {
 					billcount++;
 				}
 			}
-		}
-		if(bill == null){
-			bill = new DiliverymanPaifeiBill();
 		}
 		return billcount;
 	}
@@ -269,6 +272,10 @@ public class DiliverymanPaifeiBillService {
 			String ordernumberString = DiliverymanPaifeiBillService.spiltString(orderString);
 			/* 根据订单号查出对应的数据 */
 			List<CwbOrder> cwborderList = this.cwbDAO.getCwbOrderList(ordernumberString);
+			if(cwborderList.size()<1){
+				DiliverymanPaifeiBill bill2 = null;
+				return bill2;
+			}
 			Map<String,BigDecimal> basicMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Basic, cwborderList);
 			Map<String,BigDecimal> collectionMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Collection, cwborderList);
 			Map<String,BigDecimal> areaMap = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, cwborderList);
