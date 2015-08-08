@@ -47,6 +47,7 @@ $(function(){
 <div class="right_box">
 	<div class="inputselect_box">
 		<form id="queryCondition" method="post" action="<%=request.getContextPath()%>/expressIntoStation/expressQueryList/1">
+			
 			<table style="width: 100%">
 			    <tr>
 			    	<td align="center"><font size="2"><span>状态</span></font></td>
@@ -81,11 +82,12 @@ $(function(){
 			    </tr>
 		 </table>
 		</form>
+		
 	</div>
 	
 	
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
-	<div class="jg_10"></div><div class="jg_10"></div>
+	<div class="jg_10"></div>
 		<div class="right_title">
 			<div style="overflow: auto;">
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="listTable">
@@ -198,8 +200,7 @@ $(function(){
 		</div>
 	</div>
 </div>	
-<div class="jg_10"></div>
-<div class="jg_10"></div>
+
 <div class="iframe_bottom"> 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr>
