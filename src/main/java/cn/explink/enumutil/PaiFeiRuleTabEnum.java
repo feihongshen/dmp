@@ -35,7 +35,7 @@ public enum PaiFeiRuleTabEnum {
 	public String getText() {
 		return this.text;
 	}
-	public PaiFeiRuleTabEnum getVauleByID(int value)
+	public static PaiFeiRuleTabEnum getVauleByID(int value)
 	{
 		return PaiFeiRuleTabEnum.map.get(value);
 	}

@@ -365,6 +365,7 @@ public class PaiFeiRuleService {
 	 *            订单号
 	 * @return 派费
 	 */
+	@Deprecated
 	@Transactional
 	public BigDecimal getPFRulefee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
 		BigDecimal fee = new BigDecimal("0");
@@ -687,6 +688,7 @@ public class PaiFeiRuleService {
 	 *            订单号
 	 * @return
 	 */
+	@Deprecated
 	public BigDecimal getPFTypefeeByType(long pfruleid, PaiFeiRuleTabEnum tab, PaiFeiBuZhuTypeEnum type, String cwb) {
 
 		BigDecimal fee = new BigDecimal("0");
@@ -791,7 +793,7 @@ public class PaiFeiRuleService {
 		return fee;
 
 	}
-
+	@Transactional
 	public Map<String, BigDecimal> getPFTypefeeByTypeOfBatch(long pfruleid, PaiFeiRuleTabEnum tab, PaiFeiBuZhuTypeEnum type, List<CwbOrder> cwbOrders) {
 		PaiFeiRule pf = this.paiFeiRuleDAO.getPaiFeiRuleById(pfruleid);
 		if ((cwbOrders != null) && (pf != null)) {
@@ -812,6 +814,9 @@ public class PaiFeiRuleService {
 					if (baFbasic != null) {// 获取基本补助
 						feeMap.put(co.getCwb(), baFbasic.getBasicPFfee());
 					}
+					else {
+						feeMap.put(co.getCwb(), BigDecimal.ZERO);
+					}
 				}
 				return feeMap;
 			}
@@ -820,6 +825,9 @@ public class PaiFeiRuleService {
 					PFcollection pFcollection = this.getPFcollectionByCustomerid(pfcollections, co.getCustomerid());
 					if (pFcollection != null) {// 获取代收补助
 						feeMap.put(co.getCwb(), pFcollection.getCollectionPFfee());
+					}
+					else {
+						feeMap.put(co.getCwb(), BigDecimal.ZERO);
 					}
 				}
 				return feeMap;
@@ -887,6 +895,9 @@ public class PaiFeiRuleService {
 							if (overbigfee != null) {
 								feeMap.put(co.getCwb(), overbigfee);
 							}
+							else {
+								feeMap.put(co.getCwb(), BigDecimal.ZERO);
+							}
 						}
 					}
 				}
@@ -896,6 +907,9 @@ public class PaiFeiRuleService {
 				for (CwbOrder co : cwbOrders) {
 					if (pFbusiness != null) {
 						feeMap.put(co.getCwb(), pFbusiness.getSubsidyfee());
+					}
+					else {
+						feeMap.put(co.getCwb(), BigDecimal.ZERO);
 					}
 				}
 				return feeMap;
@@ -907,6 +921,9 @@ public class PaiFeiRuleService {
 					if (pFinsertion != null) {
 						feeMap.put(co.getCwb(), pFinsertion.getInsertionfee());
 					}
+					else {
+						feeMap.put(co.getCwb(), BigDecimal.ZERO);
+					}
 
 				}
 				return feeMap;
@@ -917,6 +934,7 @@ public class PaiFeiRuleService {
 	}
 
 	// 货物超大补助
+	@Deprecated
 	public BigDecimal getOverbigFee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		long areaid = 0;
@@ -960,6 +978,7 @@ public class PaiFeiRuleService {
 	}
 
 	// 货物超重补助
+	@Deprecated
 	public BigDecimal getOverweightFee(long pfruleid, PaiFeiRuleTabEnum tab, String cwb) {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		long areaid = 0;
@@ -990,6 +1009,7 @@ public class PaiFeiRuleService {
 	}
 
 	// 货物超大补助
+	@Transactional
 	public Map<String, BigDecimal> getOverbigFeeOfBatch(long pfruleid, PaiFeiRuleTabEnum tab, List<CwbOrder> cwbOrders) {
 		Map<String, BigDecimal> feeMap = new HashMap<String, BigDecimal>();
 		if (cwbOrders != null) {
@@ -1043,6 +1063,7 @@ public class PaiFeiRuleService {
 	}
 
 	// 货物超重补助
+	@Transactional
 	public Map<String, BigDecimal> getOverweightFeeOfBacth(long pfruleid, PaiFeiRuleTabEnum tab, List<CwbOrder> cwbOrders) {
 		Map<String, BigDecimal> feeMap = new HashMap<String, BigDecimal>();
 		if (cwbOrders != null) {

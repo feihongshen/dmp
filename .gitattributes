@@ -2430,6 +2430,7 @@ src/main/webapp/WEB-INF/jsp/orderpartgoodsreturn/goodsReturnListBycwbs.jsp -text
 src/main/webapp/WEB-INF/jsp/orverdueexmo/overdueexmo.jsp -text
 src/main/webapp/WEB-INF/jsp/orverdueexmo/overdueexmo_detail.jsp -text
 src/main/webapp/WEB-INF/jsp/paifeiCount/rule/list.jsp -text
+src/main/webapp/WEB-INF/jsp/paifeiCount/rule/test.jsp -text
 src/main/webapp/WEB-INF/jsp/parameterdetail/add.jsp -text
 src/main/webapp/WEB-INF/jsp/parameterdetail/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/parameterdetail/list.jsp -text

@@ -258,16 +258,6 @@ public class PaiFeiRuleController {
 		map.put("errorcode", errorcode);
 		return map;
 	}
-	@RequestMapping("/test")
-	public @ResponseBody
-	Map<String, BigDecimal> test(@RequestParam(value = "name", required = false, defaultValue = "") String name, Model model) {
-		String cwbs="'zff15001','zff15002','zff15003','zff15004','zff15005'";
-		List<CwbOrder> cwbOrders = this.cwbDAO.getCwbOrderByCwbs(cwbs);
-		User user = this.userDAO.getUserByRealname("dc1#");
-		Map<String, BigDecimal> map = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(user.getPfruleid(), PaiFeiRuleTabEnum.Paisong, PaiFeiBuZhuTypeEnum.Area, cwbOrders);
-		return map;
-	}
-
 	@RequestMapping("/updateArea")
 	public @ResponseBody
 	Map<String, Object> updateArea(@RequestParam(value = "areaid", required = false, defaultValue = "0") long areaid,
@@ -326,5 +316,73 @@ public class PaiFeiRuleController {
 		return map;
 	}
 
+	/********************测试方法************************/
+	@RequestMapping("/test")
+	public String test(Model model) {
+		model.addAttribute("tabs", PaiFeiRuleTabEnum.values());
+		model.addAttribute("kinds", PaiFeiBuZhuTypeEnum.values());
+		model.addAttribute("types", PaiFeiRuleTypeEnum.values());
+		return "paifeiCount/rule/test";
+	}
+	@RequestMapping("/testTAB")
+	public @ResponseBody
+	Map<String, BigDecimal> testTAB(
+			@RequestParam(value = "name", required = false, defaultValue = "") String name,
+			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "tab", required = false, defaultValue = "") int tab,
+			Model model) {
+		StringBuilder cwbstr = new StringBuilder("");
+		if (cwbs.length() > 0) {
+			for (String cwbStr : cwbs.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				cwbstr = cwbstr.append("'").append(cwbStr.trim()).append("',");
+			}
+			if (cwbstr.length() > 0) {
+				cwbstr = cwbstr.deleteCharAt(cwbstr.lastIndexOf(","));
+			}
+		}
+		List<CwbOrder> cwbOrders = this.cwbDAO.getCwbOrderByCwbs(cwbstr.toString());
+		long pfruleId=0;
+			pfruleId=this.customerDAO.getCustomerByCustomerName(name).get(0).getPfruleid();
+		Map<String, BigDecimal> map = this.paiFeiRuleService.getPFRulefeeOfBatch(pfruleId, PaiFeiRuleTabEnum.getVauleByID(tab), cwbOrders);
+		return map;
+	}
+	@RequestMapping("/testTYPE")
+	public @ResponseBody
+	Map<String, BigDecimal> testTYPE(
+			@RequestParam(value = "name", required = false, defaultValue = "") String name,
+			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "tab", required = false, defaultValue = "") int tab,
+			@RequestParam(value = "kind", required = false, defaultValue = "") int kind,
+			@RequestParam(value = "type", required = false, defaultValue = "") int type,
 
+			Model model) {
+		StringBuilder cwbstr = new StringBuilder("");
+		if (cwbs.length() > 0) {
+			for (String cwbStr : cwbs.split("\r\n")) {
+				if (cwbStr.trim().length() == 0) {
+					continue;
+				}
+				cwbstr = cwbstr.append("'").append(cwbStr.trim()).append("',");
+			}
+			if (cwbstr.length() > 0) {
+				cwbstr = cwbstr.deleteCharAt(cwbstr.lastIndexOf(","));
+			}
+		}
+		List<CwbOrder> cwbOrders = this.cwbDAO.getCwbOrderByCwbs(cwbstr.toString());
+		long pfruleId=0;
+		if(type==1){
+			pfruleId=this.branchDAO.getBranchByBranchname(name).getPfruleid();
+		}
+		else if(type==2){
+			pfruleId=this.customerDAO.getCustomerByCustomerName(name).get(0).getPfruleid();
+		}
+		else if(type==3){
+			pfruleId=this.userDAO.getUserByRealname(name).getPfruleid();
+		}
+		Map<String, BigDecimal> map = this.paiFeiRuleService.getPFTypefeeByTypeOfBatch(pfruleId, PaiFeiRuleTabEnum.getVauleByID(tab), PaiFeiBuZhuTypeEnum.getVauleByID(kind), cwbOrders);
+		return map;
+	}
 }

@@ -40,7 +40,7 @@ public enum PaiFeiBuZhuTypeEnum {
 	public String getText() {
 		return this.text;
 	}
-	public PaiFeiBuZhuTypeEnum getVauleByID(int value)
+	public static PaiFeiBuZhuTypeEnum getVauleByID(int value)
 	{
 		return PaiFeiBuZhuTypeEnum.map.get(value);
 	}
