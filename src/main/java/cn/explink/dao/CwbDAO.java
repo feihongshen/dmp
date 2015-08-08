@@ -6361,7 +6361,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql.toString(), city, area, cwb);
 	}
 	
-	public List<CwbOrder> getCwbOrderByEmailDate(long customerid,String start,String end,String type){
+	public List<CwbOrder>   getCwbOrderByEmailDate(long customerid,String start,  String end,  String type){
 		String sql="SELECT * FROM express_ops_cwb_detail WHERE emaildate >='"+start+"' AND emaildate <='"+end+"' AND deliverystate IN(1,2,3,4) AND flowordertype=36 AND customerid="+customerid+" AND state=1";
 		if(!type.equals("")&&Integer.valueOf(type)>0){
 			sql+=" AND `cwbordertypeid`=1";
@@ -6461,4 +6461,5 @@ public class CwbDAO {
 		}
 		return this.jdbcTemplate.queryForLong(sql);
 	}
+	
 }
