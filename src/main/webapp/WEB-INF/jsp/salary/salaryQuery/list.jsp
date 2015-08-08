@@ -82,8 +82,9 @@ function onBlurOnclick(obj){
 <body style="background:#eef9ff">
 <div class="right_box">
 	<div class="inputselect_box">
-<table>
-	<form action="1" method="post" id="searchForm">
+	<table width="100%"  style="font-size: 12px;">
+	<form action="1" method="post" id="searchForm" >
+
 	    <tr>
 	    <td colspan="4" height="25px">
 	    <input class="input_button2" type="submit"  value="查询"/>
@@ -97,8 +98,8 @@ function onBlurOnclick(obj){
 	    </td>
 	    </tr>
 	    <tr>
-	    <td  align="right" height="25px">批次编号：</td>
-	    <td  align="left"><input type="text" name="batchnum" id="batchnum"  value="${batchnum}"  style="color: #CCCCCC" onfocus="onfocusOnclick(this);" onblur="onBlurOnclick(this);"/></td>
+	    <td  align="right" height="25px" nowrap="nowrap">批次编号：</td>
+	    <td  align="left" nowrap="nowrap"><input type="text" name="batchnum" id="batchnum"  value="${batchnum}"  style="color: #CCCCCC" onfocus="onfocusOnclick(this);" onblur="onBlurOnclick(this);"/></td>
 	    <td  align="right" nowrap="nowrap" style="width: 20%;">站点：</td>
 	    <td  align="left" nowrap="nowrap" style="width: 20%;">
 	   <%--  <input type="text" name="branch" value="${idcard}" /> --%>
@@ -116,12 +117,12 @@ function onBlurOnclick(obj){
 					data-options="width:150,prompt: '站点'"
 			/> -->
 	    </td>
-	    <td  align="right">配送员：</td>
-	    <td  align="left"><input type="text" name="distributionmember" id="distributionmember" value="${distributionmember}" style="color: #CCCCCC" onfocus="onfocusOnclick(this);" onblur="onBlurOnclick(this);" /></td>
+	    <td  align="right" nowrap="nowrap">配送员：</td>
+	    <td  align="left" nowrap="nowrap"><input type="text" name="distributionmember" id="distributionmember" value="${distributionmember}" style="color: #CCCCCC" onfocus="onfocusOnclick(this);" onblur="onBlurOnclick(this);" /></td>
 	    </tr>
 	    <tr>
-	      <td  align="right">身份证号：</td>
-	    <td  align="left"><input type="text" name="idcard" id="idcard" value="${idcard}"   style="color: #CCCCCC" onfocus="onfocusOnclick(this);" onblur="onBlurOnclick(this);"/></td>
+	      <td  align="right" nowrap="nowrap">身份证号：</td>
+	    <td  align="left" nowrap="nowrap"><input type="text" name="idcard" id="idcard" value="${idcard}"   style="color: #CCCCCC" onfocus="onfocusOnclick(this);" onblur="onBlurOnclick(this);"/></td>
 	    <input type="hidden" name="isshow" value="1"></input>
 	    </tr>
 	    </form>
