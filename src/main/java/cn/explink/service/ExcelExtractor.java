@@ -1659,6 +1659,10 @@ public abstract class ExcelExtractor {
 		//提成
 		BigDecimal salarypush = BigDecimal.ZERO;
 		salarypush = bdss.subtract(salarybasic.add(tiaozheng));//提成=寄件配送费-（基本工资+调整额度）
+		int inte = salarypush.compareTo(BigDecimal.ZERO);
+		if(inte==-1){
+			salarypush = new BigDecimal("0.00");
+		}
 		salary.setSalarypush(salarypush);
 		bdList.add(salarypush);
 

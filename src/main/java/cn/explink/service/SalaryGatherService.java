@@ -294,8 +294,12 @@ public class SalaryGatherService {
 			for(Smtcount sc : scList){
 				for(Map mapss : mapLists){
 					long customerid = (Long)(mapss.get(1));//供货商
-					BigDecimal bd1 = (BigDecimal)(mapss.get(2));//kpi补助
-					BigDecimal bd2 = (BigDecimal)(mapss.get(3));//其他补助
+					/*Double bdle1 = (Double)(mapss.get(2));//kpi补助
+					BigDecimal bd1 = new BigDecimal(bdle1.doubleValue());*/
+					BigDecimal bd1 = new BigDecimal((String)(mapss.get(2)));//kpi补助
+					/*Double bdle2 = (Double)(mapss.get(3)); //其他补助
+					BigDecimal bd2 = new BigDecimal(bdle2.doubleValue());*/
+					BigDecimal bd2 = new BigDecimal((String)(mapss.get(3)));//其他补助
 					if(sc.getCount()==customerid){
 						long lcount = (Long)(sc.getPscount());
 						BigDecimal bdcount = BigDecimal.valueOf(lcount);
