@@ -120,7 +120,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 	             			<option value="<%=JiesuanstateEnum.ZhengchangJiesuan.getValue()%>"><%=JiesuanstateEnum.ZhengchangJiesuan.getText() %></option>
 				        </select>*
 	             	</li>
-				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="<%=u.getIdcardno() %>" maxlength="50"/></li>
+				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="<%=u.getIdcardno() %>" maxlength="50"/>*</li>
 				    <%-- <li><span>基本工资：</span><input type="text"  id="usersalary" name="usersalary" value="<%=u.getUsersalary() %>" /></li>
 					
 					 <li><span>电话：</span><input type="text" id="userphone"  name="userphone" value="<%=u.getUserphone() %>" /></li> --%>

@@ -52,7 +52,10 @@ public class UserService {
 	}
 
 	public User loadFormForUser(HttpServletRequest request, long roleid, long branchid, MultipartFile file) {
-		User user = this.loadFormForUser(request, roleid, branchid);
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String ruzhiTime = sdf.format(date);
+		User user = this.loadFormForUsers(request, roleid, branchid,ruzhiTime);
 		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
 			String name = System.currentTimeMillis() + ".wav";
@@ -63,7 +66,8 @@ public class UserService {
 	}
 
 	public User loadFormForUserToEdit(HttpServletRequest request, long roleid, long branchid, MultipartFile file, long userid) {
-		User user = this.loadFormForUser(request, roleid, branchid);
+		String ruzhiTime = request.getParameter("startworkdate")==null?"":request.getParameter("startworkdate");
+		User user = this.loadFormForUsers(request, roleid, branchid,ruzhiTime);
 		String oldusername = this.userDAO.getUserByUserid(userid).getUsername();
 		if (oldusername != null) {
 			user.setOldusername(oldusername);
@@ -79,7 +83,7 @@ public class UserService {
 		return user;
 	}
 
-	public User loadFormForUser(HttpServletRequest request, long roleid, long branchid) {
+	public User loadFormForUsers(HttpServletRequest request, long roleid, long branchid,String ruzhiTime) {
 
 		User user = new User();
 
@@ -87,7 +91,8 @@ public class UserService {
 		user.setUsername(StringUtil.nullConvertToEmptyString(request.getParameter("username")));
 		user.setRealname(StringUtil.nullConvertToEmptyString(request.getParameter("realname")));
 		user.setSex(Integer.parseInt((request.getParameter("sex")==null||"".equals(request.getParameter("lateradvance")))?"0":request.getParameter("sex")));//性别
-		user.setStartworkdate(StringUtil.nullConvertToEmptyString("".equals(request.getParameter("startworkdate"))?null:request.getParameter("startworkdate")));//入职时间
+		//user.setStartworkdate(StringUtil.nullConvertToEmptyString("".equals(request.getParameter("startworkdate"))?null:request.getParameter("startworkdate")));//入职时间
+		user.setStartworkdate(ruzhiTime);//入职时间
 		user.setJobnum(StringUtil.nullConvertToEmptyString("".equals(request.getParameter("jobnum"))?null:request.getParameter("jobnum")));//工号
 		user.setJiesuanstate(Integer.parseInt((request.getParameter("jiesuanstate")==null||"".equals(request.getParameter("jiesuanstate")))?"0":request.getParameter("jiesuanstate")));//结算状态
 		user.setMaxcutpayment(new BigDecimal((request.getParameter("maxcutpayment")==null||"".equals(request.getParameter("maxcutpayment")))?"0.00":request.getParameter("maxcutpayment")));//最高扣款额度

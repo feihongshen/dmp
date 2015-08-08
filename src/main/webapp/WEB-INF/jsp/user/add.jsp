@@ -100,11 +100,11 @@
 			        <!--  <li><span>联系地址：</span><input type="text" id="useraddress" name="useraddress" value="" /></li> -->
 			        <!-- <li><span>备注信息：</span><input type="text" id="userremark" name="userremark" value="" /></li> -->
 			        
-			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="" maxlength="50"/></li>
+			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="" maxlength="50"/>*(无需填写,点击确认时自动生成入职日期!)</li>
 			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/></li>
 	             	 <li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="" maxlength="50"/></li>
 	             	 <li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="" maxlength="50"/></li>
-	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="" maxlength="50"/></li>
+	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="" maxlength="50"/>*(无需填写,动态变化的结果!)</li>
 	                 <li><span>固定预付款：</span><input type="text"  id="fixedadvance" name="fixedadvance" value="" maxlength="50"/></li>
 	                 <li><span>保底单量：</span><input type="text"  id="fallbacknum" name="fallbacknum" value="" maxlength="50"/></li>
 	                 <li><span>基础派费：</span><input type="text"  id="basicfee" name="basicfee" value="" maxlength="50"/></li>
