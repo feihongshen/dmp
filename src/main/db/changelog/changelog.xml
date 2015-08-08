@@ -8099,4 +8099,22 @@ CREATE TABLE `cs_complaint_accept` (
 	   </sql>
 	</changeSet>
 	
+	<changeSet id="liuxiao-2015-08-08-01" author="liuxiao">
+	   	<sql>
+			insert  into `express_set_salary`(`id`,`filename`,`filetext`,`whichvalue`,`ischecked`,`addordeduct`,`addordeductimport`) 
+			values (1,'accountSingle','结算单量',0,1,1,2),(2,'salarybasic','基本工资',0,1,1,1),(3,'salaryjob','岗位工资',0,1,1,1),(4,'pushcash','绩效奖金',0,1,1,1),
+			(5,'jobpush','岗位津贴',0,1,1,1),(6,'salarypush','提成',0,1,1,2),(7,'agejob','工龄',0,1,1,1),(8,'bonusroom','住房补贴',0,1,1,1),
+			(9,'bonusallday','全勤补贴',0,1,1,1),(10,'bonusfood','餐费补贴',0,1,1,1),(11,'bonustraffic','交通补贴',0,1,1,1),(12,'bonusphone','通讯补贴',0,1,1,1),
+			(13,'bonusweather','高温寒冷补贴',0,1,1,1),(14,'penalizecancel','扣款撤销',0,1,1,2),(15,'penalizecancel_import','扣款撤销(导入)',0,1,1,1),(16,'bonusother1','其它补贴',0,1,1,1),
+			(17,'bonusother2','其它补贴2',0,1,1,1),(18,'bonusother3','其它补贴3',0,1,1,1),(19,'bonusother4','其它补贴4',0,1,1,1),(20,'bonusother5','其它补贴5',0,1,1,1),
+			(21,'bonusother6','其它补贴6',0,1,1,1),(22,'overtimework','加班费',0,1,1,1),(23,'carrent','租用车辆费用',0,1,1,1),(24,'carmaintain','车子维修费用',0,1,1,1),
+			(25,'carfuel','油/电费用',0,1,1,1),(26,'attendance','考勤扣款',0,1,0,0),(27,'security','个人社保扣款',1,1,0,0),(28,'gongjijin','个人公积金扣款',1,1,0,0),
+			(29,'foul','违纪违规扣款',0,1,0,2),(30,'foul_import','违纪违规扣款(导入)',1,1,0,0),(31,'goods','货损赔偿',0,1,0,2),(32,'dorm','宿舍费用',0,1,0,0),
+			(33,'penalizeother1','其他扣罚',1,1,0,0),(34,'penalizeother2','其他扣罚2',1,1,0,0),(35,'penalizeother3','其他扣罚3',0,1,0,0),(36,'penalizeother4','其他扣罚4',0,1,0,0),
+			(37,'penalizeother5','其他扣罚5',1,1,0,0),(38,'penalizeother6','其他扣罚6',0,1,0,0),(39,'imprestgoods','货物预付款',0,1,0,2),(40,'imprestother1','其它预付款',1,1,0,0),
+			(41,'imprestother2','其它预付款2',0,1,0,0),(42,'imprestother3','其它预付款3',0,1,0,0),(43,'imprestother4','其它预付款4',0,1,0,0),(44,'imprestother5','其它预付款5',0,1,0,0),
+			(45,'imprestother6','其它预付款6',0,1,0,0),(46,'tax','个税',0,1,0,2);	   
+	   </sql>
+	</changeSet>
+	
 </databaseChangeLog>
