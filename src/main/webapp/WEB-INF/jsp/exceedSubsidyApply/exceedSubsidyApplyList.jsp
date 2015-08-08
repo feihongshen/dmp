@@ -80,6 +80,13 @@ function updateExceedSubsidyApplyFun(form,type,page){
 				} else if(data.isExist==1){
 					$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
 					$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
+					
+					$("#"+form+" select[name='deliveryPerson']").attr("disabled",false);
+					$("#"+form+" select[name='applyState']").attr("disabled",false);
+					$("#"+form+" select[name='cwbOrderState']").attr("disabled",false);
+					$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("disabled",false);
+					$("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").attr("disabled",false);
+					
 					if(!$("#"+form+" select[name='deliveryPerson']").val()){
 						alert("配送员为必填项!");
 						return false;
@@ -134,11 +141,6 @@ function updateExceedSubsidyApplyFun(form,type,page){
 							}
 						}
 					}
-					$("#"+form+" select[name='deliveryPerson']").attr("disabled",false);
-					$("#"+form+" select[name='applyState']").attr("disabled",false);
-					$("#"+form+" select[name='cwbOrderState']").attr("disabled",false);
-					$("#"+form+" input[type='checkbox'][name='isExceedAreaSubsidy']").attr("disabled",false);
-					$("#"+form+" input[type='checkbox'][name='isBigGoodsSubsidy']").attr("disabled",false);
 					//$("#updateForm").submit();
 					$.ajax({
 						type : "POST",
@@ -662,8 +664,14 @@ function deleteExceedSubsidyApply(){
 						<font color="red">*</font>配送员
 					</td>
 					<td>
-						<input type="text" name="deliveryPersonName" readonly="readonly" style="background-color: #DCDCDC" value="${exceedSubsidyApplyVO.deliveryPersonName}">
-						<input type="hidden" name="deliveryPerson" value="${exceedSubsidyApplyVO.deliveryPerson}">
+						<select name="deliveryPerson" disabled="disabled">
+							<option value=""></option>
+							<c:forEach items="${deliveryUserList}" var="user">
+								<c:if test="${exceedSubsidyApplyVO.deliveryPerson==user.userid}">
+									<option value="${user.userid}" selected="selected">${user.realname}</option>
+								</c:if>
+							</c:forEach>
+						</select>
 					</td>
 				</tr>
 				<tr>
@@ -773,8 +781,14 @@ function deleteExceedSubsidyApply(){
 						<font color="red">*</font>配送员
 					</td>
 					<td>
-						<input type="text" name="deliveryPersonName" readonly="readonly" style="background-color: #DCDCDC" value="${exceedSubsidyApplyVO.deliveryPersonName}">
-						<input type="hidden" name="deliveryPerson" value="${exceedSubsidyApplyVO.deliveryPerson}">
+						<select name="deliveryPerson" disabled="disabled">
+							<option value=""></option>
+							<c:forEach items="${deliveryUserList}" var="user">
+								<c:if test="${exceedSubsidyApplyVO.deliveryPerson==user.userid}">
+									<option value="${user.userid}" selected="selected">${user.realname}</option>
+								</c:if>
+							</c:forEach>
+						</select>
 					</td>
 				</tr>
 				<tr>
@@ -926,8 +940,14 @@ function deleteExceedSubsidyApply(){
 						<font color="red">*</font>配送员
 					</td>
 					<td>
-						<input type="text" name="deliveryPersonName" readonly="readonly" style="background-color: #DCDCDC" value="${exceedSubsidyApplyVO.deliveryPersonName}">
-						<input type="hidden" name="deliveryPerson" value="${exceedSubsidyApplyVO.deliveryPerson}">
+						<select name="deliveryPerson" disabled="disabled">
+							<option value=""></option>
+							<c:forEach items="${deliveryUserList}" var="user">
+								<c:if test="${exceedSubsidyApplyVO.deliveryPerson==user.userid}">
+									<option value="${user.userid}" selected="selected">${user.realname}</option>
+								</c:if>
+							</c:forEach>
+						</select>
 					</td>
 				</tr>
 				<tr>
