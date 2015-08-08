@@ -252,7 +252,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		dg=$('#dg').datagrid({    
 			method: "POST",
 		    url:'${pageContext.request.contextPath}/CustomerBillContract/AllBill', 
-		    fit : true,
+		    /* fit : true, */
 			fitColumns : true,
 			border : true,
 			striped:true,
