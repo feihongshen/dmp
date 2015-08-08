@@ -51,6 +51,7 @@ import cn.explink.domain.PaifeiRulePS;
 import cn.explink.domain.PaifeiRuleTH;
 import cn.explink.domain.PaifeiRuleTab;
 import cn.explink.domain.PaifeiRuleZZ;
+import cn.explink.enumutil.ExceedSubsidyApplyStateEnum;
 import cn.explink.enumutil.PaiFeiBuZhuTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleTabEnum;
 import cn.explink.util.StringUtil;
@@ -606,7 +607,7 @@ public class PaiFeiRuleService {
 	private ExpressSetExceedSubsidyApply getExceedSubsidyApplyByCwb(List<ExpressSetExceedSubsidyApply> subsidyApplys, String cwb) {
 		if (subsidyApplys != null) {
 			for (ExpressSetExceedSubsidyApply subsidyApply : subsidyApplys) {
-				if (cwb.equals(subsidyApply.getCwbOrder())) {
+				if (cwb.equals(subsidyApply.getCwbOrder())&&(subsidyApply.getApplyState()==ExceedSubsidyApplyStateEnum.YiShenHe.getValue())) {
 					return subsidyApply;
 				}
 			}
@@ -730,7 +731,7 @@ public class PaiFeiRuleService {
 					areafee=areafee.add(pFarea.getAreafee());
 					if (pFarea.getOverbigflag() == 1) {
 						ExpressSetExceedSubsidyApply subsidy = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwb(co.getCwb());
-						if (subsidy != null) {
+						if ((subsidy != null)&&(subsidy.getApplyState()==ExceedSubsidyApplyStateEnum.YiShenHe.getValue())) {
 							BigDecimal overbigfee = subsidy.getBigGoodsSubsidyAmount();
 							if (overbigfee != null) {
 								areafee=areafee.add(overbigfee);
