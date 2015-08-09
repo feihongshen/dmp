@@ -403,7 +403,7 @@ public class PaiFeiRuleService {
 				if (pFarea.getOverbigflag() == 1) {
 					// 需要调用申请表
 					ExpressSetExceedSubsidyApply subsidy = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwb(co.getCwb());
-					if (subsidy != null) {
+					if ((subsidy != null)&&(subsidy.getApplyState()==ExceedSubsidyApplyStateEnum.YiShenHe.getValue())) {
 						BigDecimal overbigfee = subsidy.getBigGoodsSubsidyAmount();
 						if (overbigfee != null) {
 							fee=fee.add(overbigfee);
@@ -434,7 +434,7 @@ public class PaiFeiRuleService {
 			if (pFoverarea != null) {
 				// 需要掉用申请表中的方法
 				ExpressSetExceedSubsidyApply subsidy = this.exceedSubsidyApplyDAO.getExceedSubsidyApplyByCwb(co.getCwb());
-				if (subsidy != null) {
+				if ((subsidy != null)&&(subsidy.getApplyState()==ExceedSubsidyApplyStateEnum.YiShenHe.getValue())) {
 					BigDecimal overbigfee = subsidy.getExceedAreaSubsidyAmount();
 					if (overbigfee != null) {
 						fee=fee.add(overbigfee);
