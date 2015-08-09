@@ -8184,5 +8184,11 @@ CREATE TABLE `cs_complaint_accept` (
 				ALTER TABLE `cs_complaint_accept` ADD INDEX `accept_no_index` (`accept_no`); 
 				ALTER TABLE `cs_complaint_accept` ADD INDEX `order_index` (`order_no`); 
 			</sql>
-		</changeSet>	
+		</changeSet>
+		<changeSet id="wangqiang-2015-08-09-01" author="wangqiang">
+	   	<sql>
+	   		UPDATE dmp40_function SET functionname = '退货站入库交接单打印',functionurl= 'warehousegroupdetail/backinlist/1?' WHERE id = '505040';
+			insert into dmp40_function  values ('505050', '2', '退货出站打印', '505050', 'warehousegroupdetail/zhandianoutlist/1?', '5050');
+	   </sql>
+	</changeSet>	
 </databaseChangeLog>
