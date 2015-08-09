@@ -8176,5 +8176,13 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `express_ops_diliveryman_paifei_order`   
   				ADD COLUMN `billbatch` VARCHAR(40) NULL  COMMENT '账单批次' AFTER `ordernumber`	   
 	   </sql>
-	</changeSet>	
+	</changeSet>
+	
+		<changeSet id="wangzhiyong-2015-08-09-01" author="wangzhiyong">
+			<sql>
+				ALTER TABLE `cs_complaint_accept` ADD INDEX `accpet_time_index` (`accpet_time`); 
+				ALTER TABLE `cs_complaint_accept` ADD INDEX `accept_no_index` (`accept_no`); 
+				ALTER TABLE `cs_complaint_accept` ADD INDEX `order_index` (`order_no`); 
+			</sql>
+		</changeSet>	
 </databaseChangeLog>
