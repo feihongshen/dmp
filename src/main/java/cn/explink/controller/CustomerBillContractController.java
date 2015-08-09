@@ -104,6 +104,7 @@ public class CustomerBillContractController {
 				List<CustomerBillContract> cbclist=null;
 				long dataCount=0; //数据数量默认为0
 				if(jsonStr!=null&&!jsonStr.equals("")){  
+					//传过来的json对象
 				JSONObject jsonStu = JSONObject.fromObject(jsonStr);
 				  CustomerBillContractFindConditionVO cccv=(CustomerBillContractFindConditionVO) JSONObject.toBean(jsonStu, CustomerBillContractFindConditionVO.class);
 				  //根据传过来的查询条件查找符合条件的数据
@@ -123,6 +124,7 @@ public class CustomerBillContractController {
 					cbclist=customerbillcontractservice.getCustomerBillContractBySelect(cccv.getBillBatches(),cbcomap.get("billState"),crestartdate,creenddate,cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"),cccv.getCondition().equals("") ? "bill_batches":cccv.getCondition(),cccv.getSequence().equals("") ? "ASC" :cccv.getSequence(),start,number);
 					dataCount=customerbillcontractservice.findCustomerBillContractCount(cccv.getBillBatches(),cbcomap.get("billState"),crestartdate,creenddate,cccv.getVerificationstratdate(),cccv.getVerificationenddate(),cbcomap.get("customerId"),cbcomap.get("cwbOrderType"));				
 				}else{
+					//下面是没有查询条件时默认查询所有
 					cbclist=customerbillcontractdao.dateAllbillBatche(start,number);
 					dataCount=customerbillcontractdao.dateAllbillCount();
 				}
@@ -320,7 +322,7 @@ public class CustomerBillContractController {
 
 				//通过客户id查找该客户对象
 				Customer customer=customerdao.getCustomerById(customerid);
-				
+				//如果派费规则为0，则没有关联派费账单
 				if(customer.getPfruleid()==0){
 					return null;
 				}
@@ -379,7 +381,7 @@ public class CustomerBillContractController {
 							col=cwbdao.getCwbOrderByFanKuiDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count);
 						}																			
 				}	
-				long correspondingCwbNum=col.size();
+				long correspondingCwbNum=col.size(); //对应的订单数量
 				String dateRange=startdate+"至"+enddate;   //日期范围
 				String BillBatches=customerbillcontractservice.getBillBatches(); //自动生成批次号
 				long initbillState= BillStateEnum.WeiShenHe.getValue();  //默认未审核
@@ -390,7 +392,7 @@ public class CustomerBillContractController {
 				BigDecimal totalCharge=BigDecimal.ZERO; //派费总计	
 				
 				
-		
+			//去派费规则里面取值	
 			Map<String,BigDecimal>	map=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, col);
 			Map<String,BigDecimal>	map1=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, col);
 			Map<String,BigDecimal>	map2=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, col);
