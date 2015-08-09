@@ -359,7 +359,7 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 	  			 	dataType:'json',
 	  			 	success:function(data){
 	  			 		if(data.success==0){
-	  			 		$.messager.confirm("操作提示", "该客户已经存在"+data.successdateType+"为"+data.successdata+"的派费账单,是否继续创建批次？", function (r) { 
+	  			 		$.messager.confirm("操作提示", "该客户已经有订单存在于 "+data.successdateType+"为"+data.successdata+"的派费账单之中,是否继续创建批次？", function (r) { 
 	  			            if (r) { 
 	  			            	$('#dlg').dialog('close');
 	  			            	saveBill();  	
