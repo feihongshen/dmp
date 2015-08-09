@@ -79,8 +79,8 @@ if(showposandqita=="yes"){
 initEditArray[7]="<%=deliverystate.getPosremark()%>,posremark";
 initEditArray[8]="<%=deliverystate.getCheckfee()%>,receivedfeecheque";
 initEditArray[9]="<%=deliverystate.getOtherfee()%>,receivedfeeother";
-initEditArray[10]="<%=deliverystate.getCheckremark()%>,checkremark";
-initEditArray[11]="<%=deliverystate.getDeliverstateremark()%>,deliverstateremark";
+initEditArray[10]="<%=deliverystate.getCheckremark().replaceAll(",", "，")%>,checkremark";
+initEditArray[11]="<%=deliverystate.getDeliverstateremark().replaceAll(",", "，") %>,deliverstateremark";
 initEditArray[12]="<%=deliverystate.getReceivedfee()%>,infactfee";
 initEditArray[13]="<%=deliverystate.getInfactfare()%>,infactfare";
 if(parseInt($("#isOpenFlag").val())!=0){
@@ -92,7 +92,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-	<h1><div id="close_box" onclick="closeBox()"></div>修改反馈结果</h1>
+	<h1><div id="close_box" onclick="closeBox()"></div>修改反
 	<div id="box_form"  style="overflow:auto;width:400px">
 	<form id="deliverystate_save_Form" name="deliverystate_save_Form" 
 			 onSubmit="if(check_deliveystate(<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
