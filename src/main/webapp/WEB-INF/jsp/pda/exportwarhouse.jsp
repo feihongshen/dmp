@@ -867,7 +867,7 @@ function chuku(){
 						%>
 					<p style="display: none;">
 							<span>包号：</span><input type="text" class="saomiao_inputtxt2" name="baleno" id="baleno"
-								onKeyDown="if(event.keyCode==13&&$(this).val().length>0){if($('#branchid').val()==0){alert('请选择下一站');return;}$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}" />
+								onKeyDown="if(event.keyCode==13&&$(this).val().length>0){if($(this).val().indexOf('@zd_')>-1){$('#branchid').val($(this).val().split('_')[1]);if($('#branchid').val()!=$(this).val().split('_')[1]){$('#msg').html('         （异常扫描）扫描站点失败');$('#branchid').val(0);}else{$('#msg').html('');}$(this).val('');return false;}if($('#branchid').val()==0){alert('请选择下一站');return;}$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}" />
 							<span>&nbsp;</span> <input type="button" id="randomCreate" value="随机生成" class="button"
 								onclick="ranCreate();" /> <input type="button" id="handCreate" value="手工输入" class="button"
 								onclick="hanCreate();" />
