@@ -211,12 +211,29 @@ $(function(){
 });
 
 $("#subButton").click(function(){
-		var trArray = $("tr[gcaid='0']");
+	var shenehTypeCheckbox=$("input[type='checkbox']");
+	var checkedArray=[];
+	var i=0;
+	$.each(shenehTypeCheckbox,function (i,a){
+		if($(a).attr("checked")){
+			checkedArray[i]=$(a).val();
+			i=i+1;
+		}
+	});
+	var subTrStr = "";
+	for(var i=0;i<checkedArray.length;i++){
+		var trArray = $("tr[gcaid='0'][keyName="+checkedArray[i]+"]");
+		for(var j=0;j<trArray.length;j++){
+			subTrStr = subTrStr+"'"+$("tr[gcaid='0'][keyName="+checkedArray[i]+"]").eq(j).attr("id")+"',";
+		}
+	}
+	subTrStr = subTrStr.substring(0, subTrStr.length-1); 
+		/* var trArray = $("tr[gcaid='0']");
 		var subTrStr = "";
 		for(var i=0;i<trArray.length;i++){
 			subTrStr = subTrStr+"'"+$("tr[gcaid='0']").eq(i).attr("id")+"',";
 		}
-		subTrStr = subTrStr.substring(0, subTrStr.length-1);
+		subTrStr = subTrStr.substring(0, subTrStr.length-1); */
 		
 		trArray = $("tr[keyName='weifankui']");
 		var noSubTrStr = "";
