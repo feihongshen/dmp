@@ -580,12 +580,12 @@ public class PDAController {
 
 		List<CwbDetailView> yidaohuoViewlist = this.getcwbDetail(yidaohuolist, customerList, showCustomerjSONArray, branchList, 2);
 
-		
+
 		//揽件未到货list
 		List<CwbOrder> lanjianweidaohuolist = this.cwbDAO.getLanJianWeiDaoZhanByBranchidForList(this.getSessionUser().getBranchid(), 1);
 		List<CwbDetailView> lanjianweidaohuoViewlist = this.getcwbDetail(lanjianweidaohuolist, this.customerDAO.getAllCustomers(), showCustomerjSONArray, branchList, 1);
 
-		
+
 		model.addAttribute("lanjianweidaohuolist", lanjianweidaohuoViewlist);
 		model.addAttribute("jinriweidaohuolist", jinriweidaohuoViewlist);
 		model.addAttribute("historyweidaohuolist", historyweidaohuoViewlist);
@@ -1119,13 +1119,17 @@ public class PDAController {
 				removeList.add(b);
 			}
 		}
+		List<CwbOrder> dzzlist=this.cwbDAO.getDaizhongzhuan(this.getSessionUser().getBranchid());
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
+		List<Customer> customerList=this.customerDAO.getAllCustomers();
 		List<Reason> reasonlist = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ChangeTrains.getValue());
 		model.addAttribute("reasonlist", reasonlist);
 		model.addAttribute("branchlist", removeList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
+		model.addAttribute("dzzlist", dzzlist);
+		model.addAttribute("customerList", customerList);
 		model.addAttribute("ck_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.ChuKuBuYunXu.getText()));
 		model.addAttribute("ckfb_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.ChuKuFengBao.getText()));
 		return "pda/branchchangeexport";
@@ -1591,11 +1595,11 @@ public class PDAController {
 		// 今日待领货
 //		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
 //				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
-		
+
 		//OXO: 过滤JIT类型的订单统计 by jinghui.pan on 20150804
-		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(),getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(),this.getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
-		
+
 		// orderFlowDAO.getOrderFlowLingHuoList(getSessionUser().getBranchid(),
 		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
 		// DateTimeUtil.getCurrentDayZeroTime(), "");
@@ -1614,9 +1618,9 @@ public class PDAController {
 //		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
 //				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
 		//OXO: 过滤JIT类型的订单统计 by jinghui.pan on 20150804
-		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
+		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), this.getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
-		
+
 		// cwbDAO.getHistoryyWeiLingDaohuobyBranchid(getSessionUser().getBranchid(),getStrings(todaydaohuocwbs));
 
 		if (historycwbs.size() > 0) {
@@ -4730,7 +4734,7 @@ public class PDAController {
 				}else{
 					cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, co.getNextbranchid());
 				}
-				
+
 			}else{
 				if ((op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) || (op.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue())) {
 					long branchid = 0;
@@ -4741,7 +4745,7 @@ public class PDAController {
 					}
 					cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, branchid);
 				} else if ((op.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) || (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {
-					if (op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()&&co.getCwbstate()!=CwbStateEnum.TuiHuo.getValue()) {
+					if ((op.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())&&(co.getCwbstate()!=CwbStateEnum.TuiHuo.getValue())) {
 						Branch branch = this.branchDAO.getBranchByBranchid(op.getNextbranchid());
 						if ((branch == null) || (branch.getSitetype() != BranchEnum.ZhongZhuan.getValue())) {
 							throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
@@ -4767,7 +4771,7 @@ public class PDAController {
 					if(countnull==0){
 						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxutuihuoruku);
 					}
-					
+
 					long count3 = this.orderBackCheckDAO.getOrderbackResult(cwb,2);
 					if(count3!=0){
 						throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Shenheweizhandianpeisong);
@@ -5049,7 +5053,7 @@ public class PDAController {
 		}
 		return explinkResponse;
 	}
-	
+
 	@RequestMapping("/cwbscancwbbranchnew1")
 	public @ResponseBody
 	ExplinkResponse cwbbranchfinishchangeexportnew1(HttpServletRequest request) {
@@ -5457,7 +5461,7 @@ public class PDAController {
 //				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
 
 		//OXO: 过滤JIT类型的订单统计 by jinghui.pan on 20150804
-		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(), getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
+		List<String> todaydaohuocwbs = this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(), this.getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
 
 		// 今日滞留订单数
@@ -5479,9 +5483,9 @@ public class PDAController {
 		// cwbDAO.getHistoryyWeiLingDaohuobyBranchid(getSessionUser().getBranchid(),getStrings(todaydaohuocwbs));
 //		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
 //				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
-		
+
 		//OXO: 过滤JIT类型的订单统计 by jinghui.pan on 20150804
-		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
+		List<String> historycwbs = this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(), this.getCwbOrderTypeIdsWithoutJIT(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
 				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), DateTimeUtil.getCurrentDayZeroTime());
 
 		if (historycwbs.size() > 0) {
@@ -5597,11 +5601,13 @@ public class PDAController {
 	/*	if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 			cwbstate = CwbStateEnum.TuiHuo.getValue();
 		}*/
-
+		long daizhongzhuan=0;
 		obj.put("branch", b);
+		daizhongzhuan=this.cwbDAO.getDaizhongzhuanNum(branchid);
 		List<Map<String, Object>> weichukudata = this.cwbDAO.getChukubyBranchid(branchid, nextbranchid, cwbstate);
 		obj.put("weichukucount", weichukudata.get(0).get("count"));
 		obj.put("weichukusum", weichukudata.get(0).get("sum"));
+		obj.put("daizhongzhuan", daizhongzhuan);
 
 		obj.put("yichukucount", this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNextCount(branchid, nextbranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue()));
 
@@ -6099,8 +6105,8 @@ public class PDAController {
 
 		//揽件未到站数量统计
 		long lanjianweidaozhancount = this.cwbDAO.countLanJianWeiDaoZhanByBranch(branchid);//揽件未到站 货物数量统计
-		
-		
+
+
 		obj.put("branch", b);
 		obj.put("jinriweidaohuocount", jinriweidaohuocount);
 		obj.put("historyweidaohuocount", historyweidaohuocount);
@@ -8063,7 +8069,7 @@ public class PDAController {
 			// 查询出数据
 			String sqlstr = "";
 			if (type.length() > 0) {
-				
+
 				if (type.equals("weichuku")) {
 					if (extype.equals("wall") || extype.isEmpty()) {
 						sqlstr=this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), 0);
@@ -8294,7 +8300,7 @@ public class PDAController {
 						todayzhiliulist = this.cwbDAO.getTodayWeiLingZhiliuCwbsByWhereList(DeliveryStateEnum.FenZhanZhiLiu.getValue(), this.getSessionUser().getBranchid(),
 								this.getStrings(todayzhiliucwbs), deliverid);
 					}
-					
+
 					//今日待中转
 					List<String> todaydaizhongzhuanlist = new ArrayList<String>();
 					List<String>  todayAppZhongZhuanList=this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanList(DateTimeUtil.getCurrentDayZeroTime(), "", 2,this.getSessionUser().getBranchid());
@@ -8302,8 +8308,8 @@ public class PDAController {
 						todaydaizhongzhuanlist = this.cwbDAO.getTodayWeiLingZhiliuCwbsByWhereList(DeliveryStateEnum.DaiZhongZhuan.getValue(), this.getSessionUser().getBranchid(), this.getStrings(todayAppZhongZhuanList),
 								deliverid);
 					}
-					
-					
+
+
 					//今日退货审核不通过统计
 					List<String> todayjushoulist = new ArrayList<String>();
 					List<String>  todayJuShouCwbs=this.orderBackCheckDAO.getOrderBackChecksCwbs( this.getSessionUser().getBranchid(), DateTimeUtil.getCurrentDayZeroTime(), "");
@@ -8312,19 +8318,19 @@ public class PDAController {
 						todayjushoulist = this.cwbDAO.getTodayWeiLingJuShouByWhereList(deliverystates, this.getSessionUser().getBranchid(), this.getStrings(todayJuShouCwbs),
 								deliverid);
 					}
-					
-					
-					
-					
+
+
+
+
 					////////////////////////////////////////////////
-					
-					
+
+
 					List<String> todaycwbslist = new ArrayList<String>();
 					todaycwbslist.addAll(todaydaohuolist);
 					todaycwbslist.addAll(todayzhiliulist);
 					todaycwbslist.addAll(todaydaizhongzhuanlist);
 					todaycwbslist.addAll(todayjushoulist);
-					
+
 					StringBuffer str = new StringBuffer();
 					String cwbs = "";
 					if ((todaycwbslist != null) && (todaycwbslist.size() > 0)) {
@@ -8839,10 +8845,10 @@ public class PDAController {
 				view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") == null ? "" : cwbMap.get("InSitetime")));
 				view.setPickGoodstime(cwbMap == null ? "" : (cwbMap.get("PickGoodstime") == null ? "" : cwbMap.get("PickGoodstime")));
 				view.setOutstoreroomtime(cwbMap == null ? "" : (cwbMap.get("Outstoreroomtime") == null ? "" : cwbMap.get("Outstoreroomtime")));
-				
+
 				view.setCwbordertype(CwbOrderTypeIdEnum.getTextByValue(wco.getCwbordertypeid()));
 				view.setPickaddress(wco.getRemark4());
-				
+
 				cwbViewlist.add(view);
 			}
 		}
@@ -9199,7 +9205,7 @@ public class PDAController {
 		}
 		return "";
 	}
-	
+
 	/**
 	 * 分站到货揽件未到货list
 	 *
@@ -9212,7 +9218,7 @@ public class PDAController {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		List<CwbOrder> lanjianweidaohuolist = new ArrayList<CwbOrder>();
 		lanjianweidaohuolist = this.cwbDAO.getLanJianWeiDaoZhanByBranchidForList(this.getSessionUser().getBranchid(), page);
-		
+
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
@@ -9223,19 +9229,174 @@ public class PDAController {
 		return lanjianweidaohuoViewlist;
 
 	}
-	
+
 	private String getCwbOrderTypeIdsWithoutJIT(){
 		String typdIds = "";
-		
+
 		for(CwbOrderTypeIdEnum cwbOrderTypeIdEnum: CwbOrderTypeIdEnum.values()){
 			if(!cwbOrderTypeIdEnum.equals(CwbOrderTypeIdEnum.OXO_JIT)){
 				typdIds += "," + cwbOrderTypeIdEnum.getValue() ;
 			}
 		}
-		if(StringUtils.isNotBlank(typdIds)){
+		if(org.apache.commons.lang3.StringUtils.isNotBlank(typdIds)){
 			typdIds = typdIds.substring(1); //remove the last comma
 		}
 		return typdIds;
+	}
+	@RequestMapping("/daizhongzhuanExport")
+	public void daizhongzhuanExport(HttpServletResponse response, HttpServletRequest request) {
+		String[] cloumnName1 = {}; // 导出的列名
+		String[] cloumnName2 = {}; // 导出的英文列名
+		String[] cloumnName3 = {}; // 导出的数据类型
+
+		List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs("0");
+		cloumnName1 = new String[listSetExportField.size()];
+		cloumnName2 = new String[listSetExportField.size()];
+		cloumnName3 = new String[listSetExportField.size()];
+		for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
+			cloumnName1[k] = listSetExportField.get(j).getFieldname();
+			cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
+			cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
+		}
+		final String[] cloumnName4 = cloumnName1;
+		final String[] cloumnName5 = cloumnName2;
+		final String[] cloumnName6 = cloumnName3;
+		String sheetName = "订单信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
+
+		try {
+			// 查询出数据
+			String sqlstr = this.cwbDAO.getDaizhongzhuanSql(this.getSessionUser().getBranchid());
+
+			if (sqlstr.length() == 0) {
+				return;
+			}
+			final String sql = sqlstr;
+
+			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+				@Override
+				public void fillData(final Sheet sheet, final CellStyle style) {
+					final List<User> uList = PDAController.this.userDAO.getAllUser();
+					final Map<Long, Customer> cMap = PDAController.this.customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = PDAController.this.branchDAO.getAllBranches();
+					final List<Common> commonList = PDAController.this.commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = PDAController.this.customWareHouseDAO.getAllCustomWareHouse();
+					List<Remark> remarkList = PDAController.this.remarkDAO.getRemarkByCwbs("");
+					final Map<String, Map<String, String>> remarkMap = PDAController.this.exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = PDAController.this.reasonDAO.getAllReason();
+					PDAController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+						private int count = 0;
+						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
+						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
+
+						public void processRow(ResultSet rs) throws SQLException {
+							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
+							this.recordbatch.add(mapRow);
+							this.count++;
+							if ((this.count % 100) == 0) {
+								this.writeBatch();
+							}
+						}
+
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
+								Map<String, String> complaintMap) throws SQLException {
+							Row row = sheet.createRow(rownum + 1);
+							row.setHeightInPoints(15);
+							for (int i = 0; i < cloumnName4.length; i++) {
+								Cell cell = row.createCell((short) i);
+								cell.setCellStyle(style);
+								// sheet.setColumnWidth(i, (short) (5000));
+								// //设置列宽
+								Object a = PDAController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
+										reasonList, cwbspayupidMap, complaintMap);
+								if (cloumnName6[i].equals("double")) {
+									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
+								} else {
+									cell.setCellValue(a == null ? "" : a.toString());
+								}
+							}
+						}
+
+						@Override
+						public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+							while (rs.next()) {
+								this.processRow(rs);
+							}
+							this.writeBatch();
+							return null;
+						}
+
+						public void writeBatch() throws SQLException {
+							if (this.recordbatch.size() > 0) {
+								List<String> cwbs = new ArrayList<String>();
+								for (Map<String, Object> mapRow : this.recordbatch) {
+									cwbs.add(mapRow.get("cwb").toString());
+								}
+								Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = this.getComplaintMap(cwbs);
+								Map<String, Map<String, String>> orderflowList = PDAController.this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = this.recordbatch.size();
+								for (int i = 0; i < size; i++) {
+									String cwb = this.recordbatch.get(i).get("cwb").toString();
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
+											complaintMap);
+								}
+								this.recordbatch.clear();
+							}
+						}
+
+						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
+							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
+							for (TuihuoRecord tuihuoRecord : PDAController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
+							}
+							return map;
+						}
+
+						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
+							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
+							for (DeliveryState deliveryState : PDAController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+								map.put(deliveryState.getCwb(), deliveryState);
+							}
+							return map;
+						}
+
+						private Map<String, String> getComplaintMap(List<String> cwbs) {
+							Map<String, String> complaintMap = new HashMap<String, String>();
+							for (Complaint complaint : PDAController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+								complaintMap.put(complaint.getCwb(), complaint.getContent());
+							}
+							return complaintMap;
+						}
+
+						private Map<String, String> getcwbspayupidMap(List<String> cwbs) {
+							Map<String, String> cwbspayupidMap = new HashMap<String, String>();
+							/*
+							 * for(DeliveryState deliveryState:deliveryStateDAO.
+							 * getActiveDeliveryStateByCwbs(cwbs)){ String
+							 * ispayup = "否"; GotoClassAuditing goclass =
+							 * gotoClassAuditingDAO
+							 * .getGotoClassAuditingByGcaid(deliveryState
+							 * .getGcaid());
+							 *
+							 * if(goclass!=null&&goclass.getPayupid()!=0){
+							 * ispayup = "是"; }
+							 * cwbspayupidMap.put(deliveryState.getCwb(),
+							 * ispayup); }
+							 */
+							return cwbspayupidMap;
+						}
+					});
+				}
+			};
+			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
