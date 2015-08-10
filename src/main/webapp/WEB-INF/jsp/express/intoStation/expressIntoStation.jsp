@@ -50,25 +50,25 @@ $(function(){
 			
 			<table style="width: 100%">
 			    <tr>
-			    	<td align="center"><font size="2"><span>状态</span></font></td>
+			    	<td align="center"><font size="2"><span>&nbsp;</span></font></td>
 			    	<td>
-				    	<select id="processState" name="processState" class="select1" onchange="controlDisplayBtn(this);">
+				    	<font size="2">状态:</font><select id="processState" name="processState" class="select1" onchange="controlDisplayBtn(this);">
 				    		<option value="1">未处理</option>
 				    		<option value="2">已处理</option>
 				    	</select>
 			    	</td>
-			    	<td align="center"><font size="2"><span>小件员</span></font></td>
+			    	<td align="center"><font size="2"><span>&nbsp;</span></font></td>
 			    	<td>
-			    		<select id="deliveryId" name="deliveryId" class="select1" ><!-- onchange="controlBtnEnable(this);" -->
+			    		<font size="2">小件员:</font><select id="deliveryId" name="deliveryId" class="select1" ><!-- onchange="controlBtnEnable(this);" -->
 			    		<option value="-1"></option>
 						<%for(User u : uList){ %>
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected='selected'<%} %>    ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
 			    	</td>
-			    	<td align="center"><font size="2"><span>付款方式</span></font></td>
+			    	<td align="center"><font size="2"><span>&nbsp;</span></font></td>
 			    	<td>
-			    		<select id="payType" name="payType" class="select1">
+			    		<font size="2">付款方式:</font><select id="payType" name="payType" class="select1">
 			    			<option value="1">现结</option>
 				    		<option value="2">月结</option>
 				    		<option value="3">到付</option>
@@ -204,7 +204,7 @@ $(function(){
 <div class="iframe_bottom"> 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr>
-			<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
+			<td height="30" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 15px;">
 			<a href="javascript:$('#queryCondition').attr('action','${pageContext.request.contextPath}/expressIntoStation/expressQueryList/1');$('#queryCondition').submit();" >第一页</a>　
 			<a href="javascript:$('#queryCondition').attr('action','${pageContext.request.contextPath}/expressIntoStation/expressQueryList/${page_obj.previous<1 ? 1 : page_obj.previous }');$('#queryCondition').submit();">上一页</a>　
 			<a href="javascript:$('#queryCondition').attr('action','${pageContext.request.contextPath}/expressIntoStation/expressQueryList/${page_obj.next<1 ? 1 : page_obj.next }');$('#queryCondition').submit();" >下一页</a>　
