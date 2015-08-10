@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PunishInsideOperationinfo;
+import cn.explink.domain.PunishInsideReviseAndReply;
+import cn.explink.util.DateTimeUtil;
 
 @Component
 public class PunishInsideOperationinfoDao {
@@ -64,6 +66,25 @@ public class PunishInsideOperationinfoDao {
 				ps.setString(4, punishInsideOperationinfo.getOperationdescribe());
 				ps.setLong(5, punishInsideOperationinfo.getShensutype());
 				ps.setString(6, punishInsideOperationinfo.getShensudate());
+			}
+		});
+	}
+	/**
+	 * 新增一条修改记录
+	 * @param punishInsideReviseAndReply
+	 */
+	public void insertIntoOPerationwithRevise(final PunishInsideReviseAndReply punishInsideReviseAndReply){
+		String sql="insert into express_ops_punishInside_operationinfo (detailid,operationuserid,operationtype,operationdescribe,shensutype,shensudate) values(?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
+			
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setLong(1,punishInsideReviseAndReply.getId() );
+				ps.setLong(2,punishInsideReviseAndReply.getDutynameAdd() );
+				ps.setLong(3,5);//5为修改的类型
+				ps.setString(4,punishInsideReviseAndReply.getDescribe() );
+				ps.setLong(5, -1);
+				ps.setString(6, DateTimeUtil.getNowTime());
 			}
 		});
 	}

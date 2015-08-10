@@ -71,6 +71,7 @@ import cn.explink.enumutil.ExpressSysMonitorEnum;
 import cn.explink.service.AccountDeductRecordService;
 import cn.explink.service.AppearWindowService;
 import cn.explink.service.FloworderLogService;
+import cn.explink.service.PunishInsideService;
 
 @Component
 public class JobUtil {
@@ -201,6 +202,8 @@ public class JobUtil {
 	VipShopOXOGetPickStateService vipShopOXOGetPickStateService;
 	@Autowired
 	VipShopOXOJITFeedbackService vipShopOXOJITFeedbackService;
+	@Autowired
+	PunishInsideService punishInsideService;
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 
@@ -229,6 +232,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXO", 0);
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
+		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 
 	}
 
@@ -258,6 +262,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXO", 0);
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
+		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1145,5 +1150,33 @@ public class JobUtil {
 		this.logger.info("执行了获取vipshop_OXOJIT_feedback订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 	
+	
+	public void sendPunishInsideAutoShenheTask(){
+		System.out.println("-----sendPunishInsideAutoShenheTask启动执行");
+//		String sysValue = this.getSysOpenValue();
+//		if ("yes".equals(sysValue)) {
+//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+//			return;
+//		}
+
+		if (JobUtil.threadMap.get("punishinside_autoshenhe") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环punishinside_autoshenhe");
+			return;
+		}
+		JobUtil.threadMap.put("punishinside_autoshenhe", 1);
+		long starttime = 0;
+		long endtime = 0;
+		try{
+			starttime = System.currentTimeMillis();
+			this.punishInsideService.automaticShenheChengli();
+			endtime = System.currentTimeMillis();
+
+		}catch(Exception e){
+			this.logger.error("执行punishinside_autoshenhe定时器异常", e);
+		}finally{
+			JobUtil.threadMap.put("punishinside_autoshenhe", 0);
+		}
+		this.logger.info("执行了获取punishinside_autoshenhe订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
 	
 }

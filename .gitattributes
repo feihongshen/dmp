@@ -1249,6 +1249,7 @@ src/main/java/cn/explink/domain/PrintcwbDetail.java -text
 src/main/java/cn/explink/domain/Punish.java -text
 src/main/java/cn/explink/domain/PunishGongdanView.java -text
 src/main/java/cn/explink/domain/PunishInsideOperationinfo.java -text
+src/main/java/cn/explink/domain/PunishInsideReviseAndReply.java -text
 src/main/java/cn/explink/domain/PunishType.java -text
 src/main/java/cn/explink/domain/Reason.java -text
 src/main/java/cn/explink/domain/Remark.java -text

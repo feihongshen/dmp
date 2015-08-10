@@ -31,12 +31,38 @@ public class PenalizeInsideView{
 	private String shenhedate;
 	private String lastqitapunishprice;
 	private String lastgoodpunishprice;
+	private String creategoodpunishprice;
+	private String createqitapunishprice;
+	private long dutybrachid;
+	private long dutypersonid;
 	
 	
 	
 	
-	
-	
+	public long getDutybrachid() {
+		return dutybrachid;
+	}
+	public void setDutybrachid(long dutybrachid) {
+		this.dutybrachid = dutybrachid;
+	}
+	public long getDutypersonid() {
+		return dutypersonid;
+	}
+	public void setDutypersonid(long dutypersonid) {
+		this.dutypersonid = dutypersonid;
+	}
+	public String getCreategoodpunishprice() {
+		return creategoodpunishprice;
+	}
+	public void setCreategoodpunishprice(String creategoodpunishprice) {
+		this.creategoodpunishprice = creategoodpunishprice;
+	}
+	public String getCreateqitapunishprice() {
+		return createqitapunishprice;
+	}
+	public void setCreateqitapunishprice(String createqitapunishprice) {
+		this.createqitapunishprice = createqitapunishprice;
+	}
 	public String getLastqitapunishprice() {
 		return lastqitapunishprice;
 	}

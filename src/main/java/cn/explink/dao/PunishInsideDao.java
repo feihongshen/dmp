@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,8 +20,10 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.PenalizeInsideFilepath;
 import cn.explink.domain.PenalizeInsideShenhe;
+import cn.explink.domain.PunishInsideReviseAndReply;
 import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.service.PunishInsideService;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 
 @Component
@@ -81,6 +84,27 @@ public class PunishInsideDao {
 			penalizeInside.setPunishsmallsortname(punishInsideService.getSortname(Integer.parseInt(rs.getLong("punishsmallsort")+"")));
 			penalizeInside.setLastgoodpunishprice(rs.getBigDecimal("lastgoodpunishprice"));
 			penalizeInside.setLastqitapunishprice(rs.getBigDecimal("lastqitapunishprice"));
+			penalizeInside.setCreategoodpunishprice(rs.getBigDecimal("creategoodpunishprice"));
+			penalizeInside.setCreateqitapunishprice(rs.getBigDecimal("createqitapunishprice"));
+			return penalizeInside;
+		}
+
+	}
+	
+	private final class PenalizeInsideAutoShenheRowMapper implements RowMapper<PenalizeInside>{
+		@Override
+		public PenalizeInside mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			PenalizeInside penalizeInside=new PenalizeInside();
+			penalizeInside.setDutybranchid(rs.getLong("dutybranchid"));
+			penalizeInside.setDutypersonid(rs.getLong("dutypersonid"));
+			penalizeInside.setCreDate(rs.getString("creDate"));
+			penalizeInside.setId(rs.getLong("id"));
+			penalizeInside.setPunishInsideprice(rs.getBigDecimal("punishInsideprice"));
+			penalizeInside.setCreategoodpunishprice(rs.getBigDecimal("creategoodpunishprice"));
+			penalizeInside.setCreateqitapunishprice(rs.getBigDecimal("createqitapunishprice"));
+			penalizeInside.setPunishInsideprice(rs.getBigDecimal("punishInsideprice"));
+			penalizeInside.setPunishNo(rs.getString("punishNo"));
 			return penalizeInside;
 		}
 
@@ -419,6 +443,68 @@ public class PunishInsideDao {
 					ps.setLong(6, id);
 			}
 		});
+	}
+	
+	
+	public List<PenalizeInside> getWeiShenheData(){
+		String sql="select * from express_ops_punishInside_detail where punishcwbstate IN(1,2)";
+		try {
+			return this.jdbcTemplate.query(sql,new PenalizeInsideAutoShenheRowMapper() );
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ArrayList<PenalizeInside>();
+		}
+	}
+	/**
+	 * 系统在超过设置的期限内对对内扣罚单进行自动审核为扣罚成立
+	 * @param penalizeInsides
+	 */
+	public void autoShenheWeiKouFaChengLi(final List<PenalizeInside> penalizeInsides){
+		String sql="update express_ops_punishInside_detail set shenhepunishprice=?,shenhetype=?,shenhedescribe=?,shenheuserid=?,shenhedate=?,lastgoodpunishprice=?,lastqitapunishprice=?,punishcwbstate=? where id=?";
+		this.jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				// TODO Auto-generated method stub
+				ps.setBigDecimal(1, penalizeInsides.get(i).getPunishInsideprice());
+				ps.setLong(2, 1);
+				ps.setString(3, "系统自动审核为扣罚成立");
+				ps.setLong(4, -2);
+				ps.setString(5, DateTimeUtil.getNowTime());
+				ps.setBigDecimal(6, penalizeInsides.get(i).getCreategoodpunishprice());
+				ps.setBigDecimal(7, penalizeInsides.get(i).getCreateqitapunishprice());
+				ps.setLong(8, 3);
+				ps.setLong(9, penalizeInsides.get(i).getId());
+			}
+			
+			@Override
+			public int getBatchSize() {
+				// TODO Auto-generated method stub
+				return penalizeInsides.size();
+			}
+		});
+	}
+	
+	/**
+	 * 修改扣罚金额与扣罚责任信息（包括责任站点与责任人）
+	 * @param punishInsideReviseAndReply
+	 */
+	public void updatekoufaPriceAndDutyInfo(final PunishInsideReviseAndReply punishInsideReviseAndReply){
+		String sql="update express_ops_punishInside_detail set creategoodpunishprice=?,createqitapunishprice=?,punishInsideprice=?,dutybranchid=?,dutypersonid=? where id=?";
+		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
+			
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setBigDecimal(1, punishInsideReviseAndReply.getRevisegoodprice());
+				ps.setBigDecimal(2, punishInsideReviseAndReply.getReviseqitaprice());
+				ps.setBigDecimal(3, punishInsideReviseAndReply.getKoufajine());
+				ps.setLong(4, punishInsideReviseAndReply.getDutybranchid());
+				ps.setLong(5, punishInsideReviseAndReply.getDutynameAdd());
+				ps.setLong(6, punishInsideReviseAndReply.getId());
+			}
+		});
+		
 	}
 	
 }

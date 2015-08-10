@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.controller.AbnormalPunishView;
@@ -44,6 +45,7 @@ import cn.explink.domain.PenalizeInsideShenhe;
 import cn.explink.domain.PenalizeType;
 import cn.explink.domain.PunishGongdanView;
 import cn.explink.domain.PunishInsideOperationinfo;
+import cn.explink.domain.PunishInsideReviseAndReply;
 import cn.explink.domain.Reason;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
@@ -88,6 +90,7 @@ public class PunishInsideService {
 	@Autowired
 	PunishInsideOperationinfoDao punishInsideOperationinfoDao;
 	public static final String DUINEIKOUFASHIXIAO="punishinsideshixiao";
+	private static final String PUNISHINSIDEZIDONGSHENHE="punishinsidezidongshenheshixiao";
 	private static final String ZHAOHUI="找回";
 	private static final String WEIZHAOHUI="未找回";
 	private static final String WENTICHENGLI="问题成立";
@@ -248,6 +251,10 @@ public class PunishInsideService {
 			penalizeInsideView.setShensudate(penalizeInside.getShensudate());
 			penalizeInsideView.setLastqitapunishprice(String.valueOf(penalizeInside.getLastqitapunishprice()));
 			penalizeInsideView.setLastgoodpunishprice(String.valueOf(penalizeInside.getLastgoodpunishprice()));
+			penalizeInsideView.setCreategoodpunishprice(String.valueOf(penalizeInside.getCreategoodpunishprice()));
+			penalizeInsideView.setCreateqitapunishprice(String.valueOf(penalizeInside.getCreateqitapunishprice()));
+			penalizeInsideView.setDutybrachid(penalizeInside.getDutybranchid());
+			penalizeInsideView.setDutypersonid(penalizeInside.getDutypersonid());
 			return penalizeInsideView;
 		}
 		//对内扣罚审核需要的数据
@@ -688,5 +695,68 @@ public class PunishInsideService {
 				userMap.put(user.getUserid(), user.getRealname());
 			}
 			return userMap;
+		}
+		/**
+		 * 定时器修改满足期限条件的对内扣罚单进行自动审核为扣罚成立
+		 */
+		@Transactional
+		public void automaticShenheChengli(){
+			List<PenalizeInside> penalizeInsides=punishInsideDao.getWeiShenheData();
+			if (penalizeInsides==null) {
+				this.logger.info("数据库中不存在非审核订单，不需要进行对内扣罚自动审核");
+			}else{
+				List<PenalizeInside> insides=this.isOrnotAutoShenhe(penalizeInsides);
+				if (insides.size()==0) {
+					this.logger.error("对内扣罚暂时没有要自动修改为扣罚成立的订单");
+				}else{
+					punishInsideDao.autoShenheWeiKouFaChengLi(insides);
+				}
+				
+			}
+			
+		}
+		/**
+		 * 获得自动审核的对内扣罚单进行自动扣罚成立
+		 * @param penalizeInsides
+		 * @return
+		 */
+		public List<PenalizeInside> isOrnotAutoShenhe(List<PenalizeInside> penalizeInsides){
+			List<PenalizeInside> needChangePenalize=new ArrayList<PenalizeInside>();
+			for (PenalizeInside penalizeInside : penalizeInsides) {
+				boolean flag=this.cheackisOrnotAutoShenhe(penalizeInside.getCreDate());
+				if(flag){
+					needChangePenalize.add(penalizeInside);
+				}
+				
+			}
+			return needChangePenalize;
+			
+		}
+		/**
+		 * 判断对内扣罚订单是否超过设定的时限
+		 * @param createDate
+		 * @return
+		 */
+		public boolean  cheackisOrnotAutoShenhe(String createDate){
+			SystemInstall systeminstall=systemInstallDAO.getSystemInstallByName(PunishInsideService.PUNISHINSIDEZIDONGSHENHE);
+			long cretime=DateTimeUtil.StringToMill(createDate);
+			String shixiao="72";
+			if (systeminstall!=null&&!"".equals(systeminstall.getValue())) {
+				shixiao=systeminstall.getValue();
+			}
+			Double shixiaotime=Double.parseDouble(shixiao);
+			if ((cretime+shixiaotime*1000*60*60)<System.currentTimeMillis()) {
+				return true;
+			}
+			return false;
+		}
+		/**
+		 * 修改金额与站点或责任人与回复
+		 * @param punishInsideReviseAndReply
+		 */
+		@Transactional
+		public void reviseAndReply(PunishInsideReviseAndReply punishInsideReviseAndReply){
+			punishInsideDao.updatekoufaPriceAndDutyInfo(punishInsideReviseAndReply);
+			punishInsideOperationinfoDao.insertIntoOPerationwithRevise(punishInsideReviseAndReply);
 		}
 }

@@ -6925,3 +6925,53 @@ function changeJSstate(contextPath){
 	});
 }
 
+function checkRevisePunishinsidePriceandDuty(){
+	if($("#describe").val()==""||$("#describe").val()=="最多100个字"){
+		alert("请输入修改备注");
+		return false;
+	}
+	if($("#describe").val().length>100){
+		alert("输入的对内扣罚审核说明不能 超过100个字！！");
+		return false;
+	}
+	if($("#koufajine").val()==""||$("#koufajine").val()=="0"||$("#koufajine").val()=="0.00"){
+		if(confirm("当前扣罚金额为0元，您确定要继续修改吗")){
+			return true;
+		}
+		return false;
+	}
+	return true;
+}
+function revisePriceOrdutyinfo(form){
+	if(checkRevisePunishinsidePriceandDuty()){
+		submitCreateFormPunishInsideRevise(form);
+		return false;
+	}
+}
+
+
+
+function submitCreateFormPunishInsideRevise(form) {
+	$.ajax({
+		type : "POST",
+		url : $(form).attr("action"),
+		data : $(form).serialize(),
+		dataType : "json",
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
+				/*$(form)[0].reset();*/
+				$("#dutybranchid").val(0);
+				$("#dutynameAdd").val(0);
+				$("#revisegoodprice").val("");
+				$("#reviseqitaprice").val("0.00");
+				$("#koufajine").val("");
+				$("#describe").val("最多100个字");
+				//$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+			}
+		}
+	});
+}

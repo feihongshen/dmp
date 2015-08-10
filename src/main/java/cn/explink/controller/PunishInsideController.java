@@ -49,6 +49,7 @@ import cn.explink.domain.PenalizeOutImportErrorRecord;
 import cn.explink.domain.PenalizeType;
 import cn.explink.domain.PunishGongdanView;
 import cn.explink.domain.PunishInsideOperationinfo;
+import cn.explink.domain.PunishInsideReviseAndReply;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
 import cn.explink.enumutil.PunishInsideStateEnum;
@@ -747,5 +748,37 @@ public class PunishInsideController {
 		List<String> successimport=punishInsideDao.findImportExcelSuccess(importFlag);
 		return successimport;
 	}
+	
+	@RequestMapping("/intoRevisePriceDutyinfoPage")
+	public String intoRevisePriceDutyinfoPage(Model model,@RequestParam(value="id",defaultValue="",required=false)long id){
+		PenalizeInside penalizeInside=punishInsideDao.getInsidebyid(id);
+		List<PunishInsideOperationinfo> punishInsideOperationinfos=punishInsideService.getOperationRecord(id);
+		PenalizeInsideView penPunishinsideView=punishInsideService.changedatatoshehe(penalizeInside);
+		List<User> users=userDAO.getAllUserbybranchid(penPunishinsideView.getDutybrachid());
+		List<Branch> branchList=branchDAO.getAllBranches();
+		long roleid=this.getSessionUser().getRoleid();
+		model.addAttribute("chuangjianfilepath", penPunishinsideView.getCreateFileposition());
+		model.addAttribute("shensuposition", penPunishinsideView.getShensufileposition());
+		model.addAttribute("id", id);
+		model.addAttribute("penPunishinsideView", penPunishinsideView);
+		model.addAttribute("punishInsideOperationinfos", punishInsideOperationinfos);
+		model.addAttribute("users", users);
+		model.addAttribute("branchList", branchList);
+		model.addAttribute("roleid", roleid);
+		return "penalize/penalizeIn/revisePriceAndDutyinfo";
+	}
+	@RequestMapping("/revisePriceAndDutybranchidwithdutypersonid")
+	public @ResponseBody String revisePriceAndDutybranchidwithdutypersonid(PunishInsideReviseAndReply punishInsideReviseAndReply ){
+		try {
+			punishInsideService.reviseAndReply(punishInsideReviseAndReply);
+			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "{\"errorCode\":1,\"error\":\"修改异常,原因为:"+e.getMessage()+"\"}";
+		}
+		
+	}
+	
 }
 
