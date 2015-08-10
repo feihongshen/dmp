@@ -35,7 +35,7 @@ public class CwbOXODetailDAO {
 	private String OXOTypeDelivery = CwbOXOTypeEnum.delivery.getValue() + "";
 	
 	private String CwbFlowOrderTypeZhanDianDaoHuo = CwbFlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+"";
-	//private String CwbFlowOrderTypeLingHuo = CwbFlowOrderTypeEnum.FenZhanLingHuo.getValue()+"";
+	private String CwbFlowOrderTypeZhongZhuanZhanChuKu = CwbFlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()+"";
 
 	private final class CwbOXODetailRowMapper implements
 			RowMapper<CwbOXODetailBean> {
@@ -109,10 +109,10 @@ public class CwbOXODetailDAO {
 		} else if (OXOStateProcessing.equals(cwbOXOStateId)) {
 			deliverySql.append("select "
 					+ OXOTypeDelivery
-					+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid else deliverybranchid end as branchid,paywayid"
+					+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid when flowordertype="+CwbFlowOrderTypeZhongZhuanZhanChuKu+" then nextbranchid else deliverybranchid end as branchid,paywayid"
 					+ " from express_ops_cwb_detail" + " where state = 1"
 					+ " and cwbordertypeid =" + OXOValue
-			        + " and case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid else deliverybranchid end =" + currentBranchId);
+			        + " and case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid when flowordertype="+CwbFlowOrderTypeZhongZhuanZhanChuKu+" then nextbranchid else deliverybranchid end =" + currentBranchId);
 		}
 		
 		if (startDate.length() > 0) {
@@ -195,10 +195,10 @@ public class CwbOXODetailDAO {
 		} else if (OXOStateProcessing.equals(cwbOXOStateId)) {
 			deliverySql.append("select "
 					+ OXOTypeDelivery
-					+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid else deliverybranchid end as branchid,paywayid"
+					+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid when flowordertype="+CwbFlowOrderTypeZhongZhuanZhanChuKu+" then nextbranchid else deliverybranchid end as branchid,paywayid"
 					+ " from express_ops_cwb_detail" + " where state = 1"
 					+ " and cwbordertypeid =" + OXOValue
-					+ " and case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid else deliverybranchid end =" + currentBranchId);
+			        + " and case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid when flowordertype="+CwbFlowOrderTypeZhongZhuanZhanChuKu+" then nextbranchid else deliverybranchid end =" + currentBranchId);
 		}
 
 		if (startDate.length() > 0) {
