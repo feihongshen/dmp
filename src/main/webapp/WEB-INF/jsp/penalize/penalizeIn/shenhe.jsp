@@ -99,12 +99,12 @@ List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOpe
 						</tr>
 						<tr  class="font_1">
 						<td align="left" valign="top">
-						最终货物扣罚金额<font color="red">*</font>:<input type="text" id="resultgoodprice" name="resultgoodprice" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'resultqitaprice','koufajine');"/>
-						&nbsp;&nbsp;最终其它扣罚金额<font color="red">*</font>:<input type="text" id="resultqitaprice" name="resultqitaprice" onkeyup="alculateSumprice(this,'resultgoodprice','koufajine');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="0.00" />
+						最终货物扣罚金额<font color="red">*</font>:<input type="text" id="resultgoodprice" name="resultgoodprice" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'resultqitaprice','koufajine');"  value="<%=penalizeInsideview.getCreategoodpunishprice() %>"/>
+						&nbsp;&nbsp;最终其它扣罚金额<font color="red">*</font>:<input type="text" id="resultqitaprice" name="resultqitaprice" onkeyup="alculateSumprice(this,'resultgoodprice','koufajine');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'"  value="<%=penalizeInsideview.getCreateqitapunishprice() %>" />
 						</td></tr>
 						<tr class="font_1">
 							<td colspan="2" align="left" valign="top">
-							总     扣   罚   金   额<font color="red">*</font>:<input type="text" id="koufajine" name="koufajine" class="input_text1" readonly="readonly"  style="height:15px;width: 120px;"/>
+							总     扣   罚   金   额<font color="red">*</font>:<input type="text" id="koufajine" name="koufajine" class="input_text1" readonly="readonly"  style="height:15px;width: 120px;" value="<%=penalizeInsideview.getPunishInsideprice() %>"/>
 							</td>
 						</tr>
 						<tr class="font_1">
