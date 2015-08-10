@@ -756,7 +756,8 @@ public class PunishInsideService {
 		 */
 		@Transactional
 		public void reviseAndReply(PunishInsideReviseAndReply punishInsideReviseAndReply){
+			User user=this.getSessionUser();
 			punishInsideDao.updatekoufaPriceAndDutyInfo(punishInsideReviseAndReply);
-			punishInsideOperationinfoDao.insertIntoOPerationwithRevise(punishInsideReviseAndReply);
+			punishInsideOperationinfoDao.insertIntoOPerationwithRevise(punishInsideReviseAndReply,user);
 		}
 }

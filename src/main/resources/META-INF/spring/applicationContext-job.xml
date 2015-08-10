@@ -862,7 +862,7 @@
                <ref bean="sendpunishinsideAutoShenhe" />
            </property>
              <property name="cronExpression">
-               <value>0 0/1 * * * ?</value>
+               <value>0 0/15 * * * ?</value>
            </property>
      </bean>
      
