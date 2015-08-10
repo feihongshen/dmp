@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.PunishInsideOperationinfo;
 import cn.explink.domain.PunishInsideReviseAndReply;
+import cn.explink.domain.User;
 import cn.explink.util.DateTimeUtil;
 
 @Component
@@ -73,14 +74,14 @@ public class PunishInsideOperationinfoDao {
 	 * 新增一条修改记录
 	 * @param punishInsideReviseAndReply
 	 */
-	public void insertIntoOPerationwithRevise(final PunishInsideReviseAndReply punishInsideReviseAndReply){
+	public void insertIntoOPerationwithRevise(final PunishInsideReviseAndReply punishInsideReviseAndReply,final User user){
 		String sql="insert into express_ops_punishInside_operationinfo (detailid,operationuserid,operationtype,operationdescribe,shensutype,shensudate) values(?,?,?,?,?,?)";
 		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setLong(1,punishInsideReviseAndReply.getId() );
-				ps.setLong(2,punishInsideReviseAndReply.getDutynameAdd() );
+				ps.setLong(2,user.getUserid() );
 				ps.setLong(3,5);//5为修改的类型
 				ps.setString(4,punishInsideReviseAndReply.getDescribe() );
 				ps.setLong(5, -1);
