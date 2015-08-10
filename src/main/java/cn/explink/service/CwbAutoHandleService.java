@@ -19,6 +19,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 
 @Service
@@ -147,11 +148,14 @@ public class CwbAutoHandleService {
 			logger.info("分站领货扫描：startbranchid:{},nextbranchid：{},currentbranchid:" + co.getCurrentbranchid() + "", co.getStartbranchid(), co.getNextbranchid());
 			if (co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
 				// 当订单当前状态是导入数据时，自动补充入库、出库、分站到货环节
-				credate -= everyAdd * 2;
-				co = isIntoWarehouse(user, co.getNextbranchid(), co, requestbatchno, comment, scancwb, credate);
-				credate += everyAdd;
-				co = isOutWarehouse(user, co, requestbatchno, comment, scancwb, iszhongzhuanout, credate);
-				credate += everyAdd;
+				// OXO:  当订单类型是OXO，不到站，直接领货，则不用补录入库和出库的 by jinghui.pan 20150806
+				if(co.getCwbordertypeid() != CwbOrderTypeIdEnum.OXO.getValue()){
+					credate -= everyAdd * 2;
+					co = isIntoWarehouse(user, co.getNextbranchid(), co, requestbatchno, comment, scancwb, credate);
+					credate += everyAdd;
+					co = isOutWarehouse(user, co, requestbatchno, comment, scancwb, iszhongzhuanout, credate);
+					credate += everyAdd;
+				}
 				co = isSubstationGoods(user, user.getBranchid(), co, requestbatchno, comment, scancwb, credate);
 			} else if (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) {
 				// 当订单当前状态是入库时，自动补充出库、分站到货环节
