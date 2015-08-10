@@ -825,10 +825,20 @@ public class PDAController {
 		List<CwbDetailView> historyweidaohuoViewlist = this.getcwbDetail(historyweidaohuolist, customerList, showCustomerjSONArray, branchList, 1);
 
 		List<CwbOrder> yidaohuolist = this.cwbDAO.getYiDaohuobyBranchidList(b.getBranchid(), 1);
+		
+		//揽件未到货list
+		List<CwbOrder> lanjianweidaohuolist = this.cwbDAO.getLanJianWeiDaoZhanByBranchidForList(b.getBranchid(), 1);
+		List<CwbDetailView> lanjianweidaohuoViewlist = this.getcwbDetail(lanjianweidaohuolist, this.customerDAO.getAllCustomers(), showCustomerjSONArray, branchList, 1);
+		long lanjianweidaohuocount = this.cwbDAO.countLanJianWeiDaoZhanByBranch(b.getBranchid());
+		
+		
 		// 已到货明细
 		List<CwbDetailView> yirukuViewlist = this.getcwbDetail(yidaohuolist, customerList, showCustomerjSONArray, branchList, 2);
 		model.addAttribute("jinriweidaocount", jinriweidaocount);// 今日未到货总数
 		model.addAttribute("historyweidaocount", historyweidaocount);// 历史未到货总数
+		
+		model.addAttribute("lanjianweidaohuocount", lanjianweidaohuocount);// 
+		model.addAttribute("lanjianweidaohuolist", lanjianweidaohuoViewlist);// 
 
 		model.addAttribute("jinriweidaohuolist", jinriweidaohuoViewlist);
 		model.addAttribute("historyweidaohuolist", historyweidaohuoViewlist);
