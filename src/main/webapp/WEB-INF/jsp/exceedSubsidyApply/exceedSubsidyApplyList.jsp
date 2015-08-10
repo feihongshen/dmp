@@ -78,8 +78,15 @@ function updateExceedSubsidyApplyFun(form,type,page){
 					alert("订单号不存在!");
 					return false;
 				} else if(data.isExist==1){
-					$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
-					$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
+					if(data.cwbOrderState){
+						$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
+					}
+					if(data.receiveAddress){
+						$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
+					}
+					if(data.deliverid){
+						$("#"+form+" select[name='deliveryPerson']").val(data.deliverid);
+					}
 					
 					$("#"+form+" select[name='deliveryPerson']").attr("disabled",false);
 					$("#"+form+" select[name='applyState']").attr("disabled",false);
@@ -227,6 +234,9 @@ function deleteExceedSubsidyApply(){
 		}
 	}
 	function addexceedSubsidyApplyPage() {
+		$("#addForm input[name='cwbOrder']").val('');
+		$("#addForm select[name='cwbOrderState']").val('');
+		$("#addForm input[name='receiveAddress']").val('');
 		$('#addPage').dialog('open');
 		$("#addForm textarea[name='remark']")
 				.focus(function() {
@@ -258,8 +268,16 @@ function deleteExceedSubsidyApply(){
 						alert("订单号不存在!");
 						return false;
 					} else if(data.isExist==1){
-						$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
-						$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
+						if(data.cwbOrderState){
+							$("#"+form+" select[name='cwbOrderState']").val(data.cwbOrderState);
+						}
+						if(data.receiveAddress){
+							$("#"+form+" input[name='receiveAddress']").val(data.receiveAddress);
+						}
+						if(data.deliverid){
+							$("#"+form+" select[name='deliveryPerson']").val(data.deliverid);
+						}
+						
 						if(!$("#"+form+" select[name='deliveryPerson']").val()){
 							alert("配送员为必填项!");
 							return false;
@@ -327,6 +345,8 @@ function deleteExceedSubsidyApply(){
 			} else if (state == 'YiJuJue') {
 				if (confirm("是否确认拒绝通过?")) {
 					$("#"+form+" select[name='applyState']").val('${yiJuJueState}');
+					$("#"+form+" input[name='exceedAreaSubsidyAmount']").val('');
+					$("#"+form+" input[name='bigGoodsSubsidyAmount']").val('');
 				}
 			}
 		}

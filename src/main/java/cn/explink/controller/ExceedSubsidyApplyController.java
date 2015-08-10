@@ -318,7 +318,9 @@ public class ExceedSubsidyApplyController {
 		} else {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 			if(cwbOrder != null){
-				rtnStr = "{\"isExist\":1,\"cwbOrderState\":" + cwbOrder.getFlowordertype() + ",\"receiveAddress\":\"" + cwbOrder.getConsigneeaddress() +"\"}";
+				rtnStr = "{\"isExist\":1,\"cwbOrderState\":" + cwbOrder.getFlowordertype() 
+						+ ",\"receiveAddress\":\"" + cwbOrder.getConsigneeaddress() 
+						+ ",\"deliverid\":\"" + cwbOrder.getDeliverid() +"\"}";
 			}
 		}
 		return rtnStr;
