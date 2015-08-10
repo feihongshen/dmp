@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.CwbOXODetailBean;
+import cn.explink.enumutil.CwbFlowOrderTypeEnum;
+import cn.explink.enumutil.CwbOXOStateEnum;
 import cn.explink.enumutil.CwbOXOTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
@@ -24,9 +26,16 @@ public class CwbOXODetailDAO {
 
 	private String OXOValue = CwbOrderTypeIdEnum.OXO.getValue() + "";
 	private String OXOJITValue = CwbOrderTypeIdEnum.OXO_JIT.getValue() + "";
+	
+	private String OXOStateUnProcessed = CwbOXOStateEnum.UnProcessed.getValue()+"";
+	private String OXOStateProcessing = CwbOXOStateEnum.Processing.getValue()+"";
+	private String OXOStateProcessed = CwbOXOStateEnum.Processed.getValue()+"";
 
 	private String OXOTypePick = CwbOXOTypeEnum.pick.getValue() + "";
 	private String OXOTypeDelivery = CwbOXOTypeEnum.delivery.getValue() + "";
+	
+	private String CwbFlowOrderTypeZhanDianDaoHuo = CwbFlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+"";
+	//private String CwbFlowOrderTypeLingHuo = CwbFlowOrderTypeEnum.FenZhanLingHuo.getValue()+"";
 
 	private final class CwbOXODetailRowMapper implements
 			RowMapper<CwbOXODetailBean> {
@@ -43,7 +52,7 @@ public class CwbOXODetailDAO {
 			cwbOXODetail.setReceivablefee(rs.getDouble("receivablefee"));
 			cwbOXODetail.setCustomerName(rs.getString("customername"));
 			cwbOXODetail.setOxoType(rs.getString("oxotype"));
-			
+
 			int payWayId = rs.getInt("paywayid");
 			String payWay = "";
 			Map<Integer, String> paywayMap = PaytypeEnum.getMap();
@@ -66,9 +75,10 @@ public class CwbOXODetailDAO {
 		StringBuilder pickSql = new StringBuilder();
 		pickSql.append("select "
 				+ OXOTypePick
-				+ " as oxotypeid,cwbordertypeid,cwb,customerid,credate,oxopickstate as cwbstate,receivablefee,pickbranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 and pickbranchid = "
-				+ currentBranchId + " and cwbordertypeid in (" + OXOValue + ","
-				+ OXOJITValue + ")");
+				+ " as oxotypeid,cwbordertypeid,cwb,customerid,credate,oxopickstate as cwbstate,receivablefee,pickbranchid as branchid,paywayid"
+				+ " from express_ops_cwb_detail" + " where state = 1"
+				+ " and pickbranchid = " + currentBranchId
+				+ " and cwbordertypeid in (" + OXOValue + "," + OXOJITValue + ")");
 		if (startDate.length() > 0) {
 			pickSql.append(" and credate >= str_to_date('" + startDate
 					+ "','%Y-%m-%d %H:%i:%s')");
@@ -89,14 +99,22 @@ public class CwbOXODetailDAO {
 
 		// 配送指令查询SQL
 		StringBuilder deliverySql = new StringBuilder();
-
-		deliverySql
-				.append("select "
-						+ OXOTypeDelivery
-						+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 "
-						+ " and deliverybranchid = " + currentBranchId
-						+ " and cwbordertypeid =" + OXOValue);
-
+		if (OXOStateUnProcessed.equals(cwbOXOStateId) || OXOStateProcessed.equals(cwbOXOStateId)) {
+			deliverySql.append("select "
+					+ OXOTypeDelivery
+					+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid"
+					+ " from express_ops_cwb_detail" + " where state = 1"
+					+ " and cwbordertypeid =" + OXOValue
+			        + " and deliverybranchid =" + currentBranchId);
+		} else if (OXOStateProcessing.equals(cwbOXOStateId)) {
+			deliverySql.append("select "
+					+ OXOTypeDelivery
+					+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid else deliverybranchid end as branchid,paywayid"
+					+ " from express_ops_cwb_detail" + " where state = 1"
+					+ " and cwbordertypeid =" + OXOValue
+			        + " and case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid else deliverybranchid end =" + currentBranchId);
+		}
+		
 		if (startDate.length() > 0) {
 			deliverySql.append(" and credate >= str_to_date('" + startDate
 					+ "','%Y-%m-%d %H:%i:%s')");
@@ -114,9 +132,10 @@ public class CwbOXODetailDAO {
 		if (cwbOrderTypeId.length() > 0 && !"0".equals(cwbOrderTypeId)) {
 			deliverySql.append(" and cwbordertypeid =" + cwbOrderTypeId);
 		}
-
+		
 		StringBuilder sql = new StringBuilder();
-		sql.append("select case when oxotypeid = 1 then '揽收' when oxotypeid = 2 then '配送' end as oxotype,case when cwbstate = 0 then '未处理' when cwbstate= 1 then '处理中' when cwbstate=2 then '已处理' end as cwbstate ,cwb.cwb,cus.customername,date_format(cwb.credate,'%Y-%m-%d %H:%i:%s') as credate,cwb.receivablefee,bra.branchname,cwb.paywayid  FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(");
+		sql.append("select case when oxotypeid = 1 then '揽收' when oxotypeid = 2 then '配送' end as oxotype,case when cwbstate = 0 then '未处理' when cwbstate= 1 then '处理中' when cwbstate=2 then '已处理' end as cwbstate ,cwb.cwb,cus.customername,date_format(cwb.credate,'%Y-%m-%d %H:%i:%s') as credate,cwb.receivablefee,bra.branchname,cwb.paywayid  "
+				+ " FROM express_set_branch bra, express_set_customer_info cus,(");
 		if ("".equals(cwbOXOTypeId) || "0".equals(cwbOXOTypeId)) { // 揽收、配送
 			sql.append(pickSql + " union " + deliverySql);
 		} else {
@@ -126,11 +145,11 @@ public class CwbOXODetailDAO {
 				sql.append(deliverySql);
 			}
 		}
-		sql.append(")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid order by cwb.credate desc limit "
+		sql.append(")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid order by cwb.credate desc limit "
 				+ ((page - 1) * Page.ONE_PAGE_NUMBER)
 				+ " ,"
 				+ Page.ONE_PAGE_NUMBER);
-
+		
 		return this.jdbcTemplate.query(sql.toString(),
 				new CwbOXODetailRowMapper());
 	}
@@ -142,9 +161,10 @@ public class CwbOXODetailDAO {
 		StringBuilder pickSql = new StringBuilder();
 		pickSql.append("select "
 				+ OXOTypePick
-				+ " as oxotypeid,cwbordertypeid,cwb,customerid,credate,oxopickstate as cwbstate,receivablefee,pickbranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 and pickbranchid = "
-				+ currentBranchId + " and cwbordertypeid in (" + OXOValue + ","
-				+ OXOJITValue + ")");
+				+ " as oxotypeid,cwbordertypeid,cwb,customerid,credate,oxopickstate as cwbstate,receivablefee,pickbranchid as branchid,paywayid"
+				+ " from express_ops_cwb_detail" + " where state = 1"
+				+ " and pickbranchid = " + currentBranchId
+				+ " and cwbordertypeid in (" + OXOValue + "," + OXOJITValue + ")");
 		if (startDate.length() > 0) {
 			pickSql.append(" and credate >= str_to_date('" + startDate
 					+ "','%Y-%m-%d %H:%i:%s')");
@@ -165,13 +185,21 @@ public class CwbOXODetailDAO {
 
 		// 配送指令查询SQL
 		StringBuilder deliverySql = new StringBuilder();
-
-		deliverySql
-				.append("select "
-						+ OXOTypeDelivery
-						+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid  from express_ops_cwb_detail where state = 1 "
-						+ " and deliverybranchid = " + currentBranchId
-						+ " and cwbordertypeid =" + OXOValue);
+		if (OXOStateUnProcessed.equals(cwbOXOStateId) || OXOStateProcessed.equals(cwbOXOStateId)) {
+			deliverySql.append("select "
+					+ OXOTypeDelivery
+					+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,deliverybranchid as branchid,paywayid"
+					+ " from express_ops_cwb_detail" + " where state = 1"
+					+ " and cwbordertypeid =" + OXOValue
+				    + " and deliverybranchid =" + currentBranchId);
+		} else if (OXOStateProcessing.equals(cwbOXOStateId)) {
+			deliverySql.append("select "
+					+ OXOTypeDelivery
+					+ " as oxotypeid, cwbordertypeid,cwb,customerid,credate,oxodeliverystate as cwbstate,receivablefee,case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid else deliverybranchid end as branchid,paywayid"
+					+ " from express_ops_cwb_detail" + " where state = 1"
+					+ " and cwbordertypeid =" + OXOValue
+					+ " and case when flowordertype="+CwbFlowOrderTypeZhanDianDaoHuo+" then currentbranchid else deliverybranchid end =" + currentBranchId);
+		}
 
 		if (startDate.length() > 0) {
 			deliverySql.append(" and credate >= str_to_date('" + startDate
@@ -192,7 +220,8 @@ public class CwbOXODetailDAO {
 		}
 
 		StringBuilder sql = new StringBuilder();
-		sql.append("select count(1)  FROM express_set_payway pay, express_set_branch bra,express_set_customer_info cus,(");
+		sql.append("select count(1) "
+				+ " FROM express_set_branch bra, express_set_customer_info cus,(");
 		if ("".equals(cwbOXOTypeId) || "0".equals(cwbOXOTypeId)) { // 揽收、配送
 			sql.append(pickSql + " union " + deliverySql);
 		} else {
@@ -202,7 +231,8 @@ public class CwbOXODetailDAO {
 				sql.append(deliverySql);
 			}
 		}
-		sql.append(")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid  and cwb.paywayid = pay.paywayid");
+		sql.append(")cwb where cwb.customerid = cus.customerid and  cwb.branchid = bra.branchid");
+				
 		return this.jdbcTemplate.queryForInt(sql.toString());
 	}
 }

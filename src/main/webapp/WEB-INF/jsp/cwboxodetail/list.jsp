@@ -90,7 +90,7 @@ $(function() {
 	<form action="<%=request.getAttribute("page")%>" method="post" id="searchForm">
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:80px">
         <tr>
-			<td width="33%">生成时间<input type="text" name="startDate" class="input_text1" value="<%= startDate%>"
+			<td width="36%">生成时间<input type="text" name="startDate" class="input_text1" value="<%= startDate%>"
 							 id="startDate"  /> 
 						   到<input type="text" name="endDate" id="endDate" class="input_text1" value="<%= endDate %>"
 								 />
