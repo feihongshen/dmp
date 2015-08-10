@@ -139,95 +139,66 @@ function getThisBoxList(id,flag){
 		}
 	});
 }
-
 function check(){
-
-	 if($.trim($("#cwb").val()).length==0)
-	{ 
 	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.daichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.yichuli.getValue()%>||$("#ishandle").val()==<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>){
-	/* if($("#strtime").val()==""){
-		alert("请选择开始时间");
-		return false;
+
+	if($("#strtime").val()!=""||$("#endtime").val()!=""){
+		if($("#strtime").val()==""){
+			alert("请选择开始时间！！");
+			return;
+		}
+		if($("#endtime").val()==""){
+			alert("请选择结束时间！！");
+			return;
+		}
+		if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
+			alert("开始时间不能大于结束时间");
+			return;
+		}
 	}
-	if($("#endtime").val()==""){
-		alert("请选择结束时间");
-		return false;
-	} */
-	
-		if($("#strtime").val()!=""||$("#endtime").val()!=""){
-			if($("#strtime").val()==""){
-				alert("请选择开始时间！！");
-				return;
+if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>){
+	 if($("#strtime").val()==""){
+			alert("请选择开始时间");
+			return false;
 			}
 			if($("#endtime").val()==""){
-				alert("请选择结束时间！！");
-				return;
-			}
-			if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
+			alert("请选择结束时间");
+			return false;
+		} 
+				if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
+					alert("开始时间不能大于结束时间");
+					return;
+				}
+			 if(!Days($("#strtime").val(),$("#endtime").val())||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
+				alert("时间跨度不能大于31天！");
+				return false;
+			} 
+}
+}else{
+	if($("#ishandle").val()==0){
+		if($("#chuangjianstrtime").val()==""){
+			alert("请选择开始时间！！");
+			return;
+		}
+		if($("#chuangjianendtime").val()==""){
+			alert("请选择结束时间！！");
+			return;
+		}
+		 if($("#chuangjianstrtime").val()>$("#chuangjianendtime").val() && $("#chuangjianendtime").val() !=''){
 				alert("开始时间不能大于结束时间");
 				return;
-			}
-		}
-	
-	/* if(!Days($("#strtime").val(),$("#endtime").val())||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
+			}  
+
+	}
+	if(!Days($("#chuangjianstrtime").val(),$("#chuangjianendtime").val())||($("#chuangjianstrtime").val()=='' &&$("#chuangjianendtime").val()!='')||($("#chuangjianstrtime").val()!='' &&$("#chuangjianendtime").val()=='')){
 		alert("时间跨度不能大于31天！");
 		return false;
-	} */
-
-	}
-	else{
-		
-		/* 	if($("#chuangjianstrtime").val()==""){
-				alert("请选择开始时间");
-				return false;
-			}
-			if($("#chuangjianendtime").val()==""){
-				alert("请选择结束时间");
-				return false;
-			}*/
-			/* if(!Days($("#chuangjianstrtime").val(),$("#chuangjianendtime").val())||($("#chuangjianstrtime").val()=='' &&$("#chuangjianendtime").val()!='')||($("#chuangjianstrtime").val()!='' &&$("#chuangjianendtime").val()=='')){
-				alert("时间跨度不能大于3天！");
-				return false;
-			} */
-		
-			
-		if($("#chuangjianstrtime").val()!=""||$("#chuangjianendtime").val()!=""){
-			if($("#chuangjianstrtime").val()==""){
-				alert("请选择开始时间！！");
-				return;
-			}
-			if($("#chuangjianendtime").val()==""){
-				alert("请选择结束时间！！");
-				return;
-			}
-			 if($("#chuangjianstrtime").val()>$("#chuangjianendtime").val() && $("#chuangjianendtime").val() !=''){
-					alert("开始时间不能大于结束时间");
-					return;
-				}  
-		}
-
-		
-	}
-	}else{
-		if($("#chuangjianstrtime").val()!=""||$("#chuangjianendtime").val()!=""){
-			if($("#chuangjianstrtime").val()==""){
-				alert("请选择开始时间！！");
-				return;
-			}
-			if($("#chuangjianendtime").val()==""){
-				alert("请选择结束时间！！");
-				return;
-			}
-			 if($("#chuangjianstrtime").val()>$("#chuangjianendtime").val() && $("#chuangjianendtime").val() !=''){
-					alert("开始时间不能大于结束时间");
-					return;
-				}  
-		}
-	 } 
-	
-	$("#searchForm").submit();
-	
+	} 
 }
+$("#searchForm").submit();
+
+}
+
 function Days(day1,day2){     
 	var y1, y2, m1, m2, d1, d2;//year, month, day;   
 	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
@@ -286,6 +257,10 @@ function checkstate(){
 	if($("#ishandle").val()!=<%=AbnormalOrderHandleEnum.jieanchuli.getValue()%>){
 		$("#dealresult").val(0);
 	}
+	$("#chuangjianstrtime").val("");
+	$("#chuangjianendtime").val("");
+	$("#strtime").val("");
+	$("#endtime").val("");
 }
 
 function isgetallcheck(){
