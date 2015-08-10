@@ -98,7 +98,7 @@ $(function(){
 						<td align="center" valign="middle" style="font-weight: bold;"> 小件员</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 揽件时间 </td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 付款方式 </td>
-						<td align="center" valign="middle" style="font-weight: bold;"> 运费合计 </td>
+						<td align="center" valign="middle" style="font-weight: bold;"> 费用合计 </td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 运费</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 包装费用</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 保价费用</td>
