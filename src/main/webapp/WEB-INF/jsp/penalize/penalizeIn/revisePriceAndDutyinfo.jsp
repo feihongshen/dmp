@@ -12,14 +12,18 @@ String chuangjianfilepath=request.getAttribute("chuangjianfilepath").toString();
 String shensuposition=request.getAttribute("shensuposition").toString();
 String id=request.getAttribute("id").toString();
 List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOperationinfo>)request.getAttribute("punishInsideOperationinfos");
+List<User> users=(List<User>)request.getAttribute("users");
+List<Branch> branchList=(List<Branch>)request.getAttribute("branchList");
+String url=request.getContextPath()+"/abnormalOrder/getbranchusers";
+long roleid=Long.parseLong(request.getAttribute("roleid").toString());
 %>
 
 <div id="box_bg"></div>
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="closeBox()"></div>审核处理详情</h1>
-		<form  enctype="multipart/form-data" method="post" id="form1"  action="<%=request.getContextPath()%>/inpunish/submitHandleShenheResultAddfile;jsessionid=<%=session.getId()%>" >
+		<h1><div id="close_box" onclick="closeBox()"></div>修改责任机构责任人与扣罚金额</h1>
+		<form   method="post" id="form1"  action="<%=request.getContextPath()%>/inpunish/revisePriceAndDutybranchidwithdutypersonid" onsubmit="revisePriceOrdutyinfo(this);return false;">
 			<table width="600" border="0" cellspacing="0" cellpadding="0" id="chatlist_alertbox">
 				<tr>
 					<td width="600" valign="top"><table width="100%" border="0" cellspacing="1" cellpadding="10" class="table_2" style="height:280px">
@@ -99,23 +103,39 @@ List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOpe
 						</tr>
 						<tr  class="font_1">
 						<td align="left" valign="top">
-						最终货物扣罚金额<font color="red">*</font>:<input type="text" id="resultgoodprice" name="resultgoodprice" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'resultqitaprice','koufajine');"/>
-						&nbsp;&nbsp;最终其它扣罚金额<font color="red">*</font>:<input type="text" id="resultqitaprice" name="resultqitaprice" onkeyup="alculateSumprice(this,'resultgoodprice','koufajine');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="0.00" />
+						责任机构<font color="red">*</font>:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers('dutynameAdd','dutybranchid');" class="select1" <%if(roleid!=1){ %>  disabled="disabled" <%} %>>
+							<option value="0" selected="selected">请选择责任机构</option>
+							<%if(branchList!=null){for(Branch branch:branchList){ %>
+							<option value="<%=branch.getBranchid() %>" <%if(branch.getBranchid()==penalizeInsideview.getDutybrachid()){ %> selected="selected" <% }%>><%=branch.getBranchname() %></option>
+							<% }}%>
+						</select>
+						&nbsp;&nbsp;责任人:<select  id="dutynameAdd" name="dutynameAdd" class="select1" <%if(roleid!=1){ %>  disabled="disabled" <%} %>>
+						<option value ='0'>请选择机构责任人</option>
+						<%if(users!=null){for(User user:users){ %>
+							<option value="<%=user.getUserid() %>" <%if(user.getUserid()==penalizeInsideview.getDutypersonid()){ %> selected="selected" <% }%>><%=user.getRealname()%></option>
+							<% }}%>
+						</select>
+						</td>
+						</tr>
+						<tr  class="font_1">
+						<td align="left" valign="top">
+						货物扣罚金额<font color="red">*</font>:<input type="text" id="revisegoodprice" name="revisegoodprice" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'reviseqitaprice','koufajine');" value="<%=penalizeInsideview.getCreategoodpunishprice() %>"/>
+						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="reviseqitaprice" name="reviseqitaprice" onkeyup="alculateSumprice(this,'revisegoodprice','koufajine');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="<%=penalizeInsideview.getCreateqitapunishprice() %>" />
 						</td></tr>
 						<tr class="font_1">
 							<td colspan="2" align="left" valign="top">
-							总     扣   罚   金   额<font color="red">*</font>:<input type="text" id="koufajine" name="koufajine" class="input_text1" readonly="readonly"  style="height:15px;width: 120px;"/>
+							总     扣   罚   金   额<font color="red">*</font>:<input type="text" id="koufajine" name="koufajine" class="input_text1" readonly="readonly"  style="height:15px;width: 120px;" value="<%=penalizeInsideview.getPunishInsideprice() %>"/>
 							</td>
 						</tr>
 						<tr class="font_1">
-							<td colspan="2" align="left" valign="top">审核备注<font color="red">*</font>：<textarea  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'" name="describe" id="describe" cols="40" rows="4" id="textfield">最多100个字</textarea></td>
+							<td colspan="2" align="left" valign="top">修改备注<font color="red">*</font>：<textarea  onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'" name="describe" id="describe" cols="40" rows="4" id="textfield">最多100个字</textarea></td>
 						</tr>
-						 <tr class="font_1">
+					<%-- 	 <tr class="font_1">
 							<td colspan="2" align="left" valign="top"> 
 								<!-- 上传附件:<input type="file" name="file" id="file"/> -->
 								上传附件：<iframe id="update" name="update" src="abnormalorder/update?fromAction=form1&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>    
 							</td>
-						</tr>
+						</tr> --%>
 				
 					</table>
 					</td>
@@ -147,13 +167,12 @@ List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOpe
 			</table>
 			
 			<input type="hidden" name="id" id="id" value="<%=id %> ">
-			<input type="hidden" name="shenheresult" id="shenheresult" value="">
 			<iframe name='post_frame' id="post_frame" style="display:none;" mce_style="display:none;"></iframe> 
 			<div align="center">
-			<input type="button" onclick="koufachengli();" value="扣罚成立" class="button" >
-			<input type="button" onclick="chexiaokoufa();" value="撤销扣罚" class="button" >
+			<input type="submit"  value="修改" class="button" >
 			<input type="button"  onclick="closeBox()"   value="取消" class="button">
 			</div>
+			<input type="hidden" name="getbranchusers" id="getbranchusers" value="<%=url %>">
 		</form>
 		
 	</div>

@@ -41,6 +41,8 @@ List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOpe
 						</tr>
 							<tr class="font_1">
 							<td  align="left" valign="top">订单金额：<strong><%=penalizeInsideview.getCwbprice()%></strong>
+							&nbsp;&nbsp;货物扣罚金额：<strong><%=penalizeInsideview.getCreategoodpunishprice() %></strong>
+							&nbsp;&nbsp;其它扣罚金额：<strong><%=penalizeInsideview.getCreateqitapunishprice() %></strong>
 							&nbsp;&nbsp;扣罚金额：<strong><%=penalizeInsideview.getPunishInsideprice() %></strong>
 							</td>
 						</tr>
@@ -73,7 +75,7 @@ List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOpe
 						</tr>
 							<tr class="font_1">
 							<td  align="left" valign="top">最后申诉说明：<strong><%=penalizeInsideview.getShensudescribe() %></strong>
-							<input name="" type="button" value="查看申诉交流记录" id="showchatlist" onclick='$("#right_chatlist").show();$("#chatlist_alertbox").width(900);'/>
+							<input name="" type="button" value="查看交流记录" id="showchatlist" onclick='$("#right_chatlist").show();$("#chatlist_alertbox").width(900);'/>
 							&nbsp;&nbsp;附件下载:<%if(!penalizeInsideview.getShensufileposition().equals("")){if(penalizeInsideview.getShensufileposition().split(",").length>=1){ %>
 							
 								&nbsp;&nbsp;&nbsp;&nbsp;<a href="<%=request.getContextPath()%>/abnormalOrder/download?filepathurl=<%=penalizeInsideview.getShensufileposition().split(",")[0] %>" style="color: blue;">申诉附件<%=penalizeInsideview.getShensufileposition().split(",")[0] %></a>&nbsp;&nbsp;<em id="morefilebutton"><a href="javascript:filedownloadwithquestionfile();" style="color: blue;">更多申诉附件</a></em>
@@ -126,12 +128,18 @@ List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOpe
 								<td><div class="chat_listbox" >
 									<div class="chat_listclose" onclick='$("#right_chatlist").hide();$("#chatlist_alertbox").width(600);'>>></div>
 									<div class="chat_listtxt">
-									<%if(punishInsideOperationinfos!=null&&punishInsideOperationinfos.size()>0)
+										<%if(punishInsideOperationinfos!=null&&punishInsideOperationinfos.size()>0)
 										for(PunishInsideOperationinfo aw : punishInsideOperationinfos){ %>
-									
+										<%if(aw.getShensutype()!=-1){ %>
 										<p><%
 												 out.print(aw.getOperationusername()+"-"+aw.getOperationtypename()+"  ("+aw.getShensutypeName()+")");%>&nbsp;&nbsp;
 												<%=aw.getShensudate() %>：<%=aw.getOperationdescribe() %></p>
+												<%}else{ %>
+														<p><%
+												 out.print(aw.getOperationusername()+"-"+"  (回复)");%>&nbsp;&nbsp;
+												<%=aw.getShensudate() %>：<%=aw.getOperationdescribe() %></p>
+												
+												<%} %>
 									<%} %>
 									</div>
 								</div></td>

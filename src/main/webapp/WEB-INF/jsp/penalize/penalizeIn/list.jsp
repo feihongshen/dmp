@@ -368,6 +368,27 @@ function shenheopteration(id){
 		}
 	});
 }
+function reviseopteration(id){
+	if($("#roleid").val()!=1){
+		alert("当前操作只有客服有权限噢！！");
+		return;
+	}
+	if($("#checkshenhe"+id).val()==3||$("#checkshenhe"+id).val()==4){
+		alert("已经审核过的单号不能再次审核！！");
+		return;
+	}
+	$.ajax({
+		type : "POST",
+		url:"<%=request.getContextPath()%>/inpunish/intoRevisePriceDutyinfoPage",
+		data:{id:id},
+		dataType : "html",
+		success : function(data) {$("#alert_box",parent.document).html(data);
+		},
+		complete:function(){
+			viewBox();
+		}
+	});
+}
 function findthisValue(id){
 	$.ajax({
 		type : "POST",
@@ -1179,6 +1200,7 @@ function checkwithdiferenttype(type){
 						<td width="100" align="center" valign="middle"><%=view.getCreDate() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getPunishcwbstatename() %></td>
 						<td width="160" align="center" valign="middle">
+						<a href="javascript:reviseopteration('<%=view.getId() %>');" <%if(view.getPunishcwbstate()==3||view.getPunishcwbstate()==4||roleid!=1){ %> style="display:none"   <%} %>><font color="blue">修改</font></a>
 						<a href="javascript:shenheopteration('<%=view.getId() %>');" ><font color="blue">审核</font></a>
 						<a href="javascript:findthisValue('<%=view.getId() %>');" ><font color="blue">查看</font></a>
 						</td>
