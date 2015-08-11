@@ -8220,4 +8220,10 @@ CREATE TABLE `cs_complaint_accept` (
 	   		UPDATE dmp40_function SET id='502070',functionorder = '502070', parentfunctionid = '5020' WHERE functionname = '退货站入库交接单打印';
 	   </sql>
 	</changeSet>	
+	<changeSet id="lansheng-2015-08-12" author="lansheng">
+	   	<sql>
+	   		ALTER TABLE `express_ops_bale_cwb` ADD COLUMN `transcwb` VARCHAR(200) DEFAULT '' NULL AFTER `cwb`; 
+	   		INSERT INTO `express_set_system_install`(`id`,`name`,`value`,`chinesename`) VALUES ( NULL,'bupipeishifouruku','0','没有匹配站点是否允许入库：0允许，1不允许，2弹框提示'); 
+	   </sql>
+	</changeSet>	
 </databaseChangeLog>

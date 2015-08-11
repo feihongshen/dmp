@@ -2783,7 +2783,13 @@ public class PDAController {
 					this.checkyouhuowudan(this.getSessionUser(),cwb, customerid,this.getSessionUser().getBranchid());
 					if (co.getDeliverybranchid()==0) {
 						FlowOrderTypeEnum flowOrderTypeEnum = FlowOrderTypeEnum.RuKu;
-						throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.ShangWeiPiPeiZhanDian);
+						String bupipeishifouruku ="0"; //0：不验证 1：验证  2：弹框
+						bupipeishifouruku =this.systemInstallDAO.getSystemInstall("bupipeishifouruku")==null?"0":this.systemInstallDAO.getSystemInstall("bupipeishifouruku").getValue();
+						if("2".equals(bupipeishifouruku.trim())){
+							throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.ShangWeiPiPeiZhanDian);
+						}else if("1".equals(bupipeishifouruku.trim())){
+							throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.ShangWeiPiPeiZhanDianBuyunxuRuku);
+						}
 					}
 				}
 				cwbOrder = this.cwborderService.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, requestbatchno, comment, "", false);

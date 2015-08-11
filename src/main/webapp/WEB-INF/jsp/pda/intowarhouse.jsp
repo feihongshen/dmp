@@ -401,7 +401,8 @@ function callfunction(cwb){//getEmailDateByIds
 											$("#scancwb").val("");
 											$("#msg").html("（异常扫描）" + data.errorinfo);
 										}
-									}else{
+									}
+									else{
 										$("#scancwb").val("");
 										$("#msg").html("（异常扫描）" + data.errorinfo);
 									}

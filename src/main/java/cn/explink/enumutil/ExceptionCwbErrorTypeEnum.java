@@ -38,6 +38,7 @@ public enum ExceptionCwbErrorTypeEnum {
 	GongHuoShang_Bufu(104, "请选择正确的供货商"),
 	WuShuJuYouHuoWuDanError(105,"无数据，有货无单"),
 	ShangWeiPiPeiZhanDian(102,"尚未匹配站点"),
+	ShangWeiPiPeiZhanDianBuyunxuRuku(202,"尚未匹配站点,不允许入库"),
 	
 	Shen_Qing_Tui_Huo_Wei_Shen_He_Cheng_Gong_Error(106, "订单未进行审核或者未审核成功，不允许进行退货出站操作"),
 	Shen_Qing_Tui_Huo_Zhi_Liu_Wu_Fa_Tui_Huo_Error(107, "退货单审核为站点滞留，不允许进行退货出站操作"),

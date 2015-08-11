@@ -1137,12 +1137,15 @@ public class BaleService {
 
 			// ==================验证订单状态=======================
 			this.logger.info("开始验证订单" + cwb);
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
 			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 			if (co == null) {
 				// 订单不存在
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			}
-
+			
+			
 			/*long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
 			if(count1!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuankuhebaochuku);
