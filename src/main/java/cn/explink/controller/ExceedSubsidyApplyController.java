@@ -320,7 +320,7 @@ public class ExceedSubsidyApplyController {
 			if(cwbOrder != null){
 				rtnStr = "{\"isExist\":1,\"cwbOrderState\":" + cwbOrder.getFlowordertype() 
 						+ ",\"receiveAddress\":\"" + cwbOrder.getConsigneeaddress() 
-						+ ",\"deliverid\":\"" + cwbOrder.getDeliverid() +"\"}";
+						+ "\",\"deliverid\":" + cwbOrder.getDeliverid() + "}";
 			}
 		}
 		return rtnStr;
