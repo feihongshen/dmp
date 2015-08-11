@@ -14,9 +14,11 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/index.css" type="text/css" />
 <script src="${pageContext.request.contextPath}/js/paifeirule.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
+<script src="${pageContext.request.contextPath}/js/inputer.js"></script>
 
 <script type="text/javascript">
-	
+
 </script>
 </head>
 
@@ -44,9 +46,9 @@
 </c:forEach>
 </select><br></br>
 补助类型：
-<select name="tab">
+<select name="tab" id="tab">
 <c:forEach items="${tabs}" var="op">
-<option value="${op.value}">${op.text}</option>
+<option value="${op.value}" >${op.text}</option>
 </c:forEach>
 </select><br></br>
 补助具体类型：
@@ -60,6 +62,19 @@
 <input type="submit" value="查询"/>
 </form>
 </fieldset>
+
+
+    <div style="padding: 50px;">
+        button触发事件取值<input type="text" id="txtInputer1"  />
+        <br />
+        <br />
+        <br />
+        自动触发事件<input type="text" id="txtInputer2" style="border: 1px solid #ccc; height: 25px;
+            font-size: 16px; font-weight: bold; line-height: 25px;" maxlength="20" />
+    </div>
+    <div id="result" style="margin: 50px;margin-top:150px; max-height: 50px; border: 1px solid #ccc;">
+        这里显示结果
+    </div>
 </body>
 </html>
 

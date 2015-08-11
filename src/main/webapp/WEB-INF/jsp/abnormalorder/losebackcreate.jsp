@@ -31,6 +31,8 @@ String message=request.getAttribute("message")==null?"":request.getAttribute("me
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-form.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/ajaxfileupload.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
+<script src="${pageContext.request.contextPath}/js/inputer.js"></script>
 <script language="javascript">
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");

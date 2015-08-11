@@ -9646,6 +9646,7 @@ src/main/webapp/js/easyui/themes/metro/window.css -text
 src/main/webapp/js/expdopmap.js -text
 src/main/webapp/js/express/takeExpressAssign.js -text
 src/main/webapp/js/images/repeatx.png -text
+src/main/webapp/js/inputer.js -text
 src/main/webapp/js/install_lodop32.exe -text
 src/main/webapp/js/install_lodop64.exe -text
 src/main/webapp/js/intowarehousePrint.js -text
@@ -9655,6 +9656,7 @@ src/main/webapp/js/jquery-1.8.0.min.js -text
 src/main/webapp/js/jquery-form.js -text
 src/main/webapp/js/jquery-ui-1.8.18.custom.min.js -text
 src/main/webapp/js/jquery-ui-timepicker-addon.js -text
+src/main/webapp/js/jquery.inputer.js -text
 src/main/webapp/js/jquery.swfupload.js -text
 src/main/webapp/js/jquery.ui.datepicker-zh-CN.js -text
 src/main/webapp/js/jquery.ui.message.min.js -text

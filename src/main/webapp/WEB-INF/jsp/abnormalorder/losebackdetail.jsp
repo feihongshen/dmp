@@ -47,6 +47,8 @@ Page page_obj = (Page)request.getAttribute("page_obj");
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-form.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
+<script src="${pageContext.request.contextPath}/js/inputer.js"></script>
 <script language="javascript">
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");

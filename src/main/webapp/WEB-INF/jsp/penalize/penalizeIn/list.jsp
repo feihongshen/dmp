@@ -56,6 +56,8 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
+<script src="${pageContext.request.contextPath}/js/inputer.js"></script>
 <script language="javascript">
 var file_id;
 $(function(){

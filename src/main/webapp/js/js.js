@@ -5315,7 +5315,7 @@ function selectbranchUsers(targetid,oldid){
 	$.ajax({
 		url:$("#getbranchusers").val(),
 		type:"POST",
-		data:"dutybranchid="+$("#"+oldid).val(),
+		data:"dutybranchid="+$("#"+oldid+"_value").val(),
 	dataType:'json',
 	success:function (json){
 		$("#"+targetid).empty();
