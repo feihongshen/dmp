@@ -3350,6 +3350,12 @@ public class CwbOrderService {
 			String comment, String packagecode, boolean anbaochuku) {
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		
+		//审核未上门拒退的订单不允许做退货出站操作
+		if(co.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),ExceptionCwbErrorTypeEnum.SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN);
+		}
+		
 		if (this.userDAO.getAllUserByid(user.getUserid()).getIsImposedOutWarehouse() == 0) {
 			forceOut = false;
 		}
@@ -3384,11 +3390,6 @@ public class CwbOrderService {
 		// //原包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
-		
-		//审核未上门拒退的订单不允许做退货出站操作
-		if(co.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){
-			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),ExceptionCwbErrorTypeEnum.SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN);
-		}
 		
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
