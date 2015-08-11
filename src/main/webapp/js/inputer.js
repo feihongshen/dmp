@@ -1,6 +1,6 @@
 ﻿$().ready(function(){
 	 $("select[id*=branch]").each(function(){
-		 LoadInputer($(this)[0].id);	 
+		// LoadInputer($(this)[0].id);	 
 	 });
 
 }
