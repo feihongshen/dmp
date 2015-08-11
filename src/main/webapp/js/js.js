@@ -5315,7 +5315,7 @@ function selectbranchUsers(targetid,oldid){
 	$.ajax({
 		url:$("#getbranchusers").val(),
 		type:"POST",
-		data:"dutybranchid="+$("#"+oldid+"_value").val(),
+		data:"dutybranchid="+$("#"+oldid).val(),
 	dataType:'json',
 	success:function (json){
 		$("#"+targetid).empty();
@@ -6999,3 +6999,18 @@ function submitchatcontent(){
 	document.getElementById('chattextareaid').innerHtml='';
 }
 
+function selectbranchUsersInputer(targetid,oldid){
+	$.ajax({
+		url:$("#getbranchusers").val(),
+		type:"POST",
+		data:"dutybranchid="+$("#"+oldid+"_value").val(),
+		dataType:'json',
+		success:function (json){
+			$("#"+targetid).empty();
+			$("<option value ='0'>==请选择机构责任人==</option>").appendTo("#"+targetid);// 添加下拉框的option
+			for (var j = 0; j < json.length; j++) {
+				$("<option value=' "+ json[j].userid +" '>"+json[j].realname+"</option>").appendTo("#"+targetid);
+			}
+		}
+	});
+}
