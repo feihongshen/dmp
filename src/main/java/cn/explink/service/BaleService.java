@@ -1207,7 +1207,11 @@ public class BaleService {
 	}
 	public void validateStateTransfer(CwbOrder co, FlowOrderTypeEnum flowEnum,String text) {
 		CwbFlowOrderTypeEnum fromstate = CwbFlowOrderTypeEnum.getText((int) co.getFlowordertype());
-		if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) == null)) {
+		if(co.getFlowordertype()==FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()){
+			if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) != null)) {
+				throw new CwbException(co.getCwb(), flowEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), text);
+			}
+		}else if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) == null)) {
 			throw new CwbException(co.getCwb(), flowEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), text);
 		}
 	}
