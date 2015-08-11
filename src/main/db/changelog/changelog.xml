@@ -8196,4 +8196,9 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO `express_set_system_install` (`name`, `value`, `chinesename`) VALUES('punishinsidezidongshenheshixiao','72','对内扣罚自动审核时效(小时为单位)');
 		</sql>
 	</changeSet>
+	<changeSet id="lichongchong-2015-08-11-01" author="lichongchong">
+		<sql>
+			ALTER TABLE express_set_branch_contract ADD COLUMN branchId INT(11) DEFAULT 0 COMMENT '加盟商id';
+		</sql>
+	</changeSet>
 </databaseChangeLog>
