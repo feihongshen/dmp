@@ -103,7 +103,7 @@ long roleid=Long.parseLong(request.getAttribute("roleid").toString());
 						</tr>
 						<tr  class="font_1">
 						<td align="left" valign="top">
-						责任机构<font color="red">*</font>:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers('dutynameAdd','dutybranchid');" class="select1" <%if(roleid!=1){ %>  disabled="disabled" <%} %>>
+						责任机构<font color="red">*</font>:<select  id="dutybranchid" name="dutybranchid" onchange="selectbranchUsers('dutynameAdd','dutybranchid');" class="select1" disabled="disabled">
 							<option value="0" selected="selected">请选择责任机构</option>
 							<%if(branchList!=null){for(Branch branch:branchList){ %>
 							<option value="<%=branch.getBranchid() %>" <%if(branch.getBranchid()==penalizeInsideview.getDutybrachid()){ %> selected="selected" <% }%>><%=branch.getBranchname() %></option>
