@@ -1437,8 +1437,7 @@ public class CwbOrderService {
 	 * @author jinghui.pan@pjbest.com
 	 */
 	private boolean isOxoAndJitType(CwbOrder co){
-		int cwbOrderTypeId = co.getCwbordertypeid();
-		return (CwbOrderTypeIdEnum.OXO.getValue() == cwbOrderTypeId || isJitType(co));
+		return (isOxoType(co) || isJitType(co));
 	}
 	
 	/**
@@ -1449,6 +1448,16 @@ public class CwbOrderService {
 	private boolean isJitType(CwbOrder co){
 		int cwbOrderTypeId = co.getCwbordertypeid();
 		return (CwbOrderTypeIdEnum.OXO_JIT.getValue() == cwbOrderTypeId) ;
+	}
+	
+	/**
+	 * 判断，订单类型是否为 'OXO'
+	 * 
+	 * @author jinghui.pan@pjbest.com
+	 */
+	private boolean isOxoType(CwbOrder co){
+		int cwbOrderTypeId = co.getCwbordertypeid();
+		return (CwbOrderTypeIdEnum.OXO.getValue() == cwbOrderTypeId) ;
 	}
 	
 	private void handleSubstationGoods(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
@@ -1503,6 +1512,13 @@ public class CwbOrderService {
 				this.jdbcTemplate.update(sqlstr, currentbranchid, co.getCwb());
 			}
 		}
+		//修复oxo订单，一票多件到错货的缺陷.
+		//TODO:但是这里有个问题，就是不同站点扫描不同运单，导致nextbranchid反复变化，
+		if(isOxoType(co)){
+			String sqlstr = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
+			this.jdbcTemplate.update(sqlstr, currentbranchid, co.getCwb());
+		}
+		
 		// ======按包到货时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
