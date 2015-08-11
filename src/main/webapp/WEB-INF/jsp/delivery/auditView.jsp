@@ -248,8 +248,8 @@ $("#subButton").click(function(){
 			zanbuchuliTrStr = zanbuchuliTrStr+"'"+$("tr[gcaid='-1']").eq(i).attr("id")+"',";
 		}
 		zanbuchuliTrStr = zanbuchuliTrStr.substring(0, zanbuchuliTrStr.length-1);
-		if($("#yfkcwb").val()=="0"){
-			alert("没有要归班的订单");
+		if($("input[type='checkbox']").attr("checked")==undefined){
+			alert("请勾选已反馈的订单！");
 		}else{
 			$.ajax({type: "POST",
 				url:"sub",
