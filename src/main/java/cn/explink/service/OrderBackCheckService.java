@@ -1,5 +1,6 @@
 package cn.explink.service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,9 +60,13 @@ public class OrderBackCheckService {
 		return list;
 	}
 
-	public List<OrderBackCheck> getOrderBackCheckList2(List<OrderBackCheck> orderbackList, List<Customer> customerList, List<Branch> branchList) {
+	public List<OrderBackCheck> getOrderBackCheckList2(List<OrderBackCheck> orderbackList, List<Customer> customerList, List<Branch> branchList) throws ParseException {
 		if (orderbackList != null && !orderbackList.isEmpty()) {
 			for (OrderBackCheck o : orderbackList) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				String strcre = o.getCreatetime();
+				Date date = sdf.parse(strcre);
+				o.setCreatetime(sdf.format(date));
 				o.setCustomername(dataStatisticsService.getQueryCustomerName(customerList, o.getCustomerid()));// 供货商的名称
 				o.setFlowordertypename(FlowOrderTypeEnum.getText(o.getFlowordertype()).getText());
 				o.setCwbordertypename(CwbOrderTypeIdEnum.getByValue(o.getCwbordertypeid()).getText());
