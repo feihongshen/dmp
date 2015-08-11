@@ -7,6 +7,7 @@ List<Exportmould> exportmouldlist =(List<Exportmould>) request.getAttribute("exp
 Page page_obj =(Page)request.getAttribute("page_obj");
 Object cwbs =request.getAttribute("cwbs");
 Object branchids =request.getAttribute("branchids");
+Object warhouseids =request.getAttribute("warhouseids");
 Object startime =request.getAttribute("startime");
 Object endtime =request.getAttribute("endtime");
 Object flag =request.getAttribute("flag");
@@ -38,6 +39,7 @@ System.out.println("sssssssssssssssss"+p+" "+o);
 		<input type="hidden" id="detail_branchids" name="detail_branchids" value='<%=branchids%>'/>
 			<input type="hidden" id="detail_startime" name="detail_startime"  value='<%=startime%>'/>
 			<input type="hidden" id="detail_endtime" name="detail_endtime"  value='<%=endtime%>'/>
+			<input type="hidden" id="warhouseids" name="warhouseids"  value='<%=warhouseids%>'/>
 			<input type="hidden" id="flag" name="flag"  value="<%=flag%>"/> 
 					<%if(cOrders != null && cOrders.size()>0){  %>
 			<select name ="exportmould" id ="exportmould">
@@ -123,6 +125,7 @@ System.out.println("sssssssssssssssss"+p+" "+o);
 			<input type="hidden" id="detail_startime" name="detail_startime"  value='<%=startime%>'/>
 			<input type="hidden" id="detail_endtime" name="detail_endtime"  value='<%=endtime%>'/>
 			<input type="hidden" id="flag" name="flag"  value="<%=flag%>"/> 
+			<input type="hidden" id="warhouseids" name="warhouseids" value="<%=warhouseids%>"/> 
 		
 		</form>
 		

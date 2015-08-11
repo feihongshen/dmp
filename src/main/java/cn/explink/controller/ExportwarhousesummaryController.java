@@ -205,11 +205,14 @@ public class ExportwarhousesummaryController {
 	@RequestMapping("/detail/{page}")
 	public String detail(Model model, HttpServletRequest request, @PathVariable("page") long page, @RequestParam(value = "detail_branchids", required = false, defaultValue = "") String branchids,
 			@RequestParam(value = "detail_startime", required = false, defaultValue = "") String startime, @RequestParam(value = "detail_endtime", required = false, defaultValue = "") String endtime,
-			@RequestParam(value = "flag", required = false, defaultValue = "") String flag) {
+			@RequestParam(value = "flag", required = false, defaultValue = "") String flag,
+			@RequestParam(value = "warhouseids", required = false, defaultValue = "") String warhouseids
+			) {
 		model.addAttribute("branchids", branchids);
 		model.addAttribute("startime", startime);
 		model.addAttribute("endtime", endtime);
 		model.addAttribute("flag", flag);
+		model.addAttribute("warhouseids", warhouseids);
 		branchids = "'" + branchids.replace(",", "','") + "'";
 		List<CwbOrder> cwbOrders = null;
 		int count = 0;
@@ -217,17 +220,17 @@ public class ExportwarhousesummaryController {
 			cwbOrders = this.exDAO.getCwbsByeveryday(page, branchids, startime);
 			count = this.exDAO.getCwbsByeverydaycount(branchids, startime);
 		} else if (flag.equals("2")) {
-			cwbOrders = this.exDAO.getCwbsByBrancheveryday(page, branchids, startime);
-			count = this.exDAO.getCwbsByBrancheverydaycount(branchids, startime);
+			cwbOrders = this.exDAO.getCwbsByBrancheveryday(page, warhouseids, branchids, startime);
+			count = this.exDAO.getCwbsByBrancheverydaycount(warhouseids,branchids, startime);
 		} else if (flag.equals("3")) {
-			cwbOrders = this.exDAO.getCwbsByAlleveryday(page, branchids, startime, endtime);
+			cwbOrders = this.exDAO.getCwbsByAlleveryday(page,branchids, startime, endtime);
 			count = this.exDAO.getCwbsByAlleverydaycount(branchids, startime, endtime);
 		} else if (flag.equals("4")) {
-			cwbOrders = this.exDAO.getCwbsByALLBrancheveryday(page, branchids, startime, endtime);
-			count = this.exDAO.getCwbsByALLBrancheverydaycount(branchids, startime, endtime);
+			cwbOrders = this.exDAO.getCwbsByALLBrancheveryday(page,warhouseids, branchids, startime, endtime);
+			count = this.exDAO.getCwbsByALLBrancheverydaycount(warhouseids,branchids, startime, endtime);
 		} else if (flag.equals("5")) {
-			cwbOrders = this.exDAO.getCwbsByBranchAllday(page, branchids, startime, endtime);
-			count = this.exDAO.getCwbsByBranchAlldaycount(branchids, startime, endtime);
+			cwbOrders = this.exDAO.getCwbsByBranchAllday(page,warhouseids, branchids, startime, endtime);
+			count = this.exDAO.getCwbsByBranchAlldaycount(warhouseids,branchids, startime, endtime);
 		}
 		String cwbs = "'";
 		for (CwbOrder cwb : cwbOrders) {
@@ -390,27 +393,10 @@ public class ExportwarhousesummaryController {
 	}
 
 	@RequestMapping("/exportExcle")
-	public void exportExcle(Model model, HttpServletResponse response, /*
-																		 * @
-																		 * RequestParam
-																		 * (
-																		 * value
-																		 * =
-																		 * "cwbs"
-																		 * ,
-																		 * required
-																		 * =
-																		 * false
-																		 * ,
-																		 * defaultValue
-																		 * = "")
-																		 * final
-																		 * String
-																		 * cwbs0
-																		 * ,
-																		 */
+	public void exportExcle(Model model, HttpServletResponse response, 
 			@RequestParam(value = "exportmould", required = false, defaultValue = "") final String exportmould, @RequestParam(value = "p", required = false, defaultValue = "") long p,
 			@RequestParam(value = "detail_branchids", required = false, defaultValue = "") String branchids,
+			@RequestParam(value = "warhouseids", required = false, defaultValue = "") String warhouseids,
 			@RequestParam(value = "detail_startime", required = false, defaultValue = "") String startime, @RequestParam(value = "detail_endtime", required = false, defaultValue = "") String endtime,
 			@RequestParam(value = "flag", required = false, defaultValue = "") String flag) {
 		branchids = "'" + branchids.replace(",", "','") + "'";
@@ -418,17 +404,17 @@ public class ExportwarhousesummaryController {
 		int count = 0;
 		String str = "";
 		if (flag.equals("1")) {
-			str += " SELECT a.* FROM express_ops_cwb_detail a," + "express_ops_order_intowarhouse b " + " WHERE a.cwb=b.cwb and a.state=1 AND b.branchid in (" + branchids + ") "
+			str += " SELECT a.* FROM express_ops_cwb_detail a," + "express_ops_order_intowarhouse b " + " WHERE  a.cwb=b.cwb and a.state=1 AND b.branchid in (" + branchids + ") "
 					+ " and   b.flowordertype='4' " + " and   b.state='1' " + " and   b.credate >= '" + startime + " 00:00:00" + "'" + " and   b.credate <= '" + startime + " 23:59:59" + "'"
 					+ " limit " + ((p - 1) * Page.EXCEL_PAGE_NUMBER) + " ," + Page.EXCEL_PAGE_NUMBER;
 
 			count = this.exDAO.getCwbsByeverydaycount(branchids, startime);
 		} else if (flag.equals("2")) {
-			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE a.cwb=b.cwb and a.state=1 AND" + " b.nextbranchid in (" + branchids + ") "
+			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE b.startbranchid in ("+warhouseids+") and a.cwb=b.cwb and a.state=1 AND" + " b.nextbranchid in (" + branchids + ") "
 					+ " and   b.state='1' " + " and   b.credate >= '" + startime + " 00:00:00" + "'" + " and   b.credate <= '" + startime + " 23:59:59" + "'" + " limit " + ((p - 1)
 					* Page.EXCEL_PAGE_NUMBER) + " ," + Page.EXCEL_PAGE_NUMBER;
 
-			count = this.exDAO.getCwbsByBrancheverydaycount(branchids, startime);
+			count = this.exDAO.getCwbsByBrancheverydaycount(warhouseids,branchids, startime);
 		} else if (flag.equals("3")) {
 			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_order_intowarhouse b  WHERE a.cwb=b.cwb and a.state=1 AND" + " b.branchid in (" + branchids + ") "
 					+ " and   b.flowordertype='4' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + ((p - 1)
@@ -436,17 +422,17 @@ public class ExportwarhousesummaryController {
 
 			count = this.exDAO.getCwbsByAlleverydaycount(branchids, startime, endtime);
 		} else if (flag.equals("4")) {
-			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE a.cwb=b.cwb and a.state=1 " + " and   b.nextbranchid in (" + branchids + ")  "
+			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE b.startbranchid in ("+warhouseids+") and a.cwb=b.cwb and a.state=1 " + " and   b.nextbranchid in (" + branchids + ")  "
 					+ " and   b.type='1' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + ((p - 1) * Page.EXCEL_PAGE_NUMBER)
 					+ " ," + Page.EXCEL_PAGE_NUMBER;
 
-			count = this.exDAO.getCwbsByALLBrancheverydaycount(branchids, startime, endtime);
+			count = this.exDAO.getCwbsByALLBrancheverydaycount(warhouseids,branchids, startime, endtime);
 		} else if (flag.equals("5")) {
-			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE a.cwb=b.cwb and a.state=1 " + " and   b.nextbranchid in (" + branchids + ")  "
+			str += " SELECT a.* FROM express_ops_cwb_detail a,express_ops_warehouse_to_branch b  WHERE b.startbranchid in ("+warhouseids+") and a.cwb=b.cwb and a.state=1 " + " and   b.nextbranchid in (" + branchids + ")  "
 					+ " and   b.type='1' " + " and   b.state='1' " + " and b.credate >= '" + startime + "'" + " and b.credate <= '" + endtime + "'" + " limit " + ((p - 1) * Page.EXCEL_PAGE_NUMBER)
 					+ " ," + Page.EXCEL_PAGE_NUMBER;
 
-			count = this.exDAO.getCwbsByBranchAlldaycount(branchids, startime, endtime);
+			count = this.exDAO.getCwbsByBranchAlldaycount(warhouseids,branchids, startime, endtime);
 		}
 		p++;
 		model.addAttribute("p", p);

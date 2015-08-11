@@ -321,8 +321,9 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
-	public List<CwbOrder> getCwbsByeveryday(long page, String branchid, String strtime) {
-		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
+	public List<CwbOrder> getCwbsByeveryday(long page,String branchid, String strtime) {
+		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE "
+				+ " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
@@ -344,7 +345,8 @@ public class ExportwarhousesummaryDAO {
 	}
 
 	public int getCwbsByeverydaycount(String branchid, String strtime) {
-		String sql = " select COUNT(cwb) " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
+		String sql = " select COUNT(cwb) " + " from express_ops_order_intowarhouse  " + " WHERE "
+				+ " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and SUBSTR(credate,1,10) = '" + strtime + "'";
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
@@ -362,7 +364,8 @@ public class ExportwarhousesummaryDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getCwbsByAlleveryday(long page, String branchid, String strtime, String endtime) {
-		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
+		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE "
+				+ " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 
@@ -374,7 +377,8 @@ public class ExportwarhousesummaryDAO {
 	}
 
 	public int getCwbsByAlleverydaycount(String branchid, String strtime, String endtime) {
-		String sql = " select COUNT(cwb) " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
+		String sql = " select COUNT(cwb) " + " from express_ops_order_intowarhouse  " + " WHERE "
+				+ " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'";
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
@@ -391,8 +395,10 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
-	public List<CwbOrder> getCwbsByBrancheveryday(long page, String branchid, String strtime) {
-		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
+	public List<CwbOrder> getCwbsByBrancheveryday(long page, String warhouseids,String branchid, String strtime) {
+		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE "
+	+ " startbranchid in ("+warhouseids+") and"
+	+ " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
 				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
@@ -402,8 +408,10 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
-	public int getCwbsByBrancheverydaycount(String branchid, String strtime) {
-		String sql = " select Count(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
+	public int getCwbsByBrancheverydaycount(String warhouseids,String branchid, String strtime) {
+		String sql = " select Count(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE " 
+				+ " startbranchid in ("+warhouseids+") and"
+				+ " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
 				+ " and SUBSTR(credate,1,10) = '" + strtime + "'";
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
@@ -420,8 +428,10 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
-	public List<CwbOrder> getCwbsByBranchAllday(long page, String branchid, String strtime, String endtime) {
-		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' " + " and credate > '"
+	public List<CwbOrder> getCwbsByBranchAllday(long page,String warhouseids, String branchid, String strtime, String endtime) {
+		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE "
+				+ " startbranchid in ("+warhouseids+") and"
+				+ " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' " + " and credate > '"
 				+ strtime + "'" + " and credate < '" + endtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
@@ -431,8 +441,10 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
-	public int getCwbsByBranchAlldaycount(String branchid, String strtime, String endtime) {
-		String sql = " select COUNT(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
+	public int getCwbsByBranchAlldaycount(String warhouseids,String branchid, String strtime, String endtime) {
+		String sql = " select COUNT(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE "
+				+ " startbranchid in ("+warhouseids+") and"
+				+ " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
 				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'";
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
@@ -449,8 +461,10 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
-	public List<CwbOrder> getCwbsByALLBrancheveryday(long page, String branchid, String strtime, String endtime) {
-		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' " + " and credate > '"
+	public List<CwbOrder> getCwbsByALLBrancheveryday(long page,String warhouseids, String branchid, String strtime, String endtime) {
+		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE "
+				+ " startbranchid in ("+warhouseids+") and"
+				+ " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' " + " and credate > '"
 				+ strtime + "'" + " and credate < '" + endtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		;
 		try {
@@ -460,8 +474,10 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
-	public int getCwbsByALLBrancheverydaycount(String branchid, String strtime, String endtime) {
-		String sql = " select COUNT(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE " + " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
+	public int getCwbsByALLBrancheverydaycount(String warhouseids,String branchid, String strtime, String endtime) {
+		String sql = " select COUNT(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE "
+				+ " startbranchid in ("+warhouseids+") and"
+				+ " nextbranchid in (" + branchid + ") " + " and   type='1' " + " and   state='1' "
 				+ " and credate > '" + strtime + "'" + " and credate < '" + endtime + "'";
 		try {
 			return this.jdbcTemplate.queryForInt(sql);

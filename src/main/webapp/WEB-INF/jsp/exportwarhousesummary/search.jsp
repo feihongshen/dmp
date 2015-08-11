@@ -242,7 +242,7 @@ $("#detailForm").submit();
 								<td width="110px" align="center" valign="middle">0</td>
 						<% }
 								else{%>
-								<td width="110px" align="center" valign="middle"><a href="javascript:detail('<%=credate%>','','<%=branchids%>','2')"><%=everdaysum %></a></td>
+								<td width="110px" align="center" valign="middle"><a href="javascript:detail('<%=credate%>','','<%=branchids%>','2','<%=warhouseids%>')"><%=everdaysum %></a></td>
 								</tr>
 								<%}} %>
 									<tr class="font_1" height="30">
@@ -273,6 +273,7 @@ $("#detailForm").submit();
 			<input type="hidden" id="detail_startime" name="detail_startime"/>
 			<input type="hidden" id="detail_endtime" name="detail_endtime"/>
 			<input type="hidden" id="flag" name="flag"/> 
+			<input type="hidden" id="warhouseids" name="warhouseids" value="<%=warhouseids%>"/> 
 				</form>
 </body>
 </html>
