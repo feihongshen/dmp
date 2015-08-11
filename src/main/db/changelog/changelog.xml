@@ -8215,4 +8215,9 @@ CREATE TABLE `cs_complaint_accept` (
 				) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 			</sql>
 		</changeSet>
+	<changeSet id="wangqiang-2015-08-11-01" author="wangqiang">
+	   	<sql>
+	   		UPDATE dmp40_function SET id='502070',functionorder = '502070', parentfunctionid = '5020' WHERE functionname = '退货站入库交接单打印';
+	   </sql>
+	</changeSet>	
 </databaseChangeLog>
