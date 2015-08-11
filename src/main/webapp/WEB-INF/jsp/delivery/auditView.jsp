@@ -213,11 +213,11 @@ $(function(){
 $("#subButton").click(function(){
 	var shenehTypeCheckbox=$("input[type='checkbox']");
 	var checkedArray=[];
-	var i=0;
+	var k=0;
 	$.each(shenehTypeCheckbox,function (i,a){
 		if($(a).attr("checked")){
-			checkedArray[i]=$(a).val();
-			i=i+1;
+			checkedArray[k]=$(a).val();
+			k=k+1;
 		}
 	});
 	var subTrStr = "";
@@ -931,7 +931,7 @@ function exportYifankui(){
 								<%} %>
 							</tr>
 							<%for(DeliveryStateView ds:dsDTO.getFankui_diushiList()){ %>
-							<tr id="<%=ds.getCwb() %>" keyName="shangmenhuan_chenggong" gcaid="<%=ds.getGcaid() %>">
+							<tr id="<%=ds.getCwb() %>" keyName="diushi" gcaid="<%=ds.getGcaid() %>">
 								<td width="10%" align="center" valign="middle"><a  target="_blank" href="<%=request.getContextPath() %>/order/queckSelectOrder/<%=ds.getCwb()%>" ><%=ds.getCwb()+ds.isHistory() %></a></td>
 								<td width="5%" align="center" valign="middle" >
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
