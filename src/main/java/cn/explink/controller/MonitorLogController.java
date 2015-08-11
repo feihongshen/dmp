@@ -621,7 +621,7 @@ public class MonitorLogController {
 						String wheresql =" ( " +
 						 		" cwb in("+cwbs1+")" +
 						 		" or cwb in("+cwbs2+")) or  ";
-					sql1 =   cwbDAO.getMonitorLogByTypeSql(wheresql,branchid,lbranchids);
+					sql1 =   cwbDAO.getMonitorLogByTypeSqlAll(wheresql,branchid,lbranchids);
 				}
 			}
 			final String sql =sql1;

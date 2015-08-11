@@ -5992,11 +5992,20 @@ public class CwbDAO {
 
 	public String getMonitorLogByTypeSql(String wheresql, String branchid, String branchids) {
 
-		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  ( " + wheresql + " (flowordertype in(1,2)  and "
-				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 ) )AND state=1  " + "");
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  (" + wheresql + "  "
+				+ (branchid.length() > 0 ? " and nextbranchid in(" + branchid + ") " : " ") + ") AND state=1  " + "");
 
 		System.out.println(sql);
 
+		return sql.toString();
+	}
+	public String getMonitorLogByTypeSqlAll(String wheresql, String branchid, String branchids) {
+		
+		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  ( " + wheresql + " (flowordertype in(1,2)  and "
+				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 ) )AND state=1  " + "");
+		
+		System.out.println(sql);
+		
 		return sql.toString();
 	}
 
