@@ -3363,7 +3363,12 @@ public class CwbOrderService {
 		// //原包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
-
+		
+		//审核未上门拒退的订单不允许做退货出站操作
+		if(co.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),ExceptionCwbErrorTypeEnum.SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN);
+		}
+		
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3684,6 +3689,9 @@ public class CwbOrderService {
 
 	private void handleReceiveGoods(User user, String cwb, String scancwb, long currentbranchid, User deliveryUser, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum,
 			long isypdjusetranscwb, boolean isypdj) {
+	    if(co.getScannum()<co.getSendcarnum()){
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(),ExceptionCwbErrorTypeEnum.YIPIAODUOJIAN_DAOHUOBUQUAN);
+		}
 		this.validateCwbState(co, flowOrderTypeEnum);
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);

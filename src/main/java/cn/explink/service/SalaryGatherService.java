@@ -170,7 +170,7 @@ public class SalaryGatherService {
 		return salaryfee;
 	}
 	//个税计算公式
-	public BigDecimal getTax(BigDecimal salaryaccrual) {
+	public BigDecimal getTax(BigDecimal salaryaccrual) throws Exception{
 		BigDecimal bdreal = BigDecimal.ZERO;
 		BigDecimal tax = BigDecimal.ZERO;
 		DecimalFormat df = new DecimalFormat("0.00");
@@ -244,7 +244,7 @@ public class SalaryGatherService {
 		//List<Smtcount> linghuos  = this.deliveryStateDAO.getLinghuocwbs(userid,starttime,endtime);
 	}*/
 	@SuppressWarnings("unused")
-	public List<BigDecimal> getKpiOthers(long userid,String starttime,String endtime){
+	public List<BigDecimal> getKpiOthers(long userid,String starttime,String endtime) throws Exception{
 		List<Map> mapLists = new ArrayList<Map>();
 		List<Map> mapList = new ArrayList<Map>();
 		List<Smtcount> scList = this.deliveryStateDAO.getShenheCount(userid,starttime,endtime);

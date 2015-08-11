@@ -40,6 +40,7 @@ import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbApplyZhongZhuanDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.CwbStateControlDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
@@ -72,6 +73,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -141,6 +143,8 @@ public class BaleService {
 	CwbApplyZhongZhuanDAO applyZhongZhuanDAO;
 	@Autowired
 	OrderBackCheckDAO orderBackCheckDAO;
+	@Autowired
+	CwbStateControlDAO cwbStateControlDAO;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -1071,7 +1075,13 @@ public class BaleService {
 	/**
 	 * 订单的包验证（库房出库扫描、中转站出库扫描、退货出站）
 	 */
-	public void validateCwbBaleCheck(User user, String baleno, String cwb, CwbOrder co, long branchid, long flowOrderTypeEnum) {
+	public void validateCwbBaleCheck(User user, String baleno, String cwb, CwbOrder co, long branchid, long flowOrderTypeEnum,long currentbranchid,FlowOrderTypeEnum flowEnum) {
+		//==================做和订单出站相同的限制====================
+		if ((co.getFlowordertype() != flowOrderTypeEnum) || (co.getStartbranchid() != currentbranchid)) {
+			String str = "合包";
+			this.validateStateTransfer(co, flowEnum,str);
+		}
+		
 		if (!"".equals(co.getPackagecode()) && (co.getPackagecode() != null)) {
 			Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
 			Branch userbranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
@@ -1191,10 +1201,17 @@ public class BaleService {
 
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
-			this.validateCwbBaleCheck(user, baleno, cwb, co, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+			this.validateCwbBaleCheck(user, baleno, cwb, co, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),currentbranchid,FlowOrderTypeEnum.ChuKuSaoMiao);
+		}
+		
+	}
+	public void validateStateTransfer(CwbOrder co, FlowOrderTypeEnum flowEnum,String text) {
+		CwbFlowOrderTypeEnum fromstate = CwbFlowOrderTypeEnum.getText((int) co.getFlowordertype());
+		if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) == null)) {
+			throw new CwbException(co.getCwb(), flowEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), text);
 		}
 	}
-
+	
 	/**
 	 * 退货出站根据包号扫描订单检查
 	 *
@@ -1243,7 +1260,7 @@ public class BaleService {
 
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
-			this.validateCwbBaleCheck(user, baleno, cwb, co, branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue());
+			this.validateCwbBaleCheck(user, baleno, cwb, co, branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),currentbranchid,FlowOrderTypeEnum.TuiHuoChuZhan);
 
 		}
 	}
@@ -1333,6 +1350,12 @@ public class BaleService {
 			}
 			// ==================验证订单状态End=======================
 
+			// =========中转订单合包时与订单直接中转出库做相同验证==============
+			//==================做和订单出站相同的限制====================
+			if ((co.getFlowordertype() != FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getStartbranchid() != currentbranchid)) {
+				this.validateStateTransfer(co, FlowOrderTypeEnum.ChuKuSaoMiao,"合包");
+			}
+			
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
 			if (co.getPackagecode()!=null&&!"".equals(co.getPackagecode())) {
@@ -1358,6 +1381,7 @@ public class BaleService {
 					}
 				}
 			}
+			
 			
 			//分站滞留的订单不允许操作中转出站
 			if((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue())){
@@ -1400,7 +1424,7 @@ public class BaleService {
 
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
-			this.validateCwbBaleCheck(user, baleno, cwb, co, branchid, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());
+			this.validateCwbBaleCheck(user, baleno, cwb, co, branchid, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(),currentbranchid,FlowOrderTypeEnum.TuiGongYingShangChuKu);
 
 		}
 	}

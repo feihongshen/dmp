@@ -185,7 +185,8 @@ public class OrderBackCheckService {
 		orderBackCheck.setCwb(co.getCwb());
 		orderBackCheck.setCustomerid(co.getCustomerid());
 		orderBackCheck.setCwbordertypeid(co.getCwbordertypeid());
-		orderBackCheck.setFlowordertype(co.getFlowordertype());
+		//审核时插入退货出站申请表
+		orderBackCheck.setFlowordertype(FlowOrderTypeEnum.YiShenHe.getValue());
 		orderBackCheck.setCwbstate(cwbstate);// 拒收 配送结果
 		orderBackCheck.setConsigneename(co.getConsigneename());
 		orderBackCheck.setConsigneephone(co.getConsigneephone());

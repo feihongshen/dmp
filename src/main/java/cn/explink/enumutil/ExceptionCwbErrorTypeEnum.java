@@ -75,7 +75,9 @@ public enum ExceptionCwbErrorTypeEnum {
 	NOT_EXPRESS_CWB(137,"单号{0}不是快递单，不允许揽件出站"),
 	CURRENT_BRANCH_NOT_MATCH(138,"不是这个站点的运单/包号,下一站为{0}站"),
 	REPEATED_OUT_STATION(139,"运单/包号重复出站,下一站为{0}站"),
-	NEXT_BRANCH_NOT_MATCH(139,"页面所选下一站{0}和运单/包的下一站{1}不一致")
+	NEXT_BRANCH_NOT_MATCH(139,"页面所选下一站{0}和运单/包的下一站{1}不一致"),
+	YIPIAODUOJIAN_DAOHUOBUQUAN(140,"一票多件订单到货不全,不许领货操作!"),
+	SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN(141,"审核为上门拒退的订单不允许做退货出站操作!")
 	;
 
 	private int value;
