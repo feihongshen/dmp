@@ -22,14 +22,32 @@ List<User> driverList = (List<User>)request.getAttribute("driverList");
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
-	$("#beginemaildate").datepicker();
-	$("#endemaildate").datepicker();
+/* 	$("#beginemaildate").datepicker();
+	$("#endemaildate").datepicker(); */
+	
+	$("#beginemaildate").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	$("#endemaildate").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
 });
 </script>
 </head>
@@ -40,12 +58,12 @@ $(function(){
 	</span>
 	<form action="1" method="post" id="searchForm" name="searchForm">
 		驾驶员：<select name="userid" id="userid">
-        <option value="0">请选择驾驶员</option>
+        <option value="0">---请选择---</option>
         <%for(User u :driverList){ %>
            <option value="<%=u.getUserid()%>"><%=u.getRealname()%></option>
         <%} %>
         </select>　
-		发货时间段：
+		退货站入库时间：
 		 <input type ="text" name ="beginemaildate" id ="beginemaildate" class="input_text1" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("beginemaildate")) %>" />&nbsp;到
 		 <input type ="text" name= "endemaildate" id ="endemaildate" class="input_text1" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("endemaildate")) %>" />     
 	      　　<input type="submit" id="find" value="查询" class="input_button2" />
