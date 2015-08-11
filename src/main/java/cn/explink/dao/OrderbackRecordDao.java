@@ -128,4 +128,14 @@ public class OrderbackRecordDao {
 		String sql = "update express_ops_orderback_record set shenhestate=?,auditname=?,audittime=? where cwb=? order by id desc limit 1";
 		jdbcTemplate.update(sql,shenhestate,auditname,audittime,cwb);
 	}
+	
+	public OrderbackRecord getOBRecord(String cwb){
+		try{
+			String sql = "select * from express_ops_orderback_record where cwb=? order by id desc limit 1";
+			return this.jdbcTemplate.queryForObject(sql, new OrderbackRecordMapper(), cwb);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

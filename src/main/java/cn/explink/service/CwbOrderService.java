@@ -5128,8 +5128,17 @@ public class CwbOrderService {
 
 	private void handleCustomrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb,
 			boolean isypdj) {
+		
+		OrderbackRecord obre = this.orderbackRecordDao.getOBRecord(cwb);
+		if(obre!=null){
+			if(obre.getShenhestate()==0){
+				throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_DAIQUEREN);
+			}else if(obre.getShenhestate()==1){
+				throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_SUCCESS);
+			}
+		}
+		
 		this.validateCwbState(co, flowOrderTypeEnum);
-
 		this.validateStateTransfer(co, flowOrderTypeEnum);
 		this.validateRepeatScan(co,user,flowOrderTypeEnum);
 		String oldcwbremark = co.getCwbremark().length() > 0 ? co.getCwbremark() + "\n" : "";
