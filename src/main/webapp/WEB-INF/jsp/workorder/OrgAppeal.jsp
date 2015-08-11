@@ -30,42 +30,17 @@ List<CsShenSuChat> cschatlist=request.getAttribute("cschatlist")==null?null:(Lis
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>工单详情</h1>
 		<div id="box_form">				
-				
+			<table>
+			<tr>
+				<td>		
+						<form id="ShenSuChangeComplaintStateF" enctype="multipart/form-data" method="post" onsubmit="if(IfShenSu())submitShenSu(this);return false;" action="<%=request.getContextPath()%>/workorder/ShenSuChangeComplaintStateFile;jsessionid=<%=session.getId()%>" >
 					<table>
 						<tr>
 							<td align="right">工单号:</td><td><font color="croci"><%=cca.getAcceptNo() %></font></td>
 							<td align="right">工单状态:</td><td><font color="croci"><%=ComplaintStateEnum.getByValue1(cca.getComplaintState()).getText() %></font></td>
-							<td align="right">订单号:</td><td><font color="croci"><%=cca.getOrderNo() %></font></td>
-							<td valign="top">
-									<button onclick="showAndoffChatWin()">交谈记录</button>
-								
-							<div id="chatcontent" hidden="true" class="chat_listtxt">				
-									<table style="color: orange;" >
-										
-										<%if(cschatlist!=null){ %>
-											<%for(CsShenSuChat cs:cschatlist){ %>
-											<tr>
-												<%for(User u:alluser){%>
-													<%if(u.getUserid()==cs.getCreUser()){%>
-													<td><%=u.getRealname()%></td>													
-												<%} }%>
-													
-													<td><%=cs.getCreTime()%></td>
-											</tr>
-											<tr>
-													<td colspan="2"><%=cs.getCreChatContent()%></td>
-											</tr>
-											<br>
-											<%}} %>
-											
-									</table>
-									
-								</div>
-							
-							</td>
+							<td align="right">订单号:</td><td><font color="croci"><%=cca.getOrderNo() %></font></td>				
 						</tr>
 						<hr>
-			<form id="ShenSuChangeComplaintStateF" enctype="multipart/form-data" method="post" onsubmit="if(IfShenSu())submitShenSu(this);return false;" action="<%=request.getContextPath()%>/workorder/ShenSuChangeComplaintStateFile;jsessionid=<%=session.getId()%>" >
 						<tr>
 							
 								<td align="right">一级类型:</td><td><font color="croci"><%=oneleave%></font></td>
@@ -191,20 +166,61 @@ List<CsShenSuChat> cschatlist=request.getAttribute("cschatlist")==null?null:(Lis
 							<input type="hidden" value="<%=ComplaintStateEnum.YiJieAn.getValue()%>" id="yjav"/>
 						
 		</form>
-				</table>				
-		
-			<button onclick="showAndoffHuiFuChatWin()">是否回复</button>
+				</table>
+					</td>
+					<td valign="top">													
+								<div id="chatcontent" hidden="true" class="chat_listtxt">	
+								<table height=100% style=border-color:000000;border-left-style:solid;border-width:1px>
+									<tr>
+									<td valign=top>			
+										<table style="color: orange;">
+										
+										<%if(cschatlist!=null){ %>
+											<%for(CsShenSuChat cs:cschatlist){ %>
+											<tr>
+												<%for(User u:alluser){%>
+													<%if(u.getUserid()==cs.getCreUser()){%>
+													<td><%=u.getRealname()%></td>													
+												<%} }%>
+													
+													<td><%=cs.getCreTime()%></td>
+											</tr>
+											<tr>
+													<td colspan="2"><%=cs.getCreChatContent()%></td>
+											</tr>
+											<br>
+											<%}} %>
+											
+												</table>
+											</td>
+										</tr>
+									</table>
+								</div>
+							
+							</td>
+						
+				</tr>	
+			
+				<tr>
+					<td colspan="3" rowspan="3">
+						<button onclick="showAndoffHuiFuChatWin()" class="input_button2">回复</button>
+							<button onclick="showAndoffChatWin()" class="input_button2">交谈记录</button>	
 											<div id="ifShowTiJaoContent" hidden="true">
 											
 													<form id="chatcontentForm">
-																<textarea id="chattextareaid" cols="40" rows="4" name="chatcontenttext" onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'" maxlength="100"></textarea>
+																<textarea id="chattextareaid" cols="40" rows="4" name="chatcontenttext" onfocus="if(this.value == '最多100个字') this.value = ''" onblur="if(this.value == '') this.value = '最多100个字'" maxlength="100" style="margin: 3px 0px 0px; width: 687px; height: 53px;"></textarea>
 																<input id="chatacceptnoid" type="hidden" value="<%=cca.getAcceptNo()%>" name="acceptNo">
 													</form>
-												<input type="button" value="添加" onclick="submitchatcontent()">
+												<input type="button" value="发送内容" onclick="submitchatcontent()" class="input_button2">
 											</div>
 
 		
-			<input type="hidden" value="<%=request.getContextPath()%>/workorder/huiFuChat" id="chatcontentFormUrl">
+							<input type="hidden" value="<%=request.getContextPath()%>/workorder/huiFuChat" id="chatcontentFormUrl">
+					</td>
+				</tr>
+						
+		</table>
+			
 						
 	
 			</div>

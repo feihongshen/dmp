@@ -18,8 +18,7 @@
 <link rel="stylesheet" href="${ctx_path}/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css"
 	media="all" />
 <script src="${ctx_path}/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
-<script src="${ctx_path}/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
-<script src="${ctx_path}/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="${ctx_path}/js/jquery.uer-addon.js" type="text/javascript"></script>
 <script src="${ctx_path}/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="${ctx_path}/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script src="${ctx_path}/js/json2.min.js" type="text/javascript"></script>

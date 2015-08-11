@@ -6994,5 +6994,8 @@ function submitchatcontent(){
 	
 		}
 	});
+	
+	
+	document.getElementById('chattextareaid').innerHtml='';
 }
 
