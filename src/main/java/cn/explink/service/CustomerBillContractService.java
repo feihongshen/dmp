@@ -16,6 +16,10 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -284,7 +288,7 @@ public class CustomerBillContractService {
 	}
 	
 
-	public List<ImportBillExcel> getUploadExcel(InputStream fis) throws Exception {
+	public List<ImportBillExcel> getUploadExcelHSSF(InputStream fis) throws Exception {
 	
 			HSSFWorkbook xwb = new HSSFWorkbook(fis);			
 			boolean a=true;
@@ -333,6 +337,73 @@ public class CustomerBillContractService {
 		
 	}
 	
+	
+	public List<ImportBillExcel> getUploadExcelXSSF(InputStream fis) throws Exception {
+		
+		XSSFWorkbook xwb = new XSSFWorkbook(fis);			
+		boolean a=true;
+		XSSFSheet sheet = xwb.getSheetAt(0);
+		XSSFRow pdrows = sheet.getRow(0);
+		String titles[]={"订单号","基价","续重","返单费","返程费","代收款手续费","POS手续费","保价费","包装费","干线补贴"};
+		if(pdrows.getLastCellNum()==titles.length){
+			for(int i=0;i<=titles.length-1;i++){
+					if(!titles[i].equals(formatCell(pdrows.getCell(i)))){
+						a=false;					
+					}
+			}
+		
+		}else{
+			
+				a=false;
+			
+		}
+		if(a==true){
+			
+		List<ImportBillExcel> rows = new ArrayList<ImportBillExcel>();
+		
+		for(int rowNum=1;rowNum<=sheet.getLastRowNum();rowNum++){
+			
+				XSSFRow row = sheet.getRow(rowNum); // 从第二行开始，取出每一行
+				ImportBillExcel ib = new ImportBillExcel();
+				ib.setCwb(formatCell(row.getCell(0)));
+				ib.setJijiaMoney(new BigDecimal(formatCell(row.getCell(1))));
+				ib.setXuzhongMoney(new BigDecimal(formatCell(row.getCell(2))));
+				ib.setFandanMoney(new BigDecimal(formatCell(row.getCell(3))));
+				ib.setFanchengMoney(new BigDecimal(formatCell(row.getCell(4))));
+				ib.setDaishoukuanshouxuMoney(new BigDecimal(formatCell(row.getCell(5))));
+				ib.setPosShouxuMoney(new BigDecimal(formatCell(row.getCell(6))));
+				ib.setBaojiaMoney(new BigDecimal(formatCell(row.getCell(7))));
+				ib.setBaozhuangMoney(new BigDecimal(formatCell(row.getCell(8))));
+				ib.setGanxianbutieMoney(new BigDecimal(formatCell(row.getCell(9))));
+				
+				rows.add(ib);
+		}
+			
+			
+			return rows;
+		}
+		
+		return null;
+	
+}
+	
+	
+	
+	public static String formatCell(XSSFCell cell){//判断cell类型
+		if(cell==null){
+			return "";
+		}else{
+			if(cell.getCellType()==XSSFCell.CELL_TYPE_BOOLEAN){
+				return String.valueOf(cell.getBooleanCellValue());
+			}else if(cell.getCellType()==XSSFCell.CELL_TYPE_NUMERIC){
+				return String.valueOf(cell.getNumericCellValue());
+			}else{
+				return String.valueOf(cell.getStringCellValue());
+			}
+			
+		}
+	
+	}
 	
 	public static String formatCell(HSSFCell cell){//判断cell类型
 		if(cell==null){

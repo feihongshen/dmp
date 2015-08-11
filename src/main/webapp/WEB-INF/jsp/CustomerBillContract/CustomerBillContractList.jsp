@@ -753,20 +753,23 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endCo
 		   var fileName= $('#uploadExcel').val();  
 		   var a = $('#hv').val();
 		   $('#uploadbillBatches').val(a);
-
+            	  var d1=/\.[^\.]+$/.exec(fileName);
+            	  var flag;
+            	  if(d1==".xls"){  
+            		 flag=11;
+            	  }
+            	  if(d1==".xlsx"){  
+             		 flag=22;
+             	  }
               if(fileName==""){     
                  $.messager.alert('提示','请选择上传文件！','info');   
               }else{  
-            	  var d1=/\.[^\.]+$/.exec(fileName);   
                           
             	  $('#questionTypesManage').form('submit',{
-      	  			url:'${pageContext.request.contextPath}/CustomerBillContract/getupdateExcel',
+      	  			url:'${pageContext.request.contextPath}/CustomerBillContract/getupdateExcel?flag='+flag,
       	  			onSubmit: function(){
-      	  			if(d1==".xls"){      	  			 
+      	  			if(d1==".xls"||d1==".xlsx"){      	  			 
       	  				return true;
-      	  			}else if(d1==".xlsx"){
-      	  			 $.messager.alert('提示','您的Excel文件版本过高！','info');   
-      	  				return false;    	  				
       	  			}else{
 	      	  			 $.messager.alert('提示','请上传Excel文件！','info');   
 	   	  				return false;  

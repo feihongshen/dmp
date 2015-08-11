@@ -220,7 +220,7 @@ public class DataStatisticsService {
 			} else if (sign == 8) {// 分站到货
 				begindate = enddate = "";
 				currentBranchid = new String[] {};
-				String cid = request.getParameter("customerids") == null ? "" : request.getParameter("customerids");
+				String cid = (request.getParameter("customerids") == null||"0".equals(request.getParameter("customerids"))) ? "" : request.getParameter("customerids");
 				String[] cs = new String[] { cid };
 				customerids = cs;
 			} else if (sign == 9) {// 中转订单统计

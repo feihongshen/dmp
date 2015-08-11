@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import cn.explink.domain.CsComplaintAccept;
 import cn.explink.domain.CsComplaintAcceptVO;
 import cn.explink.domain.CsConsigneeInfo;
+import cn.explink.domain.CsShenSuChat;
 import cn.explink.util.Page;
 
 @Repository
@@ -20,6 +21,7 @@ public class WorkOrderDAO {
 
 	@Autowired
 	private JdbcTemplate jt;
+	
 	private final class WorkOrderRowMapper implements RowMapper<CsConsigneeInfo>{
 
 		@Override
@@ -799,7 +801,32 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		}
 
 		sql+=sb.toString();
-		System.out.println(sql);
+
 		return this.jt.queryForLong(sql);
+	}
+	
+	private  class CsShenSuChatClass implements RowMapper<CsShenSuChat>{
+
+		@Override
+		public CsShenSuChat mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+			CsShenSuChat cs = new CsShenSuChat();
+			cs.setCreTime(rs.getString("cre_time"));
+			cs.setCreChatContent(rs.getString("cre_chat_content"));
+			cs.setCreUser(rs.getLong("cre_user"));
+			cs.setAcceptNo(rs.getString("accept_no"));
+			return cs;
+		}
+	}		
+	public List<CsShenSuChat> getCsShenSuChatContentByAcceptNo(String acceptNo){
+		String sql="select * from cs_shensu_chat where accept_no='"+acceptNo+"'";
+		List<CsShenSuChat> cslist=jt.query(sql, new CsShenSuChatClass());
+		return cslist;
+		
+	}
+	
+	public void huifuChat(String creTime,String creContent,long creUser,String acceptNo){
+		String sql="insert into cs_shensu_chat(cre_time,cre_chat_content,cre_user,accept_no) values(?,?,?,?)";
+		this.jt.update(sql,creTime,creContent,creUser,acceptNo);
 	}
 }

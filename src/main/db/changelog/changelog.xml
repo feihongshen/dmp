@@ -8201,4 +8201,18 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE express_set_branch_contract ADD COLUMN branchId INT(11) DEFAULT 0 COMMENT '加盟商id';
 		</sql>
 	</changeSet>
+		<changeSet id="wangzhiyong-2015-08-11-01" author="wangzhiyong">
+			<sql>
+				DROP TABLE IF EXISTS `cs_shensu_chat`;
+				CREATE TABLE `cs_shensu_chat` (
+				  `cre_time` varchar(255) DEFAULT NULL,
+				  `cre_user` bigint(255) DEFAULT NULL,
+				  `cre_chat_content` text,
+				  `accept_no` varchar(255) DEFAULT NULL,
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  PRIMARY KEY (`id`),
+				  KEY `accept_no_index` (`accept_no`)
+				) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+			</sql>
+		</changeSet>
 </databaseChangeLog>

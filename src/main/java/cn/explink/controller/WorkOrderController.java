@@ -53,6 +53,7 @@ import cn.explink.domain.CsComplaintAcceptExportVO;
 import cn.explink.domain.CsComplaintAcceptVO;
 import cn.explink.domain.CsConsigneeInfo;
 import cn.explink.domain.CsConsigneeInfoVO;
+import cn.explink.domain.CsShenSuChat;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.Reason;
@@ -293,6 +294,8 @@ public class WorkOrderController {
 		
 		cca.setShensuUser(uname);
 		cca.setComplaintTime(nowtime);
+		List<CsShenSuChat> cschatlist=workorderdao.getCsShenSuChatContentByAcceptNo(acceptNo);
+		model.addAttribute("cschatlist", cschatlist);   
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
 		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		model.addAttribute("customerName",customerName);
@@ -733,14 +736,16 @@ public class WorkOrderController {
 		String uname=getSessionUser().getUsername();
 		cca.setHandleUser(uname);
 		cca.setJieanchongshenTime(nowtime);
+		List<CsShenSuChat> cschatlist=workorderdao.getCsShenSuChatContentByAcceptNo(acceptNo);
+		model.addAttribute("cschatlist", cschatlist);   
 		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
-		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
-		
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());		
 		model.addAttribute("lb", lb);   
 		model.addAttribute("cci", cci);
 		model.addAttribute("cca", cca);		//存入工单信息
 		model.addAttribute("co", co);    //存入订单信息表
 		model.addAttribute("alluser",userDao.getAllUser());
+		
 		return "workorder/WorkorderDetails";
 	}
 	
@@ -967,7 +972,9 @@ public class WorkOrderController {
 		CsComplaintAccept cca = new CsComplaintAccept();
 		cca.setComplaintResult(Integer.valueOf(JieAncomplaintResult));
 		cca.setJieanremark(jieanremark);
+		if(!jid.equals("")){
 		cca.setId(Integer.valueOf(jid));
+		}
 		cca.setComplaintState(Integer.valueOf(JieAnChangeComplaintState));
 		cca.setJieanUser(getSessionUser().getUsername());
 		cca.setJieanTime(DateTimeUtil.getNowTime());
@@ -988,7 +995,9 @@ public class WorkOrderController {
 		CsComplaintAccept cca = new CsComplaintAccept();
 		cca.setDownloadshensupath(downloadname);
 		cca.setShensuremark(shensuremark);
+		if(!jid.equals("")){
 		cca.setId(Integer.valueOf(jid));
+		}
 		cca.setComplaintState(Integer.valueOf(shensuChangeComplaintState));
 		cca.setShensuUser(getSessionUser().getUsername());
 		cca.setComplaintTime(DateTimeUtil.getNowTime());
@@ -1224,6 +1233,18 @@ public class WorkOrderController {
 		Pattern p = Pattern.compile("^1\\d{10}$");
 		Matcher m = p.matcher(mobiles);
 		return m.matches();
+	}
+	
+	@RequestMapping("/huiFuChat")
+	@ResponseBody
+	public String huiFuChat(HttpServletRequest req){
+		String nowTime=DateTimeUtil.getNowTime();
+		long unameid=getSessionUser().getUserid();
+		String content=req.getParameter("textareavalue");
+		String acceptNo=req.getParameter("acceptNo");
+		workorderdao.huifuChat(nowTime,content,unameid,acceptNo);
+		return "{\"success\":0,\"successdata\":\"回复成功\"}";
+		
 	}
 	
 }

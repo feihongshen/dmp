@@ -1121,6 +1121,7 @@ src/main/java/cn/explink/domain/CsComplaintAcceptExportVO.java -text
 src/main/java/cn/explink/domain/CsComplaintAcceptVO.java -text
 src/main/java/cn/explink/domain/CsConsigneeInfo.java -text
 src/main/java/cn/explink/domain/CsConsigneeInfoVO.java -text
+src/main/java/cn/explink/domain/CsShenSuChat.java -text
 src/main/java/cn/explink/domain/CustomWareHouse.java -text
 src/main/java/cn/explink/domain/Customer.java -text
 src/main/java/cn/explink/domain/CustomerBillContract.java -text

@@ -6949,8 +6949,6 @@ function revisePriceOrdutyinfo(form){
 	}
 }
 
-
-
 function submitCreateFormPunishInsideRevise(form) {
 	$.ajax({
 		type : "POST",
@@ -6975,3 +6973,26 @@ function submitCreateFormPunishInsideRevise(form) {
 		}
 	});
 }
+function showAndoffChatWin(){
+		$("#chatcontent").toggle();
+}
+
+function showAndoffHuiFuChatWin(){
+	$("#ifShowTiJaoContent").toggle();
+}
+
+function submitchatcontent(){
+	$.ajax({
+		type:"POST",
+		url:$('#chatcontentFormUrl').val(),
+		data:{textareavalue:$('#chattextareaid').val(),acceptNo:$('#chatacceptnoid').val()},
+		dataType:"json",
+		success:function(data){
+			if(data.success==0){
+				alert(data.successdata);
+			}
+	
+		}
+	});
+}
+

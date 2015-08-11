@@ -11,6 +11,7 @@
 <%@page import="cn.explink.domain.CwbOrder"%>		
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
 <%@page import="cn.explink.domain.User"%>	
+<%@page import="cn.explink.domain.CsShenSuChat"%>
 <%
 	List<User> alluser=request.getAttribute("alluser")==null?null:(List<User>)request.getAttribute("alluser");
 	CsComplaintAccept cca=request.getAttribute("cca")==null?null:(CsComplaintAccept)request.getAttribute("cca");
@@ -19,6 +20,7 @@
 	List<Branch> lb = request.getAttribute("lb")==null?null:(List<Branch>)request.getAttribute("lb");
 	String oneleave=request.getAttribute("OneLevel")==null?null:(String)request.getAttribute("OneLevel");
 	String twoleave=request.getAttribute("TwoLevel")==null?null:(String)request.getAttribute("TwoLevel");
+	List<CsShenSuChat> cschatlist=request.getAttribute("cschatlist")==null?null:request.getAttribute("cschatlist");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -189,7 +191,7 @@
 						</tr>
 						
 						</table>
-																						
+																					
 	
 </body>
 </html>

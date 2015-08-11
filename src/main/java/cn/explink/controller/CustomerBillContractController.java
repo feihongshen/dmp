@@ -135,179 +135,7 @@ public class CustomerBillContractController {
 			return map;
 	}
 	
-/*	@RequestMapping("/addBill")
-	@ResponseBody
-	public CustomerBillContract add(
-					@RequestParam(value="crecustomerId") long customerid,
-					@RequestParam(value="dateState") long dateState,
-					@RequestParam(value="startdate") String startdate,
-					@RequestParam(value="enddate") String enddate,
-					@RequestParam(value="cwbOrderType") String cwbOrderType,
-					@RequestParam(value="remark") String remark
 
-				){		
-			//查找所有该客户下的订单信息
-				List<CwbOrder> cwborderlist=cwbdao.findCwbByCustomerid(customerid);
-				
-				//通过客户id查找该客户对象
-				Customer customer=customerdao.getCustomerById(customerid);
-				String cwbs=customerbillcontractservice.listToString(cwborderlist);		
-				if(cwbs==null){
-					return null;
-				}
-				if(customer.getPfruleid()==0){
-					return null;
-				}
-				List<CwbOrder> col=null;
-				long correspondingCwbNum=0;
-		
-			if(dateState==CwbDateEnum.ShenHeRiQi.getValue()){
-				
-				List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtypeShenHe(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
-				String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-				if(dcwbs!=null){
-						if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
-							col=cwbdao.getCwbByCwbsAndType(dcwbs,cwbOrderType);
-							correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
-						}else{
-							col=cwbdao.getCwbByCwbs(dcwbs);
-							correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
-						}	
-					}else{
-						col=null;
-					}
-			
-				}else if(dateState==CwbDateEnum.FaHuoRiQi.getValue()){
-					if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
-						col=customerbillcontractservice.findAllByCwbDateType(cwbs,startdate+" 00:00:00",enddate+" 23:59:59",cwbOrderType);
-						correspondingCwbNum=cwbdao.findcwbByCwbsAndDateAndtypeCount(cwbs, startdate+" 00:00:00", enddate+" 23:59:59", cwbOrderType);
-					}else{
-						col=customerbillcontractservice.findAllByCwbDate(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
-						correspondingCwbNum=cwbdao.findcwbByCwbsAndDateCount(cwbs, startdate+" 00:00:00", enddate+" 23:59:59");
-					}								
-				}else if(dateState==CwbDateEnum.RUKuRiQi.getValue()){
-					col=customerbillcontractservice.findcwbByCwbsAndDateAndtypeedao(cwbs,startdate+" 00:00",enddate+" 23:59",cwbOrderType);		
-					correspondingCwbNum=edao.findcwbByCwbsAndDateAndtypeCount(cwbs,startdate+" 00:00",enddate+" 23:59",cwbOrderType);
-				}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
-					List<DeliveryState> lds=deliverystatedao.findcwbByCwbsAndDateAndtype(cwbs,startdate+" 00:00:00",enddate+" 23:59:59");
-					String dcwbs=customerbillcontractservice.DeliveryStatelistToString(lds);
-					if(dcwbs!=null){
-							if(cwbOrderType!=null&&!cwbOrderType.equals("")&&Long.valueOf(cwbOrderType)>0){
-								col=cwbdao.getCwbByCwbsAndType(dcwbs,cwbOrderType);
-								correspondingCwbNum=cwbdao.getCwbByCwbsAndTypeCount(dcwbs,cwbOrderType);
-							}else{
-								col=cwbdao.getCwbByCwbs(dcwbs);
-								correspondingCwbNum=cwbdao.getCwbByCwbsCount(dcwbs);
-							}	
-					}else{
-						col=null;
-					}	
-			}	
-		
-				String dateRange=startdate+"至"+enddate;   //日期范围
-				String BillBatches=customerbillcontractservice.getBillBatches(); //自动生成批次号
-				long initbillState= BillStateEnum.WeiShenHe.getValue();  //默认未审核
-				BigDecimal deliveryMoney=BigDecimal.ZERO;   //提货费
-				BigDecimal distributionMoney=BigDecimal.ZERO; //配送费
-				BigDecimal transferMoney=BigDecimal.ZERO;	//中转费
-				BigDecimal refuseMoney=BigDecimal.ZERO;  //拒收派费
-				BigDecimal totalCharge=BigDecimal.ZERO; //派费总计	
-				
-				
-
-			Map<String,BigDecimal>	map=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, col);
-			Map<String,BigDecimal>	map1=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, col);
-			Map<String,BigDecimal>	map2=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, col);
-			List<CustomerBillContract> billlist=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid),Long.valueOf(dateState));
-			if(col!=null){
-				StringBuilder sb = new StringBuilder();
-				List<CwbOrder> lv=new ArrayList<CwbOrder>();
-				boolean b = false;
-				if(billlist.size()>0){
-					b=true;
-				}
-				for(CwbOrder str:col){		
-					if(b==true){
-					for(CustomerBillContract c: billlist){
-							if(!c.getCwbs().contains(str.getCwb())){
-								CwbOrder ce = new CwbOrder();
-								ce.setCwb(str.getCwb());
-								lv.add(ce);
-								distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
-								deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
-								transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
-								refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
-								sb.append(str.getCwb()+",");
-				         				
-								//--------------------------
-								
-								SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
-								sv.setCwb(str.getCwb());
-								sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
-								sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
-								sv.setDeliveryMoney(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
-								sv.setDistributionMoney(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
-								sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
-								sv.setTransferMoney(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
-								sv.setRefuseMoney(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
-								sv.setTotalCharge(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb())
-										.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()))
-										.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()))
-										.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee())
-										);
-								sv.setBillBatches(BillBatches);				
-								customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单    
-							}
-							
-						
-						}
-					}else{
-						distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
-						deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
-						transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
-						refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
-						sb.append(str.getCwb()+",");
-						
-						//--------------------------
-						
-						SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
-						sv.setCwb(str.getCwb());
-						sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
-						sv.setCwbstate(CwbStateEnum.getByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbstate()).getText());
-						sv.setDeliveryMoney(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
-						sv.setDistributionMoney(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
-						sv.setPaywayid(PaytypeEnum.getTextByValue((int)cwbdao.getOneCwbOrderByCwb(str.getCwb()).getPaywayid())); //强转支付方式
-						sv.setTransferMoney(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
-						sv.setRefuseMoney(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? new BigDecimal("0"):pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
-						sv.setTotalCharge(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb())
-								.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()))
-								.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()))
-								.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee())
-								);
-						sv.setBillBatches(BillBatches);				
-						customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单  
-					}
-				}
-				String cwbsOfOneBill=null;
-				if(sb.length()>0){
-					cwbsOfOneBill=sb.substring(0,sb.length()-1);
-				}
-				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney);
-				if(b==true){
-					correspondingCwbNum=lv.size();
-				}
-				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState,cwbsOfOneBill);
-
-				
-				CustomerBillContract c=customerbillcontractdao.datebillBatche(BillBatches);
-				
-				if(col!=null&&correspondingCwbNum!=0){
-					return c;  
-				}
-			}
-				return null;
-	
-	}*/
 	@RequestMapping("/addBill")
 	@ResponseBody
 	public CustomerBillContract add(
@@ -327,58 +155,82 @@ public class CustomerBillContractController {
 					return null;
 				}
 				List<CwbOrder> col=new ArrayList<CwbOrder>();
+				//隶属于该客户名下的所有账单
+				List<CustomerBillContract> billlist=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid));
+				String cwbs="";
 				
-		
+				StringBuffer sb = new StringBuffer();
+				String billbatches="";
+				//循环改客户下的账单集合
+				if(billlist!=null&&billlist.size()>0){
+				for(CustomerBillContract cc:billlist){ 
+					sb.append("'"+cc.getBillBatches()+"',"); //将所有账单批次组成in所需字符串
+				}
+				if(sb.length()>0){
+					billbatches=sb.substring(0,sb.length()-1);//将所有账单批次组成in所需字符串
+				}
+				StringBuffer sb1 = new StringBuffer();
+				//获取该客户下账单所对应的所有订单
+					List<SerachCustomerBillContractVO> billvolist=customerbillcontractdao.findcwbByBatches(billbatches);
+					for(SerachCustomerBillContractVO bx:billvolist){
+						sb1.append("'"+bx.getCwb()+"',");
+					}
+					if(sb.length()>0){
+						cwbs=sb1.substring(0,sb1.length()-1); //将所有订单拼成字符串
+					}
+				}else{
+					cwbs="''";
+				}
 				long quzhiValue=3000;		//每三千条数据重新查一次数据库	
 				if(dateState==CwbDateEnum.ShenHeRiQi.getValue()){	
-					long count=cwbdao.getCwbOrderByShenHeDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+					long count=cwbdao.getCwbOrderByShenHeDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,cwbs);
 					long yushu=count%quzhiValue; //求余
 					long cishu=(count-yushu)/quzhiValue;//需要循环的次数
 					if(count>quzhiValue){	
 						for(long i=quzhiValue,j=0;j<=cishu;i+=quzhiValue,j++){						
-							col.addAll(cwbdao.getCwbOrderByShenHeDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,i-quzhiValue,quzhiValue));													
+							col.addAll(cwbdao.getCwbOrderByShenHeDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,i-quzhiValue,quzhiValue,cwbs));													
 						}
 						
 					}else{
-						col=cwbdao.getCwbOrderByShenHeDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count);
+						col=cwbdao.getCwbOrderByShenHeDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count,cwbs);
 					}
 				}else if(dateState==CwbDateEnum.FaHuoRiQi.getValue()){					
-					long count=cwbdao.getCwbOrderByEmailDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+					long count=cwbdao.getCwbOrderByEmailDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,cwbs);
 					long yushu=count%quzhiValue; //求余
 					long cishu=(count-yushu)/quzhiValue;//需要循环的次数
 					if(count>quzhiValue){	
 						for(long i=quzhiValue,j=0;j<=cishu;i+=quzhiValue,j++){						
-							col.addAll(cwbdao.getCwbOrderByEmailDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,i-quzhiValue,quzhiValue));													
+							col.addAll(cwbdao.getCwbOrderByEmailDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,i-quzhiValue,quzhiValue,cwbs));													
 						}
 						
 					}else{
-						col=cwbdao.getCwbOrderByEmailDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count);					
+						col=cwbdao.getCwbOrderByEmailDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count,cwbs);					
 					}
 				}else if(dateState==CwbDateEnum.RUKuRiQi.getValue()){
-					long count=cwbdao.getCwbOrderByRuKuDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+					long count=cwbdao.getCwbOrderByRuKuDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,cwbs);
 					long yushu=count%quzhiValue; //求余
 					long cishu=(count-yushu)/quzhiValue;//需要循环的次数
 					if(count>quzhiValue){	
 						for(long i=quzhiValue,j=0;j<=cishu;i+=quzhiValue,j++){						
-							col.addAll(cwbdao.getCwbOrderByRuKuDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,i-quzhiValue,quzhiValue));													
+							col.addAll(cwbdao.getCwbOrderByRuKuDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,i-quzhiValue,quzhiValue,cwbs));													
 						}
 								
 						}else{
 							
-							col=cwbdao.getCwbOrderByRuKuDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count);
+							col=cwbdao.getCwbOrderByRuKuDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count,cwbs);
 						}
 				}else if(dateState==CwbDateEnum.FanKuiRiQi.getValue()){
-					long count=cwbdao.getCwbOrderByFanKuiDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType);
+					long count=cwbdao.getCwbOrderByFanKuiDateCount(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,cwbs);
 					long yushu=count%quzhiValue; //求余
 					long cishu=(count-yushu)/quzhiValue;//需要循环的次数
 					if(count>quzhiValue){	
 						for(long i=quzhiValue,j=0;j<=cishu;i+=quzhiValue,j++){						
-							col.addAll(cwbdao.getCwbOrderByFanKuiDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,i-quzhiValue,quzhiValue));													
+							col.addAll(cwbdao.getCwbOrderByFanKuiDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,i-quzhiValue,quzhiValue,cwbs));													
 						}
 								
 						}else{
 							
-							col=cwbdao.getCwbOrderByFanKuiDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count);
+							col=cwbdao.getCwbOrderByFanKuiDate(customerid,startdate+" 00:00:00", enddate+" 23:59:59",cwbOrderType,0,count,cwbs);
 						}																			
 				}	
 				long correspondingCwbNum=col.size(); //对应的订单数量
@@ -396,48 +248,27 @@ public class CustomerBillContractController {
 			Map<String,BigDecimal>	map=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Paisong, col);
 			Map<String,BigDecimal>	map1=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Tihuo, col);
 			Map<String,BigDecimal>	map2=paifeiruleservice.getPFRulefeeOfBatch(customer.getPfruleid(), PaiFeiRuleTabEnum.Zhongzhuan, col);
-			List<CustomerBillContract> billlist=customerbillcontractdao.findbillByCustomerid(Long.valueOf(customerid));
-			StringBuffer sb = new StringBuffer();
-			String billbatches="";
-			for(CustomerBillContract cc:billlist){
-				sb.append("'"+cc.getBillBatches()+"',");
-			}
-			if(sb.length()>0){
-			billbatches=sb.substring(0,sb.length()-1);
-			}
-			StringBuffer sb1 = new StringBuffer();
-			String cwbs="";
+			
 			
 			if(col!=null&&col.size()>0){	
 				long guolvCount=0;
 				boolean b = false;
 				if(billlist.size()>0){
 					b=true;
-					List<SerachCustomerBillContractVO> billvolist=customerbillcontractdao.findcwbByBatches(billbatches);
-					for(SerachCustomerBillContractVO bx:billvolist){
-						sb1.append(bx.getCwb()+",");
-					}
-					if(sb.length()>0){
-						cwbs=sb1.substring(0,sb.length()-1);
-					}
+					
 				}
 				for(CwbOrder str:col){		
-					if(b==true){
-							if(!cwbs.contains(str.getCwb())){
-								//如果已生成的账单中不包含现要生成的订单，才会添加进账单
-								/*CwbOrder ce = new CwbOrder();
-								ce.setCwb(str.getCwb());
-								lv.add(ce);*/
-								if(str.getDeliverystate()!=DeliveryStateEnum.JuShou.getValue()){ //如果Deliverystate的状态为拒收，那么直接受拒收派费，其他的款项没有
+					/*if(b==true){ //如果该客户之前生成过账单
+							if(!cwbs.contains(str.getCwb())){ //如果已生成的账单中不包含现要生成的订单，才会添加进账单
+								if(str.getDeliverystate()!=DeliveryStateEnum.JuShou.getValue()){ //如果Deliverystate的状态为拒收，那么直接拒收派费，其他的款项没有
 								guolvCount++;
 								distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
 								deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
 								transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
-								refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
+								refuseMoney=refuseMoney.add(BigDecimal.ZERO);//pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee()
 							
 				         				
-								//--------------------------
-								
+								//生成该账单所对应的订单数据								
 								SerachCustomerBillContractVO sv=new SerachCustomerBillContractVO();
 								sv.setCwb(str.getCwb());
 								sv.setCwbOrderType(CwbOrderTypeIdEnum.getTextByValue(cwbdao.getOneCwbOrderByCwb(str.getCwb()).getCwbordertypeid()));
@@ -483,14 +314,14 @@ public class CustomerBillContractController {
 									sv.setCwbInBatchType(CwbInBatchTypeEnum.KeYong.getValue());
 									customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单    
 								}
-						}
-					}else{
+					
+					}else{*/
 						if(str.getDeliverystate()!=DeliveryStateEnum.JuShou.getValue()){
 						
 						distributionMoney=distributionMoney.add(map.get(str.getCwb())==null?BigDecimal.ZERO:map.get(str.getCwb()));
 						deliveryMoney=deliveryMoney.add(map1.get(str.getCwb())==null?BigDecimal.ZERO:map1.get(str.getCwb()));
 						transferMoney=transferMoney.add(map2.get(str.getCwb())==null?BigDecimal.ZERO:map2.get(str.getCwb()));
-						refuseMoney=refuseMoney.add(pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee());
+						refuseMoney=refuseMoney.add(BigDecimal.ZERO);//pfra.getPaiFeiRuleById(customer.getPfruleid())==null ? BigDecimal.ZERO:pfra.getPaiFeiRuleById(customer.getPfruleid()).getJushouPFfee()
 				
 						
 						//--------------------------
@@ -537,13 +368,13 @@ public class CustomerBillContractController {
 							sv.setCwbInBatchType(CwbInBatchTypeEnum.KeYong.getValue());
 							customerbillcontractdao.addBillVo(sv);  //生成的账单关联的所有订单    
 						}
-					}
+					/*}*/
 				}
 				
 				totalCharge=deliveryMoney.add(distributionMoney).add(transferMoney).add(refuseMoney);
-				if(b==true){
+				/*if(b==true){
 					correspondingCwbNum=guolvCount;
-				}
+				}*/
 				customerbillcontractservice.addBill(BillBatches,initbillState,customerid,dateRange,correspondingCwbNum,deliveryMoney,distributionMoney,transferMoney,refuseMoney,totalCharge,remark,cwbOrderType,dateState);
 
 				
@@ -807,6 +638,7 @@ public class CustomerBillContractController {
 				@RequestParam(value="billBatches",defaultValue="",required=true) String billBatches){
 
 			CustomerBillContract customerBillContract= customerbillcontractdao.datebillBatche(billBatches);
+			if(customerBillContract!=null){
 			CustomerBillContractVO cbcv = new CustomerBillContractVO();
 				cbcv.setBillBatches(customerBillContract.getBillBatches());
 				cbcv.setBillState(BillStateEnum.getTextByValue(customerBillContract.getBillState()));
@@ -818,8 +650,10 @@ public class CustomerBillContractController {
 				cbcv.setDistributionMoney(customerBillContract.getDistributionMoney());
 				cbcv.setTransferMoney(customerBillContract.getTransferMoney());
 				cbcv.setRemark(customerBillContract.getRemark());
-
-			return cbcv;
+				return cbcv;
+			}else{
+				return null;
+			}
 		}
 		
 
@@ -840,13 +674,21 @@ public class CustomerBillContractController {
 		@RequestMapping("/getupdateExcel")
 		@ResponseBody
 		public String getupdateExcel(@RequestParam("uploadExcel") CommonsMultipartFile uploadExcel,  
-	            HttpServletRequest request, HttpServletResponse response)throws Exception{
+	            HttpServletRequest request, HttpServletResponse response,
+	            @RequestParam(value="flag") String flag
+				)throws Exception{
 					String billBatches=request.getParameter("billBatches");
-			InputStream in = null;
-					
+					InputStream in = null;
 				in = uploadExcel.getInputStream();
 				/*POIFSFileSystem pfs = new POIFSFileSystem(in);*/
-				List<ImportBillExcel> objlist=customerbillcontractservice.getUploadExcel(in);
+				List<ImportBillExcel> objlist=null;
+				if(flag.equals("11")){
+					objlist=customerbillcontractservice.getUploadExcelHSSF(in);			//老版本Excel2003		
+				}else if(flag.equals("22")){					
+					objlist=customerbillcontractservice.getUploadExcelXSSF(in);     //新版本Excel2007及以上
+				}else{
+					return "{\"success\":2,\"successdata\":\"上传文本格式错误\"}";
+				}
 /*				BigDecimal b = new BigDecimal("0");*/
 				if(objlist==null){
 					return "{\"success\":2,\"successdata\":\"上传文本格式错误\"}";
@@ -1168,7 +1010,7 @@ public class CustomerBillContractController {
 						    	sb.append(l.getCwb()+",");
 						    }
 					}
-			}
+				}
 			}
 		}
 		List<SerachCustomerBillContractVO> ls= new ArrayList<SerachCustomerBillContractVO>();
@@ -1236,6 +1078,7 @@ public class CustomerBillContractController {
 		}
 	}	
 		if(sb.length()>0){
+			
 				dateChongFu=sb.substring(0,sb.length()-1).toString();
 		}
 		
