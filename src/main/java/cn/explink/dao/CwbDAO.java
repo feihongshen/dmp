@@ -4872,7 +4872,7 @@ public class CwbDAO {
 	public String getSqlExportByBranchidyichuku(long startbranchid, long nextbranchid, int flowordertype) {
 
 		String sql = "SELECT cwb.* FROM express_ops_cwb_detail AS cwb LEFT JOIN express_ops_operation_time ope ON cwb.cwb = ope.cwb "
-			 	 + " WHERE ope.branchid= " + startbranchid
+			 	 + " WHERE cwb.state=1 and ope.branchid= " + startbranchid
 				 + " AND cwb.flowordertype = " + flowordertype;
 		if (nextbranchid > 0) {
 			sql += " AND ope.nextbranchid=" + nextbranchid;
