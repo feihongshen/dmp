@@ -193,7 +193,6 @@ import cn.explink.util.StringUtil;
 @Transactional
 public class CwbOrderService {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
 	@Autowired
 	OrderFlowDAO orderFlowDAO;
 	@Autowired
@@ -1931,10 +1930,12 @@ public class CwbOrderService {
 		CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
 		cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
 		cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
+		Customer customer = customerDao.getCustomerById(cwbOrder.getCustomerid());
 		try {
 			OrderFlow of = new OrderFlow(0, cwb, branchid, new Timestamp(credate), user.getUserid(), this.om.writeValueAsString(cwbOrderWithDeliveryState).toString(), flowordertype.getValue(),
 					comment);
 			long floworderid = this.orderFlowDAO.creAndUpdateOrderFlow(of);
+			
 			try {
 				this.orderFlowLogDAO.creAndUpdateOrderFlow(of,floworderid);
 			} catch (Exception e) {
@@ -1954,7 +1955,11 @@ public class CwbOrderService {
 				this.logger.warn("订单号{}订单当前状态为{}，创建退货中心出入库跟踪表", cwbOrder.getCwb(), flowordertype.getValue());
 				this.backDetailService.createBackDetail(user, cwb, flowordertype.getValue(), credate);
 			}
-
+			if(customer.getIsypdjusetranscwb() == 1&&flowordertype.getValue()==FlowOrderTypeEnum.YiFanKui.getValue()){
+				this.fankuiAddTranscwbFlow(cwb, cwbOrder, user, flowordertype);
+			}else if(customer.getIsypdjusetranscwb() == 1&&flowordertype.getValue()==FlowOrderTypeEnum.YiShenHe.getValue()){
+				this.fankuiAddTranscwbFlow(cwb, cwbOrder, user, flowordertype);
+			}
 		} catch (Exception e) {
 			this.logger.error("error while saveing orderflow", e);
 			throw new ExplinkException(ExceptionCwbErrorTypeEnum.SYS_ERROR, cwb);
@@ -7062,5 +7067,16 @@ public class CwbOrderService {
 		
 		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdatePickBranch, "", System.currentTimeMillis());
 		
+	}
+	
+	public void fankuiAddTranscwbFlow(String cwb,CwbOrder co,User user,FlowOrderTypeEnum flowOrderTypeEnum){
+
+		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1))
+		{
+					CwbOrder cwborder=cwbDAO.getCwbByCwb(cwb);
+					for(String transcwb:cwborder.getTranscwb().split(",")){
+					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb,transcwb, flowOrderTypeEnum, "");
+				}
+		}
 	}
 }
