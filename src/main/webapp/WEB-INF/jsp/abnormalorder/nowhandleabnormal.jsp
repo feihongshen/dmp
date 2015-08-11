@@ -67,7 +67,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 						
 						</tr>
 						
-				<%if((dutybranch!=""&&username!="")||iskefu==0){ %>
+				<%if((dutybranch!=""&&username!="")||iskefu!=1){ %>
 				<tr  class="font_1">
 				<td align="left" valign="top">
 					责任机构初判:<strong><%=dutybranch %>  </strong>

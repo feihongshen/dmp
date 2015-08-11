@@ -23,6 +23,7 @@ import cn.explink.dao.AbnormalOrderDAO;
 import cn.explink.dao.AbnormalTypeDAO;
 import cn.explink.dao.AbnormalWriteBackDAO;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AbnormalImportView;
 import cn.explink.domain.AbnormalOrder;
@@ -32,6 +33,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.MissPiece;
 import cn.explink.domain.MissPieceView;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -51,6 +53,8 @@ public class AbnormalService {
 	AbnormalOrderDAO abnormalOrderDAO;
 	@Autowired
 	AbnormalWriteBackDAO abnormalWriteBackDAO;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	public List<AbnormalView> setViews(List<JSONObject> alist, List<Branch> branchs, List<User> users, List<Customer> customers, List<AbnormalType> atlist,long currentbranchid,long roleid) {
 
@@ -343,6 +347,21 @@ public class AbnormalService {
 			}
 		}
 		return ishandName;
+	}
+	
+	
+	/**
+	 * 判断是不是客服角色，客服角色在系统设置中的ServiceID设置了岗位角色哪一个可以作为客服的角色权限
+	 * @param roleid
+	 */
+	public long  checkIsKeFu(long roleid){
+		long realroleid=1;
+		SystemInstall systemInstall=systemInstallDAO.getSystemInstallByName("ServiceID");
+		if(systemInstall!=null&&(systemInstall.getValue()+",").indexOf(roleid+",")>=0){
+			return realroleid;
+		}else {
+			return roleid;
+		}
 	}
 
    }

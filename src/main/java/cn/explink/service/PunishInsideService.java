@@ -760,4 +760,18 @@ public class PunishInsideService {
 			punishInsideDao.updatekoufaPriceAndDutyInfo(punishInsideReviseAndReply);
 			punishInsideOperationinfoDao.insertIntoOPerationwithRevise(punishInsideReviseAndReply,user);
 		}
+		
+		/**
+		 * 判断是不是客服角色，客服角色在系统设置中的ServiceID设置了岗位角色哪一个可以作为客服的角色权限
+		 * @param roleid
+		 */
+		public long  checkIsKeFu(long roleid){
+			long realroleid=1;
+			SystemInstall systemInstall=systemInstallDAO.getSystemInstallByName("ServiceID");
+			if(systemInstall!=null&&(systemInstall.getValue()+",").indexOf(roleid+",")>=0){
+				return realroleid;
+			}else {
+				return roleid;
+			}
+		}
 }

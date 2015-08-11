@@ -132,7 +132,8 @@ public class PunishInsideController {
 			List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
 			String quot = "'", quotAndComma = "',";
 			StringBuffer cwbs1 = new StringBuffer();
-			long roleid=this.getSessionUser().getRoleid();
+			long roleidnnow=this.getSessionUser().getRoleid();
+			long roleid=punishInsideService.checkIsKeFu(roleidnnow);
 			if (cwb.length() > 0) {
 			for (String cwbStr : cwb.split("\r\n")) {
 				if (cwbStr.trim().length() == 0) {
@@ -586,8 +587,10 @@ public class PunishInsideController {
 			if (cwbs1.length() > 0) {
 				cwbs = cwbs1.substring(0, cwbs1.length() - 1);
 			}
-			List<PenalizeInside> penalizeInsides=punishInsideDao.findByCondition(-9,cwbs,dutybranchid,cwbpunishtype,dutynameid,cwbstate,punishbigsort,punishsmallsort,begindate,enddate,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
-			String punishsumprice=punishInsideDao.calculateSumPrice(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
+			long roleidnow=this.getSessionUser().getRoleid();
+			long roleid=punishInsideService.checkIsKeFu(roleidnow);
+			List<PenalizeInside> penalizeInsides=punishInsideDao.findByCondition(-9,cwbs,dutybranchid,cwbpunishtype,dutynameid,cwbstate,punishbigsort,punishsmallsort,begindate,enddate,this.getSessionUser().getBranchid(),roleid);
+			String punishsumprice=punishInsideDao.calculateSumPrice(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate,this.getSessionUser().getBranchid(),roleid);
 			final List<PenalizeInsideView> penalizeInsideViews=punishInsideService.setViews(penalizeInsides,punishsumprice);
 			ExcelUtils excelUtil = new ExcelUtils() {
 
@@ -756,7 +759,8 @@ public class PunishInsideController {
 		PenalizeInsideView penPunishinsideView=punishInsideService.changedatatoshehe(penalizeInside);
 		List<User> users=userDAO.getAllUserbybranchid(penPunishinsideView.getDutybrachid());
 		List<Branch> branchList=branchDAO.getAllBranches();
-		long roleid=this.getSessionUser().getRoleid();
+		long roleidnow=this.getSessionUser().getRoleid();
+		long roleid=punishInsideService.checkIsKeFu(roleidnow);
 		model.addAttribute("chuangjianfilepath", penPunishinsideView.getCreateFileposition());
 		model.addAttribute("shensuposition", penPunishinsideView.getShensufileposition());
 		model.addAttribute("id", id);

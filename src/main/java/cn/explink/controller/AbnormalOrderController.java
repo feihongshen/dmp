@@ -509,7 +509,7 @@ public class AbnormalOrderController {
 		List<JSONObject> abnormalOrderList = new ArrayList<JSONObject>();
 		int count = 0;
 		//findscope字段判断是查本站还是本人，管理员可以查询本站，个人只可以查询自己的
-		long findscope=user.getRoleid();
+		long findscope=abnormalService.checkIsKeFu(user.getRoleid());
 		if (isshow == 1) {
 			if (ishandle ==1||ishandle==0 ) {
 
@@ -547,7 +547,7 @@ public class AbnormalOrderController {
 		List<User> users = this.userDAO.getAllUser();
 		List<Customer> customers = this.customerDAO.getAllCustomers();
 		List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
-		List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
+		List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),findscope);
 		/*
 		 * List<AbnormalView> viewForShow=new ArrayList<AbnormalView>(); for
 		 * (int i = (int) ((page-1)*Page.ONE_PAGE_NUMBER); i <
@@ -575,7 +575,7 @@ public class AbnormalOrderController {
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("sitetype", this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype());
 		model.addAttribute("userid", this.getSessionUser().getUserid());
-		model.addAttribute("roleid", user.getRoleid());
+		model.addAttribute("roleid", findscope);
 		return "/abnormalorder/handleabnormallist";
 	}
 
@@ -619,10 +619,11 @@ public class AbnormalOrderController {
 		//创建人
 		abnormalOrder.getCreuserid();
 		User user=userDAO.getAllUserByid(dutyuser);
-		long iskefu=0;
+	/*	long iskefu=0;
 		if (this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
 			iskefu=1;
-		}
+		}*/
+		long roleid=abnormalService.checkIsKeFu(this.getSessionUser().getRoleid());
 		String createname="";
 		if (user!=null) {
 			createname=user.getRealname()==null?"":user.getRealname();
@@ -681,7 +682,7 @@ public class AbnormalOrderController {
 		model.addAttribute("showabnomal", showabnomal);
 		Role role = this.roleDao.getRolesByRoleid(this.getSessionUser().getRoleid());
 		model.addAttribute("role", role);
-		model.addAttribute("iskefu", iskefu);
+		model.addAttribute("iskefu", roleid);
 		if (type == 1) {
 			if(isfind==1){
 			return "/abnormalorder/nowhandleabnormalnew";
@@ -717,7 +718,8 @@ public class AbnormalOrderController {
 				dutybranchid=ab.getDutybrachid()+"";
 			}
 			long userid=this.getSessionUser().getUserid();
-			long roleid=this.getSessionUser().getRoleid();
+			long roleidnow=this.getSessionUser().getRoleid();
+			long roleid=abnormalService.checkIsKeFu(roleidnow);
 			long ishandle=0;
 			//判断是谁处理的
 			if (this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
@@ -766,7 +768,8 @@ public class AbnormalOrderController {
 				dutybranchid=ab.getDutybrachid()+"";
 			}
 			long userid=this.getSessionUser().getUserid();
-			long roleid=this.getSessionUser().getRoleid();
+			long roleidnow=this.getSessionUser().getRoleid();
+			long roleid=abnormalService.checkIsKeFu(roleidnow);
 			long ishandle=0;
 			//判断是谁处理的
 			if (this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
@@ -931,7 +934,7 @@ public class AbnormalOrderController {
 			// List<String> abnormalWriteBackOpscwbidList = new
 			// ArrayList<String>();
 			//判断人员权限
-			long findscope=user.getRoleid();
+			long findscope=abnormalService.checkIsKeFu(user.getRoleid());
 			List<JSONObject> abnormalOrderList = new ArrayList<JSONObject>();
 			//当ishandle这个字段为1与8的时候为修改与未处理状态，也就是为当前创建状态
 			if (ishandle == 1||ishandle==8||ishandle==0) {
@@ -974,7 +977,7 @@ public class AbnormalOrderController {
 			List<User> users = this.userDAO.getAllUser();
 			List<Customer> customers = this.customerDAO.getAllCustomers();
 			List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
-			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
+			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),findscope);
 			ExcelUtilsHandler.exportExcelHandler(response, cloumnName, cloumnName3, sheetName, fileName, views);
 			/*ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
@@ -1182,7 +1185,7 @@ public class AbnormalOrderController {
 			List<Customer> customers = this.customerDAO.getAllCustomers();
 			List<AbnormalType> atlist = this.abnormalTypeDAO.getAllAbnormalTypeByName();
 			List<JSONObject> abnormalOrderList = this.abnormalOrderDAO.getAbnormalOrderByWherefindExport(starttime, endtime, ishandle, abnormaltypeid);
-			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),this.getSessionUser().getRoleid());
+			final List<AbnormalView> views = this.abnormalService.setViews(abnormalOrderList, branchs, users, customers, atlist,this.getSessionUser().getBranchid(),this.abnormalService.checkIsKeFu(this.getSessionUser().getRoleid()));
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
