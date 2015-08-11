@@ -391,6 +391,11 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set gcaid=0 where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, cwb);
 	}
+	
+	public void updateStateBycwb(String cwb) {
+		String sql = "update express_ops_delivery_state set state=0 where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, cwb);
+	}
 
 	/**
 	 * 通过订单号更新该反馈记录的信息

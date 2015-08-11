@@ -359,6 +359,9 @@
 				</tr>
 			</table>
 		</div>
+		
+		
+		
 		<div class="iframe_bottom">
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
@@ -385,6 +388,8 @@
 				</tr>
 			</table>
 			</div>
+				
+	
 		<form id="detailForm" name="detailForm" action="${ctx_path}/smtfaresettle/detail_s/1"
 			method="post">
 			<input type="hidden" id="optTimeType" name="optTimeType" value="${cond.optTimeType}" /> <input
@@ -394,6 +399,14 @@
 				id="type" name="type" />
 
 		</form>
+	
+
+
+
+
+
+
+
 		
 </body>
 </html>

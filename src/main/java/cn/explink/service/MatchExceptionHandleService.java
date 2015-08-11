@@ -96,6 +96,7 @@ public class MatchExceptionHandleService {
 			cwbOrder.setConsigneephone(cwbOrder.getConsigneephoneOfkf());
 			OrderFlow of = new OrderFlow(0, cwb, this.getCurrentBranchId(), new Timestamp(System.currentTimeMillis()), this.getCurrentUserId(), this.om.writeValueAsString(cwbOrderWithDeliveryState)
 					.toString(), FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue(), "异常匹配已处理");
+			this.deliveryStateDAO.updateStateBycwb(cwb);
 			this.orderFlowDAO.creAndUpdateOrderFlow(of);
 		} catch (Exception e) {
 			this.logger.error("error while saveing orderflow", e);
