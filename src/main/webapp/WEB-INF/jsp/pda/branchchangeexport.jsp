@@ -39,8 +39,21 @@ $(function(){
 		var index = $menuli.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
+	$("#ysm_export").hide();
+	$("#dzz_li").hide();
+	$("#ysm_li").hide();
 	
 })
+function showTab(tab){
+	$("#dzz_li").hide();
+	$("#ysm_li").hide();
+	$("#dzz_title").removeClass("light");
+	$("#ysm_title").removeClass("light");
+	$("#"+tab+"_li").show();
+	$("#"+tab+"_title").addClass("light");
+	
+	
+}
 function ranCreate(){
 	var timestamp = new Date().getTime();
 	$("#baleno").val(timestamp);
@@ -83,6 +96,32 @@ $(function(){
 				$("#chukukucundanshu").html(data.weichukucount);
 				$("#alloutnum").html(data.yichukucount);
 				$("#daizhongzhuan").html(data.daizhongzhuan);
+				var cwbList=data.yisaomiaocwOrders;
+				var customers=data.customerList;
+				$("#ysm").html("");
+				$("#ysm_nextbranchid").val(branchid);
+				var tr="";
+				if(cwbList.length>0){
+					$("#ysm_export").show();
+				}
+				for(var i=0;i<cwbList.length;i++)
+					{
+					tr+= "<tr>"
+					+"<td width='120' align='center'>"+cwbList[i].cwb+"</td>"
+					+"<td width='120' align='center'>"+cwbList[i].transcwb+"</td>"
+					+"<td width='120' align='center'>"+cwbList[i].packagecode+"</td>";
+					for(var j=0;j<customers.length;j++){
+						if(customers[j].customerid==cwbList[i].customerid){
+					tr+="<td width='100' align='center'> "+customers[j].customername+"</td>";
+						}
+					}
+					tr+="<td width='140' align='center'> "+cwbList[i].emaildate+"</td>"
+					+"<td width='100' align='center'> "+cwbList[i].consigneename+"</td>"
+					+"<td width='100' align='center'> "+cwbList[i].receivablefee+"</td>"
+					+"<td align='left'> "+cwbList[i].consigneeaddress+"</td>"
+					+ "</tr>";
+					}
+				$("#ysm").append(tr);
 			}
 		});
 	}
@@ -329,11 +368,11 @@ function chuku(){
 		</dl> -->
 		<dl class="yellow">
 			<dt>反馈待中转</dt>
-			<dd id="daizhongzhuan">0</dd>
+			<dd id="daizhongzhuan" style="cursor: pointer;" onclick="showTab('dzz')">0</dd>
 		</dl>
 		<dl class="green">
 			<dt>已扫描</dt>
-			<dd id="alloutnum">0</dd>
+			<dd id="alloutnum"  style="cursor: pointer;" onclick="showTab('ysm')">0</dd>
 		</dl>
 		
 		<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/branchchangeexport'" style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
@@ -452,14 +491,17 @@ function chuku(){
 </div>
 <div id="smallTag"class="saomiao_tab2">
 			<ul>
-				<li><a id="table_jinriweidaohuo" href="#" class="light">反馈为待中转</a></li>
+				<li><a id="dzz_title" href="#" class="light" onclick="showTab('dzz')">反馈为待中转</a></li>
+				<li><a id="ysm_title" href="#" onclick="showTab('ysm')">已扫描</a></li>
 			</ul>
 		</div>
 		<div id="ViewList" class="tabbox">
-<li>			<form action="<%=request.getContextPath()%>/PDA/daizhongzhuanExport">
+<li id="dzz_li">			<form action="<%=request.getContextPath()%>/PDA/daizhongzhuanExport">
+			<c:if test="${fn:length(dzzlist)>0 }">
 				<input type ="submit" id="btnval0" value="导出Excel" class="input_button1" />
+				</c:if>
 				</form>
-				<table width="100%" border="0" cellspacing="10" cellpadding="0">
+				<table width="100%" border="0" cellspacing="10" cellpadding="0" >
 					<tbody>
 						<tr>
 							<td width="10%" height="26" align="left" valign="top">
@@ -477,7 +519,7 @@ function chuku(){
 									</tr>
 								</table>
 								<div style="height: 160px; overflow-y: scroll">
-									<table  width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2">
+									<table  width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" id="dzz">
 										<c:forEach items="${dzzlist}" var="co">
 										<tr>
 										<td width="120" align="center" bgcolor="#f1f1f1">${co.cwb}</td>
@@ -501,6 +543,38 @@ function chuku(){
 					</tbody>
 				</table>
 			</li>
+<li id="ysm_li">			<form action="<%=request.getContextPath()%>/PDA/daizhongzhuanysmExport">
+				<input type ="submit" id="btnval0" value="导出Excel" class="input_button1" />
+				<input type ="hidden" id="ysm_nextbranchid" name="nextbranchid" value="" class="input_button1" />
+				</form>
+				<table width="100%" border="0" cellspacing="10" cellpadding="0" >
+					<tbody>
+						<tr>
+							<td width="10%" height="26" align="left" valign="top">
+								<table width="100%" border="0" cellspacing="0" cellpadding="2"
+									class="table_5">
+									<tr>
+										<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+										<td width="120" align="center" bgcolor="#f1f1f1">运单号</td>
+										<td width="120" align="center" bgcolor="#f1f1f1">包号</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
+										<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
+										<td align="center" bgcolor="#f1f1f1">地址</td>
+									</tr>
+								</table>
+								<div style="height: 160px; overflow-y: scroll">
+									<table  width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" id="ysm">
+								
+									</table>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</li>
 			</div>
+			
 </body>
 </html>
