@@ -3757,6 +3757,10 @@ public class CwbDAO {
 		String sql = "select * from express_ops_cwb_detail where state=1 and cwb in(" + cwbs + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+	public long getCwbOrderByCwbsCount(String cwbs) {
+		String sql = "select count(1) from express_ops_cwb_detail where state=1 and cwb in(" + cwbs + ")";
+		return this.jdbcTemplate.queryForLong(sql);
+	}
 
 	public CwbOrder getSumByCwbs(String cwbs) {
 		String sql = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where state=1 and cwb in(" + cwbs + ")";
@@ -5994,18 +5998,18 @@ public class CwbDAO {
 
 		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  (" + wheresql + "  "
 				+ (branchid.length() > 0 ? " and nextbranchid in(" + branchid + ") " : " ") + ") AND state=1  " + "");
-		
+
 		System.out.println(sql);
 
 		return sql.toString();
 	}
 	public String getMonitorLogByTypeSqlAll(String wheresql, String branchid, String branchids) {
-		
+
 		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  ( " + wheresql + " (flowordertype in(1,2)  and "
 				+ (branchid.length() > 0 ? (" nextbranchid in(" + branchid + ")  and") : " nextbranchid IN(" + branchids + ") and ") + " nextbranchid>0 ) )AND state=1  " + "");
-		
+
 		System.out.println(sql);
-		
+
 		return sql.toString();
 	}
 

@@ -250,7 +250,6 @@ public class BaleService {
 
 	public void exportExcelMethod(HttpServletResponse response, HttpServletRequest request, long baleid, long page) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
-
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -295,8 +294,22 @@ public class BaleService {
 		}
 		fileName = fileName + otherName + lastStr;
 		try {
-			String sql1 = "select de.* from express_ops_bale_cwb as bw left join express_ops_cwb_detail de on bw.cwb=de.cwb" + " where de.state=1 and bw.baleid='" + baleid + "' limit "
-					+ (page * Page.EXCEL_PAGE_NUMBER) + " ," + Page.EXCEL_PAGE_NUMBER;
+
+			List<String> cwbsList=this.baleCwbDAO.getCwbsByBale(String.valueOf(baleid));
+			String cwbs = "";
+			if((cwbsList!=null)&&(cwbsList.size()>0)){
+				for (String cwb : cwbsList) {
+					cwb = this.cwbOrderService.translateCwb(cwb);
+					cwbs += "'" + cwb + "',";
+				}
+				if(cwbs.contains(","))
+				{
+					cwbs=cwbs.substring(0,cwbs.lastIndexOf(","));
+				}
+			}
+			//String sql1 = "select de.* from express_ops_bale_cwb as bw left join express_ops_cwb_detail de on bw.cwb=de.cwb" + " where de.state=1 and bw.baleid='" + baleid + "' limit "
+			String sql1 = "select * from express_ops_cwb_detail where state=1 and cwb in(" + cwbs + ") limit "
+			+ (page * Page.EXCEL_PAGE_NUMBER) + " ," + Page.EXCEL_PAGE_NUMBER;
 
 			final String sql = sql1;
 
@@ -1081,7 +1094,7 @@ public class BaleService {
 			String str = "合包";
 			this.validateStateTransfer(co, flowEnum,str);
 		}
-		if(baleCwbDAO.getBaleAndCwbCount(baleno, cwb)==0 ){
+		if(this.baleCwbDAO.getBaleAndCwbCount(baleno, cwb)==0 ){
 		}
 		else {
 			if (!"".equals(co.getPackagecode()) && (co.getPackagecode() != null)) {
@@ -1109,7 +1122,7 @@ public class BaleService {
 							}
 						}
 
-						if(coBale.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()&&coBale.getBranchid()!=userbranch.getBranchid()){
+						if((coBale.getBalestate() == BaleStateEnum.YiDaoHuo.getValue())&&(coBale.getBranchid()!=userbranch.getBranchid())){
 
 						}else{
 							// 操作失败，此订单已经在{0}包号{1}!
@@ -1152,7 +1165,7 @@ public class BaleService {
 			if (isypdjusetranscwb == 1) {
 				this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 			}
-			
+
 			/*long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
 			if(count1!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuankuhebaochuku);
@@ -1161,7 +1174,7 @@ public class BaleService {
 			if(count2!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuankuhebaochuku);
 			}*/
-			
+
 			Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
 			Branch nextBranch = this.branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
 			boolean aflag = false;
@@ -1201,12 +1214,12 @@ public class BaleService {
 			}
 
 			// 出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑
-			if ((co.getStartbranchid() == currentbranchid) && (co.getNextbranchid() == branchid || branchid == -1 || branchid == 0 || co.getNextbranchid() == currentbranchid )
-					&& (co.getSendcarnum() > 1 && co.getSendcarnum() == co.getScannum())
+			if ((co.getStartbranchid() == currentbranchid) && ((co.getNextbranchid() == branchid) || (branchid == -1) || (branchid == 0) || (co.getNextbranchid() == currentbranchid) )
+					&& ((co.getSendcarnum() > 1) && (co.getSendcarnum() == co.getScannum()))
 					&& (co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {// 重复
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			}
-			else if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())&& (co.getSendcarnum() > 1 && co.getSendcarnum() == co.getScannum()) && !forceOut) {
+			else if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())&& ((co.getSendcarnum() > 1) && (co.getSendcarnum() == co.getScannum())) && !forceOut) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			}
 			// ==================验证订单状态End=======================
@@ -1215,7 +1228,7 @@ public class BaleService {
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
 			this.validateCwbBaleCheck(user, baleno, scancwb, co, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),currentbranchid,FlowOrderTypeEnum.ChuKuSaoMiao);
 		}
-		
+
 	}
 	private void validateIsSubCwb(String cwb, CwbOrder co, long flowordertype) {
 		String transcwb = co.getTranscwb();
@@ -1230,7 +1243,7 @@ public class BaleService {
 			}
 		}
 		// 2013-8-5腾讯达需求，领货不再限制只能扫描运单号，产品确定需求不是做成开关，而是所有客户统一如此处理
-		if (flowordertype !=FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue() && flowordertype != FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+		if ((flowordertype !=FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()) && (flowordertype != FlowOrderTypeEnum.FenZhanLingHuo.getValue())) {
 			throw new CwbException(cwb, flowordertype, ExceptionCwbErrorTypeEnum.Qing_SAO_MIAO_YUN_DAN_HAO);
 		}
 	}
@@ -1251,7 +1264,7 @@ public class BaleService {
 			throw new CwbException(co.getCwb(), flowEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), text);
 		}
 	}
-	
+
 	/**
 	 * 退货出站根据包号扫描订单检查
 	 *
@@ -1316,9 +1329,9 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===中转出站封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
-			
-		
-				
+
+
+
 
 			//首先验证订单号是否在中转出站审核表中被审核通过
 			long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
@@ -1395,10 +1408,10 @@ public class BaleService {
 			if ((co.getFlowordertype() != FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getStartbranchid() != currentbranchid)) {
 				this.validateStateTransfer(co, FlowOrderTypeEnum.ChuKuSaoMiao,"合包");
 			}
-			
+
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
-			if (co.getPackagecode()!=null&&!"".equals(co.getPackagecode())) {
+			if ((co.getPackagecode()!=null)&&!"".equals(co.getPackagecode())) {
 				Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
 				Branch nextbranch = this.branchDAO.getBranchByBranchid(coBale.getNextbranchid());
 				if ((coBale != null) && (nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
@@ -1421,13 +1434,13 @@ public class BaleService {
 					}
 				}
 			}
-			
-			
+
+
 			//分站滞留的订单不允许操作中转出站
 			if((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue())){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Fenzhanzhiliustatenotzhongzhanchuzhan);
 			}
-			
+
 		}
 	}
 
@@ -1439,7 +1452,7 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
-			
+
 		/*	long count = this.orderBackCheckDAO.getOrderbackCheckss(cwb);
 			if(count!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.Wei_Shen_he_huozhe_shen_he_butongguo);
@@ -1489,15 +1502,15 @@ public class BaleService {
 				if (baleOld.getBalestate() == BaleStateEnum.WeiFengBao.getValue()) {
 					this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
 				}
-				
+
 				//如果该订单之前封包过并且状态已完结，则需要删除之前的包的关系 ，已到货说明完结
-				if (baleno!=co.getPackagecode()&&baleOld.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()&&baleOld.getBranchid()!=branchid) {
+				if ((baleno!=co.getPackagecode())&&(baleOld.getBalestate() == BaleStateEnum.YiDaoHuo.getValue())&&(baleOld.getBranchid()!=branchid)) {
 					this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
 				}
 			}
 
-			
-			
+
+
 			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno);
 			if (bale == null) {
 				this.logger.info("创建包号" + baleno);

@@ -126,8 +126,24 @@ public class BaleController {
 
 	@RequestMapping("/show/{baleid}/{page}")
 	public String show(Model model, @PathVariable(value = "baleid") long baleid, @PathVariable(value = "page") long page) {
-		List<CwbOrder> cwborderList = this.cwbDAO.getCwbOrderByBaleid(baleid, page);
-		long cwborderCount = this.cwbDAO.getCwbOrderByBaleidCount(baleid);
+		List<String> cwbsList=this.baleCwbDao.getCwbsByBale(String.valueOf(baleid));
+		List<CwbOrder> cwborderList=new ArrayList<CwbOrder>();
+		long cwborderCount=0;
+		if((cwbsList!=null)&&(cwbsList.size()>0)){
+			String cwbs = "";
+			for (String cwb : cwbsList) {
+				cwb = this.cwbOrderService.translateCwb(cwb);
+				cwbs += "'" + cwb + "',";
+			}
+			if(cwbs.contains(","))
+			{
+				cwbs=cwbs.substring(0,cwbs.lastIndexOf(","));
+			}
+			//cwborderList = this.cwbDAO.getCwbOrderByBaleid(baleid, page);
+			//cwborderCount = this.cwbDAO.getCwbOrderByBaleidCount(baleid);
+			cwborderList = this.cwbDAO.getCwbOrderByCwbs(page, cwbs);
+			cwborderCount = this.cwbDAO.getCwbOrderByCwbsCount(cwbs);
+		}
 		model.addAttribute("cwborderList", cwborderList);
 		model.addAttribute("page_obj", new Page(cwborderCount, page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
