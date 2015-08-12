@@ -343,7 +343,7 @@ public class ApplyEditDeliverystateController {
 							//客户调整单逻辑入口
 							this.adjustmentRecordService.createAdjustment4ReFeedBack(cwb);
 							//站内调整单逻辑入口
-							this.orgBillAdjustmentRecordService.createAdjustment4ReFeedBack(cwb);
+							this.orgBillAdjustmentRecordService.createAdjustment4ReFeedBack(cwb,ec_dsd);
 						}
 						
 					}else{

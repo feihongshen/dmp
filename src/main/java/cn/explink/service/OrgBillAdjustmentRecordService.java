@@ -18,6 +18,7 @@ import cn.explink.dao.FnOrgBillDetailDAO;
 import cn.explink.dao.OrgBillAdjustmentRecordDao;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.FnOrgBillDetail;
 import cn.explink.domain.OrgBillAdjustmentRecord;
 import cn.explink.domain.User;
@@ -156,8 +157,9 @@ public class OrgBillAdjustmentRecordService {
 
 	/**
 	 * 站内站点调整单  重置审核状态
+	 * @param ec_dsd 
 	 */
-	public void createAdjustment4ReFeedBack(String cwb) {
+	public void createAdjustment4ReFeedBack(String cwb, EdtiCwb_DeliveryStateDetail ec_dsd) {
 		
 		List<FnOrgBillDetail> fnOrgBillDetails = new ArrayList<FnOrgBillDetail>();
 		
@@ -172,7 +174,7 @@ public class OrgBillAdjustmentRecordService {
 		Integer orderType = order.getCwbordertypeid();
 		if(null!=fnOrgBillDetails&&fnOrgBillDetails.size()>0){//该订单已经生成过账单
 			adjustRecord = orgBillAdjustmentRecordDao.getAdjustmentRecordByCwb(order.getCwb());
-			DeliveryState deliveryState = deliverStateDao.getDeliverSignTime(order.getCwb());
+			DeliveryState deliveryState = ec_dsd.getDs();
 //			if(adjustRecord.size()<=0){//没有生成过调整单记录
 				//根据不同的订单类型
 				record.setOrderNo(order.getCwb());
