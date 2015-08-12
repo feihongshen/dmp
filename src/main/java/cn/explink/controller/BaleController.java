@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.dao.BaleCwbDao;
 import cn.explink.dao.BaleDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
@@ -52,6 +53,8 @@ public class BaleController {
 
 	@Autowired
 	BaleDao baleDAO;
+	@Autowired
+	BaleCwbDao baleCwbDao;
 	@Autowired
 	JointService jointService;
 	@Autowired
@@ -283,18 +286,19 @@ public class BaleController {
 			// =====封包成功后出库======
 			if (flag) {
 				// 根据包号查找订单信息
-				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
+//				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
+				List<String> cwbs = baleCwbDao.getCwbsByBaleNO(baleno.trim());
 				List<CwbOrder> errorList = new ArrayList<CwbOrder>();
 				List<BaleView> errorListView = new ArrayList<BaleView>();
-				if ((cwbOrderList != null) && !cwbOrderList.isEmpty()) {
+//				if ((cwbOrderList != null) && !cwbOrderList.isEmpty()) {
 					long successCount = 0;
 					long errorCount = 0;
-					for (CwbOrder co : cwbOrderList) {
+					for (String cwb : cwbs) {
 						try {
 							// 订单出库 只有分站中转给中转站的订单 才传入true
 							boolean iszhongzhuanout = getIsZhongZhuanOutFlag(branchid);
 							
-							CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), co.getCwb(), co.getCwb(), driverid, truckid, branchid, 0, false, "", baleno, reasonid, iszhongzhuanout,
+							CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), cwb, cwb, driverid, truckid, branchid, 0, false, "", baleno, reasonid, iszhongzhuanout,
 									true);
 							successCount++;
 
@@ -320,6 +324,8 @@ public class BaleController {
 							// ====中转出站 正确的配送站点End==========
 
 						} catch (CwbException e) {
+							cwb = this.cwbOrderService.translateCwb(cwb);
+							CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 							errorCount++;
 							co.setRemark1(e.getMessage());// 异常原因
 							errorList.add(co);
@@ -348,7 +354,7 @@ public class BaleController {
 						this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 					}
 				}
-			}
+//			}
 		}
 		return explinkResponse;
 	}

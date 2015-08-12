@@ -62,10 +62,18 @@ public class BaleCwbDao {
 		String sql = "select count(1) from express_ops_bale_cwb where baleid=? and cwb=?";
 		return jdbcTemplate.queryForLong(sql, baleid, cwb);
 	}
+	public long getBaleAndCwbCount(String baleno, String cwb) {
+		String sql = "select count(1) from express_ops_bale_cwb where baleno=? and cwb=?";
+		return jdbcTemplate.queryForLong(sql, baleno, cwb);
+	}
 	
 	public List<String> getCwbsByBale(String baleid) {
 		String sql = "select cwb from express_ops_bale_cwb where baleid=";
 		return jdbcTemplate.queryForList(sql+baleid, String.class);
+	}
+	public List<String> getCwbsByBaleNO(String baleno) {
+		String sql = "select cwb from express_ops_bale_cwb where baleno=?";
+		return jdbcTemplate.queryForList(sql, String.class,baleno);
 	}
 
 	public void deleteByBaleidAndCwb(long baleid, String cwb) {

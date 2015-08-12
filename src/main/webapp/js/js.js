@@ -972,18 +972,19 @@ function check_role() {
 // ///////员工管理//////////////
 function checkRealname() {
 	if ($("#realname").val().length > 0) {
-		$.ajax({
-			type : "POST",
-			url : "user/userrealnamecheck",
-			data : {
-				realname : $("#realname").val()
-			},
-			success : function(data) {
-				if (data == false)
-					alert("员工姓名已存在");
-				// else alert("员工姓名可用");
-			}
-		});
+//		$.ajax({
+//			type : "POST",
+//			url : "user/userrealnamecheck",
+//			data : {
+//				realname : $("#realname").val()
+//			},
+//			success : function(data) {
+//				if (data == false)
+//					alert("员工姓名已存在");
+//				// else alert("员工姓名可用");
+//			}
+//		});
+		return true;
 	} else {
 		alert("员工姓名不能为空");
 	}
