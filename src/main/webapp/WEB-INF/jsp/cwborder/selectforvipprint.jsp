@@ -213,7 +213,7 @@ function nowprint(){
 						  </tr>
 						<% 
 						List<OrderGoods> orderGoods=mapOrderGoods.get(co.getCwb());
-						if(orderGoods.size()>12)
+						if(orderGoods.size()>50)
 						{%>
 						<tr align="center" style="font-size: 14px">
 							<td  colspan="10">商品数量较多，无法正常显示</td>
@@ -240,29 +240,20 @@ function nowprint(){
 			</tr>
 			<tr>
 				<td height="12px">退货仓地址:</td>
-				<td colspan="6"><%=co.getRemark5() %></td>
+				<td colspan="4"><%=co.getRemark5() %>/<%for (Customer c : customerlist) {if (c.getCustomerid() == co.getCustomerid()) {	%>
+					<%=c.getCustomername()%> <%}}%></td>
+				<td height="12px">建议最晚揽件时间:</td>
+				<td colspan="2"><%=co.getCustomercommand()!=null&&co.getCustomercommand().contains("建议最晚揽件时间")?(co.getCustomercommand().substring(co.getCustomercommand().indexOf("建议最晚揽件时间:")+9)):"" %></td>
 			</tr>
 			<tr>
 				<td height="16">取件承运商：</td>
-				<td >
-					<%
-						for (Customer c : customerlist) {
-								if (c.getCustomerid() == co.getCustomerid()) {
-					%>
-					<%=c.getCustomername()%> <%
- 	}
- 		}
- %>
+				<td ><%=request.getAttribute("companyName") %>
 				</td>
 				 <td>打印日期：</td>
 				<td colspan="1"><% SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd"); %><%=dateFormat.format(new Date()) %></td>
 				 <td>取货人签字：</td>
 				 <td width="86"></td>
 				 <td width="148">取货时间：________</td>
-			</tr>
-			<tr>
-				<td colspan="6" height="12px"></td>
-				<td align="left">退货人签字:</td>
 			</tr>
 		</table>
 <%-- 		<%
@@ -326,7 +317,7 @@ function nowprint(){
 						  </tr>
 						<% 
 						List<OrderGoods> orderGoods=mapOrderGoods.get(co.getCwb());
-						if(orderGoods.size()>12)
+						if(orderGoods.size()>50)
 						{%>
 						<tr align="center" style="font-size: 14px">
 							<td colspan="10">商品数量较多，无法正常显示</td>
@@ -353,6 +344,7 @@ function nowprint(){
 			<tr>
 				<td height="12px">退货仓地址:</td>
 				<td colspan="6"><%=co.getRemark5() %></td>
+				
 			</tr>
 			<tr>
 				<td height="16">取件承运商：</td>
@@ -372,17 +364,13 @@ function nowprint(){
 				 <td width="86"></td>
 				 <td width="148">取货时间：________</td>
 			</tr>
-			<tr>
-				<td colspan="6" height="12px"></td>
-				<td align="left">退货人签字:</td>
-			</tr>
 		</table>
 			<table id="cwb" height="535px"
 			width="700" border="0" cellspacing="0" cellpadding="0"
 			class="table_dd" style="font-size: 14px">
 						<tr align="center" style="font-size: 14px">
 			<% orderGoods=mapOrderGoods.get(co.getCwb());
-			if(orderGoods.size()>12){%><td>商品数量太多！图片无法显示</td></tr><%}else{
+			if(orderGoods.size()>50){%><td>商品数量太多！图片无法显示</td></tr><%}else{
 				if(orderGoods.size()==1){
 				String url_pic=orderGoods.get(0).getGoods_pic_url();
 				url_pic=url_pic.contains("http:")?url_pic:("http://"+url_pic);
