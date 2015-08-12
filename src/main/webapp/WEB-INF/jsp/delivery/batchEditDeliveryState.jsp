@@ -159,7 +159,9 @@ function changeTag(id){
 
 		<%if(batchEditDeliveryStateisUseCash.equals("no")){ %>
 			$("#paytype").val(-1);
-		<%}%>
+		<%}else{%>
+		$("#paytype").val(1);
+		 <%}%>
 	}else if(id==<%=DeliveryStateEnum.DaiZhongZhuan.getValue()%>){
 		$("#firstchangereasonid").parent().show();
 		$("#deliverremark").parent().show();
