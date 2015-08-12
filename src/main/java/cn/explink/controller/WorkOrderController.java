@@ -316,8 +316,8 @@ public class WorkOrderController {
 		String uname=getSessionUser().getUsername();
 		cca.setChongshenUser(uname);
 		cca.setJieanchongshenTime(nowtime);
-		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
-		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent()==null?"":reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
+		model.addAttribute("OneLevel", reasondao.getReasonByReasonid(cca.getComplaintOneLevel()).getReasoncontent());
+		model.addAttribute("TwoLevel", reasondao.getReasonByReasonid(cca.getComplaintTwoLevel()).getReasoncontent());
 		
 		model.addAttribute("lb", lb);  
 		model.addAttribute("alluser",userDao.getAllUser());
