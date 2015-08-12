@@ -111,40 +111,42 @@ public class OrderBackCheckService {
 		wufazaicifankuiBuffer.append("审核完成，（已审核的订单无法再次反馈）其中已审核的订单号为:");
 		if (!"".equals(ids)) {
 			logger.info("===退货确认审核开始===");
-			for (String id : ids.split(",")) {
-				OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckById(Long.parseLong(id));
-				if(order!=null&&order.getCheckstate()==2){
-					wufazaicifankuiBuffer.append(order.getCwb()+",");
-					//return "已审核的订单无法再次反馈！订单号:"+order.getCwb();
-				}
-				// 获得当前站点的退货站
-				List<Branch> bList = new ArrayList<Branch>();
-				for (long i : cwbRouteService.getNextPossibleBranch(order.getBranchid())) {
-					bList.add(branchDAO.getBranchByBranchid(i));
-				}
-				Branch tuihuoNextBranch = null;
-				for (Branch b : bList) {
-					if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
-						tuihuoNextBranch = b;
+			List<OrderBackCheck> orderList = orderBackCheckDAO.getOrderBackCheckById(ids);
+			if (orderList!=null&&!orderList.isEmpty()) {
+				//OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckById(Long.parseLong(id));
+				for(OrderBackCheck order : orderList){
+					if(order.getCheckstate()==2){
+						wufazaicifankuiBuffer.append(order.getCwb()+",");
+						//return "已审核的订单无法再次反馈！订单号:"+order.getCwb();
 					}
+					// 获得当前站点的退货站
+					List<Branch> bList = new ArrayList<Branch>();
+					for (long i : cwbRouteService.getNextPossibleBranch(order.getBranchid())) {
+						bList.add(branchDAO.getBranchByBranchid(i));
+					}
+					Branch tuihuoNextBranch = null;
+					for (Branch b : bList) {
+						if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+							tuihuoNextBranch = b;
+						}
+					}
+					// 更改下一站为退货站
+					cwbDAO.updateNextBranchid(order.getCwb(), tuihuoNextBranch.getBranchid());
+					cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.TuiHuo);
+	
+					// 更新checkstate=1 并且更新确认状态为确认退货
+					orderBackCheckDAO.updateOrderBackCheck1(1,order.getId(),user.getRealname(), dateStr);
+					logger.info("用户:{},对订单:{},退货审核为确认退货状态", new Object[] { user.getRealname(), order.getCwb() });
 				}
-				// 更改下一站为退货站
-				cwbDAO.updateNextBranchid(order.getCwb(), tuihuoNextBranch.getBranchid());
-				cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.TuiHuo);
-
-				// 更新checkstate=1 并且更新确认状态为确认退货
-				orderBackCheckDAO.updateOrderBackCheck1(1,Long.parseLong(id),user.getRealname(), dateStr);
-				logger.info("用户:{},对订单:{},退货审核为确认退货状态", new Object[] { user.getRealname(), order.getCwb() });
+				logger.info("===退货审核确认结束===");
 			}
-			logger.info("===退货审核确认结束===");
+			if (wufazaicifankuiBuffer.indexOf(",")!=-1) {
+				return wufazaicifankuiBuffer.substring(0, wufazaicifankuiBuffer.length()-1).toString();
+			}else {
+				return "审核为确认退货成功！";
+			}
 		}
-		if (wufazaicifankuiBuffer.indexOf(",")!=-1) {
-			return wufazaicifankuiBuffer.substring(0, wufazaicifankuiBuffer.length()-1).toString();
-		}else {
-			return "审核为确认退货成功！";
-
-		}
-		
+		return "没有需要审核的订单!";
 	}
 
 	/**

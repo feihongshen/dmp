@@ -343,4 +343,15 @@ public class OrderBackCheckDAO {
 			String sql = "select count(1) from ops_order_back_check where cwb=? and isstastics=0";
 			return this.jdbcTemplate.queryForLong(sql,cwb); 
 		}
+
+		public List<OrderBackCheck> getOrderBackCheckById(String ids) {
+			// TODO Auto-generated method stub
+			try{
+				String sql = "select * from ops_order_back_check where id in("+ids+")";
+				return this.jdbcTemplate.query(sql, new OrderBackCheckRowMapper());
+			}catch(Exception e){
+				e.printStackTrace();
+				return null;
+			}
+		}
 }
