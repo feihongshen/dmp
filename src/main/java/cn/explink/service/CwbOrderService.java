@@ -2838,7 +2838,7 @@ public class CwbOrderService {
 		} else if ("1".equals(switchInstall.getValue())) {
 			// 一票多件时在领货前的操作是不阻挡的，但在领货的时候会拦截一票多件前一环节件数不对而阻拦
 			if (!forceOut && (co.getSendcarnum() > co.getScannum()
-					&& ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()))
+					&& ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()))
 					&& (co.getFlowordertype() != flowOrderTypeEnum.getValue()) && (alength == co.getSendcarnum()))) {
 				throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
 						flowOrderTypeEnum.getText());
