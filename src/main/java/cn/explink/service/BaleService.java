@@ -1202,7 +1202,7 @@ public class BaleService {
 
 			// 出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑
 			if ((co.getStartbranchid() == currentbranchid) && (co.getNextbranchid() == branchid || branchid == -1 || branchid == 0 || co.getNextbranchid() == currentbranchid )
-					|| (co.getSendcarnum() > 1 && co.getSendcarnum() == co.getScannum())
+					&& (co.getSendcarnum() > 1 && co.getSendcarnum() == co.getScannum())
 					&& (co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {// 重复
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			}
