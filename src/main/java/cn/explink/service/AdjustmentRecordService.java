@@ -44,6 +44,7 @@ public class AdjustmentRecordService {
 		return userDetail.getUser();
 	}
 
+	//写的什么鬼东西！FUCK 
 	/**
 	 * sunyun
 	 * 根据cwb值,判断是否存在和是否已经核销,来创建调整单记录
@@ -209,74 +210,122 @@ public class AdjustmentRecordService {
 				//表示有对应订单信息,下面判断是否生成过调整单,查询调整单表 fn_adjustment_record表
 				adjustmentRecords=adjustmentRecordDAO.getAdjustmentRecordByCwb(cwbOrder.getCwb());
 				
-				if(adjustmentRecords.size()>0){
-					//表示表中存在该订单的调整单记录,查询是否存在调整账单号
-					for (AdjustmentRecord adjustmentRecord : adjustmentRecords) {
-						
-						long adjust_bill_id=adjustmentRecord.getBill_id();
-						
-						int adjust_status=adjustmentRecord.getStatus();
-						
-						if(adjust_bill_id==0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
-							//未核销,并且存在调整账单信息,则需要修改该信息
-							//上门退订单
-							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
-//								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
-//								aRecord.setRefund_fee(cwbOrder.getPaybackfee());//应退金额
-								BigDecimal refundFee = adjustmentRecord.getRefund_fee()==null?BigDecimal.ZERO:adjustmentRecord.getRefund_fee();
-								aRecord.setModify_fee(page_payback_fee);
-//								aRecord.setAdjust_amount(cwbOrder.getPaybackfee().subtract(page_payback_fee));
-								aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
-								aRecord.setRemark(refundFee+"元修改成"+page_payback_fee+"元");
-								
-							}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
-								//配送订单
-//								aRecord.setReceive_fee(cwbOrder.getReceivablefee());//修改调整单记录,原始金额为原有数据中的原始金额
-//								aRecord.setRefund_fee(page_payback_fee);
-								aRecord.setModify_fee(page_receive_fee);
-//								aRecord.setAdjust_amount(page_receive_fee.subtract(cwbOrder.getReceivablefee()));//通过原始金额减去调整后金额产生调整差额
-								aRecord.setAdjust_amount(page_receive_fee.subtract(adjustmentRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
-								aRecord.setRemark(adjustmentRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
-								
-							}else {//TODO 上门换
-								if(page_payback_fee.doubleValue()>0&&page_receive_fee.doubleValue()<=0){
-									BigDecimal refundFee = adjustmentRecord.getRefund_fee()==null?BigDecimal.ZERO:adjustmentRecord.getRefund_fee();
-									aRecord.setModify_fee(page_payback_fee);
-									aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
-									aRecord.setRemark(refundFee+"元修改成"+page_payback_fee+"元");
-									
-								}else if(page_receive_fee.doubleValue()>0&&page_payback_fee.doubleValue()<=0){
-									//配送订单
-									aRecord.setModify_fee(page_receive_fee);
-									aRecord.setAdjust_amount(page_receive_fee.subtract(adjustmentRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
-									aRecord.setRemark(adjustmentRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
-									
-								}
-							}
-							aRecord.setCreator(getSessionUser().getUsername());
-							aRecord.setCreate_time(DateTimeUtil.getNowTime());
-							
-							adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
-							
-						}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.YiHeXiao.getValue()){
-							//表示存在该订单信息,并且已经核销,需要生成新的调整单信息
-							this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
-							
-						}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
-							//没有生成过调整账单&&是未核销的状态  则创建新的记录
-							this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
-						}
-					}	
-				}else{
-					//创建新的记录
-					this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
-				}	
+//				if(adjustmentRecords.size()>0){
+//					//表示表中存在该订单的调整单记录,查询是否存在调整账单号
+//					for (AdjustmentRecord adjustmentRecord : adjustmentRecords) {
+//						
+//						long adjust_bill_id=adjustmentRecord.getBill_id();
+//						
+//						int adjust_status=adjustmentRecord.getStatus();
+//						
+//						if(adjust_bill_id==0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
+//							//未核销,并且存在调整账单信息,则需要修改该信息
+//							//上门退订单
+//							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
+////								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
+////								aRecord.setRefund_fee(cwbOrder.getPaybackfee());//应退金额
+//								BigDecimal refundFee = adjustmentRecord.getRefund_fee()==null?BigDecimal.ZERO:adjustmentRecord.getRefund_fee();
+//								aRecord.setModify_fee(page_payback_fee);
+////								aRecord.setAdjust_amount(cwbOrder.getPaybackfee().subtract(page_payback_fee));
+//								aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
+//								aRecord.setRemark(refundFee+"元修改成"+page_payback_fee+"元");
+//								
+//							}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
+//								//配送订单
+////								aRecord.setReceive_fee(cwbOrder.getReceivablefee());//修改调整单记录,原始金额为原有数据中的原始金额
+////								aRecord.setRefund_fee(page_payback_fee);
+//								aRecord.setModify_fee(page_receive_fee);
+////								aRecord.setAdjust_amount(page_receive_fee.subtract(cwbOrder.getReceivablefee()));//通过原始金额减去调整后金额产生调整差额
+//								aRecord.setAdjust_amount(page_receive_fee.subtract(adjustmentRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
+//								aRecord.setRemark(adjustmentRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
+//								
+//							}else {//TODO 上门换
+//								if(page_payback_fee.doubleValue()>0&&page_receive_fee.doubleValue()<=0){
+//									BigDecimal refundFee = adjustmentRecord.getRefund_fee()==null?BigDecimal.ZERO:adjustmentRecord.getRefund_fee();
+//									aRecord.setModify_fee(page_payback_fee);
+//									aRecord.setAdjust_amount(refundFee.subtract(page_payback_fee));
+//									aRecord.setRemark(refundFee+"元修改成"+page_payback_fee+"元");
+//									
+//								}else if(page_receive_fee.doubleValue()>0&&page_payback_fee.doubleValue()<=0){
+//									//配送订单
+//									aRecord.setModify_fee(page_receive_fee);
+//									aRecord.setAdjust_amount(page_receive_fee.subtract(adjustmentRecord.getReceive_fee()));//通过原始订单的金额减去调整后金额产生调整差额
+//									aRecord.setRemark(adjustmentRecord.getReceive_fee()+"元修改成"+page_receive_fee+"元");
+//									
+//								}
+//							}
+//							aRecord.setCreator(getSessionUser().getUsername());
+//							aRecord.setCreate_time(DateTimeUtil.getNowTime());
+//							
+//							adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
+//							
+//						}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.YiHeXiao.getValue()){
+//							//表示存在该订单信息,并且已经核销,需要生成新的调整单信息
+//							this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
+//							
+//						}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
+//							//没有生成过调整账单&&是未核销的状态  则创建新的记录
+//							this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
+//						}
+//					}	
+//				}else{
+//					//创建新的记录
+//					this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
+//				}	
+				this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
 	}
 	
+	/**
+	 * 重置反馈状态，对应生成调整单记录
+	 * @param cwb
+	 * @param payWayId
+	 * @param newPayWayId
+	 * update express_ops_applyeditdeliverystate set shenhestate=3,edituserid=?,edittime=?,ishandle=1 where cwb=? order by id desc limit 1
+	 */
+	public void createAdjustment4ReFeedBack(String cwb){
+		//只知道订单号
+		List<FnCustomerBillDetail> fnCustomerBillDetails=new ArrayList<FnCustomerBillDetail>();
+		List<AdjustmentRecord> adjustmentRecords=new ArrayList<AdjustmentRecord>();
+		//创建一个新的调整单记录对象,用于保存调整单记录
+		AdjustmentRecord aRecord=new AdjustmentRecord();
+		//查询出对应订单号的账单详细信息
+		CwbOrder cwbOrder=cwbDao.getCwbByCwb(cwb);
+		fnCustomerBillDetails=FnCustomerBillDetaildao.getFnCustomerBillDetailByCwb(cwb);
+		if(fnCustomerBillDetails!=null&&fnCustomerBillDetails.size()>0){
+			//表示存在该订单的账单信息
+			//表示有对应订单信息,下面判断是否生成过调整单,查询调整单表 fn_adjustment_record表
+			adjustmentRecords=adjustmentRecordDAO.getAdjustmentRecordByCwb(cwb);
+//			if(adjustmentRecords.size()>0){
+//				//存在订单的调整单信息,
+//				for (AdjustmentRecord adjustmentRecord : adjustmentRecords) {
+//					long adjust_bill_id=adjustmentRecord.getBill_id();
+//					int adjust_status=adjustmentRecord.getStatus();
+//					if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
+//						//需要修改订单信息
+//						aRecord.setReceive_fee(cwbOrder.getReceivablefee());
+//						aRecord.setRefund_fee(cwbOrder.getPaybackfee());
+//						aRecord.setModify_fee(BigDecimal.ZERO);
+//						aRecord.setAdjust_amount(BigDecimal.ZERO);
+//						aRecord.setRemark(PaytypeEnum.getByValue(payWayId).getText()+"修改成"+PaytypeEnum.getByValue(newPayWayId).getText());
+//						aRecord.setCreator(getSessionUser().getUsername());
+//						aRecord.setCreate_time(DateTimeUtil.getNowTime());
+//						adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
+//					}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.YiHeXiao.getValue()){
+//						//已核销过,重新生成一个新的调整单记录  modified by jiangyu
+//						this.reFeedBack2CreateRecord(aRecord, cwbOrder);
+//					}
+//				}
+//			}else{
+//				//创建新的记录   modified by jiangyu
+//				this.reFeedBack2CreateRecord(aRecord, cwbOrder);
+//			}
+			this.reFeedBack2CreateRecord(aRecord, cwbOrder);
+		}
+	}
 	
 	/**
 	 * 修改支付方式生成调整单的记录 
@@ -297,30 +346,31 @@ public class AdjustmentRecordService {
 			//表示存在该订单的账单信息
 			//表示有对应订单信息,下面判断是否生成过调整单,查询调整单表 fn_adjustment_record表
 			adjustmentRecords=adjustmentRecordDAO.getAdjustmentRecordByCwb(cwb);
-			if(adjustmentRecords.size()>0){
-				//存在订单的调整单信息,
-				for (AdjustmentRecord adjustmentRecord : adjustmentRecords) {
-					long adjust_bill_id=adjustmentRecord.getBill_id();
-					int adjust_status=adjustmentRecord.getStatus();
-					if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
-						//需要修改订单信息
-						aRecord.setReceive_fee(cwbOrder.getReceivablefee());
-						aRecord.setRefund_fee(cwbOrder.getPaybackfee());
-						aRecord.setModify_fee(BigDecimal.ZERO);
-						aRecord.setAdjust_amount(BigDecimal.ZERO);
-						aRecord.setRemark(PaytypeEnum.getByValue(payWayId).getText()+"修改成"+PaytypeEnum.getByValue(newPayWayId).getText());
-						aRecord.setCreator(getSessionUser().getUsername());
-						aRecord.setCreate_time(DateTimeUtil.getNowTime());
-						adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
-					}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.YiHeXiao.getValue()){
-						//已核销过,重新生成一个新的调整单记录  modified by jiangyu
-						this.modifyPayWay2CreateRecord(payWayId, newPayWayId,aRecord, cwbOrder);
-					}
-				}
-			}else{
-				//创建新的记录   modified by jiangyu
-				this.modifyPayWay2CreateRecord(payWayId, newPayWayId, aRecord,cwbOrder);
-			}
+//			if(adjustmentRecords.size()>0){
+//				//存在订单的调整单信息,
+//				for (AdjustmentRecord adjustmentRecord : adjustmentRecords) {
+//					long adjust_bill_id=adjustmentRecord.getBill_id();
+//					int adjust_status=adjustmentRecord.getStatus();
+//					if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
+//						//需要修改订单信息
+//						aRecord.setReceive_fee(cwbOrder.getReceivablefee());
+//						aRecord.setRefund_fee(cwbOrder.getPaybackfee());
+//						aRecord.setModify_fee(BigDecimal.ZERO);
+//						aRecord.setAdjust_amount(BigDecimal.ZERO);
+//						aRecord.setRemark(PaytypeEnum.getByValue(payWayId).getText()+"修改成"+PaytypeEnum.getByValue(newPayWayId).getText());
+//						aRecord.setCreator(getSessionUser().getUsername());
+//						aRecord.setCreate_time(DateTimeUtil.getNowTime());
+//						adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
+//					}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.YiHeXiao.getValue()){
+//						//已核销过,重新生成一个新的调整单记录  modified by jiangyu
+//						this.modifyPayWay2CreateRecord(payWayId, newPayWayId,aRecord, cwbOrder);
+//					}
+//				}
+//			}else{
+//				//创建新的记录   modified by jiangyu
+//				this.modifyPayWay2CreateRecord(payWayId, newPayWayId, aRecord,cwbOrder);
+//			}
+			this.modifyPayWay2CreateRecord(payWayId, newPayWayId,aRecord, cwbOrder);
 		}
 	}
 	
@@ -343,6 +393,38 @@ public class AdjustmentRecordService {
 		aRecord.setModify_fee(BigDecimal.ZERO);
 		aRecord.setAdjust_amount(BigDecimal.ZERO);
 		aRecord.setRemark(PaytypeEnum.getByValue(payWayId).getText()+"修改成"+PaytypeEnum.getByValue(newPayWayId).getText());
+		
+		aRecord.setCreator(getSessionUser().getUsername());
+		aRecord.setCreate_time(DateTimeUtil.getNowTime());
+		aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
+		aRecord.setOrder_type(cwbOrder.getCwbordertypeid());
+		
+		adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+	}
+	
+	
+	/**
+	 * 重置审核状态-创建调整单记录
+	 * @param payWayId
+	 * @param newPayWayId
+	 * @param aRecord
+	 * @param cwbOrder
+	 * TODO
+	 */
+	private void reFeedBack2CreateRecord(AdjustmentRecord aRecord, CwbOrder cwbOrder) {
+		aRecord.setOrder_no(cwbOrder.getCwb());
+		//不允许为空
+		aRecord.setBill_no("");
+		aRecord.setAdjust_bill_no("");
+		aRecord.setCustomer_id(cwbOrder.getCustomerid());
+		
+		aRecord.setReceive_fee(cwbOrder.getReceivablefee());
+		aRecord.setRefund_fee(cwbOrder.getPaybackfee());
+		aRecord.setModify_fee(BigDecimal.ZERO);
+		
+		BigDecimal adjustAmount = (cwbOrder.getReceivablefee()!=null && cwbOrder.getReceivablefee().compareTo(BigDecimal.ZERO)>0) ? cwbOrder.getReceivablefee() : cwbOrder.getPaybackfee() ;
+		aRecord.setAdjust_amount(adjustAmount);
+		aRecord.setRemark("已审核账单重置反馈状态!");
 		
 		aRecord.setCreator(getSessionUser().getUsername());
 		aRecord.setCreate_time(DateTimeUtil.getNowTime());

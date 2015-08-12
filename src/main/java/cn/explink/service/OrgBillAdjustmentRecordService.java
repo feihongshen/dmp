@@ -79,7 +79,7 @@ public class OrgBillAdjustmentRecordService {
 		if(null!=fnOrgBillDetails&&fnOrgBillDetails.size()>0){//该订单已经生成过账单
 			adjustRecord = orgBillAdjustmentRecordDao.getAdjustmentRecordByCwb(order.getCwb());
 			DeliveryState deliveryState = deliverStateDao.getDeliverSignTime(order.getCwb());
-			if(adjustRecord.size()<=0){//没有生成过调整单记录
+//			if(adjustRecord.size()<=0){//没有生成过调整单记录
 				//根据不同的订单类型
 				//配送
 				record.setOrderNo(order.getCwb());
@@ -146,13 +146,81 @@ public class OrgBillAdjustmentRecordService {
 				}
 				record.setPayWayChangeFlag(0);
 				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
-			}else{//该订单已经生成过调整单记录  不让其修改
-				//提示信息
-			}
+//			}else{//该订单已经生成过调整单记录  不让其修改
+//				//提示信息
+//			}
 		}else{
 			//该订单还没有生成过账单记录，不能生成调整单记录
 		}
 	}
+
+	/**
+	 * 站内站点调整单  重置审核状态
+	 */
+	public void createAdjustment4ReFeedBack(String cwb) {
+		
+		List<FnOrgBillDetail> fnOrgBillDetails = new ArrayList<FnOrgBillDetail>();
+		
+		List<OrgBillAdjustmentRecord> adjustRecord = new ArrayList<OrgBillAdjustmentRecord>();
+		
+		OrgBillAdjustmentRecord record = new OrgBillAdjustmentRecord();
+		//通过订单号查询出站点账单的记录
+		fnOrgBillDetails = fnOrgBillDetailDAO.getFnOrgBillDetailByCwb(cwb);
+		//查询出对应订单号的账单详细信息
+		CwbOrder order = cwbDao.getCwbByCwb(cwb);
+		//订单的类型
+		Integer orderType = order.getCwbordertypeid();
+		if(null!=fnOrgBillDetails&&fnOrgBillDetails.size()>0){//该订单已经生成过账单
+			adjustRecord = orgBillAdjustmentRecordDao.getAdjustmentRecordByCwb(order.getCwb());
+			DeliveryState deliveryState = deliverStateDao.getDeliverSignTime(order.getCwb());
+//			if(adjustRecord.size()<=0){//没有生成过调整单记录
+				//根据不同的订单类型
+				record.setOrderNo(order.getCwb());
+				record.setBillNo("");
+				record.setBillId(0L);
+				record.setAdjustBillNo("");
+				record.setCustomerId(order.getCustomerid());
+				record.setReceiveFee(order.getReceivablefee());
+				record.setRefundFee(order.getPaybackfee());
+				//是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
+				record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
+				
+				
+				record.setCreator(getSessionUser().getUsername());
+				record.setCreateTime(new Date());
+				record.setOrderType(orderType);
+				//订单的支付方式可能是新的支付方式
+				Long oldPayWay = Long.valueOf(order.getPaywayid())==null?1L:Long.valueOf(order.getPaywayid());
+				Long newPayWay = order.getNewpaywayid()==null?0L:Long.valueOf(order.getNewpaywayid());
+				if (oldPayWay.intValue()==newPayWay.intValue()) {
+					record.setPayMethod(oldPayWay.intValue());
+				}else {
+					record.setPayMethod(newPayWay.intValue());
+				}
+				record.setDeliverybranchid(order.getDeliverybranchid());
+				if( order.getPaybackfee() != null && order.getPaybackfee().compareTo(BigDecimal.ZERO)>0){
+					record.setModifyFee(order.getPaybackfee());
+					record.setAdjustAmount(BigDecimal.ZERO);
+				}else{
+					record.setModifyFee(order.getReceivablefee());
+					record.setAdjustAmount(BigDecimal.ZERO);
+				}
+				try {
+					record.setSignTime(sdf.parse(deliveryState.getSign_time()));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				record.setPayWayChangeFlag(0);
+				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
+//			}else{//该订单已经生成过调整单记录  不让其修改
+//				//提示信息
+//			}
+		}else{
+			//该订单还没有生成过账单记录，不能生成调整单记录
+		}
+	}
+
+	
 	/**
 	 * 修改支付方式
 	 * @param cwb
@@ -172,13 +240,13 @@ public class OrgBillAdjustmentRecordService {
 		
 		if(null!=fnOrgBillDetails&&fnOrgBillDetails.size()>0){//该订单已经生成过账单
 			adjustRecord = orgBillAdjustmentRecordDao.getAdjustmentRecordByCwb(order.getCwb());
-			if(adjustRecord.size()<=0){//没有生成过调整单记录
+//			if(adjustRecord.size()<=0){//没有生成过调整单记录
 				DeliveryState deliveryState = deliverStateDao.getDeliverSignTime(order.getCwb());
 				//正向
 				this.createAdjustRecordByModifyPayMethod(order,deliveryState,payWayId,newPayWayId,AdjustWayEnum.Forward);
 				//逆向
 				this.createAdjustRecordByModifyPayMethod(order,deliveryState,payWayId,newPayWayId,AdjustWayEnum.Reverse);
-			}
+//			}
 		}
 	}
 	

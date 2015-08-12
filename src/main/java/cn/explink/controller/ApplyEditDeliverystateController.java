@@ -332,6 +332,20 @@ public class ApplyEditDeliverystateController {
 						//重置审核的最终方法
 						EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), getSessionUser().getUserid());
 						this.applyEditDeliverystateDAO.updateShenheStatePass(cwb,edituserid,edittime);//更改审核状态
+						
+						//重置反馈状态调整单逻辑(若原先配送结果为上门退、换、送成功则处理调整单逻辑)
+						if( DeliveryStateEnum.ShangMenHuanChengGong.getValue() == ec_dsd.getDs().getDeliverystate()
+								||
+							DeliveryStateEnum.ShangMenTuiChengGong.getValue() == ec_dsd.getDs().getDeliverystate()
+								||
+							DeliveryStateEnum.PeiSongChengGong.getValue() == ec_dsd.getDs().getDeliverystate()
+						){
+							//客户调整单逻辑入口
+							this.adjustmentRecordService.createAdjustment4ReFeedBack(cwb);
+							//站内调整单逻辑入口
+							this.orgBillAdjustmentRecordService.createAdjustment4ReFeedBack(cwb);
+						}
+						
 					}else{
 						cwbStr += cwb+",";
 					}
