@@ -40,7 +40,7 @@ $(function(){
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
 	$("#ysm_export").hide();
-	$("#dzz_li").hide();
+	$("#dzz_li");
 	$("#ysm_li").hide();
 	
 })
@@ -496,11 +496,12 @@ function chuku(){
 			</ul>
 		</div>
 		<div id="ViewList" class="tabbox">
-<li id="dzz_li">			<form action="<%=request.getContextPath()%>/PDA/daizhongzhuanExport">
-			<c:if test="${fn:length(dzzlist)>0 }">
-				<input type ="submit" id="btnval0" value="导出Excel" class="input_button1" />
+		<li id="dzz_li">			
+			<form action="<%=request.getContextPath()%>/PDA/daizhongzhuanExport">
+				<c:if test="${fn:length(dzzlist)>0 }">
+					<input type ="submit" id="btnval0" value="导出Excel" class="input_button1" />
 				</c:if>
-				</form>
+			</form>
 				<table width="100%" border="0" cellspacing="10" cellpadding="0" >
 					<tbody>
 						<tr>
@@ -521,20 +522,20 @@ function chuku(){
 								<div style="height: 160px; overflow-y: scroll">
 									<table  width="100%" border="0" cellspacing="1" cellpadding="2" class="table_2" id="dzz">
 										<c:forEach items="${dzzlist}" var="co">
-										<tr>
-										<td width="120" align="center" bgcolor="#f1f1f1">${co.cwb}</td>
-										<td width="120" align="center" bgcolor="#f1f1f1">${co.transcwb}</td>
-										<td width="120" align="center" bgcolor="#f1f1f1">${co.packagecode}</td>
-										<c:forEach items="${customerList}" var="cus">
-										<c:if test="${cus.customerid==co.customerid}">
-										<td width="100" align="center" bgcolor="#f1f1f1">${cus.customername}</td>
-										</c:if>
-										</c:forEach>
-										<td width="140" align="center" bgcolor="#f1f1f1">${co.emaildate}</td>
-										<td width="100" align="center" bgcolor="#f1f1f1">${co.consigneename}</td>
-										<td width="100" align="center" bgcolor="#f1f1f1">${co.receivablefee}</td>
-										<td align="center" bgcolor="#f1f1f1">${co.consigneeaddress}</td>
-										</tr>
+											<tr>
+												<td width="120" align="center">${co.cwb}</td>
+												<td width="120" align="center">${co.transcwb}</td>
+												<td width="120" align="center">${co.packagecode}</td>
+												<c:forEach items="${customerList}" var="cus">
+												<c:if test="${cus.customerid==co.customerid}">
+												<td width="100" align="center">${cus.customername}</td>
+												</c:if>
+												</c:forEach>
+												<td width="140" align="center">${co.emaildate}</td>
+												<td width="100" align="center">${co.consigneename}</td>
+												<td width="100" align="center">${co.receivablefee}</td>
+												<td align="center">${co.consigneeaddress}</td>
+											</tr>
 										</c:forEach>
 									</table>
 								</div>
@@ -543,9 +544,10 @@ function chuku(){
 					</tbody>
 				</table>
 			</li>
-<li id="ysm_li">			<form action="<%=request.getContextPath()%>/PDA/daizhongzhuanysmExport">
-				<input type ="submit" id="btnval0" value="导出Excel" class="input_button1" />
-				<input type ="hidden" id="ysm_nextbranchid" name="nextbranchid" value="" class="input_button1" />
+			<li id="ysm_li">			
+				<form action="<%=request.getContextPath()%>/PDA/daizhongzhuanysmExport">
+					<input type ="submit" id="btnval0" value="导出Excel" class="input_button1" />
+					<input type ="hidden" id="ysm_nextbranchid" name="nextbranchid" value="" class="input_button1" />
 				</form>
 				<table width="100%" border="0" cellspacing="10" cellpadding="0" >
 					<tbody>
