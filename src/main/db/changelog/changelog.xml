@@ -8236,6 +8236,12 @@ CREATE TABLE `cs_complaint_accept` (
 	   	<sql>
 	   		ALTER TABLE `ops_order_back_check` ADD INDEX `id`(`id`);
 	   </sql>
+	</changeSet>
+	
+	<changeSet id="wangqiang-2015-08-13-01" author="wangqiang">
+	   	<sql>
+	   		UPDATE dmp40_function SET functionurl = 'backimportprint/list/1' WHERE id='502070';
+	   </sql>
 	</changeSet>	
 		
 </databaseChangeLog>
