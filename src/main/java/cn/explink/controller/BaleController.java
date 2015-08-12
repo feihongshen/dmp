@@ -197,13 +197,9 @@ public class BaleController {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		try {
-			if((co!=null)&&(customerid>0)){
-				if (co.getCustomerid() != customerid) {
-					throw new CwbException(cwb, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.GONG_YING_SHANG_XUAN_ZE_CUO_WU, this.customerDAO.getCustomerById(
-							co.getCustomerid()).getCustomername());
-				}}
+			
 			if(confirmflag==0){
-				if((co!=null)&&(co.getNextbranchid()!=branchid))
+				if((co!=null)&&(co.getNextbranchid()!=branchid ) && co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())
 				{
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,this.branchDAO.
 							getBranchByBranchid(co.getNextbranchid()).getBranchname());
