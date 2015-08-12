@@ -101,10 +101,10 @@ function bdprint(id,printtemplateid){
 				      <input type="submit" id="find" value="查询" class="input_button2" />
 				     <c:choose>
 					      <c:when test="${type==2}">
-					        <a href="<%=request.getContextPath() %>/warehousegroupdetail/zhandianoutlist/1">返回未打印列表 >></a>
+					        <a href="<%=request.getContextPath() %>/warehousegroupdetail/branchzhongzhuanoutlist/1">返回未打印列表 >></a>
 						  </c:when>
 					     <c:when test="${type==3}">
-					        <a href="<%=request.getContextPath() %>/warehousegroupdetail/branchzhongzhuanoutlist/1">返回未打印列表 >></a>
+					        <a href="<%=request.getContextPath() %>/warehousegroupdetail/zhandianoutlist/1">返回未打印列表 >></a>
 						  </c:when>
 						 <c:otherwise>
 						 <a href="<%=request.getContextPath() %>/warehousegroupdetail/outlist/1">返回未打印列表 >></a>
