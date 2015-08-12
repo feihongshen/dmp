@@ -199,6 +199,8 @@ function changeTag(id){
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
 		$("#paytype").val(-1);
+		$("#firstchangereasonid").parent().hide();
+		$("#changereasonid").parent().hide();
 	}
 	
 	
