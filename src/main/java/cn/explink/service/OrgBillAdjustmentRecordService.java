@@ -141,7 +141,7 @@ public class OrgBillAdjustmentRecordService {
 				record.setDeliverybranchid(order.getDeliverybranchid());
 				try {
 					record.setSignTime(sdf.parse(deliveryState.getSign_time()));
-				} catch (ParseException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				record.setPayWayChangeFlag(0);
@@ -185,7 +185,7 @@ public class OrgBillAdjustmentRecordService {
 				//是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
 				record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
 				
-				
+				record.setDeliverId(order.getDeliverid());
 				record.setCreator(getSessionUser().getUsername());
 				record.setCreateTime(new Date());
 				record.setOrderType(orderType);
@@ -207,7 +207,7 @@ public class OrgBillAdjustmentRecordService {
 				}
 				try {
 					record.setSignTime(sdf.parse(deliveryState.getSign_time()));
-				} catch (ParseException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				record.setPayWayChangeFlag(0);

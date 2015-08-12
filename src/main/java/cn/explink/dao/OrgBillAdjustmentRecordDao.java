@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.ctc.wstx.util.DataUtil;
+
 import cn.explink.domain.OrgBillAdjustmentRecord;
 /**
  * 结算 站内调整账单的生成
@@ -97,7 +99,7 @@ public class OrgBillAdjustmentRecordDao {
 						ps.setInt(13, adjustmentRecord.getOrderType());
 						ps.setInt(14, adjustmentRecord.getPayMethod());
 						ps.setLong(15, adjustmentRecord.getDeliverId());
-						ps.setDate(16, new Date(adjustmentRecord.getSignTime().getTime()));
+						ps.setDate(16, adjustmentRecord.getSignTime() == null ? null :new Date(adjustmentRecord.getSignTime().getTime()));
 						ps.setLong(17, adjustmentRecord.getDeliverybranchid());
 						ps.setBigDecimal(18, adjustmentRecord.getAdjustAmount());
 						ps.setInt(19, adjustmentRecord.getPayWayChangeFlag());
