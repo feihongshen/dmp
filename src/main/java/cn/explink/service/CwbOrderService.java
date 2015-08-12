@@ -2844,8 +2844,14 @@ public class CwbOrderService {
 						flowOrderTypeEnum.getText());
 
 			}
-		}
+			// 一票多件时在领货前的操作是不阻挡的，但在领货的时候会拦截一票多件前一环节件数不对而阻拦
+			else if (!forceOut && (co.getSendcarnum() > co.getScannum()
+								&& flowOrderTypeEnum.getValue() ==FlowOrderTypeEnum.FenZhanLingHuo.getValue())){
+							throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
+									flowOrderTypeEnum.getText());
 
+						}
+		}
 	}
 
 	private void handleOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode,
