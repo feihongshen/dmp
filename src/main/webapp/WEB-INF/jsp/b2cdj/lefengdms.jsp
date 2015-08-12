@@ -18,7 +18,7 @@
 	<div id="box_top_bg"></div>
 	<div id="box_top_bg"></div>
 	<div id="box_top_bg"></div>
-	<div id="box_in_bg">
+	<div id="box_in_bg" style="width: 500px;">
 		<h1><div id="close_box" onclick="closeBox()"></div>乐蜂网接口设置</h1>
 		<form id="smile_save_Form" name="smile_save_Form"  onSubmit="if(check_liebo()){submitSaveForm(this);}return false;" action="<%=request.getContextPath()%>/lefengdms/saveLefeng/${joint_num}" method="post">
 		<div id="box_form">
