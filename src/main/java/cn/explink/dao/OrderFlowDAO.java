@@ -569,6 +569,9 @@ public class OrderFlowDAO {
 	}
 
 	public List<String> getOrderFlowBySome(String begindate, String enddate, String flowordertypes, String currentBranchids, long isnowdata) {
+		if(currentBranchids.equals("")){
+			currentBranchids="''";
+		}
 		String sql = "select cwb from express_ops_order_flow FORCE INDEX(FlowCredateIdx)  where flowordertype in(" + flowordertypes + ") " + " and credate >= '" + begindate + "'  and credate <= '"
 				+ enddate + "' and branchid in(" + currentBranchids + ")";
 
