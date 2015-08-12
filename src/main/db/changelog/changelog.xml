@@ -8243,5 +8243,10 @@ CREATE TABLE `cs_complaint_accept` (
 	   		UPDATE dmp40_function SET functionurl = 'backimportprint/list/1' WHERE id='502070';
 	   </sql>
 	</changeSet>	
+	<changeSet id="wangqiang-2015-08-14-01" author="wangqiang">
+	   	<sql>
+	   		UPDATE dmp40_function SET functionurl = 'backimportprint/list/1?' WHERE id='502070';
+	   </sql>
+	</changeSet>	
 		
 </databaseChangeLog>
