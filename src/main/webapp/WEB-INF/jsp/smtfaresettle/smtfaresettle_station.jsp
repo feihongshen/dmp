@@ -22,6 +22,8 @@
 <script src="${ctx_path}/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="${ctx_path}/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script src="${ctx_path}/js/json2.min.js" type="text/javascript"></script>
+<script src="${ctx_path}/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="${ctx_path}/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 
 <script>
 	function check() {
