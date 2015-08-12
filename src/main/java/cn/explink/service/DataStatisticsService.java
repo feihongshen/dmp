@@ -1667,9 +1667,9 @@ public class DataStatisticsService {
 
 		if (clist.size() > 0) {
 			for (CwbOrder c : clist) {
-				if (c.getNewpaywayid().equals(PaytypeEnum.Pos.getValue()+"")&&c.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()) {
+				/*if (c.getNewpaywayid().equals(PaytypeEnum.Pos.getValue()+"")&&c.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()) {
 					continue;
-				}
+				}*/
 				CwbOrderView cwbOrderView = new CwbOrderView();
 				cwbOrderView.setCwb(c.getCwb());
 				cwbOrderView.setEmaildate(c.getEmaildate());
