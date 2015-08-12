@@ -166,7 +166,10 @@ function changeTag(id){
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
 		$("#paytype").val(-1);
+		$("#firstchangereasonid").parent().hide();
+		$("#changereasonid").parent().hide();
 	}else if(id==<%=DeliveryStateEnum.DaiZhongZhuan.getValue()%>){
+		$("#losereasonid").parent().hide();
 		$("#firstchangereasonid").parent().show();
 		$("#firstlevelreasonid").parent().hide();
 		$("#changereasonid").parent().show();
