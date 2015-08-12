@@ -392,12 +392,6 @@
 					</tr>
 				</c:forEach>
 			</table>
-		</div>
-
-
-
-		<div class="iframe_bottom">
-
 			<table id="summary_table" style="width: 100%" border="0" cellspacing="1" cellpadding="0"
 				class="table_2" id="total_table">
 				<tr class="font_1">
@@ -409,9 +403,16 @@
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
 				</tr>
 			</table>
+		</div>
+
+
+
+		<div>
+
+			
 			<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
-					<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
+					<td height="20" align="center" valign="middle" bgcolor="#eef6ff"><a
 						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/deliver/1');$('#searchForm').submit();">第一页</a>
 						<a
 						<c:choose>  

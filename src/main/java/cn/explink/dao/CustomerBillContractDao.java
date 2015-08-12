@@ -102,7 +102,6 @@ public class CustomerBillContractDao {
 				sb.append(" ORDER BY "+condition+" "+sequence);
 				sb.append(" limit "+start+","+number);
 				sql+=sb.toString();
-				System.out.println(sql);
 				return jdbcTemplate.query(sql, new CustomerBillContractmapper());
 			}
 	

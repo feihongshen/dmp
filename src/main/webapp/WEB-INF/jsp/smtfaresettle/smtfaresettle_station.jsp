@@ -342,10 +342,21 @@
 					</tr>
 				</c:forEach>
 			</table>
+				<table id="summary_table" style="width: 100%" border="0" cellspacing="1" cellpadding="0"
+				class="table_2">
+				<tr class="font_1">
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">汇总</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">&nbsp;</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
+				</tr>
+			</table>
 		</div>
 
 
-
+<!-- 
 		<div class="iframe_bottom">
 
 			<table id="summary_table" style="width: 100%" border="0" cellspacing="1" cellpadding="0"
@@ -359,14 +370,27 @@
 					<td width="100" align="center" valign="middle" bgcolor="#eef6ff">0</td>
 				</tr>
 			</table>
-		</div>
+		</div> -->
 		
 		
 		
-		<div class="iframe_bottom">
+		
+				
+	
+		<form id="detailForm" name="detailForm" action="${ctx_path}/smtfaresettle/detail_s/1"
+			method="post">
+			<input type="hidden" id="optTimeType" name="optTimeType" value="${cond.optTimeType}" /> <input
+				type="hidden" id="startTime" name="startTime" value="${cond.startTime}" /> <input type="hidden"
+				id="endTime" name="endTime" value="${cond.endTime}" /> <input type="hidden" id="stationId"
+				name="stationId" /> <input type="hidden" id="venderId" name="venderId" /> <input type="hidden"
+				id="type" name="type" />
+
+		</form>
+	
+		<div >
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 				<tr>
-					<td height="38" align="center" valign="middle" bgcolor="#eef6ff"><a
+					<td height="20" align="center" valign="middle" bgcolor="#eef6ff"><a
 						href="javascript:$('#searchForm').attr('action','${ctx_path}/smtfaresettle/station/1');$('#searchForm').submit();">第一页</a>
 						<a
 						<c:choose>  
@@ -389,19 +413,6 @@
 				</tr>
 			</table>
 			</div>
-				
-	
-		<form id="detailForm" name="detailForm" action="${ctx_path}/smtfaresettle/detail_s/1"
-			method="post">
-			<input type="hidden" id="optTimeType" name="optTimeType" value="${cond.optTimeType}" /> <input
-				type="hidden" id="startTime" name="startTime" value="${cond.startTime}" /> <input type="hidden"
-				id="endTime" name="endTime" value="${cond.endTime}" /> <input type="hidden" id="stationId"
-				name="stationId" /> <input type="hidden" id="venderId" name="venderId" /> <input type="hidden"
-				id="type" name="type" />
-
-		</form>
-	
-
 
 
 
