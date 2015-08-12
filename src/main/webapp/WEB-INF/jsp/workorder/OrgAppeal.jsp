@@ -215,7 +215,7 @@ List<CsShenSuChat> cschatlist=request.getAttribute("cschatlist")==null?null:(Lis
 											</div>
 
 		
-							<input type="hidden" value="<%=request.getContextPath()%>/workorder/huiFuChat" id="chatcontentFormUrl">
+							<input type="hidden" value="<%=request.getContextPath()%>/workorder/huiFuChat;jsessionid=<%=session.getId()%>" id="chatcontentFormUrl">
 					</td>
 				</tr>
 						
