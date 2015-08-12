@@ -55,9 +55,10 @@ public class TimeEffectiveController {
 
 	private List<TimeEffectiveVO> transfer(String[] strIds, String[] strTimeTypes, String[] strTimeHours, String[] strTimeMinutes) {
 		List<TimeEffectiveVO> teVOList = new ArrayList<TimeEffectiveVO>();
+		if(null!=strIds){
 		for (int i = 0; i < strIds.length; i++) {
 			teVOList.add(this.transfer(strIds[i], strTimeTypes[i], strTimeHours[i], strTimeMinutes[i]));
-		}
+		}}
 		return teVOList;
 	}
 
