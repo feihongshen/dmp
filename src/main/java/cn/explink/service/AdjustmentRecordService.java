@@ -422,7 +422,7 @@ public class AdjustmentRecordService {
 		aRecord.setRefund_fee(cwbOrder.getPaybackfee());
 		aRecord.setModify_fee(BigDecimal.ZERO);
 		
-		BigDecimal adjustAmount = (cwbOrder.getReceivablefee()!=null && cwbOrder.getReceivablefee().compareTo(BigDecimal.ZERO)>0) ? cwbOrder.getReceivablefee() : cwbOrder.getPaybackfee() ;
+		BigDecimal adjustAmount = (cwbOrder.getReceivablefee()!=null && cwbOrder.getReceivablefee().compareTo(BigDecimal.ZERO)>0) ? BigDecimal.ZERO.subtract(cwbOrder.getReceivablefee()) : cwbOrder.getPaybackfee() ;
 		aRecord.setAdjust_amount(adjustAmount);
 		aRecord.setRemark("已审核账单重置反馈状态!");
 		

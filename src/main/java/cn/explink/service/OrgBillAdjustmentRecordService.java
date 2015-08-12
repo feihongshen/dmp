@@ -201,11 +201,11 @@ public class OrgBillAdjustmentRecordService {
 				}
 				record.setDeliverybranchid(order.getDeliverybranchid());
 				if( order.getPaybackfee() != null && order.getPaybackfee().compareTo(BigDecimal.ZERO)>0){
-					record.setModifyFee(order.getPaybackfee());
-					record.setAdjustAmount(BigDecimal.ZERO);
+					record.setModifyFee(BigDecimal.ZERO);
+					record.setAdjustAmount(order.getPaybackfee());
 				}else{
 					record.setModifyFee(order.getReceivablefee());
-					record.setAdjustAmount(BigDecimal.ZERO);
+					record.setAdjustAmount(BigDecimal.ZERO.subtract(order.getReceivablefee()));
 				}
 				try {
 					record.setSignTime(sdf.parse(deliveryState.getSign_time()));
