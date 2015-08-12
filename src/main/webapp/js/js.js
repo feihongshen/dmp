@@ -6944,7 +6944,9 @@ function checkRevisePunishinsidePriceandDuty(){
 }
 function revisePriceOrdutyinfo(form){
 	if(checkRevisePunishinsidePriceandDuty()){
+		$("#dutybranchid").removeAttr("disabled");
 		submitCreateFormPunishInsideRevise(form);
+		$("#dutybranchid").attr("disabled","disabled");
 		return false;
 	}
 }
@@ -6961,11 +6963,11 @@ function submitCreateFormPunishInsideRevise(form) {
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
 				/*$(form)[0].reset();*/
-				$("#dutybranchid").val(0);
+			/*	$("#dutybranchid").val(0);
 				$("#dutynameAdd").val(0);
 				$("#revisegoodprice").val("");
 				$("#reviseqitaprice").val("0.00");
-				$("#koufajine").val("");
+				$("#koufajine").val("");*/
 				$("#describe").val("最多100个字");
 				//$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
 				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
