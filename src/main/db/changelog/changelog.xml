@@ -8226,4 +8226,9 @@ CREATE TABLE `cs_complaint_accept` (
 	   		INSERT INTO `express_set_system_install`(`id`,`name`,`value`,`chinesename`) VALUES ( NULL,'bupipeishifouruku','0','没有匹配站点是否允许入库：0允许，1不允许，2弹框提示'); 
 	   </sql>
 	</changeSet>	
+	<changeSet id="gaoliangliang-2015-08-12-01" author="lansheng">
+	   	<sql>
+	   		INSERT INTO `cgform_button` (`ID`, `BUTTON_CODE`, `button_icon`, `BUTTON_NAME`, `BUTTON_STATUS`, `BUTTON_STYLE`, `container_id`, `EXP`, `FORM_ID`, `OPT_TYPE`, `order_num`, `sequence`) values('402880e84cdee962014cdf4f3343001g','rightExport','download-alt','核对记录导出','1','button','btn3','','402880534b146f4c014b147c22310002','js','20','3,4');
+	   </sql>
+	</changeSet>	
 </databaseChangeLog>
