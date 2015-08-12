@@ -176,6 +176,7 @@ public class BaleController {
 			) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		cwb = this.cwbOrderService.translateCwb(cwb);
 		CwbOrder co=this.cwbDAO.getCwbByCwb(cwb);
 
 		try {
