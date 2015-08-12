@@ -231,8 +231,8 @@ public class VipShopOXOGetCwbDataService {
 		cwbOrder.setReceivablefee(order.getMoney());
 		if(StringUtils.isNotBlank(order.getExtPayType())){
 			if(order.getExtPayType().equals("-1")){ //非货到付款
-				cwbOrder.setPaywayid(PaytypeEnum.Qita.getValue());
-				cwbOrder.setNewpaywayid(PaytypeEnum.Qita.getValue()+"");
+				cwbOrder.setPaywayid(PaytypeEnum.Pos.getValue());
+				cwbOrder.setNewpaywayid(PaytypeEnum.Pos.getValue()+"");
 			}
 			
 			if(order.getExtPayType().equals("0")){//货到付款现金支付
@@ -249,6 +249,7 @@ public class VipShopOXOGetCwbDataService {
 				cwbOrder.setPaywayid(PaytypeEnum.CodPos.getValue());
 				cwbOrder.setNewpaywayid(PaytypeEnum.CodPos.getValue()+"");
 			}
+			
 		}else{
 			cwbOrder.setPaywayid(PaytypeEnum.Xianjin.getValue());
 			cwbOrder.setNewpaywayid(PaytypeEnum.Xianjin.getValue()+"");
@@ -257,7 +258,13 @@ public class VipShopOXOGetCwbDataService {
 		cwbOrder.setCargorealweight(order.getOriginalWeight());//重量
 		cwbOrder.setCargovolume(order.getOriginalVolume()); //体积
 		
-		cwbOrder.setSendcargonum(order.getTotalPack());//箱数
+		try {
+			//发货件数
+			cwbOrder.setSendcargonum((order.getTotalPack()==null || "0".equals(order.getTotalPack().trim()))?"1":Integer.parseInt(order.getTotalPack())+"" );//箱数
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			cwbOrder.setSendcargonum("1");
+		}
 		
 		//orderMap.put("", order.getSalesPlatform());//销售平台，不确定要不要存
 		cwbOrder.setCargotype(order.getTransportType());//品类
