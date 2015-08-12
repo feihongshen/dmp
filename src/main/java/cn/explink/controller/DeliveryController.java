@@ -869,7 +869,8 @@ public class DeliveryController {
 		model.addAttribute("isReasonRequired", isReasonRequired);
 		String isChorseZhongzhuanReason=this.systemInstallDAO.getSystemInstall("isChorseZhongzhuanReason").getValue();
 		model.addAttribute("isChorseZhongzhuanReason", isChorseZhongzhuanReason);
-
+		String batchEditDeliveryStateisUseCash=this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash").getValue();
+		model.addAttribute("batchEditDeliveryStateisUseCash", batchEditDeliveryStateisUseCash);
 		return "delivery/batchEditDeliveryState";
 	}
 

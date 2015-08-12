@@ -1,3 +1,4 @@
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="cn.explink.domain.Truck"%>
 <%@page import="cn.explink.print.template.PrintTemplate"%>
 <%@page import="cn.explink.util.StringUtil"%>
@@ -88,7 +89,7 @@ function bdprint(id,printtemplateid){
 					            </select>　
 					        上次打印时间：<input type ="text" name ="beginemaildate"  class="input_text1" id ="beginemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("beginemaildate")) %>"/>&nbsp;到
 					              <input type ="text" name= "endemaildate"  class="input_text1" id ="endemaildate" value ="<%=StringUtil.nullConvertToEmptyString(request.getParameter("endemaildate")) %>"/>
-				      　　
+				      　　<c:if test="${type!=2&&type!=3}">
 						      车辆：
 						<select id="truckid" name="truckid" style="width: 160px">
 							<option value="-1" selected>请选择</option>
@@ -96,8 +97,19 @@ function bdprint(id,printtemplateid){
 								<option value="<%=t.getTruckid() %>" ><%=t.getTruckno() %></option>
 							<%} %>
 				        </select>
+				        </c:if>
 				      <input type="submit" id="find" value="查询" class="input_button2" />
-				      <a href="<%=request.getContextPath() %>/warehousegroupdetail/zhandianoutlist/1?type=${type}">返回未打印列表 >></a>
+				     <c:choose>
+					      <c:when test="${type==2}">
+					        <a href="<%=request.getContextPath() %>/warehousegroupdetail/zhandianoutlist/1">返回未打印列表 >></a>
+						  </c:when>
+					     <c:when test="${type==3}">
+					        <a href="<%=request.getContextPath() %>/warehousegroupdetail/branchzhongzhuanoutlist/1">返回未打印列表 >></a>
+						  </c:when>
+						 <c:otherwise>
+						 <a href="<%=request.getContextPath() %>/warehousegroupdetail/outlist/1">返回未打印列表 >></a>
+						 </c:otherwise>
+					</c:choose>
 				</form>
 				</div>
 				<div class="right_title">

@@ -1543,14 +1543,25 @@ public class WarehouseGroup_detailController {
 	public String historyreturnlist(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
 			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate) {
-		List<Branch> blist = this.getNextPossibleBranches();
+		/*List<Branch> blist = this.getNextPossibleBranches();
 		List<Branch> removeList=new ArrayList<Branch>();
 		for (Branch branch : blist) {
 			if (branch.getSitetype()==4) {
 				removeList.add(branch);
 			}
 		}
-		blist.removeAll(removeList);
+		blist.removeAll(removeList);*/
+//		model.addAttribute("branchList", blist);
+		List<Branch> bList = this.getNextPossibleBranches();
+		List<Branch> lastList = new ArrayList<Branch>();
+		for (Branch b : bList) {
+			// 退货站
+			if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+				lastList.add(b);
+			}
+		}
+		model.addAttribute("branchList", lastList);
+
 		model.addAttribute("outwarehousegroupList", this.outwarehousegroupDao.getOutWarehouseGroupByPage(page, branchid, beginemaildate, endemaildate, 0,
 				OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue(), 0, this.getSessionUser().getBranchid()));
 		model.addAttribute(
@@ -1558,7 +1569,6 @@ public class WarehouseGroup_detailController {
 				new Page(this.outwarehousegroupDao.getOutWarehouseGroupCount(branchid, beginemaildate, endemaildate, 0, OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue(), 0, this.getSessionUser()
 						.getBranchid()), page, Page.ONE_PAGE_NUMBER));
 
-		model.addAttribute("branchList", blist);
 		model.addAttribute("printtemplateList",
 				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.TuiHuoChuZhanAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()));
 		model.addAttribute("page", page);
