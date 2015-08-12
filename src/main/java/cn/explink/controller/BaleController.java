@@ -179,11 +179,18 @@ public class BaleController {
 		CwbOrder co=this.cwbDAO.getCwbByCwb(cwb);
 
 		try {
-			if(co!=null&&customerid>0){
+			if((co!=null)&&(customerid>0)){
 				if (co.getCustomerid() != customerid) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.GONG_YING_SHANG_XUAN_ZE_CUO_WU, this.customerDAO.getCustomerById(
 							co.getCustomerid()).getCustomername());
 				}}
+			if(confirmflag==0){
+				if((co!=null)&&(co.getNextbranchid()!=branchid))
+				{
+					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,this.branchDAO.
+							getBranchByBranchid(co.getNextbranchid()).getBranchname());
+				}
+			}
 			// 封包检查
 			if (flag == 1) {// 库房出库
 				this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), cwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
@@ -287,7 +294,7 @@ public class BaleController {
 			if (flag) {
 				// 根据包号查找订单信息
 //				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
-				List<String> cwbs = baleCwbDao.getCwbsByBaleNO(baleno.trim());
+				List<String> cwbs = this.baleCwbDao.getCwbsByBaleNO(baleno.trim());
 				List<CwbOrder> errorList = new ArrayList<CwbOrder>();
 				List<BaleView> errorListView = new ArrayList<BaleView>();
 //				if ((cwbOrderList != null) && !cwbOrderList.isEmpty()) {
@@ -296,8 +303,8 @@ public class BaleController {
 					for (String cwb : cwbs) {
 						try {
 							// 订单出库 只有分站中转给中转站的订单 才传入true
-							boolean iszhongzhuanout = getIsZhongZhuanOutFlag(branchid);
-							
+							boolean iszhongzhuanout = this.getIsZhongZhuanOutFlag(branchid);
+
 							CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), cwb, cwb, driverid, truckid, branchid, 0, false, "", baleno, reasonid, iszhongzhuanout,
 									true);
 							successCount++;
@@ -361,9 +368,9 @@ public class BaleController {
 
 	private boolean getIsZhongZhuanOutFlag(long branchid) {
 		boolean iszhongzhuanout=false;
-		Branch branch=branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-		Branch zzbranch=branchDAO.getBranchByBranchid(branchid);
-		if(branch.getSitetype()==BranchEnum.ZhanDian.getValue()&&zzbranch.getSitetype()==BranchEnum.ZhongZhuan.getValue()){
+		Branch branch=this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		Branch zzbranch=this.branchDAO.getBranchByBranchid(branchid);
+		if((branch.getSitetype()==BranchEnum.ZhanDian.getValue())&&(zzbranch.getSitetype()==BranchEnum.ZhongZhuan.getValue())){
 			iszhongzhuanout=true;
 		}
 		return iszhongzhuanout;
@@ -647,7 +654,7 @@ public class BaleController {
 					String scancwb = cwb;
 					cwb = this.cwbOrderService.translateCwb(cwb);
 					this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 0, 0);
-					
+
 					// 更改包的状态
 					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
