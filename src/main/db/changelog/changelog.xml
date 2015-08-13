@@ -8247,6 +8247,13 @@ CREATE TABLE `cs_complaint_accept` (
 	   	<sql>
 	   		UPDATE dmp40_function SET functionurl = 'backimportprint/list/1?' WHERE id='502070';
 	   </sql>
+	</changeSet>
+	<!-- 导出模版添加滞留原因一二级字段 -->
+	<changeSet id="gaoliangliang-2015-08-13-01" author="gaoliangliang">
+		<sql>
+			INSERT INTO `express_ops_setexportfield` ( `fieldname`, `exportstate`, `fieldenglishname`, `orderlevel`, `exportdatatype`) VALUES ( '滞留一级原因', '1', 'stayFirstLevel', '144', 'string');
+			INSERT INTO `express_ops_setexportfield` ( `fieldname`, `exportstate`, `fieldenglishname`, `orderlevel`, `exportdatatype`) VALUES ( '滞留二级原因', '1', 'staySecondLevel', '145', 'string');
+		</sql>
 	</changeSet>	
 	<changeSet id="wangyonghe-2015-08-14-01" author="wangyonghe">
 	   	<sql>
