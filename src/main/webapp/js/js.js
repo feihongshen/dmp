@@ -1107,7 +1107,8 @@ function check_user() {
 	var s6 = $("#"+checkuserformid+" input[id=areafee]").val();
 	//re.test(s2)||re.test(s3)||re.test(s4)
 	//^[0-9]+[\.][0-9]{0,2}$
-	var regu = "^[0-9].*$";
+	//var regu = "^[0-9].*$";
+	var regu = "^[+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$";
 	var re = new RegExp(regu);
 	if (s1!=''&&!re.test(s1)) {
 		alert("请输入正确格式的金额(正数)!");
@@ -4361,7 +4362,8 @@ function check_userbranch() {
 	var s6 = $("#"+checkuserformid+" input[id=areafee]").val();
 	//re.test(s2)||re.test(s3)||re.test(s4)
 	//^[0-9]+[\.][0-9]{0,2}$
-	var regu = "^[0-9].*$";
+	//var regu = "^[0-9].*$";
+	var regu = "^[+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$";
 	var re = new RegExp(regu);
 	if (s1!=''&&!re.test(s1)) {
 		alert("请输入正确格式的金额(正数)!");
