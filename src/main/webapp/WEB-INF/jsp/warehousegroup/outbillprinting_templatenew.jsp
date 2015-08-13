@@ -1,3 +1,5 @@
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
 <%@page import="javax.swing.text.StyledEditorKit.ForegroundAction"%>
 <%@page import="cn.explink.enumutil.PrintTemplateOpertatetypeEnum"%>
@@ -91,10 +93,14 @@ function setcreowg(){
 	<%}else if(flowtype>0&&flowtype==FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()){%>
 		operatetype = <%=OutwarehousegroupOperateEnum.KuDuiKuChuKu.getValue()%>;
 	<%}%>
+	var baleno="";
+	if($("#baleno").length>0){
+		baleno=$("#baleno").text();
+	}
 	 $.ajax({
 			type: "POST",
 			url:"<%=request.getContextPath()%>/warehousegroup/creowgnew",
-			data : {"cwbs":"<%=huizongcwbs%>","operatetype":operatetype,"driverid":<%=deliverid%>},
+			data : {"cwbs":"<%=huizongcwbs%>","operatetype":operatetype,"driverid":<%=deliverid%>,"baleno":baleno},
 			dataType:"json",
 			success : function(data) {
 				if(data.errorCode==0){
@@ -181,7 +187,7 @@ function nowprint(){
 				<o:p></o:p>
 			</span> </span></td>
 		<%}else{ %>
-			<td colspan="2"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;"><%=datetime %><span
+			<td colspan="1"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt; font-size: 9.5000pt;"><%=datetime %><span
 									style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
 				<o:p></o:p>
 			</span> </span></td>
@@ -190,10 +196,14 @@ function nowprint(){
 									style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 				<o:p></o:p>
 			</span></span></td>
-			<td colspan="2"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;font-size: 9.5000pt;"><%for(Branch b : branchlist){if(Long.parseLong(usermap.get("branchid").toString())==b.getBranchid()){%><%=b.getBranchname() %><%}} %><span
+			<td colspan="1"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;font-size: 9.5000pt;"><%for(Branch b : branchlist){if(Long.parseLong(usermap.get("branchid").toString())==b.getBranchid()){%><%=b.getBranchname() %><%}} %><span
 									style="font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
 				<o:p></o:p>
 			</span> </span></td>
+			<c:if test="${!(baleno eq null)}">
+			<td align="right"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;font-size: 9.5000pt;">包号:</span</td>
+			<td align="left"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;font-size: 9.5000pt;" id="baleno">${baleno}</span></td>
+		</c:if>
 		<%} %>
 		</tr>
 	<tr>

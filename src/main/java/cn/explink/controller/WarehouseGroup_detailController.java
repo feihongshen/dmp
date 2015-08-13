@@ -419,6 +419,7 @@ public class WarehouseGroup_detailController {
 
 		model.addAttribute("mapBybranchid", map);
 		if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 1) {
+			model.addAttribute("baleno",  baleno);
 			return "warehousegroup/outbillprinting_templatenew";
 		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 2) {
 			Map<Long, List<JSONObject>> hmap = new HashMap<Long, List<JSONObject>>();
@@ -1024,7 +1025,10 @@ public class WarehouseGroup_detailController {
 		List<CwbOrder> cwbList = new ArrayList<CwbOrder>();
 		OutWarehouseGroup owg = this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid);
 		long truckid = owg.getTruckid();
-
+		String balenoowg=owg.getBaleno();
+		if((null!=balenoowg)&&(balenoowg.length()>0)){
+		model.addAttribute("baleno", balenoowg);
+		}
 		String cwbs = "";
 
 		if (owg.getSign() == 1) {

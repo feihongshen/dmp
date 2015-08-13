@@ -143,8 +143,14 @@ function cwbexport(){
 				<form action="1" method="post" id="searchForm">
 					<input type="hidden"  name="isshow" value="1"  />
 					 <div>  
+                        站点名称
+			<select name="ismohu" id="ismohu" class="select1">
+					<option value ="1"<%if(1==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>模糊匹配</option>
+					<option value ="2"<%if(2==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>精确匹配</option>
+			 </select>
+			 <input name="branchname" id="branchname" class="input_text1" onKeydown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','branchid',$(this).val());}"/>
 					 下一站
-					 <select name="branchid" id="branchid" multiple="multiple" style="width:180px;">
+					 <select name="branchid" id="branchid" multiple="multiple" style="width:120px;">
 
 				        <%for(Branch b :branchlist){ %>
 				           <option value="<%=b.getBranchid()%>" 

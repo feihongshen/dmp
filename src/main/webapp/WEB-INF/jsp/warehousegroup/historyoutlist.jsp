@@ -39,9 +39,14 @@
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
+<script src="${pageContext.request.contextPath}/js/inputer.js"></script>
 
 <script type="text/javascript">
 $(function() {
+	 $("select[id*=branch]").each(function(){
+			 LoadInputer($(this)[0].id);	 
+		 });
 	$("#beginemaildate").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,

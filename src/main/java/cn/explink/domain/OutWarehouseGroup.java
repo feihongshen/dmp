@@ -15,9 +15,10 @@ public class OutWarehouseGroup {
 	private long currentbranchid;
 	private String cwbs;
 	private long sign;
+	private String baleno;
 
 	public long getBranchid() {
-		return branchid;
+		return this.branchid;
 	}
 
 	public void setBranchid(long branchid) {
@@ -25,7 +26,7 @@ public class OutWarehouseGroup {
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -33,7 +34,7 @@ public class OutWarehouseGroup {
 	}
 
 	public Timestamp getCredate() {
-		return credate;
+		return this.credate;
 	}
 
 	public void setCredate(Timestamp credate) {
@@ -41,7 +42,7 @@ public class OutWarehouseGroup {
 	}
 
 	public long getDriverid() {
-		return driverid;
+		return this.driverid;
 	}
 
 	public void setDriverid(long driverid) {
@@ -49,7 +50,7 @@ public class OutWarehouseGroup {
 	}
 
 	public long getTruckid() {
-		return truckid;
+		return this.truckid;
 	}
 
 	public void setTruckid(long truckid) {
@@ -57,7 +58,7 @@ public class OutWarehouseGroup {
 	}
 
 	public int getState() {
-		return state;
+		return this.state;
 	}
 
 	public void setState(int state) {
@@ -65,7 +66,7 @@ public class OutWarehouseGroup {
 	}
 
 	public String getPrinttime() {
-		return printtime;
+		return this.printtime;
 	}
 
 	public void setPrinttime(String printtime) {
@@ -73,7 +74,7 @@ public class OutWarehouseGroup {
 	}
 
 	public long getOperatetype() {
-		return operatetype;
+		return this.operatetype;
 	}
 
 	public void setOperatetype(long operatetype) {
@@ -81,7 +82,7 @@ public class OutWarehouseGroup {
 	}
 
 	public long getCustomerid() {
-		return customerid;
+		return this.customerid;
 	}
 
 	public void setCustomerid(long customerid) {
@@ -89,7 +90,7 @@ public class OutWarehouseGroup {
 	}
 
 	public long getCurrentbranchid() {
-		return currentbranchid;
+		return this.currentbranchid;
 	}
 
 	public void setCurrentbranchid(long currentbranchid) {
@@ -97,7 +98,7 @@ public class OutWarehouseGroup {
 	}
 
 	public String getCwbs() {
-		return cwbs;
+		return this.cwbs;
 	}
 
 	public void setCwbs(String cwbs) {
@@ -105,11 +106,25 @@ public class OutWarehouseGroup {
 	}
 
 	public long getSign() {
-		return sign;
+		return this.sign;
 	}
 
 	public void setSign(long sign) {
 		this.sign = sign;
+	}
+
+	/**
+	 * @return the baleno
+	 */
+	public String getBaleno() {
+		return this.baleno;
+	}
+
+	/**
+	 * @param baleno the baleno to set
+	 */
+	public void setBaleno(String baleno) {
+		this.baleno = baleno;
 	}
 
 }

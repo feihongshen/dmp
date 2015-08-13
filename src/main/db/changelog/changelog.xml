@@ -8248,5 +8248,11 @@ CREATE TABLE `cs_complaint_accept` (
 	   		UPDATE dmp40_function SET functionurl = 'backimportprint/list/1?' WHERE id='502070';
 	   </sql>
 	</changeSet>	
+	<changeSet id="wangyonghe-2015-08-14-01" author="wangyonghe">
+	   	<sql>
+	   		ALTER TABLE `express_ops_outwarehousegroup`
+			ADD COLUMN `baleno`  varchar(50) NULL DEFAULT '' COMMENT '包号' AFTER `sign`;
+	   </sql>
+	</changeSet>	
 		
 </databaseChangeLog>
