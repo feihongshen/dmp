@@ -229,14 +229,14 @@ public class GztlService {
 			xmlMap.put("cargorealweight", order.getWeight());// 重量
 			String receivablefee =order.getShouldreceive();
 			if (order.getTypeid().equals("1") || order.getTypeid().equals("3")) {
-				if (receivablefee=="") {
+				if ("".equals(receivablefee)) {
 					receivablefee="0.00";
 				}
 				receivablefee=BigDecimal.valueOf(Double.parseDouble(receivablefee))+"";
 				xmlMap.put("receivablefee", receivablefee);// 应收金额
 				xmlMap.put("paybackfee", "0");// 应退款
 			} else {
-				if (receivablefee=="") {
+				if ("".equals(receivablefee)) {
 					receivablefee="0.00";
 				}
 				receivablefee = Math.abs(Double.parseDouble(receivablefee))+"";
