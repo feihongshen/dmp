@@ -34,11 +34,11 @@ public class CommonService {
 
 	public void initCommonList() {
 		try {
-			SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
+			//SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
 			SystemInstall omsUrl = systemInstallDAO.getSystemInstallByName("omsUrl");
 			String url1 = "";
-			if (omsPathUrl != null && omsUrl != null) {
-				url1 = omsPathUrl.getValue() + omsUrl.getValue();
+			if ( omsUrl != null) {
+				url1 = omsUrl.getValue();
 			} else {
 				url1 = "http://127.0.0.1:8080/oms/";
 			}

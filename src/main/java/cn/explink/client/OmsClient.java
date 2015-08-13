@@ -65,11 +65,13 @@ public class OmsClient {
 	 * @return
 	 */
 	protected String getOmsBaseUrl() {
-		SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
+		//SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
 		SystemInstall omsUrl = systemInstallDAO.getSystemInstallByName("omsUrl");
 		String omsBaseUrl = DEFAULT_OMS_BASE_URL;
-		if (omsPathUrl != null && omsUrl != null) {
-			omsBaseUrl = omsPathUrl.getValue() + omsUrl.getValue();
+		//if (omsPathUrl != null && omsUrl != null) {
+			//omsBaseUrl = omsPathUrl.getValue() + omsUrl.getValue();
+		if ( omsUrl != null) {
+			omsBaseUrl =omsUrl.getValue();
 		}
 		return omsBaseUrl;
 	}

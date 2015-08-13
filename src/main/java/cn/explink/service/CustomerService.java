@@ -76,11 +76,11 @@ public class CustomerService {
 
 	public void initCustomerList() {
 		try {
-			SystemInstall omsPathUrl = this.systemInstallDAO.getSystemInstallByName("omsPathUrl");
+			//SystemInstall omsPathUrl = this.systemInstallDAO.getSystemInstallByName("omsPathUrl");
 			SystemInstall omsUrl = this.systemInstallDAO.getSystemInstallByName("omsUrl");
 			String url1 = "";
-			if ((omsPathUrl != null) && (omsUrl != null)) {
-				url1 = omsPathUrl.getValue() + omsUrl.getValue();
+			if (omsUrl != null) {
+				url1 = omsUrl.getValue();
 //				url1 = omsUrl.getValue();
 			} else {
 				url1 = "http://127.0.0.1:8080/oms/";

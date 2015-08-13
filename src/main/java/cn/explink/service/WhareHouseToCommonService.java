@@ -150,11 +150,11 @@ public class WhareHouseToCommonService {
 	}
 
 	public String auditCommen(String commencodes, long startbranchid, int outbranchflag) {
-		SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
+		//SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
 		SystemInstall omsUrl = systemInstallDAO.getSystemInstallByName("omsUrl");
 		String url1 = "";
-		if (omsPathUrl != null && omsUrl != null) {
-			url1 = omsPathUrl.getValue() + omsUrl.getValue();
+		if (omsUrl != null) {
+			url1 =  omsUrl.getValue();
 		} else {
 			url1 = "http://127.0.0.1:8080/oms/";
 		}
@@ -265,11 +265,11 @@ public class WhareHouseToCommonService {
 	 * @return
 	 */
 	public String auditCommen_imitate(String commencodes, WarehouseToCommen warehtoCommen, long startbranchid, int outbranchflag) {
-		SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
+		//SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
 		SystemInstall omsUrl = systemInstallDAO.getSystemInstallByName("omsUrl");
 		String url1 = "";
-		if (omsPathUrl != null && omsUrl != null) {
-			url1 = omsPathUrl.getValue() + omsUrl.getValue();
+		if (omsUrl != null) {
+			url1 =omsUrl.getValue();
 		} else {
 			url1 = "http://127.0.0.1:8080/oms/";
 		}
