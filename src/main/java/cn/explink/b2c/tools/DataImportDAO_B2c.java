@@ -90,6 +90,70 @@ public class DataImportDAO_B2c {
 			cwbOrder.setShouldfare(rs.getBigDecimal("shouldfare"));
 			cwbOrder.setInfactfare(rs.getBigDecimal("infactfare"));
 			cwbOrder.setResendtime(rs.getString("resendtime"));
+
+			return cwbOrder;
+		}
+	}
+	
+	
+	private final class CwbDTO4TempMapper implements RowMapper<CwbOrderDTO> {
+		@Override
+		public CwbOrderDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+			CwbOrderDTO cwbOrder = new CwbOrderDTO();
+			cwbOrder.setStartbranchid(rs.getLong("startbranchid"));
+			cwbOrder.setCustomerwarehouseid(rs.getLong("customerwarehouseid"));
+			cwbOrder.setEmaildate(StringUtil.nullConvertToEmptyString(rs.getString("emaildate")));
+			cwbOrder.setEmaildateid(rs.getLong("emaildateid"));
+			cwbOrder.setServiceareaid(rs.getLong("serviceareaid"));
+			cwbOrder.setCustomerid(rs.getLong("customerid"));
+			cwbOrder.setShipcwb(StringUtil.nullConvertToEmptyString(rs.getString("shipcwb")));
+			cwbOrder.setConsigneeno(StringUtil.nullConvertToEmptyString(rs.getString("consigneeno")));
+			cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+			cwbOrder.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
+			cwbOrder.setConsigneepostcode(StringUtil.nullConvertToEmptyString(rs.getString("consigneepostcode")));
+			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+			cwbOrder.setCwbremark(StringUtil.nullConvertToEmptyString(rs.getString("cwbremark")));
+			cwbOrder.setCustomercommand(StringUtil.nullConvertToEmptyString(rs.getString("customercommand")));
+			cwbOrder.setTransway(StringUtil.nullConvertToEmptyString(rs.getString("transway")));
+			cwbOrder.setCwbprovince(StringUtil.nullConvertToEmptyString(rs.getString("cwbprovince")));
+			cwbOrder.setCwbcity(StringUtil.nullConvertToEmptyString(rs.getString("cwbcity")));
+			cwbOrder.setCwbcounty(StringUtil.nullConvertToEmptyString(rs.getString("cwbcounty")));
+			cwbOrder.setReceivablefee(rs.getBigDecimal("receivablefee"));
+			cwbOrder.setPaybackfee(rs.getBigDecimal("paybackfee"));
+			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
+			cwbOrder.setShipperid(rs.getLong("shipperid"));
+			cwbOrder.setCwbordertypeid(rs.getLong("cwbordertypeid"));
+			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+			cwbOrder.setTranscwb(StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
+			cwbOrder.setDestination(StringUtil.nullConvertToEmptyString(rs.getString("destination")));
+			cwbOrder.setCwbdelivertypeid(rs.getLong("cwbdelivertypeid"));
+			cwbOrder.setExceldeliver(StringUtil.nullConvertToEmptyString(rs.getString("exceldeliver")));
+			cwbOrder.setExcelbranch(StringUtil.nullConvertToEmptyString(rs.getString("excelbranch")));
+			cwbOrder.setCargorealweight(rs.getBigDecimal("carrealweight"));
+			cwbOrder.setModelname(rs.getString("modelname"));
+
+			cwbOrder.setPaywayid(rs.getLong("paywayid"));
+			cwbOrder.setNewpaywayid(rs.getString("newpaywayid"));
+			cwbOrder.setMulti_shipcwb(rs.getString("multi_shipcwb"));
+			cwbOrder.setCargovolume(rs.getBigDecimal("cargovolume"));
+			cwbOrder.setConsignoraddress(rs.getString("consignoraddress"));
+			cwbOrder.setCargoamount(rs.getBigDecimal("caramount"));
+			cwbOrder.setSendcargoname(rs.getString("sendcarname"));
+			cwbOrder.setBackcargoname(rs.getString("backcarname"));
+			cwbOrder.setOpscwbid(rs.getLong("opscwbid"));
+			cwbOrder.setSendcargonum(rs.getInt("sendcarnum"));
+			cwbOrder.setBackcargonum(rs.getInt("backcarnum"));
+			cwbOrder.setRemark1(rs.getString("remark1"));
+			cwbOrder.setRemark2(rs.getString("remark2"));
+			cwbOrder.setRemark3(rs.getString("remark3"));
+			cwbOrder.setRemark4(rs.getString("remark4"));
+			cwbOrder.setRemark5(rs.getString("remark5"));
+			cwbOrder.setCargotype(rs.getString("cartype"));
+			cwbOrder.setCargosize(rs.getString("carsize"));
+			cwbOrder.setCommoncwb(StringUtil.nullConvertToEmptyString(rs.getString("commoncwb")));
+			cwbOrder.setShouldfare(rs.getBigDecimal("shouldfare"));
+			cwbOrder.setInfactfare(rs.getBigDecimal("infactfare"));
+			cwbOrder.setResendtime(rs.getString("resendtime"));
 			cwbOrder.setGetDataFlag(rs.getLong("getDataFlag"));
 
 			return cwbOrder;
@@ -186,7 +250,7 @@ public class DataImportDAO_B2c {
 	 */
 	public List<CwbOrderDTO> getCwbOrderTempByKeys(String customerids) {
 		String sql = "select * from express_ops_cwb_detail_b2ctemp where customerid in (" + customerids + ") and getDataFlag=0 order by credate limit 0,2000 ";
-		List<CwbOrderDTO> cwborderList = jdbcTemplate.query(sql, new CwbDTOMapper());
+		List<CwbOrderDTO> cwborderList = jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 		return cwborderList;
 	}
 
@@ -196,7 +260,7 @@ public class DataImportDAO_B2c {
 	public CwbOrderDTO getCwbOrderTempByCwb(String cwb, String customerid) {
 		String sql = "select * from express_ops_cwb_detail_b2ctemp where cwb ='" + cwb + "' and customerid='" + customerid + "' order by credate  ";
 		CwbOrderDTO d = new CwbOrderDTO();
-		List<CwbOrderDTO> list = jdbcTemplate.query(sql, new CwbDTOMapper());
+		List<CwbOrderDTO> list = jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 		if (list.size() > 0) {
 			return d;
 		}
@@ -241,7 +305,7 @@ public class DataImportDAO_B2c {
 		String beforeTime=DateTimeUtil.getDateBefore(5);
 		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1 and customerid="
 				+ customerid + " and isB2cSuccessFlag=0 and emaildate>='"+beforeTime+"' limit 0," + MaxCount;
-		return jdbcTemplate.query(sql, new CwbDTOMapper());
+		return jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 	}
 
 	/**
@@ -303,7 +367,7 @@ public class DataImportDAO_B2c {
 
 	public CwbOrderDTO getCwbByCwbB2ctemp(String cwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where cwb=? and state=1 limit 0,1", new CwbDTOMapper(), cwb);
+			return jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where cwb=? and state=1 limit 0,1", new CwbDTO4TempMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
