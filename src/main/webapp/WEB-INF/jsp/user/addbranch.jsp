@@ -52,8 +52,8 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 	             			<option value="<%=JiesuanstateEnum.ZhengchangJiesuan.getValue()%>"><%=JiesuanstateEnum.ZhengchangJiesuan.getText() %></option>
 				        </select>*
 	             	</li>
-				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="" maxlength="50"/>*</li>
-					<li><span>手机：</span><input type="text" id="usermobile"  name="usermobile" value="" maxlength="50"/><span style="text-align: left;" name="tip" id="tip">*</span></li>
+				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="" maxlength="50"/>*(必填项)</li>
+					<li><span>手机：</span><input type="text" id="usermobile"  name="usermobile" value="" maxlength="50"/><span style="text-align: left;" name="tip" id="tip">*(必填项)</span></li>
 					<li><span>Email/QQ/MSN：</span><input type="text"  id="useremail" name="useremail" value="" /></li>
 	        		<li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="" maxlength="50"/>*(无需填写,点击确认时自动生成入职日期!)</li>
 			        <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/></li>

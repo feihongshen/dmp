@@ -91,11 +91,11 @@
 	             			<option value="<%=JiesuanstateEnum.ZhengchangJiesuan.getValue()%>"><%=JiesuanstateEnum.ZhengchangJiesuan.getText() %></option>
 				        </select>*
 	             	</li>
-				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="" maxlength="50"/>*</li>
+				    <li><span>身份证号：</span><input type="text" id="idcardno" name="idcardno" value="" maxlength="50"/>*(必填项)</li>
 				    <!-- <li><span>基本工资：</span><input type="text"  id="usersalary" name="usersalary" value="" /></li> -->
 					
 					 <!-- <li><span>电话：</span><input type="text" id="userphone"  name="userphone" value="" /></li> -->
-					 <li><span>手机：</span><input type="text" id="usermobile"  name="usermobile" value="" maxlength="50"/><span style="text-align: left;" name="tip" id="tip">*</span></li>
+					 <li><span>手机：</span><input type="text" id="usermobile"  name="usermobile" value="" maxlength="50"/><span style="text-align: left;" name="tip" id="tip">*(必填项)</span></li>
 					 <li><span>Email/QQ/MSN：</span><input type="text"  id="useremail" name="useremail" value="" /></li>
 			        <!--  <li><span>联系地址：</span><input type="text" id="useraddress" name="useraddress" value="" /></li> -->
 			        <!-- <li><span>备注信息：</span><input type="text" id="userremark" name="userremark" value="" /></li> -->

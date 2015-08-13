@@ -90,7 +90,7 @@ public class UserService {
 		user.setUserid((request.getParameter("userid") == null) || request.getParameter("userid").equals("") ? 0L : (Long.parseLong(request.getParameter("userid"))));
 		user.setUsername(StringUtil.nullConvertToEmptyString(request.getParameter("username")));
 		user.setRealname(StringUtil.nullConvertToEmptyString(request.getParameter("realname")));
-		user.setSex(Integer.parseInt((request.getParameter("sex")==null||"".equals(request.getParameter("lateradvance")))?"0":request.getParameter("sex")));//性别
+		user.setSex(Integer.parseInt(((request.getParameter("sex")==null)||("".equals(request.getParameter("sex"))))?"0":request.getParameter("sex")));//性别
 		//user.setStartworkdate(StringUtil.nullConvertToEmptyString("".equals(request.getParameter("startworkdate"))?null:request.getParameter("startworkdate")));//入职时间
 		user.setStartworkdate(ruzhiTime);//入职时间
 		user.setJobnum(StringUtil.nullConvertToEmptyString("".equals(request.getParameter("jobnum"))?null:request.getParameter("jobnum")));//工号
