@@ -184,7 +184,7 @@ public class GztlService {
 			xmlMap.put("cwb", order.getOrderid());// 订单号或运单号
 			String transcwb="";
 			if (order.getSubnumber().isEmpty()) {
-				transcwb=order.getSclientcode();
+				transcwb=order.getOrderid();
 			}else {
 				transcwb=order.getSubnumber();
 			}
