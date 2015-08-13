@@ -52,6 +52,7 @@ import cn.explink.domain.PunishInsideOperationinfo;
 import cn.explink.domain.PunishInsideReviseAndReply;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.service.AbnormalService;
 import cn.explink.service.Excel2003Extractor;
@@ -156,6 +157,11 @@ public class PunishInsideController {
 				punishsumprice=punishInsideDao.calculateSumPrice(cwbs, dutybranchid, cwbpunishtype, dutynameid, cwbstate, punishbigsort, punishsmallsort, begindate, enddate,this.getSessionUser().getBranchid(),roleid);
 			}
 			User user=this.getSessionUser();
+			Branch branch=branchDAO.getBranchById(user.getBranchid());
+			long iskufang=0;
+			if(branch.getSitetype()==BranchEnum.KuFang.getValue()){
+				iskufang=1;
+			}
 			List<Branch> branchs = this.branchDAO.getAllEffectBranches();
 			List<User> users = this.userDAO.getAllUser();
 			List<Reason> lr=reasonDao.addWO();
@@ -175,6 +181,7 @@ public class PunishInsideController {
 			model.addAttribute("penalizesmallList", penalizesmallList);
 			model.addAttribute("importFlag", importFlag);
 			model.addAttribute("cwb", cwb);
+			model.addAttribute("iskufang", iskufang);
 			return "penalize/penalizeIn/list";
 	}
 	//进入根据订单创建对内扣罚单的弹出框

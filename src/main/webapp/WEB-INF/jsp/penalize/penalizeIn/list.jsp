@@ -26,6 +26,8 @@
   String sitetype = request.getAttribute("sitetype")==null?"":request.getAttribute("sitetype").toString();
   long roleid = Long.parseLong(request.getAttribute("roleid").toString());
   long userid = Long.parseLong(request.getAttribute("userid").toString());
+  long iskufang = Long.parseLong(request.getAttribute("iskufang").toString());
+  
   long currentbranchid = Long.parseLong(request.getAttribute("currentbranchid").toString());
   String url=request.getContextPath()+"/abnormalOrder/getbranchusers";
   List<PenalizeInside> penalizeInsides=(List<PenalizeInside>) request.getAttribute("penalizeInsides");
@@ -331,7 +333,7 @@ function shensuopteration(){
 	}
 	console.info($("#roleid").val());
 	if(rolecount>0){
-			if($("#roleid").val()!=4&&$("#roleid").val()!=7){
+			if($("#roleid").val()!=4&&$("#iskufang").val()!=1){
 				alert("您不是当事人或管理员，没有该操作权限，请重新选择订单！！");
 				return;
 			}
@@ -684,14 +686,14 @@ function checkwithdiferenttype(type){
 						'						<tr class="font_1">'+
 						'							<td align="left" valign="top">'+
 						'							扣罚大类：<font color="red">*</font>'+
-						'							<select id="punishbigsort2" name="punishbigsort2" class="select1" onchange="findsmallAdd(\'<%=request.getContextPath() %>\',this,\'punishsmallsort1\');">'+
+						'							<select id="punishbigsort2" name="punishbigsort2" class="select1" onchange="findsmallAdd(\'<%=request.getContextPath() %>\',this,\'punishsmallsort2\');">'+
 						'								<option value="0">请选择扣罚大类</option>'+
 						'								<%if(penalizebigList!=null&&penalizebigList.size()>0){for(PenalizeType   pType :penalizebigList) {%>'+
 						'								<option value="<%=pType.getId()%>"><%=pType.getText() %></option>'+
 						'								<%}} %>'+
 						'							</select>'+
 						'							&nbsp;&nbsp;扣罚小类：'+
-						'							<select id="punishsmallsort2" name="punishsmallsort2" class="select1" onchange="findbigAdd(this,\'punishbigsort1\');">'+
+						'							<select id="punishsmallsort2" name="punishsmallsort2" class="select1" onchange="findbigAdd(this,\'punishbigsort2\');">'+
 						'								<option value="0">请选择扣罚小类</option>'+
 						'								<%if(penalizesmallList!=null&&penalizesmallList.size()>0){for(PenalizeType     penType:penalizesmallList) {%>'+
 						'								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>'+
@@ -831,14 +833,14 @@ function checkwithdiferenttype(type){
 				'						<tr class="font_1">'+
 				'							<td align="left" valign="top">'+
 				'							扣罚大类<font color="red">*</font>：'+
-				'							<select id="punishbigsort3" name="punishbigsort3" class="select1" onchange="findbigAdd(this,\'punishbigsort2\');">'+
+				'							<select id="punishbigsort3" name="punishbigsort3" class="select1" onchange="findsmallAdd(\'<%=request.getContextPath() %>\',this,\'punishsmallsort3\');">'+
 				'								<option value="0">==请选择扣罚大类==</option>'+
 				'								<%if(penalizebigList!=null&&penalizebigList.size()>0){for(PenalizeType   pType :penalizebigList) {%>'+
 				'								<option value="<%=pType.getId()%>"><%=pType.getText() %></option>'+
 				'								<%}} %>'+
 				'							</select>'+
 				'							&nbsp;&nbsp;扣罚小类：'+
-				'							<select id="punishsmallsort3" name="punishsmallsort3" class="select1" onchange="findbigAdd(this,\'punishbigsort2\');">'+
+				'							<select id="punishsmallsort3" name="punishsmallsort3" class="select1" onchange="findbigAdd(this,\'punishbigsort3\');">'+
 				'								<option value="0">==请选择扣罚小类==</option>'+
 				'								<%if(penalizesmallList!=null&&penalizesmallList.size()>0){for(PenalizeType     penType:penalizesmallList) {%>'+
 				'								<option value="<%=penType.getId()%>" id="<%=penType.getParent() %>"><%=penType.getText() %></option>'+
@@ -1125,6 +1127,7 @@ function checkwithdiferenttype(type){
 									<input type="hidden" name="isshow" value="1"/>
 									<input type="hidden" name="roleid" id="roleid" value="<%=roleid %>"/>
 									<input type="hidden" name="userid" id="userid" value="<%=userid %>"/>
+									<input type="hidden" name="iskufang" id="iskufang" value="<%=iskufang %>"/>
 									<input type="hidden" name="currentbranchid" id="currentbranchid" value="<%=currentbranchid %>"/></td>
 									</tr>
 									<tr>

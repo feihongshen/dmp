@@ -134,7 +134,7 @@ public class PunishInsideService {
 		BigDecimal priceDecimal=new BigDecimal(cwbprice);
 		penalizeInside.setCwbPrice(priceDecimal);
 		penalizeInside.setPunishbigsort(Integer.valueOf(cwpunishbigsort));
-		penalizeInside.setPunishsmallsort(Integer.valueOf(punishsmallsort));
+		penalizeInside.setPunishsmallsort(Integer.valueOf("".equals(punishsmallsort)?"0":punishsmallsort));
 		penalizeInside.setDutybranchid(Integer.valueOf(dutybranchid));
 		penalizeInside.setDutypersonid(Integer.valueOf(dutypersoname));
 		BigDecimal punishprice1=new BigDecimal(punishprice);
@@ -180,7 +180,7 @@ public class PunishInsideService {
 		penalizeInside.setPunishInsideprice(new BigDecimal(punishprice1==""?"0.00":punishprice1));
 		penalizeInside.setPunishNo(punishNO);
 		penalizeInside.setSourceNo(availablecwb1);
-		penalizeInside.setPunishsmallsort(Integer.parseInt(punishsmallsort1));
+		penalizeInside.setPunishsmallsort(Integer.parseInt("".equals(punishsmallsort1)?"0":punishbigsort1));
 		return penalizeInside;
 	}
 		public String switchDescribe(String describe){
