@@ -29,7 +29,10 @@ initUser[1]="<%=u.getEmployeestatus() %>,employeestatus";
 			<ul>
 					<li><span>所属机构：</span><%=branch.getBranchname() %></li>
 	           		<li><span>用户角色：</span>小件员</li>
-					<li><span>姓名：</span><input type="text" id="realname" name="realname" value="<%=u.getRealname() %>" maxlength="50"/>*</li>
+					<li><span>姓名：</span>
+					<input type="text" id="realname" name="realname" value="<%=u.getRealname() %>" maxlength="50"/>
+					<input type="hidden" id="creandsave" name="creandsave" value="1"/>
+					*</li>
 					<li><span>性别：</span>
 						<select id="sex" name="sex">
 							<option value="-1" selected>----请选择----</option>

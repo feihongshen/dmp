@@ -38,6 +38,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 			<ul>
 					<li><span>姓名：</span>
 						<input type="text" id="realname" name="realname" value="<%=u.getRealname() %>" maxlength="50"/>*
+						<input type="hidden" id="creandsave" name="creandsave" value="1"/>
 					</li>
 					<li><span>性别：</span>
 						<select id="sex" name="sex">

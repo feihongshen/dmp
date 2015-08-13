@@ -28,7 +28,10 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 						<%} }%>
 			           </select>
 			        </li>
-	           		<li><span>姓名：</span><input type="text" id="realname" name="realname" value="" maxlength="50"/>*</li>
+	           		<li><span>姓名：</span>
+		           		<input type="text" id="realname" name="realname" value="" maxlength="50"/>
+		           		<input type="hidden" id="creandsave" name="creandsave" value="0"/>	
+	           		*</li>
 					<li><span>性别：</span>
 						<select id="sex" name="sex">
 							<option value="-1" selected>----请选择----</option>

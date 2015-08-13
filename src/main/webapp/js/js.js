@@ -1087,21 +1087,52 @@ function check_user() {
 		return false;
 	}
 	
-	/*var s1 = $("#"+checkuserformid+" input[id=maxcutpayment]").val();
+	var regu = "/[^/d]/g";
+	var re = new RegExp(regu);
+	if(re.test(s1)){
+		
+	}
+	var creandsave = $("#creandsave").val();
+	var checkuserformid;
+	if(creandsave==0){
+		checkuserformid = "user_cre_Form";
+	}else if(creandsave==1){
+		checkuserformid = "user_save_Form";
+	}
+	var s1 = $("#"+checkuserformid+" input[id=maxcutpayment]").val();
 	var s2 = $("#"+checkuserformid+" input[id=basicadvance]").val();
 	var s3 = $("#"+checkuserformid+" input[id=lateradvance]").val();
-	//var s4 = $("#"+checkuserformid+" input[id=fixedadvance]").val();
+	var s4 = $("#"+checkuserformid+" input[id=fixedadvance]").val();
+	var s5 = $("#"+checkuserformid+" input[id=basicfee]").val();
+	var s6 = $("#"+checkuserformid+" input[id=areafee]").val();
 	//re.test(s2)||re.test(s3)||re.test(s4)
 	//^[0-9]+[\.][0-9]{0,2}$
-	var regu = "^[0-9]";
+	var regu = "^[0-9].*$";
 	var re = new RegExp(regu);
-	if (re.test(s1)) {
-		
-		return true;
-	} else{
-		alert("金额输入格式有误！(注:小数点后最多两位小数)");
+	if (s1!=''&&!re.test(s1)) {
+		alert("请输入正确格式的金额(正数)!");
 		return false;
-	}*/
+	}
+	if (s2!=''&&!re.test(s2)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s3!=''&&!re.test(s3)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s4!=''&&!re.test(s4)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s5!=''&&!re.test(s5)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s6!=''&&!re.test(s6)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
 	
 	return true;
 }
@@ -4313,6 +4344,47 @@ function check_userbranch() {
 	}
 	if ($("#idcardno").val().length == 0) {
 		alert("身份证号不能为空!");
+		return false;
+	}
+	var creandsave = $("#creandsave").val();
+	var checkuserformid;
+	if(creandsave==0){
+		checkuserformid = "user_cre_Form";
+	}else if(creandsave==1){
+		checkuserformid = "user_save_Form";
+	}
+	var s1 = $("#"+checkuserformid+" input[id=maxcutpayment]").val();
+	var s2 = $("#"+checkuserformid+" input[id=basicadvance]").val();
+	var s3 = $("#"+checkuserformid+" input[id=lateradvance]").val();
+	var s4 = $("#"+checkuserformid+" input[id=fixedadvance]").val();
+	var s5 = $("#"+checkuserformid+" input[id=basicfee]").val();
+	var s6 = $("#"+checkuserformid+" input[id=areafee]").val();
+	//re.test(s2)||re.test(s3)||re.test(s4)
+	//^[0-9]+[\.][0-9]{0,2}$
+	var regu = "^[0-9].*$";
+	var re = new RegExp(regu);
+	if (s1!=''&&!re.test(s1)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s2!=''&&!re.test(s2)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s3!=''&&!re.test(s3)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s4!=''&&!re.test(s4)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s5!=''&&!re.test(s5)) {
+		alert("请输入正确格式的金额(正数)!");
+		return false;
+	}
+	if (s6!=''&&!re.test(s6)) {
+		alert("请输入正确格式的金额(正数)!");
 		return false;
 	}
 	
