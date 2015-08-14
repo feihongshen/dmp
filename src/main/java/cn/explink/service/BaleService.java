@@ -1107,8 +1107,9 @@ public class BaleService {
 				if (((coBale != null) && (userbranch.getSitetype() != BranchEnum.ZhongZhuan.getValue()) && (userbranch.getSitetype() != BranchEnum.TuiHuo.getValue()))
 						|| ((coBale != null) && (userbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue()) && (balebranch.getSitetype() == BranchEnum.ZhongZhuan.getValue()))
 						|| ((coBale != null) && (userbranch.getSitetype() == BranchEnum.TuiHuo.getValue()) && (balebranch.getSitetype() == BranchEnum.TuiHuo.getValue()))) {
+					long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
-					if (baleno.equals(co.getPackagecode())) {
+					if (baleno.equals(co.getPackagecode()) &&(isypdjusetranscwb!=1)&&(co.getScannum()==co.getSendcarnum())) {
 						// 重复封包
 						throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao);
 					}
