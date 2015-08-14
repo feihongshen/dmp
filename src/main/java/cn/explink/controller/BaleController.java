@@ -260,6 +260,8 @@ public class BaleController {
 		try {
 			this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
 			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+			cwb=this.cwbOrderService.translateCwb(cwb);
+			this.cwbDAO.updateScannumAuto(cwb);
 			long successCount = bale.getCwbcount();
 			obj.put("successCount", successCount);
 			obj.put("errorcode", "000000");
