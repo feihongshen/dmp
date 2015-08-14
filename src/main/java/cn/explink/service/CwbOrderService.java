@@ -1369,10 +1369,10 @@ public class CwbOrderService {
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 		if (isypdjusetranscwb == 1) {
-			if(!anbaochuku){
-			this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, flowOrderTypeEnum);
-			}
 			this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
+		}
+		if(!anbaochuku){
+			this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, flowOrderTypeEnum);
 		}
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1))) {
 			return this.handleSubstationGoodsYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, credate);
