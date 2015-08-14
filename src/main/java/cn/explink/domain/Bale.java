@@ -13,6 +13,7 @@ public class Bale {
 	private Timestamp cretime;
 	private long nextbranchid;
 	private long cwbcount;
+	private long scannum;
 
 	public Bale() {
 	}
@@ -29,7 +30,7 @@ public class Bale {
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(long id) {
@@ -37,7 +38,7 @@ public class Bale {
 	}
 
 	public String getBaleno() {
-		return baleno;
+		return this.baleno;
 	}
 
 	public void setBaleno(String baleno) {
@@ -45,7 +46,7 @@ public class Bale {
 	}
 
 	public long getBalestate() {
-		return balestate;
+		return this.balestate;
 	}
 
 	public void setBalestate(long balestate) {
@@ -53,7 +54,7 @@ public class Bale {
 	}
 
 	public long getBranchid() {
-		return branchid;
+		return this.branchid;
 	}
 
 	public void setBranchid(long branchid) {
@@ -61,7 +62,7 @@ public class Bale {
 	}
 
 	public long getGroupid() {
-		return groupid;
+		return this.groupid;
 	}
 
 	public void setGroupid(long groupid) {
@@ -69,7 +70,7 @@ public class Bale {
 	}
 
 	public Timestamp getCretime() {
-		return cretime;
+		return this.cretime;
 	}
 
 	public void setCretime(Timestamp cretime) {
@@ -77,7 +78,7 @@ public class Bale {
 	}
 
 	public long getNextbranchid() {
-		return nextbranchid;
+		return this.nextbranchid;
 	}
 
 	public void setNextbranchid(long nextbranchid) {
@@ -85,11 +86,25 @@ public class Bale {
 	}
 
 	public long getCwbcount() {
-		return cwbcount;
+		return this.cwbcount;
 	}
 
 	public void setCwbcount(long cwbcount) {
 		this.cwbcount = cwbcount;
+	}
+
+	/**
+	 * @return the scannum
+	 */
+	public long getScannum() {
+		return this.scannum;
+	}
+
+	/**
+	 * @param scannum the scannum to set
+	 */
+	public void setScannum(long scannum) {
+		this.scannum = scannum;
 	}
 
 }

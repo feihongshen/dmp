@@ -32,6 +32,7 @@ public class BaleDao {
 			bale.setCretime(rs.getTimestamp("cretime"));
 			bale.setCwbcount(rs.getLong("cwbcount"));
 			bale.setNextbranchid(rs.getLong("nextbranchid"));
+			bale.setScannum(rs.getLong("scannum"));
 			return bale;
 		}
 	}
@@ -41,7 +42,8 @@ public class BaleDao {
 
 	public long createBale(final Bale bale) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_bale(baleno,balestate,branchid,nextbranchid,cwbcount) values(?,?,?,?,?)", new String[] { "id" });
@@ -58,7 +60,8 @@ public class BaleDao {
 
 	public long create(final String baleno) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_bale(baleno) values(?)", new String[] { "id" });
@@ -72,7 +75,7 @@ public class BaleDao {
 	public Bale getBaleByBalestateAndBranchid(String baleno, long balestate, long branchid) {
 		try {
 			String sql = "select * from express_ops_bale where baleno=? and balestate=? and branchid=?";
-			return jdbcTemplate.queryForObject(sql, new BaleMapper(), baleno, balestate, branchid);
+			return this.jdbcTemplate.queryForObject(sql, new BaleMapper(), baleno, balestate, branchid);
 		} catch (Exception e) {
 			return null;
 		}
@@ -80,33 +83,33 @@ public class BaleDao {
 
 	public List<Bale> getBaleByBalenoAndBranchid(String baleno, long branchid) {
 		String sql = "select * from express_ops_bale where baleno=? and branchid=?";
-		return jdbcTemplate.query(sql, new BaleMapper(), baleno, branchid);
+		return this.jdbcTemplate.query(sql, new BaleMapper(), baleno, branchid);
 	}
 
 	public List<Bale> getBaleByBalestate(String baleno, long balestate) {
 		String sql = "select * from express_ops_bale where baleno=? and balestate=?";
-		return jdbcTemplate.query(sql, new BaleMapper(), baleno, balestate);
+		return this.jdbcTemplate.query(sql, new BaleMapper(), baleno, balestate);
 	}
 
 	public List<Bale> getBaleByBalenoAndBalestate(String baleno, String balestates) {
 		String sql = "select * from express_ops_bale where baleno=? and balestate in(" + balestates + ")";
-		return jdbcTemplate.query(sql, new BaleMapper(), baleno);
+		return this.jdbcTemplate.query(sql, new BaleMapper(), baleno);
 	}
 
 	public List<Bale> getBaleByBalestate(long balestate) {
 		String sql = "select * from express_ops_bale where balestate=?";
-		return jdbcTemplate.query(sql, new BaleMapper(), balestate);
+		return this.jdbcTemplate.query(sql, new BaleMapper(), balestate);
 	}
 
 	public void saveForBranchid(long id, long branchid, long groupid, long balestate) {
 		String sql = "update express_ops_bale set branchid=?,groupid=?,balestate=? where id=?";
-		jdbcTemplate.update(sql, branchid, groupid, balestate, id);
+		this.jdbcTemplate.update(sql, branchid, groupid, balestate, id);
 	}
 
 	public Bale getBaleByBaleno(String baleno, long balestate) {
 		try {
 			String sql = "select * from express_ops_bale where baleno=? and balestate=?";
-			return jdbcTemplate.queryForObject(sql, new BaleMapper(), baleno, balestate);
+			return this.jdbcTemplate.queryForObject(sql, new BaleMapper(), baleno, balestate);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -123,55 +126,55 @@ public class BaleDao {
 
 	public void saveForState(String baleno, long branchid, long balestate) {
 		String sql = "update express_ops_bale set balestate=? where branchid=? and baleno=? and balestate=? ";
-		jdbcTemplate.update(sql, balestate, branchid, baleno, BaleStateEnum.WeiDaoZhan.getValue());
+		this.jdbcTemplate.update(sql, balestate, branchid, baleno, BaleStateEnum.WeiDaoZhan.getValue());
 	}
 
 	public void saveForBalestate(String baleno, long balestate, long oldbalestate) {
 		String sql = "update express_ops_bale set balestate=? where baleno=? and balestate=? ";
-		jdbcTemplate.update(sql, balestate, baleno, oldbalestate);
+		this.jdbcTemplate.update(sql, balestate, baleno, oldbalestate);
 	}
 
 	public void saveForBranchidAndState(String baleno, long branchid, long balestate) {
 		String sql = "update express_ops_bale set branchid=?,balestate=? where baleno=? and balestate=? ";
-		jdbcTemplate.update(sql, branchid, balestate, baleno, BaleStateEnum.WeiDaoZhan.getValue());
+		this.jdbcTemplate.update(sql, branchid, balestate, baleno, BaleStateEnum.WeiDaoZhan.getValue());
 	}
 
 	public void saveForBranchidAndGroupid(long branchid, long balestate, long groupid) {
 		String sql = "update express_ops_bale set balestate=? where branchid=? and groupid=? and balestate=?";
-		jdbcTemplate.update(sql, balestate, branchid, groupid, BaleStateEnum.WeiDaoZhan.getValue());
+		this.jdbcTemplate.update(sql, balestate, branchid, groupid, BaleStateEnum.WeiDaoZhan.getValue());
 	}
 
 	public void saveById(long balestate, long id) {
 		String sql = "update express_ops_bale set balestate=? where id=?";
-		jdbcTemplate.update(sql, balestate, id);
+		this.jdbcTemplate.update(sql, balestate, id);
 	}
 
 	public List<Bale> getBaleByBaleno(String baleno) {
 		String sql = "select * from express_ops_bale where baleno=?";
-		return jdbcTemplate.query(sql, new BaleMapper(), baleno);
+		return this.jdbcTemplate.query(sql, new BaleMapper(), baleno);
 
 	}
 
 	public void saveForBaleCount(long id, long cwbcount) {
 		String sql = "update express_ops_bale set cwbcount=?  where id=? ";
-		jdbcTemplate.update(sql, cwbcount, id);
+		this.jdbcTemplate.update(sql, cwbcount, id);
 	}
 
 	public List<Bale> getBaleByChukuDate(String begindate, String enddate, long page) {
 		String sql = "select * from express_ops_bale where cretime>=? and cretime<=? ";
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		return jdbcTemplate.query(sql, new BaleMapper(), begindate, enddate);
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new BaleMapper(), begindate, enddate);
 	}
 
 	public long getBaleByChukuDateCount(String begindate, String enddate) {
 		String sql = "select count(1) from express_ops_bale where cretime>=? and cretime<=? ";
-		return jdbcTemplate.queryForLong(sql, begindate, enddate);
+		return this.jdbcTemplate.queryForLong(sql, begindate, enddate);
 	}
 
 	public Bale getBaleByCwb(String cwb) {
 		try {
 			String sql = "select * from express_ops_bale where cwb=? ";
-			return jdbcTemplate.queryForObject(sql, new BaleMapper(), cwb);
+			return this.jdbcTemplate.queryForObject(sql, new BaleMapper(), cwb);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -180,7 +183,7 @@ public class BaleDao {
 	public Bale getBaleOneByBaleno(String baleno) {
 		try {
 			String sql = "select * from express_ops_bale where baleno=? ";
-			return jdbcTemplate.queryForObject(sql, new BaleMapper(), baleno);
+			return this.jdbcTemplate.queryForObject(sql, new BaleMapper(), baleno);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -189,7 +192,7 @@ public class BaleDao {
 	public Bale getBaleOneByBalenoLock(String baleno) {
 		try {
 			String sql = "select * from express_ops_bale where baleno=? for update";
-			return jdbcTemplate.queryForObject(sql, new BaleMapper(), baleno);
+			return this.jdbcTemplate.queryForObject(sql, new BaleMapper(), baleno);
 		} catch (DataAccessException e) {
 			return null;
 		}
@@ -197,17 +200,21 @@ public class BaleDao {
 
 	public void updateSubBaleCount(String baleno) {
 		String sql = "update express_ops_bale set cwbcount=cwbcount-1 where baleno=? ";
-		jdbcTemplate.update(sql, baleno);
+		this.jdbcTemplate.update(sql, baleno);
 	}
 
 	public void updateAddBaleCount(String baleno) {
 		String sql = "update express_ops_bale set cwbcount=cwbcount+1 where baleno=? ";
-		jdbcTemplate.update(sql, baleno);
+		this.jdbcTemplate.update(sql, baleno);
+	}
+	public void updateAddBaleScannum(String baleno) {
+		String sql = "update express_ops_bale set scannum=scannum+1 where baleno=? ";
+		this.jdbcTemplate.update(sql, baleno);
 	}
 
 	public void updateBalesate(String baleno, long balestate) {
 		String sql = "update express_ops_bale set balestate=? where baleno=? ";
-		jdbcTemplate.update(sql, balestate, baleno);
+		this.jdbcTemplate.update(sql, balestate, baleno);
 	}
 
 	public List<Bale> getBaleByBalePrint(long branchid, String baleno, String strtime, String endtime) {
@@ -221,12 +228,12 @@ public class BaleDao {
 		if (endtime.length() > 0) {
 			sql += " and cretime<'" + endtime + "'";
 		}
-		return jdbcTemplate.query(sql, new BaleMapper(), branchid);
+		return this.jdbcTemplate.query(sql, new BaleMapper(), branchid);
 	}
 	public Bale getBaleById(long baleid) {
 		try {
 			String sql = "select * from express_ops_bale where id=? ";
-			return jdbcTemplate.queryForObject(sql, new BaleMapper(), baleid);
+			return this.jdbcTemplate.queryForObject(sql, new BaleMapper(), baleid);
 		} catch (DataAccessException e) {
 			return null;
 		}

@@ -1114,9 +1114,9 @@ public class BaleService {
 						// 重复封包
 						throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao);
 					}
-					if ((coBale.getBranchid() == user.getBranchid()) && (coBale.getBalestate() == BaleStateEnum.WeiFengBao.getValue()) &&(isypdjusetranscwb!=1)&&(co.getScannum()==co.getSendcarnum())) {
+					if ((coBale.getBranchid() == user.getBranchid()) && (isypdjusetranscwb!=1)&&(co.getScannum()==co.getSendcarnum())) {
 						// 订单{0}已经在{1}包号中，确认重新封包吗?
-						throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Bale_ChongXinFengBao, cwb, co.getPackagecode());
+						throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao);
 					} else {
 						String errorstate = "";
 						for (BaleStateEnum ft : BaleStateEnum.values()) {

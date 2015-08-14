@@ -262,8 +262,11 @@ public class BaleController {
 			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
 			cwb=this.cwbOrderService.translateCwb(cwb);
 			this.cwbDAO.updateScannumAuto(cwb);
+			this.baleDAO.updateAddBaleScannum(baleno);
 			long successCount = bale.getCwbcount();
+			long scannum = bale.getScannum()+1;
 			obj.put("successCount", successCount);
+			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
 			obj.put("errorcode", "111111");
