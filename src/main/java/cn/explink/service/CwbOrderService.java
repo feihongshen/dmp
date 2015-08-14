@@ -488,7 +488,7 @@ public class CwbOrderService {
 						ps.setString(60, cwbOrderDTO.getPrinttime());
 						ps.setString(61, cwbOrderDTO.getCommoncwb());
 						ps.setFloat(62, cwbOrderDTO.getShouldfare().floatValue());
-						
+
 						//如果是OXO_JIT类型的订单，则订单状态设为CwbOrderTypeIdEnum.OXO_JIT  add by zhouguoting 2015-08-05
 						if(cwbOrderDTO.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue()){
 							ps.setLong(63, CwbStateEnum.OXO_JIT.getValue());
@@ -877,7 +877,7 @@ public class CwbOrderService {
 			}
 		}
 		// 2013-8-5腾讯达需求，领货不再限制只能扫描运单号，产品确定需求不是做成开关，而是所有客户统一如此处理
-		if (flowordertype !=FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue() && flowordertype != FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+		if ((flowordertype !=FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()) && (flowordertype != FlowOrderTypeEnum.FenZhanLingHuo.getValue())) {
 			throw new CwbException(cwb, flowordertype, ExceptionCwbErrorTypeEnum.Qing_SAO_MIAO_YUN_DAN_HAO);
 		}
 	}
@@ -1115,7 +1115,7 @@ public class CwbOrderService {
 		this.validateStateTransfer(co, flowOrderTypeEnum);
 
 		// 对oxo和oxo_jit的订单不用中转审核 by jinghui.pan on 20150806
-		if(isOxoAndJitType(co) == false){
+		if(this.isOxoAndJitType(co) == false){
 			this.validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);//中转校验
 		}
 
@@ -1367,7 +1367,9 @@ public class CwbOrderService {
 		}
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
-
+		if (isypdjusetranscwb == 1) {
+			this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
+		}
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) && !anbaochuku) {
 			return this.handleSubstationGoodsYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, credate);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1) || anbaochuku) {
@@ -1409,63 +1411,63 @@ public class CwbOrderService {
 		}
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
-	
+
 	/**
 	 * 判断，订单类型是否为‘上门退’，且FlowOrderTypeEnum为"分站到货扫描"或"到错货"
-	 * 
+	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
 	private boolean isShangMenTuiTypeAndBranchScan(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum){
 		int cwbOrderTypeId = co.getCwbordertypeid();
-		return (cwbOrderTypeId == CwbOrderTypeIdEnum.Shangmentui.getValue()  
-				&&	(flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao || flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao));
+		return ((cwbOrderTypeId == CwbOrderTypeIdEnum.Shangmentui.getValue())
+				&&	((flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao) || (flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao)));
 	}
 
 	/**
 	 * 判断，订单类型是否为‘OXO’ 或 'OXO_JIT'，且FlowOrderTypeEnum为"分站到货扫描"或"到错货"
-	 * 
+	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
 	private boolean isOxoAndJitTypeAndBranchScan(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum){
-		return (isOxoAndJitType(co) 
-				&&	(flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao || flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao));
+		return (this.isOxoAndJitType(co)
+				&&	((flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao) || (flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao)));
 	}
-	
+
 	/**
 	 * 判断，订单类型是否为‘OXO’ 或 'OXO_JIT'
-	 * 
+	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
 	private boolean isOxoAndJitType(CwbOrder co){
-		return (isOxoType(co) || isJitType(co));
+		return (this.isOxoType(co) || this.isJitType(co));
 	}
-	
+
 	/**
 	 * 判断，订单类型是否为 'OXO_JIT'
-	 * 
+	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
 	private boolean isJitType(CwbOrder co){
 		int cwbOrderTypeId = co.getCwbordertypeid();
 		return (CwbOrderTypeIdEnum.OXO_JIT.getValue() == cwbOrderTypeId) ;
 	}
-	
+
 	/**
 	 * 判断，订单类型是否为 'OXO'
-	 * 
+	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
 	private boolean isOxoType(CwbOrder co){
 		int cwbOrderTypeId = co.getCwbordertypeid();
 		return (CwbOrderTypeIdEnum.OXO.getValue() == cwbOrderTypeId) ;
 	}
-	
+
 	private void handleSubstationGoods(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
 			FlowOrderTypeEnum flowOrderTypeEnum, Branch userbranch, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
-		
+
 		// dmp_v4.2 OXO项目:comment by jinghui.pan@pjbest.com on 20150725
 /*		if (!isauto
 				&& !(((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (flowOrderTypeEnum == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao)) || ((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui
@@ -1473,11 +1475,11 @@ public class CwbOrderService {
 			co = this.cwbAutoHandleService.autoSupplyLink(user, flowOrderTypeEnum.getValue(), co, requestbatchno, scancwb, false);
 		}*/
 		if (!isauto
-				&& !((isShangMenTuiTypeAndBranchScan(co,flowOrderTypeEnum)) || isOxoAndJitTypeAndBranchScan(co,flowOrderTypeEnum) )) {
+				&& !((this.isShangMenTuiTypeAndBranchScan(co,flowOrderTypeEnum)) || this.isOxoAndJitTypeAndBranchScan(co,flowOrderTypeEnum) )) {
 			co = this.cwbAutoHandleService.autoSupplyLink(user, flowOrderTypeEnum.getValue(), co, requestbatchno, scancwb, false);
 		}
 		//end
-		
+
 		// 自动补充完环节后重新定位当前操作
 
 		if (requestbatchno > 0) {
@@ -1514,11 +1516,11 @@ public class CwbOrderService {
 		}
 		//修复oxo订单，一票多件到错货的缺陷.
 		//TODO:但是这里有个问题，就是不同站点扫描不同运单，导致nextbranchid反复变化，
-		if(isOxoType(co)){
+		if(this.isOxoType(co)){
 			String sqlstr = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
 			this.jdbcTemplate.update(sqlstr, currentbranchid, co.getCwb());
 		}
-		
+
 		// ======按包到货时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
@@ -1636,9 +1638,9 @@ public class CwbOrderService {
 				}
 			}
 		}
-		
+
 		// ==== 扫描成功后，更新配送状态为‘处理中=====
-		updateOXODeliveryState(co,CwbOXOStateEnum.Processing);
+		this.updateOXODeliveryState(co,CwbOXOStateEnum.Processing);
 	}
 
 	/**
@@ -1647,11 +1649,11 @@ public class CwbOrderService {
 	 * @author jinghui.pan@pjbest.com
 	 */
 	private void updateOXODeliveryState(CwbOrder co, CwbOXOStateEnum oxoStateEnum){
-		if(isOxoAndJitType(co)){
+		if(this.isOxoAndJitType(co)){
 			this.cwbDAO.updateOXODeliveryState(oxoStateEnum.getValue(), co.getCwb());
 		}
 	}
-	
+
 	/**
 	 * 退货站入库扫描
 	 *
@@ -1946,12 +1948,12 @@ public class CwbOrderService {
 		CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
 		cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
 		cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
-		Customer customer = customerDao.getCustomerById(cwbOrder.getCustomerid());
+		Customer customer = this.customerDao.getCustomerById(cwbOrder.getCustomerid());
 		try {
 			OrderFlow of = new OrderFlow(0, cwb, branchid, new Timestamp(credate), user.getUserid(), this.om.writeValueAsString(cwbOrderWithDeliveryState).toString(), flowordertype.getValue(),
 					comment);
 			long floworderid = this.orderFlowDAO.creAndUpdateOrderFlow(of);
-			
+
 			try {
 				this.orderFlowLogDAO.creAndUpdateOrderFlow(of,floworderid);
 			} catch (Exception e) {
@@ -1971,9 +1973,9 @@ public class CwbOrderService {
 				this.logger.warn("订单号{}订单当前状态为{}，创建退货中心出入库跟踪表", cwbOrder.getCwb(), flowordertype.getValue());
 				this.backDetailService.createBackDetail(user, cwb, flowordertype.getValue(), credate);
 			}
-			if(customer.getIsypdjusetranscwb() == 1&&flowordertype.getValue()==FlowOrderTypeEnum.YiFanKui.getValue()){
+			if((customer.getIsypdjusetranscwb() == 1)&&(flowordertype.getValue()==FlowOrderTypeEnum.YiFanKui.getValue())){
 				this.fankuiAddTranscwbFlow(cwb, cwbOrder, user, flowordertype);
-			}else if(customer.getIsypdjusetranscwb() == 1&&flowordertype.getValue()==FlowOrderTypeEnum.YiShenHe.getValue()){
+			}else if((customer.getIsypdjusetranscwb() == 1)&&(flowordertype.getValue()==FlowOrderTypeEnum.YiShenHe.getValue())){
 				this.fankuiAddTranscwbFlow(cwb, cwbOrder, user, flowordertype);
 			}
 		} catch (Exception e) {
@@ -2359,12 +2361,12 @@ public class CwbOrderService {
 			boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, boolean iszhongzhuanout, boolean aflag, Long credate,
 			boolean anbaochuku, Branch userbranch) {
 		this.validateCwbState(co, flowOrderTypeEnum);
-		
+
 		// 对oxo和oxo_jit的订单不用中转审核 by jinghui.pan on 20150806
-		if(isOxoAndJitType(co) == false){
+		if(this.isOxoAndJitType(co) == false){
 			this.validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);//中转校验
 		}
-		
+
 		if ((co.getFlowordertype() != flowOrderTypeEnum.getValue()) || (co.getStartbranchid() != currentbranchid)) {
 			this.validateStateTransfer(co, flowOrderTypeEnum);
 		}
@@ -2644,13 +2646,13 @@ public class CwbOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-		
+
 		//OXO项目：OXO_JIT订单不允许做领货。 by jinghui.pan@pjbest.com on 20150730
-		if(isJitType(co)){
+		if(this.isJitType(co)){
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.OXO_JIT_DISALLOW_TRANSFER_STATION_OUTBOUND);
 		}
-		
-		
+
+
 		boolean aflag = false;
 		if ((ifBranch != null) && (ifBranch.getSitetype() == 2)) {
 			List<BranchRoute> routelist = this.branchRouteDAO.getBranchRouteByWheresql(currentbranchid, branchid, 2);
@@ -2837,7 +2839,7 @@ public class CwbOrderService {
 			}
 		} else if ("1".equals(switchInstall.getValue())) {
 			// 一票多件时在领货前的操作是不阻挡的，但在领货的时候会拦截一票多件前一环节件数不对而阻拦
-			if (!forceOut && (co.getSendcarnum() > co.getScannum()
+			if (!forceOut && ((co.getSendcarnum() > co.getScannum())
 					&& ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()))
 					&& (co.getFlowordertype() != flowOrderTypeEnum.getValue()) && (alength == co.getSendcarnum()))) {
 				throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
@@ -2845,8 +2847,8 @@ public class CwbOrderService {
 
 			}
 			// 一票多件时在领货前的操作是不阻挡的，但在领货的时候会拦截一票多件前一环节件数不对而阻拦
-			else if (!forceOut && (co.getSendcarnum() > co.getScannum()
-					&& flowOrderTypeEnum.getValue() ==FlowOrderTypeEnum.FenZhanLingHuo.getValue())){
+			else if (!forceOut && ((co.getSendcarnum() > co.getScannum())
+					&& (flowOrderTypeEnum.getValue() ==FlowOrderTypeEnum.FenZhanLingHuo.getValue()))){
 				throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
 						flowOrderTypeEnum.getText());
 			}
@@ -2864,7 +2866,7 @@ public class CwbOrderService {
 			// 中转出站操作根据系统设置，是否只有审核的订单才可以中转出站
 
 			// 对oxo和oxo_jit的订单不用中转审核 by jinghui.pan@pjbest.com
-			if(isOxoAndJitType(co) == false){
+			if(this.isOxoAndJitType(co) == false){
 				int changealowflag = this.getChangealowflagById(co);
 
 				if((changealowflag ==1) && (co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())){
@@ -3355,12 +3357,12 @@ public class CwbOrderService {
 			String comment, String packagecode, boolean anbaochuku) {
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
-		
+
 		//审核未上门拒退的订单不允许做退货出站操作
 		if(co.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),ExceptionCwbErrorTypeEnum.SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN);
 		}
-		
+
 		if (this.userDAO.getAllUserByid(user.getUserid()).getIsImposedOutWarehouse() == 0) {
 			forceOut = false;
 		}
@@ -3395,7 +3397,7 @@ public class CwbOrderService {
 		// //原包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
-		
+
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3666,7 +3668,7 @@ public class CwbOrderService {
 		}
 
 		//OXO项目：OXO_JIT订单不允许做领货。 by jinghui.pan@pjbest.com on 20150730
-		if(isJitType(co)){
+		if(this.isJitType(co)){
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.OXO_JIT_DISALLOW_RECEIVEGOODS);
 		}
 
@@ -3854,16 +3856,16 @@ public class CwbOrderService {
 	}
 
 	private void validateAppZhongZhuanLinghuo(String cwb, CwbOrder co,FlowOrderTypeEnum flowOrderTypeEnum) {
-		
-		if(co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()&&co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){
-			
+
+		if((co.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())&&(co.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue())){
+
 			int changealowflag = this.getChangealowflagById(co); //中转是否要申请
 			if(changealowflag==0){  //不需要审核,领货提示不能操作
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.DaizhongzhuanCannotlinghuo);
 			}
-			
+
 			CwbApplyZhongZhuan cwbApplyZhongZhuan = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
-			
+
 			if(cwbApplyZhongZhuan!=null){
 				  long ishandle = cwbApplyZhongZhuan.getIshandle();
 				  if(ishandle==0){
@@ -3874,8 +3876,8 @@ public class CwbOrderService {
 				  }
 			}
 		}
-		
-		
+
+
 	}
 
 	/**
@@ -4790,7 +4792,7 @@ public class CwbOrderService {
 			// =======OXO配送状态逻辑: by jinghui.pan@pjbest.com
 			// ==== 如果订单的配送状态为'配送成功'，更新配送状态为'已处理'=====
 			if(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()){
-				updateOXODeliveryState(co,CwbOXOStateEnum.Processed);
+				this.updateOXODeliveryState(co,CwbOXOStateEnum.Processed);
 			}
 
 			// =======结算逻辑==========
@@ -5134,7 +5136,7 @@ public class CwbOrderService {
 
 	private void handleCustomrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb,
 			boolean isypdj) {
-		
+
 		OrderbackRecord obre = this.orderbackRecordDao.getOBRecord(cwb);
 		if(obre!=null){
 			if(obre.getShenhestate()==0){
@@ -5143,7 +5145,7 @@ public class CwbOrderService {
 				throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_SUCCESS);
 			}
 		}
-		
+
 		this.validateCwbState(co, flowOrderTypeEnum);
 		this.validateStateTransfer(co, flowOrderTypeEnum);
 		this.validateRepeatScan(co,user,flowOrderTypeEnum);
@@ -7024,7 +7026,7 @@ public class CwbOrderService {
 	public List<OrderBackRuku> getOrderBackRukuRecord(
 			List<OrderBackRuku> obrList, List<Branch> branchList,
 			List<Customer> customerList) {
-		if(obrList!=null&&obrList.size()>0){
+		if((obrList!=null)&&(obrList.size()>0)){
 			for(OrderBackRuku obr : obrList){
 				obr.setCwbordertypename(CwbOrderTypeIdEnum.getTextByValue(obr.getCwbordertypeid()));//订单类型
 				obr.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, obr.getCustomerid()));//客户名称
@@ -7095,16 +7097,16 @@ public class CwbOrderService {
 		this.validateStateTransfer(cwbOrder, FlowOrderTypeEnum.UpdatePickBranch);
 
 		this.cwbDAO.updatePickBranchid(branch.getBranchid(), cwbOrder.getCwb());
-		
+
 		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdatePickBranch, "", System.currentTimeMillis());
-		
+
 	}
-	
+
 	public void fankuiAddTranscwbFlow(String cwb,CwbOrder co,User user,FlowOrderTypeEnum flowOrderTypeEnum){
 
 		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1))
 		{
-					CwbOrder cwborder=cwbDAO.getCwbByCwb(cwb);
+					CwbOrder cwborder=this.cwbDAO.getCwbByCwb(cwb);
 					for(String transcwb:cwborder.getTranscwb().split(",")){
 					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb,transcwb, flowOrderTypeEnum, "");
 				}
