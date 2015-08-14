@@ -121,7 +121,7 @@
 			            <ref bean="getVipShopTask" />  
 			        </property>
 			          <property name="cronExpression">  
-			            <value>0 */15 * * * ?</value>
+			            <value>0 */2 * * * ?</value>
 			        </property> 
 	     </bean>
 	     
