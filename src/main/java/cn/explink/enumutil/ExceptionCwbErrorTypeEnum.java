@@ -80,7 +80,8 @@ public enum ExceptionCwbErrorTypeEnum {
 	YIPIAODUOJIAN_DAOHUOBUQUAN(140,"一票多件订单到货不全,不许领货操作!"),
 	SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN(141,"审核为上门拒退的订单不允许做退货出站操作!"),
 	TUIKEHU_DAIQUEREN(142,"退客户待确认的订单禁止退客户拒收返库!"),
-	TUIKEHU_SUCCESS(143,"退客户成功的订单禁止退客户拒收返库!")
+	TUIKEHU_SUCCESS(143,"退客户成功的订单禁止退客户拒收返库!"),
+	YIJINGFENGBAO(144, "此单已经在{0}封包了,不允许其它操作")
 	;
 
 	private int value;
