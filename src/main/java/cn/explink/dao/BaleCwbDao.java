@@ -79,4 +79,12 @@ public class BaleCwbDao {
 	public void deleteByBaleidAndCwb(long baleid, String cwb) {
 		jdbcTemplate.update("delete from express_ops_bale_cwb where baleid = ? and cwb=?", baleid, cwb);
 	}
+	public BaleCwb getBaleCwbByCwb(String cwb) {
+		String sql = "select cwb from express_ops_bale_cwb where cwb=?";
+		try{
+		return jdbcTemplate.queryForObject(sql, new BaleMapper(),cwb);
+		}catch(Exception e){
+			return null;
+		}
+	}
 }
