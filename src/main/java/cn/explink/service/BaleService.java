@@ -1174,6 +1174,26 @@ public class BaleService {
 			if(count2!=0){
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuankuhebaochuku);
 			}*/
+			//start-------------
+/*			if (this.userDAO.getAllUserByid(user.getUserid()).getIsImposedOutWarehouse() == 0) {// 是否拥有
+						// 请指出库权限
+						// 1是
+						// 0
+						// 否
+						// 默认1
+						forceOut = false;
+					}
+				if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
+							.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())))
+							&& (co.getCurrentbranchid() != currentbranchid)) {
+						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+					}
+				//若当前  归班反馈  反馈为待中转，失效该记录
+					DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+					if((ds != null) && (DeliveryStateEnum.DaiZhongZhuan.getValue() == ds.getDeliverystate()) && (ds.getDeliverybranchid() == currentbranchid)){
+						this.deliveryStateDAO.inactiveDeliveryStateByCwb(ds.getCwb());
+					}*/
+			//end---------------
 
 			Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
 			Branch nextBranch = this.branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
