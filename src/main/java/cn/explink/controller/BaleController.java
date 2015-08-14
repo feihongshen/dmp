@@ -197,12 +197,16 @@ public class BaleController {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		try {
-			
+
 			if(confirmflag==0){
-				if((co!=null)&&(co.getNextbranchid()!=branchid ) && co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())
+				if((co!=null)&&(co.getNextbranchid()!=branchid ) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()))
 				{
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,this.branchDAO.
 							getBranchByBranchid(co.getNextbranchid()).getBranchname());
+				}
+				else if((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())&&(branchid!=co.getDeliverybranchid())) {
+					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,this.branchDAO.
+							getBranchByBranchid(co.getDeliverybranchid()).getBranchname());
 				}
 			}
 			// 封包检查
