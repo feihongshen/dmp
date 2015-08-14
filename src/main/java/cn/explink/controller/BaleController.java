@@ -396,7 +396,7 @@ public class BaleController {
 					List<Customer> customerList = this.customerDAO.getAllCustomers();
 					errorListView = this.baleService.getCwbOrderCustomerView(errorList, customerList);
 					obj.put("errorListView", errorListView);
-					obj.put("errorinfo", "(按包出库)" + baleno + "包号，成功" + successCount + "件，失败" + errorCount + "件");
+					obj.put("errorinfo", "(按包出库)" + baleno + "包号，成功" + successCount + "单，失败" + errorCount + "单");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				} else {
 					Bale bale=this.baleDAO.getBaleByBaleno(baleno,BaleStateEnum.YiFengBao.getValue());
