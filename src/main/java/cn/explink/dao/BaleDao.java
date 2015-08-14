@@ -223,5 +223,12 @@ public class BaleDao {
 		}
 		return jdbcTemplate.query(sql, new BaleMapper(), branchid);
 	}
-
+	public Bale getBaleById(long baleid) {
+		try {
+			String sql = "select * from express_ops_bale where id=? ";
+			return jdbcTemplate.queryForObject(sql, new BaleMapper(), baleid);
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
 }
