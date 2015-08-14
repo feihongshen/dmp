@@ -43,7 +43,7 @@ List<PunishInsideOperationinfo> punishInsideOperationinfos=(List<PunishInsideOpe
 							<td  align="left" valign="top">订单金额：<strong><%=penalizeInsideview.getCwbprice()%></strong>
 							&nbsp;&nbsp;货物扣罚金额：<strong><%=penalizeInsideview.getCreategoodpunishprice() %></strong>
 							&nbsp;&nbsp;其它扣罚金额：<strong><%=penalizeInsideview.getCreateqitapunishprice() %></strong>
-							&nbsp;&nbsp;扣罚金额：<strong><%=penalizeInsideview.getPunishInsideprice() %></strong>
+							&nbsp;&nbsp;扣罚金额：<strong><%="0.00".equals(penalizeInsideview.getPunishInsideprice())?"":penalizeInsideview.getPunishInsideprice() %></strong>
 							</td>
 						</tr>
 							<tr class="font_1">

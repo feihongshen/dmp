@@ -7126,16 +7126,23 @@ function alculateSumpriceCreate(selfObject,addObject,sumPrice){
 	 
          var num1 = selfdata.val();// 取得first对象的值  
          var num2 = addData.val();// 取得second对象的值  
-         var sum = sumPriceAdd(num1,num2,selfdata,addData); 
+        // var sum = sumPriceAdd(num1,num2,selfdata,addData); 
+         if($(selfdata).val()==""&&$(addData).val()==""){
+        	 sumSP.val("");
+        	 return;
+         }
          if(isNaN(num1)&&isNaN(num2)){
         	 $(sumSP).val("");
+        	 return;
          }else if(!isNaN(num1)&&!isNaN(num2)){
         	 var sum1 = sumPriceAdd(num1,num2,selfdata,addData,sumSP);
              sumSP.val(sum1);
+             return;
          }else if(isNaN(num1)){
         	  var num4 = addData.val();
              var sum1 = sumPriceAdd("0",num2,selfdata,addData,sumSP);
              sumSP.val(sum1);
+             return;
          }else{
         	 var num3 = selfdata.val();
              var sum1 = sumPriceAdd(num1,"0",selfdata,addData,sumSP);

@@ -61,7 +61,7 @@ List<PenalizeType> penalizesmallList=(List<PenalizeType>)request.getAttribute("p
 						<tr class="font_1">
 						<td align="left" valign="top">
 						货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice" name="cwbgoodprice" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumpriceCreate(this,'cwbqitaprice','punishprice');"/>
-						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice" name="cwbqitaprice" onkeyup="alculateSumpriceCreate(this,'cwbgoodprice','punishprice');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="0.00" />
+						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice" name="cwbqitaprice" onkeyup="alculateSumpriceCreate(this,'cwbgoodprice','punishprice');" class="input_text1" style="height:15px;width: 120px;"  value="" />
 						&nbsp;&nbsp;总扣罚金额<font color="red">*</font>:<input type="text" id="punishprice" name="punishprice" readonly="readonly" class="input_text1" style="height:15px;width: 120px;"/>
 									<input type="hidden" id="punishinsidetype" name="punishinsidetype" value="1"/>
 						</td>

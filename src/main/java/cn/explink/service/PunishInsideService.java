@@ -276,17 +276,17 @@ public class PunishInsideService {
 			penalizeInsideView.setShensudate(penalizeInside.getShensudate());
 			penalizeInsideView.setLastqitapunishprice(String.valueOf(penalizeInside.getLastqitapunishprice()));
 			penalizeInsideView.setLastgoodpunishprice(String.valueOf(penalizeInside.getLastgoodpunishprice()));
-			if(!"".equals(penalizeInside.getGoodpriceremark())){
+			if(!"".equals(penalizeInside.getGoodpriceremark())||("".equals(penalizeInside.getGoodpriceremark())&&"0.00".equals(String.valueOf(penalizeInside.getCreategoodpunishprice())))){
 				penalizeInsideView.setCreategoodpunishprice(penalizeInside.getGoodpriceremark());
 			}else{
 				penalizeInsideView.setCreategoodpunishprice(String.valueOf(penalizeInside.getCreategoodpunishprice()));
 			}
-			if(!"".equals(penalizeInside.getQitapriceremark())){
+			if(!"".equals(penalizeInside.getQitapriceremark())||("".equals(penalizeInside.getQitapriceremark())&&"0.00".equals(String.valueOf(penalizeInside.getCreateqitapunishprice())))){
 				penalizeInsideView.setCreateqitapunishprice(penalizeInside.getQitapriceremark());
 			}else{
 				penalizeInsideView.setCreateqitapunishprice(String.valueOf(penalizeInside.getCreateqitapunishprice()));
 			}
-			if(!"".equals(penalizeInside.getGoodpriceremark())&&!"".equals(penalizeInside.getQitapriceremark())){
+			if((!"".equals(penalizeInside.getGoodpriceremark())&&!"".equals(penalizeInside.getQitapriceremark()))||(("".equals(penalizeInside.getGoodpriceremark())&&"0.00".equals(String.valueOf(penalizeInside.getCreategoodpunishprice())))&&("".equals(penalizeInside.getQitapriceremark())&&"0.00".equals(String.valueOf(penalizeInside.getCreateqitapunishprice()))))){
 				penalizeInsideView.setPunishInsideprice("");
 			}else{
 				penalizeInsideView.setPunishInsideprice(String.valueOf(penalizeInside.getPunishInsideprice()));
@@ -798,13 +798,13 @@ public class PunishInsideService {
 			if (!isNum(punishInsideReviseAndReply.getRevisegoodprice())) {
 				punishInsideReviseAndReply.setRevisegoodpriceNew(BigDecimal.ZERO);
 			}else {
-				punishInsideReviseAndReply.setRevisegoodpriceNew(new BigDecimal(punishInsideReviseAndReply.getRevisegoodprice()));
+				punishInsideReviseAndReply.setRevisegoodpriceNew(new BigDecimal("".equals(punishInsideReviseAndReply.getRevisegoodprice())?"0.00":punishInsideReviseAndReply.getRevisegoodprice()));
 				punishInsideReviseAndReply.setRevisegoodprice("");
 			}
 			if (!isNum(punishInsideReviseAndReply.getReviseqitaprice())) {
 				punishInsideReviseAndReply.setReviseqitapriceNew(BigDecimal.ZERO);
 			}else{
-				punishInsideReviseAndReply.setReviseqitapriceNew(new BigDecimal(punishInsideReviseAndReply.getReviseqitaprice()));
+				punishInsideReviseAndReply.setReviseqitapriceNew(new BigDecimal("".equals(punishInsideReviseAndReply.getReviseqitaprice())?"0.00":punishInsideReviseAndReply.getReviseqitaprice()));
 				punishInsideReviseAndReply.setReviseqitaprice("");
 			}
 			if("".equals(punishInsideReviseAndReply.getKoufajine())){
