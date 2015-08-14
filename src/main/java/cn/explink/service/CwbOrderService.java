@@ -113,6 +113,7 @@ import cn.explink.domain.AccountDeducDetail;
 import cn.explink.domain.AccountDeductRecord;
 import cn.explink.domain.ApplyEditDeliverystate;
 import cn.explink.domain.Bale;
+import cn.explink.domain.BaleCwb;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchRoute;
 import cn.explink.domain.ChangeGoodsTypeResult;
@@ -2683,7 +2684,19 @@ public class CwbOrderService {
 		}
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
-
+		String baleCwbStr=cwb;
+		if(isypdjusetranscwb==1)
+		{
+			baleCwbStr=scancwb;
+		}
+		BaleCwb baleCwb=baleCwbDAO.getBaleCwbByCwb(baleCwbStr);
+		if(baleCwb!=null)
+		{
+			Bale bale=baleDAO.getBaleById(baleCwb.getBaleid());
+			if(null!=bale&&bale.getBalestate()==BaleStateEnum.YiFengBao.getValue()){
+				throw new CwbException(baleCwbStr, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno());
+			}
+		}
 		//若当前  归班反馈  反馈为待中转，失效该记录
 		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 		if((ds != null) && (DeliveryStateEnum.DaiZhongZhuan.getValue() == ds.getDeliverystate()) && (ds.getDeliverybranchid() == currentbranchid)){
