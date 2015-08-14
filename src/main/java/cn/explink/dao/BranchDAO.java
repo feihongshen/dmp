@@ -151,6 +151,15 @@ public class BranchDAO {
 			return new Branch();
 		}
 	}
+	
+	public Branch getBranchByBranchnameMatch(String branchname) {
+		try {
+			Branch branchList = this.jdbcTemplate.queryForObject("SELECT * from express_set_branch where branchname=? and brancheffectflag='1' ", new BranchRowMapper(), branchname);
+			return branchList;
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
 
 	public List<Branch> getBranchByBranchnameCheck(String branchname) {
 		List<Branch> branchList = this.jdbcTemplate.query("SELECT * from express_set_branch where branchname=?", new BranchRowMapper(), branchname);

@@ -1025,7 +1025,7 @@ public class DataImportController {
 				} else {
 					info.setCwb(realnamecwbs[i]);
 				}
-				Branch branch = this.branchDAO.getBranchByBranchname(realnamebranches[i]);
+				Branch branch = this.branchDAO.getBranchByBranchnameMatch(realnamebranches[i]);
 				if (branch == null) {
 					brancherror = "站点<font color='red'>[" + realnamebranches[i] + "]</font>不存在  ";
 					info.setBranch(realnamebranches[i]);
@@ -1039,12 +1039,12 @@ public class DataImportController {
 				info.setError(cwbbranches);
 				cwberror = "";
 				brancherror = "";
-				if (co != null) {
+				if (co != null&&branch != null) {
 					CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
 					if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) || (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
 						addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
 					} else if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue())
-							|| (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是为匹配的
+							|| (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是未匹配或者曾经人工修改匹配的
 																														// 都将匹配状态变更为人工修改
 						addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 					}
