@@ -399,7 +399,8 @@ public class BaleController {
 					obj.put("errorinfo", "(按包出库)" + baleno + "包号，成功" + successCount + "件，失败" + errorCount + "件");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				} else {
-					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + successCount + "件");
+					Bale bale=this.baleDAO.getBaleByBaleno(baleno,BaleStateEnum.YiFengBao.getValue());
+					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				}
 				if (successCount > 0) {
