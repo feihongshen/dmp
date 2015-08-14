@@ -1369,6 +1369,9 @@ public class CwbOrderService {
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 		if (isypdjusetranscwb == 1) {
+			if(!anbaochuku){
+			this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, flowOrderTypeEnum);
+			}
 			this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
 		}
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) && !anbaochuku) {
@@ -2684,18 +2687,10 @@ public class CwbOrderService {
 		}
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
-		String baleCwbStr=cwb;
-		if(isypdjusetranscwb==1)
-		{
-			baleCwbStr=scancwb;
-		}
-		BaleCwb baleCwb=baleCwbDAO.getBaleCwbByCwb(baleCwbStr);
-		if(baleCwb!=null)
-		{
-			Bale bale=baleDAO.getBaleById(baleCwb.getBaleid());
-			if(null!=bale&&bale.getBalestate()==BaleStateEnum.YiFengBao.getValue()){
-				throw new CwbException(baleCwbStr, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno());
-			}
+		FlowOrderTypeEnum flowOrderTypeEnum=FlowOrderTypeEnum.ChuKuSaoMiao;
+		//验证是否已经封包
+		if(!anbaochuku){
+		this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, flowOrderTypeEnum);
 		}
 		//若当前  归班反馈  反馈为待中转，失效该记录
 		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
@@ -2727,6 +2722,28 @@ public class CwbOrderService {
 		// disposePackageCode(packagecode, scancwb, user, co);
 
 		return this.cwbDAO.getCwbByCwb(cwb);
+	}
+
+	/**验证包号是否已经封包
+	 * @param cwb
+	 * @param scancwb
+	 * @param isypdjusetranscwb
+	 * @param flowOrderTypeEnum
+	 */
+	private void checkBaleOfOrder(String cwb, String scancwb, long isypdjusetranscwb, FlowOrderTypeEnum flowOrderTypeEnum) {
+		String baleCwbStr=cwb;
+		if(isypdjusetranscwb==1)
+		{
+			baleCwbStr=scancwb;
+		}
+		BaleCwb baleCwb=this.baleCwbDAO.getBaleCwbByCwb(baleCwbStr);
+		if(baleCwb!=null)
+		{
+			Bale bale=this.baleDAO.getBaleById(baleCwb.getBaleid());
+			if((null!=bale)&&(bale.getBalestate()==BaleStateEnum.YiFengBao.getValue())){
+				throw new CwbException(baleCwbStr, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(),flowOrderTypeEnum.getText());
+			}
+		}
 	}
 
 	// private void disposePackageCode(String packagecode,String cwb,User

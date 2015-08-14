@@ -34,7 +34,8 @@ public class BaleCwbDao {
 
 	public long createBale(final BaleCwb bale) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_bale_cwb(baleid,baleno,cwb) values(?,?,?)", new String[] { "id" });
@@ -60,29 +61,29 @@ public class BaleCwbDao {
 
 	public long getBaleCount(long baleid, String cwb) {
 		String sql = "select count(1) from express_ops_bale_cwb where baleid=? and cwb=?";
-		return jdbcTemplate.queryForLong(sql, baleid, cwb);
+		return this.jdbcTemplate.queryForLong(sql, baleid, cwb);
 	}
 	public long getBaleAndCwbCount(String baleno, String cwb) {
 		String sql = "select count(1) from express_ops_bale_cwb where baleno=? and cwb=?";
-		return jdbcTemplate.queryForLong(sql, baleno, cwb);
+		return this.jdbcTemplate.queryForLong(sql, baleno, cwb);
 	}
-	
+
 	public List<String> getCwbsByBale(String baleid) {
 		String sql = "select cwb from express_ops_bale_cwb where baleid=";
-		return jdbcTemplate.queryForList(sql+baleid, String.class);
+		return this.jdbcTemplate.queryForList(sql+baleid, String.class);
 	}
 	public List<String> getCwbsByBaleNO(String baleno) {
 		String sql = "select cwb from express_ops_bale_cwb where baleno=?";
-		return jdbcTemplate.queryForList(sql, String.class,baleno);
+		return this.jdbcTemplate.queryForList(sql, String.class,baleno);
 	}
 
 	public void deleteByBaleidAndCwb(long baleid, String cwb) {
-		jdbcTemplate.update("delete from express_ops_bale_cwb where baleid = ? and cwb=?", baleid, cwb);
+		this.jdbcTemplate.update("delete from express_ops_bale_cwb where baleid = ? and cwb=?", baleid, cwb);
 	}
 	public BaleCwb getBaleCwbByCwb(String cwb) {
-		String sql = "select cwb from express_ops_bale_cwb where cwb=?";
+		String sql = "select * from express_ops_bale_cwb where cwb=?";
 		try{
-		return jdbcTemplate.queryForObject(sql, new BaleMapper(),cwb);
+		return this.jdbcTemplate.queryForObject(sql, new BaleMapper(),cwb);
 		}catch(Exception e){
 			return null;
 		}

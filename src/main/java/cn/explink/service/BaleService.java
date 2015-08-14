@@ -54,6 +54,7 @@ import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Bale;
+import cn.explink.domain.BaleCwb;
 import cn.explink.domain.BaleView;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchRoute;
@@ -1164,6 +1165,7 @@ public class BaleService {
 			long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 			if (isypdjusetranscwb == 1) {
 				this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+				this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, FlowOrderTypeEnum.ChuKuSaoMiao);
 			}
 
 			/*long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
@@ -1249,6 +1251,27 @@ public class BaleService {
 			this.validateCwbBaleCheck(user, baleno, scancwb, co, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),currentbranchid,FlowOrderTypeEnum.ChuKuSaoMiao);
 		}
 
+	}
+	/**验证包号是否已经封包
+	 * @param cwb
+	 * @param scancwb
+	 * @param isypdjusetranscwb
+	 * @param flowOrderTypeEnum
+	 */
+	private void checkBaleOfOrder(String cwb, String scancwb, long isypdjusetranscwb, FlowOrderTypeEnum flowOrderTypeEnum) {
+		String baleCwbStr=cwb;
+		if(isypdjusetranscwb==1)
+		{
+			baleCwbStr=scancwb;
+		}
+		BaleCwb baleCwb=this.baleCwbDAO.getBaleCwbByCwb(baleCwbStr);
+		if(baleCwb!=null)
+		{
+			Bale bale=this.baleDAO.getBaleById(baleCwb.getBaleid());
+			if((null!=bale)&&(bale.getBalestate()==BaleStateEnum.YiFengBao.getValue())){
+				throw new CwbException(baleCwbStr, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(),"封包");
+			}
+		}
 	}
 	private void validateIsSubCwb(String cwb, CwbOrder co, long flowordertype) {
 		String transcwb = co.getTranscwb();

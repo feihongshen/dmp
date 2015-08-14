@@ -204,7 +204,7 @@ public class BaleController {
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,this.branchDAO.
 							getBranchByBranchid(co.getNextbranchid()).getBranchname());
 				}
-				else if((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())&&(branchid!=co.getDeliverybranchid())) {
+				else if((co!=null)&&(co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())&&(branchid!=co.getDeliverybranchid())) {
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,this.branchDAO.
 							getBranchByBranchid(co.getDeliverybranchid()).getBranchname());
 				}
