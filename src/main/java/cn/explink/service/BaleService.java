@@ -1110,10 +1110,11 @@ public class BaleService {
 					long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
 					if (baleno.equals(co.getPackagecode()) &&(isypdjusetranscwb!=1)&&(co.getScannum()==co.getSendcarnum())) {
+						System.out.println("++++++++++++++++++++++++++++=:");
 						// 重复封包
 						throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao);
 					}
-					if ((coBale.getBranchid() == user.getBranchid()) && (coBale.getBalestate() == BaleStateEnum.WeiFengBao.getValue())) {
+					if ((coBale.getBranchid() == user.getBranchid()) && (coBale.getBalestate() == BaleStateEnum.WeiFengBao.getValue()) &&(isypdjusetranscwb!=1)&&(co.getScannum()==co.getSendcarnum())) {
 						// 订单{0}已经在{1}包号中，确认重新封包吗?
 						throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Bale_ChongXinFengBao, cwb, co.getPackagecode());
 					} else {
@@ -1124,12 +1125,12 @@ public class BaleService {
 							}
 						}
 
-						if((coBale.getBalestate() == BaleStateEnum.YiDaoHuo.getValue())&&(coBale.getBranchid()!=userbranch.getBranchid())){
+					/*	if((coBale.getBalestate() == BaleStateEnum.YiDaoHuo.getValue())&&(coBale.getBranchid()!=userbranch.getBranchid())){
 
 						}else{
 							// 操作失败，此订单已经在{0}包号{1}!
 							throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Bale_Error1, cwb, co.getPackagecode(), errorstate);
-						}
+						}*/
 
 
 					}
