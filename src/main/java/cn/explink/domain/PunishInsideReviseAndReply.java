@@ -2,16 +2,44 @@ package cn.explink.domain;
 
 import java.math.BigDecimal;
 
+
 public class PunishInsideReviseAndReply {
 	private long id;
 	private long dutybranchid;
 	private long dutynameAdd;
-	private BigDecimal revisegoodprice;
-	private BigDecimal reviseqitaprice;
-	private BigDecimal koufajine;
+	private String revisegoodprice;
+	private String reviseqitaprice;
+	private String koufajine;
 	private String describe;
+	private BigDecimal revisegoodpriceNew;
+	private BigDecimal reviseqitapriceNew;
+	private BigDecimal koufajineNew;
 	
 	
+	public BigDecimal getKoufajineNew() {
+		return koufajineNew;
+	}
+	public void setKoufajineNew(BigDecimal koufajineNew) {
+		this.koufajineNew = koufajineNew;
+	}
+	public String getKoufajine() {
+		return koufajine;
+	}
+	public void setKoufajine(String koufajine) {
+		this.koufajine = koufajine;
+	}
+	public BigDecimal getRevisegoodpriceNew() {
+		return revisegoodpriceNew;
+	}
+	public void setRevisegoodpriceNew(BigDecimal revisegoodpriceNew) {
+		this.revisegoodpriceNew = revisegoodpriceNew;
+	}
+	public BigDecimal getReviseqitapriceNew() {
+		return reviseqitapriceNew;
+	}
+	public void setReviseqitapriceNew(BigDecimal reviseqitapriceNew) {
+		this.reviseqitapriceNew = reviseqitapriceNew;
+	}
 	public String getDescribe() {
 		return describe;
 	}
@@ -36,23 +64,18 @@ public class PunishInsideReviseAndReply {
 	public void setDutynameAdd(long dutynameAdd) {
 		this.dutynameAdd = dutynameAdd;
 	}
-	public BigDecimal getRevisegoodprice() {
+	public String getRevisegoodprice() {
 		return revisegoodprice;
 	}
-	public void setRevisegoodprice(BigDecimal revisegoodprice) {
+	public void setRevisegoodprice(String revisegoodprice) {
 		this.revisegoodprice = revisegoodprice;
 	}
-	public BigDecimal getReviseqitaprice() {
+	public String getReviseqitaprice() {
 		return reviseqitaprice;
 	}
-	public void setReviseqitaprice(BigDecimal reviseqitaprice) {
+	public void setReviseqitaprice(String reviseqitaprice) {
 		this.reviseqitaprice = reviseqitaprice;
 	}
-	public BigDecimal getKoufajine() {
-		return koufajine;
-	}
-	public void setKoufajine(BigDecimal koufajine) {
-		this.koufajine = koufajine;
-	}
+
 	
 }

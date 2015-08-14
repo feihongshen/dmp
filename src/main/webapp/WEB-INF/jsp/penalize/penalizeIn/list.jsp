@@ -714,8 +714,8 @@ function checkwithdiferenttype(type){
 						'						</tr >'+
 						'						<tr class="font_1">'+
 						'						<td align="left" valign="top">'+
-						'						货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice2" name="cwbgoodprice2" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,\'cwbqitaprice2\',\'punishprice2\');"/>'+
-						'						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice2" name="cwbqitaprice2" onkeyup="alculateSumprice(this,\'cwbgoodprice2\',\'punishprice2\');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value==\'0.00\') this.value=\'\'" onblur="javascript:if(this.value==\'\') this.value=\'0.00\'" value="0.00" />'+
+						'						货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice2" name="cwbgoodprice2" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumpriceCreate(this,\'cwbqitaprice2\',\'punishprice2\');"/>'+
+						'						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice2" name="cwbqitaprice2" onkeyup="alculateSumpriceCreate(this,\'cwbgoodprice2\',\'punishprice2\');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value==\'0.00\') this.value=\'\'" onblur="javascript:if(this.value==\'\') this.value=\'0.00\'" value="0.00" />'+
 						'						&nbsp;&nbsp;总扣罚金额<font color="red">*</font>:<input type="text" id="punishprice2" name="punishprice2" class="input_text1" style="height:15px;width: 120px;" readonly="readonly"/>'+
 						'						</td>'+
 						'						</tr>'+
@@ -862,8 +862,8 @@ function checkwithdiferenttype(type){
 				'						</tr >'+
 				'						<tr class="font_1">'+
 				'						<td align="left" valign="top">'+
-				'							货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice3" name="cwbgoodprice3" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,\'cwbqitaprice3\',\'punishprice3\');"/>'+
-				'						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice3" name="cwbqitaprice3" onkeyup="alculateSumprice(this,\'cwbgoodprice3\',\'punishprice3\');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value==\'0.00\') this.value=\'\'" onblur="javascript:if(this.value==\'\') this.value=\'0.00\'" value="0.00" />'+
+				'							货物扣罚金额<font color="red">*</font>:<input type="text" id="cwbgoodprice3" name="cwbgoodprice3" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumpriceCreate(this,\'cwbqitaprice3\',\'punishprice3\');"/>'+
+				'						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="cwbqitaprice3" name="cwbqitaprice3" onkeyup="alculateSumpriceCreate(this,\'cwbgoodprice3\',\'punishprice3\');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value==\'0.00\') this.value=\'\'" onblur="javascript:if(this.value==\'\') this.value=\'0.00\'" value="0.00" />'+
 				'							'+
 				'						&nbsp;&nbsp;扣罚金额<font color="red">*</font>:<input type="text" id="punishprice3" name="punishprice3" class="input_text1" style="height:15px;width: 120px;" readonly="readonly"/>'+
 				'						'+
@@ -1198,7 +1198,7 @@ function checkwithdiferenttype(type){
 						<td width="100" align="center"  valign="middle"><%=view.getDutypersonname() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwbstatename() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwbPrice() %></td>
-						<td width="100" align="center" valign="middle"><%=view.getPunishInsideprice()==null?"":view.getPunishInsideprice() %></td>
+						<td width="100" align="center" valign="middle"><%=(view.getPunishInsideprice()==null||(view.getGoodpriceremark().length()>0&&view.getQitapriceremark().length()>0))?"":view.getPunishInsideprice() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getPunishbigsortname() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getPunishsmallsortname() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCreUserName() %></td>

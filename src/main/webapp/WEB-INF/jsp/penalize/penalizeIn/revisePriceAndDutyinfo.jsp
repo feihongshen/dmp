@@ -119,8 +119,8 @@ long roleid=Long.parseLong(request.getAttribute("roleid").toString());
 						</tr>
 						<tr  class="font_1">
 						<td align="left" valign="top">
-						货物扣罚金额<font color="red">*</font>:<input type="text" id="revisegoodprice" name="revisegoodprice" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumprice(this,'reviseqitaprice','koufajine');" value="<%=penalizeInsideview.getCreategoodpunishprice() %>"/>
-						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="reviseqitaprice" name="reviseqitaprice" onkeyup="alculateSumprice(this,'revisegoodprice','koufajine');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="<%=penalizeInsideview.getCreateqitapunishprice() %>" />
+						货物扣罚金额<font color="red">*</font>:<input type="text" id="revisegoodprice" name="revisegoodprice" class="input_text1" style="height:15px;width: 120px;" onkeyup="alculateSumpriceCreate(this,'reviseqitaprice','koufajine');" value="<%=penalizeInsideview.getCreategoodpunishprice() %>"/>
+						&nbsp;&nbsp;其它扣罚金额<font color="red">*</font>:<input type="text" id="reviseqitaprice" name="reviseqitaprice" onkeyup="alculateSumpriceCreate(this,'revisegoodprice','koufajine');" class="input_text1" style="height:15px;width: 120px;" onfocus="javascript:if(this.value=='0.00') this.value=''" onblur="javascript:if(this.value=='') this.value='0.00'" value="<%=penalizeInsideview.getCreateqitapunishprice() %>" />
 						</td></tr>
 						<tr class="font_1">
 							<td colspan="2" align="left" valign="top">

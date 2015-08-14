@@ -125,6 +125,16 @@ public class PunishInsideService {
 		String createBySource = StringUtil.nullConvertToEmptyString(request.getParameter("punishinsidetype")).trim();
 		String cwbgoodprice = StringUtil.nullConvertToEmptyString(request.getParameter("cwbgoodprice")==""?"0.00":request.getParameter("cwbgoodprice")).trim();
 		String cwbqitaprice = StringUtil.nullConvertToEmptyString(request.getParameter("cwbqitaprice")==""?"0.00":request.getParameter("cwbqitaprice")).trim();
+		String goodpriceremark="";
+		String qitapriceremark="";
+		if(!isNum(cwbgoodprice)){
+			goodpriceremark=cwbgoodprice;
+			cwbgoodprice="0";
+		}
+		if(!isNum(cwbqitaprice)){
+			qitapriceremark=cwbqitaprice;
+			cwbqitaprice="0";
+		}
 		penalizeInside.setCreategoodpunishprice(new BigDecimal(cwbgoodprice));
 		penalizeInside.setCreateqitapunishprice(new BigDecimal(cwbqitaprice));
 		penalizeInside.setCreateBySource(Integer.valueOf(createBySource));//根据订单创建的来源标识为1
@@ -145,10 +155,14 @@ public class PunishInsideService {
 		penalizeInside.setCreDate(nowtime);
 		penalizeInside.setPunishcwbstate(punishinsidetype);
 		penalizeInside.setSourceNo(cwb);
+		penalizeInside.setGoodpriceremark(goodpriceremark);
+		penalizeInside.setQitapriceremark(qitapriceremark);
 		return penalizeInside;
 	}
 	//根据问题件生成想要的insert对内扣罚单的数据
 	public PenalizeInside switchTowantDataWithQuestion(HttpServletRequest request,String type1){
+		String goodpriceremark="";
+		String qitapriceremark="";
 		//生成扣罚单号
 		String punishNO="P"+System.currentTimeMillis()+"";
 		int punishinsidetype=PunishInsideStateEnum.daiqueren.getValue();
@@ -162,6 +176,16 @@ public class PunishInsideService {
 		String cwbhhh=StringUtil.nullConvertToEmptyString(request.getParameter("cwbhhh"+type1));
 		String cwbgoodprice=StringUtil.nullConvertToEmptyString(request.getParameter("cwbgoodprice"+type1));
 		String cwbqitaprice=StringUtil.nullConvertToEmptyString(request.getParameter("cwbqitaprice"+type1));
+		if(!isNum(cwbgoodprice)){
+			goodpriceremark=cwbgoodprice;
+			cwbgoodprice="0";
+		}
+		if(!isNum(cwbqitaprice)){
+			qitapriceremark=cwbqitaprice;
+			cwbqitaprice="0";
+		}
+		
+		
 		long userid=this.getSessionUser().getUserid();
 		PenalizeInside penalizeInside=new PenalizeInside();
 		penalizeInside.setCreategoodpunishprice(new BigDecimal(cwbgoodprice==""?"0.00":cwbgoodprice));
@@ -181,6 +205,8 @@ public class PunishInsideService {
 		penalizeInside.setPunishNo(punishNO);
 		penalizeInside.setSourceNo(availablecwb1);
 		penalizeInside.setPunishsmallsort(Integer.parseInt("".equals(punishsmallsort1)?"0":punishbigsort1));
+		penalizeInside.setGoodpriceremark(goodpriceremark);
+		penalizeInside.setQitapriceremark(qitapriceremark);
 		return penalizeInside;
 	}
 		public String switchDescribe(String describe){
@@ -236,7 +262,6 @@ public class PunishInsideService {
 			penalizeInsideView.setPunishbigsort(this.getSortname(Integer.parseInt(penalizeInside.getPunishbigsort()+"")));//-----暂时没写????
 			penalizeInsideView.setPunishcwbstate(this.getPunishState(penalizeInside.getPunishcwbstate()));//???扣罚操作状态
 			penalizeInsideView.setPunishdescribe(penalizeInside.getPunishdescribe());
-			penalizeInsideView.setPunishInsideprice(String.valueOf(penalizeInside.getPunishInsideprice()));
 			penalizeInsideView.setPunishsmallsort(this.getSortname(Integer.parseInt(penalizeInside.getPunishsmallsort()+"")));
 			penalizeInsideView.setShensudescribe(StringUtil.nullConvertToEmptyString(penalizeInside.getShensudescribe()));
 			penalizeInsideView.setShensufileposition(StringUtil.nullConvertToEmptyString(penalizeInside.getShensufileposition()));
@@ -251,8 +276,21 @@ public class PunishInsideService {
 			penalizeInsideView.setShensudate(penalizeInside.getShensudate());
 			penalizeInsideView.setLastqitapunishprice(String.valueOf(penalizeInside.getLastqitapunishprice()));
 			penalizeInsideView.setLastgoodpunishprice(String.valueOf(penalizeInside.getLastgoodpunishprice()));
-			penalizeInsideView.setCreategoodpunishprice(String.valueOf(penalizeInside.getCreategoodpunishprice()));
-			penalizeInsideView.setCreateqitapunishprice(String.valueOf(penalizeInside.getCreateqitapunishprice()));
+			if(!"".equals(penalizeInside.getGoodpriceremark())){
+				penalizeInsideView.setCreategoodpunishprice(penalizeInside.getGoodpriceremark());
+			}else{
+				penalizeInsideView.setCreategoodpunishprice(String.valueOf(penalizeInside.getCreategoodpunishprice()));
+			}
+			if(!"".equals(penalizeInside.getQitapriceremark())){
+				penalizeInsideView.setCreateqitapunishprice(penalizeInside.getQitapriceremark());
+			}else{
+				penalizeInsideView.setCreateqitapunishprice(String.valueOf(penalizeInside.getCreateqitapunishprice()));
+			}
+			if(!"".equals(penalizeInside.getGoodpriceremark())&&!"".equals(penalizeInside.getQitapriceremark())){
+				penalizeInsideView.setPunishInsideprice("");
+			}else{
+				penalizeInsideView.setPunishInsideprice(String.valueOf(penalizeInside.getPunishInsideprice()));
+			}
 			penalizeInsideView.setDutybrachid(penalizeInside.getDutybranchid());
 			penalizeInsideView.setDutypersonid(penalizeInside.getDutypersonid());
 			return penalizeInsideView;
@@ -757,6 +795,23 @@ public class PunishInsideService {
 		@Transactional
 		public void reviseAndReply(PunishInsideReviseAndReply punishInsideReviseAndReply){
 			User user=this.getSessionUser();
+			if (!isNum(punishInsideReviseAndReply.getRevisegoodprice())) {
+				punishInsideReviseAndReply.setRevisegoodpriceNew(BigDecimal.ZERO);
+			}else {
+				punishInsideReviseAndReply.setRevisegoodpriceNew(new BigDecimal(punishInsideReviseAndReply.getRevisegoodprice()));
+				punishInsideReviseAndReply.setRevisegoodprice("");
+			}
+			if (!isNum(punishInsideReviseAndReply.getReviseqitaprice())) {
+				punishInsideReviseAndReply.setReviseqitapriceNew(BigDecimal.ZERO);
+			}else{
+				punishInsideReviseAndReply.setReviseqitapriceNew(new BigDecimal(punishInsideReviseAndReply.getReviseqitaprice()));
+				punishInsideReviseAndReply.setReviseqitaprice("");
+			}
+			if("".equals(punishInsideReviseAndReply.getKoufajine())){
+				punishInsideReviseAndReply.setKoufajineNew(BigDecimal.ZERO);;
+			}else{
+				punishInsideReviseAndReply.setKoufajineNew(new BigDecimal(punishInsideReviseAndReply.getKoufajine()));
+			}
 			punishInsideDao.updatekoufaPriceAndDutyInfo(punishInsideReviseAndReply);
 			punishInsideOperationinfoDao.insertIntoOPerationwithRevise(punishInsideReviseAndReply,user);
 		}
@@ -773,5 +828,9 @@ public class PunishInsideService {
 			}else {
 				return roleid;
 			}
+		}
+		
+		public static boolean isNum(String str){
+			return str.matches("^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$");
 		}
 }

@@ -86,6 +86,8 @@ public class PunishInsideDao {
 			penalizeInside.setLastqitapunishprice(rs.getBigDecimal("lastqitapunishprice"));
 			penalizeInside.setCreategoodpunishprice(rs.getBigDecimal("creategoodpunishprice"));
 			penalizeInside.setCreateqitapunishprice(rs.getBigDecimal("createqitapunishprice"));
+			penalizeInside.setGoodpriceremark(rs.getString("goodpriceremark"));
+			penalizeInside.setQitapriceremark(rs.getString("qitapriceremark"));
 			return penalizeInside;
 		}
 
@@ -105,6 +107,8 @@ public class PunishInsideDao {
 			penalizeInside.setCreateqitapunishprice(rs.getBigDecimal("createqitapunishprice"));
 			penalizeInside.setPunishInsideprice(rs.getBigDecimal("punishInsideprice"));
 			penalizeInside.setPunishNo(rs.getString("punishNo"));
+			penalizeInside.setGoodpriceremark(rs.getString("goodpriceremark"));
+			penalizeInside.setQitapriceremark(rs.getString("qitapriceremark"));
 			return penalizeInside;
 		}
 
@@ -113,7 +117,7 @@ public class PunishInsideDao {
 	private JdbcTemplate jdbcTemplate;
 	//根据订单号创建对内扣罚单
 	public int createPunishInside(final PenalizeInside penalizeInside,final long importFlag){
-		return this.jdbcTemplate.update("insert into express_ops_punishInside_detail (cwb,punishNo,createBySource,sourceNo,dutybranchid,dutypersonid,cwbstate,cwbPrice,punishInsideprice,punishbigsort,punishsmallsort,createuserid,creDate,punishcwbstate,punishdescribe,fileposition,creategoodpunishprice,createqitapunishprice,importFlag) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+		return this.jdbcTemplate.update("insert into express_ops_punishInside_detail (cwb,punishNo,createBySource,sourceNo,dutybranchid,dutypersonid,cwbstate,cwbPrice,punishInsideprice,punishbigsort,punishsmallsort,createuserid,creDate,punishcwbstate,punishdescribe,fileposition,creategoodpunishprice,createqitapunishprice,importFlag,goodpriceremark,qitapriceremark) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				// TODO Auto-generated method stub
@@ -136,6 +140,9 @@ public class PunishInsideDao {
 				ps.setBigDecimal(17, penalizeInside.getCreategoodpunishprice());
 				ps.setBigDecimal(18, penalizeInside.getCreateqitapunishprice());
 				ps.setLong(19, importFlag);
+				ps.setString(20, penalizeInside.getGoodpriceremark());
+				ps.setString(21, penalizeInside.getQitapriceremark());
+				
 
 			}
 		});
@@ -491,17 +498,19 @@ public class PunishInsideDao {
 	 * @param punishInsideReviseAndReply
 	 */
 	public void updatekoufaPriceAndDutyInfo(final PunishInsideReviseAndReply punishInsideReviseAndReply){
-		String sql="update express_ops_punishInside_detail set creategoodpunishprice=?,createqitapunishprice=?,punishInsideprice=?,dutybranchid=?,dutypersonid=? where id=?";
+		String sql="update express_ops_punishInside_detail set creategoodpunishprice=?,createqitapunishprice=?,punishInsideprice=?,dutybranchid=?,dutypersonid=?,goodpriceremark=?,qitapriceremark=? where id=?";
 		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setBigDecimal(1, punishInsideReviseAndReply.getRevisegoodprice());
-				ps.setBigDecimal(2, punishInsideReviseAndReply.getReviseqitaprice());
-				ps.setBigDecimal(3, punishInsideReviseAndReply.getKoufajine());
+				ps.setBigDecimal(1, punishInsideReviseAndReply.getRevisegoodpriceNew());
+				ps.setBigDecimal(2, punishInsideReviseAndReply.getReviseqitapriceNew());
+				ps.setBigDecimal(3, punishInsideReviseAndReply.getKoufajineNew());
 				ps.setLong(4, punishInsideReviseAndReply.getDutybranchid());
 				ps.setLong(5, punishInsideReviseAndReply.getDutynameAdd());
-				ps.setLong(6, punishInsideReviseAndReply.getId());
+				ps.setString(6, punishInsideReviseAndReply.getRevisegoodprice());
+				ps.setString(7, punishInsideReviseAndReply.getReviseqitaprice());
+				ps.setLong(8, punishInsideReviseAndReply.getId());
 			}
 		});
 		

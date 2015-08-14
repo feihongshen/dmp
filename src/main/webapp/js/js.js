@@ -6338,6 +6338,24 @@ function getComplaintUserValue(){
 
 //对内扣罚审核的判断
 function check_punishinsideshenhe(){
+	if($("#resultgoodprice").val()==""||$("#resultqitaprice").val()==""){
+		alert("最终货物扣罚金额与最终其它扣罚金额不能为空，请重输入！！");
+		return false;
+	}
+	if(isNaN($("#resultgoodprice").val())&&isNaN($("#resultqitaprice").val())){
+		$("#resultgoodprice").val("");
+		$("#resultqitaprice").val("");
+		alert("最终货物扣罚金额与最终其它扣罚金额不能为非数字类型，请重新输入！！");
+		return false;
+	}else if(isNaN($("#resultgoodprice").val())){
+		$("#resultgoodprice").val("");
+		alert("最终货物扣罚金额不能为非数字类型，请重新输入！！");
+		return false;
+	}else if(isNaN($("#resultqitaprice").val())){
+		$("#resultqitaprice").val("");
+		alert("最终其它扣罚金额不能为非数字类型，请重新输入！！");
+		return false;
+	}
 
 	if($("#describe").val()==""||$("#describe").val()=="最多100个字"){
 		alert("请输入对内扣罚审核说明！！");
@@ -6362,7 +6380,7 @@ function koufachengli(){
 		if ($("#update").contents().find("#wavText").val() == "") {
 			$("#form1").attr("enctype", "");
 			$("#form1").attr("action", "inpunish/submitHandleShenheResult");
-			submitCreateForm($("#form1"));
+			submitCreateFormShenheKoufa($("#form1"));
 			return;
 		}
 		$("#update")[0].contentWindow.submitShenheLoad();
@@ -6382,7 +6400,7 @@ function chexiaokoufa(){
 		if ($("#update").contents().find("#wavText").val() == "") {
 			$("#form1").attr("enctype", "");
 			$("#form1").attr("action", "inpunish/submitHandleShenheResult");
-			submitCreateForm($("#form1"));
+			submitCreateFormShenheKoufa($("#form1"));
 			return;
 		}
 		$("#update")[0].contentWindow.submitShenheLoad();
@@ -6774,7 +6792,14 @@ function alculateSumprice(selfObject,addObject,sumPrice){
         	 var num3 = selfdata.val();
              var num4 = addData.val();
              var sum1 = sumPriceAdd(num3,num4,selfdata,addData,sumSP);
-             sumSP.val(sum1);
+             	if(isNaN(num4)){
+             		$(addData).val("");
+             		sumSP.val("");
+             	}else {
+             		sumSP.val(sum1);
+				}
+             
+           
         	alert("亲，只能输入数字类型的噢,请重新输入！！");
          }else{
         	 sumSP.val(sum);
@@ -7091,3 +7116,57 @@ function selectbranchUsersInputer(targetid,oldid){
 		}
 	});
 }
+
+
+
+function alculateSumpriceCreate(selfObject,addObject,sumPrice){
+	var selfdata=$(selfObject);
+	var addData=$("#"+addObject);
+	var sumSP=$("#"+sumPrice);
+	 
+         var num1 = selfdata.val();// 取得first对象的值  
+         var num2 = addData.val();// 取得second对象的值  
+         var sum = sumPriceAdd(num1,num2,selfdata,addData); 
+         if(isNaN(num1)&&isNaN(num2)){
+        	 $(sumSP).val("");
+         }else if(!isNaN(num1)&&!isNaN(num2)){
+        	 var sum1 = sumPriceAdd(num1,num2,selfdata,addData,sumSP);
+             sumSP.val(sum1);
+         }else if(isNaN(num1)){
+        	  var num4 = addData.val();
+             var sum1 = sumPriceAdd("0",num2,selfdata,addData,sumSP);
+             sumSP.val(sum1);
+         }else{
+        	 var num3 = selfdata.val();
+             var sum1 = sumPriceAdd(num1,"0",selfdata,addData,sumSP);
+             sumSP.val(sum1);
+         }
+        
+         
+}
+
+
+
+function submitCreateFormShenheKoufa(form) {
+	$.ajax({
+		type : "POST",
+		url : $(form).attr("action"),
+		data : $(form).serialize(),
+		dataType : "json",
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
+				/*$(form)[0].reset();*/
+				//$("#WORK_AREA")[0].contentWindow.addSuccess(data);  
+				$("#koufajine").val("");
+				$("#resultgoodprice").val("");
+				$("#resultqitaprice").val("0.00");
+				$("#describe").val("最多100个字");
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+			}
+		}
+	});
+}
+

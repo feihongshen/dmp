@@ -8260,6 +8260,12 @@ CREATE TABLE `cs_complaint_accept` (
 	   		ALTER TABLE `express_ops_outwarehousegroup`
 			ADD COLUMN `baleno`  varchar(50) NULL DEFAULT '' COMMENT '包号' AFTER `sign`;
 	   </sql>
+	</changeSet>
+	<changeSet id="wukong-2015-08-14-01" author="wukong">
+	   	<sql>
+	   		ALTER TABLE `express_ops_punishInside_detail` ADD COLUMN `goodpriceremark` VARCHAR(100) DEFAULT '',
+						     								 ADD COLUMN  `qitapriceremark` VARCHAR(100) DEFAULT '';
+	   </sql>
 	</changeSet>	
 		
 </databaseChangeLog>

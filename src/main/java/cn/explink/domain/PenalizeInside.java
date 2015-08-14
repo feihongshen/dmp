@@ -44,8 +44,22 @@ public class PenalizeInside {
 	private BigDecimal createqitapunishprice;//创建时的其它扣罚金额
 	private BigDecimal lastgoodpunishprice;//审核时确定的货物扣罚金额
 	private BigDecimal lastqitapunishprice;//审核时的确定的其他扣罚金额
+	private String goodpriceremark;//货物金额为汉字时存放的remark
+	private String qitapriceremark;//其它金额为汉字的时候存放的remark
 	
 	
+	public String getGoodpriceremark() {
+		return goodpriceremark;
+	}
+	public void setGoodpriceremark(String goodpriceremark) {
+		this.goodpriceremark = goodpriceremark;
+	}
+	public String getQitapriceremark() {
+		return qitapriceremark;
+	}
+	public void setQitapriceremark(String qitapriceremark) {
+		this.qitapriceremark = qitapriceremark;
+	}
 	public BigDecimal getCreategoodpunishprice() {
 		return creategoodpunishprice;
 	}
