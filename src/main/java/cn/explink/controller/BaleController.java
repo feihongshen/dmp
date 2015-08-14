@@ -191,10 +191,10 @@ public class BaleController {
 	@RequestMapping("/baleaddcwbCheck/{cwb}/{baleno}")
 	public @ResponseBody
 	ExplinkResponse baleaddcwbCheck(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb, @PathVariable(value = "baleno") String baleno,
-			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "flag", required = true, defaultValue = "0") long flag,
-			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
-			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid
-			) {
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "flag", required = true, defaultValue = "0") long flag, @RequestParam(
+					value = "confirmflag",
+					required = false,
+					defaultValue = "0") long confirmflag, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		String scancwb = cwb;
@@ -202,27 +202,27 @@ public class BaleController {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		try {
-			long nextbranchid=co.getNextbranchid();
-			String nextbranchname="";
-			long deliverybranchid=co.getDeliverybranchid();
-			String deliverybranchname="";
-			if(nextbranchid==0){
-				nextbranchname="未知站点";
-			}else {
-				nextbranchname=this.branchDAO.getBranchByBranchid(nextbranchid).getBranchname();
-			}
-			if(deliverybranchid==0){
-				deliverybranchname="未知站点";
-			}else{
-				deliverybranchname=this.branchDAO.getBranchByBranchid(deliverybranchid).getBranchname();
-			}
-			if(confirmflag==0){
-				if((co!=null)&&(co.getNextbranchid()!=branchid ) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()))
-				{
-					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,nextbranchname);
+			if (co != null) {
+				long nextbranchid = co.getNextbranchid();
+				String nextbranchname = "";
+				long deliverybranchid = co.getDeliverybranchid();
+				String deliverybranchname = "";
+				if (nextbranchid == 0) {
+					nextbranchname = "未知站点";
+				} else {
+					nextbranchname = this.branchDAO.getBranchByBranchid(nextbranchid).getBranchname();
 				}
-				else if((co!=null)&&(co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())&&(branchid!=co.getDeliverybranchid())) {
-					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,deliverybranchname);
+				if (deliverybranchid == 0) {
+					deliverybranchname = "未知站点";
+				} else {
+					deliverybranchname = this.branchDAO.getBranchByBranchid(deliverybranchid).getBranchname();
+				}
+				if (confirmflag == 0) {
+					if ((co != null) && (co.getNextbranchid() != branchid) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {
+						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, nextbranchname);
+					} else if ((co != null) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) && (branchid != co.getDeliverybranchid())) {
+						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, deliverybranchname);
+					}
 				}
 			}
 			// 封包检查

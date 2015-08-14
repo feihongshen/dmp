@@ -1163,10 +1163,10 @@ public class BaleService {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			}
 			long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
-			if (isypdjusetranscwb == 1) {
+			if ((isypdjusetranscwb == 1)&&(null!=co.getTranscwb())&&(co.getTranscwb().length()>0)) {
 				this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
-				this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, FlowOrderTypeEnum.ChuKuSaoMiao);
 			}
+			this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, FlowOrderTypeEnum.ChuKuSaoMiao);
 
 			/*long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb,0);
 			if(count1!=0){
