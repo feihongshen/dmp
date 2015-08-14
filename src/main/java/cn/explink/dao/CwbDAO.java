@@ -1200,6 +1200,9 @@ public class CwbDAO {
 	public void updateScannum(String cwb, long scannum) {
 		this.jdbcTemplate.update("update express_ops_cwb_detail set scannum=? where cwb=? and state = 1  ", scannum, cwb);
 	}
+	public void updateScannumAuto(String cwb) {
+		this.jdbcTemplate.update("update express_ops_cwb_detail set scannum=scannum+1 where cwb=? and state = 1  ",cwb);
+	}
 
 	public CwbOrder getCwbOrderByOpscwbid(long opscwbid) {
 		return this.jdbcTemplate.queryForObject("select * from express_ops_cwb_detail where opscwbid=? and state=1 ", new CwbMapper(), opscwbid);
