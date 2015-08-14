@@ -8267,5 +8267,11 @@ CREATE TABLE `cs_complaint_accept` (
 						     								 ADD COLUMN  `qitapriceremark` VARCHAR(100) DEFAULT '';
 	   </sql>
 	</changeSet>	
+	<changeSet id="wangyonghe-2015-08-14-02" author="wangyonghe">
+	   	<sql>
+	   		ALTER TABLE `express_ops_bale`
+			ADD COLUMN `scannum`  int(10) NULL DEFAULT 0 COMMENT '扫描件数' AFTER `cwbcount`;
+	   </sql>
+	</changeSet>	
 		
 </databaseChangeLog>
