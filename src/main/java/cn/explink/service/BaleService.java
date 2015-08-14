@@ -1109,7 +1109,7 @@ public class BaleService {
 						|| ((coBale != null) && (userbranch.getSitetype() == BranchEnum.TuiHuo.getValue()) && (balebranch.getSitetype() == BranchEnum.TuiHuo.getValue()))) {
 					long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
-					if (baleno.equals(co.getPackagecode()) &&(isypdjusetranscwb!=1)&&(co.getScannum()==co.getSendcarnum())) {
+					if (baleno.equals(co.getPackagecode()) &&(isypdjusetranscwb==1)) {
 						System.out.println("++++++++++++++++++++++++++++=:");
 						// 重复封包
 						throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao);
