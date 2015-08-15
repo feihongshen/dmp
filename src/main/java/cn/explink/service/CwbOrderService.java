@@ -870,6 +870,12 @@ public class CwbOrderService {
 		if (!StringUtils.hasLength(transcwb)) {// 为兼容腾讯达历史数据没有transcwb的问题，下个版本请删除
 			return;
 		}
+		
+		//排除一票一件，也存在运单号情况，
+		if( !(co.getSendcarnum() > 1 ||  co.getBackcarnum() > 1)){
+			return;
+		}
+		
 		String splitString = this.getSplitstring(transcwb);
 		String[] split = transcwb.split(splitString);
 		for (String string : split) {
