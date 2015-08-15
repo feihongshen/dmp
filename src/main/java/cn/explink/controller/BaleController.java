@@ -198,6 +198,8 @@ public class BaleController {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		String scancwb = cwb;
+		obj.put("scancwb", scancwb);
+		obj.put("baleno", baleno);
 		cwb = this.cwbOrderService.translateCwb(cwb);
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
