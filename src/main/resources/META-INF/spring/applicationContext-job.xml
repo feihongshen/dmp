@@ -83,6 +83,7 @@
 							 <ref bean="doTime_sfxhm" />
 							 <ref bean="doTime_zhongliang" />
 							 <ref bean="doTime_wenxuan" />
+							  <ref bean="doTime_gztl" />
 							 <ref bean="doTime_deleteFlow" />
 							 <ref bean="doTime_vipshopOXO" />
 							 <ref bean="doTime_vipshopOXOPickState" />
@@ -875,6 +876,25 @@
          </property>
      </bean>
      <!-- 对内扣罚自动审核  结束-->
+     
+           <bean id="doTime_gztl" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getGztl" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+     <!--广州通路临时表到主表  -->
+     <bean id="getGztl" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getGztlCwbDetail_Task</value>
+         </property>
+     </bean>
+     <!--结束  -->
      
 <!-- ===================================自动生成HTML定时器 结束========================================== -->
 </beans>
