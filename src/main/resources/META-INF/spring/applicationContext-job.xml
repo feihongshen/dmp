@@ -876,8 +876,8 @@
          </property>
      </bean>
      <!-- 对内扣罚自动审核  结束-->
-     
-           <bean id="doTime_gztl" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+     	  <!--广州通路临时表到主表  -->
+     <bean id="doTime_gztl" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
            <property name="jobDetail">
                <ref bean="getGztl" />
            </property>
@@ -885,7 +885,7 @@
                <value>0 */15 * * * ?</value>
            </property>
       </bean>
-     <!--广州通路临时表到主表  -->
+   
      <bean id="getGztl" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
       <property name="targetBean">
              <value>excuteTimmer</value>
