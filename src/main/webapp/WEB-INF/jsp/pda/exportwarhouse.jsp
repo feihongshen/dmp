@@ -617,9 +617,9 @@ function baleaddcwbCheck(){
    			$("#msg").html("");
    			if(data.body.errorcode=="111111"){
    				if(data.body.errorenum=="Bale_ChongXinFengBao"){//此订单已在包号：XXX中封包，确认要重新封包吗?
-   					if(confirm(data.body.errorinfo)){
+   					/* if(confirm(data.body.errorinfo)){
    						baleaddcwb();//出库根据包号扫描订单
-   					}
+   					} */
    				}else{
    					$("#scancwb").val("");
 	   				$("#msg").html("（异常扫描）"+data.body.errorinfo);
@@ -627,20 +627,24 @@ function baleaddcwbCheck(){
    				}
    				return;
    			} 
-   			baleaddcwb();//出库根据包号扫描订单
+   			baleaddcwb(data.body.scancwb,data.body.baleno);//出库根据包号扫描订单
    		}
    	});
 }
 //=============出库根据包号扫描订单===============	
-function baleaddcwb(){
+function baleaddcwb(scancwb,baleno){
 	if($("#baleno").val()==""){
 		alert("包号不能为空！");
 		$("#scancwb").val("");
 		return;
 	}
+/* 	if($("#baleno").val()!=baleno||$("#scancwb").val()!=scancwb){
+		
+		return;
+	} */
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/baleaddcwb/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?branchid="+$("#branchid").val(),
+		url:"<%=request.getContextPath()%>/bale/baleaddcwb/"+scancwb+"/"+baleno+"?branchid="+$("#branchid").val(),
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
