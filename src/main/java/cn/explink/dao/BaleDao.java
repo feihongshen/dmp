@@ -199,7 +199,7 @@ public class BaleDao {
 	}
 
 	public void updateSubBaleCount(String baleno) {
-		String sql = "update express_ops_bale set cwbcount=cwbcount-1 where baleno=? ";
+		String sql = "update express_ops_bale set cwbcount=cwbcount-1 ,scannum=scannum-1  where baleno=? ";
 		this.jdbcTemplate.update(sql, baleno);
 	}
 
