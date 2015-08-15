@@ -1555,18 +1555,7 @@ public class BaleService {
 		if (!StringUtils.isEmpty(baleno) && !StringUtils.isEmpty(cwb)) {
 			// 如果订单存在原来的包号 包号表的订单数-1
 			String scancwb = cwb;
-			List<BaleCwb> baleCwbs=new ArrayList<BaleCwb>();
-				 baleCwbs = this.baleCwbDAO.getBaleCwbByCwb(scancwb);
-			if (baleCwbs != null&&baleCwbs.size()>0) {
-				for(BaleCwb baleCwb:baleCwbs){
-					Bale bale = this.baleDAO.getBaleById(baleCwb.getBaleid());
-					if ((null != bale) && (bale.getBalestate() == BaleStateEnum.WeiFengBao.getValue())) {
-						this.baleCwbDAO.deleteByBaleidAndCwb(bale.getId(), scancwb);
-						this.baleDAO.updateSubBaleCount(bale.getBaleno());
-					}
-				}
-			}
-			/*cwb = this.cwbOrderService.translateCwb(cwb);
+			cwb = this.cwbOrderService.translateCwb(cwb);
 			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 			if ((co != null) && !StringUtils.isEmpty(co.getPackagecode())) {
 				Bale baleOld = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
@@ -1580,7 +1569,7 @@ public class BaleService {
 				if ((baleno != co.getPackagecode()) && (baleOld.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()) && (baleOld.getBranchid() != branchid)) {
 					this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
 				}
-			}*/
+			}
 
 			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno);
 			if (bale == null) {
