@@ -2694,9 +2694,9 @@ public class CwbOrderService {
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 		FlowOrderTypeEnum flowOrderTypeEnum=FlowOrderTypeEnum.ChuKuSaoMiao;
-		//验证是否已经封包
+		//验证是否已经封包(按包出校验订单是否在包中)
 		if(!anbaochuku){
-		this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, flowOrderTypeEnum);
+			this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, flowOrderTypeEnum);
 		}
 		//若当前  归班反馈  反馈为待中转，失效该记录
 		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
@@ -3394,6 +3394,10 @@ public class CwbOrderService {
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		
 		//审核未上门拒退的订单不允许做退货出站操作
 		if(co.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),ExceptionCwbErrorTypeEnum.SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN);
@@ -3401,9 +3405,6 @@ public class CwbOrderService {
 
 		if (this.userDAO.getAllUserByid(user.getUserid()).getIsImposedOutWarehouse() == 0) {
 			forceOut = false;
-		}
-		if (co == null) {
-			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 		/*if(co.getCurrentbranchid()!=currentbranchid)
 		{

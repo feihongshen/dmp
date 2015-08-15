@@ -379,6 +379,11 @@ public class BaleController {
 					} catch (CwbException e) {
 						cwb = this.cwbOrderService.translateCwb(cwb);
 						CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+						//如果单号系统不存在（或者已经失效）
+						if( null ==  co){
+							co = new CwbOrder();
+							co.setCwb(cwb);
+						}
 						errorCount++;
 						co.setRemark1(e.getMessage());// 异常原因
 						errorList.add(co);
