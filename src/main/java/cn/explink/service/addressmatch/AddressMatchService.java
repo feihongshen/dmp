@@ -109,8 +109,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					public void configure() throws Exception {
 						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=matchAddress").routeId("地址匹配");
-						this.from("jms:queue:VirtualTopicConsumers.cwbbaiduMap.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
-						.to("bean:addressMatchService?method=matchAddressMap").routeId("地址百度匹配");
+						/*this.from("jms:queue:VirtualTopicConsumers.cwbbaiduMap.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						.to("bean:addressMatchService?method=matchAddressMap").routeId("地址百度匹配");*/
 						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=addZhanDian").routeId("创建地址库中的站点");
 					}
@@ -122,8 +122,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					public void configure() throws Exception {
 						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=empty").routeId("地址匹配");
-						this.from("jms:queue:VirtualTopicConsumers.cwbbaiduMap.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
-						.to("bean:addressMatchService?method=matchAddressMap").routeId("地址百度匹配");
+						/*this.from("jms:queue:VirtualTopicConsumers.cwbbaiduMap.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						.to("bean:addressMatchService?method=matchAddressMap").routeId("地址百度匹配");*/
 						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=empty").routeId("创建地址库中的站点");
 					}
