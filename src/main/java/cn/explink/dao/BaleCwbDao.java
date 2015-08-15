@@ -80,10 +80,10 @@ public class BaleCwbDao {
 	public void deleteByBaleidAndCwb(long baleid, String cwb) {
 		this.jdbcTemplate.update("delete from express_ops_bale_cwb where baleid = ? and cwb=?", baleid, cwb);
 	}
-	public BaleCwb getBaleCwbByCwb(String cwb) {
+	public List<BaleCwb> getBaleCwbByCwb(String cwb) {
 		String sql = "select * from express_ops_bale_cwb where cwb=?";
 		try{
-		return this.jdbcTemplate.queryForObject(sql, new BaleMapper(),cwb);
+		return this.jdbcTemplate.query(sql, new BaleMapper(),cwb);
 		}catch(Exception e){
 			return null;
 		}

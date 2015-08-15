@@ -2707,7 +2707,7 @@ public class CwbOrderService {
 		// =====加入按包出库标识 zs=====
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) ) {
 			return this.handleOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co,
-					FlowOrderTypeEnum.ChuKuSaoMiao, isypdjusetranscwb, iszhongzhuanout, aflag, credate, driverid, truckid);
+					FlowOrderTypeEnum.ChuKuSaoMiao, isypdjusetranscwb, iszhongzhuanout, aflag, credate, driverid, truckid,anbaochuku);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1) || anbaochuku) {
 			// 出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑
 			if ((co.getStartbranchid() == currentbranchid) && ((co.getNextbranchid() == branchid) || (branchid == -1) || (branchid == 0) || (co.getNextbranchid() == currentbranchid))
@@ -2737,17 +2737,20 @@ public class CwbOrderService {
 	 * @param flowOrderTypeEnum
 	 */
 	private void checkBaleOfOrder(String cwb, String scancwb, long isypdjusetranscwb, FlowOrderTypeEnum flowOrderTypeEnum) {
-		String baleCwbStr=cwb;
-		if(isypdjusetranscwb==1)
-		{
-			baleCwbStr=scancwb;
+
+		List<BaleCwb> baleCwbs=new ArrayList<BaleCwb>();
+		if (isypdjusetranscwb == 1) {
+			 baleCwbs = this.baleCwbDAO.getBaleCwbByCwb(scancwb);
 		}
-		BaleCwb baleCwb=this.baleCwbDAO.getBaleCwbByCwb(baleCwbStr);
-		if(baleCwb!=null)
-		{
-			Bale bale=this.baleDAO.getBaleById(baleCwb.getBaleid());
-			if((null!=bale)&&(bale.getBalestate()==BaleStateEnum.YiFengBao.getValue())){
-				throw new CwbException(baleCwbStr, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(),flowOrderTypeEnum.getText());
+		else {
+			 baleCwbs= this.baleCwbDAO.getBaleCwbByCwb(cwb);
+		}
+		if (baleCwbs != null&&baleCwbs.size()>0) {
+			for(BaleCwb baleCwb:baleCwbs){
+				Bale bale = this.baleDAO.getBaleById(baleCwb.getBaleid());
+				if ((null != bale) && (bale.getBalestate() == BaleStateEnum.YiFengBao.getValue()||bale.getBalestate() == BaleStateEnum.YiFengBaoChuKu.getValue())) {
+					throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(), flowOrderTypeEnum.getText());
+				}
 			}
 		}
 	}
@@ -2801,7 +2804,7 @@ public class CwbOrderService {
 
 	private CwbOrder handleOutowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment,
 			String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean iszhongzhuanout, boolean aflag, Long credate,
-			long driverid, long truckid) {
+			long driverid, long truckid,boolean anbaochuku) {
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), 0, currentbranchid, branchid, ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
@@ -2812,14 +2815,15 @@ public class CwbOrderService {
 				this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb,
 						true, iszhongzhuanout, aflag, credate, false, driverid, truckid);
 			}
-			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
+			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())||anbaochuku) {
 				long realscannum = co.getScannum() + 1;
 				if (isypdjusetranscwb == 1) {
 					// 一票多件使用运单号时，扫描次数需要计算
 					realscannum = this.transcwborderFlowDAO.getTranscwbOrderFlowByScanCwbCount(scancwb, co.getCwb(), flowOrderTypeEnum.getValue(), currentbranchid, co.getNextbranchid()) + 1;
 				}
+				if(!anbaochuku){
 				this.cwbDAO.updateScannum(co.getCwb(), realscannum);
-
+				}
 				// 结算更新扫描件数
 				this.accountCwbDetailDAO.updateAccountCwbDetailScannum(co.getCwb(), realscannum);
 

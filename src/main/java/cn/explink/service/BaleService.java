@@ -1276,15 +1276,19 @@ public class BaleService {
 	 * @param flowOrderTypeEnum
 	 */
 	private void checkBaleOfOrder(String cwb, String scancwb, long isypdjusetranscwb, FlowOrderTypeEnum flowOrderTypeEnum) {
-		String baleCwbStr = cwb;
+		List<BaleCwb> baleCwbs=new ArrayList<BaleCwb>();
 		if (isypdjusetranscwb == 1) {
-			baleCwbStr = scancwb;
+			 baleCwbs = this.baleCwbDAO.getBaleCwbByCwb(scancwb);
 		}
-		BaleCwb baleCwb = this.baleCwbDAO.getBaleCwbByCwb(baleCwbStr);
-		if (baleCwb != null) {
-			Bale bale = this.baleDAO.getBaleById(baleCwb.getBaleid());
-			if ((null != bale) && (bale.getBalestate() == BaleStateEnum.YiFengBao.getValue())) {
-				throw new CwbException(baleCwbStr, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(), "封包");
+		else {
+			 baleCwbs= this.baleCwbDAO.getBaleCwbByCwb(cwb);
+		}
+		if (baleCwbs != null&&baleCwbs.size()>0) {
+			for(BaleCwb baleCwb:baleCwbs){
+				Bale bale = this.baleDAO.getBaleById(baleCwb.getBaleid());
+				if ((null != bale) && (bale.getBalestate() == BaleStateEnum.YiFengBao.getValue()||bale.getBalestate() == BaleStateEnum.YiFengBaoChuKu.getValue())) {
+					throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(), "封包");
+				}
 			}
 		}
 	}
