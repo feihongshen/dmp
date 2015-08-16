@@ -81,6 +81,7 @@ public enum ExceptionCwbErrorTypeEnum {
 	SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN(141,"审核为上门拒退的订单不允许做退货出站操作!"),
 	TUIKEHU_DAIQUEREN(142,"退客户待确认的订单禁止退客户拒收返库!"),
 	TUIKEHU_SUCCESS(143,"退客户成功的订单禁止退客户拒收返库!"),
+	YIJINGSHANGXIAN(144, "此单发货件数已经达到上限了,不允许{0}操作"),
 	YIJINGFENGBAO(144, "此单已经在{0}封包了,不允许{1}操作")
 	;
 
