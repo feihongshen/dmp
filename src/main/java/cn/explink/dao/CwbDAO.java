@@ -6530,25 +6530,22 @@ public class CwbDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getCwbListByAnyNo(List<String> orderOrTransNo){
-		List<CwbOrder> resultCwbList = null;
+		List<CwbOrder> resultCwbList = new ArrayList<CwbOrder>();
 		if( null != orderOrTransNo && !orderOrTransNo.isEmpty()){
 			StringBuilder queryCondition = new StringBuilder();
-			for (String noStr : orderOrTransNo) {
-				queryCondition.append("'").append(noStr).append("',");
+			
+			for (String tempCwb : orderOrTransNo) {
+				String targetCwb = this.cwbOrderService.translateCwb(tempCwb);
+				queryCondition.append("'").append(targetCwb).append("',");
 			}
-			String queryStr = queryCondition.substring(0, queryCondition.length()-1);
-			if( !StringUtils.isEmpty(queryStr)){
-				String sql = " SELECT * FROM express_ops_cwb_detail "
-						+ " WHERE state = 1"
-						+ " AND cwb IN ( "
-								+ " SELECT DISTINCT(a.cwb)  FROM express_ops_cwb_detail AS a "
-								+ " LEFT JOIN express_ops_transcwb AS b "
-								+ " ON a.cwb = b.cwb "
-								+ " WHERE (a.cwb IN ( " + queryStr + " ) "
-								+ " OR b.transcwb IN ( " + queryStr + " )"
-							+ ")"
-						+ " )";
-				resultCwbList =  this.jdbcTemplate.query(sql,new CwbMapper());
+			if( queryCondition.length() > 0){
+				String queryStr = queryCondition.substring(0, queryCondition.length()-1);
+				if( !StringUtils.isEmpty(queryStr)){
+					String sql = " SELECT * FROM express_ops_cwb_detail "
+							+ " WHERE state = 1"
+							+ " AND cwb IN ( " + queryStr + " )";
+					resultCwbList =  this.jdbcTemplate.query(sql,new CwbMapper());
+				}
 			}
 		}
 		return resultCwbList;
