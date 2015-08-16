@@ -3228,17 +3228,25 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> getCwbByPackageCode(String packageCode) {
-		String sql =  " SELECT * FROM express_ops_cwb_detail "
+		
+		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '" + packageCode + "' ";
+		List<String> baleCwbList = this.jdbcTemplate.queryForList(baleCwbSql, String.class);
+		StringBuilder targetString = new StringBuilder();
+		if( null != baleCwbList && !baleCwbList.isEmpty()){
+			for (String tempBaleCwb : baleCwbList) {
+				String targetCwb = this.cwbOrderService.translateCwb(tempBaleCwb);
+				targetString.append("'").append(targetCwb).append("',");
+			}
+		}
+		if( targetString.length() > 0){
+			String quertStr = targetString.substring(0,targetString.length() -1 );
+			String sql =  " SELECT * FROM express_ops_cwb_detail "
 					+ " WHERE state = 1"
-					+ " AND cwb IN ( "
-							+ " SELECT DISTINCT(a.cwb)  FROM express_ops_cwb_detail AS a "
-							+ " LEFT JOIN express_ops_transcwb AS b "
-							+ " ON a.cwb = b.cwb "
-							+ " WHERE (a.cwb IN ( SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '" + packageCode + "' ) "
-							+ " OR b.transcwb IN ( SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '" + packageCode + "' )"
-						+ ")"
-					+ " )";
-		return this.jdbcTemplate.query(sql, new CwbMapper());
+					+ " AND cwb IN ( " + quertStr + " )";
+			return this.jdbcTemplate.query(sql, new CwbMapper());
+		}else{
+			return new ArrayList<CwbOrder>();
+		}
 	}
 
 	// ===========================监控使用=======END=======================================
