@@ -1286,10 +1286,11 @@ public class BaleService {
 		if ((baleCwbs != null)&&(baleCwbs.size()>0)) {
 			for(BaleCwb baleCwb:baleCwbs){
 				Bale bale = this.baleDAO.getBaleById(baleCwb.getBaleid());
-				if(co.getScannum()>=co.getSendcarnum()){
-					throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGSHANGXIAN,  "扫描封包");
-				}
-				else if ((null != bale) && ((bale.getBalestate() == BaleStateEnum.YiFengBao.getValue())||(bale.getBalestate() == BaleStateEnum.YiFengBaoChuKu.getValue()))) {
+
+				if ((null != bale) && ((bale.getBalestate() == BaleStateEnum.YiFengBao.getValue())||(bale.getBalestate() == BaleStateEnum.YiFengBaoChuKu.getValue()))) {
+					if(co.getScannum()>=co.getSendcarnum()){
+						throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGSHANGXIAN,  "扫描封包");
+					}
 					throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(), "扫描封包");
 				}
 			}
