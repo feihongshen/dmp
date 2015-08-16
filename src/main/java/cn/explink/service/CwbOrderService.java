@@ -2748,7 +2748,7 @@ public class CwbOrderService {
 		if (baleCwbs != null&&baleCwbs.size()>0) {
 			for(BaleCwb baleCwb:baleCwbs){
 				Bale bale = this.baleDAO.getBaleById(baleCwb.getBaleid());
-				if ((null != bale) && (bale.getBalestate() == BaleStateEnum.YiFengBao.getValue()||bale.getBalestate() == BaleStateEnum.YiFengBaoChuKu.getValue())) {
+				if ((null != bale) && (bale.getBalestate() == BaleStateEnum.YiFengBao.getValue())) {
 					throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(), flowOrderTypeEnum.getText());
 				}
 			}
