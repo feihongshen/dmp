@@ -1173,7 +1173,7 @@ public class BaleService {
 			if ((isypdjusetranscwb == 1) && (null != co.getTranscwb()) && (co.getTranscwb().length() > 0)) {
 				this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 			}
-			this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, FlowOrderTypeEnum.ChuKuSaoMiao,co);
+			this.checkBaleOfOrder(baleno,cwb, scancwb, isypdjusetranscwb, FlowOrderTypeEnum.ChuKuSaoMiao,co);
 
 			/*
 			 * long count1 =
@@ -1275,7 +1275,7 @@ public class BaleService {
 	 * @param isypdjusetranscwb
 	 * @param flowOrderTypeEnum
 	 */
-	private void checkBaleOfOrder(String cwb, String scancwb, long isypdjusetranscwb, FlowOrderTypeEnum flowOrderTypeEnum,CwbOrder co) {
+	private void checkBaleOfOrder(String baleno,String cwb, String scancwb, long isypdjusetranscwb, FlowOrderTypeEnum flowOrderTypeEnum,CwbOrder co) {
 		List<BaleCwb> baleCwbs=new ArrayList<BaleCwb>();
 		if (isypdjusetranscwb == 1) {
 			 baleCwbs = this.baleCwbDAO.getBaleCwbByCwb(scancwb);
@@ -1286,11 +1286,11 @@ public class BaleService {
 		if ((baleCwbs != null)&&(baleCwbs.size()>0)) {
 			for(BaleCwb baleCwb:baleCwbs){
 				Bale bale = this.baleDAO.getBaleById(baleCwb.getBaleid());
+				if(co.getScannum()>=co.getSendcarnum()){
+					throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGSHANGXIAN,  "扫描封包");
+				}
 
-				if ((null != bale) && ((bale.getBalestate() == BaleStateEnum.YiFengBao.getValue())||(bale.getBalestate() == BaleStateEnum.YiFengBaoChuKu.getValue()))) {
-					if(co.getScannum()>=co.getSendcarnum()){
-						throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGSHANGXIAN,  "扫描封包");
-					}
+				if ((null != bale) &&(bale.getBaleno().equals(baleno.trim()))&&((bale.getBalestate() == BaleStateEnum.YiFengBao.getValue())||(bale.getBalestate() == BaleStateEnum.YiFengBaoChuKu.getValue()))) {
 					throw new CwbException(scancwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YIJINGFENGBAO, bale.getBaleno(), "扫描封包");
 				}
 			}
