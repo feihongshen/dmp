@@ -8273,5 +8273,11 @@ CREATE TABLE `cs_complaint_accept` (
 			ADD COLUMN `scannum`  int(10) NULL DEFAULT 0 COMMENT '扫描件数' AFTER `cwbcount`;
 	   </sql>
 	</changeSet>	
+	<changeSet id="wangyonghe-2015-08-16-01" author="wangyonghe">
+	   	<sql>
+	   		ALTER TABLE `express_ops_groupdetail`
+			MODIFY COLUMN `baleno`  varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL AFTER `customerid`;
+	   </sql>
+	</changeSet>	
 		
 </databaseChangeLog>
