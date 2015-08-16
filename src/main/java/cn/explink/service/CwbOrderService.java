@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import cn.explink.aspect.OrderFlowOperation;
+import cn.explink.b2c.lefeng.result;
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.b2c.tools.B2cEnum;
@@ -2827,6 +2828,9 @@ public class CwbOrderService {
 				// 结算更新扫描件数
 				this.accountCwbDetailDAO.updateAccountCwbDetailScannum(co.getCwb(), realscannum);
 
+				// 已出库 向打印列表 插入数据
+				this.produceGroupDetail(user, cwb, requestbatchno, isauto, flowOrderTypeEnum.getValue(), branchid, co.getDeliverid(), co.getCustomerid(), driverid, truckid, packagecode);
+
 				co.setScannum(realscannum);
 				if (isypdjusetranscwb == 1) {
 					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -2967,12 +2971,12 @@ public class CwbOrderService {
 		this.produceTransferResStastics(co, DateTimeUtil.getNowTime(), user, reasonid, 1);
 
 		// 更新订单打印的包号信息
-		if (!"".equals(co.getPackagecode())) {
-			Bale bale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
-			if (bale != null) {
-				this.groupDetailDAO.updateGroupDetailByBale(bale.getId(), co.getPackagecode(), cwb, user.getBranchid());
-			}
-		}
+//		if (!"".equals(co.getPackagecode())) {
+//			Bale bale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
+//			if (bale != null) {
+//				this.groupDetailDAO.updateGroupDetailByBale(bale.getId(), co.getPackagecode(), cwb, user.getBranchid());
+//			}
+//		}
 
 		if (reasonid != 0) {
 			Reason reason = this.reasonDAO.getReasonByReasonid(reasonid);
@@ -3958,9 +3962,45 @@ public class CwbOrderService {
 			if (gdlist.size() == 0) {
 				this.groupDetailDAO.creGroupDetail(cwb, outWarehouseGroupId, user.getUserid(), flowordertype, user.getBranchid(), nextbranchid, deliverid, customerid, driverid, truckid, packagecode);
 			} else {
-				this.groupDetailDAO.saveGroupDetailByBranchidAndCwb(user.getUserid(), nextbranchid, cwb, user.getBranchid(), deliverid, customerid);
+				/**
+				 * 广州通路按包操作  逻辑  临时方案：
+				 * 按包（一票多件分扫描在在不同包中）
+				 * SELECT * FROM express_ops_bale_cwb WHERE cwb IN (SELECT transcwb FROM express_ops_transcwb WHERE cwb = 'D0816026') OR cwb = 'D0816026'
+				 */
+				List<String> baleNoList = this.baleCwbDAO.getBaleNoList(cwb);
+				List<String> existBaleNoList = this.buildExistBaleNoList(gdlist);
+				// 更新订单打印的包号信息
+				if( null != baleNoList && baleNoList.size() > 1 ){
+					if( baleNoList.contains(packagecode) && !existBaleNoList.contains(packagecode) ){
+						this.groupDetailDAO.creGroupDetail(cwb, outWarehouseGroupId, user.getUserid(), flowordertype, user.getBranchid(), nextbranchid, deliverid, customerid, driverid, truckid, packagecode);
+					}else{
+						this.groupDetailDAO.saveGroupDetailByBranchidAndCwb(user.getUserid(), nextbranchid, cwb, user.getBranchid(), deliverid, customerid);
+					}
+				}else{
+					this.groupDetailDAO.saveGroupDetailByBranchidAndCwb(user.getUserid(), nextbranchid, cwb, user.getBranchid(), deliverid, customerid);
+				}
+			}
+			if (!"".equals(packagecode)) {
+				Bale bale = this.baleDAO.getBaleOneByBaleno(packagecode);
+				if (bale != null) {
+					this.groupDetailDAO.updateGroupDetailByBale(bale.getId(), bale.getBaleno(), cwb, user.getBranchid());
+				}
+			}
+			
+		}
+	}
+
+	private List<String> buildExistBaleNoList(List<GroupDetail> gdlist) {
+		List<String> resultList = new ArrayList<String>();
+		for (GroupDetail groupDetail : gdlist) {
+			/**
+			 * 如果上次扫描已添加该环节该包记录
+			 */
+			if( !resultList.contains(groupDetail.getBaleno()) ){
+				resultList.add(groupDetail.getBaleno());
 			}
 		}
+		return resultList;
 	}
 
 	private void validateStateTransfer(CwbOrder co, FlowOrderTypeEnum nextState) {
@@ -5863,6 +5903,61 @@ public class CwbOrderService {
 		requestbatchno = this.outWarehouseGroupDAO.creOutWarehouseGroup(driverid, truckid, branchid, datetime, operatetype, customerid, user.getBranchid(), cwbsStrSql.toString());
 
 		this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertype(cwbsStrSql.toString(), user.getBranchid(), flowordertype);
+
+		// 更改批次中间表中该订单的打印状态为1（已打印），0为未打印(若交接单机制更改的功能上线后历史数据中不存在未打印的了，该段代码可删除）
+		for (String cwb : cwbs.split("-H-")) {
+			cwb = cwb.replaceAll("'", "");
+			this.groupDetailDAO.updateGroupDetailByCwb2(cwb, requestbatchno);
+		}
+
+		return requestbatchno;
+	}
+	
+	/**
+	 * 产生批次号
+	 *
+	 * @param user
+	 * @param requestbatchno
+	 * @param branchid
+	 * @param driverid
+	 * @param truckid
+	 * @param state
+	 * @param operatetype
+	 * @param cwb
+	 * @return
+	 */
+	@Transactional
+	public long checkResponseBatchnoForBale(User user, long requestbatchno, long branchid, long driverid, long truckid, long state, long operatetype, String cwbs, long customerid,String baleno) {
+		// 不传批次号也不存在符合条件的批次号的时候创建一条新的批次信息
+
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		String datetime = df.format(date);
+
+		StringBuffer cwbsStrSql = new StringBuffer();
+		for (String cwb : cwbs.split("-H-")) {
+			cwb = cwb.replaceAll("'", "");
+			cwbsStrSql.append("'").append(cwb).append("',");
+		}
+		if (cwbsStrSql.length() > 0) {
+			cwbsStrSql = cwbsStrSql.deleteCharAt(cwbsStrSql.length() - 1);
+		}
+		long flowordertype = FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+		if (operatetype == OutwarehousegroupOperateEnum.ChuKu.getValue()) {
+			flowordertype = FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+		} else if (operatetype == OutwarehousegroupOperateEnum.TuiHuoChuZhan.getValue()) {
+			flowordertype = FlowOrderTypeEnum.TuiHuoChuZhan.getValue();
+		} else if (operatetype == OutwarehousegroupOperateEnum.TuiGongYingShangChuKu.getValue()) {
+			flowordertype = FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue();
+		} else if (operatetype == OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()) {
+			flowordertype = FlowOrderTypeEnum.FenZhanLingHuo.getValue();
+		} else if (operatetype == OutwarehousegroupOperateEnum.KuDuiKuChuKu.getValue()) {
+			flowordertype = FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue();
+		}
+
+		requestbatchno = this.outWarehouseGroupDAO.creOutWarehouseGroup(driverid, truckid, branchid, datetime, operatetype, customerid, user.getBranchid(), cwbsStrSql.toString());
+
+		this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertype, baleno);
 
 		// 更改批次中间表中该订单的打印状态为1（已打印），0为未打印(若交接单机制更改的功能上线后历史数据中不存在未打印的了，该段代码可删除）
 		for (String cwb : cwbs.split("-H-")) {

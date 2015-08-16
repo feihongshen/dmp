@@ -14,6 +14,7 @@
 <%
 PrintTemplate printTemplate = (PrintTemplate) request.getAttribute("template");
 List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
+List<CwbOrder> cwbListForBale = request.getAttribute("cwbListForBale") == null ? new ArrayList<CwbOrder>() : (List<CwbOrder>)request.getAttribute("cwbListForBale");
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 List<User> userlist = (List<User>)request.getAttribute("userlist");
@@ -25,7 +26,7 @@ SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 long iscustomer = (Long)request.getAttribute("iscustomer");
 String isback = request.getAttribute("isback")==null?"":(String)request.getAttribute("isback");
 long islinghuo = request.getAttribute("islinghuo")==null?0:Long.parseLong(request.getAttribute("islinghuo").toString());;
-
+long baleScanCount = request.getAttribute("baleCount") == null ? 0 : Long.parseLong(request.getAttribute("baleCount").toString());
 Date date = new Date();
 String datetime = df.format(date);
 BigDecimal money = new BigDecimal(0);;
@@ -48,7 +49,7 @@ for(int i=0;i<cwbList.size();i++){
 	
 }
 Map<String,String> map=(Map<String,String>)request.getAttribute("map");
-
+String baleNo = (String)request.getAttribute("baleno") == null? "" : (String)request.getAttribute("baleno") ; 
 
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -329,18 +330,36 @@ function nowprint(){
 			<o:p></o:p>
 		</span></span></td>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=cwbList.size() %>单</span><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=cwbListForBale.size() %>单</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>
-		<td>&nbsp;</td>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&#23435;&#20307;';">件数：<%=allSendcare %></span><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&#23435;&#20307;';">件数：</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>
-		<td colspan="2"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&#23435;&#20307;';">代收金额：<%=allMoney %>&nbsp;&nbsp;&nbsp;元</span><span
+		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
+								<%if( baleNo.equals("") ){out.print( allSendcare + "件");}else{out.print( baleScanCount + "件");} %>
+								<%-- <%=allSendcare %> --%>
+								</span><span
+								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
+			<o:p></o:p>
+		</span></span></td>
+		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&#23435;&#20307;';">
+								<%-- 代收金额：<%=allMoney %>&nbsp;&nbsp;&nbsp;元 --%>
+								<%if( baleNo.equals("") ){out.print("代收金额：");} %>
+								</span><span
+								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
+			<o:p></o:p>
+		</span></span></td>
+		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
+								<%if( baleNo.equals("") ){out.print(allMoney);} %>
+								<%-- <%=allMoney %>&nbsp;&nbsp;&nbsp;元 --%>
+								</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>

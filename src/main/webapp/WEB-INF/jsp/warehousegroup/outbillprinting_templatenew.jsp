@@ -15,31 +15,34 @@
 <%@page import="cn.explink.domain.CwbOrder,cn.explink.domain.Customer,cn.explink.domain.Branch,cn.explink.domain.User"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-PrintTemplate printTemplate = (PrintTemplate) request.getAttribute("template");
-//List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
-List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
-List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
-List<User> userlist = (List<User>)request.getAttribute("userlist");
-//long nextbranchid = (Long) request.getAttribute("nextbranchid");
-long deliverid = request.getAttribute("deliverid")==null?0:Long.parseLong(request.getAttribute("deliverid").toString());
-Map<String,String> map=(Map<String,String>)request.getAttribute("map");
-
-String localbranchname = (String )request.getAttribute("localbranchname");
-
-long iscustomer = (Long)request.getAttribute("iscustomer");
-String isback = request.getAttribute("isback")==null?"":(String)request.getAttribute("isback");
-long islinghuo = request.getAttribute("islinghuo")==null?0:Long.parseLong(request.getAttribute("islinghuo").toString());;
-
-
-SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-Date date = new Date();
-String datetime = df.format(date);
-
-Map usermap = (Map) session.getAttribute("usermap");
-Map<Long,List<CwbOrder>>  mapBybranchid =(Map<Long,List<CwbOrder>>)request.getAttribute("mapBybranchid");
-String huizongcwbs = (String)request.getAttribute("cwbs");
-String type=(String)request.getAttribute("flowtype");
-Long flowtype=Long.parseLong(type);
+	PrintTemplate printTemplate = (PrintTemplate) request.getAttribute("template");
+	//List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
+	List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
+	List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
+	List<User> userlist = (List<User>)request.getAttribute("userlist");
+	//long nextbranchid = (Long) request.getAttribute("nextbranchid");
+	long deliverid = request.getAttribute("deliverid")==null?0:Long.parseLong(request.getAttribute("deliverid").toString());
+	Map<String,String> map=(Map<String,String>)request.getAttribute("map");
+	
+	String localbranchname = (String )request.getAttribute("localbranchname");
+	
+	long iscustomer = (Long)request.getAttribute("iscustomer");
+	String isback = request.getAttribute("isback")==null?"":(String)request.getAttribute("isback");
+	long islinghuo = request.getAttribute("islinghuo")==null?0:Long.parseLong(request.getAttribute("islinghuo").toString());;
+	long baleScanCount = request.getAttribute("baleCount") == null ? 0 : Long.parseLong(request.getAttribute("baleCount").toString());
+	
+	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	Date date = new Date();
+	String datetime = df.format(date);
+	
+	Map usermap = (Map) session.getAttribute("usermap");
+	/* 打印明细记录 */
+	Map<Long,List<CwbOrder>>  mapBybranchid =(Map<Long,List<CwbOrder>>)request.getAttribute("mapBybranchid");
+	Map<Long,List<CwbOrder>>  mapForBaleHandler =(Map<Long,List<CwbOrder>>)request.getAttribute("mapForBaleHandler");
+	String huizongcwbs = (String)request.getAttribute("cwbs");
+	String type=(String)request.getAttribute("flowtype");
+	Long flowtype=Long.parseLong(type);
+	String baleno = (String)request.getAttribute("baleno") == null ? "" : (String)request.getAttribute("baleno");
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -47,8 +50,7 @@ Long flowtype=Long.parseLong(type);
 <head>
 <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
 <title>出库交接单</title>
-<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA"
-	width=0 height=0>
+<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
 	<param name="CompanyName" value="北京易普联科信息技术有限公司" />
 <param name="License" value="653717070728688778794958093190" />
 	<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 companyname="北京易普联科信息技术有限公司" 
@@ -128,6 +130,7 @@ function nowprint(){
 		if(!mapBybranchid.isEmpty()){
 			for(Long branchid:mapBybranchid.keySet()){
 				List<CwbOrder> cwbs=mapBybranchid.get(branchid);
+				List<CwbOrder> cwbsForBale = mapForBaleHandler.get(branchid) == null ? new ArrayList<CwbOrder>() : mapForBaleHandler.get(branchid) ;
 				if(cwbs.size()>0){
 				BigDecimal money = new BigDecimal(0);
 				for(CwbOrder c : cwbs){
@@ -248,13 +251,17 @@ function nowprint(){
 		</table></td>
 		</tr>
 	<tr>
-		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
+		<td>
+		<span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
 								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">合计</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=cwbs.size() %>单</span><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
+								<%if( baleno.equals("") ){out.print( cwbs.size() + "件");}else{out.print( cwbsForBale.size() + "单");} %>
+								<%-- <%=cwbs.size() %>单 --%>
+								</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>
@@ -264,17 +271,25 @@ function nowprint(){
 			<o:p></o:p>
 		</span></span></td>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=allSendcare %></span><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
+								<%if( baleno.equals("") ){out.print( allSendcare + "件");}else{out.print( baleScanCount + "件");} %>
+								<%-- <%=allSendcare %> --%>
+								</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&#23435;&#20307;';">代收金额：</span><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&#23435;&#20307;';">
+								<%if( baleno.equals("") ){out.print("代收金额：");} %>
+								</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';"><%=allMoney %>&nbsp;&nbsp;&nbsp;元</span><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">
+								<%if( baleno.equals("") ){out.print(allMoney);} %>
+								<%-- <%=allMoney %>&nbsp;&nbsp;&nbsp;元 --%>
+								</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>

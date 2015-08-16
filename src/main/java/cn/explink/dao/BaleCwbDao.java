@@ -67,7 +67,25 @@ public class BaleCwbDao {
 		String sql = "select count(1) from express_ops_bale_cwb where baleno=? and cwb=?";
 		return this.jdbcTemplate.queryForLong(sql, baleno, cwb);
 	}
-
+	/**
+	 * 根据包号获取当前包扫描所有件数
+	 * @param baleno
+	 * @return
+	 */
+	public long getBaleScanCount(String baleno) {
+		String sql = "select scannum from express_ops_bale where baleno=?";
+		return this.jdbcTemplate.queryForLong(sql, baleno);
+	}
+	/**
+	 * 根据订单号获取对应包号
+	 * @param orderNo
+	 * @return
+	 */
+	public List<String> getBaleNoList(String orderNo){
+		String sql = "SELECT baleno FROM express_ops_bale_cwb WHERE cwb IN (SELECT transcwb FROM express_ops_transcwb WHERE cwb = '" + orderNo + "') OR cwb = '" + orderNo + "'";
+		return this.jdbcTemplate.queryForList(sql,String.class);
+	}
+	
 	public List<String> getCwbsByBale(String baleid) {
 		String sql = "select cwb from express_ops_bale_cwb where baleid=";
 		return this.jdbcTemplate.queryForList(sql+baleid, String.class);

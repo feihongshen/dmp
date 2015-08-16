@@ -887,10 +887,14 @@ public class WarehouseGroupController {
 				}
 
 				for (Long branchid : branchList) {
-					long outwarehousegroupid=this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0);
 					if((null!=baleno)&&(baleno.length()>0)){
+						long outwarehousegroupid=this.cwbOrderService.checkResponseBatchnoForBale(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0 ,baleno);
 						this.outwarehousegroupDao.updateOutwarehousegroupBalenoByID(baleno, outwarehousegroupid);
+					}else{
+						long outwarehousegroupid=this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0);
 					}
+//					if((null!=baleno)&&(baleno.length()>0)){
+//					}
 				}
 				return "{\"errorCode\":0,\"error\":\"成功\"}";
 			} else {

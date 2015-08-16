@@ -3228,7 +3228,17 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> getCwbByPackageCode(String packageCode) {
-		return this.jdbcTemplate.query("select * from express_ops_cwb_detail where packageCode=? and state=1", new CwbMapper(), packageCode);
+		String sql =  " SELECT * FROM express_ops_cwb_detail "
+					+ " WHERE state = 1"
+					+ " AND cwb IN ( "
+							+ " SELECT DISTINCT(a.cwb)  FROM express_ops_cwb_detail AS a "
+							+ " LEFT JOIN express_ops_transcwb AS b "
+							+ " ON a.cwb = b.cwb "
+							+ " WHERE (a.cwb IN ( SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '" + packageCode + "' ) "
+							+ " OR b.transcwb IN ( SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '" + packageCode + "' )"
+						+ ")"
+					+ " )";
+		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
 	// ===========================监控使用=======END=======================================
@@ -6504,5 +6514,35 @@ public class CwbDAO {
 						+ " and state=1 ";
 		return sql;
 
+	}
+	
+	/**
+	 * 根据给定单号list 查询对应订单对象list
+	 * @param orderOrTransNo 订单号、运单号list
+	 * @return
+	 */
+	public List<CwbOrder> getCwbListByAnyNo(List<String> orderOrTransNo){
+		List<CwbOrder> resultCwbList = null;
+		if( null != orderOrTransNo && !orderOrTransNo.isEmpty()){
+			StringBuilder queryCondition = new StringBuilder();
+			for (String noStr : orderOrTransNo) {
+				queryCondition.append("'").append(noStr).append("',");
+			}
+			String queryStr = queryCondition.substring(0, queryCondition.length()-1);
+			if( !StringUtils.isEmpty(queryStr)){
+				String sql = " SELECT * FROM express_ops_cwb_detail "
+						+ " WHERE state = 1"
+						+ " AND cwb IN ( "
+								+ " SELECT DISTINCT(a.cwb)  FROM express_ops_cwb_detail AS a "
+								+ " LEFT JOIN express_ops_transcwb AS b "
+								+ " ON a.cwb = b.cwb "
+								+ " WHERE (a.cwb IN ( " + queryStr + " ) "
+								+ " OR b.transcwb IN ( " + queryStr + " )"
+							+ ")"
+						+ " )";
+				resultCwbList =  this.jdbcTemplate.query(sql,new CwbMapper());
+			}
+		}
+		return resultCwbList;
 	}
 }
