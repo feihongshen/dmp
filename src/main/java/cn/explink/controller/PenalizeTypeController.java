@@ -67,7 +67,7 @@ public class PenalizeTypeController {
 		if ((null != type) && (type.getText().length() <= 0)) {
 			return "{\"errorCode\":1,\"error\":\"赔付类型不能为空\"}";
 		}
-		String text = type.getText().replace("\r\n", "");
+		String text = type.getText().replaceAll("\r\n", "");
 		if(text.trim().length()==0){
 			return "{\"errorCode\":1,\"error\":\"该赔付类型不能为空\"}";
 		}
@@ -98,7 +98,7 @@ public class PenalizeTypeController {
 		if (null == type) {
 			return "{\"errorCode\":1,\"error\":\"修改失败！\"}";
 		}
-		type.setText(type.getText().replace("\r\n", ""));
+		type.setText(type.getText().replaceAll("\r\n", ""));
 		PenalizeType penalizeType = this.penalizeTypeDAO.getPenalizeTypeByTextAndOne(type.getText(), type.getId());
 		List<PenalizeOut> penalizeOut = this.penalizeOutDAO.getPenalizeOutByPenalizeTypeId(type.getId());
 		if ((penalizeOut != null) && (penalizeOut.size() > 0)) {
