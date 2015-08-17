@@ -607,7 +607,7 @@ public class CommonCoreService {
 		parameters.put("sign_time", DateTimeUtil.getNowTime());
 
 		parameters.put("nosysyemflag", "1");//
-		parameters.put("firstlevelreasonid", reason.getParentid());
+		parameters.put("firstlevelreasonid", reason==null?0:reason.getParentid());
 		cwborderService.deliverStatePod(user, cwb, cwb, parameters);
 	}
 
