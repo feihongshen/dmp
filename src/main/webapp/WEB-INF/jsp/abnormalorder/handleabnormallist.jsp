@@ -111,7 +111,7 @@ function getThisBoxList(id,flag){
 		console.info($("#dutyuseridhhh"+id).val());
 		console.info($("#userid").val());
 		console.info($("#dutyuseridhhh"+id).val()!=$("#userid").val());
-		if($("#sitetype").val()!=5){
+		if($("#roleid").val()!=1){
 			if(($("#useridhhh"+id).val()!=$("#userid").val())&&($("#dutyuseridhhh"+id).val()!=$("#userid").val())){
 				//是否是本站的站长
 				if($("#iszhanzhang"+id).val()!=1){
@@ -283,7 +283,7 @@ function stateBatch()
 	var efectiveids="";
 	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
-		if($("#sitetype").val()!=5){
+		if($("#roleid").val()!=1){
 			if(($("#useridhhh"+id).val()!=$("#userid").val())&&($("#dutyuseridhhh"+id).val()!=$("#userid").val())){
 				num=num+1;
 			}
@@ -396,7 +396,7 @@ function reviseQuestionError(state)
 	var effectids="";
 	$('input[name="id"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		id=$(this).val();
-		if($("#sitetype").val()!=5){
+		if($("#roleid").val()!=1){
 			if(($("#useridhhh"+id).val()!=$("#userid").val())&&($("#dutyuseridhhh"+id).val()!=$("#userid").val())){
 				if($("#iszhanzhang"+id).val()!=1){
 					num=num+1;
@@ -488,7 +488,7 @@ function resultdatadeal(id)
 		alert("只支持选择一单数据进行处理");
 	} */
 	
-	if($("#sitetype").val()!=5){
+	if($("#roleid").val()!=1){
 		
 			alert("对不起，只有客服有权限对问题件结案，请联系客服！！");
 			return;

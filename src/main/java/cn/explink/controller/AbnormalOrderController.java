@@ -722,8 +722,9 @@ public class AbnormalOrderController {
 			long roleid=abnormalService.checkIsKeFu(roleidnow);
 			long ishandle=0;
 			//判断是谁处理的
-			if (this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
-				ishandle=AbnormalOrderHandleEnum.kefuchuli.getValue();
+/*			if (this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
+*/			if(roleid==1){	
+			ishandle=AbnormalOrderHandleEnum.kefuchuli.getValue();
 			}else if (userid==ab.getCreuserid()) {
 				ishandle=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
 			}else if (userid==ab.getDutypersonid()||roleid==4) {
@@ -772,7 +773,7 @@ public class AbnormalOrderController {
 			long roleid=abnormalService.checkIsKeFu(roleidnow);
 			long ishandle=0;
 			//判断是谁处理的
-			if (this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
+			if (roleid==1) {
 				ishandle=AbnormalOrderHandleEnum.kefuchuli.getValue();
 			}else if (userid==ab.getCreuserid()) {
 				ishandle=AbnormalOrderHandleEnum.chuangjianfangchuli.getValue();
@@ -1140,7 +1141,8 @@ public class AbnormalOrderController {
 				int id = Integer.parseInt(arrayIds[i]);
 				AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
 				//判断是哪一方处理（客服，创建方，责任方）
-				if (this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getSitetype()==BranchEnum.KeFu.getValue()) {
+				long roleid=abnormalService.checkIsKeFu(this.getSessionUser().getRoleid());
+				if (roleid==1) {
 					ishandle=AbnormalOrderHandleEnum.kefuchuli.getValue();
 				}else if (this.getSessionUser().getUserid()==ab.getDutypersonid()) {
 					ishandle=AbnormalOrderHandleEnum.zerenfangchuli.getValue();

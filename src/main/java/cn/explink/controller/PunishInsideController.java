@@ -171,7 +171,7 @@ public class PunishInsideController {
 			model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));//需要做一下修改
 			model.addAttribute("sitetype", this.branchDAO.getBranchById(this.getSessionUser().getBranchid()).getSitetype());
 			model.addAttribute("userid", user.getUserid());
-			model.addAttribute("roleid", user.getRoleid());
+			model.addAttribute("roleid", punishInsideService.checkIsKeFu(user.getRoleid()));
 			model.addAttribute("currentbranchid", user.getBranchid());
 			model.addAttribute("penalizeInsides", penalizeInsides);
 			model.addAttribute("abnormalTypeList", atlist);
