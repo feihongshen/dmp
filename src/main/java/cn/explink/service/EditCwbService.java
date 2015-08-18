@@ -515,7 +515,7 @@ public class EditCwbService {
 		 */
 		try {
 			JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=2&cwb=" + co.getCwb() + "&receivablefee=" + receivablefee + "&paybackfee=" + paybackfee, "POST");
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			e1.printStackTrace();
 			logger.info("云订单修改订单金额异常:" + co.getCwb());
 		}
