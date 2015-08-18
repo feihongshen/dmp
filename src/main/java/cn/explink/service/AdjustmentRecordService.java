@@ -390,7 +390,7 @@ public class AdjustmentRecordService {
 		aRecord.setOrder_no(cwbOrder.getCwb());
 		//不允许为空
 		aRecord.setBill_no(targetBill.getBillNo());
-		aRecord.setBill_id(targetBill.getId());
+//		aRecord.setBill_id(targetBill.getId());
 		aRecord.setAdjust_bill_no("");
 		aRecord.setCustomer_id(cwbOrder.getCustomerid());
 		
@@ -422,7 +422,7 @@ public class AdjustmentRecordService {
 		aRecord.setOrder_no(cwbOrder.getCwb());
 		//不允许为空
 		aRecord.setBill_no(targetBill.getBillNo());
-		aRecord.setBill_id(targetBill.getId());
+//		aRecord.setBill_id(targetBill.getId());
 		aRecord.setAdjust_bill_no("");
 		aRecord.setCustomer_id(cwbOrder.getCustomerid());
 		
@@ -457,7 +457,7 @@ public class AdjustmentRecordService {
 		aRecord.setOrder_no(order.getCwb());
 		//不允许为空
 		aRecord.setBill_no(targetBill.getBillNo());
-		aRecord.setBill_id(targetBill.getId());
+//		aRecord.setBill_id(targetBill.getId());
 		aRecord.setAdjust_bill_no("");
 		aRecord.setCustomer_id(order.getCustomerid());
 		
