@@ -1171,6 +1171,7 @@ src/main/java/cn/explink/domain/FeeWayTypeRemark.java -text
 src/main/java/cn/explink/domain/FinanceAudit.java -text
 src/main/java/cn/explink/domain/FinanceDeliverPayupDetail.java -text
 src/main/java/cn/explink/domain/FinancePayUpAudit.java -text
+src/main/java/cn/explink/domain/FnCustomerBill.java -text
 src/main/java/cn/explink/domain/FnCustomerBillDetail.java -text
 src/main/java/cn/explink/domain/FnOrgBillDetail.java -text
 src/main/java/cn/explink/domain/Function.java -text

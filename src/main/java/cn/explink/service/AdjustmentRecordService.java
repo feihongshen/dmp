@@ -14,6 +14,7 @@ import cn.explink.dao.FnCustomerBillDetailDAO;
 import cn.explink.dao.FnOrgBillDetailDAO;
 import cn.explink.domain.AdjustmentRecord;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.FnCustomerBill;
 import cn.explink.domain.FnCustomerBillDetail;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -50,136 +51,136 @@ public class AdjustmentRecordService {
 	 * 根据cwb值,判断是否存在和是否已经核销,来创建调整单记录
 	 *
 	 */
-	public void createAdjustmentRecode(String cwb,long customerid,BigDecimal order_receive_fee,BigDecimal page_payback_fee,BigDecimal page_receive_fee,String remark,String creator,int cwbordertypeid) {
-		
-		try {
-			//cwbDao.getcwbbycwb
-			//只知道订单号
-			List<FnCustomerBillDetail> fnCustomerBillDetails=new ArrayList<FnCustomerBillDetail>();
-			List<AdjustmentRecord> adjustmentRecords=new ArrayList<AdjustmentRecord>();
-			//创建一个新的调整单记录对象,用于保存调整单记录
-			AdjustmentRecord aRecord=new AdjustmentRecord();
-			//查询出对应订单号的账单详细信息
-			fnCustomerBillDetails=FnCustomerBillDetaildao.getFnCustomerBillDetailByCwb(cwb);
-			//查询出订单类型状态用于判断订单类型是配送订单还是上门退订单
-			CwbOrder cwbOrder=cwbDao.getCwbByCwb(cwb);
-			int cwbOrderTypeId=cwbOrder.getCwbordertypeid();
-			//获取原始应退金额
-			BigDecimal orderPayBackFee=cwbOrder.getPaybackfee();
-			//
-			if(fnCustomerBillDetails!=null&&fnCustomerBillDetails.size()>0){
-				//表示有对应订单信息,下面判断是否生成过调整单,查询调整单表 fn_adjustment_record表
-				adjustmentRecords=adjustmentRecordDAO.getAdjustmentRecordByCwb(cwb);
-				if(adjustmentRecords.size()>0){
-					//表示表中存在该订单的调整单记录,查询是否存在调整账单号
-					for (AdjustmentRecord adjustmentRecord : adjustmentRecords) {
-						long adjust_bill_id=adjustmentRecord.getBill_id();
-						int adjust_status=adjustmentRecord.getStatus();
-						if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
-							//未核销,并且存在调整账单信息,则需要修改该信息
-							//上门退订单
-							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
-								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
-								aRecord.setRefund_fee(orderPayBackFee);
-								aRecord.setModify_fee(page_payback_fee);
-//								aRecord.setAdjust_amount(refund_fee.subtract(payBackFee));//通过原始金额减去调整后金额产生调整差额
-								aRecord.setAdjust_amount(orderPayBackFee.subtract(page_payback_fee));
-								aRecord.setRemark(orderPayBackFee+"元修改成"+page_payback_fee+"元");
-								aRecord.setCreator(getSessionUser().getUsername());
-								aRecord.setCreate_time(DateTimeUtil.getNowTime());
-//								adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
-								
-							}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
-								//配送订单
-								//修改调整单记录
-								aRecord.setReceive_fee(order_receive_fee);//修改调整单记录,原始金额为原有数据中的原始金额
-								aRecord.setRefund_fee(page_payback_fee);
-								aRecord.setModify_fee(page_receive_fee);
-								aRecord.setAdjust_amount(page_receive_fee.subtract(order_receive_fee));//通过原始金额减去调整后金额产生调整差额
-								aRecord.setRemark(order_receive_fee+"元修改成"+page_receive_fee+"元");
-								aRecord.setCreator(getSessionUser().getUsername());
-								aRecord.setCreate_time(DateTimeUtil.getNowTime());
-							}
-							
-							adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
-						}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.YiHeXiao.getValue()){
-							//表示存在该订单信息,并且已经核销,需要生成新的调整单信息
-							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
-								//上门退订单
-								aRecord.setOrder_no(cwb);
-								aRecord.setBill_no(adjustmentRecord.getBill_no());//不允许为空
-								aRecord.setCustomer_id(customerid);
-								aRecord.setReceive_fee(order_receive_fee);
-								aRecord.setRefund_fee(orderPayBackFee);
-								aRecord.setModify_fee(page_payback_fee);
-//								aRecord.setAdjust_amount(refund_fee.subtract(payBackFee));//通过原始金额减去调整后金额产生调整差额
-								aRecord.setAdjust_amount(orderPayBackFee.subtract(page_payback_fee));
-								aRecord.setRemark(orderPayBackFee+"元修改成"+page_payback_fee+"元");
-								aRecord.setCreator(getSessionUser().getUsername());
-								aRecord.setCreate_time(DateTimeUtil.getNowTime());
-								aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
-								aRecord.setOrder_type(cwbordertypeid);
-								adjustmentRecordDAO.creAdjustmentRecord(aRecord);
-							}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
-								//配送订单
-								aRecord.setOrder_no(cwb);
-								aRecord.setBill_no(adjustmentRecord.getBill_no());//不允许为空
-								aRecord.setCustomer_id(customerid);
-								aRecord.setReceive_fee(order_receive_fee);
-								aRecord.setRefund_fee(page_payback_fee);
-								aRecord.setModify_fee(page_receive_fee);
-								aRecord.setAdjust_amount(page_receive_fee.subtract(order_receive_fee));//通过原始金额减去调整后金额产生调整差额
-								aRecord.setRemark(order_receive_fee+"元修改成"+page_receive_fee+"元");
-								aRecord.setCreator(getSessionUser().getUsername());
-								aRecord.setCreate_time(DateTimeUtil.getNowTime());
-								aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
-								aRecord.setOrder_type(cwbordertypeid);
-								adjustmentRecordDAO.creAdjustmentRecord(aRecord);
-							}
-						}
-					}	
-				}else{
-					if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
-						//没有生成过调整单新加一个记录
-						aRecord.setOrder_no(cwb);
-						aRecord.setBill_no("");//不允许为空
-						aRecord.setAdjust_bill_no("");
-						aRecord.setCustomer_id(customerid);
-						aRecord.setReceive_fee(order_receive_fee);
-						aRecord.setRefund_fee(orderPayBackFee);
-						aRecord.setModify_fee(page_payback_fee);
-						aRecord.setAdjust_amount(page_payback_fee.subtract(orderPayBackFee));//通过原始金额减去调整后金额产生调整差额
-						aRecord.setRemark(orderPayBackFee+"元修改成"+page_payback_fee+"元");
-						aRecord.setCreator(getSessionUser().getUsername());
-						aRecord.setCreate_time(DateTimeUtil.getNowTime());
-						aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
-						aRecord.setOrder_type(cwbordertypeid);
-//									adjustmentRecordDAO.creAdjustmentRecord(aRecord);
-					}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
-						//没有生成过调整单新加一个记录
-						aRecord.setOrder_no(cwb);
-						aRecord.setBill_no("");//不允许为空
-						aRecord.setAdjust_bill_no("");
-						aRecord.setCustomer_id(customerid);
-						aRecord.setReceive_fee(order_receive_fee);
-						aRecord.setRefund_fee(page_payback_fee);
-						aRecord.setModify_fee(page_receive_fee);
-						aRecord.setAdjust_amount(page_receive_fee.subtract(order_receive_fee));//通过原始金额减去调整后金额产生调整差额
-						aRecord.setRemark(order_receive_fee+"元修改成"+page_receive_fee+"元");
-						aRecord.setCreator(getSessionUser().getUsername());
-						aRecord.setCreate_time(DateTimeUtil.getNowTime());
-						aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
-						aRecord.setOrder_type(cwbordertypeid);
-					}
-					adjustmentRecordDAO.creAdjustmentRecord(aRecord);
-				}	
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-	}
-	
-	
+//	public void createAdjustmentRecode(String cwb,long customerid,BigDecimal order_receive_fee,BigDecimal page_payback_fee,BigDecimal page_receive_fee,String remark,String creator,int cwbordertypeid) {
+//		
+//		try {
+//			//cwbDao.getcwbbycwb
+//			//只知道订单号
+//			List<FnCustomerBillDetail> fnCustomerBillDetails=new ArrayList<FnCustomerBillDetail>();
+//			List<AdjustmentRecord> adjustmentRecords=new ArrayList<AdjustmentRecord>();
+//			//创建一个新的调整单记录对象,用于保存调整单记录
+//			AdjustmentRecord aRecord=new AdjustmentRecord();
+//			//查询出对应订单号的账单详细信息
+//			fnCustomerBillDetails=FnCustomerBillDetaildao.getFnCustomerBillDetailByCwb(cwb);
+//			//查询出订单类型状态用于判断订单类型是配送订单还是上门退订单
+//			CwbOrder cwbOrder=cwbDao.getCwbByCwb(cwb);
+//			int cwbOrderTypeId=cwbOrder.getCwbordertypeid();
+//			//获取原始应退金额
+//			BigDecimal orderPayBackFee=cwbOrder.getPaybackfee();
+//			//
+//			if(fnCustomerBillDetails!=null&&fnCustomerBillDetails.size()>0){
+//				//表示有对应订单信息,下面判断是否生成过调整单,查询调整单表 fn_adjustment_record表
+//				adjustmentRecords=adjustmentRecordDAO.getAdjustmentRecordByCwb(cwb);
+//				if(adjustmentRecords.size()>0){
+//					//表示表中存在该订单的调整单记录,查询是否存在调整账单号
+//					for (AdjustmentRecord adjustmentRecord : adjustmentRecords) {
+//						long adjust_bill_id=adjustmentRecord.getBill_id();
+//						int adjust_status=adjustmentRecord.getStatus();
+//						if(adjust_bill_id>0&&adjust_status==VerificationEnum.WeiHeXiao.getValue()){
+//							//未核销,并且存在调整账单信息,则需要修改该信息
+//							//上门退订单
+//							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
+//								aRecord.setReceive_fee(BigDecimal.ZERO);//修改调整单记录,没有原始应收金额
+//								aRecord.setRefund_fee(orderPayBackFee);
+//								aRecord.setModify_fee(page_payback_fee);
+////								aRecord.setAdjust_amount(refund_fee.subtract(payBackFee));//通过原始金额减去调整后金额产生调整差额
+//								aRecord.setAdjust_amount(orderPayBackFee.subtract(page_payback_fee));
+//								aRecord.setRemark(orderPayBackFee+"元修改成"+page_payback_fee+"元");
+//								aRecord.setCreator(getSessionUser().getUsername());
+//								aRecord.setCreate_time(DateTimeUtil.getNowTime());
+////								adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
+//								
+//							}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
+//								//配送订单
+//								//修改调整单记录
+//								aRecord.setReceive_fee(order_receive_fee);//修改调整单记录,原始金额为原有数据中的原始金额
+//								aRecord.setRefund_fee(page_payback_fee);
+//								aRecord.setModify_fee(page_receive_fee);
+//								aRecord.setAdjust_amount(page_receive_fee.subtract(order_receive_fee));//通过原始金额减去调整后金额产生调整差额
+//								aRecord.setRemark(order_receive_fee+"元修改成"+page_receive_fee+"元");
+//								aRecord.setCreator(getSessionUser().getUsername());
+//								aRecord.setCreate_time(DateTimeUtil.getNowTime());
+//							}
+//							
+//							adjustmentRecordDAO.updateAdjustmentRecord(aRecord, adjustmentRecord.getId());
+//						}else if(adjust_bill_id>0&&adjust_status==VerificationEnum.YiHeXiao.getValue()){
+//							//表示存在该订单信息,并且已经核销,需要生成新的调整单信息
+//							if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
+//								//上门退订单
+//								aRecord.setOrder_no(cwb);
+//								aRecord.setBill_no(adjustmentRecord.getBill_no());//不允许为空
+//								aRecord.setCustomer_id(customerid);
+//								aRecord.setReceive_fee(order_receive_fee);
+//								aRecord.setRefund_fee(orderPayBackFee);
+//								aRecord.setModify_fee(page_payback_fee);
+////								aRecord.setAdjust_amount(refund_fee.subtract(payBackFee));//通过原始金额减去调整后金额产生调整差额
+//								aRecord.setAdjust_amount(orderPayBackFee.subtract(page_payback_fee));
+//								aRecord.setRemark(orderPayBackFee+"元修改成"+page_payback_fee+"元");
+//								aRecord.setCreator(getSessionUser().getUsername());
+//								aRecord.setCreate_time(DateTimeUtil.getNowTime());
+//								aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
+//								aRecord.setOrder_type(cwbordertypeid);
+//								adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+//							}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
+//								//配送订单
+//								aRecord.setOrder_no(cwb);
+//								aRecord.setBill_no(adjustmentRecord.getBill_no());//不允许为空
+//								aRecord.setCustomer_id(customerid);
+//								aRecord.setReceive_fee(order_receive_fee);
+//								aRecord.setRefund_fee(page_payback_fee);
+//								aRecord.setModify_fee(page_receive_fee);
+//								aRecord.setAdjust_amount(page_receive_fee.subtract(order_receive_fee));//通过原始金额减去调整后金额产生调整差额
+//								aRecord.setRemark(order_receive_fee+"元修改成"+page_receive_fee+"元");
+//								aRecord.setCreator(getSessionUser().getUsername());
+//								aRecord.setCreate_time(DateTimeUtil.getNowTime());
+//								aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
+//								aRecord.setOrder_type(cwbordertypeid);
+//								adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+//							}
+//						}
+//					}	
+//				}else{
+//					if(cwbOrderTypeId==CwbOrderTypeIdEnum.Shangmentui.getValue()){
+//						//没有生成过调整单新加一个记录
+//						aRecord.setOrder_no(cwb);
+//						aRecord.setBill_no("");//不允许为空
+//						aRecord.setAdjust_bill_no("");
+//						aRecord.setCustomer_id(customerid);
+//						aRecord.setReceive_fee(order_receive_fee);
+//						aRecord.setRefund_fee(orderPayBackFee);
+//						aRecord.setModify_fee(page_payback_fee);
+//						aRecord.setAdjust_amount(page_payback_fee.subtract(orderPayBackFee));//通过原始金额减去调整后金额产生调整差额
+//						aRecord.setRemark(orderPayBackFee+"元修改成"+page_payback_fee+"元");
+//						aRecord.setCreator(getSessionUser().getUsername());
+//						aRecord.setCreate_time(DateTimeUtil.getNowTime());
+//						aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
+//						aRecord.setOrder_type(cwbordertypeid);
+////									adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+//					}else if(cwbOrderTypeId==CwbOrderTypeIdEnum.Peisong.getValue()){
+//						//没有生成过调整单新加一个记录
+//						aRecord.setOrder_no(cwb);
+//						aRecord.setBill_no("");//不允许为空
+//						aRecord.setAdjust_bill_no("");
+//						aRecord.setCustomer_id(customerid);
+//						aRecord.setReceive_fee(order_receive_fee);
+//						aRecord.setRefund_fee(page_payback_fee);
+//						aRecord.setModify_fee(page_receive_fee);
+//						aRecord.setAdjust_amount(page_receive_fee.subtract(order_receive_fee));//通过原始金额减去调整后金额产生调整差额
+//						aRecord.setRemark(order_receive_fee+"元修改成"+page_receive_fee+"元");
+//						aRecord.setCreator(getSessionUser().getUsername());
+//						aRecord.setCreate_time(DateTimeUtil.getNowTime());
+//						aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
+//						aRecord.setOrder_type(cwbordertypeid);
+//					}
+//					adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+//				}	
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}	
+//	}
+//	
+//	
 	//===================================================Refactored by jiangyu 2015-04-03================================================================================
 	
 	/**
@@ -193,7 +194,7 @@ public class AdjustmentRecordService {
 	public void processAdjusRecordByMoney(CwbOrder cwbOrder,BigDecimal page_payback_fee, BigDecimal page_receive_fee, String remark,String username) {
 
 		try {
-			List<FnCustomerBillDetail> fnCustomerBillDetails=new ArrayList<FnCustomerBillDetail>();
+			List<FnCustomerBill> fnCustomerBillDetails=new ArrayList<FnCustomerBill>();
 			
 			List<AdjustmentRecord> adjustmentRecords=new ArrayList<AdjustmentRecord>();
 			
@@ -207,6 +208,7 @@ public class AdjustmentRecordService {
 			int cwbOrderTypeId=cwbOrder.getCwbordertypeid();
 			
 			if(fnCustomerBillDetails!=null&&fnCustomerBillDetails.size()>0){
+				FnCustomerBill targetBill = fnCustomerBillDetails.get(0);
 				//表示有对应订单信息,下面判断是否生成过调整单,查询调整单表 fn_adjustment_record表
 				adjustmentRecords=adjustmentRecordDAO.getAdjustmentRecordByCwb(cwbOrder.getCwb());
 				
@@ -272,7 +274,7 @@ public class AdjustmentRecordService {
 //					//创建新的记录
 //					this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
 //				}	
-				this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
+				this.createNewAdjustRecordByMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord,targetBill);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -288,7 +290,7 @@ public class AdjustmentRecordService {
 	 */
 	public void createAdjustment4ReFeedBack(String cwb){
 		//只知道订单号
-		List<FnCustomerBillDetail> fnCustomerBillDetails=new ArrayList<FnCustomerBillDetail>();
+		List<FnCustomerBill> fnCustomerBillDetails=new ArrayList<FnCustomerBill>();
 		List<AdjustmentRecord> adjustmentRecords=new ArrayList<AdjustmentRecord>();
 		//创建一个新的调整单记录对象,用于保存调整单记录
 		AdjustmentRecord aRecord=new AdjustmentRecord();
@@ -296,6 +298,7 @@ public class AdjustmentRecordService {
 		CwbOrder cwbOrder=cwbDao.getCwbByCwb(cwb);
 		fnCustomerBillDetails=FnCustomerBillDetaildao.getFnCustomerBillDetailByCwb(cwb);
 		if(fnCustomerBillDetails!=null&&fnCustomerBillDetails.size()>0){
+			FnCustomerBill targetBill = fnCustomerBillDetails.get(0);
 			//表示存在该订单的账单信息
 			//表示有对应订单信息,下面判断是否生成过调整单,查询调整单表 fn_adjustment_record表
 			adjustmentRecords=adjustmentRecordDAO.getAdjustmentRecordByCwb(cwb);
@@ -323,7 +326,7 @@ public class AdjustmentRecordService {
 //				//创建新的记录   modified by jiangyu
 //				this.reFeedBack2CreateRecord(aRecord, cwbOrder);
 //			}
-			this.reFeedBack2CreateRecord(aRecord, cwbOrder);
+			this.reFeedBack2CreateRecord(aRecord, cwbOrder,targetBill);
 		}
 	}
 	
@@ -335,7 +338,7 @@ public class AdjustmentRecordService {
 	 */
 	public void createAdjustmentRecordByPayType(String cwb,int payWayId,int newPayWayId){
 		//只知道订单号
-		List<FnCustomerBillDetail> fnCustomerBillDetails=new ArrayList<FnCustomerBillDetail>();
+		List<FnCustomerBill> fnCustomerBillDetails=new ArrayList<FnCustomerBill>();
 		List<AdjustmentRecord> adjustmentRecords=new ArrayList<AdjustmentRecord>();
 		//创建一个新的调整单记录对象,用于保存调整单记录
 		AdjustmentRecord aRecord=new AdjustmentRecord();
@@ -343,6 +346,7 @@ public class AdjustmentRecordService {
 		CwbOrder cwbOrder=cwbDao.getCwbByCwb(cwb);
 		fnCustomerBillDetails=FnCustomerBillDetaildao.getFnCustomerBillDetailByCwb(cwb);
 		if(fnCustomerBillDetails!=null&&fnCustomerBillDetails.size()>0){
+			FnCustomerBill targetBill = fnCustomerBillDetails.get(0);
 			//表示存在该订单的账单信息
 			//表示有对应订单信息,下面判断是否生成过调整单,查询调整单表 fn_adjustment_record表
 			adjustmentRecords=adjustmentRecordDAO.getAdjustmentRecordByCwb(cwb);
@@ -370,7 +374,7 @@ public class AdjustmentRecordService {
 //				//创建新的记录   modified by jiangyu
 //				this.modifyPayWay2CreateRecord(payWayId, newPayWayId, aRecord,cwbOrder);
 //			}
-			this.modifyPayWay2CreateRecord(payWayId, newPayWayId,aRecord, cwbOrder);
+			this.modifyPayWay2CreateRecord(payWayId, newPayWayId,aRecord, cwbOrder,targetBill);
 		}
 	}
 	
@@ -380,11 +384,13 @@ public class AdjustmentRecordService {
 	 * @param newPayWayId
 	 * @param aRecord
 	 * @param cwbOrder
+	 * @param targetBill 
 	 */
-	private void modifyPayWay2CreateRecord(int payWayId, int newPayWayId,AdjustmentRecord aRecord, CwbOrder cwbOrder) {
+	private void modifyPayWay2CreateRecord(int payWayId, int newPayWayId,AdjustmentRecord aRecord, CwbOrder cwbOrder, FnCustomerBill targetBill) {
 		aRecord.setOrder_no(cwbOrder.getCwb());
 		//不允许为空
-		aRecord.setBill_no("");
+		aRecord.setBill_no(targetBill.getBillNo());
+		aRecord.setBill_id(targetBill.getId());
 		aRecord.setAdjust_bill_no("");
 		aRecord.setCustomer_id(cwbOrder.getCustomerid());
 		
@@ -410,11 +416,13 @@ public class AdjustmentRecordService {
 	 * @param aRecord
 	 * @param cwbOrder
 	 * TODO
+	 * @param targetBill 
 	 */
-	private void reFeedBack2CreateRecord(AdjustmentRecord aRecord, CwbOrder cwbOrder) {
+	private void reFeedBack2CreateRecord(AdjustmentRecord aRecord, CwbOrder cwbOrder, FnCustomerBill targetBill) {
 		aRecord.setOrder_no(cwbOrder.getCwb());
 		//不允许为空
-		aRecord.setBill_no("");
+		aRecord.setBill_no(targetBill.getBillNo());
+		aRecord.setBill_id(targetBill.getId());
 		aRecord.setAdjust_bill_no("");
 		aRecord.setCustomer_id(cwbOrder.getCustomerid());
 		
@@ -441,13 +449,15 @@ public class AdjustmentRecordService {
 	 * @param page_payback_fee  页面返回修改后的应退金额
 	 * @param page_receive_fee  页面返回修改后的应收金额
 	 * @param aRecord
+	 * @param targetBill 
 	 */
-	private void createNewAdjustRecordByMoney(CwbOrder order, BigDecimal page_payback_fee,BigDecimal page_receive_fee,AdjustmentRecord aRecord) {
+	private void createNewAdjustRecordByMoney(CwbOrder order, BigDecimal page_payback_fee,BigDecimal page_receive_fee,AdjustmentRecord aRecord, FnCustomerBill targetBill) {
 		//订单类型
 		int orderType = order.getCwbordertypeid();
 		aRecord.setOrder_no(order.getCwb());
 		//不允许为空
-		aRecord.setBill_no("");
+		aRecord.setBill_no(targetBill.getBillNo());
+		aRecord.setBill_id(targetBill.getId());
 		aRecord.setAdjust_bill_no("");
 		aRecord.setCustomer_id(order.getCustomerid());
 		

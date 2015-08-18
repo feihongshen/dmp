@@ -60,7 +60,7 @@ public class AdjustmentRecordDAO{
 	private JdbcTemplate jdbcTemplate;
 	public void creAdjustmentRecord(final AdjustmentRecord adjustmentRecord) {
 		this.jdbcTemplate.update("insert into fn_adjustment_record (order_no,bill_no,adjust_bill_no,customer_id," + "receive_fee,refund_fee,modify_fee,adjust_amount,remark,creator,create_time,"
-				+ "status,check_user,check_time,order_type) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?)",
+				+ "status,check_user,check_time,order_type,billid) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -79,6 +79,7 @@ public class AdjustmentRecordDAO{
 						ps.setString(13, adjustmentRecord.getCheck_user());
 						ps.setString(14, adjustmentRecord.getCheck_time());
 						ps.setInt(15, adjustmentRecord.getOrder_type());
+						ps.setLong(16,adjustmentRecord.getBill_id());
 					}
 
 				});

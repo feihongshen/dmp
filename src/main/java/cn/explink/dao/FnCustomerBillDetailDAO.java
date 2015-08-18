@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.AbnormalOrder;
 import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.FnCustomerBill;
 import cn.explink.domain.FnCustomerBillDetail;
 import cn.explink.domain.User;
 import cn.explink.enumutil.VerificationEnum;
@@ -53,15 +54,50 @@ public class FnCustomerBillDetailDAO{
 			return fnCustomerBillDetail;
 		}
 	}
+
+	private final class FnCustomerBillRowMapper implements RowMapper<FnCustomerBill> {
+		@Override
+		public FnCustomerBill mapRow(ResultSet rs, int rowNum) throws SQLException {
+			FnCustomerBill fnCustomerBill = new FnCustomerBill();
+
+			fnCustomerBill.setId(rs.getLong("id"));
+			fnCustomerBill.setBillNo(rs.getString("bill_no"));
+			fnCustomerBill.setCustomerId(rs.getLong("customer_id"));
+			fnCustomerBill.setBillType(rs.getInt("bill_type"));
+			fnCustomerBill.setStatus(rs.getInt("status"));
+			fnCustomerBill.setSettleTime(rs.getString("settle_time"));
+			fnCustomerBill.setCreator(rs.getString("creator"));
+			fnCustomerBill.setCheckTime(rs.getString("check_time"));
+			fnCustomerBill.setCheckUser(rs.getString("check_user"));
+			fnCustomerBill.setConfirmTime(rs.getDate("confirm_time"));
+			fnCustomerBill.setConfirmUser(rs.getString("confirm_user"));
+			fnCustomerBill.setVerifyTime(rs.getString("verify_time"));
+			fnCustomerBill.setVerifyUser(rs.getString("verify_user"));
+			fnCustomerBill.setDeliverOrg(rs.getString("deliver_org"));
+			fnCustomerBill.setBillCount(rs.getInt("bill_count"));
+			fnCustomerBill.setBillAmount(rs.getBigDecimal("bill_amount"));
+			fnCustomerBill.setActualAmount(rs.getBigDecimal("actual_amount"));
+			fnCustomerBill.setRemark(rs.getString("remark"));
+			fnCustomerBill.setDateType(rs.getInt("date_type"));
+			fnCustomerBill.setStartTime(rs.getString("start_time"));
+			fnCustomerBill.setEndTime(rs.getString("end_time"));
+			fnCustomerBill.setCreateType(rs.getString("create_type"));
+			fnCustomerBill.setImportRemark(rs.getString("import_remark"));
+			return fnCustomerBill;
+		}
+	}
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
 	
 
-	public List<FnCustomerBillDetail> getFnCustomerBillDetailByCwb(String cwb) {
-		String sql="SELECT * FROM `fn_customer_bill_detail` WHERE order_no=?";
-				
-		return jdbcTemplate.query(sql, new FnCustomerBillDetailRowMapper(),cwb);
+	public List<FnCustomerBill> getFnCustomerBillDetailByCwb(String cwb) {
+		//String sql="SELECT * FROM `fn_customer_bill_detail` WHERE order_no=?";
+		String sql = " SELECT a.* FROM fn_customer_bill AS a LEFT JOIN fn_customer_bill_detail AS b "
+				   + " ON a.id = b.bill_id"
+				   + " WHERE a.bill_type= 2 "
+				   + " AND b.order_no=?";		
+		return jdbcTemplate.query(sql, new FnCustomerBillRowMapper(),cwb);
 	}
 	
 	
