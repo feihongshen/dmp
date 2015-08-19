@@ -84,7 +84,7 @@ List<CsShenSuChat> cschatlist=request.getAttribute("cschatlist")==null?null:(Lis
 						
 							<tr>
 								<td align="right"><span>工单内容:</span></td>
-								<td><font color="croci"><textarea cols="10" disabled="disabled"><%=cca.getContent()%></textarea></font></td>
+								<td><font color="croci"><textarea cols="10"><%=cca.getContent()%></textarea></font></td>
 							</tr>
 						
 							<tr>
@@ -99,7 +99,7 @@ List<CsShenSuChat> cschatlist=request.getAttribute("cschatlist")==null?null:(Lis
 							<tr>
 								<%if(cca.getRemark()!=null){ %>
 								<td align="right"><span>核实内容:</span></td>
-								<td><font color="croci"><textarea cols="10" disabled="disabled"><%=cca.getRemark()%></textarea></font></td>
+								<td><font color="croci"><textarea cols="10"><%=cca.getRemark()%></textarea></font></td>
 								<%} %>
 							</tr>
 						
@@ -136,7 +136,7 @@ List<CsShenSuChat> cschatlist=request.getAttribute("cschatlist")==null?null:(Lis
 											<td><font color="croci"><%=u.getRealname()%></font></td>
 									<%} }%>
 								<td align="right"><span>结案备注:</span></td>
-								<td><font color="croci"><textarea cols="10" disabled="disabled"><%=cca.getJieanremark() %></textarea></font></td>
+								<td><font color="croci"><textarea cols="10"><%=cca.getJieanremark() %></textarea></font></td>
 								<%if(cca.getDownloadjieanpath()!=null){ %>
 								<td><span><a href="<%=request.getContextPath()%>/workorder/download?filepathurl=<%=cca.getDownloadjieanpath()%>">附件下载</a></span></td>
 								<%}%>
