@@ -255,7 +255,7 @@ function nowprint(){
 				<o:p></o:p>
 			</span> </span></td>
 			<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-									style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">配送员：<%for(User user : userlist){if(cwbList.get(0).getDeliverid()==user.getUserid()){%><%=user.getRealname() %><%}} %></span><span
+									style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">配送员：<%for(User user : userlist){if(null != cwbList && !cwbList.isEmpty() && cwbList.get(0).getDeliverid()==user.getUserid()){%><%=user.getRealname() %><%}} %></span><span
 									style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 				<o:p></o:p>
 			</span></span></td>
