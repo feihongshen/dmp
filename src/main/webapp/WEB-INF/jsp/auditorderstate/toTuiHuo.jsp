@@ -171,7 +171,7 @@ function exportField(){
 								} %>"	>
 									<td width="150" align="center" valign="middle"><%=cwb.getCwb() %></td>
 									<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCustomername()) %></td>
-									<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypeid() %></td>
+									<td width="100" align="center" valign="middle"><%=CwbOrderTypeIdEnum.getTextByValue( Integer.parseInt(cwb.getCwbordertypeid()) ) %></td>
 									<td width="100" align="center" valign="middle"><%=FlowOrderTypeEnum.getText(cwb.getFlowordertype()).getText() %></td>
 									<td width="120" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
 									<td width="100" align="center" valign="middle"><%for(Branch b:branchList){if(cwb.getCurrentbranchid()==b.getBranchid()){out.print(b.getBranchname());} } %></td>

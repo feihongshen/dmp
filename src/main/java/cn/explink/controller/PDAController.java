@@ -3410,6 +3410,11 @@ public class PDAController {
 			defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
+		CwbOrder cwbOrderOld = cwbDAO.getCwbByCwb(cwb);
+		if(cwbOrderOld == null){
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		
 		CwbOrder cwbOrder = this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, comment, "", false);
 		JSONObject obj = new JSONObject();
 		String deliveryname = "";
@@ -3419,6 +3424,11 @@ public class PDAController {
 					deliveryname = this.userDAO.getAllUserByid(cwbOrder.getDeliverid()).getRealname() == null ? "" : this.userDAO.getAllUserByid(cwbOrder.getDeliverid()).getRealname();
 				}
 			}
+		}
+		if((int)cwbOrderOld.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()){//订单拦截显示在页面上
+			obj.put("dingdanlanjie", "订单拦截");
+		}else{
+			obj.put("dingdanlanjie", "");
 		}
 		obj.put("deliveryname", deliveryname);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));

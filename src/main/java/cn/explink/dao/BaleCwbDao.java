@@ -98,6 +98,9 @@ public class BaleCwbDao {
 	public void deleteByBaleidAndCwb(long baleid, String cwb) {
 		this.jdbcTemplate.update("delete from express_ops_bale_cwb where baleid = ? and cwb=?", baleid, cwb);
 	}
+	public void deleteByCwbs(String cwbs) {
+		this.jdbcTemplate.update("delete from express_ops_bale_cwb where cwb in("+cwbs+") ");
+	}
 	public List<BaleCwb> getBaleCwbByCwb(String cwb) {
 		String sql = "select * from express_ops_bale_cwb where cwb=?";
 		try{

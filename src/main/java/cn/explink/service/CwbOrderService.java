@@ -186,6 +186,7 @@ import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TransCwbService;
+import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
@@ -5427,15 +5428,7 @@ public class CwbOrderService {
 			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO);
 		}
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
-		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
-			return this.handleTuihuoYipiaoduojian(user, cwb, scancwb, co, FlowOrderTypeEnum.DingDanLanJie, isypdjusetranscwb, reasonid);
-		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1)) {
-			this.handleTuihuo(user, cwb, scancwb, co, FlowOrderTypeEnum.DingDanLanJie, isypdjusetranscwb, false, reasonid);
-		} else {
-			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
-		}
-
-		return this.cwbDAO.getCwbByCwb(cwb);
+		return this.handleTuihuoChack(user, cwb, scancwb, co, FlowOrderTypeEnum.DingDanLanJie, isypdjusetranscwb, reasonid);
 	}
 
 	@Transactional
@@ -5448,7 +5441,7 @@ public class CwbOrderService {
 		}
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
-			return this.handleTuihuoYipiaoduojian(user, cwb, scancwb, co, FlowOrderTypeEnum.DingDanLanJie, isypdjusetranscwb, reasonid);
+			return this.handleTuihuoChack(user, cwb, scancwb, co, FlowOrderTypeEnum.DingDanLanJie, isypdjusetranscwb, reasonid);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1)) {
 			this.handleTuihuoVipshop(user, cwb, scancwb, co, FlowOrderTypeEnum.DingDanLanJie, isypdjusetranscwb, false, reasonid);
 		} else {
@@ -5460,6 +5453,46 @@ public class CwbOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
+	private  CwbOrder handleTuihuoChack(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, long reasonid) {
+		if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
+			this.cwbDAO.updateScannum(co.getCwb(), co.getScannum() + 1);
+			co.setScannum(co.getScannum() + 1);
+		}else{
+			this.cwbDAO.updateScannum(co.getCwb(), 1);
+		}
+		if(co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue() || co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue() ){
+			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+		}else if(co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
+			this.updateCwbState(cwb, CwbStateEnum.PeiShong);
+		}else{
+			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), 
+					ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR,FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
+					FlowOrderTypeEnum.DingDanLanJie.getText());
+		}
+		Reason r = this.reasonDAO.getReasonByReasonid(reasonid);
+		String sql = "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), r == null ? "" : r.getReasoncontent(), r == null ? 0 : r.getReasonid(), cwb);
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis());
+		this.shangMenTuiCwbDetailDAO.deletePrintRecord(cwb);
+		if(co.getTranscwb() != null && co.getTranscwb().length()>0 ){
+		 String[]  cwbList = co.getTranscwb().split(",");
+		 String cwbs="'"+cwb+"',";
+		 if(cwbList == null || cwbList.length ==0){
+			 baleCwbDAO.deleteByCwbs(cwb);
+		 }else{
+			 for (String tr : cwbList) {
+				 cwbs += "'"+tr+"',";
+				 if (isypdjusetranscwb == 1) {
+						this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, tr, flowOrderTypeEnum, "");
+				 }
+			}
+			 cwbs = cwbs.substring(0, cwbs.length()-1);
+			 baleCwbDAO.deleteByCwbs(cwbs);
+		  }
+		  //删除包关联表
+		}
+		return this.cwbDAO.getCwbByCwb(cwb);
+	}
 
 	private CwbOrder handleTuihuoYipiaoduojian(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, long reasonid) {
 		if (isypdjusetranscwb == 1) {

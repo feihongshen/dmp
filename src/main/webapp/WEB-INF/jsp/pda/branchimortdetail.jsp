@@ -118,13 +118,16 @@ function submitBranchImport(pname,scancwb,driverid,requestbatchno,rk_switch,comm
 						$("#customername").show();
 						$("#damage").show();
 						$("#multicwbnum").show();
+						$("#dingdanlanjie").hide();
 						
 						if(data.body.cwbOrder.deliverybranchid!=0){
 							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
 						}else{
 							$("#excelbranch").html("尚未匹配站点");
 						}
-						
+						if(data.body.dingdanlanjie != ""){
+							$("#dingdanlanjie").show();
+						}
 						if(data.body.cwbOrder.customercommand.indexOf('预约')>=0&&data.yuyuedaService=='yes')
 						{	
 							$("#customercommand").html("预约派送");
@@ -633,6 +636,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 					<p id="msg" name="msg" ></p>
 					<p id="showcwb" name="showcwb"></p>
 					<p id="cwbgaojia" name="cwbgaojia" style="display: none" >高价</p>
+					<p id="dingdanlanjie" name="dingdanlanjie" style="display: none" ><font color="red" size="12">订单拦截</font></p>
 					<p id="excelbranch" name="excelbranch" ></p>
 					<p id="customername" name="customername" ></p>
 					<p id="address" name="address" ></p>
