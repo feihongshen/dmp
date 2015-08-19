@@ -168,14 +168,23 @@ public class CommonCoreService {
 
 		Customer customer = customerDAO.getCustomerById(cwbOrder.getCustomerid());
 		if (customer.getIsypdjusetranscwb() == 1) { // 使用一票多件模式
-			List<TranscwbView> translist = transCwbDao.getTransCwbByCwb(cwb);
+		/*	List<TranscwbView> translist = transCwbDao.getTransCwbByCwb(cwb);
 			if (translist == null || translist.size() == 0) {
 				logger.info("一票多件查询transcwb表异常,cwb={},flowordertype={}", cwb, flowordertype);
 				return;
-			}
-			for (TranscwbView trans : translist) {
+			}*/
+		/*	for (TranscwbView trans : translist) {
 				cwborderService.receiveGoods(user, user, trans.getTranscwb(), trans.getTranscwb());
 
+			}*/
+			String transcwbs=cwbOrder.getTranscwb();
+			if("".equals(transcwbs)){
+				transcwbs=cwbOrder.getCwb();
+			}
+			String splitString = cwborderService.getSplitstring(transcwbs);
+			String[] split = transcwbs.split(splitString);
+			for (String transcwb : split) {
+				cwborderService.receiveGoods(user, user, transcwb, transcwb);
 			}
 
 		} else {
@@ -260,13 +269,22 @@ public class CommonCoreService {
 	private void dealWith_fenzhandaohuo(String cwb, User user, CwbOrder cwbOrder, long flowordertype) {
 		Customer customer = customerDAO.getCustomerById(cwbOrder.getCustomerid());
 		if (customer.getIsypdjusetranscwb() == 1) {// 使用一票多件模式
-			List<TranscwbView> translist = transCwbDao.getTransCwbByCwb(cwb);
+	/*		List<TranscwbView> translist = transCwbDao.getTransCwbByCwb(cwb);
 			if (translist == null || translist.size() == 0) {
 				logger.info("一票多件查询transcwb表异常,cwb={},flowordertype={}", cwb, flowordertype);
 				return;
+			}*/
+//			for (TranscwbView trans : translist) {
+//				cwborderService.substationGoods(user, trans.getTranscwb(), trans.getTranscwb(), user.getUserid(), 0, "系统对接", "", false);
+//			}
+			String transcwbs=cwbOrder.getTranscwb();
+			if("".equals(transcwbs)){
+				transcwbs=cwbOrder.getCwb();
 			}
-			for (TranscwbView trans : translist) {
-				cwborderService.substationGoods(user, trans.getTranscwb(), trans.getTranscwb(), user.getUserid(), 0, "系统对接", "", false);
+			String splitString = cwborderService.getSplitstring(transcwbs);
+			String[] split = transcwbs.split(splitString);
+			for (String transcwb : split) {
+				cwborderService.substationGoods(user, transcwb, transcwb, user.getUserid(), 0, "系统对接", "", false);
 			}
 
 		} else {
