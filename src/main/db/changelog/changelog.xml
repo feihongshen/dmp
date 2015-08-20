@@ -8285,6 +8285,11 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE express_ops_punishinside_bill DROP COLUMN punishInsideIds;
 			ALTER TABLE express_ops_punishinside_bill DROP COLUMN punishNos;
 	   </sql>
-	</changeSet>	
+	</changeSet>
+	<changeSet id="wangqiang-2015-08-20-01" author="wangqiang">
+	   	<sql>
+	   		insert into dmp40_function  values ('502080', '2', '中转站入库交接单打印', '502080', 'warehousegroup/changeinlist/1?', '5020');
+	   </sql>
+	</changeSet>		
 		
 </databaseChangeLog>
