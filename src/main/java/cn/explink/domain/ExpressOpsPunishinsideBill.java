@@ -26,8 +26,6 @@ public class ExpressOpsPunishinsideBill {
 	private int punishbigsort;
 	private int punishsmallsort;
 	private String punishInsideRemark;
-	private String punishInsideIds;
-	private String punishNos;
 	private String punishNoCreateBeginDate;
 	private String punishNoCreateEndDate;
 
@@ -181,22 +179,6 @@ public class ExpressOpsPunishinsideBill {
 
 	public String getPunishInsideRemark() {
 		return punishInsideRemark;
-	}
-
-	public void setPunishInsideIds(String punishInsideIds) {
-		this.punishInsideIds = punishInsideIds;
-	}
-
-	public String getPunishInsideIds() {
-		return punishInsideIds;
-	}
-
-	public String getPunishNos() {
-		return punishNos;
-	}
-
-	public void setPunishNos(String punishNos) {
-		this.punishNos = punishNos;
 	}
 
 	public String getPunishNoCreateBeginDate() {

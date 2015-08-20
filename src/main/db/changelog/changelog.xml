@@ -8279,5 +8279,12 @@ CREATE TABLE `cs_complaint_accept` (
 			MODIFY COLUMN `baleno`  varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL AFTER `customerid`;
 	   </sql>
 	</changeSet>	
+	<changeSet id="lichongchong-2015-08-20-01" author="lichongchong">
+	   	<sql>
+	   		ALTER TABLE express_ops_punishInside_detail ADD COLUMN billId INT(11) DEFAULT 0 COMMENT '对内扣罚账单id';
+			ALTER TABLE express_ops_punishinside_bill DROP COLUMN punishInsideIds;
+			ALTER TABLE express_ops_punishinside_bill DROP COLUMN punishNos;
+	   </sql>
+	</changeSet>	
 		
 </databaseChangeLog>

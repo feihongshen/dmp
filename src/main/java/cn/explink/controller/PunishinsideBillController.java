@@ -113,14 +113,14 @@ public class PunishinsideBillController {
 
 	@RequestMapping("/addPunishinsideBill")
 	public String addPunishinsideBill(
-			ExpressOpsPunishinsideBill punishinsideBill, Model model) {
+			ExpressOpsPunishinsideBillVO billVO, Model model) {
 		// 获取当前登录用户
 		User user = getSessionUser();
 		if (user != null) {
 			long userId = user.getUserid();
-			punishinsideBill.setCreator(new Long(userId).intValue());
+			billVO.setCreator(new Long(userId).intValue());
 		}
-		int id = this.punishinsideBillService.createPunishinsideBill(punishinsideBill);
+		int id = this.punishinsideBillService.createPunishinsideBill(billVO);
 		
 		// 责任机构
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();

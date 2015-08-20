@@ -45,13 +45,7 @@ public class PunishinsideBillService {
 			BeanUtilsSelfDef.copyPropertiesIgnoreException(rtnVO,
 					punishinsideBill);
 			rtnVO = setPersonName(rtnVO);
-			if (StringUtils.isNotBlank(punishinsideBill.getPunishNos())) {
-				List<String> punishNoList = Arrays.asList(punishinsideBill
-						.getPunishNos().split(","));
-				String punishNos = StringUtil.getStringsByStringList(punishNoList);
-				penalizeInsideList = this.punishinsideBillDAO.findByCondition(0,
-						0, punishNos, 0, 0, "", "", -1, -9);
-			}
+			penalizeInsideList = this.punishinsideBillDAO.getPunishinsideDetailListByBillId(id);
 		}
 		rtnVO.setPenalizeInsideList(penalizeInsideList);
 		return rtnVO;
@@ -99,31 +93,22 @@ public class PunishinsideBillService {
 
 	@Transactional
 	public int createPunishinsideBill(
-			ExpressOpsPunishinsideBill punishinsideBill) {
+			ExpressOpsPunishinsideBillVO billVO) {
 
-		String punishNos = punishinsideBill.getPunishNos();
+		String punishNos = billVO.getPunishNos();
 		if(StringUtils.isNotBlank(punishNos)){
 			List<String> list = Arrays.asList(punishNos.split(","));
 			punishNos = StringUtil.getStringsByStringList(list);
 		}
-		List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO
-				.getPunishinsideBillList();
-		// 对内扣罚账单表中已存在的扣罚单记录
-		String punishNosSaved = "";
-		if (billList != null && !billList.isEmpty()) {
-			for (int i = 0; i < billList.size(); i++) {
-				punishNosSaved += billList.get(i).getPunishNos() + ",";
-			}
-		}
 		// 获取对内扣罚列表
 		List<PenalizeInside> penalizeInsideList = this.punishinsideBillDAO
-				.findByCondition(punishinsideBill.getPunishbigsort(),
-						punishinsideBill.getPunishsmallsort(),
+				.findByCondition(billVO.getPunishbigsort(),
+						billVO.getPunishsmallsort(),
 						punishNos,
-						punishinsideBill.getDutybranchid(),
-						punishinsideBill.getDutypersonid(),
-						punishinsideBill.getPunishNoCreateBeginDate(),
-						punishinsideBill.getPunishNoCreateEndDate(),
+						billVO.getDutybranchid(),
+						billVO.getDutypersonid(),
+						billVO.getPunishNoCreateBeginDate(),
+						billVO.getPunishNoCreateEndDate(),
 						PunishInsideStateEnum.koufachengli.getValue(), -9);
 		PenalizeInside penalizeInside = null;
 		punishNos = "";
@@ -132,41 +117,30 @@ public class PunishinsideBillService {
 			for (int i = 0; i < penalizeInsideList.size(); i++) {
 				penalizeInside = penalizeInsideList.get(i);
 				if (StringUtils.isNotBlank(penalizeInside.getPunishNo())) {
-					// 过滤到对内扣罚账单表中已存在的扣罚单
-					if(StringUtils.isBlank(punishNosSaved) || punishNosSaved.indexOf(penalizeInside.getPunishNo()) == -1){
-						punishNos += penalizeInside.getPunishNo() + ",";
-						if (penalizeInside.getPunishInsideprice() != null) {
-							sumPrice = sumPrice.add(penalizeInside
-									.getPunishInsideprice());
-						}
+					punishNos += penalizeInside.getPunishNo() + ",";
+					if (penalizeInside.getPunishInsideprice() != null) {
+						sumPrice = sumPrice.add(penalizeInside.getPunishInsideprice());
 					}
 				}
 			}
 		}
+		billVO.setSumPrice(sumPrice);
+		billVO.setCreateDate(DateTimeUtil.getNowDate());
+		billVO.setBillBatch(this.generateBillBatch());
+		billVO.setBillState(PunishBillStateEnum.WeiShenHe.getValue());
+		billVO.setShenHeDate(StringUtil.nullConvertToEmptyString(billVO.getShenHeDate()));
+		billVO.setCheXiaoDate(StringUtil.nullConvertToEmptyString(billVO.getCheXiaoDate()));
+		billVO.setHeXiaoDate(StringUtil.nullConvertToEmptyString(billVO.getHeXiaoDate()));
+		billVO.setQuXiaoHeXiaoDate(StringUtil.nullConvertToEmptyString(billVO.getQuXiaoHeXiaoDate()));
+		// 创建对内扣罚账单表
+		long id = this.punishinsideBillDAO.createPunishinsideBill(billVO);
+		// 更新对内扣罚表中billId字段(billId为对内扣罚账单表主键id)
 		if (StringUtils.isNotBlank(punishNos)) {
 			punishNos = punishNos.substring(0, punishNos.length() - 1);
+			List<String> list = Arrays.asList(punishNos.split(","));
+			punishNos = StringUtil.getStringsByStringList(list);
+			this.punishinsideBillDAO.updatePunishinsideDetail(punishNos, (new Long(id)).intValue());
 		}
-		punishinsideBill.setPunishNos(punishNos);
-		punishinsideBill.setSumPrice(sumPrice);
-		punishinsideBill.setCreateDate(DateTimeUtil.getNowDate());
-		String billBatch = this.generateBillBatch();
-		punishinsideBill.setBillBatch(billBatch);
-		punishinsideBill.setBillState(PunishBillStateEnum.WeiShenHe.getValue());
-		punishinsideBill.setShenHeDate(StringUtil
-				.nullConvertToEmptyString(punishinsideBill.getShenHeDate()));
-		punishinsideBill.setCheXiaoDate(StringUtil
-				.nullConvertToEmptyString(punishinsideBill.getCheXiaoDate()));
-		punishinsideBill.setHeXiaoDate(StringUtil
-				.nullConvertToEmptyString(punishinsideBill.getHeXiaoDate()));
-		punishinsideBill.setQuXiaoHeXiaoDate(StringUtil
-				.nullConvertToEmptyString(punishinsideBill
-						.getQuXiaoHeXiaoDate()));
-		punishinsideBill
-				.setPunishInsideIds(StringUtil
-						.nullConvertToEmptyString(punishinsideBill
-								.getPunishInsideIds()));
-		long id = this.punishinsideBillDAO
-				.createPunishinsideBill(punishinsideBill);
 		return new Long(id).intValue();
 	}
 
@@ -221,14 +195,14 @@ public class PunishinsideBillService {
 		if(StringUtils.isNotBlank(punishNos)){
 			punishNos = StringUtil.removalDuplicateString(billVO
 					.getPunishNos());
-			List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO
-					.getPunishinsideBillList();
+			List<PenalizeInside> detailList = this.punishinsideBillDAO
+					.getExistedPunishinsideDetailList();
 			// 对内扣罚账单表中已存在的扣罚单号
 			String punishNosSaved = "";
-			if (billList != null && !billList.isEmpty()) {
-				for (int i = 0; i < billList.size(); i++) {
-					if (billList.get(i).getId() != billVO.getId()) {
-						punishNosSaved += billList.get(i).getPunishNos() + ",";
+			if (detailList != null && !detailList.isEmpty()) {
+				for (int i = 0; i < detailList.size(); i++) {
+					if (detailList.get(i).getBillId() != billVO.getId()) {
+						punishNosSaved += detailList.get(i).getPunishNo() + ",";
 					}
 				}
 				if (StringUtils.isNotBlank(punishNosSaved)) {
@@ -241,39 +215,30 @@ public class PunishinsideBillService {
 				sumPrice = this.punishinsideBillDAO
 						.calculateSumPrice(StringUtil.getStringsByStringList(Arrays
 								.asList(punishNos.split(","))));
+				List<String> list = Arrays.asList(punishNos.split(","));
+				punishNos = StringUtil.getStringsByStringList(list);
+				// 更新对内扣罚表billId字段
+				this.punishinsideBillDAO.updatePunishinsideDetail(punishNos, billVO.getId());
+				// 更新对内扣罚账单表
+				this.punishinsideBillDAO.updatePunishinsideBill(sumPrice, billVO.getId());
+				return;
 			}
 		}
-		this.punishinsideBillDAO.updatePunishinsideBill(punishNos,sumPrice,
-				billVO.getId());
+		// 更新对内扣罚表billId字段
+		this.punishinsideBillDAO.updatePunishinsideDetail(billVO.getId());
+		// 更新对内扣罚账单表
+		this.punishinsideBillDAO.updatePunishinsideBill(sumPrice, billVO.getId());
+		return;
 	}
 	
 	public 	String getExistedPunishNos(int id){
 		// 所有已存在的赔付单号
 		String existedPunishNos = "";
-		List<ExpressOpsPunishinsideBill> billList = this.punishinsideBillDAO.getPunishinsideBillList();
-	/*	// 已审核或已核销的赔付单号
-		String punishNosAudited = "";
-		if (billList != null && !billList.isEmpty()) {
-			for (int i = 0; i < billList.size(); i++) {
-				if (billList.get(i).getId() != id && StringUtils.isNotBlank(billList.get(i).getPunishNos())) {
-					punishNosAudited = billList.get(i).getPunishNos() + "," + punishNosAudited;
-				}
-			}
-		}
-		// 当前扣罚账单已存在的赔付单号
-		String currentExistedPunishNos = "";
-		ExpressOpsPunishinsideBill punishinsideBill = this.punishinsideBillDAO
-				.getPunishinsideBillListById(id);
-		if (punishinsideBill != null) {
-			if (StringUtils.isNotBlank(punishinsideBill.getPunishNos())) {
-				currentExistedPunishNos = punishinsideBill.getPunishNos();
-			}
-		}
-		existedPunishNos = punishNosAudited + currentExistedPunishNos;*/
-		if (billList != null && !billList.isEmpty()) {
-			for (int i = 0; i < billList.size(); i++) {
-				if (StringUtils.isNotBlank(billList.get(i).getPunishNos())) {
-					existedPunishNos = billList.get(i).getPunishNos() + "," + existedPunishNos;
+		List<PenalizeInside> detailList = this.punishinsideBillDAO.getExistedPunishinsideDetailList();
+		if (detailList != null && !detailList.isEmpty()) {
+			for (int i = 0; i < detailList.size(); i++) {
+				if (StringUtils.isNotBlank(detailList.get(i).getPunishNo())) {
+					existedPunishNos = detailList.get(i).getPunishNo() + "," + existedPunishNos;
 				}
 			}
 		}

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.ExpressOpsPunishinsideBill;
 import cn.explink.domain.PenalizeInside;
+import cn.explink.domain.PenalizeType;
 import cn.explink.domain.VO.ExpressOpsPunishinsideBillVO;
 import cn.explink.enumutil.PunishBillStateEnum;
 import cn.explink.service.PunishInsideService;
@@ -58,9 +59,6 @@ public class PunishinsideBillDAO {
 			punishinsideBill.setPunishsmallsort(rs.getInt("punishsmallsort"));
 			punishinsideBill.setPunishInsideRemark(rs
 					.getString("punishInsideRemark"));
-			punishinsideBill
-					.setPunishInsideIds(rs.getString("punishInsideIds"));
-			punishinsideBill.setPunishNos(rs.getString("punishNos"));
 			punishinsideBill.setPunishNoCreateBeginDate(rs
 					.getString("punishNoCreateBeginDate"));
 			punishinsideBill.setPunishNoCreateEndDate(rs
@@ -126,6 +124,7 @@ public class PunishinsideBillDAO {
 			penalizeInside.setPunishsmallsortname(punishInsideService
 					.getSortname(Integer.parseInt(rs.getLong("punishsmallsort")
 							+ "")));
+			penalizeInside.setBillId(rs.getInt("billId"));
 			return penalizeInside;
 		}
 
@@ -135,7 +134,7 @@ public class PunishinsideBillDAO {
 	private JdbcTemplate jdbcTemplate;
 
 	public long createPunishinsideBill(
-			final ExpressOpsPunishinsideBill punishinsideBill) {
+			final ExpressOpsPunishinsideBillVO punishinsideBill) {
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			public PreparedStatement createPreparedStatement(
@@ -147,8 +146,8 @@ public class PunishinsideBillDAO {
 								+ "creator,createDate,shenHePerson,shenHeDate,cheXiaoPerson,"
 								+ "cheXiaoDate,heXiaoPerson,heXiaoDate,quXiaoHeXiaoPerson,"
 								+ "quXiaoHeXiaoDate,punishbigsort,punishsmallsort,punishInsideRemark,"
-								+ "punishInsideIds,punishNos,punishNoCreateBeginDate,punishNoCreateEndDate"
-								+ ") values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								+ "punishNoCreateBeginDate,punishNoCreateEndDate"
+								+ ") values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 						new String[] { "id" });
 				int i = 1;
 
@@ -170,8 +169,6 @@ public class PunishinsideBillDAO {
 				ps.setInt(i++, punishinsideBill.getPunishbigsort());
 				ps.setInt(i++, punishinsideBill.getPunishsmallsort());
 				ps.setString(i++, punishinsideBill.getPunishInsideRemark());
-				ps.setString(i++, punishinsideBill.getPunishInsideIds());
-				ps.setString(i++, punishinsideBill.getPunishNos());
 				ps.setString(i++, punishinsideBill.getPunishNoCreateBeginDate());
 				ps.setString(i++, punishinsideBill.getPunishNoCreateEndDate());
 
@@ -188,7 +185,7 @@ public class PunishinsideBillDAO {
 				.update("update express_ops_punishinside_bill set "
 						+ "billState=?,sumPrice=?,shenHePerson=?,shenHeDate=?,cheXiaoPerson=?,"
 						+ "cheXiaoDate=?,heXiaoPerson=?,heXiaoDate=?,quXiaoHeXiaoPerson=?,quXiaoHeXiaoDate=?,"
-						+ "punishInsideRemark=?,punishInsideIds=?,punishNos=? where id=?",
+						+ "punishInsideRemark=? where id=?",
 						new PreparedStatementSetter() {
 							@Override
 							public void setValues(PreparedStatement ps)
@@ -216,29 +213,35 @@ public class PunishinsideBillDAO {
 										punishinsideBill.getQuXiaoHeXiaoDate());
 								ps.setString(i++, punishinsideBill
 										.getPunishInsideRemark());
-								ps.setString(i++,
-										punishinsideBill.getPunishInsideIds());
-								ps.setString(i++,
-										punishinsideBill.getPunishNos());
 								ps.setInt(i++, punishinsideBill.getId());
 							}
 						});
 	}
 	
-	public void updatePunishinsideBill( final String punishNos, final BigDecimal sumPrice, final int id) {
+	public void updatePunishinsideBill( final BigDecimal sumPrice, final int id) {
 		
 		this.jdbcTemplate
 		.update("update express_ops_punishinside_bill set "
-				+ "punishNos=?,sumPrice=? where id=?",
+				+ "sumPrice=? where id=?",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps)
 							throws SQLException {
-						ps.setString(1, punishNos);
-						ps.setBigDecimal(2, sumPrice);
-						ps.setInt(3, id);
+						ps.setBigDecimal(1, sumPrice);
+						ps.setInt(2, id);
 					}
 				});
+	}
+	
+	public void updatePunishinsideDetail( final String punishNos, final int billId) {
+		String sql = "update express_ops_punishInside_detail set billId=" + billId + " where punishNo in ("
+				+ punishNos +")";
+		this.jdbcTemplate.update(sql);
+	}
+	
+	public void updatePunishinsideDetail( final int billId) {
+		String sql = "update express_ops_punishInside_detail set billId=0 where billId=" + billId;
+		this.jdbcTemplate.update(sql);
 	}
 
 	public int deletePunishinsideBill(String ids) {
@@ -249,6 +252,21 @@ public class PunishinsideBillDAO {
 	public List<ExpressOpsPunishinsideBill> getPunishinsideBillList() {
 		String sql = "select * from express_ops_punishinside_bill";
 		return jdbcTemplate.query(sql, new PunishinsideBillMapper());
+	}
+	
+	public List<PenalizeInside> getPunishinsideDetailListByBillId(int billId) {
+		String sql = "select * from express_ops_punishInside_detail where billId = ?" ;
+		return jdbcTemplate.query(sql, new PenalizeInsideRowMapper(), billId);
+	}
+	
+	public List<PenalizeInside> getPunishinsideDetailList() {
+		String sql = "select * from express_ops_punishInside_detail" ;
+		return jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
+	}
+	
+	public List<PenalizeInside> getExistedPunishinsideDetailList() {
+		String sql = "select * from express_ops_punishInside_detail where billId != 0" ;
+		return jdbcTemplate.query(sql, new PenalizeInsideRowMapper());
 	}
 
 	public ExpressOpsPunishinsideBill getPunishinsideBillListById(int id) {
@@ -409,8 +427,7 @@ public class PunishinsideBillDAO {
 			long punishsmallsort, String punishNos, long dutybranchid,
 			long dutypersonid, String punishNoCreateBeginDate,
 			String punishNoCreateEndDate, int punishcwbstate, long page) {
-		String sql = "select * from express_ops_punishInside_detail where 1=1 ";
-
+		String sql = "select * from express_ops_punishInside_detail where billId=0 ";
 		if (punishbigsort > 0) {
 			sql += " And punishbigsort=" + punishbigsort;
 		}
@@ -418,7 +435,7 @@ public class PunishinsideBillDAO {
 			sql += " And punishsmallsort=" + punishsmallsort;
 		}
 		if (StringUtils.isNotBlank(punishNos)) {
-			sql += " And punishNo IN(" + punishNos + ")";
+			sql += " And punishNo in (" + punishNos + ")";
 		}
 		if (dutybranchid > 0) {
 			sql += " And dutybranchid=" + dutybranchid;

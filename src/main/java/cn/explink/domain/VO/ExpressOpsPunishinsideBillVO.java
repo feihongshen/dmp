@@ -40,14 +40,13 @@ public class ExpressOpsPunishinsideBillVO {
 	private int punishbigsort;
 	private int punishsmallsort;
 	private String punishInsideRemark;
-	private String punishInsideIds;
 	private String contractColumn;
 	private String contractColumnOrder;
-	private String punishNos;
 	private String punishNoCreateBeginDate;
 	private String punishNoCreateEndDate;
 	private List<PenalizeInside> penalizeInsideList;
 	private String cwbs;
+	private String punishNos;
 
 	public void setId(int id) {
 		this.id = id;
@@ -201,14 +200,6 @@ public class ExpressOpsPunishinsideBillVO {
 		return punishInsideRemark;
 	}
 
-	public void setPunishInsideIds(String punishInsideIds) {
-		this.punishInsideIds = punishInsideIds;
-	}
-
-	public String getPunishInsideIds() {
-		return punishInsideIds;
-	}
-
 	public String getContractColumn() {
 		return contractColumn;
 	}
@@ -271,14 +262,6 @@ public class ExpressOpsPunishinsideBillVO {
 
 	public void setDutypersonname(String dutypersonname) {
 		this.dutypersonname = dutypersonname;
-	}
-
-	public String getPunishNos() {
-		return punishNos;
-	}
-
-	public void setPunishNos(String punishNos) {
-		this.punishNos = punishNos;
 	}
 
 	public String getPunishNoCreateBeginDate() {
@@ -351,6 +334,14 @@ public class ExpressOpsPunishinsideBillVO {
 
 	public void setQuXiaoHeXiaoPersonName(String quXiaoHeXiaoPersonName) {
 		this.quXiaoHeXiaoPersonName = quXiaoHeXiaoPersonName;
+	}
+
+	public String getPunishNos() {
+		return punishNos;
+	}
+
+	public void setPunishNos(String punishNos) {
+		this.punishNos = punishNos;
 	}
 
 }
