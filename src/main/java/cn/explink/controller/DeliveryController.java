@@ -777,7 +777,9 @@ public class DeliveryController {
 				obj.put("cwb", cwb);
 				this.logger.info("反馈(批量)-配送订单,cwb:{}", cwb);
 				try {
-
+					if(deliverystate==DeliveryStateEnum.FenZhanZhiLiu.getValue()){
+						deliverstateremark="";//分站滞留时将反馈备注为空
+					}
 					// 成功订单
 					Map<String, Object> parameters = new HashMap<String, Object>();
 					parameters.put("podresultid", deliverystate);
