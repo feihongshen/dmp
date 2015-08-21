@@ -341,7 +341,7 @@ public class PunishInsideDao {
 		});
 	}
 	public String calculateSumPrice(String cwb,long dutybranchid,long cwbpunishtype,long dutynameid,long cwbstate,long punishbigsort,long punishsmallsort,String begindate,String enddate,long currentbranchid,long roleid){
-		String sql="SELECT SUM(punishInsideprice)as sumprice FROM express_ops_punishInside_detail where 1=1";
+		String sql="SELECT SUM(shenhepunishprice)as sumprice FROM express_ops_punishInside_detail where 1=1";
 		if (cwb.length()>0) {
 			sql+=" And cwb IN("+cwb+")";
 		}
