@@ -189,7 +189,6 @@ public class OrderBackRukuRecordDao {
 			String sql = "select * from express_orderbackruku_record where cwb=? and auditstate=0";
 			return this.jdbcTemplate.queryForObject(sql, new OrderBackRukuRowMapper(),cwb);
 		}catch(Exception e){
-			e.printStackTrace();
 			return null;
 		}
 		

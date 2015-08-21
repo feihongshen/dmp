@@ -125,12 +125,8 @@ public class UserController {
 	public @ResponseBody
 	String create(Model model, @RequestParam("branchid") long branchid, @RequestParam("roleid") long roleid, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
-		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = this.userDAO.getUsersByRealname(realname);
-		if (list.size() > 0) {
-			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
-		} else {
-			list = this.userDAO.getUsersByUsernameToUpper(username);
+//		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
+		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
 			} else {
@@ -156,7 +152,7 @@ public class UserController {
 				this.userMonitorService.userMonitorByUsername(user.getUsername());
 				return "{\"errorCode\":0,\"error\":\"创建成功\"}";
 			}
-		}
+		
 	}
 
 	@RequestMapping("/createFile")
@@ -164,12 +160,8 @@ public class UserController {
 	String createFile(Model model, @RequestParam(value = "Filedata", required = false) MultipartFile file, @RequestParam("branchid") long branchid, @RequestParam("roleid") long roleid,
 			HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
-		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = this.userDAO.getUsersByRealname(realname);
-		if (list.size() > 0) {
-			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
-		} else {
-			list = this.userDAO.getUsersByUsernameToUpper(username);
+//		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
+		List<User> list =  this.userDAO.getUsersByUsernameToUpper(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
 			} else {
@@ -195,7 +187,6 @@ public class UserController {
 				this.userMonitorService.userMonitorByUsername(user.getUsername());
 				return "{\"errorCode\":0,\"error\":\"创建成功\",\"type\":\"add\"}";
 			}
-		}
 	}
 
 	@RequestMapping("/list/{page}")
@@ -226,16 +217,11 @@ public class UserController {
 			@RequestParam("roleid") long roleid, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = this.userDAO.getUsersByRealname(realname);
+		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
 		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
 		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, file, userid);
 		user.setUserid(userid);
-		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
-			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
-		} else {
-			// list = this.userDAO.getUsersByUsername(username);
-			list = this.userDAO.getUsersByUsernameToUpper(username);
 			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
@@ -267,7 +253,6 @@ public class UserController {
 				this.userMonitorService.userMonitorById(userid);
 				return "{\"errorCode\":0,\"error\":\"保存成功\",\"type\":\"edit\"}";
 			}
-		}
 
 	}
 
@@ -276,15 +261,11 @@ public class UserController {
 	String save(@PathVariable("id") long userid, Model model, @RequestParam("branchid") long branchid, @RequestParam("roleid") long roleid, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = this.userDAO.getUsersByRealname(realname);
+		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
 		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
 		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, null, userid);
 		user.setUserid(userid);
-		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
-			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
-		} else {
-			list = this.userDAO.getUsersByUsernameToUpper(username);
 			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
@@ -316,8 +297,6 @@ public class UserController {
 				this.userMonitorService.userMonitorById(userid);
 				return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 			}
-		}
-
 	}
 
 	@RequestMapping("updatepassword")
@@ -345,12 +324,8 @@ public class UserController {
 	public @ResponseBody
 	String createBranch(Model model, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
-		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = this.userDAO.getUsersByRealname(realname);
-		if (list.size() > 0) {
-			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
-		} else {
-			list = this.userDAO.getUsersByUsernameToUpper(username);
+//		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
+		List<User> list =  this.userDAO.getUsersByUsernameToUpper(username);
 			if (list.size() > 0) {
 				return "{\"errorCode\":1,\"error\":\"员工登录名已存在\"}";
 			} else {
@@ -374,7 +349,6 @@ public class UserController {
 				this.userMonitorService.userMonitorByUsername(username);
 				return "{\"errorCode\":0,\"error\":\"创建成功\",\"type\":\"add\"}";
 			}
-		}
 	}
 
 	@RequestMapping("/editBranch/{id}")
@@ -390,15 +364,11 @@ public class UserController {
 	String saveBranch(@PathVariable("id") long userid, Model model, HttpServletRequest request) throws Exception {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
-		List<User> list = this.userDAO.getUsersByRealname(realname);
+		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
 		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
 		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, 2, this.getSessionUser().getBranchid(), null, userid);
 		user.setUserid(userid);
-		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
-			return "{\"errorCode\":1,\"error\":\"员工姓名已存在\"}";
-		} else {
-			list = this.userDAO.getUsersByUsernameToUpper(username);
 			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
@@ -428,7 +398,6 @@ public class UserController {
 				this.userMonitorService.userMonitorById(userid);
 				return "{\"errorCode\":0,\"error\":\"保存成功\",\"type\":\"edit\"}";
 			}
-		}
 
 	}
 
