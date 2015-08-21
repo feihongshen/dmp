@@ -8291,5 +8291,9 @@ CREATE TABLE `cs_complaint_accept` (
 	   		insert into dmp40_function  values ('502080', '2', '中转站入库交接单打印', '502080', 'warehousegroup/changeinlist/1?', '5020');
 	   </sql>
 	</changeSet>		
-		
+	<changeSet id="wukong-2015-08-21-01" author="wukong">
+		<sql>
+			 ALTER  TABLE `express_ops_backintowarehous_print` MODIFY COLUMN `transcwb`  VARCHAR(1000)  DEFAULT '';
+		</sql>
+	</changeSet>	
 </databaseChangeLog>
