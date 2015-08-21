@@ -383,7 +383,7 @@ function callfunction(cwb){//getEmailDateByIds
 									}else if(data.statuscode=="13"){
 										$("#scancwb").val("");
 										alert("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
-									}else if(data.statuscode=="101"){
+									}else if(data.statuscode=="105"){
 										if(!confirm("无数据，有货无单,是否放弃入库？")){
 											$("#youhuowudanflag").val("1");
 											data.wavList = [];
