@@ -384,14 +384,15 @@ function callfunction(cwb){//getEmailDateByIds
 										$("#scancwb").val("");
 										alert("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
 									}else if(data.statuscode=="105"){
-										if(!confirm("无数据，有货无单,是否放弃入库？")){
+										<%-- if(!confirm("无数据，有货无单,是否放弃入库？")){
 											$("#youhuowudanflag").val("1");
 											data.wavList = [];
 											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
-										}else{
+										}else{ --%>
+											
 											$("#scancwb").val("");
 											$("#msg").html("（异常扫描）" + data.errorinfo);
-										}
+										<%-- } --%>
 									}else if(data.statuscode=="102"){
 										if(!confirm("尚未匹配站点，是否放弃入库？")){
 											$("#youhuowudanflag").val("1");
