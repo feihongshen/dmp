@@ -3228,11 +3228,11 @@ public class CwbDAO {
 	}
 
 	public List<CwbOrder> getCwbByPackageCode(String packageCode) {
-		
+
 		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '" + packageCode + "' ";
 		List<String> baleCwbList = this.jdbcTemplate.queryForList(baleCwbSql, String.class);
 		StringBuilder targetString = new StringBuilder();
-		if( null != baleCwbList && !baleCwbList.isEmpty()){
+		if( (null != baleCwbList) && !baleCwbList.isEmpty()){
 			for (String tempBaleCwb : baleCwbList) {
 				String targetCwb = this.cwbOrderService.translateCwb(tempBaleCwb);
 				targetString.append("'").append(targetCwb).append("',");
@@ -4939,7 +4939,7 @@ public class CwbDAO {
 		String sql = "SELECT b.* FROM express_ops_operation_time a LEFT JOIN express_ops_cwb_detail b ON a.cwb=b.cwb WHERE a.branchid=" + branchid + " AND a.flowordertype="
 				+ FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() + " AND b.state=1 ";
 		if(cwbordertypeid>0){
-			sql+="  AND cwbordertypeid="+cwbordertypeid;
+			sql+="  AND b.cwbordertypeid="+cwbordertypeid;
 		}
 		return sql;
 	}
@@ -6523,7 +6523,7 @@ public class CwbDAO {
 		return sql;
 
 	}
-	
+
 	/**
 	 * 根据给定单号list 查询对应订单对象list
 	 * @param orderOrTransNo 订单号、运单号list
@@ -6531,9 +6531,9 @@ public class CwbDAO {
 	 */
 	public List<CwbOrder> getCwbListByAnyNo(List<String> orderOrTransNo){
 		List<CwbOrder> resultCwbList = new ArrayList<CwbOrder>();
-		if( null != orderOrTransNo && !orderOrTransNo.isEmpty()){
+		if( (null != orderOrTransNo) && !orderOrTransNo.isEmpty()){
 			StringBuilder queryCondition = new StringBuilder();
-			
+
 			for (String tempCwb : orderOrTransNo) {
 				String targetCwb = this.cwbOrderService.translateCwb(tempCwb);
 				queryCondition.append("'").append(targetCwb).append("',");
