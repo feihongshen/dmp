@@ -65,6 +65,11 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 				return 0;
 			}
 			
+			
+			
+			
+			
+			
 
 		} catch (Exception e) {
 			logger.error("error info by request yihaodian download cwb detail interface!,loopcount=" + loopcount, e);
@@ -123,6 +128,7 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 				cwbMap = parseCwbArrByOrderCarton(order, cwbMap);
 
 				// multi_shipcwb 存入 一票多箱 多个箱号逗号隔开，存入主表时插入 transcwb列 20130606
+
 				String fromcompany=order.getFromCompany();
 				if(fromcompany!=null&&fromcompany.contains("药网")){
 					cwbMap.put("customerid",yhd.getYwcustomerid()); //公司来源
@@ -130,8 +136,10 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 					cwbMap.put("customerid",yhd.getCustomerids()); //公司来源
 				}
 				
-
+				
 				cwbMap.put("transcwb", cwbMap.get("multi_shipcwb"));
+			
+				
 				cwbList.add(cwbMap);
 
 				// logger.info("替换后的consigneeaddress={},consigneename={}",order.getConsigneeAddress().replaceAll("[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]",
