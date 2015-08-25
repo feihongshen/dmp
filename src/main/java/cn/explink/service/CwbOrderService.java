@@ -3405,10 +3405,6 @@ public class CwbOrderService {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 
-		//上门退、上门换订单，可以反馈为配送成功，但是反馈之后不能做退货出站
-		if(((co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmenhuan.getValue())||(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()))&&(co.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue())){
-			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),ExceptionCwbErrorTypeEnum.SMHorSMTBXYTHCZ,DeliveryStateEnum.PeiSongChengGong.getText(),CwbOrderTypeIdEnum.getTextByValue(co.getCwbordertypeid()),FlowOrderTypeEnum.TuiHuoChuZhan.getText());
-		}
 		//审核未上门拒退的订单不允许做退货出站操作
 		if(co.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),ExceptionCwbErrorTypeEnum.SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN);
@@ -4093,7 +4089,10 @@ public class CwbOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-
+		//上门退、上门换订单，可以反馈为配送成功，但是反馈之后不能做退货出站
+		if(((co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmenhuan.getValue())||(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()))&&(podresultid==DeliveryStateEnum.PeiSongChengGong.getValue())){
+					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(),ExceptionCwbErrorTypeEnum.SMHorSMTBXYTHCZ,CwbOrderTypeIdEnum.getTextByValue(co.getCwbordertypeid()),DeliveryStateEnum.PeiSongChengGong.getText());
+		}
 		this.validateCwbState(co, FlowOrderTypeEnum.YiFanKui);
 
 		this.validateStateTransfer(co, FlowOrderTypeEnum.YiFanKui);
