@@ -82,7 +82,8 @@ public enum ExceptionCwbErrorTypeEnum {
 	TUIKEHU_DAIQUEREN(142,"退客户待确认的订单禁止退客户拒收返库!"),
 	TUIKEHU_SUCCESS(143,"退客户成功的订单禁止退客户拒收返库!"),
 	YIJINGSHANGXIAN(144, "此单发货件数已经达到上限了,不允许{0}操作"),
-	YIJINGFENGBAO(144, "此单已经在{0}封包了,不允许{1}操作")
+	YIJINGFENGBAO(145, "此单已经在{0}封包了,不允许{1}操作"),
+	SMHorSMTBXYTHCZ(145, "反馈为{0}的{1}类型的订单,不允许{2}操作")
 	;
 
 	private int value;
