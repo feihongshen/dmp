@@ -673,6 +673,7 @@ src/main/java/cn/explink/b2c/zhongliang/xml/Response_WaitOrder.java -text
 src/main/java/cn/explink/b2c/zhongliang/xml/TestXml.java -text
 src/main/java/cn/explink/client/AccountClient.java -text
 src/main/java/cn/explink/client/OmsClient.java -text
+src/main/java/cn/explink/commoncwborder/CommonCwbOrderController.java -text
 src/main/java/cn/explink/controller/AbnormalOrderController.java -text
 src/main/java/cn/explink/controller/AbnormalPunishView.java -text
 src/main/java/cn/explink/controller/AbnormalTypeController.java -text
@@ -2099,6 +2100,7 @@ src/main/webapp/WEB-INF/jsp/changecwb/changecwbforwegihttopaohuo.jsp -text
 src/main/webapp/WEB-INF/jsp/changecwb/printandweightcwb.jsp -text
 src/main/webapp/WEB-INF/jsp/changecwb/printcwb.jsp -text
 src/main/webapp/WEB-INF/jsp/codxiufu.jsp -text
+src/main/webapp/WEB-INF/jsp/commencwborder.jsp -text
 src/main/webapp/WEB-INF/jsp/common/add.jsp -text
 src/main/webapp/WEB-INF/jsp/common/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/common/list.jsp -text
