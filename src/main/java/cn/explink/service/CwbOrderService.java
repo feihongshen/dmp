@@ -4283,21 +4283,24 @@ public class CwbOrderService {
 		}
 		Reason reason = new Reason();
 		String cwbremark="";
-		cwbremark=this.creCwbremark(co.getCwbremark(),reason.getReasoncontent(),deliverstateremark);
+
 		if ((backreasonid != 0)
 				&& ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(backreasonid);
+			cwbremark=this.creCwbremark(co.getCwbremark(),reason.getReasoncontent(),deliverstateremark);
 			this.cwbDAO.saveCwbForBackreason(co.getCwb(), reason.getReasoncontent(), backreasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 
 		if ((firstlevelreasonid != 0) && ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(leavedreasonid);
+			cwbremark=this.creCwbremark(co.getCwbremark(),reason.getReasoncontent(),deliverstateremark);
 			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid, firstlevelreasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 		if ((changereasonid != 0) && (podresultid == DeliveryStateEnum.DaiZhongZhuan.getValue() )) {
 			reason = this.reasonDAO.getReasonByReasonid(changereasonid);
+			cwbremark=this.creCwbremark(co.getCwbremark(),reason.getReasoncontent(),deliverstateremark);
 			this.cwbDAO.saveCwbForChangereason(co.getCwb(), reason.getReasoncontent(), changereasonid,firstchangereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 
@@ -4305,6 +4308,7 @@ public class CwbOrderService {
 		// 为货物丢失添加的
 		if ((losereasonid != 0) && ((podresultid == DeliveryStateEnum.HuoWuDiuShi.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(losereasonid);
+			cwbremark=this.creCwbremark(co.getCwbremark(),reason.getReasoncontent(),deliverstateremark);
 			this.cwbDAO.saveCwbForDiushireason(co.getCwb(), reason.getReasoncontent(), losereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
@@ -7295,14 +7299,14 @@ public class CwbOrderService {
 	 */
 	private String creCwbremark(String cwbremark, String reasoncontent, String deliverstateremark) {
 		StringBuilder strBuilder=new StringBuilder();
-		if(cwbremark.length()>0){
+		if((null!=cwbremark)&&(cwbremark.length()>0)){
 			strBuilder.append(cwbremark+",");
 		}
-		if(reasoncontent.length()>0)
+		if((null!=reasoncontent)&&(reasoncontent.length()>0))
 		{
 			strBuilder.append(reasoncontent+",");
 		}
-		if(deliverstateremark.length()>0)
+		if((null!=deliverstateremark)&&(deliverstateremark.length()>0))
 		{
 			strBuilder.append(deliverstateremark+",");
 		}
