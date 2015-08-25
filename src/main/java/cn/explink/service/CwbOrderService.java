@@ -4089,7 +4089,7 @@ public class CwbOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-		//上门退、上门换订单，可以反馈为配送成功，但是反馈之后不能做退货出站
+		//上门退、上门换订单，不能反馈为配送成功
 		if(((co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmenhuan.getValue())||(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()))&&(podresultid==DeliveryStateEnum.PeiSongChengGong.getValue())){
 					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(),ExceptionCwbErrorTypeEnum.SMHorSMTBXYTHCZ,CwbOrderTypeIdEnum.getTextByValue(co.getCwbordertypeid()),DeliveryStateEnum.PeiSongChengGong.getText());
 		}
