@@ -1045,8 +1045,13 @@ public class OrderSelectController {
 			String customername = StringUtil.nullConvertToEmptyString(this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
 			User user = this.getUser(orderFlowAll.getUserid());
 			String phone = StringUtil.nullConvertToEmptyString(this.getUserPhone(user));
-			String comment = StringUtil.nullConvertToEmptyString(orderFlowAll.getComment());
-
+			String comment = StringUtil.nullConvertToEmptyString(orderFlowAll.getComment()).trim();
+			if(comment.length()>0){
+				if(comment.lastIndexOf(",")==(comment.length()-1))
+				{
+					comment=comment.substring(0,comment.length()-1);
+				}
+			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TiHuo.getValue()) {
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>提货；供货商：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>；备注：<font color =\"red\">[{3}]</font>",
 						currentbranchname, customername, phone, comment);
@@ -1129,12 +1134,12 @@ public class OrderSelectController {
 				return MessageFormat.format("货物配送站点变更为<font color =\"red\">[{0}]</font>；操作人：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>", this.branchDAO
 						.getBranchByBranchid(cwbOrder.getDeliverybranchid()).getBranchname(), this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
 			}
-			
+
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdatePickBranch.getValue()) {
 				return MessageFormat.format("货物揽收站点变更为<font color =\"red\">[{0}]</font>；操作人：<font color =\"red\">[{1}]</font>；联系电话：<font color =\"red\">[{2}]</font>", this.branchDAO
 						.getBranchByBranchid(cwbOrder.getPickbranchid()).getBranchname(), this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
 			}
-			
+
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()) {
 				return MessageFormat.format("货物已由<font color =\"red\">[{0}]</font>退供货商拒收返库入库；联系电话：<font color =\"red\">[{1}]</font>；备注：<font color =\"red\">[{2}]</font>", currentbranchname, phone,
 						comment);

@@ -43,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import cn.explink.aspect.OrderFlowOperation;
-import cn.explink.b2c.lefeng.result;
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.b2c.tools.B2cEnum;
@@ -186,7 +185,6 @@ import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TransCwbService;
-import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
@@ -872,12 +870,12 @@ public class CwbOrderService {
 		if (!StringUtils.hasLength(transcwb)) {// 为兼容腾讯达历史数据没有transcwb的问题，下个版本请删除
 			return;
 		}
-		
+
 		//排除一票一件，也存在运单号情况，
-		if( !(co.getSendcarnum() > 1 ||  co.getBackcarnum() > 1)){
+		if( !((co.getSendcarnum() > 1) ||  (co.getBackcarnum() > 1))){
 			return;
 		}
-		
+
 		String splitString = this.getSplitstring(transcwb);
 		String[] split = transcwb.split(splitString);
 		for (String string : split) {
@@ -2027,7 +2025,7 @@ public class CwbOrderService {
 	 */
 	public void updateOutToCommen(CwbOrder cwbOrder, OrderFlow of, int outbranchflag) {
 		try {
-			if (of.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()||of.getFlowordertype()==FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()||of.getFlowordertype()==FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {// 出库状态或中转站出库或上门退订单自动领货
+			if ((of.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())||(of.getFlowordertype()==FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())||(of.getFlowordertype()==FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue())) {// 出库状态或中转站出库或上门退订单自动领货
 
 				if (cwbOrder.getCwbstate() != CwbStateEnum.PeiShong.getValue()) {
 					this.logger.warn("订单号{}订单当前状态为{}，不能参与发送至承运商", cwbOrder.getCwb(), cwbOrder.getCwbstate());
@@ -2747,7 +2745,7 @@ public class CwbOrderService {
 		else {
 			 baleCwbs= this.baleCwbDAO.getBaleCwbByCwb(cwb);
 		}
-		if (baleCwbs != null&&baleCwbs.size()>0) {
+		if ((baleCwbs != null)&&(baleCwbs.size()>0)) {
 			for(BaleCwb baleCwb:baleCwbs){
 				Bale bale = this.baleDAO.getBaleById(baleCwb.getBaleid());
 				if ((null != bale) && (bale.getBalestate() == BaleStateEnum.YiFengBao.getValue())) {
@@ -3406,7 +3404,7 @@ public class CwbOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-		
+
 		//审核未上门拒退的订单不允许做退货出站操作
 		if(co.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),ExceptionCwbErrorTypeEnum.SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN);
@@ -3971,7 +3969,7 @@ public class CwbOrderService {
 				List<String> baleNoList = this.baleCwbDAO.getBaleNoList(cwb);
 				List<String> existBaleNoList = this.buildExistBaleNoList(gdlist);
 				// 更新订单打印的包号信息
-				if( null != baleNoList && baleNoList.size() > 1 ){
+				if( (null != baleNoList) && (baleNoList.size() > 1) ){
 					if( baleNoList.contains(packagecode) && !existBaleNoList.contains(packagecode) ){
 						this.groupDetailDAO.creGroupDetail(cwb, outWarehouseGroupId, user.getUserid(), flowordertype, user.getBranchid(), nextbranchid, deliverid, customerid, driverid, truckid, packagecode);
 					}else{
@@ -3987,7 +3985,7 @@ public class CwbOrderService {
 					this.groupDetailDAO.updateGroupDetailByBale(bale.getId(), bale.getBaleno(), cwb, user.getBranchid());
 				}
 			}
-			
+
 		}
 	}
 
@@ -4280,29 +4278,31 @@ public class CwbOrderService {
 			businessfee = co.getPaybackfee();
 		}
 		Reason reason = new Reason();
+		String cwbremark="";
+		cwbremark=this.creCwbremark(co.getCwbremark(),reason.getReasoncontent(),deliverstateremark);
 		if ((backreasonid != 0)
 				&& ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(backreasonid);
 			this.cwbDAO.saveCwbForBackreason(co.getCwb(), reason.getReasoncontent(), backreasonid);
-			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
+			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 
 		if ((firstlevelreasonid != 0) && ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(leavedreasonid);
 			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid, firstlevelreasonid);
-			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
+			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 		if ((changereasonid != 0) && (podresultid == DeliveryStateEnum.DaiZhongZhuan.getValue() )) {
 			reason = this.reasonDAO.getReasonByReasonid(changereasonid);
 			this.cwbDAO.saveCwbForChangereason(co.getCwb(), reason.getReasoncontent(), changereasonid,firstchangereasonid);
-			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
+			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 
 		}
 		// 为货物丢失添加的
 		if ((losereasonid != 0) && ((podresultid == DeliveryStateEnum.HuoWuDiuShi.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(losereasonid);
 			this.cwbDAO.saveCwbForDiushireason(co.getCwb(), reason.getReasoncontent(), losereasonid);
-			this.cwbDAO.updateCwbRemark(co.getCwb(), co.getCwbremark() + "," + reason.getReasoncontent() + "," + deliverstateremark);
+			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 		if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
 			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb2(0, co.getCwb(), firstlevelreasonid);
@@ -4391,6 +4391,8 @@ public class CwbOrderService {
 				+ "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
 		return map;
 	}
+
+
 
 	/**
 	 * 更新当前反馈状态需要指定订单的下一站
@@ -5460,12 +5462,12 @@ public class CwbOrderService {
 		}else{
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
 		}
-		if(co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue() || co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue() ){
+		if((co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) ){
 			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 		}else if(co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
 			this.updateCwbState(cwb, CwbStateEnum.PeiShong);
 		}else{
-			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), 
+			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(),
 					ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR,FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
 					FlowOrderTypeEnum.DingDanLanJie.getText());
 		}
@@ -5474,11 +5476,11 @@ public class CwbOrderService {
 		this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), r == null ? "" : r.getReasoncontent(), r == null ? 0 : r.getReasonid(), cwb);
 		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis());
 		this.shangMenTuiCwbDetailDAO.deletePrintRecord(cwb);
-		if(co.getTranscwb() != null && co.getTranscwb().length()>0 ){
+		if((co.getTranscwb() != null) && (co.getTranscwb().length()>0) ){
 		 String[]  cwbList = co.getTranscwb().split(",");
 		 String cwbs="'"+cwb+"',";
-		 if(cwbList == null || cwbList.length ==0){
-			 baleCwbDAO.deleteByCwbs(cwb);
+		 if((cwbList == null) || (cwbList.length ==0)){
+			 this.baleCwbDAO.deleteByCwbs(cwb);
 		 }else{
 			 for (String tr : cwbList) {
 				 cwbs += "'"+tr+"',";
@@ -5487,7 +5489,7 @@ public class CwbOrderService {
 				 }
 			}
 			 cwbs = cwbs.substring(0, cwbs.length()-1);
-			 baleCwbDAO.deleteByCwbs(cwbs);
+			 this.baleCwbDAO.deleteByCwbs(cwbs);
 		  }
 		  //删除包关联表
 		}
@@ -5945,7 +5947,7 @@ public class CwbOrderService {
 
 		return requestbatchno;
 	}
-	
+
 	/**
 	 * 产生批次号
 	 *
@@ -7281,4 +7283,31 @@ public class CwbOrderService {
 				}
 		}
 	}
+	/**
+	 * @param cwbremark
+	 * @param reasoncontent
+	 * @param deliverstateremark
+	 * @return
+	 */
+	private String creCwbremark(String cwbremark, String reasoncontent, String deliverstateremark) {
+		StringBuilder strBuilder=new StringBuilder();
+		if(cwbremark.length()>0){
+			strBuilder.append(cwbremark+",");
+		}
+		if(reasoncontent.length()>0)
+		{
+			strBuilder.append(reasoncontent+",");
+		}
+		if(deliverstateremark.length()>0)
+		{
+			strBuilder.append(deliverstateremark+",");
+		}
+		if(strBuilder.length()>0){
+			if(strBuilder.lastIndexOf(",")==(strBuilder.length()-1)){
+				return strBuilder.substring(0, strBuilder.length()-1);
+			}
+		}
+		return strBuilder.toString();
+	}
+
 }
