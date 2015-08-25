@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import cn.explink.core.utils.StringUtils;
 import cn.explink.domain.BaleCwb;
 
 @Component
@@ -82,8 +83,24 @@ public class BaleCwbDao {
 	 * @return
 	 */
 	public List<String> getBaleNoList(String orderNo){
-		String sql = "SELECT baleno FROM express_ops_bale_cwb WHERE cwb IN (SELECT transcwb FROM express_ops_transcwb WHERE cwb = '" + orderNo + "') OR cwb = '" + orderNo + "'";
-		return this.jdbcTemplate.queryForList(sql,String.class);
+		StringBuilder queryCondition = new StringBuilder();
+		queryCondition.append("'").append(orderNo).append("',");
+		
+		String transcwbSql = " SELECT transcwb FROM express_ops_cwb_detail WHERE cwb =?";
+		List<String> transcwbStrList = this.jdbcTemplate.queryForList(transcwbSql, String.class, orderNo);
+		String transcwbStr = "";
+		if( null != transcwbStrList && transcwbStrList.size() > 0){
+			transcwbStr = transcwbStrList.get(0);
+		}
+		if( !StringUtils.isEmpty(transcwbStr)){
+			for (String tempTranscwb : transcwbStr.split(",")) {
+				queryCondition.append("'").append(tempTranscwb).append("',");
+			}
+		}
+		
+		String queryStr = queryCondition.substring(0,queryCondition.length()-1);
+		String sql = " SELECT baleno FROM express_ops_bale_cwb WHERE cwb IN ( " + queryStr + " ) ";
+		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 	
 	public List<String> getCwbsByBale(String baleid) {
