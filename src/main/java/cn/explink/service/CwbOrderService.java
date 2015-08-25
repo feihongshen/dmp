@@ -2027,7 +2027,7 @@ public class CwbOrderService {
 	 */
 	public void updateOutToCommen(CwbOrder cwbOrder, OrderFlow of, int outbranchflag) {
 		try {
-			if (of.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()||of.getFlowordertype()==FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()) {// 出库状态或中转站出库
+			if (of.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()||of.getFlowordertype()==FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()||of.getFlowordertype()==FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {// 出库状态或中转站出库或上门退订单自动领货
 
 				if (cwbOrder.getCwbstate() != CwbStateEnum.PeiShong.getValue()) {
 					this.logger.warn("订单号{}订单当前状态为{}，不能参与发送至承运商", cwbOrder.getCwb(), cwbOrder.getCwbstate());
