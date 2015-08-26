@@ -5469,11 +5469,13 @@ public class CwbOrderService {
 		}else{
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
 		}
-		if((co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) ){
+		if((co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
+				|| (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) ){
 			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
-		}else if(co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
-			this.updateCwbState(cwb, CwbStateEnum.PeiShong);
-		}else{
+		}else if(!(co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue() 
+				|| co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue() 
+			    || co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()
+			    ||co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())){
 			throw new CwbException(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue(),
 					ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR,FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
 					FlowOrderTypeEnum.DingDanLanJie.getText());
