@@ -71,6 +71,23 @@ public class ManagerController {
 
 		return "ok" + split.length;
 	}
+	@RequestMapping("/resendFlowJmsEnd")
+	public @ResponseBody String resendFlowJmsEnd(@RequestParam("cwbs") String cwbs) {
+		String[] split = cwbs.split("\n");
+		for (String cwb : split) {
+			if (cwb.trim().length() == 0) {
+				continue;
+			}
+			logger.info("resending flow for {} ", cwb);
+			OrderFlow orderFlow = orderFlowDAO.getOrderCurrentFlowByCwb(cwb.trim());
+			if(orderFlow == null ){
+				continue;
+			}	
+			cwbOrderService.send(orderFlow);
+		}
+		
+		return "ok" + split.length;
+	}
 
 	@RequestMapping("/resendPayup")
 	public @ResponseBody String resendPayup(@RequestParam("ids") String ids) {

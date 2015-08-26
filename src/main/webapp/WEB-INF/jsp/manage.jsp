@@ -21,6 +21,17 @@
 				}
 			});
 		});
+		$("#sendButtonEnd").click(function(){
+			var cwbs=$("#cwbs").val();
+			$.ajax({
+				url:"<%=request.getContextPath()%>/manage/resendFlowJmsEnd",
+				type:"POST",
+				data:{cwbs:cwbs},
+				success:function(data){
+					alert(data)
+				}
+			});
+		});
 		
 		$("#sendGCAButton").click(function(){
 			var cwbs=$("#cwbs").val();
@@ -62,7 +73,7 @@
 </head>
 <body bgcolor="#3c7fb5">
 <div>
-	运单号: <textarea id="cwbs" rows="25" cols="100"></textarea>
+	订单号: <textarea id="cwbs" rows="25" cols="100"></textarea>
 	<button id="sendButton">重发流程消息</button>
 	
 	<button id="sendGCAButton">重发归班消息</button>
@@ -70,6 +81,8 @@
 	<button id="sendPayupButton">重发交款消息</button>
 	
 	<button id="sendPdaButton">重发反馈消息</button>
+	
+	<button id="sendButtonEnd">重发最后状态</button>
 </div>
 </body>
 </html>
