@@ -26,13 +26,11 @@ Page page_obj = (Page)request.getAttribute("page_obj");
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/easyui-extend/plugins/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
 <script src="${pageContext.request.contextPath}/js/inputer.js"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script type="text/javascript">
 $(function(){
 	
@@ -156,29 +154,28 @@ function check(){
 		return true;
 		} 
 
-	if($("#strtime").val()==""){
+ 	if($("input[name='begindate']").val()==""){
 		alert("请选择开始时间");
 		return false;
 	}
-	if($("#endtime").val()==""){
+	if($("input[name='enddate']").val()==""){
 		alert("请选择结束时间");
 		return false;
 	}
-	if($("#strtime").val()>$("#endtime").val()){
+	if($("input[name='begindate']").val()>$("input[name='enddate']").val()){
 		alert("开始时间不能大于结束时间");
 		return false;
 	}
-	if(!Days()||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
+	if(!Days()||($("input[name='begindate']").val()=='' &&$("input[name='enddate']").val()!='')||($("input[name='begindate']").val()!='' &&$("input[name='enddate']").val()=='')){
 		alert("时间跨度不能大于30天！");
 		return false;
 	}
-
    $("#searchForm").submit();
 	return true;
 }
 function Days(){     
-	var day1 = $("#strtime").val();   
-	var day2 = $("#endtime").val(); 
+	var day1 = $("input[name='begindate']").val();   
+	var day2 = $("input[name='enddate']").val();  
 	var y1, y2, m1, m2, d1, d2;//year, month, day;   
 	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
 	day2=new Date(Date.parse(day2.replace(/-/g,"/")));
@@ -198,25 +195,6 @@ function Days(){
 	return true;
 }
 
-$(function() {
-	$("#strtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	$("#endtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-		timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	
-});
 function resetData(){
 	$("#cwbs").val("");
 	$("#cwbtypeid").val(0);
@@ -266,21 +244,25 @@ function resetData(){
 										</td>
 										<td>
 											配送站点:
-											<select name ="branchid" id ="branchid" class="select1">
+											<input type="text" id="branchid" name="branchid" class="easyui-validatebox" style="width: 130px;"initDataType="TABLE"
+												initDataKey="Branch" 
+												filterField="sitetype" 
+												filterVal="2"
+												viewField="branchname" saveField="branchid"/>	
+											<%-- <select name ="branchid" id ="branchid" class="select1">
 												<option  value ="0">全部</option>
 												 <%if(branchList!=null && branchList.size()>0) {%>
 													<%for(Branch branch:branchList){ %>
 													<option value ="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
 													<%} }%>
-											</select>
+											</select> --%>
 										</td>
 									</tr>
 									<tr>
-										<td>
+										<td align="right">
 											退货入库时间:
-												<input type ="text" name ="begindate" id="strtime"  value="" class="input_text1" style="height:20px;"/>
-											到
-												<input type ="text" name ="enddate" id="endtime"  value=""class="input_text1" style="height:20px;"/>
+											<input  type ="text" name="enddate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'"/>
+											<input  type ="text" name="begindate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'"/>
 										</td>
 										<td>
 											审核状态:
