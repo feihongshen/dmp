@@ -242,8 +242,8 @@ function resethence(){
 									<input type="button"  onclick="check()" value="查询" class="input_button2"/>
 									<input type="button" onclick="resethence();"   value="重置" class="input_button2">
 									<input type="button"  onclick="cancelmisspiece();"  value="作废" class="input_button2">
-									</td>
 									<input type ="button" id="btnval" value="导出" class="input_button2" <%if(misspieces.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
+									</td>
 								</td>
 								</tr>
 								</table>
