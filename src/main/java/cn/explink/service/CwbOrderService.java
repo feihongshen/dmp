@@ -1792,6 +1792,10 @@ public class CwbOrderService {
 		int flowordertype = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue();
 		long nextbranchid = this.cwbRouteService.getNextBranch(currentbranchid, co.getDeliverybranchid());
 		this.logger.info("退货站正常入库-保存下一站");
+		if(co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()){
+			nextbranchid = co.getDeliverybranchid();
+			currentbranchid = user.getBranchid();
+		}
 		this.cwbDAO.updateNextBranchid(cwb, nextbranchid);
 
 		String sql = "update express_ops_cwb_detail set currentbranchid=?,flowordertype=? where cwb=? and state=1";
