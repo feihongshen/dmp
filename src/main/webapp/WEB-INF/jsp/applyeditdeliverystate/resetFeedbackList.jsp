@@ -4,6 +4,9 @@
 <%@page import="cn.explink.enumutil.*"%>
 <%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
+<script src="${ctx}/js/easyui-extend/plugins/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+
 <%
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
@@ -20,15 +23,8 @@ String cwbs = request.getParameter("cwb")==null?"":request.getParameter("cwb");
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
-
 <script type="text/javascript">
 
 $(function(){
@@ -63,25 +59,6 @@ $(function(){
 	$("tr[cwbstate='no']").css("backgroundColor","#aaaaaa");
 });
 
-$(function() {
-	$("#strtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	$("#endtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-		timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	
-});
 
 function check(){
 	var len=$.trim($("#cwb").val()).length;
@@ -91,19 +68,19 @@ function check(){
 		return true;
 		} 
 
-	if($("#strtime").val()==""){
+	if($("input[name='begindate']").val()==""){
 		alert("请选择开始时间");
 		return false;
 	}
-	if($("#endtime").val()==""){
+	if($("input[name='enddate']").val()==""){
 		alert("请选择结束时间");
 		return false;
 	}
-	if($("#strtime").val()>$("#endtime").val()){
+	if($("input[name='begindate']").val()>$("input[name='enddate']").val()){
 		alert("开始时间不能大于结束时间");
 		return false;
 	}
-	if(!Days()||($("#strtime").val()=='' &&$("#endtime").val()!='')||($("#strtime").val()!='' &&$("#endtime").val()=='')){
+	if(!Days()||($("input[name='begindate']").val()=='' &&$("input[name='enddate']").val()!='')||($("input[name='begindate']").val()!='' &&$("input[name='enddate']").val()=='')){
 		alert("时间跨度不能大于30天！");
 		return false;
 	}
@@ -112,8 +89,8 @@ function check(){
 	return true;
 }
 function Days(){     
-	var day1 = $("#strtime").val();   
-	var day2 = $("#endtime").val(); 
+	var day1 = $("input[name='begindate']").val();   
+	var day2 = $("input[name='enddate']").val(); 
 	var y1, y2, m1, m2, d1, d2;//year, month, day;   
 	day1=new Date(Date.parse(day1.replace(/-/g,"/"))); 
 	day2=new Date(Date.parse(day2.replace(/-/g,"/")));
@@ -229,10 +206,11 @@ function resetData(){
 	$("#cwbstate").val(0);
 	$("#cwbresultid").val(0);
 	$("#isdo").val(0);
+	$("#feedbackbranchid").setValue(0);
 	$("#cwbtypeid").val(0);
 	$("#feedbackbranchid").val(0);
-	$("#strtime").val("");
-	$("#endtime").val("");
+	$("input[typr='hidden' name='begindate']").val('');
+	$("input[name='enddate']").val('');
 }
 </script>
 </HEAD>
@@ -319,19 +297,25 @@ function resetData(){
 											反馈站点:
 										</td>
 										<td>	
-											<select style="width: 140px;" name ="feedbackbranchid" id ="feedbackbranchid">
+											<input type="text" id="feedbackbranchid" name="feedbackbranchid" class="easyui-validatebox" style="width: 130px;"initDataType="TABLE"
+												initDataKey="Branch" 
+												filterField="sitetype" 
+												filterVal="2"
+												viewField="branchname" saveField="branchid" />	
+											<%-- <select style="width: 140px;" name ="feedbackbranchid" id ="feedbackbranchid">
 												<option  value ="0">全部</option>
 												<%for(Branch br:branchList){ %>
 													<option value ="<%=br.getBranchid() %>"><%=br.getBranchname() %></option>
 												<%} %>
-											</select>
+											</select> --%>
 										</td>
 										<td>
 											&nbsp;&nbsp;
 											操作时间:
 										</td>
 										<td>	
-											<input style="width: 140px;" type ="text" name ="begindate" id="strtime"  value=""/>到<input style="width: 140px;" type ="text" name ="enddate" id="endtime"  value=""/>
+											<input  type ="text" name="enddate" class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'"/>
+											<input  type ="text" name="begindate" class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'"/>
 										</td>
 									</tr>
 								</table>
@@ -442,8 +426,8 @@ function resetData(){
 	$("#isdo").val(<%=request.getParameter("isdo")==null?0:Long.parseLong(request.getParameter("isdo"))%>);
 	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Long.parseLong(request.getParameter("cwbtypeid"))%>);
 	$("#feedbackbranchid").val(<%=request.getParameter("feedbackbranchid")==null?0:Long.parseLong(request.getParameter("feedbackbranchid"))%>);
-	$("#strtime").val("<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>");
-	$("#endtime").val("<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>");
+	$("input[name='begindate']").val("<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>");
+	$("input[name='enddate']").val("<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>");
 </script>
 </BODY>
 </HTML>
