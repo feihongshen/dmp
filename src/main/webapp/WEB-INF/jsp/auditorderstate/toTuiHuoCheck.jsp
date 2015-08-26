@@ -275,8 +275,8 @@ function restData(){
 										</select>
 										&nbsp;
 										归班反馈时间:
-											<input  type ="text" name="enddate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>"/>
-											<input  type ="text" name="begindate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>"/>
+											<input  type ="text" name="enddate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>"/>
+											<input  type ="text" name="begindate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>"/>
 									</td>
 								</tr>
 							</table>
