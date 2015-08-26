@@ -26,6 +26,7 @@ String message=request.getAttribute("message")==null?"":request.getAttribute("me
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
@@ -161,22 +162,24 @@ function checkfileValue(object){
 							<div class="menucontant">
 							<form id="searchForm"  name="searchForm" action="<%=request.getContextPath()%>/abnormalOrder/toCreatMissPieceToCheck" method="post"  >
 							<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1" align="left">
-							<tr>
-							<td>
+							<tr >
+							<td >
 							
 								订    单    号<font color="red">*</font>：
 								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb">查询多个订单用回车隔开</textarea>
 								</td>
-								<td>
+								<td align="left">
 								找回机构:
-									<select name="callbackbranchid" id="callbackbranchid" class="select1">
+									<!-- <input type="text" id="callbackbranchid" name="callbackbranchid" class="easyui-validatebox" style="width: 200px;"initDataType="TABLE"
+												initDataKey="Branch" 
+												viewField="branchname" saveField="branchid"/> -->
+								 <select name="callbackbranchid" id="callbackbranchid" class="select1">
 										<option value="0">请选择责任机构</option>
 										<%if(branchList!=null){for(Branch b: branchList){ %>
 											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 											<%}} %>
-									
+									</select>
 								</td>
-								<td></td>
 								</tr>
 								<tr>
 								<td >

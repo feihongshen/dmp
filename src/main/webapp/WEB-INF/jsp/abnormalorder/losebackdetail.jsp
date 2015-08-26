@@ -40,15 +40,12 @@ Page page_obj = (Page)request.getAttribute("page_obj");
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
-
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/easyui-extend/plugins/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-form.js" type="text/javascript"></script>
 <script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
 <script src="${pageContext.request.contextPath}/js/inputer.js"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script language="javascript">
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");
@@ -63,27 +60,6 @@ $(function(){
 	
 })
 
-
-$(function() {
-	$("#strtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	$("#endtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-
-	
-});
 
 
 function getThisBoxList(id,flag){
@@ -131,27 +107,6 @@ function editSuccess(data){
 	window.parent.closeBox();
 	$("#searchForm").submit();
 }		
-function checkstate(){
-	if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.weichuli.getValue()%>){
-		$("#chuangjianstrtime").show();
-		$("#chuangjianendtime").show();
-		$("#strtime").hide();
-		$("#endtime").hide();
-		$("#chuli").html("创建时间：");
-	}else if($("#ishandle").val()==<%=AbnormalOrderHandleEnum.daichuli.getValue()%>){
-		$("#chuangjianstrtime").hide();
-		$("#chuangjianendtime").hide();
-		$("#strtime").show();
-		$("#endtime").show();
-		$("#chuli").html("处理时间：");
-	}else{
-		$("#chuangjianstrtime").hide();
-		$("#chuangjianendtime").hide();
-		$("#strtime").show();
-		$("#endtime").show();
-		$("#chuli").html("处理时间：");
-	}
-}
 
 function isgetallcheck(){
 	if($('input[name="id"]:checked').size()>0){
@@ -164,12 +119,12 @@ function isgetallcheck(){
 }
 
 function check(){
-	if($("#customerid").val()==0&&$("#cwb").val()==""&&$("#losebackbranchid").val()==0&&$("#cwbordertype").val()==0&&$("#losebackbranchid").val()==0&&$("#strtime").val()==""&&$("#endtime").val()==""){
+	if($("#customerid").val()==0&&$("#cwb").val()==""&&$("#losebackbranchid").val()==0&&$("#cwbordertype").val()==0&&$("#losebackbranchid").val()==0){
 		alert("请至少选择一个条件进行查询！");
 		return;
-	}else if($("#endtime").val()!=""&&$("#strtime").val()==""){
+	}else if($("input[name='begindate']").val()==""){
 		alert("请选择开始时间");
-	}else if($("#endtime").val()==""&&$("#strtime").val()!=""){
+	}else if($("input[name='enddate']").val()==""){
 		alert("请选择结束时间");
 	}
 	$("#searchForm").submit();
@@ -220,8 +175,6 @@ function resethence(){
 	$("#customerid").val(0);
 	$("#cwbordertype").val(0);
 	$("#losebackbranchid").val(0);
-	$("#strtime").val("");
-	$("#endtime").val("");
 	$("#cwb").val("");
 }
 </script>
@@ -240,7 +193,7 @@ function resethence(){
 									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ><%=cwb %></textarea>
 								</td>
 								
-								<td align="left">
+								<td align="right">
 								
 									<label for="select2"></label>
 										客户名称 ： <select name ="customerid" id ="customerid"    class="select1">
@@ -264,20 +217,23 @@ function resethence(){
 										<%} %>
 									</select>
 		      						</td>
-									<td>
+									<td align="right">
 								找回机构：
-									<label for="select2"></label>
-									<select name="losebackbranchid" id="losebackbranchid" class="select1">
+										<input type="text" id="losebackbranchid" name="losebackbranchid" class="easyui-validatebox" style="width: 280px;"initDataType="TABLE"
+												initDataKey="Branch" 
+												filterField="sitetype" 
+												viewField="branchname" saveField="branchid"/>
+									<%-- <select name="losebackbranchid" id="losebackbranchid" class="select1">
 										<option value="0">请选择责任机构</option>
 										<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
 											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
 										<%}} %>
-									</select>
+									</select> --%>
 									<br><br>
 									<strong id="chuli">创建时间：</strong>
-									<input type ="text" name ="begindate" id="strtime"  value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>" class="input_text1" style="height:20px;"/>
-									<strong id="chulidown">到</strong>
-									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
+									<input  type ="text" name="enddate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>"/>
+									<input  type ="text" name="begindate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate") %>"/>
+									
 									<input type="hidden" name="isshow" value="1"/>
 								</td>
 									</tr>
@@ -287,7 +243,6 @@ function resethence(){
 									<input type="button" onclick="resethence();"   value="重置" class="input_button2">
 									<input type="button"  onclick="cancelmisspiece();"  value="作废" class="input_button2">
 									</td>
-									<td>
 									<input type ="button" id="btnval" value="导出" class="input_button2" <%if(misspieces.size()==0){ %> disabled="disabled" <%} %> onclick="exportField();"/>
 								</td>
 								</tr>
