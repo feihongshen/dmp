@@ -261,8 +261,8 @@ function resetData(){
 									<tr>
 										<td align="right">
 											退货入库时间:
-											<input  type ="text" name="enddate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'"/>
-											<input  type ="text" name="begindate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'"/>
+											<input  type ="text" name="enddate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>"/>
+											<input  type ="text" name="begindate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>"/>
 										</td>
 										<td>
 											审核状态:
@@ -377,8 +377,6 @@ function resetData(){
 	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);
 	$("#customerid").val(<%=request.getParameter("customerid")==null?0:Long.parseLong(request.getParameter("customerid"))%>);
 	$("#branchid").val(<%=request.getParameter("branchid")==null?0:Long.parseLong(request.getParameter("branchid"))%>);
-	$("#strtime").val("<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>");
-	$("#endtime").val("<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>");
 	$("#auditstate").val(<%=request.getParameter("auditstate")==null?0:Long.parseLong(request.getParameter("auditstate"))%>);
 </script>
 </BODY>
