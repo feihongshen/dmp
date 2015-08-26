@@ -232,6 +232,7 @@ public class CwbDAO {
 			cwbOrder.setFnorgoffsetflag(rs.getInt("fnorgoffsetflag"));
 			cwbOrder.setCity(StringUtil.nullConvertToEmptyString(rs.getString("city")));
 			cwbOrder.setArea(StringUtil.nullConvertToEmptyString(rs.getString("area")));
+			cwbOrder.setFirstlevelid(rs.getInt("firstlevelid"));
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;
