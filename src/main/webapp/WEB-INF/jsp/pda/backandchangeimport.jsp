@@ -209,14 +209,16 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 				success : function(data) {
 					$("#scancwb").val("");
 					if(data.statuscode=="000000"){
+						$("#excelbranch").show();
+						$("#customername").show();
 						$("#cwbgaojia").hide();
 						if(data.body.cwbOrder.deliverybranchid!=0){
-							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
+							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname);
 						}else{
 							$("#excelbranch").html("尚未匹配站点");
 						}
 						
-						$("#customername").html(data.body.cwbcustomername);
+						$("#customername").html("<font color=\"red\">"+data.body.cwbcustomername+"</font>");
 						$("#multicwbnum").val(data.body.cwbOrder.sendcarnum);
 						$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
 

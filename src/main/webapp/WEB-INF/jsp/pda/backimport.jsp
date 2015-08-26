@@ -208,18 +208,20 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 				success : function(data) {
 					$("#scancwb").val("");
 					if(data.statuscode=="000000"){
+						$("#excelbranch").show();
+						$("#customername").show();
 						$("#cwbgaojia").hide();
 						if(data.body.cwbOrder.deliverybranchid!=0){
 							var cwbbname = data.body.cwbbranchname;
 							if(isNull(cwbbname)){
 								cwbbname = '';
 							}
-							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+cwbbname);
+							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname);
+							$("#customername").html("<font color=\"red\">"+data.body.cwbcustomername+"</font>");
 						}else{
+							$("#customername").html("<font color=\"red\">"+data.body.cwbcustomername+"</font>");
 							$("#excelbranch").html("尚未匹配站点");
 						}
-						
-						$("#customername").html(data.body.cwbcustomername);
 						$("#multicwbnum").val(data.body.cwbOrder.sendcarnum);
 						$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
 

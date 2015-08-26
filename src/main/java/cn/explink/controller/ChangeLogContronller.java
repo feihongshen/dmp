@@ -1006,4 +1006,7 @@ public class ChangeLogContronller {
 		model.addAttribute("msg", msg);
 		return "/changeLog/optionChange";
 	}
+	
+	
+	
 }
