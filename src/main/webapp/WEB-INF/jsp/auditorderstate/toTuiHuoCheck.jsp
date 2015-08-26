@@ -275,8 +275,8 @@ function restData(){
 										</select>
 										&nbsp;
 										归班反馈时间:
-											<input  type ="text" name="enddate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'"/>
-											<input  type ="text" name="begindate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'"/>
+											<input  type ="text" name="enddate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '结束时间'" value="<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>"/>
+											<input  type ="text" name="begindate"  class="easyui-my97" datefmt="yyyy-MM-dd HH:mm:ss" data-options="width:140,prompt: '起始时间'" value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>"/>
 									</td>
 								</tr>
 							</table>
@@ -365,8 +365,6 @@ function restData(){
 	$("#branchid").val(<%=request.getParameter("branchid")==null?0:Long.parseLong(request.getParameter("branchid"))%>);
 	$("#shenhestate").val(<%=request.getParameter("shenhestate")==null?0:Long.parseLong(request.getParameter("shenhestate"))%>);
 	$("#checkresult").val(<%=request.getParameter("checkresult")==null?0:Long.parseLong(request.getParameter("checkresult"))%>);
-	$("#strtime").val("<%=request.getParameter("begindate")==null?"":request.getParameter("begindate")%>");
-	$("#endtime").val("<%=request.getParameter("enddate")==null?"":request.getParameter("enddate")%>");
 </script>
 </BODY>
 </HTML>
