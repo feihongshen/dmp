@@ -220,11 +220,28 @@ public class BaleController {
 					deliverybranchname = this.branchDAO.getBranchByBranchid(deliverybranchid).getBranchname();
 				}
 				if (confirmflag == 0) {
-					if ((co != null) && (co.getNextbranchid() != branchid) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {
-						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, nextbranchname);
-					} else if ((co != null) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) && (branchid != co.getDeliverybranchid())) {
-						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, deliverybranchname);
+					if(co != null){
+						if(co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()){
+							if ((co != null) && (co.getNextbranchid() != branchid) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {
+								throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, nextbranchname);
+							}
+						}else{
+							if((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())&&(branchid != co.getDeliverybranchid())&&(co.getNextbranchid() != branchid)){
+								throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, deliverybranchname);
+							}
+						}
 					}
+					/*if((co != null)&&(co.getFlowordertype() != FlowOrderTypeEnum.YiShenHe.getValue())){
+						if((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())&&(branchid != co.getDeliverybranchid())&&(co.getNextbranchid() != branchid)){
+							throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, deliverybranchname);
+						}
+					}else{
+						if ((co != null) && (co.getNextbranchid() != branchid) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {
+							throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, nextbranchname);
+						}
+					}*//*else if ((co != null) && ((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())||(co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue())) && (branchid != co.getDeliverybranchid())) {
+						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, deliverybranchname);
+					}*/
 				}
 			}
 			// 封包检查

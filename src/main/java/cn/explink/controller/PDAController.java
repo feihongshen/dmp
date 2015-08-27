@@ -4381,19 +4381,15 @@ public class PDAController {
 	 */
 	@RequestMapping("/cwbexportUntreadWarhouse/{cwb}")
 	public @ResponseBody
-	ExplinkResponse cwbexportUntreadWarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(
-			value = "requestbatchno",
-			required = true,
-			defaultValue = "0") long requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
-			value = "comment",
-			required = false,
-			defaultValue = "") String comment) {
+	ExplinkResponse cwbexportUntreadWarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, 
+			@RequestParam(value = "branchid",required = true,defaultValue = "0") long branchid, 
+			@RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, 
+			@RequestParam(value = "truckid",required = false,defaultValue = "0") long truckid, 
+			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, 
+			@RequestParam(value = "requestbatchno",required = true,defaultValue = "0") long requestbatchno, 
+			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, 
+			@RequestParam(value = "comment",required = false,defaultValue = "") String comment) 
+	{
 
 		String scancwb = cwb;
 		long SuccessCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());

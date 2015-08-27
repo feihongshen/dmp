@@ -91,6 +91,7 @@ import cn.explink.enumutil.PrintTemplateOpertatetypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.print.template.PrintTemplate;
 import cn.explink.print.template.PrintTemplateDAO;
+import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
@@ -160,6 +161,8 @@ public class WarehouseGroup_detailController {
 	TruckDAO truckDAO;
 	@Autowired
 	private BaleCwbDao baleCwbDao;
+	@Autowired
+	CwbOrderService cwborderService;
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -1613,16 +1616,26 @@ public class WarehouseGroup_detailController {
 	public String returnlist(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
 			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
-		List<Branch> bList = this.getNextPossibleBranches();
-		List<Branch> lastList = new ArrayList<Branch>();
+		//List<Branch> bList = this.getNextPossibleBranches();
+		//List<Branch> lastList = new ArrayList<Branch>();
 		List<PrintView> printList = new ArrayList<PrintView>();
-		for (Branch b : bList) {
+		
+		List<Branch> bList = this.cwborderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> removeList = new ArrayList<Branch>();
+		for (Branch b : bList) {// 去掉中转站
+			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue())) {
+				removeList.add(b);
+			}
+		}
+		bList.removeAll(removeList);
+		
+		/*for (Branch b : bList) {
 			// 退货站
 			if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 				lastList.add(b);
 			}
-		}
-		model.addAttribute("branchlist", lastList);
+		}*/
+		model.addAttribute("branchlist", bList);
 
 		if (isshow > 0) {
 			List<GroupDetail> gdList = this.groupDetailDao.getCwbForChuKuPrintTime(this.getSessionUser().getBranchid(), branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), begindate, enddate);

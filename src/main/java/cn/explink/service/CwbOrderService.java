@@ -3509,8 +3509,11 @@ public class CwbOrderService {
 				}
 			}
 		}
-
-		this.produceGroupDetail(user, cwb, requestbatchno, false, flowOrderTypeEnum.getValue(), co.getNextbranchid(), co.getDeliverid(), co.getCustomerid(), 0, 0, "");
+		if(forceOut){
+			this.produceGroupDetail(user, cwb, requestbatchno, false, flowOrderTypeEnum.getValue(), branchid, co.getDeliverid(), co.getCustomerid(), 0, 0, "");
+		}else{
+			this.produceGroupDetail(user, cwb, requestbatchno, false, flowOrderTypeEnum.getValue(), co.getNextbranchid(), co.getDeliverid(), co.getCustomerid(), 0, 0, "");
+		}
 
 		// =====加入按包出库标识 zs==========
 		if (!anbaochuku) {
