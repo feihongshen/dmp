@@ -210,7 +210,12 @@ public class WorkOrderController {
 	
 	@RequestMapping("/CreateComplainWorkOrder")
 	public String CreateComplainWorkOrder(Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid,@RequestParam(value="CallerPhoneValue",defaultValue="",required=true) String CallerPhoneValue){
-		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);	
+		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);
+		CsComplaintAccept co=workorderdao.getCsComplaintAcceptByAcceptNo(transcwb);
+		while(co!=null){
+			transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);
+			co=workorderdao.getCsComplaintAcceptByAcceptNo(transcwb);
+		}
 		CwbOrder cl=cwbdao.getCwbOrderByOpscwbid(opscwbid);
 		CsComplaintAccept ca = new CsComplaintAccept();
 			ca.setProvence(cl.getCwbprovince());

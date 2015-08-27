@@ -829,4 +829,16 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		String sql="insert into cs_shensu_chat(cre_time,cre_chat_content,cre_user,accept_no) values(?,?,?,?)";
 		this.jt.update(sql,creTime,creContent,creUser,acceptNo);
 	}
+	
+	public CsComplaintAccept getCsComplaintAcceptByAcceptNo(String workOrderNo){
+		String sql = "SELECT * FROM cs_complaint_accept WHERE accept_no='"+workOrderNo+"'";
+		CsComplaintAccept cc=null;
+		try {
+			 cc= this.jt.queryForObject(sql,new CsComplaintAcceptRowMapper());
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+		return cc;
+	}
 }
