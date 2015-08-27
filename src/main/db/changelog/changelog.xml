@@ -8296,4 +8296,9 @@ CREATE TABLE `cs_complaint_accept` (
 			 ALTER  TABLE `express_ops_backintowarehous_print` MODIFY COLUMN `transcwb`  VARCHAR(1000)  DEFAULT '';
 		</sql>
 	</changeSet>	
+	<changeSet id="wangzhiyong-2015-08-27-01" author="wangzhiyong">
+		<sql>
+			ALTER TABLE `cs_complaint_accept` ADD INDEX `acceptno_Idx` (`accept_no`);
+		</sql>
+	</changeSet>
 </databaseChangeLog>
