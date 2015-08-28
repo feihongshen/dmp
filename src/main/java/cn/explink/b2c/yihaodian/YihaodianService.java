@@ -67,7 +67,10 @@ public class YihaodianService {
 
 		yihaodian.setIsopenDataDownload(Integer.parseInt(request.getParameter("isopenDataDownload")));
 		yihaodian.setLoopcount(Integer.parseInt(request.getParameter("loopcount")));
-		yihaodian.setYwcustomerid(request.getParameter("ywcustomerid"));
+		
+		String ywcustomerid=request.getParameter("ywcustomerid");
+		yihaodian.setYwcustomerid(ywcustomerid);
+		String oldYwCustomerids = ""; //yaowang customerid
 
 		String customerids = request.getParameter("customerids");
 		String oldCustomerids = "";
@@ -82,6 +85,7 @@ public class YihaodianService {
 		} else {
 			try {
 				oldCustomerids = getYihaodian(joint_num).getCustomerids();
+				oldYwCustomerids = this.getYihaodian(joint_num).getYwcustomerid();
 			} catch (Exception e) {
 			}
 			jointEntity.setJoint_num(joint_num);
@@ -90,6 +94,7 @@ public class YihaodianService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerDAO.updateB2cEnumByJoint_num(ywcustomerid, oldYwCustomerids, joint_num);
 	}
 
 	public void update(int joint_num, int state) {
