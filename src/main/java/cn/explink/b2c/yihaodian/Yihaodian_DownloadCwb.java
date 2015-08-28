@@ -130,7 +130,7 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 				// multi_shipcwb 存入 一票多箱 多个箱号逗号隔开，存入主表时插入 transcwb列 20130606
 
 				String fromcompany=order.getFromCompany();
-				if(fromcompany!=null&&fromcompany.contains("药网")){
+				if(fromcompany!=null&&fromcompany.contains("1")){
 					cwbMap.put("customerid",yhd.getYwcustomerid()); //公司来源
 				}else{
 					cwbMap.put("customerid",yhd.getCustomerids()); //公司来源
