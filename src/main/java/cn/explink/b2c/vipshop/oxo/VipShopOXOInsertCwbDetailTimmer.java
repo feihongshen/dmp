@@ -43,10 +43,12 @@ public class VipShopOXOInsertCwbDetailTimmer {
 	VipShopOXOGetCwbDataService vipShopOXOGetCwbDataService;
 	@Autowired
 	CwbDAO cwbDAO;
-	@Produce(uri = "jms:topic:addressmatchOXO")
-	ProducerTemplate addressmatch;
+
 	@Autowired
 	DataImportService dataImportService;
+	
+	@Produce(uri = "jms:topic:addressmatchOXO")
+	ProducerTemplate addressmatch;
 
 	/**
 	 * 一号店定时器，查询临时表，插入数据到detail表中。

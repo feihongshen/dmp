@@ -57,7 +57,8 @@ public class YihaodianInsertCwbDetailTimmer {
 			logger.info("未开启[一号店]对接！yhd_key={},当前获取订单插入临时表-----", yhd_key);
 			return;
 		}
-		List<CwbOrderDTO> cwbOrderList = dataImportDAO_B2c.getCwbOrderTempByKeys(yihaodian.getCustomerids());
+		String customerids=yihaodian.getCustomerids()+","+yihaodian.getYwcustomerid();
+		List<CwbOrderDTO> cwbOrderList = dataImportDAO_B2c.getCwbOrderTempByKeys(customerids);
 		if (cwbOrderList == null) {
 			return;
 		}

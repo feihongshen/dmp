@@ -131,9 +131,10 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 
 				String fromcompany=order.getFromCompany();
 				if(fromcompany!=null&&fromcompany.contains("1")){
-					cwbMap.put("customerid",yhd.getYwcustomerid()); //公司来源
-				}else{
 					cwbMap.put("customerid",yhd.getCustomerids()); //公司来源
+				}else{
+					
+					cwbMap.put("customerid",yhd.getYwcustomerid()); //公司来源
 				}
 				
 				

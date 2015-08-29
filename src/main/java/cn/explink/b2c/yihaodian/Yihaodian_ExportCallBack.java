@@ -38,7 +38,9 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 	public void ExportCallBackByYiHaoDian(int yhd_key, int loopcount) {
 		Yihaodian yihaodian = getYihaodian(yhd_key);
 		try {
-			List<CwbOrderDTO> datalist = dataImportDAO_B2c.getCwbOrderByCustomerIdAndPageCount(Long.parseLong(yihaodian.getCustomerids()), yihaodian.getCallBackCount());
+			
+			String customerids=yihaodian.getCustomerids()+","+yihaodian.getYwcustomerid();
+			List<CwbOrderDTO> datalist = dataImportDAO_B2c.getCwbOrderByCustomerIdsAndPageCount(customerids, yihaodian.getCallBackCount());
 			if (datalist == null || datalist.size() == 0) {
 				return;
 			}

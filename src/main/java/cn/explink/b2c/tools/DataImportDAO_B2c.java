@@ -308,6 +308,14 @@ public class DataImportDAO_B2c {
 		return jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 	}
 
+	public List<CwbOrderDTO> getCwbOrderByCustomerIdsAndPageCount(String  customerids, long MaxCount) {
+		String beforeTime=DateTimeUtil.getDateBefore(5);
+		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1"
+				+ " and customerid in ("+customerids+")"
+				+ " and isB2cSuccessFlag=0 and emaildate>='"+beforeTime+"' limit 0," + MaxCount;
+		return jdbcTemplate.query(sql, new CwbDTO4TempMapper());
+	}
+	
 	/**
 	 * 修改为已 反馈给B2C（已经成功）
 	 * 
