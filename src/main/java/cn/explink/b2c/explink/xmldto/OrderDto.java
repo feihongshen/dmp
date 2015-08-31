@@ -40,8 +40,17 @@ public class OrderDto implements Serializable {
 	private String consigneenameOfkf;
 	private String consigneemobileOfkf;
 	private String consigneephoneOfkf;
+	private BigDecimal shouldfare = BigDecimal.ZERO;// 应收运费
+
 	
 	
+	public BigDecimal getShouldfare() {
+		return shouldfare;
+	}
+
+	public void setShouldfare(BigDecimal shouldfare) {
+		this.shouldfare = shouldfare;
+	}
 
 	public String getConsigneenameOfkf() {
 		return consigneenameOfkf;
