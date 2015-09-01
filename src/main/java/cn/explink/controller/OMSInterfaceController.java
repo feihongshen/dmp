@@ -860,6 +860,7 @@ public class OMSInterfaceController {
 				orderDto.setConsigneenameOfkf(cwbOrder.getConsigneenameOfkf());
 				orderDto.setConsigneemobileOfkf(cwbOrder.getConsigneemobileOfkf());
 				orderDto.setConsigneephoneOfkf(cwbOrder.getConsigneephoneOfkf());
+				orderDto.setShouldfare(cwbOrder.getShouldfare());
 				orderDtoList.add(orderDto);
 			} catch (Exception e) {
 				logger.error("环形对接-根据订单号获取订单详细信息发生错误" + cwbOrder.getCwb(), e);
