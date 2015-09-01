@@ -192,7 +192,9 @@ public class WhareHouseToCommonService {
 		String msg = "确认出库给承运商成功";
 		quejiancwbStr = quejiancwbStr.length() > 0 ? quejiancwbStr.substring(0, quejiancwbStr.length() - 1) : "";
 		if (quejiancwbStr.length() > 0) {
-			msg = "存在一票多件的订单没有把所有运单号做完出库扫描，请查看明细！";
+			//承运商出库时缺件补件数
+			cwbDAO.updateSendCarNumEqualScannum(quejiancwbStr);
+			//msg = "存在一票多件的订单没有把所有运单号做完出库扫描，请查看明细！";
 		}
 		for (String commencode : commencodes.split(",")) {
 			final String emaildate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -215,9 +217,9 @@ public class WhareHouseToCommonService {
 			}
 
 			String sql = "select * from  commen_cwb_order  " + " where commencode =" + commencode + " and stateTime='' and outbranchflag=" + outbranchflag;
-			if (quejiancwbStr.length() > 0) {
+			/*if (quejiancwbStr.length() > 0) {
 				sql = sql + " and cwb not in(" + quejiancwbStr + ")";
-			}
+			}*/
 			if (startbranchid > 0) {
 				sql += " and startbranchid=" + startbranchid;
 			}

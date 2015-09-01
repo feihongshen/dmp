@@ -6551,4 +6551,11 @@ public class CwbDAO {
 		}
 		return resultCwbList;
 	}
+	public int updateSendCarNumEqualScannum(String ypdjcwbs){
+		try {
+			return this.jdbcTemplate.update("UPDATE express_ops_cwb_detail SET scannum=sendcarnum where cwb in ("+ypdjcwbs+")");
+		} catch (DataAccessException e) {
+			return 0;
+		}
+	}
 }
