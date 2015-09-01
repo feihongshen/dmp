@@ -375,7 +375,7 @@ public class WarehouseGroup_detailController {
 		 * 广州通路需求，如果出库交接单打印，查询页面录入包号查询，变更查询逻辑（由关联表而不是主表取数）
 		 */
 		if( !StringUtils.isEmpty(baleno) ){
-			Map<String, List<CwbOrder>> cwbOrderListMap = this.handleQueryForBale(baleno);
+			Map<String, List<CwbOrder>> cwbOrderListMap = this.handleQueryForBale(baleno,nextbranchid,flowordertype);
 			cwbList = cwbOrderListMap.get("cwbList");
 			cwbListForBaleView = cwbOrderListMap.get("cwbListForBaleView");
 			long baleCount = this.baleCwbDao.getBaleScanCount(baleno);
@@ -685,15 +685,70 @@ public class WarehouseGroup_detailController {
 	/**
 	 * 通路逻辑：按包查询内容，主表、关联表数据不一致情况
 	 * @param baleno 包号
+	 * @param flowordertype 
+	 * @param currentbranchid 
+	 * @param nextbranchid 
 	 * @param cwbList 实际对应订单明细
 	 * @param cwbListForBaleView 用于打印页面运单维度订单明细（一票多件多条记录，订单号由运单号替换）
+	 */
+	private Map<String,List<CwbOrder>> handleQueryForBale(String baleno, String nextbranchid, long flowordertype) {
+		
+		Map<String,List<CwbOrder>> resultMap = new HashMap<String, List<CwbOrder>>();
+		//所有包中关联订/运单号 Str list
+		List<String> orderNoStrs = this.baleCwbDao.getCwbsByBaleNO(baleno);
+		//所有真实订单号 Strs
+		StringBuilder cwbsSB = new StringBuilder();
+		String cwbs = "";
+		if( null != orderNoStrs && !orderNoStrs.isEmpty()){
+			for (String tempNo : orderNoStrs) {
+				String targetCwb = this.cwborderService.translateCwb(tempNo);
+				cwbsSB.append("'").append(targetCwb).append("',");
+			}
+		}
+		if( cwbsSB.length() > 0){
+			cwbs = cwbsSB.substring(0,cwbsSB.length()-1);
+		}
+		//真实订单list(根据打印相关表获取)
+//		List<CwbOrder> cwbList = this.cwbDao.getCwbListByAnyNo(orderNoStrs);
+		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype,baleno);
+		
+		//显示用订单list
+		List<CwbOrder> cwbListForBaleView = new ArrayList<CwbOrder>();
+		//构建显示-打印用订单list（运单维度）
+		Map<String , String> cwbTransCwbMap = this.buildCwbTransCwbMap(cwbList);
+		
+		if( null != cwbList && null != orderNoStrs ){
+			for (String tempNo : orderNoStrs) {
+				CwbOrder cwbOrder = null;
+				//关联为订单号
+				if( cwbTransCwbMap.get(tempNo) == null  ){
+					cwbOrder = this.getCwbOrderByOrderNO(cwbList,tempNo);
+				//关联为运单号	
+				}else{
+					cwbOrder = this.getCwbOrderByTransNo(cwbList,tempNo,cwbTransCwbMap);
+				}
+				cwbListForBaleView.add(cwbOrder);
+			}
+		}
+		
+		resultMap.put("cwbList", cwbList);
+		resultMap.put("cwbListForBaleView", cwbListForBaleView);
+		return resultMap;
+	}
+	
+	/**
+	 * 按包查询内容，主表、关联表数据不一致情况 for 历史打印
+	 * @param baleno
+	 * @param nextbranchid
+	 * @param flowordertype
+	 * @return
 	 */
 	private Map<String,List<CwbOrder>> handleQueryForBale(String baleno) {
 		
 		Map<String,List<CwbOrder>> resultMap = new HashMap<String, List<CwbOrder>>();
 		//所有包中关联订/运单号 Str list
 		List<String> orderNoStrs = this.baleCwbDao.getCwbsByBaleNO(baleno);
-		//真实订单list
+		//真实订单list(根据打印相关表获取)
 		List<CwbOrder> cwbList = this.cwbDao.getCwbListByAnyNo(orderNoStrs);
 		//显示用订单list
 		List<CwbOrder> cwbListForBaleView = new ArrayList<CwbOrder>();
@@ -720,7 +775,8 @@ public class WarehouseGroup_detailController {
 	private CwbOrder getCwbOrderByTransNo(List<CwbOrder> cwbList, String tempNo, Map<String, String> cwbTransCwbMap) {
 		CwbOrder tarCwbOrder = new CwbOrder();
 		for (CwbOrder cwbOrder : cwbList) {
-			if(cwbOrder.getCwb().equals(cwbTransCwbMap.get(tempNo))){
+			//此处未实现按照不同客户区分大小写设置 TODO
+			if(cwbOrder.getCwb().equalsIgnoreCase(cwbTransCwbMap.get(tempNo))){
 				tarCwbOrder = BeanConverter.convert(tarCwbOrder, cwbOrder);
 				/**
 				 * 一票一件，存在运单号情况处理
@@ -736,7 +792,7 @@ public class WarehouseGroup_detailController {
 
 	private CwbOrder getCwbOrderByOrderNO(List<CwbOrder> cwbList, String tempNo) {
 		for (CwbOrder cwbOrder : cwbList) {
-			if(cwbOrder.getCwb().equals(tempNo)){
+			if(cwbOrder.getCwb().equalsIgnoreCase(tempNo)){
 				return cwbOrder;
 			}
 		}
@@ -753,7 +809,7 @@ public class WarehouseGroup_detailController {
 		if( null != cwbList && !cwbList.isEmpty()){
 			for (CwbOrder cwbOrder : cwbList) {
 				String transCwb = cwbOrder.getTranscwb() == null? "" : cwbOrder.getTranscwb();
-				if(transCwb.split(",").length > 0){
+				if( !transCwb.equals("") && transCwb.split(",").length > 0){
 					for (String tempTransCwb : transCwb.split(",")) {
 						resultMap.put( tempTransCwb , cwbOrder.getCwb());
 					}

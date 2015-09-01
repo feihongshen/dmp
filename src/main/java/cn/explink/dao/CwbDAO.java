@@ -472,6 +472,7 @@ public class CwbDAO {
 			cwbOrder.setReceivablefee(rs.getBigDecimal("receivablefee"));
 			cwbOrder.setPaybackfee(rs.getBigDecimal("paybackfee"));
 			cwbOrder.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
+			cwbOrder.setTranscwb(StringUtil.nullConvertToEmptyString(rs.getString("transcwb")));
 			cwbOrder.setCwbordertypeid(rs.getInt("cwbordertypeid"));
 			cwbOrder.setPaywayid(rs.getLong("paywayid"));
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
@@ -5241,7 +5242,7 @@ public class CwbDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs, String nextbranchid, long branchid, long flowordertype) {
-		String sql = "SELECT cd.cwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
+		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
 				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
 				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
 				+ "FROM express_ops_groupdetail op LEFT JOIN express_ops_cwb_detail cd ON cd.cwb=op.cwb where op.cwb in(" + cwbs + ") " + "and op.nextbranchid in(" + nextbranchid
@@ -5249,6 +5250,22 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
 	}
 
+	/**
+	 * 出库打印 按照站点分开(for bale)
+	 *
+	 * @param cwbs
+	 * @param nextbranchid
+	 * @return
+	 */
+	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs, String nextbranchid, long branchid, long flowordertype,String baleno) {
+		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
+				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
+				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
+				+ "FROM express_ops_groupdetail op LEFT JOIN express_ops_cwb_detail cd ON cd.cwb=op.cwb where op.cwb in(" + cwbs + ") and op.baleno='" + baleno + "' and op.nextbranchid in(" + nextbranchid
+				+ ") and op.branchid=" + branchid + " and cd.state=1 and op.flowordertype=" + flowordertype;
+		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
+	}
+	
 	/**
 	 * 分站到货 已到货
 	 *
