@@ -137,6 +137,7 @@ function changeTag(id){
 		$("#changereasonid").parent().hide();
 		$("#losereasonid").val(0);
 		$("#paytype").val(-1);
+		$("#deliverremark").val("");
 	}else if(id==<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>){
 		$("#paytype").parent().show();
 		$("#backreasonid").parent().hide();
@@ -156,7 +157,7 @@ function changeTag(id){
 		$("#firstchangereasonid").parent().hide();
 		$("#changereasonid").parent().hide();
 		$("#losereasonid").val(0);
-
+		$("#deliverremark").val("");
 		<%if(batchEditDeliveryStateisUseCash.equals("no")){ %>
 			$("#paytype").val(-1);
 		<%}else{%>
@@ -201,6 +202,7 @@ function changeTag(id){
 		$("#paytype").val(-1);
 		$("#firstchangereasonid").parent().hide();
 		$("#changereasonid").parent().hide();
+		$("#deliverremark").val("");
 	}
 	
 	
