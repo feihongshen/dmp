@@ -150,8 +150,8 @@ public class LogTodayLogDAO {
 
 	// 今日到货日报 按当前站点查询
 	public long getTodaybyBranchid(long branchid, long flowordertype, String startTime, String endTime) {
-		return jdbcTemplate.queryForLong("SELECT COUNT(DISTINCT cwb) FROM express_ops_order_flow_log FORCE INDEX(FlowCredateIdx) WHERE  " + " flowordertype=? " + " AND credate >=? " + " AND credate <=? "
-				+ " AND branchid=? ", flowordertype, startTime, endTime, branchid);
+		return jdbcTemplate.queryForLong("SELECT COUNT(DISTINCT cwb) FROM express_ops_order_flow_log  WHERE  " + " credate >=? " + " AND credate <=? AND  flowordertype=? " 
+				+ " AND branchid=? ",  startTime, endTime,flowordertype, branchid);
 	}
 
 	/**
@@ -288,8 +288,8 @@ public class LogTodayLogDAO {
 	}
 
 	public List<String> getOrderByDeliverystate(long branchid, long flowordertype, String startTime, String endTime) {
-		return jdbcTemplate.query("SELECT DISTINCT cwb as cwb FROM express_ops_order_flow_log FORCE INDEX(FlowCredateIdx) WHERE " + " branchid = ? " + " AND flowordertype=? " + " AND credate >=? "
-				+ " AND credate <=? AND isnow=1 ", new OrderCwbMapper(), branchid, flowordertype, startTime, endTime);
+		return jdbcTemplate.query("SELECT cwb FROM express_ops_order_flow_log WHERE " + "  credate >=? "
+				+ " AND credate <=? AND branchid = ?  AND flowordertype=? AND isnow=1 ", new OrderCwbMapper(), startTime, endTime,branchid, flowordertype);
 	}
 
 	// ====按flow查询反馈订单的款项统计 end==============
