@@ -33,7 +33,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExportmouldDAO;
-import cn.explink.dao.LogTodayDAO;
+import cn.explink.dao.LogTodayLogDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchTodayLog;
@@ -79,7 +79,7 @@ public class LogToDayController {
 	DeliveryStateDAO deliveryStateDAO;
 
 	@Autowired
-	LogTodayDAO logTodayDAO;
+	LogTodayLogDAO logTodayDAO;
 	@Autowired
 	CustomWareHouseDAO customWareHouseDAO;
 	@Autowired

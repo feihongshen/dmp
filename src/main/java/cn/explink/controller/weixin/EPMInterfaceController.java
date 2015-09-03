@@ -1,7 +1,6 @@
 package cn.explink.controller.weixin;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,7 @@ import cn.explink.controller.UserView;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
-import cn.explink.dao.LogTodayDAO;
+import cn.explink.dao.LogTodayLogDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
@@ -56,7 +55,7 @@ public class EPMInterfaceController {
 	@Autowired
 	RoleDAO roleDAO;
 	@Autowired
-	LogTodayDAO logTodayDAO;
+	LogTodayLogDAO logTodayDAO;
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
 

@@ -38,7 +38,7 @@ import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.LogTodayByTuihuoDAO;
 import cn.explink.dao.LogTodayByWarehouseDAO;
-import cn.explink.dao.LogTodayDAO;
+import cn.explink.dao.LogTodayLogDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.PayWayDao;
 import cn.explink.dao.ReasonDao;
@@ -108,7 +108,7 @@ public class LogToDayExportService {
 	@Autowired
 	LogTodayByTuihuoDAO logTodayByTuihuoDAO;
 	@Autowired
-	LogTodayDAO logTodayDAO;
+	LogTodayLogDAO logTodayDAO;
 	@Autowired
 	TuihuoRecordDAO tuihuoRecordDAO;
 	@Autowired

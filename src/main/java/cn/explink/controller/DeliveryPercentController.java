@@ -31,7 +31,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryPercentDAO;
 import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.ExportmouldDAO;
-import cn.explink.dao.LogTodayDAO;
+import cn.explink.dao.LogTodayLogDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchTodayLog;
@@ -60,7 +60,7 @@ public class DeliveryPercentController {
 	@Autowired
 	LogToDayService logToDayService;
 	@Autowired
-	LogTodayDAO logTodayDAO;
+	LogTodayLogDAO logTodayDAO;
 	@Autowired
 	DeliveryPercentDAO deliveryPercentDAO;
 	@Autowired

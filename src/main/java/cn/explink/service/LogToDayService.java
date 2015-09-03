@@ -26,9 +26,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryPercentDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.EmailDateDAO;
-import cn.explink.dao.LogTodayDAO;
-import cn.explink.dao.OrderFlowDAO;
-import cn.explink.dao.OrderFlowLogDAO;
+import cn.explink.dao.LogTodayLogDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
@@ -62,9 +60,7 @@ public class LogToDayService implements SystemConfigChangeListner {
 	@Autowired
 	CwbDAO cwbDAO;
 	@Autowired
-	OrderFlowLogDAO orderFlowDAO;
-	@Autowired
-	LogTodayDAO logTodayDAO;
+	LogTodayLogDAO logTodayDAO;
 	@Autowired
 	BranchDAO branchDAO;
 	@Autowired

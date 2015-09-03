@@ -34,7 +34,6 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.FinanceAuditDAO;
 import cn.explink.dao.FinancePayUpAuditDAO;
-import cn.explink.dao.LogTodayDAO;
 import cn.explink.dao.PayUpDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
@@ -58,8 +57,6 @@ public class BranchPayamountService {
 	DeliveryStateDAO deliverStateDAO;
 	@Autowired
 	FinanceAuditDAO financeAuditDAO;
-	@Autowired
-	LogTodayDAO logTodayDAO;
 	@Autowired
 	EmailDateDAO emailDateDAO;
 	@Autowired
