@@ -564,6 +564,8 @@ src/main/java/cn/explink/b2c/weisuda/WeisudaController.java -text
 src/main/java/cn/explink/b2c/weisuda/WeisudaService.java -text
 src/main/java/cn/explink/b2c/weisuda/xml/GetUnVerifyOrders_back_Item.java -text
 src/main/java/cn/explink/b2c/weisuda/xml/GetUnVerifyOrders_back_Root.java -text
+src/main/java/cn/explink/b2c/weisuda/xml/Good.java -text
+src/main/java/cn/explink/b2c/weisuda/xml/Goods.java -text
 src/main/java/cn/explink/b2c/weisuda/xml/ObjectUnMarchal.java -text
 src/main/java/cn/explink/b2c/weisuda/xml/PushOrders_Item.java -text
 src/main/java/cn/explink/b2c/weisuda/xml/PushOrders_Root.java -text

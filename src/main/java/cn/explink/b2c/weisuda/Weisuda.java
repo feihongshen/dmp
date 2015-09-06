@@ -12,6 +12,11 @@ public class Weisuda {
 	private String siteDel_URL;
 	private String courierUpdate_URL;
 	private String carrierDel_URL;
+	private String unboundOrders_URL;
+	private String getback_boundOrders_URL;
+	private String getback_getAppOrders_URL;
+	private String getback_confirmAppOrders_URL;
+	private String getback_updateOrders_URL;
 	private String nums;
 	private String count;
 
@@ -103,6 +108,77 @@ public class Weisuda {
 		this.carrierDel_URL = carrierDel_URL;
 	}
 
+	/**
+	 * @return the unboundOrders_URL
+	 */
+	public String getUnboundOrders_URL() {
+		return this.unboundOrders_URL;
+	}
+
+	/**
+	 * @param unboundOrders_URL
+	 *            the unboundOrders_URL to set
+	 */
+	public void setUnboundOrders_URL(String unboundOrders_URL) {
+		this.unboundOrders_URL = unboundOrders_URL;
+	}
+
+	/**
+	 * @return the getback_boundOrders_URL
+	 */
+	public String getGetback_boundOrders_URL() {
+		return this.getback_boundOrders_URL;
+	}
+
+	/**
+	 * @param getback_boundOrders_URL the getback_boundOrders_URL to set
+	 */
+	public void setGetback_boundOrders_URL(String getback_boundOrders_URL) {
+		this.getback_boundOrders_URL = getback_boundOrders_URL;
+	}
+
+	/**
+	 * @return the getback_getAppOrders_URL
+	 */
+	public String getGetback_getAppOrders_URL() {
+		return this.getback_getAppOrders_URL;
+	}
+
+	/**
+	 * @param getback_getAppOrders_URL the getback_getAppOrders_URL to set
+	 */
+	public void setGetback_getAppOrders_URL(String getback_getAppOrders_URL) {
+		this.getback_getAppOrders_URL = getback_getAppOrders_URL;
+	}
+
+	/**
+	 * @return the getback_confirmAppOrders_URL
+	 */
+	public String getGetback_confirmAppOrders_URL() {
+		return this.getback_confirmAppOrders_URL;
+	}
+
+	/**
+	 * @param getback_confirmAppOrders_URL the getback_confirmAppOrders_URL to set
+	 */
+	public void setGetback_confirmAppOrders_URL(String getback_confirmAppOrders_URL) {
+		this.getback_confirmAppOrders_URL = getback_confirmAppOrders_URL;
+	}
+
+	/**
+	 * @return the getback_updateOrders_URL
+	 */
+	public String getGetback_updateOrders_URL() {
+		return this.getback_updateOrders_URL;
+	}
+
+	/**
+	 * @param getback_updateOrders_URL the getback_updateOrders_URL to set
+	 */
+	public void setGetback_updateOrders_URL(String getback_updateOrders_URL) {
+		this.getback_updateOrders_URL = getback_updateOrders_URL;
+	}
+
 	public String getNums() {
 		return this.nums;
 	}
@@ -110,6 +186,8 @@ public class Weisuda {
 	public void setNums(String nums) {
 		this.nums = nums;
 	}
+
+
 
 	public String getCount() {
 		return this.count;

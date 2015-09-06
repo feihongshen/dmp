@@ -1,11 +1,8 @@
 package cn.explink.b2c.weisuda;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +23,7 @@ public class CourierService {
 
 	public void courierUpdate(User user) {
 		try {
-			logger.info("=========修改派送员伟速达"+user.getRealname()+"=================");
+			this.logger.info("=========修改派送员唯速达" + user.getRealname() + "=================");
 			String jsonUser = JsonUtil.translateToJson(user);
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "update");
 		} catch (Exception e) {
@@ -40,7 +37,7 @@ public class CourierService {
 
 	public void carrierDel(User user) {
 		try {
-			logger.info("=========删除派送员伟速达"+user.getRealname()+"=================");
+			this.logger.info("=========删除派送员伟速达" + user.getRealname() + "=================");
 			String jsonUser = JsonUtil.translateToJson(user);
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "del");
 		} catch (Exception e) {
@@ -48,7 +45,6 @@ public class CourierService {
 		}
 
 	}
-
 
 	public void customerUpdate() {
 		try {
@@ -59,19 +55,28 @@ public class CourierService {
 
 	}
 
-//	@PostConstruct
-//	public void init() {
-//		try {
-//			this.camelContext.addRoutes(new RouteBuilder() {
-//				@Override
-//				public void configure() throws Exception {
-//					this.from("jms:queue:VirtualTopicConsumers.omsToWeisudaSyn.courierUpdate?concurrentConsumers=5").to("bean:courierService?method=courierUpdate").routeId("weisuda_���¿��Ա");
-//				}
-//			});
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public void platformCustomerUpdate() {
+		try {
+			this.courierUpdate.sendBodyAndHeader(null, "platformcustomer", "update");
+		} catch (Exception e) {
+			this.logger.error("(对接平台)供货商通知异常JMS", e);
+
+		}
+	}
+
+	// @PostConstruct
+	// public void init() {
+	// try {
+	// this.camelContext.addRoutes(new RouteBuilder() {
+	// @Override
+	// public void configure() throws Exception {
+	// this.from("jms:queue:VirtualTopicConsumers.omsToWeisudaSyn.courierUpdate?concurrentConsumers=5").to("bean:courierService?method=courierUpdate").routeId("weisuda_���¿��Ա");
+	// }
+	// });
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
 
 	// public void courierUpdate(@Headers()Map<String, String>
 	// parameters,@Body() String body){

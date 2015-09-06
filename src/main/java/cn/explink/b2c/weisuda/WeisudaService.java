@@ -22,21 +22,26 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.explink.core_up.CommonCoreService;
 import cn.explink.b2c.explink.xmldto.OrderFlowDto;
+import cn.explink.b2c.tools.ExptCodeJoint;
 import cn.explink.b2c.tools.ExptCodeJointDAO;
 import cn.explink.b2c.tools.ExptReasonDAO;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMappDAO;
+import cn.explink.b2c.weisuda.xml.Good;
+import cn.explink.b2c.weisuda.xml.Goods;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryCashDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
+import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.OrderGoods;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -46,9 +51,12 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.pos.tools.PosEnum;
 import cn.explink.pos.tools.PosPayDAO;
 import cn.explink.pos.tools.PosPayService;
+import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.OrderPartGoodsReturnService;
 import cn.explink.util.StringUtil;
 
 @Service
@@ -87,6 +95,10 @@ public class WeisudaService {
 	SystemInstallDAO systemInstallDAO;
 	@Autowired
 	ReasonDao reasonDAO;
+	@Autowired
+	OrderGoodsDAO orderGoodsDAO;
+	@Autowired
+	OrderPartGoodsReturnService orderPartGoodsReturnService;
 	@Autowired
 	CwbOrderService cwborderService;
 
@@ -145,6 +157,11 @@ public class WeisudaService {
 		String siteDel_URL = StringUtil.nullConvertToEmptyString(request.getParameter("siteDel_URL"));
 		String courierUpdate_URL = StringUtil.nullConvertToEmptyString(request.getParameter("courierUpdate_URL"));
 		String carrierDel_URL = StringUtil.nullConvertToEmptyString(request.getParameter("carrierDel_URL"));
+		String unboundOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("unboundOrders_URL"));
+		String getback_boundOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_boundOrders_URL"));
+		String getback_confirmAppOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_confirmAppOrders_URL"));
+		String getback_getAppOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_getAppOrders_URL"));
+		String getback_updateOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_updateOrders_URL"));
 
 		weisuda.setCode(code);
 		weisuda.setV(v);
@@ -157,6 +174,11 @@ public class WeisudaService {
 		weisuda.setSiteDel_URL(siteDel_URL);
 		weisuda.setCourierUpdate_URL(courierUpdate_URL);
 		weisuda.setCarrierDel_URL(carrierDel_URL);
+		weisuda.setUnboundOrders_URL(unboundOrders_URL);
+		weisuda.setGetback_boundOrders_URL(getback_boundOrders_URL);
+		weisuda.setGetback_confirmAppOrders_URL(getback_confirmAppOrders_URL);
+		weisuda.setGetback_getAppOrders_URL(getback_getAppOrders_URL);
+		weisuda.setGetback_updateOrders_URL(getback_updateOrders_URL);
 		weisuda.setNums(nums);
 		weisuda.setCount(count);
 
@@ -185,7 +207,7 @@ public class WeisudaService {
 
 	/**
 	 * 对接反馈接口
-	 * 
+	 *
 	 * @param commd
 	 * @param cwb
 	 * @param podresultid
@@ -207,7 +229,7 @@ public class WeisudaService {
 		BigDecimal paybackedfee = BigDecimal.ZERO;
 
 		long podresultid = Long.valueOf(orderFlowDto.getDeliverystate());
-		podresultid = this.getPodresultid(podresultid, cwbOrder);
+		// podresultid = this.getPodresultid(podresultid, cwbOrder);
 
 		DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(orderFlowDto.getCwb());
 
@@ -222,7 +244,7 @@ public class WeisudaService {
 			this.cwbOrderService.deliverStatePodCancel(orderFlowDto.getCwb(), deliverystate.getDeliverybranchid(), deliverystate.getDeliveryid(), "运单撤销", 0);
 			return;
 		}
-
+		String remark5 = "";
 		if (deliverystate.getIsout() == 1) { // 应退款
 			pos = BigDecimal.ZERO;
 			cash = BigDecimal.ZERO;
@@ -231,7 +253,7 @@ public class WeisudaService {
 			if ((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
 					|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 				paybackedfee = deliverystate.getBusinessfee();
-				String remark5 = cwbOrder.getRemark5();
+				remark5 = cwbOrder.getRemark5();
 				if (remark5 != null) {
 					if (remark5.trim().length() > 0) {
 						remark5 += ",";
@@ -241,7 +263,6 @@ public class WeisudaService {
 				}
 				remark5 += orderFlowDto.getPayremark();
 
-				this.cwbDAO.updateCwbRemarkPaytype(orderFlowDto.getCwb(), remark5);
 			}
 
 		} else if ((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())) { // 应收款
@@ -281,14 +302,31 @@ public class WeisudaService {
 		String deliverstateremark = "系统对接";
 
 		if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
+			if ((orderFlowDto.getExptmsg() != null) && !orderFlowDto.getExptmsg().isEmpty()) {
+				ExptCodeJoint exptCodeJoint = this.exptcodeJointDAO.getExpMatchListByPosCode(orderFlowDto.getExptmsg(), PosEnum.Weisuda.getKey());
 
-			backedreasonid = Long.valueOf((orderFlowDto.getExptcode() == null) || orderFlowDto.getExptcode().isEmpty() ? "0" : orderFlowDto.getExptcode());
+				if ((exptCodeJoint != null) && (exptCodeJoint.getReasonid() != 0)) {
+					backedreasonid = exptCodeJoint.getReasonid();
+				}
+			}
+		}
+		if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
+			if ((orderFlowDto.getStrandedrReason() != null) && !orderFlowDto.getStrandedrReason().isEmpty()) {
+				ExptCodeJoint exptCodeJoint = this.exptcodeJointDAO.getExpMatchListByPosCode(orderFlowDto.getStrandedrReason(), PosEnum.Weisuda.getKey());
+
+				if ((exptCodeJoint != null) && (exptCodeJoint.getReasonid() != 0)) {
+					leavedreasonid = exptCodeJoint.getReasonid();
+				}
+			}
 		}
 
 		long deliverid = deliverystate.getDeliveryid();
 		long infactDeliverid = 0;
 		try {
-			User user = this.userDAO.getUserByUsernameToUpper(orderFlowDto.getDeliveryname());
+			User user = this.userDAO.getUserByUsernameToUpper(orderFlowDto.getDeliveryname().toUpperCase());
+			if (user == null) {
+				user = this.userDAO.getUserByUsername(orderFlowDto.getDeliveryname());
+			}
 			infactDeliverid = user.getUserid();
 			if ((infactDeliverid != deliverid) && (infactDeliverid != 0)) {
 				deliverid = infactDeliverid;
@@ -298,10 +336,10 @@ public class WeisudaService {
 				deliverystate.setDeliveryid(deliverid);
 			}
 		} catch (Exception e1) {
-			this.logger.error("唯速达_02回传username=" + orderFlowDto.getDeliveryname() + "不存在，cwb=" + cwbOrder.getCwb());
+			this.logger.error("唯速达_回传username=" + orderFlowDto.getDeliveryname() + "不存在，cwb=" + cwbOrder.getCwb());
 			infactDeliverid = 0;
 		}
-
+		String posremark = pos.compareTo(BigDecimal.ZERO) > 0 ? "POS刷卡" : "";
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("deliverid", deliverid);
 		parameters.put("podresultid", podresultid);
@@ -313,7 +351,7 @@ public class WeisudaService {
 		parameters.put("receivedfeeother", other);
 		parameters.put("paybackedfee", paybackedfee);
 		parameters.put("podremarkid", (long) 0);
-		parameters.put("posremark", pos.compareTo(BigDecimal.ZERO) > 0 ? "POS刷卡" : "");
+		parameters.put("posremark", posremark);
 		parameters.put("checkremark", check.compareTo(BigDecimal.ZERO) > 0 ? "支票支付" : "");
 		parameters.put("deliverstateremark", deliverstateremark);
 		parameters.put("owgid", 0);
@@ -331,52 +369,75 @@ public class WeisudaService {
 			cwbOrder.setCwbremark(newcwbremark);
 
 		} catch (Exception e) {
-			this.logger.error("error while saveing cwbremark,cwb:" + cwbOrder.getCwb() + "cwbremark:" + newcwbremark, e);
+			this.logger.error("唯速达接口反馈异常,cwb:" + cwbOrder.getCwb() + "cwbremark:" + newcwbremark, e);
 			throw new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 		}
 		parameters.put("nosysyemflag", "1");//
-		if ((orderFlowDto.getExptmsg() != null) && !orderFlowDto.getExptmsg().isEmpty()) {
-			this.cwbDAO.saveCwbForBackreason(orderFlowDto.getCwb(), orderFlowDto.getExptmsg(), 0);
-		}
-//		if ((orderFlowDto.getStrandedrReason() != null) && !orderFlowDto.getStrandedrReason().isEmpty()) {
-//			this.cwbDAO.saveCwbForLeavereason(orderFlowDto.getCwb(), orderFlowDto.getStrandedrReason(), 0);
-//		}
 
 		User user = this.userDAO.getAllUserByid(deliverid);
 
-		this.cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
-
-	}
-
-	private long getPodresultid(long podresultid, CwbOrder cwbOrder) {
-		if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) {
-			if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
-				podresultid = DeliveryStateEnum.ShangMenHuanChengGong.getValue();
-			} else if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				podresultid = DeliveryStateEnum.ShangMenTuiChengGong.getValue();
+		if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
+			String Sign_Remark;
+			int Sign_Self_Flag;
+			if (orderFlowDto.getConsignee().trim().equals(cwbOrder.getConsigneename().trim())) {
+				Sign_Self_Flag = SignTypeEnum.BenRenQianShou.getValue();
+				Sign_Remark = SignTypeEnum.BenRenQianShou.getSign_text();
+			} else {
+				Sign_Self_Flag = SignTypeEnum.TaRenDaiQianShou.getValue();
+				Sign_Remark = SignTypeEnum.TaRenDaiQianShou.getSign_text();
 			}
-
-		} else if (podresultid == DeliveryStateEnum.JuShou.getValue()) {
-			if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
-				podresultid = DeliveryStateEnum.JuShou.getValue();
-			} else if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				podresultid = DeliveryStateEnum.ShangMenJuTui.getValue();
+			if (orderFlowDto.getPaytype() == PaytypeEnum.Pos.getValue()) {
+				boolean flag = this.posPayDAO.save_PosTradeDetailRecord(cwbOrder.getCwb(), posremark, Double.valueOf(cwbOrder.getReceivablefee() + ""), deliverid, orderFlowDto.getPaytype(), "",
+						orderFlowDto.getConsignee(), Sign_Self_Flag, Sign_Remark, 4, 1, "", PosEnum.Weisuda.getMethod(), 0, "");
+				this.logger.info("唯速达签收交易-记录posPayDetail表" + flag + "! 订单号:{}", cwbOrder.getCwb());
 			}
-		} else if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
-			podresultid = DeliveryStateEnum.FenZhanZhiLiu.getValue();
+		} else if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+			List<OrderGoods> orderGoods = this.orderGoodsDAO.getOrderGoodsList(orderFlowDto.getCwb());
+			Goods goods = JacksonMapper.getInstance().readValue(orderFlowDto.getReamrk1(), Goods.class);
+			List<Good> goodlist = goods.getGood();
+			if ((orderGoods != null) && (orderGoods.size() > 0) && (goodlist != null) && (goodlist.size() > 0)) {
+				for (Good good : goodlist) {
+					for (OrderGoods orderGood : orderGoods) {
+						if (orderGood.getGoods_code().equals(good.getCode())) {
+							orderGood.setShituicount(good.getFetch_num());
+							orderGood.setTepituicount(good.getSpecial_num());
+							orderGood.setRemark1(good.getRemark());
+						}
+					}
+				}
+				this.orderPartGoodsReturnService.updateOrderGoods(orderGoods);
+			}
 		}
-		return podresultid;
+		this.cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
+		this.cwbDAO.updateCwbRemarkPaytype(orderFlowDto.getCwb(), remark5);
 	}
+
+	/*
+	 * private long getPodresultid(long podresultid, CwbOrder cwbOrder) { if
+	 * (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) { if
+	 * (cwbOrder.getCwbordertypeid() ==
+	 * CwbOrderTypeIdEnum.Shangmenhuan.getValue()) { podresultid =
+	 * DeliveryStateEnum.ShangMenHuanChengGong.getValue(); } else if
+	 * (cwbOrder.getCwbordertypeid() ==
+	 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { podresultid =
+	 * DeliveryStateEnum.ShangMenTuiChengGong.getValue(); }
+	 *
+	 * } else if (podresultid == DeliveryStateEnum.JuShou.getValue()) { if
+	 * (cwbOrder.getCwbordertypeid() ==
+	 * CwbOrderTypeIdEnum.Shangmenhuan.getValue()) { podresultid =
+	 * DeliveryStateEnum.JuShou.getValue(); } else if
+	 * (cwbOrder.getCwbordertypeid() ==
+	 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { podresultid =
+	 * DeliveryStateEnum.ShangMenJuTui.getValue(); } } return podresultid; }
+	 */
 
 	public String subCwbRemark(String newcwbremark) {
-		boolean flag = false;
-		if (newcwbremark.length() > 500) {
-			flag = true;
-			newcwbremark = newcwbremark.substring(newcwbremark.length() - 500);
-			this.subCwbRemark(newcwbremark);
-		}
-		if (newcwbremark.contains("\n") && flag) {
-			newcwbremark = newcwbremark.substring(newcwbremark.indexOf("\n"));
+		while (newcwbremark.length() > 500) {
+			if (newcwbremark.contains("\n")) {
+				newcwbremark = newcwbremark.substring(newcwbremark.indexOf("\n") + 1);
+			} else {
+				newcwbremark = newcwbremark.substring(0, 500);
+			}
 		}
 		return newcwbremark;
 	}
