@@ -109,6 +109,7 @@ function changeTag(id){
 
 		$("#backreasonid").val(0);
 		$("#deliverstateremark").val("");
+		$("#deliverremark").val("");
 		$("#leavedreasonid").val(0);
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
