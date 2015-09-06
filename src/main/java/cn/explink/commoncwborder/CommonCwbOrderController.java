@@ -18,7 +18,6 @@ import cn.explink.dao.WarehouseToCommenDAO;
 import cn.explink.domain.Common;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.orderflow.OrderFlow;
-import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 
 @Controller
@@ -81,10 +80,10 @@ public class CommonCwbOrderController {
 					String commencode = commlist.get(0).getCommonnumber();
 
 					if (count > 0) {
-						this.warehouseToCommenDAO.updateWarehouseToCommen(cwbOrder.getCwb(), of.getBranchid(), cwbOrder.getNextbranchid(), commencode,
+					/*	this.warehouseToCommenDAO.updateWarehouseToCommen(cwbOrder.getCwb(), of.getBranchid(), cwbOrder.getNextbranchid(), commencode,
 								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
 						this.logger.info("存入出库给承运商表 订单号:{},更新成功", cwb);
-						num++;
+						num++;*/
 					} else {
 						this.warehouseToCommenDAO.creWarehouseToCommen(cwbOrder.getCwb(), cwbOrder.getCustomerid(), of.getBranchid(), cwbOrder.getNextbranchid(), commencode, new SimpleDateFormat(
 								"yyyy-MM-dd HH:mm:ss").format(of.getCredate()), "", 0);
