@@ -102,6 +102,7 @@ function changeTag(id)
 		$("#leavedreasonid").val(0);
 		$("#resendtime").val("");
 		$("#zhiliuremark").val("");
+		$("#deliverstateremark").val("");
 		
 		
 	}else if(id==<%=DeliveryStateEnum.HuoWuDiuShi.getValue()%>){
