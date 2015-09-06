@@ -929,7 +929,6 @@ public class DeliveryController {
 					parameters.put("podremarkid", 0l);
 					parameters.put("posremark", "");
 					parameters.put("checkremark", "");
-					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("owgid", 0);
 					parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 					parameters.put("sessionuserid", this.getSessionUser().getUserid());
@@ -944,6 +943,7 @@ public class DeliveryController {
 					parameters.put("fankuileixing", "SHANGMENHUAN");//添加的
 					parameters.put("firstchangereasonid", firstchangereasonid);
 					parameters.put("changereasonid", changereasonid);
+					parameters.put("firstlevelreasonid", firstlevelreasonid);
 					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
 					obj.put("errorcode", "000000");
@@ -1066,7 +1066,6 @@ public class DeliveryController {
 				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 				try {// 成功订单
 					Map<String, Object> parameters = new HashMap<String, Object>();
-					parameters.put("deliverstateremark", deliverstateremark);
 					parameters.put("losereasonid", losereasonid);
 					//以上为添加的
 					parameters.put("podresultid", deliverystate);
@@ -1085,6 +1084,7 @@ public class DeliveryController {
 					parameters.put("resendtime", resendtime);
 					parameters.put("zhiliuremark", zhiliuremark);
 					parameters.put("fankuileixing", "SHANGMENTUI");//添加的
+					parameters.put("firstlevelreasonid", firstlevelreasonid);
 
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);
