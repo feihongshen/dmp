@@ -20,7 +20,7 @@ Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>唯速达对接设置</h1>
 		<form id="alipay_save_Form" name="alipay_save_Form"  onSubmit="submitSaveForm(this);return false;" action="<%=request.getContextPath()%>/weisuda/save/${joint_num}" method="post">
-		<div id="box_form">
+		<div id="box_form" style="width: 400px;">
 				<ul>
 					<li><span>承运商代码：</span>
  						<input type ="text" id="code" name ="code" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getCode())%>" maxlength="30"  > 
@@ -33,6 +33,9 @@ Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
 					</li>
 						<li><span>绑定关系通知：</span>
  						<input type ="text" id="pushOrders_URL" name ="pushOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getPushOrders_URL())%>" maxlength="1000"  > 
+					</li>
+						<li><span>取消绑定通知：</span>
+ 						<input type ="text" id="unboundOrders_URL" name ="unboundOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getUnboundOrders_URL())%>" maxlength="1000"  > 
 					</li>
 					<li><span>签收信息同步API：</span>
  						<input type ="text" id="UnVerifyOrders_URL" name ="UnVerifyOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getUnVerifyOrders_URL())%>" maxlength="1000"  > 
@@ -55,13 +58,24 @@ Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
 					<li><span>快递员删除：</span>
  						<input type ="text" id="carrierDel_URL" name ="carrierDel_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getCarrierDel_URL())%>" maxlength="1000"  > 
 					</li>
+					<li><span>上门退绑定：</span>
+ 						<input type ="text" id="getback_boundOrders_URL" name ="getback_boundOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getGetback_boundOrders_URL())%>" maxlength="1000"  > 
+					</li>
+					<li><span>签收结果：</span>
+ 						<input type ="text" id="getback_getAppOrders_URL" name ="getback_getAppOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getGetback_getAppOrders_URL())%>" maxlength="1000"  > 
+					</li>
+					<li><span>签收结果同步：</span>
+ 						<input type ="text" id="getback_confirmAppOrders_URL" name ="getback_confirmAppOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getGetback_confirmAppOrders_URL())%>" maxlength="1000"  > 
+					</li>
+					<li><span>信息修改：</span>
+ 						<input type ="text" id="getback_updateOrders_URL" name ="getback_updateOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getGetback_updateOrders_URL())%>" maxlength="1000"  > 
+					</li>
 					<li><span>接收单数：</span>
  						<input type ="text" id="nums" name ="nums" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getNums())%>" maxlength="1000"  > 
 					</li>
 					<li><span>接收次数：</span>
  						<input type ="text" id="count" name ="count" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getCount())%>" maxlength="1000"  > 
 					</li>
-					
 					<li><span>密码：</span>
  						<input type ="password" id="password" name ="password" value ="" maxlength="30"  > 
 					</li>
