@@ -8301,4 +8301,11 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `cs_complaint_accept` ADD INDEX `acceptno_Idx` (`accept_no`);
 		</sql>
 	</changeSet>
+	<changeSet id="mali-2015-09-06-01" author="mali">
+		<sql>
+			create INDEX    `detail_fncustomerbillid_idx`  on express_ops_cwb_detail(`fncustomerbillid`);
+			create INDEX  `detail_fncustomerpayablebillid_idx`  on express_ops_cwb_detail(`fncustomerpayablebillid`);
+			create INDEX  `detail_fnorgbillid_idx`  on express_ops_cwb_detail(`fnorgbillid`);
+		</sql>
+	</changeSet>
 </databaseChangeLog>
