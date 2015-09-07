@@ -647,7 +647,7 @@
 				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_pj_42?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_shpj_test?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>root</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -660,11 +660,11 @@
 				<word></word>
 				<logotxd>2</logotxd>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
-				<label>local</label>
-				<addresscustomerid>4</addresscustomerid>
-				<addressid>4</addressid>
+				<label>version_pj</label>
+				<addresscustomerid>1</addresscustomerid>
+				<addressid>1</addressid>
 				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
@@ -3305,6 +3305,31 @@
 				<addressid>6</addressid>
 				<addresspassword>gztl</addresspassword>
 				<addressWebserviceIp>183.61.89.252/addressmatchgztl42</addressWebserviceIp>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>SHPJTEST</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.28:3306/shpj_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/logo_scpj.png</logoimgurl>
+				<label>SHPJTEST</label>
+				<addresscustomerid>13</addresscustomerid>
+				<addressid>13</addressid>
+				<addresspassword>shpj</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressg</addressWebserviceIp>
 			</properties>
 		</profile>
 		
