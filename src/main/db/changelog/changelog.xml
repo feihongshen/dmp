@@ -8313,4 +8313,9 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO dmp40_function  VALUES ('8091', '1', '加盟站点预扣款管理', '8091', '', '80');
 		</sql>
 	</changeSet>
+	<changeSet id="zhouguoting-2015-09-07-02" author="zhouguoting">
+		<sql>
+			INSERT INTO dmp40_function  VALUES ('809110', '2', '站点金额明细管理', '809110', 'accountfranchisee/stationAccountDetailMgmt?', '8091');
+		</sql>
+	</changeSet>
 </databaseChangeLog>
