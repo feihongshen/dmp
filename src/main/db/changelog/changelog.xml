@@ -8308,14 +8308,4 @@ CREATE TABLE `cs_complaint_accept` (
 			create INDEX  `detail_fnorgbillid_idx`  on express_ops_cwb_detail(`fnorgbillid`);
 		</sql>
 	</changeSet>
-	<changeSet id="zhouguoting-2015-09-07-01" author="zhouguoting">
-		<sql>
-			INSERT INTO dmp40_function  VALUES ('8091', '1', '加盟站点预扣款管理', '8091', '', '80');
-		</sql>
-	</changeSet>
-	<changeSet id="zhouguoting-2015-09-07-02" author="zhouguoting">
-		<sql>
-			INSERT INTO dmp40_function  VALUES ('809110', '2', '站点金额明细管理', '809110', 'accountfranchisee/stationAccountDetailMgmt?', '8091');
-		</sql>
-	</changeSet>
 </databaseChangeLog>
