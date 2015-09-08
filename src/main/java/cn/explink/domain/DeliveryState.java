@@ -3,11 +3,13 @@ package cn.explink.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.deser.std.DateDeserializer;
 import org.codehaus.jackson.map.ser.std.DateSerializer;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeliveryState {
 	private long id;
 	private String cwb;
