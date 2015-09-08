@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.vipshop.oxo.VipShopOXOGetCwbDataService;
+import cn.explink.b2c.vipshop.oxo.VipShopOXOInsertCwbDetailTimmer;
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
@@ -40,6 +42,8 @@ public class VipShopOXOController {
 	CwbDAO cwbDAO;
 	@Autowired
 	OrderGoodsDAO orderGoodsDAO;
+	@Autowired
+	VipShopOXOInsertCwbDetailTimmer vipShopOXOInsertCwbDetailTimmer;
 
 	@RequestMapping("/show/{id}")
 	public String jointShow(@PathVariable("id") int key, Model model) {
@@ -122,6 +126,23 @@ public class VipShopOXOController {
 		cwbOrderService.datalose_vipshop(cwb);
 
 		return "执行订单"+cwb+"失效成功";
+
+	}
+	
+
+	/**
+	 * vipshop请求接口 2012-10-25
+	 *
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/timmer")
+	public @ResponseBody String timmer(HttpServletRequest request, HttpServletResponse response) {
+
+		vipShopOXOInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.VipShop_OXO.getKey());
+
+		return "定时任务执行成功";
 
 	}
 
