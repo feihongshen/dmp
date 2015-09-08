@@ -159,6 +159,16 @@ $("#right_hideboxbtn").click(function(){
 				long	 chukuCountsum1 = chukuMap.get(mo.getKey()) == null?0:chukuMap.get(mo.getKey()).getDcount();
 				BigDecimal chukuCaramountsum1 = chukuMap.get(mo.getKey()) == null? BigDecimal.ZERO:chukuMap.get(mo.getKey()).getDsum();
 				
+				if( null == weidaohuoCaramountsum1){
+					weidaohuoCaramountsum1 = BigDecimal.ZERO;
+				}
+				if( null == rukuCaramountsum1){
+					rukuCaramountsum1 = BigDecimal.ZERO;
+				}
+				if( null == chukuCaramountsum1){
+					chukuCaramountsum1 = BigDecimal.ZERO;
+				}
+				
 				
 				%>
 			   	<tr height="30">
@@ -174,8 +184,7 @@ $("#right_hideboxbtn").click(function(){
 			   		<td  align="center" valign="middle" ><a href="<%=request.getContextPath()%>/monitorlog/showkucun/<%=mo.getKey()%>/all/1"> <%= rukuCountsum1 +chukuCountsum1+weidaohuoCountsum1
 			   		  %></a></td>
 			   		<td  align="right" valign="middle" >
-			   		<%=rukuCaramountsum1.add(chukuCaramountsum1).
-			   		add(weidaohuoCaramountsum1)%>
+			   		<%=rukuCaramountsum1.add(chukuCaramountsum1).add(weidaohuoCaramountsum1)%>
 			   		</td>
 				</tr>
 				<%
