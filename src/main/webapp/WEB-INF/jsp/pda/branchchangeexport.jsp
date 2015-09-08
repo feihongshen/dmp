@@ -97,30 +97,36 @@ $(function(){
 				$("#alloutnum").html(data.yichukucount);
 				$("#daizhongzhuan").html(data.daizhongzhuan);
 				var cwbList=data.yisaomiaocwOrders;
-				var customers=data.customerList;
-				$("#ysm").html("");
-				$("#ysm_nextbranchid").val(branchid);
-				var tr="";
-				if(cwbList.length>0){
-					$("#ysm_export").show();
-				}
-				for(var i=0;i<cwbList.length;i++)
-					{
-					tr+= "<tr>"
-					+"<td width='120' align='center'>"+cwbList[i].cwb+"</td>"
-					+"<td width='120' align='center'>"+cwbList[i].transcwb+"</td>"
-					+"<td width='120' align='center'>"+cwbList[i].packagecode+"</td>";
-					for(var j=0;j<customers.length;j++){
-						if(customers[j].customerid==cwbList[i].customerid){
-					tr+="<td width='100' align='center'> "+customers[j].customername+"</td>";
+					var customers=data.customerList;
+					$("#ysm").html("");
+					$("#ysm_nextbranchid").val(branchid);
+					var tr="";
+				if( !(typeof(cwbList) == "undefined" || cwbList == "undefined") ){
+					if(cwbList.length>0){
+						$("#ysm_export").show();
+					}
+					$('#ysmSumNo').val(cwbList.length);
+					for(var i=0;i<cwbList.length;i++)
+						{
+						tr+= "<tr>"
+						+"<td width='120' align='center'>"+cwbList[i].cwb+"</td>"
+						+"<td width='120' align='center'>"+cwbList[i].transcwb+"</td>"
+						+"<td width='120' align='center'>"+cwbList[i].packagecode+"</td>";
+						for(var j=0;j<customers.length;j++){
+							if(customers[j].customerid==cwbList[i].customerid){
+						tr+="<td width='100' align='center'> "+customers[j].customername+"</td>";
+							}
 						}
-					}
-					tr+="<td width='140' align='center'> "+cwbList[i].emaildate+"</td>"
-					+"<td width='100' align='center'> "+cwbList[i].consigneename+"</td>"
-					+"<td width='100' align='center'> "+cwbList[i].receivablefee+"</td>"
-					+"<td align='left'> "+cwbList[i].consigneeaddress+"</td>"
-					+ "</tr>";
-					}
+						tr+="<td width='140' align='center'> "+cwbList[i].emaildate+"</td>"
+						+"<td width='100' align='center'> "+cwbList[i].consigneename+"</td>"
+						+"<td width='100' align='center'> "+cwbList[i].receivablefee+"</td>"
+						+"<td align='left'> "+cwbList[i].consigneeaddress+"</td>"
+						+ "</tr>";
+						}
+					$('#ysmExport').show();
+				}else{
+					$('#ysmExport').hide();
+				}
 				$("#ysm").append(tr);
 			}
 		});
@@ -546,7 +552,7 @@ function chuku(){
 			</li>
 			<li id="ysm_li">			
 				<form action="<%=request.getContextPath()%>/PDA/daizhongzhuanysmExport">
-					<input type ="submit" id="btnval0" value="导出Excel" class="input_button1" />
+					<input type ="submit" id="ysmExport" value="导出Excel" class="input_button1" />
 					<input type ="hidden" id="ysm_nextbranchid" name="nextbranchid" value="" class="input_button1" />
 				</form>
 				<table width="100%" border="0" cellspacing="10" cellpadding="0" >
