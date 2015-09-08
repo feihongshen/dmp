@@ -36,6 +36,7 @@ import cn.explink.domain.addressvo.OrderVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.service.SystemConfigChangeListner;
@@ -224,6 +225,7 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 		Set<Long> set = new HashSet<Long>();
 		orderVoList.add(this.getOrderVo(cwbOrder,address));
 		AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
+		logger.info("订单{}匹配地址库返回:{}",cwb,JacksonMapper.getInstance().writeValueAsString(addressreturn));
 		int successFlag = addressreturn.getResultCode().getCode();
 		if (successFlag == 0) {
 			OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(cwb);
