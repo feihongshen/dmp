@@ -178,6 +178,9 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 				List<DeliveryStationVo> deliveryStationList=new ArrayList<DeliveryStationVo>();
 				Set<Long> set = addressMatchStation(cwb, address, cwbOrder, user, orderVoList,deliveryStationList);
 				
+				if(set == null||set.size()==0){
+					return null;
+				}
 				if (set.size() == 1) {
 					Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
 					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
