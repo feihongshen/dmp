@@ -1235,6 +1235,25 @@ public class WarehouseGroup_detailController {
 				cwbListForBale = cwbListMap.get("cwbListForBaleView");
 			}else{
 				cwbs = owg.getCwbs();
+				if(cwbs.indexOf("'") >0){
+					if(",".equals(cwbs.substring(cwbs.length()-1, cwbs.length()))){
+						cwbs = cwbs.substring(0, cwbs.length()-1);
+					}
+				}else{
+					String cwbs1 = cwbs;
+					String[] cwbStr = cwbs1.split(",");
+					cwbs="";
+					if(cwbStr.length >0){
+						for (String cwb : cwbStr) {
+							cwbs += "'"+cwb+"',";
+						}
+					}
+					if(cwbs.length()>0){
+						cwbs =  cwbs.substring(0, cwbs.length()-1);
+					}else{
+						cwbs = "'--'";
+					}
+				}
 				cwbList.addAll(this.cwbDao.getCwbByCwbs(cwbs));
 			}
 		} else {
