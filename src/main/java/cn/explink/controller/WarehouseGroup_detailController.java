@@ -1235,7 +1235,7 @@ public class WarehouseGroup_detailController {
 				cwbListForBale = cwbListMap.get("cwbListForBaleView");
 			}else{
 				cwbs = owg.getCwbs();
-				if(cwbs.indexOf("'") >0){
+				if(cwbs.indexOf("'") >-1){
 					if(",".equals(cwbs.substring(cwbs.length()-1, cwbs.length()))){
 						cwbs = cwbs.substring(0, cwbs.length()-1);
 					}
@@ -1290,8 +1290,8 @@ public class WarehouseGroup_detailController {
 			/**
 			 * 按包逻辑完善：真实订单、显示打印用订单 list
 			 */
-			model.addAttribute("cwbList", cwbListForBale);
-			model.addAttribute("cwbListForBale",cwbList);
+			model.addAttribute("cwbList", cwbList);
+			model.addAttribute("cwbListForBale",cwbListForBale);
 			return "warehousegroup/outbillprinting_history";
 		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 2) {
 
