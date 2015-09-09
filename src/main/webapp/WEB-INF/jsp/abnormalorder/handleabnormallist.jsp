@@ -720,7 +720,7 @@ function checkdealresult(){
 						<td width="100" align="center" valign="middle"><%=view.getIsfinecontent() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getIsfindInfo() %></td>
 						<td width="160" align="center" valign="middle">
-						<%if(!ishandle.equals(AbnormalOrderHandleEnum.jieanchuli.getValue()+"")){ %>
+						<%if(!(view.getIshandle()+"").equals(AbnormalOrderHandleEnum.jieanchuli.getValue()+"")){ %>
 						<a id="" href="javascript:void(0);" style="color: blue;" onclick="getThisBoxList('<%=view.getId() %>','0');">处理</a>
 						<a href="javascript:void(0);" style="color: blue;" onclick="resultdatadeal('<%=view.getId() %>');">结案处理</a></td>
 						<%}else{

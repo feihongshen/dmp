@@ -80,7 +80,7 @@ String filepathsum=request.getAttribute("filepathsum").toString();
 						</tr>
 						<tr class="font_1">
 							<td align="left" valign="top">
-								处理结果:<strong><%=abnormalOrder.getDealresult()=="1"?"问题成立":"问题不成立"%></strong>
+								处理结果:<strong><%="1".equals(abnormalOrder.getDealresult())?"问题成立":"问题不成立"%></strong>
 							</td>
 						</tr>
 						<tr class="font_1">

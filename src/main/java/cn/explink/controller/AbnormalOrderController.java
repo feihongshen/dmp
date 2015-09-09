@@ -1359,11 +1359,14 @@ public class AbnormalOrderController {
 			Date date = new Date();
 			String nowtime = df.format(date);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(id);
-			List<AbnormalWriteBack> abnormalWriteBacks=this.abnormalWriteBackDAO.getAbnormalWriteBackisjiean(ab.getCwb());
-			if (abnormalWriteBacks!=null) {
+			//List<AbnormalWriteBack> abnormalWriteBacks=this.abnormalWriteBackDAO.getAbnormalWriteBackisjiean(ab.getCwb());
+		/*	if (abnormalWriteBacks!=null) {
 				if (abnormalWriteBacks.size()>0) {
 					return "{\"errorCode\":1,\"error\":\"操作失败(已经结案的订单不允许再次结案)\"}";
 				}
+			}*/
+			if((ab!=null)&&(ab.getIshandle()==AbnormalOrderHandleEnum.jieanchuli.getValue())){
+				return "{\"errorCode\":1,\"error\":\"操作失败(已经结案的订单不允许再次结案)\"}";
 			}
 			long action=AbnormalWriteBackEnum.JieAN.getValue();
 			long ishandle=AbnormalOrderHandleEnum.jieanchuli.getValue();
@@ -1397,11 +1400,14 @@ public class AbnormalOrderController {
 			String nowtime = df.format(date);
 			String filepath=this.abnormalService.loadexceptfile(file);
 			AbnormalOrder ab = this.abnormalOrderDAO.getAbnormalOrderByOId(Integer.parseInt(id));
-			List<AbnormalWriteBack> abnormalWriteBacks=this.abnormalWriteBackDAO.getAbnormalWriteBackisjiean(ab.getCwb());
-			if (abnormalWriteBacks!=null) {
+			//List<AbnormalWriteBack> abnormalWriteBacks=this.abnormalWriteBackDAO.getAbnormalWriteBackisjiean(ab.getCwb());
+		/*	if (abnormalWriteBacks!=null) {
 				if (abnormalWriteBacks.size()>0) {
 					return "{\"errorCode\":1,\"error\":\"操作失败(已经结案的订单不允许再次结案)\"}";
 				}
+			}*/
+			if((ab!=null)&&(ab.getIshandle()==AbnormalOrderHandleEnum.jieanchuli.getValue())){
+				return "{\"errorCode\":1,\"error\":\"操作失败(已经结案的订单不允许再次结案)\"}";
 			}
 			String filepathsum=(ab.getFileposition()==null?"":ab.getFileposition())+","+filepath;
 			long action=AbnormalWriteBackEnum.JieAN.getValue();
