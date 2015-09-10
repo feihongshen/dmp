@@ -281,29 +281,6 @@ public class BaleController {
 			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
 //			cwb=this.cwbOrderService.translateCwb(cwb);
 			
-			/**
-			 * 广州通路按包操作性能问题  初步解决方案
-			 */
-			boolean iszhongzhuanout = false;
-			Branch currentBranch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-			//判断是否中转出库
-			if( BranchEnum.ZhongZhuan.getValue() == currentBranch.getSitetype()){
-				iszhongzhuanout = true;
-			}
-			CwbOrder cwbOrder = this.cwbOrderService.outWarehous(
-					this.getSessionUser(), 
-					cwb, 
-					cwb, 
-					0, 
-					0, 
-					branchid,
-					0, 
-					false, 
-					"", 
-					baleno, 
-					0, 
-					iszhongzhuanout, 
-					false);
 //			this.cwbDAO.updateScannumAuto(cwb);
 			
 			this.baleDAO.updateAddBaleScannum(baleno);

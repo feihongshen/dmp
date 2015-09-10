@@ -1600,7 +1600,32 @@ public class BaleService {
 
 			this.logger.info("更新订单:" + cwb + "的包号为:" + baleno + "，下一站为:" + branchid);
 			// 更新订单表的包号、下一站
-			this.cwbDAO.updatePackagecodeAndNextbranchid(baleno, branchid, cwb);
+//			this.cwbDAO.updatePackagecodeAndNextbranchid(baleno, branchid, cwb);
+
+			/**
+			 * 广州通路按包操作性能问题  初步解决方案
+			 */
+			boolean iszhongzhuanout = false;
+			Branch currentBranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
+			//判断是否中转出库
+			if( BranchEnum.ZhongZhuan.getValue() == currentBranch.getSitetype()){
+				iszhongzhuanout = true;
+			}
+			CwbOrder cwbOrder = this.cwbOrderService.outWarehous(
+			user, 
+			cwb, 
+			cwb, 
+			0, 
+			0, 
+			branchid,
+			0, 
+			false, 
+			"", 
+			baleno, 
+			0, 
+			iszhongzhuanout, 
+			false);
+			
 		}
 	}
 
