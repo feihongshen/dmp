@@ -621,7 +621,7 @@ public class DeliveryController {
 			parameters.put("podremarkid", podremarkid);
 			parameters.put("posremark", posremark);
 			parameters.put("checkremark", checkremark);
-			parameters.put("deliverstateremark", deliverstateremark);
+			parameters.put("deliverstateremark", "");
 			parameters.put("owgid", 0);
 			parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 			parameters.put("sessionuserid", this.getSessionUser().getUserid());
@@ -920,7 +920,7 @@ public class DeliveryController {
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
-				this.logger.info("反馈(批量)-上门换订单,cwb:{}", cwb);
+	 			this.logger.info("反馈(批量)-上门换订单,cwb:{}", cwb);
 				try {// 成功订单
 					Map<String, Object> parameters = new HashMap<String, Object>();
 					parameters.put("podresultid", deliverystate);
