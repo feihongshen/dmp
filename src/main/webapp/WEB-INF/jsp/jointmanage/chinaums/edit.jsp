@@ -33,6 +33,9 @@ ChinaUms chinaums = (ChinaUms)request.getAttribute("chinaums");
 					<li><span>商户号：</span>
 						<input type ="text" id="mer_id" name ="mer_id" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getMer_id()) %>" maxlength="50"  >
 					</li>
+					<li><span>转发URL：</span>
+						<input type ="text" id="forward_url" name ="forward_url" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getForward_url()) %>" maxlength="50"  >
+					</li>
 					<li><span>密码：</span>
  						<input type ="password" id="password" name ="password" value ="" maxlength="30"  > 
 					</li>

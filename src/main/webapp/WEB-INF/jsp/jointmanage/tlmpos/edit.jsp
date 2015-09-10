@@ -69,6 +69,9 @@ Tlmpos alipay = (Tlmpos)request.getAttribute("tlmposlist");
  						<input type="radio" name="isshowPaytype" value="1"  <%if(alipay.getIsshowPaytype()==1){%>checked<%} %>>显示
  						<input type="radio" name="isshowPaytype"  value="0" <%if(alipay.getIsshowPaytype()==0){%>checked<%} %>>不显示
 					</li>
+					<li><span>转发URL：</span>
+ 						<input type ="text" id="forwardUrl" name ="forwardUrl" value ="<%=StringUtil.nullConvertToEmptyString(alipay.getForwardUrl())%>" maxlength="150"  > 
+					</li>
 					
 					<li><span>密码：</span>
  						<input type ="password" id="password" name ="password" value ="" maxlength="30"  > 

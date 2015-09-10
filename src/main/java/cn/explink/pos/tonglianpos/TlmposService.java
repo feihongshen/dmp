@@ -18,6 +18,7 @@ import cn.explink.b2c.tools.ExptCodeJointDAO;
 import cn.explink.b2c.tools.ExptReasonDAO;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
+import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMappDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
@@ -25,6 +26,7 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -141,7 +143,8 @@ public class TlmposService {
 		tlmpos.setRequest_url(request_url);
 		tlmpos.setIsValidateSign(Integer.valueOf(isValidateSign));
 		tlmpos.setIsbackout(Integer.valueOf(isbackout));
-
+		String forwardUrl = request.getParameter("forwardUrl");
+		tlmpos.setForwardUrl(forwardUrl);
 		tlmpos.setIsshowPhone(Integer.valueOf(isshowPhone));
 		tlmpos.setIsshowPaytype(Integer.valueOf(isshowPaytype));
 		tlmpos.setPrivate_key(private_key);
@@ -211,6 +214,23 @@ public class TlmposService {
 	 */
 	private String DealWithtlmposInterface(Tlmpos tlmpos, String xmlstr, Transaction rootnote) {
 		String transaction_id = "";
+		
+		String cwb="";
+		try {
+				if(!"MI0001".equals(transaction_id)){
+					cwb = cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrder_no());
+					CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+					if(co == null){ //转发
+						String forwardStr = RestHttpServiceHanlder.sendHttptoServer(xmlstr, tlmpos.getForwardUrl());
+						logger.info("tlmpos转发URL返回={}",forwardStr);
+						return forwardStr;
+					}
+				}
+				
+		} catch (Exception e) {
+			logger.error("tlmpos转发ULR异常,cwb="+cwb,e);
+		}
+		
 		try {
 			transaction_id = rootnote.getTransaction_Header().getTransaction_id();
 			// logger.info("获取tlmpos的业务编码["+transaction_id+"];请求XML:"+xmlstr);

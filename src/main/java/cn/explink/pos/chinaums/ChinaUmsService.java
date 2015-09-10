@@ -1,7 +1,9 @@
 package cn.explink.pos.chinaums;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +20,7 @@ import cn.explink.b2c.tools.ExptCodeJointDAO;
 import cn.explink.b2c.tools.ExptReasonDAO;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
+import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
@@ -26,6 +29,7 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -116,19 +120,24 @@ public class ChinaUmsService {
 	}
 
 	public void edit(HttpServletRequest request, int joint_num) {
-		ChinaUms ChinaUms = new ChinaUms();
+		ChinaUms chinaums = new ChinaUms();
 		String private_key = StringUtil.nullConvertToEmptyString(request.getParameter("private_key"));
 		String request_url = StringUtil.nullConvertToEmptyString(request.getParameter("request_url"));
 		int isotherdeliveroper = Integer.parseInt(request.getParameter("isotherdeliveroper"));
 
 		String mer_id = StringUtil.nullConvertToEmptyString(request.getParameter("mer_id")); // 商户号
+		
+		String forward_url = StringUtil.nullConvertToEmptyString(request.getParameter("forward_url")); 
+		
 
-		ChinaUms.setPrivate_key(private_key);
-		ChinaUms.setRequest_url(request_url);
-		ChinaUms.setIsotherdeliveroper(isotherdeliveroper);
-		ChinaUms.setMer_id(mer_id);
+		chinaums.setPrivate_key(private_key);
+		chinaums.setRequest_url(request_url);
+		chinaums.setIsotherdeliveroper(isotherdeliveroper);
+		chinaums.setMer_id(mer_id);
+		chinaums.setForward_url(forward_url);
+		
 
-		JSONObject jsonObj = JSONObject.fromObject(ChinaUms);
+		JSONObject jsonObj = JSONObject.fromObject(chinaums);
 		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
 			jointEntity = new JointEntity();
@@ -160,7 +169,7 @@ public class ChinaUmsService {
 					logger.error("chinaums请求签名验证失败!");
 					rootnote.getTransaction_Header().setResponse_code(ChinaUmsExptMessageEnum.SignValidateFailed.getResp_code());
 					rootnote.getTransaction_Header().setResponse_msg(ChinaUmsExptMessageEnum.SignValidateFailed.getResp_msg());
-					return chinaUmsService_public.createXML_toExptFeedBack(chinaUms, rootnote);
+					//return chinaUmsService_public.createXML_toExptFeedBack(chinaUms, rootnote);
 				}
 				return DealWithchinaumsInterface(chinaUms, xmlstr, rootnote);
 			} catch (Exception e) {
@@ -183,9 +192,30 @@ public class ChinaUmsService {
 	 * @return
 	 */
 	private String DealWithchinaumsInterface(ChinaUms chinaUms, String xmlstr, Transaction rootnote) {
-		String transaction_id = "";
+		String transaction_id = rootnote.getTransaction_Header().getTranstype();
+		String cwb = "";
 		try {
-			transaction_id = rootnote.getTransaction_Header().getTranstype();
+			if (ChinaUmsEnum.Delivery.getCommand().equals(transaction_id)
+					||ChinaUmsEnum.DeliveryCancel.getCommand().equals(transaction_id)
+					||ChinaUmsEnum.OrderRegistration.getCommand().equals(transaction_id)
+					||ChinaUmsEnum.Search.getCommand().equals(transaction_id)) {// 查询支付反馈异常件需要判断是否要转发
+				
+				cwb = cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrderno());
+				CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+				if(co == null){ //转发
+					Map<String,String> paraMap=new HashMap<String,String>();
+					paraMap.put("context", xmlstr);
+					String forwardStr = RestHttpServiceHanlder.sendHttptoServer(paraMap, chinaUms.getForward_url());
+					logger.info("chinaums转发URL返回={}",forwardStr);
+					return forwardStr;
+				}
+			}
+		} catch (Exception e) {
+			logger.error("chinaums转发ULR异常,cwb="+cwb,e);
+		}
+		
+		try {
+			
 			logger.info("获取chinaums的业务编码[" + transaction_id + "];请求XML:" + xmlstr);
 			if (ChinaUmsEnum.Login.getCommand().equals(transaction_id)) {// 派送员登陆
 				return chinaUmsServiceMaster.getChinaUmsService_toLogin().tologin(rootnote, chinaUms);

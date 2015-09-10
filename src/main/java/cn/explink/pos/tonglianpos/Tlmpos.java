@@ -14,7 +14,16 @@ public class Tlmpos {
 	private int isshowPhone; // 是否显示电话 0不显示 1显示
 	private int isshowPaytype; // 是否显示支付方式放在remark列 0不显示 1显示
 	private String private_key;
+	private String forwardUrl; //转发URl
 	
+	public String getForwardUrl() {
+		return forwardUrl;
+	}
+
+	public void setForwardUrl(String forwardUrl) {
+		this.forwardUrl = forwardUrl;
+	}
+
 	public String getPrivate_key() {
 		return private_key;
 	}
