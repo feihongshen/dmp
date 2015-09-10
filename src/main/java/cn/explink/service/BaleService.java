@@ -1600,7 +1600,7 @@ public class BaleService {
 
 			this.logger.info("更新订单:" + cwb + "的包号为:" + baleno + "，下一站为:" + branchid);
 			// 更新订单表的包号、下一站
-//			this.cwbDAO.updatePackagecodeAndNextbranchid(baleno, branchid, cwb);
+			this.cwbDAO.updatePackagecodeAndNextbranchid(baleno, branchid, cwb);
 
 			/**
 			 * 广州通路按包操作性能问题  初步解决方案
