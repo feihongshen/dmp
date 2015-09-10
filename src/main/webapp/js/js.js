@@ -1363,6 +1363,7 @@ function init_deliverystate() {
 	$("#infactfare").parent().hide();
 	$("#changereasonid").parent().hide();
 	$("#firstchangereasonid").parent().hide();
+	$("#signmanphone").parent().hide();
 }
 
 function gonggong() {
@@ -1463,8 +1464,12 @@ function weishuakachange() {
 function signmanchange() {
 	if ($("#signmanid").val() == 2) {
 		$("#signman").parent().show();
+		$("#signmanphone").parent().show();
 	} else {
+		$("#signman").val("");
+		$("#signmanphone").val("");
 		$("#signman").parent().hide();
+		$("#signmanphone").parent().hide();
 	}
 }
 
@@ -1795,13 +1800,22 @@ function checkPeiSong() {
 	}
 	return true;
 }
+
+
+
 function checksignman() {
 	if (parseFloat($("#signmanid").val()) == 2 && $("#signman").val().length == 0) {
 		alert("请输入签收人姓名");
 		return false;
 	}
+	if (parseFloat($("#signmanid").val()) == 2 && $("#signmanphone").val().length == 0) {
+		alert("请输入代签收人电话");
+		return false;
+	}
 	return true;
 }
+
+
 function checkShangMenTui() {
 	if (!checkGongGong_delivery()) {
 		return false;

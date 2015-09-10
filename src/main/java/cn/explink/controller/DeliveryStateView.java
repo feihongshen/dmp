@@ -34,7 +34,15 @@ public class DeliveryStateView {
 	private String backreason;// 退货原因
 	private String leavedreason;// 滞留原因
 	private String changereason; //中转原因
-	
+	private String sign_man_phone;
+
+	public String getSign_man_phone() {
+		return sign_man_phone;
+	}
+
+	public void setSign_man_phone(String sign_man_phone) {
+		this.sign_man_phone = sign_man_phone;
+	}
 
 	private long customerid;
 	private String customername;// 供货商

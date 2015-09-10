@@ -50,6 +50,14 @@ public class DeliveryState {
 	private String pushremarks;// 推送备注
 	private BigDecimal shouldfare = BigDecimal.ZERO;
 	private BigDecimal infactfare = BigDecimal.ZERO;
+	private String sign_man_phone;
+	public String getSign_man_phone() {
+		return sign_man_phone;
+	}
+
+	public void setSign_man_phone(String sign_man_phone) {
+		this.sign_man_phone = sign_man_phone;
+	}
 
 	// 加字段
 	private long customerid;// 供货商id

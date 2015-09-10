@@ -246,7 +246,8 @@ if(parseInt($("#isOpenFlag").val())!=0){
 			        	<option value ="2">他人签收</option>
 			        </select>*
 		        </li>
-		        <li><span>签收人：</span><input type="text" name="signman" id="signman" value ="<%=deliverystate.getSign_man()%>" maxlength="50"/></li>
+		        <li><span>实际签收人：</span><input type="text" name="signman" id="signman" value ="<%=deliverystate.getSign_man()%>" maxlength="50"/></li>
+		        <li><span>实际签收人手机：</span><input type="text" name="signmanphone" id="signmanphone" value ="" maxlength="50"/></li>
 		        <li><span>应<%=(cwborder.getPaybackfee().compareTo(cwborder.getReceivablefee())==1?"退":"收") %>款：</span><%=deliverystate.getBusinessfee() %><input type="hidden" id="shouldfee" value="<%=deliverystate.getBusinessfee()%>"/></li>
 		        <li><span>实收款：</span><input type="text" id="infactfee" value="<%=deliverystate.getReceivedfee()%>"/></li>
 		        <li><span>退还现金：</span><input type="text" name="returnedfee" id="returnedfee" value ="<%=deliverystate.getReturnedfee()%>" maxlength="50"/></li>

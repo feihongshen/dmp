@@ -409,11 +409,11 @@ public class DeliveryStateDAO {
 
 	public void saveForReFanKui(String cwb, long deliverid, BigDecimal receivedfee, BigDecimal returnedfee, BigDecimal businessfee, long deliverystate, BigDecimal cash, BigDecimal pos,
 			String posremark, BigDecimal checkfee, String checkremark, BigDecimal otherfee, long podremarkid, String deliverstateremark, String createtime, int sign_typeid, String sign_man,
-			String sign_time, BigDecimal codpos, BigDecimal infactfare) {
-		String sql = "update express_ops_delivery_state set sign_man=?,sign_time=?";
+			String sign_time,String sign_man_phone, BigDecimal codpos, BigDecimal infactfare) {
+		String sql = "update express_ops_delivery_state set sign_man=?,sign_time=?,sign_man_phone=? ";
 		sql = this.setDeliveyStateParmForSql(sql, cwb, deliverid, receivedfee, returnedfee, businessfee, deliverystate, cash, pos, posremark, checkfee, checkremark, otherfee, podremarkid,
 				deliverstateremark, createtime, sign_typeid, codpos, infactfare);
-		this.jdbcTemplate.update(sql, sign_man, sign_time);
+		this.jdbcTemplate.update(sql, sign_man, sign_time,sign_man_phone);
 	}
 
 	public void saveDeliveyStateIsautolinghuoByCwb(long isautolinghuo, String cwb) {

@@ -601,7 +601,8 @@ public class DeliveryController {
 			@RequestParam("losereasonid") long losereasonid, @RequestParam(value = "deliverytime", required = false, defaultValue = "") String deliverytime,
 			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare,
 			@RequestParam("changereasonid") long changereasonid, @RequestParam("firstchangereasonid") long firstchangereasonid,
-			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
+			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid,
+			@RequestParam(value = "signmanphone", required = false, defaultValue = "") String signmanphone) {
 
 		this.logger.info("web-editDeliveryState-进入单票反馈,cwb={}",cwb);
 		try {
@@ -626,6 +627,7 @@ public class DeliveryController {
 			parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 			parameters.put("sessionuserid", this.getSessionUser().getUserid());
 			parameters.put("sign_typeid", SignTypeEnum.BenRenQianShou.getValue());
+			parameters.put("sign_man_phone", signmanphone);
 			parameters.put("sign_man", signman);
 			parameters.put("sign_time", DateTimeUtil.getNowTime());
 			parameters.put("weishuakareasonid", weishuakareasonid);

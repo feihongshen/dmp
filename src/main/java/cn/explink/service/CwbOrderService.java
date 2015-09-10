@@ -4063,6 +4063,7 @@ public class CwbOrderService {
 		long sessionbranchid = parameters.get("sessionbranchid") == null ? 0l : (Long) parameters.get("sessionbranchid");
 		int sign_typeid = parameters.get("sign_typeid") == null ? SignTypeEnum.BenRenQianShou.getValue() : (Integer) parameters.get("sign_typeid");
 		String sign_man = parameters.get("sign_man") == null ? "" : (String) parameters.get("sign_man");
+		String sign_man_phone = parameters.get("sign_man_phone") == null ? "" : (String) parameters.get("sign_man_phone");
 		String sign_time = parameters.get("sign_time") == null ? "" : (String) parameters.get("sign_time");
 		long paywayid = (parameters.get("paywayid") == null ? 0L : (Long) parameters.get("paywayid"));
 		boolean isbatch = parameters.get("isbatch") != null;
@@ -4232,6 +4233,7 @@ public class CwbOrderService {
 				.getValue()))) {
 			sign_man = sign_man.length() == 0 ? co.getConsigneenameOfkf() : sign_man;
 			sign_time = DateTimeUtil.getNowTime();
+			sign_man_phone = sign_man_phone.length() == 0 ? "" : sign_man_phone;
 			sign_typeid = 1;
 
 		} else {
@@ -4354,7 +4356,7 @@ public class CwbOrderService {
 		}
 
 		this.deliveryStateDAO.saveForReFanKui(co.getCwb(), deliverid, receivedfee, paybackedfee, businessfee, podresultid, receivedfeecash, receivedfeepos, posremark, receivedfeecheque, checkremark,
-				receivedfeeother, podremarkid, deliverstateremark, "", sign_typeid, sign_man, sign_time, receivedfeecodpos, infactfare);
+				receivedfeeother, podremarkid, deliverstateremark, "", sign_typeid, sign_man, sign_time,sign_man_phone, receivedfeecodpos, infactfare);
 		// 修改订单表的实收运费
 		this.cwbDAO.updateCwbInfactFare(co.getCwb(), infactfare);
 
@@ -4693,7 +4695,7 @@ public class CwbOrderService {
 
 		Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 		this.deliveryStateDAO.saveForReFanKui(cwb, deliveryid, feebackAmount, new BigDecimal(0), Receivablefee, deliverystate, cash, pos, posremark, check, checkremark, new BigDecimal(0), 0,
-				deliverstateremark, DateTimeUtil.getNowTime(), 0, "", "", BigDecimal.ZERO, BigDecimal.ZERO);
+				deliverstateremark, DateTimeUtil.getNowTime(), 0, "", "","", BigDecimal.ZERO, BigDecimal.ZERO);
 
 		this.deliveryCashDAO.saveDeliveryCashForDSById(DateTimeUtil.getNowTime(), new BigDecimal(0), cash.add(check), pos, deliverystate == 0 ? ds.getDeliverystate() : deliverystate, ds.getId());
 

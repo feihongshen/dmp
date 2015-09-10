@@ -456,6 +456,7 @@ public class CommonCoreService {
 		sdv.setUserid(ds.getUserid());
 		sdv.setGcaid(ds.getGcaid());
 		sdv.setSign_typeid(ds.getSign_typeid());
+		sdv.setSign_man_phone(ds.getSign_man_phone());
 		sdv.setSign_man(ds.getSign_man());
 		sdv.setSign_time(ds.getSign_time());
 		sdv.setDeliverytime(ds.getDeliverytime());
