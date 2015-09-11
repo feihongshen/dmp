@@ -308,6 +308,16 @@ src/main/java/cn/explink/b2c/jiuye/JiuYe.java -text
 src/main/java/cn/explink/b2c/jiuye/JiuYeController.java -text
 src/main/java/cn/explink/b2c/jiuye/JiuYeInsertCwbDetailTimmer.java -text
 src/main/java/cn/explink/b2c/jiuye/JiuYeService.java -text
+src/main/java/cn/explink/b2c/jiuye/addressmatch/Content.java -text
+src/main/java/cn/explink/b2c/jiuye/addressmatch/JiuYeAddMatchController.java -text
+src/main/java/cn/explink/b2c/jiuye/addressmatch/JiuYeAddMatchService.java -text
+src/main/java/cn/explink/b2c/jiuye/addressmatch/JiuYeAddressMatch.java -text
+src/main/java/cn/explink/b2c/jiuye/addressmatch/JiuYeRequest.java -text
+src/main/java/cn/explink/b2c/jiuye/addressmatch/JiuYeResponse.java -text
+src/main/java/cn/explink/b2c/jiuye/jsondto/JiuYeContent.java -text
+src/main/java/cn/explink/b2c/jiuye/jsondto/JiuYe_request.java -text
+src/main/java/cn/explink/b2c/jiuye/jsondto/JiuYe_response.java -text
+src/main/java/cn/explink/b2c/jiuye/jsondto/SubCode.java -text
 src/main/java/cn/explink/b2c/jumei/AnalyzXMLJuMeiHandler.java -text
 src/main/java/cn/explink/b2c/jumei/JointException.java -text
 src/main/java/cn/explink/b2c/jumei/JuMeiException.java -text
