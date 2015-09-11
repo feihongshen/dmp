@@ -76,8 +76,14 @@ public enum B2cEnum {
 			"文轩网", "wenxuan", 0), 
 			lefengwang(20093, "乐蜂网_对接", "lefengwang_statereturn", 0), Guangzhoutonglu(20095, "广州通路_对接", "guangzhoutonglu", 0), GuangzhoutongluWaifadan(20096, "广州通路对接_外发单",
 			"guangzhoutongluwaifadanduijie", 0),
-			JiuYe(20089, "九曳", "jiuye", 0),
-	VipShop_OXO(20090, "唯品会_oxo", "VIP_OXO", 0); // 唯品会OXO vipshop_oxo
+	VipShop_OXO(20090, "唯品会_oxo", "VIP_OXO", 0),// 唯品会OXO vipshop_oxo
+	JiuYe1(20101, "九曵1", "jiuye_1", 0),JiuYe2(20102, "九曵2", "jiuye_2", 0),JiuYe3(20103, "九曵3", "jiuye_3", 0),JiuYe4(20104, "九曵4", "jiuye_4", 0),JiuYe5(20105, "九曵5", "jiuye_5", 0),
+	JiuYeAddressMatch1(20109, "九曳_站点匹配1", "jiuyeaddressmatch_1", 0),
+	JiuYeAddressMatch2(20110, "九曳_站点匹配2", "jiuyeaddressmatch_2", 0),
+	JiuYeAddressMatch3(20111, "九曳_站点匹配3", "jiuyeaddressmatch_3", 0),
+	JiuYeAddressMatch4(20112, "九曳_站点匹配4", "jiuyeaddressmatch_4", 0),
+	JiuYeAddressMatch5(20113, "九曳_站点匹配5", "jiuyeaddressmatch_5", 0)
+	; 
 
 	private int key;
 	private String text;

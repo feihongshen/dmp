@@ -431,7 +431,16 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/vipshopOXO/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshopOXO/del/');
 		}
-
+		
+		else if(obj=='20101'||obj=='20102'||obj=='20103'||obj=='20104'||obj=='20105'){
+			$("#edit").val('<%=request.getContextPath()%>/jiuye/show/');
+			$("#del").val('<%=request.getContextPath()%>/jiuye/del/');
+		}
+		
+		else if(obj=='20109'||obj=='20110'||obj=='20111'||obj=='20112'||obj=='20113'){
+			$("#edit").val('<%=request.getContextPath()%>/jiuyeaddressmatch/show/');
+			$("#del").val('<%=request.getContextPath()%>/jiuyeaddressmatch/del/');
+		}
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

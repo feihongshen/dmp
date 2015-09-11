@@ -81,6 +81,7 @@
 							  <ref bean="doTime_homegobj1" />
 							  <ref bean="doTime_lechong" />
 							 <ref bean="doTime_sfxhm" />
+							 <ref bean="doTime_jiuye" />
 							 <ref bean="doTime_zhongliang" />
 							 <ref bean="doTime_wenxuan" />
 							  <ref bean="doTime_gztl" />
@@ -895,6 +896,24 @@
          </property>
      </bean>
      <!--结束  -->
+	
+	  <bean id="doTime_jiuye" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getJiuYe" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
      
+     <bean id="getJiuYe" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      	<property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getJiuYe_Task</value>
+         </property>
+     </bean>	
+	     
 <!-- ===================================自动生成HTML定时器 结束========================================== -->
 </beans>

@@ -303,6 +303,11 @@ src/main/java/cn/explink/b2c/jiuxian/JiuxianController.java -text
 src/main/java/cn/explink/b2c/jiuxian/JiuxianInsertCwbDetailTimmer.java -text
 src/main/java/cn/explink/b2c/jiuxian/JiuxianService.java -text
 src/main/java/cn/explink/b2c/jiuxian/JiuxianWang.java -text
+src/main/java/cn/explink/b2c/jiuye/CwbColumnSetJiuye.java -text
+src/main/java/cn/explink/b2c/jiuye/JiuYe.java -text
+src/main/java/cn/explink/b2c/jiuye/JiuYeController.java -text
+src/main/java/cn/explink/b2c/jiuye/JiuYeInsertCwbDetailTimmer.java -text
+src/main/java/cn/explink/b2c/jiuye/JiuYeService.java -text
 src/main/java/cn/explink/b2c/jumei/AnalyzXMLJuMeiHandler.java -text
 src/main/java/cn/explink/b2c/jumei/JointException.java -text
 src/main/java/cn/explink/b2c/jumei/JuMeiException.java -text
@@ -2029,6 +2034,8 @@ src/main/webapp/WEB-INF/jsp/b2cdj/hxg_test.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/hxgdms.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/hzabc.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/jingdong.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/jiuye/jiuye.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/jiuye/jiuyeAddmatch.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/jumeiyoupin.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/lechong.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/lechong/addXml.jsp -text

@@ -122,7 +122,8 @@
 		<intercept-url pattern="/branchContract/**" access="permitAll" />
 		<intercept-url pattern="/gztl/**" access="permitAll" />
 
-
+		<intercept-url pattern="/jiuye/**" access="permitAll" />
+ 		<intercept-url pattern="/jiuyeaddressmatch/**" access="permitAll" />
 
 
 		<intercept-url pattern="/**" access="isAuthenticated()" />

@@ -37,6 +37,7 @@ import cn.explink.b2c.homegou.HomegouService_getOrder;
 import cn.explink.b2c.huitongtx.HuitongtxInsertCwbDetailTimmer;
 import cn.explink.b2c.hxgdms.HxgdmsInsertCwbDetailTimmer;
 import cn.explink.b2c.hzabc.HangZhouABCInsertCwbDetailTimmer;
+import cn.explink.b2c.jiuye.JiuYeInsertCwbDetailTimmer;
 import cn.explink.b2c.lechong.LechongInsertCwbDetailTimmer;
 import cn.explink.b2c.liantong.LiantongInsertCwbDetailTimmer;
 import cn.explink.b2c.maikaolin.MaikaolinInsertCwbDetailTimmer;
@@ -204,6 +205,9 @@ public class JobUtil {
 	VipShopOXOJITFeedbackService vipShopOXOJITFeedbackService;
 	@Autowired
 	PunishInsideService punishInsideService;
+	@Autowired
+	JiuYeInsertCwbDetailTimmer jiuYeInsertCwbDetailTimmer;
+	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 
@@ -1177,6 +1181,23 @@ public class JobUtil {
 			JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 		}
 		this.logger.info("执行了获取punishinside_autoshenhe订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	/**
+	 * 九曳
+	 */
+	public void getJiuYe_Task() {
+		try {
+			long starttime = System.currentTimeMillis();
+
+			this.jiuYeInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了九曵订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+		} catch (Exception e) {
+			this.logger.error("执行九曵订单导入定时器异常", e);
+		}
+
 	}
 	
 }

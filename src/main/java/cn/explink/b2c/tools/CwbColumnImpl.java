@@ -20,6 +20,7 @@ import cn.explink.b2c.homegou.CwbColumnSetHomegou;
 import cn.explink.b2c.huitongtx.CwbColumnSetHuitongtx;
 import cn.explink.b2c.hxgdms.CwbColumnSetHxgdms;
 import cn.explink.b2c.hzabc.CwbColumnSetHZABC;
+import cn.explink.b2c.jiuye.CwbColumnSetJiuye;
 import cn.explink.b2c.liantong.CwbColumnSetLiantong;
 import cn.explink.b2c.maikaolin.CwbColumnSetMaikaolin;
 import cn.explink.b2c.rufengda.CwbColumnSetRufengda;
@@ -110,6 +111,9 @@ public class CwbColumnImpl implements CwbColumnSet {
 
 	@Autowired
 	CwbColumnSetGztl cwbClolumSetGztl;
+	@Autowired
+	CwbColumnSetJiuye cwbColumnSetJiuye;
+	
 
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
@@ -190,6 +194,14 @@ public class CwbColumnImpl implements CwbColumnSet {
 			return this.cwbColumnSetWenxuan.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Guangzhoutonglu.getMethod())) {
 			return this.cwbClolumSetGztl.getEexcelColumnSetByB2c(b2cFlag);
+		}else if (
+				(b2cFlag.equals(B2cEnum.JiuYe1.getMethod())
+				||(b2cFlag.equals(B2cEnum.JiuYe2.getMethod()))
+				||(b2cFlag.equals(B2cEnum.JiuYe3.getMethod()))
+				||(b2cFlag.equals(B2cEnum.JiuYe4.getMethod()))
+				||(b2cFlag.equals(B2cEnum.JiuYe5.getMethod())))) 
+		{
+			return this.cwbColumnSetJiuye.getEexcelColumnSetByB2c(b2cFlag);
 		}
 
 		return null;

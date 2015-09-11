@@ -1,5 +1,6 @@
 package cn.explink.service.addressmatch;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -531,4 +532,29 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		this.init();
 	}
+	
+	
+	/**
+	 * 对接站点匹配地址库，支持新老地址库
+	 * @param itemno
+	 * @param Address
+	 * @return
+	 * @throws IOException
+	 */
+	public JSONObject matchAddressByInterfaces(String itemno, String Address) throws IOException {
+		this.logger.info("{}匹配站点: 地址： {} 开始", itemno,Address);
+		JSONArray addressList = new JSONArray();
+		String addressenabled = this.systemInstallService.getParameter("newaddressenabled"); // 新旧地址库
+		if ((addressenabled != null) && addressenabled.equals("1")) {
+			addressList = this.invokeNewAddressMatchService(itemno, Address);
+		} else {
+				addressList = JSONArray
+						.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + itemno + "@" + Address.replaceAll(",", ""), "POST"));
+		}
+
+		return addressList==null||addressList.size()==0?null:addressList.getJSONObject(0);
+		
+	}
+	
+	
 }
