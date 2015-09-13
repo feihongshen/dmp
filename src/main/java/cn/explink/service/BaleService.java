@@ -1614,7 +1614,7 @@ public class BaleService {
 			CwbOrder cwbOrder = this.cwbOrderService.outWarehous(
 			user, 
 			cwb, 
-			cwb, 
+			scancwb, 
 			0, 
 			0, 
 			branchid,
