@@ -107,6 +107,7 @@ public class JiuYeService {
 			
 			
 			if(!jiuyeReq.getRequestName().equals("RequestOrdersToTMS")){
+				this.logger.info("订单号:{},requestName:{}",jiuyeReq.getContent().getWorkCode(),jiuyeReq.getRequestName());
 				return responseJson(jiuyeReq.getRequestName(), "102", false, "RequestName值不正确",0);
 			}
 			
