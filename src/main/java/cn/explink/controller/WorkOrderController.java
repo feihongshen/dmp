@@ -628,7 +628,15 @@ public class WorkOrderController {
 		SystemInstall systemInstall=systeminstalldao.getSystemInstall("ServiceID");
 		String roleids=systemInstall==null?new SystemInstall().getValue():systemInstall.getValue();
 		Page p=null;		
-		if(getSessionUser().getRoleid()==1||roleids.contains(getSessionUser().getRoleid()+"")){		
+		boolean b = false;
+		String roleidss[]=roleids.split(",");
+		for(String s:roleidss){
+			if(getSessionUser().getRoleid()==1||(getSessionUser().getRoleid()+"").equals(s)){
+				b=true;
+				break;
+			}
+		}
+		if(b==true){		
 			lcs=workorderdao.findGoOnacceptWOByCWBs(page,ncwbs,cv,workorders);		
 			p=new Page(workorderdao.findGoOnacceptWOByCWBsCount(ncwbs,cv,workorders), page, Page.ONE_PAGE_NUMBER);			
 		}else
