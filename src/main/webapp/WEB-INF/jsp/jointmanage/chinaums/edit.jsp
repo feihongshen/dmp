@@ -22,6 +22,7 @@ ChinaUms chinaums = (ChinaUms)request.getAttribute("chinaums");
 					<li><span>密钥：</span>
 						<input type ="text" id="private_key" name ="private_key" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getPrivate_key()) %>" maxlength="50"  >
 					</li>
+					
 					<li><span>请求URL：</span>
 						<input type ="text" id="request_url" name ="request_url" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getRequest_url()) %>" maxlength="50"  >
 					</li>
@@ -32,6 +33,10 @@ ChinaUms chinaums = (ChinaUms)request.getAttribute("chinaums");
 					</li>
 					<li><span>商户号：</span>
 						<input type ="text" id="mer_id" name ="mer_id" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getMer_id()) %>" maxlength="50"  >
+					</li>
+					<li><span>是否允许转发：</span>
+						<input type="radio" name="isforward" <% if(chinaums.getIsForward()==1){ %>checked="checked"<%} %> value="1">允许
+						<input type="radio" name="isforward" <%  if(chinaums.getIsForward()==0){ %>checked="checked"<%} %> value="0">禁止
 					</li>
 					<li><span>转发URL：</span>
 						<input type ="text" id="forward_url" name ="forward_url" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getForward_url()) %>" maxlength="50"  >

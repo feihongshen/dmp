@@ -8,6 +8,16 @@ public class ChinaUms {
 	private String mer_id; // 商户号
 
 	private String forward_url; //转发URL,用于新老系统公用
+	private int isForward; //是否允许转发
+	
+	public int getIsForward() {
+		return isForward;
+	}
+
+	public void setIsForward(int isForward) {
+		this.isForward = isForward;
+	}
+
 	public String getForward_url() {
 		return forward_url;
 	}

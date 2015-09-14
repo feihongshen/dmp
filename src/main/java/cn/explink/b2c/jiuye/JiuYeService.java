@@ -105,11 +105,10 @@ public class JiuYeService {
 	public String RequestOrdersToTMS(JiuYe_request jiuyeReq,JiuYe  jiuye) {
 		try {
 			
-			
-			/*if(!jiuyeReq.getRequestName().equals("RequestOrdersToTMS")){
+			if(!jiuyeReq.getRequestName().equals("RequestOrdersToTMS")){
 				this.logger.info("订单号:{},requestName:{}",jiuyeReq.getContent().getWorkCode(),jiuyeReq.getRequestName());
 				return responseJson(jiuyeReq.getRequestName(), "102", false, "RequestName值不正确",0);
-			}*/
+			}
 			
 			String localSign=MD5Util.md5(jiuyeReq.getTimeStamp()+jiuye.getPrivate_key());
 			if(!localSign.equalsIgnoreCase(jiuyeReq.getSign())){

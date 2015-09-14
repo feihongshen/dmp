@@ -127,15 +127,17 @@ public class ChinaUmsService {
 
 		String mer_id = StringUtil.nullConvertToEmptyString(request.getParameter("mer_id")); // 商户号
 		
-		String forward_url = StringUtil.nullConvertToEmptyString(request.getParameter("forward_url")); 
+		String forward_url = StringUtil.nullConvertToEmptyString(request.getParameter("forward_url"));
 		
+		String isforward = StringUtil.nullConvertToEmptyString(request.getParameter("isforward"));
+		int isfW = Integer.parseInt(("".equals(isforward))?"0":isforward);//新加（是否允许转发）---LX 1允许，0禁止
 
 		chinaums.setPrivate_key(private_key);
 		chinaums.setRequest_url(request_url);
 		chinaums.setIsotherdeliveroper(isotherdeliveroper);
 		chinaums.setMer_id(mer_id);
 		chinaums.setForward_url(forward_url);
-		
+		chinaums.setIsForward(isfW);//是否允许转发----LX
 
 		JSONObject jsonObj = JSONObject.fromObject(chinaums);
 		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
@@ -202,7 +204,7 @@ public class ChinaUmsService {
 				
 				cwb = cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrderno());
 				CwbOrder co = cwbDAO.getCwbByCwb(cwb);
-				if(co == null){ //转发
+				if((co == null)&&(chinaUms.getIsForward()==1)){ //转发
 					Map<String,String> paraMap=new HashMap<String,String>();
 					paraMap.put("context", xmlstr);
 					String forwardStr = RestHttpServiceHanlder.sendHttptoServer(paraMap, chinaUms.getForward_url());
