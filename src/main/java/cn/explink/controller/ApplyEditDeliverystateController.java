@@ -350,6 +350,7 @@ public class ApplyEditDeliverystateController {
 						cwbStr += cwb+",";
 					}
 				} catch (Exception e) {
+					this.logger.error("订单号:"+cwb,",异常原因:"+e);
 					errorcount++;
 				}
 				}
