@@ -37,13 +37,13 @@ Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
 						<li><span>取消绑定通知：</span>
  						<input type ="text" id="unboundOrders_URL" name ="unboundOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getUnboundOrders_URL())%>" maxlength="1000"  > 
 					</li>
-					<li><span>签收信息同步API：</span>
+					<li><span>签收信息同步：</span>
  						<input type ="text" id="UnVerifyOrders_URL" name ="UnVerifyOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getUnVerifyOrders_URL())%>" maxlength="1000"  > 
 					</li>
-					<li><span>签收信息同步结果：</span>
+					<li><span>签收信息结果回调：</span>
  						<input type ="text" id="updateUnVerifyOrders_URL" name ="updateUnVerifyOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getUpdateUnVerifyOrders_URL())%>" maxlength="1000"  > 
 					</li>
-					<li><span>包裹签收信息修改：</span>
+					<li><span>签收信息修改：</span>
  						<input type ="text" id="updateOrders_URL" name ="updateOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getUpdateOrders_URL())%>" maxlength="1000"  > 
 					</li>
 					<li><span>站点更新：</span>
@@ -58,16 +58,16 @@ Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
 					<li><span>快递员删除：</span>
  						<input type ="text" id="carrierDel_URL" name ="carrierDel_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getCarrierDel_URL())%>" maxlength="1000"  > 
 					</li>
-					<li><span>上门退绑定：</span>
+					<li><span>揽退绑定：</span>
  						<input type ="text" id="getback_boundOrders_URL" name ="getback_boundOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getGetback_boundOrders_URL())%>" maxlength="1000"  > 
 					</li>
-					<li><span>签收结果：</span>
+					<li><span>揽退签收：</span>
  						<input type ="text" id="getback_getAppOrders_URL" name ="getback_getAppOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getGetback_getAppOrders_URL())%>" maxlength="1000"  > 
 					</li>
-					<li><span>签收结果同步：</span>
+					<li><span>揽退签收回调：</span>
  						<input type ="text" id="getback_confirmAppOrders_URL" name ="getback_confirmAppOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getGetback_confirmAppOrders_URL())%>" maxlength="1000"  > 
 					</li>
-					<li><span>信息修改：</span>
+					<li><span>揽退签收修改：</span>
  						<input type ="text" id="getback_updateOrders_URL" name ="getback_updateOrders_URL" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getGetback_updateOrders_URL())%>" maxlength="1000"  > 
 					</li>
 					<li><span>接收单数：</span>
