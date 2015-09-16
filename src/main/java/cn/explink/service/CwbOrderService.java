@@ -4371,7 +4371,7 @@ public class CwbOrderService {
 
 		String batchEditDeliveryStateisUseCash = "";
 
-		if (receivedfeepos.compareTo(BigDecimal.ZERO) == 0) {
+		if (receivedfeepos.compareTo(BigDecimal.ZERO) == 0&&isbatch) {
 			batchEditDeliveryStateisUseCash = this.systemInstallDAO.getSystemInstall("batchEditDeliveryStateisUseCash") == null ? "no" : this.systemInstallDAO.getSystemInstall(
 					"batchEditDeliveryStateisUseCash").getValue();
 		}
