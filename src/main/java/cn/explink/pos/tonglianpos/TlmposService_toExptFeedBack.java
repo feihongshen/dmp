@@ -16,7 +16,6 @@ import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
-
 import cn.explink.pos.tonglianpos.xmldto.Transaction;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.util.DateTimeUtil;
@@ -77,6 +76,7 @@ public class TlmposService_toExptFeedBack extends TlmposService {
 		long deliverystate = delivery_state;
 		long backreasonid = 0;
 		long leavedreasonid = 0;
+		long firstlevelreasonid=0;
 		ExptCodeJoint exptCodeJoint = exptcodeJointDAO.getExpMatchListByPosCode(tlmposRespNote.getEx_code(), PosEnum.TongLianPos.getKey());
 		if (deliverystate == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
 
@@ -85,6 +85,11 @@ public class TlmposService_toExptFeedBack extends TlmposService {
 			} else {
 				leavedreasonid = Long.parseLong(tlmposRespNote.getEx_code());
 			}
+			
+			try {
+				firstlevelreasonid=this.reasonDao.getReasonByReasonid(leavedreasonid).getParentid();
+			} catch (Exception e) {}
+			
 		} else if (deliverystate == DeliveryStateEnum.JuShou.getValue()) {
 			if (exptCodeJoint != null && exptCodeJoint.getReasonid() != 0) {
 				backreasonid = (exptcodeJointDAO.getExpMatchListByPosCode(tlmposRespNote.getEx_code(), PosEnum.TongLianPos.getKey())).getReasonid();
@@ -101,6 +106,7 @@ public class TlmposService_toExptFeedBack extends TlmposService {
 			parameters.put("podresultid", deliverystate);
 			parameters.put("backreasonid", backreasonid);
 			parameters.put("leavedreasonid", leavedreasonid);
+			parameters.put("firstlevelreasonid", firstlevelreasonid);
 			parameters.put("receivedfeecash", BigDecimal.ZERO);
 			parameters.put("receivedfeepos", BigDecimal.ZERO);
 			parameters.put("receivedfeecheque", BigDecimal.ZERO);

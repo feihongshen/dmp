@@ -81,7 +81,7 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 		long deliverystate = delivery_state;
 		long backreasonid = 0;
 		long leavedreasonid = 0;
-
+		long firstlevelreasonid=0;
 		if (rootnote.getTransaction_Body().getBadtype() != null && !rootnote.getTransaction_Body().getBadtype().isEmpty()) {
 
 			ExptCodeJoint exptCodeJoint = exptcodeJointDAO.getExpMatchListByPosCode(chinaUmsRespNote.getEx_code(), PosEnum.ChinaUms.getKey());
@@ -89,6 +89,9 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 
 				if (exptCodeJoint != null && exptCodeJoint.getReasonid() != 0) {
 					leavedreasonid = (exptcodeJointDAO.getExpMatchListByPosCode(chinaUmsRespNote.getEx_code(), PosEnum.ChinaUms.getKey())).getReasonid();
+					try {
+						firstlevelreasonid=this.reasonDao.getReasonByReasonid(leavedreasonid).getParentid();
+					} catch (Exception e) {}
 				} else {
 					chinaUmsRespNote.setResp_code(ChinaUmsExptMessageEnum.QiTaShiBai.getResp_code());
 					chinaUmsRespNote.setResp_msg(ChinaUmsExptMessageEnum.QiTaShiBai.getResp_msg() + "无法识别此异常码");
@@ -113,6 +116,9 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 			parameters.put("podresultid", deliverystate);
 			parameters.put("backreasonid", backreasonid);
 			parameters.put("leavedreasonid", leavedreasonid);
+			parameters.put("firstlevelreasonid", firstlevelreasonid);
+			
+			
 			parameters.put("receivedfeecash", BigDecimal.ZERO);
 			parameters.put("receivedfeepos", BigDecimal.ZERO);
 			parameters.put("receivedfeecheque", BigDecimal.ZERO);

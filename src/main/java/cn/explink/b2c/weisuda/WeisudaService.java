@@ -298,7 +298,7 @@ public class WeisudaService {
 
 		long backedreasonid = 0;
 		long leavedreasonid = 0;
-
+		long firstlevelreasonid=0;
 		String deliverstateremark = "系统对接";
 
 		if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
@@ -312,11 +312,14 @@ public class WeisudaService {
 		}
 		if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
 			if ((orderFlowDto.getStrandedrReason() != null) && !orderFlowDto.getStrandedrReason().isEmpty()) {
-				ExptCodeJoint exptCodeJoint = this.exptcodeJointDAO.getExpMatchListByPosCode(orderFlowDto.getStrandedrReason(), PosEnum.Weisuda.getKey());
+				try {
+					ExptCodeJoint exptCodeJoint = this.exptcodeJointDAO.getExpMatchListByPosCode(orderFlowDto.getStrandedrReason(), PosEnum.Weisuda.getKey());
 
-				if ((exptCodeJoint != null) && (exptCodeJoint.getReasonid() != 0)) {
-					leavedreasonid = exptCodeJoint.getReasonid();
-				}
+					if ((exptCodeJoint != null) && (exptCodeJoint.getReasonid() != 0)) {
+						leavedreasonid = exptCodeJoint.getReasonid();
+						firstlevelreasonid=this.reasonDao.getReasonByReasonid(leavedreasonid).getParentid();
+					}
+				} catch (Exception e) {}
 			}
 		}
 
@@ -339,12 +342,18 @@ public class WeisudaService {
 			this.logger.error("唯速达_回传username=" + orderFlowDto.getDeliveryname() + "不存在，cwb=" + cwbOrder.getCwb());
 			infactDeliverid = 0;
 		}
+		
+		
+		
+		
 		String posremark = pos.compareTo(BigDecimal.ZERO) > 0 ? "POS刷卡" : "";
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("deliverid", deliverid);
 		parameters.put("podresultid", podresultid);
 		parameters.put("backreasonid", backedreasonid);
 		parameters.put("leavedreasonid", leavedreasonid);
+		parameters.put("firstlevelreasonid", firstlevelreasonid);
+		
 		parameters.put("receivedfeecash", cash);
 		parameters.put("receivedfeepos", pos);
 		parameters.put("receivedfeecheque", check);
