@@ -6575,4 +6575,16 @@ public class CwbDAO {
 			return 0;
 		}
 	}
+	/**
+	 * 忽略订单失效查询
+	 * @param cwb
+	 * @return
+	 */
+	public CwbOrder getCwbByCwbIgnoreCaseLose(String cwb) {
+		try {
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail where cwb=?  limit 0,1", new CwbMapper(), cwb);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 }

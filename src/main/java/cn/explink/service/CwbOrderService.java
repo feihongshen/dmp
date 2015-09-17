@@ -4089,6 +4089,9 @@ public class CwbOrderService {
 		this.logger.info("修改反馈时间用户：" + user.getRealname() + " cwb" + cwb + "：当前{}改为{}", DateTimeUtil.getNowTime(), deliverytime);
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		
+		validatorVipshopSMT(cwb, co);//验证唯品会揽退单如果上一个状态未完成，则抛异常
+		
 		//added by jiangyu begin
 		//缓存一下原先的支付方式
 		map.put("preObj", co);
@@ -4414,7 +4417,71 @@ public class CwbOrderService {
 		return map;
 	}
 
+	
+	public void validatorVipshopSMT(String cwb, CwbOrder co) {
+		CwbOrder allcwbOrder=cwbDAO.getCwbByCwbIgnoreCaseLose(cwb);
+		if(allcwbOrder==null){
+			return ;
+		}
+		String enumKey = getB2cEnumKeys(customerDAO.getCustomerById(allcwbOrder.getCustomerid()), "vipshop");
+		if(enumKey!=null&&allcwbOrder.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){ 
+			if(allcwbOrder.getCwb().contains("-T")){
+				
+				//如果当前订单被失效，那么自动检查其他关联单号
+				if(allcwbOrder.getState()==0){ 
+					notifyOtherCwbsSMT(cwb, allcwbOrder);
+				}
+				if(co==null){
+					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+				}
+				CwbOrder cwbOrder =cwbDAO.getCwbByCwb(co.getCwb().substring(0,co.getCwb().indexOf("-T"))); //去掉-T拿到之前的配送单
+				if(cwbOrder==null){
+					return;
+				}
+				if(!(cwbOrder.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()
+						||cwbOrder.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()
+						||cwbOrder.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()))
+				{
+					
+					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.PeisongDan_vipshop_weiwanjie,co.getCwb());
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 智能提醒其他单号
+	 * @param cwb
+	 * @param allcwbOrder
+	 */
+	private void notifyOtherCwbsSMT(String cwb, CwbOrder allcwbOrder) {
+		String newCwb=""; //这里需要遍历
+		String subCwb=allcwbOrder.getCwb().substring(0,allcwbOrder.getCwb().indexOf("-T"));
+		for(int i=1;i<10;i++){  //模拟最多到T9 
+			newCwb=subCwb+"-T"+i;
+			if(allcwbOrder.getCwb().equals(newCwb)){
+				continue;
+			}
+			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(newCwb);
+			if(cwbOrder!=null){
+				newCwb=cwbOrder.getCwb();
+				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Shangmentui_vipshop_shixiao,allcwbOrder.getCwb(),newCwb);
+			}
+		}
+		
+		
+	}
 
+	public String getB2cEnumKeys(Customer customer, String constainsStr) {
+		for (B2cEnum enums : B2cEnum.values()) {
+			if (enums.getMethod().contains(constainsStr)) {
+				if (customer.getB2cEnum().equals(String.valueOf(enums.getKey()))) {
+					return String.valueOf(enums.getKey());
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * 更新当前反馈状态需要指定订单的下一站
