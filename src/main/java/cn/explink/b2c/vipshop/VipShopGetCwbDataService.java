@@ -518,7 +518,7 @@ public class VipShopGetCwbDataService {
 			dataMap.put("remark4", created_dtm_loc); // 批次时间
 
 			dataMap.put("cargotype", cargotype); // 服务类别
-			dataMap.put("remark5", warehouse_addr); // 仓库地址
+			dataMap.put("remark5", customer_name+"/"+warehouse_addr); // 仓库地址
 
 			dataMap.put("cwbordertypeid", cwbordertype);
 			dataMap.put("shouldfare", freight.isEmpty() ? "0" : freight);
