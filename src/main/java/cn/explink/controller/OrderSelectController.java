@@ -2329,7 +2329,7 @@ public class OrderSelectController {
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
 		//List<Punish> punishList = this.punishDAO.getPunishByCwb(cwb);
 		List<PenalizeInside> penalizeInsides=this.punishInsideDao.getInsidebycwb(cwb);
-		String punishinsideShixiaoTime=this.systemInstallDAO.getSystemInstall("punishinsideshixiao").getValue();
+		String punishinsideShixiaoTime=this.systemInstallDAO.getSystemInstall("punishinsidezidongshenheshixiao").getValue();
 		model.addAttribute("branchlist", branchlist);
 		model.addAttribute("punishList", penalizeInsides);
 		model.addAttribute("userList", userList);
