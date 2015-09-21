@@ -5995,7 +5995,7 @@ CREATE TABLE
 
 		</sql>
 	</changeSet>
-	<changeSet id="wangyonghe-2014-12-24-2" author="wangyonghe">
+	<!-- <changeSet id="wangyonghe-2014-12-24-2" author="wangyonghe">
 		<sql>
 		ALTER TABLE `express_ops_abnormal_order`
 		ADD COLUMN `cwb`  varchar(100) NULL DEFAULT '' AFTER `id`,
@@ -6008,6 +6008,7 @@ CREATE TABLE
 		;
 		</sql>
 	</changeSet>
+	 -->
 	<changeSet id="wangyonghe-2014-12-24-3" author="wangyonghe">
 		<sql>
 		ALTER TABLE `express_ops_abnormal_write_back`
