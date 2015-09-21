@@ -3441,7 +3441,7 @@
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>tcp://192.168.70.47:61616</jms.brokerURL>
+				<jms.brokerURL>tcp://localhost:61616</jms.brokerURL>
 				<uploadimgPath>/home/apps/data/uploading/</uploadimgPath>
 				<wavPath>/home/apps/data/wav/</wavPath>
 				<filePath>/home/apps/data/moule/</filePath>
