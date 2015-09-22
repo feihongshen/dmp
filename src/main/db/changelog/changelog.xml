@@ -8345,7 +8345,7 @@ CREATE TABLE `cs_complaint_accept` (
 				ALTER TABLE `express_ops_cwb_detail`   
   			ADD COLUMN `fnorgfreightbillid` BIGINT(11) DEFAULT 0  NULL  COMMENT '站点运费账单的id' AFTER `outareaflag`;
 		</sql>
-	</changeSet>、
+	</changeSet>
 	
 	<!-- 站内账单表新增站点费用类型字段 -->
 	<changeSet id="zhouguoting-2015-09-22-4" author="zhouguoting">
