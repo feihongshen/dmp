@@ -23,7 +23,9 @@ import cn.explink.domain.FnOrgBillDetail;
 import cn.explink.domain.OrgBillAdjustmentRecord;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AdjustWayEnum;
+import cn.explink.enumutil.BillAdjustTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.OrderTypeEnum;
 import cn.explink.enumutil.PayMethodSwitchEnum;
 import cn.explink.enumutil.PaytypeEnum;
 
@@ -213,7 +215,20 @@ public class OrgBillAdjustmentRecordService {
 					e.printStackTrace();
 				}
 				record.setPayWayChangeFlag(0);
+				//调整金额为货款调整
+				record.setAdjustType(BillAdjustTypeEnum.OrderFee.getValue());
 				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
+				
+				//如果是是上门退订单，生成运单调整记录
+				if(OrderTypeEnum.TuiHuo.getValue() == order.getCwbordertypeid()){
+					record.setReceiveFee(order.getInfactfare());
+					record.setModifyFee(order.getInfactfare());
+					record.setAdjustAmount(BigDecimal.ZERO.subtract(order.getInfactfare()));
+					//调整金额为运费调整
+					record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+					orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
+				}
+				
 //			}else{//该订单已经生成过调整单记录  不让其修改
 //				//提示信息
 //			}

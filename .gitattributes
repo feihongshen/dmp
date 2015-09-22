@@ -1381,6 +1381,7 @@ src/main/java/cn/explink/enumutil/BackTypeEnum.java -text
 src/main/java/cn/explink/enumutil/BalePDAEnum.java -text
 src/main/java/cn/explink/enumutil/BaleStateEnum.java -text
 src/main/java/cn/explink/enumutil/BatchSateEnum.java -text
+src/main/java/cn/explink/enumutil/BillAdjustTypeEnum.java -text
 src/main/java/cn/explink/enumutil/BillStateEnum.java -text
 src/main/java/cn/explink/enumutil/BranchEnum.java -text
 src/main/java/cn/explink/enumutil/BranchLogEnum.java -text

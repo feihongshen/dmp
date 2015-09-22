@@ -104,6 +104,11 @@ public class OrgBillAdjustmentRecord{
 	 */
 	private Integer payWayChangeFlag ;
 	
+	/**
+	 * 调整类型:0-货款，1-运费
+	 */
+	private int adjustType;
+	
 	public OrgBillAdjustmentRecord() {
 	}
 
@@ -290,4 +295,13 @@ public class OrgBillAdjustmentRecord{
 	public void setPayWayChangeFlag(Integer payWayChangeFlag) {
 		this.payWayChangeFlag = payWayChangeFlag;
 	}
+
+	public int getAdjustType() {
+		return adjustType;
+	}
+
+	public void setAdjustType(int adjustType) {
+		this.adjustType = adjustType;
+	}
+	
 }
