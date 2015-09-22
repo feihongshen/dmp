@@ -8322,8 +8322,29 @@ CREATE TABLE `cs_complaint_accept` (
 			insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('weisuda_Version','1','唯速达版本设置');
 		</sql>
 	</changeSet>
-
-
 	
+	<!-- 站内账单明细表新增运费金额字段 -->
+	<changeSet id="zhouguoting-2015-09-22-1" author="zhouguoting">
+		<sql>
+			ALTER TABLE `fn_org_bill_detail`   
+  				ADD COLUMN `freight_amount` DECIMAL(19,2) DEFAULT 0.00  NULL  COMMENT '运费金额' AFTER `goods_amount`;
+		</sql>
+	</changeSet>
 	
+	<!-- 站内账单调整记录表新增调整类型字段 -->
+	<changeSet id="zhouguoting-2015-09-22-2" author="zhouguoting">
+		<sql>
+			ALTER TABLE `fn_org_bill_adjustment_record`   
+  				ADD COLUMN `adjust_type` TINYINT(4) DEFAULT 0  NULL  COMMENT '调整类型（0.货款调整,1.运费调整)默认为0' AFTER `pay_way_change_flag`;
+		</sql>
+	</changeSet>
+	
+	<!-- 订单主表新增站点运费账单的id字段 -->
+	<changeSet id="zhouguoting-2015-09-22-3" author="zhouguoting">
+		<sql>
+				ALTER TABLE `express_ops_cwb_detail`   
+  			ADD COLUMN `fnorgfreightbillid` BIGINT(11) DEFAULT 0  NULL  COMMENT '站点运费账单的id' AFTER `outareaflag`;
+		</sql>
+	</changeSet>
+
 </databaseChangeLog>
