@@ -8359,5 +8359,9 @@ CREATE TABLE `cs_complaint_accept` (
 	   		insert into dmp40_function  values ('502090', '2', '入库交接单打印', '502090', 'backimportprint/jiaojiedandayin/1?', '5020');
 	   </sql>
 	</changeSet>
-	
+	<changeSet id="wangqiang-2015-09-23-02" author="wangqiang">
+	   	<sql>
+			insert into express_set_system_install (`chinesename`,`name`,`value`) values ('是否打开弹出框','Dialog','open');
+	 </sql>
+	</changeSet>
 </databaseChangeLog>

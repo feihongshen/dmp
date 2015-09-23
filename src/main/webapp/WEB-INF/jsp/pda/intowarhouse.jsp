@@ -53,6 +53,11 @@ $(function(){
 	});
 	
 });
+function closeDialog(){
+	$('#find').dialog('close');
+	$("#scancwb").focus();
+}
+
 var LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));  
 
 var data;
@@ -390,6 +395,7 @@ function callfunction(cwb){//getEmailDateByIds
 										}else{
 											$("#msg1").html("（异常扫描）"+data.errorinfo);
 											$('#find').dialog('open');
+											$("#scancwb").blur();
 										}
 									}else if(data.statuscode=="13"){
 										$("#scancwb").val("");
@@ -399,6 +405,7 @@ function callfunction(cwb){//getEmailDateByIds
 											
 											$("#msg1").html("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
 											$('#find').dialog('open');
+											$("#scancwb").blur();
 										}
 									}else if(data.statuscode=="105"){
 										<%-- if(!confirm("无数据，有货无单,是否放弃入库？")){
@@ -413,6 +420,7 @@ function callfunction(cwb){//getEmailDateByIds
 											}else{
 												$("#msg1").html("（异常扫描）" + data.errorinfo);
 												$('#find').dialog('open');
+												$("#scancwb").blur();
 											}
 										<%-- } --%>
 									}else if(data.statuscode=="102"){
@@ -427,6 +435,7 @@ function callfunction(cwb){//getEmailDateByIds
 											}else{
 												$("#msg1").html("（异常扫描）" + data.errorinfo);
 												$('#find').dialog('open');
+												$("#scancwb").blur();
 											}
 										}
 									}
@@ -437,6 +446,8 @@ function callfunction(cwb){//getEmailDateByIds
 										}else{
 											$("#msg1").html("（异常扫描）" + data.errorinfo);
 											$('#find').dialog('open');
+											$("#scancwb").blur();
+												
 										}
 									}
 									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
@@ -782,6 +793,7 @@ $(function(){
 			}else{
 				$("#msg1").html(data.body.errorinfo);
 				$('#find').dialog('open');
+				$("#scancwb").blur();
 			}
  			$("#scancwb").val("");
  			errorvedioplay("<%=request.getContextPath()%>",data);
@@ -908,7 +920,7 @@ function openLogin(){
 				</p>	
 				</div>
 				<c:if test="${isOpenDialog=='open'}">
-					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:280px;">
+					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:200px;">
 				 		<div class="saomiao_right2">
 							<p id="msg1" name="msg" ></p>
 							<p id="showcwb" name="showcwb"></p>
@@ -927,7 +939,10 @@ function openLogin(){
 							</div>
 							<div style="display: none" id="errorvedio"></div>
 						</div>
-				 	</div>
+							<div  align="center" valign="bottom">
+					         	<input type="button" class="input_button1" value="关闭" onclick="closeDialog();"/>
+				         	</div>
+					</div>
 			 	</c:if>
 				
 				<div class="saomiao_right2">

@@ -68,7 +68,11 @@ $(function(){
 		getcwbsquejiandataForBranchid($("#branchid").val());
 		$("#scancwb").focus();
 	});
-	
+function closeDialog(){
+	$('#find').dialog('close');
+	$("#scancwb").focus();
+}
+
 	
 	
 $(function() {
@@ -289,6 +293,7 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 						$("#msg1").html("         （异常扫描）扫描站点失败");
 						$("#branchid").val(0);
 						$('#find').dialog('open');
+						$("#scancwb").blur();
 					}else{
 						$("#msg1").html("");
 					}
@@ -351,6 +356,7 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 										$("#showcwb").html("");
 										$("#msg1").html(scancwb+"         （异常扫描）"+data.errorinfo);
 										$('#find').dialog('open');
+										$("#scancwb").blur();
 										addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
 										//errorvedioplay(pname,data);
 									}
@@ -709,6 +715,7 @@ function baleaddcwbCheck(){
    					}else{
    						$("#msg1").html("（异常扫描）"+data.body.errorinfo);
    						$('#find').dialog('open');
+   						$("#scancwb").blur();
    					}
 	   				errorvedioplay("<%=request.getContextPath()%>",data);
    				}
@@ -746,6 +753,7 @@ function baleaddcwb(scancwb,baleno){
 				}else{
 					$("#msg1").html("（异常扫描）"+data.body.errorinfo);
 					$('#find').dialog('open');
+					$("#scancwb").blur();
 				}
 				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
@@ -774,6 +782,7 @@ function fengbao(){
 				}else{
 					$("#msg1").html("（异常扫描）"+data.body.errorinfo);
 					$('#find').dialog('open');
+					$("#scancwb").blur();
 				}
 				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
@@ -987,7 +996,7 @@ function chuku(){
 					</p>
 				</div>
 				<c:if test="${isOpenDialog=='open'}">
-					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:280px;">
+					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:200px;">
 				 		<div class="saomiao_right2">
 								<p id="msg1" name="msg1" ></p>
 								<p id="showcwb" name="showcwb"></p>
@@ -1001,6 +1010,9 @@ function chuku(){
 								</div>
 									<div style="display: none" id="errorvedio"></div>
 								</div>
+							<div  align="center" valign="bottom" style="margin-top:100px;">
+					         	<input type="button" class="input_button1" value="关闭" onclick="closeDialog();"/>
+				         	</div>
 				 	</div>
 			 	</c:if>
 			 
