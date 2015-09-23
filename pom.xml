@@ -2700,6 +2700,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>AHPX</label>
+				<addresscustomerid>10</addresscustomerid>
+				<addressid>10</addressid>
+				<addresspassword>ahpj</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressahpj</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
