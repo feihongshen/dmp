@@ -1337,7 +1337,7 @@ public class DataStatisticsService {
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
 
-		if ((mouldfieldids2 != null) && !"0".equals(mouldfieldids2)) { // 选择模板
+		if ((mouldfieldids2 != null) && !"0".equals(mouldfieldids2)&&!"".equals(mouldfieldids2)) { // 选择模板
 			List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs(mouldfieldids2);
 			cloumnName1 = new String[listSetExportField.size()];
 			cloumnName2 = new String[listSetExportField.size()];
