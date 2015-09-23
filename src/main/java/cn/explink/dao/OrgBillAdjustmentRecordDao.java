@@ -79,7 +79,8 @@ public class OrgBillAdjustmentRecordDao {
 				+ "deliverybranchid,"
 				+ "goods_amount,"
 				+ "pay_way_change_flag,"
-				+ "adjust_type"
+				+ "adjust_type,"
+				+ "freight_amount,"
 				+ ") " 
 				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
@@ -102,9 +103,10 @@ public class OrgBillAdjustmentRecordDao {
 						ps.setLong(15, adjustmentRecord.getDeliverId());
 						ps.setDate(16, adjustmentRecord.getSignTime() == null ? null :new Date(adjustmentRecord.getSignTime().getTime()));
 						ps.setLong(17, adjustmentRecord.getDeliverybranchid());
-						ps.setBigDecimal(18, adjustmentRecord.getAdjustAmount());
+						ps.setBigDecimal(18, adjustmentRecord.getGoodsAmount());
 						ps.setInt(19, adjustmentRecord.getPayWayChangeFlag());
 						ps.setInt(20, adjustmentRecord.getAdjustType());
+						ps.setBigDecimal(20, adjustmentRecord.getFreightAmount());
 					}
 				});
 	}
