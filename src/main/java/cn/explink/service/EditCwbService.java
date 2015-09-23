@@ -197,6 +197,8 @@ public class EditCwbService {
 		ec_dsd.setNew_isout(ds.getIsout());
 		ec_dsd.setCwbordertypeid(co.getCwbordertypeid());
 		ec_dsd.setNew_cwbordertypeid(co.getCwbordertypeid());
+		//记录原实收运费
+		ec_dsd.setOriInfactfare(co.getInfactfare());
 
 		/*
 		 * 修改订单表字段 express_ops_cwb_detail｛ 将 nextbranchid 改为对应货物所在站点的中转站id 将

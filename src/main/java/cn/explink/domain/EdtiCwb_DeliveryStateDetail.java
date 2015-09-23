@@ -26,6 +26,8 @@ public class EdtiCwb_DeliveryStateDetail {
 	private long editcwbtypeid; // 修改订单的类型
 	private long requestUser;// 申请人
 	private long editUser;// 修改人
+	
+	private BigDecimal oriInfactfare;//原实收运费
 
 	public long getRequestUser() {
 		return requestUser;
@@ -165,6 +167,14 @@ public class EdtiCwb_DeliveryStateDetail {
 
 	public void setNew_flowordertype(long new_flowordertype) {
 		this.new_flowordertype = new_flowordertype;
+	}
+
+	public BigDecimal getOriInfactfare() {
+		return oriInfactfare;
+	}
+
+	public void setOriInfactfare(BigDecimal oriInfactfare) {
+		this.oriInfactfare = oriInfactfare;
 	}
 
 	public void setDs(DeliveryState ds) {
