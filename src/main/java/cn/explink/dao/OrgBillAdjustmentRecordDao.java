@@ -82,7 +82,7 @@ public class OrgBillAdjustmentRecordDao {
 				+ "adjust_type,"
 				+ "freight_amount"
 				+ ") " 
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -106,7 +106,7 @@ public class OrgBillAdjustmentRecordDao {
 						ps.setBigDecimal(18, adjustmentRecord.getGoodsAmount());
 						ps.setInt(19, adjustmentRecord.getPayWayChangeFlag());
 						ps.setInt(20, adjustmentRecord.getAdjustType());
-						ps.setBigDecimal(20, adjustmentRecord.getFreightAmount());
+						ps.setBigDecimal(21, adjustmentRecord.getFreightAmount());
 					}
 				});
 	}
