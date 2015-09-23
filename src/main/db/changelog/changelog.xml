@@ -8335,7 +8335,8 @@ CREATE TABLE `cs_complaint_accept` (
 	<changeSet id="zhouguoting-2015-09-22-2" author="zhouguoting">
 		<sql>
 			ALTER TABLE `fn_org_bill_adjustment_record`   
-  				ADD COLUMN `adjust_type` TINYINT(4) DEFAULT 0  NULL  COMMENT '调整类型（0.货款调整,1.运费调整)默认为0' AFTER `pay_way_change_flag`;
+  				ADD COLUMN `adjust_type` TINYINT(4) DEFAULT 0  NULL  COMMENT '调整类型（0.货款调整,1.运费调整)默认为0' AFTER `pay_way_change_flag`,
+  				ADD COLUMN `freight_amount` DECIMAL(19,2) DEFAULT 0.00  NULL  COMMENT '原始运费金额' AFTER `refund_fee`;
 		</sql>
 	</changeSet>
 	
