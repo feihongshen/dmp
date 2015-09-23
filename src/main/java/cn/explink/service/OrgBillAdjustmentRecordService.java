@@ -25,7 +25,6 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.AdjustWayEnum;
 import cn.explink.enumutil.BillAdjustTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.enumutil.OrderTypeEnum;
 import cn.explink.enumutil.PayMethodSwitchEnum;
 import cn.explink.enumutil.PaytypeEnum;
 
@@ -220,7 +219,7 @@ public class OrgBillAdjustmentRecordService {
 				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 				
 				//如果是是上门退订单，生成运单调整记录
-				if(OrderTypeEnum.TuiHuo.getValue() == order.getCwbordertypeid()){
+				if(CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid()){
 					record.setReceiveFee(order.getInfactfare());
 					record.setModifyFee(order.getInfactfare());
 					record.setAdjustAmount(BigDecimal.ZERO.subtract(order.getInfactfare()));
