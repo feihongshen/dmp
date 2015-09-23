@@ -80,7 +80,7 @@ public class OrgBillAdjustmentRecordDao {
 				+ "goods_amount,"
 				+ "pay_way_change_flag,"
 				+ "adjust_type,"
-				+ "freight_amount,"
+				+ "freight_amount"
 				+ ") " 
 				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
