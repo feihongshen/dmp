@@ -8354,5 +8354,10 @@ CREATE TABLE `cs_complaint_accept` (
  		 		ADD COLUMN `fee_type` TINYINT(4) DEFAULT 0  NULL  COMMENT '费用类型（默认为货款0,1.上门退运费）' AFTER `bill_type`;
 		</sql>
 	</changeSet>
+	<changeSet id="wangqiang-2015-09-23-01" author="wangqiang">
+	   	<sql>
+	   		insert into dmp40_function  values ('502090', '2', '入库交接单打印', '502090', 'backimportprint/jiaojiedandayin/1?', '5020');
+	   </sql>
+	</changeSet>
 	
 </databaseChangeLog>

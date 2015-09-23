@@ -2341,6 +2341,7 @@ src/main/webapp/WEB-INF/jsp/intowarehouseprint/list.jsp -text
 src/main/webapp/WEB-INF/jsp/intowarehouseprint/printcwb.jsp -text
 src/main/webapp/WEB-INF/jsp/intowarehouseprint/printcwbnew.jsp -text
 src/main/webapp/WEB-INF/jsp/intowarehouseprint/printcwbruku.jsp -text
+src/main/webapp/WEB-INF/jsp/jiaojiedandayin.jsp -text
 src/main/webapp/WEB-INF/jsp/joinlist/list.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/alipay/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/alipayapp/edit.jsp -text

@@ -101,6 +101,58 @@ public class BackimportprintController {
 		model.addAttribute("backreasonList",backreasonList);
 		return "backimportprint/list";
 	}
+	/**
+	 * 将退货站入库交接单与中转站入库交接单打印  做入同一个页面中
+	 * @param model
+	 * @param page
+	 * @param request
+	 * @param branchid
+	 * @param begincredate
+	 * @param endcredate
+	 * @param driverid
+	 * @param flag
+	 * @param isshow
+	 * @param reasoncontent
+	 * @return
+	 */
+	@RequestMapping("/jiaojiedandayin/{page}")
+	public String jiaojiedandayin(Model model, @PathVariable("page") long page, HttpServletRequest request, @RequestParam(value = "branchid", required = false, defaultValue = "0") String[] branchid,
+			@RequestParam(value = "begincredate", required = false, defaultValue = "") String begincredate, @RequestParam(value = "endcredate", required = false, defaultValue = "") String endcredate,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "flag", required = false, defaultValue = "0") long flag,
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String reasoncontent) {
+		model.addAttribute("branches", this.branchDAO.getBranchesByKuFangAndZhanDian());
+		model.addAttribute("driverList", this.userDAO.getUserByRole(3));
+		model.addAttribute("userList", this.userDAO.getAllUser());
+		model.addAttribute("driverid", driverid);
+		model.addAttribute("flag", flag);
+		model.addAttribute("begincredate", begincredate);
+		model.addAttribute("endcredate", endcredate);
+		model.addAttribute("reasoncontent", reasoncontent);//添加退货备注！
+		model.addAttribute("templete", this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.Tuihuozhanrukumingxi.getValue() + ""));
+		List<String> branchArrlist = new ArrayList<String>();
+		if ((branchid != null) && (branchid.length > 0)) {
+			for (String str : branchid) {
+				branchArrlist.add(str);
+			}
+		}
+		String branchids = this.getStringByBranchids(branchid);
+		long flowordertype = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue();
+		long ordertype = FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue();
+		List<Reason> backreasonList = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZhanRuKuBeiZhu.getValue());
+		List<Backintowarehouse_print> backIntoprintList = new ArrayList<Backintowarehouse_print>();
+		if (isshow > 0) {
+
+			backIntoprintList = this.backIntoprintDAO.getBackintoPrints(begincredate, endcredate, flowordertype,ordertype, branchids, driverid, flag, this.getSessionUser(),reasoncontent);
+		}
+		model.addAttribute("backIntoprintList", backIntoprintList);
+		model.addAttribute("reasonList", this.reasonDao.getAllReason());
+		model.addAttribute("customerList", this.customerDAO.getAllCustomers());
+		model.addAttribute("branchArrlist", branchArrlist);
+		model.addAttribute("branchids", branchids);
+		model.addAttribute("backreasonList",backreasonList);
+		return "jiaojiedandayin";
+	}
 
 	@RequestMapping("/print")
 	public String print(Model model, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint,
