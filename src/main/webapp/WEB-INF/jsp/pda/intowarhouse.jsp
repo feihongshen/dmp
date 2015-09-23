@@ -377,7 +377,6 @@ function callfunction(cwb){//getEmailDateByIds
 									}
 								} else {
 									$("#excelbranch").hide();
-									$("#msg").hide();
 									$("#customername").hide();
 									$("#cwbgaojia").hide();
 									$("#damage").hide();
@@ -939,7 +938,7 @@ function openLogin(){
 							</div>
 							<div style="display: none" id="errorvedio"></div>
 						</div>
-							<div  align="center" valign="bottom">
+							<div  align="center" valign="bottom" style="margin-top:100px;">
 					         	<input type="button" class="input_button1" value="关闭" onclick="closeDialog();"/>
 				         	</div>
 					</div>
