@@ -1077,12 +1077,12 @@ public class CwbOrderService {
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) && !anbaochuku) {
-			return this.handleChangeIntowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, credate);
+			return this.handleChangeIntowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, credate,driverid);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1) || anbaochuku) {
 			if ((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			} else {
-				this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, false, credate, anbaochuku);
+				this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, false, credate, anbaochuku,driverid);
 			}
 		} else {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -1091,14 +1091,14 @@ public class CwbOrderService {
 	}
 
 	private CwbOrder handleChangeIntowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
-			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, Long credate) {
+			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, Long credate,long driverid) {
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), currentbranchid, 0, 0, ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 		}
 		if ((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 			if (co.getScannum() < 1) {
-				this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false);
+				this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false,driverid);
 			}
 			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
 				this.cwbDAO.updateScannum(co.getCwb(), co.getScannum() + 1);
@@ -1115,14 +1115,14 @@ public class CwbOrderService {
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
-			this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false);
+			this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false,driverid);
 		}
 
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
 	private void handleChangeIntowarehouse(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
-			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku) {
+			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku,long driverid) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
@@ -1162,7 +1162,11 @@ public class CwbOrderService {
 		}
 
 		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate);
-
+		/**
+		 * 中转入库交接单打印
+		 */
+		this.backIntoprintDAO.creChangeIntoprint(co, user, driverid, nextbranchid, "", "", "", "", comment);
+		
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);

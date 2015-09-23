@@ -4882,7 +4882,7 @@ public class PDAController {
 					} else {
 						branchid = op.getNextbranchid();
 					}
-					cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 1, branchid);
+					cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, comment, "", false, 1, branchid);
 				} else {
 					if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
 						cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, 0);

@@ -27,6 +27,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PrintTemplateOpertatetypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
@@ -137,13 +138,20 @@ public class BackimportprintController {
 			}
 		}
 		String branchids = this.getStringByBranchids(branchid);
-		long flowordertype = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue();
-		long ordertype = FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue();
+		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		String nextbranchids ="-1";
+		if(tbranchlist != null && tbranchlist.size()>0){
+			for (Branch br : tbranchlist) {
+				nextbranchids += ","+br.getBranchid();
+			}
+		}
+		
+		String flowordertypes = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue();
 		List<Reason> backreasonList = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZhanRuKuBeiZhu.getValue());
 		List<Backintowarehouse_print> backIntoprintList = new ArrayList<Backintowarehouse_print>();
 		if (isshow > 0) {
 
-			backIntoprintList = this.backIntoprintDAO.getBackintoPrints(begincredate, endcredate, flowordertype,ordertype, branchids, driverid, flag, this.getSessionUser(),reasoncontent);
+			backIntoprintList = this.backIntoprintDAO.getBackintoPrintsAll(begincredate, endcredate, flowordertypes, branchids, driverid, flag, nextbranchids,reasoncontent);
 		}
 		model.addAttribute("backIntoprintList", backIntoprintList);
 		model.addAttribute("reasonList", this.reasonDao.getAllReason());
@@ -171,7 +179,17 @@ public class BackimportprintController {
 		}
 		PrintTemplate pt = this.printTemplateDAO.getPrintTemplate(printid);
 		List<Backintowarehouse_print> bPrints = new ArrayList<Backintowarehouse_print>();
-		bPrints = this.backIntoprintDAO.getBackintoPrint(starttime, endtime, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), branchids, driverid, flag, this.getSessionUser(),cwbs);
+		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		String nextbranchids ="-1";
+		if(tbranchlist != null && tbranchlist.size()>0){
+			for (Branch br : tbranchlist) {
+				nextbranchids += ","+br.getBranchid();
+			}
+		}
+		
+		String flowordertypes = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue();
+		
+		bPrints = this.backIntoprintDAO.getBackintoPrintAll(starttime, endtime, flowordertypes, branchids, driverid, flag,nextbranchids,cwbs);
 		List<Reason> reasonList = this.reasonDao.getAllReason();
 		//done
 		List<Reason> backreasonList = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZhanRuKuBeiZhu.getValue());
