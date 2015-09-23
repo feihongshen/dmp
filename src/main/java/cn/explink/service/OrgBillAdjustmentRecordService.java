@@ -220,7 +220,9 @@ public class OrgBillAdjustmentRecordService {
 				
 				//如果是是上门退订单，生成运单调整记录
 				if(CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid()){
-					record.setReceiveFee(ec_dsd.getOriInfactfare());
+					record.setReceiveFee(BigDecimal.ZERO);
+					record.setRefundFee(BigDecimal.ZERO);
+					record.setFreightAmount(ec_dsd.getOriInfactfare());
 					record.setModifyFee(order.getInfactfare());
 					record.setAdjustAmount(BigDecimal.ZERO.subtract(ec_dsd.getOriInfactfare()));
 					//调整金额为运费调整

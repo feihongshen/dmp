@@ -40,6 +40,11 @@ public class OrgBillAdjustmentRecord{
 	 * 应退
 	 */
 	private BigDecimal refundFee;
+	
+	/**
+	 * 原实收运费
+	 */
+	private BigDecimal freightAmount;
 	/**
 	 * 修改金额
 	 */
@@ -174,6 +179,14 @@ public class OrgBillAdjustmentRecord{
 
 	public void setRefundFee(BigDecimal refundFee) {
 		this.refundFee = refundFee;
+	}
+
+	public BigDecimal getFreightAmount() {
+		return freightAmount;
+	}
+
+	public void setFreightAmount(BigDecimal freightAmount) {
+		this.freightAmount = freightAmount;
 	}
 
 	public BigDecimal getModifyFee() {
