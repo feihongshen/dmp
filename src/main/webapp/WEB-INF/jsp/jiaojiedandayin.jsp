@@ -275,7 +275,7 @@
 							type="checkbox" value="<%=pv.getCwb()%>" checked="checked" /><%=i%></td>
 						<td align="center" valign="middle">
 							<%
-								out.print(FlowOrderTypeEnum.getText(pv.getFlowordertype()));
+								out.print(FlowOrderTypeEnum.(FlowOrderTypeEnum.getText(pv.getFlowordertype())).getText());
 							%>
 						</td>
 						<td align="center" valign="middle"><%=pv.getCwb()%></td>
