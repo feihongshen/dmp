@@ -1,3 +1,5 @@
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum,cn.explink.enumutil.ExceptionCwbErrorTypeEnum"%>
 <%@page import="cn.explink.util.Page"%>
@@ -24,7 +26,6 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong(request.getAttribute("isscanbaleTag").toString());
 int isshowzhongzhuan= request.getAttribute("isshowzhongzhuan")==null?0:Integer.parseInt(request.getAttribute("isshowzhongzhuan").toString());
 String chorsezhongzhuanreason= request.getAttribute("chorsezhongzhuanreason")==null?"no":request.getAttribute("chorsezhongzhuanreason").toString();
-
 String wavPath=request.getContextPath()+"/images/wavnums/";
 
 
@@ -40,10 +41,12 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
+	if('${isOpenDialog}'=='open'){
+		$('#find').dialog('close');
+	}
 	var $menuli1 = $("#bigTag li");
 	$menuli1.click(function(){
 		$(this).children().addClass("light");
@@ -170,7 +173,8 @@ var branchStr=[];
 var Cwbs="";
 function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag){
 	if(scancwb.length>0){
-		if(scancwb.indexOf("@zd_")>-1){
+		if("${isOpenDialog}" != "open"){
+			if(scancwb.indexOf("@zd_")>-1){
 			$("#branchid").val(scancwb.split('_')[1]);
 			if($("#branchid").val()!=scancwb.split('_')[1]){
 				$("#msg").html("         （异常扫描）扫描站点失败");
@@ -185,54 +189,70 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 			baleaddcwbCheck();
 		}else{//出库
 			
-			if('<%=isshowzhongzhuan%>'=='1'&&'<%=chorsezhongzhuanreason%>'=='yes'){
-				if($("#reasonid").val()==0){
-					alert('请选择中转原因!');
-					return;
+				if('<%=isshowzhongzhuan%>'=='1'&&'<%=chorsezhongzhuanreason%>'=='yes'){
+					if($("#reasonid").val()==0){
+						alert('请选择中转原因!');
+						return;
+					}
+					
 				}
-				
-			}
-			$.ajax({
-				type: "POST",
-				url:pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno,
-				dataType:"json",
-				success : function(data) {
-					$("#scancwb").val("");
-					if(data.statuscode=="000000"){
-						if(data.body.packageCode!=""){
-							$("#msg").html(data.body.packageCode+"　（"+data.errorinfo+"）");
-							if(data.body.cwbOrder.scannum==1){
-								if(Cwbs.indexOf("|"+scancwb+"|")==-1){
-									Cwbs += "|"+scancwb+"|";
-									/*$("#singleoutnum").html(parseInt($("#singleoutnum").html())+1);
-									$("#alloutnum").html(parseInt($("#alloutnum").html())+1);
-									branchStr[data.body.cwbOrder.nextbranchid] = $("#singleoutnum").html(); */
+				$.ajax({
+					type: "POST",
+					url:pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno,
+					dataType:"json",
+					success : function(data) {
+						$("#scancwb").val("");
+						if(data.statuscode=="000000"){
+							if(data.body.packageCode!=""){
+								$("#msg").html(data.body.packageCode+"　（"+data.errorinfo+"）");
+								if(data.body.cwbOrder.scannum==1){
+									if(Cwbs.indexOf("|"+scancwb+"|")==-1){
+										Cwbs += "|"+scancwb+"|";
+										/*$("#singleoutnum").html(parseInt($("#singleoutnum").html())+1);
+										$("#alloutnum").html(parseInt($("#alloutnum").html())+1);
+										branchStr[data.body.cwbOrder.nextbranchid] = $("#singleoutnum").html(); */
+									}
+									//getOutSum(pname,data.body.cwbOrder.nextbranchid);
+									//getcwbsquejiandataForBranchid(data.body.cwbOrder.nextbranchid);
+									//getchukucwbquejiandataList(data.body.cwbOrder.nextbranchid);
+									//将成功扫描的订单放到已入库明细中
+									//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#branchid").val());
 								}
-								//getOutSum(pname,data.body.cwbOrder.nextbranchid);
-								//getcwbsquejiandataForBranchid(data.body.cwbOrder.nextbranchid);
-								//getchukucwbquejiandataList(data.body.cwbOrder.nextbranchid);
-								//将成功扫描的订单放到已入库明细中
-								//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#branchid").val());
-							}
-							if(data.body.cwbOrder.sendcarnum>1){
-								numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
-								//document.ypdj.play();
-							}
-							if(data.body.cwbbranchnamewav!=""&&data.body.cwbbranchnamewav!=pname+"/wav/"){
-								numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
-								//$("#wavPlay",parent.document).attr("src",pname+"/wavPlay?wavPath="+data.body.cwbbranchnamewav+"&a="+Math.random());
+								if(data.body.cwbOrder.sendcarnum>1){
+									numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+									//document.ypdj.play();
+								}
+								if(data.body.cwbbranchnamewav!=""&&data.body.cwbbranchnamewav!=pname+"/wav/"){
+									numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+									//$("#wavPlay",parent.document).attr("src",pname+"/wavPlay?wavPath="+data.body.cwbbranchnamewav+"&a="+Math.random());
+								}else{
+									$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
+									numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+								}
 							}else{
-								$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
-								numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
-							}
-						}else{
-							$("#branchid").val(data.body.cwbOrder.nextbranchid);
-							if(data.body.cwbOrder.scannum==1){
-								if(Cwbs.indexOf("|"+scancwb+"|")==-1){
-									Cwbs += "|"+scancwb+"|";
-									/* $("#singleoutnum").html(parseInt($("#singleoutnum").html())+1);
-									$("#alloutnum").html(parseInt($("#alloutnum").html())+1);
-									branchStr[data.body.cwbOrder.nextbranchid] = $("#singleoutnum").html(); */
+								$("#branchid").val(data.body.cwbOrder.nextbranchid);
+								if(data.body.cwbOrder.scannum==1){
+									if(Cwbs.indexOf("|"+scancwb+"|")==-1){
+										Cwbs += "|"+scancwb+"|";
+										/* $("#singleoutnum").html(parseInt($("#singleoutnum").html())+1);
+										$("#alloutnum").html(parseInt($("#alloutnum").html())+1);
+										branchStr[data.body.cwbOrder.nextbranchid] = $("#singleoutnum").html(); */
+									}
+									//getOutSum(pname,data.body.cwbOrder.nextbranchid);
+									//getcwbsquejiandataForBranchid(data.body.cwbOrder.nextbranchid);
+									//getchukucwbquejiandataList(data.body.cwbOrder.nextbranchid);
+									
+									//将成功扫描的订单放到已入库明细中
+									//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#branchid").val());
+								}
+								
+								$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
+								$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
+								
+								$("#scansuccesscwb").val(scancwb);
+								$("#showcwb").html("订 单 号："+scancwb);
+								if(data.body.showRemark!=null){
+								$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
 								}
 								//getOutSum(pname,data.body.cwbOrder.nextbranchid);
 								//getcwbsquejiandataForBranchid(data.body.cwbOrder.nextbranchid);
@@ -240,43 +260,105 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 								
 								//将成功扫描的订单放到已入库明细中
 								//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#branchid").val());
-							}
-							
-							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
-							$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
-							
-							$("#scansuccesscwb").val(scancwb);
-							$("#showcwb").html("订 单 号："+scancwb);
-							if(data.body.showRemark!=null){
-							$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
-							}
-							//getOutSum(pname,data.body.cwbOrder.nextbranchid);
-							//getcwbsquejiandataForBranchid(data.body.cwbOrder.nextbranchid);
-							//getchukucwbquejiandataList(data.body.cwbOrder.nextbranchid);
-							
-							//将成功扫描的订单放到已入库明细中
-							//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#branchid").val());
-							
-							//if(data.body.cwbOrder.sendcarnum>1){
-							//	document.ypdj.play();
-							//}
-							//if(data.body.cwbbranchnamewav!=""&&data.body.cwbbranchnamewav!=pname+"/wav/"){
-							//	$("#wavPlay",parent.document).attr("src",pname+"/wavPlay?wavPath="+data.body.cwbbranchnamewav+"&a="+Math.random());
-							//}else{
-							//	$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
-							//} 
-							}
-							}else{
-						$("#excelbranch").html("");
-						$("#showcwb").html("");
-						$("#msg").html(scancwb+"         （异常扫描）"+data.errorinfo);
-						addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
-						//errorvedioplay(pname,data);
+								
+								//if(data.body.cwbOrder.sendcarnum>1){
+								//	document.ypdj.play();
+								//}
+								//if(data.body.cwbbranchnamewav!=""&&data.body.cwbbranchnamewav!=pname+"/wav/"){
+								//	$("#wavPlay",parent.document).attr("src",pname+"/wavPlay?wavPath="+data.body.cwbbranchnamewav+"&a="+Math.random());
+								//}else{
+								//	$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
+								//} 
+								}
+								}else{
+							$("#excelbranch").html("");
+							$("#showcwb").html("");
+							$("#msg").html(scancwb+"         （异常扫描）"+data.errorinfo);
+							addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
+							//errorvedioplay(pname,data);
+						}
+						$("#responsebatchno").val(data.responsebatchno);
+						batchPlayWav(data.wavList);
 					}
-					$("#responsebatchno").val(data.responsebatchno);
-					batchPlayWav(data.wavList);
+				});
+			}
+		}else{
+				if(scancwb.indexOf("@zd_")>-1){
+					$("#branchid").val(scancwb.split('_')[1]);
+					if($("#branchid").val()!=scancwb.split('_')[1]){
+						$("#msg1").html("         （异常扫描）扫描站点失败");
+						$("#branchid").val(0);
+						$('#find').dialog('open');
+					}else{
+						$("#msg1").html("");
+					}
+					$("#scancwb").val("");
+					return false;
 				}
-			});
+				if($("#scanbaleTag").attr("class")=="light"){//出库根据包号扫描订单
+					baleaddcwbCheck();
+				}else{//出库
+					
+						if('<%=isshowzhongzhuan%>'=='1'&&'<%=chorsezhongzhuanreason%>'=='yes'){
+							if($("#reasonid").val()==0){
+								alert('请选择中转原因!');
+								return;
+							}
+							
+						}
+						$.ajax({
+							type: "POST",
+							url:pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno,
+							dataType:"json",
+							success : function(data) {
+								$("#scancwb").val("");
+								if(data.statuscode=="000000"){
+									if(data.body.packageCode!=""){
+										$("#msg").html(data.body.packageCode+"　（"+data.errorinfo+"）");
+										if(data.body.cwbOrder.scannum==1){
+											if(Cwbs.indexOf("|"+scancwb+"|")==-1){
+												Cwbs += "|"+scancwb+"|";
+											}
+										}
+										if(data.body.cwbOrder.sendcarnum>1){
+											numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+										}
+										if(data.body.cwbbranchnamewav!=""&&data.body.cwbbranchnamewav!=pname+"/wav/"){
+											numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+										}else{
+											$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
+											numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+										}
+									}else{
+										$("#branchid").val(data.body.cwbOrder.nextbranchid);
+										if(data.body.cwbOrder.scannum==1){
+											if(Cwbs.indexOf("|"+scancwb+"|")==-1){
+												Cwbs += "|"+scancwb+"|";
+											}
+										}
+										
+										$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
+										$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
+										
+										$("#scansuccesscwb").val(scancwb);
+										$("#showcwb").html("订 单 号："+scancwb);
+										if(data.body.showRemark!=null){
+										$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
+										}
+										}
+									}else{
+										$("#excelbranch").html("");
+										$("#showcwb").html("");
+										$("#msg1").html(scancwb+"         （异常扫描）"+data.errorinfo);
+										$('#find').dialog('open');
+										addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
+										//errorvedioplay(pname,data);
+									}
+										$("#responsebatchno").val(data.responsebatchno);
+										batchPlayWav(data.wavList);
+							}
+						});
+				}
 		}
 	}
 }
@@ -622,7 +704,12 @@ function baleaddcwbCheck(){
    					} */
    				}else{
    					$("#scancwb").val("");
-	   				$("#msg").html("（异常扫描）"+data.body.errorinfo);
+   					if("${isOpenDialog}" != "open"){
+		   				$("#msg").html("（异常扫描）"+data.body.errorinfo);
+   					}else{
+   						$("#msg1").html("（异常扫描）"+data.body.errorinfo);
+   						$('#find').dialog('open');
+   					}
 	   				errorvedioplay("<%=request.getContextPath()%>",data);
    				}
    				return;
@@ -654,7 +741,12 @@ function baleaddcwb(scancwb,baleno){
 				<%-- numbervedioplay("<%=request.getContextPath()%>",data.body.successCount); --%>
 				playWav(""+data.body.successCount);
 			}else{
-				$("#msg").html("（异常扫描）"+data.body.errorinfo);
+				if("${isOpenDialog}" != "open"){
+	   				$("#msg").html("（异常扫描）"+data.body.errorinfo);
+				}else{
+					$("#msg1").html("（异常扫描）"+data.body.errorinfo);
+					$('#find').dialog('open');
+				}
 				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 		}
@@ -677,7 +769,12 @@ function fengbao(){
 				$("#msg").html($("#baleno").val()+"包号封包成功！");
 				successvedioplay("<%=request.getContextPath()%>",data);
 			}else{
-				$("#msg").html("（封包异常）"+data.body.errorinfo);
+				if("${isOpenDialog}" != "open"){
+					$("#msg").html("（封包异常）"+data.body.errorinfo);
+				}else{
+					$("#msg1").html("（异常扫描）"+data.body.errorinfo);
+					$('#find').dialog('open');
+				}
 				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
@@ -759,8 +856,7 @@ function chuku(){
 			<li><a href="<%=request.getContextPath()%>/PDA/cwbexportwarhouseBatch">批量操作</a></li>
 		</ul>
 	</div>
-
- 
+	
 	<div class="saomiao_topnum2">
 		<dl class="blue">
 			<dt>待出库</dt>
@@ -890,6 +986,26 @@ function chuku(){
 								class="button" onclick="chuku()" />
 					</p>
 				</div>
+				<c:if test="${isOpenDialog=='open'}">
+					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:280px;">
+				 		<div class="saomiao_right2">
+								<p id="msg1" name="msg1" ></p>
+								<p id="showcwb" name="showcwb"></p>
+								<p id="excelbranch" name="excelbranch" ></p>
+								<p id="cwbDetailshow" name="cwbDetailshow" ></p>
+									<div style="display: none" id="EMBED"></div>
+								<div style="display: none">
+										<EMBED id='ypdj' name='ypdj'
+											SRC='<%=request.getContextPath()%><%=ServiceUtil.waverrorPath%><%=CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl()%>'
+											LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
+								</div>
+									<div style="display: none" id="errorvedio"></div>
+								</div>
+				 	</div>
+			 	</c:if>
+			 
+				
+				
 				<div class="saomiao_right2">
 					<p id="msg" name="msg" ></p>
 					<p id="showcwb" name="showcwb"></p>

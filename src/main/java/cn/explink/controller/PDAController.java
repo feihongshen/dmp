@@ -405,6 +405,8 @@ public class PDAController {
 		// 已入库
 		List<CwbOrder> yirukulist = this.cwbDAO.getYiRukubyBranchidList(b.getBranchid(), customerid, 1, emaildate);
 		List<CwbDetailView> yirukuViewlist = this.getcwbDetail(yirukulist, cList, showCustomerjSONArray, null, 0);
+		String isOpenDialog = this.systemInstallDAO.getSystemInstallByName("Dialog").getValue();
+		model.addAttribute("isOpenDialog", isOpenDialog);
 		model.addAttribute("isscanbaleTag", isscanbaleTag);
 		model.addAttribute("weirukulist", weirukuViewlist);
 		model.addAttribute("yirukulist", yirukuViewlist);
@@ -1181,11 +1183,11 @@ public class PDAController {
 		// 已出库明细
 		List<CwbOrder> yichukulist = this.cwbDAO.getCwbByCwbsPage(1, cwbs, Page.DETAIL_PAGE_NUMBER);
 		List<CwbDetailView> yichukuViewlist = this.getcwbDetail(yichukulist, cList, showCustomerjSONArray, null, 0);
-
+		String isOpenDialog = this.systemInstallDAO.getSystemInstallByName("Dialog").getValue();
 		model.addAttribute("weichukulist", weichukuViewlist);
 		model.addAttribute("yichukulist", yichukuViewlist);
 		model.addAttribute("customerlist", cList);
-
+		model.addAttribute("isOpenDialog",isOpenDialog);
 		model.addAttribute("branchlist", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);

@@ -1,7 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+l<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
 <%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
@@ -33,7 +34,6 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
@@ -42,6 +42,9 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 var App = {ctx:"${pageContext.request.contextPath}"};
 
 $(function(){
+	if('${isOpenDialog}'=='open'){
+		$('#find').dialog('close');
+	}
 	$("#cwbnohide").click(function(){
 		
 		$("#cwbno").toggle();
@@ -312,6 +315,7 @@ function callfunction(cwb){//getEmailDateByIds
 								
 								
 								if (data.statuscode == "000000") {
+									$("#msg").val("");
 									$("#scancwb").val("");
 									$("#cwbgaojia").hide();
 
@@ -368,6 +372,7 @@ function callfunction(cwb){//getEmailDateByIds
 									}
 								} else {
 									$("#excelbranch").hide();
+									$("#msg").hide();
 									$("#customername").hide();
 									$("#cwbgaojia").hide();
 									$("#damage").hide();
@@ -377,12 +382,24 @@ function callfunction(cwb){//getEmailDateByIds
 									$("#cwbDetailshow").html("");
 									$("#consigneeaddress").html("");
 									$("#scancwb").html("");
+									$("#msg").html("");
 									if(data.statuscode=="3"){
 										$("#scancwb").val("");
-										alert("（异常扫描）"+data.errorinfo);
+										if("${isOpenDialog}" != "open"){
+											alert("（异常扫描）"+data.errorinfo);
+										}else{
+											$("#msg1").html("（异常扫描）"+data.errorinfo);
+											$('#find').dialog('open');
+										}
 									}else if(data.statuscode=="13"){
 										$("#scancwb").val("");
-										alert("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
+										if("${isOpenDialog}" != "open"){
+											alert("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
+										}else{
+											
+											$("#msg1").html("（异常扫描）"+data.errorinfo+",订单流程未设置入库，不允许入库！");
+											$('#find').dialog('open');
+										}
 									}else if(data.statuscode=="105"){
 										<%-- if(!confirm("无数据，有货无单,是否放弃入库？")){
 											$("#youhuowudanflag").val("1");
@@ -391,7 +408,12 @@ function callfunction(cwb){//getEmailDateByIds
 										}else{ --%>
 											
 											$("#scancwb").val("");
-											$("#msg").html("（异常扫描）" + data.errorinfo);
+											if("${isOpenDialog}" != "open"){
+												$("#msg").html("（异常扫描）" + data.errorinfo);
+											}else{
+												$("#msg1").html("（异常扫描）" + data.errorinfo);
+												$('#find').dialog('open');
+											}
 										<%-- } --%>
 									}else if(data.statuscode=="102"){
 										if(!confirm("尚未匹配站点，是否放弃入库？")){
@@ -400,12 +422,22 @@ function callfunction(cwb){//getEmailDateByIds
 											submitIntoWarehouse("<%=request.getContextPath()%>",$("#scancwb").val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");
 										}else{
 											$("#scancwb").val("");
-											$("#msg").html("（异常扫描）" + data.errorinfo);
+											if("${isOpenDialog}" != "open"){
+												$("#msg").html("（异常扫描）" + data.errorinfo);
+											}else{
+												$("#msg1").html("（异常扫描）" + data.errorinfo);
+												$('#find').dialog('open');
+											}
 										}
 									}
 									else{
 										$("#scancwb").val("");
-										$("#msg").html("（异常扫描）" + data.errorinfo);
+										if("${isOpenDialog}" != "open"){
+											$("#msg").html("（异常扫描）" + data.errorinfo);
+										}else{
+											$("#msg1").html("（异常扫描）" + data.errorinfo);
+											$('#find').dialog('open');
+										}
 									}
 									addAndRemoval(scancwb,"errorTable",false,$("#customerid").val());
 									
@@ -414,10 +446,10 @@ function callfunction(cwb){//getEmailDateByIds
 								$("#responsebatchno").val(data.responsebatchno);
 								batchPlayWav(data.wavList);
 							}
-						});
-			}
+				});
 		}
 	}
+}
 	/**
 	 * 入库备注提交
 	 */
@@ -745,7 +777,12 @@ $(function(){
  		dataType : "json",
  		success : function(data) {
  			clearMsg();
- 			$("#msg").html(data.body.errorinfo);
+ 			if("${isOpenDialog}" != "open"){
+	 			$("#msg").html(data.body.errorinfo);
+			}else{
+				$("#msg1").html(data.body.errorinfo);
+				$('#find').dialog('open');
+			}
  			$("#scancwb").val("");
  			errorvedioplay("<%=request.getContextPath()%>",data);
  		}
@@ -870,6 +907,29 @@ function openLogin(){
 					%>
 				</p>	
 				</div>
+				<c:if test="${isOpenDialog=='open'}">
+					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:280px;">
+				 		<div class="saomiao_right2">
+							<p id="msg1" name="msg" ></p>
+							<p id="showcwb" name="showcwb"></p>
+							<p id="cwbgaojia" name="cwbgaojia" style="display: none" >高价</p>
+							<p id="consigneeaddress" name="consigneeaddress"></p>
+							<p id="excelbranch" name="excelbranch" ></p>
+							<p id="customername" name="customername" ></p>
+							<p id="cwbDetailshow" name="cwbDetailshow" ></p>
+							<div style="display: none" id="EMBED">
+							</div>
+							<div style="display: none">
+								<EMBED id='ypdj' name='ypdj' SRC='<%=request.getContextPath() %><%=ServiceUtil.waverrorPath %><%=CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl() %>' LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
+							</div>
+							<div style="display: none">
+								<EMBED id='gaojia' name='gaojia' SRC='<%=request.getContextPath() %><%=ServiceUtil.waverrorPath %><%=CwbOrderPDAEnum.GAO_JIA.getVediourl() %>' LOOP=false AUTOSTART=false MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>
+							</div>
+							<div style="display: none" id="errorvedio"></div>
+						</div>
+				 	</div>
+			 	</c:if>
+				
 				<div class="saomiao_right2">
 					<p id="msg" name="msg" ></p>
 					<p id="showcwb" name="showcwb"></p>
