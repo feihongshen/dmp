@@ -8371,12 +8371,5 @@ CREATE TABLE `cs_complaint_accept` (
 	 </sql>
 	</changeSet>
 	
-	<changeSet id="zhouguoting-2015-09-23-04" author="zhouguoting">
-	   	<sql>
-			ALTER TABLE `express_ops_cwb_detail`   
-			  ADD COLUMN `fnorgfreightoffsetflag` TINYINT(4) DEFAULT 0  NULL  COMMENT '运费收款状态' AFTER `fnorgoffset`,
-			  ADD COLUMN `fnorgfreightoffset` DECIMAL(19,2) DEFAULT 0.00  NULL  COMMENT '运费核销金额' AFTER `fnorgfreightoffsetflag`;
-	 	</sql>
-	</changeSet>
 	
 </databaseChangeLog>
