@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.pos.tools.EmployeeInfo;
 
 @Component
@@ -128,21 +129,21 @@ public class JiontDAO {
 		}
 
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "jointCache", key = "#joint_num")
 	public void UpdateState(int joint_num, int state) {
 		String sql = " update express_set_joint set state=? where joint_num=? ";
 		jdbcTemplate.update(sql, state, joint_num);
 
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "jointCache", key = "#jointEntity.joint_num")
 	public void Update(JointEntity jointEntity) {
 		String sql = " update express_set_joint set joint_property=? where joint_num=? ";
 		jdbcTemplate.update(sql, jointEntity.getJoint_property(), jointEntity.getJoint_num());
 
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "jointCache", key = "#jointEntity.joint_num")
 	public void Create(final JointEntity jointEntity) {
 		jdbcTemplate.update("insert into express_set_joint(joint_num,joint_property,state" + ") values(?,?,?)", new PreparedStatementSetter() {
@@ -210,6 +211,10 @@ public class JiontDAO {
 			return 0;
 		}
 
+	}
+	@CacheEvict(value = "jointCache", allEntries = true)
+	public void updateCache(){
+		
 	}
 
 }

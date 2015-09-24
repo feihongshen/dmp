@@ -8370,6 +8370,10 @@ CREATE TABLE `cs_complaint_accept` (
 			UPDATE dmp40_function SET functionname ='退货中转入库交接单' WHERE ID='502090';
 	 </sql>
 	</changeSet>
-	
+	<changeSet id="wukong-2015-09-24-01" author="wukong">
+		<sql>
+		INSERT INTO `express_set_system_install` (`name`, `value`, `chinesename`) VALUES('cachesynchro','http://localhost:8080/dmp','库房与站点基础设置同步url');
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>

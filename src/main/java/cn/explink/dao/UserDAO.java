@@ -27,6 +27,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.domain.User;
 import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.util.Page;
@@ -230,7 +231,7 @@ public class UserDAO {
 		String sql = "select * from express_set_user where branchid=?";
 		return this.jdbcTemplate.query(sql, new UserRowMapper(), branchid);
 	}
-
+	@SystemInstallOperation
 	public void creUser(final User user) {
 		this.jdbcTemplate.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,"
 				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,"
@@ -273,7 +274,7 @@ public class UserDAO {
 
 				});
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "userCache", key = "#user.userid")
 	public void saveUser(final User user) {
 		this.jdbcTemplate.update("update express_set_user set username=?,password=?,realname=?,idcardno=?,"
@@ -568,6 +569,7 @@ public class UserDAO {
 	 *
 	 * @param user
 	 */
+	@SystemInstallOperation
 	@CacheEvict(value = "userCache", key = "#userid")
 	public void updateUserCode(String deliverManCode, long userid) {
 		String sql = "update express_set_user set deliverManCode=? where userid=?";
@@ -591,6 +593,7 @@ public class UserDAO {
 	 * @param deliverAccount
 	 * @param deliverPosAccount
 	 */
+	@SystemInstallOperation
 	@CacheEvict(value = "userCache", key = "#userid")
 	public void updateUserAmount(long userid, BigDecimal deliverAccount, BigDecimal deliverPosAccount) {
 		String sql = "update express_set_user set deliverAccount=?, deliverPosAccount=? where userid=?";
@@ -701,7 +704,7 @@ public class UserDAO {
 	 *
 	 * @param user
 	 */
-
+	@SystemInstallOperation
 	public void updateUserLastInfo(User user) {
 		String sql = "update express_set_user set lastip=?, lasttime=? where userid=?";
 		this.jdbcTemplate.update(sql, user.getLastLoginIp(), user.getLastLoginTime(), user.getUserid());
@@ -982,10 +985,14 @@ public class UserDAO {
 		String sql = "select * from express_set_user where userid in("+userids+")";
 		return this.jdbcTemplate.query(sql, new UserRowMapper());
 	}
-	
+	@SystemInstallOperation
 	@CacheEvict(value = "userCache", key = "#userid")
 	public long updatelateradvanceByuserid(long userid, BigDecimal add) {
 		String sql = "update express_set_user set lateradvance=? where userid=?";
 		return this.jdbcTemplate.update(sql,add,userid);
+	}
+	@CacheEvict(value = "userCache", allEntries = true)
+	public void updateCache(){
+		
 	}
 }

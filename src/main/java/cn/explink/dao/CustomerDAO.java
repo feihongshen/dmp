@@ -22,6 +22,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.domain.Customer;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
@@ -122,7 +123,7 @@ public class CustomerDAO {
 		}
 		return this.jdbcTemplate.queryForInt(sql);
 	}
-
+	@SystemInstallOperation
 	public void creCustomer(final Customer customer) {
 		final String insertsql = "insert into express_set_customer_info(customername,customercode,customeraddress,customercontactman,customerphone,b2cEnum,paytype,isypdjusetranscwb,isUsetranscwb,isAutoProductcwb,autoProductcwbpre,isFeedbackcwb,companyname,smschannel,isqufendaxiaoxie,wav_filepath,pfruleid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -166,7 +167,7 @@ public class CustomerDAO {
 			return new Customer();
 		}
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "customerCache", key = "#customer.customerid")
 	public void save(final Customer customer) {
 
@@ -199,7 +200,7 @@ public class CustomerDAO {
 				});
 
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "customerCache", key = "#customerid")
 	public void delCustomer(long customerid) {
 		this.jdbcTemplate.update("update express_set_customer_info set ifeffectflag=(ifeffectflag+1)%2 where customerid=?", customerid);
@@ -234,7 +235,7 @@ public class CustomerDAO {
 		}
 
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "customerCache", allEntries = true)
 	public void updateB2cEnumByJoint_num(String customerids, String oldCustomerids, int joint_num) {
 		if (!"".equals(oldCustomerids)) {
@@ -340,5 +341,9 @@ public class CustomerDAO {
 		String sql="select * from express_set_customer_info where ifeffectflag=1 and pfruleid=?";
 		return this.jdbcTemplate.query(sql, new CustomerRowMapper(),pfruleid);
 
+	}
+	@CacheEvict(value = "customerCache", allEntries = true)
+	public void updateCache(){
+		
 	}
 }

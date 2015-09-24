@@ -15,6 +15,7 @@
 		<aspect name="cn.explink.aspect.OperationRecord"/>
 		<aspect name="cn.explink.aspect.OperationRecordMore"/>
 		<aspect name="cn.explink.aspect.SmtOptTimeAspect"/>
+		<aspect name="cn.explink.aspect.SysteminstallAspect"/>
 		
 	</aspects>
 

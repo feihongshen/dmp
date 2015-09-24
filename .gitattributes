@@ -31,6 +31,8 @@ src/main/java/cn/explink/aspect/OperationRecord.java -text
 src/main/java/cn/explink/aspect/OperationRecordMore.aj -text
 src/main/java/cn/explink/aspect/OrderFlowOperation.java -text
 src/main/java/cn/explink/aspect/SmtOptTimeAspect.java -text
+src/main/java/cn/explink/aspect/SystemInstallOperation.java -text
+src/main/java/cn/explink/aspect/SysteminstallAspect.java -text
 src/main/java/cn/explink/b2c/Wholeline/WholeLine.java -text
 src/main/java/cn/explink/b2c/Wholeline/WholeLineController.java -text
 src/main/java/cn/explink/b2c/Wholeline/WholeLineService.java -text
@@ -88,6 +90,7 @@ src/main/java/cn/explink/b2c/benlaishenghuo/CwbColumnSetBenlaishenghuo.java -tex
 src/main/java/cn/explink/b2c/benlaishenghuo/xml/ArrayOfRow.java -text
 src/main/java/cn/explink/b2c/benlaishenghuo/xml/BenlaiUnmarchal.java -text
 src/main/java/cn/explink/b2c/benlaishenghuo/xml/row.java -text
+src/main/java/cn/explink/b2c/cachesynchro/CacheSynchroController.java -text
 src/main/java/cn/explink/b2c/chinamobile/Chinamobile.java -text
 src/main/java/cn/explink/b2c/chinamobile/ChinamobileController.java -text
 src/main/java/cn/explink/b2c/chinamobile/ChinamobileFTPUtils.java -text

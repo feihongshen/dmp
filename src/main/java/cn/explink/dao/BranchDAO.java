@@ -24,6 +24,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.domain.Branch;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchTypeEnum;
@@ -118,6 +119,7 @@ public class BranchDAO {
 	 *            被关联的机构ID
 	 * @return
 	 */
+	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchId")
 	public int saveBranchCwbtobranchid(long branchId, String toBranchIds) {
 		return this.jdbcTemplate.update("update express_set_branch set cwbtobranchid = ? where `branchid` = ? order by branchname ", toBranchIds, branchId);
@@ -233,7 +235,7 @@ public class BranchDAO {
 			return new Branch();
 		}
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branch.branchid")
 	public void saveBranch(final Branch branch) {
 
@@ -303,7 +305,7 @@ public class BranchDAO {
 				});
 
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branch.branchid")
 	public void saveBranchNoFile(final Branch branch) {
 
@@ -384,6 +386,7 @@ public class BranchDAO {
 	 *
 	 * @param brach
 	 */
+	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public void saveBranchArrearageHuo(BigDecimal arrearagehuo, long branchid) {
 		this.jdbcTemplate.update("update express_set_branch set arrearagehuo=?" + " where branchid=?", arrearagehuo, branchid);
@@ -394,6 +397,7 @@ public class BranchDAO {
 	 *
 	 * @param brach
 	 */
+	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public void saveBranchArrearagePei(BigDecimal arrearagepei, long branchid) {
 		this.jdbcTemplate.update("update express_set_branch set arrearagepei=?" + " where branchid=?", arrearagepei, branchid);
@@ -404,11 +408,12 @@ public class BranchDAO {
 	 *
 	 * @param brach
 	 */
+	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public void saveBranchArrearageFa(BigDecimal arrearagefa, long branchid) {
 		this.jdbcTemplate.update("update express_set_branch set arrearagefa=?" + " where branchid=?", arrearagefa, branchid);
 	}
-
+	@SystemInstallOperation
 	public long creBranch(final Branch branch) {
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -732,7 +737,7 @@ public class BranchDAO {
 			return null;
 		}
 	}
-
+	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public int updateQiankuan(long branchid, BigDecimal arrearagepayupaudit, BigDecimal posarrearagepayupaudit) {
 		String sql = "update express_set_branch set arrearagepayupaudit=arrearagepayupaudit+" + arrearagepayupaudit + ",posarrearagepayupaudit=posarrearagepayupaudit+" + posarrearagepayupaudit
@@ -754,6 +759,7 @@ public class BranchDAO {
 	 * @param posarrearagepayupaudit
 	 *            pos欠款金额
 	 */
+	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public void updateForChongZhiShenHe(long branchid, BigDecimal arrearagepayupaudit, BigDecimal posarrearagepayupaudit) {
 		this.jdbcTemplate.update("update express_set_branch set arrearagepayupaudit=?,posarrearagepayupaudit=? where branchid=? ", arrearagepayupaudit, posarrearagepayupaudit, branchid);
@@ -761,7 +767,7 @@ public class BranchDAO {
 
 	// ==============================修改订单使用的方法 start
 	// ==================================
-
+	@SystemInstallOperation
 	public void delBranch(long branchid) {
 		this.jdbcTemplate.update("update express_set_branch set brancheffectflag=(brancheffectflag+1)%2 where branchid=?", branchid);
 	}
@@ -842,19 +848,19 @@ public class BranchDAO {
 			return 0;
 		}
 	}
-
+	@SystemInstallOperation
 	public void updateForFee(long branchid, BigDecimal balance, BigDecimal debt) {
 		this.jdbcTemplate.update("UPDATE express_set_branch SET balance=?,debt=? WHERE branchid=?", balance, debt, branchid);
 	}
-
+	@SystemInstallOperation
 	public void updateForVirt(long branchid, BigDecimal balancevirt, BigDecimal debtvirt) {
 		this.jdbcTemplate.update("UPDATE express_set_branch SET balancevirt=?,debtvirt=? WHERE branchid=?", balancevirt, debtvirt, branchid);
 	}
-
+	@SystemInstallOperation
 	public void updateForFeeAndVirt(long branchid, BigDecimal balance, BigDecimal debt, BigDecimal balancevirt, BigDecimal debtvirt) {
 		this.jdbcTemplate.update("UPDATE express_set_branch SET balance=?,debt=?,balancevirt=?,debtvirt=? WHERE branchid=?", balance, debt, balancevirt, debtvirt, branchid);
 	}
-
+	
 	public List<Branch> getAccessableBranch(long userId, int siteType) {
 		try {
 			String sql = "SELECT b.* FROM express_set_branch b, express_set_user_branch ub WHERE b.branchid = ub.branchid AND ub.userid = ? AND b.sitetype = ? order by sitetype ASC ,CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
@@ -1024,5 +1030,9 @@ public class BranchDAO {
 	public List<Branch> getBanchByPFruleId(long pfruleid) {
 		String sql = "SELECT * from express_set_branch  WHERE pfruleid=? and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper(),pfruleid);
+	}
+	@CacheEvict(value = "branchCache", allEntries = true)
+	public void updateCache(){
+		
 	}
 }
