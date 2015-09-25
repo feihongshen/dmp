@@ -47,10 +47,10 @@ public class ExceptionCwbDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public List<ExceptionCwb> getAllECByPage(long page, String cwb, long scantype, String errortype, long branchid, long userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
+	public List<ExceptionCwb> getAllECByPage(long page, String cwb, long scantype, String errortype, String branchid, String userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
 		try {
 			String sql = "select * from express_ops_exception_cwb where createtime >? and createtime <?";
-			sql = this.getECByWhereSql(sql, cwb, scantype, errortype, branchid, userid, ishanlder, scope);
+			sql = this.getECByWhereSqlNew(sql, cwb, scantype, errortype, branchid, userid, ishanlder, scope);
 			sql += " order by createtime desc limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 			return jdbcTemplate.query(sql, new ExceptionCwbMapper(), beginemaildate, endemaildate);
 		} catch (EmptyResultDataAccessException ee) {
@@ -69,9 +69,9 @@ public class ExceptionCwbDAO {
 		}
 	}
 
-	public long getAllECCount(String cwb, long scantype, String errortype, long branchid, long userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
+	public long getAllECCount(String cwb, long scantype, String errortype, String branchid, String userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
 		String sql = "select count(1)  from express_ops_exception_cwb where createtime >? and createtime <?";
-		sql = this.getECByWhereSql(sql, cwb, scantype, errortype, branchid, userid, ishanlder, scope);
+		sql = this.getECByWhereSqlNew1(sql, cwb, scantype, errortype, branchid, userid, ishanlder, scope);
 		return jdbcTemplate.queryForLong(sql, beginemaildate, endemaildate);
 	}
 
@@ -97,6 +97,70 @@ public class ExceptionCwbDAO {
 			}
 			if (userid > 0) {
 				w.append(" and userid=" + userid);
+			}
+			if (ishanlder > -1) {
+				w.append(" and ishanlder=" + ishanlder);
+				sql += w.toString();
+			}
+		}
+		if (scope == 1) {
+			sql += " and errortype='' or errortype=null ";
+		}
+		if (scope == 2) {
+			sql += " and errortype!='' or errortype!=null ";
+		}
+		return sql;
+	}
+	
+
+	public String getECByWhereSqlNew1(String sql, String cwb, long scantype, String errortype, String branchid, String userid, long ishanlder, long scope) {
+		if (cwb.length() > 0 || scantype > 0 || errortype.length() > 0 || !branchid .equals("") ||! userid .equals("") || ishanlder > 0) {
+			StringBuffer w = new StringBuffer();
+			if (cwb.length() > 0) {
+				w.append(" and cwb='" + cwb + "'");
+			}
+			if (scantype > 0) {
+				w.append(" and scantype=" + scantype);
+			}
+			if (errortype.length() > 0) {
+				w.append(" and errortype='" + errortype + "'");
+			}
+			if (!branchid .equals("")) {
+				w.append(" and branchid in ("+branchid+")");
+			}
+			if (!userid .equals("")) {
+				w.append(" and userid in ("+userid+")");
+			}
+			if (ishanlder > -1) {
+				w.append(" and ishanlder=" + ishanlder);
+				sql += w.toString();
+			}
+		}
+		if (scope == 1) {
+			sql += " and errortype='' or errortype=null ";
+		}
+		if (scope == 2) {
+			sql += " and errortype!='' or errortype!=null ";
+		}
+		return sql;
+	}
+	public String getECByWhereSqlNew(String sql, String cwb, long scantype, String errortype, String branchid, String userid, long ishanlder, long scope) {
+		if (cwb.length() > 0 || scantype > 0 || errortype.length() > 0 || !branchid.equals("") || !userid.equals("") || ishanlder > 0) {
+			StringBuffer w = new StringBuffer();
+			if (cwb.length() > 0) {
+				w.append(" and cwb='" + cwb + "'");
+			}
+			if (scantype > 0) {
+				w.append(" and scantype=" + scantype);
+			}
+			if (errortype.length() > 0) {
+				w.append(" and errortype='" + errortype + "'");
+			}
+			if (!branchid.equals("")) {
+				w.append(" and branchid in ("+ branchid+")");
+			}
+			if (!userid .equals("")) {
+				w.append(" and userid in ("+ userid+")");
 			}
 			if (ishanlder > -1) {
 				w.append(" and ishanlder=" + ishanlder);

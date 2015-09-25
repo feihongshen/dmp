@@ -1194,14 +1194,19 @@ public class CwbOrderPDAController {
 	 */
 	@RequestMapping("/controlForBranchImport/{page}")
 	public String controlForBranchImport(Model model, @PathVariable("page") long page, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
-			@RequestParam(value = "userid", required = false, defaultValue = "0") long userid,
+			@RequestParam(value = "userid", required = false, defaultValue = "") String[] userid,
 			@RequestParam(value = "flowOrderTypeEnumid", required = false, defaultValue = "0") long flowOrderTypeEnumid,
 			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
 			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate, @RequestParam(value = "scopeValue", required = false, defaultValue = "-1") long scope,
-			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid) {
+			@RequestParam(value = "branchid", required = false, defaultValue = "") String[] branchid,
+			@RequestParam(value = "username", required = false, defaultValue = "") String username) {
 		model.addAttribute("flowOrderTypeEnumid", flowOrderTypeEnumid);
 		model.addAttribute("branchid", branchid);
 		model.addAttribute("userid", userid);
+		
+		String userids=this.cwborderService.getToString(userid);
+		String branchids=this.cwborderService.getToString(branchid);
+		
 		List<ExceptionCwb> eclist = new ArrayList<ExceptionCwb>();
 		// List<ExceptionCwb> eclistall = new ArrayList<ExceptionCwb>();
 		long count = 0;
@@ -1209,16 +1214,26 @@ public class CwbOrderPDAController {
 		if ((beginemaildate.length() == 0) && (endemaildate.length() == 0)) {
 
 		} else {
-			eclist = this.cwborderService.controlForBranchImport(this.getSessionUser(), page, cwb, flowOrderTypeEnumid, "", userid, beginemaildate, endemaildate, branchid, scope);
-			// eclistall =
-			// cwborderService.controlForBranchImport(getSessionUser(),-1,cwb,flowOrderTypeEnumid,"",userid,
-			// beginemaildate, endemaildate,branchid);
-			count = this.exceptionCwbDAO.getAllECCount(cwb, flowOrderTypeEnumid, "", branchid, userid, 0, beginemaildate, endemaildate, scope);
-		}
+			if(username!=null&&!username.equals("")){
+				String usernameforid=userDAO.getUserByUsername(username).getUserid()+"";
+				String usernameforbranchid=userDAO.getUserByUsername(username).getBranchid()+"";
+				eclist = this.cwborderService.controlForBranchImport(this.getSessionUser(), page, cwb, flowOrderTypeEnumid, "", usernameforid, beginemaildate, endemaildate, usernameforbranchid, scope);
+				count = this.exceptionCwbDAO.getAllECCount(cwb, flowOrderTypeEnumid, "", usernameforbranchid, usernameforid, 0, beginemaildate, endemaildate, scope);
+				
+			}else{
+			
+				eclist = this.cwborderService.controlForBranchImport(this.getSessionUser(), page, cwb, flowOrderTypeEnumid, "", userids, beginemaildate, endemaildate, branchids, scope);
+				// eclistall =
+				// cwborderService.controlForBranchImport(getSessionUser(),-1,cwb,flowOrderTypeEnumid,"",userid,
+				// beginemaildate, endemaildate,branchid);
+				count = this.exceptionCwbDAO.getAllECCount(cwb, flowOrderTypeEnumid, "", branchids, userids, 0, beginemaildate, endemaildate, scope);
+				}
+			}
 
 		List<Exportmould> exportmouldlist = this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid());
 		model.addAttribute("exportmouldlist", exportmouldlist);
-
+		List<String> strArrList=this.cwborderService.getBranchList(branchid);
+		model.addAttribute("strArrList", strArrList);
 		model.addAttribute("branchlist", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("eclist", eclist);
 		// model.addAttribute("eclistall", eclistall);
@@ -3108,6 +3123,19 @@ public class CwbOrderPDAController {
 	/* 获得每一个单据的反馈信息 */
 	public String getBackReason(TranscwbOrderFlow tf) {
 		return JSONObject.fromObject(JSONObject.fromObject(tf.getFloworderdetail()).getString("cwbOrder")).getString("backreason");
+	}
+	
+	@RequestMapping("/getMoHuBranch")
+	@ResponseBody
+	public List<Branch> getMoHuBranch(@RequestParam(value="branchName") String branchName){
+		List<Branch> branchlist=branchDAO.getMoHuBranch(branchName);
+		return branchlist;
+	}
+	
+	@RequestMapping("/getMoHuUser")
+	@ResponseBody
+	public List<User> getMoHuUser(@RequestParam(value="userName") String userName){
+		return userDAO.getMoHuUser(userName);
 	}
 
 }

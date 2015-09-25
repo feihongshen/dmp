@@ -462,6 +462,15 @@ public class UserDAO {
 			return null;
 		}
 	}
+	
+	public List<User> getUserByBranchids(String branchids) {
+		try {
+			String sql = "SELECT * FROM express_set_user WHERE branchid in("+branchids+") and userDeleteFlag=1 and employeestatus=1";
+			return this.jdbcTemplate.query(sql, new UserRowMapper());
+		} catch (EmptyResultDataAccessException ee) {
+			return null;
+		}
+	}
 
 	public List<User> getAllUserByBranchid(long branchid) {
 		try {
@@ -993,6 +1002,13 @@ public class UserDAO {
 	}
 	@CacheEvict(value = "userCache", allEntries = true)
 	public void updateCache(){
+		
+	}
+	
+	public List<User> getMoHuUser(String userName){
+		
+		String sql="select * from express_set_user where realname like '%"+userName+"%'";
+		return  this.jdbcTemplate.query(sql,new UserRowMapper());
 		
 	}
 }

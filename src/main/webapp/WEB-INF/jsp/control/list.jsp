@@ -20,10 +20,18 @@ Object ids =request.getAttribute("ids");
 String starttime=request.getAttribute("beginemaildate").toString();	
 String endtime=request.getAttribute("endemaildate").toString();	
 Long flowOrderTypeEnumid =(Long)request.getAttribute("flowOrderTypeEnumid");		
-Long branchid =(Long)request.getAttribute("branchid");		
-Long userid =(Long)request.getAttribute("userid");		
+List<String> strArrList =request.getAttribute("strArrList")==null?null:(List<String>)request.getAttribute("strArrList");		
+ /*String userid =(String)request.getAttribute("userid");	 */	
 Long scopeValue =(Long)request.getAttribute("scopeValue");	
 System.out.println(scopeValue);
+%>
+<%
+String branchids = "0";
+if(!strArrList.isEmpty()) 
+      {for(int i=0;i<strArrList.size();i++){
+      	branchids = branchids + "," + strArrList.get(i).toString();
+      }
+   }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -45,7 +53,76 @@ System.out.println(scopeValue);
 <title>扫描监控</title>
 <script type="text/javascript">
 
+
+
+function getSelectBranchForUsers(value){
+	var optionstring="";
+	if($("#branchid").val()!=""){
+		$.ajax({
+			type: "POST",
+			data:{branchid:value},
+			url:"<%=request.getContextPath()%>/user/getUsersByBranchids",
+			success:function(data){
+				$("#userid").empty();
+				optionstring+="<option value='0'>请选择</option>";
+				for(var i=0;i<data.length;i++){
+					optionstring+="<option value='"+data[i].userid+"'>"+data[i].realname+"</option>";
+				}
+				$("#userid").html(optionstring);
+			}
+		});
+	}else{
+		$("#userid").empty();
+		optionstring+="<option value='0'>请选择</option>";
+		
+		<%for(User u : ulist){ %>
+			optionstring += "<option value=<%=u.getUserid()%>><%=u.getRealname()%></option>";
+        <%} %>
+        $("#userid").html(optionstring);
+	}
+	
+}
+
+//输入站点名称，模糊查询到相关的站点并在多选下拉列表中选中
+function selectallnexusbranch(path,tagname,branchname){
+	if(branchname.length>0){
+		$.ajax({
+			url:path+"/cwborderPDA/getMoHuBranch",//后台处理程序
+			type:"POST",//数据发送方式 
+			data:"branchName="+branchname,//参数
+			dataType:'json',//接受数据格式
+			success:function(data){
+				var strArr="";
+				for(var j = 0 ; j < data.length ; j++){
+					var txt = "";//用于存储显示批次文本框的文字
+					$(".multiSelectOptions input[name='"+tagname+"']").each(function(){
+						if($(this).val()==data[j].branchid){
+							$(this).attr('checked', true).parent().addClass('checked');
+							strArr+=data[j].branchid+",";
+						}
+						if($(this).parent()[0].style.display=="none"){
+							$(this).parent().attr("class","");
+							$(this).attr("checked",false);
+						}
+						if($(this).parent().attr("class")=="checked"){
+							var pici = $(this).parent().html().substring($(this).parent().html().indexOf(">")+1);
+							txt = txt+pici+", ";
+						}
+					});
+					$("input[name='"+tagname+"']").parent().parent().prev().children(".multiSelect_txt").val(txt==""?"请选择":txt);
+				}
+				
+				getSelectBranchForUsers(strArr);
+			}
+		});
+	}
+}
+
+
+
 $(function(){
+	
+	$("#branchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择配送站点' });
 	if($("#branchid").val()!=0){
 		var optionstring="";
 		$.ajax({
@@ -78,7 +155,7 @@ $(function(){
 	    dateFormat: 'yy-mm-dd'
 	});
 	
-	$("#branchid").change(function(){
+<%-- 	$("#branchid").change(function(){
 		var optionstring="";
 		if($(this).val()!=0){
 			$.ajax({
@@ -102,7 +179,7 @@ $(function(){
 	        $("#userid").html(optionstring);
 		}
 		
-	});
+	}); --%>
 });
 var arr="";
 function getCheckValue(){
@@ -118,7 +195,8 @@ function getCheckValue(){
 }
 function actionType(src)					
 {					
-	$("#searchFormFlash").attr("action",src);				
+	$("#searchFormFlash").attr("action",src);		
+	$("#searchFormFlash").submit();
 	}				
 
 </script>
@@ -134,10 +212,22 @@ function actionType(src)
     </td>
     <td>
     操作机构
-			<select name="branchid" id="branchid" class="select1">
+    		<input name="branchname" id="branchname" style="height:20px;" class="input_text1" onkeyup="selectallnexusbranch('<%=request.getContextPath()%>','branchid',$(this).val());"/>
+			<select name="branchid" id="branchid" class="select1" multiple="multiple">
 		        <option value="0">请选择</option>
-		        <%for(Branch b : branchlist){ %>
-		           <option  value="<%=b.getBranchid()%>" <% if(branchid==b.getBranchid()){ %>selected="selected" <% }%>><%=b.getBranchname()%></option>
+		        <%for(Branch b : branchlist){ %><%-- <% if(branchid==b.getBranchid()){ %>selected="selected" <% }%> --%>
+		           <option  value="<%=b.getBranchid()%>" 
+		           		<%if(!strArrList.isEmpty()) 
+						            {for(int i=0;i<strArrList.size();i++){
+						            	if(b.getBranchid()== new Long(strArrList.get(i).toString())){
+						            		%>selected="selected"<%
+						            	 break;
+						            	}
+						            }
+							     }%>
+		           
+		           
+		           ><%=b.getBranchname()%></option>
 		        <%} %>
 	        </select>
     </td>
@@ -171,10 +261,10 @@ function actionType(src)
     <td>
        操作人
 			<select name="userid" id="userid" class="select1">
-		        <option value="0">请选择</option>
-		         <%for(User u : ulist){ %>
-		           <option value="<%=u.getUserid()%>" <% if(userid==u.getUserid()){ %>selected="selected" <% }%>><%=u.getRealname()%></option>
-		        <%} %>
+		       <option value="0">请选择</option>
+		         <%for(User u : ulist){ %><%-- <% if(userid==u.getUserid()){ %>selected="selected" <% }%> --%>
+		           <option value="<%=u.getUserid()%>" ><%=u.getRealname()%></option>
+		        <%} %> 
 	        </select>
     </td>
     <td>
@@ -192,14 +282,20 @@ function actionType(src)
     </td>
     </tr>
     <tr>
+    	<td>
+    		工号查询
+    		<input name="username" id="username" class="input_text1" />
+    	</td>
+    </tr>
+    <tr>
     <td>
-    <input type="submit" value="查询" onclick="actionType('1')" class="input_button2"/>
+    <input type="button" value="查询" onclick="actionType('1')" class="input_button2"/>
     <%if(eclist != null && eclist.size()>0){%>																	
     <input type="hidden" name="cwbs" id="cwbs" value="<%=cwbs%>" />																																	
     <input type="hidden" name="ids" id="ids" value="<%=ids%>" />																																	
     <input type="hidden" name="starttime" id="starttime" value="<%=starttime%>" />																																	
     <input type="hidden" name="endtime" id="endtime" value="<%=endtime%>" />																																	
-    <input type="submit" id="btnval0" onclick="actionType('<%=request.getContextPath()%>/cwborderPDA/exportExcle')" value="导出Excel" class="input_button2"/>																	
+    <input type="button" id="btnval0" onclick="actionType('<%=request.getContextPath()%>/cwborderPDA/exportExcle')" value="导出Excel" class="input_button2"/>																	
     <%}%>
     </td>
     </tr>
@@ -291,8 +387,9 @@ function actionType(src)
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
 $("#flowOrderTypeEnumid").val(<%=request.getParameter("flowOrderTypeEnumid")%>);
-$("#branchid").val(<%=request.getParameter("branchid")%>);
+<%-- $("#branchid").val(<%=request.getParameter("branchid")%>); --%>
 $("#userid").val(<%=request.getParameter("userid")%>);
+$("#username").val(<%=request.getParameter("username")%>);
 </script>
 </body>
 </html>

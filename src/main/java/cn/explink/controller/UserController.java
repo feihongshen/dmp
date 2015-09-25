@@ -29,6 +29,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.schedule.Constants;
+import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ScheduledTaskService;
 import cn.explink.service.SystemInstallService;
@@ -65,6 +66,8 @@ public class UserController {
 	SystemInstallService systemInstallService;
 	@Autowired
 	PaiFeiRuleDAO pfFeiRuleDAO;
+	@Autowired
+	CwbOrderService cs;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -79,6 +82,15 @@ public class UserController {
 		return this.userDAO.getUserByBranchid(branchid);
 
 	}
+	
+	@RequestMapping("/getUsersByBranchids")
+	public @ResponseBody
+	List<User> getUsersByBranchids(@RequestParam("branchid") String[] branchid) {
+		String branchids=cs.getToString(branchid);
+		return this.userDAO.getUserByBranchids(branchids);
+
+	}
+
 
 	@RequestMapping("/usercheck")
 	public @ResponseBody

@@ -6105,7 +6105,7 @@ public class CwbOrderService {
 	 *            (cwb,errortype,branchid,userid)
 	 * @return
 	 */
-	public List<ExceptionCwb> controlForBranchImport(User user, long page, String cwb, long scantype, String errortype, long userid, String beginemaildate, String endemaildate, long branchid,
+	public List<ExceptionCwb> controlForBranchImport(User user, long page, String cwb, long scantype, String errortype, String userid, String beginemaildate, String endemaildate, String branchid,
 			long scope) {
 		try {
 
@@ -7403,6 +7403,33 @@ public class CwbOrderService {
 			}
 		}
 		return strBuilder.toString();
+	}
+	
+	public String getToString(String args[]){
+		String strs = "";
+		if (args!=null&&args.length > 0) {
+			for (String str : args) {
+				if(!str.equals("0")&&!str.equals('0')){
+					strs += "'" + str + "',";
+				}
+			}
+		}
+
+		if (strs.length() > 0) {
+			strs = strs.substring(0, strs.length() - 1);
+		}
+		return strs;
+	}
+	
+
+	public List<String> getBranchList(String[] strArr) {
+		List<String> strList = new ArrayList<String>();
+		if ((strArr != null) && (strArr.length > 0)) {
+			for (String str : strArr) {
+				strList.add(str);
+			}
+		}
+		return strList;
 	}
 
 }

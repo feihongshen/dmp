@@ -1035,4 +1035,10 @@ public class BranchDAO {
 	public void updateCache(){
 		
 	}
+	
+	public List<Branch> getMoHuBranch(String branchName){
+		String sql="select * from express_set_branch where branchname like '%"+branchName+"%'";
+		return this.jdbcTemplate.query(sql, new BranchRowMapper());
+		
+	}
 }
