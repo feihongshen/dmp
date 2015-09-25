@@ -52,7 +52,26 @@ if(!strArrList.isEmpty())
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <title>扫描监控</title>
 <script type="text/javascript">
-
+//全选与取消全选多选下拉列表的方法 isSelect为0为取消全选 否则为全选
+function multiSelectAll(name,isSelect,text){
+	if(isSelect==0){
+		$("input[name='"+name+"']").attr('checked', false).parent().removeClass('checked');
+	}else{
+		$("input[name='"+name+"']").attr('checked', true).parent().addClass('checked');
+	}
+	var txt = "";//用于存储显示批次文本框的文字
+	$("input[name='"+name+"']").each(function(i){
+	if($(this).parent()[0].style.display=="none"){
+	$(this).parent().attr("class","");
+	$(this).attr("checked",false);
+	}
+	if($(this).parent().attr("class")=="checked"){
+	var pici = $(this).parent().html().substring($(this).parent().html().indexOf(">")+1);
+	txt = txt+pici+", ";
+	}
+	});
+	$("input[name='"+name+"']").parent().parent().prev().children(".multiSelect_txt").val(txt==""?text:txt);
+}
 
 
 function getSelectBranchForUsers(value){
@@ -229,7 +248,7 @@ function actionType(src)
 		           
 		           ><%=b.getBranchname()%></option>
 		        <%} %>
-	        </select>
+	        </select><a href="#" onclick="multiSelectAll('branchid','1','')">[全选]</a><a href="#" onclick="multiSelectAll('branchid','0','请选择配送站点')">[取消全选]</a>
     </td>
     <td>
       扫描类型
