@@ -99,8 +99,8 @@ public class Bill99Service_toExptFeedBack extends Bill99Service {
 		} catch (CwbException e1) {
 			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(billrespNote.getOrder_no());
 			User user = getUser(billrespNote.getDeliverid());
-			exceptionCwbDAO.createExceptionCwb(billrespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			exceptionCwbDAO.createExceptionCwbScan(billrespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",billrespNote.getOrder_no());
 
 			if (e1.getError().getValue() == ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO.getValue()) {
 				logger.error("bill99异常反馈异常,没有检索到数据" + billrespNote.getOrder_no() + ",小件员：" + billrespNote.getDelivery_man(), e1);

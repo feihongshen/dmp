@@ -1189,8 +1189,8 @@ public class ApplyEditDeliverystateController {
 
 		} catch (CwbException ce) {
 			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(applyEditDeliverystate.getCwb());
-			exceptionCwbDAO.createExceptionCwb(applyEditDeliverystate.getCwb(), ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			exceptionCwbDAO.createExceptionCwbScan(applyEditDeliverystate.getCwb(), ce.getFlowordertye(), ce.getMessage(), getSessionUser().getBranchid(), getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",applyEditDeliverystate.getCwb());
 
 			return "{\"errorCode\":1,\"error\":\"" + ce.getMessage() + "\"}";
 		}

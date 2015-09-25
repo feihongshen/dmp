@@ -40,6 +40,7 @@ public class ExceptionCwbDAO {
 			exceptionCwb.setDeliverid(rs.getLong("deliverid"));
 			exceptionCwb.setInterfacetype(rs.getString("interfacetype"));
 			exceptionCwb.setRemark(rs.getString("remark"));
+			exceptionCwb.setScancwb(rs.getString("scancwb"));
 			return exceptionCwb;
 		}
 	}
@@ -76,8 +77,13 @@ public class ExceptionCwbDAO {
 	}
 
 	public void createExceptionCwb(String cwb, long scantype, String errortype, long branchid, long userid, long customerid, long driverid, long truckid, long deliverid, String interfacetype) {
-		String sql = "insert into express_ops_exception_cwb (cwb,scantype,errortype,branchid,userid,customerid,driverid,truckid,deliverid,interfacetype) " + "values(?,?,?,?,?,?,?,?,?,?)";
-		jdbcTemplate.update(sql, cwb, scantype, errortype, branchid, userid, customerid, driverid, truckid, deliverid, interfacetype);
+		String sql = "insert into express_ops_exception_cwb (cwb,scantype,errortype,branchid,userid,customerid,driverid,truckid,deliverid,interfacetype,scancwb) " + "values(?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.update(sql, cwb, scantype, errortype, branchid, userid, customerid, driverid, truckid, deliverid, interfacetype,cwb);
+	}
+	
+	public void createExceptionCwbScan(String cwb, long scantype, String errortype, long branchid, long userid, long customerid, long driverid, long truckid, long deliverid, String interfacetype,String scancwb) {
+		String sql = "insert into express_ops_exception_cwb (cwb,scantype,errortype,branchid,userid,customerid,driverid,truckid,deliverid,interfacetype,scancwb) " + "values(?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.update(sql, cwb, scantype, errortype, branchid, userid, customerid, driverid, truckid, deliverid, interfacetype,scancwb);
 	}
 
 	public String getECByWhereSql(String sql, String cwb, long scantype, String errortype, long branchid, long userid, long ishanlder, long scope) {

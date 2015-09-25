@@ -295,6 +295,7 @@ public class CwbOrderPDAController {
 			@RequestParam(value = "requestbatchno", required = false, defaultValue = "0") long requestbatchno) throws Exception {
 
 		this.logger.info("PDA--开始进行扫描");
+		String scancwb=cwb;
 		try {
 			User u = this.getSessionUser();
 		} catch (Exception e) {
@@ -326,8 +327,8 @@ public class CwbOrderPDAController {
 			}
 		} catch (CwbException e) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			PDAResponse PDAResponse = new PDAResponse(CwbOrderPDAEnum.SYS_ERROR.getCode(), e.getMessage());
 			PDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
 			return PDAResponse;
@@ -389,8 +390,8 @@ public class CwbOrderPDAController {
 			return pDAResponse;
 		} catch (CwbException e) {
 			cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
@@ -451,8 +452,8 @@ public class CwbOrderPDAController {
 			return pDAResponse;
 		} catch (CwbException e) {
 			cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
@@ -472,6 +473,7 @@ public class CwbOrderPDAController {
 			@RequestParam("clientversion") String clientversion, @RequestParam("requestparam") String requestparam, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "requestbatchno", required = false, defaultValue = "0") long requestbatchno) throws Exception {
 		this.logger.info("PDA--开始进行扫描");
+		String scancwb=cwb;
 		try {
 			User u = this.getSessionUser();
 		} catch (Exception e) {
@@ -799,8 +801,8 @@ public class CwbOrderPDAController {
 			throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.Invalid_Operation);
 		} catch (CwbException e) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			PDAResponse PDAResponse = new PDAResponse(CwbOrderPDAEnum.SYS_ERROR.getCode(), e.getMessage());
 			PDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
 			return PDAResponse;
@@ -1153,19 +1155,19 @@ public class CwbOrderPDAController {
 		StringBuffer statuscode = new StringBuffer();
 		StringBuffer errorMsg = new StringBuffer();
 		for (String cwb : cwbArr) {
+			String scancwb = cwb;
 			try {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
-				String scancwb = cwb;
 				cwb = this.cwborderService.translateCwb(cwb);
 				this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, "", "", false);
 				statuscode = statuscode.append(cwb).append("_").append(CwbOrderPDAEnum.OK.getValue()).append(",");
 				errorMsg = errorMsg.append(cwb).append("_").append(CwbOrderPDAEnum.OK.getError()).append(",");
 			} catch (CwbException e) {
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-				this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 				statuscode = statuscode.append(cwb).append("_").append(e.getError().getValue()).append(",");
 				errorMsg = errorMsg.append(cwb).append("_").append(e.getMessage()).append(",");
 				this.logger.error("分站到货批量异常" + cwb, e);
@@ -1882,8 +1884,8 @@ public class CwbOrderPDAController {
 	// 入库扫描
 	private PDAResponse intoWarehous(String cwb, String customerid, long driverid, long requestbatchno, String baleno, HttpServletRequest request, String comments) {
 		CwbOrder co;
+		String scancwb = cwb;
 		try {
-			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			co = this.cwbDAO.getCwbByCwb(cwb);
 
@@ -1932,8 +1934,8 @@ public class CwbOrderPDAController {
 			return pDAResponse;
 		} catch (CwbException e) {
 			co = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
@@ -1975,8 +1977,8 @@ public class CwbOrderPDAController {
 
 	// 退货站入库扫描
 	private PDAResponse backintoWarehous(String cwb, long driverid, long requestbatchno, HttpServletRequest request, String comments) {
+		String scancwb = cwb;
 		try {
-			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 			co = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, comments, false, 0, 0);
@@ -2012,8 +2014,8 @@ public class CwbOrderPDAController {
 			return pDAResponse;
 		} catch (CwbException e) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
@@ -2032,8 +2034,8 @@ public class CwbOrderPDAController {
 			this.cwborderService.forremark(this.getSessionUser(), comment, multicwbnum, cwb);
 		} catch (CwbException e) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",cwb);
 			errorinfo = CwbOrderPDAEnum.SYS_ERROR.getError();
 			errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 		}
@@ -2047,9 +2049,9 @@ public class CwbOrderPDAController {
 			String errorinfovediurl, HttpServletRequest request) {
 
 		CwbOrder co;
+		String scancwb = cwb;
 		try {
 
-			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			co = this.cwborderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, "", baleno, reasonid, false, false);
 
@@ -2087,8 +2089,8 @@ public class CwbOrderPDAController {
 
 		} catch (CwbException e) {
 			co = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI.getValue()) {
 				PopupConfig popupConfig = new PopupConfig();
 				popupConfig.setText("强制出站?");
@@ -2126,9 +2128,9 @@ public class CwbOrderPDAController {
 	private PDAResponse outUntreadWarehous(String cwb, long driverid, long truckid, long branchid, long confirmflag, long requestbatchno, String baleno, StringBuffer body, String statuscode,
 			String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 		CwbOrder co;
+		String scancwb = cwb;
 		try {
 			PDAResponse pDAResponse = new StringBodyPdaResponse(statuscode, errorinfo);
-			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			co = this.cwborderService.outUntreadWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, "", "", false);// 为包号修改
 			pDAResponse.setWavPath(errorinfovediurl);
@@ -2169,8 +2171,8 @@ public class CwbOrderPDAController {
 
 		} catch (CwbException e) {
 			co = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI.getValue()) {
 				PopupConfig popupConfig = new PopupConfig();
 				popupConfig.setText("强制出站?");
@@ -2232,8 +2234,8 @@ public class CwbOrderPDAController {
 	 * @return
 	 */
 	private PDAResponse substationGoods(String cwb, String baleno, long driverid, long requestbatchno, HttpServletRequest request) {
+		String scancwb = cwb;
 		try {
-			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 			co = this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, "", baleno, false);
@@ -2273,8 +2275,8 @@ public class CwbOrderPDAController {
 			return pDAResponse;
 		} catch (CwbException e) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
@@ -2366,11 +2368,11 @@ public class CwbOrderPDAController {
 		int backMes = 0;
 		String statuscode = CwbOrderPDAEnum.OK.getCode();
 		for (String cwb : cwbArray) {
+			String scancwb = cwb;
 			try {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
-				String scancwb = cwb;
 				cwb = this.cwborderService.translateCwb(cwb);
 
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -2427,8 +2429,8 @@ public class CwbOrderPDAController {
 				backMes++;
 			} catch (CwbException e) {
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-				this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				statuscode = CwbOrderPDAEnum.SYS_ERROR.getCode();
 				errorMsg = errorMsg.append(cwb).append("@").append(e.getError().getText()).append(";");
@@ -2549,8 +2551,8 @@ public class CwbOrderPDAController {
 	public PDAResponse handleCwbException(CwbException ex, HttpServletRequest request) {
 		this.logger.error("系统异常", ex);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(ex.getCwb());
-		this.exceptionCwbDAO.createExceptionCwb(ex.getCwb(), ex.getFlowordertye(), ex.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-				co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+		this.exceptionCwbDAO.createExceptionCwbScan(ex.getCwb(), ex.getFlowordertye(), ex.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+				co == null ? 0 : co.getCustomerid(), 0, 0, 0, "",ex.getCwb());
 		PDAResponse explinkResponse = new StringBodyPdaResponse(ex.getError().getValue() + "", ex.getMessage(), null);
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -2593,8 +2595,8 @@ public class CwbOrderPDAController {
 			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
 			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate, @RequestParam(value = "scopeValue", required = false, defaultValue = "-1") long scope,
 			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid) {
-		String[] cloumnName1 = new String[7]; // 导出的列名
-		String[] cloumnName2 = new String[7]; // 导出的英文列名
+		String[] cloumnName1 = new String[8]; // 导出的列名
+		String[] cloumnName2 = new String[8]; // 导出的英文列名
 
 		this.setExcelstyle(cloumnName1, cloumnName2);
 		final String[] cloumnName3 = cloumnName1;
@@ -2653,6 +2655,9 @@ public class CwbOrderPDAController {
 					}
 					if (cloumnName[i].equals("remark")) {
 						a = eclist.get(k).getRemark();
+					}
+					if (cloumnName[i].equals("scancwb")) {
+						a = eclist.get(k).getScancwb();
 					}
 					return a;
 				}
@@ -2720,8 +2725,8 @@ public class CwbOrderPDAController {
 	public void setExcelstyle(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "cwb";
-		cloumnName1[1] = "操作机构";
-		cloumnName2[1] = "branchname";
+		cloumnName1[1] = "扫描号";
+		cloumnName2[1] = "scancwb";
 		cloumnName1[2] = "扫描类型";
 		cloumnName2[2] = "flowOrderTypeEnumid";
 		cloumnName1[3] = "错误类型";
@@ -2732,6 +2737,10 @@ public class CwbOrderPDAController {
 		cloumnName2[5] = "username";
 		cloumnName1[6] = "备注";
 		cloumnName2[6] = "remark";
+		cloumnName1[7] = "操作机构";
+		cloumnName2[7] = "branchname";
+		
+		
 
 	}
 
@@ -2749,8 +2758,8 @@ public class CwbOrderPDAController {
 	 */
 	private PDAResponse intoWarehousAPP(String cwb, String customerid, long driverid, long requestbatchno, String baleno, HttpServletRequest request, String comments) {
 		CwbOrder co;
+		String scancwb = cwb;
 		try {
-			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			co = this.cwbDAO.getCwbByCwb(cwb);
 
@@ -2799,8 +2808,8 @@ public class CwbOrderPDAController {
 			return pDAResponse;
 		} catch (CwbException e) {
 			co = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 				PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
@@ -2848,9 +2857,9 @@ public class CwbOrderPDAController {
 			String statuscode, String errorinfovediurl, HttpServletRequest request) {
 
 		CwbOrder co;
+		String scancwb = cwb;
 		try {
 
-			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			co = this.cwborderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, "", baleno, reasonid, false, false);
 
@@ -2891,8 +2900,8 @@ public class CwbOrderPDAController {
 
 		} catch (CwbException e) {
 			co = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					co == null ? 0 : co.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI.getValue()) {
 				PopupConfig popupConfig = new PopupConfig();
 				popupConfig.setText("强制出站?");

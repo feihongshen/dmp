@@ -499,7 +499,7 @@ public class CwbOrderService {
 					}
 
 				});
-		this.createFloworder(user, user.getBranchid(), cwbOrderDTO.getCwb(), FlowOrderTypeEnum.DaoRuShuJu, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), cwbOrderDTO.getCwb(), FlowOrderTypeEnum.DaoRuShuJu, "", System.currentTimeMillis(),cwbOrderDTO.getCwb());
 		this.logger.info("结算区域accountareaid:{}", cwbOrderDTO.getAccountareaid());
 	}
 
@@ -742,7 +742,7 @@ public class CwbOrderService {
 			String sql = "update express_ops_cwb_detail set currentbranchid=?,flowordertype=? where cwb=? and state=1";
 			this.jdbcTemplate.update(sql, user.getBranchid(), CwbFlowOrderTypeEnum.TiHuo.getValue(), co.getCwb());
 		}
-		this.createFloworder(user, user.getBranchid(), co, FlowOrderTypeEnum.TiHuo, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, FlowOrderTypeEnum.TiHuo, "", System.currentTimeMillis(),cwb);
 		return co;
 	}
 
@@ -935,7 +935,7 @@ public class CwbOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
 
-		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate);
+		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate,scancwb);
 		this.intoWarhouse(user, cwb, flowOrderTypeEnum, credate);
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -1161,7 +1161,7 @@ public class CwbOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
 
-		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate);
+		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate,scancwb);
 		/**
 		 * 中转入库交接单打印
 		 */
@@ -1548,7 +1548,7 @@ public class CwbOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
 
-		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate);
+		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate,scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -1818,7 +1818,7 @@ public class CwbOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
 
-		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, System.currentTimeMillis());
+		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, System.currentTimeMillis(),scancwb);
 
 		this.createTuihuoZaiTouRecord(cwb, co);  //创建退货再投申请记录
 		/**
@@ -1939,8 +1939,8 @@ public class CwbOrderService {
 	 * @param credate
 	 *            操作时间 Long型
 	 */
-	public void createFloworder(User user, long branchid, CwbOrder co, FlowOrderTypeEnum flowordertype, String comment, Long credate) {
-		this.createFloworder(user, branchid, co.getCwb(), flowordertype, comment, credate);
+	public void createFloworder(User user, long branchid, CwbOrder co, FlowOrderTypeEnum flowordertype, String comment, Long credate,String scancwb) {
+		this.createFloworder(user, branchid, co.getCwb(), flowordertype, comment, credate,scancwb);
 	}
 
 	public void baleDaoHuo(CwbOrder co) {
@@ -1963,7 +1963,7 @@ public class CwbOrderService {
 
 	private ObjectMapper om = new ObjectMapper();
 
-	private void createFloworder(User user, long branchid, String cwb, FlowOrderTypeEnum flowordertype, String comment, Long credate) {
+	private void createFloworder(User user, long branchid, String cwb, FlowOrderTypeEnum flowordertype, String comment, Long credate,String scancwb) {
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 		cwbOrder.setConsigneemobile(cwbOrder.getConsigneemobileOfkf());
 		cwbOrder.setConsigneename(cwbOrder.getConsigneenameOfkf());
@@ -1987,7 +1987,7 @@ public class CwbOrderService {
 			this.updateOrInsertWareHouseToBranch(cwbOrder, of);
 			this.updateOutToCommen(cwbOrder, of, 0); // 出库 承运商库房
 			this.updateOutToCommen_toTwoLeavelBranch(cwbOrder, of, 1); // 一级站出库二级站
-			this.exceptionCwbDAO.createExceptionCwb(cwb, flowordertype.getValue(), "", user.getBranchid(), user.getUserid(), cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, flowordertype.getValue(), "", user.getBranchid(), user.getUserid(), cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			// TODO
 			this.send(of);
 
@@ -2459,7 +2459,7 @@ public class CwbOrderService {
 		} else {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
-		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate);
+		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, credate,scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -3027,7 +3027,7 @@ public class CwbOrderService {
 		} else {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
-		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.ChuKuSaoMiao, comment, credate);
+		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.ChuKuSaoMiao, comment, credate,scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -3384,7 +3384,7 @@ public class CwbOrderService {
 			realscannum = this.transcwborderFlowDAO.getTranscwbOrderFlowByScanCwbCount(scancwb, co.getCwb(), flowOrderTypeEnum.getValue(), currentbranchid, branchid) + 1;
 		}
 		this.cwbDAO.updateScannum(co.getCwb(), realscannum);
-		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao, comment, System.currentTimeMillis());
+		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao, comment, System.currentTimeMillis(),scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -3553,7 +3553,7 @@ public class CwbOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
 
-		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, System.currentTimeMillis());
+		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, System.currentTimeMillis(),scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -3625,7 +3625,7 @@ public class CwbOrderService {
 		this.jdbcTemplate.update(sql, co.getCurrentbranchid(), user.getBranchid(), flowOrderTypeEnum.getValue(), cwb);
 
 		this.cwbDAO.updateScannum(co.getCwb(), 1);
-		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, comment, System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, comment, System.currentTimeMillis(),scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -3890,7 +3890,7 @@ public class CwbOrderService {
 		this.jdbcTemplate.update(sql, this.branchDAO.getBranchByBranchid(deliveryUser.getBranchid()).getBranchname(), deliveryUser.getBranchid(), currentbranchid, 0,
 				FlowOrderTypeEnum.FenZhanLingHuo.getValue(), deliveryUser.getUserid(), DeliveryStateEnum.WeiFanKui.getValue(), cwb);
 		this.cwbDAO.updateScannum(co.getCwb(), 1);
-		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.FenZhanLingHuo, "", System.currentTimeMillis());
+		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.FenZhanLingHuo, "", System.currentTimeMillis(),scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
@@ -4410,7 +4410,7 @@ public class CwbOrderService {
 		String sql2 = "update express_ops_cwb_detail set flowordertype=?,deliverystate=?,newpaywayid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql2, FlowOrderTypeEnum.YiFanKui.getValue(), deliveryState.getDeliverystate(), newpaywayid, co.getCwb());
 		this.createFloworder(user, sessionbranchid, co, FlowOrderTypeEnum.YiFanKui, (reason.getReasoncontent() == null ? "" : reason.getReasoncontent()) + " " + deliverstateremark,
-				System.currentTimeMillis());
+				System.currentTimeMillis(),scancwb);
 
 		// 反馈时更新订单的反馈的操作时间
 		this.operationTimeDAO.creAndUpdateOperationTime(co.getCwb(), sessionbranchid, FlowOrderTypeEnum.YiFanKui.getValue(), deliveryState.getDeliverystate(), sessionbranchid, co.getCustomerid(), "",
@@ -4776,7 +4776,7 @@ public class CwbOrderService {
 		String sql3 = "update express_ops_delivery_state set deliveryid=?,deliverybranchid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql3, deliveryid, user.getBranchid(), co.getCwb());
 
-		this.createFloworder(user, user.getBranchid(), cwb, FlowOrderTypeEnum.PosZhiFu, "POS支付-" + posremark, System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), cwb, FlowOrderTypeEnum.PosZhiFu, "POS支付-" + posremark, System.currentTimeMillis(),cwb);
 
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
@@ -4819,7 +4819,7 @@ public class CwbOrderService {
 		User user = new User();
 		user.setBranchid(branchid);
 		user.setUserid(userid);
-		this.createFloworder(user, branchid, cwb, FlowOrderTypeEnum.CheXiaoFanKui, "POS撤销", System.currentTimeMillis());
+		this.createFloworder(user, branchid, cwb, FlowOrderTypeEnum.CheXiaoFanKui, "POS撤销", System.currentTimeMillis(),cwb);
 
 	}
 
@@ -4939,7 +4939,7 @@ public class CwbOrderService {
 			// 更改订单的订单状态为退货的流向
 			this.deliverPodForCwbstate(co.getCwb(), deliverystate.getDeliverystate(), auditFlowOrderTypeEnum, user);
 			// 更改反馈表中的归班时间
-			this.createFloworder(user, user.getBranchid(), co, FlowOrderTypeEnum.YiShenHe, "", System.currentTimeMillis());
+			this.createFloworder(user, user.getBranchid(), co, FlowOrderTypeEnum.YiShenHe, "", System.currentTimeMillis(),cwb);
 			// 当订单归班审核配送成功和上门退拒退 和 货物丢失状态时，删除操作时间记录
 			if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue())
 					|| (deliverystate.getDeliverystate() == DeliveryStateEnum.HuoWuDiuShi.getValue())) {
@@ -5214,7 +5214,7 @@ public class CwbOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
 
-		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, "", System.currentTimeMillis(),scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
@@ -5336,7 +5336,7 @@ public class CwbOrderService {
 			throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 		}
 		this.cwbDAO.updateScannum(co.getCwb(), 1);
-		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, comment, System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, comment, System.currentTimeMillis(),scancwb);
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
@@ -5475,7 +5475,7 @@ public class CwbOrderService {
 		String sql = "update express_ops_cwb_detail set startbranchid=?,flowordertype=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, 0, FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue(), cwb);
 		this.cwbDAO.updateScannum(co.getCwb(), 1);
-		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, "", System.currentTimeMillis(),scancwb);
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 		}
@@ -5569,7 +5569,7 @@ public class CwbOrderService {
 		Reason r = this.reasonDAO.getReasonByReasonid(reasonid);
 		String sql = "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), r == null ? "" : r.getReasoncontent(), r == null ? 0 : r.getReasonid(), cwb);
-		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis(),scancwb);
 		this.shangMenTuiCwbDetailDAO.deletePrintRecord(cwb);
 		if((co.getTranscwb() != null) && (co.getTranscwb().length()>0) ){
 		 String[]  cwbList = co.getTranscwb().split(",");
@@ -5627,7 +5627,7 @@ public class CwbOrderService {
 			this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), r == null ? "" : r.getReasoncontent(), r == null ? 0 : r.getReasonid(), cwb);
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
 			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
-			this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis());
+			this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis(),scancwb);
 			if ((isypdjusetranscwb == 1) && isypdj) {
 				this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 			}
@@ -5661,7 +5661,7 @@ public class CwbOrderService {
 			this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), r == null ? "" : r.getReasoncontent(), r == null ? 0 : r.getReasonid(), cwb);
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
 			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
-			this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis());
+			this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r == null ? "" : r.getReasoncontent(), System.currentTimeMillis(),scancwb);
 			if ((isypdjusetranscwb == 1) && isypdj) {
 				this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 			}
@@ -5734,7 +5734,7 @@ public class CwbOrderService {
 		this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), r.getReasoncontent(), r.getReasonid(), cwb);
 		this.cwbDAO.updateScannum(co.getCwb(), 1);
 		this.updateCwbState(cwb, CwbStateEnum.PeiShong);
-		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r.getReasoncontent(), System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, r.getReasoncontent(), System.currentTimeMillis(),scancwb);
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 		}
@@ -5837,7 +5837,7 @@ public class CwbOrderService {
 				+ ",handleperson=" + handleperson + ",handlereason='" + handlereason + "',cwbstate=" + CwbStateEnum.DiuShi.getValue() + " where cwb='" + cwb + "' and state =1 ";
 		this.jdbcTemplate.update(sql);
 		this.cwbDAO.updateScannum(co.getCwb(), 1);
-		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, handlereason, System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, handlereason, System.currentTimeMillis(),scancwb);
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 		}
@@ -5864,7 +5864,7 @@ public class CwbOrderService {
 		}
 
 		this.updateNextBranchId(cwbOrder.getCwb());
-		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch, "", System.currentTimeMillis(),cwbOrder.getCwb());
 
 	}
 
@@ -5893,7 +5893,7 @@ public class CwbOrderService {
 		}
 
 		this.updateNextBranchId(cwbOrder.getCwb());
-		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch, "", System.currentTimeMillis(),cwbOrder.getCwb());
 
 	}
 
@@ -5915,7 +5915,7 @@ public class CwbOrderService {
 			this.logger.info("中转出库强制出库下一站{},单号：{}", branchid, cwbOrder.getCwb());
 			this.cwbDAO.updateNextBranchid(cwbOrder.getCwb(), branchid);
 		}
-		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch, "", System.currentTimeMillis(),cwbOrder.getCwb());
 
 	}
 
@@ -5958,7 +5958,7 @@ public class CwbOrderService {
 			this.logger.error("error while saveing cwbremark,cwb:" + cwb + "cwbremark:" + csremark, e);
 			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 		}
-		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.BeiZhu, csremark, System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.BeiZhu, csremark, System.currentTimeMillis(),cwb);
 	}
 
 	public void updateSendCarNum(String cwb, int sendcarnum) {
@@ -6864,7 +6864,7 @@ public class CwbOrderService {
 		this.jdbcTemplate.update(sql2, cwb, user.getBranchid(), deliverid, datetime);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 
-		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), co, flowOrderTypeEnum, "", System.currentTimeMillis(),scancwb);
 	}
 
 	public AccountCwbDetail loadFormForAccountCwbDetail(CwbOrder co, long branchid, long flowordertype, User user, long currentbranchid) {
@@ -7364,7 +7364,7 @@ public class CwbOrderService {
 
 		this.cwbDAO.updatePickBranchid(branch.getBranchid(), cwbOrder.getCwb());
 
-		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdatePickBranch, "", System.currentTimeMillis());
+		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdatePickBranch, "", System.currentTimeMillis(),cwbOrder.getCwb());
 
 	}
 

@@ -140,8 +140,8 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 					}
 				} catch (CwbException e) {
 					User user = getUser(respNote.getDeliverid());
-					exceptionCwbDAO.createExceptionCwb(cwbOrder.getCwb(), e.getFlowordertye(), e.getMessage(), user.getBranchid(), user.getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
-							0, 0, 0, "");
+					exceptionCwbDAO.createExceptionCwbScan(cwbOrder.getCwb(), e.getFlowordertye(), e.getMessage(), user.getBranchid(), user.getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(),
+							0, 0, 0, "",cwbOrder.getCwb());
 
 					if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO.getValue()) {
 						respNote.setResp_code(ChinaUmsExptMessageEnum.ChaXunYiChang.getResp_code());
@@ -252,8 +252,8 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 			respNote.setResp_msg(AliPayExptMessageEnum.Success.getResp_msg());
 		} catch (CwbException e1) {
 			User user = getUser(respNote.getDeliverid());
-			exceptionCwbDAO.createExceptionCwb(respNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0,
-					0, 0, "");
+			exceptionCwbDAO.createExceptionCwbScan(respNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0,
+					0, 0, "",respNote.getOrder_no());
 			if (e1.getError().getValue() == ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO.getValue()) {
 				logger.error("chinaUms运单签收,没有检索到数据" + respNote.getOrder_no() + ",小件员：" + respNote.getDelivery_man(), e1);
 				respNote.setResp_code(ChinaUmsExptMessageEnum.ChaXunYiChang.getResp_code());

@@ -106,8 +106,8 @@ public class YeePayService_toSignCwb extends YeePayService {
 					respNote.getSignname(), Sign_Self_Flag, respNote.getSignremark(), 2, 1, "", PosEnum.YeePay.getMethod(), 0, "");
 
 		} catch (CwbException e1) {
-			exceptionCwbDAO.createExceptionCwb(respNote.getCwbOrder().getCwb(), e1.getFlowordertye(), e1.getMessage(), respNote.getUser().getBranchid(), respNote.getUser().getUserid(),
-					respNote.getCwbOrder() == null ? 0 : respNote.getCwbOrder().getCustomerid(), 0, 0, 0, "");
+			exceptionCwbDAO.createExceptionCwbScan(respNote.getCwbOrder().getCwb(), e1.getFlowordertye(), e1.getMessage(), respNote.getUser().getBranchid(), respNote.getUser().getUserid(),
+					respNote.getCwbOrder() == null ? 0 : respNote.getCwbOrder().getCustomerid(), 0, 0, 0, "",respNote.getCwbOrder().getCwb());
 
 			if (e1.getError().getValue() == ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO.getValue()) {
 				logger.error("yeepay运单签收,没有检索到数据" + respNote.getCwbOrder().getCwb() + ",小件员：" + respNote.getUsername(), e1);

@@ -543,8 +543,8 @@ public class DeliveryController {
 				}
 				cwb = cwb.replaceAll("'", "");
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-				this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",cwb);
 			}
 
 			e.printStackTrace();
@@ -605,8 +605,8 @@ public class DeliveryController {
 			@RequestParam(value = "signmanphone", required = false, defaultValue = "") String signmanphone) {
 
 		this.logger.info("web-editDeliveryState-进入单票反馈,cwb={}",cwb);
+		String scancwb = cwb;
 		try {
-			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 
 			Map<String, Object> parameters = new HashMap<String, Object>();
@@ -657,8 +657,8 @@ public class DeliveryController {
 
 		} catch (CwbException ce) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			return "{\"errorCode\":1,\"error\":\"" + ce.getMessage() + "\"}";
 		}
 		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
@@ -812,8 +812,8 @@ public class DeliveryController {
 
 				} catch (CwbException ce) {// 出现验证错误
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-					this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-							: cwbOrder.getCustomerid(), 0, 0, 0, "");
+					this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+							: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -953,8 +953,8 @@ public class DeliveryController {
 
 				} catch (CwbException ce) {// 出现验证错误
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-					this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-							: cwbOrder.getCustomerid(), 0, 0, 0, "");
+					this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+							: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -1102,8 +1102,8 @@ public class DeliveryController {
 
 				} catch (CwbException ce) {// 出现验证错误
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-					this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-							: cwbOrder.getCustomerid(), 0, 0, 0, "");
+					this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+							: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -1226,8 +1226,8 @@ public class DeliveryController {
 					successcount++;
 				} catch (CwbException ce) {// 出现验证错误
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
-					this.exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+					this.exceptionCwbDAO.createExceptionCwbScan(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -1367,8 +1367,8 @@ public class DeliveryController {
 					successcount++;
 				} catch (CwbException ce) {// 出现验证错误
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
-					this.exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+					this.exceptionCwbDAO.createExceptionCwbScan(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -1509,8 +1509,8 @@ public class DeliveryController {
 					obj.put("errorcode", "000000");
 					successcount++;
 				} catch (CwbException ce) {// 出现验证错误
-					this.exceptionCwbDAO.createExceptionCwb(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+					this.exceptionCwbDAO.createExceptionCwbScan(scancwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -1811,8 +1811,8 @@ public class DeliveryController {
 			}
 		} catch (CwbException ce) {// 出现验证错误
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwbs);
-			this.exceptionCwbDAO.createExceptionCwb(cwbs, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-					: cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwbs, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+					: cwbOrder.getCustomerid(), 0, 0, 0, "",cwbs);
 
 		}
 		model.addAttribute("successcount", successcount);

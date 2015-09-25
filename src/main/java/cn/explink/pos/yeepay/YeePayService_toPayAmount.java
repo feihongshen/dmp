@@ -116,8 +116,8 @@ public class YeePayService_toPayAmount extends YeePayService {
 
 		} catch (CwbException e1) {
 			User user = userDAO.getUserByUserid(respNote.getDeliverid());
-			exceptionCwbDAO.createExceptionCwb(respNote.getCwbOrder().getCwb(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(), respNote.getCwbOrder() == null ? 0
-					: respNote.getCwbOrder().getCustomerid(), 0, 0, 0, "");
+			exceptionCwbDAO.createExceptionCwbScan(respNote.getCwbOrder().getCwb(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(), respNote.getCwbOrder() == null ? 0
+					: respNote.getCwbOrder().getCustomerid(), 0, 0, 0, "",respNote.getCwbOrder().getCwb());
 
 			respNote.setResult_code("3");
 			respNote.setResult_msg("处理业务逻辑异常");

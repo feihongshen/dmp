@@ -329,6 +329,7 @@ function actionType(src)
 			<tr class="font_1">
 				<!-- <td width="6%" align="center" valign="middle" bgcolor="#eef6ff">选择</td> -->
 				<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扫描号</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作机构</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扫描类型</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">错误类型</td>
@@ -342,6 +343,7 @@ function actionType(src)
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 			<tr>
 				<td width="6%" align="center" valign="middle"><%=ec.getCwb() %></td>
+				<td width="10%" align="center" valign="middle"><%=ec.getScancwb() %></td>
 				<td width="10%" align="center" valign="middle">
 					<%for(Branch b : branchlist){if(ec.getBranchid()==b.getBranchid()){ %>
 			        <%=b.getBranchname() %>

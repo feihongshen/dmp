@@ -19,7 +19,7 @@ public class OperationRecord {
 
 	@Before("execution(void cn.explink.service.CwbOrderService.*(cn.explink.domain.User,String, ..) )&&args(user,cwb,..)&&@annotation(OrderFlowOperation(operation))")
 	public void operation(User user, String cwb, FlowOrderTypeEnum operation, JoinPoint jp) {
-		exceptionCwbDAO.createExceptionCwb(cwb, operation.getValue(), "", user.getBranchid(), user.getUserid(), 0, 0, 0, 0, "");
+		exceptionCwbDAO.createExceptionCwbScan(cwb, operation.getValue(), "", user.getBranchid(), user.getUserid(), 0, 0, 0, 0, "",cwb);
 	}
 
 }

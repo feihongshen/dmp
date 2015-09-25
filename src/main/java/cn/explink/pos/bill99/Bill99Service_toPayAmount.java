@@ -129,8 +129,8 @@ public class Bill99Service_toPayAmount extends Bill99Service {
 			}
 
 			User user = getUser(deliverid);
-			exceptionCwbDAO.createExceptionCwb(billRespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			exceptionCwbDAO.createExceptionCwbScan(billRespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",billRespNote.getOrder_no());
 
 			logger.error("bill99支付处理业务逻辑异常！小件员=" + billRespNote.getDelivery_man() + ",订单号=" + billRespNote.getOrder_no() + ",异常原因=" + e1.getMessage(), e1);
 			return DealWithCatchCwbException(billRespNote, e1);

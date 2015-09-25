@@ -17,6 +17,15 @@ public class ExceptionCwb {
 	private long deliverid;
 	private String interfacetype;
 	private String remark;
+	private String scancwb;
+
+	public String getScancwb() {
+		return scancwb;
+	}
+
+	public void setScancwb(String scancwb) {
+		this.scancwb = scancwb;
+	}
 
 	public long getId() {
 		return id;

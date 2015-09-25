@@ -89,8 +89,8 @@ public class AlipayService_toPayAmount extends AlipayService {
 					deliverid = respNote.getDeliverid(); // 根据请求接口的登录工号
 				}
 				User user = getUser(deliverid);
-				exceptionCwbDAO.createExceptionCwb(cwbOrder.getCwb(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0,
-						0, 0, "");
+				exceptionCwbDAO.createExceptionCwbScan(cwbOrder.getCwb(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(), cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0,
+						0, 0, "",cwbOrder.getCwb());
 			}
 			logger.error("Alipay支付处理业务逻辑异常！小件员=" + respNote.getDelivery_man() + ",订单号=" + respNote.getOrder_no() + ",异常原因=" + e1.getMessage());
 			return DealWithCatchCwbException(respNote, e1);

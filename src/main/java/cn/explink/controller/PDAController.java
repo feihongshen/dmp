@@ -762,8 +762,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -1972,8 +1972,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -2684,6 +2684,7 @@ public class PDAController {
 				continue;
 			}
 			JSONObject obj = new JSONObject();
+			String scancwb=cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			CwbOrder cwbOrder = new CwbOrder();
 			obj.put("cwb", cwb);
@@ -2715,8 +2716,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -2883,8 +2884,8 @@ public class PDAController {
 			return resp;
 		} catch (CwbException e) {
 			cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
 				ExplinkResponse explinkResponse = new ExplinkResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
@@ -3056,8 +3057,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -3208,8 +3209,8 @@ public class PDAController {
 			return explinkResponse;
 		} catch (CwbException e) {
 			cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
 				ExplinkResponse explinkResponse = new ExplinkResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
@@ -3299,8 +3300,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -4081,8 +4082,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -4304,8 +4305,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -4514,8 +4515,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -4781,8 +4782,8 @@ public class PDAController {
 		StringBuilder errorMsg = new StringBuilder();
 		for (String cwb : cwbs.split(",")) {
 			this.logger.info("web-cwbdeliverpod小件员批量反馈扫描-进入单票反馈,cwb={}", cwb);
+			String scancwb = cwb;
 			try {
-				String scancwb = cwb;
 				cwb = this.cwborderService.translateCwb(cwb);
 				Map<String, Object> parameters = new HashMap<String, Object>();
 				parameters.put("deliverid", deliverid);
@@ -4803,8 +4804,8 @@ public class PDAController {
 				this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 			} catch (CwbException e) {
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-				this.exceptionCwbDAO.createExceptionCwb(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				statuscode = CwbOrderPDAEnum.SYS_ERROR.getCode();
 				errorMsg = errorMsg.append(cwb).append("@").append(e.getMessage()).append(";");
@@ -5015,8 +5016,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -5332,8 +5333,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -6455,8 +6456,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -6598,8 +6599,8 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "");
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -6800,8 +6801,8 @@ public class PDAController {
 	ExplinkResponse handleCwbException(CwbException ex, HttpServletRequest request) {
 		this.logger.error("系统异常", ex);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(ex.getCwb());
-		this.exceptionCwbDAO.createExceptionCwb(ex.getCwb(), ex.getFlowordertye(), ex.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-				co == null ? 0 : co.getCustomerid(), 0, 0, 0, "");
+		this.exceptionCwbDAO.createExceptionCwbScan(ex.getCwb(), ex.getFlowordertye(), ex.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+				co == null ? 0 : co.getCustomerid(), 0, 0, 0, "",ex.getCwb());
 		ExplinkResponse explinkResponse = new ExplinkResponse(ex.getError().getValue() + "", ex.getMessage(), null);
 		// 添加异常报声.
 		boolean existExceptionWav = this.addExceptionWav(request, ex, explinkResponse, co);
@@ -9074,8 +9075,8 @@ public class PDAController {
 					thissuccess++;
 				} catch (CwbException ce) {// 出现验证错误
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-					this.exceptionCwbDAO.createExceptionCwb(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-							: cwbOrder.getCustomerid(), 0, 0, 0, "");
+					this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+							: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());

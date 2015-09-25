@@ -140,8 +140,8 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 		} catch (CwbException e1) {
 			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(chinaUmsRespNote.getOrder_no());
 			User user = getUser(chinaUmsRespNote.getDeliverid());
-			exceptionCwbDAO.createExceptionCwb(chinaUmsRespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			exceptionCwbDAO.createExceptionCwbScan(chinaUmsRespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",chinaUmsRespNote.getOrder_no());
 
 			if (e1.getError().getValue() == ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO.getValue()) {
 				logger.error("chinaUms异常反馈异常,没有检索到数据" + chinaUmsRespNote.getOrder_no() + ",小件员：" + chinaUmsRespNote.getDelivery_man(), e1);

@@ -8384,6 +8384,8 @@ CREATE TABLE `cs_complaint_accept` (
 	 	</sql>
 	</changeSet>
 	
+	
+	
 	<changeSet id="zhouguoting-2015-09-25-01" author="zhouguoting">
 	   	<sql>
 			ALTER TABLE `fn_org_bill_detail`   
@@ -8393,5 +8395,11 @@ CREATE TABLE `cs_complaint_accept` (
 			  ADD COLUMN `refund_fee` DECIMAL(19,2) DEFAULT 0.00  NULL  COMMENT '应退金额' AFTER `receive_fee`;
 	 	</sql>
 	</changeSet>
+	<changeSet id="wangzhiyong-2015-09-25-01" author="wangzhiyong">
+		<sql>
+			ALTER TABLE express_ops_exception_cwb  ADD COLUMN `scancwb` VARCHAR(100) NULL AFTER `remark`;
+		</sql>
+	</changeSet>
+	
 	
 </databaseChangeLog>

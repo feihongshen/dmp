@@ -169,8 +169,8 @@ public class TlmposService_toCwbSign extends TlmposService {
 		} catch (CwbException e1) {
 			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(tlmposRespNote.getOrder_no());
 			User user = getUser(tlmposRespNote.getDeliverid());
-			exceptionCwbDAO.createExceptionCwb(tlmposRespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			exceptionCwbDAO.createExceptionCwbScan(tlmposRespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",tlmposRespNote.getOrder_no());
 
 			if (e1.getError().getValue() == ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO.getValue()) {
 				logger.error("tlmpos运单签收,没有检索到数据" + tlmposRespNote.getOrder_no() + ",小件员：" + tlmposRespNote.getDelivery_man(), e1);

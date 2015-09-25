@@ -132,8 +132,8 @@ public class TlmposService_toSmt extends TlmposService {
 		} catch (CwbException e1) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(tlmposRespNote.getOrder_no());
 			User user = this.getUser(tlmposRespNote.getDeliverid());
-			this.exceptionCwbDAO.createExceptionCwb(tlmposRespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "");
+			this.exceptionCwbDAO.createExceptionCwbScan(tlmposRespNote.getOrder_no(), e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
+					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",tlmposRespNote.getOrder_no());
 
 			if (e1.getError().getValue() == ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO.getValue()) {
 				this.logger.error("通联上门揽退反馈异常,没有检索到数据" + tlmposRespNote.getOrder_no() + ",小件员：" + tlmposRespNote.getDelivery_man(), e1);

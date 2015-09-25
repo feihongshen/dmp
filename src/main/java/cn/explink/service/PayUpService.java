@@ -250,7 +250,7 @@ public class PayUpService {
 			// 更改订单的订单状态为退货的流向
 			deliverPodForCwbstate(co.getCwb(), deliverystate.getDeliverystate(), auditFlowOrderTypeEnum);
 			// 更改反馈表中的归班时间
-			cwborderService.createFloworder(user, user.getBranchid(), co, FlowOrderTypeEnum.YiShenHe, "", System.currentTimeMillis());
+			cwborderService.createFloworder(user, user.getBranchid(), co, FlowOrderTypeEnum.YiShenHe, "", System.currentTimeMillis(),co.getCwb());
 			// 当订单归班审核配送成功和上门退拒退 和 货物丢失状态时，删除操作时间记录
 			if (deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue()
 					|| deliverystate.getDeliverystate() == DeliveryStateEnum.HuoWuDiuShi.getValue()) {
