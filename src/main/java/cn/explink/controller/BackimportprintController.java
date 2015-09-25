@@ -279,7 +279,17 @@ public class BackimportprintController {
 	@RequestMapping("/updateprint")
 	public @ResponseBody Object print(Model model, @RequestParam(value = "starttime", required = false, defaultValue = "") String starttime,
 			@RequestParam(value = "endtime", required = false, defaultValue = "") String endtime, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs) {
-		return this.backIntoprintDAO.updateBackintoPrint(starttime, endtime, cwbs, this.getSessionUser(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
+		List<Branch> tbranchlist = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		String nextbranchids ="-1";
+		if(tbranchlist != null && tbranchlist.size()>0){
+			for (Branch br : tbranchlist) {
+				nextbranchids += ","+br.getBranchid();
+			}
+		}
+		
+		String flowordertypes = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue();
+		
+		return this.backIntoprintDAO.updateBackintoPrintAll(starttime, endtime, cwbs, flowordertypes, nextbranchids);
 	}
 
 	private String getStringByBranchids(String[] branchid) {

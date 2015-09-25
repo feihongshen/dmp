@@ -145,6 +145,12 @@ public class BackIntoprintDAO {
 
 		return this.jdbcTemplate.update(sql);
 	}
+	public int updateBackintoPrintAll(String starttime, String endtime, String cwbs,  String flowordertypes ,String nextbranchids) {
+		String sql = "update express_ops_backintowarehous_print set issignprint=1,printtime=NOW() where flowordertype in(" + flowordertypes + ") and createtime>='" + starttime + "' and createtime<='"
+				+ endtime + "' and  cwb in (" + cwbs + ") and branchid in("+nextbranchids+")";
+		
+		return this.jdbcTemplate.update(sql);
+	}
 
 	public void deletebackintowarehous_printbycwb(String cwb) {
 		try {

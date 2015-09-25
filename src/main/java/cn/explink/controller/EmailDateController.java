@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,7 +52,7 @@ public class EmailDateController {
 	 * @return
 	 */
 	@RequestMapping("/getEmailDateList")
-	public @ResponseBody List<EmailDate> getEmailDateList(Model model, @RequestParam(value = "customerids") String customerids, @RequestParam(value = "state", required = false) String state) {
+	public @ResponseBody List<EmailDate> getEmailDateList(Model model, @RequestParam(value = "customerids" , defaultValue = "-1") String customerids, @RequestParam(value = "state",  defaultValue = "-1") String state) {
 		List<EmailDate> eList = new ArrayList<EmailDate>();
 		if (null == state) {
 			for (String idStr : customerids.split(",")) {
@@ -84,5 +85,11 @@ public class EmailDateController {
 		}
 		emailDateService.makeEmFullName(eList);
 		return eList;
+	}
+	
+	@RequestMapping("/view/{cwb}")
+	public String view(@PathVariable("cwb") String cwb, Model model) {
+		System.out.println(cwb);
+		return "orderflow/view";
 	}
 }
