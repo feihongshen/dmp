@@ -267,9 +267,9 @@ if(parseInt($("#isOpenFlag").val())!=0){
 				<%} %>
 		        <li><span>支票实收：</span><input type="text" name="receivedfeecheque" id="receivedfeecheque" value="<%=deliverystate.getCheckfee() %>" maxlength="50" onkeyup="weishuakachange();" /></li>
 				<li><span>支票号备注：</span><input type="text" name="checkremark" id="checkremark" value ="<%=deliverystate.getCheckremark()%>" maxlength="50"></li>
-		        <li><span>反馈备注输入内容：</span><input type="text" name="deliverstateremark" id="deliverstateremark" value ="<%=deliverystate.getDeliverstateremark()%>" maxlength="50"></li>
-		        <li><span>真实反馈时间：</span><input type="text" name="deliverytime" id="deliverytime" value ="<%=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) %>"  maxlength="19"></li>
-		        <li><span>反馈时间格式：</span>2013-09-06 02:07:01</li>
+		        <li><span>反馈备注输入内容:</span><input type="text" name="deliverstateremark" id="deliverstateremark" value ="<%=deliverystate.getDeliverstateremark()%>" maxlength="50"></li>
+		        <li><span>真实反馈时间:</span><input type="text" name="deliverytime" id="deliverytime" value ="<%=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) %>"  maxlength="19"></li>
+		        <li><span>反馈时间格式:</span>2013-09-06 02:07:01</li>
 	         </ul>
 	         <div align="center">
 	         <input type="submit" value="保存" class="button" id="sub" /><br/>
