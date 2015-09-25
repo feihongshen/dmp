@@ -216,11 +216,12 @@ public class OrgBillAdjustmentRecordService {
 				record.setPayWayChangeFlag(0);
 				//调整金额为货款调整
 				record.setAdjustType(BillAdjustTypeEnum.OrderFee.getValue());
+				//记录运费
+				record.setFreightAmount(ec_dsd.getOriInfactfare());
 				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 				
 				//如果是是上门退订单，生成运单调整记录
 				if(CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid()){
-					record.setFreightAmount(ec_dsd.getOriInfactfare());
 					record.setModifyFee(order.getInfactfare());
 					record.setAdjustAmount(BigDecimal.ZERO.subtract(ec_dsd.getOriInfactfare()));
 					//调整金额为运费调整
