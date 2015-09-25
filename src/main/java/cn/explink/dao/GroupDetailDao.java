@@ -122,7 +122,7 @@ public class GroupDetailDao {
 		jdbcTemplate.update(sql, groupid, System.currentTimeMillis(), cwb);
 	}
 	public void updateGroupDetailByCwb2(String cwb, long groupid) {
-		String sql="update express_ops_groupdetail set groupid="+groupid+",issignprint=1 where  RTrim(cwb)='"+cwb+"' and issignprint=0 ";
+		String sql="update express_ops_groupdetail set groupid="+groupid+",issignprint=1 where cwb='"+cwb+"' and issignprint=0 ";
 		jdbcTemplate.execute(sql);
 	}
 
