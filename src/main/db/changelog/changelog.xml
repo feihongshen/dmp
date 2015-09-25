@@ -8384,4 +8384,14 @@ CREATE TABLE `cs_complaint_accept` (
 	 	</sql>
 	</changeSet>
 	
+	<changeSet id="zhouguoting-2015-09-25-01" author="zhouguoting">
+	   	<sql>
+			ALTER TABLE `fn_org_bill_detail`   
+			  ADD COLUMN `customer_id` BIGINT(20) DEFAULT 0  NULL  COMMENT '客户ID' AFTER `order_id`,
+			  ADD COLUMN `order_type` INT(11) DEFAULT 0  NULL  COMMENT '订单类型' AFTER `customer_id`,
+			  ADD COLUMN `receive_fee` DECIMAL(19,2) DEFAULT 0.00  NULL  COMMENT '应收金额' AFTER `order_type`,
+			  ADD COLUMN `refund_fee` DECIMAL(19,2) DEFAULT 0.00  NULL  COMMENT '应退金额' AFTER `receive_fee`;
+	 	</sql>
+	</changeSet>
+	
 </databaseChangeLog>
