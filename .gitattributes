@@ -856,6 +856,7 @@ src/main/java/cn/explink/controller/customerContract/CustomerContractController.
 src/main/java/cn/explink/controller/express/ExpressCommonController.java -text
 src/main/java/cn/explink/controller/express/PreOrderOperationController.java -text
 src/main/java/cn/explink/controller/express/StationOperationController.java -text
+src/main/java/cn/explink/controller/fnc/OrderLifeCycleReportController.java -text
 src/main/java/cn/explink/controller/gotoClassAuditingView.java -text
 src/main/java/cn/explink/controller/monitor/MonitorInterfaceController.java -text
 src/main/java/cn/explink/controller/pda/BatchDeliverBody.java -text
@@ -889,6 +890,7 @@ src/main/java/cn/explink/core/bean/Enum2StringConverter.java -text
 src/main/java/cn/explink/core/bean/IntrospectionCache.java -text
 src/main/java/cn/explink/core/bean/String2EnumConverter.java -text
 src/main/java/cn/explink/core/bean/TypeConverter.java -text
+src/main/java/cn/explink/core/common/model/json/DataGridReturn.java -text
 src/main/java/cn/explink/core/controller/CommonFunController.java -text
 src/main/java/cn/explink/core/dao/CommonDao.java -text
 src/main/java/cn/explink/core/dao/JdbcDao.java -text
@@ -1085,6 +1087,7 @@ src/main/java/cn/explink/dao/YpdjHandleRecordDAO.java -text
 src/main/java/cn/explink/dao/ZhiFuApplyDao.java -text
 src/main/java/cn/explink/dao/contractManagement/CustomerContractDAO.java -text
 src/main/java/cn/explink/dao/express/PreOrderDao.java -text
+src/main/java/cn/explink/dao/fnc/OrderLifeCycleReportDao.java -text
 src/main/java/cn/explink/dao/searchEditCwbInfoDao.java -text
 src/main/java/cn/explink/dao/support/BasicJdbcTemplateDaoSupport.java -text
 src/main/java/cn/explink/dao/support/LockOptions.java -text
@@ -1223,6 +1226,7 @@ src/main/java/cn/explink/domain/OrderBackCheckView.java -text
 src/main/java/cn/explink/domain/OrderBackRuku.java -text
 src/main/java/cn/explink/domain/OrderDeliveryClient.java -text
 src/main/java/cn/explink/domain/OrderGoods.java -text
+src/main/java/cn/explink/domain/OrderLifeCycleReportVO.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRt.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRtList.java -text
 src/main/java/cn/explink/domain/OrderbackRecord.java -text
@@ -1404,6 +1408,7 @@ src/main/java/cn/explink/enumutil/CwbInBatchTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOXOStateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOXOTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderAddressCodeEditTypeEnum.java -text
+src/main/java/cn/explink/enumutil/CwbOrderLifeCycleTypeIdEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderListTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderPDAEnum.java -text
 src/main/java/cn/explink/enumutil/CwbOrderTypeEnum.java -text
@@ -1809,6 +1814,7 @@ src/main/java/cn/explink/service/addressmatch/KeyWordMatchProcessor.java -text
 src/main/java/cn/explink/service/addressmatch/MatchResult.java -text
 src/main/java/cn/explink/service/contractManagement/ContractManagementService.java -text
 src/main/java/cn/explink/service/express/PreOrderService.java -text
+src/main/java/cn/explink/service/fnc/OrderLifeCycleReportService.java -text
 src/main/java/cn/explink/service/validator/BackCargoAmountShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/BackCargoNumShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/CargoAmountShouldAboveZeroAndBelowBillon.java -text
@@ -1851,6 +1857,7 @@ src/main/java/cn/explink/util/DeCodeURLUtil.java -text
 src/main/java/cn/explink/util/Dom4jParseUtil.java -text
 src/main/java/cn/explink/util/EmailUtil.java -text
 src/main/java/cn/explink/util/EncryptData.java -text
+src/main/java/cn/explink/util/ExcelExtractor.java -text
 src/main/java/cn/explink/util/ExcelUtils.java -text
 src/main/java/cn/explink/util/ExcelUtilsHandler.java -text
 src/main/java/cn/explink/util/FinalVar.java -text
@@ -1875,6 +1882,7 @@ src/main/java/cn/explink/util/ServiceUtil.java -text
 src/main/java/cn/explink/util/SqlBuilder.java -text
 src/main/java/cn/explink/util/StreamingStatementCreator.java -text
 src/main/java/cn/explink/util/StringUtil.java -text
+src/main/java/cn/explink/util/Tools.java -text
 src/main/java/cn/explink/util/WebServiceHandler.java -text
 src/main/java/cn/explink/util/XmlUtil.java -text
 src/main/java/cn/explink/util/baiduAPI/AddressComponent.java -text
@@ -2454,6 +2462,8 @@ src/main/webapp/WEB-INF/jsp/orderflow/queckSelectOrderleft.jsp -text
 src/main/webapp/WEB-INF/jsp/orderflow/queckSelectOrderright.jsp -text
 src/main/webapp/WEB-INF/jsp/orderflow/queckSelectOrders.jsp -text
 src/main/webapp/WEB-INF/jsp/orderflow/wumaorderFlowQueryForOutsideView.jsp -text
+src/main/webapp/WEB-INF/jsp/orderlifecycle/fnc_rpt_orderlifecycle.js -text
+src/main/webapp/WEB-INF/jsp/orderlifecycle/index.jsp -text
 src/main/webapp/WEB-INF/jsp/orderpartgoodsreturn/goodsReturnList.jsp -text
 src/main/webapp/WEB-INF/jsp/orderpartgoodsreturn/goodsReturnListBycwbs.jsp -text
 src/main/webapp/WEB-INF/jsp/orverdueexmo/overdueexmo.jsp -text
