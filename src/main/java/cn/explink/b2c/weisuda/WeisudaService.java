@@ -227,6 +227,7 @@ public class WeisudaService {
 		BigDecimal cash = BigDecimal.ZERO;
 		BigDecimal other = BigDecimal.ZERO;
 		BigDecimal paybackedfee = BigDecimal.ZERO;
+		BigDecimal codpos = BigDecimal.ZERO;
 
 		long podresultid = Long.valueOf(orderFlowDto.getDeliverystate());
 		// podresultid = this.getPodresultid(podresultid, cwbOrder);
@@ -250,6 +251,7 @@ public class WeisudaService {
 			cash = BigDecimal.ZERO;
 			check = BigDecimal.ZERO;
 			other = BigDecimal.ZERO;
+			codpos = BigDecimal.ZERO;
 			if ((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
 					|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 				paybackedfee = deliverystate.getBusinessfee();
@@ -279,7 +281,10 @@ public class WeisudaService {
 					check = deliverystate.getBusinessfee();
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Qita.getValue()) {
 					other = deliverystate.getBusinessfee();
-				} else {
+				} else if (orderFlowDto.getPaytype() == PaytypeEnum.CodPos.getValue()){
+					codpos = deliverystate.getBusinessfee();
+				} 
+				else {
 
 					if (cwbOrder.getPaywayid() == PaytypeEnum.Xianjin.getValue()) {
 						cash = deliverystate.getBusinessfee();
@@ -289,6 +294,8 @@ public class WeisudaService {
 						check = deliverystate.getBusinessfee();
 					} else if (cwbOrder.getPaywayid() == PaytypeEnum.Qita.getValue()) {
 						other = deliverystate.getBusinessfee();
+					} else if(cwbOrder.getPaywayid() == PaytypeEnum.CodPos.getValue()){
+						codpos = deliverystate.getBusinessfee();
 					}
 				}
 			}
@@ -358,6 +365,9 @@ public class WeisudaService {
 		parameters.put("receivedfeepos", pos);
 		parameters.put("receivedfeecheque", check);
 		parameters.put("receivedfeeother", other);
+		//--lx--支付宝cod--
+		parameters.put("receivedfeecodpos", codpos);
+		
 		parameters.put("paybackedfee", paybackedfee);
 		parameters.put("podremarkid", (long) 0);
 		parameters.put("posremark", posremark);
