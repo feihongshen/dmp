@@ -36,7 +36,7 @@ public class UnionPayService_Search extends UnionPayService {
 				+ cwbOrder.getConsigneename() + "\"," + "\"RecipientAddress\":\"" + cwbOrder.getConsigneeaddress() + "\",\"RecipientPhone\":\""
 				+ (cwbOrder.getConsigneemobile() + "^" + cwbOrder.getConsigneephone()) + "\"," + "\"Payment\":\"" + cwbOrder.getReceivablefee() + "\",\"Weight\":\"" + cwbOrder.getCarrealweight()
 				+ "\"," + "\"Postage\":\"" + 0 + "\",\"ServiceCharge\":\"" + 0 + "\"," + "\"PostagePostPaidFlag\":\"" + 1 + "\",\"ExchangeFlag\":" + (cwbOrder.getCwbordertypeid() == 3 ? 2 : 1)
-				+ ",\"OriginMailBarcode\":\"\",\"Description\":\"" + (cwbOrder.getCwbremark() + cwbOrder.getCustomercommand()) + "\",  " + "}";
+				+ ",\"OriginMailBarcode\":\"\",\"Description\":\"" + (cwbOrder.getCwbremark() + cwbOrder.getCustomercommand()) + "\"}";
 		logger.info("移动POS(UnionPay) 运单查询成功！response=00,cwb={},jsonContent={}", cwbOrder.getCwb(), json_msg);
 
 		return json_msg;
