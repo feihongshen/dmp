@@ -3381,5 +3381,16 @@ public class ExportService {
 		}
 		
 	}
+	public Object setObjectFinace(String[] cloumnName3, Map<String, Object> mapRow, int i)  {
+		Object a=null;
+		if ("Cwb".equalsIgnoreCase(cloumnName3[i].toString())) {
+			a = mapRow.get("cwb");
+		}
+		if("Businessfee".equalsIgnoreCase(cloumnName3[i].toString())){
+			a = mapRow.get("businessfee");
+		}
+		
+		return a==null?"":a;
+	}
 
 }
