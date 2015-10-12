@@ -252,7 +252,7 @@ public class VipShopGetCwbDataService {
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
 			String emaildate = dataMap.get("remark4").toString();
-			long warehouseid = this.getVipShop(vipshop_key).getWarehouseid();
+			long warehouseid = vipshop.getWarehouseid();
 			this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
 
 			this.updateMaxSEQ(vipshop_key, vipshop);
@@ -269,7 +269,7 @@ public class VipShopGetCwbDataService {
 		onelist.add(dataMap);
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
-			long warehouseid = this.getVipShop(vipshop_key).getWarehouseid();
+			long warehouseid = vipshop.getWarehouseid();
 			this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
 			this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
 
