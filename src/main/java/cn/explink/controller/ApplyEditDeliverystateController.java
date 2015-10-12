@@ -798,6 +798,7 @@ public class ApplyEditDeliverystateController {
 				}
 				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
 				CwbOrder corder = cwbDAO.getCwborder(cwbStr);
+				Customer customer = customerDao.getCustomerById(corder.getCustomerid());
 				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
 				if (corder!=null&&deliverystate!=null) {
 					if (deliverystate.getDeliverybranchid()!=this.getSessionUser().getBranchid()) {
@@ -811,6 +812,12 @@ public class ApplyEditDeliverystateController {
 				//deliverystate.getGcaid() == 0	(审核状态字段)！
 				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0 ||deliverystate.getGcaid() == 0 ) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
+					continue;
+				}else if(deliverystate.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){
+					errorCwbs.append(cwbStr + ":拒收的订单不能申请修改反馈状态！");
+					continue;
+				}else if(customer.getNeedchecked()==1){
+					errorCwbs.append(cwbStr + ":该客户的订单不能申请修改反馈状态！");
 					continue;
 				} else if (deliverystate != null && deliverystate.getPayupid() == 0) {//&& deliverystate.getIssendcustomer() == 0
 					cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
