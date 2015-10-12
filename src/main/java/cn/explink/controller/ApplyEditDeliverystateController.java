@@ -813,7 +813,7 @@ public class ApplyEditDeliverystateController {
 				}else if (deliverystate == null || deliverystate.getDeliverystate() == 0 ||deliverystate.getGcaid() == 0 ) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
 					continue;
-				}else if(deliverystate.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()||customer.getNeedchecked()==1){
+				}else if(deliverystate.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()&&customer.getNeedchecked()==1){
 					errorCwbs.append(cwbStr + ":该客户的订单不能申请修改反馈状态！");
 					continue;
 				} else if (deliverystate != null && deliverystate.getPayupid() == 0) {//&& deliverystate.getIssendcustomer() == 0
