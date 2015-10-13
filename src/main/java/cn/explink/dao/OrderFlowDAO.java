@@ -1231,4 +1231,48 @@ public class OrderFlowDAO {
 		}
 	}
 	
+
+	/**
+	 * 获取时间范围内订单流程记录数
+	 * 
+	 * @param begindate 开始日期
+	 * @param enddate 结束日期
+	 * @return
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	public long getOrderFlowCountByCredate(String begindate, String enddate) {
+
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append("select count(1) from express_ops_order_flow FORCE INDEX(FlowCredateIdx)")
+		.append(" where 1 = 1")
+		.append(" and credate >= ? ")
+		.append(" and credate <= ? ");
+		
+		return this.jdbcTemplate.queryForLong(sqlBuilder.toString(), begindate,enddate);
+	}
+	
+	/**
+	 * 获取以floworderid排倒序订单流程列表
+	 * 
+	 * @param begindate 开始日期
+	 * @param enddate 结束日期
+	 * @param page 页码
+	 * @param pageSize 页数
+	 * @return
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	public List<OrderFlow> getOrderFlowByCredateAndPage(String begindate, String enddate, int page, int pageSize) {
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append("select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)")
+		.append(" where 1 = 1")
+		.append(" and credate >= ? ")
+		.append(" and credate <= ?")
+		.append(" order by floworderid desc ")
+		.append(" limit ?, ? ");
+		
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new OrderFlowRowMapper(), begindate,enddate,((page - 1) * pageSize), pageSize  );
+	}
+	
 }

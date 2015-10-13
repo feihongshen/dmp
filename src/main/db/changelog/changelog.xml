@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog
      xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -8401,5 +8401,56 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
+	<!-- 财务综合报表-订单生命周期报表 -->
+	<changeSet id="panjinghui-2015-10-08-1" author="panjinghui">
+		<sql>
+			CREATE TABLE `fn_order_details_snapshot` (
+					`id` bigint(10) NOT NULL AUTO_INCREMENT,
+					 `cwb`                       VARCHAR(100) COLLATE utf8_bin COMMENT '订单号',
+					`shiptime`                  VARCHAR(100) COLLATE utf8_bin    COMMENT '发货日期',
+					`receivablefee`             DECIMAL(19,2)                    DEFAULT 0.00 COMMENT '应收金额',
+					`paybackfee`                DECIMAL(19,2)                    DEFAULT 0.00 COMMENT '应退金额',
+					`customerid`                INT								 DEFAULT -1 COMMENT '客户编号',
+					`cwbordertypeid`            VARCHAR(11) COLLATE utf8_bin     DEFAULT '-1' COMMENT '订单类型',
+					`startbranchid`             INT                              DEFAULT 0 COMMENT '上一站点',
+					`nextbranchid`              INT                              DEFAULT 0 COMMENT '下一站点',
+					`sendcarnum`                INT                              DEFAULT 1 COMMENT '发货件数',
+					`backcarnum`                INT                              DEFAULT 0 COMMENT '退货件数',
+					`flowordertype`             INT                              DEFAULT 0 COMMENT '订单操作状态',
+					`state`                     INT                              DEFAULT 1 COMMENT '记录状态',
+					`deliverybranchid`          INT                              DEFAULT 0 COMMENT '配送站点',
+					`currentbranchid`           INT                              DEFAULT 0 COMMENT '当前站点',
+					`cwbstate`                  INT                              DEFAULT 1 COMMENT '订单状态',
+					`deliverystate`             INT                              DEFAULT 0 COMMENT '反馈状态',
+					`shouldfare`                DECIMAL(9,2)                     DEFAULT 0.00 COMMENT '应收运费',
+					`infactfare`                DECIMAL(9,2)                     DEFAULT 0.00 COMMENT '实收运费',
+					`fnorgoffsetflag`           INT                              DEFAULT 0 COMMENT '收款状态',
+					`fnrptlifecycleid`          INT                              DEFAULT -1 COMMENT '生命周期报表id',
+					`lifecycle_rpt_date`		INT								 NOT NULL COMMENT '生命周期报表日期',
+					`createtime` 				TIMESTAMP 				 		 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建更新时间',
+					PRIMARY KEY (`id`),
+					KEY `order_snapshot_cwb_idx` (`cwb`),
+					KEY `order_snapshot_cwbordertypeid_idx` (`cwbordertypeid`),
+					KEY `order_snapshot_flowordertype_idx` (`flowordertype`),
+					KEY `order_snapshot_rpt_date_idx` (`lifecycle_rpt_date`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+
+			CREATE TABLE `fn_rpt_order_lifecycle` (
+					`id` bigint(10) NOT NULL AUTO_INCREMENT,
+					`customerid`                INT								 DEFAULT -1 COMMENT '客户编号',	
+					`count`                 	INT             				 DEFAULT 0 COMMENT '票数',
+					`amount`                 	DECIMAL(9,2)             		 DEFAULT 0 COMMENT '金额',
+					`typeid`                 	INT             				 DEFAULT -1 COMMENT '生命周期id',
+					`state`                     INT                              DEFAULT 1 COMMENT '记录状态',
+					`reportdate`				INT								 NOT NULL COMMENT '生命周期报表日期',
+					`createtime` 				TIMESTAMP 				 		 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建更新时间',
+					PRIMARY KEY (`id`),
+			  		KEY `order_lc_customerid_idx` (`customerid`),
+			  		KEY `order_lc_reportdate_idx` (`reportdate`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+			
+			insert into dmp40_function  values ('805040', '2', '订单生命周期报表', '805040', 'orderlifecycle/index?', '8050');	
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>

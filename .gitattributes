@@ -909,6 +909,7 @@ src/main/java/cn/explink/core/utils/DefaultNameHandler.java -text
 src/main/java/cn/explink/core/utils/JsonUtil.java -text
 src/main/java/cn/explink/core/utils/NameHandler.java -text
 src/main/java/cn/explink/core/utils/NameUtils.java -text
+src/main/java/cn/explink/core/utils/PoiExcelUtils.java -text
 src/main/java/cn/explink/core/utils/Reflections.java -text
 src/main/java/cn/explink/core/utils/ServletUtils.java -text
 src/main/java/cn/explink/core/utils/SpringContextUtils.java -text
@@ -1087,6 +1088,7 @@ src/main/java/cn/explink/dao/YpdjHandleRecordDAO.java -text
 src/main/java/cn/explink/dao/ZhiFuApplyDao.java -text
 src/main/java/cn/explink/dao/contractManagement/CustomerContractDAO.java -text
 src/main/java/cn/explink/dao/express/PreOrderDao.java -text
+src/main/java/cn/explink/dao/fnc/OrderDetailsSnapshotDao.java -text
 src/main/java/cn/explink/dao/fnc/OrderLifeCycleReportDao.java -text
 src/main/java/cn/explink/dao/searchEditCwbInfoDao.java -text
 src/main/java/cn/explink/dao/support/BasicJdbcTemplateDaoSupport.java -text
@@ -1162,6 +1164,7 @@ src/main/java/cn/explink/domain/CwbOXODetailBean.java -text
 src/main/java/cn/explink/domain/CwbOrder.java -text
 src/main/java/cn/explink/domain/CwbOrderAndCustomname.java -text
 src/main/java/cn/explink/domain/CwbOrderCopyToOms.java -text
+src/main/java/cn/explink/domain/CwbOrderSnapshot.java -text
 src/main/java/cn/explink/domain/CwbOrderTypeBean.java -text
 src/main/java/cn/explink/domain/CwbSearchDelivery.java -text
 src/main/java/cn/explink/domain/CwbStateControl.java -text
@@ -2471,8 +2474,8 @@ src/main/webapp/WEB-INF/jsp/orderflow/queckSelectOrderleft.jsp -text
 src/main/webapp/WEB-INF/jsp/orderflow/queckSelectOrderright.jsp -text
 src/main/webapp/WEB-INF/jsp/orderflow/queckSelectOrders.jsp -text
 src/main/webapp/WEB-INF/jsp/orderflow/wumaorderFlowQueryForOutsideView.jsp -text
-src/main/webapp/WEB-INF/jsp/orderlifecycle/fnc_rpt_orderlifecycle.js -text
 src/main/webapp/WEB-INF/jsp/orderlifecycle/index.jsp -text
+src/main/webapp/WEB-INF/jsp/orderlifecycle/manualtrigger.jsp -text
 src/main/webapp/WEB-INF/jsp/orderpartgoodsreturn/goodsReturnList.jsp -text
 src/main/webapp/WEB-INF/jsp/orderpartgoodsreturn/goodsReturnListBycwbs.jsp -text
 src/main/webapp/WEB-INF/jsp/orverdueexmo/overdueexmo.jsp -text
@@ -9691,6 +9694,7 @@ src/main/webapp/js/easyui/themes/metro/validatebox.css -text
 src/main/webapp/js/easyui/themes/metro/window.css -text
 src/main/webapp/js/expdopmap.js -text
 src/main/webapp/js/express/takeExpressAssign.js -text
+src/main/webapp/js/fnc/common_rpt/order_lifecycle_rpt.js -text
 src/main/webapp/js/images/repeatx.png -text
 src/main/webapp/js/inputer.js -text
 src/main/webapp/js/install_lodop32.exe -text

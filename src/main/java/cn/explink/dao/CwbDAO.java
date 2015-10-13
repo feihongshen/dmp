@@ -233,6 +233,7 @@ public class CwbDAO {
 			cwbOrder.setCity(StringUtil.nullConvertToEmptyString(rs.getString("city")));
 			cwbOrder.setArea(StringUtil.nullConvertToEmptyString(rs.getString("area")));
 			cwbOrder.setFirstlevelid(rs.getInt("firstlevelid"));
+			cwbOrder.setShiptime(rs.getString("shiptime"));//by jinghui.pan 20151009 
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;

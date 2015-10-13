@@ -1,5 +1,11 @@
 package cn.explink.enumutil;
 
+/**
+ * 订单生命周期类型id
+ * 
+ * @author jinghui.pan
+ *
+ */
 public enum CwbOrderLifeCycleTypeIdEnum {
 
 	Import(1, "导入未收货"), 
@@ -33,4 +39,27 @@ public enum CwbOrderLifeCycleTypeIdEnum {
 		return text;
 	}
 
+	public static CwbOrderLifeCycleTypeIdEnum getByValue(int cwbordertypeid) {
+		for (CwbOrderLifeCycleTypeIdEnum idEnum : CwbOrderLifeCycleTypeIdEnum.values()) {
+			if (idEnum.getValue() == cwbordertypeid)
+				return idEnum;
+		}
+		return null;
+	}
+	public static String getTextByValue(int value) {
+		for (CwbOrderLifeCycleTypeIdEnum idEnum : CwbOrderLifeCycleTypeIdEnum.values()) {
+			if (idEnum.getValue() == value){
+				return idEnum.getText();
+			}	
+		}
+		return "";
+	}
+	public static int getMaxValue() {
+		int ret = 0;
+		for (CwbOrderLifeCycleTypeIdEnum idEnum : CwbOrderLifeCycleTypeIdEnum.values()) {
+			if (idEnum.getValue() > ret)
+				ret = idEnum.getValue();
+		}
+		return ret;
+	}
 }

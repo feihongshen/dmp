@@ -73,6 +73,8 @@ import cn.explink.service.AccountDeductRecordService;
 import cn.explink.service.AppearWindowService;
 import cn.explink.service.FloworderLogService;
 import cn.explink.service.PunishInsideService;
+import cn.explink.service.fnc.OrderLifeCycleReportService;
+import cn.explink.util.DateTimeUtil;
 
 @Component
 public class JobUtil {
@@ -207,6 +209,8 @@ public class JobUtil {
 	PunishInsideService punishInsideService;
 	@Autowired
 	JiuYeInsertCwbDetailTimmer jiuYeInsertCwbDetailTimmer;
+	@Autowired
+	OrderLifeCycleReportService orderLifeCycleReportService;
 	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -237,7 +241,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
-
+		JobUtil.threadMap.put("order_lifecycle_report", 0);
 	}
 
 	/**
@@ -267,6 +271,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
+		JobUtil.threadMap.put("order_lifecycle_report", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1200,4 +1205,43 @@ public class JobUtil {
 
 	}
 	
+	
+	/**
+	 * 生成前一天的生命周期报表
+	 *
+	 */
+	public void generateOrderLifeCycleReport(){
+		System.out.println("-----generateOrderLifeCycleReport启动执行");
+		final String threadKey = "order_lifecycle_report";
+		
+		if (JobUtil.threadMap.get(threadKey) == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXOJIT_feedback");
+			return;
+		}
+		JobUtil.threadMap.put(threadKey, 1);
+		long starttime = 0;
+		long endtime = 0;
+		
+		try{
+			starttime = System.currentTimeMillis();
+			//
+			String reportDate = DateTimeUtil.getDateBeforeDay(1);//in 'yyyy-MM-dd' format
+			int batchSize = 1000;
+			
+			//生成前一天的订单详情列表
+			this.orderLifeCycleReportService.genLifeCycleOrderDetail(batchSize, reportDate);
+			
+			//生成前一天的生命周期报表
+			this.orderLifeCycleReportService.genLifeCycleReport(reportDate);
+			
+			
+			endtime = System.currentTimeMillis();
+
+		}catch(Exception e){
+			this.logger.error("执行generateOrderLifeCycleReport定时器异常", e);
+		}finally{
+			JobUtil.threadMap.put(threadKey, 0);
+		}
+		this.logger.info("执行了获取generateOrderLifeCycleReport订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
 }

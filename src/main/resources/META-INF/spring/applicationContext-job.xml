@@ -906,7 +906,7 @@
            </property>
       </bean>
      
-     <bean id="getJiuYe" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <bean id="getJiuYe" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
       	<property name="targetBean">
              <value>excuteTimmer</value>
          </property>
@@ -914,6 +914,26 @@
              <value>getJiuYe_Task</value>
          </property>
      </bean>	
-	     
+     
+     <!-- 订单生命周期报表生成任务  开始 -->
+     <bean id="doTime_orderLifecycleReport" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="orderLifecycleReportTask" />
+           </property>
+             <property name="cronExpression">
+               <value>0 0 3 * * ?</value> <!-- 每天凌晨3点触发一次 -->
+           </property>
+     </bean>
+     
+     <bean id="orderLifecycleReportTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>generateOrderLifeCycleReport</value>
+         </property>
+     </bean>
+     <!-- 订单生命周期报表生成任务 结束-->
+     
 <!-- ===================================自动生成HTML定时器 结束========================================== -->
 </beans>
