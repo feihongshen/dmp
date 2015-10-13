@@ -120,7 +120,7 @@ public class VipShopOXOGetCwbDataService {
 			this.jiontDAO.Update(jointEntity);
 		}
 		// 保存 枚举到供货商表中
-		this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+	//this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
 	}
 
 	public void updateMaxSEQ(int joint_num, VipShop vipshop) {
