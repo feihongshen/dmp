@@ -353,10 +353,10 @@ public class DeliveryStateDTO {
 				continue;
 			}
 			if (ds.getGcaid() != -1) {
-				total = total.add(ds.getReceivedfee()).subtract(ds.getReturnedfee());
+				total = total.add(ds.getReceivedfee()).subtract(ds.getReturnedfee()).add(ds.getInfactfare());
 				pos_amount = pos_amount.add(ds.getPos());
 				codpos_amount = codpos_amount.add(ds.getCodpos());
-				cash_amount = cash_amount.add(ds.getCash()).subtract(ds.getReturnedfee());
+				cash_amount = cash_amount.add(ds.getCash()).subtract(ds.getReturnedfee()).add(ds.getInfactfare());
 				checkfee_amount = checkfee_amount.add(ds.getCheckfee());
 				otherfee_amount = otherfee_amount.add(ds.getOtherfee());
 				if (ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) {
