@@ -72,7 +72,6 @@ function sub(id){
 			}else{
 				alert(data.error);
 			}
-			searchForm.submit();
 		}
 	});
 	
