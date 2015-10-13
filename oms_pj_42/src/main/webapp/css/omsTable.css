@@ -1,0 +1,77 @@
+body{
+
+margin: 6px;
+
+padding: 0;
+
+font-size: 12px;
+
+font-family: tahoma, arial;
+
+background: #fff;
+
+}
+
+table{
+
+width: 100%;
+
+}
+
+tr.odd{
+
+background: #fff;
+
+}
+
+tr.even{
+
+background: #eee;
+
+}
+
+div.datagrid_div{
+
+width: 100%;
+
+border: 1px solid #999;
+
+}
+
+/*****************样式2*******************/
+
+table.datagrid{
+
+border-collapse: collapse; 
+
+}
+
+table.datagrid th{
+
+text-align: left;
+
+background: #9cf;
+
+padding: 3px;
+
+border: 1px #333 solid;
+
+}
+
+table.datagrid td{
+
+padding: 3px;
+
+border: none;
+
+border:1px #333 solid;
+
+}
+
+tr:hover,
+
+tr.hover{
+
+background: #9cf;
+
+}

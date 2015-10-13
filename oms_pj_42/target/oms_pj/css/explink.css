@@ -1,0 +1,28 @@
+body{
+	margin: 0px;
+}
+.errorMessage{
+	background-color: greenYellow;
+	color: red;}
+.validMessage{
+	background-color: greenYellow;
+	color: green;	
+}
+.desciption{
+	color: #FF0000;
+}
+.emphasize{
+	font-weight: bold;
+}
+#breakcrumbar{
+	background:#fff url(../images/main_topima.gif) no-repeat left top;
+	padding-left: 25px;
+}
+.filelist{
+	position: relative;
+	background-color: #FFF;
+	padding: 3px;
+	top: -30px;
+	font: 700 14px Arial, Helvetica, sans-serif;
+	color: #73b304;
+}

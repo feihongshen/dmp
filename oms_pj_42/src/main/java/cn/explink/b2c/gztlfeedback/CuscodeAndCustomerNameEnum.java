@@ -1,0 +1,181 @@
+package cn.explink.b2c.gztlfeedback;
+
+public enum CuscodeAndCustomerNameEnum {
+/**
+ * 广州通路供货商代码与供货商名对应的枚举,由广州通路那边提供的
+ */
+	woaigouwu("D001", "我爱购物"),
+	wangjiagouwu("D010","王将购物"),
+	dongfanggouwu("D011","东方购物"),
+	jiayougouwu("D017","家有购物"),
+	aosenmei("D019","奥森美"),
+	xiangguo("D022","橡果"),
+	abc("D023","ABC"),
+	shangchi("D027","尚驰"),
+	hangzhouganshneg("D028","杭州甘盛"),
+	yingguanggouwu("D029","央广购物"),
+	yandutianxi("K02008001","燕都天玺"),
+	yuetongka("K02013001","粤通卡"),
+	xiaolanzhijian("K76002001","小榄志坚"),
+	shoujiansanhu("S001","收件散户"),
+	langgougouwu("SD001","朗构购物"),
+	qinrun("SW001","亲润"),
+	fengmingnanchang("SW002","凤鸣南昌"),
+	fengmingjiangxi("SW003","凤鸣江西"),
+	chengyiwuliu("SW004","诚义物流"),
+	fanyusudi("SW005","凡宇速递"),
+	lvshoushangcheng("SW006","绿瘦商城"),
+	chengshiyibai("SW007","城市100"),
+	yamaxun("W001","亚马逊"),
+	dangdang("W002","当当"),
+	letaowang("W003","乐淘网"),
+	fanke("W004","凡客"),
+	shanghaiyiyao("W005","上海义尧"),
+	yemaishangmao("W006","也买商贸"),
+	zhonghang("W007","中行"),
+	xingzuojiuye("W008","星座酒业"),
+	shengdianxinshouji("W009","省电信手机"),
+	fujianfeiyuan("W010","福建飞远"),
+	cuifengyuan("W011","翠丰园"),
+	guomei("W012","国美"),
+	zouxiuwang("W013","走秀网"),
+	honghaizibeijing("W014","红孩子北京"),
+	hainanweipinhui("W015","海南唯品会"),
+	lefengwang("W016","乐蜂网"),
+	airuipu("W017","埃瑞普"),
+	aigouwu("W018","爱购网"),
+	ZYPW2013("W019","ZYPW2013"),
+	feihu("W020","飞狐"),
+	jushang("W021","聚尚"),
+	weipinhuituangou("W022","唯品会团购"),
+	shanghaiweipinhui("W023","上海唯品会"),
+	guangzhouweipinhui("W024","广州唯品会"),
+	chengduweipinhui("W025","成都唯品会"),
+	beijingweipinhui("W026","北京唯品会"),
+	hainanshanghaiweipinhui("W027","海南上海唯品会"),
+	shenzhoushuma("W028","神州数码"),
+	hainanweipinhuituangou("W029","海南唯品会团购"),
+	leimian("W030","裂帛"),
+	yiji("W031","易积"),
+	yougouwang("W032","优购网"),
+	duoduoxianguo("W033","多多鲜果"),
+	tongzhitianxia("W034","通和天下"),
+	debangwuliu("W036","德邦物流"),
+	maibaobao("W037","麦包包"),
+	beijinghuitong("W038","北京汇通"),
+	lingshiwang("W039","零食网"),
+	mengbasha("W040","梦芭莎"),
+	shanghaibeilesheng("W041","上海倍乐生"),
+	tengxunda("W042","腾迅达"),
+	BYT2013("W043","BYT2013"),
+	guangdongpiaowuwang("W044","广东票务网"),
+	jiujiu("W045","九久"),
+	rongbangdeda("W046","荣邦德达"),
+	jumei("W047","聚美"),
+	guangzhouounisi("W048","广州欧妮斯"),
+	jiumeiwang("W049","酒美网"),
+	guangzhoudianshitai("W050","广州电视台"),
+	maikaolin("W051","麦考林"),
+	zhusanjiaoweipinhui("W052","珠三角唯品会"),
+	weipinhui("W053","唯品会"),
+	yihaodain("W054","1号店"),
+	pinganyaowang("W055","平安药网"),
+	haolemai("W056","好乐买"),
+	tianmaoliemian("W057","裂帛（天猫）"),
+	tianmaolefeng("W058","乐蜂（天猫）"),
+	qingyi("W059","青怡"),
+	jiuxianwang("W060","酒仙网"),
+	maimaibao("W061","买卖宝"),
+	wangyi("W062","网易"),
+	meituan("W063","美团"),
+	shishang("W064","时尚"),
+	wanxiang("W065","万象"),
+	shijiushijiu("W066","1919"),
+	huadaoshubaokan("W067","华道书报刊"),
+	ZZBK2013("W068","ZZBK2013"),
+	honghaizishanghai("W069","红孩子上海"),
+	guangzhouyuansi("W070","广州缘思"),
+	shengdianxindaishouyewudengji("W071","省电信代收业务登记"),
+	jumeiEMS("W072","聚美EMS"),
+	qiaowuqiaoyu("W073","俏物俏语"),
+	shenzhenhongyuan("W074","深圳宏远"),
+	zhongliangwomaiwang("W075","中粮我买网"),
+	foshanchuangmeiyaoye("W076","佛山创美药业"),
+	yuanlongyatu("W077","元隆雅图"),
+	zhongxiaokehu("W078","中小客户"),
+	guangzhouyuegou("W079","广州粤购"),
+	muyingzhijia("W080","母婴之家"),
+	guangzhouyigou("W081","广州易邮"),
+	donghang("W082","东航"),
+	jumeihainan("W083","聚美海南"),
+	ZRYG2013("W084","ZRYG2013"),
+	jiuqianjia("W085","九千家"),
+	kejiemohe("W086","科捷墨盒"),
+	kejieyidong("W087","科捷移动"),
+	yihaoyaodian("W088","1号药网"),
+	lifujiaju("W089","丽芙家居"),
+	kaishu("W090","凯树"),
+	hongcheng("W091","弘承"),
+	guangzhoubaili("W092","广州百丽"),
+	feifeishangcheng("W093","飞飞商城"),
+	shanghaiyousong("W094","上海优送"),
+	haoxiangle("W095","好享购"),
+	hongtongwuliu("W096","鸿通物流"),
+	wotugongfang("W097","沃土工坊"),
+	qilekangSDD("W098","7乐康SDD"),
+	huatie("W099","华铁"),
+	qilekang("W100","7乐康"),
+	kejiehaikang("W101","科捷海康"),
+	kejiezhongmai("W102","科捷中脉"),
+	shenzhouzaixianSMZX001("W103","神码在线SMZX001"),
+	shenzhouzaixianSMZX002("W104","神码在线SMZX002"),
+	kejieqita("W105","科捷其他"),
+	jinsilu("W106","金思路"),
+	shanghaiweipinhuiluyun("W107","上海唯品会陆运"),
+	ouweite("W108","欧唯特"),
+	xiaomengyang("W109","小萌羊"),
+	feiniuwang("W110","飞牛网"),
+	rufengda("W129","如风达"),
+	zhongguodainxin("W130","中国电信"),
+	tianmao("W131","天猫"),
+	huangouwang("W132","欢购网"),
+	bufa("W133","补发"),
+	huaxinlang("W134","华信朗"),
+	yixunwang("W136","易迅网"),
+	luotuo("W137","骆驼"),
+	kejiedianxin("W138","科捷电信"),
+	guangxindainxin("W139","广信电信"),
+	goushuzhongxin("W140","购书中心"),
+	suiyigou("W141","随意购"),
+	laijianshun("W142","来坚顺"),
+	zhongxiaokehuceshi("W150","中小客户测试"),
+	guangzhouzhouqigou("W161","广州周期购"),
+	yitao("W70","移淘")
+
+
+	;
+	private String cuscode;
+	private String customerName;
+
+	public String getCuscode() {
+		return this.cuscode;
+	}
+
+	public void setCuscode(String cuscode) {
+		this.cuscode = cuscode;
+	}
+
+	public String getCustomerName() {
+		return this.customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	private CuscodeAndCustomerNameEnum(String cuscode, String customerName) {
+		this.cuscode = cuscode;
+		this.customerName = customerName;
+	}
+
+}

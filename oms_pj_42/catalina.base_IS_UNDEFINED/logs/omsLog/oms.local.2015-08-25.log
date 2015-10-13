@@ -1,0 +1,122 @@
+2015-08-25 09:56:05.673 [main] INFO  org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization started
+2015-08-25 09:56:05.744 [main] INFO  o.s.web.context.support.XmlWebApplicationContext - Refreshing Root WebApplicationContext: startup date [Tue Aug 25 09:56:05 CST 2015]; root of context hierarchy
+2015-08-25 09:56:05.803 [main] INFO  o.s.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from file [E:\项目资料\易普联科\项目\dmpOXO\oms_pj_42\target\classes\META-INF\spring\applicationContext-jms.xml]
+2015-08-25 09:56:07.335 [main] INFO  o.s.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from file [E:\项目资料\易普联科\项目\dmpOXO\oms_pj_42\target\classes\META-INF\spring\applicationContext-job.xml]
+2015-08-25 09:56:07.415 [main] INFO  o.s.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from file [E:\项目资料\易普联科\项目\dmpOXO\oms_pj_42\target\classes\META-INF\spring\applicationContext-security.xml]
+2015-08-25 09:56:07.501 [main] INFO  o.s.security.core.SpringSecurityCoreVersion - You are running with Spring Security Core 3.1.0.RELEASE
+2015-08-25 09:56:07.501 [main] INFO  o.s.security.config.SecurityNamespaceHandler - Spring Security 'config' module version is 3.1.0.RELEASE
+2015-08-25 09:56:07.561 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'hasRole('ROLE_ADMIN')' for /choices/**
+2015-08-25 09:56:07.562 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'isAuthenticated()' for /member/**
+2015-08-25 09:56:07.563 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /resources/**
+2015-08-25 09:56:07.563 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /login
+2015-08-25 09:56:07.563 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /monitor/**
+2015-08-25 09:56:07.563 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /monitor*/**
+2015-08-25 09:56:07.564 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /monitordelivery/**
+2015-08-25 09:56:07.564 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /order/**
+2015-08-25 09:56:07.564 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /complaint/**
+2015-08-25 09:56:07.564 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /exportcwb/**
+2015-08-25 09:56:07.564 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /delivery/**
+2015-08-25 09:56:07.565 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /funds/**
+2015-08-25 09:56:07.565 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /cleint/**
+2015-08-25 09:56:07.565 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /sysetem/**
+2015-08-25 09:56:07.565 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /problem/**
+2015-08-25 09:56:07.565 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /news/**
+2015-08-25 09:56:07.565 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /proxy/**
+2015-08-25 09:56:07.566 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /sms/**
+2015-08-25 09:56:07.566 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /smsconfig/**
+2015-08-25 09:56:07.566 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /interface/**
+2015-08-25 09:56:07.566 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /pospay/**
+2015-08-25 09:56:07.566 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /createselectterm/**
+2015-08-25 09:56:07.566 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /js/**
+2015-08-25 09:56:07.567 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /css/**
+2015-08-25 09:56:07.567 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /common/**
+2015-08-25 09:56:07.567 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /images/**
+2015-08-25 09:56:07.567 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /advancedquery/**
+2015-08-25 09:56:07.567 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /cwborderPDA/loginError
+2015-08-25 09:56:07.567 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /interface/**
+2015-08-25 09:56:07.568 [main] WARN  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Duplicate URL defined: /interface/**. The original attribute values will be overwritten
+2015-08-25 09:56:07.568 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /explinkinterface/**
+2015-08-25 09:56:07.568 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /handfeedback/**
+2015-08-25 09:56:07.568 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /orderflow/**
+2015-08-25 09:56:07.568 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /status_feedback/**
+2015-08-25 09:56:07.568 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /test/**
+2015-08-25 09:56:07.569 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /setdefaultexport/**
+2015-08-25 09:56:07.569 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /setexportcwb/**
+2015-08-25 09:56:07.569 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /operation/**
+2015-08-25 09:56:07.569 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /gome/**
+2015-08-25 09:56:07.569 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /amazon/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /b2cjointmonitor/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /OMSChange/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /datastatistics/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /download/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /moonbasa/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /liantong/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /maikaolin/test/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /S_huobang/**
+2015-08-25 09:56:07.570 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /OMSExplink/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /Ben_lai/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /jiuxianwang/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /epaicore/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /epainotify/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /happygo_oms/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /maisike/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /sfexpress/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /wangjiu/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /smiled/**
+2015-08-25 09:56:07.571 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /weisuda/**
+2015-08-25 09:56:07.572 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /zhongliang/**
+2015-08-25 09:56:07.572 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /gztlfeedback/**
+2015-08-25 09:56:07.572 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'permitAll' for /commonemail/**
+2015-08-25 09:56:07.572 [main] INFO  o.s.s.c.h.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute 'isAuthenticated()' for /**
+2015-08-25 09:56:07.605 [main] INFO  o.s.s.config.http.HttpSecurityBeanDefinitionParser - Checking sorted filter chain: [Root bean: class [org.springframework.security.web.session.ConcurrentSessionFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 200, Root bean: class [org.springframework.security.web.context.SecurityContextPersistenceFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 300, Root bean: class [org.springframework.security.web.authentication.logout.LogoutFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 400, <loginFilter>, order = 799, <PDALoginFilter>, order = 800, Root bean: class [org.springframework.security.web.savedrequest.RequestCacheAwareFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1300, Root bean: class [org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1400, Root bean: class [org.springframework.security.web.authentication.AnonymousAuthenticationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1700, Root bean: class [org.springframework.security.web.session.SessionManagementFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1800, Root bean: class [org.springframework.security.web.access.ExceptionTranslationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1900, <org.springframework.security.web.access.intercept.FilterSecurityInterceptor#0>, order = 2000]
+2015-08-25 09:56:07.616 [main] INFO  o.s.beans.factory.xml.XmlBeanDefinitionReader - Loading XML bean definitions from file [E:\项目资料\易普联科\项目\dmpOXO\oms_pj_42\target\classes\META-INF\spring\applicationContext.xml]
+2015-08-25 09:56:28.688 [main] ERROR org.springframework.web.context.ContextLoader - Context initialization failed
+org.springframework.beans.factory.xml.XmlBeanDefinitionStoreException: Line 60 in XML document from file [E:\项目资料\易普联科\项目\dmpOXO\oms_pj_42\target\classes\META-INF\spring\applicationContext.xml] is invalid; nested exception is org.xml.sax.SAXParseException: cvc-complex-type.2.4.c: The matching wildcard is strict, but no declaration can be found for element 'tx:annotation-driven'.
+	at org.springframework.beans.factory.xml.XmlBeanDefinitionReader.doLoadBeanDefinitions(XmlBeanDefinitionReader.java:396) ~[spring-beans-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.beans.factory.xml.XmlBeanDefinitionReader.loadBeanDefinitions(XmlBeanDefinitionReader.java:334) ~[spring-beans-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.beans.factory.xml.XmlBeanDefinitionReader.loadBeanDefinitions(XmlBeanDefinitionReader.java:302) ~[spring-beans-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanDefinitionReader.loadBeanDefinitions(AbstractBeanDefinitionReader.java:174) ~[spring-beans-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanDefinitionReader.loadBeanDefinitions(AbstractBeanDefinitionReader.java:209) ~[spring-beans-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanDefinitionReader.loadBeanDefinitions(AbstractBeanDefinitionReader.java:180) ~[spring-beans-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.web.context.support.XmlWebApplicationContext.loadBeanDefinitions(XmlWebApplicationContext.java:125) ~[spring-web-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.web.context.support.XmlWebApplicationContext.loadBeanDefinitions(XmlWebApplicationContext.java:94) ~[spring-web-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.context.support.AbstractRefreshableApplicationContext.refreshBeanFactory(AbstractRefreshableApplicationContext.java:131) ~[spring-context-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.obtainFreshBeanFactory(AbstractApplicationContext.java:522) ~[spring-context-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:436) ~[spring-context-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.web.context.ContextLoader.configureAndRefreshWebApplicationContext(ContextLoader.java:384) ~[spring-web-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.web.context.ContextLoader.initWebApplicationContext(ContextLoader.java:283) ~[spring-web-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.web.context.ContextLoaderListener.contextInitialized(ContextLoaderListener.java:111) [spring-web-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.eclipse.jetty.server.handler.ContextHandler.callContextInitialized(ContextHandler.java:782) [jetty-server.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.servlet.ServletContextHandler.callContextInitialized(ServletContextHandler.java:424) [jetty-servlet.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.server.handler.ContextHandler.startContext(ContextHandler.java:774) [jetty-server.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.servlet.ServletContextHandler.startContext(ServletContextHandler.java:249) [jetty-servlet.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.webapp.WebAppContext.startContext(WebAppContext.java:1242) [jetty-webapp.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:717) [jetty-server.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.webapp.WebAppContext.doStart(WebAppContext.java:494) [jetty-webapp.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:64) [jetty-util.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.server.handler.HandlerWrapper.doStart(HandlerWrapper.java:95) [jetty-server.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.server.Server.doStart(Server.java:282) [jetty-server.jar:8.1.14.v20131031]
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:64) [jetty-util.jar:8.1.14.v20131031]
+	at net.sourceforge.eclipsejetty.starter.embedded.JettyEmbeddedAdapter.start(JettyEmbeddedAdapter.java:67) [eclipse-jetty-starters-embedded.jar:na]
+	at net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain.launch(AbstractJettyLauncherMain.java:85) [eclipse-jetty-starters-common.jar:na]
+	at net.sourceforge.eclipsejetty.starter.embedded.JettyEmbeddedLauncherMain.main(JettyEmbeddedLauncherMain.java:42) [eclipse-jetty-starters-embedded.jar:na]
+Caused by: org.xml.sax.SAXParseException: cvc-complex-type.2.4.c: The matching wildcard is strict, but no declaration can be found for element 'tx:annotation-driven'.
+	at org.apache.xerces.util.ErrorHandlerWrapper.createSAXParseException(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.util.ErrorHandlerWrapper.error(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.XMLErrorReporter.reportError(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.XMLErrorReporter.reportError(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.xs.XMLSchemaValidator$XSIErrorReporter.reportError(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.xs.XMLSchemaValidator.reportSchemaError(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.xs.XMLSchemaValidator.handleStartElement(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.xs.XMLSchemaValidator.emptyElement(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.XMLNSDocumentScannerImpl.scanStartElement(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.dispatch(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.parsers.XMLParser.parse(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.parsers.DOMParser.parse(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.apache.xerces.jaxp.DocumentBuilderImpl.parse(Unknown Source) ~[xercesImpl-2.6.2.jar:na]
+	at org.springframework.beans.factory.xml.DefaultDocumentLoader.loadDocument(DefaultDocumentLoader.java:75) ~[spring-beans-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	at org.springframework.beans.factory.xml.XmlBeanDefinitionReader.doLoadBeanDefinitions(XmlBeanDefinitionReader.java:388) ~[spring-beans-3.1.0.RELEASE.jar:3.1.0.RELEASE]
+	... 27 common frames omitted

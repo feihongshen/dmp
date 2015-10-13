@@ -1,0 +1,1072 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet id="zhangxiaofeng-001" author="zhangxiaofeng">
+		<sqlFile path="oms_init.sql" encoding="UTF-8"
+			relativeToChangelogFile="true" />
+	</changeSet>
+	<changeSet id="jumu-20121108-1" author="jumu">
+		<sql>
+			ALTER TABLE `express_ops_order_flow` CHANGE `floworderdetail`
+			`floworderdetail` VARCHAR(2000) CHARSET utf8 COLLATE utf8_bin DEFAULT
+			'{}' NULL;
+		</sql>
+	</changeSet>
+	<changeSet id="zhangxiaofeng-20111401" author="zhangxiaofeng">
+		<sql>
+			ALTER TABLE `express_ops_delivery_state` DROP COLUMN `id` , DROP INDEX `id` ;
+		</sql>
+		<sql>
+			ALTER TABLE `express_ops_delivery_state` ADD PRIMARY KEY (`cwb`)
+		</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-20121115-1" author="zhangpengkai">
+		<sql>ALTER TABLE `express_send_b2c_data` ADD COLUMN `shipcwb` VARCHAR(100) NULL ; </sql>
+	</changeSet>
+	<changeSet id="liangdong-20121120-1" author="liangdong">
+		<sql>ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `tuihuoid` INT(11) NULL AFTER `multi_shipcwb`, ADD COLUMN `zhongzhuanid` INT(11) NULL AFTER `tuihuoid`;</sql>
+	</changeSet>
+	<changeSet id="liangdong-20121124-1" author="liangdong">
+		<sql>
+			 DROP TABLE IF EXISTS `express_ops_exportmould`;
+
+			 CREATE TABLE `express_ops_exportmould` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `rolename` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `roleid` int(11) DEFAULT NULL,
+			  `mouldname` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `mouldfieldids` varchar(2000) COLLATE utf8_bin DEFAULT NULL,
+			  `status` int(2) DEFAULT '1',
+			  PRIMARY KEY (`id`)
+			 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+			 
+			 DROP TABLE IF EXISTS `express_ops_setexportfield`;
+
+			 CREATE TABLE `express_ops_setexportfield` (
+			  `id` INT(11) NOT NULL AUTO_INCREMENT,
+			  `fieldname` VARCHAR(30) COLLATE utf8_bin DEFAULT NULL,
+			  `exportstate` INT(11) DEFAULT '0',
+			  `fieldenglishname` VARCHAR(50) COLLATE utf8_bin DEFAULT NULL,
+			  PRIMARY KEY (`id`)
+			 ) ENGINE=INNODB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+			
+			 INSERT  INTO `express_ops_setexportfield`(`id`,`fieldname`,`exportstate`,`fieldenglishname`) VALUES (1,'承运商',1,'Commonname'),(2,'供货商',1,'Customername'),(3,'订单号',1,'Cwb'),(4,'运单号',1,'Transcwb'),(5,'收件人名称',1,'Consigneename'),(6,'收件人地址',1,'Consigneeaddress'),(7,'收件人邮编',1,'Consigneepostcode'),(8,'收件人电话',1,'Consigneephone'),(9,'收件人手机',1,'Consigneemobile'),(10,'发出商品名称',1,'Sendcarname'),(11,'取回商品名称',1,'Backcarname'),(12,'货物重量',1,'Carrealweight'),(13,'代收货款应收金额',1,'Receivablefee'),(14,'订单备注',1,'Cwbremark'),(15,'指定小件员',1,'Exceldeliver'),(16,'配送站点',1,'Excelbranch'),(17,'配送单号',1,'Shipcwb'),(18,'收件人编号',1,'Consigneeno'),(19,'货物金额',1,'Caramount'),(20,'客户要求',1,'Customercommand'),(21,'货物类型',1,'Cartype'),(22,'货物尺寸',1,'Carsize'),(23,'取回货物金额',1,'Backcaramount'),(25,'目的地',1,'Destination'),(26,'运输方式',1,'Transway'),(27,'退供货商承运商',1,'Shipperid'),(28,'发货数量',1,'Sendcarnum'),(29,'取货数量',1,'Backcarnum'),(30,'省',1,'Cwbprovince'),(31,'市',1,'Cwbcity'),(32,'区县',1,'Cwbcounty'),(33,'发货仓库',1,'Carwarehouse'),(34,'订单类型',1,'OrderType'),(36,'修改时间',1,'Edittime'),(38,'当前订单状态',1,'FlowordertypeMethod'),(39,'审核人',1,'Auditor'),(40,'退货备注',1,'Returngoodsremark'),(41,'最新跟踪状态',1,'Newfollownotes'),(42,'标记人',1,'Marksflagmen'),(43,'订单原始金额',1,'Primitivemoney'),(45,'签收时间',1,'Signintime'),(46,'修改的签收时间',1,'Editsignintime'),(47,'签收人',1,'Signinman'),(48,'修改人',1,'Editman'),(49,'承运商编号',1,'Commonnumber'),(50,'审核人',1,'Auditor'),(51,'审核时间',1,'Audittime'),(52,'审核状态',1,'AuditstateStr'),(53,'站点',1,'Branchname'),(54,'入库时间',1,'Instoreroomtime'),(55,'备注1',1,'Remark1'),(56,'备注2',1,'Remark2'),(57,'备注3',1,'Remark3'),(58,'备注4',1,'Remark4'),(59,'备注5',1,'Remark5'),(60,'当前所在站点',1,'Startbranchname'),(61,'下一站站点',1,'Nextbranchname'),(62,'出库时间',1,'Outstoreroomtime'),(63,'到站时间',1,'InSitetime'),(64,'小件员领货时间',1,'PickGoodstime'),(65,'配送成功时间',1,'SendSuccesstime'),(66,'反馈时间',1,'Gobacktime'),(67,'归班时间',1,'Goclasstime'),(68,'最新修改时间',1,'Nowtime'),(69,'滞留原因',1,'LeavedreasonStr'),(70,'入库仓库',1,'Inhouse'),(71,'称重重量',1,'Realweight'),(72,'货品备注',1,'Goodsremark'),(73,'支付方式',1,'PaytypeName'),(74,'入库仓库名称',1,'Carwarehousename'),(75,'发货仓库名称',1,'Customerwarehousename'),(76,'反馈小件员',1,'Fdelivername'),(77,'收到总金额',1,'Receivedfee'),(78,'退还金额',1,'Returnedfee'),(79,'应处理金额',1,'Businessfee'),(80,'现金实收',1,'Cash'),(81,'pos实收',1,'Pos'),(82,'pos备注',1,'Posremark'),(83,'pos反馈时间',1,'Mobilepodtime'),(84,'支票实收',1,'Checkfee'),(85,'支票号备注',1,'Checkremark'),(86,'收款人',1,'ReceivedfeeuserName'),(87,'归班状态',1,'StatisticstateStr'),(88,'创建时间',1,'Createtime'),(89,'其他金额',1,'Otherfee'),(90,'反馈备注',1,'Deliverstateremark'),(91,'反馈站点名称',1,'Payupbranchname'),(92,'配送结果备注',1,'PodremarkStr'),(93,'上交款人姓名',1,'Payuprealname'),(94,'发货妥投时间',1,'TuotouTime'),(95,'发货有结果时间',1,'YoujieguoTime'),(96,'入库妥投时间',1,'RukutuotouTime'),(97,'入库有结果时间',1,'RukuyoujieguoTime'),(98,'到站妥投时间',1,'DaozhantuotouTime'),(99,'到站有结果时间',1,'DaozhanyoujieguoTime'),(100,'是否上缴款',1,'IspayUpStr'),(101,'是否有欠款',1,'IsQiankuanStr'),(102,'退货再投审核',1,'AuditEganstateStr'),(103,'当前操作员',1,'OperatorName'),(104,'退货原因',1,'Backreason'),(105,'供应商异常编码',1,'Expt_code'),(106,'供应商异常原因',1,'Expt_msg'),(107,'配送结果',1,'OrderResultTypeText'); 
+	  
+	   </sql>
+	</changeSet>
+	<changeSet id="liangdong-20121206-1" author="liangdong">
+		   <sql>
+			 ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `deliverybranchid` INT(11) NULL AFTER `tuihuoid`;  
+			 ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `currentbranchid` INT(11) NULL AFTER `zhongzhuanid`; 
+		   </sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-20121225-1" author="zhangpengkai">
+		   <sql>
+			  ALTER TABLE `express_send_b2c_data` ADD COLUMN `send_dmp_flag` INT(4) DEFAULT 0 NULL COMMENT 'default:0,send success=1'; 
+			  UPDATE `express_send_b2c_data` SET send_dmp_flag=-1 where send_b2c_flag>0; 
+		   </sql>
+	</changeSet>
+	<changeSet id="liangdong-20130103-1" author="liangdong">
+		   <sql>
+			  ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `orderResultType` INT(4) DEFAULT 0 NULL AFTER `expt_msg`;
+			  ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `paytype_old` VARCHAR(50) NULL AFTER `orderResultType`; 
+			  ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `exportBackType` INT(4) DEFAULT 0 NULL AFTER `paytype_old`; 
+			  ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `exportType` INT(4) DEFAULT 0 NULL AFTER `exportBackType`;
+		   </sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-20130319-1" author="zhangpengkai">
+		   <sql>
+			 ALTER TABLE `express_send_b2c_data` ADD COLUMN `remark` VARCHAR(500) NULL ;
+		   </sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-04-12-1" author="lansheng">
+		   <sql>
+			 ALTER TABLE `express_send_b2c_data` ADD COLUMN `timeout` BIGINT(11) DEFAULT 0 NULL AFTER `send_dmp_flag`, ADD COLUMN `timeoutdate` VARCHAR(20) DEFAULT '' NULL AFTER `timeout`, ADD COLUMN `delId` BIGINT(11) DEFAULT 0 NULL AFTER `timeoutdate`; 
+		   </sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-07-01-1" author="zhangpengkai">
+		   <sql>
+			 ALTER TABLE `express_ops_cwb_detail` CHANGE `consigneename` `consigneename` VARCHAR(50) CHARSET utf8 COLLATE utf8_bin NULL,
+			 CHANGE `consigneepostcode` `consigneepostcode` VARCHAR(50) CHARSET utf8 COLLATE utf8_bin NULL,
+			 CHANGE `consigneephone` `consigneephone` VARCHAR(100) CHARSET utf8 COLLATE utf8_bin NULL,
+			 CHANGE `consigneemobile` `consigneemobile` VARCHAR(100) CHARSET utf8 COLLATE utf8_bin NULL, 
+			 CHANGE `shiptime` `shiptime` VARCHAR(50) CHARSET utf8 COLLATE utf8_bin NULL, CHANGE `transcwb` `transcwb` VARCHAR(1500) CHARSET utf8 COLLATE utf8_bin NULL;  
+		   </sql>
+	</changeSet>
+	<changeSet id="jumu-2013-07-22-1" author="jumu">
+		   <sql>
+				ALTER TABLE `express_send_b2c_data` ADD INDEX `b2c_customerid_idx` (`customerid`), ADD INDEX `b2c_flowordertype_idx` (`flowordertype`),ADD INDEX `b2c_send_b2c_flag_idx` (`send_b2c_flag`); 
+			</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-08-15-1" author="zhangpengkai">
+		   <sql>
+				ALTER TABLE `express_send_b2c_data` ADD COLUMN `send_payamount_flag` INT(4) DEFAULT 0 NULL;  
+			</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-08-30-1" author="lansheng">
+		   <sql>
+			CREATE TABLE `express_send_b2c_cod` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(200) DEFAULT NULL,
+			  `customerid` int(4) DEFAULT NULL,
+			  `datajson` text,
+			  `state` int(4) DEFAULT NULL,
+			  `cretime` varchar(20) DEFAULT NULL,
+			  `posttime` varchar(20) DEFAULT NULL,
+			  `remark` varchar(500) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `cwb_index` (`cwb`),
+			  KEY `b2c_customerid_idx` (`customerid`),
+			  KEY `b2c_state_idx` (`state`),
+			  KEY `b2c_posttime_idx` (`posttime`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;  
+			CREATE TABLE `express_send_b2c_filecount` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `filecount` bigint(11) DEFAULT '1',
+			  `type` bigint(4) DEFAULT '0',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+			</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-09-03-1" author="lansheng">
+		   <sql>
+			ALTER TABLE `express_send_b2c_cod` ADD COLUMN `deliverystate` INT(4) DEFAULT 0 NULL AFTER `remark`; 
+			ALTER TABLE `express_send_b2c_cod` CHANGE `customerid` `customerid` INT(4) DEFAULT 0 NULL, CHANGE `state` `state` INT(4) DEFAULT 0 NULL;
+			</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-09-30-1" author="lansheng">
+		   <sql>
+			CREATE TABLE `ops_delivery_successful` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) DEFAULT NULL,
+			  `createtime` varchar(20) DEFAULT NULL,
+			  `branchid` bigint(11) DEFAULT '0',
+			  `deliveryid` bigint(11) DEFAULT '0',
+			  `deliverystate` bigint(11) DEFAULT '0',
+			  `cwbordertypeid` bigint(11) DEFAULT '0',
+			  `customerid` bigint(11) DEFAULT '0',
+			  `deliverystateid` bigint(11) DEFAULT '0',
+			  `paywayid` bigint(11) DEFAULT '0',
+			  `deliverytime` varchar(20) DEFAULT NULL,
+			  `audittime` varchar(20) DEFAULT NULL,
+			  `auditstate` bigint(11) DEFAULT '0',
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `success_cwb_idx` (`cwb`),
+			  KEY `success_branchid_idx` (`branchid`),
+			  KEY `success_deliveryid_idx` (`deliveryid`),
+			  KEY `success_deliverytime_idx` (`deliverytime`),
+			  KEY `success_audittime_idx` (`audittime`),
+			  KEY `success_customerid_idx` (`customerid`)
+			) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+			CREATE TABLE `set_download_manager` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `userid` bigint(11) DEFAULT NULL,
+			  `datajson` varchar(500) DEFAULT NULL,
+			  `modelid` bigint(11) DEFAULT '0',
+			  `createtime` timestamp NULL DEFAULT NULL,
+			  `state` bigint(11) DEFAULT '0',
+			  `filename` varchar(500) DEFAULT NULL,
+			  `fileurl` varchar(500) DEFAULT NULL,
+			  `timeout` bigint(11) DEFAULT '-1',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+			</sql>
+	</changeSet>
+	
+	<changeSet id="zhangpengkai-2013-10-12-1" author="zhangpengkai">
+		   <sql>
+			CREATE TABLE `express_b2cdata_search` (
+				  `b2cid` BIGINT(11) NOT NULL AUTO_INCREMENT,
+				  `cwb` VARCHAR(100) DEFAULT NULL,
+				  `customerid` int DEFAULT NULL,
+				  `cretime` VARCHAR(50) DEFAULT NULL,
+				  `flowordertype` INT(4) DEFAULT NULL,
+				  `content` VARCHAR(300) DEFAULT NULL,
+				  `remark` VARCHAR(300) DEFAULT NULL,
+				  `operatorname` VARCHAR(50) DEFAULT NULL,
+				  KEY `b2cid` (`b2cid`)
+				) ENGINE=INNODB DEFAULT CHARSET=utf8;
+				ALTER TABLE `express_b2cdata_search` ADD INDEX `cwbindex` (`cwb`); 
+			</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-10-14-1" author="zhangpengkai">
+		   <sql>
+			ALTER TABLE `express_b2cdata_search` ADD COLUMN `deliverystate` INT(4) NULL ; 
+			</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-10-14-2" author="zhangpengkai">
+		   <sql>
+			ALTER TABLE `express_b2cdata_search` ADD COLUMN `signname` VARCHAR(50) NULL AFTER `deliverystate`, ADD COLUMN `mobilephone` VARCHAR(50) NULL AFTER `signname`; 
+			</sql>
+	</changeSet>
+	<changeSet id="jumu-2013-10-21-1" author="jumu">
+		   <sql>
+			ALTER TABLE `express_ops_cwb_detail` ADD INDEX `detail_emaildateid_idx` (`emaildateid`); 
+			</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-10-25-1" author="zhangpengkai">
+		   <sql>
+			CREATE TABLE `express_b2cdata_liantong` (
+			  `b2cid` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(50) DEFAULT NULL,
+			  `transcwb` varchar(50) DEFAULT NULL,
+			  `acceptTime` varchar(50) DEFAULT NULL,
+			  `acceptAddress` varchar(50) DEFAULT NULL,
+			  `acceptAction` varchar(300) DEFAULT NULL,
+			  `acceptName` varchar(50) DEFAULT NULL,
+			  `remark` varchar(300) DEFAULT NULL,
+			  `flowordertype` int(4) DEFAULT NULL,
+			  KEY `b2cid` (`b2cid`),
+			  KEY `cwb_index` (`cwb`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+			</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-10-10-1" author="lansheng">
+		   <sql>
+			 ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `resendtime` VARCHAR(20) NULL 
+			 AFTER `currentbranchid`, ADD COLUMN `tuihuozhaninstoreroomtime` VARCHAR(20) NULL 
+			 AFTER `resendtime`, ADD COLUMN `packagecode` VARCHAR(100) NULL 
+			 AFTER `tuihuozhaninstoreroomtime`, ADD COLUMN `weishuakareasonid` INT(11) NULL 
+			 AFTER `packagecode`, ADD COLUMN `weishuakareason` VARCHAR(200) NULL 
+			 AFTER `weishuakareasonid`, ADD COLUMN `losereasonid` INT(11) NULL 
+			 AFTER `weishuakareason`, ADD COLUMN `losereason` VARCHAR(200) NULL 
+			 AFTER `losereasonid`;
+			</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-10-21-1" author="lansheng">
+		   <sql>
+			 ALTER TABLE `set_download_manager` ADD COLUMN `endtime` TIMESTAMP NULL AFTER `timeout`; 
+			</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-10-30-1" author="lansheng">
+		   <sql>
+			 ALTER TABLE `express_ops_cwb_detail` 
+			 ADD COLUMN `customerbrackhouseremark` VARCHAR(500) NULL AFTER `losereason`, 
+			 ADD COLUMN `tuihuochuzhantime` VARCHAR(20) NULL AFTER `customerbrackhouseremark`, 
+			 ADD COLUMN `tuigonghuoshangchukutime` VARCHAR(20) NULL AFTER `tuihuochuzhantime`, 
+			 ADD COLUMN `zhongzhuanrukutime` VARCHAR(20) NULL AFTER `tuigonghuoshangchukutime`, 
+			 ADD COLUMN `zhongzhuanzhanchukutime` VARCHAR(20) NULL AFTER `zhongzhuanrukutime`;  
+			</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-11-01-1" author="lansheng">
+		   <sql>
+			CREATE TABLE `ops_delivery_chuku` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) DEFAULT NULL,
+			  `emaildate` varchar(20) DEFAULT NULL,
+			  `outstoreroomtime` varchar(20) DEFAULT NULL,
+			  `startbranchid` bigint(11) DEFAULT '0',
+			  `nextbranchid` bigint(11) DEFAULT '0',
+			  `cwbordertypeid` bigint(11) DEFAULT '0',
+			  `customerid` bigint(11) DEFAULT '0',
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `success_cwb_idx` (`cwb`),
+			  KEY `success_startbranchid_idx` (`startbranchid`),
+			  KEY `success_nextbranchid_idx` (`nextbranchid`),
+			  KEY `success_customerid_idx` (`customerid`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+			CREATE TABLE `ops_delivery_jushou` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) DEFAULT NULL,
+			  `emaildate` varchar(20) DEFAULT NULL,
+			  `branchid` bigint(11) DEFAULT '0',
+			  `deliveryid` bigint(11) DEFAULT '0',
+			  `cwbordertypeid` bigint(11) DEFAULT '0',
+			  `customerid` bigint(11) DEFAULT '0',
+			  `deliverystateid` bigint(11) DEFAULT '0',
+			  `deliverytime` varchar(20) DEFAULT NULL,
+			  `audittime` varchar(20) DEFAULT NULL,
+			  `gcaid` bigint(11) DEFAULT '0',
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `jushou_cwb_idx` (`cwb`),
+			  KEY `jushou_branchid_idx` (`branchid`),
+			  KEY `jushou_deliveryid_idx` (`deliveryid`),
+			  KEY `jushou_deliverytime_idx` (`deliverytime`),
+			  KEY `jushou_audittime_idx` (`audittime`),
+			  KEY `jushou_customerid_idx` (`customerid`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+			CREATE TABLE `ops_delivery_zhiliu` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) DEFAULT NULL,
+			  `emaildate` varchar(20) DEFAULT NULL,
+			  `resendtime` varchar(20) DEFAULT NULL,
+			  `branchid` bigint(11) DEFAULT '0',
+			  `deliveryid` bigint(11) DEFAULT '0',
+			  `cwbordertypeid` bigint(11) DEFAULT '0',
+			  `customerid` bigint(11) DEFAULT '0',
+			  `deliverystateid` bigint(11) DEFAULT '0',
+			  `deliverytime` varchar(20) DEFAULT NULL,
+			  `audittime` varchar(20) DEFAULT NULL,
+			  `gcaid` bigint(11) DEFAULT '0',
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `zhiliu_cwb_idx` (`cwb`),
+			  KEY `zhiliu_branchid_idx` (`branchid`),
+			  KEY `zhiliu_deliveryid_idx` (`deliveryid`),
+			  KEY `zhiliu_deliverytime_idx` (`deliverytime`),
+			  KEY `zhiliu_audittime_idx` (`audittime`),
+			  KEY `zhiliu_customerid_idx` (`customerid`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2013-11-01-1" author="liyuanyuan">
+		<sql>
+			  ALTER TABLE `ops_delivery_chuku` ADD INDEX `Delivery_Chuku_Outstoreroomtime_Idx` (`outstoreroomtime`); 
+		</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-12-02-1" author="lansheng">
+		<sql>
+			   ALTER TABLE `set_download_manager` ADD COLUMN `cnfilename` VARCHAR(500) NULL AFTER `endtime`;  
+		</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-11-03-1" author="lansheng">
+		<sql>
+			ALTER TABLE `express_ops_cwb_detail` CHANGE `sendcarname` `sendcarname` MEDIUMTEXT NULL;  
+		</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2013-11-06-1" author="liyuanyuan">
+		<sql>
+			  CREATE TABLE `ops_delivery_daohuo` (
+				  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+				  `cwb` varchar(100) DEFAULT NULL,
+				  `emaildate` varchar(20) DEFAULT NULL,
+				  `inSitetime` varchar(20) DEFAULT NULL,
+				  `startbranchid` bigint(11) DEFAULT '0',
+				  `currentbranchid` bigint(11) DEFAULT '0',
+				  `nextbranchid` bigint(11) DEFAULT '0',
+				  `cwbordertypeid` bigint(11) DEFAULT '0',
+				  `customerid` bigint(11) DEFAULT '0',
+				  `receivablefee` decimal(10,2) DEFAULT NULL,
+				  `paybackfee` decimal(10,2) DEFAULT NULL,
+				  `isnow` int(4) DEFAULT '0',
+				  PRIMARY KEY (`id`),
+				  KEY `Delivery_Daohuo_Emaildate_dx` (`emaildate`),
+				  KEY `Delivery_Daohuo_InSitetime_dx` (`inSitetime`),
+				  KEY `Delivery_Daohuo_Cwb_dx` (`cwb`),
+				  KEY `Delivery_Daohuo_Customerid_dx` (`customerid`),
+				  KEY `Delivery_Daohuo_Startbranchid_dx` (`startbranchid`),
+				  KEY `Delivery_Daohuo_Nextbranchid_dx` (`cwbordertypeid`),
+				  KEY `Delivery_Daohuo_Currentbranchid_dx` (`currentbranchid`)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+		</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-11-06-1" author="zhangpengkai">
+		<sql>
+			ALTER TABLE `express_b2cdata_search` ADD COLUMN `state` INT(4) DEFAULT 1 NOT NULL ;   
+		</sql>
+	</changeSet>
+
+	<changeSet id="lichunxue-2013-11-04-1" author="lichunxue">
+		   <sql>
+			CREATE TABLE `express_b2cdata_search_saohuobang` (
+			`id` bigint(11) NOT NULL AUTO_INCREMENT,
+			`cwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			`flowordertype` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+			`posttime` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+			`remark` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			`transcwb` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+			`address` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			`orderState` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+				PRIMARY KEY (`id`),
+				KEY `transcwb` (`transcwb`(255))
+			) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+			</sql>
+	</changeSet>
+	<changeSet id="lichunxue-2013-11-21-1" author="lichunxue">
+		   <sql>
+			ALTER TABLE `express_b2cdata_search_saohuobang` DROP INDEX `transcwb`, ADD INDEX `saohuobang_cwb_idx` (`cwb`);
+
+			</sql>
+	</changeSet>
+	<changeSet id="lansheng-2013-11-29-1" author="lansheng">
+		<sql>
+			CREATE TABLE `commen_cwb_order` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(200) DEFAULT NULL,
+			  `customerid` bigint(11) DEFAULT NULL,
+			  `startbranchid` bigint(11) DEFAULT NULL,
+			  `commencode` varchar(50) DEFAULT NULL,
+			  `credate` varchar(20) DEFAULT '',
+			  `stateTime` varchar(20) DEFAULT '',
+			  `emaildateid` bigint(11) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `commencode_time_idx` (`commencode`,`stateTime`),
+			  KEY `emaildateid_idx` (`emaildateid`)
+			) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+			CREATE TABLE `common_emaildate` (
+			  `emaildateid` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `commoncode` varchar(200) DEFAULT NULL,
+			  `cwbcount` bigint(11) DEFAULT '0',
+			  `emaildate` varchar(20) DEFAULT NULL,
+			  PRIMARY KEY (`emaildateid`),
+			  KEY `emaildate_idx` (`emaildate`),
+			  KEY `commoncode_idx` (`commoncode`)
+			) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet> 
+	<changeSet id="zhangpengkai-2013-12-02-1" author="zhangpengkai">
+		<sql>
+			CREATE TABLE `commen_send_data` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) DEFAULT NULL,
+			  `customerid` int(4) DEFAULT NULL,
+			  `datajson` mediumtext,
+			  `posttime` varchar(50) DEFAULT NULL,
+			  `statetime` varchar(50) DEFAULT NULL,
+			  `startbranchid` int(4) DEFAULT NULL,
+			  `commoncode` varchar(50) DEFAULT NULL,
+			  `flowordertype` int(4) DEFAULT NULL,
+			  `deliverystate` int(4) DEFAULT NULL,
+			  `state` varchar(50) DEFAULT '',
+			  KEY `id` (`id`),
+			  KEY `commensend_cwb_idx` (`cwb`),
+			  KEY `commensend_commoncode_idx` (`commoncode`),
+			  KEY `commensend_state_idx` (`state`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-12-05-1" author="zhangpengkai">
+		<sql>
+			 ALTER TABLE `commen_send_data` ADD COLUMN `reason` VARCHAR(300) NULL ; 
+		</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2013-12-05-1" author="liyuanyuan">
+		<sql>
+			CREATE TABLE `set_updatemessage` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `menuname` varchar(50) DEFAULT '',
+			  `lastupdatetime` varchar(50) DEFAULT '',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-12-09-1" author="zhangpengkai">
+		<sql>
+			 ALTER TABLE `commen_send_data` ADD COLUMN `custid` VARCHAR(30) DEFAULT '' NULL; 
+		</sql>
+	</changeSet>
+	<changeSet id="liukangning-2013-12-10-01" author="liukangning">
+		<sql>
+			ALTER TABLE `set_download_manager` CHANGE `datajson` `datajson` VARCHAR(5000) CHARSET utf8 COLLATE utf8_general_ci NULL;	
+		</sql>
+	</changeSet>
+	<changeSet id="liukangning-2013-12-17-01" author="liukangning">
+		<sql>
+			 CREATE TABLE `ops_delivery_tuihuochuzhan` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `tuihuochuzhantime` varchar(20) COLLATE utf8_bin DEFAULT '',
+			  `tuihuobranchid` int(11) DEFAULT NULL,
+			  `customerid` int(11) DEFAULT NULL,
+			  `cwbordertypeid` int(4) DEFAULT NULL,
+			  `tuihuozhanrukutime` varchar(20) COLLATE utf8_bin DEFAULT '',
+			  PRIMARY KEY (`id`),
+			  KEY `tuihuochuzhan_tuihuochuzhantime_idx` (`tuihuochuzhantime`),
+			  KEY `tuihuochuzhan_tuihuobrnachid_idx` (`tuihuobranchid`),
+			  KEY `tuihuochuzhan_customerid_idx` (`customerid`)
+			) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8 COLLATE=utf8_bin
+		</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2013-12-11-1" author="liyuanyuan">
+		<sql>
+			CREATE TABLE `ops_zhongzhuan` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) DEFAULT NULL,
+			  `zhongzhuanoutstoreroomtime` varchar(50) DEFAULT '',
+			  `startbranchid` bigint(11) DEFAULT '0',
+			  `nextbranchid` bigint(11) DEFAULT '0',
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  `insitebranchid` bigint(11) DEFAULT '0',
+			  `inSitetime` varchar(50) DEFAULT '',
+			  `customerid` bigint(10) DEFAULT '0',
+			  `cwbordertypeid` bigint(10) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `ZZ_Zhongzhuanoutstoreroomtime_Idx` (`zhongzhuanoutstoreroomtime`),
+			  KEY `ZZ_Startbranchid_Idx` (`startbranchid`),
+			  KEY `ZZ_Nextbranchid_Idx` (`nextbranchid`)
+			) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2013-12-11-2" author="liyuanyuan">
+		<sql>
+			ALTER TABLE `set_updatemessage` ADD COLUMN `menunvalue` BIGINT(5) NULL AFTER `lastupdatetime`;
+		</sql>
+	</changeSet>
+	<changeSet id="liukangning-2013-12-17-1" author="liukangning">
+		<sql>
+			ALTER TABLE `ops_delivery_jushou` ADD COLUMN `deliverystate` INT(11) NULL AFTER `paybackfee`
+		</sql>
+	</changeSet>
+	 <changeSet id="liyuanyuan-2013-12-18-1" author="liyuanyuan">
+		<sql>
+			CREATE TABLE `ops_cwb_tihuo` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) DEFAULT NULL,
+			  `emaildate` varchar(20) DEFAULT '',
+			  `tihuotime` varchar(20) DEFAULT '',
+			  `currentbranchid` bigint(11) DEFAULT '0',
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  `customerid` bigint(11) DEFAULT '0',
+			  `cwbordertypeid` bigint(4) DEFAULT '0',
+			  `userid` bigint(11) DEFAULT '0',
+			  PRIMARY KEY (`id`),
+			  KEY `TiHuo_Emaildate_Idx` (`emaildate`),
+			  KEY `TiHuo_Cwb_Idx` (`cwb`),
+			  KEY `TiHuo_Customerid_Idx` (`customerid`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+		</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2013-12-19-1" author="liyuanyuan">
+		<sql>
+			ALTER TABLE `ops_cwb_tihuo` ADD INDEX `TiHuo_TiHuoTime_Idx` (`tihuotime`);
+		</sql>
+	</changeSet>
+	
+	
+	<changeSet id="zhangpengkai-2013-12-20-1" author="zhangpengkai">
+		<sql>
+			 ALTER TABLE `express_b2cdata_search` ADD COLUMN `nowtime` VARCHAR(50) NULL; 
+		</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-12-20-2" author="zhangpengkai">
+		<sql>
+			 UPDATE express_b2cdata_search SET `nowtime`=cretime WHERE `nowtime` IS NULL;
+		</sql>
+	</changeSet>
+
+	
+
+	 <changeSet id="lichunxue-2013-12-25-1" author="lichunxue">
+		<sql>
+		CREATE TABLE `express_b2cdata_search_happygo` (
+		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `cwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+		  `posttime` varchar(25) COLLATE utf8_bin DEFAULT NULL,
+		  `flowordertype` int(4) DEFAULT NULL,
+		  `state` int(4) DEFAULT NULL,
+		  `orderinfo` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+		  `credate` varchar(25) COLLATE utf8_bin DEFAULT NULL,
+		  KEY `id` (`id`),
+		  KEY `happygo_cwb_idx` (`cwb`),
+		  KEY `happygo_state_idx` (`state`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
+	<changeSet id="liukangning-2013-12-26-1" author="liukangning">
+		<sql>
+			UPDATE  `common_emaildate` SET commoncode=REPLACE(commoncode,"","'" );
+		</sql>
+	</changeSet>
+	<changeSet id="liukangning-2013-12-27-1" author="liukangning">
+		<sql>
+		UPDATE  `common_emaildate` SET commoncode=REPLACE(commoncode,"'","" );
+		</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2013-12-27-1" author="zhangpengkai">
+		<sql>
+			ALTER TABLE `commen_cwb_order` ADD COLUMN `nextbranchid` INT(4) DEFAULT 0 ;
+			ALTER TABLE `commen_cwb_order` ADD COLUMN `remark` VARCHAR(300) NULL ; 
+		</sql>
+	</changeSet>
+	<changeSet id="lichunxue-2014-01-06-1" author="lichunxue">
+		<sql>
+			CREATE TABLE `express_b2cdatadown_wholeline` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `cwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  `transcwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  `state` int(1) DEFAULT '1',
+  `customerid` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `cretime` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `remark` text COLLATE utf8_bin,
+  PRIMARY KEY (`id`),
+  KEY `wholeline_state_idx` (`state`),
+  KEY `wholeline_cwb_idx` (`cwb`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+			
+		</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2014-01-07-1" author="zhangpengkai">
+		<sql>
+			ALTER TABLE `commen_send_data` ADD COLUMN `loopcount` INT(4) DEFAULT 0 ; 
+		</sql>
+	</changeSet>
+	<changeSet id="zhangpengkai-2014-01-08-1" author="zhangpengkai">
+		<sql>
+			 ALTER TABLE `commen_cwb_order`  ADD COLUMN `loopcount` INT(4) DEFAULT 0 ; 
+		</sql>
+	</changeSet>
+	
+	<changeSet id="lichunxue-2014-01-11-1" author="lichunxue">
+		<sql>
+			ALTER TABLE `express_b2cdatadown_wholeline` CHANGE `state` `state` VARCHAR(20) DEFAULT '' NULL; 
+		</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2014-01-12-1" author="liyuanyuan">
+		<sql>
+			CREATE TABLE `ops_chukudataresult` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `begindate` varchar(50) DEFAULT '',
+			  `enddate` varchar(50) DEFAULT '',
+			  `kufangid` bigint(11) DEFAULT '0',
+			  `customerid` bigint(11) DEFAULT '0',
+			  `result` text,
+			  `exportid` bigint(11) DEFAULT '0',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+		</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2014-01-19-1" author="liyuanyuan">
+		<sql>
+			CREATE TABLE `ops_delivery_kdkchuku` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) DEFAULT NULL,
+			  `emaildate` varchar(20) DEFAULT NULL,
+			  `outstoreroomtime` varchar(20) DEFAULT NULL,
+			  `startbranchid` bigint(11) DEFAULT '0',
+			  `nextbranchid` bigint(11) DEFAULT '0',
+			  `cwbordertypeid` bigint(11) DEFAULT '0',
+			  `customerid` bigint(11) DEFAULT '0',
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `Delivery_KDKChuku_Cwb_idx` (`cwb`),
+			  KEY `Delivery_KDKChuku_Startbranchid_idx` (`startbranchid`),
+			  KEY `Delivery_KDKChuku_Nextbranchid_idx` (`nextbranchid`),
+			  KEY `Delivery_KDKChuku_Customerid_idx` (`customerid`),
+			  KEY `Delivery_KDKChuku_Outstoreroomtime_Idx` (`outstoreroomtime`)
+			) ENGINE=InnoDB AUTO_INCREMENT=450 DEFAULT CHARSET=utf8; 
+		</sql>
+	</changeSet>
+	<changeSet id="liukangning-2014-01-25-1" author="liukangning">
+		<sql>
+			CREATE TABLE `ops_tuihuozhanruku` (
+			  `id` int(100) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `cwbordertypeid` int(4) DEFAULT NULL,
+			  `tuihuobranchid` int(11) DEFAULT NULL,
+			  `deliverystateid` int(11) DEFAULT NULL,
+			  `rukutime` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `customerid` int(11) DEFAULT NULL,
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `tuihuozhanruku_cwb_idx` (`cwb`),
+			  KEY `tuihuozhanruku_tuihuobranchid-idx` (`tuihuobranchid`),
+			  KEY `tuihuozhanruku_rukutime_idx` (`rukutime`),
+			  KEY `tuihuozhanruku_customerid_idx` (`customerid`)
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
+	  <changeSet id="liukangning-2014-01-25-2" author="liukangning">
+		<sql>
+		CREATE TABLE `ops_kufangruku` (
+		  `id` int(100) NOT NULL AUTO_INCREMENT,
+		  `cwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+		  `customerid` int(11) DEFAULT NULL,
+		  `intowarehousetime` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+		  `intobranchid` int(11) DEFAULT NULL,
+		  `cwbordertypeid` int(4) DEFAULT NULL,
+		  `deliverybranchid` int(11) DEFAULT NULL,
+		  `isruku` int(4) DEFAULT NULL,
+		  `emaildate` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+		  `paybackfee` decimal(10,2) DEFAULT NULL,
+		  `receivablefee` decimal(10,2) DEFAULT NULL,
+		  PRIMARY KEY (`id`),
+		  KEY `kufangruku_cwb_idx` (`cwb`),
+		  KEY `kufangruku_customerid_idx` (`customerid`),
+		  KEY `kufangruku_intowarehousetime_idx` (`intowarehousetime`),
+		  KEY `kufangruku_intobranchid_idx` (`intobranchid`),
+		  KEY `kufangruku_emaildate_idx` (`emaildate`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+					
+		</sql>
+	</changeSet>
+	  <changeSet id="liukangning-2014-02-10-1" author="liukangning">
+		<sql>
+			CREATE TABLE `ops_kufangzaitu` (
+			  `id` int(100) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+			  `cwbordertypeid` int(4) DEFAULT NULL,
+			  `deliverybranchid` int(11) DEFAULT NULL,
+			  `emaildate` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `outwarehousetime` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+			  `outbranchid` int(11) DEFAULT NULL,
+			  `nextbranchid` int(11) DEFAULT NULL,
+			  `receivablefee` decimal(10,2) DEFAULT NULL,
+			  `paybackfee` decimal(10,2) DEFAULT NULL,
+			  `customerid` int(11) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `kufangzaitu_cwb_idx` (`cwb`),
+			  KEY `kufangzaitu_emaildate_idx` (`emaildate`),
+			  KEY `kufangzaitu_outwarehousetime_idx` (`outwarehousetime`),
+			  KEY `kufangzaitu_outbranchid_idx` (`outbranchid`),
+			  KEY `kufangzaitu_nextbranchid_idx` (`nextbranchid`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
+	<changeSet id="liukangning-2014-02-13-1" author="liukangning">
+		<sql>
+			CREATE TABLE `ops_fahuohuizongdata` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `begindate` varchar(50) DEFAULT NULL,
+			  `enddate` varchar(50) DEFAULT NULL,
+			  `kufangid` int(11) DEFAULT NULL,
+			  `customerid` int(11) DEFAULT NULL,
+			  `result` int(11) DEFAULT NULL,
+			  `exportid` int(11) DEFAULT NULL,
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+	<changeSet id="zhangjianbao-2014-03-14-1" author="zhangjianbao">
+		<sql>
+			CREATE TABLE `commen_cwb_order_tail` (
+			  `cwbid` bigint(20) NOT NULL COMMENT '订单ID',
+			  `paywayid` bigint(20) NOT NULL DEFAULT '-1' COMMENT '原支付方式',
+			  `newpaywayid` bigint(20) NOT NULL DEFAULT '-1' COMMENT '现支付方式',
+			  `customerid` bigint(20) NOT NULL DEFAULT '-1' COMMENT '供应商ID',
+			  `cwbordertypeid` bigint(11) NOT NULL DEFAULT '-1' COMMENT '订单类型',
+			  `receivablefee` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '代收货款应收金额',
+			  `paybackfee` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '上门退货应退金额',
+			  `branchid` bigint(20) NOT NULL DEFAULT '-1' COMMENT '当前站点',
+			  `deliverybranchid` bigint(20) NOT NULL DEFAULT '-1' COMMENT '配送站点',
+			  `nextbranchid` bigint(20) NOT NULL DEFAULT '-1' COMMENT '下一站',
+			  `deliverystate` int(11) NOT NULL DEFAULT '-1' COMMENT '交付状态',
+			  `cwbstate` int(11) NOT NULL DEFAULT '-1' COMMENT '订单状态',
+			  `gobackstate` varchar(20) NOT NULL DEFAULT '1' COMMENT '归班状态',
+			  `emaildatetime` varchar(20) NOT NULL DEFAULT '' COMMENT '发货时间',
+			  `couplebacktime` varchar(20) NOT NULL DEFAULT '' COMMENT '反馈时间#',
+			  `checktime` varchar(20) NOT NULL DEFAULT '' COMMENT '审核时间#',
+			  `customerbacktime` varchar(20) NOT NULL DEFAULT '' COMMENT '供应商退货时间@',
+			  `tuihuointowarehoustime` varchar(20) NOT NULL DEFAULT '' COMMENT '退货站入库时间#',
+			  `changeouttowarehoustime` varchar(20) NOT NULL DEFAULT '' COMMENT '中转站出库时间#',
+			  `housetohousetime` varchar(20) NOT NULL DEFAULT '' COMMENT '库对库出库时间#',
+			  `getgoodstime` varchar(20) NOT NULL DEFAULT '' COMMENT '提货时间#',
+			  `intowarehoustime` varchar(20) NOT NULL DEFAULT '' COMMENT '入库时间#',
+			  `outwarehousetime` varchar(20) NOT NULL DEFAULT '' COMMENT '出库时间#',
+			  `substationgoodstime` varchar(20) NOT NULL DEFAULT '' COMMENT '到货扫描时间#',
+			  `receivegoodstime` varchar(20) NOT NULL DEFAULT '' COMMENT '分站领货时间#',
+			  `returngoodsoutwarehousetime` varchar(20) NOT NULL DEFAULT '' COMMENT '退货出站扫描时间#',
+			  `changeintowarehoustime` varchar(20) NOT NULL DEFAULT '' COMMENT '中转站入库时间#',
+			  PRIMARY KEY (`cwbid`),
+			  KEY `tail_cwb_emaildatetime` (`emaildatetime`) USING BTREE,
+			  KEY `tail_cwb_couplebacktime` (`couplebacktime`),
+			  KEY `tail_cwb_customerbacktime` (`customerbacktime`),
+			  KEY `tail_cwb_checktime` (`checktime`),
+			  KEY `tail_cwb_tuihuointowarehoustime` (`tuihuointowarehoustime`),
+			  KEY `tail_cwb_changeouttowarehoustime` (`changeouttowarehoustime`),
+			  KEY `tail_cwb_housetohousetime` (`housetohousetime`),
+			  KEY `tail_cwb_getgoodstime` (`getgoodstime`),
+			  KEY `tail_cwb_intowarehoustime` (`intowarehoustime`),
+			  KEY `tail_cwb_outwarehousetime` (`outwarehousetime`),
+			  KEY `tail_cwb_substationgoodstime` (`substationgoodstime`),
+			  KEY `tail_cwb_receivegoodstime` (`receivegoodstime`),
+			  KEY `tail_cwb_returngoodsoutwarehousetime` (`returngoodsoutwarehousetime`),
+			  KEY `tail_cwb_changeintowarehoustime` (`changeintowarehoustime`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8
+			
+
+		</sql>
+	</changeSet>
+	<changeSet id="zhangjianbao-2014-03-17-1" author="zhangjianbao">
+		<sqlFile path="quartz_init.sql" encoding="UTF-8"
+			relativeToChangelogFile="true" />
+	</changeSet>
+	<changeSet id="lansheng-2014-03-21-1" author="lansheng">
+		<sql>
+		ALTER TABLE `commen_cwb_order_tail` CHANGE `cwbid` `cwb` VARCHAR(200) DEFAULT '' NULL COMMENT '订单号', DROP PRIMARY KEY;  
+		ALTER TABLE `commen_cwb_order_tail` ADD COLUMN `id` BIGINT(11) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`id`);
+		</sql>
+	</changeSet>
+	<changeSet id="lansheng-2014-03-28-1" author="lansheng">
+		<sql>
+		 ALTER TABLE `commen_cwb_order_tail` 
+		 ADD COLUMN `flowordertype` BIGINT(11) DEFAULT 1 NULL AFTER `changeintowarehoustime`,
+		 ADD COLUMN `zhandianouttozhongzhuantime` VARCHAR(20) DEFAULT '' NULL AFTER `flowordertype`, 
+		 ADD COLUMN `tuihuoouttozhandiantime` VARCHAR(20) DEFAULT '' NULL AFTER `zhandianouttozhongzhuantime`, 
+		 ADD COLUMN `gonghuoshangchenggongtime` VARCHAR(20) DEFAULT '' NULL AFTER `tuihuoouttozhandiantime`, 
+		 ADD COLUMN `gonghuoshangjushoutime` VARCHAR(20) DEFAULT '' NULL AFTER `gonghuoshangchenggongtime`; 
+
+		 ALTER TABLE `commen_cwb_order_tail` 
+		 ADD INDEX `tail_cwb_zhandianouttozhongzhuantime` (`zhandianouttozhongzhuantime`), 
+		 ADD INDEX `tail_cwb_tuihuoouttozhandiantime` (`tuihuoouttozhandiantime`), 
+		 ADD INDEX `tail_cwb_gonghuoshangchenggongtime` (`gonghuoshangchenggongtime`); 
+ </sql>
+	</changeSet>
+	<changeSet id="lansheng-2014-04-01-1" author="lansheng">
+		<sql>
+		 ALTER TABLE `commen_cwb_order_tail` ADD INDEX `tail_cwb_Idx` (`cwb`); 
+		</sql>
+	</changeSet>
+	
+	<changeSet id="zhangpengkai-2014-05-01-1" author="zhangpengkai">
+		<sql>
+			CREATE TABLE `express_b2cdatadown_sf` (
+			  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(50) DEFAULT NULL,
+			  `transcwb` varchar(500) DEFAULT NULL,
+			  `cretime` varchar(50) DEFAULT NULL,
+			  `updatetime` varchar(50) DEFAULT NULL,
+			  `status` int(4) DEFAULT '0',
+			  `remark` varchar(500) DEFAULT NULL,
+			  `isok` int(4) DEFAULT '0',
+			  KEY `id` (`id`),
+			  KEY `sf_cwb_idx` (`cwb`),
+			  KEY `sf_status_idx` (`status`),
+			  KEY `sf_isok_idx` (`isok`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="lansheng-2014-03-16" author="lansheng">
+		<sql>
+			CREATE TABLE `express_ops_b2c_amazon_ziti` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `cwb` varchar(200) DEFAULT NULL,
+			  `createtime` bigint(11) DEFAULT '0',
+			  `daohuotime` varchar(20) DEFAULT '',
+			  `customerid` bigint(11) DEFAULT '0',
+			  `state` bigint(11) DEFAULT '0',
+			  `branchid` bigint(11) DEFAULT '0',
+			  PRIMARY KEY (`id`),
+			  KEY `Ziti_Cwb_Idx` (`cwb`),
+			  KEY `Ziti_createtime_Idx` (`createtime`),
+			  KEY `Ziti_Branchid_Idx` (`branchid`)
+			) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="xushiju-2014-05-19-1" author="xushiju">
+		<sql>
+			create table `SCHEDULED_TASKS` (
+				`ID` int(22) primary key not null auto_increment comment 'id',
+				`TASK_TYPE` varchar(50) not null,
+				`STATUS` int(2) not null,
+				`REFERENCE_TYPE` varchar(50),
+				`REFERENCE_ID` varchar(32),
+				`FIRE_TIME` DATETIME,
+				`COMPLETED_TIME` DATETIME,
+				`CREATED_AT` DATETIME,
+				`TRY_COUNT` int (10)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+			
+			-- create index IDX_TASKS_STATUS_FIRE_TIME
+			CREATE INDEX `IDX_TASKS_STATUS_FIRE_TIME` ON `SCHEDULED_TASKS`
+			(
+				`STATUS`,
+				`FIRE_TIME`
+			);
+			
+			-- create index IDX_TASKS_STATUS_FIRE_TIME
+			CREATE INDEX `IDX_TASKS_STATUS_TYPE_FIRE_TIME` ON `SCHEDULED_TASKS`
+			(
+				`STATUS`,
+				`TASK_TYPE`,
+				`FIRE_TIME`
+			);
+			
+			-- create index IDX_TASKS_REFERENCE_ID
+			CREATE INDEX `IDX_TASKS_REFERENCE_ID` ON `SCHEDULED_TASKS`
+			(
+				`REFERENCE_ID`
+			);
+		</sql>
+	</changeSet>
+	
+	<changeSet id="xushiju-2014-05-24-1" author="xushiju">
+		<sql>
+			CREATE TABLE `set_download_results` (
+				`id` BIGINT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+				`download_id` BIGINT(11) NOT NULL,
+				`result` TEXT
+			) ENGINE=INNODB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+			CREATE INDEX `IDX_DOWNLOAD_RESULT_DOWN_ID` ON `set_download_results`
+			(
+				`download_id`
+			);
+		</sql>
+	</changeSet>
+	
+	<changeSet id="xushiju-2014-06-12-1" author="xushiju">
+		<sql>
+			ALTER TABLE set_download_results MODIFY result LONGTEXT;
+		</sql>
+	</changeSet>
+	
+	
+	<changeSet id="zhangpengkai-2014-06-21-1" author="zhangpengkai">
+		<sql>
+			CREATE TABLE `express_b2cdata_wangjiu` (
+			  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+			  `mailNo` varchar(50) DEFAULT NULL,
+			  `orderStatus` varchar(50) DEFAULT NULL,
+			  `acceptTime` varchar(50) DEFAULT NULL,
+			  `acceptAddress` varchar(200) DEFAULT NULL,
+			  `status` varchar(50) DEFAULT NULL,
+			  `name` varchar(50) DEFAULT NULL,
+			  `remark` varchar(300) DEFAULT NULL,
+			  `flowordertype` int(4) DEFAULT NULL,
+			  KEY `id` (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="xushiju-2014-07-08-1" author="xushiju">
+		<sql>
+			CREATE TABLE `DELIVERY_RATE_CONDITIONS` (
+				`ID` INT(22) PRIMARY KEY NOT NULL AUTO_INCREMENT COMMENT 'id',
+				`NAME` VARCHAR(100) NOT NULL,
+				`STATUS` INT(2) NOT NULL,
+				`SELECT_TYPE` INT(2) NOT NULL,
+				`DELIVERY_RATE_REQUEST` LONGTEXT NOT NULL,
+				`USER_ID` INT(22) NOT NULL
+			) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+			
+			CREATE INDEX `IDX_DELIVERY_RATE_CONDITIONS_USER` ON `DELIVERY_RATE_CONDITIONS`
+			(
+				`USER_ID`
+			);
+		</sql>
+	</changeSet>
+	<changeSet id="wangyonghe-2014-08-15" author="wangyonghe">
+		<sql>
+			/*唯速达对接数据表*/
+			CREATE TABLE `express_b2cdata_weisuda` (
+			`id`  bigint(11) NOT NULL AUTO_INCREMENT ,
+			`cwb`  varchar(100) NULL ,
+			`courier_code`  varchar(100) NULL ,
+			`bound_time`  varchar(100) NULL ,
+			`istuisong`  varchar(100) NULL  DEFAULT '0',
+			`isqianshou`  varchar(100) NULL  DEFAULT '0',
+			PRIMARY KEY (`id`)
+			)
+			;
+		</sql>
+	</changeSet>
+	<changeSet id="wangyonghe-2014-08-15 12:00" author="wangyonghe">
+		<sql>
+			ALTER TABLE `express_b2cdata_weisuda`
+ADD COLUMN `remark`  varchar(100) NULL AFTER `isqianshou`,
+
+ADD INDEX `cwb_idx` (`cwb`) ;
+		</sql>
+	</changeSet>
+	<changeSet id="wangyonghe-2014-08-22 12:00" author="wangyonghe">
+		<sql>
+			ALTER TABLE `express_b2cdata_weisuda`
+ADD COLUMN `operationTime`  varchar(100) NULL AFTER `remark`;
+
+		</sql>
+	</changeSet>
+
+	
+	<changeSet id="zhaoshuang-2014-08-06-1" author="zhaoshuang">
+		<sql>
+			ALTER TABLE `ops_kufangruku` ADD COLUMN `intowarehouseuserid` INT(11) DEFAULT NULL AFTER `intowarehousetime`;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="zhaoshuang-2014-08-06-2" author="zhaoshuang">
+		<sql>
+			ALTER TABLE `ops_delivery_chuku` ADD COLUMN `outstoreroomtimeuserid` INT(11) DEFAULT NULL AFTER `outstoreroomtime`;
+		</sql>
+	</changeSet>
+	<changeSet id="wangyongchao-2014-08-28-1" author="wangyongchao">
+	    <sql>
+	        DELETE FROM	`set_download_manager` WHERE modelid = '20';
+	    </sql>
+	</changeSet>
+		<changeSet id="wangyonghe-2014-09-11 17:00" author="wangyonghe">
+		<sql>
+ALTER TABLE `express_b2cdata_weisuda`
+ADD INDEX `istuisong_idx` (`istuisong`) ,
+ADD INDEX `isqianshou_idx` (`isqianshou`) ;
+		</sql>
+	</changeSet>
+	<changeSet id="wangyongchao-2014-09-14-1" author="wangyongchao">
+		<sql>
+			CREATE TABLE `express_sys_monitor` (
+                  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+                  `optime` varchar(20) COLLATE utf8_bin DEFAULT '',
+                  `type` varchar(20) DEFAULT '',
+                  `dealflag` int(2) DEFAULT '0',  
+                   PRIMARY KEY (`id`)
+             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+             
+            CREATE INDEX `express_sys_monitor_optime` ON `express_sys_monitor`
+			(
+				`optime`
+			);
+            CREATE INDEX `express_sys_monitor_type` ON `express_sys_monitor`
+			(
+				`type`
+			);
+		</sql>
+	</changeSet>
+	<changeSet id="liyuanyuan-2014-09-17-1" author="liyuanyuan">
+		<sql>
+			CREATE TABLE `monitor_send_b2c_data`(
+			 `id` INT(11) NOT NULL AUTO_INCREMENT,
+			  `requesttime` VARCHAR(50) DEFAULT '',
+			  `resultcount` INT(100) DEFAULT 0,
+			   PRIMARY KEY (`id`) 
+			 ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin; 
+		</sql>
+	</changeSet>
+	<changeSet id="wangyongchao-2014-10-8-1" author="wangyongchao">	
+		<sql>
+			ALTER TABLE express_ops_cwb_detail ADD COLUMN historybranchname VARCHAR (50);
+		</sql>
+	</changeSet>
+	
+	<changeSet id="wangyongchao-2014-11-11-1" author="wangyongchao">	
+		<sql>
+            ALTER TABLE `express_ops_delivery_state` ADD COLUMN `shangmenlanshoutime` VARCHAR(50) DEFAULT '';
+		</sql>
+	</changeSet>
+	
+	<changeSet id="zhaoshb-2014-11-11"  author="zhaoshb">
+		<sql>
+			alter table commen_cwb_order_tail add column goods_type int default 0;
+			alter table  express_ops_cwb_detail add column goods_type int default 0;
+			alter table commen_cwb_order_tail add column payupid int ;
+			alter table commen_cwb_order_tail add column deliverpayupapproved int;
+			alter table commen_cwb_order_tail add column gcaid long;
+		</sql>
+	</changeSet>
+	
+	<!-- 主表添加一二级滞留原因字段 -->
+	<changeSet id="gaoliangliang-2015-08-13-01" author="gaoliangliang">
+		<sql>
+			ALTER TABLE  `express_ops_cwb_detail` ADD COLUMN `firstleavedreasonid` BIGINT(11) COMMENT '滞留一级原因' DEFAULT 0 AFTER `leavedreasonid`;
+		</sql>
+	</changeSet>
+	
+	<!-- 应收运费，实收运费 -->
+	<changeSet id="gaoliangliang-2015-08-14-01" author="gaoliangliang">
+		<sql>
+			ALTER TABLE  `express_ops_cwb_detail` ADD COLUMN `shouldfare` DECIMAL(19,2) COMMENT '应收运费' DEFAULT 0.00 ;
+			ALTER TABLE  `express_ops_cwb_detail` ADD COLUMN `infactfare` DECIMAL(19,2) COMMENT '实收运费' DEFAULT 0.00 ;
+		</sql>
+	</changeSet>
+	
+	
+</databaseChangeLog>
