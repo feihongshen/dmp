@@ -50,7 +50,7 @@ function query(page, number,queryDate){
 
 	var param = {
 		customers: customers.join(","),
-		queryDate, queryDate,
+		queryDate: queryDate,
 		page : page,
 		pageSize : number
 	}
@@ -108,7 +108,7 @@ function billExportExecute(){
 			})
 		}
 		
-		var customerids = getMutiSelectedArray();
+		var customers = getMutiSelectedArray();
 		var queryDate = getQueryDate();
 
 		var form = $("<form>");   //定义一个form表单
@@ -124,8 +124,8 @@ function billExportExecute(){
 		form.append(input1);	
 		var input3 = $('<input>');
 		input3.attr('type', 'hidden');
-		input3.attr('name', 'customerids');
-		input3.attr('value', customerids.join(","));
+		input3.attr('name', 'customers');
+		input3.attr('value', customers.join(","));
 		form.append(input3);
 		var input4 = $('<input>');
 		input4.attr('type', 'hidden');
@@ -135,7 +135,7 @@ function billExportExecute(){
 		var input5 = $('<input>');
 		input5.attr('type', 'hidden');
 		input5.attr('name', 'pageSize');
-		input5.attr('value', customerids.length);
+		input5.attr('value', customers.length);
 		form.append(input5);
 		var input9 = $('<input>');
 		input9.attr('type', 'hidden');
