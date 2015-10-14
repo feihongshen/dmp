@@ -622,7 +622,7 @@ public class DeliveryController {
 			parameters.put("podremarkid", podremarkid);
 			parameters.put("posremark", posremark);
 			parameters.put("checkremark", checkremark);
-			parameters.put("deliverstateremark", "");
+			parameters.put("deliverstateremark", deliverstateremark);
 			parameters.put("owgid", 0);
 			parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 			parameters.put("sessionuserid", this.getSessionUser().getUserid());

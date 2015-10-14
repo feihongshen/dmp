@@ -92,7 +92,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-	<h1><div id="close_box" onclick="closeBox()"></div>修改反
+	<h1><div id="close_box" onclick="closeBox()"></div>修改反馈
 	<div id="box_form"  style="overflow:auto;width:400px">
 	<form id="deliverystate_save_Form" name="deliverystate_save_Form" 
 			 onSubmit="if(check_deliveystate(<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
