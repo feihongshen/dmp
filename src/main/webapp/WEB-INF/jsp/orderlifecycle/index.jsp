@@ -57,7 +57,7 @@
 	<div data-options="region:'center'" style="height:100%;overflow-x: auto; overflow-y: auto;">
 		<table id="dg"
 				class="easyui-datagrid" toolbar="#signFee_toolbar" 
-				showFooter="true" fitColumns="true" fit="false" singleSelect="false" width="100%">
+				showFooter="true" fitColumns="true" fit="true" singleSelect="false" width="100%">
 				<thead>
 					<tr>
 						<th field="customername" rowspan="2" align="center" width="100px;">站点</th>
@@ -66,7 +66,7 @@
 						<th colspan="2" align="center" width="120px;">分拣入库未出库</th>
 						<th colspan="2" align="center" width="120px;">分拣出库未到站</th>
 						<th colspan="2" align="center" width="120px;">站点在站货物</th>
-						<th colspan="2" align="center" width="120px;">站点未返<br/>代收货款</th>
+						<th colspan="2" align="center" width="120px;">站点未返代收货款</th>
 						<th colspan="2" align="center" width="120px;">退货出站在途</th>
 						<th colspan="2" align="center" width="120px;">中转出站在途</th>
 						<th colspan="2" align="center" width="120px;">中转库入库未出库</th>
@@ -144,7 +144,7 @@
 									<th field="cwbstateDesc" align="center" width="30px;">订单状态</th>
 									<th field="flowordertypeDesc" align="center" width="50px;">订单操作状态</th>
 									<th field="sendcarnum" align="center" width="30px;">件数</th>
-									<th field="shiptime" align="center" width="30px;">发货日期</th>
+									<th field="emaildate" align="center" width="30px;">发货日期</th>
 									<th field="receivablefee" align="center" width="30px;">应收金额</th>
 									<th field="paybackfee" align="center" width="30px;">应退金额</th>
 									<th field="shouldfare" align="center" width="30px;">应收运费</th>

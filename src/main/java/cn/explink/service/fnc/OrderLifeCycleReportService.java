@@ -207,6 +207,10 @@ public class OrderLifeCycleReportService {
 
 		int reportdate = transalateReportDate2Int(date);
 		
+		
+		logger.info(
+				"[genLifeCycleOrderDetail][start to generate order snapshot on report date {}]", reportdate);
+		
 		// 获取总的记录数，时间范围是一天
 		long countOfRecord = orderFlowDAO.getOrderFlowCountByCredate(beginDate,
 				endDate);
@@ -215,7 +219,7 @@ public class OrderLifeCycleReportService {
 		int batch = getBatch(countOfRecord, batchSize);
 
 		logger.info(
-				"[genLifeCycleOrderDetail][total record:{}, batch size : {}]",
+				"total record:{}, batch size : {}",
 				countOfRecord, batch);
 
 		CwbOrder cwbOrder = null;
@@ -254,12 +258,12 @@ public class OrderLifeCycleReportService {
 
 				if (cwbOrder != null) {
 					boolean existed = orderDetailsSnapshotDao
-							.isExistByCwb(orderFlow.getCwb());
+							.isExistByCwbAndReportdate(orderFlow.getCwb(),reportdate);
 
 					// 如果 《订单快照表》中不存在记录，则插入
 					if (!existed) {
 						if (logger.isDebugEnabled()) {
-							logger.debug("[cwb {} add to batch {}]",
+							logger.debug("[cwb {} add to batch {} ]",
 									cwbOrder.getCwb(), i);
 						}
 						cwbOrderSnapshot = copyCwbOrderToSnapshot(cwbOrder);

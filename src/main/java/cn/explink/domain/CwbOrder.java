@@ -139,8 +139,6 @@ public class CwbOrder {
 
 	private int branchfeebillexportflag;//加盟商派费账单导出标志
 
-	private String shiptime;//供货商发货时间
-	
 	/**
 	 * @return the city
 	 */
@@ -1191,14 +1189,5 @@ public class CwbOrder {
 	public void setBranchfeebillexportflag(int branchfeebillexportflag) {
 		this.branchfeebillexportflag = branchfeebillexportflag;
 	}
-
-	public String getShiptime() {
-		return shiptime;
-	}
-
-	public void setShiptime(String shiptime) {
-		this.shiptime = shiptime;
-	}
-
 	
 }

@@ -172,7 +172,7 @@ public class OrderDetailsSnapshotDao {
 	public List<CwbOrderSnapshot> getListFeeNotReturnedFromCwbDetailByPage(int cwbordertypeid, int page, int pageSize){
 		
 		StringBuilder sqlBuilder = new StringBuilder(
-				"select cwb,customerid,cwbordertypeid,cwbstate,flowordertype,shiptime,sendcarnum")
+				"select cwb,customerid,cwbordertypeid,cwbstate,flowordertype,emaildate,sendcarnum")
 				.append(" ,backcarnum, receivablefee,paybackfee,shouldfare,currentbranchid, startbranchid")
 				.append(" ,nextbranchid, deliverybranchid,deliverystate,state,infactfare,cwbstate, fnorgoffsetflag")
 				.append(" from express_ops_cwb_detail")
@@ -303,13 +303,20 @@ public class OrderDetailsSnapshotDao {
 		return (count >= 1);
 	}
 	
+	public boolean isExistByCwbAndReportdate(String cwb,int reportDate) {
+		
+		int count = this.jdbcTemplate.queryForInt("select count(1) from fn_order_details_snapshot where cwb = ? and lifecycle_rpt_date = ? and state = 1",cwb,reportDate);
+		
+		return (count >= 1);
+	}
+	
 	
 	public void batchInsertOrderDetailSnapshot(final List<CwbOrderSnapshot> cwbOrderList) {
 		
 		final int batchSize = cwbOrderList.size();
 		
 		final String insertsql = "insert into fn_order_details_snapshot"
-				+ "( cwb,shiptime,receivablefee,paybackfee,customerid,cwbordertypeid,startbranchid,nextbranchid"
+				+ "( cwb,emaildate,receivablefee,paybackfee,customerid,cwbordertypeid,startbranchid,nextbranchid"
 				+ ",sendcarnum,backcarnum,flowordertype,deliverybranchid,currentbranchid,cwbstate,deliverystate"
 				+ ",shouldfare,infactfare,fnorgoffsetflag,lifecycle_rpt_date)"
 				+ " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -323,7 +330,7 @@ public class OrderDetailsSnapshotDao {
 				CwbOrderSnapshot cwbOrder = cwbOrderList.get(i);
 				
 				ps.setString(1, cwbOrder .getCwb());
-				ps.setString(2, cwbOrder.getShiptime());
+				ps.setString(2, cwbOrder.getEmaildate());
 				ps.setBigDecimal(3, cwbOrder.getReceivablefee());
 				ps.setBigDecimal(4, cwbOrder.getPaybackfee());
 				ps.setLong(5, cwbOrder.getCustomerid());
@@ -351,7 +358,7 @@ public class OrderDetailsSnapshotDao {
 	}
 	public void insertOrderDetailSnapshot(final CwbOrderSnapshot cwbOrder) {
 		final String insertsql = "insert into fn_order_details_snapshot"
-				+ "( cwb,shiptime,receivablefee,paybackfee,customerid,cwbordertypeid,startbranchid,nextbranchid"
+				+ "( cwb,emaildate,receivablefee,paybackfee,customerid,cwbordertypeid,startbranchid,nextbranchid"
 				+ ",sendcarnum,backcarnum,flowordertype,deliverybranchid,currentbranchid,cwbstate,deliverystate"
 				+ ",shouldfare,infactfare,fnorgoffsetflag,lifecycle_rpt_date)"
 				+ " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -363,7 +370,7 @@ public class OrderDetailsSnapshotDao {
 				PreparedStatement ps = connection.prepareStatement(insertsql,
 						new String[] { "id" });
 				ps.setString(1, cwbOrder.getCwb());
-				ps.setString(2, cwbOrder.getShiptime());
+				ps.setString(2, cwbOrder.getEmaildate());
 				ps.setBigDecimal(3, cwbOrder.getReceivablefee());
 				ps.setBigDecimal(4, cwbOrder.getPaybackfee());
 				ps.setLong(5, cwbOrder.getCustomerid());
@@ -433,7 +440,7 @@ public class OrderDetailsSnapshotDao {
 			CwbOrderSnapshot orderSnapshot = new CwbOrderSnapshot();
 			
 			orderSnapshot.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
-			orderSnapshot.setShiptime(rs.getString("shiptime"));
+			orderSnapshot.setEmaildate(rs.getString("emaildate"));
 			orderSnapshot.setReceivablefee(rs.getBigDecimal("receivablefee"));
 			orderSnapshot.setPaybackfee(rs.getBigDecimal("paybackfee"));
 			orderSnapshot.setCustomerid(rs.getLong("customerid"));
