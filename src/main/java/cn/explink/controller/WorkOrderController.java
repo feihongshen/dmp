@@ -690,6 +690,12 @@ public class WorkOrderController {
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
 		return "workorder/WorkOrderQueryManage";		
 	}
+	@RequestMapping("/selectBranch")
+	@ResponseBody
+	public List<Branch> selectBranch(@RequestParam(value="branchname") String branchname){
+		List<Branch> branchs = branchDao.getBranchByBranchnameMoHu(branchname);
+		return branchs;
+	}
 
 	@RequestMapping("/ChangeComplaintState")
 	@ResponseBody

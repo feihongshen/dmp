@@ -26,7 +26,6 @@ String message=request.getAttribute("message")==null?"":request.getAttribute("me
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
-<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
@@ -34,7 +33,9 @@ String message=request.getAttribute("message")==null?"":request.getAttribute("me
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/ajaxfileupload.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
 <script src="${pageContext.request.contextPath}/js/inputer.js"></script>
+
 <script language="javascript">
+
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");
 	var $menulilink = $(".kfsh_tabbtn ul li a");
@@ -150,8 +151,28 @@ function checkfileValue(object){
 		return;
 	}
 }
+function selectBranchName(value){
+	$.ajax({
+		type : "POST",
+		data:"branchname="+ value,
+		url :"<%=request.getContextPath()%>/workorder/selectBranch",
+		dataType : "json",
+		success : function(data) {
+			$("#branchList").empty();
+			var html = '<select id="callbackbranchid" name="callbackbranchid" style="width: 166px;margin-left:63px" class="select1" >'
+			for ( var p in data) {
+				html += '<option value="' + data[p].branchid +'">' + data[p].branchname + '</option>'
+			}
+			html += '</select>';
+			$("#branchList").append(html);
+		}
+	});
+}
+
+
 </script>
 </head>
+
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div style="background:#FFF">
@@ -168,17 +189,20 @@ function checkfileValue(object){
 								订    单    号<font color="red">*</font>：
 								<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb">查询多个订单用回车隔开</textarea>
 								</td>
-								<td align="left">
+								<td  >
 								找回机构:
 									<!-- <input type="text" id="callbackbranchid" name="callbackbranchid" class="easyui-validatebox" style="width: 200px;"initDataType="TABLE"
 												initDataKey="Branch" 
 												viewField="branchname" saveField="branchid"/> -->
-								 <select name="callbackbranchid" id="callbackbranchid" class="select1">
-										<option value="0">请选择责任机构</option>
-										<%if(branchList!=null){for(Branch b: branchList){ %>
-											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
-											<%}} %>
-									</select>
+									<input name="branchname" style="height:20px;width: 166px;" class="input_text1" onkeyup="selectBranchName($(this).val());"/>
+									 <div id="branchList" style="left">
+										 <select name="callbackbranchid" id="callbackbranchid" style="width: 166px; margin-left:63px" class="select1">
+												<option value="0">请选择责任机构</option>
+											<%if(branchList!=null){for(Branch b: branchList){ %>
+												<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
+												<%}} %>
+										 </select>
+									</div>
 								</td>
 								</tr>
 								<tr>

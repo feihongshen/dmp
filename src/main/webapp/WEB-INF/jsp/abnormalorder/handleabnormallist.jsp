@@ -670,7 +670,7 @@ function checkdealresult(){
 									<input type ="text"  style="width: 120px;" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>"/>  --%>
 									<strong id="chulidown">到</strong>
 									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
-									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>" class="input_text1" style="height:20px;"align=/>
+									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>" class="input_text1" style="height:20px;margin-left:65px"/>
 									<input type="hidden" name="isshow" value="1"/>
 									<input type="hidden" name="branchid"  id="branchid" value="<%=branchid %>"/>
 									<input type="hidden" name="sitetype"  id="sitetype" value="<%=sitetype %>"/>
