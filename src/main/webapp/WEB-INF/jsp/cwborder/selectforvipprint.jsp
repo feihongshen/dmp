@@ -243,7 +243,7 @@ function nowprint(){
 				<td colspan="4"><%=co.getRemark5() %>/<%for (Customer c : customerlist) {if (c.getCustomerid() == co.getCustomerid()) {	%>
 					<%=c.getCustomername()%> <%}}%></td>
 				<td height="12px">建议最晚揽件时间:</td>
-				<td colspan="2"><%=co.getCustomercommand()!=null&&co.getCustomercommand().contains("建议最晚揽件时间")?(co.getCustomercommand().substring(co.getCustomercommand().indexOf("建议最晚揽件时间:")+9)):"" %></td>
+				<td colspan="2"><%=co.getCustomercommand()!=null&&co.getCustomercommand().contains("预约揽收时间")?(co.getCustomercommand().substring(co.getCustomercommand().indexOf("预约揽收时间:")+9)):"" %></td>
 			</tr>
 			<tr>
 				<td height="16">取件承运商：</td>
