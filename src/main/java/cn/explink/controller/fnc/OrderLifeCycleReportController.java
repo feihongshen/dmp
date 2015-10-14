@@ -220,7 +220,7 @@ public class OrderLifeCycleReportController {
 			model.addAttribute("nowdate", DateTimeUtil.getNowDate());//set to the day before current date
 			return "/orderlifecycle/manualtrigger";
 		}else{
-			return "/";
+			return "login";
 		}
 	}
 	
