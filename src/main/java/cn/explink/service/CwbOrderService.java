@@ -4947,7 +4947,8 @@ public class CwbOrderService {
 			} else {// 如果不是最终，则更新跟踪记录
 				this.operationTimeDAO.updateOperationTime(cwb, user.getBranchid(), FlowOrderTypeEnum.YiShenHe.getValue(), deliverystate.getDeliverystate(), co.getNextbranchid());
 			}
-			amount = amount.add(deliverystate.getCash()).add(deliverystate.getCheckfee()).add(deliverystate.getOtherfee()).subtract(deliverystate.getReturnedfee());
+			amount = amount.add(deliverystate.getCash()).add(deliverystate.getCheckfee()).add(deliverystate.getOtherfee())
+					.subtract(deliverystate.getReturnedfee()).subtract(deliverystate.getInfactfare());
 			amount_pos = amount_pos.add(deliverystate.getPos()).add(deliverystate.getCodpos());
 
 			// // 如果包号不为空清空包号zs
