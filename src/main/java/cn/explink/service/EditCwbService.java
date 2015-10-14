@@ -139,10 +139,10 @@ public class EditCwbService {
 			throw new ExplinkException(co.getFlowordertype() + "_当前订单状态已经不是[已审核]状态！");
 		}
 
-		List<AccountCwbFareDetail> accountCwbFareDetailList = accountCwbFareDetailDAO.getAccountCwbFareDetailByCwb(cwb);
+		/*List<AccountCwbFareDetail> accountCwbFareDetailList = accountCwbFareDetailDAO.getAccountCwbFareDetailByCwb(cwb);
 		if (co.getInfactfare().compareTo(BigDecimal.ZERO) > 0 && accountCwbFareDetailList.size() > 0 && accountCwbFareDetailList.get(0).getFareid() > 0) {
 			throw new ExplinkException("当前订单运费已交款，不可重置审核状态！");
-		}
+		}*/
 
 		DeliveryState ds = deliveryStateDAO.getDeliveryByCwbLock(cwb);
 		GotoClassAuditing gca = gotoClassAuditingDAO.getGotoClassAuditingByGcaid(ds.getGcaid());
