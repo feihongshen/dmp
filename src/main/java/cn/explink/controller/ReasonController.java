@@ -159,7 +159,9 @@ public class ReasonController {
 				reason.setParentid(parentid);
 				reason.setWhichreason(2);
 			}
-		}
+		}else{
+			reason.setWhichreason(0);
+		} 
 
 		reasonDao.creReason(reason);
 		logger.info("operatorUser={},常用语管理->create", getSessionUser()

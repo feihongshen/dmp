@@ -909,7 +909,9 @@ public class DeliveryController {
 		List<User> deliverList = this.userDAO.getDeliveryUserByRolesAndBranchid("2,4", this.getSessionUser().getBranchid());
 		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取供货商列表
 		List<JSONObject> objList = new ArrayList<JSONObject>();
-		List<Reason> firstlist = this.reasonDao.add();
+		
+		//List<Reason> firstlist = this.reasonDao.add();
+		List<Reason> firstlist = this.reasonDao.getFirstReasonByType(ReasonTypeEnum.BeHelpUp.getValue());//查出滞留一级原因-------LX
 		List<Reason> firstchangereasonlist = this.reasonDao.getFirstReasonByType(ReasonTypeEnum.ChangeTrains.getValue());
 
 		long successcount = 0;
@@ -1038,7 +1040,8 @@ public class DeliveryController {
 			@RequestParam(defaultValue = "", required = false, value = "resendtime") String resendtime,
 			@RequestParam(defaultValue = "", required = false, value = "zhiliuremark") String zhiliuremark,
 			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid) {
-		List<Reason> firstlist = this.reasonDao.add();
+		//List<Reason> firstlist = this.reasonDao.add();
+		List<Reason> firstlist = this.reasonDao.getFirstReasonByType(ReasonTypeEnum.BeHelpUp.getValue());//查出滞留一级原因-------LX
 		List<Reason> leavedreasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.BeHelpUp.getValue());
 		List<Reason> losereasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.DiuShi.getValue());
 		List<Reason> weishuakareasonlist = this.reasonDao.getAllReasonByReasonType(ReasonTypeEnum.WeiShuaKa.getValue());
