@@ -346,7 +346,7 @@ public class MatchExceptionController {
 		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowPart());
 		this.appendTransferSqlWhereCond(sql, today, transfer);
 		sql.appendExtraPart(this.getLimitSql(page));
-
+		System.out.println("查询sql:"+sql);
 		return sql.getSql();
 	}
 
@@ -354,7 +354,7 @@ public class MatchExceptionController {
 		SqlBuilder sql = new SqlBuilder();
 		sql.appendSelectPart(this.getSelectFlowInnerJoinCwbCountPart());
 		this.appendTransferSqlWhereCond(sql, today, transfer);
-
+		System.out.println("sql:"+sql.getSql());
 		return sql.getSql();
 	}
 
@@ -456,6 +456,7 @@ public class MatchExceptionController {
 		} else {
 			sql = this.getQueryWaitHandleOrderSql(today, page);
 		}
+		System.out.println("queryHandleOrder:"+sql);
 		List<MatchExceptionOrder> meoList = this.cwbDAO.queryMatchExceptionOrder(sql, true);
 		this.fillMatchExceptionOrder(meoList, transfer && match);
 
@@ -469,7 +470,7 @@ public class MatchExceptionController {
 		sql.append(this.getMatchOrderSql(today, false, -1));
 		sql.append(" ");
 		sql.append(this.getLimitSql(page));
-
+		System.out.println("getQueryWaitHandleOrderSql:"+sql);
 		return sql.toString();
 	}
 
@@ -480,7 +481,7 @@ public class MatchExceptionController {
 		sql.append(this.getMatchOrderSql(today, true, -1));
 		sql.append(" ");
 		sql.append(this.getLimitSql(page));
-
+		System.out.println("getQueryHandleOrderSql:"+sql.toString());
 		return sql.toString();
 	}
 
@@ -488,7 +489,7 @@ public class MatchExceptionController {
 		SqlBuilder sql = new SqlBuilder();
 		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowCountPart());
 		this.appendMatchSqlWhereCond(sql, today, match);
-
+		System.out.println("getMatchOrderCountSql:"+sql.getSql());
 		return sql.getSql();
 
 	}
@@ -498,7 +499,7 @@ public class MatchExceptionController {
 		sql.appendSelectPart(this.getSelectCwbInnerJoinFlowPart());
 		this.appendMatchSqlWhereCond(sql, today, match);
 		sql.appendExtraPart(this.getLimitSql(page));
-
+		System.out.println("getMatchOrderSql:"+sql.toString());
 		return sql.getSql();
 	}
 
@@ -533,6 +534,7 @@ public class MatchExceptionController {
 		sql.appendCondition(this.getOrderTypeWhereCond());
 		sql.appendCondition(this.getMatchOrderWhereCond());
 		sql.appendCondition(this.getEffectiveWhereCond());
+		System.out.println("appendMatchSqlWhereCond:"+sql.getSql());
 	}
 
 	private String getMatchFlowNowCond(boolean match) {
@@ -572,6 +574,8 @@ public class MatchExceptionController {
 		if(today){
 			sql.appendCondition(this.getEffectiveWhereIsnow());
 		}
+		System.out.println("appendTransferSqlWhereCond:"+sql.getSql());
+		
 	}
 
 	private String getEffectiveWhereCond() {
