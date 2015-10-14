@@ -103,6 +103,40 @@ $(function(){
 	checkstate();
 	
 });
+function selectBranch(value){
+	$.ajax({
+		type : "POST",
+		data:"branchname="+ value,
+		url :"<%=request.getContextPath()%>/workorder/selectBranch",
+		dataType : "json",
+		success : function(data) {
+			$("#branchList").empty();
+			var html = '<select id="createbranchid" name="createbranchid" style="width:166px;" class="select1" >'
+			for ( var p in data) {
+				html += '<option value="' + data[p].branchid +'">' + data[p].branchname + '</option>'
+			}
+			html += '</select>';
+			$("#branchList").append(html);
+		}
+	});
+}
+function selectBranchName(value){
+	$.ajax({
+		type : "POST",
+		data:"branchname="+ value,
+		url :"<%=request.getContextPath()%>/workorder/selectBranch",
+		dataType : "json",
+		success : function(data) {
+			$("#branchLi").empty();
+			var html = '<select id="dutybranchid" name="dutybranchid" style="width: 166px;" class="select1" >'
+			for ( var p in data) {
+				html += '<option value="' + data[p].branchid +'">' + data[p].branchname + '</option>'
+			}
+			html += '</select>';
+			$("#branchLi").append(html);
+		}
+	});
+}
 
 function getThisBoxList(id,flag){
 	var URL="";
@@ -553,25 +587,35 @@ function checkdealresult(){
 									<textarea id="cwb" class="kfsh_text" rows="2" name="cwb" ><%=cwb%></textarea>
 								</td>
 								
-								<td align="left">
+								<td align="left" nowrap="nowrap">
 								&nbsp;创建机构：
+								<label for="select2"></label>
+									<input name="branchname" style="height:20px;width: 166px;" class="input_text1" onkeyup="selectBranch($(this).val());"/>
+									<br>
+									<div id="branchList" align="right">
+										<select name="createbranchid" id="createbranchid" style="width: 166px;" class="select1">
+											<option value="0">请选择创建机构</option>
+											<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
+												<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
+											<%}} %>
+										</select>
+									</div>
+								<br>
+								<br>
+								&nbsp;责任机构：
 									<label for="select2"></label>
-									<select name="createbranchid" id="createbranchid" class="select1">
-										<option value="0">请选择</option>
-										<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
-											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
-										<%}} %>
-									</select>
-								<br>
-								<br>
-									客户名称 ： <select name ="customerid" id ="customerid"  style="width: 120px;"  class="select1">
-									<option value="-1">请选择</option>
-		          						<%for(Customer c : customerlist){ %>
-		      					     <option value ="<%=c.getCustomerid() %>"  <%if(c.getCustomerid()==customerid){%>  selected="selected"<%}%>><%=c.getCustomername() %></option>
-		         						 <%} %>
-		      						  </select>
+									<input name="branchname" style="height:20px;width: 166px;" class="input_text1" onkeyup="selectBranchName($(this).val());"/>
+									<br>
+									<div id="branchLi" align="right">
+										<select name="dutybranchid" id="dutybranchid"  style="width: 166px;" class="select1">
+											<option value="0">请选择责任机构</option>
+											<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
+												<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
+											<%}} %>
+										</select>
+									</div>
 		      						</td>
-		      						<td>
+		      						<td nowrap="nowrap">
 									<label for="select3"></label>
 									问题件类型：
 									<select name="abnormaltypeid" id="abnormaltypeid" class="select1">
@@ -581,16 +625,15 @@ function checkdealresult(){
 										<%} %>
 									</select>
 									<br><br>
-										&nbsp;责 任 机构：
-									<label for="select2"></label>
-									<select name="dutybranchid" id="dutybranchid" class="select1">
-										<option value="0">请选择责任机构</option>
-										<%if(branchList!=null||branchList.size()!=0){for(Branch b : branchList){ %>
-											<option value="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
-										<%}} %>
-									</select>
+									客户名称 ： <select name ="customerid" id ="customerid"  style="width: 160px;"  class="select1">
+									<option value="-1">请选择</option>
+		          						<%for(Customer c : customerlist){ %>
+		      					     <option value ="<%=c.getCustomerid() %>"  <%if(c.getCustomerid()==customerid){%>  selected="selected"<%}%>><%=c.getCustomername() %></option>
+		         						 <%} %>
+		      						  </select>
+										
 									</td>
-										<td>
+										<td nowrap="nowrap">
 									<label for="select3"></label>
 									处理状态：
 									<select name="ishandle" id="ishandle" onchange="checkstate()" class="select1">
@@ -627,7 +670,7 @@ function checkdealresult(){
 									<input type ="text"  style="width: 120px;" name ="chuangjianbegindate" id="chuangjianstrtime"  value="<%=request.getAttribute("chuangjianbegindate")==null?"":request.getAttribute("chuangjianbegindate") %>"/>  --%>
 									<strong id="chulidown">到</strong>
 									<input type ="text" name ="enddate" id="endtime"  value="<%=request.getParameter("enddate")==null?"":request.getParameter("enddate") %>" class="input_text1" style="height:20px;"/>
-									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>" class="input_text1" style="height:20px;"/>
+									<input type ="text" name ="chuangjianenddate" id="chuangjianendtime"  value="<%=request.getAttribute("chuangjianenddate")==null?"":request.getAttribute("chuangjianenddate") %>" class="input_text1" style="height:20px;"align=/>
 									<input type="hidden" name="isshow" value="1"/>
 									<input type="hidden" name="branchid"  id="branchid" value="<%=branchid %>"/>
 									<input type="hidden" name="sitetype"  id="sitetype" value="<%=sitetype %>"/>
