@@ -1,4 +1,4 @@
-﻿﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog
      xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -6008,7 +6008,8 @@ CREATE TABLE
 		;
 		</sql>
 	</changeSet>
-	 -->
+	-->
+	<!-- 
 	<changeSet id="wangyonghe-2014-12-24-3" author="wangyonghe">
 		<sql>
 		ALTER TABLE `express_ops_abnormal_write_back`
@@ -6016,6 +6017,7 @@ CREATE TABLE
 		ADD INDEX `Abnormal_Back_cwb_idx` (`cwb`) ;
 		</sql>
 	</changeSet>
+	 -->
 	<changeSet id="jiangyu-2015-04-10-1" author="jiangyu">
 		<sql>
 			ALTER TABLE fn_org_bill_adjustment_record ADD COLUMN `pay_way_change_flag` int(2) DEFAULT 0 comment '是否修改支付方式标识';
@@ -6118,8 +6120,8 @@ CREATE TABLE
 	</changeSet>
 	<changeSet id="wangyonghe-2015-05-18-1" author="wangyonghe">
 		<sql>
-INSERT INTO `dmp_pj`.`express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '20');
-INSERT INTO `dmp_pj`.`express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '2020');
+			INSERT INTO `express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '20');
+			INSERT INTO `express_set_role_menu_new` (`roleid`, `menuid`) VALUES ('0', '2020');
 		</sql>
 	</changeSet>
 	<changeSet id="wukong-2015-05-19-1" author="wukong">
