@@ -89,8 +89,8 @@
 							 <ref bean="doTime_vipshopOXO" />
 							 <ref bean="doTime_vipshopOXOPickState" />
 							 <ref bean="doTime_vipshopOXOJITFeedback" />	
-							 <ref bean="doTime_sendPunishInsideAutoShenheTask" />	
-							 						 
+							 <ref bean="doTime_sendPunishInsideAutoShenheTask" />
+							 <ref bean="doTime_orderLifecycleReport"/>					 
 							 
 			           </list>                 
 	               </property>         
@@ -921,7 +921,7 @@
                <ref bean="orderLifecycleReportTask" />
            </property>
              <property name="cronExpression">
-               <value>0 0 3 * * ?</value> <!-- 每天凌晨3点触发一次 -->
+               <value>0 30 3 * * ?</value> <!-- 每天凌晨3点30分 触发一次 -->
            </property>
      </bean>
      

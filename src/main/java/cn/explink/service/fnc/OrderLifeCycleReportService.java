@@ -31,7 +31,6 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderSnapshot;
 import cn.explink.domain.OrderLifeCycleReportVO;
 import cn.explink.domain.orderflow.OrderFlow;
-import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderLifeCycleTypeIdEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
@@ -366,7 +365,7 @@ public class OrderLifeCycleReportService {
 			et = (System.currentTimeMillis() - st);
 
 			logger.info(
-					"[OrderLifeCycleReportService][genLifeCycleOrderDetail][batch {} procceed {} rows，spend time={} ms]",
+					"[genLifeCycleOrderDetail][batch {} procceed {} rows，spend time={} ms]",
 					new Object[] { i, cwbOrderListForBatchSave.size(), et });
 
 		}
