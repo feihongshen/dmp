@@ -1,6 +1,5 @@
 package cn.explink.domain;
 
-import java.sql.Timestamp;
 
 
 /**
@@ -35,6 +34,9 @@ public class CwbOrderSnapshot extends CwbOrder {
 	private String nextbranchDesc;
 	
 	private int reportdate;
+	
+	/** '客户账单的核销标识', 1000 应收 200应付， 应收未核销 < 100， */
+	private int fncustomerbillverifyflag;
 	
 	/**
 	 * 生命周期报表生成标记：0未生成，1，已生成
@@ -121,6 +123,13 @@ public class CwbOrderSnapshot extends CwbOrder {
 		this.lifecycleRptFlag = lifecycleRptFlag;
 	}
 
+	public int getFncustomerbillverifyflag() {
+		return fncustomerbillverifyflag;
+	}
+
+	public void setFncustomerbillverifyflag(int fncustomerbillverifyflag) {
+		this.fncustomerbillverifyflag = fncustomerbillverifyflag;
+	}
 
 	
 	

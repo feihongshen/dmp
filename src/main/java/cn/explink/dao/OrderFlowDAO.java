@@ -1275,4 +1275,30 @@ public class OrderFlowDAO {
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new OrderFlowRowMapper(), begindate,enddate,((page - 1) * pageSize), pageSize  );
 	}
 	
+	/**
+	 * 获取以floworderid排倒序订单流程列表
+	 * 
+	 * @param begindate 开始日期
+	 * @param enddate 结束日期
+	 * @param page 页码
+	 * @param pageSize 页数
+	 * @return
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	public List<OrderFlow> getOrderFlowByCredateAndPage(String begindate, String enddate, int page, int pageSize,long lastFloworderid) {
+		StringBuilder sqlBuilder = new StringBuilder();
+		sqlBuilder.append("select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)")
+		.append(" where 1 = 1")
+		.append(" and credate >= ? ")
+		.append(" and credate <= ?");
+		
+		if(lastFloworderid > 0){
+			sqlBuilder.append(" and floworderid < " ).append(lastFloworderid);
+		}
+		
+		sqlBuilder.append(" order by floworderid desc limit ?, ?");
+		
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new OrderFlowRowMapper(), begindate,enddate,((page - 1) * pageSize), pageSize  );
+	}
 }

@@ -70,7 +70,7 @@ public class OrderDetailsSnapshotDao {
 	
 	public List<CwbOrderSnapshot> listByFlowordertypeAndOrdertypeid(int flowordertype, int cwbordertypeid, int reportdate){
 		
-		return _listByFlowordertypeAndOrdertypeidAndCwbstate(flowordertype, cwbordertypeid, 0, 0);
+		return _listByFlowordertypeAndOrdertypeidAndCwbstate(flowordertype, cwbordertypeid, 0, reportdate);
 		
 	}
 	
@@ -156,10 +156,41 @@ public class OrderDetailsSnapshotDao {
 	public List<CwbOrderSnapshot> getListFeeNotReturned(int cwbordertypeid, int reportdate){
 		
 		StringBuilder sqlBuilder = new StringBuilder( "select * from fn_order_details_snapshot")
-				.append(" where deliverystate=1 and flowordertype in (35,36) ")
-				.append(" and fnorgoffsetflag = 0 ")
-				.append(" and cwbordertypeid = ? ")
-				.append(" and receivablefee > 0  and lifecycle_rpt_date = ? and state =1");
+		.append(" where deliverystate=1 and flowordertype in (35,36) ")
+		.append(" and fnorgoffsetflag = 0 ")
+		.append(" and cwbordertypeid = ? ")
+		.append(" and receivablefee > 0  and lifecycle_rpt_date = ? and state =1");
+		
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderSnapshotRowMapper(),cwbordertypeid,reportdate);
+	}
+	
+	/**
+	 * Quer list for “退供货商成功”操作状态但未做应收款账单核销的配送类型订单
+	 * 
+	 * @return
+	 */
+	public List<CwbOrderSnapshot> getListTuiKeHuNotReturned(int cwbordertypeid,int reportdate){
+		
+		StringBuilder sqlBuilder = new StringBuilder( "select * from fn_order_details_snapshot")
+				.append(" where flowordertype = 34 ")
+				.append(" and cwbordertypeid = ?  ")
+				.append(" and fncustomerbillverifyflag < 1000 and lifecycle_rpt_date = ? and state = 1 ");
+		
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderSnapshotRowMapper(),cwbordertypeid,reportdate);
+	}
+	
+	/**
+	 * #退货再投未到站 -  退货再投未到站的只需要统计操作状态为出库扫描且上一站是退货库的订单
+	 * 
+	 * @return
+	 */
+	public List<CwbOrderSnapshot> getTuiHuoZaiTouWeiDaoZhan(int cwbordertypeid, int reportdate){
+		StringBuilder sqlBuilder = new StringBuilder( "select * from fn_order_details_snapshot s")
+				.append(" left join express_set_branch b on s.startbranchid = b.branchid ")
+				.append(" where 1 = 1 ")
+				.append(" and flowordertype = 6 ")
+				.append(" and cwbstate = 1 and cwbordertypeid = ? ")
+				.append(" and sitetype = 3 and lifecycle_rpt_date = ? and state =1 ");
 		
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderSnapshotRowMapper(),cwbordertypeid,reportdate);
 	}
@@ -169,15 +200,46 @@ public class OrderDetailsSnapshotDao {
 	 * 
 	 * @return
 	 */
-	public List<CwbOrderSnapshot> getListFeeNotReturnedFromCwbDetailByPage(int cwbordertypeid, int page, int pageSize){
+	public List<CwbOrderSnapshot> getListFeeNotReturnedFromCwbDetailByPage(int cwbordertypeid, int page, int pageSize, long opscwbid){
 		
 		StringBuilder sqlBuilder = new StringBuilder(
-				"select cwb,customerid,cwbordertypeid,cwbstate,flowordertype,emaildate,sendcarnum")
+				"select opscwbid,cwb,customerid,cwbordertypeid,cwbstate,flowordertype,emaildate,sendcarnum")
 				.append(" ,backcarnum, receivablefee,paybackfee,shouldfare,currentbranchid, startbranchid")
-				.append(" ,nextbranchid, deliverybranchid,deliverystate,state,infactfare,cwbstate, fnorgoffsetflag")
+				.append(" ,nextbranchid, deliverybranchid,deliverystate,state,infactfare,cwbstate, fnorgoffsetflag,fncustomerbillverifyflag")
 				.append(" from express_ops_cwb_detail")
 				.append(" where deliverystate=1 and flowordertype in (35,36) ")
-				.append(" and fnorgoffsetflag = 0 and cwbordertypeid = ? and receivablefee > 0  and state =1 limit ?, ? ");
+				.append(" and fnorgoffsetflag = 0 and cwbordertypeid = ? and receivablefee > 0  ");
+		
+		if(opscwbid > 0){
+			sqlBuilder.append(" and opscwbid < " + opscwbid );
+		}
+		
+		sqlBuilder.append(" and state =1  order by opscwbid desc limit ?, ? ");
+		
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderAdapteRowMapper(),cwbordertypeid,((page - 1) * pageSize), pageSize);
+	}
+	
+	
+	/**
+	 * Quer list for “退供货商成功”操作状态但未做应收款账单核销的配送类型订单
+	 * 
+	 * @return
+	 */
+	public List<CwbOrderSnapshot> getListTuiKeHuWeiShouKuanFromCwbDetailByPage(int cwbordertypeid, int page, int pageSize, long opscwbid){
+		
+		StringBuilder sqlBuilder = new StringBuilder(
+				"select opscwbid,cwb,customerid,cwbordertypeid,cwbstate,flowordertype,emaildate,sendcarnum")
+				.append(" ,backcarnum, receivablefee,paybackfee,shouldfare,currentbranchid, startbranchid")
+				.append(" ,nextbranchid, deliverybranchid,deliverystate,state,infactfare,cwbstate, fnorgoffsetflag,fncustomerbillverifyflag")
+				.append(" from express_ops_cwb_detail")
+				.append(" where flowordertype = 34 ")
+				.append(" and cwbordertypeid = ?  and fncustomerbillverifyflag < 1000");
+		
+		if(opscwbid > 0){
+			sqlBuilder.append(" and opscwbid < " + opscwbid );
+		}
+		
+		sqlBuilder.append(" and state = 1 order by opscwbid desc limit ?, ? ");
 		
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderAdapteRowMapper(),cwbordertypeid,((page - 1) * pageSize), pageSize);
 	}
@@ -200,7 +262,15 @@ public class OrderDetailsSnapshotDao {
 		return this.jdbcTemplate.queryForLong(sqlBuilder.toString(), cwbordertypeid);
 	}
 	
-	
+	public long countTuiKeHuWeiShouKuanFromCwbDetail(int cwbordertypeid) {
+		
+		StringBuilder sqlBuilder = new StringBuilder( "select count(1)")
+				.append(" from express_ops_cwb_detail")
+				.append(" where flowordertype = 34 ")
+				.append(" and cwbordertypeid = ?  and fncustomerbillverifyflag < 1000 and state = 1 ");
+		
+		return this.jdbcTemplate.queryForLong(sqlBuilder.toString(), cwbordertypeid);
+	}
 	
 	
 	
@@ -420,7 +490,7 @@ public class OrderDetailsSnapshotDao {
 		
 	}
 	
-	private class CwbOrderSnapshotRowMapper extends CwbOrderAdapteRowMapper implements RowMapper<CwbOrderSnapshot> {
+	private class CwbOrderSnapshotRowMapper extends CwbOrderCommonRowMapper implements RowMapper<CwbOrderSnapshot> {
 		@Override
 		public CwbOrderSnapshot mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CwbOrderSnapshot orderSnapshot = super.mapRow(rs, rowNum);
@@ -434,7 +504,19 @@ public class OrderDetailsSnapshotDao {
 		}
 	}
 	
-	private class CwbOrderAdapteRowMapper implements RowMapper<CwbOrderSnapshot> {
+	private class CwbOrderAdapteRowMapper extends CwbOrderCommonRowMapper implements RowMapper<CwbOrderSnapshot> {
+		@Override
+		public CwbOrderSnapshot mapRow(ResultSet rs, int rowNum) throws SQLException {
+			CwbOrderSnapshot orderSnapshot = super.mapRow(rs, rowNum);
+			
+			orderSnapshot.setOpscwbid(rs.getLong("opscwbid"));
+			
+			return orderSnapshot;
+		}
+	}
+	
+	
+	private class CwbOrderCommonRowMapper implements RowMapper<CwbOrderSnapshot> {
 		@Override
 		public CwbOrderSnapshot mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CwbOrderSnapshot orderSnapshot = new CwbOrderSnapshot();
@@ -458,6 +540,7 @@ public class OrderDetailsSnapshotDao {
 			orderSnapshot.setShouldfare(rs.getBigDecimal("shouldfare"));
 			orderSnapshot.setInfactfare(rs.getBigDecimal("infactfare"));
 			orderSnapshot.setFnorgoffsetflag(rs.getInt("fnorgoffsetflag"));
+			orderSnapshot.setFncustomerbillverifyflag(rs.getInt("fncustomerbillverifyflag"));
 			
 			return orderSnapshot;
 		}

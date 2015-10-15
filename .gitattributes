@@ -1817,7 +1817,10 @@ src/main/java/cn/explink/service/addressmatch/KeyWordMatchProcessor.java -text
 src/main/java/cn/explink/service/addressmatch/MatchResult.java -text
 src/main/java/cn/explink/service/contractManagement/ContractManagementService.java -text
 src/main/java/cn/explink/service/express/PreOrderService.java -text
+src/main/java/cn/explink/service/fnc/OrderLifeCycleBatchHandlerTemplate.java -text
+src/main/java/cn/explink/service/fnc/OrderLifeCycleFeeNotReturnFeeHandler.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleReportService.java -text
+src/main/java/cn/explink/service/fnc/OrderLifeCycleTuiKeHuWeiShouKuanHandler.java -text
 src/main/java/cn/explink/service/validator/BackCargoAmountShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/BackCargoNumShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/CargoAmountShouldAboveZeroAndBelowBillon.java -text

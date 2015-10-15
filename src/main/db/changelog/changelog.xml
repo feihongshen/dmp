@@ -8427,6 +8427,7 @@ CREATE TABLE `cs_complaint_accept` (
 					`shouldfare`                DECIMAL(9,2)                     DEFAULT 0.00 COMMENT '应收运费',
 					`infactfare`                DECIMAL(9,2)                     DEFAULT 0.00 COMMENT '实收运费',
 					`fnorgoffsetflag`           INT                              DEFAULT 0 COMMENT '收款状态',
+					`fncustomerbillverifyflag`  INT                              DEFAULT 0 COMMENT '客户账单的核销标识',
 					`fnrptlifecycleid`          INT                              DEFAULT -1 COMMENT '生命周期报表id',
 					`lifecycle_rpt_date`		INT								 NOT NULL COMMENT '生命周期报表日期',
 					`createtime` 				TIMESTAMP 				 		 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建更新时间',
@@ -8452,6 +8453,8 @@ CREATE TABLE `cs_complaint_accept` (
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 			
 			insert into dmp40_function  values ('805040', '2', '订单生命周期报表', '805040', 'orderlifecycle/index?', '8050');	
+			
+			INSERT INTO `express_set_system_install` (`name`, `value`, `chinesename`) VALUES('fnc_lifecyclerpt_batchsize','1000','订单生命周期报表每批次处理的行数');
 		</sql>
 	</changeSet>
 	

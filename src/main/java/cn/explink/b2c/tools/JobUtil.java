@@ -1226,7 +1226,7 @@ public class JobUtil {
 			starttime = System.currentTimeMillis();
 			//
 			String reportDate = DateTimeUtil.getDateBeforeDay(1);//in 'yyyy-MM-dd' format
-			int batchSize = 1000;
+			int batchSize = getbatchSizeOfOrderLifeCycleReport();
 			
 			//生成前一天的订单详情列表
 			this.orderLifeCycleReportService.genLifeCycleOrderDetail(batchSize, reportDate);
@@ -1243,5 +1243,30 @@ public class JobUtil {
 			JobUtil.threadMap.put(threadKey, 0);
 		}
 		this.logger.info("执行了获取generateOrderLifeCycleReport订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	
+	/**
+	 * 订单生命周期报表每批次处理的行数,如果找不到，默认是1000
+	 * @return
+	 */
+	private int getbatchSizeOfOrderLifeCycleReport(){
+		// 系统设置 设置开启对外操作
+		int defBatchSize = 1000;
+		int ret = defBatchSize;
+		try {
+			SystemInstall systemInstall = this.systemInstallDAO.getSystemInstall("isOpenJobHand");
+			String sysValue = systemInstall.getValue();
+			if(systemInstall != null){
+					ret = Integer.parseInt(sysValue);
+				
+			}
+		} catch (Exception e) {
+			System.err.println("[getbatchSizeOfOrderLifeCycleReport error:]" + e.getMessage());
+		}
+		
+		
+		return ret;
+		
 	}
 }
