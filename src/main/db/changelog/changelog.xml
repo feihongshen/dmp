@@ -8458,4 +8458,10 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
+    <changeSet id="panjinghui-2015-10-15-1" author="panjinghui">
+		<sql>
+			ALTER TABLE fn_rpt_order_lifecycle  MODIFY COLUMN `amount` DECIMAL(18,2) DEFAULT 0 COMMENT '金额';
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
