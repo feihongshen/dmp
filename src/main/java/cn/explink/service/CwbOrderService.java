@@ -4948,7 +4948,7 @@ public class CwbOrderService {
 				this.operationTimeDAO.updateOperationTime(cwb, user.getBranchid(), FlowOrderTypeEnum.YiShenHe.getValue(), deliverystate.getDeliverystate(), co.getNextbranchid());
 			}
 			amount = amount.add(deliverystate.getCash()).add(deliverystate.getCheckfee()).add(deliverystate.getOtherfee())
-					.subtract(deliverystate.getReturnedfee()).subtract(deliverystate.getInfactfare());
+					.subtract(deliverystate.getReturnedfee()).add(deliverystate.getInfactfare());
 			amount_pos = amount_pos.add(deliverystate.getPos()).add(deliverystate.getCodpos());
 
 			// // 如果包号不为空清空包号zs
