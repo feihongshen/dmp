@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
+import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ShangMenTuiCwbDetailDAO;
 import cn.explink.dao.UserDAO;
@@ -65,6 +66,8 @@ public class MatchExceptionHandleService {
 	ShangMenTuiCwbDetailDAO shangMenTuiCwbDetailDAO;
 	@Autowired
 	private OrderFlowDAO orderFlowDAO;
+	@Autowired
+	ExceptionCwbDAO exceptioncwbdao;
 
 	private ObjectMapper om = new ObjectMapper();
 

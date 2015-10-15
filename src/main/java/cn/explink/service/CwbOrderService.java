@@ -388,6 +388,8 @@ public class CwbOrderService {
 	OrderBackRukuRecordDao orderBackRukuRecordDao;
 	@Autowired
 	CwbApplyZhongZhuanDAO applyZhongZhuanDAO;
+	@Autowired
+	CustomerDAO customerdao;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -1977,6 +1979,9 @@ public class CwbOrderService {
 			OrderFlow of = new OrderFlow(0, cwb, branchid, new Timestamp(credate), user.getUserid(), this.om.writeValueAsString(cwbOrderWithDeliveryState).toString(), flowordertype.getValue(),
 					comment);
 			long floworderid = this.orderFlowDAO.creAndUpdateOrderFlow(of);
+			if(!(customer.getIsypdjusetranscwb()==1&&cwbOrder.getSendcarnum()>1)){
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, flowordertype.getValue(), "", user.getBranchid(), user.getUserid(), cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+			}
 
 			try {
 				this.orderFlowLogDAO.creAndUpdateOrderFlow(of,floworderid);
@@ -1987,7 +1992,7 @@ public class CwbOrderService {
 			this.updateOrInsertWareHouseToBranch(cwbOrder, of);
 			this.updateOutToCommen(cwbOrder, of, 0); // 出库 承运商库房
 			this.updateOutToCommen_toTwoLeavelBranch(cwbOrder, of, 1); // 一级站出库二级站
-			this.exceptionCwbDAO.createExceptionCwbScan(cwb, flowordertype.getValue(), "", user.getBranchid(), user.getUserid(), cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+			
 			// TODO
 			this.send(of);
 
@@ -2156,6 +2161,14 @@ public class CwbOrderService {
 			TranscwbOrderFlow tof = new TranscwbOrderFlow(0, cwb, scancwb, branchid, new Timestamp(System.currentTimeMillis()), user.getUserid(), this.om.writeValueAsString(cwbOrderWithDeliveryState)
 					.toString(), flowOrdertype.getValue(), comment);
 			this.transcwborderFlowDAO.creAndUpdateTranscwbOrderFlow(tof);
+			if(FlowOrderTypeEnum.YiFanKui.getValue()==flowOrdertype.getValue()||FlowOrderTypeEnum.YiShenHe.getValue()==flowOrdertype.getValue()){
+				
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, flowOrdertype.getValue(), "", user.getBranchid(), user.getUserid(), 0, 0, 0, 0, "",cwb);
+			}else{
+			
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, flowOrdertype.getValue(), "", user.getBranchid(), user.getUserid(), 0, 0, 0, 0, "",scancwb);
+			}
+			
 			// sendTranscwbOrderFlow(tof);
 		} catch (Exception e) {
 			this.logger.error("error while saveing orderflow", e);

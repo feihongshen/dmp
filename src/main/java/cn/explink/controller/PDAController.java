@@ -1972,6 +1972,7 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
+				
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
 						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
 

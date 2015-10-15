@@ -189,8 +189,8 @@ public class ExceptionCwbDAO {
 
 	public void editCwbofException(CwbOrder cwb, int flowOrderTypeEnum, User user, String remark) {
 
-		String sql = "INSERT INTO express_ops_exception_cwb (cwb, scantype, createtime, branchid, userid,remark) VALUES('" + cwb.getCwb() + "','" + flowOrderTypeEnum + "','"
-				+ DateTimeUtil.getNowTime() + "','" + user.getBranchid() + "','" + user.getUserid() + "','" + remark + "')";
+		String sql = "INSERT INTO express_ops_exception_cwb (cwb, scantype, createtime, branchid, userid,remark,scancwb) VALUES('" + cwb.getCwb() + "','" + flowOrderTypeEnum + "','"
+				+ DateTimeUtil.getNowTime() + "','" + user.getBranchid() + "','" + user.getUserid() + "','" + remark + "','" + cwb.getCwb() + "')";
 		jdbcTemplate.update(sql);
 	}
 }
