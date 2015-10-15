@@ -57,7 +57,7 @@
 	<div data-options="region:'center'" style="height:100%;overflow-x: auto; overflow-y: auto;">
 		<table id="dg"
 				class="easyui-datagrid" toolbar="#signFee_toolbar" 
-				showFooter="true" fitColumns="true" fit="true" singleSelect="false" width="100%">
+				showFooter="true" fitColumns="false" fit="true" singleSelect="false" width="100%">
 				<thead>
 					<tr>
 						<th field="customername" rowspan="2" align="center" width="100px;">客户</th>
@@ -77,34 +77,34 @@
 						<th colspan="2" align="center" width="120px;">退客户未收款</th>
 					</tr>
 					<tr>
-						<th field="count1" align="center" width="40px;">票数</th>
-						<th field="amount1" align="center" width="60px;">金额</th>
-						<th field="count2" align="center" width="40px;">票数</th>
-						<th field="amount2" align="center" width="60px;">金额</th>
+						<th field="count1" align="center" width="60px;">票数</th>
+						<th field="amount1" align="center" width="100px;">金额</th>
+						<th field="count2" align="center" width="60px;">票数</th>
+						<th field="amount2" align="center" width="100px;">金额</th>
 						<th field="count3" align="center" width="60px;">票数</th>
-						<th field="amount3" align="center" width="60px;">金额</th>
+						<th field="amount3" align="center" width="100px;">金额</th>
 						<th field="count4" align="center" width="60px;">票数</th>
-						<th field="amount4" align="center" width="60px;">金额</th>
+						<th field="amount4" align="center" width="100px;">金额</th>
 						<th field="count5" align="center" width="60px;">票数</th>
-						<th field="amount5" align="center" width="60px;">金额</th>
+						<th field="amount5" align="center" width="100px;">金额</th>
 						<th field="count6" align="center" width="60px;">票数</th>
-						<th field="amount6" align="center" width="60px;">金额</th>
+						<th field="amount6" align="center" width="100px;">金额</th>
 						<th field="count7" align="center" width="60px;">票数</th>
-						<th field="amount7" align="center" width="60px;">金额</th>
+						<th field="amount7" align="center" width="100px;">金额</th>
 						<th field="count8" align="center" width="60px;">票数</th>
-						<th field="amount8" align="center" width="60px;">金额</th>
+						<th field="amount8" align="center" width="100px;">金额</th>
 						<th field="count9" align="center" width="60px;">票数</th>
-						<th field="amount9" align="center" width="60px;">金额</th>
+						<th field="amount9" align="center" width="100px;">金额</th>
 						<th field="count10" align="center" width="60px;">票数</th>
-						<th field="amount10" align="center" width="60px;">金额</th>
+						<th field="amount10" align="center" width="100px;">金额</th>
 						<th field="count11" align="center" width="60px;">票数</th>
-						<th field="amount11" align="center" width="60px;">金额</th>
+						<th field="amount11" align="center" width="100px;">金额</th>
 						<th field="count12" align="center" width="60px;">票数</th>
-						<th field="amount12" align="center" width="60px;">金额</th>
+						<th field="amount12" align="center" width="100px;">金额</th>
 						<th field="count13" align="center" width="60px;">票数</th>
-						<th field="amount13" align="center" width="60px;">金额</th>
+						<th field="amount13" align="center" width="100px;">金额</th>
 						<th field="count14" align="center" width="60px;">票数</th>
-						<th field="amount14" align="center" width="60px;">金额</th>
+						<th field="amount14" align="center" width="100px;">金额</th>
 
 					</tr>
 				</thead>
