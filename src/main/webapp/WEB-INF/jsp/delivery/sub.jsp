@@ -29,7 +29,7 @@
 			+"&zhongzhuanamount="+(dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_zhongzhuanList()))
 			+"&smtcg="+(dsDTO.getFankui_shangmentui_chenggong()-dsDTO.getFankui_shangmentui_chenggong_zanbuchuli())
 			+"&smtcgamount="+(dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_shangmentui_chenggongList()))
-			+"&smtcgfare="+(dsDTO.getSmtcgFareAmountNotZanbuchuli(dsDTO.getFankui_shangmenhuan_chenggongList()))
+			+"&smtcgfare="+(dsDTO.getSmtcgFareAmountNotZanbuchuli(dsDTO.getFankui_shangmentui_chenggongList())) 
 			+"&smtjutui="+(dsDTO.getFankui_shangmentui_jutui()-dsDTO.getFankui_shangmentui_jutui_zanbuchuli())
 			+"&smtjutuiamount="+(dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_shangmentui_jutuiList()))
 			+"&smtjutuifare="+(dsDTO.getSmtjtFareAmountNotZanbuchuli(dsDTO.getFankui_shangmentui_jutuiList()))
