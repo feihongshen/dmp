@@ -60,7 +60,7 @@
 				showFooter="true" fitColumns="true" fit="true" singleSelect="false" width="100%">
 				<thead>
 					<tr>
-						<th field="customername" rowspan="2" align="center" width="100px;">站点</th>
+						<th field="customername" rowspan="2" align="center" width="100px;">客户</th>
 						<th colspan="2" align="center" width="100px;">导入未收货</th>
 						<th colspan="2" align="center" width="100px;">提货未入库</th>
 						<th colspan="2" align="center" width="120px;">分拣入库未出库</th>
