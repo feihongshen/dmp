@@ -1286,7 +1286,7 @@ public class OrderFlowDAO {
 	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
-	public List<OrderFlow> getOrderFlowByCredateAndPage(String begindate, String enddate, int page, int pageSize,long lastFloworderid) {
+	public List<OrderFlow> getOrderFlowByCredateAndPage(String begindate, String enddate, int pageSize,long lastFloworderid) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append("select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)")
 		.append(" where 1 = 1")
@@ -1297,8 +1297,9 @@ public class OrderFlowDAO {
 			sqlBuilder.append(" and floworderid < " ).append(lastFloworderid);
 		}
 		
-		sqlBuilder.append(" order by floworderid desc limit ?, ?");
 		
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new OrderFlowRowMapper(), begindate,enddate,((page - 1) * pageSize), pageSize  );
+		sqlBuilder.append(" order by floworderid desc limit ?");
+		
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new OrderFlowRowMapper(), begindate,enddate, pageSize  );
 	}
 }

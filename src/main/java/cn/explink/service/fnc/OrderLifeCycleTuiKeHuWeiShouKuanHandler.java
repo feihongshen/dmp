@@ -29,7 +29,7 @@ public class OrderLifeCycleTuiKeHuWeiShouKuanHandler extends
 		// TODO Auto-generated method stub
 		String cwbs = getCwbsFromCwbOrderSnapshotList(batchList,reportdate);
 		
-		this.orderDetailsSnapshotDao.disableRowByCwbAndReportDate(cwbs, reportdate);
+		this.orderDetailsSnapshotDao.disableRowByTuiKeHuWeiShouKuanByReportDate(getCwbOrderTypeId(), reportdate);
 		
 		orderDetailsSnapshotDao.batchInsertOrderDetailSnapshot(batchList);
 	}
@@ -38,7 +38,7 @@ public class OrderLifeCycleTuiKeHuWeiShouKuanHandler extends
 	protected List<CwbOrderSnapshot> getNextBatchList(int currentBatch, int batchSzie,
 			long lastRowId) {
 		return this.orderDetailsSnapshotDao
-				.getListTuiKeHuWeiShouKuanFromCwbDetailByPage(getCwbOrderTypeId(),currentBatch, batchSzie,lastRowId);
+				.getListTuiKeHuWeiShouKuanFromCwbDetailByPage(getCwbOrderTypeId(), batchSzie,lastRowId);
 	}
 
 	@Override

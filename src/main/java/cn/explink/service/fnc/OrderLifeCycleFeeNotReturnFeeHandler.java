@@ -39,7 +39,7 @@ public class OrderLifeCycleFeeNotReturnFeeHandler extends
 	protected List<CwbOrderSnapshot> getNextBatchList(int currentBatch, int batchSzie,
 			long lastRowId) {
 		return this.orderDetailsSnapshotDao
-				.getListFeeNotReturnedFromCwbDetailByPage(getCwbOrderTypeId(),currentBatch, batchSzie,lastRowId);
+				.getListFeeNotReturnedFromCwbDetailByPage(getCwbOrderTypeId(), batchSzie,lastRowId);
 	}
 
 	@Override

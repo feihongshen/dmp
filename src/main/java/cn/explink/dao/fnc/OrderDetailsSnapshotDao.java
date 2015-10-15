@@ -215,7 +215,7 @@ public class OrderDetailsSnapshotDao {
 	 * 
 	 * @return
 	 */
-	public List<CwbOrderSnapshot> getListFeeNotReturnedFromCwbDetailByPage(int cwbordertypeid, int page, int pageSize, long opscwbid){
+	public List<CwbOrderSnapshot> getListFeeNotReturnedFromCwbDetailByPage(int cwbordertypeid, int pageSize, long opscwbid){
 		
 		StringBuilder sqlBuilder = new StringBuilder(
 				"select opscwbid,cwb,customerid,cwbordertypeid,cwbstate,flowordertype,emaildate,sendcarnum")
@@ -229,9 +229,9 @@ public class OrderDetailsSnapshotDao {
 			sqlBuilder.append(" and opscwbid < " + opscwbid );
 		}
 		
-		sqlBuilder.append(" and state =1  order by opscwbid desc limit ?, ? ");
+		sqlBuilder.append(" and state =1  order by opscwbid desc limit ? ");
 		
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderAdapteRowMapper(),cwbordertypeid,((page - 1) * pageSize), pageSize);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderAdapteRowMapper(),cwbordertypeid, pageSize);
 	}
 	
 	
@@ -240,7 +240,7 @@ public class OrderDetailsSnapshotDao {
 	 * 
 	 * @return
 	 */
-	public List<CwbOrderSnapshot> getListTuiKeHuWeiShouKuanFromCwbDetailByPage(int cwbordertypeid, int page, int pageSize, long opscwbid){
+	public List<CwbOrderSnapshot> getListTuiKeHuWeiShouKuanFromCwbDetailByPage(int cwbordertypeid, int pageSize, long opscwbid){
 		
 		StringBuilder sqlBuilder = new StringBuilder(
 				"select opscwbid,cwb,customerid,cwbordertypeid,cwbstate,flowordertype,emaildate,sendcarnum")
@@ -254,9 +254,9 @@ public class OrderDetailsSnapshotDao {
 			sqlBuilder.append(" and opscwbid < " + opscwbid );
 		}
 		
-		sqlBuilder.append(" and state = 1 order by opscwbid desc limit ?, ? ");
+		sqlBuilder.append(" and state = 1 order by opscwbid desc limit ? ");
 		
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderAdapteRowMapper(),cwbordertypeid,((page - 1) * pageSize), pageSize);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderAdapteRowMapper(),cwbordertypeid, pageSize);
 	}
 	
 	/**
@@ -364,6 +364,24 @@ public class OrderDetailsSnapshotDao {
 		.append(" and fnorgoffsetflag = 0 ")
 		.append(" and cwbordertypeid = ? ")
 		.append(" and receivablefee > 0  and lifecycle_rpt_date = ? and state =1");
+		
+		this.jdbcTemplate.update(sqlBuilder.toString(),cwbordertypeid, reportdate);
+	}
+	
+	/**
+	 * 软删除订单记录,退供货商未收款,删除reportdate当天的退供成功的配送记录(退供货商只有应收的款),
+	 * 
+	 * @param cwbordertypeid
+	 * @param reportdate
+	 *
+	 */
+	public void disableRowByTuiKeHuWeiShouKuanByReportDate(int cwbordertypeid, int reportdate) {
+		
+		StringBuilder sqlBuilder = new StringBuilder( "update fn_order_details_snapshot set state = 0")
+		.append(" where deliverystate=1 and flowordertype in (35,36) ")
+		.append(" and flowordertype = 34 ")
+		.append(" and cwbordertypeid = ? and lifecycle_rpt_date = ? ")
+		.append(" and state = 1");
 		
 		this.jdbcTemplate.update(sqlBuilder.toString(),cwbordertypeid, reportdate);
 	}

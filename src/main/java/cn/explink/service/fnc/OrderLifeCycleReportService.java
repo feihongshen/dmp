@@ -311,7 +311,7 @@ public class OrderLifeCycleReportService {
 			st = System.currentTimeMillis();
 
 			// 分批从《订单操作流程表》中获取记录，记录已将按倒序排列
-			List<OrderFlow> orderFlows = orderFlowDAO.getOrderFlowByCredateAndPage(beginDate, endDate, i, batchSize,lastFloworderid);
+			List<OrderFlow> orderFlows = orderFlowDAO.getOrderFlowByCredateAndPage(beginDate, endDate, batchSize,lastFloworderid);
 
 			if (logger.isDebugEnabled()) {
 				logger.debug(
