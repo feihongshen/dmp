@@ -180,6 +180,21 @@ public class OrderDetailsSnapshotDao {
 	}
 	
 	/**
+	 * 分拣出库未到站  - 只需要统计操作状态为出库扫描且上一站是退货库的订单
+	 * 
+	 * @return
+	 */
+	public List<CwbOrderSnapshot> getFengBoChukuWeiDaoZhan(int cwbordertypeid, int reportdate){
+		StringBuilder sqlBuilder = new StringBuilder( "select * from fn_order_details_snapshot s")
+		.append(" left join express_set_branch b on s.startbranchid = b.branchid ")
+		.append(" where 1 = 1 ")
+		.append(" and flowordertype = 6 ")
+		.append(" and cwbstate = 1 and cwbordertypeid = ? ")
+		.append(" and sitetype = 1 and lifecycle_rpt_date = ? and state =1 ");
+		
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new CwbOrderSnapshotRowMapper(),cwbordertypeid,reportdate);
+	}
+	/**
 	 * #退货再投未到站 -  退货再投未到站的只需要统计操作状态为出库扫描且上一站是退货库的订单
 	 * 
 	 * @return

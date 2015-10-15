@@ -476,12 +476,13 @@ public class OrderLifeCycleReportService {
 
 		// 分拣出库未到站 “出库扫描” ,配送状态
 		// flowordertype=6 and cwbstate = 1 and cwbordertypeid = 1
-		cwbStateEnum = CwbStateEnum.PeiShong;
-		flowOrderTypeEnum = FlowOrderTypeEnum.ChuKuSaoMiao;
-		orderSnapshots = this.orderDetailsSnapshotDao
-				.listByFlowordertypeAndOrdertypeidAndCwbstate(
-						flowOrderTypeEnum.getValue(),
-						cwbOrderTypeIdEnum.getValue(), cwbStateEnum.getValue(),reportdate);
+//		cwbStateEnum = CwbStateEnum.PeiShong;
+//		flowOrderTypeEnum = FlowOrderTypeEnum.ChuKuSaoMiao;
+//		orderSnapshots = this.orderDetailsSnapshotDao
+//				.listByFlowordertypeAndOrdertypeidAndCwbstate(
+//						flowOrderTypeEnum.getValue(),
+//						cwbOrderTypeIdEnum.getValue(), cwbStateEnum.getValue(),reportdate);
+		orderSnapshots = this.orderDetailsSnapshotDao.getFengBoChukuWeiDaoZhan(cwbOrderTypeIdEnum.getValue(),reportdate);
 		_genLifeCycleReportByCwbOrderSnapshotList(orderSnapshots,
 				CwbOrderLifeCycleTypeIdEnum.FengBoChuku,reportdate);
 
