@@ -63,6 +63,7 @@ import cn.explink.b2c.yangguang.YangGuangService_download;
 import cn.explink.b2c.yihaodian.YihaodianService;
 import cn.explink.b2c.yixun.YiXunInsertCwbDetailTimmer;
 import cn.explink.b2c.yonghuics.YonghuiService;
+import cn.explink.b2c.zhemeng.ZhemengInsertCwbDetailTimmer;
 import cn.explink.b2c.zhongliang.ZhongliangInsertCwbDetailTimmer;
 import cn.explink.b2c.zhongliang.ZhongliangService;
 import cn.explink.dao.ExpressSysMonitorDAO;
@@ -211,6 +212,9 @@ public class JobUtil {
 	JiuYeInsertCwbDetailTimmer jiuYeInsertCwbDetailTimmer;
 	@Autowired
 	OrderLifeCycleReportService orderLifeCycleReportService;
+	@Autowired
+	ZhemengInsertCwbDetailTimmer zhemengInsertCwbDetailTimmer;
+	
 	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -1244,6 +1248,21 @@ public class JobUtil {
 		}
 		this.logger.info("执行了获取generateOrderLifeCycleReport订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
+
+	
+	public void getZheMeng_Task() {
+		try {
+
+			this.zhemengInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.ZheMeng.getKey());
+
+			this.logger.info("执行了哲盟-安达信订单导入定时器！");
+
+		} catch (Exception e) {
+			this.logger.error("执行哲盟-安达信订单导入定时器异常", e);
+		}
+
+	}
+
 	
 	
 	/**
@@ -1269,4 +1288,5 @@ public class JobUtil {
 		return ret;
 		
 	}
+
 }

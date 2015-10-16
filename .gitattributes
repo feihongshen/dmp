@@ -675,6 +675,17 @@ src/main/java/cn/explink/b2c/yonghuics/json/OrderDownloadRet.java -text
 src/main/java/cn/explink/b2c/yonghuics/json/OrderDto.java -text
 src/main/java/cn/explink/b2c/yonghuics/json/OrderListDto.java -text
 src/main/java/cn/explink/b2c/yonghuics/json/ReturnDto.java -text
+src/main/java/cn/explink/b2c/zhemeng/CwbColumnSetZhemeng.java -text
+src/main/java/cn/explink/b2c/zhemeng/Zhemeng.java -text
+src/main/java/cn/explink/b2c/zhemeng/ZhemengController.java -text
+src/main/java/cn/explink/b2c/zhemeng/ZhemengInsertCwbDetailTimmer.java -text
+src/main/java/cn/explink/b2c/zhemeng/ZhemengService.java -text
+src/main/java/cn/explink/b2c/zhemeng/xmldto/RequestAddressItems.java -text
+src/main/java/cn/explink/b2c/zhemeng/xmldto/RequestAddressShell.java -text
+src/main/java/cn/explink/b2c/zhemeng/xmldto/RequestItems.java -text
+src/main/java/cn/explink/b2c/zhemeng/xmldto/RequestOrder.java -text
+src/main/java/cn/explink/b2c/zhemeng/xmldto/ResponseAddress.java -text
+src/main/java/cn/explink/b2c/zhemeng/xmldto/ResponseItem.java -text
 src/main/java/cn/explink/b2c/zhongliang/CwbColumnSetZhongliang.java -text
 src/main/java/cn/explink/b2c/zhongliang/VerifyDataUtil.java -text
 src/main/java/cn/explink/b2c/zhongliang/Zhongliang.java -text
@@ -2113,6 +2124,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/yihaodian.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yihaodianAddmatch.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yixun.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/yonghui.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/zhemeng.jsp -text
 src/main/webapp/WEB-INF/jsp/backimportprint/list.jsp -text
 src/main/webapp/WEB-INF/jsp/backimportprint/print.jsp -text
 src/main/webapp/WEB-INF/jsp/backsummary/detail.jsp -text

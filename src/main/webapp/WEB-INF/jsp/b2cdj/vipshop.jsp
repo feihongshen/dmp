@@ -82,9 +82,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="resuseReasonFlag1" name ="resuseReasonFlag" value="0" <%if(vipshop.getResuseReasonFlag()==0){%>checked<%}%>  >回传
 							<input type ="radio" id="resuseReasonFlag2" name ="resuseReasonFlag" value="1" <%if(vipshop.getResuseReasonFlag()==1){%>checked<%}%>  >不回传
 						</li>
-						<li><span>订单生成时间作为批次：</span>
+						<li><span>生成批次标识：</span>
 							<input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==0){%>checked<%}%>  >关闭
-							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==1){%>checked<%}%>  >开启
+							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==1){%>checked<%}%>  >开启（订单生成时间作为标识）
 						</li>
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
@@ -152,9 +152,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="resuseReasonFlag1" name ="resuseReasonFlag" value="0" checked>回传
 							<input type ="radio" id="resuseReasonFlag2" name ="resuseReasonFlag" value="1" >不回传
 						</li>
-						<li><span>订单生成时间作为批次：</span>
+						<li><span>生成批次标识：</span>
 							<input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0"  >关闭
-							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1"  >开启
+							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1"  >开启（订单生成时间作为标识）
 						</li>
 						
 						<li><span>订单导入库房：</span>
