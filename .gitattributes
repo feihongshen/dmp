@@ -1817,7 +1817,8 @@ src/main/java/cn/explink/service/addressmatch/KeyWordMatchProcessor.java -text
 src/main/java/cn/explink/service/addressmatch/MatchResult.java -text
 src/main/java/cn/explink/service/contractManagement/ContractManagementService.java -text
 src/main/java/cn/explink/service/express/PreOrderService.java -text
-src/main/java/cn/explink/service/fnc/OrderLifeCycleBatchHandlerTemplate.java -text
+src/main/java/cn/explink/service/fnc/BatchHandlerTemplate.java -text
+src/main/java/cn/explink/service/fnc/OrderLifeCycleBaseBatchHandler.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleFeeNotReturnFeeHandler.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleReportService.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleTuiKeHuWeiShouKuanHandler.java -text

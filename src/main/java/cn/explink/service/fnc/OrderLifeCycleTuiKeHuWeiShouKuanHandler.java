@@ -1,10 +1,8 @@
 package cn.explink.service.fnc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,9 +11,14 @@ import cn.explink.dao.fnc.OrderDetailsSnapshotDao;
 import cn.explink.domain.CwbOrderSnapshot;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 
+/**
+ * 退客户未收款的处理类，取订单主表中全部“退供货商成功”操作状态，但未做应收款账单核销的配送类型订单，并且将订单快照表中的对应的记录设置为state为0
+ * 
+ * @author jinghui.pan
+ *
+ */
 @Component
-public class OrderLifeCycleTuiKeHuWeiShouKuanHandler extends
-		OrderLifeCycleBatchHandlerTemplate<CwbOrderSnapshot> {
+public class OrderLifeCycleTuiKeHuWeiShouKuanHandler extends OrderLifeCycleBaseBatchHandler {
 
 	
 	@Autowired
@@ -26,8 +29,8 @@ public class OrderLifeCycleTuiKeHuWeiShouKuanHandler extends
 	
 	@Override
 	protected void doBatch(List<CwbOrderSnapshot> batchList,int reportdate) {
-		// TODO Auto-generated method stub
-		String cwbs = getCwbsFromCwbOrderSnapshotList(batchList,reportdate);
+		
+		super.doBatch(batchList, reportdate);
 		
 		this.orderDetailsSnapshotDao.disableRowByTuiKeHuWeiShouKuanByReportDate(getCwbOrderTypeId(), reportdate);
 		
@@ -61,25 +64,4 @@ public class OrderLifeCycleTuiKeHuWeiShouKuanHandler extends
 		return CwbOrderTypeIdEnum.Peisong.getValue();
 	}
 	
-	/**
-	 * Get the cwb in format '1,3,2,3' from list;
-	 */
-	private String getCwbsFromCwbOrderSnapshotList(List<CwbOrderSnapshot> cwbOrderListForBatchSave, int reportdate){
-		
-		String cwbs = null;
-		
-		if(CollectionUtils.isNotEmpty(cwbOrderListForBatchSave)){
-			List<String> cwbList = new ArrayList<String>();
-			for (CwbOrderSnapshot cwbOrderSnapshot : cwbOrderListForBatchSave) {
-				
-				cwbOrderSnapshot.setReportdate(reportdate);
-				cwbList.add(cwbOrderSnapshot.getCwb());
-				
-			}
-			cwbs = StringUtils.join(cwbList, "','");
-			cwbs = "'" + cwbs + "'";
-		}
-		
-		return cwbs;
-	}
 }

@@ -116,155 +116,6 @@ public class OrderLifeCycleReportService {
 		dg.setTotal(total);
 		return dg;
 	}
-	
-	/**
-	 * 站点未返代收货款
-	 * 
-	 * @param batchSize
-	 *            每批次处理多少行数据在.如果传入少于等于0，则默认是1000行/批次
-	 * @param date
-	 *            生成的日期字符串，格式是'yyyy-MM-dd'
-	 */
-	public void handleNotReturnedRecivableFeeOrder(int batchSize,String date) {
-		
-//		if (batchSize <= 0) {
-//			batchSize = 1000;
-//		}
-//
-//		int reportdate = transalateReportDate2Int(date);
-//		
-//		// 订单类型
-//		CwbOrderTypeIdEnum cwbOrderTypeIdEnum = CwbOrderTypeIdEnum.Peisong;
-//		
-//		// 获取总的记录数
-//		long countOfRecord = this.orderDetailsSnapshotDao.countFeeNotReturnedFromCwbDetail(cwbOrderTypeIdEnum.getValue());
-//
-//		// 计算批次
-//		int batch = getBatch(countOfRecord, batchSize);
-//
-//		logger.info(
-//				"[handleNotReturnedRecivableFeeOrder][total record:{}, batch size : {}]", countOfRecord, batch);
-//
-//		long st, et;
-//		List<CwbOrderSnapshot> cwbOrderListForBatchSave = null;
-//		String cwbs = null;
-//		long lastopscwbid = 0L;
-//		
-//		for (int i = 1; i <= batch; i++) {
-//			// 记录开始时间
-//			st = System.currentTimeMillis();
-//			
-//			cwbOrderListForBatchSave = this.orderDetailsSnapshotDao
-//					.getListFeeNotReturnedFromCwbDetailByPage(cwbOrderTypeIdEnum.getValue(),i, batchSize,lastopscwbid);
-//			
-//			if(CollectionUtils.isNotEmpty(cwbOrderListForBatchSave)){
-//				
-//				cwbs = getCwbsFromCwbOrderSnapshotList(cwbOrderListForBatchSave,reportdate);
-//				
-//				this.orderDetailsSnapshotDao.disableRowByNotReturnedFeeByReportDate(cwbOrderTypeIdEnum.getValue(), reportdate);
-//				
-//				orderDetailsSnapshotDao.batchInsertOrderDetailSnapshot(cwbOrderListForBatchSave);
-//				
-//				//Retrieve the last opscwbid for next iterator
-//				lastopscwbid = cwbOrderListForBatchSave.get(cwbOrderListForBatchSave.size() - 1).getOpscwbid();
-//				
-//			}
-//
-//			et = (System.currentTimeMillis() - st);
-//
-//			logger.info(
-//					"[handleNotReturnedRecivableFeeOrder][batch {} procceed {} rows，spend time={} ms]",
-//					new Object[] { i, cwbOrderListForBatchSave.size(), et });
-//		}
-		
-	}
-	
-	
-	/**
-	 * “退供货商成功”操作状态但未做应收款账单核销的配送类型
-	 * 
-	 * @param batchSize
-	 *            每批次处理多少行数据在.如果传入少于等于0，则默认是1000行/批次
-	 * @param date
-	 *            生成的日期字符串，格式是'yyyy-MM-dd'
-	 */
-	public void handleTuiKeHuWeiShouKuanOrder(int batchSize,String date) {
-		
-//		if (batchSize <= 0) {
-//			batchSize = 1000;
-//		}
-//
-//		int reportdate = transalateReportDate2Int(date);
-//		
-//		// 订单类型
-//		CwbOrderTypeIdEnum cwbOrderTypeIdEnum = CwbOrderTypeIdEnum.Peisong;
-//		
-//		// 获取总的记录数
-//		long countOfRecord = this.orderDetailsSnapshotDao.countFeeNotReturnedFromCwbDetail(cwbOrderTypeIdEnum.getValue());
-//
-//		// 计算批次
-//		int batch = getBatch(countOfRecord, batchSize);
-//
-//		logger.info(
-//				"[handleTuiKeHuWeiShouKuanOrder][total record:{}, batch size : {}]", countOfRecord, batch);
-//
-//		long st, et;
-//		List<CwbOrderSnapshot> cwbOrderListForBatchSave = null;
-//		String cwbs = null;
-//		long lastopscwbid = 0L;
-//		
-//		for (int i = 1; i <= batch; i++) {
-//			// 记录开始时间
-//			st = System.currentTimeMillis();
-//			
-//			cwbOrderListForBatchSave = this.orderDetailsSnapshotDao
-//					.getListTuiKeHuNotReturnedFromCwbDetailByPage(cwbOrderTypeIdEnum.getValue(),i, batchSize,lastopscwbid);
-//			
-//			if(CollectionUtils.isNotEmpty(cwbOrderListForBatchSave)){
-//				
-//				cwbs = getCwbsFromCwbOrderSnapshotList(cwbOrderListForBatchSave,reportdate);
-//				
-//				this.orderDetailsSnapshotDao.disableRowByCwbAndReportDate(cwbs, reportdate);
-//				
-//				orderDetailsSnapshotDao.batchInsertOrderDetailSnapshot(cwbOrderListForBatchSave);
-//				
-//				//Retrieve the last opscwbid for next iterator
-//				lastopscwbid = cwbOrderListForBatchSave.get(cwbOrderListForBatchSave.size() - 1).getOpscwbid();
-//				
-//			}
-//
-//			et = (System.currentTimeMillis() - st);
-//
-//			logger.info(
-//					"[handleTuiKeHuWeiShouKuanOrder][batch {} procceed {} rows，spend time={} ms]",
-//					new Object[] { i, cwbOrderListForBatchSave.size(), et });
-//		}
-	}
-	
-	
-	
-	
-	/**
-	 * Get the cwb in format '1,3,2,3' from list;
-	 */
-	private String getCwbsFromCwbOrderSnapshotList(List<CwbOrderSnapshot> cwbOrderListForBatchSave, int reportdate){
-		
-		String cwbs = null;
-		
-		if(CollectionUtils.isNotEmpty(cwbOrderListForBatchSave)){
-			List<String> cwbList = new ArrayList<String>();
-			for (CwbOrderSnapshot cwbOrderSnapshot : cwbOrderListForBatchSave) {
-				
-				cwbOrderSnapshot.setReportdate(reportdate);
-				cwbList.add(cwbOrderSnapshot.getCwb());
-				
-			}
-			cwbs = StringUtils.join(cwbList, "','");
-			cwbs = "'" + cwbs + "'";
-		}
-		
-		return cwbs;
-	}
 
 	/**
 	 * 生成给定日期的订单详细信息的快照，
@@ -313,54 +164,56 @@ public class OrderLifeCycleReportService {
 			// 分批从《订单操作流程表》中获取记录，记录已将按倒序排列
 			List<OrderFlow> orderFlows = orderFlowDAO.getOrderFlowByCredateAndPage(beginDate, endDate, batchSize,lastFloworderid);
 
-			if (logger.isDebugEnabled()) {
-				logger.debug(
-						"[Before remove duplicate cwb, orderFlows size = {}]",
-						orderFlows.size());
-			}
-			orderFlows = removeDuplicatedRecordWithCwb(orderFlows);
-
-			if (logger.isDebugEnabled()) {
-				logger.debug(
-						"[After remove duplicate cwb, orderFlows size = {}]",
-						orderFlows.size());
-			}
-
 			if(CollectionUtils.isNotEmpty(orderFlows)){
 				
-				cwbOrderListForBatchSave = new ArrayList<CwbOrderSnapshot>();
+				lastFloworderid = orderFlows.get(orderFlows.size() - 1).getFloworderid();
+			
+				if (logger.isDebugEnabled()) {
+					logger.debug(
+							"[Before remove duplicate cwb, orderFlows size = {}]",
+							orderFlows.size());
+				}
+				orderFlows = removeDuplicatedRecordWithCwb(orderFlows);
 				
-				//Recurse the order flow 
-				for (OrderFlow orderFlow : orderFlows) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(
+							"[After remove duplicate cwb, orderFlows size = {}]",
+							orderFlows.size());
+				}
+	
+				if(CollectionUtils.isNotEmpty(orderFlows)){
 					
-					cwbOrder = getCwbOrderFromOrderFlow(orderFlow);
-
-					if (cwbOrder != null) {
-						boolean existed = orderDetailsSnapshotDao
-								.isExistByCwbAndReportdate(orderFlow.getCwb(),reportdate);
-
-						// 如果 《订单快照表》中不存在记录，则插入
-						if (!existed) {
-							if (logger.isDebugEnabled()) {
-								logger.debug("[cwb {} add to batch {} ]", cwbOrder.getCwb(), i);
+					cwbOrderListForBatchSave = new ArrayList<CwbOrderSnapshot>();
+					
+					//Recurse the order flow 
+					for (OrderFlow orderFlow : orderFlows) {
+						
+						cwbOrder = getCwbOrderFromOrderFlow(orderFlow);
+	
+						if (cwbOrder != null) {
+							boolean existed = orderDetailsSnapshotDao
+									.isExistByCwbAndReportdate(orderFlow.getCwb(),reportdate);
+	
+							// 如果 《订单快照表》中不存在记录，则插入
+							if (!existed) {
+								if (logger.isDebugEnabled()) {
+									logger.debug("[cwb {} add to batch {} ]", cwbOrder.getCwb(), i);
+								}
+								cwbOrderSnapshot = copyCwbOrderToSnapshot(cwbOrder);
+								cwbOrderSnapshot.setReportdate(reportdate);//set report date
+								cwbOrderListForBatchSave.add(cwbOrderSnapshot);
 							}
-							cwbOrderSnapshot = copyCwbOrderToSnapshot(cwbOrder);
-							cwbOrderSnapshot.setReportdate(reportdate);//set report date
-							cwbOrderListForBatchSave.add(cwbOrderSnapshot);
 						}
 					}
+					
+					if (!cwbOrderListForBatchSave.isEmpty()) {
+						// 批量插入到《订单快照表》
+						orderDetailsSnapshotDao
+								.batchInsertOrderDetailSnapshot(cwbOrderListForBatchSave);
+					}
 				}
-				
-				lastFloworderid = orderFlows.get(orderFlows.size() - 1).getFloworderid();
-				
-				
-				if (!cwbOrderListForBatchSave.isEmpty()) {
-					// 批量插入到《订单快照表》
-					orderDetailsSnapshotDao
-							.batchInsertOrderDetailSnapshot(cwbOrderListForBatchSave);
-				}
-			}
 			
+			}
 
 			et = (System.currentTimeMillis() - st);
 

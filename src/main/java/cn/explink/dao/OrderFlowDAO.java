@@ -1288,7 +1288,7 @@ public class OrderFlowDAO {
 	 */
 	public List<OrderFlow> getOrderFlowByCredateAndPage(String begindate, String enddate, int pageSize,long lastFloworderid) {
 		StringBuilder sqlBuilder = new StringBuilder();
-		sqlBuilder.append("select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)")
+		sqlBuilder.append("select * from express_ops_order_flow")
 		.append(" where 1 = 1")
 		.append(" and credate >= ? ")
 		.append(" and credate <= ?");

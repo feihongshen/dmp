@@ -124,17 +124,6 @@ public class OrderDetailsSnapshotDao {
 		
 	}
 	
-	/**
-	 * 站点在站货物 - “分站到货扫描”“到错货”“到错货处理”“分站领货”“反馈为分站滞留”“反馈为小件员滞留”“反馈为待中转”“反馈为拒收”“反馈为货物丢失”
-	 * 
-	 * @return
-	 */
-	public List<CwbOrderSnapshot> getListStockInStation(int cwbordertypeid){
-		
-		final String sql = "select * from fn_order_details_snapshot "
-				+ " where flowordertype in(7,8,9,38) or (flowordertype in (35,36) and deliverystate in(6,10,4,8)) and cwbordertypeid = ? and state = 1 ";
-		return this.jdbcTemplate.query(sql, new CwbOrderSnapshotRowMapper(),cwbordertypeid);
-	}
 	
 	/**
 	 * 站点在站货物 - “分站到货扫描”“到错货”“到错货处理”“分站领货”“反馈为分站滞留”“反馈为小件员滞留”“反馈为待中转”“反馈为拒收”“反馈为货物丢失”
@@ -144,7 +133,7 @@ public class OrderDetailsSnapshotDao {
 	public List<CwbOrderSnapshot> getListStockInStation(int cwbordertypeid, int reportdate){
 		
 		final String sql = "select * from fn_order_details_snapshot "
-				+ " where flowordertype in(7,8,9,38) or (flowordertype in (35,36) and deliverystate in(6,10,4,8)) and cwbordertypeid = ? and lifecycle_rpt_date = ? and state = 1 ";
+				+ " where (flowordertype in(7,8,9,38) or (flowordertype in (35,36) and deliverystate in(6,10,4,8))) and cwbordertypeid = ? and lifecycle_rpt_date = ? and state = 1 ";
 		return this.jdbcTemplate.query(sql, new CwbOrderSnapshotRowMapper(),cwbordertypeid,reportdate);
 	}
 	
@@ -351,7 +340,7 @@ public class OrderDetailsSnapshotDao {
 	}
 	
 	/**
-	 * 软删除订单记录(state=0, fnrptlifecycleid = -1）
+	 * 软删除订单记录(站点未返代收货款 )
 	 * 
 	 * @param cwbordertypeid
 	 * @param reportdate
@@ -378,8 +367,9 @@ public class OrderDetailsSnapshotDao {
 	public void disableRowByTuiKeHuWeiShouKuanByReportDate(int cwbordertypeid, int reportdate) {
 		
 		StringBuilder sqlBuilder = new StringBuilder( "update fn_order_details_snapshot set state = 0")
-		.append(" where deliverystate=1 and flowordertype in (35,36) ")
+		.append(" where 1 = 1 ")
 		.append(" and flowordertype = 34 ")
+		.append(" and fncustomerbillverifyflag < 1000 ")
 		.append(" and cwbordertypeid = ? and lifecycle_rpt_date = ? ")
 		.append(" and state = 1");
 		

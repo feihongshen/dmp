@@ -6,11 +6,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class OrderLifeCycleBatchHandlerTemplate<T> {
+public abstract class BatchHandlerTemplate<T> {
 
 	
 	private Logger logger = LoggerFactory
-			.getLogger(OrderLifeCycleBatchHandlerTemplate.class);
+			.getLogger(BatchHandlerTemplate.class);
 
 	
 	public void batchHandle(int batchSize,int reportdate){
@@ -38,12 +38,13 @@ public abstract class OrderLifeCycleBatchHandlerTemplate<T> {
 			
 			batchList = getNextBatchList(i, batchSize,lastRowId);
 			
+			
+			//Retrieve the last opscwbid for next iterator
+			lastRowId = getLastRowId(batchList);
+			
 			if(CollectionUtils.isNotEmpty(batchList)){
 				
 				doBatch(batchList,reportdate);
-				
-				//Retrieve the last opscwbid for next iterator
-				lastRowId = getLastRowId(batchList);
 				
 			}
 
