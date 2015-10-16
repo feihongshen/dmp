@@ -133,7 +133,7 @@ public class OrderDetailsSnapshotDao {
 	public List<CwbOrderSnapshot> getListStockInStation(int cwbordertypeid, int reportdate){
 		
 		final String sql = "select * from fn_order_details_snapshot "
-				+ " where (flowordertype in(7,8,9,38) or (flowordertype in (35,36) and deliverystate in(6,10,4,8))) and cwbordertypeid = ? and lifecycle_rpt_date = ? and state = 1 ";
+				+ " where (flowordertype in(7,8,9,38) or (flowordertype in (35,36) and deliverystate in(4,6,8,9,10))) and cwbordertypeid = ? and lifecycle_rpt_date = ? and state = 1 ";
 		return this.jdbcTemplate.query(sql, new CwbOrderSnapshotRowMapper(),cwbordertypeid,reportdate);
 	}
 	
