@@ -1,5 +1,9 @@
 /**************************初始化默认值***************************/
-$("#customers").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择客户' });
+//$("#customers").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择客户' });
+$("#customers").multipleSelect({ placeholder: "请选择客户", filter: true });
+
+
+
 //$(".multiSelect .multiSelect_txt").removeAttr("readonly");
 
  
@@ -9,7 +13,10 @@ var _pageSize=10;
 
 function getMutiSelectedArray(){
 	var customers = new Array();
-	$("#signFee_toolbar input[name='customers']:checked").each(function(){
+//	$("#signFee_toolbar input[name='customers']:checked").each(function(){
+//		customers.push($(this).val());
+//	})
+	$("#signFee_toolbar input[name='selectItemcustomers']:checked").each(function(){
 		customers.push($(this).val());
 	})
 	return customers;

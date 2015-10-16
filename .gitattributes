@@ -9816,6 +9816,9 @@ src/main/webapp/js/multiSelcet/dropdown_hover.gif -text
 src/main/webapp/js/multiSelcet/jquery.bgiframe.min.js -text
 src/main/webapp/js/multiSelcet/jquery.multiSelect.css -text
 src/main/webapp/js/multiSelcet/jquery.multiSelect.js -text
+src/main/webapp/js/multiSelcet/jquery.multiple.select.js -text
+src/main/webapp/js/multiSelcet/multiple-select.css -text
+src/main/webapp/js/multiSelcet/multiple-select.png -text
 src/main/webapp/js/paifeirule.js -text
 src/main/webapp/js/paybusinessbenefit.js -text
 src/main/webapp/js/punish.js -text

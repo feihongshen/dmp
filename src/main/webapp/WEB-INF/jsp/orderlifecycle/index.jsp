@@ -27,10 +27,12 @@
 	
 	
 	<script src="<%=request.getContextPath()%>/js/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
-	<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
-	<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+<%-- 	<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script> --%>
+	<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+<%-- 	<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script> --%>
 	<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
-	<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
+<%-- 	<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" /> --%>
+	<link href="<%=request.getContextPath()%>/js/multiSelcet/multiple-select.css" rel="stylesheet" type="text/css" />
 	
 	
 <%-- 	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" /> --%>
@@ -117,8 +119,8 @@
 							<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername()%></option>
 						<%}%>
 					</select>
-						[<a href="javascript:multiSelectAll('customers',1,'请选择客户');">全选</a>]
-						[<a href="javascript:multiSelectAll('customers',0,'请选择客户');">取消全选</a>]
+<!-- 						[<a href="javascript:multiSelectAll('customers',1,'请选择客户');">全选</a>] -->
+<!-- 						[<a href="javascript:multiSelectAll('customers',0,'请选择客户');">取消全选</a>] -->
 				    <label for="querydate">日期：</label>
 				    <input type="text" name="querydate" id="querydate" value="<%=nowdate%>" onclick="WdatePicker({startDate: '%y-%M-%d',dateFmt:'yyyy-MM-dd'})" onchange="initEndTime()" />
 				  <div class="btn btn-default" onclick="selectQuery();" style="margin-right:5px;" ><i class="icon-search"></i>查询</div>
