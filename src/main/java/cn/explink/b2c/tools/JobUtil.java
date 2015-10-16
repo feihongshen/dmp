@@ -1215,7 +1215,7 @@ public class JobUtil {
 		final String threadKey = "order_lifecycle_report";
 		
 		if (JobUtil.threadMap.get(threadKey) == 1) {
-			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXOJIT_feedback");
+			this.logger.warn("本地定时器没有执行完毕，跳出循环generateOrderLifeCycleReport");
 			return;
 		}
 		JobUtil.threadMap.put(threadKey, 1);
