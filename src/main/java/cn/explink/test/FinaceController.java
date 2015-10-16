@@ -39,7 +39,7 @@ public class FinaceController {
 		List<Branch> branchlist=branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue()+"");
 		request.setAttribute("branchlist",branchlist);
 		accountService.calc(deliverybranchid, chongzhiAmount,request);
-		return "finace/deliveryBranchFinace";
+		return "finance/deliveryBranchFinace";
 
 	}
 	
@@ -49,7 +49,7 @@ public class FinaceController {
 	{
 		List<Branch> branchlist=branchDAO.getBanchByBranchidForStock(BranchEnum.ZhanDian.getValue()+"");
 		request.setAttribute("branchlist",branchlist);
-		return "finace/deliveryBranchFinace";
+		return "finance/deliveryBranchFinace";
 
 	}
 
