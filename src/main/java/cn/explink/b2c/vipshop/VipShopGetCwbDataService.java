@@ -108,6 +108,9 @@ public class VipShopGetCwbDataService {
 		vipshop.setResuseReasonFlag(Integer.parseInt(resuseReasonFlag));
 		String lefengCustomerid=request.getParameter("lefengCustomerid");
 		vipshop.setLefengCustomerid(lefengCustomerid);
+		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
+		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
+		
 		
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
@@ -152,6 +155,7 @@ public class VipShopGetCwbDataService {
 		vip.setIsShangmentuiFlag(vipshop.getIsShangmentuiFlag());
 		vip.setIsOpenLefengflag(vipshop.getIsOpenLefengflag());
 		vip.setLefengCustomerid(vipshop.getLefengCustomerid());
+		vip.setIsCreateTimeToEmaildateFlag(vipshop.getIsCreateTimeToEmaildateFlag());
 		
 		JSONObject jsonObj = JSONObject.fromObject(vip);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
@@ -270,9 +274,15 @@ public class VipShopGetCwbDataService {
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
 			long warehouseid = vipshop.getWarehouseid();
-			this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
+			
+			if(vipshop.getIsCreateTimeToEmaildateFlag()==0){
+				this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
+			}else{
+				String emaildate = dataMap.get("remark2").toString();
+				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
+			}
 			this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
-
+			
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-更新了最大的SEQ!{}", vipshop.getVipshop_seq());
 		} catch (Exception e) {
