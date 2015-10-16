@@ -262,7 +262,7 @@ public class GztlService {
 			} else if (order.getExtPayType().equals("1")) {
 				paywayid = "2";
 			} else {
-				paywayid = "4";
+				paywayid = "1";
 			}
 			xmlMap.put("paywayid", paywayid);// 支付方式
 
