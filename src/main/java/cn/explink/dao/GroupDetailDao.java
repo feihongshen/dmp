@@ -181,8 +181,8 @@ public class GroupDetailDao {
 	}
 
 	public void delGroupDetailByCwbsAndBranchidAndFlowordertype(String cwbs, long branchid, long flowordertype) {
-		String sql = "DELETE FROM express_ops_groupdetail where cwb in(" + cwbs + ") and branchid=? and flowordertype=? and issignprint=0 and groupid=0 ";
-		jdbcTemplate.update(sql, branchid, flowordertype);
+		String sql = "DELETE FROM express_ops_groupdetail where cwb in(" + cwbs + ")  and flowordertype=? and issignprint=0 and groupid=0 ";
+		jdbcTemplate.update(sql, flowordertype);
 	}
 	
 	/**
