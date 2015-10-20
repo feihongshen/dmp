@@ -13,6 +13,8 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Header;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,7 +185,8 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 					return null;
 				}
 				if (set.size() == 1) {
-					Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
+					long finashBranchId = getFinashBranchId(set);
+					Branch b = this.branchDAO.getEffectBranchById(finashBranchId);
 					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						return b;
 					}
@@ -220,6 +223,16 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 
 
 
+	private long getFinashBranchId(Set<Long> set) {
+		long finashBranchId=0;
+		for(Long branchid:set){
+			finashBranchId=branchid;
+		}
+		return finashBranchId;
+	}
+
+
+
 	private Set<Long> addressMatchStation(String cwb, String address, CwbOrder cwbOrder,
 			User user, List<OrderVo> orderVoList,List<DeliveryStationVo> deliveryStationList) throws Exception {
 		Set<Long> set = new HashSet<Long>();
@@ -244,6 +257,28 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 	}
 
 	
+	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
+		String jsonStr="{\"resultCode\":\"success\",\"message\":null,\"resultMap\":{\"15102030344420\":{\"result\":\"singleResult\",\"message\":null,\"addressList\":[{\"id\":2422146,\"name\":\"莘朱路\",\"addressTypeId\":null,\"addressLevel\":5,\"parentId\":2422141,\"path\":\"1-862-863-872-2422141\",\"pId\":null,\"isParent\":false,\"open\":true}],\"deliveryStationList\":[{\"externalId\":203,\"name\":\"徐汇站\",\"customerId\":null}],\"delivererList\":null,\"timeLimitList\":null}}}	";
+		List<DeliveryStationVo> deliveryStationList=null;
+		AddressMappingResult addressreturn = JacksonMapper.getInstance().readValue(jsonStr, AddressMappingResult.class);
+		int successFlag = addressreturn.getResultCode().getCode();
+		if (successFlag == 0) {
+			OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get("15102030344420");
+			if (mappingresult != null) {
+				deliveryStationList = mappingresult.getDeliveryStationList();
+				if (deliveryStationList.size() == 0) {
+					System.out.println("return null");
+				}
+				for (DeliveryStationVo desvo : deliveryStationList) {
+					System.out.println(desvo.getExternalId());
+				}
+			}
+		}
+		
+		System.out.println(deliveryStationList.get(0).getExternalId());
+		System.out.println(((DeliveryStationVo)deliveryStationList.get(0)).getExternalId().longValue()+"==");
+		
+	}
 
 	
 

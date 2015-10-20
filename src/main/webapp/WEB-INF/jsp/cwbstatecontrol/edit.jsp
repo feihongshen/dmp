@@ -87,6 +87,7 @@ function check_cwbstatecontrol(form){
 							<option value="<%=FlowOrderTypeEnum.PosZhiFu.getValue() %>"  <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.PosZhiFu.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.PosZhiFu.getText() %></option>
 							<option value="<%=FlowOrderTypeEnum.CheXiaoFanKui.getValue() %>"  <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.CheXiaoFanKui.getText() %></option>
 							<option value="<%=FlowOrderTypeEnum.UpdateDeliveryBranch.getValue() %>"  <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.UpdateDeliveryBranch.getText() %></option>
+							<option value="<%=FlowOrderTypeEnum.UpdatePickBranch.getValue() %>"  <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.UpdateDeliveryBranch.getText() %></option>
 							<option value="<%=FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue() %>"  <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getText() %></option>
 							
 						</select>*
