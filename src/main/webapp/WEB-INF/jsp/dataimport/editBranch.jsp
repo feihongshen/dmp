@@ -412,7 +412,9 @@ function changeCustomerid(){
 	 $.ajax({
 		type: "POST",
 		url:"<%=request.getContextPath()%>/emaildate/getEmailDateList",
-		data:{customerids:$("#customerid").val()},
+		data:{customerids:$("#customerid").val(),
+			  state:1
+		},
 		success:function(data){
 			var optionstring="";
 			var high ="";
