@@ -9,9 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.OrderAddressRevise;
-import cn.explink.util.DateTimeUtil;
 
 @Component
 public class OrderAddressReviseDao {
@@ -87,5 +85,22 @@ public class OrderAddressReviseDao {
 		public long deleteEditInfo(String cwb) {
 			return jdbcTemplate.update("delete from  express_service_revise_address where cwb=?  ", cwb);
 		}
+		
+		
+		
+		/**
+		 * 根据订单id查询订单信息修改表 按revisetime倒序排序
+		 * @param cwb
+		 * @return
+		 */
+		public List<OrderAddressRevise> getOrderAddressReviseByCwb(String cwb){
+			try {
+			String sql="select * from express_service_revise_address where  cwb=? ORDER BY revisetime DESC";
+			return jdbcTemplate.query(sql, new OrderAddressReviseMapper(), cwb);
+			} catch (Exception ee) {
+				return null;
+			}
+		}
+		
 		
 }

@@ -57,6 +57,7 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.GroupDetailDao;
+import cn.explink.dao.OrderAddressReviseDao;
 import cn.explink.dao.OrderDeliveryClientDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.PunishDAO;
@@ -83,6 +84,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassAuditing;
+import cn.explink.domain.OrderAddressRevise;
 import cn.explink.domain.OrderDeliveryClient;
 import cn.explink.domain.PenalizeInside;
 import cn.explink.domain.PunishType;
@@ -193,6 +195,8 @@ public class OrderSelectController {
 	PunishTypeDAO punishTypeDAO;
 	@Autowired
 	PunishDAO punishDAO;
+	@Autowired
+	OrderAddressReviseDao orderAddressReviseDao;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -844,7 +848,23 @@ public class OrderSelectController {
 		CustomWareHouse customWareHouse = this.customWareHouseDAO.getWarehouseId(Long.parseLong(view.getCustomerwarehouseid()));
 		String customWareHousename = customWareHouse == null ? "" : customWareHouse.getCustomerwarehouse();
 		view.setCustomerwarehouseid(customWareHousename);
-
+			
+		List<OrderAddressRevise>   orderAddressRevises =this.orderAddressReviseDao.getOrderAddressReviseByCwb(order.getCwb());
+		String oldAddress=null;
+		if (orderAddressRevises!=null && orderAddressRevises.size()>0) {
+			String currentAddress=orderAddressRevises.get(0).getAddress();
+			for (int i = 1; i < orderAddressRevises.size(); i++) {
+				if(!currentAddress.trim().equals(orderAddressRevises.get(i).getAddress().trim())){
+					oldAddress=orderAddressRevises.get(i).getAddress().trim();
+					break;
+				}
+			}
+		}
+		
+		
+		String oldconsigneeaddress=oldAddress==null ? "": oldAddress;
+		view.setOldconsigneeaddress(oldconsigneeaddress);
+		
 		List<OrderFlow> rukuList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.RuKu.getValue(), "", "");
 		List<OrderFlow> linghuoList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), "", "");
 		Customer customer = this.customerDAO.getCustomerById(view.getCustomerid());

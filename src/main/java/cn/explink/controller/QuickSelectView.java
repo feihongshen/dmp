@@ -48,6 +48,7 @@ public class QuickSelectView {
 	String consigneeno;// 收件人编号
 	String consigneename;// 收件人名称
 	String consigneeaddress;// 收件人地址
+	String oldconsigneeaddress;//原地址
 	String consigneepostcode;// 收件人邮编
 	String consigneephone;// 收件人电话
 	String cwbremark;// 订单备注
@@ -71,6 +72,8 @@ public class QuickSelectView {
 	String consigneenameOfkf;
 	String consigneemobileOfkf;
 	String consigneephoneOfkf;
+
+	
 
 	private String city;//通过百度API匹配的城市
 	private String area;//通过百度API匹配的城区区域
@@ -1030,6 +1033,14 @@ public class QuickSelectView {
 			}
 		}
 		return "";
+	}
+	
+	public String getOldconsigneeaddress() {
+		return oldconsigneeaddress;
+	}
+
+	public void setOldconsigneeaddress(String oldconsigneeaddress) {
+		this.oldconsigneeaddress = oldconsigneeaddress;
 	}
 
 }

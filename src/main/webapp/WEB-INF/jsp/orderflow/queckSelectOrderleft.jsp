@@ -127,63 +127,59 @@ function goForm(cwb){
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>手机：</b><%=view.getConsigneemobile()%></td>
-										<td bgcolor="#EBFFD7"><b>电话：</b><%=view.getConsigneephone()%></td>
+										<td bgcolor="#EBFFD7"><b>原收件人地址：</b><span style="color:red"><%=view.getOldconsigneeaddress()%></span></td>
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>派送城市：</b><%=view.getCity()==null?"":view.getCity()%></td>
-										<td bgcolor="#EBFFD7"><b>派送区域：</b><%=view.getArea()==null?"":view.getArea()%></td>
+										<td bgcolor="#EBFFD7"><b>电话：</b><%=view.getConsigneephone()%></td>
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>订单金额：</b><%=view.getCaramount()%>元</td>
+										<td bgcolor="#EBFFD7"><b>派送区域：</b><%=view.getArea()==null?"":view.getArea()%></td>
+									</tr>
+									<tr>
+										<td bgcolor="#EBFFD7"><b>重量：</b><%=view.getCarrealweight()%></td>
 										<td bgcolor="#EBFFD7"><b>代收款：</b><%=view.getReceivablefee()%>
 										元
 										</td>
 									</tr>
 									<tr>
-										<td bgcolor="#EBFFD7"><b>重量：</b><%=view.getCarrealweight()%></td>
+										<td bgcolor="#EBFFD7"><b>货物尺寸：</b><%=view.getCarsize()%></td>
 										<td bgcolor="#EBFFD7"><b>原支付方式：</b><%=view.getPaytypeNameOld()%>&nbsp;&nbsp;<b>现支付方式：</b><%=view.getPaytypeName() %></td>
 									</tr>
 									<tr>
-										<td bgcolor="#EBFFD7"><b>货物尺寸：</b><%=view.getCarsize()%></td>
-										<td bgcolor="#EBFFD7"><b>供货商发货仓库：</b><%=view.getCustomerwarehouseid()%></td>
-									</tr>
-									<tr>
 										<td bgcolor="#EBFFD7"><b>应退金额：</b><%=view.getPaybackfee()%></td>
-										<td bgcolor="#EBFFD7"><b>小件员：</b><%=StringUtil.nullConvertToEmptyString(deliveryname.getRealname()==null?view.getExceldeliver():deliveryname.getRealname())%></td>
+										<td bgcolor="#EBFFD7"><b>供货商发货仓库：</b><%=view.getCustomerwarehouseid()%></td>
 									</tr>
 										<tr>
 										<td bgcolor="#EBFFD7"><b>应收运费：</b><%=cwborder.getShouldfare()%></td>
-										<td bgcolor="#EBFFD7"><b>实收运费：</b><%=cwborder.getInfactfare()%></td>
+										<td bgcolor="#EBFFD7"><b>小件员：</b><%=StringUtil.nullConvertToEmptyString(deliveryname.getRealname()==null?view.getExceldeliver():deliveryname.getRealname())%></td>
 									</tr>
 									 <tr>
 										<td bgcolor="#EBFFD7"><b>供&nbsp;货&nbsp;商：</b><%=StringUtil.nullConvertToEmptyString(customer.getCustomername()) %><b>&nbsp;&nbsp;供货商订单号：</b><%=cwborder.getCommoncwb()%></td>
-										<td bgcolor="#EBFFD7"><b>入库库房：</b><%=invarhousebranch.getBranchname()==null?"":invarhousebranch.getBranchname()%></td>
+										<td bgcolor="#EBFFD7"><b>实收运费：</b><%=cwborder.getInfactfare()%></td>
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>发货时间：</b><%=view.getEmaildate()%></td>
-										<td bgcolor="#EBFFD7"><b>入库时间：</b><%=orderFlowRuKu.getCredate()==null?"":orderFlowRuKu.getCredate() %></td>
-										
+										<td bgcolor="#EBFFD7"><b>入库库房：</b><%=invarhousebranch.getBranchname()==null?"":invarhousebranch.getBranchname()%></td>
 									</tr>
-																					<tr>												<tr>
+									<tr>
 										<td bgcolor="#EBFFD7"><b>上一站点：</b><%=startbranch.getBranchname()==null?"":startbranch.getBranchname()%></td>
-										<td bgcolor="#EBFFD7"><b>当前站点：</b><%=currentbranch.getBranchname()==null?"":currentbranch.getBranchname()%><b style="color: red;"><%if(view.getFlowordertype()==8){%>(到错货站点)<% }%></b></td>
+										<td bgcolor="#EBFFD7"><b>入库时间：</b><%=orderFlowRuKu.getCredate()==null?"":orderFlowRuKu.getCredate() %></td>
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>下一站点：</b><%=nextbranch.getBranchname()==null?"":nextbranch.getBranchname()%></td>
-										<td bgcolor="#EBFFD7"><b>配送站点：</b><%=deliverybranch.getBranchname()==null?"":deliverybranch.getBranchname()%></td>
-										
+										<td bgcolor="#EBFFD7"><b>当前站点：</b><%=currentbranch.getBranchname()==null?"":currentbranch.getBranchname()%><b style="color: red;"><%if(view.getFlowordertype()==8){%>(到错货站点)<% }%></b></td>
 									</tr>
 
 									<tr>
-									
 										<td bgcolor="#EBFFD7"><b>发货件数：</b><%=view.getSendcarnum()%></td>
-										<td bgcolor="#EBFFD7"><b>货物类型：</b><%=view.getCartype()%></td>
-										
+										<td bgcolor="#EBFFD7"><b>配送站点：</b><%=deliverybranch.getBranchname()==null?"":deliverybranch.getBranchname()%></td>
 									</tr>
 
 									<tr>
 										<td bgcolor="#EBFFD7"><b>小件员领货时间：</b><%=orderFlowLingHuo.getCredate()==null?"":orderFlowLingHuo.getCredate() %></td>
-										<td bgcolor="#EBFFD7"><b>拒收时间：</b><%=rejectiontime.getCreatetime()%></td >
+										<td bgcolor="#EBFFD7"><b>货物类型：</b><%=view.getCartype()%></td>
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>签收时间：</b><input name="flagtime" type="text" id="flagtime" value="<%=rejectiontime.getCreatetime().length()>0 && deliveryChengGong.getCreatetime().length()==0?"":view.getSign_time()%>" /></td>
@@ -191,23 +187,24 @@ function goForm(cwb){
 									</tr>	
 									<tr>
 										<td bgcolor="#EBFFD7"><b>派送类型：</b><%=view.getCwbdelivertypeStr()%></td>
-										<td bgcolor="#EBFFD7"><b>滞留原因：</b><%=view.getLeavedreason()%></td>
+										<td bgcolor="#EBFFD7"><b>拒收时间：</b><%=rejectiontime.getCreatetime()%></td >
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>拒收原因：</b><%=view.getBackreason()%></td>
+										<td bgcolor="#EBFFD7"><b>滞留原因：</b><%=view.getLeavedreason()%></td>
+									</tr>
+									<tr>
 										<td bgcolor="#EBFFD7"><b>备注1：</b><%=cwborder.getRemark1()==null?"":cwborder.getRemark1()%></td>
-									</tr>
-									<tr>
 										<td bgcolor="#EBFFD7"><b>备注2：</b><%=cwborder.getRemark2()==null?"":cwborder.getRemark2() %></td>
-										<td bgcolor="#EBFFD7"><b>备注3：</b><%=cwborder.getRemark3()==null?"":cwborder.getRemark3() %></td>
 									</tr>
 									<tr>
+										<td bgcolor="#EBFFD7"><b>备注3：</b><%=cwborder.getRemark3()==null?"":cwborder.getRemark3() %></td>
 										<td bgcolor="#EBFFD7"><b>备注4：</b><%=cwborder.getRemark4()==null?"":cwborder.getRemark4() %></td>
-										<td bgcolor="#EBFFD7"><b>备注5：</b><%=cwborder.getRemark5()==null?"":cwborder.getRemark5()%></td>
 									</tr> 
 									
 									<tr>
-										<td colspan="2" valign="top" style="height:20px" bgcolor="#EBFFD7"><b>历史备注：</b>
+									<td bgcolor="#EBFFD7"><b>备注5：</b><%=cwborder.getRemark5()==null?"":cwborder.getRemark5()%></td>
+									<td width="50%"  valign="top" style="height:20px" bgcolor="#EBFFD7"><b>历史备注：</b>
 										<textarea name="remarkView" rows="2" id="remarkView" readonly style="width:85%;height:60px"><%=view.getCwbremark()%></textarea></td>
 									</tr>
 								</tbody>
