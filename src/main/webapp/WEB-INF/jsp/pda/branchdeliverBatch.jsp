@@ -315,6 +315,8 @@ function tohome(){
 	</div>
 		<input type="hidden" name="showCustomerSign" id="showCustomerSign" value="<%=showCustomerSign %>"/>
 		<input type="hidden" name="clist" id="clist" value="<%=cList %>"/>
+		<input type="hidden" name="alertErrorMsg" id="alertErrorMsg" value="${alertErrorMsg }"/>
+		<input type="hidden" name="alertWarnMsg" id="alertWarnMsg" value="${alertWarnMsg }"/>
 	<div class="saomiao_info2">
 		<div class="saomiao_inbox2">
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
@@ -549,5 +551,19 @@ function tohome(){
 	</form>
 </div>
 </body>
+
+<script type="text/javascript">
+$(function(){
+	var alertErrorMsg = $("#alertErrorMsg").val();
+	if (alertErrorMsg != null && alertErrorMsg.length > 0) {
+		alert(alertErrorMsg);
+	} else {
+		var alertWarnMsg = $("#alertWarnMsg").val();
+		if (alertWarnMsg != null && alertWarnMsg.length > 0) {
+			alert(alertWarnMsg);
+		}
+	}
+})
+</script>
 </html>
 

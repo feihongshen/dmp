@@ -60,8 +60,11 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.EditCwbTypeEnum;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
+import cn.explink.pos.alipay.xml.exception;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
@@ -203,14 +206,22 @@ public class EditCwbController {
 		if (type == EditCwbTypeEnum.XiuGaiJinE.getValue()) {// 修改订单金额更改操作
 																	// Start
 			List<CwbOrderWithDeliveryState> allowCods = new ArrayList<CwbOrderWithDeliveryState>();
+			List<CwbOrderWithDeliveryState> prohibitedCods = new ArrayList<CwbOrderWithDeliveryState>();
 			for (CwbOrder co : cwbList) {
 				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
 				cods.setCwbOrder(co);
 				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
 				// 存储订单表记录和反馈表记录，用于前端判断
-				allowCods.add(cods);
+				String completedCwb = editCwbService.getCompletedCwbByCwb(co.getCwb());//已经完成的订单不能修改订单支付信息
+				if (completedCwb != null && !completedCwb.isEmpty()) { 
+					cods.setError(completedCwb + "订单金额");
+					prohibitedCods.add(cods);
+				} else {
+					allowCods.add(cods);
+				}
 			}
 			model.addAttribute("allowCods", allowCods);
+			model.addAttribute("prohibitedCods", prohibitedCods);
 			return "editcwb/XiuGaiJinE";
 			// 修改订单金额更改操作 end
 		} else if (type == EditCwbTypeEnum.XiuGaiZhiFuFangShi.getValue()) {// 修改订单支付方式更改操作
@@ -221,8 +232,12 @@ public class EditCwbController {
 				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
 				cods.setCwbOrder(co);
 				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
-				// 存储订单表记录和反馈表记录，用于前端判断 如果代收金额
-				if (co.getReceivablefee().compareTo(BigDecimal.ZERO) <= 0 ||co.getDeliverystate()==0) {
+				String completedCwb = editCwbService.getCompletedCwbByCwb(co.getCwb());
+			    if (completedCwb != null && !completedCwb.isEmpty()) { //已经完成的订单不能修改订单支付信息
+				    cods.setError(completedCwb + "订单支付方式");
+					prohibitedCods.add(cods);
+				} else if (co.getReceivablefee().compareTo(BigDecimal.ZERO) <= 0 || co.getDeliverystate() == 0) { // 存储订单表记录和反馈表记录，用于前端判断 如果代收金额
+					cods.setError("代收货款应收金额少于等于0或者未反馈的订单不允许修改订单支付方式");
 					prohibitedCods.add(cods);
 				} else {
 					allowCods.add(cods);
@@ -240,13 +255,17 @@ public class EditCwbController {
 				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
 				cods.setCwbOrder(co);
 				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
-				// 已经归班的订单不能修改订单类型，必须充值审核状态才能修改
-				if ((cods.getDeliveryState() != null) && (cods.getDeliveryState().getGcaid() > 0)) {
-					cods.setError("已审核的订单不允许修改订单类型，若要修改，请重置审核状态后再试");
+				
+				String completedCwb = editCwbService.getCompletedCwbByCwb(co.getCwb());
+				if (completedCwb != null && !completedCwb.isEmpty()) {
+					cods.setError(completedCwb + "订单类型"); //已完成的订单不允许修改订单类型
 					prohibitedCods.add(cods);
 				} else if ((cods.getDeliveryState() != null) && (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue())
 						&& (cods.getDeliveryState().getInfactfare().compareTo(BigDecimal.ZERO) > 0)) {
 					cods.setError("上门退有应收运费的订单不允许修改订单类型");
+					prohibitedCods.add(cods);
+				} else if ((cods.getDeliveryState() != null) && (cods.getDeliveryState().getGcaid() > 0)) { // 已经归班的订单不能修改订单类型，必须充值审核状态才能修改
+					cods.setError("已审核的订单不允许修改订单类型，若要修改，请重置审核状态后再试");
 					prohibitedCods.add(cods);
 				} else {
 					allowCods.add(cods);
@@ -755,8 +774,16 @@ public class EditCwbController {
 		cwb = cwb.trim();
 		this.logger.info("修改订单号：{}开始,editname" + editname + "editmobile" + editmobile + "editcommand" + editcommand + "editaddress" + editaddress, cwb);
 		CwbOrder old = this.cwbDAO.getCwbByCwb(cwb);
+		
+		//已经完成的订单不允许修改
+		String completedCwb = editCwbService.getCompletedCwbByCwb(cwb);
+		if (completedCwb != null && !completedCwb.isEmpty()) {
+			return "{\"errorCode\":1,\"error\":\"修改失败，"+completedCwb+"订单信息！\"}";
+		}
+		
 		// 删除后新增，插入新增查询表中
 		this.cwbInfoDao.deleteEditInfo(cwb);
+		
 		// 构建新的订单信息
 		CwbOrderDTO co = this.dataImportDAO_B2c.getCwbFromCwborder(cwb);// 运单号
 		co.setConsigneename(editname);

@@ -107,6 +107,8 @@ import cn.explink.dao.UserDAO;
 import cn.explink.dao.WarehouseToBranchDAO;
 import cn.explink.dao.WarehouseToCommenDAO;
 import cn.explink.dao.YpdjHandleRecordDAO;
+import cn.explink.dao.ZhiFuApplyDao;
+import cn.explink.dao.searchEditCwbInfoDao;
 import cn.explink.domain.AccountCwbDetail;
 import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.AccountDeducDetail;
@@ -142,6 +144,7 @@ import cn.explink.domain.OrderbackRecord;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.ReturnCwbs;
+import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.ShangMenTuiCwbDetail;
 import cn.explink.domain.StockDetail;
 import cn.explink.domain.StockResult;
@@ -390,6 +393,10 @@ public class CwbOrderService {
 	CwbApplyZhongZhuanDAO applyZhongZhuanDAO;
 	@Autowired
 	CustomerDAO customerdao;
+	@Autowired
+	ZhiFuApplyDao zhiFuApplyDao;
+	@Autowired
+	searchEditCwbInfoDao editCwbInfoDao;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -3744,6 +3751,12 @@ public class CwbOrderService {
 		//OXO项目：OXO_JIT订单不允许做领货。 by jinghui.pan@pjbest.com on 20150730
 		if(this.isJitType(co)){
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.OXO_JIT_DISALLOW_RECEIVEGOODS);
+		}
+		
+		//订单如果存在未审批或者审批通过未确认的支付信息修改申请，不允许做领货。  by vic.liang@pjbest.com on 20151013
+		List<ZhiFuApplyView> unconfirmZFAV = zhiFuApplyDao.getUnConfirmZFAVByCwbs(cwb);
+		if (unconfirmZFAV != null && unconfirmZFAV.size() > 0) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen, cwb);
 		}
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
@@ -7446,4 +7459,31 @@ public class CwbOrderService {
 		return strList;
 	}
 
+	
+	//获取存在订单修改申请or确认完成的支付信息修改申请的订单号
+	public List<String> getEditCwb (String cwbs) {
+		List<String> editCwbList = new ArrayList<String>();
+			
+		List<ZhiFuApplyView> zhifuApplyList = zhiFuApplyDao.getCheckConfirmZFAVByCwbs(cwbs);
+		List<SearcheditInfo> editInfoList = editCwbInfoDao.getEditInfoByCwbs(cwbs);
+			
+		if (zhifuApplyList != null && zhifuApplyList.size() > 0) {
+			for (ZhiFuApplyView zhifuApply : zhifuApplyList) {
+				String cwb = zhifuApply.getCwb();
+				if (!editCwbList.contains(cwb)) {
+					editCwbList.add(cwb);
+				}
+			}
+			}
+			
+		if (editInfoList != null && editInfoList.size() > 0) {
+			for (SearcheditInfo editInfo : editInfoList) {
+				String cwb = editInfo.getCwb();
+				if (!editCwbList.contains(cwb)) {
+					editCwbList.add(cwb);
+				}
+			}
+		}
+		return editCwbList;
+	}
 }

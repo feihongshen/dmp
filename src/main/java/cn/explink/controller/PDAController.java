@@ -1933,6 +1933,8 @@ public class PDAController {
 		long allnum = 0;
 
 		long linghuoSuccessCount = 0;
+		String alertErrorMsg = "";
+		String alertWarnMsg = "";
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 		for (String cwb : cwbs.split("\r\n")) {
@@ -1948,9 +1950,28 @@ public class PDAController {
 				CwbOrder cwbOrder = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
+				List<String> editCwbList = this.cwborderService.getEditCwb(cwb);
+				if (editCwbList != null && editCwbList.size() > 0) {
+					for (String editCwb : editCwbList) {
+						if (alertWarnMsg != null && alertWarnMsg.length() > 0) {
+							alertWarnMsg += "," +editCwb;
+						} else {
+							alertWarnMsg = editCwb;
+						}
+					}
+				}
 
 				linghuoSuccessCount++;
 			} catch (CwbException ce) {// 出现验证错误
+				if (ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen
+						.equals(ce.getError())) { //订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
+					//领货失败
+					if (alertErrorMsg != null && alertErrorMsg.length() > 0) {
+						alertErrorMsg += "," + cwb;
+					} else {
+						alertErrorMsg = cwb;
+					}
+				}
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -1995,6 +2016,15 @@ public class PDAController {
 				}
 			}
 			objList.add(obj);
+		}
+		
+		if (alertErrorMsg != null && alertErrorMsg.length() > 0) {
+			alertErrorMsg += "有修改未审核确认，请联系客服人员！";
+			alertWarnMsg = "";
+		} else {
+			if (alertWarnMsg != null && alertWarnMsg.length() > 0) {
+				alertWarnMsg += "有修改，请及时核对！";
+			}
 		}
 		model.addAttribute("objList", objList);
 		model.addAttribute("customerlist", cList);
@@ -2097,6 +2127,8 @@ public class PDAController {
 			msg = "成功扫描" + linghuoSuccessCount + "单，异常" + (allnum - linghuoSuccessCount) + "单";
 		}
 		model.addAttribute("msg", msg);
+		model.addAttribute("alertErrorMsg", alertErrorMsg);
+		model.addAttribute("alertWarnMsg", alertWarnMsg);
 
 		return "pda/branchdeliverBatch";
 	}
@@ -4679,6 +4711,13 @@ public class PDAController {
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
 		CwbOrder cwbOrder = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+		
+		List<String> editCwbList = this.cwborderService.getEditCwb(cwb);
+		if (editCwbList != null && editCwbList.size() > 0) {
+			obj.put("editCwb", cwb);
+		} else {
+			obj.put("editCwb", "");
+		}
 
 		if (cwbOrder.getDeliverid() != 0) {
 			User user = this.userDAO.getUserByUserid(cwbOrder.getDeliverid());

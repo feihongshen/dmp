@@ -9,6 +9,7 @@
 <%
 String [] cwbArray = (String[])request.getAttribute("cwbArray");
 List<CwbOrderWithDeliveryState> allowCods = (List<CwbOrderWithDeliveryState>)request.getAttribute("allowCods");
+List<CwbOrderWithDeliveryState> prohibitedCods = (List<CwbOrderWithDeliveryState>)request.getAttribute("prohibitedCods");
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
@@ -104,11 +105,30 @@ function sub(){
 <BODY style="background:#f5f5f5">
 <form id="searchForm" action ="<%=request.getContextPath()%>/editcwb/editXiuGaiJinE" method = "post">
 <input type="hidden" name="requestUser" value="<%=request.getParameter("requestUser") %>" />
+
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 	<tr>
-		<td colspan="6">要求修改金额总数：<%=cwbArray.length %>单　有效订单：<%=allowCods.size() %>单</td>
+		<td colspan="6">要求修改订单类型订单总数：<%=cwbArray.length %>单　有效订单：<%=allowCods.size() %>单　不符合条件订单：<%=prohibitedCods.size() %>单</td>
  	</tr>
  	
+	<tr class="font_1" height="30" style="background-color: rgb(243, 243, 243); ">
+		<td>不能修改订单类型的订单</td>
+		<td>订单类型</td>
+		<td>当前环节</td>
+ 		<td>原因</td>
+ 	</tr>
+ 	<%for(CwbOrderWithDeliveryState cods :prohibitedCods){ 
+ 	%>
+ 	<tr>
+		<td align="center" valign="middle" bgcolor="#EEF6FF"><strong><%=cods.getCwbOrder().getCwb() %></strong></td>
+		<td align="center" valign="middle" bgcolor="#EEF6FF"><%=CwbOrderTypeIdEnum.getByValue(cods.getCwbOrder().getCwbordertypeid()).getText() %></td>
+ 		<td align="center" valign="middle" bgcolor="#EEF6FF"><%=FlowOrderTypeEnum.getText(cods.getCwbOrder().getFlowordertype()).getText() %></td>
+ 		<td align="center" valign="middle" bgcolor="#EEF6FF"><%=cods.getError() %></td>
+ 	</tr>
+ 	<%} %>
+</table>
+
+<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 	<tr class="font_1" height="30" style="background-color: rgb(243, 243, 243); ">
 		<td>没反馈最终结果的订单</td>
 		<td>订单类型</td>

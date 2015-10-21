@@ -85,7 +85,8 @@ public enum ExceptionCwbErrorTypeEnum {
 	YIJINGFENGBAO(145, "此单已经在{0}封包了,不允许{1}操作"),
 	SMHorSMTBXYTHCZ(146, "{0}类型的订单,不允许反馈为{1}"),
 	PeisongDan_vipshop_weiwanjie(147, "唯品会配送单状态未完结，不能操作当前揽退单:{0}"),
-	Shangmentui_vipshop_shixiao(148, "当前操作订单{0}已失效，请关联订单{1}")
+	Shangmentui_vipshop_shixiao(148, "当前操作订单{0}已失效，请关联订单{1}"),
+	LingHuo_ZhiFuXinxiWeiQueRen(148, "订单{0}有修改未确认，请联系客服人员！")
 	;
 
 	private int value;

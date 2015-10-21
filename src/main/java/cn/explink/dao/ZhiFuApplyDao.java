@@ -425,4 +425,18 @@ public class ZhiFuApplyDao {
 		String sql = "select count(1) from express_ops_zhifu_apply where applystate=1 and cwb=? and applyway=?";
 		return this.jdbcTemplate.queryForLong(sql,cwb,applyway);
 	}
+	
+	//查询未审批或者审批通过未确认的申请数据
+	public List<ZhiFuApplyView> getUnConfirmZFAVByCwbs(String cwbs) {
+		String sql = "select * from express_ops_zhifu_apply where applystate = 1 and applyresult = 0 and cwb in (?)"
+				+ " union "
+				+ "select * from express_ops_zhifu_apply where applystate = 2 and applyresult = 2 and confirmstate = 1 and confirmresult = 0 and cwb in (?)";
+		return this.jdbcTemplate.query(sql, new ZhiFuApplyMapper(), cwbs, cwbs);
+	}
+	
+	//查询审批通过并且确认通过的申请数据
+	public List<ZhiFuApplyView> getCheckConfirmZFAVByCwbs(String cwbs) {
+		String sql  = "select * from express_ops_zhifu_apply where applystate = 2 and applyresult = 2 and confirmstate = 2 and confirmresult = 2 and cwb in (?)";
+		return this.jdbcTemplate.query(sql, new ZhiFuApplyMapper(), cwbs);
+	}
 }

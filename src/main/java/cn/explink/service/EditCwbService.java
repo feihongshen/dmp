@@ -1655,5 +1655,43 @@ public class EditCwbService {
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
-}
+    }
+	
+	//获取已经完成了的订单
+	public String getCompletedCwbByCwb (String cwb) {
+		Long completedCount = 0L;
+		CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+		String cwbMsg = "的订单不允许修改";
+		if (co != null) {
+			int flowordertype = FlowOrderTypeEnum.YiShenHe.getValue();
+			int cwbOrderTypeId = co.getCwbordertypeid();
+			int deliveryState = -1;
+			if (CwbOrderTypeIdEnum.Peisong.getValue() == cwbOrderTypeId) {
+				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
+				cwbMsg = "配送成功" + cwbMsg;
+			} else if (CwbOrderTypeIdEnum.Shangmentui.getValue() == cwbOrderTypeId) {
+				deliveryState = DeliveryStateEnum.ShangMenTuiChengGong.getValue();
+				cwbMsg = "上门退成功" + cwbMsg;
+			} else if (CwbOrderTypeIdEnum.Shangmenhuan.getValue() == cwbOrderTypeId) {
+				deliveryState = DeliveryStateEnum.ShangMenHuanChengGong.getValue();
+				cwbMsg = "上门换成功" + cwbMsg;
+			} else if (CwbOrderTypeIdEnum.OXO.getValue() == cwbOrderTypeId) {
+				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
+				cwbMsg = "OXO配送成功" + cwbMsg;
+			} else if (CwbOrderTypeIdEnum.OXO_JIT.getValue() == cwbOrderTypeId) {
+				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
+				cwbMsg = "OXO_JIT揽收成功" + cwbMsg;
+			} else if (CwbOrderTypeIdEnum.Express.getValue() == cwbOrderTypeId) {
+				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
+				cwbMsg = "快递配送成功" + cwbMsg;
+		    } else {
+		    	// do nothing
+		    }
+			completedCount = cwbDAO.getCompletedCwbCount(cwb, cwbOrderTypeId, flowordertype, deliveryState);
+		}
+		if (completedCount > 0) {
+			return cwbMsg;
+		}
+		return "";
+	}
 }

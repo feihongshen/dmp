@@ -113,6 +113,8 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 			url:pname+"/PDA/cwbbranchdeliver/"+scancwb+"?deliverid="+deliverid+"&requestbatchno="+requestbatchno,
 			dataType:"json",
 			success : function(data) {
+				
+				//alert(data.errorinfo);
 				$("#scancwb").val("");
 				$("#pagemsg").html("");
 				//var linghuoSuccessCount = deliverStr[deliverid].split(",").length-1;
@@ -143,6 +145,12 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#exceldeliverid").html(data.body.cwbdelivername);
 					$("#deliver").html("已领货（"+data.body.cwbdelivername+"）");
 					
+					if (data.body.editCwb != "") {
+						alert(data.body.editCwb+"有修改，请及时核对！");
+					}
+					
+					//var checkRecord = data.body.checkRecord;
+					//alert(checkRecord);
 					//getweilingdata(data.body.cwbOrder.deliverid);
 					//将成功扫描的订单放到已入库明细中
 					//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true);
@@ -167,6 +175,9 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#msg").html(scancwb+"         （异常扫描）"+data.errorinfo);
 					addAndRemoval(scancwb,"errorTable",false);
 					//errorvedioplay(pname,data);
+					if (data.statuscode=='148') { //订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
+						alert(data.errorinfo);
+					}
 				}
 				$("#responsebatchno").val(data.responsebatchno);
 				batchPlayWav(data.wavList);
