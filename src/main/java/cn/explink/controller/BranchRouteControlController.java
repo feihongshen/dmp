@@ -88,7 +88,7 @@ public class BranchRouteControlController {
 	@RequestMapping("/list/{page}")
 	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "fromBranchId", required = false, defaultValue = "0") long fromBranchId,
 			@RequestParam(value = "toBranchId", required = false, defaultValue = "0") long toBranchId, @RequestParam(value = "type", required = false, defaultValue = "0") int type) {
-		model.addAttribute("branchlist", branchDAO.getAllEffectBranches());
+		model.addAttribute("branchlist", branchDAO.getAllBranches());
 		model.addAttribute("brList", branchRouteDAO.getBranchRouteByWhere(page, fromBranchId, toBranchId, type));
 		model.addAttribute("page_obj", new Page(branchRouteDAO.getBranchRouteCount(fromBranchId, toBranchId, type), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);

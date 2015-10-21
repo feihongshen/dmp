@@ -104,8 +104,11 @@ function openadd(){
 		 <% for(BranchRoute br : brList){ %>
 		<tr>
 			<%for(Branch b : branchlist){if(br.getFromBranchId()==b.getBranchid()){ %>
+				<%if(b.getBrancheffectflag().equals("1")){ %>
 				<td width="10%" align="center" valign="middle" ><%=b.getBranchname() %></td>
-			<%}} %>
+				<% }else{%>
+				<td width="10%" align="center" valign="middle" ><%=b.getBranchname() %>(失效)</td>
+			<%}}} %>
 			<%for(Branch b : branchlist){if(br.getToBranchId()==b.getBranchid()){ %>
 				<td width="10%" align="center" valign="middle" ><%=b.getBranchname() %></td>
 			<%}} %>
