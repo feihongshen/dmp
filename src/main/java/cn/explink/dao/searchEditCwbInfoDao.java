@@ -124,7 +124,7 @@ public class searchEditCwbInfoDao {
 	
 	
 	public List<SearcheditInfo> getEditInfoByCwbs (String cwbs) {
-		String sql = "SELECT * FROM express_ops_editcwbinfo WHERE cwb in (?)";
-		return this.jdbcTemplate.query(sql, new EditInfoRowMapper(), cwbs);
+		String sql = "SELECT * FROM express_ops_editcwbinfo WHERE cwb in ("+cwbs+")";
+		return this.jdbcTemplate.query(sql, new EditInfoRowMapper());
 	}
 }

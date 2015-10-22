@@ -3754,9 +3754,24 @@ public class CwbOrderService {
 		}
 		
 		//订单如果存在未审批或者审批通过未确认的支付信息修改申请，不允许做领货。  by vic.liang@pjbest.com on 20151013
-		List<ZhiFuApplyView> unconfirmZFAV = zhiFuApplyDao.getUnConfirmZFAVByCwbs(cwb);
-		if (unconfirmZFAV != null && unconfirmZFAV.size() > 0) {
-			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen, cwb);
+		String searchCwb = "'"+cwb+"'";
+		List<ZhiFuApplyView> zhiFuApplyViewList = zhiFuApplyDao.getZhiFuApplyViewListByCwbs(searchCwb);
+		if (zhiFuApplyViewList != null && !zhiFuApplyViewList.isEmpty()) {
+			for (ZhiFuApplyView zhifuApply : zhiFuApplyViewList) {
+				if (zhifuApply != null) {
+					int applystate = zhifuApply.getApplystate();//审核所处的状态
+					int applyresult = zhifuApply.getApplyresult(); //审核结果
+					int confirmstate = zhifuApply.getConfirmstate();//确认状态
+					int confirmresult = zhifuApply.getConfirmresult();//确认结果
+					
+					if (applystate == 1 && applyresult == 0) {// 客服未审核
+						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen);
+					} else if ((applystate == 2 && applyresult == 2)
+							&& (confirmstate == 1 && confirmresult == 0)) {//客服审核通过财务未确认
+						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen);
+					}
+				}
+			}
 		}
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
@@ -7460,31 +7475,37 @@ public class CwbOrderService {
 		return strList;
 	}
 
-	
-	//获取存在订单修改申请or确认完成的支付信息修改申请的订单号
-	public List<String> getEditCwb (String cwbs) {
-		List<String> editCwbList = new ArrayList<String>();
-			
-		List<ZhiFuApplyView> zhifuApplyList = zhiFuApplyDao.getCheckConfirmZFAVByCwbs(cwbs);
-		List<SearcheditInfo> editInfoList = editCwbInfoDao.getEditInfoByCwbs(cwbs);
-			
+	// 获取存在订单修改申请or确认完成的支付信息修改申请的订单号
+	public Map<String, List<String>> getEditCwb(String cwbs) {
+		List<String> editCwbInfoList = new ArrayList<String>();
+		List<String> editCwbPayList = new ArrayList<String>();
+		Map<String, List<String>> editCwbMap = new HashMap<String, List<String>>();
+
+		List<ZhiFuApplyView> zhifuApplyList = zhiFuApplyDao
+				.getCheckConfirmZFAVByCwbs(cwbs);
+		List<SearcheditInfo> editInfoList = editCwbInfoDao
+				.getEditInfoByCwbs(cwbs);
+
 		if (zhifuApplyList != null && zhifuApplyList.size() > 0) {
 			for (ZhiFuApplyView zhifuApply : zhifuApplyList) {
 				String cwb = zhifuApply.getCwb();
-				if (!editCwbList.contains(cwb)) {
-					editCwbList.add(cwb);
-				}
-			}
-			}
-			
-		if (editInfoList != null && editInfoList.size() > 0) {
-			for (SearcheditInfo editInfo : editInfoList) {
-				String cwb = editInfo.getCwb();
-				if (!editCwbList.contains(cwb)) {
-					editCwbList.add(cwb);
+				if (!editCwbPayList.contains(cwb)) {
+					editCwbPayList.add(cwb);
 				}
 			}
 		}
-		return editCwbList;
+
+		if (editInfoList != null && editInfoList.size() > 0) {
+			for (SearcheditInfo editInfo : editInfoList) {
+				String cwb = editInfo.getCwb();
+				if (!editCwbInfoList.contains(cwb)) {
+					editCwbInfoList.add(cwb);
+				}
+			}
+		}
+
+		editCwbMap.put("cwbInfo", editCwbInfoList);
+		editCwbMap.put("cwbPay", editCwbPayList);
+		return editCwbMap;
 	}
 }

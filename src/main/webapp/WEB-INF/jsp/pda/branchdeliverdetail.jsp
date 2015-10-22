@@ -114,7 +114,6 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 			dataType:"json",
 			success : function(data) {
 				
-				//alert(data.errorinfo);
 				$("#scancwb").val("");
 				$("#pagemsg").html("");
 				//var linghuoSuccessCount = deliverStr[deliverid].split(",").length-1;
@@ -145,8 +144,8 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#exceldeliverid").html(data.body.cwbdelivername);
 					$("#deliver").html("已领货（"+data.body.cwbdelivername+"）");
 					
-					if (data.body.editCwb != "") {
-						alert(data.body.editCwb+"有修改，请及时核对！");
+					if (data.body.editCwb != null && data.body.editCwb != "") {
+						alert(data.body.editCwb);
 					}
 					
 					//var checkRecord = data.body.checkRecord;
@@ -175,7 +174,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#msg").html(scancwb+"         （异常扫描）"+data.errorinfo);
 					addAndRemoval(scancwb,"errorTable",false);
 					//errorvedioplay(pname,data);
-					if (data.statuscode=='148') { //订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
+					if (data.statuscode=='149') { //订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
 						alert(data.errorinfo);
 					}
 				}

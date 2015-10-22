@@ -1950,17 +1950,6 @@ public class PDAController {
 				CwbOrder cwbOrder = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
-				List<String> editCwbList = this.cwborderService.getEditCwb(cwb);
-				if (editCwbList != null && editCwbList.size() > 0) {
-					for (String editCwb : editCwbList) {
-						if (alertWarnMsg != null && alertWarnMsg.length() > 0) {
-							alertWarnMsg += "," +editCwb;
-						} else {
-							alertWarnMsg = editCwb;
-						}
-					}
-				}
-
 				linghuoSuccessCount++;
 			} catch (CwbException ce) {// 出现验证错误
 				if (ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen
@@ -2019,11 +2008,45 @@ public class PDAController {
 		}
 		
 		if (alertErrorMsg != null && alertErrorMsg.length() > 0) {
-			alertErrorMsg += "有修改未审核确认，请联系客服人员！";
+			alertErrorMsg += "有修改未审核，请联系客服人员！";
 			alertWarnMsg = "";
 		} else {
-			if (alertWarnMsg != null && alertWarnMsg.length() > 0) {
-				alertWarnMsg += "有修改，请及时核对！";
+			StringBuilder editCwbs = new StringBuilder();
+			if (cwbs != null && !cwbs.isEmpty()) {
+				String searchCwbs = getCwbs(cwbs);
+				Map<String, List<String>> editCwbMap = this.cwborderService.getEditCwb(searchCwbs);
+				if (editCwbMap != null && !editCwbMap.isEmpty()) {
+					List<String> editCwbInfoList = editCwbMap.get("cwbInfo");
+					List<String> editCwbPayList = editCwbMap.get("cwbPay");
+					
+					if (editCwbPayList != null && !editCwbPayList.isEmpty()) {
+						for (String editCwb : editCwbPayList) {
+							if ( editCwbs.indexOf(editCwb) == -1) {
+								if (editCwbs.length() > 0) {
+									editCwbs.append(","+editCwb);
+								} else {
+									editCwbs.append(editCwb);
+								}
+							}
+						}
+					} 
+					
+					if (editCwbInfoList != null && !editCwbInfoList.isEmpty()) {
+						for (String editCwb : editCwbInfoList) {
+							if ( editCwbs.indexOf(editCwb) == -1) {
+								if (editCwbs.length() > 0) {
+									editCwbs.append(","+editCwb);
+								} else {
+									editCwbs.append(editCwb);
+								}
+							}
+						}
+					} 
+				}
+			}
+			
+			if (editCwbs.length() > 0) {
+				alertWarnMsg = editCwbs.toString() + "有修改，请及时核对！";
 			}
 		}
 		model.addAttribute("objList", objList);
@@ -2430,6 +2453,21 @@ public class PDAController {
 		return cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "";
 
 	}
+	
+	
+	private String getCwbs(String cwbs) {
+		StringBuffer strs = new StringBuffer("");
+		if(!cwbs.equals("")){
+			for(String str:cwbs.split("\r\n")){
+				strs.append("'").append(str).append("',");
+			}
+		}
+		String cwbss = "";
+		if(strs.length()>0){
+			cwbss = strs.substring(0, strs.length()-1);
+		}
+		return cwbss;
+	}	
 
 	/**
 	 * 退货站入库 得到未入库 list
@@ -4712,9 +4750,22 @@ public class PDAController {
 		CwbOrder cwbOrder = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 		
-		List<String> editCwbList = this.cwborderService.getEditCwb(cwb);
-		if (editCwbList != null && editCwbList.size() > 0) {
-			obj.put("editCwb", cwb);
+		String searchCwb = "'" + cwb + "'";
+		Map<String,List<String>> editCwbMap = this.cwborderService.getEditCwb(searchCwb);
+		if (editCwbMap != null && !editCwbMap.isEmpty()) {
+			String alertInfo = "";
+			List<String> editCwbInfoList = editCwbMap.get("cwbInfo");
+			List<String> editCwbPayList = editCwbMap.get("cwbPay");
+			if ((editCwbPayList != null && !editCwbPayList.isEmpty()) && (editCwbInfoList != null && !editCwbInfoList.isEmpty()) ) {
+				alertInfo = "订单信息和订单支付信息存在修改，请及时核对！";
+			} else if (editCwbPayList != null && !editCwbPayList.isEmpty()) {
+				alertInfo = "订单涉及财务修改，请及时核对！";
+			} else if (editCwbInfoList != null && !editCwbInfoList.isEmpty()) {
+				alertInfo = "订单信息存在修改，请及时核对！";
+			} else {//没有修改订单
+				// do nothing
+			}
+			obj.put("editCwb", alertInfo);
 		} else {
 			obj.put("editCwb", "");
 		}
