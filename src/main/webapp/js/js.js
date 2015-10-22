@@ -1572,15 +1572,20 @@ function click_podresultid(deliverystate, PeiSongChengGong, ShangMenTuiChengGong
 				}
 			}
 			bufentuihuoObj(podresultid);
-		} else if (podresultid == FenZhanZhiLiu || podresultid == ZhiLiuZiDongLingHuo) {// 分站滞留、滞留自动领货
+		} else if (podresultid == FenZhanZhiLiu || podresultid == ZhiLiuZiDongLingHuo) {// 分站滞留、滞留自动领货		
+			if (needdefault) {
+				$("#infactfare").val(0);//DMP4.2.3 修复页面下拉先上门退成功=》再选分站滞留，实收运费被设置成应收运费的缺陷 by jinghui.pan 20151021
+			}
 			zhiliuObj();
 		}else if (podresultid == DaiZhongZhuan) {// 待中转
 			zhongzhuanObj();
 		}
 		
 		else if (podresultid == ShangMenJuTui) {// 上门拒退
+			//DMP4.2.3 修复页面下拉先上门退成功=》再选分站滞留，实收运费被设置成应收运费的缺陷 by jinghui.pan 20151021
 			if (needdefault) {
-				$("#infactfare").val(parseFloat($("#shishou").val()));
+				//$("#infactfare").val(parseFloat($("#shishou").val()));
+				$("#infactfare").val(0);
 			}
 			shangmenjutuiObj();
 		} else if (podresultid == HuoWuDiuShi) {// 货物丢失

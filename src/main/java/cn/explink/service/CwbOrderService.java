@@ -4378,6 +4378,7 @@ public class CwbOrderService {
 		if ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue())
 				|| (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue())) {
 			receivedfeecash = receivedfeepos = receivedfeecheque = receivedfeeother = BigDecimal.ZERO;
+			infactfare = BigDecimal.ZERO;//DMP4.2.3 修复页面下拉先上门退成功=》再选分站滞留，实收运费被设置成应收运费的缺陷 by jinghui.pan 20151021
 		}
 
 		this.logger.info("进入单票反馈cwborderservice处理完后开始保存信息cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash
