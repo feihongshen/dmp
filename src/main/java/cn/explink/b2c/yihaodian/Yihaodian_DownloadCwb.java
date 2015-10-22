@@ -35,15 +35,15 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 	/**
 	 * 下载一号店订单信息
 	 */
-	public long DownLoadCwbDetailByYiHaoDian(int yhd_key, int loopcount) {
+	public long DownLoadCwbDetailByYiHaoDian(int yhd_key, int loopcount,String url,int urlFlag) {
 		Yihaodian yihaodian = getYihaodian(yhd_key);
 		try {
-			OrderExportResultDto exportDto = BuildOrderExportCondition(yihaodian);
+			OrderExportResultDto exportDto = BuildOrderExportCondition(yihaodian,url);
 			if (exportDto != null && !exportDto.getErrCode().equals(YihaodianExpEmum.Success.getErrCode())) {
 				logger.info("Invoke export cwb detail interface business exception!errCode={},errMsg={},yhd_key=" + yhd_key + ",loopcount=" + loopcount, exportDto.getErrCode(), exportDto.getErrMsg());
 				return 0;
 			}
-			List<Map<String, String>> cwbOrderList = parseCwbArrByOrderDto(exportDto,yihaodian); // 返回一个封装好的List
+			List<Map<String, String>> cwbOrderList = parseCwbArrByOrderDto(exportDto,yihaodian,urlFlag); // 返回一个封装好的List
 			if (cwbOrderList == null) {
 				logger.warn("请求一号店没有下载到订单数据!errCode={},errMsg={},yhd_key=" + yhd_key + ",loopcount=" + loopcount, exportDto.getErrCode(), exportDto.getErrMsg());
 				return 0;
@@ -84,7 +84,7 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 	 * @param yihaodian
 	 * @return
 	 */
-	private OrderExportResultDto BuildOrderExportCondition(Yihaodian yihaodian) {
+	private OrderExportResultDto BuildOrderExportCondition(Yihaodian yihaodian,String url) {
 		OrderExportConditionDto condto = new OrderExportConditionDto();
 		condto.setUserCode(yihaodian.getUserCode());
 		condto.setPageSize(yihaodian.getExportCwb_pageSize());
@@ -92,14 +92,14 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 		condto.setRequestTime(nowtime);
 
 		condto.setSign(MD5Util.md5(yihaodian.getUserCode() + nowtime + yihaodian.getPrivate_key()));
-		OrderExportResultDto exportDto = restTemplate.exportOrder(yihaodian.getExportCwb_URL(), condto);
+		OrderExportResultDto exportDto = restTemplate.exportOrder(url, condto);
 		return exportDto;
 	}
 
 	/**
 	 * 返回一个转化为导入接口可识别的对象
 	 */
-	private List<Map<String, String>> parseCwbArrByOrderDto(OrderExportResultDto exportDto,Yihaodian yhd) {
+	private List<Map<String, String>> parseCwbArrByOrderDto(OrderExportResultDto exportDto,Yihaodian yhd,int urlFlag) {
 		List<Map<String, String>> cwbList = null;
 		List<OrderExportHeaderDto> orderHeaderList = exportDto.getOrderHeaderList();
 		if (orderHeaderList != null && orderHeaderList.size() > 0) {
@@ -133,7 +133,11 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 				if(fromcompany!=null&&fromcompany.contains("1")){
 					cwbMap.put("customerid",yhd.getCustomerids()); //公司来源
 				}else{
-					
+					if(yhd.getIsopenywaddressflag()==1){ //开启药网，不允许老地址下载到药网数据
+						if(urlFlag==0){ //0表示老地址
+							continue;
+						}
+					}
 					cwbMap.put("customerid",yhd.getYwcustomerid()); //公司来源
 				}
 				

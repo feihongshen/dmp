@@ -13,6 +13,53 @@ public class Yihaodian {
 	private long callBackCount; // 每次回调数量
 	private int isopenDataDownload; // 是否开启订单导入接口 0关闭 1打开
 	private String ywcustomerid; //一号店药网customerid,如果 ywcustomerid=customerids,则指定同一个供货商
+	
+	private int isopenywaddressflag; //是否开启药网专用地址下载   0关闭 默认  1开启
+	private String ywexportCwb_URL;
+	private String ywexportSuccess_URL; // 订单数据导出成功后回调URL，告知一号店已经获取成功
+	public String getYwexportSuccess_URL() {
+		return ywexportSuccess_URL;
+	}
+
+	public void setYwexportSuccess_URL(String ywexportSuccess_URL) {
+		this.ywexportSuccess_URL = ywexportSuccess_URL;
+	}
+
+	public int getIsopenywaddressflag() {
+		return isopenywaddressflag;
+	}
+
+	public void setIsopenywaddressflag(int isopenywaddressflag) {
+		this.isopenywaddressflag = isopenywaddressflag;
+	}
+
+	public String getYwexportCwb_URL() {
+		return ywexportCwb_URL;
+	}
+
+	public void setYwexportCwb_URL(String ywexportCwb_URL) {
+		this.ywexportCwb_URL = ywexportCwb_URL;
+	}
+
+	public String getYwdeliveryResult_URL() {
+		return ywdeliveryResult_URL;
+	}
+
+	public void setYwdeliveryResult_URL(String ywdeliveryResult_URL) {
+		this.ywdeliveryResult_URL = ywdeliveryResult_URL;
+	}
+
+	public String getYwtrackLog_URL() {
+		return ywtrackLog_URL;
+	}
+
+	public void setYwtrackLog_URL(String ywtrackLog_URL) {
+		this.ywtrackLog_URL = ywtrackLog_URL;
+	}
+
+	private String ywdeliveryResult_URL; // 配送结果反馈接口URL
+	private String ywtrackLog_URL; // 跟踪日志反馈接口URL
+	
 	public String getYwcustomerid() {
 		return ywcustomerid;
 	}

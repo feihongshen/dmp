@@ -65,6 +65,24 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	 						<input type="radio" name="isopenDataDownload" value="1" <%if(yihaodian.getIsopenDataDownload()==1){%>checked<%}%>/> 开启
 	 						<input type="radio" name="isopenDataDownload" value="0"  <%if(yihaodian.getIsopenDataDownload()==0){%>checked<%}%> /> 关闭
 						</li>
+						<li><span>开启药网URL：</span>
+	 						<input type="radio" name="isopenywaddressflag" value="1" <%if(yihaodian.getIsopenywaddressflag()==1){%>checked<%}%>/> 开启
+	 						<input type="radio" name="isopenywaddressflag" value="0"  <%if(yihaodian.getIsopenywaddressflag()==0){%>checked<%}%> /> 关闭
+						</li>
+						<li><span>药网导出订单URL：</span>
+	 						<input type ="text" id="ywexportCwb_URL" name ="ywexportCwb_URL" maxlength="300"   value="<%=yihaodian.getYwexportCwb_URL()%>"   > 
+						</li>
+							<li><span>药网导出回调URL：</span>
+	 						<input type ="text" id="ywexportSuccess_URL" name ="ywexportSuccess_URL"  maxlength="300"  value="<%=yihaodian.getYwexportSuccess_URL() %>"  > 
+						</li>
+						<li><span>药网配送反馈URL：</span>
+	 						<input type ="text" id="ywdeliveryResult_URL" name ="ywdeliveryResult_URL"  maxlength="300"  value="<%=yihaodian.getYwdeliveryResult_URL() %>"  > 
+						</li>
+						<li><span>药网跟踪反馈URL：</span>
+	 						<input type ="text" id="ywtrackLog_URL" name ="ywtrackLog_URL"  maxlength="300"  value="<%=yihaodian.getYwtrackLog_URL()%>"    > 
+						</li>
+						
+						
 						
 						
 						<li><span>订单导入库房：</span>
@@ -120,6 +138,28 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	 						<input type="radio" name="isopenDataDownload" value="1" checked/> 开启
 	 						<input type="radio" name="isopenDataDownload" value="0" /> 关闭
 						</li>
+						
+						
+						
+						
+						<li><span>开启药网URL：</span>
+	 						<input type="radio" name="isopenywaddressflag" value="1" /> 开启
+	 						<input type="radio" name="isopenywaddressflag" value="0" checked /> 关闭
+						</li>
+						<li><span>药网导出订单URL：</span>
+	 						<input type ="text" id="ywexportCwb_URL" name ="ywexportCwb_URL" maxlength="300"   value=""   > 
+						</li>
+							<li><span>药网导出回调URL：</span>
+	 						<input type ="text" id="ywexportSuccess_URL" name ="ywexportSuccess_URL"  maxlength="300"  value=""  > 
+						</li>
+						<li><span>药网配送反馈URL：</span>
+	 						<input type ="text" id="ywdeliveryResult_URL" name ="ywdeliveryResult_URL"  maxlength="300"  value=""  > 
+						</li>
+						<li><span>药网跟踪反馈URL：</span>
+	 						<input type ="text" id="ywtrackLog_URL" name ="ywtrackLog_URL"  maxlength="300"  value=""    > 
+						</li>
+						
+						
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
 								<option value="0">请选择库房</option>

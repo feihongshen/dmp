@@ -68,6 +68,15 @@ public class YihaodianService {
 		yihaodian.setIsopenDataDownload(Integer.parseInt(request.getParameter("isopenDataDownload")));
 		yihaodian.setLoopcount(Integer.parseInt(request.getParameter("loopcount")));
 		
+		yihaodian.setIsopenywaddressflag(Integer.parseInt(request.getParameter("isopenywaddressflag")));
+		yihaodian.setYwexportCwb_URL(request.getParameter("ywexportCwb_URL"));
+		yihaodian.setYwdeliveryResult_URL(request.getParameter("ywdeliveryResult_URL"));
+		yihaodian.setYwtrackLog_URL(request.getParameter("ywtrackLog_URL"));
+		yihaodian.setYwexportSuccess_URL(request.getParameter("ywexportSuccess_URL"));
+		
+		
+		
+		
 		String ywcustomerid=request.getParameter("ywcustomerid");
 		yihaodian.setYwcustomerid(ywcustomerid);
 		String oldYwCustomerids = ""; //yaowang customerid
@@ -160,13 +169,22 @@ public class YihaodianService {
 			return -1;
 		}
 		int loopcount = yihaodian.getLoopcount() == 0 ? 5 : yihaodian.getLoopcount();
-		for (int i = 0; i < loopcount; i++) {
-			calcCount += yihaodian_Master.getYihaodian_DownloadCwb().DownLoadCwbDetailByYiHaoDian(yhd_key, i + 1); // 订单数据下载接口
-			yihaodian_Master.getYihaodian_ExportCallBack().ExportCallBackByYiHaoDian(yhd_key, i + 1); // 下载成功回传接口
+		calcCount = downloadByUrl(yihaodian,yhd_key, calcCount, loopcount,yihaodian.getExportCwb_URL(),0); //老地址下载
+		if(yihaodian.getIsopenywaddressflag()==1){
+			calcCount = downloadByUrl(yihaodian,yhd_key, calcCount, loopcount,yihaodian.getYwexportCwb_URL(),1); //新地址下载
 		}
-
 		yihaodianTimmer.selectTempAndInsertToCwbDetail(yhd_key); // 临时表数据插入到detail中
 
+		return calcCount;
+	}
+
+	private long downloadByUrl(Yihaodian yihaodian ,int yhd_key, long calcCount, int loopcount,String url,int urlFlag) {
+		for (int i = 0; i < loopcount; i++) {
+			calcCount += yihaodian_Master.getYihaodian_DownloadCwb().DownLoadCwbDetailByYiHaoDian(yhd_key, i + 1,url,urlFlag); // 订单数据下载接口
+			
+			String customerid=urlFlag==0?yihaodian.getExportSuccess_URL():yihaodian.getYwexportSuccess_URL();
+			yihaodian_Master.getYihaodian_ExportCallBack().ExportCallBackByYiHaoDian(yhd_key, i + 1,url,customerid); // 下载成功回传接口
+		}
 		return calcCount;
 	}
 

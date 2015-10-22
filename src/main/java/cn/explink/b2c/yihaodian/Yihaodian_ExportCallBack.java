@@ -35,12 +35,12 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 	/**
 	 * 回传下载成功记录
 	 */
-	public void ExportCallBackByYiHaoDian(int yhd_key, int loopcount) {
+	public void ExportCallBackByYiHaoDian(int yhd_key, int loopcount,String url,String customerid) {
 		Yihaodian yihaodian = getYihaodian(yhd_key);
 		try {
 			
-			String customerids=yihaodian.getCustomerids()+","+yihaodian.getYwcustomerid();
-			List<CwbOrderDTO> datalist = dataImportDAO_B2c.getCwbOrderByCustomerIdsAndPageCount(customerids, yihaodian.getCallBackCount());
+//			String customerids=yihaodian.getCustomerids()+","+yihaodian.getYwcustomerid();
+			List<CwbOrderDTO> datalist = dataImportDAO_B2c.getCwbOrderByCustomerIdsAndPageCount(customerid, yihaodian.getCallBackCount());
 			if (datalist == null || datalist.size() == 0) {
 				return;
 			}
@@ -52,7 +52,7 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 			String multiCwbs = getCwbArrStr(datalist);
 			condto.setShipmentCode(multiCwbs.replaceAll("'", ""));
 
-			ReturnDto returnDto = restTemplate.exportCallBack(yihaodian.getExportSuccess_URL(), condto); // 返回dto
+			ReturnDto returnDto = restTemplate.exportCallBack(url, condto); // 返回dto
 			if (!returnDto.getErrCode().equals(YihaodianExpEmum.Success.getErrCode())) {
 				logger.info("回调[一号店]的订单信息导出成功的接口-返回异常:errCode={},errMsg={},loopcount=" + loopcount, returnDto.getErrCode(), returnDto.getErrMsg());
 				return;
@@ -65,7 +65,7 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 			}
 
 			if (datalist != null) {
-				ExportCallBackByYiHaoDian(yhd_key, loopcount + 1);
+				ExportCallBackByYiHaoDian(yhd_key, loopcount + 1,url,customerid);
 			}
 
 		} catch (Exception e) {
