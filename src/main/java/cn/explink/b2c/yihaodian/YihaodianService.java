@@ -182,10 +182,26 @@ public class YihaodianService {
 		for (int i = 0; i < loopcount; i++) {
 			calcCount += yihaodian_Master.getYihaodian_DownloadCwb().DownLoadCwbDetailByYiHaoDian(yhd_key, i + 1,url,urlFlag); // 订单数据下载接口
 			
-			String customerid=urlFlag==0?yihaodian.getExportSuccess_URL():yihaodian.getYwexportSuccess_URL();
+			String customerid = getMatchCustomerId(yihaodian, yhd_key, url,urlFlag, i);
 			yihaodian_Master.getYihaodian_ExportCallBack().ExportCallBackByYiHaoDian(yhd_key, i + 1,url,customerid); // 下载成功回传接口
 		}
 		return calcCount;
+	}
+
+	private String getMatchCustomerId(Yihaodian yihaodian, int yhd_key,
+			String url, int urlFlag, int i) {
+		String customerid="-1";
+		if(yihaodian.getIsopenywaddressflag()==1){
+			if(urlFlag==0){
+				customerid=yihaodian.getCustomerids();
+			}else{
+				customerid=yihaodian.getYwcustomerid();
+			}
+			yihaodian_Master.getYihaodian_ExportCallBack().ExportCallBackByYiHaoDian(yhd_key, i + 1,url,customerid); // 下载成功回传接口
+		}else{
+			customerid =yihaodian.getCustomerids()+","+yihaodian.getYwcustomerid();
+		}
+		return customerid;
 	}
 
 }

@@ -39,7 +39,6 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 		Yihaodian yihaodian = getYihaodian(yhd_key);
 		try {
 			
-//			String customerids=yihaodian.getCustomerids()+","+yihaodian.getYwcustomerid();
 			List<CwbOrderDTO> datalist = dataImportDAO_B2c.getCwbOrderByCustomerIdsAndPageCount(customerid, yihaodian.getCallBackCount());
 			if (datalist == null || datalist.size() == 0) {
 				return;
