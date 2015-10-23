@@ -8464,11 +8464,4 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
-	<changeSet id="zhouguoting-2015-10-23-1" author="zhouguoting">
-		<sql>
-			ALTER TABLE `fn_org_recharges`   
-  				ADD COLUMN `handle_status` TINYINT(4) DEFAULT 0  NOT NULL  COMMENT '处理状态。0导入，1已处理但未核销，2已处理已核销，3处理异常' AFTER `bi_id`;
-		</sql>
-	</changeSet>
-	
 </databaseChangeLog>
