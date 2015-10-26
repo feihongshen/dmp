@@ -19,6 +19,7 @@ src/main/db/changelog/DMP4.0base_kefu.sql -text
 src/main/db/changelog/changelog.xml -text
 src/main/db/changelog/dmp40_function.sql -text
 src/main/db/changelog/dmp_init.sql -text
+src/main/db/changelog/eap_quartz_init.sql -text
 src/main/db/changelog/fnc.sql -text
 src/main/db/changelog/order_add_field.sql -text
 src/main/db/changelog/quartz_init.sql -text

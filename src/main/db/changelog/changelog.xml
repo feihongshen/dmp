@@ -8464,4 +8464,9 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
+	<changeSet id="zhouguoting-2015-10-26-1" author="zhouguoting">
+		<sqlFile path="eap_quartz_init.sql" encoding="UTF-8"
+			relativeToChangelogFile="true" />
+	</changeSet>
+	
 </databaseChangeLog>
