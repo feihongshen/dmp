@@ -4808,8 +4808,9 @@ public class PDAController {
 		} else {
 			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 		}
+		
 		explinkResponse.addLastWav(wavPath);
-
+		this.cwborderService.updateYpdjFlowordertypeMethod(cwb);		
 		return explinkResponse;
 	}
 

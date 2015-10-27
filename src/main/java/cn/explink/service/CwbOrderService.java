@@ -7508,4 +7508,9 @@ public class CwbOrderService {
 		editCwbMap.put("cwbPay", editCwbPayList);
 		return editCwbMap;
 	}
+	
+	@Transactional
+	public void updateYpdjFlowordertypeMethod(String cwb){
+		this.ypdjHandleRecordDAO.updateypdjflowordertype(cwb);
+	}
 }
