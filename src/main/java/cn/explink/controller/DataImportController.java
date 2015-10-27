@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -385,8 +386,8 @@ public class DataImportController {
 			@RequestParam(value = "addressCodeEditType", defaultValue = "-1", required = false) Integer addressCodeEditType, // 是否是以匹配的站点
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid, @RequestParam(value = "onePageNumber", defaultValue = "10", required = false) long onePageNumber, // 每页记录数
 			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow, // 是否显示,
-			@RequestParam(value = "zlpop", defaultValue = "2", required = false) long zlpop // 是否显示
-
+			@RequestParam(value = "zlpop", defaultValue = "2", required = false) long zlpop, // 是否显示
+			@RequestParam(value="cwbstr1",required=false) String cwbstr1
 	) {
 		/*
 		 * //如果系统设置 String
@@ -394,6 +395,14 @@ public class DataImportController {
 		 * ).getValue(); if(showCustomer.equals("no")){ return
 		 * editBrancheach(model,request,response); }
 		 */
+		if(addressCodeEditType != -1){
+			if(StringUtils.isNotEmpty(cwbstr1)){
+				if(StringUtils.isBlank(cwbs)){
+					cwbs = cwbstr1;
+				}
+			}
+		}
+		model.addAttribute("cwbs",cwbs);
 		model.addAttribute("branchs", branchDAO.getBanchByBranchidForStock("" + BranchEnum.ZhanDian.getValue()));
 		model.addAttribute("customers", customerDAO.getAllCustomers());
 		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));

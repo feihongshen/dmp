@@ -58,7 +58,6 @@
 <script type="text/javascript"
 	src="http://api.map.baidu.com/api?v=2.0&ak=szTBW9236HO8EDCYuk4xQlP4"></script>
 <script>
-
 function subEdit(form){
 	if(form.excelbranch.value.length==0){
 		alert("请输入站点");
@@ -204,7 +203,8 @@ function bdbranchmatch(){
 				<table width="100%" height="23" border="0" cellpadding="0"
 					cellspacing="5" class="right_set1">
 					<tr id="customertr" class=VwCtr style="display:">
-						<td>订单编号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs"></textarea>
+						<td>订单编号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ></textarea>
+									<textarea cols="24" rows="4"  style="display:none" name ="cwbstr1"  >${cwbs}</textarea>
 							 客户：<select
 							name="customerid" id="customerid" class="select1"
 							onchange="changeCustomerid()">
@@ -250,7 +250,7 @@ function bdbranchmatch(){
 								%>
 						</select> <input type="button" id="btnval0" class="input_button2"
 							value="导出" onclick="exportField();" /> (共<a
-							href="javascript:$('#addressCodeEditType').val(-1);selectPage(1);"
+							href="javascript:$('#addressCodeEditType').val(-2);selectPage(1);"
 							style="font-size: 18; font-weight: bold; color: red;">${AllAddress}</a>单
 							地址库匹配<a <%if(SuccessAddress==0){%> href="#" <%} else{%>
 							href="javascript:$('#addressCodeEditType').val(<%=CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()%>);selectPage(1);"
