@@ -256,8 +256,8 @@ public class YpdjHandleRecordDAO {
 		return this.jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid);
 	}
 	
-	public void updateypdjflowordertype(String cwb){
-		String sql="update ops_ypdjhandlerecord set flowordertype="+FlowOrderTypeEnum.FenZhanLingHuo.getValue()+" where cwb='"+cwb+"'";
+	public void updateypdjflowordertype(String scancwb){
+		String sql="update ops_ypdjhandlerecord set flowordertype="+FlowOrderTypeEnum.FenZhanLingHuo.getValue()+" where scancwb='"+scancwb+"'";
 		this.jdbcTemplate.update(sql);
 	}
 }

@@ -7510,7 +7510,7 @@ public class CwbOrderService {
 	}
 	
 	@Transactional
-	public void updateYpdjFlowordertypeMethod(String cwb){
-		this.ypdjHandleRecordDAO.updateypdjflowordertype(cwb);
+	public void updateYpdjFlowordertypeMethod(String scancwb){
+		this.ypdjHandleRecordDAO.updateypdjflowordertype(scancwb);
 	}
 }

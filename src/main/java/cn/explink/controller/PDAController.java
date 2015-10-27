@@ -4810,7 +4810,7 @@ public class PDAController {
 		}
 		
 		explinkResponse.addLastWav(wavPath);
-		this.cwborderService.updateYpdjFlowordertypeMethod(cwb);		
+		this.cwborderService.updateYpdjFlowordertypeMethod(scancwb);		
 		return explinkResponse;
 	}
 
