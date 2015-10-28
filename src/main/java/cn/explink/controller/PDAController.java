@@ -4816,7 +4816,13 @@ public class PDAController {
 		}
 		
 		explinkResponse.addLastWav(wavPath);
-		this.cwborderService.updateYpdjFlowordertypeMethod(scancwb);		
+		
+		if(cwbOrder.getSendcarnum()>1){
+			if(cwbOrder.getScannum()==cwbOrder.getSendcarnum()){
+				
+				this.cwborderService.delYpdjFlowordertypeMethod(cwb);
+			}
+		}
 		return explinkResponse;
 	}
 

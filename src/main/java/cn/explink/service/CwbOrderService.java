@@ -7513,8 +7513,11 @@ public class CwbOrderService extends BaseOrderService{
 	}
 	
 	@Transactional
-	public void updateYpdjFlowordertypeMethod(String scancwb){
-		this.ypdjHandleRecordDAO.updateypdjflowordertype(scancwb);
+	public void delYpdjFlowordertypeMethod(String cwb){
+
+		this.ypdjHandleRecordDAO.delypdjflowordertype(cwb);
+	
+		
 	}
 	
 	
