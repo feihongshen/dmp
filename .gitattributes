@@ -1731,6 +1731,7 @@ src/main/java/cn/explink/service/ApplyDeliverstateService.java -text
 src/main/java/cn/explink/service/BackDetailService.java -text
 src/main/java/cn/explink/service/BackSummaryService.java -text
 src/main/java/cn/explink/service/BaleService.java -text
+src/main/java/cn/explink/service/BaseOrderService.java -text
 src/main/java/cn/explink/service/BranchAutoWarhouseService.java -text
 src/main/java/cn/explink/service/BranchContractService.java -text
 src/main/java/cn/explink/service/BranchDeliveryFeeBillService.java -text
@@ -1771,6 +1772,7 @@ src/main/java/cn/explink/service/ExportService.java -text
 src/main/java/cn/explink/service/ExportmouldService.java -text
 src/main/java/cn/explink/service/FloworderLogService.java -text
 src/main/java/cn/explink/service/ImportCwbErrorService.java -text
+src/main/java/cn/explink/service/KfzdOrderService.java -text
 src/main/java/cn/explink/service/LogToDayByTuihuoService.java -text
 src/main/java/cn/explink/service/LogToDayByWarehouseService.java -text
 src/main/java/cn/explink/service/LogToDayExportService.java -text
@@ -2168,6 +2170,7 @@ src/main/webapp/WEB-INF/jsp/common/showDetail_branch.jsp -text
 src/main/webapp/WEB-INF/jsp/common/showlist.jsp -text
 src/main/webapp/WEB-INF/jsp/common/showlist_branch.jsp -text
 src/main/webapp/WEB-INF/jsp/commonLib/easyui.jsp -text
+src/main/webapp/WEB-INF/jsp/commonLib/header.jsp -text
 src/main/webapp/WEB-INF/jsp/commonmodel/add.jsp -text
 src/main/webapp/WEB-INF/jsp/commonmodel/common_coordinateModel.jsp -text
 src/main/webapp/WEB-INF/jsp/complaint/detail.jsp -text
@@ -2563,6 +2566,8 @@ src/main/webapp/WEB-INF/jsp/pda/onetomore.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/quejianlist.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/scancwbbranch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/scancwbbranchforzd.jsp -text
+src/main/webapp/WEB-INF/jsp/pda/sortingAndChangeExportWarehouse.jsp -text
+src/main/webapp/WEB-INF/jsp/pda/sortingAndChangeExportWarehouseBatch.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/takestock.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/urgentexportwarhouse.jsp -text
 src/main/webapp/WEB-INF/jsp/pda/zhandianlist.jsp -text
@@ -5822,6 +5827,7 @@ src/main/webapp/js/branchContract/editTable.js -text
 src/main/webapp/js/branchLog.js -text
 src/main/webapp/js/branchLogAll.js -text
 src/main/webapp/js/commonUtil.js -text
+src/main/webapp/js/commonWidget.js -text
 src/main/webapp/js/dragdrop-min.js -text
 src/main/webapp/js/easyui-extend/css/bglogin.css -text
 src/main/webapp/js/easyui-extend/images/button.png -text
@@ -9842,6 +9848,8 @@ src/main/webapp/js/swfupload/swfupload.queue.js -text
 src/main/webapp/js/swfupload/swfupload.swf -text
 src/main/webapp/js/temp.js -text
 src/main/webapp/js/tuihuoLog.js -text
+src/main/webapp/js/underscore/underscore-1.8.2.js -text
+src/main/webapp/js/underscore/underscore-1.8.2.min.js -text
 src/main/webapp/js/workorder/csPushSmsList.js -text
 src/main/webapp/js/yahoo-dom-event.js -text
 src/main/webapp/js/zTree/css/demo.css -text

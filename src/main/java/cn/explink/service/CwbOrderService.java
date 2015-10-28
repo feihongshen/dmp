@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -195,7 +196,7 @@ import cn.explink.util.StringUtil;
 
 @Service
 @Transactional
-public class CwbOrderService {
+public class CwbOrderService extends BaseOrderService{
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	OrderFlowDAO orderFlowDAO;
@@ -398,10 +399,10 @@ public class CwbOrderService {
 	@Autowired
 	searchEditCwbInfoDao editCwbInfoDao;
 
-	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		return userDetail.getUser();
-	}
+//	private User getSessionUser() {
+//		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+//		return userDetail.getUser();
+//	}
 
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		this.logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
@@ -2286,7 +2287,7 @@ public class CwbOrderService {
 
 	@Transactional
 	public CwbOrder changeOutWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut,
-			String comment, String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku) {
+			String comment, String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku, boolean checkUserBranchZhongZhuang) {
 		Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
@@ -2327,7 +2328,9 @@ public class CwbOrderService {
 
 		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
 		Branch cwbBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid() == 0 ? co.getNextbranchid() : co.getCurrentbranchid());
-		if ((cwbBranch.getBranchid() != branchid) && (userbranch.getSitetype() != BranchEnum.ZhongZhuan.getValue()) && (cwbBranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
+		
+		//添加是否验证当前用户站点为【中转站】验证的控制：by jinghui.pan on 20151025
+		if (checkUserBranchZhongZhuang && (cwbBranch.getBranchid() != branchid) && (userbranch.getSitetype() != BranchEnum.ZhongZhuan.getValue()) && (cwbBranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.ZHONG_ZHUAN_HUO);
 		}
 
@@ -7512,5 +7515,77 @@ public class CwbOrderService {
 	@Transactional
 	public void updateYpdjFlowordertypeMethod(String scancwb){
 		this.ypdjHandleRecordDAO.updateypdjflowordertype(scancwb);
+	}
+	
+	
+	/**
+	 * 
+	 * 分拣和中转 出库扫描业务逻辑处理
+	 * @return
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	@Transactional
+	public CwbOrder sortAndChangeOutWarehouse(User user, String cwb, String scancwb, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode,
+			long reasonid, boolean iszhongzhuanout, boolean anbaochuku) {
+		
+		this.logger.info("开始分拣和中转 出库处理,cwb:{}", cwb);
+
+		cwb = this.translateCwb(cwb);
+		
+		//【区域权限设置】的【中转站】作为扫码的当前站点
+		long currentbranchid = super.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
+		
+		if(currentbranchid == 0){
+			throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+		}
+		
+		return this.changeOutWarehousHandle(user, cwb, scancwb, currentbranchid, driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid, iszhongzhuanout,
+				System.currentTimeMillis(), anbaochuku,false);
+		
+	}
+	
+	/**
+	 * 出库扫描业务逻辑处理
+	 * 
+	 * @return
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	@Transactional
+	public CwbOrder changeOutWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment,
+			String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku) {
+		return this.changeOutWarehousHandle(user, cwb, scancwb, currentbranchid, driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, iszhongzhuanout, credate, anbaochuku,true);
+	}
+	
+
+	/**
+	 * 获取当前站点id列表中， 货物流向设置的正向站点
+	 * @param currentBranchids 当前站点branchid或数组
+	 * @return
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	public List<Branch> getNextPossibleBranches(long...currentBranchids){
+		
+		List<Branch> bList = new ArrayList<Branch>();
+		Set<Long> branchidSet = new LinkedHashSet<Long>();
+		
+		for (long currentBranchid : currentBranchids) {
+			if(currentBranchid != 0){
+				for (long i : this.cwbRouteService.getNextPossibleBranch(currentBranchid)) {
+					if(!branchidSet.contains(i)){
+						branchidSet.add(i);
+					}
+				}
+			}
+		}
+		for (Long branchid : branchidSet) {
+			Branch branch = this.branchDAO.getBranchByBranchid(branchid);
+			if (branch != null && branch.getBranchid() != 0) {
+				bList.add(branch);
+			}
+		}
+		return bList;
 	}
 }

@@ -179,6 +179,15 @@ public class YpdjHandleRecordDAO {
 		}
 		return this.jdbcTemplate.queryForLong(sql, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 	}
+	
+	// 得到出库缺货件数的统计
+	public long getChukuQuejianbyBranchid(long branchid, long nextbranchid, long flowordertype) {
+		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND cd.state=1 AND yp.flowordertype =? ";
+		if (nextbranchid > 0) {
+			sql += " and yp.nextbranchid =" + nextbranchid;
+		}
+		return this.jdbcTemplate.queryForLong(sql, branchid, flowordertype);
+	}
 
 	// 得到出库缺货件数的list列表
 	public List<JSONObject> getChukuQuejianbyBranchidList(long branchid, long nextbranchid, long page, long flowordertype) {

@@ -9,9 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +135,7 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.EmailDateService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
+import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
@@ -250,7 +251,10 @@ public class PDAController {
 	OrderBackCheckDAO orderBackCheckDAO;
 	@Autowired
 	CwbApplyZhongZhuanDAO cwbApplyZhongZhuanDAO;
+	@Autowired
+	KfzdOrderService kfzdOrderService;
 
+	
 	private ObjectMapper om = new ObjectMapper();
 
 	private boolean playGPSound = true;
@@ -3796,82 +3800,84 @@ public class PDAController {
 			value = "comment",
 			required = false,
 			defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid) {
-		JSONObject obj = new JSONObject();
-
-		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
-
-		long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
-		String scancwb = cwb;
-		cwb = this.cwborderService.translateCwb(cwb);
-		CwbOrder cwbOrder = this.cwborderService.changeoutWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0
-				: Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
-
-		obj.put("packageCode", baleno);
-		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
-		obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
-		if (cwbOrder.getNextbranchid() != 0) {
-			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
-			obj.put("cwbbranchname", branch.getBranchname());
-			obj.put("cwbbranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
-		} else {
-			obj.put("cwbbranchname", "");
-
-		}
-		if (cwbOrder.getDeliverybranchid() != 0) {
-			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
-			obj.put("cwbdeliverybranchname", branch.getBranchname());
-			obj.put("cwbdeliverybranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
-		} else {
-			obj.put("cwbdeliverybranchname", "");
-			obj.put("cwbdeliverybranchnamewav", "");
-		}
-		if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
-			obj.put("cwbgaojia", "true");
-			explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.GJ));
-		} else {
-			obj.put("cwbgaojia", "");
-		}
-		// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
-		String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
-		List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
-		String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
-		String[] showcustomer = list.get(0).getCustomerid().split(",");
-		for (String s : showcustomer) {
-			if (s.equals(cwbcustomerid)) {
-				CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
-				Object a;
-				try {
-					a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
-					obj.put("showRemark", a);
-				} catch (Exception e) {
-					e.printStackTrace();
-					obj.put("showRemark", "Erro");
-				}
-			}
-		}
-		// 加入货物类型音频文件.
-		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
-		String wavPath = null;
-		if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
-			if (this.isPlayYPDJSound()) {
-				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
-			}
-		}
-
-		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
-			if (!baleno.equals("") && !baleno.equals("0")) {
-				successCount++;
-				request.getSession().setAttribute(baleno + "-successCount", successCount);
-				explinkResponse.setErrorinfo("\n按包出库成功，已出库" + successCount + "件");
-				obj.put("successCount", successCount);
-			}
-			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
-		} else {
-			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
-		}
-		explinkResponse.addLastWav(wavPath);
-
-		return explinkResponse;
+//		JSONObject obj = new JSONObject();
+//
+//		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+//
+//		long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
+//		String scancwb = cwb;
+//		cwb = this.cwborderService.translateCwb(cwb);
+//		CwbOrder cwbOrder = this.cwborderService.changeoutWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0
+//				: Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
+//
+//		obj.put("packageCode", baleno);
+//		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+//		obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
+//		if (cwbOrder.getNextbranchid() != 0) {
+//			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+//			obj.put("cwbbranchname", branch.getBranchname());
+//			obj.put("cwbbranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
+//		} else {
+//			obj.put("cwbbranchname", "");
+//
+//		}
+//		if (cwbOrder.getDeliverybranchid() != 0) {
+//			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+//			obj.put("cwbdeliverybranchname", branch.getBranchname());
+//			obj.put("cwbdeliverybranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
+//		} else {
+//			obj.put("cwbdeliverybranchname", "");
+//			obj.put("cwbdeliverybranchnamewav", "");
+//		}
+//		if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
+//			obj.put("cwbgaojia", "true");
+//			explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.GJ));
+//		} else {
+//			obj.put("cwbgaojia", "");
+//		}
+//		// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
+//		String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+//		List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
+//		String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
+//		String[] showcustomer = list.get(0).getCustomerid().split(",");
+//		for (String s : showcustomer) {
+//			if (s.equals(cwbcustomerid)) {
+//				CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
+//				Object a;
+//				try {
+//					a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
+//					obj.put("showRemark", a);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					obj.put("showRemark", "Erro");
+//				}
+//			}
+//		}
+//		// 加入货物类型音频文件.
+//		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+//		String wavPath = null;
+//		if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
+//			if (this.isPlayYPDJSound()) {
+//				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+//			}
+//		}
+//
+//		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+//			if (!baleno.equals("") && !baleno.equals("0")) {
+//				successCount++;
+//				request.getSession().setAttribute(baleno + "-successCount", successCount);
+//				explinkResponse.setErrorinfo("\n按包出库成功，已出库" + successCount + "件");
+//				obj.put("successCount", successCount);
+//			}
+//			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
+//		} else {
+//			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
+//		}
+//		explinkResponse.addLastWav(wavPath);
+//
+//		return explinkResponse;
+		
+		return this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, true);
 	}
 
 	/**
@@ -3909,7 +3915,7 @@ public class PDAController {
 			defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid, @RequestParam(
 			value = "deliverybranchid",
 			required = false,
-			defaultValue = "0") long deliverybranchid) {
+			defaultValue = "0") long deliverybranchid) {	
 		JSONObject obj = new JSONObject();
 
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
@@ -9072,55 +9078,57 @@ public class PDAController {
 	}
 
 	public List<CwbDetailView> getcwbDetail(List<CwbOrder> cwbList, List<Customer> customerList, JSONArray showCustomerjSONArray, List<Branch> branchList, long sign) {
-		Map<String, Map<String, String>> allTime = this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(this.getcwbs(cwbList), branchList);
-		List<CwbDetailView> cwbViewlist = new ArrayList<CwbDetailView>();
-		if (cwbList.size() > 0) {
-			for (CwbOrder wco : cwbList) {
-				CwbDetailView view = new CwbDetailView();
-				Map<String, String> cwbMap = allTime.isEmpty() ? new HashMap<String, String>() : (allTime.get(wco.getCwb()));
-
-				view.setOpscwbid(wco.getOpscwbid());
-				view.setCwb(wco.getCwb());
-				view.setCwbordertypeid(wco.getCwbordertypeid());
-				view.setPackagecode(wco.getPackagecode());
-				view.setConsigneeaddress(wco.getConsigneeaddress());
-				view.setConsigneename(wco.getConsigneename());
-				view.setReceivablefee(wco.getReceivablefee());
-				view.setEmaildate(wco.getEmaildate());
-				view.setTranscwb(wco.getTranscwb());
-				view.setCustomerid(wco.getCustomerid());
-				view.setNextbranchid(wco.getNextbranchid());
-
-				view.setRemarkView(this.getShowCustomer(showCustomerjSONArray, wco));
-				view.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, wco.getCustomerid()));
-				view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") == null ? "" : cwbMap.get("InSitetime")));
-				view.setPickGoodstime(cwbMap == null ? "" : (cwbMap.get("PickGoodstime") == null ? "" : cwbMap.get("PickGoodstime")));
-				view.setOutstoreroomtime(cwbMap == null ? "" : (cwbMap.get("Outstoreroomtime") == null ? "" : cwbMap.get("Outstoreroomtime")));
-
-				view.setCwbordertype(CwbOrderTypeIdEnum.getTextByValue(wco.getCwbordertypeid()));
-				view.setPickaddress(wco.getRemark4());
-
-				cwbViewlist.add(view);
-			}
-		}
-
-		List<CwbDetailView> views = new ArrayList<CwbDetailView>();
-		Map<String, CwbDetailView> map = new HashMap<String, CwbDetailView>();
-		for (CwbDetailView weirukuView : cwbViewlist) {
-			if (sign == 1) {// 按出库时间排序
-				map.put(weirukuView.getOutstoreroomtime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
-			} else if (sign == 2) {// 按到货时间排序
-				map.put(weirukuView.getInSitetime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
-			} else if (sign == 3) {// 按领货时间排序
-				map.put(weirukuView.getPickGoodstime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
-			}
-		}
-		List<String> keys = new ArrayList<String>(map.keySet());
-		Collections.sort(keys, Collections.reverseOrder());
-		for (int i = 0; i < keys.size(); i++) {
-			views.add(map.get(keys.get(i)));
-		}
-		return sign == 0 ? cwbViewlist : views;
+//		Map<String, Map<String, String>> allTime = this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(this.getcwbs(cwbList), branchList);
+//		List<CwbDetailView> cwbViewlist = new ArrayList<CwbDetailView>();
+//		if (cwbList.size() > 0) {
+//			for (CwbOrder wco : cwbList) {
+//				CwbDetailView view = new CwbDetailView();
+//				Map<String, String> cwbMap = allTime.isEmpty() ? new HashMap<String, String>() : (allTime.get(wco.getCwb()));
+//
+//				view.setOpscwbid(wco.getOpscwbid());
+//				view.setCwb(wco.getCwb());
+//				view.setCwbordertypeid(wco.getCwbordertypeid());
+//				view.setPackagecode(wco.getPackagecode());
+//				view.setConsigneeaddress(wco.getConsigneeaddress());
+//				view.setConsigneename(wco.getConsigneename());
+//				view.setReceivablefee(wco.getReceivablefee());
+//				view.setEmaildate(wco.getEmaildate());
+//				view.setTranscwb(wco.getTranscwb());
+//				view.setCustomerid(wco.getCustomerid());
+//				view.setNextbranchid(wco.getNextbranchid());
+//
+//				view.setRemarkView(this.getShowCustomer(showCustomerjSONArray, wco));
+//				view.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, wco.getCustomerid()));
+//				view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") == null ? "" : cwbMap.get("InSitetime")));
+//				view.setPickGoodstime(cwbMap == null ? "" : (cwbMap.get("PickGoodstime") == null ? "" : cwbMap.get("PickGoodstime")));
+//				view.setOutstoreroomtime(cwbMap == null ? "" : (cwbMap.get("Outstoreroomtime") == null ? "" : cwbMap.get("Outstoreroomtime")));
+//
+//				view.setCwbordertype(CwbOrderTypeIdEnum.getTextByValue(wco.getCwbordertypeid()));
+//				view.setPickaddress(wco.getRemark4());
+//
+//				cwbViewlist.add(view);
+//			}
+//		}
+//
+//		List<CwbDetailView> views = new ArrayList<CwbDetailView>();
+//		Map<String, CwbDetailView> map = new HashMap<String, CwbDetailView>();
+//		for (CwbDetailView weirukuView : cwbViewlist) {
+//			if (sign == 1) {// 按出库时间排序
+//				map.put(weirukuView.getOutstoreroomtime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
+//			} else if (sign == 2) {// 按到货时间排序
+//				map.put(weirukuView.getInSitetime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
+//			} else if (sign == 3) {// 按领货时间排序
+//				map.put(weirukuView.getPickGoodstime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
+//			}
+//		}
+//		List<String> keys = new ArrayList<String>(map.keySet());
+//		Collections.sort(keys, Collections.reverseOrder());
+//		for (int i = 0; i < keys.size(); i++) {
+//			views.add(map.get(keys.get(i)));
+//		}
+//		return sign == 0 ? cwbViewlist : views;
+		
+		return this.kfzdOrderService.getcwbDetail(cwbList, customerList, showCustomerjSONArray, branchList, sign);
 	}
 
 	public List<String> getcwbs(List<CwbOrder> cwbList) {
@@ -9833,4 +9841,487 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 	}
 }
 
+	/**
+	 * ==============================================
+	 * 代码块：分拣中转功能
+	 * 
+	 * @since  DMP v4.2.3
+	 * @author jinghui.pan@pjbest.com
+	 * ===============================================
+	 */
+
+	/**
+	 * 进入分拣中转出库的功能页面（明细）
+	 *
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/sortingAndChangeExportWarehouse")
+	public String sortingAndChangeExportWarehouse(Model model, 
+			@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid, 
+			@RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
+		
+//		List<Branch> bList = this.cwborderService.getNextPossibleBranches(this.getSessionUser());
+		
+		List<User> uList = this.userDAO.getUserByRole(3);
+		List<Truck> tlist = this.truckDAO.getAllTruck();
+	
+		List<Customer> cList = this.customerDAO.getAllCustomers();
+		
+		long kfBranchid = this.getSessionUser().getBranchid();
+		long zzBranchid= this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
+		
+		//获取下一站的列表哦
+		List<Branch> bList = this.cwborderService.getNextPossibleBranches(kfBranchid,zzBranchid);
+		
+		
+		// 系统设置是否显示订单备注
+		boolean showCustomerSign = this.kfzdOrderService.isShowCustomerSign();
+		
+//		List<CwbDetailView> weichukuViewList = kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(1, nextbranchid);
+//		List<CwbDetailView> yichukuViewList = kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(1, nextbranchid);
+//		
+//		model.addAttribute("weichukulist", weichukuViewList);
+//		model.addAttribute("yichukulist", yichukuViewList);
+//		
+		String isOpenDialog = this.systemInstallDAO.getSystemInstallByName("Dialog").getValue();//是否显示提示框
+		String isConfigZhongZhuan = zzBranchid != 0 ? "true" : "false";
+		
+		
+		
+		model.addAttribute("customerlist", cList);
+		model.addAttribute("isConfigZhongZhuan",isConfigZhongZhuan);//“区域权限设置”是否配置了中转站
+		model.addAttribute("isOpenDialog",isOpenDialog);
+		model.addAttribute("branchlist", bList);
+		model.addAttribute("userList", uList);
+		model.addAttribute("truckList", tlist);
+		model.addAttribute("ck_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.ChuKuBuYunXu.getText()));
+		model.addAttribute("ckfb_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.ChuKuFengBao.getText()));
+		model.addAttribute("showCustomerSign", showCustomerSign);
+		model.addAttribute("isscanbaleTag", isscanbaleTag);
+		return "pda/sortingAndChangeExportWarehouse";
+	}
+	
+	/**
+	 * 得到中转分拣出库的订单总数
+	 *
+	 * @param model
+	 * @param customerid
+	 * @param cwb
+	 * @return
+	 */
+	@RequestMapping("/getSortAndChangeOutSum")
+	public @ResponseBody
+	JSONObject getSortAndChangeOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
+			@RequestParam(value = "cwbstate", required = false, defaultValue = "1") int cwbstate,Model model) {
+		JSONObject obj = new JSONObject();
+		
+		long kfBranchid = this.getSessionUser().getBranchid();
+		long zzBranchId = this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
+		
+		//统计分拣库出库扫描的数据
+		List<Map<String, Object>> weichukudata = this.cwbDAO.getChukubyBranchid(kfBranchid, nextbranchid, CwbStateEnum.PeiShong.getValue());
+		obj.put("weichukucount_fj", weichukudata.get(0).get("count"));
+		obj.put("weichukusum_fj", weichukudata.get(0).get("sum"));
+		
+		//统计中转出库扫描的数据
+		weichukudata = this.cwbDAO.getZhongZhuanZhanChukubyBranchid(zzBranchId, nextbranchid);
+		obj.put("weichukucount_zz", weichukudata.get(0).get("count"));
+		obj.put("weichukusum_zz", weichukudata.get(0).get("sum"));
+		
+		//已出库总数
+		long yichukucount = kfzdOrderService.getSortAndChangeYiChuKuCount(nextbranchid);
+		
+		obj.put("yichukucount",yichukucount);
+		
+		return obj;
+	}
+	
+	
+	/**
+	 * 分拣中转出站扫描
+	 *
+	 */
+	@RequestMapping("/cwbSortingAndChangeExportWarehouse/{cwb}")
+	public @ResponseBody
+	ExplinkResponse cwbSortingAndChangeExportWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
+			value = "branchid",
+			required = true,
+			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
+			value = "truckid",
+			required = false,
+			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(
+			value = "requestbatchno",
+			required = true,
+			defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
+			value = "comment",
+			required = false,
+			defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid, @RequestParam(
+			value = "deliverybranchid",
+			required = false,
+			defaultValue = "0") long deliverybranchid) {
+
+
+		ExplinkResponse explinkResponse = null;
+		cwb = this.cwborderService.translateCwb(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		//判断订单状态是否为中转
+		if(co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue()){
+			//调用中转出库扫描逻辑
+			
+			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid,false);
+			
+		}else{
+			//调用分拣出库扫描逻辑
+			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, deliverybranchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+		}
+		
+		return explinkResponse;
+	}
+	
+	
+	/**
+	 * 分拣中转出库批量功能======================================
+	 *
+	 */
+	@RequestMapping("/cwbSortingAndChangeExportWarehouseBatch")
+	public String cwbSortingAndChangeExportWarehouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
+			value = "branchid",
+			required = false,
+			defaultValue = "0") long nextbranchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
+			value = "truckid",
+			required = false,
+			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
+		long thissuccess = 0;
+		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
+		List<User> uList = this.userDAO.getUserByRole(3);
+		List<Truck> tlist = this.truckDAO.getAllTruck();
+
+		List<JSONObject> objList = new ArrayList<JSONObject>();
+		long allcwbnum = 0;
+		for (String cwb : cwbs.split("\r\n")) {
+			if (cwb.trim().length() == 0) {
+				continue;
+			}
+			allcwbnum++;
+			JSONObject obj = new JSONObject();
+			String scancwb = cwb;
+			cwb = this.cwborderService.translateCwb(cwb);
+			obj.put("cwb", cwb);
+			try {// 成功订单
+				
+				
+				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+				if (co == null) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+				}
+				
+				CwbOrder cwbOrder = null;
+				
+				//判断订单状态是否为中转
+				if(co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue()){
+					
+					cwbOrder = this.cwborderService.sortAndChangeOutWarehouse(this.getSessionUser(), cwb, scancwb, driverid, truckid, nextbranchid, 0, confirmflag == 1, "", "", 0, false, false);
+					
+				}else{
+					cwbOrder = this.cwborderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, nextbranchid, 0, confirmflag == 1, "", "", 0, false, false);
+				}
+				
+				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+				obj.put("errorcode", "000000");
+				for (Customer c : cList) {
+					if (c.getCustomerid() == cwbOrder.getCustomerid()) {
+						obj.put("customername", c.getCustomername());
+						break;
+					}
+				}
+				thissuccess++;
+			} catch (CwbException ce) {// 出现验证错误
+				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+				if (cwbOrder != null) {
+					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+					List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
+					String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
+					String[] showcustomer = list.get(0).getCustomerid().split(",");
+					Object a = "";
+					for (String s : showcustomer) {
+						if (s.equals(cwbcustomerid)) {
+							if (s.equals(cwbcustomerid)) {
+								try {
+									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
+								} catch (Exception e) {
+									e.printStackTrace();
+									a = "Erro";
+								}
+							}
+						}
+					}
+					obj.put("showRemark", a);
+				}
+				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+
+				obj.put("cwbOrder", cwbOrder);
+				obj.put("errorcode", ce.getError().getValue());
+				obj.put("errorinfo", ce.getMessage());
+				if (cwbOrder == null) {// 如果无此订单
+					obj.put("customername", "");
+				} else {
+					for (Customer c : cList) {
+						if (c.getCustomerid() == cwbOrder.getCustomerid()) {
+							obj.put("customername", c.getCustomername());
+							break;
+						}
+					}
+				}
+
+			}
+			objList.add(obj);
+		}
+		model.addAttribute("objList", objList);
+		
+		long kfBranchid = this.getSessionUser().getBranchid();
+		long zzBranchid = this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
+		
+		// 系统设置是否显示订单备注
+		boolean showCustomerSign = this.kfzdOrderService.isShowCustomerSign();
+		
+		/*
+		 * 计算中转出库明细 start
+		 */
+		//统计中转出库扫描的数据
+		List<Map<String, Object>> weichukudata = this.cwbDAO.getZhongZhuanZhanChukubyBranchid(zzBranchid, nextbranchid);
+		
+		model.addAttribute("weichukucount_zz", weichukudata.get(0).get("count"));
+		model.addAttribute("weichukusum_zz", weichukudata.get(0).get("sum"));
+		/* *  end * */
+		
+		/* * 计算分拣库出库明细 start */
+		int cwbstate = CwbStateEnum.PeiShong.getValue();
+
+		//统计分拣库出库扫描的数据
+		weichukudata = this.cwbDAO.getChukubyBranchid(kfBranchid, nextbranchid, cwbstate);
+		
+		model.addAttribute("weichukucount_fj", weichukudata.get(0).get("count"));
+		model.addAttribute("weichukusum_fj", weichukudata.get(0).get("sum"));
+		/* *  end * */
+		
+		//未出库分页列表
+		List<CwbDetailView> weichukuViewList = kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(1, nextbranchid);
+		
+		//已出库分页列表
+		List<CwbDetailView> yichukuViewList = kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(1, nextbranchid);
+		
+		//一票多件缺货数量
+		long lesscwbnum = kfzdOrderService.getSortAndChangeYpdjLessCwbNum(nextbranchid);
+		
+		//已出库总数
+		long yichukucount = kfzdOrderService.getSortAndChangeYiChuKuCount(nextbranchid);
+		
+		model.addAttribute("weiChuKuList", weichukuViewList);
+		model.addAttribute("yiChuKuList", yichukuViewList);
+		model.addAttribute("yichukucount", yichukucount);
+		String isConfigZhongZhuan = zzBranchid != 0 ? "true" : "false";
+		
+//		List<Branch> bList = this.cwborderService.getNextPossibleBranches(this.getSessionUser());
+		//获取下一站的列表哦
+		List<Branch> bList = this.cwborderService.getNextPossibleBranches(kfBranchid,zzBranchid);
+		
+		
+		model.addAttribute("isConfigZhongZhuan",isConfigZhongZhuan);//“区域权限设置”是否配置了中转站
+		model.addAttribute("branchList", bList);
+		model.addAttribute("userList", uList);
+		model.addAttribute("truckList", tlist);
+		model.addAttribute("customerList", cList);
+//		model.addAttribute("weiChuKuList", weichukuViewlist);// 待出库数据
+//		model.addAttribute("yiChuKuList", yichukuViewlist);
+//		model.addAttribute("count", cwbObj.get(0).get("count"));// 待出库总数
+//		model.addAttribute("sum", cwbObj.get(0).get("sum"));// 待出库件数总数
+//		model.addAttribute("yichukucount", cwbyichukuList.size());
+		model.addAttribute("lesscwbnum", lesscwbnum);// 缺货件数
+
+		String msg = "";
+		if (cwbs.length() > 0) {
+			msg = "成功扫描" + thissuccess + "单，异常" + (allcwbnum - thissuccess) + "单";
+		}
+		model.addAttribute("msg", msg);
+		model.addAttribute("showCustomerSign", showCustomerSign);
+		return "pda/sortingAndChangeExportWarehouseBatch";
+	}
+
+	/**
+	 * 得到分拣中转出库一票多件缺货件数的统计
+	 *
+	 * @param customerid
+	 * @return
+	 */
+	@RequestMapping("/getSortAndChangeOutQueSum")
+	public @ResponseBody
+	JSONObject getSortAndChangeOutQueSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
+		JSONObject obj = new JSONObject();
+		obj.put("lesscwbnum", this.kfzdOrderService.getSortAndChangeYpdjLessCwbNum(nextbranchid));
+
+		return obj;
+	}
+	
+	/**
+	 * 得到  分拣和中转出库 一票多件缺件的分页
+	 *
+	 * @return
+	 */
+	@RequestMapping("/getSortAndChangeOutQueListPage")
+	public @ResponseBody
+	List<JSONObject> getSortAndChangeOutQueListPage(Model model, @RequestParam(value = "page", defaultValue = "1") long page,
+			@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
+		List<JSONObject> quejianList = this.kfzdOrderService.getSortAndChangeYpdjLessCwbList(nextbranchid,page);
+		return quejianList;
+	}
+	
+	/**
+	 * 得到 分拣和中转出库明细 未入库 list
+	 *
+	 * @return
+	 */
+	@RequestMapping("/getSortAndChangeExportWeiChuKuList")
+	public @ResponseBody
+	List<CwbDetailView> getSortAndChangeExportWeiChuKuList(@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid,
+			@RequestParam(value = "page", defaultValue = "1") long page) {
+		// 未出库明细
+		List<CwbDetailView> weichukuViewList = kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(page, nextbranchid);
+		return weichukuViewList;
+	}
+	
+	/**
+	 * 得到 分拣和中转出库明细 已入库 list
+	 *
+	 * @return
+	 */
+	@RequestMapping("/getSortAndChangeExportYiChuKuList")
+	public @ResponseBody
+	List<CwbDetailView> getSortAndChangeExportYiChuKuList(@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid, @RequestParam(value = "page", defaultValue = "1") long page) {
+		// 已出库明细
+		List<CwbDetailView> yichukuViewList = kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(page, nextbranchid);
+		return yichukuViewList;
+	}
+	
+	/**
+	 * 中转库出库扫描公共逻辑
+	 * 
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param cwb
+	 * @param branchid
+	 * @param driverid
+	 * @param truckid
+	 * @param confirmflag
+	 * @param requestbatchno
+	 * @param baleno
+	 * @param comment
+	 * @param reasonid
+	 * @param deliverybranchid
+	 * @param isSingleZhongzhuan 是否当前页面只有中转库出库扫描
+	 * @return
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	private	ExplinkResponse _cwbchangeexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, 
+			String cwb, long branchid,  long driverid,  long truckid, long confirmflag, String requestbatchno, String baleno,  String comment,long reasonid, boolean isSingleZhongzhuan) {
+		
+		
+		JSONObject obj = new JSONObject();
+
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+
+		long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
+		String scancwb = cwb;
+		cwb = this.cwborderService.translateCwb(cwb);
+		
+		CwbOrder cwbOrder = null;
+		
+		if(isSingleZhongzhuan) {
+			cwbOrder = this.cwborderService.changeoutWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0
+					: Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
+		}else{
+			cwbOrder = this.cwborderService.sortAndChangeOutWarehouse(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0
+					: Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
+		}
+
+		obj.put("packageCode", baleno);
+		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+		obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
+		if (cwbOrder.getNextbranchid() != 0) {
+			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+			obj.put("cwbbranchname", branch.getBranchname());
+			obj.put("cwbbranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
+		} else {
+			obj.put("cwbbranchname", "");
+
+		}
+		if (cwbOrder.getDeliverybranchid() != 0) {
+			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+			obj.put("cwbdeliverybranchname", branch.getBranchname());
+			obj.put("cwbdeliverybranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
+		} else {
+			obj.put("cwbdeliverybranchname", "");
+			obj.put("cwbdeliverybranchnamewav", "");
+		}
+		if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
+			obj.put("cwbgaojia", "true");
+			explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.GJ));
+		} else {
+			obj.put("cwbgaojia", "");
+		}
+		// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
+		String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
+		String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
+		String[] showcustomer = list.get(0).getCustomerid().split(",");
+		for (String s : showcustomer) {
+			if (s.equals(cwbcustomerid)) {
+				CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
+				Object a;
+				try {
+					a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
+					obj.put("showRemark", a);
+				} catch (Exception e) {
+					e.printStackTrace();
+					obj.put("showRemark", "Erro");
+				}
+			}
+		}
+		// 加入货物类型音频文件.
+		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+		String wavPath = null;
+		if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
+			if (this.isPlayYPDJSound()) {
+				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+			}
+		}
+
+		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+			if (!baleno.equals("") && !baleno.equals("0")) {
+				successCount++;
+				request.getSession().setAttribute(baleno + "-successCount", successCount);
+				explinkResponse.setErrorinfo("\n按包出库成功，已出库" + successCount + "件");
+				obj.put("successCount", successCount);
+			}
+			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
+		} else {
+			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
+		}
+		explinkResponse.addLastWav(wavPath);
+		
+		return explinkResponse;
+	}
+	
+	/**
+	 * ==============================================
+	 * 代码块：分拣中转功能 end
+	 * ===============================================
+	 */
+	
 }

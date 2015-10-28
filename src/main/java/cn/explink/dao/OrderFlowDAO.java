@@ -1241,15 +1241,40 @@ public class OrderFlowDAO {
 	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
-	public long getOrderFlowCountByCredate(String begindate, String enddate) {
-
+	public long getOrderFlowCountByCredate(String begindate, String enddate,FlowOrderTypeEnum... flows) {
+		
+		
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append("select count(1) from express_ops_order_flow FORCE INDEX(FlowCredateIdx)")
 		.append(" where 1 = 1")
 		.append(" and credate >= ? ")
 		.append(" and credate <= ? ");
 		
+		if (flows != null && flows.length > 0) {
+			sqlBuilder.append(" and " + this.getFlowOrderTypeCond(flows));
+		}
+		
+		
 		return this.jdbcTemplate.queryForLong(sqlBuilder.toString(), begindate,enddate);
+	}
+	/**
+	 * 获取时间范围内订单流程记录数
+	 * 
+	 * @param begindate 开始日期
+	 * @param enddate 结束日期
+	 * @return
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	public long getOrderFlowCountByCredate(String begindate, String enddate) {
+
+//		StringBuilder sqlBuilder = new StringBuilder();
+//		sqlBuilder.append("select count(1) from express_ops_order_flow FORCE INDEX(FlowCredateIdx)")
+//		.append(" where 1 = 1")
+//		.append(" and credate >= ? ")
+//		.append(" and credate <= ? ");
+		
+		return getOrderFlowCountByCredate(begindate, enddate, null);
 	}
 	
 	/**
@@ -1275,6 +1300,12 @@ public class OrderFlowDAO {
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new OrderFlowRowMapper(), begindate,enddate,((page - 1) * pageSize), pageSize  );
 	}
 	
+	
+	public List<OrderFlow> getOrderFlowByCredateAndPage(String begindate, String enddate, int pageSize,long lastFloworderid) {
+		
+		return this.getOrderFlowByCredateAndPage(begindate, enddate, pageSize, lastFloworderid, null);
+	}
+	
 	/**
 	 * 获取以floworderid排倒序订单流程列表
 	 * 
@@ -1286,7 +1317,7 @@ public class OrderFlowDAO {
 	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
-	public List<OrderFlow> getOrderFlowByCredateAndPage(String begindate, String enddate, int pageSize,long lastFloworderid) {
+	public List<OrderFlow> getOrderFlowByCredateAndPage(String begindate, String enddate, int pageSize,long lastFloworderid,FlowOrderTypeEnum... flows) {
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append("select * from express_ops_order_flow")
 		.append(" where 1 = 1")
@@ -1296,6 +1327,11 @@ public class OrderFlowDAO {
 		if(lastFloworderid > 0){
 			sqlBuilder.append(" and floworderid < " ).append(lastFloworderid);
 		}
+		
+		if (flows != null && flows.length > 0) {
+			sqlBuilder.append(" and " + this.getFlowOrderTypeCond(flows));
+		}
+		
 		
 		
 		sqlBuilder.append(" order by floworderid desc limit ?");
