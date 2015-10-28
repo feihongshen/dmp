@@ -257,7 +257,7 @@ public class YpdjHandleRecordDAO {
 	}
 	
 	public void updateypdjflowordertype(String scancwb){
-		String sql="update ops_ypdjhandlerecord set flowordertype="+FlowOrderTypeEnum.FenZhanLingHuo.getValue()+" where scancwb='"+scancwb+"'";
+		String sql="update ops_ypdjhandlerecord set flowordertype="+FlowOrderTypeEnum.FenZhanLingHuo.getValue()+" where transcwb='"+scancwb+"'";
 		this.jdbcTemplate.update(sql);
 	}
 }
