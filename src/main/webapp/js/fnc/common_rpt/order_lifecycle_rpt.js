@@ -156,7 +156,7 @@ function billExportExecute(){
 function cwbDetailInfo(page, customerid, typeid,reportdate) {
 	
 	initDategridAndPaginationStatus("ord_dg");
-
+	
 	queryOrderDetail(customerid, typeid, reportdate, page, _pageSize)
 	
 	$('#dlg_Common').dialog('open').dialog('setTitle', '订单详情');
@@ -178,7 +178,7 @@ function queryOrderDetail(customerid, typeid, reportdate, page, number){
 	var param = {
 		customerid:  customerid,
 		typeid : typeid,
-		reportdate, reportdate,
+		reportdate: reportdate,
 		page : page,
 		pageSize : number
 	}
@@ -212,4 +212,61 @@ function closeWindow() {
 	$('#dlg_Common').dialog('close');
 }
 
+
+
+function billDetailExportExecute () {
+	var fieldDef = new Array();
+	var fields = $('#ord_dg').datagrid('getColumnFields');
+	for (var i = 0; i < fields.length; i++) {
+		var col = $('#ord_dg').datagrid('getColumnOption', fields[i]);
+		fieldDef.push({
+			field:col.field,
+			width:col.width,
+			title:col.title,
+			rowspan:col.rowspan,
+			colspan:col.colspan
+		})
+	}
+	
+	
+	var rows = $("#ord_dg").datagrid("getData").rows;
+	var fnrptlifecycleid = rows[0].fnrptlifecycleid;// 生命周期报表id
+    
+    
+    var grid = $('#ord_dg');
+    var options = grid.datagrid('getPager').data("pagination").options;
+    var currPage = options.pageNumber;
+    var pageSize = options.pageSize;
+
+    var form = $("<form>");   //定义一个form表单
+	form.attr('style', 'display:none');   //在form表单中添加查询参数
+	form.attr('target', 'exportFrame');
+	form.attr('method', 'post');
+	form.attr('action', _ctx + "/orderlifecycle/exportDetail2Excel");
+
+	var input1 = $('<input>');
+	input1.attr('type', 'hidden');
+	input1.attr('name', 'fnrptlifecycleid');
+	input1.attr('value', fnrptlifecycleid);
+	form.append(input1);	
+
+	var input4 = $('<input>');
+	input4.attr('type', 'hidden');
+	input4.attr('name', 'page');
+	input4.attr('value', currPage);
+	form.append(input4);
+	var input5 = $('<input>');
+	input5.attr('type', 'hidden');
+	input5.attr('name', 'pageSize');
+	input5.attr('value', pageSize);
+	form.append(input5);
+	var input9 = $('<input>');
+	input9.attr('type', 'hidden');
+	input9.attr('name', 'columnDefs');
+	input9.attr('value', JSON.stringify(fieldDef));
+	form.append(input9);
+	$('body').append(form); 
+	form.submit();
+   
+}
 

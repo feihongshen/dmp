@@ -193,7 +193,7 @@ function resetData(){
 		</div>
 		<div class="tabbox">
 				<div style="position:relative; z-index:0 " >
-					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
+					<div style="position:absolute;  z-index:99; width:100%">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
 								<table>
@@ -265,23 +265,23 @@ function resetData(){
 								</table>
 							</form>
 						</div>
-						<div style="overflow: scroll;height: 480px;">
+						<div style="overflow: hidden;">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">取消</a></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单支付方式</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前状态</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请人</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">取消</a></td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">申请类型</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单支付方式</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单当前状态</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">申请人</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
 									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">确认人</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">确认人</td>
 									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">确认时间</td>
 								</tr>
 							</tbody>
@@ -291,35 +291,29 @@ function resetData(){
 								for(CwbOrderView zav :zhifulist){ 
 									%>
 									<tr height="30" >
-										<td  width="40" align="center" valign="middle">
+										<td align="center" valign="middle">
 											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=zav.getOpscwbid()%>"/>
 										</td>
-										<td width="100" align="center" valign="middle" ><%=zav.getCwb() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getCustomername()%></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getApplytype() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getOldnewCwbordertypename()%></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getOldnewReceivablefee() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getOldnewPaytype() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getNowState() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getBranchname()%></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getApplyuser() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getAuditor() %></td>
-										<td width="120" align="center" valign="middle" ><%=zav.getAudittime() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getConfirmname() %></td>
-										<td width="120" align="center" valign="middle" ><%=zav.getConfirmtime() %></td>
+										<td  align="center" valign="middle" ><%=zav.getCwb() %></td>
+										<td  align="center" valign="middle" ><%=zav.getCustomername()%></td>
+										<td  align="center" valign="middle" ><%=zav.getApplytype() %></td>
+										<td  align="center" valign="middle" ><%=zav.getOldnewCwbordertypename()%></td>
+										<td  align="center" valign="middle" ><%=zav.getOldnewReceivablefee() %></td>
+										<td  align="center" valign="middle" ><%=zav.getOldnewPaytype() %></td>
+										<td  align="center" valign="middle" ><%=zav.getNowState() %></td>
+										<td  align="center" valign="middle" ><%=zav.getBranchname()%></td>
+										<td  align="center" valign="middle" ><%=zav.getApplyuser() %></td>
+										<td  align="center" valign="middle" ><%=zav.getAuditor() %></td>
+										<td  align="center" valign="middle" ><%=zav.getAudittime() %></td>
+										<td  align="center" valign="middle" ><%=zav.getConfirmname() %></td>
+										<td  align="center" valign="middle" ><%=zav.getConfirmtime() %></td>
 									</tr>
 									<input id="ishandle<%=zav.getOpscwbid()%>" value="<%=zav.getNowapplystate() %>" type="hidden"/>
 								<%} }%>
 						</tbody>
 						</table>
-						</div>
-					</div>
-					<from action="" method="post" id="SubFrom" >
-					</from>
-					</div>
-					</div>
-					<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
-					<div class="iframe_bottom">
+						
+						<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 							<tr>
 								<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
@@ -337,8 +331,14 @@ function resetData(){
 								</td>
 							</tr>
 						</table>
+				         <%} %>
+						</div>
 					</div>
-				    <%} %>
+					<from action="" method="post" id="SubFrom" >
+					</from>
+					</div>
+					</div>
+					
 				</div>
 		</div>
 	</div>

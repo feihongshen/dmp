@@ -2,6 +2,7 @@ package cn.explink.controller.fnc;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.core.utils.PoiExcelUtils;
 import cn.explink.core.utils.PoiExcelUtils.ColDef;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.domain.CwbOrderSnapshot;
 import cn.explink.domain.OrderLifeCycleReportVO;
 import cn.explink.enumutil.CwbOrderLifeCycleTypeIdEnum;
 import cn.explink.service.fnc.OrderLifeCycleReportService;
@@ -206,7 +208,8 @@ public class OrderLifeCycleReportController {
 		}
 
 		// 向客户端写文件
-		PoiExcelUtils.setExcelResponseHeader(response, "ord_lifecycle" + DateTimeUtil.formatDate(new Date()) + ".xls");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		PoiExcelUtils.setExcelResponseHeader(response, "ord_lifecycle" + df.format(new Date()) + ".xls");
 		OutputStream out = response.getOutputStream();
 		workbook.write(out);
 		out.flush();
@@ -272,4 +275,80 @@ public class OrderLifeCycleReportController {
 		return result;
 	}
 	
+	
+	/**
+	 * 签收单个站点余额报表数据导出
+	 *
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/exportDetail2Excel")
+	@ResponseBody
+	public void exportDetail2Excel(
+			@RequestParam(value = "fnrptlifecycleid", required = false, defaultValue="-1") Long fnrptlifecycleid,
+			@RequestParam(value = "page", required = true, defaultValue="0") int page,
+			@RequestParam(value = "pageSize", required = true, defaultValue="10") int pageSize,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		
+		boolean isExeclAll = true;//一次导出全部还是导出当前页
+		
+		List<CwbOrderSnapshot> rows = null;
+		if (isExeclAll){
+			rows = orderLifeCycleReportService.getCwbOrderDetailExportData(fnrptlifecycleid);
+		} else {
+			rows = orderLifeCycleReportService.getCwbOrderDetailExportDataPage(fnrptlifecycleid,page,pageSize);
+		}
+		
+		// 列定义
+	    List<ColDef> colDefs = PoiExcelUtils.getExcelColDefFromRequest(request);
+		Workbook workbook = new HSSFWorkbook();
+		/** create workbook header row */
+		// head font style
+		CellStyle style = workbook.createCellStyle();
+		Font font = workbook.createFont();
+		font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+		style.setFont(font);
+		style.setFillForegroundColor(IndexedColors.LIME.getIndex());
+		style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		style.setAlignment(CellStyle.ALIGN_CENTER);
+		style.setWrapText(true);
+		Sheet sheet = workbook.createSheet("Sheet1");
+		//sheet.createFreezePane(0, 2, 0, 2);// 冻结标题
+		Row rowTitle = sheet.createRow(0);
+		
+        for (int i = 0; i < colDefs.size(); i++) {
+			ColDef colDef = colDefs.get(i);
+			String title = colDef.getTitle();
+			Cell cell = rowTitle.createCell(i);
+			cell.setCellValue(title);
+			cell.setCellStyle(style);
+			sheet.setColumnWidth(i, PoiExcelUtils.pixel2WidthUnits(colDef.getWidth()));
+		}
+		
+		/** create data rows */
+		for (int i = 0; i < rows.size(); i++) {
+			Row row = sheet.createRow(i + 1);
+			Object bean = rows.get(i);
+			for (int j = 0; j < colDefs.size(); j++) {
+				Cell cell = row.createCell(j);
+				String beanProp = colDefs.get(j).getField();
+				try {
+					Object cellValue = null;
+					cellValue = PropertyUtils.getProperty(bean, beanProp);
+					cell.setCellValue(ConvertUtils.convert(cellValue));
+				  } catch (Exception e) {
+					this.logger.warn("Failed to add bean property to excel, will ignore. Property: " + beanProp + " of " + bean, e);
+					cell.setCellValue("");
+				}
+			}
+		}
+		
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		PoiExcelUtils.setExcelResponseHeader(response, "ord_lifecycle_detail_" + df.format(new Date()) + ".xls");
+		OutputStream out = response.getOutputStream();
+		workbook.write(out);
+		out.flush();
+	}
 }

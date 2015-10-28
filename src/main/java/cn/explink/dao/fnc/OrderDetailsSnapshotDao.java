@@ -53,6 +53,14 @@ public class OrderDetailsSnapshotDao {
 		
 	}
 	
+    public List<CwbOrderSnapshot> listByFnrptlifecycleid(long fnrptlifecycleid){
+		
+		final String sql = "select * from fn_order_details_snapshot where fnrptlifecycleid=? and state = 1 order by cwb";
+		
+		return this.jdbcTemplate.query(sql, new CwbOrderSnapshotWithDescRowMapper(),fnrptlifecycleid);
+		
+	}
+	
 	public int countByFnrptlifecycleid(long fnrptlifecycleid){
 		
 		final String sql = "select count(cwb) from fn_order_details_snapshot where fnrptlifecycleid=? and state = 1";

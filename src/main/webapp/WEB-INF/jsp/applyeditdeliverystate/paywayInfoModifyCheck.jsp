@@ -21,7 +21,8 @@ long applyresult = request.getParameter("applyresult")==null?0:Long.parseLong(re
 <HEAD>
 <TITLE></TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
+
+
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -189,14 +190,14 @@ function reserData(){
 }
 </script>
 </HEAD>
-<BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
+<BODY style="background:#f5f5f5;"  marginwidth="0" marginheight="0">
 <div class="right_box">
 	<div>
 		<div class="kfsh_tabbtn">
 		</div>
 		<div class="tabbox">
 				<div style="position:relative; z-index:0 " >
-					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
+					<div style="position:absolute;  z-index:99; width:100%">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
 								<table>
@@ -268,57 +269,52 @@ function reserData(){
 								</table>
 							</form>
 						</div>
-						<div style="overflow: scroll;height: 470px;">
+						<div style="overflow: hidden;">
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">取消</a></td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单支付方式</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前状态</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请人</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">取消</a></td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">申请类型</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单支付方式</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单当前状态</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">申请人</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">申请时间</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
+									<td  align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
 								</tr>
 								
 								<%if(zhifulist!=null){
 								for(CwbOrderView zav :zhifulist){ 
 									%>
 									<tr height="30" >
-										<td  width="40" align="center" valign="middle">
+										<td  align="center" valign="middle">
 											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=zav.getOpscwbid()%>"/>
 										</td>
-										<td width="100" align="center" valign="middle" ><%=zav.getCwb() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getCustomername()%></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getApplytype() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getOldnewCwbordertypename() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getOldnewReceivablefee() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getOldnewPaytype() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getNowState() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getBranchname()%></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getApplyuser() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getApplytime() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getAuditor() %></td>
-										<td width="100" align="center" valign="middle" ><%=zav.getAudittime() %></td>
+										<td  align="center" valign="middle" ><%=zav.getCwb() %></td>
+										<td  align="center" valign="middle" ><%=zav.getCustomername()%></td>
+										<td  align="center" valign="middle" ><%=zav.getApplytype() %></td>
+										<td  align="center" valign="middle" ><%=zav.getOldnewCwbordertypename() %></td>
+										<td  align="center" valign="middle" ><%=zav.getOldnewReceivablefee() %></td>
+										<td  align="center" valign="middle" ><%=zav.getOldnewPaytype() %></td>
+										<td  align="center" valign="middle" ><%=zav.getNowState() %></td>
+										<td  align="center" valign="middle" ><%=zav.getBranchname()%></td>
+										<td  align="center" valign="middle" ><%=zav.getApplyuser() %></td>
+										<td  align="center" valign="middle" ><%=zav.getApplytime() %></td>
+										<td  align="center" valign="middle" ><%=zav.getAuditor() %></td>
+										<td  align="center" valign="middle" ><%=zav.getAudittime() %></td>
 									</tr>
 									<input type="hidden" id="ishandle<%=zav.getOpscwbid() %>" value="<%=zav.getNowapplystate()%>"/>
 								<%} }%>
 								
 							</tbody>
 						</table>
-						</div>
-					<from action="" method="post" id="SubFrom" >
-					</from>
-				</div>
-			</div>
-					<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
-					<div class="iframe_bottom">
+						
+				        <%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 							<tr>
 								<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
@@ -336,8 +332,12 @@ function reserData(){
 								</td>
 							</tr>
 						</table>
+				        <%} %> 
 					</div>
-				    <%} %>
+					<from action="" method="post" id="SubFrom" >
+					</from>
+				</div>
+			</div>
 		</div>
 <script type="text/javascript">
 	$("#selectPg").val(<%=request.getAttribute("page")%>);

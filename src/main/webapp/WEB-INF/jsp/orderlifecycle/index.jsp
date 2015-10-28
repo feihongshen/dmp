@@ -133,6 +133,7 @@
 	</div>
 	<div id="dlg_Common" class="easyui-dialog" style="width: 1000px; height: 420px; padding: 10px 10px"	closed="true" buttons="#dlgCommon-buttons1">
 <!-- 		<div id="html_Content1"></div> -->
+        <div class="btn btn-default" onclick="billDetailExportExecute();" style="margin-right:5px;"><i class="icon-download-alt"></i>导出</div>
 		<div class="container">
 			<div class="row">
 				<div data-options="region:'center'" style="overflow-x: hidden; overflow-y: auto;">

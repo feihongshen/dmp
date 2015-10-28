@@ -84,6 +84,44 @@ public class OrderLifeCycleReportService {
 
 		return dg;
 	}
+	
+	/**
+	 * 获取生命周期报表订单详情导出数据
+	 * 
+	 * @param fnrptlifecycleid 
+	 *                 生命周期报表id
+	 * @param page 
+	 *               当前页
+	 * @param pageSize
+	 *               总页数
+	 * @return
+	 */
+	
+	public List<CwbOrderSnapshot> getCwbOrderDetailExportDataPage(Long fnrptlifecycleid, int page, int pageSize) {
+		
+		List<CwbOrderSnapshot> rows = orderDetailsSnapshotDao.listByFnrptlifecycleid(fnrptlifecycleid, page, pageSize);
+		
+		return rows;
+	}
+	
+	/**
+	 * 获取生命周期报表订单详情导出数据
+	 * 
+	 * @param fnrptlifecycleid 
+	 *                 生命周期报表id
+	 * @param page 
+	 *               当前页
+	 * @param pageSize
+	 *               总页数
+	 * @return
+	 */
+	
+	public List<CwbOrderSnapshot> getCwbOrderDetailExportData(Long fnrptlifecycleid) {
+		
+		List<CwbOrderSnapshot> rows = orderDetailsSnapshotDao.listByFnrptlifecycleid(fnrptlifecycleid);
+		
+		return rows;
+	}
 
 	/**
 	 * 获取订单详情列表的数据
