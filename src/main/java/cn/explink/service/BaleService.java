@@ -1562,46 +1562,11 @@ public class BaleService {
 	@Transactional
 	public void baleaddcwb(User user, String baleno, String cwb, long branchid) {
 		if (!StringUtils.isEmpty(baleno) && !StringUtils.isEmpty(cwb)) {
-			// 如果订单存在原来的包号 包号表的订单数-1
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
-			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
-			if ((co != null) && !StringUtils.isEmpty(co.getPackagecode())) {
-				Bale baleOld = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
-				this.baleDAO.updateSubBaleCount(co.getPackagecode());
-				// 删除包号订单关系表数据
-				if (baleOld.getBalestate() == BaleStateEnum.WeiFengBao.getValue()) {
-					this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
-				}
-
-				// 如果该订单之前封包过并且状态已完结，则需要删除之前的包的关系 ，已到货说明完结
-				if ((baleno != co.getPackagecode()) && (baleOld.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()) && (baleOld.getBranchid() != branchid)) {
-					this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
-				}
-			}
-
-			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno);
-			if (bale == null) {
-				this.logger.info("创建包号" + baleno);
-				Bale o = new Bale();
-				o.setBaleno(baleno);
-				o.setBranchid(user.getBranchid());
-				o.setBalestate(BaleStateEnum.WeiFengBao.getValue());
-				o.setNextbranchid(branchid);
-				o.setCwbcount(1);
-				long baleid = this.baleDAO.createBale(o);
-				// 添加包号和订单的关系表
-				this.baleCwbDAO.createBale(baleid, baleno, scancwb);
-			} else {
-				this.baleDAO.updateAddBaleCount(baleno);// 更新订单数
-				// 添加包号和订单的关系表
-				this.baleCwbDAO.createBale(bale.getId(), baleno, scancwb);
-			}
-
-			this.logger.info("更新订单:" + cwb + "的包号为:" + baleno + "，下一站为:" + branchid);
-			// 更新订单表的包号、下一站
-			this.cwbDAO.updatePackagecodeAndNextbranchid(baleno, branchid, cwb);
-
+			
+			_baleaddcwb(user,baleno,cwb,scancwb,branchid);
+			
 			/**
 			 * 广州通路按包操作性能问题  初步解决方案
 			 */
@@ -1627,6 +1592,75 @@ public class BaleService {
 			false);
 			
 		}
+	}
+	
+	
+	/**
+	 * 分拣中转出库根据包号扫描订单
+	 * 
+	 * @param user
+	 * @param baleno
+	 * @param cwb
+	 * @param branchid
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	@Transactional
+	public void sortAndChangeBaleAddCwb(User user, String baleno, String cwb, long branchid) {
+		if (!StringUtils.isEmpty(baleno) && !StringUtils.isEmpty(cwb)) {
+			
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
+			
+			_baleaddcwb(user,baleno,cwb,scancwb,branchid);
+			
+			this.cwbOrderService.sortAndChangeOutWarehouse( user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, false, false);
+		}
+	}
+	
+	
+	
+	private void _baleaddcwb(User user, String baleno, String cwb, String scancwb, long branchid){
+		
+		// 如果订单存在原来的包号 包号表的订单数-1
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		if ((co != null) && !StringUtils.isEmpty(co.getPackagecode())) {
+			Bale baleOld = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
+			this.baleDAO.updateSubBaleCount(co.getPackagecode());
+			// 删除包号订单关系表数据
+			if (baleOld.getBalestate() == BaleStateEnum.WeiFengBao.getValue()) {
+				this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
+			}
+
+			// 如果该订单之前封包过并且状态已完结，则需要删除之前的包的关系 ，已到货说明完结
+			if ((baleno != co.getPackagecode()) && (baleOld.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()) && (baleOld.getBranchid() != branchid)) {
+				this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
+			}
+		}
+
+		Bale bale = this.baleDAO.getBaleOneByBaleno(baleno);
+		if (bale == null) {
+			this.logger.info("创建包号" + baleno);
+			Bale o = new Bale();
+			o.setBaleno(baleno);
+			o.setBranchid(user.getBranchid());
+			o.setBalestate(BaleStateEnum.WeiFengBao.getValue());
+			o.setNextbranchid(branchid);
+			o.setCwbcount(1);
+			long baleid = this.baleDAO.createBale(o);
+			// 添加包号和订单的关系表
+			this.baleCwbDAO.createBale(baleid, baleno, scancwb);
+		} else {
+			this.baleDAO.updateAddBaleCount(baleno);// 更新订单数
+			// 添加包号和订单的关系表
+			this.baleCwbDAO.createBale(bale.getId(), baleno, scancwb);
+		}
+
+		this.logger.info("更新订单:" + cwb + "的包号为:" + baleno + "，下一站为:" + branchid);
+		// 更新订单表的包号、下一站
+		this.cwbDAO.updatePackagecodeAndNextbranchid(baleno, branchid, cwb);
+		
+		
 	}
 
 	/**

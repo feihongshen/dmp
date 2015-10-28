@@ -37,12 +37,14 @@ import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderPDAEnum;
+import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.KfzdOrderService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
@@ -71,7 +73,9 @@ public class BaleController {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	BaleService baleService;
-
+	@Autowired
+	KfzdOrderService kfzdOrderService;
+	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
@@ -263,6 +267,8 @@ public class BaleController {
 		}
 		return explinkResponse;
 	}
+	
+	
 
 	/**
 	 * 根据包号扫描订单
@@ -297,6 +303,130 @@ public class BaleController {
 		return explinkResponse;
 	}
 
+	
+
+	/**
+	 * 根据包号扫描订单
+	 *
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/sortAndChangeBaleAddCwb/{cwb}/{baleno}")
+	public @ResponseBody
+	ExplinkResponse sortAndChangeBaleAddCwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb, @PathVariable(value = "baleno") String baleno,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
+		JSONObject obj = new JSONObject();
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		String scancwb = cwb.trim();
+		cwb = this.cwbOrderService.translateCwb(scancwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		if (co != null) {
+			try {
+				
+				if(CwbStateEnum.ZhongZhuan.getValue() == co.getCwbstate()){
+					//判断订单状态是否为中转
+					if(co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue()){
+						//调用中转出库扫描逻辑
+						this.baleService.sortAndChangeBaleAddCwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
+					}else{
+						//调用分拣出库扫描逻辑
+						this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
+					}
+				}
+				
+				Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+				this.baleDAO.updateAddBaleScannum(baleno);
+				long successCount = bale.getCwbcount();
+				long scannum = bale.getScannum()+1;
+				obj.put("successCount", successCount);
+				obj.put("scannum", scannum);
+				obj.put("errorcode", "000000");
+			} catch (CwbException e) {
+				obj.put("errorcode", "111111");
+				obj.put("errorinfo", e.getMessage());
+				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
+			}
+		
+		}
+		
+		return explinkResponse;
+	}
+	
+	/**
+	 * 库房出库、退货出站根据包号扫描订单检查
+	 *
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/sortAndChangeBaleAddCwbCheck/{cwb}/{baleno}")
+	public @ResponseBody
+	ExplinkResponse sortAndChangeBaleAddCwbCheck(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb, @PathVariable(value = "baleno") String baleno,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "flag", required = true, defaultValue = "0") long flag, @RequestParam(
+					value = "confirmflag",
+					required = false,
+					defaultValue = "0") long confirmflag, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid) {
+		JSONObject obj = new JSONObject();
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		String scancwb = cwb;
+		obj.put("scancwb", scancwb);
+		obj.put("baleno", baleno);
+		cwb = this.cwbOrderService.translateCwb(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+
+		try {
+			if (co != null) {
+				long nextbranchid = co.getNextbranchid();
+				String nextbranchname = "";
+				long deliverybranchid = co.getDeliverybranchid();
+				String deliverybranchname = "";
+				if (nextbranchid == 0) {
+					nextbranchname = "未知站点";
+				} else {
+					nextbranchname = this.branchDAO.getBranchByBranchid(nextbranchid).getBranchname();
+				}
+				if (deliverybranchid == 0) {
+					deliverybranchname = "未知站点";
+				} else {
+					deliverybranchname = this.branchDAO.getBranchByBranchid(deliverybranchid).getBranchname();
+				}
+				if (confirmflag == 0) {
+					if(co != null){
+						if(co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()){
+							if ((co != null) && (co.getNextbranchid() != branchid) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {
+								throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, nextbranchname);
+							}
+						}else{
+							if((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())&&(branchid != co.getDeliverybranchid())&&(co.getNextbranchid() != branchid)){
+								throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, deliverybranchname);
+							}
+						}
+					}
+				}
+			}
+			
+			long currentBranchId = this.getSessionUser().getBranchid();
+			
+			// 封包检查
+			if (flag == 1) {// 库房出库
+				//如果订单是中转出库，那么查询区域权限设置的【中转库】
+				if(CwbStateEnum.ZhongZhuan.getValue() == co.getCwbstate()){
+					currentBranchId = kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
+				}else{
+					
+				}
+				
+				this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, currentBranchId, branchid);
+			} 
+			obj.put("errorcode", "000000");
+		} catch (CwbException e) {
+			obj.put("errorcode", "111111");
+			obj.put("errorenum", e.getError());
+			obj.put("errorinfo", e.getMessage());
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
+		}
+		return explinkResponse;
+	}
+	
 	/**
 	 * 封包
 	 *

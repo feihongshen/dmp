@@ -9982,7 +9982,7 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 			
 		}else{
 			//调用分拣出库扫描逻辑
-			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, deliverybranchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
 		}
 		
 		return explinkResponse;

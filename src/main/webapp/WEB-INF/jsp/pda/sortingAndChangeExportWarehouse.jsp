@@ -497,7 +497,7 @@ function baleaddcwbCheck(){
 	
 	$.ajax({
    		type: "POST",
-   		url:"<%=request.getContextPath()%>/bale/baleaddcwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=1&branchid="+$("#branchid").val()+"&confirmflag="+confirmflag,
+   		url:"<%=request.getContextPath()%>/bale/sortAndChangeBaleAddCwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=1&branchid="+$("#branchid").val()+"&confirmflag="+confirmflag,
    		dataType : "json",
    		success : function(data) {
    			$("#msg").html("");
@@ -536,7 +536,7 @@ function baleaddcwb(scancwb,baleno){
 	} */
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/baleaddcwb/"+scancwb+"/"+baleno+"?branchid="+$("#branchid").val(),
+		url:"<%=request.getContextPath()%>/bale/sortAndChangeBaleAddCwb/"+scancwb+"/"+baleno+"?branchid="+$("#branchid").val(),
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
