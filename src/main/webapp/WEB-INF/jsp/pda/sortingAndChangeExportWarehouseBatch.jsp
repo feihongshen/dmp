@@ -414,7 +414,7 @@ function tohome(){
 		
 		<dl class="blue">
 			<dt>
-				<span>分拣库待出库</span><span>分拣库待出库合计</span>
+				<span>分拣库待出库</span><span>分拣库待出库件数</span>
 			</dt>
 			<dd style="cursor: pointer">
 				<span onclick="tabView('table_weichuku')">${weichukucount_fj}</span> 
@@ -425,7 +425,7 @@ function tohome(){
 	
 		<dl class="green">
 			<dt>
-				<span>中转待出库</span><span>中转待出库合计</span>
+				<span>中转待出库</span><span>中转待出库件数</span>
 			</dt>
 			<dd style="cursor: pointer">
 				<span onclick="tabView('table_weichuku')">${weichukucount_zz}</span> 

@@ -668,7 +668,7 @@ function chuku(){
 	
 		<dl class="blue">
 			<dt>
-				<span>分拣库待出库</span><span>分拣库待出库合计</span>
+				<span>分拣库待出库</span><span>分拣库待出库件数</span>
 			</dt>
 			<dd style="cursor: pointer">
 				<span onclick="tabView('table_weichuku')"><a href="#"
@@ -683,7 +683,7 @@ function chuku(){
 	
 		<dl class="green">
 			<dt>
-				<span>中转待出库</span><span>中转待出库合计</span>
+				<span>中转待出库</span><span>中转待出库件数</span>
 			</dt>
 			<dd style="cursor: pointer">
 				<span onclick="tabView('table_weichuku')"><a href="#"

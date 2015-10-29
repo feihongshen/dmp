@@ -9969,8 +9969,8 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 
 
 		ExplinkResponse explinkResponse = null;
-		cwb = this.cwborderService.translateCwb(cwb);
-		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		String translated = this.cwborderService.translateCwb(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(translated);
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}

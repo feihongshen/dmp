@@ -323,15 +323,13 @@ public class BaleController {
 		if (co != null) {
 			try {
 				
-				if(CwbStateEnum.ZhongZhuan.getValue() == co.getCwbstate()){
-					//判断订单状态是否为中转
-					if(co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue()){
-						//调用中转出库扫描逻辑
-						this.baleService.sortAndChangeBaleAddCwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
-					}else{
-						//调用分拣出库扫描逻辑
-						this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-					}
+				//判断订单状态是否为中转
+				if(co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue()){
+					//调用中转出库扫描逻辑
+					this.baleService.sortAndChangeBaleAddCwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
+				}else{
+					//调用分拣出库扫描逻辑
+					this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
 				}
 				
 				Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
@@ -370,7 +368,7 @@ public class BaleController {
 		String scancwb = cwb;
 		obj.put("scancwb", scancwb);
 		obj.put("baleno", baleno);
-		cwb = this.cwbOrderService.translateCwb(cwb);
+		cwb = this.cwbOrderService.translateCwb(scancwb);
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		try {
