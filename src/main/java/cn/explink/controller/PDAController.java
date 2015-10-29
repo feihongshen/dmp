@@ -9975,11 +9975,9 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 		//判断订单状态是否为中转
-		if(co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue()){
+		if(isZhongzhuanOrder(co)){
 			//调用中转出库扫描逻辑
-			
 			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid,false);
-			
 		}else{
 			//调用分拣出库扫描逻辑
 			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
@@ -9988,6 +9986,18 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 		return explinkResponse;
 	}
 	
+	/**
+	 *判断订单是否为中转，通过订单操作环节是否为中转入库或中转出库或者订单的下站点是中转
+	 */
+	private boolean isZhongzhuanOrder(CwbOrder co){
+		long nextbranchid = co.getNextbranchid();
+		Branch nextbranch = this.branchDAO.getBranchById(nextbranchid);
+		
+		return (FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() == co.getFlowordertype() 
+				|| FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() == co.getFlowordertype())
+				|| nextbranch == null ? true : nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue();
+				
+	}
 	
 	/**
 	 * 分拣中转出库批量功能======================================
@@ -10028,7 +10038,7 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 				CwbOrder cwbOrder = null;
 				
 				//判断订单状态是否为中转
-				if(co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue()){
+				if(isZhongzhuanOrder(co)){
 					
 					cwbOrder = this.cwborderService.sortAndChangeOutWarehouse(this.getSessionUser(), cwb, scancwb, driverid, truckid, nextbranchid, 0, confirmflag == 1, "", "", 0, false, false);
 					

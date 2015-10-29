@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
-	<title>订单生命周期报表手动触发测试页面</title>
+	<title>报表手动触发测试页面</title>
 	
 	<script src="<%=request.getContextPath()%>/js/jquery-1.8.0.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js" type="text/javascript"></script>
@@ -37,7 +37,7 @@
 </head>
 
 <body class="container-fluid" >
-	<h3>Lifecycle Report Generation Manager</h3>
+	<h3>Report Generation Manager</h3>
 	<div class="row-fluid">
 		<div class="form-horizontal">
 				<div class="control-group">

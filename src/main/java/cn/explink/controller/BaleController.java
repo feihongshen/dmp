@@ -324,7 +324,7 @@ public class BaleController {
 			try {
 				
 				//判断订单状态是否为中转
-				if(co.getCwbstate() == CwbStateEnum.ZhongZhuan.getValue()){
+				if(isZhongzhuanOrder(co)){
 					//调用中转出库扫描逻辑
 					this.baleService.sortAndChangeBaleAddCwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
 				}else{
@@ -348,6 +348,20 @@ public class BaleController {
 		}
 		
 		return explinkResponse;
+	}
+	
+	
+	/**
+	 *判断订单是否为中转，通过订单操作环节是否为中转入库或中转出库或者订单的下站点是中转
+	 */
+	private boolean isZhongzhuanOrder(CwbOrder co){
+		long nextbranchid = co.getNextbranchid();
+		Branch nextbranch = this.branchDAO.getBranchById(nextbranchid);
+		
+		return (FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() == co.getFlowordertype() 
+				|| FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() == co.getFlowordertype())
+				|| nextbranch == null ? true : nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue();
+				
 	}
 	
 	/**
@@ -407,10 +421,8 @@ public class BaleController {
 			// 封包检查
 			if (flag == 1) {// 库房出库
 				//如果订单是中转出库，那么查询区域权限设置的【中转库】
-				if(CwbStateEnum.ZhongZhuan.getValue() == co.getCwbstate()){
+				if(isZhongzhuanOrder(co)){
 					currentBranchId = kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
-				}else{
-					
 				}
 				
 				this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, currentBranchId, branchid);
