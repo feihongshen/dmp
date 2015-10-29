@@ -50,7 +50,7 @@
 					
 					
            		<li><span>机构名称：</span><input type="text" name="branchname" id="branchname" maxlength="50"/>*</li>
-           		<li><span>机构编号：</span><input type="text" name="branchcode" id="branchcode" maxlength="50" onblur="isbranchnum(this)"/>*</li>
+           		<li><span>机构编号：</span><input type="text" name="branchcode" id="branchcode" maxlength="50" />*</li>
            		<li><span>保证金：</span><input type="text" name="branchBail" id="branchBail" maxlength="50" onblur="isbranchnum(this)"/>元</li>
            		<li><span>负 责 人：</span><input type="text" name="branchcontactman"  id="branchcontactman" maxlength="50"/>*</li>
 		        <li><span>固定电话：</span><input type="text" name="branchphone" id="branchphone" maxlength="50" onblur="isbranchnum(this)"/></li>
