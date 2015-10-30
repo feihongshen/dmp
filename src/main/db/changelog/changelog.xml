@@ -8471,7 +8471,7 @@ CREATE TABLE `cs_complaint_accept` (
 	
 	<changeSet id="zhouguoting-2015-10-26-2" author="zhouguoting">
 	   	<sql>
-	   		insert into `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) values('3040','1','EAP定时任务管理','3040','${eapUrl}eapJob.do?index&','30');	   	
+	   		insert into `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) values('3040','1','EAP定时任务管理','3040','${eapUrl}eapJob.do?index&amp;','30');	   	
 	   </sql>
 	</changeSet>
 	
