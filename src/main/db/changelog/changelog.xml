@@ -8555,4 +8555,19 @@ CREATE TABLE `cs_complaint_accept` (
 			fn_order_details_snapshot(`fnrptlifecycleid`);
 		</sql>
 	</changeSet>
+	<changeSet id="zhouguoting-2015-10-30-1" author="zhouguoting">
+		<sql>
+			ALTER TABLE `fn_order_recharge`   
+  			ADD COLUMN `account_id` BIGINT(20) NULL  COMMENT '站点账户(fn_org_account)id' AFTER `record_bill_id`;
+		</sql>
+	</changeSet>
+	<changeSet id="zhouguoting-2015-10-30-2" author="zhouguoting">
+		<sql>
+			ALTER TABLE `fn_org_recharges`   
+  			ADD COLUMN `import_time` DATETIME NULL  COMMENT '创建（导入）时间' AFTER `create_time`;
+		</sql>
+	</changeSet>
+	
+	
+	
 </databaseChangeLog>
