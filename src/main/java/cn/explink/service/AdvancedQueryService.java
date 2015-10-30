@@ -63,6 +63,7 @@ import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
+import cn.explink.util.Tools;
 
 @Service
 public class AdvancedQueryService {
@@ -748,13 +749,12 @@ public class AdvancedQueryService {
 		fileName = fileName + otherName + lastStr;
 		try {
 			// 查询出数据
-			final List<CwbOrder> coList = new ArrayList<CwbOrder>();
+			StringBuilder cwb = new StringBuilder();
 			for (int i = 0; i < cwbStrList.size(); i++) {
-				CwbOrder cwborder = cwbDAO.getCwbByCwb(cwbStrList.get(i));
-				if (cwborder != null) {
-					coList.add(cwborder);
-				}
+				cwb.append(cwbStrList.get(i)+",");
 			}
+			String  corder = Tools.spilt(cwb.toString());
+			final List<CwbOrder> coList = cwbDAO.getListbyCwbs(corder);
 			final Map<String, String> cwbspayupMap = getcwbspayupidMap(cwbStrList);
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
