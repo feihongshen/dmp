@@ -1981,7 +1981,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.70.38:3306/xjpx_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://192.168.70.38:3306/xjpx_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -1993,6 +1993,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>XJPX</label>
+				<addresscustomerid>1</addresscustomerid>
+				<addressid>1</addressid>
+				<addresspassword>gxpx</addresspassword>
+				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
 
