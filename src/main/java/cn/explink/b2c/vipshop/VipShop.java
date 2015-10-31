@@ -23,7 +23,7 @@ public class VipShop {
 	private int cancelOrIntercept; // 0 开启取消， 1拦截
 	private int isOpenLefengflag; //下载配送单 是否只开启乐蜂下载 0关闭， 1开启    
 	private int resuseReasonFlag;  //拒收原因是否回传默认 0，  0回传， 1不回传
-	private int isCreateTimeToEmaildateFlag; //是否唯品会订单创建时间作为 邮件批次时间，emaildate 默认0 ，开启：1
+	private int isCreateTimeToEmaildateFlag; //是否唯品会订单出仓时间作为 邮件批次时间，emaildate 默认0 ，开启：1
 	private String lefengCustomerid;
   
 	public String getLefengCustomerid() {

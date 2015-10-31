@@ -520,7 +520,7 @@ public class VipShopGetCwbDataService {
 			dataMap.put("sendcargoname", "[发出商品]");
 			dataMap.put("customerid", customerid);
 			dataMap.put("remark1", order_batch_no); // 交接单号
-			dataMap.put("remark2", rec_create_time); // 2015-01-08修改为生成时间
+			dataMap.put("remark2", (vipshop.getIsCreateTimeToEmaildateFlag()==1?add_time:rec_create_time)); // 如果开启生成批次，则remark2是出仓时间，否则是订单生成时间
 
 			dataMap.put("cargorealweight", original_weight); // 重量
 			dataMap.put("paywayid", String.valueOf(paywayid)); // 支付方式
