@@ -53,6 +53,7 @@ import cn.explink.b2c.tmall.TmallInsertCwbDetailTimmer;
 import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
 import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.b2c.vipshop.VipShopService;
+import cn.explink.b2c.vipshop.VipshopInsertCwbDetailTimmer;
 import cn.explink.b2c.vipshop.oxo.VipShopOXOGetPickStateService;
 import cn.explink.b2c.vipshop.oxo.VipShopOXOJITFeedbackService;
 import cn.explink.b2c.wangjiu.WangjiuInsertCwbDetailTimmer;
@@ -215,6 +216,8 @@ public class JobUtil {
 	@Autowired
 	ZhemengInsertCwbDetailTimmer zhemengInsertCwbDetailTimmer;
 	
+	@Autowired
+	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
 	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -232,6 +235,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("haoxianggou", 0);
 		JobUtil.threadMap.put("maikolin", 0);
 		JobUtil.threadMap.put("vipshop", 0);
+		JobUtil.threadMap.put("vipshoptimmer", 0);
 		JobUtil.threadMap.put("epaiDownload", 0); // 系统对接标识
 		JobUtil.threadMap.put("zhongxingerp", 0); // 系统对接标识
 		JobUtil.threadMap.put("xiaoxi", 0);// 消息列表
@@ -264,6 +268,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("haoxianggou", 0);
 		JobUtil.threadMap.put("maikolin", 0);
 		JobUtil.threadMap.put("vipshop", 0);
+		JobUtil.threadMap.put("vipshoptimmer", 0);
 		JobUtil.threadMap.put("epaiDownload", 0);
 		JobUtil.threadMap.put("zhongxingerp", 0); // 系统对接标识
 		JobUtil.threadMap.put("yonghuics", 0);
@@ -1288,5 +1293,32 @@ public class JobUtil {
 		return ret;
 		
 	}
+	
+	/**
+	 * 执行获取vipshop临时表插入主表log
+	 */
+	public void getVipShopCwbTempInsert_Task() {
+
+		if (JobUtil.threadMap.get("vipshoptimmer") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop");
+			return;
+		}
+		JobUtil.threadMap.put("vipshoptimmer", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetails();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行vipshoptimmer定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("vipshoptimmer", 0);
+		}
+
+		this.logger.info("执行了获取vipshoptimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+
 
 }

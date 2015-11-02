@@ -94,7 +94,7 @@ public class VipShopService {
 		int loopcount = 20;
 		for (int i = 0; i < loopcount; i++) {
 			long resultflag = vipShopGetCwbDataService.getOrdersByVipShop(enums.getKey());
-			vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(enums.getKey());
+		//	vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(enums.getKey());
 			if (resultflag == -1) { // -1标识下载不到或者异常，跳出循环 ,1标识仍然有数据未下载完毕
 				return;
 			}

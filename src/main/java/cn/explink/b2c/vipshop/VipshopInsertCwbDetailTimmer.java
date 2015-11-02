@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JointService;
@@ -50,6 +51,21 @@ public class VipshopInsertCwbDetailTimmer {
 	/**
 	 * 唯品会定时器，查询临时表，插入数据到detail表中。
 	 */
+	
+	public void selectTempAndInsertToCwbDetails(){
+		
+		for (B2cEnum enums : B2cEnum.values()) { // 遍历唯品会enum，可能有多个枚举
+			if (enums.getMethod().contains("vipshop")) {
+				int isOpenFlag = jointService.getStateForJoint(enums.getKey());
+				if (isOpenFlag == 0) {
+					logger.info("未开启vipshop[" + enums.getKey() + "]对接！");
+					continue;
+				}
+				selectTempAndInsertToCwbDetail(enums.getKey());
+			}
+		}
+		
+	}
 
 	public void selectTempAndInsertToCwbDetail(int b2ckey) {
 		try {
@@ -64,37 +80,47 @@ public class VipshopInsertCwbDetailTimmer {
 				return;
 			}
 			String lefengCustomerid=vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids():vipshop.getLefengCustomerid();
-			
-			List<CwbOrderDTO> cwbOrderList=dataImportDAO_B2c.getCwbOrderTempByKeys(vipshop.getCustomerids()+","+lefengCustomerid);
-
-			if (cwbOrderList == null) {
-				return;
-			}
-			if (cwbOrderList.size() == 0) {
-				return;
-			}
-
-			int k = 1;
-			int batch = 50;
-			while (true) {
-
-				int fromIndex = (k - 1) * batch;
-				if (fromIndex >= cwbOrderList.size()) {
+			for(int i=0;i<15;i++){
+				String result = dealWithOders(vipshop, lefengCustomerid);
+				if(result==null){
 					break;
 				}
-				int toIdx = k * batch;
-				if (k * batch > cwbOrderList.size()) {
-					toIdx = cwbOrderList.size();
-				}
-				List<CwbOrderDTO> subList = cwbOrderList.subList(fromIndex, toIdx);
-				ImportSubList(vipshop.getCustomerids(), vipshop.getWarehouseid(), subList, vipshop);
-				k++;
 			}
+			
 
 		} catch (Exception e) {
 			logger.error("0唯品会0定时器临时表插入或修改方法执行异常!异常原因:", e);
 			e.printStackTrace();
 		}
+	}
+
+	private String dealWithOders(VipShop vipshop, String lefengCustomerid) {
+		List<CwbOrderDTO> cwbOrderList=dataImportDAO_B2c.getCwbOrderTempByKeys(vipshop.getCustomerids()+","+lefengCustomerid);
+
+		if (cwbOrderList == null) {
+			return null;
+		}
+		if (cwbOrderList.size() == 0) {
+			return null;
+		}
+
+		int k = 1;
+		int batch = 50;
+		while (true) {
+
+			int fromIndex = (k - 1) * batch;
+			if (fromIndex >= cwbOrderList.size()) {
+				break;
+			}
+			int toIdx = k * batch;
+			if (k * batch > cwbOrderList.size()) {
+				toIdx = cwbOrderList.size();
+			}
+			List<CwbOrderDTO> subList = cwbOrderList.subList(fromIndex, toIdx);
+			ImportSubList(vipshop.getCustomerids(), vipshop.getWarehouseid(), subList, vipshop);
+			k++;
+		}
+		return "OK";
 	}
 
 	@Transactional

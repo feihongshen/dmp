@@ -66,6 +66,7 @@
 			              	 <ref bean="doTime_happigou23"/>
 			              	 <ref bean="doTime_smile"/>
 			              	<!--  <ref bean="doAlan"/> -->
+			              	<ref bean="doTime_vipshoptimmer"/>
 			              	<!--  <ref bean="doTime_xiaoxi" /> -->
 			              	 <ref bean="doTime_liantong" />
 			              	 <ref bean="doTime_KouKuan" />
@@ -112,9 +113,9 @@
 	               
 	  </bean>
 	    <!-- cn.explink.util.DatabaseCronTriggerBean -->
-	  	  <bean id="doAlan"  class="cn.explink.util.DatabaseCronTriggerBean" dependency-check="default">
+	  	  <bean id="doTime_vipshoptimmer"  class="cn.explink.util.DatabaseCronTriggerBean" dependency-check="default">
 	  	  			<property name="jobDetail">  
-			            <ref bean="getVipShopTask3" />  
+			            <ref bean="getVipShopTaskTimmer" />  
 			        </property>
 	  	  </bean>
 	  	  
@@ -127,12 +128,12 @@
 			        </property> 
 	     </bean>
 	     
-	     <bean id="getVipShopTask3" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">  
+	     <bean id="getVipShopTaskTimmer" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">  
 	    	<property name="targetBean">  
 	            <value>excuteTimmer</value> 
 	        </property>  
 	        <property name="targetMethod">  
-	            <value>getVipShopCwbDetail_Task3</value>  
+	            <value>getVipShopCwbTempInsert_Task</value>  
 	        </property>
 	    </bean>
 	     
