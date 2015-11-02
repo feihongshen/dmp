@@ -219,5 +219,35 @@ public class RestHttpServiceHanlder {
 		}
 		return buffer.toString();
 	}
+	
+public static String sendHttptoServer_Json(String content, String URL) throws Exception {
+		
+		URL url = new URL(URL);
+		HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+		httpURLConnection.setRequestProperty("content-type", "application/json");
+		httpURLConnection.setRequestProperty("Accept-Charset", "utf-8");
+		httpURLConnection.setRequestProperty("contentType", "utf-8");
+		httpURLConnection.setDoOutput(true);
+		httpURLConnection.setDoInput(true);
+		httpURLConnection.setRequestMethod("POST");
+		httpURLConnection.setConnectTimeout(40000);   //设置延迟为40秒
+		httpURLConnection.setReadTimeout(40000);
+		httpURLConnection.connect();
+		OutputStreamWriter reqOut=null;
+		if(content!=null){
+			reqOut=new OutputStreamWriter(httpURLConnection.getOutputStream(),"UTF-8");
+		}
+		BufferedWriter out = new BufferedWriter(reqOut);
+		out.write(content);
+		out.flush();
+		// 接收服务器的返回：
+		BufferedReader reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "utf-8"));
+		StringBuilder buffer = new StringBuilder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			buffer.append(line);
+		}
+		return buffer.toString();
+	}
 
 }

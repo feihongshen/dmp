@@ -48,6 +48,7 @@ import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.ExplinkResponse;
@@ -156,6 +157,9 @@ import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.YpdjHandleRecord;
 import cn.explink.domain.ZhiFuApplyView;
+import cn.explink.domain.VO.DeliverServerParamVO;
+import cn.explink.domain.VO.DeliverServerPushVO;
+import cn.explink.domain.VO.GoodInfoVO;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.domain.addressvo.DeliveryStationVo;
 import cn.explink.domain.orderflow.OrderFlow;
@@ -190,7 +194,9 @@ import cn.explink.schedule.Constants;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TransCwbService;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.DigestsEncoder;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -262,6 +268,8 @@ public class CwbOrderService extends BaseOrderService{
 	CwbApplyZhongZhuanDAO cwbApplyZhongZhuanDAO;
 	@Autowired
 	ShiXiaoDAO shiXiaoDAO;
+	@Autowired
+	DeliverService deliverService;
 
 	@Produce(uri = "jms:topic:orderFlow")
 	ProducerTemplate orderFlowProducerTemplate;
@@ -7591,5 +7599,138 @@ public class CwbOrderService extends BaseOrderService{
 			}
 		}
 		return bList;
+	}
+	
+	private void deliveryPosAppJmsNotify(OrderFlow orderFlowObj)
+			throws IOException, JsonParseException, JsonMappingException {
+		
+		if(orderFlowObj.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
+			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderFlowObj.getFloworderdetail(), CwbOrderWithDeliveryState.class);
+			DeliveryState ds = cwbOrderWithDeliveryState.getDeliveryState();
+			if(ds.getPos().compareTo(BigDecimal.ZERO)>0 && (ds.getPosremark().contains("POS反馈")||ds.getPosremark().contains("POS刷卡"))){
+				deliverService.posFeedbackNotifyApp(ds.getCwb());
+			}
+		}
+		
+		
+	}
+	
+	/**
+	 * 派件服务监听接口
+	 * (分站领货)
+	 * @param orderFlow
+	 */
+	@Consume(uri = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow?concurrentConsumers=5")
+	public void deliverAppJms(@Header("orderFlow") String orderFlow){
+		try{
+			this.logger.info("棒棒糖派件服务JMS监听：START");
+			OrderFlow orderFlowObj = this.om.readValue(orderFlow, OrderFlow.class);
+			this.deliverAppJmsHandel(orderFlowObj);
+			
+			deliveryPosAppJmsNotify(orderFlowObj); //POS刷卡通知
+			
+			
+		}catch (Exception e){
+			this.logger.info("棒棒糖派件服务JMS监听异常,orderFlow:{}", orderFlow);
+			e.printStackTrace();
+		}
+	}
+
+	
+	/**
+	 * 派件服务-派件通知
+	 * @param orderFlowObj
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@Transactional
+	private void deliverAppJmsHandel(OrderFlow orderflow) throws JsonParseException, JsonMappingException, IOException {
+		
+		CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderflow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
+		CwbOrder co = cwbOrderWithDeliveryState.getCwbOrder();
+		
+		DeliverServerParamVO paramVO = deliverService.getDeliverServerParamVO(PosEnum.DeliverServerAPP.getKey());
+		
+		if( paramVO == null){
+			this.logger.info("棒棒糖派件服务-派件通知失败！未开启派件通知服务！");
+		}else{
+			if(orderflow.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
+				//组装请求VO对象
+				DeliverServerPushVO dspVO = new DeliverServerPushVO();
+				DeliveryState ds = cwbOrderWithDeliveryState.getDeliveryState();
+				dspVO.setOuter_trade_no(paramVO.getCode()+ (paramVO.getTradeNum()+1));
+				dspVO.setUnid(userDAO.getUserByid(ds.getDeliveryid()).get(0).getUsername());
+				dspVO.setMerchant_code(paramVO.getCode());
+				dspVO.setDelivery_company_code(paramVO.getCode());
+				dspVO.setMail_num(co.getCwb());
+				dspVO.setDelivery_type(co.getCwbordertypeid()==1?"4":co.getCwbordertypeid()+"");
+				dspVO.setS_company(customerDAO.getCustomerById(co.getCustomerid()).getCustomername());
+				dspVO.setS_contact("");
+				dspVO.setS_address("");
+				dspVO.setS_tel("");
+				dspVO.setS_mobile("");
+				dspVO.setS_address("");
+				dspVO.setD_company("");
+				dspVO.setGoods_fee(this.buildGoodsFee(co));
+				dspVO.setD_contact(co.getConsigneename());
+				dspVO.setD_tel(StringUtil.isEmpty(co.getConsigneephone())?"***********":co.getConsigneephone());
+				dspVO.setD_mobile(StringUtil.isEmpty(co.getConsigneemobile())?"***********":co.getConsigneemobile());
+				dspVO.setD_address(co.getConsigneeaddress());
+				dspVO.setGoods_info(new ArrayList<GoodInfoVO>());
+				//组装秘钥信息
+				String signStr = DigestsEncoder.encode("SHA1",((dspVO.buildSignStr() + "&" + paramVO.getToken())));
+				dspVO.setCode(paramVO.getCode());
+				dspVO.setSign(signStr);
+				String requestJson = JsonUtil.translateToJson(dspVO);
+				try {
+					String result = RestHttpServiceHanlder.sendHttptoServer_Json(requestJson, paramVO.getDeliverServerPushUrl());
+					this.logger.info("棒棒糖派件服务-派件通知推送完成，订单号：" + dspVO.getMail_num() + "请求报文：" + requestJson + ";响应报文：" + result);
+					if(this.isSuccessPush(result)){
+						deliverService.updateTradeNum(paramVO, PosEnum.DeliverServerAPP.getKey());
+					}
+				} catch (Exception e) {
+					this.logger.info("棒棒糖派件服务-派件通知推送异常，订单号：" + dspVO.getMail_num() + ",异常：" + e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 棒棒糖-派送通知-构建收款金额
+	 * @param co
+	 * @return
+	 */
+	private Integer buildGoodsFee(CwbOrder co) {
+		BigDecimal paybackfee = co.getPaybackfee();//应退金额
+		BigDecimal receivablefee = co.getReceivablefee();//应收金额
+		BigDecimal targetGoodsfee = BigDecimal.ZERO;
+		CwbOrderTypeIdEnum orderType = CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid());//订单类型
+		
+		if(CwbOrderTypeIdEnum.Peisong.equals(orderType)){
+			targetGoodsfee = null == receivablefee ? BigDecimal.ZERO:receivablefee;
+		}else if(CwbOrderTypeIdEnum.Shangmenhuan.equals(orderType) || CwbOrderTypeIdEnum.Shangmentui.equals(orderType)){
+			targetGoodsfee = (null == paybackfee || paybackfee.compareTo(BigDecimal.ZERO)== 0)?((null == receivablefee || receivablefee.compareTo(BigDecimal.ZERO) == 0 )?BigDecimal.ZERO:receivablefee):paybackfee.negate();
+		}
+		return Integer.valueOf((int)(targetGoodsfee.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue()*100));
+	}
+	
+	/**
+	 * 
+	 * 接收结果处理  TODO 单独表格存储，用于监控
+	 * @param result
+	 * @return
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@SuppressWarnings("rawtypes")
+	private boolean isSuccessPush(String result) throws JsonParseException, JsonMappingException, IOException {
+		boolean flag = false;
+		Map resultMap = JsonUtil.readValue(result,Map.class);
+		if("ok".equals(resultMap.get("result"))){
+			flag = true;
+		}
+		return flag;
 	}
 }

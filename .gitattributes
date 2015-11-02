@@ -759,6 +759,7 @@ src/main/java/cn/explink/controller/DataImportController.java -text
 src/main/java/cn/explink/controller/DataStatisticsController.java -text
 src/main/java/cn/explink/controller/DeleteCwbController.java -text
 src/main/java/cn/explink/controller/DeliverPayUpamountController.java -text
+src/main/java/cn/explink/controller/DeliverServerController.java -text
 src/main/java/cn/explink/controller/DeliveryCashController.java -text
 src/main/java/cn/explink/controller/DeliveryController.java -text
 src/main/java/cn/explink/controller/DeliveryPercentController.java -text
@@ -1343,12 +1344,17 @@ src/main/java/cn/explink/domain/UserDeleteCwb.java -text
 src/main/java/cn/explink/domain/VO/BillMoneyDuiBiChaYiVO.java -text
 src/main/java/cn/explink/domain/VO/CustomerBillContractFindConditionVO.java -text
 src/main/java/cn/explink/domain/VO/CustomerBillContractVO.java -text
+src/main/java/cn/explink/domain/VO/DeliverServerParamVO.java -text
+src/main/java/cn/explink/domain/VO/DeliverServerPullVO.java -text
+src/main/java/cn/explink/domain/VO/DeliverServerPushVO.java -text
+src/main/java/cn/explink/domain/VO/DeliveryPosNotifyVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressOpsPunishinsideBillVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchContractDetailVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchContractVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchDeliveryFeeBillDetailVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetBranchDeliveryFeeBillVO.java -text
 src/main/java/cn/explink/domain/VO/ExpressSetExceedSubsidyApplyVO.java -text
+src/main/java/cn/explink/domain/VO/GoodInfoVO.java -text
 src/main/java/cn/explink/domain/VO/ImportAndDmpCwbVO.java -text
 src/main/java/cn/explink/domain/VO/PreOrderVO.java -text
 src/main/java/cn/explink/domain/VO/SerachCustomerBillContractVO.java -text
@@ -1432,6 +1438,8 @@ src/main/java/cn/explink/enumutil/CwbStateEnum.java -text
 src/main/java/cn/explink/enumutil/DateTypeEnum.java -text
 src/main/java/cn/explink/enumutil/DeliverPayupArrearageapprovedEnum.java -text
 src/main/java/cn/explink/enumutil/DeliverPayuptypeEnum.java -text
+src/main/java/cn/explink/enumutil/DeliverServerPayEnum.java -text
+src/main/java/cn/explink/enumutil/DeliverServerResultEnum.java -text
 src/main/java/cn/explink/enumutil/DeliveridEnum.java -text
 src/main/java/cn/explink/enumutil/DeliveryFeeBillCwbTypeEnum.java -text
 src/main/java/cn/explink/enumutil/DeliveryFeeBillDateTypeEnum.java -text
@@ -1756,6 +1764,7 @@ src/main/java/cn/explink/service/CwbTranslator.java -text
 src/main/java/cn/explink/service/DataImportService.java -text
 src/main/java/cn/explink/service/DataStatisticsService.java -text
 src/main/java/cn/explink/service/DeleteCwbService.java -text
+src/main/java/cn/explink/service/DeliverService.java -text
 src/main/java/cn/explink/service/DeliveryCashService.java -text
 src/main/java/cn/explink/service/DeliverypercentService.java -text
 src/main/java/cn/explink/service/DiliverymanPaifeiBillService.java -text
@@ -1883,6 +1892,7 @@ src/main/java/cn/explink/util/DatabaseInitCronTriggerBean.java -text
 src/main/java/cn/explink/util/DateDayUtil.java -text
 src/main/java/cn/explink/util/DateTimeUtil.java -text
 src/main/java/cn/explink/util/DeCodeURLUtil.java -text
+src/main/java/cn/explink/util/DigestsEncoder.java -text
 src/main/java/cn/explink/util/Dom4jParseUtil.java -text
 src/main/java/cn/explink/util/EmailUtil.java -text
 src/main/java/cn/explink/util/EncryptData.java -text

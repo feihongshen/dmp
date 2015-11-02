@@ -377,4 +377,12 @@ public class StringUtil {
 		String[] sp = p.split(str);
 		return sp;
 	}
+	/**
+ 	 * 字符串判空
+ 	 * @param str
+ 	 * @return
+ 	 */
+ 	public static boolean isEmpty(String str){
+ 		return StringUtils.isEmpty(str);
+ 	}
 }
