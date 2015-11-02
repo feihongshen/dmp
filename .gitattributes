@@ -2071,6 +2071,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/chinamobile.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/dangdang.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/dangdang_datasyn.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/dangdang_datasyntest.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/deliverServer.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/dongfangcj.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/dpfoss/dpfoss.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/dpfoss/dpfossOrder_download.jsp -text

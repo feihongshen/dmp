@@ -190,6 +190,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/weisuda/edit/');
 			$("#del").val('<%=request.getContextPath()%>/weisuda/del/'+state+'/');
 		}
+		else if(obj=='1015'){
+			$('#edit').val('<%=request.getContextPath()%>/deliverServer/show/');
+			$('#del').val('<%=request.getContextPath()%>/deliverServer/del/'+state+'/');
+		}
 	}
 </script>
 
