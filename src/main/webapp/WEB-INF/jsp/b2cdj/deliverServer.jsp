@@ -1,6 +1,6 @@
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.enumutil.ReasonTypeEnum"%>
-<%@page import="cn.explink.domain.vo.DeliverServerParamVO"%>
+<%@page import="cn.explink.domain.VO.DeliverServerParamVO"%>
 <%@page import="cn.explink.domain.Branch" %>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
