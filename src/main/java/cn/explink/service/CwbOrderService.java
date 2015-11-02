@@ -6993,6 +6993,7 @@ public class CwbOrderService extends BaseOrderService{
 
 			this.cwbDAO.dataLoseByCwb(cwb);
 			this.deliveryStateDAO.inactiveDeliveryStateByCwb(cwb);
+			this.deliveryCashDAO.updateDeliveryCashStateBycwb(cwb); //小件员工作量表失效
 			this.exportwarhousesummaryDAO.dataLoseByCwb(cwb);
 			this.exportwarhousesummaryDAO.LoseintowarhouseByCwb(cwb);
 			this.transCwbDao.deleteTranscwb(cwb);
