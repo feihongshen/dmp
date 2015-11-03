@@ -1059,6 +1059,9 @@ public class CwbDAO {
 
 		if (ordercwb.trim().length() > 0) {
 			w.append(" and cwb in (" + ordercwb+ ")");
+			if (addressCodeEditType != null) {
+				w.append(" and  addresscodeedittype=").append(addressCodeEditType.getValue());
+			}
 		} else if ((customerid > 0) || (emaildateid > 0) || (addressCodeEditType != null) || (branchid > 0)) {
 			if (customerid > 0) {
 				w.append(" and customerid=" + customerid);
@@ -1117,6 +1120,9 @@ public class CwbDAO {
 		StringBuffer w = new StringBuffer();
 		if (ordercwb.trim().length() > 0) {
 			w.append(" and cwb in (" + ordercwb+ ")");
+			if (addressCodeEditType != null) {
+				w.append(" and  addresscodeedittype=").append(addressCodeEditType.getValue());
+			}
 		} else if ((customerid > 0) || (emaildateid > 0) || (addressCodeEditType != null) || (branchid > 0)) {
 			if (customerid > 0) {
 				w.append(" and customerid=" + customerid);
