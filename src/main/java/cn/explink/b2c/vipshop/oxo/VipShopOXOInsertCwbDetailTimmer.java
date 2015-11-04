@@ -22,6 +22,7 @@ import cn.explink.dao.EmailDateDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 
@@ -61,13 +62,15 @@ public class VipShopOXOInsertCwbDetailTimmer {
 			logger.info("未开启[VipShop_OXO]对接！B2CEnum_key={},当前获取订单插入临时表-----", vipshop_key);
 			return;
 		}
-		List<CwbOrderDTO> cwbOrderList = dataImportDAO_B2c.getCwbOrderTempByKeys(vipshop.getCustomerids());
+		String cwbordertypeids=CwbOrderTypeIdEnum.OXO.getValue()+","+CwbOrderTypeIdEnum.OXO_JIT.getValue();
+		List<CwbOrderDTO> cwbOrderList = dataImportDAO_B2c.getCwbOrderTempByKeysOXO(vipshop.getCustomerids(),cwbordertypeids);
 		if (cwbOrderList == null) {
 			return;
 		}
 		if (cwbOrderList.size() == 0) {
 			return;
 		}
+		
 		int k = 1;
 		int batch = 50;
 		while (true) {
