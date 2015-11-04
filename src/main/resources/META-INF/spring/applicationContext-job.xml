@@ -113,11 +113,22 @@
 	               
 	  </bean>
 	    <!-- cn.explink.util.DatabaseCronTriggerBean -->
-	  	  <bean id="doTime_vipshoptimmer"  class="cn.explink.util.DatabaseCronTriggerBean" dependency-check="default">
-	  	  			<property name="jobDetail">  
+	  	  <bean id="doTime_vipshoptimmer" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">  
+			        <property name="jobDetail">  
 			            <ref bean="getVipShopTaskTimmer" />  
 			        </property>
-	  	  </bean>
+			          <property name="cronExpression">  
+			            <value>0 */10 * * * ?</value>
+			        </property> 
+	     </bean>
+	     <bean id="getVipShopTaskTimmer" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">  
+	    	<property name="targetBean">  
+	            <value>excuteTimmer</value> 
+	        </property>  
+	        <property name="targetMethod">  
+	            <value>getVipShopCwbTempInsert_Task</value>  
+	        </property>
+	    </bean>
 	  	  
 	      <bean id="doTime1" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">  
 			        <property name="jobDetail">  
@@ -127,15 +138,6 @@
 			            <value>0 */10 * * * ?</value>
 			        </property> 
 	     </bean>
-	     
-	     <bean id="getVipShopTaskTimmer" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">  
-	    	<property name="targetBean">  
-	            <value>excuteTimmer</value> 
-	        </property>  
-	        <property name="targetMethod">  
-	            <value>getVipShopCwbTempInsert_Task</value>  
-	        </property>
-	    </bean>
 	     
 	    <bean id="getVipShopTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">  
 	    	<property name="targetBean">  
