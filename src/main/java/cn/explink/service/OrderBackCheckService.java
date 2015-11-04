@@ -172,6 +172,9 @@ public class OrderBackCheckService {
 			
 			for (CwbOrder cwbOrder : coList) {
 				OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckByCwb(cwbOrder.getCwb());
+				if(order==null){
+					return "订单号不存在或者已审核过站点配送";
+				}
 				if(order!=null&&order.getCheckstate()==2){
 					return "已审核的订单无法再次反馈!订单号:"+order.getCwb();
 				}
