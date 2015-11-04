@@ -63,7 +63,7 @@ public class VipShopOXOInsertCwbDetailTimmer {
 			return;
 		}
 		String cwbordertypeids=CwbOrderTypeIdEnum.OXO.getValue()+","+CwbOrderTypeIdEnum.OXO_JIT.getValue();
-		List<CwbOrderDTO> cwbOrderList = dataImportDAO_B2c.getCwbOrderTempByKeysOXO(vipshop.getCustomerids(),cwbordertypeids);
+		List<CwbOrderDTO> cwbOrderList = dataImportDAO_B2c.getCwbOrderTempByKeysExtends(vipshop.getCustomerids(),cwbordertypeids);
 		if (cwbOrderList == null) {
 			return;
 		}

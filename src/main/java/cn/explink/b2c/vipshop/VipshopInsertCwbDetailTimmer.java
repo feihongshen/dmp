@@ -21,6 +21,7 @@ import cn.explink.dao.EmailDateDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 
@@ -95,7 +96,10 @@ public class VipshopInsertCwbDetailTimmer {
 	}
 
 	private String dealWithOders(VipShop vipshop, String lefengCustomerid) {
-		List<CwbOrderDTO> cwbOrderList=dataImportDAO_B2c.getCwbOrderTempByKeys(vipshop.getCustomerids()+","+lefengCustomerid);
+		
+		String cwbordertypeids=CwbOrderTypeIdEnum.Peisong.getValue()+","+CwbOrderTypeIdEnum.Shangmentui.getValue()+","+CwbOrderTypeIdEnum.Shangmenhuan.getValue();
+		
+		List<CwbOrderDTO> cwbOrderList=dataImportDAO_B2c.getCwbOrderTempByKeysExtends((vipshop.getCustomerids()+","+lefengCustomerid),cwbordertypeids);
 
 		if (cwbOrderList == null) {
 			return null;
