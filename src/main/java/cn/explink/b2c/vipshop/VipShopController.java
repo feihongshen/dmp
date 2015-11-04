@@ -116,5 +116,13 @@ public class VipShopController {
 		return "执行订单"+cwb+"失效成功";
 
 	}
+	@RequestMapping("/timmer")
+	public @ResponseBody String timmer(HttpServletRequest request, HttpServletResponse response) {
+
+		this.vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetails();
+
+		return "手动执行定时任务成功";
+
+	}
 
 }
