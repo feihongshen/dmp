@@ -212,6 +212,9 @@ public class VipShopOXOGetCwbDataService {
 			}
 			else if(order.getBusinessType().equals("30")){//保留类型
 				//TODO保留类型
+				cwbOrder.setCwbordertypeid(4);//default OXO
+			}else{
+				cwbOrder.setCwbordertypeid(4); //default OXO
 			}
 		}
 		cwbOrder.setRemark1(order.getBrandName()+"&"+order.getStoreName()+"&"+order.getStoreContacts()+"&"+order.getStoreTel());//品牌商&提货门店&提货联系人&提货联系方式
