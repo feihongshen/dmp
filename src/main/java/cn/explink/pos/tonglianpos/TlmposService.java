@@ -1,7 +1,9 @@
 package cn.explink.pos.tonglianpos;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -104,6 +106,7 @@ public class TlmposService {
 		long deliverid = 0;
 		try {
 			List<User> userlist = this.userDAO.getUsersByUsername(deliver_man);
+			
 			if ((userlist != null) && (userlist.size() > 0)) {
 				deliverid = userlist.get(0).getUserid();
 			}
@@ -356,14 +359,31 @@ public class TlmposService {
 	 * @return
 	 */
 	protected TlmposRespNote buildtlmposRespClass(Transaction rootnote, TlmposRespNote tlmposRespNote) {
-		tlmposRespNote.setDeliverid(this.getUserIdByUserName(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()));
+		
 		String cwbTransCwb = this.cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrder_no()); // 可能是订单号也可能是运单号
+		
+		User pjdUser = getPjdUserName(cwbTransCwb);
+		if(pjdUser!=null){
+			String pjdUname = rootnote.getTransaction_Header().getExt_attributes().getDelivery_man();
+			if(pjdUser.getUsername().toUpperCase().equals(pjdUname)){
+				tlmposRespNote.setDeliverid(pjdUser.getUserid());
+			}else{
+				tlmposRespNote.setDeliverid(0);
+			}
+			
+		}else{
+			tlmposRespNote.setDeliverid(this.getUserIdByUserName(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()));
+		}
+		
 
 		long deliverid = 0;
 		Tlmpos tlmpos = this.gettlmposSettingMethod(PosEnum.TongLianPos.getKey());
 		if (tlmpos.getIsotheroperator() == 1) { // 限制他人刷卡，只能自己刷自己名下订单
 			deliverid = tlmposRespNote.getDeliverid() == 0 ? -1 : tlmposRespNote.getDeliverid();
 		}
+		
+		 
+		
 		tlmposRespNote.setCwbOrder(this.cwbDAO.getCwbDetailByCwbAndDeliverId(deliverid, cwbTransCwb));
 		if (tlmposRespNote.getCwbOrder() == null) {
 			return tlmposRespNote;
@@ -379,6 +399,18 @@ public class TlmposService {
 		tlmposRespNote.setDelivery_man(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man());
 
 		return tlmposRespNote;
+	}
+
+	private User getPjdUserName(String cwbTransCwb) {
+		User u=null;
+		CwbOrder cwbOrder = this.cwbDAO.getCwbDetailByCwbAndDeliverId(0, cwbTransCwb);
+		if(cwbOrder!=null){
+			long deliveryId = cwbOrder.getDeliverid();
+			if(deliveryId!=0){
+				u= this.userDAO.getAllUserByid(deliveryId);
+			}
+		}
+		return u;
 	}
 
 }
