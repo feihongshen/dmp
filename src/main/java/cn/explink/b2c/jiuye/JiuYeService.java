@@ -257,7 +257,7 @@ public class JiuYeService {
 				
 				cwbMap.put("consigneemobile", dmsOrder.getContent().getGetPhone());//收货人手机号
 				cwbMap.put("consigneephone", dmsOrder.getContent().getGetTel());//收货人座机
-				cwbMap.put("carrealweight", dmsOrder.getContent().getPackageHav().toString());//包裹重量
+				cwbMap.put("cargorealweight", dmsOrder.getContent().getPackageHav().toString());//包裹重量
 				cwbMap.put("carsize", dmsOrder.getContent().getPackageHav().toString());//包裹体积，单位是立方厘米
 				cwbMap.put("remark4", remark4);//是否限时配送  0 限时 1不限时
 				cwbMap.put("customercommand",customercommand);//投递时延要求
