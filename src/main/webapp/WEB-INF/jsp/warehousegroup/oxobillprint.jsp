@@ -85,9 +85,9 @@ function CreateOneFormPage(cwb){
 			
 	var transcwb = $("#transcwb").val();		
 	var cwb = $("#cwb").val();	
-	LODOP.ADD_PRINT_BARCODE(250,280,200,50,"128Auto",transcwb);
+	LODOP.ADD_PRINT_BARCODE(240,280,200,50,"128Auto",transcwb);
 	LODOP.SET_PRINT_STYLEA(0, "FontSize", 12);
-	LODOP.ADD_PRINT_BARCODE(740,280,200,50,"128Auto",cwb);
+	LODOP.ADD_PRINT_BARCODE(770,280,200,50,"128Auto",cwb);
 	LODOP.SET_PRINT_STYLEA(0, "FontSize", 12);
 };
 function nowprint(){
@@ -107,144 +107,153 @@ function nowprint(){
 		<input type="hidden" id="cwb" value="<%=cwb %>">
         <input type="hidden" id="transcwb" value="<%=transCwb %>">
 		<%if (cwbOrder != null) { %>
-			<table width="700px" border="0" cellspacing="0" cellpadding="0" style="font-size: 14px">
-				<tr>
-					<td colspan="5" align="center" height="50"><font size="5px"><strong>唯品会</strong></font></td>
-				</tr>
-				<tr>
-					<td colspan="5" align="center" height="50"><font size="3px"><strong>VIP.COM</strong></font></td>
-				</tr>
-				
-				<tr height="50">
-				    <td width="30"></td>
-					<td width="100" valign="middle" style="font-weight: bold;">签收人:</td>
-					<td width="200" valign="middle"> </td>
-					<td width="134"></td>
-					<td width="236"></td>
-				</tr>
-				
-				<tr height="50">
-				    <td width="30"></td>
-					<td width="100" valign="middle" style="font-weight: bold;">应收金额:</td>
-					<td width="200" valign="middle" style="font-weight: bold;"><%=cwbOrder.getReceivablefee()%></td>
-					<td width="134"></td>
-					<td width="236"></td>
-				</tr>
-				<tr >
-					<td colspan="5" height="30" align="middle" valign="bottom">运单号： <%=transCwb%></td>
-				</tr>
-				<tr>
-					<td height="100" colspan="5" align="middle">
-						<div id="transCwbBarcodeTarget"></div>
-					</td>
-				</tr>
-
-				<tr>
-				    <td width="30"></td>
-					<td colspan="2" valign="middle" align="left">
-						<table border="1" width="95" height="95" cellpadding="0"
-							cellspacing="0">
+			<table border="0" cellspacing="0" cellpadding="0">
+			  <tr>
+			    <td width="100"></td>
+			    <td>
+						<table border="1" cellspacing="0" cellpadding="0">
 							<tr>
-								<td></td>
+								<td>
+									<table width="500px" border="0" cellspacing="0" cellpadding="0"
+										style="font-size: 16px">
+										<tr>
+											<td colspan="4" align="center" height="50"><font
+												size="5px"><strong>唯品会</strong></font></td>
+										</tr>
+										<tr>
+											<td colspan="4" align="center" height="50"><font
+												size="3px"><strong>VIP.COM</strong></font></td>
+										</tr>
+
+										<tr height="50">
+											<td width="100" valign="middle" style="font-weight: bold;">签收人:</td>
+											<td width="100" valign="middle"></td>
+											<td ></td>
+											<td ></td>
+										</tr>
+
+										<tr height="50">
+											<td width="100" valign="middle" style="font-weight: bold;">应收金额:</td>
+											<td width="100" valign="middle" style="font-weight: bold;"><%=cwbOrder.getReceivablefee()%></td>
+											<td ></td>
+											<td ></td>
+										</tr>
+										<tr>
+											<td style="font-size: 18px" colspan="4" height="30"
+												align="middle" valign="bottom">运单号： <%=transCwb%></td>
+										</tr>
+										<tr>
+											<td height="100" colspan="4" align="middle">
+												<div id="transCwbBarcodeTarget"></div>
+											</td>
+										</tr>
+
+										<tr>
+											<td colspan="2" valign="middle" align="middle">
+												<table border="1" width="80" height="80" cellpadding="0"
+													cellspacing="0">
+													<tr>
+														<td></td>
+													</tr>
+												</table>
+											</td>
+											<td colspan="2" valign="middle" align="middle">
+												<table border="1" width="180" height="90" cellpadding="0"
+													cellspacing="0">
+													<tr>
+														<td style="font-size: 40px; text-align: center;"><%=deliveryBranchName%></td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</td>
 							</tr>
 						</table>
 					</td>
-					<td colspan="2" valign="middle" align="middle">
-						<table border="1" width="300" height="100" cellpadding="0"
-							cellspacing="0">
-							<tr>
-								<td style="font-size:50px;text-align:center;"><%=deliveryBranchName%></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
+			  </tr>
 			</table>
-			<br />
-			<br />
-		
-			<div style="width:700px;font-weight: bold; border-bottom: 1px dashed #000000;"></div>
-			<br />
-
-			<table width="700px" border="0" cellspacing="0" cellpadding="0" style="font-size: 14px">
-				<tr>
-				    <td width="30"></td>
-					<td width="100" height="30" valign="middle" style="font-weight: bold;">*会员留存联</td>
-					<td width="200"></td>
-					<td></td>
-					<td width="236"> <img src="../images/billwarn.png" /></td>
-				</tr>
-				<tr>
-				    <td width="30"></td>
-					<td width="100" height="30" valign="middle">收货人:</td>
-					<td width="200" height="30" valign="middle"><%=cwbOrder.getConsigneename()%></td>
-					<td width="134"></td>
-					<td width="236"></td>
-				</tr>
-				<tr>
-				    <td width="30"></td>
-					<td width="100" height="30" valign="middle">电话:</td>
-					<td width="200" height="30" valign="middle"><%=cwbOrder.getConsigneemobile()%></td>
-					<td width="134"></td>
-					<td width="236"></td>
-				</tr>
-				<tr>
-				    <td width="30"></td>
-					<td width="100" height="30" valign="middle">收货地址:</td>
-					<td colspan="3" height="30" valign="middle"><%=cwbOrder.getConsigneeaddress()%></td>
-				</tr>
-				<tr>
-					<td colspan="5" height="30" align="middle" valign="bottom">订单号： <%=cwb%></td>
-				</tr>
-				<tr>
-					<td height="50" colspan="5" align="middle">
-						<div id="cwbBarcodeTarget"></div>
-					</td>
-				</tr>
-			</table>
-
-            <br /> 
-			<div style="width:700px;font-weight: bold; border-bottom: 1px dashed #000000;"></div>
-			<br /> 
-			<br /> 
 			
-			<table width="700px" border="0" cellspacing="0"
-				cellpadding="0" style="font-size: 14px">
+			<br />
+			<div style="width:700px;font-weight: bold; border-bottom: 2px dashed #000000;"></div>
+			<br />
+			<br />
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100"></td>
+					<td>
+						<table border="1" cellspacing="0" cellpadding="0">
+							<tr>
+								<td>
+									<table width="500px" border="0" cellspacing="0" cellpadding="0"
+										style="font-size: 16px">
+										<tr>
+											<td width="100" height="30" valign="middle"
+												style="font-weight: bold;">*会员留存联</td>
+											<td width="150"></td>
+											<td></td>
+											<td width="236"><img src="../images/billwarn.png" /></td>
+										</tr>
+										<tr>
+											<td width="100" height="30" valign="middle">收货人:</td>
+											<td width="150" height="30" valign="middle"><%=cwbOrder.getConsigneename()%></td>
+											<td ></td>
+											<td ></td>
+										</tr>
+										<tr>
+											<td width="100" height="30" valign="middle">电话:</td>
+											<td width="150" height="30" valign="middle"><%=cwbOrder.getConsigneemobile()%></td>
+											<td ></td>
+											<td ></td>
+										</tr>
+										<tr>
+											<td width="100" height="30" valign="middle">收货地址:</td>
+											<td colspan="3" height="30" valign="middle"><%=cwbOrder.getConsigneeaddress()%></td>
+										</tr>
+										<tr>
+											<td style="font-size: 18px" colspan="4" height="50" align="middle" valign="bottom">订单号：
+												<%=cwb%></td>
+										</tr>
+										<tr>
+											<td height="50" colspan="4" align="middle">
+												<div id="cwbBarcodeTarget"></div>
+											</td>
+										</tr>
+									</table> 
+									<br />
+									<div style="width: 500px; font-weight: bold; border-bottom: 1px dashed #000000;"></div>
+									<br />
 
-				<tr valign="middle" align="middle">
-				    <td width="30"></td>
-					<td width="400" style="font-weight: bold;">品名 <%=category %></td>
-					<td style="font-weight: bold;">数量<%=goodsCount %></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr valign="bottom">
-				    <td width="30"></td>
-					<td width="400" height="30">退货寄件地址</td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr valign="bottom">
-				    <td width="30"></td>
-					<td width="400" height="30">温馨提示：</td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr valign="bottom">
-				    <td width="30"></td>
-					<td width="400" height="30">如需退货，请先登录销售平台申请，再将此单放入包裹中一并寄到如下地址，否则无法为您办理退货，敬请理解。</td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr valign="bottom">
-					<td width="30"></td>
-					<td width="400" height="80">广东省佛山市顺德区陈村镇石洲村委国通大道唯品会物流中心43-48号门，顾客退货服务部（收）
-						邮编：528313 联系电话：4006789888</td>
-					<td></td>
-					<td></td>
-					<td></td>
+									<table width="500px" border="0" cellspacing="0" cellpadding="0"
+										style="font-size: 16px">
+
+										<tr>
+											<td  align="right" width="250" style="font-weight: bold;">品名 <%=category%></td>
+											<td  align="middle"width="250" style="font-weight: bold;">数量<%=goodsCount%></td>
+										</tr>
+
+										<tr valign="bottom">
+											<td width="100" height="30">退货寄件地址</td>
+											<td></td>
+										</tr>
+										<tr valign="bottom">
+											<td colspan="2" height="30">广东省佛山市顺德区陈村镇石洲村委国通大道唯品会物流中心43-48号门，顾客退货服务部（收）
+												邮编：528313 联系电话：4006789888</td>
+										</tr>
+
+										<tr valign="bottom">
+											<td height="50">温馨提示：</td>
+											<td></td>
+										</tr>
+										<tr valign="bottom">
+											<td colspan="2" height="30">如需退货，请先登录销售平台申请，再将此单放入包裹中一并寄到如下地址，否则无法为您办理退货，敬请理解。</td>
+										</tr>
+
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</table>
          <%} %>
