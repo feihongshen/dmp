@@ -8568,6 +8568,10 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
-	
+	<changeSet id="liangyedong-2015-11-06-1" author="liangyedong">
+		<sql>
+			insert into dmp40_function values (505060, 2, 'OXO订单运单打印', 505060,'cwboxodetail/oxobill/1?', 5050);
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>

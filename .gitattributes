@@ -2732,6 +2732,8 @@ src/main/webapp/WEB-INF/jsp/warehousegroup/outdetaillist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outdetaillist2.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outlist.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/outtongluprintint_template.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/oxobill.jsp -text
+src/main/webapp/WEB-INF/jsp/warehousegroup/oxobillprint.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_default.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_hmj.jsp -text
 src/main/webapp/WEB-INF/jsp/warehousegroup/returnbillprinting_txd.jsp -text
@@ -5395,6 +5397,7 @@ src/main/webapp/images/azsjjk.png -text
 src/main/webapp/images/bcsz.png -text
 src/main/webapp/images/bg_3.gif -text
 src/main/webapp/images/bg_33.gif -text
+src/main/webapp/images/billwarn.png -text
 src/main/webapp/images/bottom_bg.png -text
 src/main/webapp/images/bottom_img.png -text
 src/main/webapp/images/bqdy.png -text

@@ -11,10 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbDAO;
 import cn.explink.dao.CwbOXODetailDAO;
+import cn.explink.dao.SystemInstallDAO;
+import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOXODetailBean;
+import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.CwbOXOStateEnum;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Page;
@@ -30,6 +35,12 @@ public class CwbOXODetailController {
 	
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	@Autowired
+	CwbDAO cwbDao;
+	@Autowired
+	BranchDAO branchDAO;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 	
 	@RequestMapping("/list/{page}")
 	public String list(
@@ -59,6 +70,29 @@ public class CwbOXODetailController {
 		model.addAttribute("page", page);
 		return "cwboxodetail/list";
 	}
+	
+	@RequestMapping("/oxobill/{page}")
+	public String printOXOBill(Model model,
+			@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
+		if (cwb != null && !cwb.isEmpty()) {
+			model.addAttribute("cwbOrder", this.cwbDao.getCwbByCwb(cwb));
+			model.addAttribute("query", "1");
+		}
+		return "warehousegroup/oxobill";
+	}
+	
+	@RequestMapping("/oxobillprint")
+	public String printOXOBillPrint(Model model,
+			@RequestParam(value = "printcwb", required = false, defaultValue = "") String printcwb) {
+		
+		List<Branch> branchList = branchDAO.getAllEffectBranches();
+		model.addAttribute("branchList", branchList);
+		if (printcwb != null && !printcwb.isEmpty()) {
+			model.addAttribute("cwbOrder", this.cwbDao.getCwbByCwb(printcwb));
+		}
+		return "warehousegroup/oxobillprint";
+	}
+	
 	
 	private long getCurrentBranchId() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
