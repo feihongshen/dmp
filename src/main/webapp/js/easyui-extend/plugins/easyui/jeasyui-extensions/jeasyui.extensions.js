@@ -353,9 +353,9 @@
                 "错误号：" + XMLHttpRequest.status + "(" + XMLHttpRequest.statusText + ")；<hr />" + XMLHttpRequest.responseText :
                 "系统出现了一个未指明的错误，如果该问题重复出现，请联系您的系统管理员并反馈该故障。");
         var win = $.easyui.messager.alert("错误提醒", msg, "error"),
-            opts = win.window("options"), panel = win.window("panel"), width = panel.outerWidth(), height = panel.outerHeight();*/
+            opts = win.window("options"), panel = win.window("panel"), width = panel.outerWidth(), height = panel.outerHeight();
         if (width > 800 || height > 800) { win.window("resize", { width: width > 800 ? 800 : width, height: height > 800 ? 800 : height }); }
-        win.window("center");
+        win.window("center");*/
     };
 
 
