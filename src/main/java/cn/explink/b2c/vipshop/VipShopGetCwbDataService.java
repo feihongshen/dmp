@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import scala.math.BigInt;
 import cn.explink.b2c.tools.B2cEnum;
@@ -184,6 +185,7 @@ public class VipShopGetCwbDataService {
 	/**
 	 * 获取唯品会订单信息
 	 */
+	@Transactional
 	public long getOrdersByVipShop(int vipshop_key) {
 		VipShop vipshop = this.getVipShop(vipshop_key);
 		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
