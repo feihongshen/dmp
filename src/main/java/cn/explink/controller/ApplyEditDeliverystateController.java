@@ -701,7 +701,8 @@ public class ApplyEditDeliverystateController {
 		EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiZhiFuFangShi(cwb, paywayid, newpaywayid, requestUser, getSessionUser().getUserid());
 		//added by jiangyu begin
 		adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid, newpaywayid);
-		orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid,newpaywayid);
+		//deleted by zhouguoting 2015/11/06 修改订单支付方式不再需要生成站内调整单（归班审核后的订单不再允许修改订单支付方式）
+		//orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid,newpaywayid);
 		//修改支付方式,判断是否生成调整单
 		//added by jiangyu end
 		ecList.add(ec_dsd);
@@ -735,7 +736,8 @@ public class ApplyEditDeliverystateController {
 			//客户调整单逻辑入口
 			this.adjustmentRecordService.processAdjusRecordByMoney(cwbOrder, paybackfee, receivablefee, "", user.getUsername());
 			//站内调整单逻辑入口
-			this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder,user,receivablefee,paybackfee);
+			//deleted by zhuoguoting 2015/11/06 修改订单支付金额不再生成站内调整记录（归班审核后的订单不再允许修改订单金额）
+			//this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder,user,receivablefee,paybackfee);
 		}
 		
 		EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, receivablefee, cash, pos, checkfee, otherfee, paybackfee, requestUser,
