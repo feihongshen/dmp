@@ -1001,6 +1001,7 @@ src/main/java/cn/explink/dao/FinancePayUpAuditDAO.java -text
 src/main/java/cn/explink/dao/FindLocationDao.java -text
 src/main/java/cn/explink/dao/FnCustomerBillDetailDAO.java -text
 src/main/java/cn/explink/dao/FnOrgBillDetailDAO.java -text
+src/main/java/cn/explink/dao/FnOrgOrderAdjustRecordDAO.java -text
 src/main/java/cn/explink/dao/GoodsStatusNumDao.java -text
 src/main/java/cn/explink/dao/GotoClassAuditingDAO.java -text
 src/main/java/cn/explink/dao/GotoClassOldDAO.java -text
@@ -1247,6 +1248,7 @@ src/main/java/cn/explink/domain/OrderPartGoodsRt.java -text
 src/main/java/cn/explink/domain/OrderPartGoodsRtList.java -text
 src/main/java/cn/explink/domain/OrderbackRecord.java -text
 src/main/java/cn/explink/domain/OrgBillAdjustmentRecord.java -text
+src/main/java/cn/explink/domain/OrgOrderAdjustmentRecord.java -text
 src/main/java/cn/explink/domain/OutWarehouseGroup.java -text
 src/main/java/cn/explink/domain/OverdueBranchResultVO.java -text
 src/main/java/cn/explink/domain/OverdueConstantVO.java -text

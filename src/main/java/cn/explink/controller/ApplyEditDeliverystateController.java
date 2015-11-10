@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
@@ -344,6 +347,18 @@ public class ApplyEditDeliverystateController {
 							this.adjustmentRecordService.createAdjustment4ReFeedBack(cwb);
 							//站内调整单逻辑入口
 							this.orgBillAdjustmentRecordService.createAdjustment4ReFeedBack(cwb,ec_dsd);
+							
+							String auditingTime = ec_dsd.getDs().getAuditingtime();
+							if (auditingTime != null && !auditingTime.isEmpty()) {
+								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+								SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								String todayStr = dateFormat.format(new Date());
+								String autitingDate = dateFormat.format(dateTimeFormat.parse(auditingTime));
+								if (!todayStr.equals(autitingDate)) {//归班审核时间与重置反馈时间不在同一天生成订单调整记录
+									//重置反馈状态生成调整记录(目前是为了站点签收余额报表增加的方法)
+									this.editCwbService.createFnOrgOrderAdjustRecord(cwb,ec_dsd);
+								}
+							}
 						}
 						
 					}else{

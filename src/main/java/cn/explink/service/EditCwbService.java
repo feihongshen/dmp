@@ -31,13 +31,13 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.FinanceAuditDAO;
 import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
 import cn.explink.dao.FinancePayUpAuditDAO;
+import cn.explink.dao.FnOrgOrderAdjustRecordDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.PayUpDAO;
 import cn.explink.dao.ReturnCwbsDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AccountCwbDetail;
-import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.AccountCwbSummary;
 import cn.explink.domain.AccountDeducDetail;
 import cn.explink.domain.AccountDeductRecord;
@@ -49,10 +49,12 @@ import cn.explink.domain.FinanceAudit;
 import cn.explink.domain.FinanceDeliverPayupDetail;
 import cn.explink.domain.FinancePayUpAudit;
 import cn.explink.domain.GotoClassAuditing;
+import cn.explink.domain.OrgOrderAdjustmentRecord;
 import cn.explink.domain.PayUp;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AccountFlowOrderTypeEnum;
+import cn.explink.enumutil.BillAdjustTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -60,6 +62,7 @@ import cn.explink.enumutil.EditCwbTypeEnum;
 import cn.explink.enumutil.FinanceAuditTypeEnum;
 import cn.explink.enumutil.FinanceDeliverPayUpDetailTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.PayMethodSwitchEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.util.JSONReslutUtil;
@@ -117,6 +120,10 @@ public class EditCwbService {
 	ExceptionCwbDAO exceptionDAO;
 	@Autowired
 	ReturnCwbsDAO returnCwbsDAO;
+	@Autowired
+	FnOrgOrderAdjustRecordDAO fnOrgOrderAdjustRecordDAO;
+	@Autowired
+	CwbDAO cwbDao;
 
 	/**
 	 * 修改订单 之 重置审核状态
@@ -1693,5 +1700,70 @@ public class EditCwbService {
 			return cwbMsg;
 		}
 		return "";
+	}
+	
+	// 新增站点重置反馈调整记录
+	public void createFnOrgOrderAdjustRecord(String cwb,
+			EdtiCwb_DeliveryStateDetail ec_dsd) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		OrgOrderAdjustmentRecord record = new OrgOrderAdjustmentRecord();
+		DeliveryState deliveryState = ec_dsd.getDs();
+		// 查询出对应订单号的账单详细信息
+		CwbOrder order = cwbDao.getCwbByCwb(cwb);
+		if (order != null ) {
+			// 根据不同的订单类型
+			record.setOrderNo(order.getCwb());
+			record.setBillNo("");
+			record.setBillId(0L);
+			record.setAdjustBillNo("");
+			record.setCustomerId(order.getCustomerid());
+			record.setReceiveFee(order.getReceivablefee());
+			record.setRefundFee(order.getPaybackfee());
+			// 是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
+			record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
+			record.setDeliverId(order.getDeliverid());
+			record.setCreator(getSessionUser().getUsername());
+			record.setCreateTime(new Date());
+			record.setOrderType(order.getCwbordertypeid());
+			// 订单的支付方式可能是新的支付方式
+			Long oldPayWay = Long.valueOf(order.getPaywayid()) == null ? 1L : Long
+					.valueOf(order.getPaywayid());
+			Long newPayWay = order.getNewpaywayid() == null ? 0L : Long
+					.valueOf(order.getNewpaywayid());
+			if (oldPayWay.intValue() == newPayWay.intValue()) {
+				record.setPayMethod(oldPayWay.intValue());
+			} else {
+				record.setPayMethod(newPayWay.intValue());
+			}
+			record.setDeliverybranchid(order.getDeliverybranchid());
+			if (order.getPaybackfee() != null
+					&& order.getPaybackfee().compareTo(BigDecimal.ZERO) > 0) {
+				record.setModifyFee(BigDecimal.ZERO);
+				record.setAdjustAmount(order.getPaybackfee());
+			} else {
+				record.setModifyFee(order.getReceivablefee());
+				record.setAdjustAmount(order.getReceivablefee().negate());
+			}
+			try {
+				record.setSignTime(sdf.parse(deliveryState.getSign_time()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			record.setPayWayChangeFlag(0);
+			// 调整金额为货款调整
+			record.setAdjustType(BillAdjustTypeEnum.OrderFee.getValue());
+			// 记录运费
+			record.setFreightAmount(ec_dsd.getOriInfactfare());
+			fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
+
+			// 如果是是上门退订单，生成运单调整记录
+			if (CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid()) {
+				record.setModifyFee(order.getInfactfare());
+				record.setAdjustAmount(ec_dsd.getOriInfactfare().negate());
+				// 调整金额为运费调整
+				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+				fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
+			}
+		}
 	}
 }
