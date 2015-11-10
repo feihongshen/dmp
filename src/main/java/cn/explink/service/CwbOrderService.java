@@ -406,6 +406,9 @@ public class CwbOrderService extends BaseOrderService{
 	ZhiFuApplyDao zhiFuApplyDao;
 	@Autowired
 	searchEditCwbInfoDao editCwbInfoDao;
+	
+	@Autowired
+	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
 
 //	private User getSessionUser() {
 //		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -5078,6 +5081,15 @@ public class CwbOrderService extends BaseOrderService{
 				this.cwbApplyZhongZhuanDAO.creAndUpdateCwbApplyZhongZhuan(cwbApplyZhongZhuan);
 			}
 
+			/**
+			 * added by zhouguoting 2015/11/08
+			 * 如果审核状态为“配送成功”，“上门退成功”，“上门换成功”。 如果之前有生成过站内账单（即之前有做过反馈审核，但被重置反馈了），再次做反馈审核后，需要站内调整记录
+			 */
+			if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
+					|| (deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
+				
+				orgBillAdjustmentRecordService.createAdjustment4GoToClassConfirm(co,deliverystate);
+			}
 
 		}
 
