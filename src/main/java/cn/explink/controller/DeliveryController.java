@@ -649,7 +649,8 @@ public class DeliveryController {
 					Long paywayid = (Long) (preParams.get("oldPayWayId")==null?0L:preParams.get("oldPayWayId"));
 					Long newpaywayid = (Long)(preParams.get("newPayWayId")==null?0L:preParams.get("newPayWayId"));
 					this.adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid.intValue(), newpaywayid.intValue());
-					this.orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid.intValue(),newpaywayid.intValue());
+					//2015/11/8 deleted by zhouguoting 归班反馈时如果修改了支付方式，不需要添加站内调整记录（因为归班审核后才会生成站内账单，所以在归班审核前对订单支付信息进行修改不需要生成调整记录）
+					//this.orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid.intValue(),newpaywayid.intValue());
 				}
 			} catch (Exception e) {
 				this.logger.error("财务处理异常cwb="+cwb,e);
