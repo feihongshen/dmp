@@ -570,6 +570,13 @@ public class CwbOrderPDAController {
 				if ((request.getParameter("baleno") != null) && (request.getParameter("baleno").length() > 0)) {
 					baleno = request.getParameter("baleno");
 				}
+				
+				if(branchid<=0){
+					CwbOrder co = cwbDAO.getCwbByCwb(scancwb);
+					if(co!=null){
+						branchid=co.getNextbranchid();
+					}
+				}
 				return this.outWarehous(cwb, driverid, truckid, branchid, confirmflag, reasonid, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), request.getContextPath()
 						+ ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
 
