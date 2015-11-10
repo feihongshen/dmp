@@ -129,6 +129,8 @@ public class CwbOrder {
 	private String zhongzhuanreason;//中转原因
 	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
 	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
+	private long fnorgbillid; //订单站点代收货款账单id
+	private long fnorgfreightbillid; //订单站点运费账单id
 	private int firstlevelid; //一级滞留原因id
 	private String city;//通过百度API匹配的城市
 	private String area;//通过百度API匹配的城区区域
@@ -1188,6 +1190,22 @@ public class CwbOrder {
 
 	public void setBranchfeebillexportflag(int branchfeebillexportflag) {
 		this.branchfeebillexportflag = branchfeebillexportflag;
+	}
+
+	public long getFnorgbillid() {
+		return fnorgbillid;
+	}
+
+	public void setFnorgbillid(long fnorgbillid) {
+		this.fnorgbillid = fnorgbillid;
+	}
+
+	public long getFnorgfreightbillid() {
+		return fnorgfreightbillid;
+	}
+
+	public void setFnorgfreightbillid(long fnorgfreightbillid) {
+		this.fnorgfreightbillid = fnorgfreightbillid;
 	}
 	
 }
