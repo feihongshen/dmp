@@ -230,6 +230,8 @@ public class CwbDAO {
 			cwbOrder.setZhongzhuanreason(rs.getString("zhongzhuanreason"));*/
 			cwbOrder.setFnorgoffset(rs.getBigDecimal("fnorgoffset"));
 			cwbOrder.setFnorgoffsetflag(rs.getInt("fnorgoffsetflag"));
+			cwbOrder.setFnorgbillid(rs.getLong("fnorgbillid"));//订单站点代收货款账单id
+			cwbOrder.setFnorgfreightbillid(rs.getLong("fnorgfreightbillid")); //订单站点运费账单id
 			cwbOrder.setCity(StringUtil.nullConvertToEmptyString(rs.getString("city")));
 			cwbOrder.setArea(StringUtil.nullConvertToEmptyString(rs.getString("area")));
 			cwbOrder.setFirstlevelid(rs.getInt("firstlevelid"));
