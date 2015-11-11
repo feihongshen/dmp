@@ -8611,4 +8611,20 @@ CREATE TABLE `cs_complaint_accept` (
          ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
 	     </sql>
      </changeSet>
+     
+     <changeSet id="zhouguoting-2015-11-10-2" author="zhouguoting">
+		<sql>
+		ALTER TABLE `fn_org_bill`   
+	  	ADD COLUMN `biz_start_time` DATETIME NULL  COMMENT '订单业务开始时间（如生成正常账单，所有账单明细中的订单的归班审核时间均在biz_start_time和biz_end_time之间）' AFTER `fee_type`,
+	  	ADD COLUMN `biz_end_time` DATETIME NULL  COMMENT '订单业务结束时间（如生成正常账单，所有账单明细中的订单的归班审核时间均在biz_start_time和biz_end_time之间）' AFTER `biz_start_time`;
+		</sql>
+	 </changeSet>
+	
+	 <changeSet id="zhouguoting-2015-11-10-3" author="zhouguoting">
+		<sql>
+		ALTER TABLE `fn_org_bill_detail`   
+  		ADD COLUMN `auditingtime` DATETIME NULL  COMMENT '订单归班审核时间' AFTER `sign_time`;
+		</sql>
+	 </changeSet>
+	       
 </databaseChangeLog>
