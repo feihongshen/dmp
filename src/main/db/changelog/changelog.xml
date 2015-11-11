@@ -8626,5 +8626,8 @@ CREATE TABLE `cs_complaint_accept` (
   		ADD COLUMN `auditingtime` DATETIME NULL  COMMENT '订单归班审核时间' AFTER `sign_time`;
 		</sql>
 	 </changeSet>
-	       
+	 
+	 <changeSet id="zhouguoting-2015-11-11-01" author="zhouguoting">
+	  	UPDATE dmp40_function SET functionurl='${eapUrl}orgBillPolicy.do?index&amp;' WHERE functionname='账单生成策略';
+	 </changeSet>     
 </databaseChangeLog>
