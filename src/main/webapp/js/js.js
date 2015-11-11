@@ -1364,6 +1364,7 @@ function init_deliverystate() {
 	$("#changereasonid").parent().hide();
 	$("#firstchangereasonid").parent().hide();
 	$("#signmanphone").parent().hide();
+	$("#transcwb").parent().hide();
 }
 
 function gonggong() {
@@ -1390,6 +1391,7 @@ function shagnmentuiObj() {
 	$("#returnedfee").parent().show();
 	$("#shouldfare").parent().show();
 	$("#infactfare").parent().show();
+	$("#transcwb").parent().show();
 }
 function shangmenhuanObj(podremarkid) {
 	gonggong();
@@ -1616,7 +1618,7 @@ function click_podresultid(deliverystate, PeiSongChengGong, ShangMenTuiChengGong
 
 // 验证字段是否正确输入
 function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuanChengGong, JuShou, BuFenTuiHuo, FenZhanZhiLiu, ZhiLiuZiDongLingHuo,
-		ShangMenJuTui, HuoWuDiuShi,DaiZhongZhuan, isReasonRequired) {
+		ShangMenJuTui, HuoWuDiuShi,DaiZhongZhuan, isReasonRequired,oldTranscwb) {
 	var podresultid = parseInt($("#podresultid").val());
 	var backreasonid = parseInt($("#backreasonid").val());
 	var leavereasonid = parseInt($("#leavedreasonid").val());
@@ -1633,6 +1635,12 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 	if (podresultid == PeiSongChengGong) {// 配送成功
 		return checkPeiSong();
 	} else if (podresultid == ShangMenTuiChengGong) {// 上门退成功
+		if(oldTranscwb!=''&&oldTranscwb!=$("#transcwb").val()){
+			if(!confirm('订单原来已经有快递单号，是否要修改快递单号？')){
+				return false;
+			}
+		}
+		
 		return checkShangMenTui();
 	} else if (podresultid == ShangMenHuanChengGong) {// 上门换成功
 		return checkShangMenHuan();

@@ -98,7 +98,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 			 onSubmit="if(check_deliveystate(<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
    			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
    			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>,
-   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>,'<%=isReasonRequired %>')){$('#sub').attr('disabled','disabled');submitSaveFormAndCloseBox(this);$('#sub').val('处理中...');}return false;" 
+   			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>,'<%=isReasonRequired %>','<%=cwborder.getTranscwb()%>')){$('#sub').attr('disabled','disabled');submitSaveFormAndCloseBox(this);$('#sub').val('处理中...');}return false;" 
 			 action="<%=request.getContextPath()%>/delivery/editDeliveryState/<%=deliverystate.getCwb()%>/<%=deliverystate.getDeliveryid()%>" method="post"  >
 				<ul>
 					<li><span>订单号：</span><%=deliverystate.getCwb() %></li>
@@ -160,6 +160,9 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    <option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
                    
                 </select>*</li>
+           		<li><span>快递单号：</span>
+                    <input type="text" name="transcwb" id="transcwb" value="<%=cwborder.getTranscwb()%>" />
+	           	</li>
            		<li><span>退货原因：</span>
 	           		<select name="backreasonid" id="backreasonid">
 	           			<option value ="0">==请选择==</option>

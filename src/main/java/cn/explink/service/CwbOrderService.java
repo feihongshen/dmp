@@ -193,6 +193,7 @@ import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TransCwbService;
+import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.DigestsEncoder;
 import cn.explink.util.ExcelUtils;
@@ -4141,7 +4142,11 @@ public class CwbOrderService extends BaseOrderService{
 		long changereasonid = parameters.get("changereasonid") == null ? 0l : (Long) parameters.get("changereasonid");
 		long firstchangereasonid = parameters.get("firstchangereasonid") == null ? 0l : (Long) parameters.get("firstchangereasonid");
 
-
+		String transcwb = parameters.get("transcwb") == null ? "" : (String) parameters.get("transcwb");
+		transcwb=transcwb.replaceAll(" ", "");
+		transcwb=transcwb.replaceAll("，", ",");//全角逗号
+		
+		
 		// 再次判定时间格式是否正确 如果正确 应该去掉空白符共18个字
 		deliverytime = deliverytime.length() != 19 ? DateTimeUtil.getNowTime() : deliverytime;
 
@@ -4422,6 +4427,29 @@ public class CwbOrderService extends BaseOrderService{
 				receivedfeeother, podremarkid, deliverstateremark, "", sign_typeid, sign_man, sign_time,sign_man_phone, receivedfeecodpos, infactfare);
 		// 修改订单表的实收运费
 		this.cwbDAO.updateCwbInfactFare(co.getCwb(), infactfare);
+		
+		//上门退成功反馈时录入快递单号
+		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()&&!transcwb.equals("")){
+			String []transcwbArr=transcwb.split(",");
+			List <String> transcwbList=new ArrayList<String>();
+			for(String transcwbTmp:transcwbArr){
+				if(transcwbTmp.length()>0){
+					transcwbList.add(transcwbTmp);
+				}
+			}
+			
+			if(transcwbList.size()>0){
+				this.transCwbDao.deleteTranscwb(cwb);
+				for(String transcwbTmp:transcwbList){
+					List<TranscwbView> transcwbViewList=this.transCwbDao.getcwbBytranscwb(transcwbTmp);
+					if(transcwbViewList!=null&&transcwbViewList.size()>0){
+						throw new CwbException(cwb,  FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FANKUI_KUAIDIDANHAO_YIGUANLIAN);
+					}
+				}
+				//this.transCwbDao.saveTranscwb(transcwb,cwb);//it is already done at OrderFlowNestedTransactionWrapper.saveTransCwb(),it also support split ,
+				this.cwbDAO.saveTranscwbByCwb(transcwb,cwb);
+			}
+		}
 
 		// 更新反馈时间
 		this.deliveryStateDAO.updateDeliverytime(cwb, deliverytime);

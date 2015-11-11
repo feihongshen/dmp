@@ -602,7 +602,8 @@ public class DeliveryController {
 			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare,
 			@RequestParam("changereasonid") long changereasonid, @RequestParam("firstchangereasonid") long firstchangereasonid,
 			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid,
-			@RequestParam(value = "signmanphone", required = false, defaultValue = "") String signmanphone) {
+			@RequestParam(value = "signmanphone", required = false, defaultValue = "") String signmanphone,
+			@RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb) {
 
 		this.logger.info("web-editDeliveryState-进入单票反馈,cwb={}",cwb);
 		String scancwb = cwb;
@@ -637,7 +638,7 @@ public class DeliveryController {
 			parameters.put("firstlevelreasonid", firstlevelreasonid);
 			parameters.put("changereasonid", changereasonid);
 			parameters.put("firstchangereasonid", firstchangereasonid);
-
+			parameters.put("transcwb", transcwb);
 
 			Map<String, Object> paywayParams = this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 
