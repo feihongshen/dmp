@@ -8631,7 +8631,7 @@ CREATE TABLE `cs_complaint_accept` (
 	  	UPDATE dmp40_function SET functionurl='${eapUrl}orgBillPolicy.do?index&amp;' WHERE functionname='账单生成策略';
 	 </changeSet>    
 	  
-	  <changeSet id="linagyurong-2015-11-12-01" author="linagyurong">
+	  <changeSet id="liangyurong-2015-11-12-01" author="liangyurong">
 		<sql>
 		 CREATE TABLE `fn_org_bill_policy` (
 		`id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
