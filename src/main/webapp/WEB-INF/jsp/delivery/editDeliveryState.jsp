@@ -161,7 +161,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    
                 </select>*</li>
            		<li><span>快递单号：</span>
-                    <input type="text" name="transcwb" id="transcwb" value="<%=cwborder.getTranscwb()%>" />
+                     <input type="text" name="transcwb" id="transcwb" value="<%=cwborder.getTranscwb()%>" onKeyDown='if(event.keyCode==13){return false;}'/> (多单号逗号分隔)
 	           	</li>
            		<li><span>退货原因：</span>
 	           		<select name="backreasonid" id="backreasonid">

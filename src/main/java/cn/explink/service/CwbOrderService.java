@@ -4145,6 +4145,7 @@ public class CwbOrderService extends BaseOrderService{
 		String transcwb = parameters.get("transcwb") == null ? "" : (String) parameters.get("transcwb");
 		transcwb=transcwb.replaceAll(" ", "");
 		transcwb=transcwb.replaceAll("，", ",");//全角逗号
+		transcwb=transcwb.replaceAll("\r\n", "");
 		
 		
 		// 再次判定时间格式是否正确 如果正确 应该去掉空白符共18个字
@@ -4440,13 +4441,14 @@ public class CwbOrderService extends BaseOrderService{
 			
 			if(transcwbList.size()>0){
 				this.transCwbDao.deleteTranscwb(cwb);
+				this.transCwbDao.saveTranscwb(cwb,cwb);
 				for(String transcwbTmp:transcwbList){
 					List<TranscwbView> transcwbViewList=this.transCwbDao.getcwbBytranscwb(transcwbTmp);
 					if(transcwbViewList!=null&&transcwbViewList.size()>0){
 						throw new CwbException(cwb,  FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FANKUI_KUAIDIDANHAO_YIGUANLIAN);
 					}
+					this.transCwbDao.saveTranscwb(transcwbTmp,cwb);//it seem it is already done at OrderFlowNestedTransactionWrapper.saveTransCwb(),it also support split ,
 				}
-				//this.transCwbDao.saveTranscwb(transcwb,cwb);//it is already done at OrderFlowNestedTransactionWrapper.saveTransCwb(),it also support split ,
 				this.cwbDAO.saveTranscwbByCwb(transcwb,cwb);
 			}
 		}
