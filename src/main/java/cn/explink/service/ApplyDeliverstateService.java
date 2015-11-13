@@ -27,7 +27,7 @@ public class ApplyDeliverstateService {
 		try {
 			String ids = delidsjson.getString("ids");
 			String pushtime = delidsjson.getString("pushtime");
-			logger.info("deliverystate ids:{}", ids);
+			//logger.info("deliverystate ids:{}", ids);
 			applyEditDeliverystateDAO.updateState(1, ids);
 			deliveryStateDAO.updateStateByIds(1, pushtime, ids);
 		} catch (Exception e) {
