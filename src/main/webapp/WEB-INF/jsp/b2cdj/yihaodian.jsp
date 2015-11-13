@@ -19,7 +19,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	<div id="box_top_bg"></div>
 	<div id="box_top_bg"></div>
 	<div id="box_top_bg"></div>
-	<div id="box_in_bg">
+	<div id="box_in_bg" style="width: 500px;">
 		<h1><div id="close_box" onclick="closeBox()"></div>一号店对接设置</h1>
 		<form id="tmall_save_Form" name="tmall_save_Form"  onSubmit="if(check_liebo()){submitSaveForm(this);}return false;" action="<%=request.getContextPath()%>/yihaodian/saveYihaodian/${joint_num}" method="post">
 		<div id="box_form">
