@@ -7649,11 +7649,15 @@ public class CwbOrderService extends BaseOrderService{
 			throws IOException, JsonParseException, JsonMappingException {
 		
 		if(orderFlowObj.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
-			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderFlowObj.getFloworderdetail(), CwbOrderWithDeliveryState.class);
-			DeliveryState ds = cwbOrderWithDeliveryState.getDeliveryState();
-			if(ds.getPos().compareTo(BigDecimal.ZERO)>0 && (ds.getPosremark().contains("POS反馈")||ds.getPosremark().contains("POS刷卡"))){
-				deliverService.posFeedbackNotifyApp(ds.getCwb());
+			DeliverServerParamVO paramVO = deliverService.getDeliverServerParamVO(PosEnum.DeliverServerAPP.getKey());
+			if(paramVO !=null){
+				CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderFlowObj.getFloworderdetail(), CwbOrderWithDeliveryState.class);
+				DeliveryState ds = cwbOrderWithDeliveryState.getDeliveryState();
+				if(ds.getPos().compareTo(BigDecimal.ZERO)>0 && (ds.getPosremark().contains("POS反馈")||ds.getPosremark().contains("POS刷卡"))){
+					deliverService.posFeedbackNotifyApp(ds.getCwb());
+				}
 			}
+			
 		}
 		
 		
@@ -7667,7 +7671,7 @@ public class CwbOrderService extends BaseOrderService{
 	@Consume(uri = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow?concurrentConsumers=5")
 	public void deliverAppJms(@Header("orderFlow") String orderFlow){
 		try{
-			this.logger.info("棒棒糖派件服务JMS监听：START");
+			//this.logger.info("棒棒糖派件服务JMS监听：START");
 			OrderFlow orderFlowObj = this.om.readValue(orderFlow, OrderFlow.class);
 			this.deliverAppJmsHandel(orderFlowObj);
 			
@@ -7691,53 +7695,55 @@ public class CwbOrderService extends BaseOrderService{
 	@Transactional
 	private void deliverAppJmsHandel(OrderFlow orderflow) throws JsonParseException, JsonMappingException, IOException {
 		
-		CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderflow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
-		CwbOrder co = cwbOrderWithDeliveryState.getCwbOrder();
-		
-		DeliverServerParamVO paramVO = deliverService.getDeliverServerParamVO(PosEnum.DeliverServerAPP.getKey());
-		
-		if( paramVO == null){
-			this.logger.info("棒棒糖派件服务-派件通知失败！未开启派件通知服务！");
-		}else{
-			if(orderflow.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
-				//组装请求VO对象
-				DeliverServerPushVO dspVO = new DeliverServerPushVO();
-				DeliveryState ds = cwbOrderWithDeliveryState.getDeliveryState();
-				dspVO.setOuter_trade_no(paramVO.getCode()+ (paramVO.getTradeNum()+1));
-				dspVO.setUnid(userDAO.getUserByid(ds.getDeliveryid()).get(0).getUsername());
-				dspVO.setMerchant_code(paramVO.getCode());
-				dspVO.setDelivery_company_code(paramVO.getCode());
-				dspVO.setMail_num(co.getCwb());
-				dspVO.setDelivery_type(co.getCwbordertypeid()==1?"4":co.getCwbordertypeid()+"");
-				dspVO.setS_company(customerDAO.getCustomerById(co.getCustomerid()).getCustomername());
-				dspVO.setS_contact("");
-				dspVO.setS_address("");
-				dspVO.setS_tel("");
-				dspVO.setS_mobile("");
-				dspVO.setS_address("");
-				dspVO.setD_company("");
-				dspVO.setGoods_fee(this.buildGoodsFee(co));
-				dspVO.setD_contact(co.getConsigneename());
-				dspVO.setD_tel(StringUtil.isEmpty(co.getConsigneephone())?"***********":co.getConsigneephone());
-				dspVO.setD_mobile(StringUtil.isEmpty(co.getConsigneemobile())?"***********":co.getConsigneemobile());
-				dspVO.setD_address(co.getConsigneeaddress());
-				dspVO.setGoods_info(new ArrayList<GoodInfoVO>());
-				//组装秘钥信息
-				String signStr = DigestsEncoder.encode("SHA1",((dspVO.buildSignStr() + "&" + paramVO.getToken())));
-				dspVO.setCode(paramVO.getCode());
-				dspVO.setSign(signStr);
-				String requestJson = JsonUtil.translateToJson(dspVO);
-				try {
-					String result = RestHttpServiceHanlder.sendHttptoServer_Json(requestJson, paramVO.getDeliverServerPushUrl());
-					this.logger.info("棒棒糖派件服务-派件通知推送完成，订单号：" + dspVO.getMail_num() + "请求报文：" + requestJson + ";响应报文：" + result);
-					if(this.isSuccessPush(result)){
-						deliverService.updateTradeNum(paramVO, PosEnum.DeliverServerAPP.getKey());
+		if(orderflow.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
+			
+			DeliverServerParamVO paramVO = deliverService.getDeliverServerParamVO(PosEnum.DeliverServerAPP.getKey());
+			if(paramVO == null){
+				//this.logger.info("棒棒糖派件服务-派件通知失败！未开启派件通知服务！");
+			}else{
+					CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderflow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
+					CwbOrder co = cwbOrderWithDeliveryState.getCwbOrder();
+					//组装请求VO对象
+					DeliverServerPushVO dspVO = new DeliverServerPushVO();
+					DeliveryState ds = cwbOrderWithDeliveryState.getDeliveryState();
+					dspVO.setOuter_trade_no(paramVO.getCode()+ (paramVO.getTradeNum()+1));
+					dspVO.setUnid(userDAO.getUserByid(ds.getDeliveryid()).get(0).getUsername());
+					dspVO.setMerchant_code(paramVO.getCode());
+					dspVO.setDelivery_company_code(paramVO.getCode());
+					dspVO.setMail_num(co.getCwb());
+					dspVO.setDelivery_type(co.getCwbordertypeid()==1?"4":co.getCwbordertypeid()+"");
+					dspVO.setS_company(customerDAO.getCustomerById(co.getCustomerid()).getCustomername());
+					dspVO.setS_contact("");
+					dspVO.setS_address("");
+					dspVO.setS_tel("");
+					dspVO.setS_mobile("");
+					dspVO.setS_address("");
+					dspVO.setD_company("");
+					dspVO.setGoods_fee(this.buildGoodsFee(co));
+					dspVO.setD_contact(co.getConsigneename());
+					dspVO.setD_tel(StringUtil.isEmpty(co.getConsigneephone())?"***********":co.getConsigneephone());
+					dspVO.setD_mobile(StringUtil.isEmpty(co.getConsigneemobile())?"***********":co.getConsigneemobile());
+					dspVO.setD_address(co.getConsigneeaddress());
+					dspVO.setGoods_info(new ArrayList<GoodInfoVO>());
+					//组装秘钥信息
+					String signStr = DigestsEncoder.encode("SHA1",((dspVO.buildSignStr() + "&" + paramVO.getToken())));
+					dspVO.setCode(paramVO.getCode());
+					dspVO.setSign(signStr);
+					String requestJson = JsonUtil.translateToJson(dspVO);
+					try {
+						String result = RestHttpServiceHanlder.sendHttptoServer_Json(requestJson, paramVO.getDeliverServerPushUrl());
+						this.logger.info("棒棒糖派件服务-派件通知推送完成，订单号：" + dspVO.getMail_num() + "请求报文：" + requestJson + ";响应报文：" + result);
+						if(this.isSuccessPush(result)){
+							deliverService.updateTradeNum(paramVO, PosEnum.DeliverServerAPP.getKey());
+						}
+					} catch (Exception e) {
+						this.logger.info("棒棒糖派件服务-派件通知推送异常，订单号：" + dspVO.getMail_num() + ",异常：" + e);
 					}
-				} catch (Exception e) {
-					this.logger.info("棒棒糖派件服务-派件通知推送异常，订单号：" + dspVO.getMail_num() + ",异常：" + e);
-				}
 			}
 		}
+		
+	
+		
 	}
 
 	/**
