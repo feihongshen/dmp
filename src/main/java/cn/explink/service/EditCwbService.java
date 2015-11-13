@@ -65,6 +65,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PayMethodSwitchEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.exception.ExplinkException;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.JSONReslutUtil;
 
 @Service
@@ -1705,7 +1706,6 @@ public class EditCwbService {
 	// 新增站点重置反馈调整记录
 	public void createFnOrgOrderAdjustRecord(String cwb,
 			EdtiCwb_DeliveryStateDetail ec_dsd) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		OrgOrderAdjustmentRecord record = new OrgOrderAdjustmentRecord();
 		DeliveryState deliveryState = ec_dsd.getDs();
 		// 查询出对应订单号的账单详细信息
@@ -1744,11 +1744,7 @@ public class EditCwbService {
 				record.setModifyFee(order.getReceivablefee());
 				record.setAdjustAmount(order.getReceivablefee().negate());
 			}
-			try {
-				record.setSignTime(sdf.parse(deliveryState.getSign_time()));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			record.setSignTime(DateTimeUtil.parseDate(deliveryState.getSign_time(), DateTimeUtil.DEF_DATETIME_FORMAT));
 			record.setPayWayChangeFlag(0);
 			// 调整金额为货款调整
 			record.setAdjustType(BillAdjustTypeEnum.OrderFee.getValue());

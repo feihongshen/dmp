@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -349,12 +350,10 @@ public class ApplyEditDeliverystateController {
 							this.orgBillAdjustmentRecordService.createAdjustment4ReFeedBack(cwb,ec_dsd);
 							
 							String auditingTime = ec_dsd.getDs().getAuditingtime();
-							if (auditingTime != null && !auditingTime.isEmpty()) {
-								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-								SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-								String todayStr = dateFormat.format(new Date());
-								String autitingDate = dateFormat.format(dateTimeFormat.parse(auditingTime));
-								if (!todayStr.equals(autitingDate)) {//归班审核时间与重置反馈时间不在同一天生成订单调整记录
+							if (StringUtils.isNotEmpty(auditingTime)) {
+								String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
+								String autitingDateStr = DateTimeUtil.translateFormatDate(auditingTime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
+								if (!todayStr.equals(autitingDateStr)) {//归班审核时间与重置反馈时间不在同一天生成订单调整记录
 									//重置反馈状态生成调整记录(目前是为了站点签收余额报表增加的方法)
 									this.editCwbService.createFnOrgOrderAdjustRecord(cwb,ec_dsd);
 								}

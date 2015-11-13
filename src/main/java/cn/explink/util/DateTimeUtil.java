@@ -24,6 +24,9 @@ import javax.servlet.http.HttpServletRequest;
  * @author Super Zhao
  */
 public class DateTimeUtil {
+	
+	public static final String DEF_DATE_FORMAT = "yyyy-MM-dd";
+	public static final String DEF_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	/**
 	 * 由java.util.Date到java.sql.Date的类型转换
@@ -773,4 +776,46 @@ public class DateTimeUtil {
 		
 	}
 
+	
+	/**
+	 * 
+	 * @param param
+	 * @return Date
+	 */
+	public static java.util.Date parseDate(String date, String format) {
+
+		java.util.Date parsed = null;
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat(format);
+			parsed = sdf.parse(date);
+		} catch (ParseException ex) {
+			ex.printStackTrace();
+		}
+		
+		return parsed;
+	}
+	
+	/**
+	 * 转换时间格式 精确到秒
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String formatDate(java.util.Date date, String format) {
+		try {
+			return new SimpleDateFormat(format).format(date);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+	
+	public static String translateFormatDate(String date, String formatOld, String formatNew) {
+		try {
+			return formatDate(parseDate(date, formatOld), formatNew);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
 }
