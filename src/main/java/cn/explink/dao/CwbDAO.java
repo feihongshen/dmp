@@ -5032,6 +5032,16 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set transcwb=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, transcwb, cwb);
 	}
+	
+	public void saveBackcarnum(int backcarnum, String cwb) {
+		String sql = "update express_ops_cwb_detail set backcarnum=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, backcarnum, cwb);
+	}
+	
+	public void saveSendcarnum(int sendcarnum, String cwb) {
+		String sql = "update express_ops_cwb_detail set sendcarnum=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, sendcarnum, cwb);
+	}
 
 	public void updateCwbRemark5(String cwb, String remark5) {
 		String sql = "update express_ops_cwb_detail set remark5=? where cwb=? and state=1 ";

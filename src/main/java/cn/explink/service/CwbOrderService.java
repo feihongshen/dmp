@@ -4450,6 +4450,8 @@ public class CwbOrderService extends BaseOrderService{
 					this.transCwbDao.saveTranscwb(transcwbTmp,cwb);//it seem it is already done at OrderFlowNestedTransactionWrapper.saveTransCwb(),it also support split ,
 				}
 				this.cwbDAO.saveTranscwbByCwb(transcwb,cwb);
+				this.cwbDAO.saveBackcarnum(transcwbList.size(),cwb);
+				this.cwbDAO.saveSendcarnum(transcwbList.size(),cwb);
 			}
 		}
 
