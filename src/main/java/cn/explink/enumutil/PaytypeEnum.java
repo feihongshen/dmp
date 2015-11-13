@@ -5,7 +5,7 @@ import java.util.Map;
 
 public enum PaytypeEnum {
 	// ================= sitetype ================
-	Xianjin(1, "现金"), Pos(2, "POS刷卡"), Zhipiao(3, "支票"), Qita(4, "其他"), CodPos(5, "支付宝COD扫码支付");
+	Xianjin(1, "现金"), Pos(2, "POS刷卡"), Zhipiao(3, "支票"), Qita(4, "其他"), CodPos(5, "COD扫码支付");
 
 	private int value;
 	private String text;
