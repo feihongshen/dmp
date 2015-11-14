@@ -163,6 +163,9 @@ public class WeisudaService {
 		String getback_getAppOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_getAppOrders_URL"));
 		String getback_updateOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_updateOrders_URL"));
 
+		String openbatchflag = request.getParameter("openbatchflag");
+		String maxBoundCount = request.getParameter("maxBoundCount");
+		
 		weisuda.setCode(code);
 		weisuda.setV(v);
 		weisuda.setSecret(secret);
@@ -181,6 +184,8 @@ public class WeisudaService {
 		weisuda.setGetback_updateOrders_URL(getback_updateOrders_URL);
 		weisuda.setNums(nums);
 		weisuda.setCount(count);
+		weisuda.setOpenbatchflag(Integer.valueOf(openbatchflag));
+		weisuda.setMaxBoundCount(Integer.valueOf(maxBoundCount));
 
 		JSONObject jsonObj = JSONObject.fromObject(weisuda);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
@@ -246,13 +251,13 @@ public class WeisudaService {
 			return;
 		}
 		String remark5 = "";
-		if (deliverystate.getIsout() == 1) { // 应退款
+		if (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()||cwbOrder.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()) { // 应退款
 			pos = BigDecimal.ZERO;
 			cash = BigDecimal.ZERO;
 			check = BigDecimal.ZERO;
 			other = BigDecimal.ZERO;
 			codpos = BigDecimal.ZERO;
-			if ((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
+			if ( (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
 					|| (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 				paybackedfee = deliverystate.getBusinessfee();
 				remark5 = cwbOrder.getRemark5();

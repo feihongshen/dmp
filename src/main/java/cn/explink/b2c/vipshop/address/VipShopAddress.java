@@ -11,6 +11,15 @@ public class VipShopAddress {
 	private String shipper_no; // 承运商账号
 	private String private_key; // 加密秘钥
 	private int getMaxCount; // 每次获取地址个数最大数量
+	private int printflag=0; //0 返回站点名称   1返回站点编码branchcode
+
+	public int getPrintflag() {
+		return printflag;
+	}
+
+	public void setPrintflag(int printflag) {
+		this.printflag = printflag;
+	}
 
 	public String getShipper_no() {
 		return shipper_no;

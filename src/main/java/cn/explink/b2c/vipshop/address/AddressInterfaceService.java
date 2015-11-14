@@ -57,6 +57,7 @@ public class AddressInterfaceService {
 		vipshop.setShipper_no(request.getParameter("shipper_no"));
 		vipshop.setPrivate_key(request.getParameter("private_key"));
 		vipshop.setGetMaxCount(Integer.parseInt(request.getParameter("getMaxCount")));
+		vipshop.setPrintflag(Integer.parseInt(request.getParameter("printflag")));
 		JSONObject jsonObj = JSONObject.fromObject(vipshop);
 		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
@@ -103,7 +104,7 @@ public class AddressInterfaceService {
 					}
 					return returnExp("请求地址数量单次超过" + count);
 				}
-				List<ResponseItem> items = getBranchByAddress(requestXML.getItems().getItem());
+				List<ResponseItem> items = getBranchByAddress(requestXML.getItems().getItem(),vip);
 				if (items != null && items.size() > 0) {
 					for (ResponseItem responseItem : items) {
 						if (!responseItem.getNetid().equals("")) {
@@ -136,12 +137,12 @@ public class AddressInterfaceService {
 		return xml;
 	}
 
-	public List<ResponseItem> getBranchByAddress(List<RequestItem> items) {
+	public List<ResponseItem> getBranchByAddress(List<RequestItem> items,VipShopAddress vip) {
 		List<ResponseItem> reItems = new ArrayList<ResponseItem>();
 		for (RequestItem requestItem : items) {
 			ResponseItem res = new ResponseItem();
 			String address = requestItem.getProvince() + requestItem.getCity() + requestItem.getArea() + requestItem.getAddress();
-			JSONObject json = addressMatchService.matchAddressByInterface(requestItem.getItemno(), address);
+			JSONObject json = addressMatchService.matchAddressByInterface(requestItem.getItemno(), address,vip.getPrintflag());
 			res.setItemno(json.getString("itemno"));
 			res.setNetid(json.getString("netid"));
 			res.setNetpoint(json.getString("netpoint"));

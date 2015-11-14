@@ -978,7 +978,7 @@ public class EditCwbController {
 	public @ResponseBody JSONObject matchaddress(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "address", defaultValue = "", required = false) String address // 是否显示,
 	) {
-		JSONObject json = this.addressMatchService.matchAddressByInterface(cwb, address);
+		JSONObject json = this.addressMatchService.matchAddressByInterface(cwb, address,0);
 		this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, json.getString("netpoint"));
 		return json;
 	}

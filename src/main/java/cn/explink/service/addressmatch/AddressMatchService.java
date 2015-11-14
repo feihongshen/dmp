@@ -289,7 +289,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	 * @param Address
 	 * @return
 	 */
-	public JSONObject matchAddressByInterface(String itemno, String Address) {
+	public JSONObject matchAddressByInterface(String itemno, String Address,int printflag) {
 		this.logger.info("唯品会匹配站点: 地址： {} 开始", Address);
 		JSONObject json = new JSONObject();
 		try {
@@ -314,7 +314,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						json.put("itemno", itemno);
 						json.put("netid", b.getBranchid());
-						json.put("netpoint", b.getBranchname());
+						json.put("netpoint", (printflag==0?b.getBranchname():b.getBranchcode()));
 						json.put("remark", "已匹配到站点");
 						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, b.getBranchname());
 					} else {

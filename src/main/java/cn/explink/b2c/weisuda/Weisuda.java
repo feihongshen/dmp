@@ -19,6 +19,24 @@ public class Weisuda {
 	private String getback_updateOrders_URL;
 	private String nums;
 	private String count;
+	private int openbatchflag; //0 默认 是单条推送   1是批量推送
+	private int maxBoundCount; //绑定关系每次最大推送数量
+
+	public int getMaxBoundCount() {
+		return maxBoundCount;
+	}
+
+	public void setMaxBoundCount(int maxBoundCount) {
+		this.maxBoundCount = maxBoundCount;
+	}
+
+	public int getOpenbatchflag() {
+		return openbatchflag;
+	}
+
+	public void setOpenbatchflag(int openbatchflag) {
+		this.openbatchflag = openbatchflag;
+	}
 
 	public String getSecret() {
 		return this.secret;

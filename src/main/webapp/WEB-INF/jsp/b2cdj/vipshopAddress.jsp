@@ -33,6 +33,10 @@
 						<li><span>每次获取数量：</span>
 							<input type ="text" id="getMaxCount" name ="getMaxCount" value="<%=vipshop.getGetMaxCount() %>"  maxlength="300">
 						</li>
+						<li><span>打印标识：</span>
+							<input type ="radio" id="printflag1" name ="printflag" value="0" <%if(vipshop.getPrintflag()==0){%>checked<%}%>  >打印名称
+							<input type ="radio" id="printflag2" name ="printflag" value="1"   <%if(vipshop.getPrintflag()==1){%>checked<%}%>  >打印编码
+						</li>
 						
 					    <li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30"    size="20"> 
@@ -47,7 +51,10 @@
 						<li><span>每次获取数量：</span>
 							<input type ="text" id="getMaxCount" name ="getMaxCount"   maxlength="300">
 						</li>
-						
+						<li><span>打印标识：</span>
+							<input type ="radio" id="printflag1" name ="printflag" value="0" checked  >打印名称
+							<input type ="radio" id="printflag2" name ="printflag" value="1" >打印编码
+						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30"    size="20"> 
 						</li>
