@@ -165,73 +165,94 @@ public class OrgBillAdjustmentRecordService {
 		//List<FnOrgBillDetail> fnOrgBillDetails = new ArrayList<FnOrgBillDetail>();
 				
 		OrgBillAdjustmentRecord record = new OrgBillAdjustmentRecord();
-		//通过订单号查询出站点账单的记录
-		//fnOrgBillDetails = fnOrgBillDetailDAO.getFnOrgBillDetailByCwb(cwb);
-		//查询出对应订单号的账单详细信息
 		CwbOrder order = cwbDao.getCwbByCwb(cwb);
 		//订单的类型
 		Integer orderType = order.getCwbordertypeid();
-		//if(null!=fnOrgBillDetails&&fnOrgBillDetails.size()>0){//该订单已经生成过账单
 		if(order.getFnorgbillid() > 0){
 			DeliveryState deliveryState = ec_dsd.getDs();
-//			if(adjustRecord.size()<=0){//没有生成过调整单记录
-				//根据不同的订单类型
-				record.setOrderNo(order.getCwb());
-				record.setBillNo("");
-				record.setBillId(0L);
-				record.setAdjustBillNo("");
-				record.setCustomerId(order.getCustomerid());
-				record.setReceiveFee(order.getReceivablefee());
-				record.setRefundFee(order.getPaybackfee());
-				//是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
-				record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
+			//根据不同的订单类型
+			record.setOrderNo(order.getCwb());
+			record.setBillNo("");
+			record.setBillId(0L);
+			record.setAdjustBillNo("");
+			record.setCustomerId(order.getCustomerid());
+			record.setReceiveFee(order.getReceivablefee());
+			record.setRefundFee(order.getPaybackfee());
+			//是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
+			record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
+			
+			record.setDeliverId(order.getDeliverid());
+			record.setCreator(getSessionUser().getUsername());
+			record.setCreateTime(new Date());
+			record.setOrderType(orderType);
+			//订单的支付方式可能是新的支付方式
+			Long oldPayWay = Long.valueOf(order.getPaywayid())==null?1L:Long.valueOf(order.getPaywayid());
+			Long newPayWay = order.getNewpaywayid()==null?0L:Long.valueOf(order.getNewpaywayid());
+			if (oldPayWay.intValue()==newPayWay.intValue()) {
+				record.setPayMethod(oldPayWay.intValue());
+			}else {
+				record.setPayMethod(newPayWay.intValue());
+			}
+			record.setDeliverybranchid(order.getDeliverybranchid());
+			if( order.getPaybackfee() != null && order.getPaybackfee().compareTo(BigDecimal.ZERO)>0){
+				record.setModifyFee(BigDecimal.ZERO);
+				record.setAdjustAmount(order.getPaybackfee());
+			}else{
+				record.setModifyFee(order.getReceivablefee());
+				record.setAdjustAmount(BigDecimal.ZERO.subtract(order.getReceivablefee()));
+			}
+			try {
+				record.setSignTime(sdf.parse(deliveryState.getSign_time()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			record.setPayWayChangeFlag(0);
+			//调整金额为货款调整
+			record.setAdjustType(BillAdjustTypeEnum.OrderFee.getValue());
+			//记录运费
+			record.setFreightAmount(ec_dsd.getOriInfactfare());
+			orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 				
-				record.setDeliverId(order.getDeliverid());
-				record.setCreator(getSessionUser().getUsername());
-				record.setCreateTime(new Date());
-				record.setOrderType(orderType);
-				//订单的支付方式可能是新的支付方式
-				Long oldPayWay = Long.valueOf(order.getPaywayid())==null?1L:Long.valueOf(order.getPaywayid());
-				Long newPayWay = order.getNewpaywayid()==null?0L:Long.valueOf(order.getNewpaywayid());
-				if (oldPayWay.intValue()==newPayWay.intValue()) {
-					record.setPayMethod(oldPayWay.intValue());
-				}else {
-					record.setPayMethod(newPayWay.intValue());
-				}
-				record.setDeliverybranchid(order.getDeliverybranchid());
-				if( order.getPaybackfee() != null && order.getPaybackfee().compareTo(BigDecimal.ZERO)>0){
-					record.setModifyFee(BigDecimal.ZERO);
-					record.setAdjustAmount(order.getPaybackfee());
-				}else{
-					record.setModifyFee(order.getReceivablefee());
-					record.setAdjustAmount(BigDecimal.ZERO.subtract(order.getReceivablefee()));
-				}
-				try {
-					record.setSignTime(sdf.parse(deliveryState.getSign_time()));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				record.setPayWayChangeFlag(0);
-				//调整金额为货款调整
-				record.setAdjustType(BillAdjustTypeEnum.OrderFee.getValue());
-				//记录运费
-				record.setFreightAmount(ec_dsd.getOriInfactfare());
-				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
+		}
+		if(CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid() && order.getFnorgfreightbillid() > 0){
+			DeliveryState deliveryState = ec_dsd.getDs();
+			//根据不同的订单类型
+			record.setOrderNo(order.getCwb());
+			record.setBillNo("");
+			record.setBillId(0L);
+			record.setAdjustBillNo("");
+			record.setCustomerId(order.getCustomerid());
+			record.setReceiveFee(order.getReceivablefee());
+			record.setRefundFee(order.getPaybackfee());
+			//是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
+			record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
+			
+			record.setDeliverId(order.getDeliverid());
+			record.setCreator(getSessionUser().getUsername());
+			record.setCreateTime(new Date());
+			record.setOrderType(orderType);
+			//订单的支付方式可能是新的支付方式
+			Long oldPayWay = Long.valueOf(order.getPaywayid())==null?1L:Long.valueOf(order.getPaywayid());
+			Long newPayWay = order.getNewpaywayid()==null?0L:Long.valueOf(order.getNewpaywayid());
+			if (oldPayWay.intValue()==newPayWay.intValue()) {
+				record.setPayMethod(oldPayWay.intValue());
+			}else {
+				record.setPayMethod(newPayWay.intValue());
+			}
+			record.setDeliverybranchid(order.getDeliverybranchid());
+			try {
+				record.setSignTime(sdf.parse(deliveryState.getSign_time()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			record.setPayWayChangeFlag(0);
+			record.setModifyFee(ec_dsd.getOriInfactfare());
+			record.setAdjustAmount(BigDecimal.ZERO.subtract(ec_dsd.getOriInfactfare()));
+			//调整金额为运费调整
+			record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+			orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
+			
 				
-				//如果是是上门退订单，生成运单调整记录
-				if(CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid() && order.getFnorgfreightbillid() > 0){
-					record.setModifyFee(order.getInfactfare());
-					record.setAdjustAmount(BigDecimal.ZERO.subtract(ec_dsd.getOriInfactfare()));
-					//调整金额为运费调整
-					record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
-					orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
-				}
-				
-//			}else{//该订单已经生成过调整单记录  不让其修改
-//				//提示信息
-//			}
-		}else{
-			//该订单还没有生成过账单记录，不能生成调整单记录
 		}
 	}
 
@@ -285,18 +306,47 @@ public class OrgBillAdjustmentRecordService {
 				record.setFreightAmount(order.getInfactfare());
 				orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 				
-				//如果是是上门退订单，生成运费调整记录
-				if(CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid() && order.getFnorgfreightbillid() > 0){
-					record.setModifyFee(order.getInfactfare());
-					record.setAdjustAmount(order.getInfactfare());
-					//调整金额为运费调整
-					record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
-					orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
-				}
 				
-		}else{
-			//该订单还没有生成过账单记录，不能生成调整单记录
-		}
+		}if(CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid() && order.getFnorgfreightbillid() > 0){
+			OrgBillAdjustmentRecord record = new OrgBillAdjustmentRecord();
+			//根据不同的订单类型
+			record.setOrderNo(order.getCwb());
+			record.setBillNo("");
+			record.setBillId(0L);
+			record.setAdjustBillNo("");
+			record.setCustomerId(order.getCustomerid());
+			record.setReceiveFee(order.getReceivablefee());
+			record.setRefundFee(order.getPaybackfee());
+			//是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
+			record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
+			
+			record.setDeliverId(order.getDeliverid());
+			record.setCreator(getSessionUser().getUsername());
+			record.setCreateTime(new Date());
+			record.setOrderType(order.getCwbordertypeid());
+			//订单的支付方式可能是新的支付方式
+			Long oldPayWay = Long.valueOf(order.getPaywayid())==null?1L:Long.valueOf(order.getPaywayid());
+			Long newPayWay = order.getNewpaywayid()==null?0L:Long.valueOf(order.getNewpaywayid());
+			if (oldPayWay.intValue()==newPayWay.intValue()) {
+				record.setPayMethod(oldPayWay.intValue());
+			}else {
+				record.setPayMethod(newPayWay.intValue());
+			}
+			record.setDeliverybranchid(order.getDeliverybranchid());
+			try {
+				record.setSignTime(sdf.parse(deliverystate.getSign_time()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			record.setPayWayChangeFlag(0);
+			//调整金额为运费调整
+			record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+			record.setModifyFee(order.getInfactfare());
+			record.setAdjustAmount(order.getInfactfare());
+			orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
+		
+			
+	}
 	}
 
 	
