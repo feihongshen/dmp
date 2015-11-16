@@ -315,6 +315,28 @@ function submitSaveFormAndCloseBox(form) {
 		}
 	});
 }
+function submitSaveFormAndCloseBox4Shangmentui(form) {
+	$.ajax({
+		type : "POST",
+		url : $(form).attr("action"),
+		data : $(form).serialize(),
+		dataType : "json",
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			console.info(data.errorCode);
+			if (data.errorCode == 0) {
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+				closeBox();
+				$("#WORK_AREA")[0].contentWindow.refreshState();
+			}else{
+				$('#sub').val('保存');
+				$('#sub').removeAttr("disabled");
+			}
+		}
+	});
+}
 function yichuli1() {
 	$("#describe2").val($("#describe").val());
 	// alert($("#describe2").val());
