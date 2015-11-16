@@ -4441,7 +4441,6 @@ public class CwbOrderService extends BaseOrderService{
 			
 			if(transcwbList.size()>0){
 				this.transCwbDao.deleteTranscwb(cwb);
-				this.transCwbDao.saveTranscwb(cwb,cwb);
 				for(String transcwbTmp:transcwbList){
 					List<TranscwbView> transcwbViewList=this.transCwbDao.getcwbBytranscwb(transcwbTmp);
 					if(transcwbViewList!=null&&transcwbViewList.size()>0){
@@ -4449,6 +4448,7 @@ public class CwbOrderService extends BaseOrderService{
 					}
 					this.transCwbDao.saveTranscwb(transcwbTmp,cwb);//it seem it is already done at OrderFlowNestedTransactionWrapper.saveTransCwb(),it also support split ,
 				}
+				this.transCwbDao.saveTranscwb(cwb,cwb);
 				this.cwbDAO.saveTranscwbByCwb(transcwb,cwb);
 				this.cwbDAO.saveBackcarnum(transcwbList.size(),cwb);
 				this.cwbDAO.saveSendcarnum(transcwbList.size(),cwb);
