@@ -8628,7 +8628,9 @@ CREATE TABLE `cs_complaint_accept` (
 	 </changeSet>
 	 
 	 <changeSet id="zhouguoting-2015-11-11-01" author="zhouguoting">
+	 	<sql>
 	  	UPDATE dmp40_function SET functionurl='${eapUrl}orgBillPolicy.do?index&amp;' WHERE functionname='账单生成策略';
+	  	</sql>
 	 </changeSet>    
 	  
 	  <changeSet id="liangyurong-2015-11-12-01" author="liangyurong">
