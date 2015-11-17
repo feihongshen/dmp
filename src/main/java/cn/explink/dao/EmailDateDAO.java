@@ -292,7 +292,7 @@ public class EmailDateDAO {
 	}
 
 	public Collection<? extends EmailDate> getEmailDateByCustomerid(long customerid, String state) {
-		String sql = "select * from express_ops_emaildate where customerid =? and state=" + state + " ORDER BY emaildatetime DESC ";
+		String sql = "select * from express_ops_emaildate where customerid =? and state in (0,1) ORDER BY emaildatetime DESC ";
 		return jdbcTemplate.query(sql, new EmailDateRowMapper(), customerid);
 	}
 
