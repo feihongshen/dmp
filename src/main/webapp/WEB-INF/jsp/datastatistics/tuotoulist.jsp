@@ -467,6 +467,7 @@ function clearSelect(){
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('deliverybranchid');" >配送站点</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('customerid');" >客户</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('deliverid');" >小件员</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('jobnum');" >小件员工号</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('emaildate');" >发货时间</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('receivablefee');" >应收金额</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('paybackfee');" >应退金额</td>
@@ -485,6 +486,7 @@ function clearSelect(){
 					<td  align="center" valign="middle"><%=c.getDeliverybranch() %></td>
 					<td  align="center" valign="middle"><%=c.getCustomername()  %></td>
 					<td  align="center" valign="middle"><%=c.getDelivername() %></td>
+					<td  align="center" valign="middle"><%=c.getJobnum() %></td>
 					<td  align="center" valign="middle"><%=c.getEmaildate() %></td>
 					<td  align="center" valign="middle"><%=c.getReceivablefee() %></td>
 					<td  align="center" valign="middle"><%=c.getPaybackfee() %></td>
@@ -505,6 +507,7 @@ function clearSelect(){
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle" class="high"><font color="red"><%=request.getAttribute("sum")==null?"0.00":request.getAttribute("sum") %></font>&nbsp;元 </td>
 			<td  align="center" valign="middle" class="high"><font color="red"><%=request.getAttribute("paybackfeesum")==null?"0.00":request.getAttribute("paybackfeesum") %></font>&nbsp;元 </td>
+			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>

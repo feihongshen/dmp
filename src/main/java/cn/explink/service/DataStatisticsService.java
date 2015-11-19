@@ -1695,6 +1695,7 @@ public class DataStatisticsService {
 				cwbOrderView.setNextbranchname(this.getQueryBranchName(branchList, c.getNextbranchid()));// 下一站机构名称
 				cwbOrderView.setDeliverybranch(this.getQueryBranchName(branchList, c.getDeliverybranchid()));// 配送站点
 				cwbOrderView.setDelivername(this.getQueryUserName(userList, c.getDeliverid()));
+				cwbOrderView.setJobnum(this.userDAO.getUserByUserid(c.getDeliverid()).getJobnum());
 				cwbOrderView.setRealweight(c.getCarrealweight());
 				cwbOrderView.setCwbremark(c.getCwbremark());
 				cwbOrderView.setReceivablefee(c.getReceivablefee());
@@ -1777,6 +1778,7 @@ public class DataStatisticsService {
 						cwbOrderView.setSendSuccesstime(orderflowList.get(c.getCwb()).get("Gobacktime"));// 配送成功时间
 					}
 				}
+				
 				cwbOrderViewList.add(cwbOrderView);
 
 			

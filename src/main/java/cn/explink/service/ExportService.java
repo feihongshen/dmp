@@ -1133,7 +1133,16 @@ public class ExportService {
 						break;
 					}
 				}
-			} else if ("commonid".equals(cloumname)) {
+			}else if ("jobnum".equals(cloumname)) {
+				a = "";
+				for (User u : uList) {
+					if (u.getUserid() == Long.parseLong(mapRow.get("deliverid").toString())) {
+						a = u.getJobnum();						
+						break;
+					}
+				}
+			} 
+			else if ("commonid".equals(cloumname)) {
 				a = "";
 				for (Common c : commonList) {
 					if (c.getId() == Long.parseLong(mapRow.get("commonid").toString())) {

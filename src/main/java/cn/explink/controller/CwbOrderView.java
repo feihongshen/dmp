@@ -269,8 +269,20 @@ public class CwbOrderView {
 	private String confirmtime;//确认时间
 	private long nowapplystate;//支付信息审核状态与支付信息修改确认的订单当前状态
 	
+	private String jobnum;
 	
 	
+	
+	
+	
+	public String getJobnum() {
+		return jobnum;
+	}
+
+	public void setJobnum(String jobnum) {
+		this.jobnum = jobnum;
+	}
+
 	public long getNowapplystate() {
 		return nowapplystate;
 	}

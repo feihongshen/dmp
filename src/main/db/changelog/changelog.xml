@@ -8658,4 +8658,10 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	 </changeSet>
 	 
+	  <changeSet id="wangzhiyong-2015-11-19-01" author="wangzhiyong">
+		<sql>
+			INSERT INTO express_ops_setexportfield(fieldname,exportstate,fieldenglishname,orderlevel,exportdatatype) VALUES('小件员工号',1,'jobnum',60,'string');
+		</sql>
+	</changeSet>
+	 
 </databaseChangeLog>
