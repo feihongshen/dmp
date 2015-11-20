@@ -84,7 +84,13 @@ public enum B2cEnum {
 	JiuYeAddressMatch4(20112, "九曳_站点匹配4", "jiuyeaddressmatch_4", 0),
 	JiuYeAddressMatch5(20113, "九曳_站点匹配5", "jiuyeaddressmatch_5", 0),
 	ZheMeng(20117, "哲盟-安达信", "zhemeng", 0),
-	GuangXinDianXin(20121,"广信电信","guangxindianxin",0)
+	GuangXinDianXin(20121,"广信电信","guangxindianxin",0),
+	VipShop_cangku4(20122, "唯品会_仓库4", "vipshop_cangku4",0),
+	VipShop_cangku5(20123, "唯品会_仓库5", "vipshop_cangku5",0),
+	VipShop_cangku6(20124, "唯品会_仓库6", "vipshop_cangku6",0),
+	VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7",0),
+	VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8",0),
+	
 	; 
 
 	private int key;
