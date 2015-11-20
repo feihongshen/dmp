@@ -92,6 +92,7 @@
 							 <ref bean="doTime_vipshopOXOJITFeedback" />	
 							 <ref bean="doTime_sendPunishInsideAutoShenheTask" />
 							 <ref bean="doTime_orderLifecycleReport"/>					 
+							 <ref bean="doTime_guangxindianxin"/>					 
 							 
 			           </list>                 
 	               </property>         
@@ -915,6 +916,23 @@
          </property>
          <property name="targetMethod">
              <value>getJiuYe_Task</value>
+         </property>
+     </bean>	
+	  <bean id="doTime_guangxindianxin" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="guangxindianxin" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+     
+      <bean id="guangxindianxin" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      	<property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getGuangXinDianXin</value>
          </property>
      </bean>	
      

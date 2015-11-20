@@ -126,6 +126,7 @@
 		<intercept-url pattern="/jiuye/**" access="permitAll" />
  		<intercept-url pattern="/jiuyeaddressmatch/**" access="permitAll" />
  		<intercept-url pattern="/deliverServer/**" access="permitAll" />
+ 		<intercept-url pattern="/gxdxAddress/**" access="permitAll" />
 
 
 		<intercept-url pattern="/**" access="isAuthenticated()" />

@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import cn.explink.b2c.gxdx.xmldto.RequestDto;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
@@ -94,7 +95,6 @@ public class DataImportDAO_B2c {
 			return cwbOrder;
 		}
 	}
-	
 	
 	private final class CwbDTO4TempMapper implements RowMapper<CwbOrderDTO> {
 		@Override
@@ -177,7 +177,7 @@ public class DataImportDAO_B2c {
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,nextbranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
 						+ "paywayid,newpaywayid,multi_shipcwb,cargovolume,consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,  ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,? )", new PreparedStatementSetter() {
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,? )", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, cwbOrderDTO.getCwb());
@@ -253,7 +253,6 @@ public class DataImportDAO_B2c {
 		List<CwbOrderDTO> cwborderList = jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 		return cwborderList;
 	}
-
 	/*
 	 * 本来网新增
 	 */

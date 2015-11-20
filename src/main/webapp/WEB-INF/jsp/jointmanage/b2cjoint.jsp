@@ -423,10 +423,6 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/gztlfeedback/del/');
 		}
 		
-		else if(obj=='20093'){
-			$("#edit").val('<%=request.getContextPath()%>/lefengdms/show/');
-			$("#del").val('<%=request.getContextPath()%>/lefengdms/del/');
-		}
 		else if(obj=='20090'){
 			$("#edit").val('<%=request.getContextPath()%>/vipshopOXO/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshopOXO/del/');
@@ -441,6 +437,12 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/jiuyeaddressmatch/show/');
 			$("#del").val('<%=request.getContextPath()%>/jiuyeaddressmatch/del/');
 		}
+		
+		else if(obj=='20121'){
+			$("#edit").val('<%=request.getContextPath()%>/gxdxAddress/show/');
+			$("#del").val('<%=request.getContextPath()%>/gxdxAddress/del/');
+		}
+		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

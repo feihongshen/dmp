@@ -200,6 +200,16 @@ src/main/java/cn/explink/b2c/gome/domain/ItemVO.java -text
 src/main/java/cn/explink/b2c/gome/domain/OrderVO.java -text
 src/main/java/cn/explink/b2c/gome/domain/TruckInfo.java -text
 src/main/java/cn/explink/b2c/gome/domain/TruckInfoVO.java -text
+src/main/java/cn/explink/b2c/gxdx/CwbColumnSetGXDX.java -text
+src/main/java/cn/explink/b2c/gxdx/GxDx.java -text
+src/main/java/cn/explink/b2c/gxdx/GxDxControcller.java -text
+src/main/java/cn/explink/b2c/gxdx/GxDxInsertCwbDetailTimmer.java -text
+src/main/java/cn/explink/b2c/gxdx/GxDxService.java -text
+src/main/java/cn/explink/b2c/gxdx/xmldto/Good.java -text
+src/main/java/cn/explink/b2c/gxdx/xmldto/GoodsInfoList.java -text
+src/main/java/cn/explink/b2c/gxdx/xmldto/RequestDto.java -text
+src/main/java/cn/explink/b2c/gxdx/xmldto/util/BeanToXml.java -text
+src/main/java/cn/explink/b2c/gxdx/xmldto/util/XmlToBean.java -text
 src/main/java/cn/explink/b2c/gzabc/CwbColumnSetGZABC.java -text
 src/main/java/cn/explink/b2c/gzabc/GuangZhouABC.java -text
 src/main/java/cn/explink/b2c/gzabc/GuangZhouABCController.java -text
@@ -2086,6 +2096,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/gome/test.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gome/testgome.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/guangzhoutonglu.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/guangzhoutonglufeedback.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/gxdx/gxdx.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/gzabc.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/happy.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/homegobj.jsp -text

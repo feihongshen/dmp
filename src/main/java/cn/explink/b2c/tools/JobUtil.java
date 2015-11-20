@@ -21,6 +21,7 @@ import cn.explink.b2c.explink.core_down.EpaiApiService_Download;
 import cn.explink.b2c.explink.core_down.EpaiApiService_ExportCallBack;
 import cn.explink.b2c.explink.core_down.EpaiInsertCwbDetailTimmer;
 import cn.explink.b2c.gome.GomeService;
+import cn.explink.b2c.gxdx.GxDxInsertCwbDetailTimmer;
 import cn.explink.b2c.gzabc.GuangZhouABCInsertCwbDetailTimmer;
 import cn.explink.b2c.gztl.GuangZhouTongLuInsertCwbDetailTimmer;
 import cn.explink.b2c.haoxgou.HXGInsertCwbDetailTimmer;
@@ -218,6 +219,9 @@ public class JobUtil {
 	
 	@Autowired
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
+	
+	@Autowired
+	GxDxInsertCwbDetailTimmer gxDxInsertCwbDetailTimmer;
 	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -1213,7 +1217,21 @@ public class JobUtil {
 		}
 
 	}
-	
+	/**
+	 * 广信电信
+	 */
+	public void getGuangXinDianXin() {
+		try {
+			long starttime = System.currentTimeMillis();
+			this.gxDxInsertCwbDetailTimmer.execute(B2cEnum.GuangXinDianXin.getKey());
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了广信电信订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+			
+		} catch (Exception e) {
+			this.logger.error("执行广信电信订单导入定时器异常", e);
+		}
+		
+	}
 	
 	/**
 	 * 生成前一天的生命周期报表

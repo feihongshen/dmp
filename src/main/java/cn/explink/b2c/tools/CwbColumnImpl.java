@@ -38,6 +38,7 @@ import cn.explink.b2c.yihaodian.CwbColumnSetYihaodian;
 import cn.explink.b2c.yixun.CwbColumnSetYiXun;
 import cn.explink.b2c.yonghuics.CwbColumnSetYonghui;
 import cn.explink.b2c.zhongliang.CwbColumnSetZhongliang;
+import cn.explink.b2c.gxdx.CwbColumnSetGXDX;
 import cn.explink.domain.ExcelColumnSet;
 
 @Service
@@ -113,6 +114,8 @@ public class CwbColumnImpl implements CwbColumnSet {
 	CwbColumnSetGztl cwbClolumSetGztl;
 	@Autowired
 	CwbColumnSetJiuye cwbColumnSetJiuye;
+	@Autowired
+	CwbColumnSetGXDX  cwbColumnsetGXDX;
 	
 
 	/**
@@ -202,6 +205,8 @@ public class CwbColumnImpl implements CwbColumnSet {
 				||(b2cFlag.equals(B2cEnum.JiuYe5.getMethod())))) 
 		{
 			return this.cwbColumnSetJiuye.getEexcelColumnSetByB2c(b2cFlag);
+		}else if(b2cFlag.equals(B2cEnum.GuangXinDianXin.getMethod())){
+			return this.cwbColumnsetGXDX.getEexcelColumnSetByB2c(b2cFlag);
 		}
 
 		return null;

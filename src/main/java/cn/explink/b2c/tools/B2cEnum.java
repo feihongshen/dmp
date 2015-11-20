@@ -83,7 +83,8 @@ public enum B2cEnum {
 	JiuYeAddressMatch3(20111, "九曳_站点匹配3", "jiuyeaddressmatch_3", 0),
 	JiuYeAddressMatch4(20112, "九曳_站点匹配4", "jiuyeaddressmatch_4", 0),
 	JiuYeAddressMatch5(20113, "九曳_站点匹配5", "jiuyeaddressmatch_5", 0),
-	ZheMeng(20117, "哲盟-安达信", "zhemeng", 0)
+	ZheMeng(20117, "哲盟-安达信", "zhemeng", 0),
+	GuangXinDianXin(20121,"广信电信","guangxindianxin",0)
 	; 
 
 	private int key;
