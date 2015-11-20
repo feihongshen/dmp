@@ -3113,7 +3113,7 @@
 				<addresscustomerid>13</addresscustomerid>
 				<addressid>13</addressid>
 				<addresspassword>shpj</addresspassword>
-				<addressWebserviceIp>103.229.214.164/addressg/</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.51:8081/addressg/</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
