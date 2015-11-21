@@ -3563,7 +3563,30 @@
 				<addressWebserviceIp>103.229.214.164/addressa</addressWebserviceIp>
 			</properties>
 		</profile>
-		
+		<profile>
+			<id>ZJFY</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.93:3306/zjfy_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://localhost:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>ZJFY</label>
+				<addresscustomerid>38</addresscustomerid>
+				<addressid>38</addressid>
+				<addresspassword>zjfy</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressh</addressWebserviceIp>
+			</properties>
+		</profile>
 	</profiles>
 
 </project>
