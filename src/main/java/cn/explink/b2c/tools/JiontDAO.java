@@ -160,7 +160,7 @@ public class JiontDAO {
 
 	public EmployeeInfo getEmployeeInfo(String username) {
 		try {
-			String sql = " select u.userid,u.username,u.password,u.realname,b.branchname,b.branchid,b.branchaddress,b.branchphone,b.branchmobile "
+			String sql = " select u.userid,u.username,u.password,u.realname,b.branchname,b.branchid,b.branchaddress,b.branchphone,b.branchmobile,b.branchcode "
 					+ " from express_set_branch b,express_set_user u where u.branchid=b.branchid and u.username=? and u.userdeleteflag=1 and employeestatus=1 ";
 			return jdbcTemplate.queryForObject(sql, new EmployeeMapper(), username);
 		} catch (Exception e) {
@@ -193,7 +193,7 @@ public class JiontDAO {
 			em.setBranchphone(rs.getString("branchphone"));
 			em.setBranchaddress(rs.getString("branchaddress"));
 			em.setBranchmobile(rs.getString("branchmobile"));
-
+			em.setBranchcode(rs.getString("branchcode"));
 			return em;
 		}
 	}

@@ -10,6 +10,15 @@ public class EmployeeInfo {
 	private String branchaddress;
 	private String branchphone;
 	private String branchmobile;
+	private String branchcode;
+
+	public String getBranchcode() {
+		return branchcode;
+	}
+
+	public void setBranchcode(String branchcode) {
+		this.branchcode = branchcode;
+	}
 
 	public String getBranchmobile() {
 		return branchmobile;

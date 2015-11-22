@@ -8,10 +8,10 @@ public enum PosEnum {
 	// HNAPay(1005,"海航新生支付","HNAPay"), //海航新生支付
 	// EasyPay(1006,"海航易生支付","EasyPay"); //海航易生支付
 	UnionPay(1005, "银联供应链综合服务平台运营服务商", "UnionPay"), ChinaUms(1006, "北京银联商务", "ChinaUms"), XitongFanKui(2001, "系统反馈", "系统反馈"), AliPayCodApp(1007, "支付宝CODAPP", "AliPayCodApp"), MobileEtong(1008,
-			"物流E通（手机App）", "MobileEtong"), YalianApp(1009, "亚联APP", "YalianApp"), MobileApp_dcb(1010, "新疆大晨报App", "MobileApp_dcb"), AliPayApp2(1011, "支付宝CODAPP2", "AliPayApp2"), TongLianPos(1012,
-			"通联POS", "TongLianPos"), Weisuda(1013, "唯速达", "Weisuda"),
-			DeliverServerAPP(1015,"棒棒糖派件员APP","deliverServer"),
-	//
+	"物流E通（手机App）", "MobileEtong"), YalianApp(1009, "亚联APP", "YalianApp"), MobileApp_dcb(1010, "新疆大晨报App", "MobileApp_dcb"), AliPayApp2(1011, "支付宝CODAPP2", "AliPayApp2"), TongLianPos(1012,
+	"通联POS", "TongLianPos"), Weisuda(1013, "唯速达", "Weisuda"),
+	DeliverServerAPP(1015,"棒棒糖派件员APP","deliverServer"),
+	BJUnion(1020,"北京银联商务(浙江)","bjunion")
 	;
 
 	private int key;

@@ -194,6 +194,10 @@ function delSuccess(data){
 			$('#edit').val('<%=request.getContextPath()%>/deliverServer/show/');
 			$('#del').val('<%=request.getContextPath()%>/deliverServer/del/'+state+'/');
 		}
+		else if(obj=='1020'){
+			$('#edit').val('<%=request.getContextPath()%>/bjunion/show/');
+			$('#del').val('<%=request.getContextPath()%>/bjunion/del/'+state+'/');
+		}
 	}
 </script>
 
