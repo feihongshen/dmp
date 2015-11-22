@@ -438,6 +438,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/jiuyeaddressmatch/del/');
 		}
 		
+		else if(obj=='20118'){
+			$("#edit").val('<%=request.getContextPath()%>/fyAddress/show/');
+			$("#del").val('<%=request.getContextPath()%>/fyAddress/del/');
+		}
+		
 		else if(obj=='20121'){
 			$("#edit").val('<%=request.getContextPath()%>/gxdxAddress/show/');
 			$("#del").val('<%=request.getContextPath()%>/gxdxAddress/del/');

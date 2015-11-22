@@ -84,6 +84,8 @@ public enum B2cEnum {
 	JiuYeAddressMatch4(20112, "九曳_站点匹配4", "jiuyeaddressmatch_4", 0),
 	JiuYeAddressMatch5(20113, "九曳_站点匹配5", "jiuyeaddressmatch_5", 0),
 	ZheMeng(20117, "哲盟-安达信", "zhemeng", 0),
+	FeiyuanAddress(20118,"ZJ飞远站点匹配","feiyuanAddress",0),
+	
 	GuangXinDianXin(20121,"广信电信","guangxindianxin",0),
 	VipShop_cangku4(20122, "唯品会_仓库4", "vipshop_cangku4",0),
 	VipShop_cangku5(20123, "唯品会_仓库5", "vipshop_cangku5",0),
