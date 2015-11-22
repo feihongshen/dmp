@@ -266,6 +266,9 @@ src/main/java/cn/explink/b2c/haoxgou/HaoXiangGouService.java -text
 src/main/java/cn/explink/b2c/haoxgou/HaoXiangGouService_PeiSong.java -text
 src/main/java/cn/explink/b2c/haoxgou/HaoXiangGouService_Test.java -text
 src/main/java/cn/explink/b2c/haoxgou/HaoXiangGouService_TuiHuo.java -text
+src/main/java/cn/explink/b2c/haoyigou/HYGController.java -text
+src/main/java/cn/explink/b2c/haoyigou/HYGService.java -text
+src/main/java/cn/explink/b2c/haoyigou/HaoYiGou.java -text
 src/main/java/cn/explink/b2c/happyGo/CwbColumnSetHappy.java -text
 src/main/java/cn/explink/b2c/happyGo/FunctionForHappy.java -text
 src/main/java/cn/explink/b2c/happyGo/HappyGo.java -text
@@ -2443,6 +2446,7 @@ src/main/webapp/WEB-INF/jsp/funds/payment/paymentMonitorbyemailtime.jsp -text
 src/main/webapp/WEB-INF/jsp/funds/payment/paymentSearchDetail.jsp -text
 src/main/webapp/WEB-INF/jsp/funds/payment/paymentSearchDetail_back.jsp -text
 src/main/webapp/WEB-INF/jsp/funds/pospay/pospaylist.jsp -text
+src/main/webapp/WEB-INF/jsp/haoyigou/haoyigou.jsp -text
 src/main/webapp/WEB-INF/jsp/iframe_welcome.jsp -text
 src/main/webapp/WEB-INF/jsp/image.jsp -text
 src/main/webapp/WEB-INF/jsp/imageForOutside.jsp -text

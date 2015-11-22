@@ -443,6 +443,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/fyAddress/del/');
 		}
 		
+		else if(obj=='20120'){
+			$("#edit").val('<%=request.getContextPath()%>/haoyigou/show/');
+			$("#del").val('<%=request.getContextPath()%>/haoyigou/del/');
+		}
+		
 		else if(obj=='20121'){
 			$("#edit").val('<%=request.getContextPath()%>/gxdxAddress/show/');
 			$("#del").val('<%=request.getContextPath()%>/gxdxAddress/del/');
