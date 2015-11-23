@@ -124,9 +124,9 @@ public class RequestFYService {
 		map.put("data",xmlStr);
 		//请求飞远地址库
 		String responseXML = RestHttpServiceHanlder.sendHttptoServer(map, requestUrl);
-		this.logger.info("飞远地址库返回信息:{}",responseXML);
 		//解析返回数据并匹配站点
 		ResponseData respdata = (ResponseData)XmlToBean.toBean(responseXML);
+		this.logger.info("飞远地址库返回信息:{},单号:{}",responseXML,respdata.getItems().getItems().get(0).getYworder());
 		return respdata;
 	}
 	
