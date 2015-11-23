@@ -4110,7 +4110,7 @@ public class CwbOrderService extends BaseOrderService{
 		BigDecimal receivedfeecash = parameters.get("receivedfeecash") == null ? BigDecimal.ZERO : (BigDecimal) parameters.get("receivedfeecash");
 		BigDecimal receivedfeepos = parameters.get("receivedfeepos") == null ? BigDecimal.ZERO : (BigDecimal) parameters.get("receivedfeepos");
 		BigDecimal receivedfeecodpos = parameters.get("receivedfeecodpos") == null ? BigDecimal.ZERO : (BigDecimal) parameters.get("receivedfeecodpos");
-		BigDecimal receivedfeecheque = parameters.get("receivedfeecheque") == null ? BigDecimal.ZERO : (BigDecimal) parameters.get("receivedfeecheque");
+		BigDecimal receivedfeecheque =  parameters.get("receivedfeecheque") == null ? BigDecimal.ZERO :  new BigDecimal( parameters.get("receivedfeecheque")+"");
 		BigDecimal receivedfeeother = parameters.get("receivedfeeother") == null ? BigDecimal.ZERO : (BigDecimal) parameters.get("receivedfeeother");
 		BigDecimal infactfare = parameters.get("infactfare") == null ? BigDecimal.ZERO : (BigDecimal) parameters.get("infactfare");
 		BigDecimal paybackedfee = parameters.get("paybackedfee") == null ? BigDecimal.ZERO : (BigDecimal) parameters.get("paybackedfee");
