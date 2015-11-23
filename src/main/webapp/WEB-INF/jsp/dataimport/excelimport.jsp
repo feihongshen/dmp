@@ -24,6 +24,8 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
+<%-- <script src="${ctx}/js/commonUtil.js" type="text/javascript"></script> --%>
 <script>
 var file_id;
 	$(function() {
@@ -268,12 +270,18 @@ var file_id;
 						</select>
 					</td>
 					<td width="300">发件供货商：
-						 <select name="customerid" id="customerid" class="select1">
+						<%--  <select name="customerid" id="customerid" class="select1">
 							<option value="0">请选择</option>
 							<%for (Customer customer : customerlist) {%>
 							<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername()%></option>
 							<%}%>
-						</select>*
+						</select>* --%>
+								<select class="easyui-combobox" name="customerid" id="customerid" style="width:150px;">
+									<option value="0">请选择</option>
+									<%for (Customer customer : customerlist) {%>
+										<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername()%></option>
+									<%}%>
+								</select>*
 					</td>
 					<td>发货仓库：
 						<select name="warehouseid" id="warehouseidflag" class="select1">

@@ -31,7 +31,7 @@
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
-
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script>
 function subEdit(form){
@@ -125,7 +125,7 @@ function showMsg(){
 					<td width="100%" colspan="2">
 					订单号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ><%if("1".equals(request.getAttribute("msg"))){ %><%=request.getParameter("cwbs")%><%} %></textarea>
 					匹配站点：<%if(branchlist!=null&&branchlist.size()>0){%>
-								<select  id="branchcode" name="branchcode">
+						<select class="easyui-combobox" id="branchcode" name="branchcode" style="width:150px;">
 								<option value="">--请选择站点-- </option>
 								<%for( Branch b:branchlist){ %>
 									<option value="<%=b.getBranchcode() %>"><%=b.getBranchname() %></option>

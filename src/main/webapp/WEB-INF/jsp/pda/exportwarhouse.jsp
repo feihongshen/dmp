@@ -912,7 +912,7 @@ function chuku(){
 			<!-- <form action="" method="get"> -->
 			<div class="saomiao_selet2">
 					下一站：
-					 <select id="branchid" name="branchid" onchange="tohome();" class="select1">
+					 <select id="branchid" name="branchid" onchange="tohome();" class="easyui-combobox" style="width: 150px">
 					<option value="0" selected>请选择</option>
 						<%
 							for (Branch b : bList) {

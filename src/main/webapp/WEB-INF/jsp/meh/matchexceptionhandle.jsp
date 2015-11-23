@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 
@@ -362,7 +363,7 @@ dl dd span {
 					</ul>
 				</div>
 				<div class="saomiao_selet2">
-					站点：<select id="branchid" name="branchid" class="select1">
+					站点： <select class="easyui-combobox" id="branchid" name="branchid" style="width:150px;">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Branch b : branchList) {

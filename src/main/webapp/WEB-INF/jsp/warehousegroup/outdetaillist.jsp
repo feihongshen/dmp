@@ -6,6 +6,7 @@
 <%@page import="cn.explink.domain.orderflow.*"%>
 <%@page import="cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
     List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
     List<PrintView> printList = (List<PrintView>)request.getAttribute("printList");
@@ -31,21 +32,21 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script> --%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
-<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script> --%>
 <script type="text/javascript">
 function cwbfind(){
-	var branchid = $('input[name="branchid"]:checked').length;
+	/* var branchid = $('input[name="branchid"]:checked').length; */
 	var truckid = $('input[name="truckid"]:checked').length;
 	 
 	if($("#endtime").val() !=''&& $("#strtime").val() !=''&&$("#strtime").val()>$("#endtime").val()){
@@ -55,9 +56,10 @@ function cwbfind(){
 	if(truckid<0){
 		alert("请选择车牌号!");
 	}
-	if(branchid>0){
+	if($('#branchid').val()!=""){
 		$("#searchForm").submit();
 	}else{
+		alert($('#branchid').val());
 		alert("抱歉，请选择下一站点！");
 	}
 }
@@ -87,7 +89,7 @@ function isgetallcheck(){
 }
 
 $(function(){
-	$("#strtime").datetimepicker({
+/* 	$("#strtime").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
 	    hourGrid: 4,
@@ -103,7 +105,7 @@ $(function(){
 		timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	});
-	$("#branchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择下一站' });
+	$("#branchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择下一站' }); */
 	
 	<%if(pList.size()==0){%>
 		alert("您还没有设置模版，请先设置模版！");
@@ -143,14 +145,18 @@ function cwbexport(){
 				<form action="1" method="post" id="searchForm">
 					<input type="hidden"  name="isshow" value="1"  />
 					 <div>  
+	<table>	<tr>
+		<td>
                         站点名称
 			<select name="ismohu" id="ismohu" class="select1">
 					<option value ="1"<%if(1==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>模糊匹配</option>
 					<option value ="2"<%if(2==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>精确匹配</option>
 			 </select>
-			 <input name="branchname" id="branchname" class="input_text1" onKeydown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','branchid',$(this).val());}"/>
+			 </td>
+			<%--  <input name="branchname" id="branchname" class="input_text1" onKeydown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','branchid',$(this).val());}"/> --%>
+					<td>
 					 下一站
-					 <select name="branchid" id="branchid" multiple="multiple" style="width:120px;">
+					<%--  <select name="branchid" id="branchid"  style="width:120px;" class="easyui-combobox">
 
 				        <%for(Branch b :branchlist){ %>
 				           <option value="<%=b.getBranchid()%>" 
@@ -161,19 +167,36 @@ function cwbexport(){
 			            	     break;
 			            	}}}%>><%=b.getBranchname()%></option>
 				        <%} %>
+			        </select> --%>
+			        <select name="branchid" id="branchid"  style="width:120px;" class="easyui-combobox">
+
+				        <%for(Branch b :branchlist){ %>
+				           <option value="<%=b.getBranchid()%>"><%=b.getBranchname()%></option>
+				        <%} %>
 			        </select>
-			        [<a href="javascript:multiSelectAll('branchid',1,'请选择');">全选</a>]
-					[<a href="javascript:multiSelectAll('branchid',0,'请选择');">取消全选</a>]
-			      <%=request.getAttribute("time") %>
-				<input type ="text" name ="strtime" id="strtime"  value="<%=strtime %>" class="input_text1"/>
-				到
-				<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>" class="input_text1"/>
-				（未打印订单只保留15天）
+			        </td>
+<!-- 			        [<a href="javascript:multiSelectAll('branchid',1,'请选择');">全选</a>]
+					[<a href="javascript:multiSelectAll('branchid',0,'请选择');">取消全选</a>] -->
+					<td style="margin-right: 0px"><%=request.getAttribute("time") %></td>
+				<td style="border-right : 3px">
+					   
+						<input type ="text" name ="strtime" id="strtime"  value="<%=strtime %>" class="easyui-datetimebox" style="width: 141px;margin-top: auto;";/>
+				</td>
+				<td>到</td>
+				<td style="border-left: 3px">
+						<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>" class="easyui-datetimebox" style="width: 141px;margin-top: auto;"/>
+						
+				</td>
+				<td style="border-left: 0px">（未打印订单只保留15天）</td>
+				</tr>		
+			</table>	
+			</div>
 				<br/>
 				<br/>
 				<!-- 添加包号查询 -->
-				包&nbsp;&nbsp;号:<input style="width:207px;" type ="text" name ="baleno" id="baleno"  value="<%=baleno%>" class="input_text1"/>&nbsp;&nbsp;
+				包&nbsp;&nbsp;号:<input style="width:207px;height: auto;" type ="text" name ="baleno" id="baleno"  value="<%=baleno%>" class="input_text1"/>&nbsp;&nbsp;
 				<!-- 添加驾驶员-->
+				
 				驾驶员：
 				<select id="driverid" name="driverid" style="width: 160px" class="select1">
 					<option value="-1" selected>请选择</option>

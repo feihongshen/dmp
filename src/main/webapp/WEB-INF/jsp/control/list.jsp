@@ -6,6 +6,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.util.Page"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 List<ExceptionCwb> eclist = (List<ExceptionCwb>)request.getAttribute("eclist");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
@@ -39,13 +40,13 @@ if(!strArrList.isEmpty())
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
 
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
@@ -82,12 +83,20 @@ function getSelectBranchForUsers(value){
 			data:{branchid:value},
 			url:"<%=request.getContextPath()%>/user/getUsersByBranchids",
 			success:function(data){
-				$("#userid").empty();
-				optionstring+="<option value='0'>请选择</option>";
+				//$("#userid").empty();
+				//optionstring+="<option value='0'>请选择</option>";
+				var comboboxdata=[];
 				for(var i=0;i<data.length;i++){
-					optionstring+="<option value='"+data[i].userid+"'>"+data[i].realname+"</option>";
+					//optionstring+="<option value='"+data[i].userid+"'>"+data[i].realname+"</option>";
+					comboboxdata.push({label:data[i].realname,value:data[i].userid});
 				}
-				$("#userid").html(optionstring);
+				var id=$('#userid');
+				$('#userid').combobox('loadData', comboboxdata);
+				if($("input.combo-text.validatebox-text.validatebox-f.textbox").val()==0){
+					$("input.combo-text.validatebox-text.validatebox-f.textbox").val("");
+				}
+
+				//$("#userid").html(optionstring);
 			}
 		});
 	}else{
@@ -98,6 +107,10 @@ function getSelectBranchForUsers(value){
 			optionstring += "<option value=<%=u.getUserid()%>><%=u.getRealname()%></option>";
         <%} %>
         $("#userid").html(optionstring);
+    	if($("input.combo-text.validatebox-text.validatebox-f.textbox").val()==0){
+    		$("input.combo-text.validatebox-text.validatebox-f.textbox").val("");
+    	}
+
 	}
 	
 }
@@ -154,6 +167,7 @@ $(function(){
 					optionstring+="<option value='"+data[i].userid+"'>"+data[i].realname+"</option>";
 				}
 				$("#userid").html(optionstring);
+				
 			}
 		});
 	}
@@ -279,7 +293,7 @@ function actionType(src)
     <tr>
     <td>
        操作人
-			<select name="userid" id="userid" class="select1">
+			<select name="userid" id="userid" class="easyui-combobox" data-options="valueField:'value',textField:'label'">
 		       <option value="0">请选择</option>
 		         <%for(User u : ulist){ %><%-- <% if(userid==u.getUserid()){ %>selected="selected" <% }%> --%>
 		           <option value="<%=u.getUserid()%>" ><%=u.getRealname()%></option>
@@ -411,6 +425,16 @@ $("#flowOrderTypeEnumid").val(<%=request.getParameter("flowOrderTypeEnumid")%>);
 <%-- $("#branchid").val(<%=request.getParameter("branchid")%>); --%>
 $("#userid").val(<%=request.getParameter("userid")%>);
 $("#username").val(<%=request.getParameter("username")%>);
+
+$(function(){
+	$("div.panel.combo-p").css({"margin-top":"-78px"});
+	$("#span.combo-arrow").css({"margin-right":"-18px"});
+	$("span.combo-arrow").css({"margin-right":"-18"});
+	$("div.combo-panel.panel-body.panel-body-noheader").css({"width":"152px"});
+	if($("input.combo-text.validatebox-text.validatebox-f.textbox").val()==0){
+		$("input.combo-text.validatebox-text.validatebox-f.textbox").val("");
+	}
+})
 </script>
 </body>
 </html>

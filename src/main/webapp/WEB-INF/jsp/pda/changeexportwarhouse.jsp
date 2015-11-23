@@ -6,6 +6,7 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Branch,cn.explink.domain.Truck,cn.explink.domain.Bale,cn.explink.domain.Switch"%>
 <%@page import="cn.explink.domain.CwbOrder,cn.explink.domain.Customer"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 List<CwbDetailView> weichukuList = (List<CwbDetailView>)request.getAttribute("weichukulist");
 List<CwbDetailView> yichukuList = (List<CwbDetailView>)request.getAttribute("yichukulist");
@@ -31,7 +32,7 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -584,7 +585,7 @@ function chuku(){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<div class="saomiao_selet2">
 				下一站：
-				<select id="branchid" name="branchid" onchange="tohome();" class="select1">
+				<select id="branchid" name="branchid" onchange="tohome();" class="easyui-combobox" style="width: 150px">
 					<option value="0" selected>请选择</option>
 					<%for(Branch b : bList){ %>
 						<option value="<%=b.getBranchid() %>" <%if(branchid==b.getBranchid()){ %> selected=selected <%} %>   ><%=b.getBranchname() %></option>
