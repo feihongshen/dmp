@@ -96,7 +96,7 @@ public class GxDxControcller {
 				//校验加密是否符合约定
 				String sign = MD5Util.md5(logicdata+gxdx.getPrivate_key());
 				if(!checkdata.equalsIgnoreCase(sign)){
-					this.logger.info("广信电信MD5验证失败");
+					this.logger.info("广信电信MD5验证失败sign={},checkdata={}",sign,checkdata );
 					return gxDxService.responseXml("","","False","MD5验证失败");
 				}
 				RequestDto red = (RequestDto)XmlToBean.toBeanRequest(logicdata);
@@ -201,5 +201,10 @@ public class GxDxControcller {
 		this.gxDxInsertCwbDetailTimmer.execute(B2cEnum.GuangXinDianXin.getKey());
 		this.logger.info("执行广信电信插入主表");
 		return "执行广信电信插入主表";
+	}
+	
+	@RequestMapping("/test1")
+	public String test(Model model){
+		return "/b2cdj/gxdx/NewFile";
 	}
 }
