@@ -367,7 +367,6 @@ function callfunction(cwb){//getEmailDateByIds
 										}else if (rk_switch == "rkbq_05") {
 											printIntowarehouseNew(scancwb);
 											/* $("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date()); */
-										//
 										}else if (rk_switch == "rkbq_04") {						
 											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbruku?scancwb="+ scancwb + "&a="+ new Date());
 										} 
@@ -892,7 +891,7 @@ function openLogin(){
 						<%
 							} else if (isprintnew.equals("1")) {
 						%>
-						<input type="checkbox" id="updateswitch" value="rkbq_03" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
+						<input type="checkbox" id="updateswitch" value="<%=ck_switch.getState() %>" name="updateswitch" <%-- <%if(ck_switch.getState().equals("rkbq_03")){ %>checked="checked"<%} %> --%>/>打印新标签
 						<%
 							} else {
 						%>
