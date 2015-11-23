@@ -12,13 +12,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMapp;
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMappDAO;
+import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
@@ -52,6 +55,19 @@ public class BJUnionIml implements BJUnionInterface{
 	ExceptionCwbDAO exceptionCwbDAO;
 	@Autowired
 	PoscodeMappDAO poscodeMappDAO;
+	@Autowired
+	CustomerDAO customerDao;
+	
+	//设置全局供货商变量
+	private static Customer customer = null;
+	
+	public Customer initCustomer(){
+		if(customer == null){
+			customer = this.customerDao.getCustomerbyB2cenum(B2cEnum.HomeGou.getKey()+"");
+		}
+		return customer;
+	}
+	
 	
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Override
@@ -122,6 +138,7 @@ public class BJUnionIml implements BJUnionInterface{
 		String orderno = map.get("order_no");
 		String cwbTransCwb = this.cwbOrderService.translateCwb(orderno);
 		CwbOrder co = this.cwbDao.getCwbByCwb(cwbTransCwb);
+		
 		if(co == null){
 			map.put("response_code", ResponseEnum.ChaXunYiChang.getResponse_code());
 			map.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_msg());
@@ -157,6 +174,16 @@ public class BJUnionIml implements BJUnionInterface{
 			if (codemapping != null) {
 				merchant_code = codemapping.getCustomercode();
 			}
+			String ec_cwb = co.getCwb();
+			try {
+				if(co.getCustomerid() == initCustomer().getCustomerid()){
+					ec_cwb = co.getTranscwb();
+				}else{
+					ec_cwb = co.getCwb();
+				}
+			} catch (Exception e) {
+				this.logger.error("获取家有购物供货商信息异常:原因{}",e);
+			}
 			responseXmlaftermac = "</transaction_header>"
 					+ "<transaction_body>"
 					+ "<amt>"+amt+"</amt>"
@@ -167,14 +194,14 @@ public class BJUnionIml implements BJUnionInterface{
 					+ "<desc>"+desc+"</desc>"
 					+ "<merchant_code>"+merchant_code+"</merchant_code>"
 					+ "<dlvryno></dlvryno>"//出库号
-					+ "<dsorderno></dsorderno>"//电商订单号
+					+ "<dsorderno>"+ec_cwb+"</dsorderno>"//电商订单号
 					+ "</transaction_body>"
 					+ "</transaction>";
 		}
 	    
 		String mac = MD5Util.md5(responseXmlbeforemac+middle+responseXmlaftermac+bu.getPrivate_key()).toUpperCase();
 		String responsexml = "<?xml version='1.0' encoding='utf-8'?>"+responseXmlbeforemac + middle + "<mac>"+mac+"</mac>"+responseXmlaftermac;
-		this.logger.info("运单查询时返回信息:{}",responsexml);
+		this.logger.info("运单查询时返回信息:{},查询单号:{}",responsexml,orderno);
 		return responsexml;
 	}
 
@@ -194,7 +221,7 @@ public class BJUnionIml implements BJUnionInterface{
 				+ "</transaction>";
 		String mac = MD5Util.md5(responseXmlbeforemac+middle+responseXmlaftermac+bu.getPrivate_key()).toUpperCase();
 		String responsexml = "<?xml version='1.0' encoding='utf-8'?>"+responseXmlbeforemac + middle + "<mac>"+mac+"</mac>"+responseXmlaftermac;
-		this.logger.info("签收操作时返回信息:{}",responsexml);
+		this.logger.info("签收操作时返回信息:{},订单号:{}",responsexml,map.get("order_no"));
 		return responsexml;
 	}
 
@@ -214,7 +241,7 @@ public class BJUnionIml implements BJUnionInterface{
 				+ "</transaction>";
 		String mac = MD5Util.md5(responseXmlbeforemac+middle+responseXmlaftermac+bu.getPrivate_key()).toUpperCase();
 		String responsexml = "<?xml version='1.0' encoding='utf-8'?>"+responseXmlbeforemac + middle + "<mac>"+mac+"</mac>"+responseXmlaftermac;
-		this.logger.info("撤销反馈时返回信息:{}",responsexml);
+		this.logger.info("撤销反馈时返回信息:{},订单号:{}",responsexml,map.get("order_no"));
 		return responsexml;
 	}
 	
@@ -285,106 +312,106 @@ public class BJUnionIml implements BJUnionInterface{
 	
 	//签收校验
 	public Map<String, String> dealSignReq(Map<String, String> map){
-			Map<String, String> lastMap = new HashMap<String, String>();
-			Map<String, Object> parameters = new HashMap<String, Object>();
-			String cwbORtranscwb = map.get("order_no");
-			String cwbTransCwb = this.cwbOrderService.translateCwb(cwbORtranscwb); // 可能是订单号也可能是运单号
-			CwbOrder cwbOrder = this.cwbDao.getCwbDetailByCwbAndDeliverId(0, cwbTransCwb);
-			User user = null;
-			DeliveryState ds = null;
-			long deliveryid = 0;
-			try{
-				if(cwbOrder==null){
-					lastMap.put("response_code",ResponseEnum.ChaXunYiChang.getResponse_code());
-					lastMap.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_msg());
-					return lastMap;
-				}
-				user = getUserName(cwbOrder);
-				
-				if(user!=null){
-					deliveryid = user.getUserid();
-					ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwbOrder.getCwb());
-					BigDecimal pos = BigDecimal.ZERO;
-					BigDecimal cash = BigDecimal.ZERO;
-					BigDecimal paybackedfee = BigDecimal.ZERO;
-					BigDecimal businessfee = BigDecimal.ZERO;
-					if(ds != null){
-						if((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()
-								||ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()
-								||ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())
-								&&(cwbOrder.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())){
-							lastMap.put("response_code",ResponseEnum.havesign.getResponse_code());
-							lastMap.put("response_msg", ResponseEnum.havesign.getResponse_msg());
-							return lastMap;
-						}
-						
-						businessfee = ds.getBusinessfee();
-						if(businessfee.doubleValue()>0&&businessfee.doubleValue()!=Double.valueOf(map.get("order_payable_amt"))){
-							lastMap.put("response_code",ResponseEnum.YingShouJinEYiChang.getResponse_code());
-							lastMap.put("response_msg", ResponseEnum.YingShouJinEYiChang.getResponse_msg());
-							return lastMap;
-						}
-						
-						String paytype=map.get("pay_type");
-						if("02".equals(paytype)){//刷卡
-							pos=ds.getBusinessfee();
-						}else{
-							cash=ds.getBusinessfee();
-						}
-						
-						if(cwbOrder.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
-							paybackedfee=ds.getBusinessfee();
-						}
-						
-					
-						parameters.put("deliverid", deliveryid);
-						parameters.put("podresultid", getPodResultIdByCwb(cwbOrder.getCwbordertypeid()));
-						parameters.put("backreasonid", (long) 0);
-						parameters.put("leavedreasonid", (long) 0);
-						parameters.put("receivedfeecash", cash);
-						parameters.put("receivedfeepos", pos);
-						parameters.put("receivedfeecheque", (long)0);
-						parameters.put("receivedfeeother", BigDecimal.ZERO);
-						parameters.put("paybackedfee", paybackedfee);
-						parameters.put("podremarkid", (long) 0);
-						parameters.put("posremark", ds.getPosremark() + "POS反馈");
-						parameters.put("checkremark", "");
-						parameters.put("deliverstateremark", "POS签收成功");
-						parameters.put("owgid", 0);
-						parameters.put("sessionbranchid", user.getBranchid());
-						parameters.put("sessionuserid", user.getUserid());
-						parameters.put("sign_typeid", 1); // 是否 已签收 （0，未签收，1已签收）
-						parameters.put("sign_man", map.get("signee"));//签收人
-						parameters.put("sign_time", DateTimeUtil.getNowTime());
-						parameters.put("nosysyemflag", "1");//
-						cwbOrderService.deliverStatePod(getUser(user.getUserid()), cwbTransCwb,cwbORtranscwb, parameters);
-						deliveryStateDAO.updateOperatorIdByCwb(user.getUserid(), cwbORtranscwb);
-						
-						//将签收信息存入签收记录表中
-						String signtype = map.get("consignee_sign_flag").equals("Y")?"本人签收":"他人签收";
-						int signtypeint = 1;
-						if("他人签收".equals(signtype)){
-							signtypeint = 2;
-						}
-						String sign_remark = "bjUnion运单签收，单号" + cwbORtranscwb + ",签收类型：" + signtype + ",小件员:" + user.getRealname();
-						this.posPayDAO.save_PosTradeDetailRecord(cwbORtranscwb, "", new BigDecimal(map.get("order_payable_amt")).doubleValue(), 0, 0, "",
-								cwbOrder.getConsigneename(), signtypeint,sign_remark, 2, 1, "", PosEnum.BJUnion.getMethod(), 0, "");
-						this.logger.info(sign_remark);
-						lastMap.put("response_code",ResponseEnum.success.getResponse_code());
-						lastMap.put("response_msg", ResponseEnum.success.getResponse_code());
+		Map<String, String> lastMap = new HashMap<String, String>();
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		String cwbORtranscwb = map.get("order_no");
+		String cwbTransCwb = this.cwbOrderService.translateCwb(cwbORtranscwb); // 可能是订单号也可能是运单号
+		CwbOrder cwbOrder = this.cwbDao.getCwbDetailByCwbAndDeliverId(0, cwbTransCwb);
+		User user = null;
+		DeliveryState ds = null;
+		long deliveryid = 0;
+		try{
+			if(cwbOrder==null){
+				lastMap.put("response_code",ResponseEnum.ChaXunYiChang.getResponse_code());
+				lastMap.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_msg());
+				return lastMap;
+			}
+			user = getUserName(cwbOrder);
+			
+			if(user!=null){
+				deliveryid = user.getUserid();
+				ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwbOrder.getCwb());
+				BigDecimal pos = BigDecimal.ZERO;
+				BigDecimal cash = BigDecimal.ZERO;
+				BigDecimal paybackedfee = BigDecimal.ZERO;
+				BigDecimal businessfee = BigDecimal.ZERO;
+				if(ds != null){
+					if((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()
+							||ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()
+							||ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())
+							&&(cwbOrder.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue())){
+						lastMap.put("response_code",ResponseEnum.havesign.getResponse_code());
+						lastMap.put("response_msg", ResponseEnum.havesign.getResponse_msg());
 						return lastMap;
 					}
+					
+					businessfee = ds.getBusinessfee();
+					if(businessfee.doubleValue()>0&&businessfee.doubleValue()!=Double.valueOf(map.get("order_payable_amt"))){
+						lastMap.put("response_code",ResponseEnum.YingShouJinEYiChang.getResponse_code());
+						lastMap.put("response_msg", ResponseEnum.YingShouJinEYiChang.getResponse_msg());
+						return lastMap;
+					}
+					
+					String paytype=map.get("pay_type");
+					if("02".equals(paytype)){//刷卡
+						pos=ds.getBusinessfee();
+					}else{
+						cash=ds.getBusinessfee();
+					}
+					
+					if(cwbOrder.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
+						paybackedfee=ds.getBusinessfee();
+					}
+					
+				
+					parameters.put("deliverid", deliveryid);
+					parameters.put("podresultid", getPodResultIdByCwb(cwbOrder.getCwbordertypeid()));
+					parameters.put("backreasonid", (long) 0);
+					parameters.put("leavedreasonid", (long) 0);
+					parameters.put("receivedfeecash", cash);
+					parameters.put("receivedfeepos", pos);
+					parameters.put("receivedfeecheque", (long)0);
+					parameters.put("receivedfeeother", BigDecimal.ZERO);
+					parameters.put("paybackedfee", paybackedfee);
+					parameters.put("podremarkid", (long) 0);
+					parameters.put("posremark", ds.getPosremark() + "POS反馈");
+					parameters.put("checkremark", "");
+					parameters.put("deliverstateremark", "POS签收成功");
+					parameters.put("owgid", 0);
+					parameters.put("sessionbranchid", user.getBranchid());
+					parameters.put("sessionuserid", user.getUserid());
+					parameters.put("sign_typeid", 1); // 是否 已签收 （0，未签收，1已签收）
+					parameters.put("sign_man", map.get("signee"));//签收人
+					parameters.put("sign_time", DateTimeUtil.getNowTime());
+					parameters.put("nosysyemflag", "1");//
+					cwbOrderService.deliverStatePod(getUser(user.getUserid()), cwbTransCwb,cwbORtranscwb, parameters);
+					deliveryStateDAO.updateOperatorIdByCwb(user.getUserid(), cwbORtranscwb);
+					
+					//将签收信息存入签收记录表中
+					String signtype = map.get("consignee_sign_flag").equals("Y")?"本人签收":"他人签收";
+					int signtypeint = 1;
+					if("他人签收".equals(signtype)){
+						signtypeint = 2;
+					}
+					String sign_remark = "bjUnion运单签收，单号" + cwbORtranscwb + ",签收类型：" + signtype + ",小件员:" + user.getRealname();
+					this.posPayDAO.save_PosTradeDetailRecord(cwbORtranscwb, "", new BigDecimal(map.get("order_payable_amt")).doubleValue(), 0, 0, "",
+							cwbOrder.getConsigneename(), signtypeint,sign_remark, 2, 1, "", PosEnum.BJUnion.getMethod(), 0, "");
+					this.logger.info(sign_remark);
+					lastMap.put("response_code",ResponseEnum.success.getResponse_code());
+					lastMap.put("response_msg", ResponseEnum.success.getResponse_msg());
+					return lastMap;
 				}
+			}
 		}catch(CwbException e1){
 			this.exceptionCwbDAO.createExceptionCwbScan(cwbORtranscwb, e1.getFlowordertye(), e1.getMessage(), user.getBranchid(), user.getUserid(),
 			cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",cwbORtranscwb);
 			if (e1.getError().getValue() == ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO.getValue()) {
 				logger.error("tlmpos运单签收,没有检索到数据" + cwbORtranscwb + ",小件员:" + user.getRealname(), e1);
 				lastMap.put("response_code",ResponseEnum.ChaXunYiChang.getResponse_code());
-				lastMap.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_code());
+				lastMap.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_msg());
 			} else if (e1.getError().getValue() == ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_XIAO_JIAN_YUAN_DE_HUO.getValue()) {
 				lastMap.put("response_code",ResponseEnum.ChaXunYiChang.getResponse_code());
-				lastMap.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_code());
+				lastMap.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_msg());
 				logger.error("tlmpos运单签收,不是此小件员的货" + cwbORtranscwb + ",当前小件员:" + user.getRealname() + e1);
 			}
 		}

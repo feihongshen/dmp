@@ -346,4 +346,21 @@ public class CustomerDAO {
 	public void updateCache(){
 		
 	}
+	
+	/**
+	 * 根据b2cenum获取供货商
+	 */
+	public Customer getCustomerbyB2cenum(String b2cEnum){
+		String sql = "select * from express_set_customer_info where b2cEnum=? limit 1";
+		try{
+			return this.jdbcTemplate.queryForObject(sql, new CustomerRowMapper(),b2cEnum);
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+	
+	
+	
 }
