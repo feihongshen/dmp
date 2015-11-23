@@ -201,7 +201,11 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 			User user = this.userDAO.getUserByUserid(userid);
 			if("yes".equals(value)){
-				addressMatchZJFY(cwbOrder, user);
+				try{
+					addressMatchZJFY(cwbOrder, user);
+				}catch(Exception e){
+					this.logger.error("请求浙江飞远异常,原因:{}",e);
+				}
 			}else{
 				String addressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((addressenabled != null) && addressenabled.equals("1")) {
