@@ -1041,4 +1041,18 @@ public class BranchDAO {
 		return this.jdbcTemplate.query(sql, new BranchRowMapper());
 		
 	}
+	
+	@Cacheable(value = "branchCache", key = "#branchcode")
+	public Branch getEffectBranchByCodeStr(String branchcode) {
+		try {
+			Branch branch = this.jdbcTemplate.queryForObject("select * from express_set_branch where branchcode =? and brancheffectflag='1' ", new BranchRowMapper(), branchcode);
+			if (branch==null) {
+				return null;
+			}else{
+				return branch;
+			} 
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 }

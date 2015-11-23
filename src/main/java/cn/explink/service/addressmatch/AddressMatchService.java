@@ -24,6 +24,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import cn.explink.b2c.zjfeiyuan.responsedto.Item;
+import cn.explink.b2c.zjfeiyuan.responsedto.ResponseData;
+import cn.explink.b2c.zjfeiyuan.service.RequestFYService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
@@ -60,6 +63,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	private String addZhanDian_url;
 	private String address_userid;
 	private String addressMatchConsumerCount;
+	private String value;
 
 	@Autowired
 	private CwbDAO cwbDAO;
@@ -91,6 +95,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	AddressMappingService addressMappingService;
 	@Autowired
 	BranchAutoWarhouseService branchAutoWarhouseService;
+	@Autowired
+	RequestFYService requestFYService;
 
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -98,6 +104,9 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			this.address_url = this.systemInstallService.getParameter("addressmatch.url");
 			this.addZhanDian_url = this.systemInstallService.getParameter("addressmatch.addZhanDianurl");
 			this.address_userid = this.systemInstallService.getParameter("addressmatch.userid");
+			//浙江飞远匹配地址库
+			this.value = this.systemInstallService.getParameter("requestFEIYUANaddress");
+			
 			this.addressMatchConsumerCount = this.systemInstallService.getParameter("addressMatch.consumerCount");
 			if (!StringUtils.hasLength(this.addressMatchConsumerCount)) {
 				this.addressMatchConsumerCount = "1";
@@ -191,70 +200,129 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		try {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 			User user = this.userDAO.getUserByUserid(userid);
-			String addressenabled = this.systemInstallService.getParameter("newaddressenabled");
-			if ((addressenabled != null) && addressenabled.equals("1")) {
-				// TODO 启用新地址库 调用webservice
-				List<OrderVo> orderVoList = new ArrayList<OrderVo>();
-				try {
-					orderVoList.add(this.getOrderVo(cwbOrder));
-					AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
-					int successFlag = addressreturn.getResultCode().getCode();
-					if (successFlag == 0) {
-						OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(cwb);
-						if (mappingresult != null) {
-							List<DeliveryStationVo> deliveryStationList = mappingresult.getDeliveryStationList();
-							List<DelivererVo> delivererList = mappingresult.getDelivererList();
-							List<Integer> timeLimitList = mappingresult.getTimeLimitList();
-							if (deliveryStationList.size() == 0) {
-								return;
-							}
-							Set<Long> set = new HashSet<Long>();
-							for (DeliveryStationVo desvo : deliveryStationList) {
-								set.add(desvo.getExternalId());
-							}
-							if (set.size() == 1) {
-								Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
-								if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
-									this.cwbOrderService.updateAddressMatch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu, deliveryStationList, delivererList, timeLimitList);
-									// 触发上门退自动分站领货
-									try {
-										this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, b);
-									} catch (Exception e) {
-										logger.error("上门退单匹配地址库自动分站到货报错",e);
+			if("yes".equals(value)){
+				addressMatchZJFY(cwbOrder, user);
+			}else{
+				String addressenabled = this.systemInstallService.getParameter("newaddressenabled");
+				if ((addressenabled != null) && addressenabled.equals("1")) {
+					// TODO 启用新地址库 调用webservice
+					List<OrderVo> orderVoList = new ArrayList<OrderVo>();
+					try {
+						orderVoList.add(this.getOrderVo(cwbOrder));
+						AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
+						int successFlag = addressreturn.getResultCode().getCode();
+						if (successFlag == 0) {
+							OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(cwb);
+							if (mappingresult != null) {
+								List<DeliveryStationVo> deliveryStationList = mappingresult.getDeliveryStationList();
+								List<DelivererVo> delivererList = mappingresult.getDelivererList();
+								List<Integer> timeLimitList = mappingresult.getTimeLimitList();
+								if (deliveryStationList.size() == 0) {
+									return;
+								}
+								Set<Long> set = new HashSet<Long>();
+								for (DeliveryStationVo desvo : deliveryStationList) {
+									set.add(desvo.getExternalId());
+								}
+								if (set.size() == 1) {
+									Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
+									if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
+										this.cwbOrderService.updateAddressMatch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu, deliveryStationList, delivererList, timeLimitList);
+										// 触发上门退自动分站领货
+										try {
+											this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, b);
+										} catch (Exception e) {
+											logger.error("上门退单匹配地址库自动分站到货报错",e);
+										}
+									
 									}
-								
 								}
 							}
 						}
+					} catch (Exception e) {
+						this.logger.error("error while doing address match for {}", cwb);
 					}
-				} catch (Exception e) {
-					this.logger.error("error while doing address match for {}", cwb);
-				}
-
-			} else {
-				// 老地址库
-				JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + cwbOrder.getCwb() + "@"
-						+ cwbOrder.getConsigneeaddress().replaceAll(",", ""), "POST"));
-				Branch b = null;
-				for (int i = 0; i < addressList.size(); i++) {
-					try {
-						b = this.branchDAO.getEffectBranchById(addressList.getJSONObject(i).getLong("station"));
-						if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
-							this.cwbOrderService.updateDeliveryBranch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
-							// 触发上门退自动分站领货
-							this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, b);
+	
+				} else {
+					// 老地址库
+					JSONArray addressList = JSONArray.fromObject(JSONReslutUtil.getResultMessage(this.address_url, "userid=" + this.address_userid + "&address=" + cwbOrder.getCwb() + "@"
+							+ cwbOrder.getConsigneeaddress().replaceAll(",", ""), "POST"));
+					Branch b = null;
+					for (int i = 0; i < addressList.size(); i++) {
+						try {
+							b = this.branchDAO.getEffectBranchById(addressList.getJSONObject(i).getLong("station"));
+							if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
+								this.cwbOrderService.updateDeliveryBranch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
+								// 触发上门退自动分站领货
+								this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, b);
+							}
+						} catch (CwbException ce) {
+							this.logger.error("update branche for cwb send jms {},error:{}", cwb, ce.getMessage());
 						}
-					} catch (CwbException ce) {
-						this.logger.error("update branche for cwb send jms {},error:{}", cwb, ce.getMessage());
 					}
 				}
-			}
-
-		} catch (Exception e) {
+	
+			} 
+		}catch (Exception e) {
 			// e.printStackTrace();
 			this.logger.error("error while doing address match for {}", cwb);
 		}
 	}
+	
+	private void addressMatchZJFY(CwbOrder cwbOrder, User user) throws Exception {
+		//此时请求浙江飞远地址库信息----LX
+		ResponseData respdata = this.requestFYService.dealAddressMatch(cwbOrder,user);
+		//单个订单请求，成功时返回空字符""
+		if(!"".equals(respdata.getHead().getMsg())){
+			this.logger.info("返回的错误信息为:{}",respdata.getHead().getMsg());
+			return ;
+		}else{//处理当前订单所要在本系统中对应的站点
+			List<Item> items = respdata.getItems().getItems();
+			String siteno = "";
+			if(items!=null&&!items.isEmpty()){
+				for(Item ie : items){
+					String netid = ie.getNetid();//分拣编码
+					String netpoint = ie.getNetpoint();//分拣站点名
+					siteno = ie.getSiteno();//配送站点编码(唯一需要处理字段信息)
+					String sitename = ie.getSitename();//配送站点名称
+				}
+			}
+			if(!"".equals(siteno)){
+				/*List<DeliveryStationVo> deliveryStationList = new ArrayList<DeliveryStationVo>();
+				List<DelivererVo> delivererList = new ArrayList<DelivererVo>();
+				List<Integer> timeLimitList = new ArrayList<Integer>();*/
+				Branch branch = this.branchDAO.getEffectBranchByCodeStr(siteno);
+				/*DeliveryStationVo dsv = new DeliveryStationVo();
+				dsv.setExternalId(cwbOrder.getDeliverid());//小件员id（指定）
+				dsv.setName("");//用于地址库匹配时指定的小件员姓名
+				DelivererVo dv = new DelivererVo();
+				dv.setExternalId(branch.getBranchid());
+				dv.setName("");//默认小件员为""
+				 */				
+				//需要确认的地方   TODO 时效/时限------暂时不处理
+				/*Integer inte = 0;
+				timeLimitList.add(inte);*/
+				
+				/*deliveryStationList.add(dsv);
+				delivererList.add(dv);*/
+				if ((branch.getSitetype() == BranchEnum.ZhanDian.getValue()) || (branch.getSitetype() == BranchEnum.KuFang.getValue())) {
+					try {
+						// 触发上门退自动分站领货
+						if(branch==null){
+							this.logger.info("请求浙江飞远地址库返回编码在本系统站点编码中未设置不存在,订单号:{},返回站点编码:{}",new Object[]{cwbOrder.getCwb(),siteno});
+						}else{
+							this.cwbOrderService.updateDeliveryBranch(user, cwbOrder, branch, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
+							this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, branch);
+						}
+					} catch (Exception e) {
+						logger.error("上门退单匹配地址库自动分站到货报错",e);
+					}
+				}
+			}
+		}
+	}
+	
+	
 	public void matchAddressMap(@Header("userid") long userid, @Header("cwb") String cwb) {
 		this.logger.info("start addressMAP match for {}", cwb);
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
