@@ -37,6 +37,7 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/intowarehousePrintNew.js" type="text/javascript"></script>
 <script type="text/javascript">
 
 var App = {ctx:"${pageContext.request.contextPath}"};
@@ -358,9 +359,15 @@ function callfunction(cwb){//getEmailDateByIds
 									if($("#updateswitch").attr('checked')=='checked'){
 										if (rk_switch == "rkbq_01") {
 											$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
+										//广州通路
 										}else if (rk_switch == "rkbq_03") {
 											printIntowarehouse(scancwb);
 											/* $("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date()); */
+										//重庆华宇
+										}else if (rk_switch == "rkbq_05") {
+											printIntowarehouseNew(scancwb);
+											/* $("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date()); */
+										//
 										}else if (rk_switch == "rkbq_04") {						
 											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbruku?scancwb="+ scancwb + "&a="+ new Date());
 										} 
