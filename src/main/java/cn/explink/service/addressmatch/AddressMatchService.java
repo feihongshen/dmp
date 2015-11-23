@@ -42,6 +42,7 @@ import cn.explink.domain.addressvo.OrderVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.BranchAutoWarhouseService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
@@ -217,6 +218,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						int successFlag = addressreturn.getResultCode().getCode();
 						if (successFlag == 0) {
 							OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(cwb);
+							
+							logger.info("阡陌地址库匹配返回json={}",JacksonMapper.getInstance().writeValueAsString(mappingresult));
 							if (mappingresult != null) {
 								List<DeliveryStationVo> deliveryStationList = mappingresult.getDeliveryStationList();
 								List<DelivererVo> delivererList = mappingresult.getDelivererList();
