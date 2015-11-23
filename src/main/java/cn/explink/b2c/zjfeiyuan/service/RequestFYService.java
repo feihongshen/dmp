@@ -110,6 +110,7 @@ public class RequestFYService {
 		item.setArea(co.getCwbcounty());//区/县
 		item.setTown("");//镇
 		item.setAddress(co.getConsigneeaddress());//收件人地址
+		item.setYworder(co.getCwb());//运单号
 		items.add(item);
 		ItemsBody ib = new ItemsBody();
 		ib.setItems(items);

@@ -4,9 +4,6 @@ import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-
-import org.springframework.stereotype.Service;
-
 import cn.explink.b2c.zjfeiyuan.requestdto.RequestData;
 import cn.explink.b2c.zjfeiyuan.responsedto.ResponseData;
 
