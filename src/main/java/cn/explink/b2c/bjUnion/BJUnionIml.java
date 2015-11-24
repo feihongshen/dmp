@@ -63,7 +63,7 @@ public class BJUnionIml implements BJUnionInterface{
 	
 	public Customer initCustomer(){
 		if(customer == null){
-			customer = this.customerDao.getCustomerbyB2cenum(B2cEnum.HomeGou.getKey()+"");
+			customer = this.customerDao.getCustomerbyB2cenum(B2cEnum.HomegoBJ.getKey()+"");
 		}
 		return customer;
 	}
