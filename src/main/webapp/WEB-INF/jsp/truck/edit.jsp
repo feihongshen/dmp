@@ -28,6 +28,8 @@ initEditArray[0]="<%=truck.getTruckdriver()%>,truckdriver";
 									           <option value ="<%=user.getUserid()%>"><%=user.getRealname() %></option>
 									           <%} %>
 									        </select></li>
+					<li><span>终端ID：</span><input type="text" name="truckTerminalId" id="truckTerminalId" value ="${truck.truckTerminalId}" maxlength="50" class="input_text1"></li>								        
+					<li><span>SIM卡号：</span><input type="text" name="truckSimNum" id="truckSimNum" value ="${truck.truckSimNum}" maxlength="50" class="input_text1"></li>								        
 				</ul>
 				<input type="hidden"  name ="truckflag" id="truckflag"  value="${truck.truckflag}"/>
 		</div>

@@ -21,6 +21,8 @@ List<User> userList = (List<User>)request.getAttribute("userList");
 									           <option value ="<%=user.getUserid()%>"><%=user.getRealname() %></option>
 									           <%} %>
 									        </select></li>
+<li><span>终端ID：</span><input type="text" name="truckTerminalId" id="truckTerminalId" value ="" maxlength="50" class="input_text1"></li>								        
+					<li><span>SIM卡号：</span><input type="text" name="truckSimNum" id="truckSimNum" value ="" maxlength="50" class="input_text1"></li>								        							        
 					
 				</ul>
 		</div>

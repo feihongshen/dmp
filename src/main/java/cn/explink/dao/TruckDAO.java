@@ -117,9 +117,9 @@ public class TruckDAO {
 				ps.setString(2, truck.getTrucktype());
 				ps.setInt(3, truck.getTruckdriver());
 				ps.setInt(4, truck.getTruckflag());
-				ps.setLong(5, truck.getTruckid());
-				ps.setString(6, truck.getTruckTerminalId());
-				ps.setString(7, truck.getTruckSimNum());
+				ps.setString(5, truck.getTruckTerminalId());
+				ps.setString(6, truck.getTruckSimNum());
+				ps.setLong(7, truck.getTruckid());
 			}
 		});
 		

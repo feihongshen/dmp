@@ -59,15 +59,19 @@ function delSuccess(data){
 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	  <tr class="font_1">
-			<td width="35%" align="center" valign="middle" bgcolor="#eef6ff">车牌号</td>
-			<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">型号</td>
-			<td width="35%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
+			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">车牌号</td>
+			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">型号</td>
+			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">终端ID</td>
+			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">SIM卡号</td>
+			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
 		 <% for(Truck truck : truckList){ %>
 		<tr>
-			<td width="35%" align="center" valign="middle"><%=truck.getTruckno() %></td>
-			<td width="30%" align="center" valign="middle"><%=truck.getTrucktype() %></td>
-			<td width="35%" align="center" valign="middle">
+			<td width="20%" align="center" valign="middle"><%=truck.getTruckno() %></td>
+			<td width="20%" align="center" valign="middle"><%=truck.getTrucktype() %></td>
+			<td width="20%" align="center" valign="middle"><%=truck.getTruckTerminalId() == null ? "" : truck.getTruckTerminalId()%></td>
+			<td width="20%" align="center" valign="middle"><%=truck.getTruckSimNum() == null ? "" : truck.getTruckSimNum()%></td>
+			<td width="20%" align="center" valign="middle">
 			[<a href="javascript:del(<%=truck.getTruckid() %>);"><%=(truck.getTruckflag()==1?"停用":"启用") %></a>]
 			[<a href="javascript:edit_button(<%=truck.getTruckid() %>);">修改</a>] 
 			</td>
