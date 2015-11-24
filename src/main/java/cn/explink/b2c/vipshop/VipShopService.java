@@ -48,7 +48,11 @@ public class VipShopService {
 						continue;
 					}
 
-					excuteGetOrdersByVipshop(enums);
+					try {
+						excuteGetOrdersByVipshop(enums);
+					} catch (Exception e) {
+						logger.error("唯品会对接循环处理异常",e);
+					}
 
 				}
 			}
