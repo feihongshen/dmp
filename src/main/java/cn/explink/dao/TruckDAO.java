@@ -29,6 +29,8 @@ public class TruckDAO {
 			truck.setTrucktype(rs.getString("trucktype"));
 			truck.setTruckdriver(rs.getInt("truckdriver"));
 			truck.setTruckflag(rs.getInt("truckflag"));
+			truck.setTruckTerminalId(rs.getString("truck_terminal_id"));
+			truck.setTruckSimNum(rs.getString("truck_sim_num"));
 			return truck;
 		}
 
@@ -89,7 +91,7 @@ public class TruckDAO {
 
 	public void creTruck(final Truck truck) {
 
-		jdbcTemplate.update("insert into express_set_truck(truckno,trucktype,truckdriver,truckflag) values(?,?,?,?)", new PreparedStatementSetter() {
+		jdbcTemplate.update("insert into express_set_truck(truckno,trucktype,truckdriver,truckflag,truck_terminal_id,truck_sim_num) values(?,?,?,?,?,?)", new PreparedStatementSetter() {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
@@ -98,13 +100,15 @@ public class TruckDAO {
 				ps.setString(2, truck.getTrucktype());
 				ps.setInt(3, truck.getTruckdriver());
 				ps.setInt(4, truck.getTruckflag());
+				ps.setString(5, truck.getTruckTerminalId());
+				ps.setString(6, truck.getTruckSimNum());
 			}
 		});
 	}
 
 	public void saveTruck(final Truck truck) {
-
-		jdbcTemplate.update("update express_set_truck set truckno=?,trucktype=?,truckdriver=?,truckflag=? where truckid=?", new PreparedStatementSetter() {
+		String sql="update express_set_truck set truckno=?,trucktype=?,truckdriver=?,truckflag=?,truck_terminal_id=?,truck_sim_num=? where truckid=?";
+		jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
@@ -114,8 +118,12 @@ public class TruckDAO {
 				ps.setInt(3, truck.getTruckdriver());
 				ps.setInt(4, truck.getTruckflag());
 				ps.setLong(5, truck.getTruckid());
+				ps.setString(6, truck.getTruckTerminalId());
+				ps.setString(7, truck.getTruckSimNum());
 			}
 		});
+		
+		System.out.println(sql);
 
 	}
 

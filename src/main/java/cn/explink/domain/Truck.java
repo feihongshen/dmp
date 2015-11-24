@@ -11,6 +11,25 @@ public class Truck {
 	private Float truckstartkm;
 	private int truckdriver;
 	private int truckflag;
+	private String truckTerminalId;
+	private String truckSimNum;
+	
+
+	public String getTruckTerminalId() {
+		return truckTerminalId;
+	}
+
+	public void setTruckTerminalId(String truckTerminalId) {
+		this.truckTerminalId = truckTerminalId;
+	}
+
+	public String getTruckSimNum() {
+		return truckSimNum;
+	}
+
+	public void setTruckSimNum(String truckSimNum) {
+		this.truckSimNum = truckSimNum;
+	}
 
 	public long getTruckid() {
 		return truckid;

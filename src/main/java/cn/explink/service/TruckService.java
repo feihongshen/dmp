@@ -22,6 +22,8 @@ public class TruckService {
 		truck.setTrucktype(StringUtil.nullConvertToEmptyString(request.getParameter("trucktype")));
 		truck.setTruckdriver(Integer.parseInt(request.getParameter("truckdriver") == null || "".equalsIgnoreCase(request.getParameter("truckdriver")) ? "0" : request.getParameter("truckdriver")));
 		truck.setTruckflag(Integer.parseInt(request.getParameter("truckflag") == null || "".equalsIgnoreCase(request.getParameter("truckflag")) ? "1" : request.getParameter("truckflag")));
+		truck.setTruckTerminalId(StringUtil.nullConvertToEmptyString(request.getParameter("truckTerminalId")));
+		truck.setTruckSimNum(StringUtil.nullConvertToEmptyString(request.getParameter("truckSimNum")));
 		return truck;
 	}
 

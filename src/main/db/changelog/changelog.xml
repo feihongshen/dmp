@@ -8663,5 +8663,13 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO express_ops_setexportfield(fieldname,exportstate,fieldenglishname,orderlevel,exportdatatype) VALUES('小件员工号',1,'jobnum',60,'string');
 		</sql>
 	</changeSet>
+	<changeSet id="wangzhiyong-2015-11-24-01" author="wangzhiyong">
+		<sql>
+			ALTER TABLE `express_set_truck`
+			ADD COLUMN `truck_terminal_id` VARCHAR(100) NULL AFTER `truckflag`,
+			ADD COLUMN `truck_sim_num` VARCHAR(100) NULL AFTER `truck_terminal_id`; 
+		</sql>
+		
+	</changeSet>
 	 
 </databaseChangeLog>
