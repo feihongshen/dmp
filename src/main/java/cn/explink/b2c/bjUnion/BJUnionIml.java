@@ -175,9 +175,11 @@ public class BJUnionIml implements BJUnionInterface{
 				merchant_code = codemapping.getCustomercode();
 			}
 			String ec_cwb = co.getCwb();
+			String jychuku = "";//remark1（家有购物出库号）
 			try {
 				if(co.getCustomerid() == initCustomer().getCustomerid()){
 					ec_cwb = co.getTranscwb();
+					jychuku = co.getRemark1();
 				}else{
 					ec_cwb = co.getCwb();
 				}
@@ -193,7 +195,7 @@ public class BJUnionIml implements BJUnionInterface{
 					+ "<status>"+status+"</status>"
 					+ "<desc>"+desc+"</desc>"
 					+ "<merchant_code>"+merchant_code+"</merchant_code>"
-					+ "<dlvryno></dlvryno>"//出库号
+					+ "<dlvryno>"+jychuku+"</dlvryno>"//出库号
 					+ "<dsorderno>"+ec_cwb+"</dsorderno>"//电商订单号
 					+ "</transaction_body>"
 					+ "</transaction>";
