@@ -79,6 +79,9 @@ public class ExplinkService {
 		explink.setKey(StringUtil.nullConvertToEmptyString(request.getParameter("key")));
 		explink.setUrl(StringUtil.nullConvertToEmptyString(request.getParameter("url")));
 		explink.setVersion(StringUtil.nullConvertToEmptyString(request.getParameter("version")));
+		explink.setNewSignMethod(Integer.valueOf(request.getParameter("newSignMethod")));
+		
+		
 		JSONObject jsonObj = JSONObject.fromObject(explink);
 
 		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
@@ -121,7 +124,7 @@ public class ExplinkService {
 		Explink explink = getExplinkByCompany(companyname);
 
 		try {
-			ValidatorBusinessMethod(cwbs, companyname, sign, explink);
+			validatorBusinessMethod(cwbs, companyname, sign, explink);
 		} catch (RuntimeException e) {
 			logger.error("请求explink发生异常,订单号=" + cwbs + "," + e.getMessage(), e);
 			return respExptMsg(e.getMessage());
@@ -399,7 +402,7 @@ public class ExplinkService {
 		return null;
 	}
 
-	private void ValidatorBusinessMethod(String cwbs, String companyname, String sign, Explink explink) {
+	private void validatorBusinessMethod(String cwbs, String companyname, String sign, Explink explink) {
 		if (explink == null) {
 			throw new RuntimeException("配置信息有误");
 		}
@@ -416,6 +419,10 @@ public class ExplinkService {
 			throw new RuntimeException("订单数不能超过" + explink.getCount() + "个");
 		}
 		String sigstr = MD5Util.md5(explink.getCompanyname() + explink.getKey());
+		if(explink.getNewSignMethod()==1){
+			sigstr=MD5Util.md5(cwbs+explink.getCompanyname() + explink.getKey());
+		}
+		
 		if (!sign.equals(sigstr)) {
 			logger.info("签名验证失败,本地签名=" + sigstr);
 			throw new RuntimeException("签名验证失败");

@@ -7,9 +7,18 @@ public class Explink {
 	private String key;
 	private String url;
 	private String version; // 0 旧版 无code标识， 1新版有code标识
-
+	private int  newSignMethod; //新 的签名   0默认  1开启
+	
 	public String getVersion() {
 		return version;
+	}
+
+	public int getNewSignMethod() {
+		return newSignMethod;
+	}
+
+	public void setNewSignMethod(int newSignMethod) {
+		this.newSignMethod = newSignMethod;
 	}
 
 	public void setVersion(String version) {
