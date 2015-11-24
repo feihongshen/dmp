@@ -37,6 +37,10 @@ Explink explink = (Explink)request.getAttribute("explinkObject");
 	 						<input type ="radio"  name ="version" value ="0"  <%if("0".equals(explink.getVersion())){%>checked<%}%> > 旧版
 	 						<input type ="radio"  name ="version" value ="1"   <%if("1".equals(explink.getVersion())){%>checked<%}%>  > 新版
 						</li>
+						<li><span>新签名方式：</span>
+	 						<input type ="radio"  name ="newSignMethod" value ="0"  <%if(explink.getNewSignMethod()==0){%>checked<%}%> > 关闭
+	 						<input type ="radio"  name ="newSignMethod" value ="1"   <%if(explink.getNewSignMethod()==1){%>checked<%}%>  > 开启
+						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30"  > 
 						</li>
@@ -56,6 +60,10 @@ Explink explink = (Explink)request.getAttribute("explinkObject");
 						<li><span>版本：</span>
 	 						<input type ="radio"  name ="version" value ="0"   > 旧版
 	 						<input type ="radio"  name ="version" value ="1"   > 新版
+						</li>
+						<li><span>新签名方式：</span>
+	 						<input type ="radio"  name ="newSignMethod" value ="0"  checked> 关闭
+	 						<input type ="radio"  name ="newSignMethod" value ="1" > 开启
 						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30"  > 
