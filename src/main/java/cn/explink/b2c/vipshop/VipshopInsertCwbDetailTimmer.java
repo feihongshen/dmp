@@ -160,7 +160,7 @@ public class VipshopInsertCwbDetailTimmer {
 			}
 
 			emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
-			cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), ed.getWarehouseid(), user, ed);
+			cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), warehouseid, user, ed);
 			logger.info("[唯品会]定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
 
 			if (cwbOrder.getExcelbranch() == null || cwbOrder.getExcelbranch().length() == 0) {
