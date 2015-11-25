@@ -24,7 +24,7 @@
 <script type="text/javascript">
 
 	function redistributionBranch() {
-		var branchid = $("#branchid").val();
+		var branchid = $("#branchid").combobox('getValue');
 		var $msg = $("#msg");
 		var $order_no = $("#order_no");
 		if(branchid == "-1"){
@@ -246,6 +246,9 @@
 	});
 	
 	$(function() {
+		$("#branchid").combobox();
+		
+		
 		$.ajax({
 			type : "post",
 			dataType : "json",
@@ -363,7 +366,7 @@ dl dd span {
 					</ul>
 				</div>
 				<div class="saomiao_selet2">
-					站点： <select class="easyui-combobox" id="branchid" name="branchid" style="width:150px;">
+					站点： <select id="branchid" name="branchid" style="width:150px; ">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Branch b : branchList) {
