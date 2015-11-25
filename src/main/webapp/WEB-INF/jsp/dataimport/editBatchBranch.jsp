@@ -77,7 +77,7 @@ function showMsg(){
 		 alert("请输入订单号");
 		 return false;
 	 }
-	 var branchid=$("#branchcode").val();
+	 var branchid=$("#branchcode").combobox("getValue");
 	 var branch=$("#excelbranch").val().replace(/(^\s*)|(\s*$)/g,"");
 	 if(branchid.length>0&&branch.length>0){
 		 if(branch!='输入站点名称或者站点编号'){
@@ -97,6 +97,9 @@ function showMsg(){
 	 $("#editBranchForm").submit();
  }
  $(function(){
+	 $("#branchcode").combobox();
+	 
+	 
 		$("#excelbranch").keydown(function(event){
 			if(event.keyCode==13) {
 				return false;
@@ -125,7 +128,7 @@ function showMsg(){
 					<td width="100%" colspan="2">
 					订单号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ><%if("1".equals(request.getAttribute("msg"))){ %><%=request.getParameter("cwbs")%><%} %></textarea>
 					匹配站点：<%if(branchlist!=null&&branchlist.size()>0){%>
-						<select class="easyui-combobox" id="branchcode" name="branchcode" style="width:150px;">
+						<select id="branchcode" name="branchcode" style="width:150px;">
 								<option value="">--请选择站点-- </option>
 								<%for( Branch b:branchlist){ %>
 									<option value="<%=b.getBranchcode() %>"><%=b.getBranchname() %></option>
@@ -227,7 +230,7 @@ function exportField(){
 	$("#exportmould2").val($("#exportmould").val());
 	$("#btnval0").attr("disabled","disabled");
  	$("#btnval0").val("请稍后……");
- 	$("#searchForm2").submit();
+ 	$(#searchForm2").submit();
 }
 
 </script>
