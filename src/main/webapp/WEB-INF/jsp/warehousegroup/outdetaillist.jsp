@@ -174,7 +174,7 @@ function cwbexport(){
 			            	}}}%>><%=b.getBranchname()%></option>
 				        <%} %>
 			        </select> --%>
-			        <select name="branchid" id="branchid"  style="width:120px;" class="easyui-combobox">
+			        <select name="branchid" id="branchid"  style="width:120px;">
 
 				        <%for(Branch b :branchlist){ %>
 				           <option value="<%=b.getBranchid()%>"><%=b.getBranchname()%></option>
