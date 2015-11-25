@@ -32,11 +32,11 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script> --%>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>  --%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
@@ -56,10 +56,10 @@ function cwbfind(){
 	if(truckid<0){
 		alert("请选择车牌号!");
 	}
-	if($('#branchid').val()!=""){
+	if($("#branchid").combobox('getValue')!=""&&$("#branchid").combobox('getValue')!= null){
 		$("#searchForm").submit();
 	}else{
-		alert($('#branchid').val());
+		alert($("#branchid").combobox('getValue'));
 		alert("抱歉，请选择下一站点！");
 	}
 }
@@ -89,7 +89,7 @@ function isgetallcheck(){
 }
 
 $(function(){
-/* 	$("#strtime").datetimepicker({
+/* $("#strtime").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
 	    hourGrid: 4,
@@ -104,20 +104,26 @@ $(function(){
 		minuteGrid: 10,
 		timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
-	});
-	$("#branchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择下一站' }); */
+	}); */
+/* 	$("#branchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择下一站' });  */
 	
 	<%if(pList.size()==0){%>
 		alert("您还没有设置模版，请先设置模版！");
 	<%}%>
-	$("#branchid").change(function(){
+/* 	$("#branchid").change(function(){
 		$("#nextbranchid").val($(this).val());	
+	}); */
+	$("#branchid").combobox({
+		onChange: function (n,o) {
+			$("#nextbranchid").val($("#branchid").combobox('getValue'));	
+		}
 	});
+	
 	$("#templateid").change(function(){
 		$("#printtemplateid").val($(this).val());	
 	});
 	
-})
+});
 
 function cwbexport(){
 	var isprint="";
@@ -228,6 +234,7 @@ function cwbexport(){
 					</div>
 				</form>
 				</div>
+				<br/><br/><br/><br/><br/>
 				<div class="right_title">
 				<div style="height:30px;"></div>
 				<div style="height:380px;width:98%;overflow: auto;">
