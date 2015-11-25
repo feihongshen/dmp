@@ -36,6 +36,19 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
+	
+	$("#branchid").combobox({
+		onChange: function (n,o) {
+			var isscanbaleTag = 1;
+			if($("#scanbaleTag").hasClass("light")){
+				isscanbaleTag=1;
+			}else{
+				isscanbaleTag=0;
+			}
+			window.location.href="<%=request.getContextPath() %>/PDA/changeexportwarhouse?branchid="+$('#branchid').combobox('getValue')+"&isscanbaleTag="+isscanbaleTag;
+		}
+	});
+	
 	var $menuli1 = $("#bigTag li");
 	$menuli1.click(function(){
 		$(this).children().addClass("light");
@@ -53,8 +66,8 @@ $(function(){
 })
 
 	$(function(){
-		getChangeOutSum('<%=request.getContextPath()%>',$("#branchid").val());
-		getcwbsquejiandataForBranchid($("#branchid").val());
+		getChangeOutSum('<%=request.getContextPath()%>',$("#branchid").combobox("getValue"));
+		getcwbsquejiandataForBranchid($('#branchid').combobox('getValue'));
 		$("#scancwb").focus();
 	});
 	
@@ -174,7 +187,7 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 								playWav("'"+data.body.successCount+"'");
 							}
 						}else{
-							$("#branchid").val(data.body.cwbOrder.nextbranchid);
+							$('#branchid').combobox('setValue',data.body.cwbOrder.nextbranchid);
 							if(data.body.cwbOrder.scannum==1){
 								if(Cwbs.indexOf("|"+scancwb+"|")==-1){
 									Cwbs += "|"+scancwb+"|";
@@ -203,7 +216,7 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 						$("#excelbranch").html("");
 						$("#showcwb").html("");
 						$("#msg").html(scancwb+"         （异常扫描）"+data.errorinfo);
-						addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
+						addAndRemoval(scancwb,"errorTable",false,$('#branchid').combobox('getValue'));
 						//errorvedioplay(pname,data);
 					}
 					$("#responsebatchno").val(data.responsebatchno);
@@ -258,7 +271,7 @@ function weichuku(){
 	$.ajax({
 		type:"post",
 		url:"<%=request.getContextPath()%>/PDA/getexportweichukulist",
-		data:{"page":weipage,"branchid":$("#branchid").val()},
+		data:{"page":weipage,"branchid":$('#branchid').combobox('getValue')},
 		success:function(data){
 			if(data.length>0){
 				var optionstring = "";
@@ -301,7 +314,7 @@ function yichuku(){
 		type:"post",
 		url:"<%=request.getContextPath()%>/PDA/getexportyichukulist",
 		data:{"page":yipage,
-			"branchid":$("#branchid").val(),
+			"branchid":$('#branchid').combobox('getValue'),
 			"flowordertype":<%=FlowOrderTypeEnum.ChuKuSaoMiao.getValue()%>},
 		success:function(data){
 			if(data.length>0){
@@ -338,18 +351,18 @@ function yichuku(){
 		}
 	});
 }
-function tohome(){
+<%-- function tohome(){
 	var isscanbaleTag = 1;
 	if($("#scanbaleTag").hasClass("light")){
 		isscanbaleTag=1;
 	}else{
 		isscanbaleTag=0;
 	}
-	window.location.href="<%=request.getContextPath() %>/PDA/changeexportwarhouse?branchid="+$("#branchid").val()+"&isscanbaleTag="+isscanbaleTag;
-}
+	window.location.href="<%=request.getContextPath() %>/PDA/changeexportwarhouse?branchid="+$('#branchid').combobox('getValue')+"&isscanbaleTag="+isscanbaleTag;
+} --%>
 
 function ranCreate(){
-	if($("#branchid").val()==0){
+	if($('#branchid').combobox('getValue')==0){
 		alert('请选择下一站');
 		return;
 	}
@@ -403,7 +416,7 @@ function bofang(){
 	
 //=============出库根据包号扫描订单检查===============
 function baleaddcwbCheck(){
-	if($("#branchid").val()==0){
+	if($('#branchid').combobox('getValue')==0){
 		alert("请选择下一站！");
 		return;
 	}
@@ -419,7 +432,7 @@ function baleaddcwbCheck(){
 	
 	$.ajax({
    		type: "POST",
-   		url:"<%=request.getContextPath()%>/bale/baleaddcwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=1&branchid="+$("#branchid").val()+"&confirmflag="+confirmflag,
+   		url:"<%=request.getContextPath()%>/bale/baleaddcwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=1&branchid="+$('#branchid').combobox('getValue')+"&confirmflag="+confirmflag,
    		dataType : "json",
    		success : function(data) {
    			$("#msg").html("");
@@ -448,7 +461,7 @@ function baleaddcwb(){
 	}
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/baleaddcwb/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?branchid="+$("#branchid").val(),
+		url:"<%=request.getContextPath()%>/bale/baleaddcwb/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?branchid="+$('#branchid').combobox('getValue'),
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
@@ -472,7 +485,7 @@ function fengbao(){
 	}
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/fengbao/"+$("#baleno").val()+"?branchid="+$("#branchid").val(),
+		url:"<%=request.getContextPath()%>/bale/fengbao/"+$("#baleno").val()+"?branchid="+$('#branchid').combobox('getValue'),
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
@@ -495,7 +508,7 @@ function chuku(){
 	}
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/balechangechuku/"+$("#baleno").val()+"?branchid="+$("#branchid").val()+"&driverid="+$("#driverid").val()+"&truckid="+$("#truckid").val(),
+		url:"<%=request.getContextPath()%>/bale/balechangechuku/"+$("#baleno").val()+"?branchid="+$('#branchid').combobox('getValue')+"&driverid="+$("#driverid").val()+"&truckid="+$("#truckid").val(),
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
@@ -566,7 +579,7 @@ function chuku(){
 		</dl>
 		<dl class="yellow">
 			<dt>一票多件缺货件数</dt>
-			<dd style="cursor:pointer" onclick="tabView('table_quejian');getchukucwbquejiandataList($('#branchid').val());"  id="lesscwbnum" name="lesscwbnum" >0</dd>
+			<dd style="cursor:pointer" onclick="tabView('table_quejian');getchukucwbquejiandataList($('#branchid').combobox('getValue'));"  id="lesscwbnum" name="lesscwbnum" >0</dd>
 		</dl>
 		<input type="button"  id="refresh" value="刷新" onclick="location.href='<%=request.getContextPath() %>/PDA/changeexportwarhouse'"  style="float:left; width:100px; height:65px; cursor:pointer; border:none; background:url(../images/buttonbgimg1.gif) no-repeat; font-size:18px; font-family:'微软雅黑', '黑体'"/>
 		<br clear="all"/>
@@ -585,7 +598,7 @@ function chuku(){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<div class="saomiao_selet2">
 				下一站：
-				<select id="branchid" name="branchid" onchange="tohome();" class="easyui-combobox" style="width: 150px">
+				<select id="branchid" name="branchid"  style="width: 150px">
 					<option value="0" selected>请选择</option>
 					<%for(Branch b : bList){ %>
 						<option value="<%=b.getBranchid() %>" <%if(branchid==b.getBranchid()){ %> selected=selected <%} %>   ><%=b.getBranchname() %></option>
@@ -614,14 +627,14 @@ function chuku(){
 					</p>
 					<%} %>
 					<p style="display: none;">
-					<span>包号：</span><input type="text" class="saomiao_inputtxt2" name="baleno" id="baleno" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){if($(this).val().indexOf('@zd_')>-1){$('#branchid').val($(this).val().split('_')[1]);if($('#branchid').val()!=$(this).val().split('_')[1]){$('#msg').html('         （异常扫描）扫描站点失败');$('#branchid').val(0);}else{$('#msg').html('');}$(this).val('');return false;}if($('#branchid').val()==0){alert('请选择下一站');return;}$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}"/>
+					<span>包号：</span><input type="text" class="saomiao_inputtxt2" name="baleno" id="baleno" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){if($(this).val().indexOf('@zd_')>-1){$('#branchid').combobox('setValue',$(this).val().split('_')[1]);if($('#branchid').combobox('getValue')!=$(this).val().split('_')[1]){$('#msg').html('         （异常扫描）扫描站点失败');$('#branchid').combobox('setValue',0);}else{$('#msg').html('');}$(this).val('');return false;}if($('#branchid').combobox('getValue')==0){alert('请选择下一站');return;}$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}"/>
 					<span>&nbsp;</span>
 					<input type="button" id="randomCreate" value="随机生成" class="button"  onclick="ranCreate();"/>
 					<input type="button" id="handCreate" value="手工输入"  class="button"  onclick="hanCreate();"/>
 					
 					</p>
 					<p><span>订单号：</span>
-						<input type="text" class="saomiao_inputtxt2" value=""  id="scancwb" name="scancwb"  onKeyDown='if(event.keyCode==13&&$(this).val().length>0){exportWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#branchid").val(),$("#driverid").val(),$("#truckid").val(),$("#requestbatchno").val(),$("#baleno").val(),$("#ck_switch").val(),$("#confirmflag").attr("checked")=="checked"?1:0);}'/>
+						<input type="text" class="saomiao_inputtxt2" value=""  id="scancwb" name="scancwb"  onKeyDown='if(event.keyCode==13&&$(this).val().length>0){exportWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#branchid").combobox("getValue"),$("#driverid").val(),$("#truckid").val(),$("#requestbatchno").val(),$("#baleno").val(),$("#ck_switch").val(),$("#confirmflag").attr("checked")=="checked"?1:0);}'/>
 					</p>
 					<p id="baleBtn">
 						<span>&nbsp;</span>
@@ -657,13 +670,13 @@ function chuku(){
 				<ul id="smallTag">
 					<li><a id="table_weichuku" href="#" class="light">待出库明细</a></li>
 					<li><a id="table_yichuku" href="#">已出库明细</a></li>
-					<li><a id="table_quejian" href="#" onclick='getchukucwbquejiandataList($("#branchid").val());getcwbsquejiandataForBranchid($("#branchid").val())'>一票多件缺件</a></li>
+					<li><a id="table_quejian" href="#" onclick='getchukucwbquejiandataList($("#branchid").combobox("getValue"));getcwbsquejiandataForBranchid($("#branchid").combobox("getValue"))'>一票多件缺件</a></li>
 					<li><a href="#">异常单明细</a></li>
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
 				<li>
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1,$("#branchid").val());'/>
+					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(1,$("#branchid").combobox("getValue"));'/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -713,7 +726,7 @@ function chuku(){
 					</table>
 				</li>
 				<li style="display: none">
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(2,$("#branchid").val());'/>
+					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(2,$("#branchid").combobox("getValue"));'/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
@@ -788,7 +801,7 @@ function chuku(){
 				</li>
 				
 				<li style="display: none">
-					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(3,$("#branchid").val());'/>
+					<input type ="button" id="btnval0" value="导出Excel" class="input_button1" onclick='exportField(3,$("#branchid").combobox("getValue"));'/>
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
 							<tr>
