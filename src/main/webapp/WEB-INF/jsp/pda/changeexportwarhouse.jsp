@@ -38,7 +38,7 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 $(function(){
 	
 	$("#branchid").combobox({
-		onChange: function (n,o) {
+		onSelect: function (n) {
 			var isscanbaleTag = 1;
 			if($("#scanbaleTag").hasClass("light")){
 				isscanbaleTag=1;
