@@ -467,7 +467,7 @@ function clearSelect(){
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('deliverybranchid');" >配送站点</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('customerid');" >客户</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('deliverid');" >小件员</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('jobnum');" >小件员工号</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" >小件员工号</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('emaildate');" >发货时间</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('receivablefee');" >应收金额</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('paybackfee');" >应退金额</td>
