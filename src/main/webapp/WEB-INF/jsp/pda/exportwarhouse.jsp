@@ -41,7 +41,7 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script languag  e="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
 	$("#branchid").combobox({
