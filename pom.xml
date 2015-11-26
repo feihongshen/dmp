@@ -2733,7 +2733,7 @@
 				<addresscustomerid>10</addresscustomerid>
 				<addressid>10</addressid>
 				<addresspassword>ahpj</addresspassword>
-				<addressWebserviceIp>103.229.214.164/addressahpj</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.23:8080/addressahpj</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
