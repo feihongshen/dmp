@@ -45,7 +45,8 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 <script type="text/javascript">
 $(function(){
 	$("#branchid").combobox({
-		onChange: function (n,o) {
+		onSelect: function (n) {
+
 			var isscanbaleTag = 1;
 			if($("#scanbaleTag").hasClass("light")){
 				isscanbaleTag=1;
