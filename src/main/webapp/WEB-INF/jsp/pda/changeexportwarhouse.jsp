@@ -35,19 +35,20 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
+function changeT(){
+	var isscanbaleTag = 1;
+	if($("#scanbaleTag").hasClass("light")){
+		isscanbaleTag=1;
+	}else{
+		isscanbaleTag=0;
+	}
+	window.location.href="<%=request.getContextPath() %>/PDA/changeexportwarhouse?branchid="+$('#branchid').combobox('getValue')+"&isscanbaleTag="+isscanbaleTag;
+
+}
+
 $(function(){
 	
-	$("#branchid").combobox({
-		onSelect: function (n) {
-			var isscanbaleTag = 1;
-			if($("#scanbaleTag").hasClass("light")){
-				isscanbaleTag=1;
-			}else{
-				isscanbaleTag=0;
-			}
-			window.location.href="<%=request.getContextPath() %>/PDA/changeexportwarhouse?branchid="+$('#branchid').combobox('getValue')+"&isscanbaleTag="+isscanbaleTag;
-		}
-	});
+	$("#branchid").combobox();
 	
 	var $menuli1 = $("#bigTag li");
 	$menuli1.click(function(){
@@ -598,7 +599,7 @@ function chuku(){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<div class="saomiao_selet2">
 				下一站：
-				<select id="branchid" name="branchid"  style="width: 150px">
+				<select id="branchid" name="branchid"  style="width: 150px" onChange="changeT();">
 					<option value="0" selected>请选择</option>
 					<%for(Branch b : bList){ %>
 						<option value="<%=b.getBranchid() %>" <%if(branchid==b.getBranchid()){ %> selected=selected <%} %>   ><%=b.getBranchname() %></option>

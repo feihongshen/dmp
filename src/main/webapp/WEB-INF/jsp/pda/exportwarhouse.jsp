@@ -43,20 +43,19 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script languag  e="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
-$(function(){
-	$("#branchid").combobox({
-		onSelect: function (n) {
-
-			var isscanbaleTag = 1;
-			if($("#scanbaleTag").hasClass("light")){
-				isscanbaleTag=1;
-			}else{
-				isscanbaleTag=0;
-			}
-			window.location.href="<%=request.getContextPath() %>/PDA/exportwarhouse?branchid="+$('#branchid').combobox('getValue')+"&isscanbaleTag="+isscanbaleTag;
-			
+	function changBlur(){
+		alert("love");
+		var isscanbaleTag = 1;
+		if($("#scanbaleTag").hasClass("light")){
+			isscanbaleTag=1;
+		}else{
+			isscanbaleTag=0;
 		}
-	});
+		window.location.href="<%=request.getContextPath() %>/PDA/exportwarhouse?branchid="+$('#branchid').combobox('getValue')+"&isscanbaleTag="+isscanbaleTag;
+	}
+$(function(){
+	
+	$("#branchid").combobox();
 	if('${isOpenDialog}'=='open'){
 		$('#find').dialog('close');
 	}
@@ -925,7 +924,7 @@ function chuku(){
 			<!-- <form action="" method="get"> -->
 			<div class="saomiao_selet2">
 					下一站：
-					 <select id="branchid" name="branchid" style="width: 150px">
+					 <select id="branchid" name="branchid" style="width: 150px" onChange="changBlur();">
 					<option value="0" selected>请选择</option>
 						<%
 							for (Branch b : bList) {
