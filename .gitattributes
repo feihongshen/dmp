@@ -919,6 +919,7 @@ src/main/java/cn/explink/controller/WarehouseKeyController.java -text
 src/main/java/cn/explink/controller/WhareHouseToCommonController.java -text
 src/main/java/cn/explink/controller/WorkOrderController.java -text
 src/main/java/cn/explink/controller/XiazaiContronller.java -text
+src/main/java/cn/explink/controller/addresscontroller/AddressCustomerStationMappingController.java -text
 src/main/java/cn/explink/controller/addresscontroller/AddressMappingController.java -text
 src/main/java/cn/explink/controller/addresscontroller/AddressSysController.java -text
 src/main/java/cn/explink/controller/customerContract/CustomerContractController.java -text
@@ -997,6 +998,7 @@ src/main/java/cn/explink/dao/AccountDeducDetailDAO.java -text
 src/main/java/cn/explink/dao/AccountDeductRecordDAO.java -text
 src/main/java/cn/explink/dao/AccountFeeDetailDAO.java -text
 src/main/java/cn/explink/dao/AccountFeeTypeDAO.java -text
+src/main/java/cn/explink/dao/AddressCustomerStationDao.java -text
 src/main/java/cn/explink/dao/AddressStartDAO.java -text
 src/main/java/cn/explink/dao/AdjustmentRecordDAO.java -text
 src/main/java/cn/explink/dao/AppearWindowDao.java -text
@@ -1425,6 +1427,8 @@ src/main/java/cn/explink/domain/WavObject.java -text
 src/main/java/cn/explink/domain/WindowShow.java -text
 src/main/java/cn/explink/domain/YpdjHandleRecord.java -text
 src/main/java/cn/explink/domain/ZhiFuApplyView.java -text
+src/main/java/cn/explink/domain/addressvo/AddressCustomerStation.java -text
+src/main/java/cn/explink/domain/addressvo/AddressCustomerStationVO.java -text
 src/main/java/cn/explink/domain/addressvo/AddressMappingResult.java -text
 src/main/java/cn/explink/domain/addressvo/AddressMappingResultEnum.java -text
 src/main/java/cn/explink/domain/addressvo/AddressQueryResult.java -text
@@ -1887,6 +1891,7 @@ src/main/java/cn/explink/service/WarehouseGroupDetailService.java -text
 src/main/java/cn/explink/service/WhareHouseToCommonService.java -text
 src/main/java/cn/explink/service/WorkOrderService.java -text
 src/main/java/cn/explink/service/XiazaiService.java -text
+src/main/java/cn/explink/service/addressmatch/AddressCustomerStationService.java -text
 src/main/java/cn/explink/service/addressmatch/AddressMappingService.java -text
 src/main/java/cn/explink/service/addressmatch/AddressMatchManager.java -text
 src/main/java/cn/explink/service/addressmatch/AddressMatchOXOService.java -text
@@ -2093,7 +2098,10 @@ src/main/webapp/WEB-INF/jsp/accountfeedetail/list.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeetype/add.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeetype/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/accountfeetype/list.jsp -text
+src/main/webapp/WEB-INF/jsp/address/add.jsp -text
 src/main/webapp/WEB-INF/jsp/address/deliveryDelivererRule.jsp -text
+src/main/webapp/WEB-INF/jsp/address/edit.jsp -text
+src/main/webapp/WEB-INF/jsp/address/list.jsp -text
 src/main/webapp/WEB-INF/jsp/advancedquery/exportView.jsp -text
 src/main/webapp/WEB-INF/jsp/advancedquery/list.jsp -text
 src/main/webapp/WEB-INF/jsp/advancedquery/simplelist.jsp -text
