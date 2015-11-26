@@ -428,12 +428,13 @@ $("#username").val(<%=request.getParameter("username")%>);
 
 $(function(){
 	$("div.panel.combo-p").css({"margin-top":"-78px"});
-	$("#span.combo-arrow").css({"margin-right":"-18px"});
-	$("span.combo-arrow").css({"margin-right":"-18"});
+// 	$("#span.combo-arrow").css({"margin-right":"-18px"});
+	$("span.combo-arrow").css({"margin-right":"-18","margin-top":"-20px"});
 	$("div.combo-panel.panel-body.panel-body-noheader").css({"width":"152px"});
 	if($("input.combo-text.validatebox-text.validatebox-f.textbox").val()==0){
 		$("input.combo-text.validatebox-text.validatebox-f.textbox").val("");
 	}
+// 	margin-top: -20px;
 })
 </script>
 </body>
