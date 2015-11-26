@@ -288,7 +288,9 @@ var file_id;
 			}
 		});
 	}
-	
+	$(function(){
+		$("div.panel.combo-p").css({"margin-top":"-78px","width":"155px"});
+	})
 </script>
 </head>
 <body  style="background:#f5f5f5">
