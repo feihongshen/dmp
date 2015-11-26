@@ -44,7 +44,6 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 <script languag  e="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 	function changBlur(){
-		alert("love");
 		var isscanbaleTag = 1;
 		if($("#scanbaleTag").hasClass("light")){
 			isscanbaleTag=1;
