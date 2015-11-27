@@ -161,6 +161,7 @@ import cn.explink.domain.VO.DeliverServerParamVO;
 import cn.explink.domain.VO.DeliverServerPushVO;
 import cn.explink.domain.VO.GoodInfoVO;
 import cn.explink.domain.addressvo.DelivererVo;
+import cn.explink.domain.addressvo.DeliveryStationVo;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AccountFlowOrderTypeEnum;
@@ -5978,8 +5979,8 @@ public class CwbOrderService extends BaseOrderService {
 	 * @throws Exception
 	 */
 	@Transactional
-	public void updateAddressMatch(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype, List<DelivererVo> delivererList, List<Integer> timeLimitList)
-			throws Exception {
+	public void updateAddressMatch(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype, List<DeliveryStationVo> deliveryStationList,
+			List<DelivererVo> delivererList, List<Integer> timeLimitList) throws Exception {
 		this.logger.info("更新配送站点,cwb:{},站点:{}", cwbOrder.getCwb(), branch.getBranchid());
 
 		this.validateStateTransfer(cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch);
