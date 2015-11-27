@@ -53,8 +53,23 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 		window.location.href="<%=request.getContextPath() %>/PDA/exportwarhouse?branchid="+$('#branchid').combobox('getValue')+"&isscanbaleTag="+isscanbaleTag;
 	}
 $(function(){
-	
 	$("#branchid").combobox();
+	
+	$("input.combo-text.validatebox-text.validatebox-f.textbox").blur(function(){
+		if($('#branchid').combobox('getValue')==undefined||$('#branchid').combobox('getValue')==0){
+			if($('#branchid').combobox('getData').length>0){
+				var data = $('#branchid').combobox('getData');
+				$("#branchid").val(data[0].value);
+				$("#branchid").combobox('select',data[0].value);
+				$("input.combo-text.validatebox-text.validatebox-f.textbox").val(data[0].text);
+				changBlur();
+			}
+
+		}else{
+			changBlur();
+		}
+	})
+
 	if('${isOpenDialog}'=='open'){
 		$('#find').dialog('close');
 	}

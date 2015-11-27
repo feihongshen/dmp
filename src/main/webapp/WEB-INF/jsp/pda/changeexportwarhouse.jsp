@@ -50,6 +50,21 @@ $(function(){
 	
 	$("#branchid").combobox();
 	
+	$("input.combo-text.validatebox-text.validatebox-f.textbox").blur(function(){
+		if($('#branchid').combobox('getValue')==undefined||$('#branchid').combobox('getValue')==0){
+			if($('#branchid').combobox('getData').length>0){
+				var data = $('#branchid').combobox('getData');
+				$("#branchid").val(data[0].value);
+				$("#branchid").combobox('select',data[0].value);
+				$("input.combo-text.validatebox-text.validatebox-f.textbox").val(data[0].text);
+				changeT();
+			}
+
+		}else{
+				changeT();
+		}
+	})
+	
 	var $menuli1 = $("#bigTag li");
 	$menuli1.click(function(){
 		$(this).children().addClass("light");
@@ -599,7 +614,7 @@ function chuku(){
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<div class="saomiao_selet2">
 				下一站：
-				<select id="branchid" name="branchid"  style="width: 150px" onChange="changeT();">
+				<select id="branchid" name="branchid"  style="width: 150px" onChange="changeT();" >
 					<option value="0" selected>请选择</option>
 					<%for(Branch b : bList){ %>
 						<option value="<%=b.getBranchid() %>" <%if(branchid==b.getBranchid()){ %> selected=selected <%} %>   ><%=b.getBranchname() %></option>
