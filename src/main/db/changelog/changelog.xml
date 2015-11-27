@@ -8671,5 +8671,43 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 		
 	</changeSet>
+	
+	<changeSet id="liangyurong-2015-11-27-01" author="liangyurong">
+		<sql>
+		INSERT INTO dmp40_function VALUES ('802005','2','客户账单生成策略','802005','${eapUrl}customerBillPolicy.do?index&amp;','8020');
+		</sql>
+	</changeSet>
+	
+	<changeSet id="liangyurong-2015-11-27-02" author="liangyurong">
+		<sql>
+		CREATE TABLE `fn_customer_bill_policy` (
+			`id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+			`policy_name` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '策略名称',
+			`customer_id` INT(11) NOT NULL DEFAULT '0' COMMENT '客户id',
+			`settle_type` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '结算类型',
+			`bill_type` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '账单类型',
+			`date_type` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '订单日期类型',
+			`warehouse_id` INT(11) NOT NULL DEFAULT '0' COMMENT '发货仓库id',
+			`cycle_type` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '生成周期类型',
+			`bill_create_date` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '账单生成日 每月第几日',
+			`bill_create_time` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '账单生成时间',
+			`bill_create_week` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '账单生成周 周几',
+			`forward_start` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '业务区间前推开始',
+			`forward_end` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '业务区间前推结束',
+			`date_start` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '业务区间第几日',
+			`date_end` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '业务区间第几日',
+			`business_time_start` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '业务开始时间',
+			`business_time_end` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '业务结束时间',
+			`state` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '策略状态',
+			`active_time` DATETIME NULL DEFAULT NULL COMMENT '激活时间',
+			`stop_time` DATETIME NULL DEFAULT NULL COMMENT '停止时间',
+			`creator` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '创建人',
+			`create_time` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
+			`update_user` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '更新人',
+			`update_time` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '更新时间',
+			PRIMARY KEY (`id`)
+		)COLLATE='utf8_general_ci' ENGINE=InnoDB;
+		</sql>
+	</changeSet>
 	 
 </databaseChangeLog>
