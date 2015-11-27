@@ -1329,11 +1329,18 @@ public class BaleService {
 
 	public void validateStateTransfer(CwbOrder co, FlowOrderTypeEnum flowEnum, String text) {
 		CwbFlowOrderTypeEnum fromstate = CwbFlowOrderTypeEnum.getText((int) co.getFlowordertype());
-		if (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
-			if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) != null)) {
-				throw new CwbException(co.getCwb(), flowEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), text);
-			}
-		} else if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) == null)) {
+		
+		//DMP 4.2.8 中转库合包出库缺陷修改
+//		if (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
+//			if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) != null)) {
+//				throw new CwbException(co.getCwb(), flowEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), text);
+//			}
+//		} else if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) == null)) {
+//			throw new CwbException(co.getCwb(), flowEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), text);
+//		}
+		
+		
+		if ((fromstate != null) && (this.cwbStateControlDAO.getCwbStateControlByParam((int) co.getFlowordertype(), flowEnum.getValue()) == null)) {
 			throw new CwbException(co.getCwb(), flowEnum.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), text);
 		}
 	}
@@ -1733,6 +1740,123 @@ public class BaleService {
 			}
 		}
 		return baleViewList;
+	}
+	
+	/**
+	 * 中转出库根据包号扫描订单检查
+	 * 
+	 * @param user
+	 * @param baleno
+	 * @param cwb
+	 * @param forceOut
+	 * @param currentbranchid
+	 * @param branchid
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 * @version DMP2.4.7
+	 */
+	@Transactional
+	public void baleaddcwbZhongzhuanChuKuCheck(User user, String baleno, String cwb, boolean forceOut, long currentbranchid, long branchid) {
+		if (!"".equals(baleno) && !"".equals(cwb)) {
+			this.logger.info("===封包检查开始===");
+			this.logger.info("开始验证包号" + baleno);
+
+			// ==================验证包号=======================
+			this.validateBaleCheck(user, baleno, cwb, branchid, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
+			// ==================验证包号End=======================
+
+			// ==================验证订单状态=======================
+			this.logger.info("开始验证订单" + cwb);
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
+			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+			if (co == null) {
+				// 订单不存在
+				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+			}
+			long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
+			if ((isypdjusetranscwb == 1) && (null != co.getTranscwb()) && (co.getTranscwb().length() > 0)) {
+				this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
+			}
+
+			Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
+			Branch nextBranch = this.branchDAO.getQueryBranchByBranchid(co.getNextbranchid());
+			boolean aflag = false;
+			if ((ifBranch != null) && (ifBranch.getSitetype() == BranchEnum.ZhanDian.getValue())) {
+				List<BranchRoute> routelist = this.branchRouteDAO.getBranchRouteByWheresql(currentbranchid, branchid, 2);
+				for (BranchRoute r : routelist) {
+					if (branchid == r.getToBranchId()) {
+						aflag = true;
+					}
+				}// co.getFlowordertype()!=FlowOrderTypeEnum.DaoRuShuJu.getValue()&&
+				if ((co.getNextbranchid() != 0) && !aflag && (branchid > 0) && !forceOut) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, this.branchDAO.getBranchByBranchid(
+							nextBranch.getSitetype() == BranchEnum.ZhanDian.getValue() ? co.getNextbranchid() : co.getDeliverybranchid()).getBranchname());
+				}// co.getFlowordertype()!=FlowOrderTypeEnum.DaoRuShuJu.getValue()&&co.getNextbranchid()!=branchid
+			} else if ((co.getNextbranchid() != 0) && (branchid > 0) && !forceOut) {
+				// 计算下一站
+				long compariBranchid = nextBranch.getSitetype() == BranchEnum.ZhanDian.getValue() ? co.getNextbranchid() : co.getDeliverybranchid();
+				// 计算的下一站！=所选的下一站 && 计算的下一站!=0
+				List<BranchRoute> routelist = this.branchRouteDAO.getBranchRouteByWheresql(branchid, co.getDeliverybranchid(), 2);
+				if (null == routelist) {
+					if ((compariBranchid != branchid) && (compariBranchid != 0)) {
+						throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, this.branchDAO.getBranchByBranchid(
+								nextBranch.getSitetype() == BranchEnum.ZhanDian.getValue() ? co.getNextbranchid() : co.getDeliverybranchid()).getBranchname());
+					}
+				}
+			}
+
+			if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
+					.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())))
+					&& (co.getCurrentbranchid() != currentbranchid)) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+			}
+
+			Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
+			Branch cwbBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid() == 0 ? co.getNextbranchid() : co.getCurrentbranchid());
+			if ((cwbBranch.getBranchid() != branchid) && (userbranch.getSitetype() != BranchEnum.ZhongZhuan.getValue()) && (cwbBranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.ZHONG_ZHUAN_HUO);
+			}
+
+			// 出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑
+			if ((co.getStartbranchid() == currentbranchid) && ((co.getNextbranchid() == branchid) || (branchid == -1) || (branchid == 0) || (co.getNextbranchid() == currentbranchid))
+					&& ((co.getSendcarnum() > 1) && (co.getSendcarnum() == co.getScannum())) && (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())) {// 重复
+				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
+			} else if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())
+					&& ((co.getSendcarnum() > 1) && (co.getSendcarnum() == co.getScannum())) && !forceOut) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
+			}
+			// ==================验证订单状态End=======================
+
+			// ==================验证订单的包号=======================
+			this.logger.info("开始验证订单的包号" + co.getPackagecode());
+			this.validateCwbBaleCheck(user, baleno, scancwb, co, branchid, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), currentbranchid, FlowOrderTypeEnum.ZhongZhuanZhanChuKu);
+		}
+
+	}
+	
+	
+	/**
+	 * 中转库出库：包添加订单
+	 * 
+	 * @param user
+	 * @param baleno 包号
+	 * @param cwb 订单号
+	 * @param branchid 站点
+	 *
+	 * @author jinghui.pan@pjbest.com
+	 */
+	@Transactional
+	public void baleZhongZhuanChuKuAddCwb(User user, String baleno, String cwb, long branchid) {
+		if (!StringUtils.isEmpty(baleno) && !StringUtils.isEmpty(cwb)) {
+			
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
+			
+			_baleaddcwb(user,baleno,cwb,scancwb,branchid);
+			
+			this.cwbOrderService.changeoutWarehous( user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, false, false);
+		}
 	}
 
 }

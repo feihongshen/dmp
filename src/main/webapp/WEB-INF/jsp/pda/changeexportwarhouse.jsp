@@ -449,7 +449,7 @@ function baleaddcwbCheck(){
 	
 	$.ajax({
    		type: "POST",
-   		url:"<%=request.getContextPath()%>/bale/baleaddcwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=1&branchid="+$('#branchid').combobox('getValue')+"&confirmflag="+confirmflag,
+   		url:"<%=request.getContextPath()%>/bale/baleaddcwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=5&branchid="+$('#branchid').combobox('getValue')+"&confirmflag="+confirmflag,
    		dataType : "json",
    		success : function(data) {
    			$("#msg").html("");
@@ -478,13 +478,14 @@ function baleaddcwb(){
 	}
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/baleaddcwb/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?branchid="+$('#branchid').combobox('getValue'),
+		url:"<%=request.getContextPath()%>/bale/baleZhongZhuanChuKuAddCwb/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?branchid="+$('#branchid').combobox('getValue'),//DMP 4.2.8
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
-				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
+				//$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
+				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
 				playWav("'"+data.body.successCount+"'");
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);

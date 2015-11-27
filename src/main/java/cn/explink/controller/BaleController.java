@@ -257,6 +257,9 @@ public class BaleController {
 				this.baleService.baleaddcwbzhongzhuanchuzhanCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
 			} else if (flag == 4) {// 退供货商出库
 				this.baleService.baleaddcwbToCustomerCheck(this.getSessionUser(), baleno, scancwb, this.getSessionUser().getBranchid(), branchid);
+			} else if(flag == 5){// 中转库出库
+				this.baleService.baleaddcwbZhongzhuanChuKuCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
+
 			}
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
@@ -423,9 +426,12 @@ public class BaleController {
 				//如果订单是中转出库，那么查询区域权限设置的【中转库】
 				if(isZhongzhuanOrder(co)){
 					currentBranchId = kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
+					
+					this.baleService.baleaddcwbZhongzhuanChuKuCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, currentBranchId, branchid);
+				}else{
+					this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, currentBranchId, branchid);
 				}
 				
-				this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, currentBranchId, branchid);
 			} 
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
@@ -633,7 +639,7 @@ public class BaleController {
 			}
 
 			// =====封包成功后出库======
-			if (flag) {
+			/*if (flag) {
 				// 根据包号查找订单信息
 				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
 				List<CwbOrder> errorList = new ArrayList<CwbOrder>();
@@ -698,6 +704,14 @@ public class BaleController {
 						this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 					}
 				}
+			}*/
+			
+			//参考 baleChuKu的实现，只是更新包的状态
+			if( flag ){
+				Bale bale=this.baleDAO.getBaleByBaleno(baleno,BaleStateEnum.YiFengBao.getValue());
+				obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
+				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+				this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 			}
 		}
 		return explinkResponse;
@@ -969,6 +983,36 @@ public class BaleController {
 					}
 				}
 			}
+		}
+		return explinkResponse;
+	}
+	
+	
+	/**
+	 * 中转库出库：包添加订单
+	 *
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/baleZhongZhuanChuKuAddCwb/{cwb}/{baleno}")
+	public @ResponseBody
+	ExplinkResponse baleZhongZhuanChuKuAddCwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb, @PathVariable(value = "baleno") String baleno,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
+		JSONObject obj = new JSONObject();
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		try {
+			this.baleService.baleZhongZhuanChuKuAddCwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
+			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+			this.baleDAO.updateAddBaleScannum(baleno);
+			long successCount = bale.getCwbcount();
+			long scannum = bale.getScannum()+1;
+			obj.put("successCount", successCount);
+			obj.put("scannum", scannum);
+			obj.put("errorcode", "000000");
+		} catch (CwbException e) {
+			obj.put("errorcode", "111111");
+			obj.put("errorinfo", e.getMessage());
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 		}
 		return explinkResponse;
 	}
