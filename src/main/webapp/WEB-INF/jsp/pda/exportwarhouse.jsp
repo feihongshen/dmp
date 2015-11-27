@@ -55,8 +55,8 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 $(function(){
 	$("#branchid").combobox();
 	
-	//combobox控件的显示输入框绑定失去焦点事件
-	$("input.combo-text.validatebox-text.validatebox-f.textbox").blur(function(){
+	//combobox控件的显示输入框绑定失去焦点事件（浏览器兼容问题，谷歌可以，火狐不行，腾出时间再看一下这个问题）
+	/* $("input.combo-text.validatebox-text.validatebox-f.textbox").blur(function(){
 		if($('#branchid').combobox('getValue')==undefined||$('#branchid').combobox('getValue')==0){
 			if($('#branchid').combobox('getData').length>0){
 				var data = $('#branchid').combobox('getData');
@@ -69,7 +69,7 @@ $(function(){
 		}else{
 			changBlur();
 		}
-	})
+	}) */
 
 	if('${isOpenDialog}'=='open'){
 		$('#find').dialog('close');

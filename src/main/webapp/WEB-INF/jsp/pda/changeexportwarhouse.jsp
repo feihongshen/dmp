@@ -51,7 +51,7 @@ $(function(){
 	$("#branchid").combobox();
 	
 	//combobox控件的显示输入框绑定失去焦点事件
-	$("input.combo-text.validatebox-text.validatebox-f.textbox").blur(function(){
+	/* $("input.combo-text.validatebox-text.validatebox-f.textbox").blur(function(){
 		if($('#branchid').combobox('getValue')==undefined||$('#branchid').combobox('getValue')==0){
 			if($('#branchid').combobox('getData').length>0){
 				var data = $('#branchid').combobox('getData');
@@ -64,7 +64,7 @@ $(function(){
 		}else{
 				changeT();
 		}
-	})
+	}) */
 	
 	var $menuli1 = $("#bigTag li");
 	$menuli1.click(function(){
