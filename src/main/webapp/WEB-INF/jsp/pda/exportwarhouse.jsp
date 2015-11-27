@@ -55,6 +55,7 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 $(function(){
 	$("#branchid").combobox();
 	
+	//combobox控件的显示输入框绑定失去焦点事件
 	$("input.combo-text.validatebox-text.validatebox-f.textbox").blur(function(){
 		if($('#branchid').combobox('getValue')==undefined||$('#branchid').combobox('getValue')==0){
 			if($('#branchid').combobox('getData').length>0){
