@@ -410,6 +410,8 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
+	@Autowired
+	AdjustmentRecordService adjustmentRecordService;
 
 	// private User getSessionUser() {
 	// ExplinkUserDetail userDetail = (ExplinkUserDetail)
@@ -5136,6 +5138,15 @@ public class CwbOrderService extends BaseOrderService {
 					|| (deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 
 				this.orgBillAdjustmentRecordService.createAdjustment4GoToClassConfirm(co, deliverystate);
+			}
+			
+			/**
+			 * added by zhouguoting 2015/11/25
+			 * 如果审核状态为“配送成功”，如果结算类型是“返款结算”的客户的订单，且之前已经生成过“应付配送货款账单”,需要生成配送货款调整记录，配送货款调整金额= 应收金额。
+			 */
+			if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue())) {
+				
+				adjustmentRecordService.createAdjustment4GoToClassConfirm(co,deliverystate);
 			}
 
 		}
