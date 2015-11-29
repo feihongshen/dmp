@@ -6,27 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import net.sf.json.JSONObject;
 
-import org.junit.Test;
-import org.neo4j.cypher.internal.compiler.v2_1.docbuilders.internalDocBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.AbnormalOrder;
-import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.AdjustmentRecord;
-import cn.explink.domain.CwbOrder;
-import cn.explink.domain.User;
 import cn.explink.enumutil.VerificationEnum;
-import cn.explink.util.Page;
 
 @Component
 public class AdjustmentRecordDAO{
@@ -103,20 +91,15 @@ public class AdjustmentRecordDAO{
 	 * @param adjustmentRecord
 	 */
 	public void updateAdjustmentRecord(AdjustmentRecord adjustmentRecord,long id){
-		try {
-			String sql="UPDATE fn_adjustment_record SET receive_fee=?,refund_fee=?,modify_fee=?,adjust_amount=?,remark=?,creator=?,create_time=? WHERE id=?";
-			
-			BigDecimal receive_fee=adjustmentRecord.getReceive_fee();
-			BigDecimal refund_fee=adjustmentRecord.getRefund_fee();
-			BigDecimal modify_fee=adjustmentRecord.getModify_fee();
-			BigDecimal adjust_amount=adjustmentRecord.getAdjust_amount();
-			String remark=adjustmentRecord.getRemark();
-			String creator=adjustmentRecord.getCreator();
-			String create_time=adjustmentRecord.getCreate_time();
-			this.jdbcTemplate.update(sql,receive_fee,refund_fee,modify_fee,adjust_amount,remark,creator,create_time,id);	
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		String sql="UPDATE fn_adjustment_record SET receive_fee=?,refund_fee=?,modify_fee=?,adjust_amount=?,remark=?,creator=?,create_time=? WHERE id=?";			
+		BigDecimal receive_fee=adjustmentRecord.getReceive_fee();
+		BigDecimal refund_fee=adjustmentRecord.getRefund_fee();
+		BigDecimal modify_fee=adjustmentRecord.getModify_fee();
+		BigDecimal adjust_amount=adjustmentRecord.getAdjust_amount();
+		String remark=adjustmentRecord.getRemark();
+		String creator=adjustmentRecord.getCreator();
+		String create_time=adjustmentRecord.getCreate_time();
+		this.jdbcTemplate.update(sql,receive_fee,refund_fee,modify_fee,adjust_amount,remark,creator,create_time,id);	
 
 	}	
 }
