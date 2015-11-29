@@ -138,7 +138,7 @@ $(function(){
 	<div class="clear"></div>
 
 	<input type="hidden" id="customerValue" value="${customerid}">
-	<input type="hidden" id="stationValue" value="${station})">
+	<input type="hidden" id="stationValue" value="${station}">
 <script type="text/javascript">
 <%-- $("#selectPg").val(<%=request.getAttribute("page") %>); --%>
 <%-- $("#name").val(<%=request.getParameter("name") %>); --%>

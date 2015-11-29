@@ -92,15 +92,21 @@ public class AddressCustomerStationService {
 	}
 
 	// 根据客户id修改站点信息
-	public void update(Long customerid, String stationName, User user) {
+	public void updateByCustomerId(Long customerid, String stationName, User user) {
 		// 根据客户id删掉之前的数据
 		this.addressCustomerStationDao.delByCustomerId(customerid);
 		// 根据所选择的客户的站点，将所有站点都添加到该客户下
 		this.create(customerid.toString(), stationName, user);
 	}
+	
+	//根据id修改站点信息
+	public void updateById(Long id, String stationName, User user){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
+		this.addressCustomerStationDao.updateById(id,stationName,user.getUserid(),user.getUsername(),df.format(new Date()));
+	}
 
 	// 根据id删除记录
-	public void delByCustomerId(Long customerid) {
-		this.addressCustomerStationDao.delByCustomerId(customerid);
+	public void delById(Long id) {
+		this.addressCustomerStationDao.delById(id);
 	}
 }

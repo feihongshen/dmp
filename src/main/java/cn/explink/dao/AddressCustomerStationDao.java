@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import cn.explink.domain.User;
 import cn.explink.domain.addressvo.AddressCustomerStationVO;
 import cn.explink.util.Page;
 
@@ -79,7 +80,7 @@ public class AddressCustomerStationDao {
 		for (int a = 0; a < listParams.size(); a++) {
 			obj[a] = listParams.get(a);
 		}
-		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		sql += "  ORDER BY customerid limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		List<AddressCustomerStationVO> list = this.jdbcTemplate.query(sql, obj, new AddressCustomerStationMapper());
 		return list;
 	}
@@ -126,9 +127,22 @@ public class AddressCustomerStationDao {
 		this.jdbcTemplate.update(sql, customerName, stationName, userid, userName, dateTime);
 	}
 
+	//根据id更新记录
+	public void updateById(Long id, String stationName, Long userid, String userName, String dateTime){
+		String sql = "UPDATE express_set_customer_station SET branchid=?,creatorid=?,creatorname=?,createtime=? WHERE id=?";
+		this.jdbcTemplate.update(sql,stationName,userid,userName,dateTime,id);
+	}
+	
 	// 根据客户id删除记录
 	public void delByCustomerId(Long customerId) {
 		String sql = "delete from express_set_customer_station where customerid=?";
 		this.jdbcTemplate.update(sql, customerId);
 	}
+	
+	// 根据id删除记录
+	public void delById(Long id) {
+		String sql = "delete from express_set_customer_station where id=?";
+		this.jdbcTemplate.update(sql, id);
+	}
+
 }

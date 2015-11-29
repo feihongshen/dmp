@@ -95,13 +95,14 @@ public class AddressCustomerStationMappingController {
 	@RequestMapping("/save")
 	public @ResponseBody String save(Model model, @RequestParam("customerName") String customerName, @RequestParam("branchName") String branchName) throws Exception {
 		User user = this.getSessionUser();
-		this.addressCustomerStationService.update(Long.parseLong(customerName), branchName, user);
+//		this.addressCustomerStationService.updateByCustomerId(Long.parseLong(customerName), branchName, user);
+		this.addressCustomerStationService.updateById(Long.parseLong(customerName), branchName, user);
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 	}
 
 	@RequestMapping("/del/{id}")
-	public @ResponseBody String del(@PathVariable("id") long customerid) throws Exception {
-		this.addressCustomerStationService.delByCustomerId(customerid);
+	public @ResponseBody String del(@PathVariable("id") long id) throws Exception {
+		this.addressCustomerStationService.delById(id);
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 	}
 

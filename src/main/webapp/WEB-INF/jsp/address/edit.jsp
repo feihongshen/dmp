@@ -45,6 +45,21 @@ function buttonSave(form){
 		});
 	}
 }
+
+function changeStation(){
+	$.ajax({
+		type: "POST",
+		url:$("#getAreaURL").val(),
+		data:{
+			branchid : $("#branchName").val()
+		},
+		dataType:"json",
+		success : function(data) {
+			$("#areaInput").val(data.error);
+		}
+	});
+}
+
 </script>
 <div style="background:#f5f5f5">
 	<div id="box_in_bg">
@@ -61,7 +76,7 @@ function buttonSave(form){
 					<%} %>
 					</select>*
 					
-					<span>站点名称：</span><select id="branchName" name="branchName" class="select1">
+					<span>站点名称：</span><select id="branchName" name="branchName" class="select1" onchange="changeStation();">
 					<%for(Branch branch : listBranchs){ %>
 						<option value="<%=branch.getBranchid() %>" <%if(addressCustomerStationVO.getBranchid()==branch.getBranchid()){%>selected<%} %>><%=branch.getBranchname() %></option>
 					<%} %>
@@ -74,6 +89,7 @@ function buttonSave(form){
 	        <input type="button" value="返回" class="button" id="cancel" onclick="location='<%=request.getContextPath()%>/addressCustomerStationMap/list/1'" /></div>
 		</form>
 	</div>
+	<input type="hidden" id="getAreaURL" value="<%=request.getContextPath()%>/addressCustomerStationMap/getAreaByBranchid">
 </div>
 
 
