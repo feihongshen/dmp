@@ -698,8 +698,10 @@ public class ApplyEditDeliverystateController {
 		int newpaywayid = fwtr.getNewpaywayid();
 		long requestUser = fwtr.getRequestUser();
 		EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiZhiFuFangShi(cwb, paywayid, newpaywayid, requestUser, getSessionUser().getUserid());
+		/** 2015/11/25 deleted by zhouguoting 修改订单支付方式不再需要生成客户账单调整记录
 		//added by jiangyu begin
 		adjustmentRecordService.createAdjustmentRecordByPayType(cwb, paywayid, newpaywayid);
+		**/
 		//deleted by zhouguoting 2015/11/06 修改订单支付方式不再需要生成站内调整单（归班审核后的订单不再允许修改订单支付方式）
 		//orgBillAdjustmentRecordService.createAdjustmentRecordByPayType(cwb,paywayid,newpaywayid);
 		//修改支付方式,判断是否生成调整单
