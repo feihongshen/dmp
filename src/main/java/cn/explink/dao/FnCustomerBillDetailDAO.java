@@ -1,33 +1,15 @@
 package cn.explink.dao;
 
-import java.math.BigDecimal;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
-import net.sf.json.JSONObject;
-
-import org.junit.Test;
-import org.neo4j.cypher.internal.compiler.v2_1.docbuilders.internalDocBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
-import cn.explink.domain.AbnormalOrder;
-import cn.explink.domain.AbnormalWriteBack;
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.FnCustomerBill;
 import cn.explink.domain.FnCustomerBillDetail;
-import cn.explink.domain.User;
-import cn.explink.enumutil.VerificationEnum;
-import cn.explink.util.Page;
 
 @Component
 public class FnCustomerBillDetailDAO{
@@ -89,7 +71,19 @@ public class FnCustomerBillDetailDAO{
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
-	
+	/**
+	 * 根据客户账单id,订单号 获取账单明细
+	 * @param billId
+	 * @param cwb
+	 * @return
+	 */
+	public FnCustomerBillDetail getFnCustomerBillDetailByBillId(Long billId,String cwb){
+		try {
+			return this.jdbcTemplate.queryForObject("select * from fn_customer_bill_detail where bill_id=? and order_no=? limit 1", new FnCustomerBillDetailRowMapper(),billId,cwb);
+		} catch (DataAccessException e) {
+			return new FnCustomerBillDetail();
+		}
+	}
 
 	public List<FnCustomerBill> getFnCustomerBillDetailByCwb(String cwb) {
 		//String sql="SELECT * FROM `fn_customer_bill_detail` WHERE order_no=?";

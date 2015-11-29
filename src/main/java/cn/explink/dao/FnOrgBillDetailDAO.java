@@ -1,17 +1,14 @@
 package cn.explink.dao;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.AdjustmentRecord;
 import cn.explink.domain.FnOrgBillDetail;
 /**
  * 账单明细表DAO
@@ -46,31 +43,6 @@ public class FnOrgBillDetailDAO{
 	}
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-	public void creAdjustmentRecord(final AdjustmentRecord adjustmentRecord) {
-		this.jdbcTemplate.update("insert into fn_adjustment_record (order_no,bill_no,adjust_bill_no,customer_id," + "receive_fee,refund_fee,modify_fee,adjust_amount,remark,creator,create_time,"
-				+ "status,check_user,check_time,order_type) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?)",
-				new PreparedStatementSetter() {
-					@Override
-					public void setValues(PreparedStatement ps) throws SQLException {
-						ps.setString(1, adjustmentRecord.getOrder_no());
-						ps.setString(2, adjustmentRecord.getBill_no());
-						ps.setString(3, adjustmentRecord.getAdjust_bill_no());
-						ps.setLong(4, adjustmentRecord.getCustomer_id());
-						ps.setBigDecimal(5, adjustmentRecord.getReceive_fee());
-						ps.setBigDecimal(6, adjustmentRecord.getRefund_fee());
-						ps.setBigDecimal(7, adjustmentRecord.getModify_fee());
-						ps.setBigDecimal(8, adjustmentRecord.getAdjust_amount());
-						ps.setString(9, adjustmentRecord.getRemark());
-						ps.setString(10, adjustmentRecord.getCreator());
-						ps.setString(11, adjustmentRecord.getCreate_time());
-						ps.setInt(12, adjustmentRecord.getStatus());
-						ps.setString(13, adjustmentRecord.getCheck_user());
-						ps.setString(14, adjustmentRecord.getCheck_time());
-						ps.setInt(15, adjustmentRecord.getOrder_type());
-					}
-
-				});
-	}
 	
 	/**
 	 * 通过订单获取到对应订单的调整单
