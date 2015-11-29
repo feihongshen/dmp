@@ -1,10 +1,13 @@
-<%@page import="cn.explink.domain.addressvo.AddressCustomerStationVO"%>
+<%@page import="cn.explink.domain.addressvo.AddressCustomerStationVO,cn.explink.domain.Customer,cn.explink.domain.Branch"%>
 <%@page import="cn.explink.enumutil.*,cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<AddressCustomerStationVO> listRalations = (List<AddressCustomerStationVO>)request.getAttribute("listRalations");
 	Page page_obj = (Page)request.getAttribute("page_obj");
-	HashMap<String, List<AddressCustomerStationVO>> map = (HashMap<String, List<AddressCustomerStationVO>>)request.getAttribute("mapRalation");
+	List<Customer> listCustomers = (List<Customer>)request.getAttribute("listCustomers");
+	List<Branch> listBranchs = (List<Branch>)request.getAttribute("listBranchs");
+
+// 	HashMap<String, List<AddressCustomerStationVO>> map = (HashMap<String, List<AddressCustomerStationVO>>)request.getAttribute("mapRalation");
 %>
 
 
@@ -46,6 +49,18 @@ function del(id){
 		}
 	});
 }
+
+function changeCustomer(){
+	$("#searchForm").submit();
+}
+
+function changeStation(){
+	$("#searchForm").submit();
+}
+$(function(){
+	$("#station").val($("#stationValue").val());
+	$("#customerid").val($("#customerValue").val());
+})
 </script>
 </head>
 
@@ -53,13 +68,22 @@ function del(id){
 
 <div class="right_box">
 	<div class="inputselect_box">
-	<span><input name="" type="button" value="创建对应关系" class="input_button1"  id="" onclick="window.location.href='<%=request.getContextPath()%>/addressCustomerStationMap/add';" />
+	<span><input name="" type="button" value="创建映射关系" class="input_button1"  id="" onclick="window.location.href='<%=request.getContextPath()%>/addressCustomerStationMap/add';" />
 	</span>
 	<form action="1" method="post" id="searchForm" method="post" >
-		客户：<input type="text" id="customer" name="customer" class="input_text1"/>
-		站点：<input type="text" id="station" name="station" class="input_text1"/>
-<!-- 		<input type="submit" onclick="$('#searchForm').attr('action',1);return true;" id="find" value="查询" class="input_button2" /> -->
-		<!-- <input type="button"  onclick="location.href='1'" value="返回" class="input_button2" /> -->
+		客户：<select id="customerid" name="customerid" class="select1" onChange="changeCustomer();">
+				<option></option>
+			<%for(Customer customer : listCustomers){ %>
+				<option value="<%= customer.getCustomerid()%>"><%=customer.getCustomername() %></option>
+			<%} %>
+		</select>
+		站点：<select id="station" name="station" class="select1" onChange="changeStation();">
+				<option></option>
+			<%for(Branch branch : listBranchs){ %>
+				<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
+			<%} %>
+		</select>
+		
 	</form>
 	</div>
 	<div class="right_title">
@@ -67,31 +91,20 @@ function del(id){
 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr class="font_1">
-			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">序号</td>
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">客户名称</td>
+			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">区域</td>
 			<td width="30%" align="center" valign="middle" bgcolor="#eef6ff">站点名称</td>
 			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
-		<%int a=0; %>
-		<% for(String key : map.keySet()){
-				a++;
-			    List<AddressCustomerStationVO> value = (List<AddressCustomerStationVO>)map.get(key);
-			    String outShow = "";
+		<% for(AddressCustomerStationVO addressCustomerStationVO : listRalations){
 		%>
 		<tr>
-			<td width="15%" align="center" valign="middle" ><%=a %></td>
-			<td width="15%" align="center" valign="middle" ><%=key %></td>
-			<td width="30%" align="center" valign="middle" >
-			<%for(AddressCustomerStationVO acsv : value){ %>
-				<% outShow += (acsv.getBranchName()+"|");%> 
-			<%} 
-				outShow = outShow.substring(0,outShow.length()-1);
-			%>
-				<%=outShow%>
-			</td>
+			<td width="15%" align="center" valign="middle" ><%=addressCustomerStationVO.getCustomerName() %></td>
+			<td width="15%" align="center" valign="middle" ><%=addressCustomerStationVO.getArea() %></td>
+			<td width="30%" align="center" valign="middle" ><%=addressCustomerStationVO.getBranchName() %></td>
 			<td width="10%" align="center" valign="middle" >
-			[<a href="javascript:if(confirm('确定要删除?')){del(<%=value.get(0).getCustomerid() %>);}">删除</a>]
-			[<a href="<%=request.getContextPath()%>/addressCustomerStationMap/edit/<%=value.get(0).getCustomerid() %>">修改</a>]
+			[<a href="javascript:if(confirm('确定要删除?')){del(<%=addressCustomerStationVO.getId() %>);}">删除</a>]
+			[<a href="<%=request.getContextPath()%>/addressCustomerStationMap/edit/<%=addressCustomerStationVO.getId() %>">修改</a>]
 			</td> 
 		</tr>
 		<%} %>
@@ -124,6 +137,8 @@ function del(id){
 	<div class="jg_10"></div>
 	<div class="clear"></div>
 
+	<input type="hidden" id="customerValue" value="${customerid}">
+	<input type="hidden" id="stationValue" value="${station})">
 <script type="text/javascript">
 <%-- $("#selectPg").val(<%=request.getAttribute("page") %>); --%>
 <%-- $("#name").val(<%=request.getParameter("name") %>); --%>

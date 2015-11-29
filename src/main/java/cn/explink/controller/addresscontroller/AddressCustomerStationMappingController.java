@@ -1,7 +1,6 @@
 package cn.explink.controller.addresscontroller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,13 +45,15 @@ public class AddressCustomerStationMappingController {
 
 	// 进入客户站点对应关系维护界面
 	@RequestMapping("/list/{page}")
-	public String list(Model model, @PathVariable("page") long page) {
-		// List<AddressCustomerStationVO> list =
-		// this.addressCustomerStationService.getAllCountByCustomerId();
-		HashMap<String, List<AddressCustomerStationVO>> map = this.addressCustomerStationService.getCustomerStations();
-		// model.addAttribute("listRalations", list);
-		model.addAttribute("mapRalation", map);
-		model.addAttribute("page_obj", new Page(this.addressCustomerStationService.getAllCountByCustomerId(), page, Page.ONE_PAGE_NUMBER));
+	public String list(Model model, @PathVariable("page") long page, String customerid, String station) {
+
+		List<AddressCustomerStationVO> list = this.addressCustomerStationService.getCustomerStationsArea(page, customerid, station);
+		model.addAttribute("customerid", customerid);
+		model.addAttribute("station", station);
+		model.addAttribute("listRalations", list);
+		model.addAttribute("listCustomers", this.customerService.getPageCash());
+		model.addAttribute("listBranchs", this.getStations());
+		model.addAttribute("page_obj", new Page(this.addressCustomerStationService.getAllCount(), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
 		return "/address/list";
 	}
@@ -65,6 +66,14 @@ public class AddressCustomerStationMappingController {
 		return "/address/add";
 	}
 
+	// 将站点对应的区域查询查出来
+	@RequestMapping("/getAreaByBranchid")
+	public @ResponseBody String getAreaByBranchId(Long branchid) {
+		// return
+		// this.addressCustomerStationService.getAreaByBranchId(branchid);
+		return "{\"errorCode\":0,\"error\":\"" + this.addressCustomerStationService.getAreaByBranchId(branchid) + "\"}";
+	}
+
 	// 确认添加客户站点对应关系操作
 	@RequestMapping("/create")
 	public @ResponseBody String create(HttpServletRequest request, @RequestParam("stationName") String stationName, @RequestParam("customerName") String customerName) throws Exception {
@@ -75,39 +84,28 @@ public class AddressCustomerStationMappingController {
 
 	// 进入编辑页
 	@RequestMapping("/edit/{id}")
-	public String edit(Model model, @PathVariable("id") long customerid) {
-		// model.addAttribute("addressCustomerStationVO",
-		// this.addressCustomerStationService.getCustomerStationByid(customerid));
-		model.addAttribute("listCustomer", this.addressCustomerStationService.getCustomerStationByCustomerid(customerid));
+	public String edit(Model model, @PathVariable("id") long id) {
+		model.addAttribute("addressCustomerStationVO", this.addressCustomerStationService.getCustomerStationByid(id));
+		model.addAttribute("listCustomers", this.customerService.getPageCash());
 		model.addAttribute("listBranchs", this.getStations());
 		return "/address/edit";
 	}
 
 	// 确认修改客户站点对应关系操作
-	@RequestMapping("/save/{id}")
-	public @ResponseBody String save(Model model, @PathVariable("id") long id, @RequestParam("customerName") String customerName, @RequestParam("branchName") String branchName) throws Exception {
-		// SystemInstall cs = systemInstallDAO.getSystemInstallById(id);
-		// if (cs == null) {
-		// return "{\"errorCode\":1,\"error\":\"该设置不存在\"}";
-		// } else {
-		// systemInstallService.saveSystemInstall(chinesename, name, value, id);
-		// if ("siteDayLogTime".equals(name) ||
-		// "wareHouseDayLogTime".equals(name) ||
-		// "tuiHuoDayLogTime".equals(name)) {
-		// setQuartzTime(value, name);
-		// }
-		// logger.info("operatorUser={},系统 设置->save",
-		// getSessionUser().getUsername());
+	@RequestMapping("/save")
+	public @ResponseBody String save(Model model, @RequestParam("customerName") String customerName, @RequestParam("branchName") String branchName) throws Exception {
+		User user = this.getSessionUser();
+		this.addressCustomerStationService.update(Long.parseLong(customerName), branchName, user);
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
-		// }
 	}
 
 	@RequestMapping("/del/{id}")
-	public @ResponseBody String del(@PathVariable("id") long id) throws Exception {
-		this.addressCustomerStationService.delById(id);
+	public @ResponseBody String del(@PathVariable("id") long customerid) throws Exception {
+		this.addressCustomerStationService.delByCustomerId(customerid);
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 	}
 
+	// 获取所有站点机构
 	public List<Branch> getStations() {
 		List<Branch> list = this.branchService.getPageCash();
 		List<Branch> listStation = new ArrayList<Branch>();
@@ -116,7 +114,7 @@ public class AddressCustomerStationMappingController {
 				listStation.add(branch);
 			}
 		}
-		return list;
+		return listStation;
 	}
 
 }

@@ -2,6 +2,7 @@ package cn.explink.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.addressvo.AddressCustomerStationVO;
+import cn.explink.util.Page;
 
 @Component
 public class AddressCustomerStationDao {
@@ -61,6 +63,27 @@ public class AddressCustomerStationDao {
 		return list;
 	}
 
+	// 获取全部记录带分页
+	public List<AddressCustomerStationVO> getAllCustomerStationsByPage(Long page, String customerid, String station) {
+		String sql = "select * from express_set_customer_station where 1=1 ";
+		List<Object> listParams = new ArrayList<Object>();
+		if ((customerid != null) && !"".equals(customerid)) {
+			sql += " and customerid=?";
+			listParams.add(customerid);
+		}
+		if ((station != null) && !"".equals(station)) {
+			sql += " and branchid=?";
+			listParams.add(station);
+		}
+		Object[] obj = new Object[listParams.size()];
+		for (int a = 0; a < listParams.size(); a++) {
+			obj[a] = listParams.get(a);
+		}
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		List<AddressCustomerStationVO> list = this.jdbcTemplate.query(sql, obj, new AddressCustomerStationMapper());
+		return list;
+	}
+
 	// 获取按客户查询的分页
 	public List<AddressCustomerStationVO> getCustomerStationsPage() {
 		String sql = " SELECT * FROM express_set_customer_station GROUP BY customerid LIMIT 0,10";
@@ -76,6 +99,12 @@ public class AddressCustomerStationDao {
 	// 根据客户id分组获取所有记录
 	public int getAllCountByCustomerId() {
 		String sql = "SELECT COUNT(1) FROM (SELECT DISTINCT(customerid) FROM express_set_customer_station) AS t";
+		return this.jdbcTemplate.queryForInt(sql);
+	}
+
+	// 根据客户id分组获取所有记录
+	public int getAllCount() {
+		String sql = "SELECT COUNT(1) FROM express_set_customer_station";
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
@@ -97,9 +126,9 @@ public class AddressCustomerStationDao {
 		this.jdbcTemplate.update(sql, customerName, stationName, userid, userName, dateTime);
 	}
 
-	// 根据删除记录
-	public void delById(Long id) {
+	// 根据客户id删除记录
+	public void delByCustomerId(Long customerId) {
 		String sql = "delete from express_set_customer_station where customerid=?";
-		this.jdbcTemplate.update(sql, id);
+		this.jdbcTemplate.update(sql, customerId);
 	}
 }

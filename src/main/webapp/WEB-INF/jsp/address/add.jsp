@@ -18,11 +18,12 @@ List<Customer> listCustomers = (List<Customer>)request.getAttribute("listCustome
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 <script>
-
+/* 
+ * 多选下拉框
 $(function(){
-	$("#stationName").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择操作下一环节' });
+	$("#stationName").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择站点' });
 })
-
+ */
 
 function buttonSave(form){
 	
@@ -44,6 +45,24 @@ function buttonSave(form){
 		});
 	}
 }
+
+function changeStation(){
+	$.ajax({
+		type: "POST",
+		url:$("#getAreaURL").val(),
+		data:{
+			branchid : $("#stationName").val()
+		},
+		dataType:"json",
+		success : function(data) {
+			$("#areaInput").val(data.error);
+		}
+	});
+}
+
+$(function(){
+	$("#areaInput").attr("disabled","disabled");
+})
 </script>
 <div style="background:#f5f5f5">
 	<div id="box_in_bg">
@@ -52,24 +71,29 @@ function buttonSave(form){
 			 onSubmit="buttonSave(this);return false;" 
 			 action="<%=request.getContextPath()%>/addressCustomerStationMap/create" method="post"  >
 			<div id="box_form">
-				<ul>
-					<li><span>客户名称：</span><select id="customerName" name="customerName" class="select1">
+				<div>
+				<span>客户名称：</span><select id="customerName" name="customerName" class="select1">
 					<%for(Customer customer : listCustomers){ %>
 						<option value="<%= customer.getCustomerid()%>"><%=customer.getCustomername() %></option>
 					<%} %>
-					</select>*</li>
-					<li><span>站点名称：</span><select id="stationName" name="stationName" class="select1" multiple="multiple" style="height: 20px;width: 500px">
+					</select>*
+				<!-- </div>
+				<div> -->
+				<span>站点名称：</span><select id="stationName" name="stationName" class="select1" onchange="changeStation();">
 					<%for(Branch branch : listBranchs){ %>
 						<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
 					<%} %>
-					</select>*</li>
-	         </ul>
+					</select>*
+				<span>区域：</span><input type="text" id="areaInput" class="input_text1" style="width:300px"/>	
+				</div>
 		</div>
 		<div align="center">
         <input type="submit" value="确认" class="button" id="sub" />
         <input type="button" value="返回" class="button" id="cancel" onclick="location='<%=request.getContextPath()%>/addressCustomerStationMap/list/1'" /></div>
 	</form>
 	</div>
+	
+	<input type="hidden" id="getAreaURL" value="<%=request.getContextPath()%>/addressCustomerStationMap/getAreaByBranchid">
 </div>
 
 

@@ -44,6 +44,19 @@ public class AddressCustomerStationVO {
 	 */
 	private Date createtime;
 
+	/**
+	 * 区域
+	 */
+	private String area;
+
+	public String getArea() {
+		return this.area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
 	public Integer getId() {
 		return this.id;
 	}

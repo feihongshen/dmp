@@ -1,8 +1,9 @@
-<%@page import="cn.explink.domain.addressvo.AddressCustomerStationVO,cn.explink.domain.Branch"%>
+<%@page import="cn.explink.domain.addressvo.AddressCustomerStationVO,cn.explink.domain.Customer,cn.explink.domain.Branch"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-// AddressCustomerStationVO addressCustomerStationVO = (AddressCustomerStationVO)request.getAttribute("addressCustomerStationVO");
-List<AddressCustomerStationVO> listCustomer = (List<AddressCustomerStationVO>)request.getAttribute("listCustomer");
+AddressCustomerStationVO addressCustomerStationVO = (AddressCustomerStationVO)request.getAttribute("addressCustomerStationVO");
+// List<AddressCustomerStationVO> listCustomer = (List<AddressCustomerStationVO>)request.getAttribute("listCustomer");
+List<Customer> listCustomers = (List<Customer>)request.getAttribute("listCustomers");
 List<Branch> listBranchs = (List<Branch>)request.getAttribute("listBranchs");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -20,7 +21,8 @@ List<Branch> listBranchs = (List<Branch>)request.getAttribute("listBranchs");
 <script>
 
 $(function(){
-	$("#branchName").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择操作下一环节' });
+
+	$("#customerName").attr("disabled",true);   
 })
 
 
@@ -49,17 +51,23 @@ function buttonSave(form){
 		<h2>修改系统设置</h2>
 		<form id="addressCustomerStation_cre_Form" name="addressCustomerStation_cre_Form"
 			 onSubmit="buttonSave(this);return false;" 
-			 action="<%=request.getContextPath()%>/addressCustomerStationMap/save/<%=listCustomer.get(0).getCustomerid()%>" method="post"  >
+			 action="<%=request.getContextPath()%>/addressCustomerStationMap/save" method="post"  >
 			<div id="box_form">
-				<ul>
-					<li><span>客户名称：</span><input type="text" id="customerName" name="customerName" class="input_text1" value="<%=listCustomer.get(0).getCustomerName()%>"/>*</li>
-					<li><span>站点名称：</span><select id="branchName" name="branchName" multiple="multiple" class="select1">
-					<%for(Branch branch : listBranchs){ %>
-						<option value="<%=branch.getBranchid() %>" <%for(int a = 0;a < listCustomer.size(); a++){if(listCustomer.get(a).getBranchid()==branch.getBranchid()){%>selected<%}} %>><%=branch.getBranchname() %></option>
+				<div>
+					<input type="hidden" name="customerName" value="<%=addressCustomerStationVO.getId()%>">
+					<li><span>客户名称：</span><select id="customerName" name="customerName" class="select1">
+					<%for(Customer customer : listCustomers){ %>
+						<option value="<%= customer.getCustomerid()%>" <%if(addressCustomerStationVO.getCustomerid()==customer.getCustomerid()){ %>selected<%} %>><%=customer.getCustomername() %></option>
 					<%} %>
-					</select>*</li>
-	           		
-		         </ul>
+					</select>*
+					
+					<span>站点名称：</span><select id="branchName" name="branchName" class="select1">
+					<%for(Branch branch : listBranchs){ %>
+						<option value="<%=branch.getBranchid() %>" <%if(addressCustomerStationVO.getBranchid()==branch.getBranchid()){%>selected<%} %>><%=branch.getBranchname() %></option>
+					<%} %>
+					</select>*
+					<span>区域：</span><input id="areaInput" type="text" class="input_text1" style="width:300px"/>
+				</div>	           		
 			</div>
 			<div align="center">
 	        <input type="submit" value="确认" class="button" id="sub" />

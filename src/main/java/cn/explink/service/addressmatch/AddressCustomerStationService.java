@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.explink.dao.AddressCustomerStationDao;
+import cn.explink.dao.BranchDAO;
+import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.domain.addressvo.AddressCustomerStationVO;
 
@@ -17,6 +19,8 @@ public class AddressCustomerStationService {
 
 	@Autowired
 	AddressCustomerStationDao addressCustomerStationDao;
+	@Autowired
+	BranchDAO branchDAO;
 
 	// 获取全部记录
 	public List<AddressCustomerStationVO> getAllCustomerStations() {
@@ -24,12 +28,17 @@ public class AddressCustomerStationService {
 		return list;
 	}
 
+	// 查询所有的记录数
+	public int getAllCount() {
+		return this.addressCustomerStationDao.getAllCount();
+	}
+
 	// 查询客户id不重复的记录数
 	public int getAllCountByCustomerId() {
 		return this.addressCustomerStationDao.getAllCountByCustomerId();
 	}
 
-	// 获取页面所需要的map记录
+	// 获取页面所需要的map记录(一个客户匹配多站的时候会用到)
 	public HashMap<String, List<AddressCustomerStationVO>> getCustomerStations() {
 		// @SuppressWarnings("unchecked")
 		HashMap<String, List<AddressCustomerStationVO>> map = new HashMap<String, List<AddressCustomerStationVO>>();
@@ -38,6 +47,27 @@ public class AddressCustomerStationService {
 			map.put("" + addressCustomerStationVO.getCustomerName(), this.addressCustomerStationDao.getCustomerStationByCustomerId(addressCustomerStationVO.getCustomerid()));
 		}
 		return map;
+	}
+
+	// 获取页面所需要的list(一个客户匹配一个站点用到)带分页
+	public List<AddressCustomerStationVO> getCustomerStationsArea(Long page, String customerid, String station) {
+		List<AddressCustomerStationVO> list = this.addressCustomerStationDao.getAllCustomerStationsByPage(page, customerid, station);
+		List<Branch> listBranchs = this.branchDAO.getAllBranches();
+		for (AddressCustomerStationVO addressCustomerStationVO : list) {
+			for (Branch branch : listBranchs) {
+				if (addressCustomerStationVO.getBranchid() == branch.getBranchid()) {
+					addressCustomerStationVO.setArea("" + branch.getBranchprovince() + branch.getBranchcity() + branch.getBranchstreet());
+				}
+			}
+		}
+		return list;
+	}
+
+	// 根据branchId获取站点区域
+	public String getAreaByBranchId(Long branchid) {
+		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
+		String area = branch.getBranchprovince() + branch.getBranchcity() + branch.getBranchstreet();
+		return area;
 	}
 
 	// 根据id获取一条记录
@@ -62,12 +92,15 @@ public class AddressCustomerStationService {
 	}
 
 	// 根据客户id修改站点信息
-	public void update(Long customerid) {
-		List<AddressCustomerStationVO> list = this.addressCustomerStationDao.getCustomerStationByCustomerid(customerid);
+	public void update(Long customerid, String stationName, User user) {
+		// 根据客户id删掉之前的数据
+		this.addressCustomerStationDao.delByCustomerId(customerid);
+		// 根据所选择的客户的站点，将所有站点都添加到该客户下
+		this.create(customerid.toString(), stationName, user);
 	}
 
 	// 根据id删除记录
-	public void delById(Long id) {
-		this.addressCustomerStationDao.delById(id);
+	public void delByCustomerId(Long customerid) {
+		this.addressCustomerStationDao.delByCustomerId(customerid);
 	}
 }
