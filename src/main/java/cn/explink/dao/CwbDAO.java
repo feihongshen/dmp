@@ -236,6 +236,9 @@ public class CwbDAO {
 			cwbOrder.setArea(StringUtil.nullConvertToEmptyString(rs.getString("area")));
 			cwbOrder.setFirstlevelid(rs.getInt("firstlevelid"));
 			cwbOrder.setPickbranchid(rs.getLong("pickbranchid"));
+			cwbOrder.setFncustomerbillid(rs.getLong("fncustomerbillid")); //应收客户账单id
+			cwbOrder.setFncustomerposbillid(rs.getLong("fncustomerposbillid")); //客户POS抵扣账单id
+			cwbOrder.setFncustomerpayablebillid(rs.getLong("fncustomerpayablebillid")); //应付客户账单id
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;

@@ -140,6 +140,10 @@ public class CwbOrder {
 	private long oxodeliverystate; //oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
 	private int branchfeebillexportflag;//加盟商派费账单导出标志
+	
+	private long fncustomerpayablebillid; //应付客户账单id
+	private long fncustomerposbillid; //客户pos抵扣账单 id
+	private long fncustomerbillid; // 应收客户账单id
 
 	/**
 	 * @return the city
@@ -1207,5 +1211,30 @@ public class CwbOrder {
 	public void setFnorgfreightbillid(long fnorgfreightbillid) {
 		this.fnorgfreightbillid = fnorgfreightbillid;
 	}
+
+	public long getFncustomerpayablebillid() {
+		return fncustomerpayablebillid;
+	}
+
+	public void setFncustomerpayablebillid(long fncustomerpayablebillid) {
+		this.fncustomerpayablebillid = fncustomerpayablebillid;
+	}
+
+	public long getFncustomerposbillid() {
+		return fncustomerposbillid;
+	}
+
+	public void setFncustomerposbillid(long fncustomerposbillid) {
+		this.fncustomerposbillid = fncustomerposbillid;
+	}
+
+	public long getFncustomerbillid() {
+		return fncustomerbillid;
+	}
+
+	public void setFncustomerbillid(long fncustomerbillid) {
+		this.fncustomerbillid = fncustomerbillid;
+	}
+	
 	
 }
