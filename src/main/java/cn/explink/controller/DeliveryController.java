@@ -641,7 +641,8 @@ public class DeliveryController {
 			parameters.put("transcwb", transcwb);
 
 			Map<String, Object> paywayParams = this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
-
+			
+			/** 2015/11/25 deleted by zhouguoting  即使归班反馈时修改了支付方式，即不需要生成客户账单调整记录，也不需要生成站内账单调整记录
 			try {
 				//操作之前判断是否修改了支付方式
 				Map<String, Object> preParams = this.cwborderService.checkIsModifyPayMethod(parameters,paywayParams);
@@ -655,7 +656,8 @@ public class DeliveryController {
 				}
 			} catch (Exception e) {
 				this.logger.error("财务处理异常cwb="+cwb,e);
-			}
+			} 
+			**/
 
 		} catch (CwbException ce) {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
