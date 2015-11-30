@@ -23,6 +23,7 @@ List<Branch> listBranchs = (List<Branch>)request.getAttribute("listBranchs");
 $(function(){
 
 	$("#customerName").attr("disabled",true);   
+	changeStation();
 })
 
 
@@ -102,6 +103,7 @@ function changeStation(){
 	        <input type="button" value="返回" class="button" id="cancel" onclick="location='<%=request.getContextPath()%>/addressCustomerStationMap/list/1'" /></div>
 		</form>
 	</div>
+	<input type="hidden" id="areaValue" name="area" value="<%=addressCustomerStationVO.getArea()%>">
 	<input type="hidden" id="getAreaURL" value="<%=request.getContextPath()%>/addressCustomerStationMap/getAreaByBranchid">
 </div>
 

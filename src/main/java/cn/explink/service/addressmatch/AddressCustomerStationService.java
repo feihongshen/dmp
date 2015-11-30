@@ -88,14 +88,21 @@ public class AddressCustomerStationService {
 	}
 
 	//判断是否添加了相同的数据
-	public Boolean checkSame(String customerid,String stationid){
+	public int checkSame(String customerid,String stationid){
 		List<AddressCustomerStationVO> list = this.addressCustomerStationDao.getCustomerStationByCustomerid(Long.parseLong(customerid));
+		String areaSrc = getAreaByBranchId(Long.parseLong(stationid));
 		for(AddressCustomerStationVO addressCustomerStationVO : list){
+			String areaTar = getAreaByBranchId(addressCustomerStationVO.getBranchid().longValue());
+			//根据站点判断
 			if(addressCustomerStationVO.getBranchid()==Integer.parseInt(stationid)){
-				return false;
+				return 2;
+			}
+			//根据区域判断
+			if(areaSrc.length()>0&&areaSrc.equals(areaTar)){
+				return 1;
 			}
 		}
-		return true;
+		return 0;
 	}
 	
 	// 根据customerid创建多条记录
