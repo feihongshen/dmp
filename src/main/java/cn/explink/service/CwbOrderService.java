@@ -4390,6 +4390,12 @@ public class CwbOrderService extends BaseOrderService {
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 
 		}
+		//配送成功添加到历史备注中======LX====ADD====
+		if(podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()){
+			cwbremark=this.creCwbremark(co.getCwbremark(),reason.getReasoncontent(),deliverstateremark);
+			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
+		}
+		
 		// 为货物丢失添加的
 		if ((losereasonid != 0) && ((podresultid == DeliveryStateEnum.HuoWuDiuShi.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(losereasonid);
