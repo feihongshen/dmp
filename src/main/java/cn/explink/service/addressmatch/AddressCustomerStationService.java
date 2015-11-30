@@ -56,7 +56,11 @@ public class AddressCustomerStationService {
 		for (AddressCustomerStationVO addressCustomerStationVO : list) {
 			for (Branch branch : listBranchs) {
 				if (addressCustomerStationVO.getBranchid() == branch.getBranchid()) {
-					addressCustomerStationVO.setArea("" + branch.getBranchprovince() + branch.getBranchcity() + branch.getBranchstreet());
+					String area = branch.getBranchprovince().length()==0?"":(branch.getBranchprovince() + "-") + (branch.getBranchcity().length()==0?"":(branch.getBranchcity() + "-")) + (branch.getBrancharea().length()==0?"":branch.getBrancharea() + "-") +branch.getBranchstreet();
+					if(area.endsWith("-")){
+						area = area.substring(0,area.length()-1);
+					}
+					addressCustomerStationVO.setArea(area);
 				}
 			}
 		}
@@ -66,7 +70,10 @@ public class AddressCustomerStationService {
 	// 根据branchId获取站点区域
 	public String getAreaByBranchId(Long branchid) {
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
-		String area = branch.getBranchprovince() + branch.getBranchcity() + branch.getBranchstreet();
+		String area = branch.getBranchprovince().length()==0?"":(branch.getBranchprovince() + "-") + (branch.getBranchcity().length()==0?"":(branch.getBranchcity() + "-")) + (branch.getBrancharea().length()==0?"":branch.getBrancharea() + "-") +branch.getBranchstreet();
+		if(area.endsWith("-")){
+			area = area.substring(0,area.length()-1);
+		}
 		return area;
 	}
 
