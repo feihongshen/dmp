@@ -10,10 +10,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.AccountAreaDAO;
@@ -96,6 +100,7 @@ import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
@@ -193,6 +198,8 @@ public class CwbOrderController {
 	OrderbackRecordDao orderbackRecordDao;
 	@Autowired
 	OrderBackRukuRecordDao orderBackRukuRecordDao;
+	@Autowired
+	AdjustmentRecordService adjustmentRecordService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -1774,8 +1781,14 @@ public class CwbOrderController {
 				}
 				shiXiaoDAO.creAbnormalOrdernew(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb,
 						co.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), getSessionUser().getUserid(),loseeffect,co.getCwbstate(),co.getEmaildate());
+				
+				//买单结算的客户订单失效需要判断是否已经生成客户账单，如果生成了客户账单，要生成客户调整账单
+				Customer cwbCustomer = customerDao.getCustomerById(co.getCustomerid());
+				if (cwbCustomer != null && cwbCustomer.getPaytype() == 1) {
+					this.adjustmentRecordService.createAdjustmentForLosecwbBatch(co);
+				}
+				
 				successCount++;
-
 				obj.put("cwbOrder", JSONObject.fromObject(co));
 				obj.put("errorcode", "000000");
 				for (Customer c : cList) {

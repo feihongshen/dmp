@@ -470,6 +470,34 @@ public class AdjustmentRecordService {
 	
 	
 	/**
+	 * 订单失效-创建调整单记录
+	 */
+	private void createRecordFowLosecwbBatch(CwbOrder cwbOrder) {
+		AdjustmentRecord aRecord = new AdjustmentRecord();
+		aRecord.setOrder_no(cwbOrder.getCwb());
+		//不允许为空
+		aRecord.setBill_no("");
+		aRecord.setAdjust_bill_no("");
+		aRecord.setCustomer_id(cwbOrder.getCustomerid());
+		
+		aRecord.setReceive_fee(cwbOrder.getReceivablefee());
+		aRecord.setRefund_fee(cwbOrder.getPaybackfee());
+		aRecord.setModify_fee(BigDecimal.ZERO);
+		
+		BigDecimal adjustAmount = (cwbOrder.getReceivablefee()!=null && cwbOrder.getReceivablefee().compareTo(BigDecimal.ZERO)>0) ? BigDecimal.ZERO.subtract(cwbOrder.getReceivablefee()) : cwbOrder.getPaybackfee() ;
+		aRecord.setAdjust_amount(adjustAmount);
+		aRecord.setRemark("订单状态失效!");
+		
+		aRecord.setCreator(getSessionUser().getUsername());
+		aRecord.setCreate_time(DateTimeUtil.getNowTime());
+		aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
+		aRecord.setOrder_type(cwbOrder.getCwbordertypeid());
+		
+		adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+	}
+	
+	
+	/**
 	 * 创建一个新的记录  --added by jiangyu
 	 * @param order
 	 * @param page_payback_fee  页面返回修改后的应退金额
@@ -615,4 +643,14 @@ public class AdjustmentRecordService {
 		
 	}
 	
+	
+	/**
+	 * 订单失效，对应生成调整单记录
+	 */
+	public void createAdjustmentForLosecwbBatch(CwbOrder cwbOrder) {
+		Long customerBillId = cwbOrder.getFncustomerpayablebillid(); //生成过应付客户账单的订单失效生成调整单
+		if (customerBillId > 0) {
+			this.createRecordFowLosecwbBatch(cwbOrder);
+		}
+	}
 }
