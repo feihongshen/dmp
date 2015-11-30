@@ -91,6 +91,7 @@ public class AddressCustomerStationService {
 	public int checkSame(String customerid,String stationid){
 		List<AddressCustomerStationVO> list = this.addressCustomerStationDao.getCustomerStationByCustomerid(Long.parseLong(customerid));
 		String areaSrc = getAreaByBranchId(Long.parseLong(stationid));
+		int a = 0;
 		for(AddressCustomerStationVO addressCustomerStationVO : list){
 			String areaTar = getAreaByBranchId(addressCustomerStationVO.getBranchid().longValue());
 			//根据站点判断
@@ -99,10 +100,10 @@ public class AddressCustomerStationService {
 			}
 			//根据区域判断
 			if(areaSrc.length()>0&&areaSrc.equals(areaTar)){
-				return 1;
+				a = 1;
 			}
 		}
-		return 0;
+		return a;
 	}
 	
 	// 根据customerid创建多条记录
