@@ -40,7 +40,18 @@ function buttonSave(form){
 			data:$(form).serialize(),
 			dataType:"json",
 			success : function(data) {
-				alert(data.error);
+// 				alert(data.error);
+				//判断是否添加相同数据
+				if(data.errorCode==1){
+					if(confirm(data.error)){
+						$("#checkFlag").val("1");
+						$("#sub").click();
+						$("#checkFlag").val("0");
+					   }
+				}else{
+					alert(data.error);
+				}
+
 			}
 		});
 	}
@@ -82,6 +93,8 @@ function changeStation(){
 					<%} %>
 					</select>*
 					<span>区域：</span><input id="areaInput" type="text" class="input_text1" style="width:300px"/>
+					<input type="hidden" id="checkFlag" name="checkFlag" value="0">
+					<input type="hidden" id="customerId" name="customerId" value="<%=addressCustomerStationVO.getCustomerid()%>">
 				</div>	           		
 			</div>
 			<div align="center">

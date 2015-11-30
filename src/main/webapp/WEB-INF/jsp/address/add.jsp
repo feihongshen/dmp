@@ -40,7 +40,16 @@ function buttonSave(form){
 			data:$(form).serialize(),
 			dataType:"json",
 			success : function(data) {
-				alert(data.error);
+				//判断是否添加相同数据
+				if(data.errorCode==1){
+					if(confirm(data.error)){
+						$("#checkFlag").val("1");
+						$("#sub").click();
+						$("#checkFlag").val("0");
+					   }
+				}else{
+					alert(data.error);
+				}
 			}
 		});
 	}
@@ -84,7 +93,8 @@ $(function(){
 						<option value="<%=branch.getBranchid() %>"><%=branch.getBranchname() %></option>
 					<%} %>
 					</select>*
-				<span>区域：</span><input type="text" id="areaInput" class="input_text1" style="width:300px"/>	
+				<span>区域：</span><input type="text" id="areaInput" class="input_text1" style="width:300px"/>
+				<input type="hidden" id="checkFlag" name="checkFlag" value="0">	
 				</div>
 		</div>
 		<div align="center">

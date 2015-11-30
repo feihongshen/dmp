@@ -87,6 +87,17 @@ public class AddressCustomerStationService {
 		return this.addressCustomerStationDao.getCustomerStationByCustomerid(customerid);
 	}
 
+	//判断是否添加了相同的数据
+	public Boolean checkSame(String customerid,String stationid){
+		List<AddressCustomerStationVO> list = this.addressCustomerStationDao.getCustomerStationByCustomerid(Long.parseLong(customerid));
+		for(AddressCustomerStationVO addressCustomerStationVO : list){
+			if(addressCustomerStationVO.getBranchid()==Integer.parseInt(stationid)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	// 根据customerid创建多条记录
 	public void create(String customerName, String stationName, User user) {
 		String[] stationNames = stationName.split(",");

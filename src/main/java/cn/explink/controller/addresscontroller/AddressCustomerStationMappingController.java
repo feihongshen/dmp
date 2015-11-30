@@ -76,8 +76,15 @@ public class AddressCustomerStationMappingController {
 
 	// 确认添加客户站点对应关系操作
 	@RequestMapping("/create")
-	public @ResponseBody String create(HttpServletRequest request, @RequestParam("stationName") String stationName, @RequestParam("customerName") String customerName) throws Exception {
+	public @ResponseBody String create(HttpServletRequest request, @RequestParam("stationName") String stationName, @RequestParam("customerName") String customerName, @RequestParam("checkFlag") String checkFlag) throws Exception {
 		User user = this.getSessionUser();
+		if(checkFlag.endsWith("0")){
+			//校验是否添加相同数据
+			Boolean checkF = this.addressCustomerStationService.checkSame(customerName,stationName);
+			if(!checkF){
+				return "{\"errorCode\":1,\"error\":\"相同的客户、区域已存在该站点，系统将平均分配执行站点，是否继续创建？\"}";
+			}
+		}
 		this.addressCustomerStationService.create(customerName, stationName, user);
 		return "{\"errorCode\":0,\"error\":\"创建成功\"}";
 	}
@@ -93,9 +100,15 @@ public class AddressCustomerStationMappingController {
 
 	// 确认修改客户站点对应关系操作
 	@RequestMapping("/save")
-	public @ResponseBody String save(Model model, @RequestParam("customerName") String customerName, @RequestParam("branchName") String branchName) throws Exception {
+	public @ResponseBody String save(Model model, @RequestParam("customerName") String customerName, @RequestParam("branchName") String branchName,@RequestParam("checkFlag") String checkFlag, @RequestParam("customerId") String customerId) throws Exception {
 		User user = this.getSessionUser();
-//		this.addressCustomerStationService.updateByCustomerId(Long.parseLong(customerName), branchName, user);
+		if(checkFlag.endsWith("0")){
+			//校验是否添加相同数据
+			Boolean checkF = this.addressCustomerStationService.checkSame(customerId,branchName);
+			if(!checkF){
+				return "{\"errorCode\":1,\"error\":\"相同的客户、区域已存在该站点，系统将平均分配执行站点，是否继续修改？\"}";
+			}
+		}
 		this.addressCustomerStationService.updateById(Long.parseLong(customerName), branchName, user);
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 	}
