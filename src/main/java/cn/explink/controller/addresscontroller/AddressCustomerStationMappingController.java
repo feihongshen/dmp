@@ -128,7 +128,7 @@ public class AddressCustomerStationMappingController {
 		List<Branch> list = this.branchService.getPageCash();
 		List<Branch> listStation = new ArrayList<Branch>();
 		for (Branch branch : list) {
-			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()&&"1".equals(branch.getBrancheffectflag())) {
 				listStation.add(branch);
 			}
 		}
