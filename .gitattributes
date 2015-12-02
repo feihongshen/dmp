@@ -3102,6 +3102,7 @@ src/main/webapp/css/easyui/themes/metro/window.css -text
 src/main/webapp/css/fonts-min.css -text
 src/main/webapp/css/index.css -text
 src/main/webapp/css/kuaijie.css -text
+src/main/webapp/css/multiple-select.css -text
 src/main/webapp/css/redmond/images/ui-bg_flat_0_aaaaaa_40x100.png -text
 src/main/webapp/css/redmond/images/ui-bg_flat_55_fbec88_40x100.png -text
 src/main/webapp/css/redmond/images/ui-bg_glass_75_d0e5f5_1x400.png -text
@@ -9924,6 +9925,7 @@ src/main/webapp/js/multiSelcet/jquery.multiSelect.js -text
 src/main/webapp/js/multiSelcet/jquery.multiple.select.js -text
 src/main/webapp/js/multiSelcet/multiple-select.css -text
 src/main/webapp/js/multiSelcet/multiple-select.png -text
+src/main/webapp/js/multiple-select.js -text
 src/main/webapp/js/paifeirule.js -text
 src/main/webapp/js/paybusinessbenefit.js -text
 src/main/webapp/js/punish.js -text

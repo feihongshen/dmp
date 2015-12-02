@@ -20,6 +20,7 @@
     String[] branchidList=request.getParameterValues("branchid");
     long truckid=Long.parseLong(request.getParameter("truckid")==null?"-1":request.getParameter("truckid").toString());
     long driverid=Long.parseLong(request.getParameter("driverid")==null?"-1":request.getParameter("driverid").toString());
+    int m=-1;
 %>
 
 
@@ -31,6 +32,7 @@
 <title>出库交接单打印</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/multiple-select.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
 <%-- <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
@@ -40,6 +42,8 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.0.min.js"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/multiple-select.js"></script>
 <%-- <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
@@ -56,10 +60,11 @@ function cwbfind(){
 	if(truckid<0){
 		alert("请选择车牌号!");
 	}
-	if($("#branchid").combobox('getValue')!=""&&$("#branchid").combobox('getValue')!= null){
+// 	if($("#branchid").combobox('getValue')!=""&&$("#branchid").combobox('getValue')!= null){
+	if($("#branchid").val()!=""&&$("#branchid").val()!= null){
 		$("#searchForm").submit();
 	}else{
-		alert($("#branchid").combobox('getValue'));
+// 		alert($("#branchid").combobox('getValue'));
 		alert("抱歉，请选择下一站点！");
 	}
 }
@@ -113,11 +118,12 @@ $(function(){
 /* 	$("#branchid").change(function(){
 		$("#nextbranchid").val($(this).val());	
 	}); */
-	$("#branchid").combobox({
+	/* $("#branchid").combobox({
+		 multiple:true,
 		onChange: function (n,o) {
 			$("#nextbranchid").val($("#branchid").combobox('getValue'));	
 		}
-	});
+	}); */
 	
 	$("#templateid").change(function(){
 		$("#printtemplateid").val($(this).val());	
@@ -140,7 +146,12 @@ function cwbexport(){
 	
 }
 
-
+$(function(){
+	
+$("#branchid").multipleSelect({
+    filter: true
+});
+})
 </script>
 </head>
 <body style="background:#f5f5f5">
@@ -174,10 +185,18 @@ function cwbexport(){
 			            	}}}%>><%=b.getBranchname()%></option>
 				        <%} %>
 			        </select> --%>
-			        <select name="branchid" id="branchid"  style="width:120px;">
+			        <select name="branchid" id="branchid" multiple="multiple"  style="width:120px;">
 
-				        <%for(Branch b :branchlist){ %>
-				           <option value="<%=b.getBranchid()%>"><%=b.getBranchname()%></option>
+				        <%for(Branch b :branchlist){ 
+// 				        	m++;
+				        %>
+				           <option value="<%=b.getBranchid()%>" sid=<%=m %>
+				           <%if(branchidList!=null&&branchidList.length>0){
+				        	for(int i=0;i<branchidList.length;i++){
+			            	if(b.getBranchid()==Long.parseLong(branchidList[i])){
+			            		%>selected="selected"<%
+			            	    break;
+			            	}}}%>><%=b.getBranchname()%></option>
 				        <%} %>
 			        </select>
 			        </td>
@@ -223,7 +242,7 @@ function cwbexport(){
 		      <%if(printList!=null&&printList.size()>0){ %>
 		      　　<input type="button" id="forexport" onclick="cwbexport();" value="导出" class="input_button2" />
 		      <%} %>
-		      <div style="float:right">   
+		      <div style="float:right;margin-top: -20px;">   
 				     	 打印模版：<select name="templateid" id="templateid" class="select1">
 					  			<%for(PrintTemplate pt : pList){ %>
 					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
@@ -278,8 +297,6 @@ function cwbexport(){
 			</div>			
 	<div class="jg_10"></div>
 	<div class="clear"></div>
-
-
 
 
 <script type="text/javascript">
