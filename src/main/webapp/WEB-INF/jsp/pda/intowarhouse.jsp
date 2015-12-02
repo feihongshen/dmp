@@ -38,6 +38,7 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintNew.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/intowarehousePrintFor3025.js" type="text/javascript"></script>
 <script type="text/javascript">
 
 var App = {ctx:"${pageContext.request.contextPath}"};
@@ -369,6 +370,9 @@ function callfunction(cwb){//getEmailDateByIds
 											/* $("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbnew?scancwb="+ scancwb + "&a="+ new Date()); */
 										}else if (rk_switch == "rkbq_04") {						
 											$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbruku?scancwb="+ scancwb + "&a="+ new Date());
+										//福建飞远30*25
+										}else if (rk_switch == "rkbq_06") {						
+											printIntowarehouse3025(scancwb);
 										} 
 									}
 
