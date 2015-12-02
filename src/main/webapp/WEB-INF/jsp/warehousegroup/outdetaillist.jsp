@@ -163,13 +163,13 @@ $("#branchid").multipleSelect({
 					<input type="hidden"  name="isshow" value="1"  />
 					 <div>  
 	<table>	<tr>
-		<td>
+		<%-- <td>
                         站点名称
 			<select name="ismohu" id="ismohu" class="select1">
 					<option value ="1"<%if(1==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>模糊匹配</option>
 					<option value ="2"<%if(2==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>精确匹配</option>
 			 </select>
-			 </td>
+			 </td> --%>
 			<%--  <input name="branchname" id="branchname" class="input_text1" onKeydown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','branchid',$(this).val());}"/> --%>
 					<td>
 					 下一站
@@ -185,7 +185,7 @@ $("#branchid").multipleSelect({
 			            	}}}%>><%=b.getBranchname()%></option>
 				        <%} %>
 			        </select> --%>
-			        <select name="branchid" id="branchid" multiple="multiple"  style="width:120px;">
+			        <select name="branchid" id="branchid" multiple="multiple"  style="width:180px;">
 
 				        <%for(Branch b :branchlist){ 
 // 				        	m++;
