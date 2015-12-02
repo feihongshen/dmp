@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
+
 import cn.explink.dao.AdjustmentRecordDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
@@ -20,6 +21,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.FnCustomerBill;
 import cn.explink.domain.User;
+import cn.explink.enumutil.CustomerBillDateTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.VerificationEnum;
@@ -232,18 +234,21 @@ public class AdjustmentRecordService {
 		int cwbOrderTypeId=cwbOrder.getCwbordertypeid();
 		AdjustmentRecord aRecord = null ;
 		if(cwbOrderTypeId == CwbOrderTypeIdEnum.Peisong.getValue()){
-			Customer cust = customerdao.getCustomerById(cwbOrder.getCustomerid());
+			/*Customer cust = customerdao.getCustomerById(cwbOrder.getCustomerid());
 			if(cust == null || cust.getPaytype() == 0){
 				logger.error("订单【"+cwbOrder.getCwb()+"】没有客户信息，或未配置客户的结算类型,订单支付信息修改审核生成调整记录失败");
 				throw new RuntimeException("订单【"+cwbOrder.getCwb()+"】没有客户信息,订单支付信息修改审核生成调整记录失败");
-			}
+			}*/  //deleted by zhouguoting 2015/12/2
 			
 			/**
 			 * 买单结算类型的客户的订单,且已经生成过“应付配送货款账单”,在修改支付金额的时候才需要生成调整记录
 			 */
-			if(cust.getPaytype() == 1 && cwbOrder.getFncustomerpayablebillid() != 0){//返款结算
-				aRecord = new AdjustmentRecord();
-				buildAdjustRecord4ModifyMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
+			if(cwbOrder.getFncustomerpayablebillid() != 0){
+				FnCustomerBill custBill =  this.FnCustomerBillDetaildao.getFnCustomerBillById(cwbOrder.getFncustomerpayablebillid());
+				if(custBill != null &&  CustomerBillDateTypeEnum.audit.getValue().intValue() != (int)custBill.getDateType()){
+					aRecord = new AdjustmentRecord();
+					buildAdjustRecord4ModifyMoney(cwbOrder, page_payback_fee, page_receive_fee, aRecord);
+				}
 			}
 			
 			
@@ -325,33 +330,36 @@ public class AdjustmentRecordService {
 		
 		CwbOrder cwbOrder=cwbDao.getCwbByCwb(cwb);
 		
-		Customer cust = customerdao.getCustomerById(cwbOrder.getCustomerid());
+		/*Customer cust = customerdao.getCustomerById(cwbOrder.getCustomerid());
 		if(cust == null || cust.getPaytype() == 0){
 			logger.error("订单【"+cwbOrder.getCwb()+"】没有客户信息，或未配置客户的结算类型,订单重置反馈审核生成调整记录失败");
 			throw new RuntimeException("订单【"+cwbOrder.getCwb()+"】没有客户信息，或未配置客户的结算类型,订单重置反馈审核生成调整记录失败");
-		}
+		}*/ // deletedy by zhouguoting 2015/12/2 
 		
 		/**
 		 * //结算类型为“返款结算”的客户的订单重置反馈的时候,如果之前已经生成过“应付配送货款账单”需要生成调整单
 		 */
-		if(cust.getPaytype() == 2 && cwbOrder.getFncustomerpayablebillid() != 0){
-			AdjustmentRecord aRecord = new AdjustmentRecord();
-			aRecord.setOrder_no(cwbOrder.getCwb());
-			//不允许为空
-			aRecord.setBill_no("");
-			aRecord.setAdjust_bill_no("");
-			aRecord.setCustomer_id(cwbOrder.getCustomerid());
-			aRecord.setReceive_fee(cwbOrder.getReceivablefee());
-			aRecord.setRefund_fee(cwbOrder.getPaybackfee());
-			aRecord.setModify_fee(BigDecimal.ZERO);
-			BigDecimal adjustAmount = cwbOrder.getReceivablefee() == null ? BigDecimal.ZERO : BigDecimal.ZERO.subtract(cwbOrder.getReceivablefee());
-			aRecord.setAdjust_amount(adjustAmount);
-			aRecord.setRemark("已审核账单重置反馈状态!");
-			aRecord.setCreator(getSessionUser().getUsername());
-			aRecord.setCreate_time(DateTimeUtil.getNowTime());
-			aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
-			aRecord.setOrder_type(cwbOrder.getCwbordertypeid());
-			adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+		if(cwbOrder.getFncustomerpayablebillid() != 0){
+			FnCustomerBill custBill =  this.FnCustomerBillDetaildao.getFnCustomerBillById(cwbOrder.getFncustomerpayablebillid());
+			if(custBill != null &&  CustomerBillDateTypeEnum.audit.getValue().intValue() == (int)custBill.getDateType()){
+				AdjustmentRecord aRecord = new AdjustmentRecord();
+				aRecord.setOrder_no(cwbOrder.getCwb());
+				//不允许为空
+				aRecord.setBill_no("");
+				aRecord.setAdjust_bill_no("");
+				aRecord.setCustomer_id(cwbOrder.getCustomerid());
+				aRecord.setReceive_fee(cwbOrder.getReceivablefee());
+				aRecord.setRefund_fee(cwbOrder.getPaybackfee());
+				aRecord.setModify_fee(BigDecimal.ZERO);
+				BigDecimal adjustAmount = cwbOrder.getReceivablefee() == null ? BigDecimal.ZERO : BigDecimal.ZERO.subtract(cwbOrder.getReceivablefee());
+				aRecord.setAdjust_amount(adjustAmount);
+				aRecord.setRemark("已审核账单重置反馈状态!");
+				aRecord.setCreator(getSessionUser().getUsername());
+				aRecord.setCreate_time(DateTimeUtil.getNowTime());
+				aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
+				aRecord.setOrder_type(cwbOrder.getCwbordertypeid());
+				adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+			}
 		}
 		
 	}
@@ -611,34 +619,39 @@ public class AdjustmentRecordService {
 	 * @param deliverystate
 	 */
 	public void createAdjustment4GoToClassConfirm(CwbOrder cwbOrder,DeliveryState deliverystate){
-		Customer cust = customerdao.getCustomerById(cwbOrder.getCustomerid());
+		/*Customer cust = customerdao.getCustomerById(cwbOrder.getCustomerid());
 		if(cust == null || cust.getPaytype() == 0){
 			logger.error("订单【"+cwbOrder.getCwb()+"】没有客户信息，或未配置客户的结算类型,订单反馈审核时无法判断是否要生成调整记录");
 			return;
-		}
+		}*/ //deleted by zhouguoting 2015/12/2
+		
 		/**
-		 * 如果结算类型是“返款结算”的客户的订单，且之前已经生成过“应付配送货款账单”,需要生成配送货款调整记录，配送货款调整金额= 应收金额。
+		 * 如果之前已经生成过“应付配送货款账单”,且结算类型是“返款结算”的客户的订单（如果之前生成过的账单的时间类型是归班审核时间即认为是返款结算）,需要生成配送货款调整记录，配送货款调整金额= 应收金额。
 		 */
-		if(cust.getPaytype() == 2 && cwbOrder.getFncustomerpayablebillid() != 0){
-			AdjustmentRecord aRecord = new AdjustmentRecord();
-			aRecord.setOrder_no(cwbOrder.getCwb());
-			//不允许为空
-			aRecord.setBill_no("");
-			aRecord.setAdjust_bill_no("");
-			aRecord.setCustomer_id(cwbOrder.getCustomerid());
-			
-			aRecord.setReceive_fee(cwbOrder.getReceivablefee());
-			aRecord.setRefund_fee(cwbOrder.getPaybackfee());
-			aRecord.setModify_fee(BigDecimal.ZERO);
-			aRecord.setAdjust_amount(cwbOrder.getReceivablefee());
-			
-			aRecord.setRemark("再次归班审核生成调整记录");
-			
-			aRecord.setCreator(getSessionUser().getUsername());
-			aRecord.setCreate_time(DateTimeUtil.getNowTime());
-			aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
-			aRecord.setOrder_type(cwbOrder.getCwbordertypeid());
-			adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+		long payableBillId =  cwbOrder.getFncustomerpayablebillid();
+		if(payableBillId != 0){
+			FnCustomerBill custBill =  this.FnCustomerBillDetaildao.getFnCustomerBillById(payableBillId);
+			if(custBill != null &&  CustomerBillDateTypeEnum.audit.getValue().intValue() == (int)custBill.getDateType()){
+				AdjustmentRecord aRecord = new AdjustmentRecord();
+				aRecord.setOrder_no(cwbOrder.getCwb());
+				//不允许为空
+				aRecord.setBill_no("");
+				aRecord.setAdjust_bill_no("");
+				aRecord.setCustomer_id(cwbOrder.getCustomerid());
+				
+				aRecord.setReceive_fee(cwbOrder.getReceivablefee());
+				aRecord.setRefund_fee(cwbOrder.getPaybackfee());
+				aRecord.setModify_fee(BigDecimal.ZERO);
+				aRecord.setAdjust_amount(cwbOrder.getReceivablefee());
+				
+				aRecord.setRemark("再次归班审核生成调整记录");
+				
+				aRecord.setCreator(getSessionUser().getUsername());
+				aRecord.setCreate_time(DateTimeUtil.getNowTime());
+				aRecord.setStatus(VerificationEnum.WeiHeXiao.getValue());
+				aRecord.setOrder_type(cwbOrder.getCwbordertypeid());
+				adjustmentRecordDAO.creAdjustmentRecord(aRecord);
+			}
 		}
 		
 	}
