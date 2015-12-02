@@ -658,8 +658,13 @@ public class AdjustmentRecordService {
 	 */
 	public void createAdjustmentForLosecwbBatch(CwbOrder cwbOrder) {
 		Long customerBillId = cwbOrder.getFncustomerpayablebillid(); //生成过应付客户账单的订单失效生成调整单
-		if (customerBillId > 0) {
-			this.createRecordFowLosecwbBatch(cwbOrder);
+		if (customerBillId != 0) {
+			FnCustomerBill customerBill = FnCustomerBillDetaildao.getFnCustomerBillById(customerBillId);
+			if (customerBill != null) {
+				if (customerBill.getDateType() == CustomerBillDateTypeEnum.customerDeliver.getValue()) {
+					this.createRecordFowLosecwbBatch(cwbOrder);
+				}
+			}
 		}
 	}
 }

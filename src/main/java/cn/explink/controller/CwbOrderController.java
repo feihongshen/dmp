@@ -1783,10 +1783,7 @@ public class CwbOrderController {
 						co.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), getSessionUser().getUserid(),loseeffect,co.getCwbstate(),co.getEmaildate());
 				
 				//买单结算的客户订单失效需要判断是否已经生成客户账单，如果生成了客户账单，要生成客户调整账单
-				Customer cwbCustomer = customerDao.getCustomerById(co.getCustomerid());
-				if (cwbCustomer != null && cwbCustomer.getPaytype() == 1) {
-					this.adjustmentRecordService.createAdjustmentForLosecwbBatch(co);
-				}
+				this.adjustmentRecordService.createAdjustmentForLosecwbBatch(co);
 				
 				successCount++;
 				obj.put("cwbOrder", JSONObject.fromObject(co));
