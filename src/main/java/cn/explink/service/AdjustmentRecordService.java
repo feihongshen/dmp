@@ -11,12 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
 import cn.explink.dao.AdjustmentRecordDAO;
-import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.FnCustomerBillDetailDAO;
 import cn.explink.dao.FnOrgBillDetailDAO;
 import cn.explink.domain.AdjustmentRecord;
-import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.FnCustomerBill;
@@ -41,8 +39,6 @@ public class AdjustmentRecordService {
 	CwbDAO cwbDao;
 	@Autowired
 	FnCustomerBillDetailDAO FnCustomerBillDetaildao;
-	@Autowired
-	CustomerDAO customerdao;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	
