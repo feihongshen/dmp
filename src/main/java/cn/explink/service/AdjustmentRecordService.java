@@ -661,7 +661,7 @@ public class AdjustmentRecordService {
 		if (customerBillId != 0) {
 			FnCustomerBill customerBill = FnCustomerBillDetaildao.getFnCustomerBillById(customerBillId);
 			if (customerBill != null) {
-				if (customerBill.getDateType() == CustomerBillDateTypeEnum.customerDeliver.getValue()) {
+				if (CustomerBillDateTypeEnum.customerDeliver.getValue().intValue() == (int)customerBill.getDateType()) {
 					this.createRecordFowLosecwbBatch(cwbOrder);
 				}
 			}
