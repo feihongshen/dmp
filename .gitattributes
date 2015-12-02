@@ -1484,6 +1484,7 @@ src/main/java/cn/explink/enumutil/ComplaintStateEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ConfirmResultEnum.java -text
 src/main/java/cn/explink/enumutil/ConfirmStateEnum.java -text
+src/main/java/cn/explink/enumutil/CustomerBillDateTypeEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDateEnum.java -text
 src/main/java/cn/explink/enumutil/CwbDiuShiIsHandleEnum.java -text
 src/main/java/cn/explink/enumutil/CwbFlowOrderTypeEnum.java -text
