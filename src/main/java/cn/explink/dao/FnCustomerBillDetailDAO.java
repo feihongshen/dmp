@@ -95,6 +95,16 @@ public class FnCustomerBillDetailDAO{
 	}
 	
 	
+	/**
+	 * 根据 客户账单id查询客户账单记录
+	 * @param billId
+	 * @return
+	 */
+	public FnCustomerBill getFnCustomerBillById(Long billId){
+		String sql = " SELECT * FROM fn_customer_bill where id = ?";	
+		return jdbcTemplate.queryForObject(sql, new FnCustomerBillRowMapper(), billId);
+	}
+	
 	
 	
 }
