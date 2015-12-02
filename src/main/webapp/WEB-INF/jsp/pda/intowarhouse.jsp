@@ -124,16 +124,17 @@ var emaildate=0;
 				switchstate = "rkbq_02";
 				$("#rk_switch").val("rkbq_02");
 			}
-			$.ajax({
-				type: "POST",
-				url:"<%=request.getContextPath()%>/switchcontroller/updateswitch?switchstate="+switchstate,
-				dataType:"json",
-				success : function(data) {
-					if(data.errorCode==1){
-						alert(data.error);
-					}
-				}                 
-			});
+			//按照生哥指导，不需要更新数据库
+// 			$.ajax({
+// 				type: "POST",
+<%-- 				url:"<%=request.getContextPath()%>/switchcontroller/updateswitch?switchstate="+switchstate, --%>
+// 				dataType:"json",
+// 				success : function(data) {
+// 					if(data.errorCode==1){
+// 						alert(data.error);
+// 					}
+// 				}                 
+// 			});
 		});
 	});
 	$(function(){
