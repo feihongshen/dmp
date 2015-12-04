@@ -94,7 +94,12 @@ public class UserDAO {
 	}
 
 	public User getUserByUsername(String username) {
-		return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where username=? and userDeleteFlag=1", new UserRowMapper(), username);
+		try{
+			return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where username=? and userDeleteFlag=1", new UserRowMapper(), username);
+		}catch(Exception e){
+			return null;
+		}
+		
 	}
 
 	public List<User> getUsersByUsernameLogin(String username) {

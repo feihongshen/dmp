@@ -1223,11 +1223,11 @@ public class CwbOrderPDAController {
 		if ((beginemaildate.length() == 0) && (endemaildate.length() == 0)) {
 
 		} else {
-			if(username!=null&&!username.equals("")){
-				String usernameforid=userDAO.getUserByUsername(username).getUserid()+"";
-				String usernameforbranchid=userDAO.getUserByUsername(username).getBranchid()+"";
-				eclist = this.cwborderService.controlForBranchImport(this.getSessionUser(), page, cwb, flowOrderTypeEnumid, "", usernameforid, beginemaildate, endemaildate, usernameforbranchid, scope);
-				count = this.exceptionCwbDAO.getAllECCount(cwb, flowOrderTypeEnumid, "", usernameforbranchid, usernameforid, 0, beginemaildate, endemaildate, scope);
+			if(username!=null&&!username.equals("")&&userDAO.getUserByUsername(username)!=null){
+					String usernameforid=userDAO.getUserByUsername(username).getUserid()+"";
+					String usernameforbranchid=userDAO.getUserByUsername(username).getBranchid()+"";
+					eclist = this.cwborderService.controlForBranchImport(this.getSessionUser(), page, cwb, flowOrderTypeEnumid, "", usernameforid, beginemaildate, endemaildate, usernameforbranchid, scope);
+					count = this.exceptionCwbDAO.getAllECCount(cwb, flowOrderTypeEnumid, "", usernameforbranchid, usernameforid, 0, beginemaildate, endemaildate, scope);
 				
 			}else{
 			

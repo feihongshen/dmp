@@ -441,7 +441,7 @@ $("#selectPg").val(<%=request.getAttribute("page") %>);
 $("#flowOrderTypeEnumid").val(<%=request.getParameter("flowOrderTypeEnumid")%>);
 <%-- $("#branchid").val(<%=request.getParameter("branchid")%>); --%>
 $("#userid").val(<%=request.getParameter("userid")%>);
-$("#username").val(<%=request.getParameter("username")%>);
+<%-- $("#username").val(<%=request.getParameter("username")%>); --%>
 
 $(function(){
 	$("div.panel.combo-p").css({"top":"50px"});
