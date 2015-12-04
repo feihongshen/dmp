@@ -55,6 +55,7 @@ import cn.explink.service.SystemConfigChangeListner;
 import cn.explink.service.SystemInstallService;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.ResourceBundleUtil;
+import cn.explink.util.StringUtil;
 import cn.explink.util.baiduAPI.GeoCoder;
 import cn.explink.util.baiduAPI.GeoPoint;
 import cn.explink.util.baiduAPI.ReGeoCoderResult;
@@ -350,7 +351,13 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 		Set<Long> mappingStationIdList = new TreeSet<Long>();
 		for (AddressCustomerStationVO customerStationMapping : customerStationMappingList) {
-			mappingStationIdList.add(Long.valueOf(customerStationMapping.getBranchid()));
+			long branchid = customerStationMapping.getBranchid();
+			// 过滤掉停用的站点
+			Branch branch = this.branchDAO.getEffectBranchById(branchid);
+			if (StringUtil.isEmpty(branch.getBranchname())) {
+				continue;
+			}
+			mappingStationIdList.add(Long.valueOf(branchid));
 		}
 		// 只有既属于地址库匹配的站点，又在映射关系中的站点
 		externalIdList.retainAll(mappingStationIdList);
