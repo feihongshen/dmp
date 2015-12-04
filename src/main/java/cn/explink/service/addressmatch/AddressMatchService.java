@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import net.sf.json.JSONArray;
@@ -27,18 +28,22 @@ import org.springframework.util.StringUtils;
 import cn.explink.b2c.zjfeiyuan.responsedto.Item;
 import cn.explink.b2c.zjfeiyuan.responsedto.ResponseData;
 import cn.explink.b2c.zjfeiyuan.service.RequestFYService;
+import cn.explink.dao.AddressCustomerStationDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
+import cn.explink.domain.addressvo.AddressCustomerStationVO;
 import cn.explink.domain.addressvo.AddressMappingResult;
+import cn.explink.domain.addressvo.AddressMappingResultEnum;
 import cn.explink.domain.addressvo.ApplicationVo;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.domain.addressvo.DeliveryStationVo;
 import cn.explink.domain.addressvo.OrderAddressMappingResult;
 import cn.explink.domain.addressvo.OrderVo;
+import cn.explink.domain.addressvo.ResultCodeEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
@@ -59,6 +64,11 @@ import cn.explink.util.baiduAPI.ReGeoCoderResult;
 public class AddressMatchService implements SystemConfigChangeListner, ApplicationListener<ContextRefreshedEvent> {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private static final String IS_CUSTOMER_STATION_MAPPING_ENABLED = "is_customer_station_mapping_enabled";
+
+	private static final String ENABLED = "1";
+	private static final String DISABLED = "0";
 
 	private String address_url;
 	private String addZhanDian_url;
@@ -98,6 +108,9 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	BranchAutoWarhouseService branchAutoWarhouseService;
 	@Autowired
 	RequestFYService requestFYService;
+
+	@Autowired
+	private AddressCustomerStationDao addressCustomerStationDao;
 
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -228,32 +241,28 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						orderVoList.add(this.getOrderVo(cwbOrder));
 						AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
 						int successFlag = addressreturn.getResultCode().getCode();
-						if (successFlag == 0) {
-							OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(cwb);
+						if (successFlag == ResultCodeEnum.success.getCode()) {
+							OrderAddressMappingResult mappingResult = addressreturn.getResultMap().get(cwb);
 
-							this.logger.info("阡陌地址库匹配返回json={}", JacksonMapper.getInstance().writeValueAsString(mappingresult));
-							if (mappingresult != null) {
-								List<DeliveryStationVo> deliveryStationList = mappingresult.getDeliveryStationList();
-								List<DelivererVo> delivererList = mappingresult.getDelivererList();
-								List<Integer> timeLimitList = mappingresult.getTimeLimitList();
-								if (deliveryStationList.size() == 0) {
+							this.logger.info("阡陌地址库匹配返回json={}", JacksonMapper.getInstance().writeValueAsString(mappingResult));
+							if (mappingResult != null) {
+								List<DeliveryStationVo> deliveryStationList = mappingResult.getDeliveryStationList();
+								List<DelivererVo> delivererList = mappingResult.getDelivererList();
+								List<Integer> timeLimitList = mappingResult.getTimeLimitList();
+								if ((deliveryStationList == null) || deliveryStationList.isEmpty()) {
 									return;
 								}
-								Set<Long> set = new HashSet<Long>();
-								for (DeliveryStationVo desvo : deliveryStationList) {
-									set.add(desvo.getExternalId());
-								}
-								if (set.size() == 1) {
-									Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
-									if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
-										this.cwbOrderService.updateAddressMatch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu, deliveryStationList, delivererList, timeLimitList);
-										// 触发上门退自动分站领货
-										try {
-											this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, b);
-										} catch (Exception e) {
-											this.logger.error("上门退单匹配地址库自动分站到货报错", e);
-										}
-
+								AddressMappingResultEnum mappingResultEnum = mappingResult.getResult();
+								if (mappingResultEnum.equals(AddressMappingResultEnum.singleResult)) {
+									this.setStationNameToOrder(cwbOrder, user, deliveryStationList.get(0).getExternalId(), delivererList, timeLimitList);
+								} else if (mappingResultEnum.equals(AddressMappingResultEnum.multipleResult)) {
+									// 对于匹配多站按照客户-站点映射关系选择的功能默认不可用
+									String mappingEnabled = this.systemInstallService.getParameter(AddressMatchService.IS_CUSTOMER_STATION_MAPPING_ENABLED, AddressMatchService.DISABLED);
+									if ((mappingEnabled == null) || mappingEnabled.equals(AddressMatchService.DISABLED)) {
+										return;
+									}
+									if (mappingEnabled.equals(AddressMatchService.ENABLED)) {
+										this.processMultiMatch(cwbOrder, user, deliveryStationList, delivererList, timeLimitList);
 									}
 								}
 							}
@@ -285,6 +294,80 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		} catch (Exception e) {
 			// e.printStackTrace();
 			this.logger.error("error while doing address match for {}", cwb);
+		}
+	}
+
+	/**
+	 * 对匹配多站的处理
+	 *
+	 * @param cwbOrder
+	 * @param user
+	 * @param deliveryStationList
+	 * @param delivererList
+	 * @param timeLimitList
+	 * @throws Exception
+	 */
+	private void processMultiMatch(CwbOrder cwbOrder, User user, List<DeliveryStationVo> deliveryStationList, List<DelivererVo> delivererList, List<Integer> timeLimitList) throws Exception {
+		Long selectedBranchId = null;
+		List<Long> externalIdList = this.mapCustomerToStation(cwbOrder.getCustomerid(), deliveryStationList);
+		if (externalIdList.isEmpty()) {
+			return;
+		}
+		int stationCount = externalIdList.size();
+		if (stationCount == 1) {
+			selectedBranchId = externalIdList.get(0);
+		} else {
+			String addressLine = cwbOrder.getConsigneeaddress();
+			if ((addressLine == null) || addressLine.trim().equals("")) {
+				return;
+			}
+			int addressLength = addressLine.trim().length();
+			// 使用取模的方式达到将不同的订单分散到不同的站点中的目的，同时多次请求结果相同（前提是订单地址长度不能改变）
+			selectedBranchId = externalIdList.get(addressLength % stationCount);
+		}
+		if (selectedBranchId == null) {
+			return;
+		}
+		this.setStationNameToOrder(cwbOrder, user, selectedBranchId, delivererList, timeLimitList);
+	}
+
+	/**
+	 * 获取订单上客户可以配送的站点
+	 *
+	 * @param customerid
+	 * @param deliveryStationList
+	 * @return
+	 */
+	private List<Long> mapCustomerToStation(long customerid, List<DeliveryStationVo> deliveryStationList) {
+		List<Long> externalIdList = new ArrayList<Long>();
+		for (DeliveryStationVo deliveryStation : deliveryStationList) {
+			externalIdList.add(deliveryStation.getExternalId());
+		}
+		List<AddressCustomerStationVO> customerStationMappingList = this.addressCustomerStationDao.getCustomerStationByCustomerid(customerid);
+		if ((customerStationMappingList == null) || customerStationMappingList.isEmpty()) {
+			return externalIdList;
+		}
+
+		Set<Long> mappingStationIdList = new TreeSet<Long>();
+		for (AddressCustomerStationVO customerStationMapping : customerStationMappingList) {
+			mappingStationIdList.add(Long.valueOf(customerStationMapping.getBranchid()));
+		}
+		// 只有既属于地址库匹配的站点，又在映射关系中的站点
+		externalIdList.retainAll(mappingStationIdList);
+		return externalIdList;
+	}
+
+	private void setStationNameToOrder(CwbOrder cwbOrder, User user, long branchid, List<DelivererVo> delivererList, List<Integer> timeLimitList) throws Exception {
+		Branch b = this.branchDAO.getEffectBranchById(branchid);
+		if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
+			this.cwbOrderService.updateAddressMatch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu, delivererList, timeLimitList);
+			// 触发上门退自动分站领货
+			try {
+				this.branchAutoWarhouseService.branchAutointoWarhouse(cwbOrder, b);
+			} catch (Exception e) {
+				this.logger.error("上门退单匹配地址库自动分站到货报错", e);
+			}
+
 		}
 	}
 
@@ -624,7 +707,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	/**
 	 * 对接站点匹配地址库，支持新老地址库
-	 * 
+	 *
 	 * @param itemno
 	 * @param Address
 	 * @return

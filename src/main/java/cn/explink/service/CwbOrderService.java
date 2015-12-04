@@ -161,7 +161,6 @@ import cn.explink.domain.VO.DeliverServerParamVO;
 import cn.explink.domain.VO.DeliverServerPushVO;
 import cn.explink.domain.VO.GoodInfoVO;
 import cn.explink.domain.addressvo.DelivererVo;
-import cn.explink.domain.addressvo.DeliveryStationVo;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AccountFlowOrderTypeEnum;
@@ -1253,7 +1252,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 中转审核相关流程限制，条件：待审核和审核不通过 不允许 进行中转相关操作
-	 * 
+	 *
 	 * @param cwb
 	 * @param co
 	 * @param flowOrderTypeEnum
@@ -1752,7 +1751,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 创建退货再投申请记录
-	 * 
+	 *
 	 * @param cwb
 	 * @param co
 	 */
@@ -2777,7 +2776,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 验证包号是否已经封包
-	 * 
+	 *
 	 * @param cwb
 	 * @param scancwb
 	 * @param isypdjusetranscwb
@@ -3236,7 +3235,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 通过中转一级原因查询是否需中转
-	 * 
+	 *
 	 * @param co
 	 * @return
 	 */
@@ -3250,7 +3249,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 通过中转一级原因查询是否需中转
-	 * 
+	 *
 	 * @param co
 	 * @return
 	 */
@@ -4390,12 +4389,12 @@ public class CwbOrderService extends BaseOrderService {
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 
 		}
-		//配送成功添加到历史备注中======LX====ADD====
-		if(podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()){
-			cwbremark=this.creCwbremark(co.getCwbremark(),reason.getReasoncontent(),deliverstateremark);
+		// 配送成功添加到历史备注中======LX====ADD====
+		if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) {
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
-		
+
 		// 为货物丢失添加的
 		if ((losereasonid != 0) && ((podresultid == DeliveryStateEnum.HuoWuDiuShi.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(losereasonid);
@@ -4558,7 +4557,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 智能提醒其他单号
-	 * 
+	 *
 	 * @param cwb
 	 * @param allcwbOrder
 	 */
@@ -4806,7 +4805,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * updateDeliveryBranch(user, co, deliverybranch, addressCodeEditType);
 	 * logger.info("审核为中转，操作人是{}，配送站点是{}",userDAO.getUserByid(user.getUserid()),
 	 * deliverybranch.getBranchname()+"--"+deliverybranchid);
-	 * 
+	 *
 	 * }
 	 */
 
@@ -5145,14 +5144,15 @@ public class CwbOrderService extends BaseOrderService {
 
 				this.orgBillAdjustmentRecordService.createAdjustment4GoToClassConfirm(co, deliverystate);
 			}
-			
+
 			/**
 			 * added by zhouguoting 2015/11/25
-			 * 如果审核状态为“配送成功”，如果结算类型是“返款结算”的客户的订单，且之前已经生成过“应付配送货款账单”,需要生成配送货款调整记录，配送货款调整金额= 应收金额。
+			 * 如果审核状态为“配送成功”，如果结算类型是“返款结算”的客户的订单，
+			 * 且之前已经生成过“应付配送货款账单”,需要生成配送货款调整记录，配送货款调整金额= 应收金额。
 			 */
 			if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue())) {
-				
-				adjustmentRecordService.createAdjustment4GoToClassConfirm(co,deliverystate);
+
+				this.adjustmentRecordService.createAdjustment4GoToClassConfirm(co, deliverystate);
 			}
 
 		}
@@ -5348,7 +5348,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 退货申请相关流程校验 不通过或者待审核都不允许做操作
-	 * 
+	 *
 	 * @param cwb
 	 * @param flowOrderTypeEnum
 	 */
@@ -5469,7 +5469,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 退供货商拒收反馈重复扫描判断
-	 * 
+	 *
 	 * @param co
 	 * @param user
 	 * @param flowOrderTypeEnum
@@ -5495,7 +5495,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * == null ? 0 : (Long) parameterMap.get("truckid"); long baleid =
 	 * parameterMap.get("baleid") == null ? 0 : (Long)
 	 * parameterMap.get("baleid");
-	 * 
+	 *
 	 * if (!StringUtils.hasLength(comment)) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "备注"); }
 	 * if (branchid != 0) { throw new
@@ -5508,7 +5508,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "车辆"); }
 	 * if (baleid != 0) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "包号"); }
-	 * 
+	 *
 	 * } }
 	 */
 
@@ -5592,7 +5592,7 @@ public class CwbOrderService extends BaseOrderService {
 	private void handleSupplierBackSuccess(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
 		/*
 		 * validateCwbState(co, flowOrderTypeEnum);
-		 * 
+		 *
 		 * validateStateTransfer(co, flowOrderTypeEnum);
 		 */
 
@@ -5624,11 +5624,11 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder auditToTuihuoHandle(User user, String
 	 * cwb,long flowOrderType, long reasonid) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new CwbException(cwb,FlowOrderTypeEnum.DingDanLanJie.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * Reason r = reasonDAO.getReasonByReasonid(reasonid); // 更新订单状态 String sql
 	 * =
 	 * "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1"
@@ -5756,7 +5756,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 唯品会上门揽退订单拦截
-	 * 
+	 *
 	 * @param user
 	 * @param cwb
 	 * @param scancwb
@@ -5867,12 +5867,12 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder SpecialCwbHandle(User user, String cwb,
 	 * long handleresult, long handleperson, String handlereason) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new
 	 * CwbException(cwb,FlowOrderTypeEnum.YiChangDingDanChuLi.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * validateDeliveryState(cwbOrder, FlowOrderTypeEnum.YiChangDingDanChuLi);
 	 * // 更新订单状态 String sql =
 	 * "update express_ops_cwb_detail set currentbranchid=" + user.getBranchid()
@@ -5996,8 +5996,8 @@ public class CwbOrderService extends BaseOrderService {
 	 * @throws Exception
 	 */
 	@Transactional
-	public void updateAddressMatch(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype, List<DeliveryStationVo> deliveryStationList,
-			List<DelivererVo> delivererList, List<Integer> timeLimitList) throws Exception {
+	public void updateAddressMatch(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype, List<DelivererVo> delivererList, List<Integer> timeLimitList)
+			throws Exception {
 		this.logger.info("更新配送站点,cwb:{},站点:{}", cwbOrder.getCwb(), branch.getBranchid());
 
 		this.validateStateTransfer(cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch);
@@ -7575,7 +7575,7 @@ public class CwbOrderService extends BaseOrderService {
 	/**
 	 *
 	 * 分拣和中转 出库扫描业务逻辑处理
-	 * 
+	 *
 	 * @return
 	 *
 	 * @author jinghui.pan@pjbest.com
@@ -7616,7 +7616,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 获取当前站点id列表中， 货物流向设置的正向站点
-	 * 
+	 *
 	 * @param currentBranchids
 	 *            当前站点branchid或数组
 	 * @return
@@ -7664,7 +7664,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 派件服务监听接口 (分站领货)
-	 * 
+	 *
 	 * @param orderFlow
 	 */
 	@Consume(uri = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow?concurrentConsumers=5")
@@ -7684,7 +7684,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 派件服务-派件通知
-	 * 
+	 *
 	 * @param orderFlowObj
 	 * @throws IOException
 	 * @throws JsonMappingException
@@ -7744,7 +7744,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 * 棒棒糖-派送通知-构建收款金额
-	 * 
+	 *
 	 * @param co
 	 * @return
 	 */
@@ -7766,7 +7766,7 @@ public class CwbOrderService extends BaseOrderService {
 	/**
 	 *
 	 * 接收结果处理 TODO 单独表格存储，用于监控
-	 * 
+	 *
 	 * @param result
 	 * @return
 	 * @throws IOException
