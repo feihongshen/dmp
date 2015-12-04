@@ -153,24 +153,41 @@ function selectallnexusbranch(path,tagname,branchname){
 
 
 $(function(){
-	
 	$("#branchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择配送站点' });
-	if($("#branchid").val()!=0){
+	var strArr="";
+	//获取已选中的机构
+	$(".multiSelectOptions input[name='branchid']").each(function(){
+		if($(this).parent().attr("class")=="checked"){
+// 	         console.log($(this).val());		
+	         strArr+=$(this).val()+",";
+		}
+	});
+	
+	strArr = strArr.substring(0,strArr.length-1);
+	if(strArr.length!=0){
 		var optionstring="";
 		$.ajax({
 			type: "POST",
-			url:"<%=request.getContextPath()%>/user/",
-			data:{branchid:$("#branchid").val()},
+			url:"<%=request.getContextPath()%>/user/getUsersByBranchids",
+			data:{branchid:strArr},
 			success:function(data){
-				optionstring+="<option value='0'>请选择</option>";
+				var comboboxdata=[];
+// 				optionstring+="<option value='0'>请选择</option>";
 				for(var i=0;i<data.length;i++){
-					optionstring+="<option value='"+data[i].userid+"'>"+data[i].realname+"</option>";
+// 					optionstring+="<option value='"+data[i].userid+"'>"+data[i].realname+"</option>";
+					comboboxdata.push({label:data[i].realname,value:data[i].userid});
 				}
-				$("#userid").html(optionstring);
-				
+// 				$("#userid").html(optionstring);
+				$('#userid').combobox('loadData', comboboxdata);
+				if($("input.combo-text.validatebox-text.validatebox-f.textbox").val()==0){
+					$("input.combo-text.validatebox-text.validatebox-f.textbox").val("");
+				}
+
 			}
 		});
 	}
+	
+	
 	$("#beginemaildate").datetimepicker({
 	    changeMonth: true,
 	    changeYear: true,
@@ -427,7 +444,7 @@ $("#userid").val(<%=request.getParameter("userid")%>);
 $("#username").val(<%=request.getParameter("username")%>);
 
 $(function(){
-	$("div.panel.combo-p").css({"margin-top":"-78px"});
+	$("div.panel.combo-p").css({"top":"50px"});
 // 	$("#span.combo-arrow").css({"margin-right":"-18px"});
 	$("span.combo-arrow").css({"margin-right":"-18","margin-top":"-20px"});
 	$("div.combo-panel.panel-body.panel-body-noheader").css({"width":"152px"});
