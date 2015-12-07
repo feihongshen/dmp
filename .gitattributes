@@ -840,6 +840,7 @@ src/main/java/cn/explink/controller/JoinListController.java -text
 src/main/java/cn/explink/controller/LogToDayByTuihuoSiteController.java -text
 src/main/java/cn/explink/controller/LogToDayByWareHouseController.java -text
 src/main/java/cn/explink/controller/LogToDayController.java -text
+src/main/java/cn/explink/controller/MapServerController.java -text
 src/main/java/cn/explink/controller/MatchExceptionController.java -text
 src/main/java/cn/explink/controller/MenuController.java -text
 src/main/java/cn/explink/controller/MonitorKucunDTO.java -text
