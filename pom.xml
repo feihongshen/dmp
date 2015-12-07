@@ -647,7 +647,7 @@
 				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_40818t_test?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_42?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>root</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -660,7 +660,7 @@
 				<word></word>
 				<logotxd>2</logotxd>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
-				<label>version_pj</label>
+				<label>local</label>
 				<addresscustomerid>1</addresscustomerid>
 				<addressid>1</addressid>
 				<addresspassword>gxpx</addresspassword>
@@ -2007,7 +2007,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.70.38:3306/xjpx_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://172.20.200.106:3306/xjpx_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -2117,7 +2117,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.70.48:3306/pxwl_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://172.20.200.85:3306/pxwl_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -2587,7 +2587,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.70.39:3306/ynpx_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://172.20.200.107:3306/ynpx_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -2718,7 +2718,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.70.39:3306/awpx_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://172.20.200.108:3306/awpx_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -2767,7 +2767,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.70.40:3306/gxpx_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://172.20.200.110:3306/gxpx_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -2818,7 +2818,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.70.38:3306/nxpj_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://172.20.200.109:3306/nxpj_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
@@ -3447,7 +3447,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.70.38:3306/scpj_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://172.20.200.105:3306/scpj_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
