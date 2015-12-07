@@ -77,7 +77,7 @@ function multiSelectAll(name,isSelect,text){
 
 function getSelectBranchForUsers(value){
 	var optionstring="";
-	if($("#branchid").val()!=""){
+	if(value!=""){
 		$.ajax({
 			type: "POST",
 			data:{branchid:value},

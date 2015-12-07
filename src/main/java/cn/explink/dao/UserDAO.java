@@ -102,6 +102,15 @@ public class UserDAO {
 		
 	}
 
+	public User getUserByJobnum(String username) {
+		try{
+			return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where jobnum=? and userDeleteFlag=1", new UserRowMapper(), username);
+		}catch(Exception e){
+			return null;
+		}
+		
+	}
+	
 	public List<User> getUsersByUsernameLogin(String username) {
 		List<User> userList = this.jdbcTemplate.query("SELECT * from express_set_user where username=? and userDeleteFlag=1 and employeestatus<>3", new UserRowMapper(), username);
 		return userList;

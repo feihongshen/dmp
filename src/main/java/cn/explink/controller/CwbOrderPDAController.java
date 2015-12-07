@@ -1223,9 +1223,9 @@ public class CwbOrderPDAController {
 		if ((beginemaildate.length() == 0) && (endemaildate.length() == 0)) {
 
 		} else {
-			if(username!=null&&!username.equals("")&&userDAO.getUserByUsername(username)!=null){
-					String usernameforid=userDAO.getUserByUsername(username).getUserid()+"";
-					String usernameforbranchid=userDAO.getUserByUsername(username).getBranchid()+"";
+			if(username!=null&&!username.equals("")&&userDAO.getUserByJobnum(username)!=null){
+					String usernameforid=userDAO.getUserByJobnum(username).getUserid()+"";
+					String usernameforbranchid=userDAO.getUserByJobnum(username).getBranchid()+"";
 					eclist = this.cwborderService.controlForBranchImport(this.getSessionUser(), page, cwb, flowOrderTypeEnumid, "", usernameforid, beginemaildate, endemaildate, usernameforbranchid, scope);
 					count = this.exceptionCwbDAO.getAllECCount(cwb, flowOrderTypeEnumid, "", usernameforbranchid, usernameforid, 0, beginemaildate, endemaildate, scope);
 				
