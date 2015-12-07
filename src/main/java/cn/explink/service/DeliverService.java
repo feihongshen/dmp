@@ -351,7 +351,7 @@ public class DeliverService {
 			String jsonStr = JsonUtil.translateToJson(notifyVO);
 			logger.info("派件服务-POS刷卡通知：{}，cwb={}",jsonStr,notifyCwb);
 			
-			String responseJson = RestHttpServiceHanlder.sendHttptoServer(jsonStr, dVo.getDeliverPosSynUrl());
+			String responseJson = RestHttpServiceHanlder.sendHttptoServer_Json(jsonStr, dVo.getDeliverPosSynUrl());
 			
 			logger.info("派件服务-POS刷卡通知返回：{}，cwb={}",responseJson,notifyCwb);
 			
