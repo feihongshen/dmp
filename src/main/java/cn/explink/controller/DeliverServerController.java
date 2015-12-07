@@ -1,5 +1,6 @@
 package cn.explink.controller;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import cn.explink.pos.tools.PosEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DeliverService;
 import cn.explink.util.DigestsEncoder;
+import cn.explink.util.Dom4jParseUtil;
 import cn.explink.util.JsonUtil;
 import cn.explink.util.StringUtil;
 
@@ -191,21 +193,10 @@ public class DeliverServerController {
 	 * @return
 	 */
 	private DeliverServerPullVO buildPullVO(HttpServletRequest request){
-		byte[] bytes = new byte[1024 * 1024];  
-        InputStream is;
-        String str = null;
         DeliverServerPullVO pullVO = null;
 		try {
-			is = request.getInputStream();
-	        int nRead = 1;  
-	        int nTotalRead = 0;  
-	        while (nRead > 0) {  
-	            nRead = is.read(bytes, nTotalRead, bytes.length - nTotalRead);  
-	            if (nRead > 0)  {
-	            	nTotalRead = nTotalRead + nRead;  
-	            }
-	        }  
-	        str = new String(bytes, 0, nTotalRead, "utf-8");  
+			InputStream input = new BufferedInputStream(request.getInputStream());
+			String str = Dom4jParseUtil.getStringByInputStream(input); // 读取文件流，获得xml字符串 
 	        this.logger.info("棒棒糖派送服务App-派送结果反馈请求报文：" + str);
 	        pullVO = JsonUtil.readValue(str, DeliverServerPullVO.class);
 		} catch (IOException e) {
