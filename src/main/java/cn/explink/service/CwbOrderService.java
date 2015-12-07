@@ -214,6 +214,10 @@ public class CwbOrderService extends BaseOrderService {
 	CwbDAO cwbDAO;
 	@Autowired
 	StockDetailDAO stockDetailDAO;
+	
+	
+	
+	
 	@Autowired
 	StockResultDAO stockResultDAO;
 	@Autowired
@@ -7648,7 +7652,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	private void deliveryPosAppJmsNotify(OrderFlow orderFlowObj) throws IOException, JsonParseException, JsonMappingException {
 
-		if (orderFlowObj.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+		if (orderFlowObj.getFlowordertype() == FlowOrderTypeEnum.YiFanKui.getValue()) {
 			DeliverServerParamVO paramVO = this.deliverService.getDeliverServerParamVO(PosEnum.DeliverServerAPP.getKey());
 			if (paramVO != null) {
 				CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderFlowObj.getFloworderdetail(), CwbOrderWithDeliveryState.class);
