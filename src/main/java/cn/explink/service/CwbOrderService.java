@@ -7711,7 +7711,7 @@ public class CwbOrderService extends BaseOrderService {
 				dspVO.setOuter_trade_no(paramVO.getCode() + (paramVO.getTradeNum() + 1));
 				dspVO.setUnid(this.userDAO.getUserByid(ds.getDeliveryid()).get(0).getUsername());
 				dspVO.setMerchant_code(paramVO.getCode());
-				dspVO.setDelivery_company_code(paramVO.getCode());
+				dspVO.setDelivery_company_code(paramVO.getDelivery_company_code());
 				dspVO.setMail_num(co.getCwb());
 				dspVO.setDelivery_type(co.getCwbordertypeid() == 1 ? "4" : co.getCwbordertypeid() + "");
 				dspVO.setS_company(this.customerDAO.getCustomerById(co.getCustomerid()).getCustomername());
