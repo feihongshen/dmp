@@ -2782,7 +2782,7 @@
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.45:8081/addressgxpx</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
@@ -2812,7 +2812,7 @@
 
 
 
-		<profile>
+			<profile>
 			<id>NXPJ</id>
 			<properties>
 				<tomcat.manager.url></tomcat.manager.url>
@@ -2833,7 +2833,7 @@
 				<addresscustomerid>7</addresscustomerid>
 				<addressid>7</addressid>
 				<addresspassword>nxpj</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.103:8081/addressnxpj</addressWebserviceIp>
 			</properties>
 		</profile>
 
