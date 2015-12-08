@@ -232,7 +232,7 @@ public class VipShopGetCwbDataService {
 		if ((orderlist == null) || (orderlist.size() == 0)) {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-没有获取到订单或者订单信息重复！,当前SEQ={}", vipshop.getVipshop_seq());
-			return 1;
+			return -1;
 		}
 
 		if (vipshop.getIsTuoYunDanFlag() == 0) {
