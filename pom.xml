@@ -3561,7 +3561,7 @@
 				<addresscustomerid>27</addresscustomerid>
 				<addressid>27</addressid>
 				<addresspassword>hnpj</addresspassword>
-				<addressWebserviceIp>103.229.214.164/addressb</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.44:8081/addressb</addressWebserviceIp>
 			</properties>
 		</profile>
 		
