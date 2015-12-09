@@ -173,7 +173,9 @@ public class TlmposService_toCwbSearch extends TlmposService {
 		retMap.put("e_order_no", rootnote.getTransaction_Body().getTranscwb() == null ? "" : rootnote.getTransaction_Body().getTranscwb());
 		retMap.put("amt", tlmposRespNote.getCwbOrder() == null ? "0" : tlmposRespNote.getCwbOrder().getReceivablefee() + "");
 		retMap.put("account_keyword", tlmposRespNote.getMerchant_code());// 分账标识符,
-																			// 配送商户编号
+						
+		String shouldfee =tlmposRespNote.getCwbOrder()==null?"":String.valueOf(tlmposRespNote.getCwbOrder().getShouldfare() == null ? "0" : tlmposRespNote.getCwbOrder().getShouldfare());
+		retMap.put("shouldfee", shouldfee);	
 
 		// 生成待加密的字符串
 		String str = TlmposXMLHandler.createMACXML_SearchCwb(retMap);
