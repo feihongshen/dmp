@@ -12,14 +12,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import cn.explink.b2c.jiuye.jsondto.JiuYe_request;
 import cn.explink.b2c.tools.B2cEnum;
-import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.util.B2cUtil;
 
 @Controller
 @RequestMapping("/jiuye")
@@ -31,15 +30,16 @@ public class JiuYeController {
 	JiuYeService jiuYeService;
 	@Autowired
 	BranchDAO branchDAO;
-	@Autowired
-	JiontDAO jiontDAO;
 	@Autowired 
 	JointService jointService;
+	@Autowired
+	B2cUtil b2cUtil;
+	
 	private Logger logger =LoggerFactory.getLogger(JiuYeController.class);
 	
 	@RequestMapping("/show/{id}")
 	public  String  jointShow(@PathVariable("id") int key ,Model model){
-		model.addAttribute("jiuye", jiuYeService.getJiuYe(key));
+		model.addAttribute("jiuye", this.b2cUtil.getViewBean(key, JiuYe.class));
 		model.addAttribute("joint_num", key);
 		model.addAttribute("warehouselist",branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
 		logger.info("进行九曳对接配置——————");
@@ -62,42 +62,22 @@ public class JiuYeController {
 		}else{
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}
-		//保存
 	}
 	@RequestMapping("/dms")
 	public @ResponseBody  String dms(HttpServletRequest request) throws IOException{
-	
 		String params=request.getParameter("Data");
 		logger.info("九曳请求参数：{}",params);
 		
 		JiuYe_request jiuyeReq=JacksonMapper.getInstance().readValue(params, JiuYe_request.class);
-		
-		JiuYe  jiuye =  getJiuYeDeliveryCode(jiuyeReq.getDelveryCode());
-		
-		int isOpenFlag = jointService.getStateForJoint(jiuye.getB2cenum());
+		int key = B2cEnum.JiuYe1.getKey();
+		int isOpenFlag = this.jointService.getStateForJoint(key);
 		if (isOpenFlag == 0) {
 			logger.info("未开启[九曳]对接！");
 			return "未开启九曳对接！";
 		}
+		JiuYe jiuye = this.b2cUtil.getViewBean(key, JiuYe.class);
 		return jiuYeService.RequestOrdersToTMS(jiuyeReq,jiuye);
-		
-		
 	}
-	
-	private JiuYe getJiuYeDeliveryCode(String deliveryCode) {
-		JiuYe jiye = null;
-		for (B2cEnum enums : B2cEnum.values()) { // 遍历唯品会enum，可能有多个枚举
-			if (enums.getMethod().contains("jiuye_")) {
-				jiye = jiuYeService.getJiuYe(enums.getKey());
-				if (jiye != null && jiye.getDmsCode().equals(deliveryCode)) {
-					
-					return jiye;
-				}
-			}
-		}
-		return null;
-	}
-
 	
 	//执行临时表直接插入主表
 	@RequestMapping("/timmer")
@@ -106,13 +86,9 @@ public class JiuYeController {
 		return "执行了九曳的临时表";
 	}
 	
-	
-	
-	
 	//jsp页面上实施的页面本地测试
 	@RequestMapping("/test")
 	public  String test(HttpServletRequest request){
-		
 		return "/b2cdj/jiuye/test";
 	}
 	

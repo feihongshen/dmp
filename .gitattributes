@@ -1950,6 +1950,7 @@ src/main/java/cn/explink/test/FinaceService.java -text
 src/main/java/cn/explink/test/TestController.java -text
 src/main/java/cn/explink/test/TypeVo.java -text
 src/main/java/cn/explink/util/ApplicationContextUtil.java -text
+src/main/java/cn/explink/util/B2cUtil.java -text
 src/main/java/cn/explink/util/BeanInvokingJobDetailFactoryBean.java -text
 src/main/java/cn/explink/util/BeanUtilsSelfDef.java -text
 src/main/java/cn/explink/util/DatabaseCronTriggerBean.java -text

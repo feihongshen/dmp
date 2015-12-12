@@ -24,12 +24,11 @@ import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
+import cn.explink.util.B2cUtil;
 
 @Service
 public class JiuYeInsertCwbDetailTimmer {
-	private Logger logger =LoggerFactory.getLogger(JiuYeInsertCwbDetailTimmer.class);
-	
-
+	private Logger logger =LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	JiuYeService smileService;
 	@Autowired
@@ -49,13 +48,25 @@ public class JiuYeInsertCwbDetailTimmer {
 	DataImportService  dataImportService;
 	@Autowired
 	CwbDAO cwbDAO;
+	@Autowired
+	B2cUtil b2cUtil;
+	
+	public void selectTempAndInsertToCwbDetail(){
+		int key = B2cEnum.JiuYe1.getKey();
+		int isOpenFlag=jointService.getStateForJoint(key);
+		if (isOpenFlag == 0) {
+			logger.info("未开启【九曳】对接！");
+			return ;
+		}
+		execute(key);
+	}
+
 	/**
-	 * 九耶定时器，查询临时表，插入数据到detail表中。 
+	 * 【九曳】定时器，查询临时表，插入数据到detail表中。 
 	 */
 	private void execute(int key){
-		
-		JiuYe dms=smileService.getJiuYe(key);
-		List<CwbOrderDTO> cwbOrderList=dataImportDAO_B2c.getCwbOrderTempByKeys(dms.getCustomerid());
+		JiuYe dms = this.b2cUtil.getViewBean(key, JiuYe.class);
+		List<CwbOrderDTO> cwbOrderList = this.dataImportDAO_B2c.getCwbOrderTempByKeys(dms.getCustomerid());
 		if(cwbOrderList==null){
 			return;
 		}
@@ -77,24 +88,8 @@ public class JiuYeInsertCwbDetailTimmer {
 			ImportSubList(dms, subList); 
 			k++;
 		}
-	
-		
 	}
 	
-	public void selectTempAndInsertToCwbDetail(){
-		for(B2cEnum enums:B2cEnum.values()){
-			if(enums.getMethod().contains("jiuye_")){
-				int isOpenFlag=jointService.getStateForJoint(enums.getKey());
-				if (isOpenFlag == 0) {
-					logger.info("未开启[九曳]对接！");
-					continue;
-				}
-				execute(enums.getKey());
-				
-			}
-		}
-	}
-
 	@Transactional
 	public void ImportSubList(JiuYe smile,List<CwbOrderDTO> cwbOrderList) {
 		
