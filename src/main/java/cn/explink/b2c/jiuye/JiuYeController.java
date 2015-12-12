@@ -76,6 +76,10 @@ public class JiuYeController {
 			return "未开启九曳对接！";
 		}
 		JiuYe jiuye = this.b2cUtil.getViewBean(key, JiuYe.class);
+		if(!jiuyeReq.getDelveryCode().equals(jiuye.getDmsCode())){
+			this.logger.info("单号:{},九曳传来编码:{},物流商配置编码:{}",new Object[]{jiuyeReq.getContent().getWorkCode(),jiuyeReq.getDelveryCode(),jiuye.getDmsCode()});
+			return "运营商编码不统一";
+		}
 		return jiuYeService.RequestOrdersToTMS(jiuyeReq,jiuye);
 	}
 	
