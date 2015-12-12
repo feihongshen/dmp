@@ -65,11 +65,14 @@ public class JiuYeAddMatchController {
 	public @ResponseBody String JiuYeRequest(HttpServletRequest request) throws IOException{
 		
 		String requestjson=request.getParameter("Data");
-		JiuYeRequest jyreq=JacksonMapper.getInstance().readValue(requestjson, JiuYeRequest.class);
-		JiuYeAddressMatch jiuyadd = getJiuYeDeliveryCode(jyreq.getDelveryCode());
-		
 		if(requestjson==null||requestjson.isEmpty()){
 			return "请求参数Data不能为空";
+		}
+		JiuYeRequest jyreq=JacksonMapper.getInstance().readValue(requestjson, JiuYeRequest.class);
+		
+		JiuYeAddressMatch jiuyadd = getJiuYeDeliveryCode(jyreq.getDelveryCode());
+		if(jiuyadd == null){
+			return "运营商编码设置错误,请注意核实!";
 		}
 		logger.info("九曳站点匹配-请求json={}",requestjson);
 		
@@ -81,15 +84,9 @@ public class JiuYeAddMatchController {
 		return jiuYeAddMatchService.invokeJiuYeAddressmatch(jyreq,jiuyadd);
 	}
 	private JiuYeAddressMatch getJiuYeDeliveryCode(String deliveryCode) {
-		JiuYeAddressMatch jiuye = null;
-		for (B2cEnum enums : B2cEnum.values()) { // 遍历唯品会enum，可能有多个枚举
-			if (enums.getMethod().contains("jiuyeaddressmatch_")) {
-				jiuye = jiuYeAddMatchService.getJiuYe(enums.getKey());
-				if (jiuye != null && jiuye.getDmsCode().equals(deliveryCode)) {
-					
-					return jiuye;
-				}
-			}
+		JiuYeAddressMatch jiuye = jiuYeAddMatchService.getJiuYe(B2cEnum.JiuYeAddressMatch1.getKey());
+		if (jiuye != null && jiuye.getDmsCode().equals(deliveryCode)) {
+			return jiuye;
 		}
 		return null;
 	}
