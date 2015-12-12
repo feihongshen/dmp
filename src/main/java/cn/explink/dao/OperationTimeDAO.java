@@ -307,6 +307,7 @@ public class OperationTimeDAO {
 		if (nextbranchid > 0) {
 			sql += " and nextbranchid=" + nextbranchid;
 		}
+		sql += " limit 0,1000";
 		return this.jdbcTemplate.queryForList(sql, String.class, branchid, flowordertype);
 	}
 
