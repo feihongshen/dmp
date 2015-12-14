@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tools.JiontDAO;
-import cn.explink.dao.CustomerDAO;
 import cn.explink.domain.User;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.service.ExplinkUserDetail;
@@ -33,8 +32,6 @@ public class WeisudaController {
 	JiontDAO jointDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
-	@Autowired
-	CustomerDAO customerDAO;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -43,9 +40,10 @@ public class WeisudaController {
 
 	@RequestMapping("/edit/{id}")
 	public String edit(@PathVariable("id") int key, Model model) {
-		model.addAttribute("weisudalist",this.weisudaService.getWeisudaSettingMethod(PosEnum.Weisuda.getKey()));
+		model.addAttribute("weisudalist", this.weisudaService.getWeisudaSettingMethod(PosEnum.Weisuda.getKey()));
 		model.addAttribute("joint_num", key);
 		return "jointmanage/weisuda/edit";
+
 	}
 
 	@RequestMapping("/save/{id}")
