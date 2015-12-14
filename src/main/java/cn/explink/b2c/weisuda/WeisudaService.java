@@ -162,9 +162,11 @@ public class WeisudaService {
 		String getback_confirmAppOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_confirmAppOrders_URL"));
 		String getback_getAppOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_getAppOrders_URL"));
 		String getback_updateOrders_URL = StringUtil.nullConvertToEmptyString(request.getParameter("getback_updateOrders_URL"));
-
+		String customers = StringUtil.nullConvertToEmptyString(request.getParameter("customers"));
 		String openbatchflag = request.getParameter("openbatchflag");
 		String maxBoundCount = request.getParameter("maxBoundCount");
+		String isSend = request.getParameter("isSend");
+		
 		
 		weisuda.setCode(code);
 		weisuda.setV(v);
@@ -186,7 +188,8 @@ public class WeisudaService {
 		weisuda.setCount(count);
 		weisuda.setOpenbatchflag(Integer.valueOf(openbatchflag));
 		weisuda.setMaxBoundCount(Integer.valueOf(maxBoundCount));
-
+		weisuda.setCustomers(customers);
+		weisuda.setIsSend(Integer.valueOf(isSend));
 		JSONObject jsonObj = JSONObject.fromObject(weisuda);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
@@ -238,6 +241,9 @@ public class WeisudaService {
 		// podresultid = this.getPodresultid(podresultid, cwbOrder);
 
 		DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(orderFlowDto.getCwb());
+	
+		
+		String deliverstateremark = "系统对接"+"("+orderFlowDto.getPayremark()+")";
 
 		if (deliverystate == null) {
 			this.logger.info("订单{}不满足支付条件，deliverystate表为空", deliverystate);
@@ -280,14 +286,19 @@ public class WeisudaService {
 
 				if (orderFlowDto.getPaytype() == PaytypeEnum.Pos.getValue()) {
 					pos = deliverystate.getBusinessfee();
+					//deliverstateremark+="-pos签收";
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Xianjin.getValue()) {
 					cash = deliverystate.getBusinessfee();
+					//deliverstateremark+="-现金签收";
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Zhipiao.getValue()) {
 					check = deliverystate.getBusinessfee();
+					//deliverstateremark+="-支票签收";
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Qita.getValue()) {
 					other = deliverystate.getBusinessfee();
+					//deliverstateremark+="-其他方式签收";
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.CodPos.getValue()){
 					codpos = deliverystate.getBusinessfee();
+					//deliverstateremark+="-支票签收";
 				} 
 				else {
 
@@ -304,25 +315,27 @@ public class WeisudaService {
 					}
 				}
 			}
-		} else if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
-
 		}
 
 		long backedreasonid = 0;
 		long leavedreasonid = 0;
 		long firstlevelreasonid=0;
-		String deliverstateremark = "系统对接";
+
 
 		if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
+			deliverstateremark+="-"+orderFlowDto.getExptmsg();
 			if ((orderFlowDto.getExptmsg() != null) && !orderFlowDto.getExptmsg().isEmpty()) {
 				ExptCodeJoint exptCodeJoint = this.exptcodeJointDAO.getExpMatchListByPosCode(orderFlowDto.getExptmsg(), PosEnum.Weisuda.getKey());
 
 				if ((exptCodeJoint != null) && (exptCodeJoint.getReasonid() != 0)) {
 					backedreasonid = exptCodeJoint.getReasonid();
 				}
+				
 			}
 		}
 		if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
+			
+			deliverstateremark+="-"+orderFlowDto.getStrandedrReason();
 			if ((orderFlowDto.getStrandedrReason() != null) && !orderFlowDto.getStrandedrReason().isEmpty()) {
 				try {
 					ExptCodeJoint exptCodeJoint = this.exptcodeJointDAO.getExpMatchListByPosCode(orderFlowDto.getStrandedrReason(), PosEnum.Weisuda.getKey());

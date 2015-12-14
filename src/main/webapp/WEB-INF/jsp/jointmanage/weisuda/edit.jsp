@@ -1,17 +1,13 @@
 <%@page import="cn.explink.util.StringUtil"%>
-
+<%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.b2c.weisuda.*"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <%
-
-Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
-
+	Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
 %>
 
 <script type="text/javascript">
-
-
 
 </script>
 <div id="box_bg"></div>
@@ -84,7 +80,14 @@ Weisuda weisuda=(Weisuda)request.getAttribute("weisudalist");
 					<li><span>最大批量阀值：</span>
  						<input type ="text" id="maxBoundCount" name ="maxBoundCount" value ="<%=weisuda.getMaxBoundCount()%>" maxlength="1000"  > 
 					</li>
-					
+					<li><span>是否开启外单推送：</span>
+							<input type ="radio" id="isSend" name ="isSend" value="1" <%if(weisuda.getIsSend()==1){%>checked<%}%>  >开启
+							<input type ="radio" id="isSend" name ="isSend" value="0" <%if(weisuda.getIsSend()==0){%>checked<%}%>  >关闭
+					</li>
+					<li>
+						<span>推送外单客户：</span>
+						<input type ="text" id="customers" name ="customers" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getCustomers())%>" maxlength="1000"  > 
+					</li>
 					<li><span>密码：</span>
  						<input type ="password" id="password" name ="password" value ="" maxlength="30"  > 
 					</li>

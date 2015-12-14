@@ -21,6 +21,27 @@ public class Weisuda {
 	private String count;
 	private int openbatchflag; //0 默认 是单条推送   1是批量推送
 	private int maxBoundCount; //绑定关系每次最大推送数量
+	private String customers;
+	private int isSend;//是否发送订单（唯速达）  0 关闭   1开启
+	
+	
+	
+	
+	public int getIsSend() {
+		return isSend;
+	}
+
+	public void setIsSend(int isSend) {
+		this.isSend = isSend;
+	}
+
+	public String getCustomers() {
+		return customers;
+	}
+
+	public void setCustomers(String customers) {
+		this.customers = customers;
+	}
 
 	public int getMaxBoundCount() {
 		return maxBoundCount;
