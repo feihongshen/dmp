@@ -33,6 +33,8 @@ import cn.explink.b2c.tools.CommonExptDao;
 import cn.explink.b2c.tools.ExptCodeJointDAO;
 import cn.explink.b2c.tools.ExptReasonDAO;
 import cn.explink.b2c.tools.JiontDAO;
+import cn.explink.b2c.tools.poscodeMapp.PoscodeMapp;
+import cn.explink.b2c.tools.poscodeMapp.PoscodeMappDAO;
 import cn.explink.b2c.weisuda.WeisudaService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
@@ -60,6 +62,7 @@ import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.pos.tools.PosEnum;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Dom4jParseUtil;
 import cn.explink.util.ResourceBundleUtil;
@@ -135,6 +138,8 @@ public class OMSInterfaceController {
 	WeisudaService weisudaService;
 	@Autowired
 	OrderGoodsDAO orderGoodsDAO;
+	@Autowired
+	PoscodeMappDAO poscodeMappDAO;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -264,6 +269,15 @@ public class OMSInterfaceController {
 	@RequestMapping("/getBranchByZhanDian")
 	public @ResponseBody String getBranchByZhanDian() {
 		return JSONArray.fromObject(branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue())).toString();
+	}
+	
+	@RequestMapping("/getNowCustomerPos/{customerid}")
+	public @ResponseBody String getNowCustomerPos(@PathVariable("customerid") long customerid){
+		PoscodeMapp codemapping = this.poscodeMappDAO.getPosCodeByKey(customerid, PosEnum.TongLianPos.getKey());
+		if(codemapping == null){
+			return "";
+		}
+		return codemapping.getCustomercode();
 	}
 
 	@RequestMapping("/getBranchByKufang")
