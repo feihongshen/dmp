@@ -38,9 +38,22 @@ ChinaUms chinaums = (ChinaUms)request.getAttribute("chinaums");
 						<input type="radio" name="isforward" <% if(chinaums.getIsForward()==1){ %>checked="checked"<%} %> value="1">允许
 						<input type="radio" name="isforward" <%  if(chinaums.getIsForward()==0){ %>checked="checked"<%} %> value="0">禁止
 					</li>
+					
+					
 					<li><span>转发URL：</span>
 						<input type ="text" id="forward_url" name ="forward_url" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getForward_url()) %>" maxlength="50"  >
 					</li>
+					
+					<li><span>版本：</span>
+						<input type="radio" name="version" <% if(chinaums.getVersion()==0){ %>checked="checked"<%} %> value="0">默认
+						<input type="radio" name="version" <%  if(chinaums.getVersion()==1){ %>checked="checked"<%} %> value="1">西安品信
+					</li>
+					
+					<li><span>是否补充流程：</span>
+						<input type="radio" name="isAutoSupplementaryProcess" <% if(chinaums.getIsAutoSupplementaryProcess()==0){ %>checked="checked"<%} %> value="0">默认
+						<input type="radio" name="isAutoSupplementaryProcess" <%  if(chinaums.getIsAutoSupplementaryProcess()==1){ %>checked="checked"<%} %> value="1">开启
+					</li>
+					
 					<li><span>密码：</span>
  						<input type ="password" id="password" name ="password" value ="" maxlength="30"  > 
 					</li>
