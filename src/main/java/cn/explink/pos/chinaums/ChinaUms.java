@@ -6,10 +6,30 @@ public class ChinaUms {
 	private String request_url; // 请求URL
 	private int isotherdeliveroper; // 他人刷卡限制 0 关闭 (可刷) 1 开启（不可刷）
 	private String mer_id; // 商户号
+	
+	private int isAutoSupplementaryProcess; //是否自动补充流程 ,默认  0关闭， 1 开启 (到货和领货都可以自动补充)
+	
+	public int getIsAutoSupplementaryProcess() {
+		return isAutoSupplementaryProcess;
+	}
+
+	public void setIsAutoSupplementaryProcess(int isAutoSupplementaryProcess) {
+		this.isAutoSupplementaryProcess = isAutoSupplementaryProcess;
+	}
 
 	private String forward_url; //转发URL,用于新老系统公用
 	private int isForward; //是否允许转发
 	
+	private int version; //版本 0 易普默认版本    1 陕西城联个性化版本    注:目前暂时使用这俩个版本.
+	
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
 	public int getIsForward() {
 		return isForward;
 	}
