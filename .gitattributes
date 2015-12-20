@@ -2448,7 +2448,6 @@ src/main/webapp/WEB-INF/jsp/jointmanage/b2cjoint.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/b2cjointPower.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/bill99/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/chinaums/chinaums_test.jsp -text
-src/main/webapp/WEB-INF/jsp/jointmanage/chinaums/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/chinaums/test.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/commonexpt/add.jsp -text
 src/main/webapp/WEB-INF/jsp/jointmanage/commonexpt/addjoint.jsp -text
