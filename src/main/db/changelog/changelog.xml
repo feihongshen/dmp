@@ -8716,4 +8716,19 @@ CREATE TABLE `cs_complaint_accept` (
 			  ADD COLUMN `fncustomerposbillid` BIGINT(20) DEFAULT 0  NULL  COMMENT '客户POS抵扣账单id' AFTER `fncustomerbillid`;		
 		</sql>
 	</changeSet>
+	
+	 <changeSet id="zhouguoting-2015-12-10-01" author="zhouguoting">
+		<sql>
+		   ALTER TABLE `fn_adjustment_record`   
+ 			 ADD COLUMN `order_id` INT(11) DEFAULT 0  NULL  COMMENT '订单id' AFTER `order_no`;	
+		</sql>
+	</changeSet>
+	
+	 <changeSet id="zhouguoting-2015-12-11-01" author="zhouguoting">
+		<sql>
+		   ALTER TABLE `fn_customer_bill`   
+  			ADD COLUMN `must_ruku` TINYINT(4) DEFAULT 0  NULL  COMMENT '是否是必须已入库状态。0.不是,1.是' AFTER `import_remark`;
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
