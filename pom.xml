@@ -34,6 +34,11 @@
 			<name>momoplan maven release</name>
 			<url>https://raw.github.com/momoplan/maven-repository/master/releases</url>
 		</repository>
+		<repository>
+			<id>explink</id>
+			<name>explink Repository</name>
+			<url>http://explink.wicp.net:21122/nexus/content/repositories/releases/</url>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
@@ -48,6 +53,46 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<dependencies>
+		<dependency>
+  			<groupId>com.vip</groupId>
+  			<artifactId>mainidservice-service-api</artifactId>
+  			<version>1.0.0_17</version>
+		</dependency>
+		<dependency>
+  			<groupId>org.apache.thrift</groupId>
+  			<artifactId>libthrift</artifactId>
+  			<version>0.9.1</version>
+		</dependency>
+		<dependency>
+              <groupId>io.netty</groupId>
+              <artifactId>netty-all</artifactId>
+              <version>4.0.15.Final</version>
+		</dependency>
+		<dependency>
+              <groupId>io.netty</groupId>
+              <artifactId>netty</artifactId>
+              <version>3.7.0.Final</version>
+		</dependency>
+		<dependency>
+		     <groupId>com.pjbest</groupId> 
+			 <artifactId>pjdeliveryorder-service-api</artifactId> 
+			 <version>1.0.1_12</version> 
+		</dependency>
+		<dependency>
+  			<groupId>com.pjbest.pjorganization</groupId>
+  			<artifactId>pjorganization-service-api</artifactId>
+  			<version>1.0.0_12</version>
+			</dependency>
+		<dependency>
+  			<groupId>osp</groupId>
+  			<artifactId>osp-core</artifactId>
+  			<version>1.2.6</version>
+		</dependency>
+		<dependency>
+		     <groupId>org.apache</groupId> 
+			<artifactId>zookeeper</artifactId> 
+			<version>3.4.6</version> 
+		</dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>stringtemplate</artifactId>
@@ -405,7 +450,6 @@
 			<artifactId>jtds</artifactId>
 			<version>1.2.4</version>
 		</dependency>
-
 		<!-- <dependency>
 			<groupId>winxuan-sdk-explink</groupId>
 			<artifactId>winxuan-api-sdk</artifactId>
@@ -468,6 +512,12 @@
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
 			<version>2.5.2</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		    <version>2.3</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -644,12 +694,12 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url>
+<!-- 				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url> -->
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_42?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
-				<expressurl.user>root</expressurl.user>
-				<expressurl.password>root</expressurl.password>
+				<expressurl.url>jdbc:mysql://192.168.0.222:3306/pxwl_express_update?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+ 				<expressurl.user>pj</expressurl.user>
+				<expressurl.password>pjexplink</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
@@ -661,10 +711,11 @@
 				<logotxd>2</logotxd>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>local</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addresscustomerid>13</addresscustomerid>
+				<addressid>13</addressid>
+				<addresspassword>shpj</addresspassword>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+				<expressCarrierCode>30102000000</expressCarrierCode>
 			</properties>
 		</profile>
 		<profile>
@@ -710,6 +761,31 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>HNJH_ADDRESS_TEST</label>
+				<addresscustomerid>13</addresscustomerid>
+				<addressid>13</addressid>
+				<addresspassword>shpj</addresspassword>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>EXPRESS_UPDATE_TEST</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.0.222:3306/pxwl_express_update1_copy?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>pj</expressurl.user>
+				<expressurl.password>pjexplink</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://localhost:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>EXPRESS_UPDATE_TEST</label>
 				<addresscustomerid>13</addresscustomerid>
 				<addressid>13</addressid>
 				<addresspassword>shpj</addresspassword>
@@ -2122,9 +2198,9 @@
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
-				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
-				<wavPath>/home/appusr/data/wav/</wavPath>
-				<filePath>/home/appusr/data/moule/</filePath>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
 				<logoswitch>1</logoswitch>
 				<word></word>
 				<logoimgurl>images/logo_gzpx.png</logoimgurl>
@@ -2133,6 +2209,7 @@
 				<addressid>2</addressid>
 				<addresspassword>123</addresspassword>
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<expressCarrierCode>30083</expressCarrierCode>
 			</properties>
 		</profile>
 		<profile>
@@ -2812,7 +2889,7 @@
 
 
 
-			<profile>
+		<profile>
 			<id>NXPJ</id>
 			<properties>
 				<tomcat.manager.url></tomcat.manager.url>
@@ -3068,7 +3145,6 @@
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
 			</properties>
 		</profile>
-		
 		<profile>
 			<id>BJPJ</id>
 			<properties>
@@ -3091,6 +3167,30 @@
 				<addressid>4</addressid>
 				<addresspassword>hbpj</addresspassword>
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+			</properties>
+		</profile>
+		<profile>
+			<id>HBPJ_OXO</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.32:3306/hbpj_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://172.20.200.28:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data1/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data1/wav/</wavPath>
+				<filePath>/home/apps/data1/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/logo_scpj.png</logoimgurl>
+				<label>HBPJ_OXO</label>
+				<addresscustomerid>4</addresscustomerid>
+				<addressid>4</addressid>
+				<addresspassword>hbpj</addresspassword>
+				<addressWebserviceIp>183.61.89.252/addresstest</addressWebserviceIp>
 			</properties>
 		</profile>
 		
@@ -3248,9 +3348,10 @@
 				<tomcat.manager.url>http://192.168.0.222:8082/manager</tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.0.222:3306/dmp_42?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
-				<expressurl.user>pj</expressurl.user>
-				<expressurl.password>pjexplink</expressurl.password>
+				<!-- <expressurl.url>jdbc:mysql://127.0.0.1:3306/dmp_pj?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url> -->
+				<expressurl.url>jdbc:mysql://127.0.0.1:3306/42_bak?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>1234</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase>false</expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
 				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
@@ -3263,7 +3364,8 @@
 				<addresscustomerid>4</addresscustomerid>
 				<addressid>4</addressid>
 				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+				<addressWebserviceIp>192.168.0.217:10180/address</addressWebserviceIp>
+				<expressCarrierCode>30102000000</expressCarrierCode>
 			</properties>
 		</profile>
 		<profile>
@@ -3365,7 +3467,80 @@
 				<addressWebserviceIp>183.61.89.252/addressmatchgztl42</addressWebserviceIp>
 			</properties>
 		</profile>
-		
+		<profile>
+			<id>wangzhiyu</id>
+			<properties>
+				<tomcat.manager.url>http://192.168.0.36:8082/manager</tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://localhost:3306/dmp_42_dev?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>root</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase>false</expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>wangzhiyu</label>
+				<addresscustomerid>37</addresscustomerid>
+				<addressid>37</addressid>
+				<addresspassword>sxpj</addresspassword>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+			</properties>
+		</profile>
+		<profile>
+			<id>PJ_42_TEST</id>
+			<properties>
+				<tomcat.manager.url>http://192.168.0.217:8090/manager</tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.0.222:3306/dmp_42_test?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>pj</expressurl.user>
+				<expressurl.password>pjexplink</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>PJ_42_TEST</label>
+				<addresscustomerid>37</addresscustomerid>
+				<addressid>37</addressid>
+				<addresspassword>sxpj</addresspassword>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+				<expressCarrierCode>3010711111111111</expressCarrierCode>
+			</properties>
+		</profile>
+		<profile>
+			<id>DMP_TEST_SC</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.87:3306/dmp_sc?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explink</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/logo_scpj.png</logoimgurl>
+				<label>PJ_TEST_SC</label>
+				<addresscustomerid>37</addresscustomerid>
+				<addressid>37</addressid>
+				<addresspassword>sxpj</addresspassword>
+				<addressWebserviceIp>127.0.0.1:8087/address</addressWebserviceIp>
+				<expressCarrierCode>30107</expressCarrierCode>
+			</properties>
+		</profile>
 		<profile>
 			<id>SHPJTEST</id>
 			<properties>
@@ -3452,9 +3627,9 @@
 				<expressurl.password>explinkvipshop</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
-				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
-				<wavPath>/home/appusr/data/wav/</wavPath>
-				<filePath>/home/appusr/data/moule/</filePath>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
 				<logoswitch>1</logoswitch>
 				<word></word>
 				<logoimgurl>images/logo_scpj.png</logoimgurl>
@@ -3463,6 +3638,7 @@
 				<addressid>4</addressid>
 				<addresspassword>hbpj</addresspassword>
 				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<expressCarrierCode>30107</expressCarrierCode>
 			</properties>
 		</profile>
 		
@@ -3638,8 +3814,31 @@
 				<addressWebserviceIp>103.229.214.164/addressi</addressWebserviceIp>
 			</properties>
 		</profile>
-		
-		
+		<profile>
+			<id>DMP_42_TEST_GZ</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.87:3306/dmp_gz?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explink</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/logo_gzpx.png</logoimgurl>
+				<label>PJ_42_TEST_GZ</label>
+				<addresscustomerid>37</addresscustomerid>
+				<addressid>37</addressid>
+				<addresspassword>sxpj</addresspassword>
+				<addressWebserviceIp>127.0.0.1:8087/address</addressWebserviceIp>
+				<expressCarrierCode>30083</expressCarrierCode>
+			</properties>
+		</profile>
 	</profiles>
 
 </project>
