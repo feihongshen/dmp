@@ -551,10 +551,14 @@ public class WarehouseGroup_detailController {
 				model.addAttribute("printList", printlist);
 				String[] nextBranchid = nextbranchid.split(",");
 				String nextBranch = "";
-				for (int i = 1; i < nextBranchid.length; i++) {
-					nextBranch = nextBranch + this.branchDAO.getBranchByBranchid(Long.parseLong(nextBranchid[i])).getBranchname() + ",";
+				//DMP 4.2.8 修复分拣出库打印
+//				for (int i = 1; i < nextBranchid.length; i++) {
+				for (int i = 0,len = nextBranchid.length; i < len; i++) {
+					nextBranch = nextBranch + this.branchDAO.getBranchByBranchid(Long.parseLong(nextBranchid[i])).getBranchname() ;
+					if(i == (len -1)){
+						nextBranch += ",";
+					}
 				}
-				nextBranch = nextBranch.substring(0, nextBranch.length() - 1);
 				model.addAttribute("branchname", nextBranch);
 				/*
 				 * if(truckid-1){ model.addAttribute("truckid","___________");
@@ -710,7 +714,9 @@ public class WarehouseGroup_detailController {
 		}
 		//真实订单list(根据打印相关表获取)
 //		List<CwbOrder> cwbList = this.cwbDao.getCwbListByAnyNo(orderNoStrs);
-		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype,baleno);
+//		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype,baleno);
+		//dmp 4.2.8 修复分拣出库打印的bug
+		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs,this.getSessionUser().getBranchid(),baleno);
 		
 		//显示用订单list
 		List<CwbOrder> cwbListForBaleView = new ArrayList<CwbOrder>();
@@ -1013,12 +1019,17 @@ public class WarehouseGroup_detailController {
 	}
 
 	private String getStrings(String[] branchid) {
-		String str = "-1,";
-		for (String s : branchid) {
-			str += s + ",";
+		String str = "-1";
+//		for (String s : branchid) {
+//			str += s + ",";
+//		}
+		if(branchid != null && branchid.length > 0){
+			str = org.apache.commons.lang.StringUtils.join(branchid,",");
 		}
+		
 
-		return str.substring(0, str.length() - 1);
+//		return str.substring(0, str.length() - 1);
+		return str;
 	}
 
 	/**

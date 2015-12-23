@@ -6209,7 +6209,18 @@ public class CwbOrderService extends BaseOrderService {
 
 		requestbatchno = this.outWarehouseGroupDAO.creOutWarehouseGroup(driverid, truckid, branchid, datetime, operatetype, customerid, user.getBranchid(), cwbsStrSql.toString());
 
-		this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertype, baleno);
+//		this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertype, baleno);
+		
+		//DMP 4.2.8 由于分拣中转合包打印，所有当出库扫描打印的时候包含包含
+		if (flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+			String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+			this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypesForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertypes, baleno);
+
+		}else{
+			this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertype, baleno);
+		}
+		
+		
 
 		// 更改批次中间表中该订单的打印状态为1（已打印），0为未打印(若交接单机制更改的功能上线后历史数据中不存在未打印的了，该段代码可删除）
 		for (String cwb : cwbs.split("-H-")) {
