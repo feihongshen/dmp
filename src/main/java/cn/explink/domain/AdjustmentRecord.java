@@ -20,6 +20,7 @@ public class AdjustmentRecord {
 	private String check_user;//核对人
 	private String check_time;//核对时间
 	private int order_type;//订单类型
+	private long order_id; //订单id
 	public long getId() {
 		return id;
 	}
@@ -121,6 +122,12 @@ public class AdjustmentRecord {
 	}
 	public void setBill_id(long bill_id) {
 		this.bill_id = bill_id;
+	}
+	public long getOrder_id() {
+		return order_id;
+	}
+	public void setOrder_id(long order_id) {
+		this.order_id = order_id;
 	}
 		
 }

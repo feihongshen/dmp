@@ -40,6 +40,7 @@ public class AdjustmentRecordDAO{
 			adjustmentRecord.setCheck_user(rs.getString("check_user"));
 			adjustmentRecord.setCheck_time(rs.getString("check_time"));
 			adjustmentRecord.setOrder_type(rs.getInt("order_type"));
+			adjustmentRecord.setOrder_id(rs.getLong("order_id"));
 			return adjustmentRecord;
 		}
 	}
@@ -48,7 +49,7 @@ public class AdjustmentRecordDAO{
 	private JdbcTemplate jdbcTemplate;
 	public void creAdjustmentRecord(final AdjustmentRecord adjustmentRecord) {
 		this.jdbcTemplate.update("insert into fn_adjustment_record (order_no,bill_no,adjust_bill_no,customer_id," + "receive_fee,refund_fee,modify_fee,adjust_amount,remark,creator,create_time,"
-				+ "status,check_user,check_time,order_type,billid) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?)",
+				+ "status,check_user,check_time,order_type,billid,order_id) " + "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -68,6 +69,7 @@ public class AdjustmentRecordDAO{
 						ps.setString(14, adjustmentRecord.getCheck_time());
 						ps.setInt(15, adjustmentRecord.getOrder_type());
 						ps.setLong(16,adjustmentRecord.getBill_id());
+						ps.setLong(17, adjustmentRecord.getOrder_id());
 					}
 
 				});

@@ -229,7 +229,7 @@ public class AdjustmentRecordService {
 		 */
 		int cwbOrderTypeId=cwbOrder.getCwbordertypeid();
 		AdjustmentRecord aRecord = null ;
-		if(cwbOrderTypeId == CwbOrderTypeIdEnum.Peisong.getValue()){
+		if(cwbOrderTypeId == CwbOrderTypeIdEnum.Peisong.getValue() || cwbOrderTypeId == CwbOrderTypeIdEnum.OXO.getValue()){
 			/*Customer cust = customerdao.getCustomerById(cwbOrder.getCustomerid());
 			if(cust == null || cust.getPaytype() == 0){
 				logger.error("订单【"+cwbOrder.getCwb()+"】没有客户信息，或未配置客户的结算类型,订单支付信息修改审核生成调整记录失败");
@@ -340,6 +340,7 @@ public class AdjustmentRecordService {
 			if(custBill != null &&  CustomerBillDateTypeEnum.audit.getValue().intValue() == (int)custBill.getDateType()){
 				AdjustmentRecord aRecord = new AdjustmentRecord();
 				aRecord.setOrder_no(cwbOrder.getCwb());
+				aRecord.setOrder_id(cwbOrder.getOpscwbid());
 				//不允许为空
 				aRecord.setBill_no("");
 				aRecord.setAdjust_bill_no("");
@@ -479,6 +480,7 @@ public class AdjustmentRecordService {
 	private void createRecordFowLosecwbBatch(CwbOrder cwbOrder) {
 		AdjustmentRecord aRecord = new AdjustmentRecord();
 		aRecord.setOrder_no(cwbOrder.getCwb());
+		aRecord.setOrder_id(cwbOrder.getOpscwbid());
 		//不允许为空
 		aRecord.setBill_no("");
 		aRecord.setAdjust_bill_no("");
@@ -576,6 +578,7 @@ public class AdjustmentRecordService {
 			**/
 		}else if(orderType == CwbOrderTypeIdEnum.Peisong.getValue()){
 			aRecord.setOrder_no(order.getCwb());
+			aRecord.setOrder_id(order.getOpscwbid());
 			//不允许为空
 			aRecord.setBill_no("");
 			aRecord.setAdjust_bill_no("");
@@ -630,6 +633,7 @@ public class AdjustmentRecordService {
 			if(custBill != null &&  CustomerBillDateTypeEnum.audit.getValue().intValue() == (int)custBill.getDateType()){
 				AdjustmentRecord aRecord = new AdjustmentRecord();
 				aRecord.setOrder_no(cwbOrder.getCwb());
+				aRecord.setOrder_id(cwbOrder.getOpscwbid());
 				//不允许为空
 				aRecord.setBill_no("");
 				aRecord.setAdjust_bill_no("");
