@@ -1,5 +1,7 @@
 package cn.explink.b2c.explink;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,6 +14,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+
 @Controller
 @RequestMapping("/explinkInterface")
 public class ExplinkController {
@@ -19,6 +25,11 @@ public class ExplinkController {
 
 	@Autowired
 	ExplinkService explinkService;
+	/*@Autowired
+	PjDeliveryOrderServiceHelper pjDeliveryOrderServiceHelper;*/
+	/*@Autowired
+	PjTransportFeedbackRequest pjTransportFeedbackRequest;*/
+	
 
 	@RequestMapping("/show/{id}")
 	public String jointShow(@PathVariable("id") int key, Model model) {
@@ -103,5 +114,32 @@ public class ExplinkController {
 		}
 		return "b2cdj/explink_test/explinkinterface_test";
 	}
-
+	//测试--LX
+	@RequestMapping("/kuaiditest")
+	public void KuaiDI_Feedback_test(HttpServletRequest request, Model model) {
+		PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
+//		PjDeliveryOrderService pds = new PjDeliveryOrderServiceHelper();
+		try {
+			PjTransportFeedbackRequest ptf = new PjTransportFeedbackRequest();
+			ptf.setOperateOrg("gdfy");
+			ptf.setOperater("LX");
+			Date date = new Date();
+			/*SimpleDateFormat sdf = new SimpleDateFormat();
+			String da = sdf.format(date);*/
+			long dat = 135436131313L;
+			ptf.setOperateTime(dat);
+			ptf.setOperateType(1);
+			ptf.setReason("测试");
+			ptf.setTransportNo("108000000204");
+//			pds.
+//			boolean bl = this.pjDeliveryOrderServiceHelper.feedbackTransport(ptf);
+			boolean bool = pjDeliveryOrderS.feedbackTransport(ptf);
+			System.out.println("=============================");
+		} catch (Exception e) {
+			//System.out.println(bool+"");
+			//logger.info("返回信息:{}",);
+			logger.info("异常！{}",e.getMessage());
+		}
+	}
+	
 }

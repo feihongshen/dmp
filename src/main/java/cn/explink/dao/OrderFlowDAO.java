@@ -28,6 +28,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
+import cn.explink.util.Tools;
 
 @Repository
 public class OrderFlowDAO {
@@ -165,14 +166,29 @@ public class OrderFlowDAO {
 				|| (of.getFlowordertype() == FlowOrderTypeEnum.CheXiaoFanKui.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue())
 				|| (of.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue())
 				|| (of.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.ChaoQu.getValue())
-				|| (of.getFlowordertype() == FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue())) {
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.YiChangPiPeiYiChuLi.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.YunDanLuRu.getValue())
+				|| (of.getFlowordertype() == FlowOrderTypeEnum.LanJianRuZhan.getValue()) || (of.getFlowordertype() == FlowOrderTypeEnum.LanJianChuZhan.getValue())){
 			JSONObject orderJson = JSONObject.fromObject(of.getFloworderdetail()).getJSONObject("cwbOrder");
 			String outWarehouseTime = "";
 			if (of.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) {
 				outWarehouseTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate());
 			}
+			//modified by jiangyu begin【避免出现空指针异常】
+			String receivablefee = "0.00";
+			if ("null".equals(orderJson.getString("receivablefee"))||orderJson.getString("receivablefee")==null) {
+				receivablefee = "0.00";
+			}else {
+				receivablefee = orderJson.getString("receivablefee");
+			}
+			String paybackfee = "0.00";
+			if ("null".equals(orderJson.getString("paybackfee"))||orderJson.getString("paybackfee")==null) {
+				paybackfee = "0.00";
+			}else {
+				paybackfee = orderJson.getString("paybackfee");
+			}
+			//modified by jiangyu end
 			this.operationTimeDAO.creAndUpdateOperationTime(of.getCwb(), of.getBranchid(), of.getFlowordertype(), 0, orderJson.getLong("nextbranchid"), orderJson.getLong("customerid"),
-					outWarehouseTime, orderJson.getString("emaildate"),orderJson.getInt("cwbordertypeid"),new BigDecimal( orderJson.getString("receivablefee")),new BigDecimal( orderJson.getString("paybackfee")));
+					outWarehouseTime, orderJson.getString("emaildate"),orderJson.getInt("cwbordertypeid"),new BigDecimal(receivablefee),new BigDecimal(paybackfee));
 		} else if (of.getFlowordertype() == FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()) {
 			this.operationTimeDAO.delOperationTime(of.getCwb());
 		}

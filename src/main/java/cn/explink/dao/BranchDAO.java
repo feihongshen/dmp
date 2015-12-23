@@ -62,6 +62,7 @@ public class BranchDAO {
 			branch.setBrancheffectflag(rs.getString("brancheffectflag"));
 			branch.setContractrate(rs.getBigDecimal("contractrate"));
 			branch.setBranchcode(rs.getString("branchcode"));
+			branch.setTpsbranchcode(StringUtil.nullConvertToEmptyString(rs.getString("tpsbranchcode")));
 			branch.setNoemailimportflag(rs.getString("noemailimportflag"));
 			branch.setErrorcwbdeliverflag(rs.getString("errorcwbdeliverflag"));
 			branch.setErrorcwbbranchflag(rs.getString("errorcwbbranchflag"));
@@ -103,6 +104,9 @@ public class BranchDAO {
 			branch.setBacktime(rs.getLong("backtime"));
 			branch.setBranchBail(rs.getBigDecimal("branch_bail"));
 			branch.setPfruleid(rs.getLong("pfruleid"));
+			// 机构所在的省和市区
+			branch.setBranchprovinceid(rs.getLong("branchprovinceid"));
+			branch.setBranchcityid(rs.getLong("branchcityid"));
 			return branch;
 		}
 	}
@@ -133,6 +137,13 @@ public class BranchDAO {
 		}
 	}
 
+	// add by 王志宇
+	public List<Branch> getBranchByBranchIdsNotNull(String branchids) {
+		String sql = "SELECT * from express_set_branch where branchid in(" + branchids + ") and branchid<>0 ";
+
+		return this.jdbcTemplate.query(sql, new BranchRowMapper());
+	}
+
 	public Branch getBranchByBranchidLock(long branchid) {
 		return this.jdbcTemplate.queryForObject("SELECT * from express_set_branch where branchid=? for update ", new BranchRowMapper(), branchid);
 	}
@@ -153,7 +164,7 @@ public class BranchDAO {
 			return new Branch();
 		}
 	}
-	
+
 	public Branch getBranchByBranchnameMatch(String branchname) {
 		try {
 			Branch branchList = this.jdbcTemplate.queryForObject("SELECT * from express_set_branch where branchname=? and brancheffectflag='1' ", new BranchRowMapper(), branchname);
@@ -209,6 +220,7 @@ public class BranchDAO {
 			return new Branch();
 		}
 	}
+
 	public Branch getBranchByIdAdd(long branchid) {
 		try {
 			List<Branch> list = this.jdbcTemplate.query("select * from express_set_branch where branchid =?", new BranchRowMapper(), branchid);
@@ -235,6 +247,7 @@ public class BranchDAO {
 			return new Branch();
 		}
 	}
+
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branch.branchid")
 	public void saveBranch(final Branch branch) {
@@ -245,7 +258,7 @@ public class BranchDAO {
 						+ "payfeeupdateflag=?,backtodeliverflag=?,branchpaytoheadflag=?,branchfinishdayflag=?,creditamount=?,branchwavfile=?,"
 						+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
 						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
-						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,backtime=?,branch_bail=?,pfruleid=? "
+						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,backtime=?,branch_bail=?,pfruleid=?,tpsbranchcode=? "
 						+ " where branchid=?", new PreparedStatementSetter() {
 
 					@Override
@@ -300,85 +313,85 @@ public class BranchDAO {
 						ps.setBigDecimal(45, branch.getBranchBail());
 						ps.setLong(46, branch.getPfruleid());
 						ps.setLong(47, branch.getBranchid());
+						ps.setString(48, branch.getTpsbranchcode());
 
 					}
 				});
 
 	}
+
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branch.branchid")
 	public void saveBranchNoFile(final Branch branch) {
+		this.jdbcTemplate
+				.update("update express_set_branch set branchname=?,branchaddress=?,branchcontactman=?,branchphone=?,"
+						+ "branchmobile=?,branchfax=?,branchemail=?,contractflag=?,contractrate=?,cwbtobranchid=?,branchcode=?,"
+						+ "payfeeupdateflag=?,backtodeliverflag=?,branchpaytoheadflag=?,branchfinishdayflag=?,creditamount=?,"
+						+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
+						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
+						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,bindmsksid=?,"
+						+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?,,tpsbranchcode=?"
+						+ " where branchid=?", new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps) throws SQLException {
+						// TODO Auto-generated method stub
+						ps.setString(1, branch.getBranchname());
+						ps.setString(2, branch.getBranchaddress());
+						ps.setString(3, branch.getBranchcontactman());
+						ps.setString(4, branch.getBranchphone());
+						ps.setString(5, branch.getBranchmobile());
+						ps.setString(6, branch.getBranchfax());
+						ps.setString(7, branch.getBranchemail());
+						ps.setString(8, branch.getContractflag());
+						ps.setBigDecimal(9, branch.getContractrate());
+						ps.setString(10, branch.getCwbtobranchid());
+						ps.setString(11, branch.getBranchcode());
+						ps.setString(12, branch.getPayfeeupdateflag());
+						ps.setString(13, branch.getBacktodeliverflag());
+						ps.setString(14, branch.getBranchpaytoheadflag());
+						ps.setString(15, branch.getBranchfinishdayflag());
+						ps.setBigDecimal(16, branch.getCreditamount());
+						ps.setString(17, "1");
+						ps.setString(18, branch.getNoemailimportflag());
+						ps.setString(19, branch.getErrorcwbdeliverflag());
+						ps.setString(20, branch.getErrorcwbbranchflag());
+						ps.setString(21, branch.getBranchcodewavfile());
+						ps.setString(22, branch.getImportwavtype());
+						ps.setString(23, branch.getExportwavtype());
+						ps.setBigDecimal(24, branch.getBranchinsurefee());
+						ps.setString(25, branch.getBranchprovince());
+						ps.setString(26, branch.getBranchcity());
+						ps.setString(27, branch.getNoemaildeliverflag());
+						ps.setInt(28, branch.getSendstartbranchid());
+						ps.setInt(29, branch.getSitetype());
+						ps.setLong(30, branch.getCheckremandtype());
+						ps.setString(31, branch.getBranchmatter());
+						ps.setInt(32, branch.getAccountareaid());
+						ps.setString(33, branch.getFunctionids());
+						ps.setLong(34, branch.getZhongzhuanid());
+						ps.setLong(35, branch.getTuihuoid());
+						ps.setLong(36, branch.getCaiwuid());
+						ps.setString(37, branch.getBankcard());
+						ps.setInt(38, branch.getBindmsksid());
 
-		this.jdbcTemplate.update("update express_set_branch set branchname=?,branchaddress=?,branchcontactman=?,branchphone=?,"
-				+ "branchmobile=?,branchfax=?,branchemail=?,contractflag=?,contractrate=?,cwbtobranchid=?,branchcode=?,"
-				+ "payfeeupdateflag=?,backtodeliverflag=?,branchpaytoheadflag=?,branchfinishdayflag=?,creditamount=?,"
-				+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
-				+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
-				+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,bindmsksid=?,"
-				+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?"
-				+ " where branchid=?", new PreparedStatementSetter() {
+						ps.setInt(39, branch.getAccounttype());
+						ps.setInt(40, branch.getAccountexcesstype());
+						ps.setBigDecimal(41, branch.getAccountexcessfee());
+						ps.setLong(42, branch.getAccountbranch());
+						ps.setBigDecimal(43, branch.getCredit());
 
-			@Override
-			public void setValues(PreparedStatement ps) throws SQLException {
-				// TODO Auto-generated method stub
-				ps.setString(1, branch.getBranchname());
-				ps.setString(2, branch.getBranchaddress());
-				ps.setString(3, branch.getBranchcontactman());
-				ps.setString(4, branch.getBranchphone());
-				ps.setString(5, branch.getBranchmobile());
-				ps.setString(6, branch.getBranchfax());
-				ps.setString(7, branch.getBranchemail());
-				ps.setString(8, branch.getContractflag());
-				ps.setBigDecimal(9, branch.getContractrate());
-				ps.setString(10, branch.getCwbtobranchid());
-				ps.setString(11, branch.getBranchcode());
-				ps.setString(12, branch.getPayfeeupdateflag());
-				ps.setString(13, branch.getBacktodeliverflag());
-				ps.setString(14, branch.getBranchpaytoheadflag());
-				ps.setString(15, branch.getBranchfinishdayflag());
-				ps.setBigDecimal(16, branch.getCreditamount());
-				ps.setString(17, "1");
-				ps.setString(18, branch.getNoemailimportflag());
-				ps.setString(19, branch.getErrorcwbdeliverflag());
-				ps.setString(20, branch.getErrorcwbbranchflag());
-				ps.setString(21, branch.getBranchcodewavfile());
-				ps.setString(22, branch.getImportwavtype());
-				ps.setString(23, branch.getExportwavtype());
-				ps.setBigDecimal(24, branch.getBranchinsurefee());
-				ps.setString(25, branch.getBranchprovince());
-				ps.setString(26, branch.getBranchcity());
-				ps.setString(27, branch.getNoemaildeliverflag());
-				ps.setInt(28, branch.getSendstartbranchid());
-				ps.setInt(29, branch.getSitetype());
-				ps.setLong(30, branch.getCheckremandtype());
-				ps.setString(31, branch.getBranchmatter());
-				ps.setInt(32, branch.getAccountareaid());
-				ps.setString(33, branch.getFunctionids());
-				ps.setLong(34, branch.getZhongzhuanid());
-				ps.setLong(35, branch.getTuihuoid());
-				ps.setLong(36, branch.getCaiwuid());
-				ps.setString(37, branch.getBankcard());
-				ps.setInt(38, branch.getBindmsksid());
-
-				ps.setInt(39, branch.getAccounttype());
-				ps.setInt(40, branch.getAccountexcesstype());
-				ps.setBigDecimal(41, branch.getAccountexcessfee());
-				ps.setLong(42, branch.getAccountbranch());
-				ps.setBigDecimal(43, branch.getCredit());
-
-				ps.setLong(44, branch.getPrescription24());
-				ps.setLong(45, branch.getPrescription48());
-
-				ps.setString(46, branch.getBranchcity());
-				ps.setString(47, branch.getBrancharea());
-				ps.setString(48, branch.getBranchstreet());
-				ps.setLong(49, branch.getBacktime());
-				ps.setBigDecimal(50, branch.getBranchBail());
-				ps.setLong(51, branch.getPfruleid());
-				ps.setLong(52, branch.getBranchid());
-			}
-		});
-
+						ps.setLong(44, branch.getPrescription24());
+						ps.setLong(45, branch.getPrescription48());
+						ps.setString(46, branch.getBranchcity());
+						ps.setString(47, branch.getBrancharea());
+						ps.setString(48, branch.getBranchstreet());
+						ps.setLong(49, branch.getBacktime());
+						ps.setBigDecimal(50, branch.getBranchBail());
+						ps.setLong(51, branch.getPfruleid());
+						ps.setLong(52, branch.getBranchid());
+						ps.setString(53, branch.getTpsbranchcode());
+					}
+				});
 	}
 
 	/**
@@ -413,6 +426,7 @@ public class BranchDAO {
 	public void saveBranchArrearageFa(BigDecimal arrearagefa, long branchid) {
 		this.jdbcTemplate.update("update express_set_branch set arrearagefa=?" + " where branchid=?", arrearagefa, branchid);
 	}
+
 	@SystemInstallOperation
 	public long creBranch(final Branch branch) {
 		KeyHolder key = new GeneratedKeyHolder();
@@ -425,8 +439,8 @@ public class BranchDAO {
 						+ "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag,"
 						+ "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag,"
 						+ "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid,"
-						+ "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
+						+ "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid,tpsbranchcode) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
 				ps.setLong(1, branch.getBranchid());
 				ps.setString(2, branch.getBranchname());
 				ps.setString(3, branch.getBranchaddress());
@@ -477,8 +491,9 @@ public class BranchDAO {
 				ps.setString(48, branch.getBrancharea());
 				ps.setString(49, branch.getBranchstreet());
 				ps.setLong(50, branch.getBacktime());
-				ps.setBigDecimal(51,branch.getBranchBail());
-				ps.setLong(52,branch.getPfruleid());
+				ps.setBigDecimal(51, branch.getBranchBail());
+				ps.setLong(52, branch.getPfruleid());
+				ps.setString(53, branch.getTpsbranchcode());// 为快递上传tps新增的机构编码
 				return ps;
 			}
 		}, key);
@@ -517,9 +532,9 @@ public class BranchDAO {
 		sql = this.getBranchByPageWhereSql(sql, branchname, branchaddress);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
-	
+
 	private String getJoinBranchByPageWhereSql(String sql, String branchname, String branchaddress) {
-		
+
 		if ((branchname.length() > 0) || (branchaddress.length() > 0)) {
 			sql += " and ";
 			if ((branchname.length() > 0) && (branchaddress.length() > 0)) {
@@ -535,20 +550,19 @@ public class BranchDAO {
 		}
 		return sql;
 	}
-	
+
 	public List<Branch> getJoinBranchByPage(long page, String branchname, String branchaddress) {
-		String sql = "select * from express_set_branch where contractflag in ("
-				+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
+		String sql = "select * from express_set_branch where contractflag in (" + BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + ","
 				+ BranchTypeEnum.JiaMengSanJi.getValue() + ") and brancheffectflag='1'";
 		sql = this.getJoinBranchByPageWhereSql(sql, branchname, branchaddress);
-//		sql += " order by branchid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		// sql += " order by branchid desc limit " + ((page - 1) *
+		// Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
 		return branchlist;
 	}
-	
+
 	public long getJoinBranchCount(String branchname, String branchaddress) {
-		String sql = "select count(1) from express_set_branch where contractflag in ("
-				+ BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + "," 
+		String sql = "select count(1) from express_set_branch where contractflag in (" + BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + ","
 				+ BranchTypeEnum.JiaMengSanJi.getValue() + ") and brancheffectflag='1'";
 		sql = this.getJoinBranchByPageWhereSql(sql, branchname, branchaddress);
 		return this.jdbcTemplate.queryForInt(sql);
@@ -728,6 +742,7 @@ public class BranchDAO {
 			return null;
 		}
 	}
+
 	public List<Branch> getBranchByBranchidsNoType(String branchids) {
 		if (branchids.length() > 0) {
 			List<Branch> branchList = this.jdbcTemplate.query("select * from express_set_branch where branchid in(" + branchids
@@ -737,6 +752,7 @@ public class BranchDAO {
 			return null;
 		}
 	}
+
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public int updateQiankuan(long branchid, BigDecimal arrearagepayupaudit, BigDecimal posarrearagepayupaudit) {
@@ -848,19 +864,22 @@ public class BranchDAO {
 			return 0;
 		}
 	}
+
 	@SystemInstallOperation
 	public void updateForFee(long branchid, BigDecimal balance, BigDecimal debt) {
 		this.jdbcTemplate.update("UPDATE express_set_branch SET balance=?,debt=? WHERE branchid=?", balance, debt, branchid);
 	}
+
 	@SystemInstallOperation
 	public void updateForVirt(long branchid, BigDecimal balancevirt, BigDecimal debtvirt) {
 		this.jdbcTemplate.update("UPDATE express_set_branch SET balancevirt=?,debtvirt=? WHERE branchid=?", balancevirt, debtvirt, branchid);
 	}
+
 	@SystemInstallOperation
 	public void updateForFeeAndVirt(long branchid, BigDecimal balance, BigDecimal debt, BigDecimal balancevirt, BigDecimal debtvirt) {
 		this.jdbcTemplate.update("UPDATE express_set_branch SET balance=?,debt=?,balancevirt=?,debtvirt=? WHERE branchid=?", balance, debt, balancevirt, debtvirt, branchid);
 	}
-	
+
 	public List<Branch> getAccessableBranch(long userId, int siteType) {
 		try {
 			String sql = "SELECT b.* FROM express_set_branch b, express_set_user_branch ub WHERE b.branchid = ub.branchid AND ub.userid = ? AND b.sitetype = ? order by sitetype ASC ,CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
@@ -993,34 +1012,36 @@ public class BranchDAO {
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
-	public Branch getbranchname(long l){
+	public Branch getbranchname(long l) {
 		Branch b;
 		try {
-			String sql="select * from express_set_branch where branchid=?";
-			b = this.jdbcTemplate.queryForObject(sql, new BranchRowMapper(),l);
+			String sql = "select * from express_set_branch where branchid=?";
+			b = this.jdbcTemplate.queryForObject(sql, new BranchRowMapper(), l);
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			return null;
 		}
 		return b;
 	}
+
 	public List<Branch> getQueryBranchs(long sitetype) {
 		String sql = "SELECT * from express_set_branch  WHERE sitetype=?  and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype);
 	}
 
 	public List<Branch> getBranchsBycontractflag(String contractflag) {
-		String sql = "SELECT * from express_set_branch  WHERE contractflag in("+contractflag+")  and brancheffectflag='1' ";
+		String sql = "SELECT * from express_set_branch  WHERE contractflag in(" + contractflag + ")  and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper());
 	}
 
-	public List<Branch> getBranchssBycontractflag(String contractflag,long sitetype) {
+	public List<Branch> getBranchssBycontractflag(String contractflag, long sitetype) {
 		String sql = "SELECT * from express_set_branch  WHERE contractflag=? and sitetype=? and brancheffectflag='1' ";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(),contractflag,sitetype);
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(), contractflag, sitetype);
 	}
-	public List<Branch> getBranchsByContractflagAndSiteType(long sitetype,String contractflag){
+
+	public List<Branch> getBranchsByContractflagAndSiteType(long sitetype, String contractflag) {
 		String sql = "SELECT * from express_set_branch  WHERE contractflag=? and sitetype=?  and brancheffectflag='1' ";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(),contractflag,sitetype);
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(), contractflag, sitetype);
 	}
 
 	/**
@@ -1029,28 +1050,29 @@ public class BranchDAO {
 	 */
 	public List<Branch> getBanchByPFruleId(long pfruleid) {
 		String sql = "SELECT * from express_set_branch  WHERE pfruleid=? and brancheffectflag='1' ";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(),pfruleid);
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(), pfruleid);
 	}
+
 	@CacheEvict(value = "branchCache", allEntries = true)
-	public void updateCache(){
-		
+	public void updateCache() {
+
 	}
-	
-	public List<Branch> getMoHuBranch(String branchName){
-		String sql="select * from express_set_branch where branchname like '%"+branchName+"%'";
+
+	public List<Branch> getMoHuBranch(String branchName) {
+		String sql = "select * from express_set_branch where branchname like '%" + branchName + "%'";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper());
-		
+
 	}
-	
+
 	@Cacheable(value = "branchCache", key = "#branchcode")
 	public Branch getEffectBranchByCodeStr(String branchcode) {
 		try {
 			Branch branch = this.jdbcTemplate.queryForObject("select * from express_set_branch where branchcode =? and brancheffectflag='1' ", new BranchRowMapper(), branchcode);
-			if (branch==null) {
+			if (branch == null) {
 				return null;
-			}else{
+			} else {
 				return branch;
-			} 
+			}
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}

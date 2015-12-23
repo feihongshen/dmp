@@ -79,8 +79,13 @@
           			*
           		</li>
           		<li>
-          			<span>机构编号：</span>
+          			<span>分拣码：</span>
           			<input type="text" name="branchcode" id="branchcode" value ="<%=branch.getBranchcode() %>" maxlength="50"/>
+          			*
+       			</li>
+       			<li>
+          			<span>机构编码：</span>
+          			<input type="text" name="tpsbranchcode" id="tpsbranchcode" value ="<%=branch.getTpsbranchcode() %>" maxlength="50"/>
           			*
        			</li>
        			<li>

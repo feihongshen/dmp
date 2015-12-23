@@ -241,42 +241,45 @@ public class CwbOrderView {
 	private String applyzhongzhuanhandleremark;// 中转申请审核备注
 	private String applyzhongzhuanhandleusername;// 中转申请审核人
 	private String applyzhongzhuanhandletime;// 中转申请审核时间
-	
-	//新加显示字段2015-5-27
-	private String cwbordertypename;//订单类型名(原类型)
-	private String matchbranchid;//匹配站点id
-	private String matchbranchname;//匹配站点名称
-	private String newcwbordertypename;//现类型
-	private BigDecimal newreceivefee;//现在金额
-	private String nowState;//订单当前状态
-	private String applytype;//申请类型
-	
-	//重置状态反馈
-	private String deliveryname;//配送结果
-	private String cwbstatename;//订单状态
-	private String resetfeedusername;//反馈人
-	private String resetfeedtime;//反馈时间
-	private String donepeople;//操作人
-	private String donetime;//操作时间
-	
-	//支付信息修改部分（合成字段）
+
+	// 新加显示字段2015-5-27
+	private String cwbordertypename;// 订单类型名(原类型)
+	private String matchbranchid;// 匹配站点id
+	private String matchbranchname;// 匹配站点名称
+	private String newcwbordertypename;// 现类型
+	private BigDecimal newreceivefee;// 现在金额
+	private String nowState;// 订单当前状态
+	private String applytype;// 申请类型
+
+	// 重置状态反馈
+	private String deliveryname;// 配送结果
+	private String cwbstatename;// 订单状态
+	private String resetfeedusername;// 反馈人
+	private String resetfeedtime;// 反馈时间
+	private String donepeople;// 操作人
+	private String donetime;// 操作时间
+
+	// 支付信息修改部分（合成字段）
 	private String oldnewCwbordertypename;
 	private String oldnewReceivablefee;
 	private String oldnewPaytype;
-	private String applyuser;//申请人
-	private String applytime;//申请时间
-	private String confirmname;//确认人
-	private String confirmtime;//确认时间
-	private long nowapplystate;//支付信息审核状态与支付信息修改确认的订单当前状态
-	
+
+	private String applyuser;// 申请人
+	private String applytime;// 申请时间
+	private String confirmname;// 确认人
+	private String confirmtime;// 确认时间
+	private long nowapplystate;// 支付信息审核状态与支付信息修改确认的订单当前状态
+
 	private String jobnum;
-	
-	
-	
-	
-	
+
+	private BigDecimal shouldfare = BigDecimal.ZERO; // 应收运费
+	private String expressPayWay;// 支付方式
+
+	// 添加揽件省 added by songkaojun 2015-11-17
+	private String senderprovince;
+
 	public String getJobnum() {
-		return jobnum;
+		return this.jobnum;
 	}
 
 	public void setJobnum(String jobnum) {
@@ -284,7 +287,7 @@ public class CwbOrderView {
 	}
 
 	public long getNowapplystate() {
-		return nowapplystate;
+		return this.nowapplystate;
 	}
 
 	public void setNowapplystate(long nowapplystate) {
@@ -292,7 +295,7 @@ public class CwbOrderView {
 	}
 
 	public String getConfirmname() {
-		return confirmname;
+		return this.confirmname;
 	}
 
 	public void setConfirmname(String confirmname) {
@@ -300,7 +303,7 @@ public class CwbOrderView {
 	}
 
 	public String getConfirmtime() {
-		return confirmtime;
+		return this.confirmtime;
 	}
 
 	public void setConfirmtime(String confirmtime) {
@@ -308,7 +311,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplytime() {
-		return applytime;
+		return this.applytime;
 	}
 
 	public void setApplytime(String applytime) {
@@ -316,21 +319,21 @@ public class CwbOrderView {
 	}
 
 	public String getApplyuser() {
-		return applyuser;
+		return this.applyuser;
 	}
 
 	public void setApplyuser(String applyuser) {
 		this.applyuser = applyuser;
 	}
 
-	//反馈状态申请
+	// 反馈状态申请
 	private int reasonid;
-	
-	//退供应商成功确认状态
+
+	// 退供应商成功确认状态
 	private String auditstatename;
-	
+
 	public String getAuditstatename() {
-		return auditstatename;
+		return this.auditstatename;
 	}
 
 	public void setAuditstatename(String auditstatename) {
@@ -338,7 +341,7 @@ public class CwbOrderView {
 	}
 
 	public int getReasonid() {
-		return reasonid;
+		return this.reasonid;
 	}
 
 	public void setReasonid(int reasonid) {
@@ -346,7 +349,7 @@ public class CwbOrderView {
 	}
 
 	public String getOldnewCwbordertypename() {
-		return oldnewCwbordertypename;
+		return this.oldnewCwbordertypename;
 	}
 
 	public void setOldnewCwbordertypename(String oldnewCwbordertypename) {
@@ -354,7 +357,7 @@ public class CwbOrderView {
 	}
 
 	public String getOldnewReceivablefee() {
-		return oldnewReceivablefee;
+		return this.oldnewReceivablefee;
 	}
 
 	public void setOldnewReceivablefee(String oldnewReceivablefee) {
@@ -362,7 +365,7 @@ public class CwbOrderView {
 	}
 
 	public String getOldnewPaytype() {
-		return oldnewPaytype;
+		return this.oldnewPaytype;
 	}
 
 	public void setOldnewPaytype(String oldnewPaytype) {
@@ -370,7 +373,7 @@ public class CwbOrderView {
 	}
 
 	public String getDeliveryname() {
-		return deliveryname;
+		return this.deliveryname;
 	}
 
 	public void setDeliveryname(String deliveryname) {
@@ -378,7 +381,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbstatename() {
-		return cwbstatename;
+		return this.cwbstatename;
 	}
 
 	public void setCwbstatename(String cwbstatename) {
@@ -386,7 +389,7 @@ public class CwbOrderView {
 	}
 
 	public String getResetfeedusername() {
-		return resetfeedusername;
+		return this.resetfeedusername;
 	}
 
 	public void setResetfeedusername(String resetfeedusername) {
@@ -394,7 +397,7 @@ public class CwbOrderView {
 	}
 
 	public String getResetfeedtime() {
-		return resetfeedtime;
+		return this.resetfeedtime;
 	}
 
 	public void setResetfeedtime(String resetfeedtime) {
@@ -402,7 +405,7 @@ public class CwbOrderView {
 	}
 
 	public String getDonepeople() {
-		return donepeople;
+		return this.donepeople;
 	}
 
 	public void setDonepeople(String donepeople) {
@@ -410,7 +413,7 @@ public class CwbOrderView {
 	}
 
 	public String getDonetime() {
-		return donetime;
+		return this.donetime;
 	}
 
 	public void setDonetime(String donetime) {
@@ -418,7 +421,7 @@ public class CwbOrderView {
 	}
 
 	public String getApplytype() {
-		return applytype;
+		return this.applytype;
 	}
 
 	public void setApplytype(String applytype) {
@@ -426,7 +429,7 @@ public class CwbOrderView {
 	}
 
 	public String getNowState() {
-		return nowState;
+		return this.nowState;
 	}
 
 	public void setNowState(String nowState) {
@@ -434,18 +437,15 @@ public class CwbOrderView {
 	}
 
 	public String getNewcwbordertypename() {
-		return newcwbordertypename;
+		return this.newcwbordertypename;
 	}
 
 	public void setNewcwbordertypename(String newcwbordertypename) {
 		this.newcwbordertypename = newcwbordertypename;
 	}
 
-
-
-
 	public BigDecimal getNewreceivefee() {
-		return newreceivefee;
+		return this.newreceivefee;
 	}
 
 	public void setNewreceivefee(BigDecimal newreceivefee) {
@@ -453,7 +453,7 @@ public class CwbOrderView {
 	}
 
 	public String getMatchbranchid() {
-		return matchbranchid;
+		return this.matchbranchid;
 	}
 
 	public void setMatchbranchid(String matchbranchid) {
@@ -461,7 +461,7 @@ public class CwbOrderView {
 	}
 
 	public String getMatchbranchname() {
-		return matchbranchname;
+		return this.matchbranchname;
 	}
 
 	public void setMatchbranchname(String matchbranchname) {
@@ -469,7 +469,7 @@ public class CwbOrderView {
 	}
 
 	public String getCwbordertypename() {
-		return cwbordertypename;
+		return this.cwbordertypename;
 	}
 
 	public void setCwbordertypename(String cwbordertypename) {
@@ -2171,5 +2171,29 @@ public class CwbOrderView {
 		String infos = consigneeaddress.replaceAll("#", "").replaceAll("[*]", "").replaceAll(" ", "").replaceAll("\\p{Pc}|\\p{Ps}|\\p{Pe}|\\p{Pi}|\\p{Pf}|\\p{Po}", "");
 		System.out.println(infos);
 
+	}
+
+	public BigDecimal getShouldfare() {
+		return this.shouldfare;
+	}
+
+	public void setShouldfare(BigDecimal shouldfare) {
+		this.shouldfare = shouldfare;
+	}
+
+	public String getExpressPayWay() {
+		return this.expressPayWay;
+	}
+
+	public void setExpressPayWay(String expressPayWay) {
+		this.expressPayWay = expressPayWay;
+	}
+
+	public String getSenderprovince() {
+		return this.senderprovince;
+	}
+
+	public void setSenderprovince(String senderprovince) {
+		this.senderprovince = senderprovince;
 	}
 }

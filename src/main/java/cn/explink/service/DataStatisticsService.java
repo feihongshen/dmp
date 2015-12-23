@@ -67,6 +67,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
+import cn.explink.enumutil.express.ExpressSettleWayEnum;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
@@ -115,6 +116,7 @@ public class DataStatisticsService {
 	ComplaintDAO complaintDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
@@ -199,7 +201,7 @@ public class DataStatisticsService {
 			long isnowdata = request.getParameter("isnowdata") == null ? 0 : Long.parseLong(request.getParameter("isnowdata").toString());
 			Integer paybackfeeIsZero = request.getParameter("paybackfeeIsZero1") == null ? -1 : Integer.parseInt(request.getParameter("paybackfeeIsZero1").toString());
 			String servicetype = request.getParameter("servicetype1") == null ? "全部" : request.getParameter("servicetype1").toString();
-			int firstlevelid = request.getParameter("firstzhiliureasonid") ==null ? 0  : Integer.parseInt(request.getParameter("firstzhiliureasonid"));
+			int firstlevelid = request.getParameter("firstzhiliureasonid") == null ? 0 : Integer.parseInt(request.getParameter("firstzhiliureasonid"));
 
 			String orderflowcwbs = this.getCwbs(sign, begindate, enddate, isauditTime, nextbranchid, startbranchid, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
 					kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, isnowdata, firstlevelid);
@@ -220,7 +222,7 @@ public class DataStatisticsService {
 			} else if (sign == 8) {// 分站到货
 				begindate = enddate = "";
 				currentBranchid = new String[] {};
-				String cid = (request.getParameter("customerids") == null||"0".equals(request.getParameter("customerids"))) ? "" : request.getParameter("customerids");
+				String cid = ((request.getParameter("customerids") == null) || "0".equals(request.getParameter("customerids"))) ? "" : request.getParameter("customerids");
 				String[] cs = new String[] { cid };
 				customerids = cs;
 			} else if (sign == 9) {// 中转订单统计
@@ -230,11 +232,10 @@ public class DataStatisticsService {
 				begindate = enddate = "";
 				startbranchid = nextbranchid = new String[] {};
 				flowordertype = 0l;
-			}
-			else if(sign==7){
-				List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),
-						BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
-				Branch branch=this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			} else if (sign == 7) {
+				List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
+						+ BranchEnum.ZhongZhuan.getValue());
+				Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 				if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 					if (kufangList.size() == 0) {
 						kufangList.add(branch);
@@ -244,12 +245,11 @@ public class DataStatisticsService {
 						}
 					}
 				}
-				if((kufangid.length==0)){
-					kufangid=new String[kufangList.size()];
-					int i=0;
-					for(Branch kf:kufangList)
-					{
-						kufangid[i]=kf.getBranchid()+"";
+				if ((kufangid.length == 0)) {
+					kufangid = new String[kufangList.size()];
+					int i = 0;
+					for (Branch kf : kufangList) {
+						kufangid[i] = kf.getBranchid() + "";
 						i++;
 					}
 
@@ -1337,7 +1337,7 @@ public class DataStatisticsService {
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
 
-		if ((mouldfieldids2 != null) && !"0".equals(mouldfieldids2)&&!"".equals(mouldfieldids2)) { // 选择模板
+		if ((mouldfieldids2 != null) && !"0".equals(mouldfieldids2) && !"".equals(mouldfieldids2)) { // 选择模板
 			List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs(mouldfieldids2);
 			cloumnName1 = new String[listSetExportField.size()];
 			cloumnName2 = new String[listSetExportField.size()];
@@ -1485,7 +1485,7 @@ public class DataStatisticsService {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -1497,16 +1497,16 @@ public class DataStatisticsService {
 					/*
 					 * jdbcTemplate.query(new StreamingStatementCreator(sql),
 					 * new RowCallbackHandler(){ private int count=0;
-					 *
+					 * 
 					 * @Override public void processRow(ResultSet rs) throws
 					 * SQLException { Row row = sheet.createRow(count + 1);
 					 * row.setHeightInPoints((float) 15);
-					 *
+					 * 
 					 * DeliveryState ds = getDeliveryByCwb(rs.getString("cwb"));
 					 * Map<String,String> allTime =
 					 * getOrderFlowByCredateForDetailAndExportAllTime
 					 * (rs.getString("cwb"));
-					 *
+					 * 
 					 * for (int i = 0; i < cloumnName4.length; i++) { Cell cell
 					 * = row.createCell((short) i); cell.setCellStyle(style);
 					 * //sheet.setColumnWidth(i, (short) (5000)); //设置列宽 Object
@@ -1520,7 +1520,7 @@ public class DataStatisticsService {
 					 * .doubleValue():Double.parseDouble(a.toString())); }else{
 					 * cell.setCellValue(a == null ? "" : a.toString()); } }
 					 * count++;
-					 *
+					 * 
 					 * }});
 					 */
 
@@ -1667,9 +1667,6 @@ public class DataStatisticsService {
 
 		if (clist.size() > 0) {
 			for (CwbOrder c : clist) {
-				/*if (c.getNewpaywayid().equals(PaytypeEnum.Pos.getValue()+"")&&c.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()) {
-					continue;
-				}*/
 				CwbOrderView cwbOrderView = new CwbOrderView();
 				cwbOrderView.setCwb(c.getCwb());
 				cwbOrderView.setEmaildate(c.getEmaildate());
@@ -1778,11 +1775,14 @@ public class DataStatisticsService {
 						cwbOrderView.setSendSuccesstime(orderflowList.get(c.getCwb()).get("Gobacktime"));// 配送成功时间
 					}
 				}
-				
+				cwbOrderView.setShouldfare(c.getShouldfare());
+				cwbOrderView.setExpressPayWay(ExpressSettleWayEnum.getByValue(c.getPaymethod()).getText());
+				cwbOrderView.setRealweight(new BigDecimal(c.getRealweight()));
+
+				// 添加揽件省 added by songkaojun 2015-11-17
+				cwbOrderView.setSenderprovince(c.getSenderprovince());
 				cwbOrderViewList.add(cwbOrderView);
 
-			
-			
 			}
 		}
 		return cwbOrderViewList;
@@ -1952,7 +1952,7 @@ public class DataStatisticsService {
 
 	private String getCwbs(long sign, String begindate, String enddate, long isauditTime, String[] nextbranchid, String[] startbranchid, long isaudit, String[] operationOrderResultTypes,
 			String[] dispatchbranchid, long deliverid, long flowordertype, String[] kufangid, String[] currentBranchid, long branchid1, String type, String[] branchid2s, String[] customerid,
-			long isnowdata,int firstlevelid ) {
+			long isnowdata, int firstlevelid) {
 		String orderflowcwbs = "";
 		String customerids = this.getStrings(customerid);
 		if (sign == 1) {

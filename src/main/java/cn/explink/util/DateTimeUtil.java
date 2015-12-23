@@ -672,7 +672,7 @@ public class DateTimeUtil {
 	 * 读取修改时间的方法2
 	 */
 	public static void getModifiedTime_2() {
-		File f = new File("C:\\test.txt");
+		File f = new File("C:\\ExecelImportAndValidateUtilTest.txt");
 		Calendar cal = Calendar.getInstance();
 		long time = f.lastModified();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

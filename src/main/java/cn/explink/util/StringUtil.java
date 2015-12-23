@@ -2,6 +2,10 @@ package cn.explink.util;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,8 +16,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 public class StringUtil {
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 	public static String nullConvertToEmptyString(String string) {
 		String lastusername = string == null ? "" : string;
+		if ("null".equals(lastusername)) {
+			lastusername = "";
+		}
 		return lastusername;
 	}
 
@@ -25,6 +34,40 @@ public class StringUtil {
 	public static BigDecimal nullConvertToBigDecimal(Object bd) {
 		BigDecimal lastusername = bd == null ? BigDecimal.ZERO : (BigDecimal) bd;
 		return lastusername;
+	}
+
+	public static Long nullConvertToLong(Object bd) {
+		Long lastusername = bd == null ? Long.valueOf(0) : (Long) bd;
+		return lastusername;
+	}
+
+	public static java.util.Date formateSqlDateTime(Timestamp time) {
+		java.util.Date date = null;
+		if (time != null) {
+			String timeStr = time.toString();
+			String dateStr = timeStr.substring(0, timeStr.length() - 2);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			try {
+				date = sdf.parse(dateStr);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		return date;
+	}
+
+	public static String nullDateConverToEmptyString(Object bd) {
+		if (bd == null) {
+			return "";
+		} else {
+			if (bd instanceof Date) {
+				return StringUtil.sdf.format(bd);
+			} else if (bd instanceof java.util.Date) {
+				return StringUtil.sdf.format(bd);
+			} else {
+				return bd.toString();
+			}
+		}
 	}
 
 	/**
@@ -377,12 +420,22 @@ public class StringUtil {
 		String[] sp = p.split(str);
 		return sp;
 	}
+
 	/**
- 	 * 字符串判空
- 	 * @param str
- 	 * @return
- 	 */
- 	public static boolean isEmpty(String str){
- 		return StringUtils.isEmpty(str);
- 	}
+	 * 字符串判空
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static boolean isEmpty(String str) {
+		return StringUtils.isEmpty(str);
+	}
+
+	public static String nullOrEmptyStringConvertToEmpty(Object string) {
+		String lastusername = string == null ? "空" : (String) string;
+		if ("".equals(lastusername)) {
+			lastusername = "空";
+		}
+		return lastusername;
+	}
 }

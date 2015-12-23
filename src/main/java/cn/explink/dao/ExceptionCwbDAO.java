@@ -59,7 +59,7 @@ public class ExceptionCwbDAO {
 		}
 	}
 
-	public List<ExceptionCwb> getAllECByExcel(long page, String cwb, long scantype, String errortype, long branchid, long userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
+	public List<ExceptionCwb> getAllECByExcel(long page, String cwb, long scantype, String errortype, String branchid, long userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
 		try {
 			String sql = "select * from express_ops_exception_cwb where createtime >? and createtime <?";
 			sql = this.getECByWhereSql(sql, cwb, scantype, errortype, branchid, userid, ishanlder, scope);
@@ -86,8 +86,8 @@ public class ExceptionCwbDAO {
 		jdbcTemplate.update(sql, cwb, scantype, errortype, branchid, userid, customerid, driverid, truckid, deliverid, interfacetype,scancwb);
 	}
 
-	public String getECByWhereSql(String sql, String cwb, long scantype, String errortype, long branchid, long userid, long ishanlder, long scope) {
-		if (cwb.length() > 0 || scantype > 0 || errortype.length() > 0 || branchid > 0 || userid > 0 || ishanlder > 0) {
+	public String getECByWhereSql(String sql, String cwb, long scantype, String errortype, String branchid, long userid, long ishanlder, long scope) {
+		if (cwb.length() > 0 || scantype > 0 || errortype.length() > 0 || branchid.length() > 0 || userid > 0 || ishanlder > 0) {
 			StringBuffer w = new StringBuffer();
 			if (cwb.length() > 0) {
 				w.append(" and cwb='" + cwb + "'");
@@ -98,8 +98,8 @@ public class ExceptionCwbDAO {
 			if (errortype.length() > 0) {
 				w.append(" and errortype='" + errortype + "'");
 			}
-			if (branchid > 0) {
-				w.append(" and branchid=" + branchid);
+			if (branchid.length() > 0) {
+				w.append(" and branchid in(" + branchid+")");
 			}
 			if (userid > 0) {
 				w.append(" and userid=" + userid);

@@ -74,4 +74,19 @@ public class RoleDAO {
 	public List<Role> getRolesByIsdelivery() {
 		return this.jdbcTemplate.query("select * from express_set_role_new where isdelivery=1 ", new RoleRowMapper());
 	}
+
+	/**
+	 *
+	 * @Title: getRolesByDeliveryNames
+	 * @description 通过揽件员的名字的集合（字符串），查询字符串内所有揽件员的信息
+	 * @author 刘武强
+	 * @date  2015年10月12日上午11:20:40
+	 * @param  @param DeliveryNames
+	 * @param  @return
+	 * @return  List<Role>
+	 * @throws
+	 */
+	public List<Role> getRolesByDeliveryNames(String DeliveryNames) {
+		return this.jdbcTemplate.query("select * from express_set_role_new where rolename in ? ", new RoleRowMapper(), DeliveryNames);
+	}
 }

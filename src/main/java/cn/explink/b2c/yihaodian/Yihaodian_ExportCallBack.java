@@ -18,7 +18,7 @@ import cn.explink.util.MD5.MD5Util;
 
 /**
  * 下载数据成功后回传
- * 
+ *
  * @author Administrator
  *
  */
@@ -35,12 +35,11 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 	/**
 	 * 回传下载成功记录
 	 */
-	public void ExportCallBackByYiHaoDian(int yhd_key, int loopcount,String url,String customerid) {
-		Yihaodian yihaodian = getYihaodian(yhd_key);
+	public void ExportCallBackByYiHaoDian(int yhd_key, int loopcount, String url, String customerid) {
+		Yihaodian yihaodian = this.getYihaodian(yhd_key);
 		try {
-			
-			List<CwbOrderDTO> datalist = dataImportDAO_B2c.getCwbOrderByCustomerIdsAndPageCount(customerid, yihaodian.getCallBackCount());
-			if (datalist == null || datalist.size() == 0) {
+			List<CwbOrderDTO> datalist = this.dataImportDAO_B2c.getCwbOrderByCustomerIdsAndPageCount(customerid, yihaodian.getCallBackCount());
+			if ((datalist == null) || (datalist.size() == 0)) {
 				return;
 			}
 			OrderExportCallbackDto condto = new OrderExportCallbackDto();
@@ -48,33 +47,33 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 			String nowtime = DateTimeUtil.getNowTime();
 			condto.setRequestTime(nowtime);
 			condto.setSign(MD5Util.md5(yihaodian.getUserCode() + nowtime + yihaodian.getPrivate_key()));
-			String multiCwbs = getCwbArrStr(datalist);
+			String multiCwbs = this.getCwbArrStr(datalist);
 			condto.setShipmentCode(multiCwbs.replaceAll("'", ""));
 
-			ReturnDto returnDto = restTemplate.exportCallBack(url, condto); // 返回dto
+			ReturnDto returnDto = this.restTemplate.exportCallBack(url, condto); // 返回dto
 			if (!returnDto.getErrCode().equals(YihaodianExpEmum.Success.getErrCode())) {
-				logger.info("回调[一号店]的订单信息导出成功的接口-返回异常:errCode={},errMsg={},loopcount=" + loopcount, returnDto.getErrCode(), returnDto.getErrMsg());
+				this.logger.info("回调[一号店]的订单信息导出成功的接口-返回异常:errCode={},errMsg={},loopcount=" + loopcount, returnDto.getErrCode(), returnDto.getErrMsg());
 				return;
 			} else {
 				for (String cwb : condto.getShipmentCode().split(",")) {
-					dataImportDAO_B2c.updateIsB2cSuccessFlagByCwbs(cwb);
+					this.dataImportDAO_B2c.updateIsB2cSuccessFlagByCwbs(cwb);
 				}
 
-				logger.info("成功的回调[一号店]的订单信息导出成功的接口,当前回调运单号组={},loopcount=" + loopcount, multiCwbs);
+				this.logger.info("成功的回调[一号店]的订单信息导出成功的接口,当前回调运单号组={},loopcount=" + loopcount, multiCwbs);
 			}
 
 			if (datalist != null) {
-				ExportCallBackByYiHaoDian(yhd_key, loopcount + 1,url,customerid);
+				this.ExportCallBackByYiHaoDian(yhd_key, loopcount + 1, url, customerid);
 			}
 
 		} catch (Exception e) {
-			logger.error("error info while request yihaodian export cwb Successfully CallBackReturn  interface!" + e, e);
+			this.logger.error("error info while request yihaodian export cwb Successfully CallBackReturn  interface!" + e, e);
 			e.printStackTrace();
 		}
 	}
 
 	private String getCwbArrStr(List<CwbOrderDTO> datalist) {
-		if (datalist != null && datalist.size() > 0) {
+		if ((datalist != null) && (datalist.size() > 0)) {
 			StringBuffer sub = new StringBuffer();
 			for (CwbOrderDTO cwbOrder : datalist) {
 				sub.append("'" + cwbOrder.getCwb() + "',");

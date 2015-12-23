@@ -70,6 +70,7 @@ import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.express.ExpressOrderDao;
 import cn.explink.domain.AbnormalType;
 import cn.explink.domain.AbnormalWriteBack;
 import cn.explink.domain.AbnormalWriteBackView;
@@ -95,12 +96,15 @@ import cn.explink.domain.SetExportField;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.express.EmbracedOrderVO;
+import cn.explink.domain.VO.express.JoinMessageVO;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.ComplaintAuditTypeEnum;
 import cn.explink.enumutil.ComplaintTypeEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
@@ -111,6 +115,7 @@ import cn.explink.service.CwbTranslator;
 import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
+import cn.explink.service.express.DeliveryOrderTrackingService;
 import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateDayUtil;
 import cn.explink.util.DateTimeUtil;
@@ -119,6 +124,14 @@ import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
+
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryTrackInfo;
+import com.pjbest.pjorganization.bizservice.service.SbOrgModel;
+import com.pjbest.pjorganization.bizservice.service.SbOrgService;
+import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
+import com.vip.osp.core.exception.OspException;
 
 @Controller
 @RequestMapping("/order")
@@ -196,6 +209,10 @@ public class OrderSelectController {
 	@Autowired
 	PunishDAO punishDAO;
 	@Autowired
+	DeliveryOrderTrackingService deliveryOrderTrackingService;
+	@Autowired
+	private ExpressOrderDao expressOrderDao;
+	@Autowired
 	OrderAddressReviseDao orderAddressReviseDao;
 
 	private User getSessionUser() {
@@ -223,7 +240,7 @@ public class OrderSelectController {
 	 * DeliveryState
 	 * deliveryState=deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 	 * if(deliveryState!=null){ BeanUtils.copyProperties(deliveryState, view); }
-	 *
+	 * 
 	 * List<OrderFlow> datalist = orderFlowDAO.getOrderFlowByCwb(cwb);
 	 * List<OrderFlowView> views=new ArrayList<OrderFlowView>(); for (OrderFlow
 	 * orderFlowAll:datalist) { OrderFlowView orderFlowView=new OrderFlowView();
@@ -236,7 +253,7 @@ public class OrderSelectController {
 	 * view.setNewpaywayid(view.getNewpaywayid());
 	 * view.setBackreason(order.getBackreason());
 	 * view.setLeavedreason(order.getLeavedreason());
-	 *
+	 * 
 	 * List<OrderFlow> rukuList =
 	 * orderFlowDAO.getOrderFlowByCwbAndFlowordertype(
 	 * cwb,FlowOrderTypeEnum.RuKu.getValue(),"",""); List<OrderFlow> linghuoList
@@ -252,7 +269,7 @@ public class OrderSelectController {
 	 * GotoClassAuditing gotoClassAuditingGuiBan =
 	 * gotoClassAuditingDAO.getGotoClassAuditingByGcaid(view.getGcaid()); User
 	 * deliveryname = userDAO.getUserByUserid(view.getDeliverid());
-	 *
+	 * 
 	 * model.addAttribute("deliveryname",deliveryname);
 	 * model.addAttribute("customer",customer);
 	 * model.addAttribute("invarhousebranch",invarhousebranch==null?new
@@ -280,7 +297,7 @@ public class OrderSelectController {
 	 * model.addAttribute("userInBranchType",
 	 * branchDAO.getBranchByBranchid(getSessionUser
 	 * ().getBranchid()).getSitetype());
-	 *
+	 * 
 	 * //加问题件处理的过程 List<AbnormalWriteBack> backList =
 	 * abnormalWriteBackDAO.getAbnormalOrderByOpscwbid(order.getOpscwbid());
 	 * List<AbnormalWriteBackView> backViewList = new
@@ -297,14 +314,14 @@ public class OrderSelectController {
 	 * backview.setDescribe(back.getDescribe()); if(typename.equals("--")){
 	 * typename = getTypeName(back.getOpscwbid(), alist); }
 	 * backview.setTypename(typename); backViewList.add(backview); } }
-	 *
+	 * 
 	 * //投诉的订单记录 List<Complaint> comList = complaintDAO.getComplaintByCwb(cwb);
 	 * List<ComplaintsView> comViewList = new ArrayList<ComplaintsView>();
 	 * if(comList != null && comList.size()>0){ for (Complaint complaint :
 	 * comList) { ComplaintsView complaintview = new ComplaintsView(); User
 	 * user1 = userDAO.getUserByUserid(complaint.getCreateUser()); User user2 =
 	 * userDAO.getUserByUserid(complaint.getAuditUser());
-	 *
+	 * 
 	 * complaintview.setCwb(cwb);
 	 * complaintview.setCreateTime(complaint.getCreateTime());
 	 * complaintview.setAuditTime(complaint.getAuditTime());
@@ -318,7 +335,7 @@ public class OrderSelectController {
 	 * .setAuditTypeName(getComplaintAuditTypeName(complaint.getAuditType()));
 	 * complaintview.setAuditRemark(complaint.getAuditRemark());
 	 * comViewList.add(complaintview); } }
-	 *
+	 * 
 	 * model.addAttribute("comViewList", comViewList);
 	 * model.addAttribute("abnormalWriteBackViewList", backViewList); return
 	 * "/orderflow/orderWorkRightQueck"; }
@@ -585,9 +602,15 @@ public class OrderSelectController {
 		model.addAttribute("scancwb", scancwb);
 		cwb = this.translateCwb(cwb);
 		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
+		String jspPage = "/orderflow/queckSelectOrderright";
 
 		if (order == null) {
-			return "/orderflow/queckSelectOrderright";
+			return jspPage;
+		}
+		if (order.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
+			jspPage = "/orderflow/deliveryOrderTrackingRight";
+		} else {
+			jspPage = "/orderflow/queckSelectOrderright";
 		}
 		QuickSelectView view = new QuickSelectView();
 		BeanUtils.copyProperties(order, view);
@@ -668,6 +691,44 @@ public class OrderSelectController {
 		view.setBackreason(order.getBackreason());
 		view.setLeavedreason(order.getLeavedreason());
 		model.addAttribute("view", view);
+
+		if (order.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
+			PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
+			List<PjDeliveryTrackInfo> result = new ArrayList<PjDeliveryTrackInfo>();
+			List<JoinMessageVO> resultShow = new ArrayList<JoinMessageVO>();
+			try {
+				result = pjDeliveryOrderService.getDeliveryOrderTracking(cwb);
+			} catch (OspException e) {
+				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}", e.getMessage());
+				e.printStackTrace();
+				return jspPage;
+			}
+			if ((result == null) || (result.size() == 0)) {
+				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}");
+				return jspPage;
+			}
+			for (PjDeliveryTrackInfo temp : result) {
+				JoinMessageVO joinMessage = new JoinMessageVO();
+				BeanUtils.copyProperties(temp, joinMessage);
+				// joinMessage.connectMessage();
+				joinMessage.replaceDetail();
+				resultShow.add(joinMessage);
+			}
+			List<AorderFlowView> aorderFlowViews = new ArrayList<AorderFlowView>();// 总的订单流程list
+			result = this.deliveryOrderTrackingService.orderList(result);// 订单排序
+			int i = 0;
+			for (JoinMessageVO temp : resultShow) {
+				AorderFlowView a = new AorderFlowView();
+				a.setId(i);// 用于排序同时操作的相同时间的显示顺序
+				a.setTime(temp.getOperateTime());
+				a.setUsername(temp.getOperator());
+				// a.setContent(temp.getDescription());
+				a.setContent(temp.getTransportDetail());
+				aorderFlowViews.add(a);
+			}
+			model.addAttribute("aorderFlowViews", aorderFlowViews);
+			return jspPage;
+		}
 
 		// 加问题件处理的过程
 
@@ -795,13 +856,65 @@ public class OrderSelectController {
 		return "/orderflow/queckSelectOrderright";
 	}
 
+	/**
+	 *
+	 * @Title: getStionInfo
+	 * @description 当鼠标移动到轨迹的站点名称上市，浮窗显示站点信息
+	 * @author 刘武强
+	 * @date 2015年10月27日下午5:09:32
+	 * @param @param operateOrgCode
+	 * @param @return
+	 * @return JSONObject
+	 * @throws
+	 */
+	@RequestMapping("/getStionInfo")
+	@ResponseBody
+	public JSONObject getStionInfo(String carrierCode, String operateOrgCode) {
+		JSONObject obj = new JSONObject();
+		SbOrgService sbOrgService = new SbOrgServiceHelper.SbOrgServiceClient();
+		List<SbOrgModel> resultList = new ArrayList<SbOrgModel>();
+		try {
+			resultList = sbOrgService.findSbOrgByCarrierAndSelfStation(carrierCode, operateOrgCode);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		/*
+		 * SbOrgModel a = new SbOrgModel(); a.setOrgName("测试站");
+		 * a.setTelephone("15652549876"); a.setContactor("小刘");
+		 * resultList.add(a);
+		 */
+		if ((resultList != null) && (resultList.size() > 0)) {
+			obj.put("info", resultList.get(0));
+		} else {
+			obj.put("info", new SbOrgModel());
+		}
+		return obj;
+	}
+
 	@RequestMapping("/queckSelectOrderleft/{cwb}")
 	public String queckSelectOrderleft(Model model, @PathVariable(value = "cwb") String cwb) {
 		cwb = this.translateCwb(cwb);
 		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
-		if (order == null) {
-			return "/orderflow/queckSelectOrderleft";
+		String jspPage = "";
+		// 如果是快递单，则取快递单自己的左侧页面-刘武强10.20
+		if ((order != null) && (order.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue())) {
+			EmbracedOrderVO embracedOrder = this.expressOrderDao.getCwbOrderByCwb(cwb);
+			embracedOrder = embracedOrder != null ? embracedOrder : new EmbracedOrderVO();
+			model.addAttribute("embracedOrder", embracedOrder);
+			List<Customer> senderCustomer = this.customerDAO.getCustomerByCustomerid(embracedOrder.getSender_customerid() + "");
+			List<Customer> consineerCustomer = this.customerDAO.getCustomerByCustomerid(embracedOrder.getConsignee_customerid() + "");
+
+			model.addAttribute("senderCustomer", senderCustomer.size() > 0 ? senderCustomer.get(0) : new Customer());
+			model.addAttribute("consineerCustomer", consineerCustomer.size() > 0 ? consineerCustomer.get(0) : new Customer());
+			jspPage = "/orderflow/deliveryOrderTracking";
+		} else {
+			jspPage = "/orderflow/queckSelectOrderleft";
 		}
+
+		if (order == null) {
+			return jspPage;
+		}
+
 		List<TranscwbView> transcwbList = new ArrayList<TranscwbView>();
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(order.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(order.getCustomerid()).getIsypdjusetranscwb();
 		if (((order.getSendcarnum() > 1) || (order.getBackcarnum() > 1)) && ((order.getTranscwb().split(",").length > 1) || (order.getTranscwb().split(":").length > 1)) && (isypdjusetranscwb == 1)) {
@@ -848,23 +961,22 @@ public class OrderSelectController {
 		CustomWareHouse customWareHouse = this.customWareHouseDAO.getWarehouseId(Long.parseLong(view.getCustomerwarehouseid()));
 		String customWareHousename = customWareHouse == null ? "" : customWareHouse.getCustomerwarehouse();
 		view.setCustomerwarehouseid(customWareHousename);
-			
-		List<OrderAddressRevise>   orderAddressRevises =this.orderAddressReviseDao.getOrderAddressReviseByCwb(order.getCwb());
-		String oldAddress=null;
-		if (orderAddressRevises!=null && orderAddressRevises.size()>0) {
-			String currentAddress=orderAddressRevises.get(0).getAddress();
+
+		List<OrderAddressRevise> orderAddressRevises = this.orderAddressReviseDao.getOrderAddressReviseByCwb(order.getCwb());
+		String oldAddress = null;
+		if ((orderAddressRevises != null) && (orderAddressRevises.size() > 0)) {
+			String currentAddress = orderAddressRevises.get(0).getAddress();
 			for (int i = 1; i < orderAddressRevises.size(); i++) {
-				if(!currentAddress.trim().equals(orderAddressRevises.get(i).getAddress().trim())){
-					oldAddress=orderAddressRevises.get(i).getAddress().trim();
+				if (!currentAddress.trim().equals(orderAddressRevises.get(i).getAddress().trim())) {
+					oldAddress = orderAddressRevises.get(i).getAddress().trim();
 					break;
 				}
 			}
 		}
-		
-		
-		String oldconsigneeaddress=oldAddress==null ? "": oldAddress;
+
+		String oldconsigneeaddress = oldAddress == null ? "" : oldAddress;
 		view.setOldconsigneeaddress(oldconsigneeaddress);
-		
+
 		List<OrderFlow> rukuList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.RuKu.getValue(), "", "");
 		List<OrderFlow> linghuoList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), "", "");
 		Customer customer = this.customerDAO.getCustomerById(view.getCustomerid());
@@ -890,8 +1002,7 @@ public class OrderSelectController {
 		model.addAttribute("view", view);
 		// 只有客服才能在订单查询界面加备注
 		model.addAttribute("userInBranchType", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getSitetype());
-
-		return "/orderflow/queckSelectOrderleft";
+		return jspPage;
 	}
 
 	private String getComplaintTypeName(long complainttype) {
@@ -959,7 +1070,7 @@ public class OrderSelectController {
 						phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
-				phone=this.showBranchPhone(currentbranchname, phone);
+				phone = this.showBranchPhone(currentbranchname, phone);
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>到货；联系电话：<font color =\"red\">[{1}]</font>；", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
@@ -1066,10 +1177,9 @@ public class OrderSelectController {
 			User user = this.getUser(orderFlowAll.getUserid());
 			String phone = StringUtil.nullConvertToEmptyString(this.getUserPhone(user));
 			String comment = StringUtil.nullConvertToEmptyString(orderFlowAll.getComment()).trim();
-			if(comment.length()>0){
-				if(comment.lastIndexOf(",")==(comment.length()-1))
-				{
-					comment=comment.substring(0,comment.length()-1);
+			if (comment.length() > 0) {
+				if (comment.lastIndexOf(",") == (comment.length() - 1)) {
+					comment = comment.substring(0, comment.length() - 1);
 				}
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TiHuo.getValue()) {
@@ -1107,20 +1217,29 @@ public class OrderSelectController {
 				return MessageFormat.format("货物由<font color =\"red\">[{0}]</font>撤销反馈；联系电话：<font color =\"red\">[{1}]</font>", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
-				phone=this.showBranchPhone(currentbranchname, phone);
+				phone = this.showBranchPhone(currentbranchname, phone);
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>到货；联系电话：<font color =\"red\">[{1}]</font>；备注：<font color =\"red\">[{2}]</font>", currentbranchname, phone, comment);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
-				String deliverphone = this.getUserPhone(this.userDAO.getUserByUserid(cwbOrderWithDeliveryState.getDeliveryState().getDeliveryid()));
+				// modified by jiangyu 20150917 begin
+				// 反馈状态的获取
+				DeliveryState deliveryState = cwbOrderWithDeliveryState.getDeliveryState();
+				String deliverphone = "";// 小件员电话
+				String realName = "";// 小件员姓名
+				if (null != deliveryState) {
+					User deliverMan = this.userDAO.getUserByUserid(deliveryState.getDeliveryid());
+					deliverphone = this.getUserPhone(deliverMan);
+					realName = deliverMan.getRealname();
+				}
 
 				if ((comment != null) && !comment.isEmpty() && comment.contains("正在派件") && comment.contains("派件人")) {
 
 					return MessageFormat.format("货物已从<font color =\"red\">[{0}]</font>" + comment, currentbranchname);
 				} else {
-					return MessageFormat.format("货物已从<font color =\"red\">[{0}]</font>的小件员<font color =\"red\">[{1}]</font>分站领货；小件员电话：<font color =\"red\">[{2}]</font>", currentbranchname,
-							this.userDAO.getUserByUserid(cwbOrderWithDeliveryState.getDeliveryState().getDeliveryid()).getRealname(), deliverphone);
+					return MessageFormat.format("货物已从<font color =\"red\">[{0}]</font>的小件员<font color =\"red\">[{1}]</font>分站领货；小件员电话：<font color =\"red\">[{2}]</font>", currentbranchname, realName,
+							deliverphone);
 				}
-
+				// modified by jiangyu 20150917 end
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.YiFanKui.getValue()) {
 				String deliverphone = this.getUserPhone(this.userDAO.getUserByUserid(cwbOrderWithDeliveryState.getDeliveryState().getDeliveryid()));
@@ -1193,6 +1312,22 @@ public class OrderSelectController {
 				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>异常匹配已处理；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
 						comment);
 			}
+			// ==========================add begin by
+			// wangzhiyu===========================================
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.YunDanLuRu.getValue()) {
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>运单录入；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
+						comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.LanJianRuZhan.getValue()) {
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件入站；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
+						comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.LanJianChuZhan.getValue()) {
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件出站；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
+						comment);
+			}
+			// ============================add
+			// end=========================================================
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -1248,7 +1383,7 @@ public class OrderSelectController {
 				return MessageFormat.format("货物由<font color =\"red\">[{0}]</font>撤销反馈；联系电话：<font color =\"red\">[{1}]</font>", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
-				phone=this.showBranchPhone(currentbranchname, phone);
+				phone = this.showBranchPhone(currentbranchname, phone);
 				return MessageFormat.format("从<font color =\"red\">[{0}]</font>到货；联系电话：<font color =\"red\">[{1}]</font>；备注：<font color =\"red\">[{2}]</font>", currentbranchname, phone, comment);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
@@ -1368,7 +1503,7 @@ public class OrderSelectController {
 				return MessageFormat.format("货物由[{0}]撤销反馈；联系电话：[{1}]", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
-				phone=this.showBranchPhone(currentbranchname, phone);
+				phone = this.showBranchPhone(currentbranchname, phone);
 				return MessageFormat.format("从[{0}]到货；联系电话：[{1}]；备注：[{2}]", currentbranchname, phone, comment);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
@@ -2238,8 +2373,7 @@ public class OrderSelectController {
 			@RequestParam(value = "consigneeaddress", required = false, defaultValue = "") String consigneeaddress, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb,
 			@RequestParam(value = "showLetfOrRight", required = false, defaultValue = "1") long showLetfOrRight,
-			@RequestParam(value = "ischangetime", required = false, defaultValue = "0") long ischangetime
-			) {
+			@RequestParam(value = "ischangetime", required = false, defaultValue = "0") long ischangetime) {
 		List<CwbOrder> clist = new ArrayList<CwbOrder>();
 		Page pageparm = new Page();
 		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
@@ -2251,10 +2385,10 @@ public class OrderSelectController {
 			pageparm = new Page(this.cwbOrderService.getCountByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb), page,
 					Page.ONE_PAGE_NUMBER);
 		}
-		if (ischangetime==0) {
-			model.addAttribute("currentime",DateTimeUtil.getNowTime());
-		}else {
-			model.addAttribute("currentime",begindate);
+		if (ischangetime == 0) {
+			model.addAttribute("currentime", DateTimeUtil.getNowTime());
+		} else {
+			model.addAttribute("currentime", begindate);
 
 		}
 		model.addAttribute("orderlist", clist);
@@ -2262,7 +2396,7 @@ public class OrderSelectController {
 		model.addAttribute("page_obj", pageparm);
 		model.addAttribute("page", page);
 		model.addAttribute("showLetfOrRight", showLetfOrRight);
-		model.addAttribute("cwbs",cwbs);
+		model.addAttribute("cwbs", cwbs);
 		return "/neworderquery/left";
 
 	}
@@ -2347,9 +2481,10 @@ public class OrderSelectController {
 		List<Branch> branchlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		List<User> userList = this.userDAO.getAllUser();
 		List<PunishType> punishTypeList = this.punishTypeDAO.getAllPunishTypeByName();
-		//List<Punish> punishList = this.punishDAO.getPunishByCwb(cwb);
-		List<PenalizeInside> penalizeInsides=this.punishInsideDao.getInsidebycwb(cwb);
-		String punishinsideShixiaoTime=this.systemInstallDAO.getSystemInstall("punishinsidezidongshenheshixiao").getValue();
+		// List<Punish> punishList = this.punishDAO.getPunishByCwb(cwb);
+		List<PenalizeInside> penalizeInsides = this.punishInsideDao.getInsidebycwb(cwb);
+		String punishinsideShixiaoTime = this.systemInstallDAO.getSystemInstall("punishinsidezidongshenheshixiao") == null ? "" : this.systemInstallDAO.getSystemInstall(
+				"punishinsidezidongshenheshixiao").getValue();
 		model.addAttribute("branchlist", branchlist);
 		model.addAttribute("punishList", penalizeInsides);
 		model.addAttribute("userList", userList);
@@ -2642,7 +2777,7 @@ public class OrderSelectController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -2903,18 +3038,17 @@ public class OrderSelectController {
 
 		return "/orderflow/queckSelectOrders";
 	}
-	public String showBranchPhone(String currentbranchname,String phone)
-	{
+
+	public String showBranchPhone(String currentbranchname, String phone) {
 		try {
 
-		SystemInstall systemInstall=this.systemInstallDAO.getSystemInstallByName("showbranchPhone");
-		systemInstall=systemInstall==null?new SystemInstall():systemInstall;
-		if((systemInstall.getValue()!=null)&&systemInstall.getValue().equalsIgnoreCase("yes"))
-		{
-			Branch branch=this.branchDAO.getBranchByBranchname(currentbranchname);
-			branch=branch==null?new Branch():branch;
-			phone=branch.getBranchphone();
-		}
+			SystemInstall systemInstall = this.systemInstallDAO.getSystemInstallByName("showbranchPhone");
+			systemInstall = systemInstall == null ? new SystemInstall() : systemInstall;
+			if ((systemInstall.getValue() != null) && systemInstall.getValue().equalsIgnoreCase("yes")) {
+				Branch branch = this.branchDAO.getBranchByBranchname(currentbranchname);
+				branch = branch == null ? new Branch() : branch;
+				phone = branch.getBranchphone();
+			}
 
 		} catch (Exception e) {
 			return phone;

@@ -290,6 +290,12 @@ function changeBranchDeliver(branchname,delivername,deliverid){
 				<td bgcolor="#F4F4F4">费用总计</td>
 				<td bgcolor="#F4F4F4">当前状态</td>
 				<td bgcolor="#F4F4F4">备注</td>
+				
+				<td bgcolor="#F4F4F4">应收运费</td>
+				<td bgcolor="#F4F4F4">重量</td>
+				<td bgcolor="#F4F4F4">付款方式</td>
+				<td bgcolor="#F4F4F4">客户</td>
+				<td bgcolor="#F4F4F4">客户编号</td>
 			</tr>
 		<% for(CwbKuaiDiView  c : cwbViewList){ %>
 				<tr bgcolor="#FF3300">
@@ -303,6 +309,12 @@ function changeBranchDeliver(branchname,delivername,deliverid){
 					<td><strong><%=c.getAllfee() %></strong></td>
 					<td><label for="textfield2"></label><%=c.getFlowordertypeMethod() %></td>
 					<td><%=c.getRemark() %></td>
+					
+					<td><%=c.getShouldfare() %></td>
+					<td><%=c.getRealweight() %></td>
+					<td><%=c.getPaymethod() %></td>
+					<td><%=c.getCustomername() %></td>
+					<td><%=c.getCustomercode() %></td>
 				 </tr>
 		 <% }%>
 	</table>

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,7 +44,6 @@ import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.ZhiFuApplyDao;
 import cn.explink.dao.searchEditCwbInfoDao;
-import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
@@ -56,6 +54,7 @@ import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.User;
 import cn.explink.domain.WindowShow;
 import cn.explink.domain.ZhiFuApplyView;
+import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -168,7 +167,7 @@ public class EditCwbController {
 		model.addAttribute("cwbArray", cwbArray);
 		String cwbsSql = cwbsSqlBuffer.substring(0, cwbsSqlBuffer.length() - 1);
 		List<CwbOrder> cwbList = this.cwbDAO.getCwbByCwbs(cwbsSql);
-	//	Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(cwbsSql);
+		//	Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(cwbsSql);
 
 		/*// 做重置审核状态更改的操作 start
 		if (type == EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue()) {
@@ -202,9 +201,9 @@ public class EditCwbController {
 			model.addAttribute("prohibitedCwb", prohibitedCwb);
 			return "editcwb/ChongZhiShenHe";
 			// 做重置审核状态更改的操作 end
-		}*/ 
+		}*/
 		if (type == EditCwbTypeEnum.XiuGaiJinE.getValue()) {// 修改订单金额更改操作
-																	// Start
+															// Start
 			List<CwbOrderWithDeliveryState> allowCods = new ArrayList<CwbOrderWithDeliveryState>();
 			List<CwbOrderWithDeliveryState> prohibitedCods = new ArrayList<CwbOrderWithDeliveryState>();
 			for (CwbOrder co : cwbList) {
@@ -260,8 +259,8 @@ public class EditCwbController {
 				if (completedCwb != null && !completedCwb.isEmpty()) {
 					cods.setError(completedCwb + "订单类型"); //已完成的订单不允许修改订单类型
 					prohibitedCods.add(cods);
-				} else if ((cods.getDeliveryState() != null) && (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue())
-						&& (cods.getDeliveryState().getInfactfare().compareTo(BigDecimal.ZERO) > 0)) {
+				} else if ((cods.getDeliveryState() != null) && (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (cods.getDeliveryState().getInfactfare()
+						.compareTo(BigDecimal.ZERO) > 0)) {
 					cods.setError("上门退有应收运费的订单不允许修改订单类型");
 					prohibitedCods.add(cods);
 				} else if ((cods.getDeliveryState() != null) && (cods.getDeliveryState().getGcaid() > 0)) { // 已经归班的订单不能修改订单类型，必须充值审核状态才能修改
@@ -275,6 +274,20 @@ public class EditCwbController {
 			model.addAttribute("prohibitedCods", prohibitedCods);
 			return "editcwb/XiuGaiDingDanLeiXing";
 			// 修改订单订单类型更改操作 end
+		} else if (type == EditCwbTypeEnum.XiuGaiKaiDiYunFeiJinE.getValue()) {// 修改快递单运费金额操作
+			List<CwbOrderWithDeliveryState> allowCods = new ArrayList<CwbOrderWithDeliveryState>();
+			for (CwbOrder co : cwbList) {
+				// 存储订单表记录和反馈表记录，用于前端判断
+				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
+				cods.setCwbOrder(co);
+				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
+				//将非快递单过滤掉
+				if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
+					allowCods.add(cods);
+				}
+			}
+			model.addAttribute("allowCods", allowCods);
+			return "editcwb/updateExpressFee";
 		}
 
 		// 如果不属于任何操作 则回到开始页面
@@ -301,8 +314,7 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/editChongZhiShenHeZhuangTai")
-	public String editChongZhiShenHeZhuangTai(Model model, @RequestParam(value = "requestUser", required = false, defaultValue = "0") Long requestUser,
-			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) {
+	public String editChongZhiShenHeZhuangTai(Model model, @RequestParam(value = "requestUser", required = false, defaultValue = "0") Long requestUser, @RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) {
 		List<User> userList = this.userDAO.getUserByid(requestUser);
 		if (userList != null) {
 			this.logger.info("重置订单审核状态功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
@@ -349,11 +361,10 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/editXiuGaiJinE2")
-	public String editXiuGaiJinE2(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = true, defaultValue = "0") Long requestUser,
-			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) {
-		List<User> userList = userDAO.getUserByid(requestUser);
+	public String editXiuGaiJinE2(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = true, defaultValue = "0") Long requestUser, @RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) {
+		List<User> userList = this.userDAO.getUserByid(requestUser);
 		if (userList.size() > 0) {
-			logger.info("修改订单金额功能 [{}] cwb: {}", getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
+			this.logger.info("修改订单金额功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
 			List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
 			List<String> errorList = new ArrayList<String>();
 			for (String cwb : cwbs) {
@@ -376,18 +387,18 @@ public class EditCwbController {
 
 				// 先判断是有账单 获取到修改订单金额的值,进行判断插入到数据库中
 				if ((receivablefee != null) && !receivablefee.equals(cwbOrder.getReceivablefee())) {
-//					this.adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), paybackfee, receivablefee, "", user.getUsername(),cwbOrder.getCwbordertypeid());
+					//					this.adjustmentRecordService.createAdjustmentRecode(cwb, cwbOrder.getCustomerid(), cwbOrder.getReceivablefee(), paybackfee, receivablefee, "", user.getUsername(),cwbOrder.getCwbordertypeid());
 					//客户调整单逻辑入口
 					this.adjustmentRecordService.processAdjusRecordByMoney(cwbOrder, paybackfee, receivablefee, "", user.getUsername());
 					//站内调整单逻辑入口
-					this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder,user,receivablefee,paybackfee);
+					this.orgBillAdjustmentRecordService.createOrgBillAdjustRecord(cwbOrder, user, receivablefee, paybackfee);
 				}
-				
+
 				//added by jiangyu end
-				
+
 				try {
-					EdtiCwb_DeliveryStateDetail ec_dsd = editCwbService.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, receivablefee, cash, pos, checkfee, otherfee, Paybackfee, requestUser,
-							getSessionUser().getUserid());
+					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService
+							.analysisAndSaveByXiuGaiJinE(cwb, isDeliveryState, receivablefee, cash, pos, checkfee, otherfee, Paybackfee, requestUser, this.getSessionUser().getUserid());
 					ecList.add(ec_dsd);
 				} catch (ExplinkException ee) {
 					errorList.add(cwb + "_" + ee.getMessage());
@@ -402,15 +413,14 @@ public class EditCwbController {
 		}
 		return "editcwb/XiuGaiJinEResult";
 	}
-	
+
 	//修改后的修改金额处理方式
 	@RequestMapping("/editXiuGaiJinE")
-	public String editXiuGaiJinE(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = true, defaultValue = "0") Long requestUser,
-			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
+	public String editXiuGaiJinE(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = true, defaultValue = "0") Long requestUser, @RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
 		//存储在订单修改确认时所需要的参数(在金额修改时需要使用)
 		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
-	//	long editcwbnum = 0;
-		if(cwbs!=null&&cwbs.length>0){
+		//	long editcwbnum = 0;
+		if ((cwbs != null) && (cwbs.length > 0)) {
 			for (String cwb : cwbs) {
 				FeeWayTypeRemark fr = new FeeWayTypeRemark();
 				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
@@ -437,46 +447,46 @@ public class EditCwbController {
 				fr.setRequestUser(requestUser);
 				frlist.add(fr);
 			}
-			
-			List<User> userList = userDAO.getUserByid(requestUser);
+
+			List<User> userList = this.userDAO.getUserByid(requestUser);
 			if (userList.size() > 0) {
-				logger.info("修改订单金额功能 [{}] cwb: {}", getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
+				this.logger.info("修改订单金额功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
 				//5.28新加支付申请-审核-确认流程
 				List<ZhiFuApplyView> list = new ArrayList<ZhiFuApplyView>();
 				String cwbss = "";
-				for(String cwb:cwbs){
-					cwbss+="'"+cwb+"',";
+				for (String cwb : cwbs) {
+					cwbss += "'" + cwb + "',";
 				}
-				List<CwbOrder> cwblist = cwbDAO.getcwborderList(cwbss.substring(0,cwbss.lastIndexOf(",")));
-				for(CwbOrder co:cwblist){
-					long count = zhiFuApplyDao.getApplystateCount(co.getCwb(),1);
-					if(count==0){
-						for(FeeWayTypeRemark fre:frlist){
-							if(co.getCwb().equals(fre.getCwb())){
+				List<CwbOrder> cwblist = this.cwbDAO.getcwborderList(cwbss.substring(0, cwbss.lastIndexOf(",")));
+				for (CwbOrder co : cwblist) {
+					long count = this.zhiFuApplyDao.getApplystateCount(co.getCwb(), 1);
+					if (count == 0) {
+						for (FeeWayTypeRemark fre : frlist) {
+							if (co.getCwb().equals(fre.getCwb())) {
 								ZhiFuApplyView zfav = new ZhiFuApplyView();
 								zfav.setCwb(co.getCwb());
-								zfav.setCustomerid((int)co.getCustomerid());
+								zfav.setCustomerid((int) co.getCustomerid());
 								zfav.setCwbordertypeid(co.getCwbordertypeid());
 								zfav.setApplycwbordertypeid(0);
-								zfav.setFlowordertype((int)co.getFlowordertype());
-								zfav.setBranchid((int)co.getCurrentbranchid());
-								zfav.setPaywayid((int)co.getPaywayid());
+								zfav.setFlowordertype((int) co.getFlowordertype());
+								zfav.setBranchid((int) co.getCurrentbranchid());
+								zfav.setPaywayid((int) co.getPaywayid());
 								zfav.setApplypaywayid(0);
 								BigDecimal bdformer = BigDecimal.ZERO;
 								BigDecimal bdafter = BigDecimal.ZERO;
 								BigDecimal cwbreceivfee = co.getReceivablefee();//订单代收款
 								BigDecimal cwbpaybackfee = co.getPaybackfee();//订单待退款
-								if(co.getCwbordertypeid()==1){
+								if (co.getCwbordertypeid() == 1) {
 									bdformer = cwbreceivfee;
 									bdafter = fre.getReceivablefee();
-								}else if(co.getCwbordertypeid()==2){
+								} else if (co.getCwbordertypeid() == 2) {
 									bdformer = cwbpaybackfee;
 									bdafter = fre.getPaybackfee();
-								}else{
-									if(fre.getReceivablefee().compareTo(bdformer)>0){
+								} else {
+									if (fre.getReceivablefee().compareTo(bdformer) > 0) {
 										bdformer = cwbreceivfee;
 										bdafter = fre.getReceivablefee();
-									}else{
+									} else {
 										bdformer = cwbpaybackfee;
 										bdafter = fre.getPaybackfee();
 									}
@@ -492,13 +502,13 @@ public class EditCwbController {
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
 								list.add(zfav);
-	//							editcwbnum+=1;
+								//							editcwbnum+=1;
 							}
 						}
 					}
 				}
-				for(ZhiFuApplyView za:list){
-					long lon = zhiFuApplyDao.creZhiFuApplyView(za);
+				for (ZhiFuApplyView za : list) {
+					long lon = this.zhiFuApplyDao.creZhiFuApplyView(za);
 				}
 			}
 		}
@@ -506,15 +516,101 @@ public class EditCwbController {
 		return "editcwb/start";
 	}
 
-	
-	@RequestMapping("/editXiuGaiZhiFuFangShi")
-	public String editXiuGaiZhiFuFangShi(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = false, defaultValue = "0") Long requestUser,
-			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
-		
+	//修改快递金额处理方法
+	@RequestMapping("/editXiuGaiKuaiDiJinE")
+	public String editXiuGaiKuaiDiJinE(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = true, defaultValue = "0") Long requestUser, @RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
+		//存储在订单修改确认时所需要的参数(在金额修改时需要使用)
 		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
-		if(cwbs!=null&&cwbs.length>0){
+		//	long editcwbnum = 0;
+		if ((cwbs != null) && (cwbs.length > 0)) {
+			for (String cwb : cwbs) {
+				FeeWayTypeRemark fr = new FeeWayTypeRemark();
+				String isDeliveryState = request.getParameter("isDeliveryState_" + cwb);
+				//修改为代退金额
+				BigDecimal shouldfare = request.getParameter("Shouldfare_" + cwb) == null ? BigDecimal.ZERO : new BigDecimal(request.getParameter("Shouldfare_" + cwb));
+				fr.setCwb(cwb);
+				fr.setIsDeliveryState(isDeliveryState);
+				fr.setShouldfare(shouldfare);
+				fr.setRequestUser(requestUser);
+				frlist.add(fr);
+			}
+
+			List<User> userList = this.userDAO.getUserByid(requestUser);
+			if (userList.size() > 0) {
+				this.logger.info("修改快递运费金额功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
+				//5.28新加支付申请-审核-确认流程
+				List<ZhiFuApplyView> list = new ArrayList<ZhiFuApplyView>();
+				String cwbss = "";
+				for (String cwb : cwbs) {
+					cwbss += "'" + cwb + "',";
+				}
+				List<CwbOrder> cwblist = this.cwbDAO.getcwborderList(cwbss.substring(0, cwbss.lastIndexOf(",")));
+				for (CwbOrder co : cwblist) {
+					long count = this.zhiFuApplyDao.getApplystateCount(co.getCwb(), 1);
+					if (count == 0) {
+						for (FeeWayTypeRemark fre : frlist) {
+							if (co.getCwb().equals(fre.getCwb())) {
+								ZhiFuApplyView zfav = new ZhiFuApplyView();
+								zfav.setCwb(co.getCwb());
+								zfav.setCustomerid((int) co.getCustomerid());
+								zfav.setCwbordertypeid(co.getCwbordertypeid());
+								zfav.setApplycwbordertypeid(0);
+								zfav.setFlowordertype((int) co.getFlowordertype());
+								zfav.setBranchid((int) co.getCurrentbranchid());
+								zfav.setPaywayid((int) co.getPaywayid());
+								zfav.setApplypaywayid(0);//快递应该填这个吗？实体里面没有注释
+								/*BigDecimal bdformer = BigDecimal.ZERO;
+								BigDecimal bdafter = BigDecimal.ZERO;
+								BigDecimal cwbreceivfee = co.getReceivablefee();//订单代收款
+								BigDecimal cwbpaybackfee = co.getPaybackfee();//订单待退款
+								if (co.getCwbordertypeid() == 1) {
+									bdformer = cwbreceivfee;
+									bdafter = fre.getReceivablefee();
+								} else if (co.getCwbordertypeid() == 2) {
+									bdformer = cwbpaybackfee;
+									bdafter = fre.getPaybackfee();
+								} else {
+									if (fre.getReceivablefee().compareTo(bdformer) > 0) {
+										bdformer = cwbreceivfee;
+										bdafter = fre.getReceivablefee();
+									} else {
+										bdformer = cwbpaybackfee;
+										bdafter = fre.getPaybackfee();
+									}
+								}*/
+								zfav.setReceivablefee(BigDecimal.ZERO);
+								zfav.setApplyreceivablefee(BigDecimal.ZERO);
+								zfav.setShouldfare(fre.getShouldfare());
+								zfav.setApplyway(ApplyEnum.kuaidiyunfeijine.getValue());
+								zfav.setApplystate(1);//快递应该填这个吗？实体里面没有注释
+								zfav.setApplyresult(0);//快递应该填这个吗？实体里面没有注释
+								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
+								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								String dateStr = sdf.format(new Date());
+								zfav.setApplytime(dateStr);
+								list.add(zfav);
+								//							editcwbnum+=1;
+							}
+						}
+					}
+				}
+				for (ZhiFuApplyView za : list) {
+					long lon = this.zhiFuApplyDao.creZhiFuApplyView(za);
+				}
+			}
+		}
+		//model.addAttribute("auditcwbnum",editcwbnum);
+		return "editcwb/start";
+	}
+
+	@RequestMapping("/editXiuGaiZhiFuFangShi")
+	public String editXiuGaiZhiFuFangShi(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = false, defaultValue = "0") Long requestUser, @RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
+
+		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
+		if ((cwbs != null) && (cwbs.length > 0)) {
 			//5.28新加支付申请-审核-确认流程
-			
+
 			for (String cwb : cwbs) {
 				FeeWayTypeRemark fr = new FeeWayTypeRemark();
 				fr.setCwb(cwb);
@@ -523,31 +619,31 @@ public class EditCwbController {
 				fr.setRequestUser(requestUser);
 				frlist.add(fr);
 			}
-			
-			List<User> userList = userDAO.getUserByid(requestUser);
+
+			List<User> userList = this.userDAO.getUserByid(requestUser);
 			if (userList.size() > 0) {
-				logger.info("修改订单支付方式功能 [{}] cwb: {}", getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
+				this.logger.info("修改订单支付方式功能 [{}] cwb: {}", this.getSessionUser().getRealname(), StringUtil.getStringsToString(cwbs));
 				//5.28新加支付申请-审核-确认流程
 				List<ZhiFuApplyView> list = new ArrayList<ZhiFuApplyView>();
 				String cwbss = "";
-				for(String cwb:cwbs){
-					cwbss+="'"+cwb+"',";
+				for (String cwb : cwbs) {
+					cwbss += "'" + cwb + "',";
 				}
-				List<CwbOrder> cwblist = cwbDAO.getcwborderList(cwbss.substring(0,cwbss.lastIndexOf(",")));
-				
-				for(CwbOrder co:cwblist){
-					long count = zhiFuApplyDao.getApplystateCount(co.getCwb(),2);
-					if(count==0){
-						for(FeeWayTypeRemark ftr:frlist){
-							if(ftr.getCwb().equals(co.getCwb())){
+				List<CwbOrder> cwblist = this.cwbDAO.getcwborderList(cwbss.substring(0, cwbss.lastIndexOf(",")));
+
+				for (CwbOrder co : cwblist) {
+					long count = this.zhiFuApplyDao.getApplystateCount(co.getCwb(), 2);
+					if (count == 0) {
+						for (FeeWayTypeRemark ftr : frlist) {
+							if (ftr.getCwb().equals(co.getCwb())) {
 								ZhiFuApplyView zfav = new ZhiFuApplyView();
 								zfav.setCwb(co.getCwb());
-								zfav.setCustomerid((int)co.getCustomerid());
+								zfav.setCustomerid((int) co.getCustomerid());
 								zfav.setCwbordertypeid(co.getCwbordertypeid());
 								zfav.setApplycwbordertypeid(0);
-								zfav.setFlowordertype((int)co.getFlowordertype());
-								zfav.setBranchid((int)co.getCurrentbranchid());
-								zfav.setPaywayid((int)co.getPaywayid());
+								zfav.setFlowordertype((int) co.getFlowordertype());
+								zfav.setBranchid((int) co.getCurrentbranchid());
+								zfav.setPaywayid((int) co.getPaywayid());
 								zfav.setApplypaywayid(ftr.getNewpaywayid());
 								zfav.setReceivablefee(co.getReceivablefee());
 								zfav.setApplyreceivablefee(BigDecimal.ZERO);
@@ -564,20 +660,18 @@ public class EditCwbController {
 						}
 					}
 				}
-				for(ZhiFuApplyView za:list){
-					long lon = zhiFuApplyDao.creZhiFuApplyView(za);
+				for (ZhiFuApplyView za : list) {
+					long lon = this.zhiFuApplyDao.creZhiFuApplyView(za);
 				}
 			}
 		}
 		return "editcwb/start";
 	}
 
-	
 	@RequestMapping("/editXiuGaiDingDanLeiXing")
-	public String editXiuGaiDingDanLeiXing(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = false, defaultValue = "0") Long requestUser,
-			@RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
+	public String editXiuGaiDingDanLeiXing(Model model, HttpServletRequest request, @RequestParam(value = "requestUser", required = false, defaultValue = "0") Long requestUser, @RequestParam(value = "cwbs", required = false, defaultValue = "") String[] cwbs) throws Exception {
 		List<FeeWayTypeRemark> frlist = new ArrayList<FeeWayTypeRemark>();
-		if(cwbs!=null&&cwbs.length>0){
+		if ((cwbs != null) && (cwbs.length > 0)) {
 			for (String cwb : cwbs) {
 				FeeWayTypeRemark fr = new FeeWayTypeRemark();
 				fr.setCwb(cwb);
@@ -591,24 +685,25 @@ public class EditCwbController {
 				//5.28新加支付申请-审核-确认流程
 				List<ZhiFuApplyView> list = new ArrayList<ZhiFuApplyView>();
 				String cwbss = "";
-				for(String cwb:cwbs){
-					cwbss+="'"+cwb+"',";
+				for (String cwb : cwbs) {
+					cwbss += "'" + cwb + "',";
 				}
-				
-				List<CwbOrder> cwblist = cwbDAO.getcwborderList(cwbss.substring(0,cwbss.lastIndexOf(",")));
-				for(CwbOrder co:cwblist){
-					long count = zhiFuApplyDao.getApplystateCount(co.getCwb(),3);
-					if(count==0){
-						for(FeeWayTypeRemark ftr:frlist){
-							if(ftr.getCwb().equals(co.getCwb())){
+
+				List<CwbOrder> cwblist = this.cwbDAO.getcwborderList(cwbss.substring(0, cwbss.lastIndexOf(",")));
+				for (CwbOrder co : cwblist) {
+					long count = this.zhiFuApplyDao.getApplystateCount(co.getCwb(), 3);
+					if (count == 0) {
+						for (FeeWayTypeRemark ftr : frlist) {
+							if (ftr.getCwb().equals(co.getCwb())) {
 								ZhiFuApplyView zfav = new ZhiFuApplyView();
 								zfav.setCwb(co.getCwb());
-								zfav.setCustomerid((int)co.getCustomerid());
+								zfav.setCustomerid((int) co.getCustomerid());
 								zfav.setCwbordertypeid(co.getCwbordertypeid());
-								zfav.setApplycwbordertypeid(request.getParameter("Newcwbordertypeid_" +co.getCwb() ) == null ? 0 : Integer.valueOf(request.getParameter("Newcwbordertypeid_" + co.getCwb())));
-								zfav.setFlowordertype((int)co.getFlowordertype());
-								zfav.setBranchid((int)co.getCurrentbranchid());
-								zfav.setPaywayid((int)co.getPaywayid());
+								zfav.setApplycwbordertypeid(request.getParameter("Newcwbordertypeid_" + co.getCwb()) == null ? 0 : Integer.valueOf(request.getParameter("Newcwbordertypeid_" + co
+										.getCwb())));
+								zfav.setFlowordertype((int) co.getFlowordertype());
+								zfav.setBranchid((int) co.getCurrentbranchid());
+								zfav.setPaywayid((int) co.getPaywayid());
 								zfav.setApplypaywayid(0);
 								zfav.setReceivablefee(co.getReceivablefee());
 								zfav.setApplyreceivablefee(BigDecimal.ZERO);
@@ -625,8 +720,8 @@ public class EditCwbController {
 						}
 					}
 				}
-				for(ZhiFuApplyView za:list){
-					long lon = zhiFuApplyDao.creZhiFuApplyView(za);
+				for (ZhiFuApplyView za : list) {
+					long lon = this.zhiFuApplyDao.creZhiFuApplyView(za);
 				}
 			}
 		}
@@ -650,10 +745,7 @@ public class EditCwbController {
 	 * @return
 	 */
 	@RequestMapping("/getList")
-	public String getList(Model model, @RequestParam(value = "fd_payup_detail_id", required = false, defaultValue = "0") Long fd_payup_detail_id,
-			@RequestParam(value = "f_payup_audit_id", required = false, defaultValue = "0") Long f_payup_audit_id,
-			@RequestParam(value = "finance_audit_id", required = false, defaultValue = "0") Long finance_audit_id,
-			@RequestParam(value = "payupid", required = false, defaultValue = "") String payupids, @RequestParam(value = "gcaid", required = false, defaultValue = "0") Long gcaid) {
+	public String getList(Model model, @RequestParam(value = "fd_payup_detail_id", required = false, defaultValue = "0") Long fd_payup_detail_id, @RequestParam(value = "f_payup_audit_id", required = false, defaultValue = "0") Long f_payup_audit_id, @RequestParam(value = "finance_audit_id", required = false, defaultValue = "0") Long finance_audit_id, @RequestParam(value = "payupid", required = false, defaultValue = "") String payupids, @RequestParam(value = "gcaid", required = false, defaultValue = "0") Long gcaid) {
 		model.addAttribute("userList", this.userDAO.getAllUserByuserDeleteFlag());
 		if (fd_payup_detail_id > 0) {
 			model.addAttribute("ecList", this.editCwbDAO.getEditCwbListByFdPayupDetailId(fd_payup_detail_id));
@@ -679,31 +771,30 @@ public class EditCwbController {
 	 * 订单信息修改
 	 */
 	@RequestMapping("/editCwbInfo")
-	public String editCwbInfo(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
-			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
+	public String editCwbInfo(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb, @RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
 	) {
-		
-/*		List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
-		if (isshow > 0) {// 查询
-			
-			StringBuffer sb1 = new StringBuffer();
-			String cwbs="";
-			if(!StringUtils.isEmpty(cwb)){		
-			String cwbss[]=cwb.trim().split("\r\n");		
-			for(String str1:cwbss){
-				sb1=sb1.append("'"+str1+"',");
-			}
-			cwbs=sb1.substring(0, sb1.length()-1);
-			}
-			
-				List<CwbOrder> co = this.cwbDAO.getCwbByCwbs(cwbs);
-				if (co != null) {
-					cwborderlist=co;
-				}
-			}
-		
-		
-		*/
+
+		/*		List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
+				if (isshow > 0) {// 查询
+
+					StringBuffer sb1 = new StringBuffer();
+					String cwbs="";
+					if(!StringUtils.isEmpty(cwb)){
+					String cwbss[]=cwb.trim().split("\r\n");
+					for(String str1:cwbss){
+						sb1=sb1.append("'"+str1+"',");
+					}
+					cwbs=sb1.substring(0, sb1.length()-1);
+					}
+
+						List<CwbOrder> co = this.cwbDAO.getCwbByCwbs(cwbs);
+						if (co != null) {
+							cwborderlist=co;
+						}
+					}
+
+
+				*/
 
 		if (isshow > 0) {// 查询
 			List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
@@ -717,20 +808,20 @@ public class EditCwbController {
 					cwborderlist.add(co);
 				}
 			}
-			String destinationName="";
+			String destinationName = "";
 			List<Branch> branchs = this.branchDAO.getBranchAllzhandian(BranchEnum.ZhanDian.getValue() + "");
-			if(cwborderlist.size()>0){
+			if (cwborderlist.size() > 0) {
 				for (Iterator<Branch> iterator = branchs.iterator(); iterator.hasNext();) {
-					Branch branch = (Branch) iterator.next();
-					if (branch.getBranchid()==cwborderlist.get(0).getDeliverybranchid()) {
-						destinationName=branch.getBranchname();
+					Branch branch = iterator.next();
+					if (branch.getBranchid() == cwborderlist.get(0).getDeliverybranchid()) {
+						destinationName = branch.getBranchname();
 					}
 				}
 			}
 			model.addAttribute("cwbList", cwborderlist);
 			model.addAttribute("branchs", branchs);
 			if (!destinationName.equals("")) {
-				model.addAttribute("destinationName",destinationName);
+				model.addAttribute("destinationName", destinationName);
 			}
 		}
 		return "editcwb/editInfo";
@@ -738,8 +829,7 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/searchCwbInfo/{cwb}")
-	public @ResponseBody String searchCwbInfo(Model model, @PathVariable("cwb") String cwb, @RequestParam(value = "editname", required = false, defaultValue = "") String editname,
-			@RequestParam(value = "editmobile", required = false, defaultValue = "0") Long editmobile, @RequestParam(value = "editcommand", defaultValue = "", required = false) String editcommand, // 是否显示,
+	public @ResponseBody String searchCwbInfo(Model model, @PathVariable("cwb") String cwb, @RequestParam(value = "editname", required = false, defaultValue = "") String editname, @RequestParam(value = "editmobile", required = false, defaultValue = "0") Long editmobile, @RequestParam(value = "editcommand", defaultValue = "", required = false) String editcommand, // 是否显示,
 			@RequestParam(value = "editshow", defaultValue = "0", required = false) long editshow, // 是否显示,
 			@RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress) {
 		cwb = cwb.trim();
@@ -761,14 +851,7 @@ public class EditCwbController {
 			@RequestParam(value = "editshow", defaultValue = "0", required = false) long editshow, // 是否显示,
 			@RequestParam(value = "remark", defaultValue = "", required = false) String remark, // 订单备注
 			@RequestParam(value = "matchaddress", defaultValue = "", required = false) String branchname, // 匹配后站点
-			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, 
-			@RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress,
-			@RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress,
-			@RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname,
-			@RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile,
-			@RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname,
-			@RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand
-			) {// 地址
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress, @RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress, @RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname, @RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile, @RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname, @RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand) {// 地址
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		cwb = cwb.trim();
@@ -836,37 +919,41 @@ public class EditCwbController {
 					this.appearWindowDao.creWindowTime(jsonInfo, "2", userlist.get(0).getUserid(), "1");
 				}
 			}
-			Branch branch2=branchDAO.getBranchByBranchname(checkbranchname);
-			long branchid=branch2.getBranchid();
+			Branch branch2 = this.branchDAO.getBranchByBranchname(checkbranchname);
+			long branchid = branch2.getBranchid();
 			this.cwbInfoDao.createEditInfo(old, branchid, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
-			long count=orderAddressReviseDao.countReviseAddress(cwb);
-			if (count==0) {
-				this.orderAddressReviseDao.createReviseAddressInfo(cwb, old.getConsigneeaddress(),old.getEmaildate(), "系统导入",old.getConsigneenameOfkf(),old.getConsigneemobileOfkf(),"",checkbranchname,old.getCustomercommand());
+			long count = this.orderAddressReviseDao.countReviseAddress(cwb);
+			if (count == 0) {
+				this.orderAddressReviseDao
+						.createReviseAddressInfo(cwb, old.getConsigneeaddress(), old.getEmaildate(), "系统导入", old.getConsigneenameOfkf(), old.getConsigneemobileOfkf(), "", checkbranchname, old
+								.getCustomercommand());
 			}
-			
-			if ((!checkeditaddress.equals(editaddress))||(!editname.equals(checkeditname))||(!editmobile.equals(checkeditmobile))||(!editcommand.equals(checkeditcommand))||(!branchname.equals(""))) {
+
+			if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand)) || (!branchname
+					.equals(""))) {
 				/**
 				 * 关于站点的一点判断
 				 */
-				String revisebranchName=checkbranchname;
-				if ((!branchname.equals(checkbranchname))&&(!branchname.equals("请选择"))) {
+				String revisebranchName = checkbranchname;
+				if ((!branchname.equals(checkbranchname)) && (!branchname.equals("请选择"))) {
 					if (!branchname.equals("")) {
-						revisebranchName=branchname;
+						revisebranchName = branchname;
 					}
-					this.orderAddressReviseDao.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(),editname,editmobile,begindate,revisebranchName,editcommand);
-					
-					
-				}else {
-					if ((!checkeditaddress.equals(editaddress))||(!editname.equals(checkeditname))||(!editmobile.equals(checkeditmobile))||(!editcommand.equals(checkeditcommand))) {
-						
-						this.orderAddressReviseDao.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(),editname,editmobile,begindate,revisebranchName,editcommand);
+					this.orderAddressReviseDao
+							.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand);
+
+				} else {
+					if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand))) {
+
+						this.orderAddressReviseDao
+								.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand);
 
 					}
 
 				}
-				
+
 			}
-		
+
 			// 2.更新到主表
 			EmailDate ed = this.dataImportService.getEmailDate_B2CByEmaildate(co.getCustomerid(), co.getCustomerwarehouseid(), co.getCustomerwarehouseid(), co.getEmaildate());
 			userDetail.getUser().setBranchid(Long.valueOf(ed.getWarehouseid()));
@@ -881,11 +968,10 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/toSearchCwb/{page}")
-	public String toSerchCwb(Model model, @PathVariable("page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", defaultValue = "", required = false) String endtime, // 是否显示,
+	public String toSerchCwb(Model model, @PathVariable("page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", defaultValue = "", required = false) String endtime, // 是否显示,
 			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
 	) {
-		List<Branch> branchs=this.branchDAO.getAllBranches();
+		List<Branch> branchs = this.branchDAO.getAllBranches();
 		Page pageobj = new Page();
 		if (isshow > 0) {
 			List<SearcheditInfo> slist = this.cwbInfoDao.getInfoByCretime(page, begindate, endtime);
@@ -975,8 +1061,7 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/matchaddress")
-	public @ResponseBody JSONObject matchaddress(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
-			@RequestParam(value = "address", defaultValue = "", required = false) String address // 是否显示,
+	public @ResponseBody JSONObject matchaddress(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb, @RequestParam(value = "address", defaultValue = "", required = false) String address // 是否显示,
 	) {
 		JSONObject json = this.addressMatchService.matchAddressByInterface(cwb, address,0);
 		this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, json.getString("netpoint"));
@@ -990,10 +1075,11 @@ public class EditCwbController {
 
 		return branches;
 	}
+
 	@RequestMapping("/findCwbDetail/{cwb}")
-	public String FindCwbDetail(Model model,@PathVariable String cwb){
-		List<OrderAddressRevise> orderAddressRevise=this.orderAddressReviseDao.getAddressReviseDetails(cwb);
-		model.addAttribute("orderAddressRevises",orderAddressRevise);
+	public String FindCwbDetail(Model model, @PathVariable String cwb) {
+		List<OrderAddressRevise> orderAddressRevise = this.orderAddressReviseDao.getAddressReviseDetails(cwb);
+		model.addAttribute("orderAddressRevises", orderAddressRevise);
 		return "editcwb/addressReviseDetail";
 	}
 }

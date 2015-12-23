@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import cn.explink.domain.FnCustomerBill;
+import cn.explink.domain.FnCustomerBill;
 import cn.explink.domain.FnCustomerBillDetail;
 
 @Component

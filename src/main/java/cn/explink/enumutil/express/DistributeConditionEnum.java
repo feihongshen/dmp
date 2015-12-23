@@ -9,7 +9,7 @@ import java.util.List;
  * @author songkaojun 2015年8月3日
  */
 public enum DistributeConditionEnum {
-	NotDistribute(1, "未分配"), Distributed(2, "已分配");
+	NotDistribute(1, "未分配"), Distributed(2, "已分配但未完成揽件"),AleryDistributed(3,"已分配揽件员");
 
 	private int value;
 	private String text;
@@ -19,7 +19,7 @@ public enum DistributeConditionEnum {
 		this.text = text;
 	}
 
-	public long getValue() {
+	public int getValue() {
 		return this.value;
 	}
 
@@ -30,7 +30,8 @@ public enum DistributeConditionEnum {
 	public static List<DistributeConditionEnum> getAllStatus() {
 		List<DistributeConditionEnum> distributeConditionEnumList = new ArrayList<DistributeConditionEnum>();
 		distributeConditionEnumList.add(NotDistribute);
-		distributeConditionEnumList.add(Distributed);
+//		distributeConditionEnumList.add(Distributed);
+		distributeConditionEnumList.add(AleryDistributed);
 		return distributeConditionEnumList;
 	}
 

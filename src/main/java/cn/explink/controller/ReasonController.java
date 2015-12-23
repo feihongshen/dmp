@@ -1,7 +1,5 @@
 package cn.explink.controller;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import scala.Array;
 import cn.explink.dao.ReasonDao;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
@@ -153,7 +150,7 @@ public class ReasonController {
 				}
 			}
 		}
-		if (reasontype == 1||reasontype == 2||reasontype == 13) {
+		if (reasontype == 1||reasontype == 2||reasontype == 13||reasontype==15||reasontype==16||reasontype==17||reasontype==18) {
 			reason.setWhichreason(1);
 			if (whichreason == 2) {
 				reason.setParentid(parentid);

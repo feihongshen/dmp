@@ -11,6 +11,7 @@ import cn.explink.b2c.dpfoss.CwbColumnSetDpfoss;
 import cn.explink.b2c.efast.CwbColumnSetEfast;
 import cn.explink.b2c.explink.core_down.CwbColumnSetEpaiAPI;
 import cn.explink.b2c.gome.CwbColumnSetGome;
+import cn.explink.b2c.gxdx.CwbColumnSetGXDX;
 import cn.explink.b2c.gzabc.CwbColumnSetGZABC;
 import cn.explink.b2c.gztl.CwbColumnSetGztl;
 import cn.explink.b2c.haoxgou.CwbColumnSetHXG;
@@ -38,7 +39,6 @@ import cn.explink.b2c.yihaodian.CwbColumnSetYihaodian;
 import cn.explink.b2c.yixun.CwbColumnSetYiXun;
 import cn.explink.b2c.yonghuics.CwbColumnSetYonghui;
 import cn.explink.b2c.zhongliang.CwbColumnSetZhongliang;
-import cn.explink.b2c.gxdx.CwbColumnSetGXDX;
 import cn.explink.domain.ExcelColumnSet;
 
 @Service
@@ -115,8 +115,7 @@ public class CwbColumnImpl implements CwbColumnSet {
 	@Autowired
 	CwbColumnSetJiuye cwbColumnSetJiuye;
 	@Autowired
-	CwbColumnSetGXDX  cwbColumnsetGXDX;
-	
+	CwbColumnSetGXDX cwbColumnsetGXDX;
 
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
@@ -197,15 +196,10 @@ public class CwbColumnImpl implements CwbColumnSet {
 			return this.cwbColumnSetWenxuan.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Guangzhoutonglu.getMethod())) {
 			return this.cwbClolumSetGztl.getEexcelColumnSetByB2c(b2cFlag);
-		}else if (
-				(b2cFlag.equals(B2cEnum.JiuYe1.getMethod())
-				||(b2cFlag.equals(B2cEnum.JiuYe2.getMethod()))
-				||(b2cFlag.equals(B2cEnum.JiuYe3.getMethod()))
-				||(b2cFlag.equals(B2cEnum.JiuYe4.getMethod()))
-				||(b2cFlag.equals(B2cEnum.JiuYe5.getMethod())))) 
-		{
+		} else if ((b2cFlag.equals(B2cEnum.JiuYe1.getMethod()) || (b2cFlag.equals(B2cEnum.JiuYe2.getMethod())) || (b2cFlag.equals(B2cEnum.JiuYe3.getMethod()))
+				|| (b2cFlag.equals(B2cEnum.JiuYe4.getMethod())) || (b2cFlag.equals(B2cEnum.JiuYe5.getMethod())))) {
 			return this.cwbColumnSetJiuye.getEexcelColumnSetByB2c(b2cFlag);
-		}else if(b2cFlag.equals(B2cEnum.GuangXinDianXin.getMethod())){
+		} else if (b2cFlag.equals(B2cEnum.GuangXinDianXin.getMethod())) {
 			return this.cwbColumnsetGXDX.getEexcelColumnSetByB2c(b2cFlag);
 		}
 

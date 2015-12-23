@@ -128,7 +128,7 @@ public class EditCwbService {
 
 	/**
 	 * 修改订单 之 重置审核状态
-	 * 
+	 *
 	 * @param editUser
 	 *            修改人
 	 * @param requestUser
@@ -137,43 +137,47 @@ public class EditCwbService {
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public EdtiCwb_DeliveryStateDetail analysisAndSaveByChongZhiShenHe(String cwb, Long requestUser, Long editUser) {
-		logger.info("EditCwb_SQL:{}重置审核状态 开始", cwb);
+		this.logger.info("EditCwb_SQL:{}重置审核状态 开始", cwb);
 		// 根据cwb 获得 订单表 express_ops_cwb_detail 有效记录 state lock
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
 		// 根据 反馈表 中的gcaid 获得 归班表 express_ops_goto_class_auditing 记录 lock
 		// 根据 归班表中的payupid 获得 交款表 express_ops_pay_up 记录 lock
-		CwbOrder co = cwbDAO.getCwbByCwbLock(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		if (co.getFlowordertype() != FlowOrderTypeEnum.YiShenHe.getValue()) {
 			throw new ExplinkException(co.getFlowordertype() + "_当前订单状态已经不是[已审核]状态！");
 		}
 
-		/*List<AccountCwbFareDetail> accountCwbFareDetailList = accountCwbFareDetailDAO.getAccountCwbFareDetailByCwb(cwb);
-		if (co.getInfactfare().compareTo(BigDecimal.ZERO) > 0 && accountCwbFareDetailList.size() > 0 && accountCwbFareDetailList.get(0).getFareid() > 0) {
-			throw new ExplinkException("当前订单运费已交款，不可重置审核状态！");
-		}*/
+		/*
+		 * List<AccountCwbFareDetail> accountCwbFareDetailList =
+		 * accountCwbFareDetailDAO.getAccountCwbFareDetailByCwb(cwb); if
+		 * (co.getInfactfare().compareTo(BigDecimal.ZERO) > 0 &&
+		 * accountCwbFareDetailList.size() > 0 &&
+		 * accountCwbFareDetailList.get(0).getFareid() > 0) { throw new
+		 * ExplinkException("当前订单运费已交款，不可重置审核状态！"); }
+		 */
 
-		DeliveryState ds = deliveryStateDAO.getDeliveryByCwbLock(cwb);
-		GotoClassAuditing gca = gotoClassAuditingDAO.getGotoClassAuditingByGcaid(ds.getGcaid());
+		DeliveryState ds = this.deliveryStateDAO.getDeliveryByCwbLock(cwb);
+		GotoClassAuditing gca = this.gotoClassAuditingDAO.getGotoClassAuditingByGcaid(ds.getGcaid());
 		PayUp payUp = null;
 		if (gca.getPayupid() > 0) {
-			payUp = payUpDAO.getPayUpByIdLock(gca.getPayupid());
+			payUp = this.payUpDAO.getPayUpByIdLock(gca.getPayupid());
 		}
 
 		// 根据反馈表中的 deliveryid 获得 express_ops_user表 对应的小件员详细信息 用于更改小件员帐户 lock
-		User u = userDAO.getUserByUseridLock(ds.getDeliveryid());
+		User u = this.userDAO.getUserByUseridLock(ds.getDeliveryid());
 
 		// 根据 反馈表的cwb 获取 finance_audit_temp 结算审核明细表中 按配送结果结算的明细记录 中的审核id
 		// 根据 结算审核明细表中的记录 中的 auditid 获取finance_audit 结算审核表 记录 lock
-		Long financeAuditId = financeAuditDAO.getFinanceAuditTempByCwb(cwb, FinanceAuditTypeEnum.AnPeiSongJieGuo);
+		Long financeAuditId = this.financeAuditDAO.getFinanceAuditTempByCwb(cwb, FinanceAuditTypeEnum.AnPeiSongJieGuo);
 		FinanceAudit financeAudit = null;
 		if (financeAuditId > 0) {// 如果存在按配送结果结算和按配送结果结算的
-			financeAudit = financeAuditDAO.getFinanceAuditByIdLock(financeAuditId);
+			financeAudit = this.financeAuditDAO.getFinanceAuditByIdLock(financeAuditId);
 		}
 
 		// 根据 归班表 payupid 获得 finance_pay_up_audit 站点交款审核表 记录 lock
 		FinancePayUpAudit financePayUpAudit = null;
-		if (payUp != null && payUp.getAuditid() > 0) {
-			financePayUpAudit = financePayUpAuditDAO.getFinancePayUpAuditByIdLock(payUp.getAuditid());
+		if ((payUp != null) && (payUp.getAuditid() > 0)) {
+			financePayUpAudit = this.financePayUpAuditDAO.getFinancePayUpAuditByIdLock(payUp.getAuditid());
 		}
 		// 整理 更改对象 EdtiCwb_DeliveryStateDetail
 		EdtiCwb_DeliveryStateDetail ec_dsd = new EdtiCwb_DeliveryStateDetail();
@@ -205,7 +209,7 @@ public class EditCwbService {
 		ec_dsd.setNew_isout(ds.getIsout());
 		ec_dsd.setCwbordertypeid(co.getCwbordertypeid());
 		ec_dsd.setNew_cwbordertypeid(co.getCwbordertypeid());
-		//记录原实收运费
+		// 记录原实收运费
 		ec_dsd.setOriInfactfare(co.getInfactfare());
 
 		/*
@@ -217,14 +221,14 @@ public class EditCwbService {
 		// Long nextbranchid =
 		// branchDAO.getBranchByBranchid(co.getDeliverybranchid()).getZhongzhuanid();
 		Long nextbranchid = co.getNextbranchid();
-		cwbDAO.updateForChongZhiShenHe(co.getOpscwbid(), nextbranchid, FlowOrderTypeEnum.FenZhanLingHuo, 0L, CwbStateEnum.PeiShong, DeliveryStateEnum.WeiFanKui, BigDecimal.ZERO);
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where nextbranchid=" + nextbranchid + " and flowordertype=" + FlowOrderTypeEnum.FenZhanLingHuo.getValue()
+		this.cwbDAO.updateForChongZhiShenHe(co.getOpscwbid(), nextbranchid, FlowOrderTypeEnum.FenZhanLingHuo, 0L, CwbStateEnum.PeiShong, DeliveryStateEnum.WeiFanKui, BigDecimal.ZERO);
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where nextbranchid=" + nextbranchid + " and flowordertype=" + FlowOrderTypeEnum.FenZhanLingHuo.getValue()
 				+ " and currentbranchid=0 and cwbstate=" + CwbStateEnum.PeiShong.getValue() + " and deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue() + " and opscwbid=" + co.getOpscwbid());
 
-		exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), getSessionUser(), "重置审核状态");
-		//删除返单表
-		returnCwbsDAO.deleteReturnCwbByCwb(cwb);
-		
+		this.exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), this.getSessionUser(), "重置审核状态");
+		// 删除返单表
+		this.returnCwbsDAO.deleteReturnCwbByCwb(cwb);
+
 		/**
 		 * 云订单重置审核状态
 		 */
@@ -233,7 +237,7 @@ public class EditCwbService {
 					+ FlowOrderTypeEnum.FenZhanLingHuo.getValue() + "&currentbranchid=0&deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue(), "POST");
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			logger.info("云订单重置审核状态异常:" + co.getCwb());
+			this.logger.info("云订单重置审核状态异常:" + co.getCwb());
 		}
 
 		/*
@@ -243,8 +247,8 @@ public class EditCwbService {
 		 * 将sign_typeid 变为未签收 0 sign_man 签收人清空 sign_time 清空 将issendcustomer
 		 * 是否已推送供货商 状态变更为 0 为推送 将 pushtime 推送成功时间 置为"" ｝
 		 */
-		deliveryStateDAO.updateForChongZhiShenHe(ds.getId(), DeliveryStateEnum.WeiFanKui, BigDecimal.ZERO);
-		logger.info("EditCwb_SQL:" + cwb + " select * from  express_ops_delivery_state " + "where  cash=0 and pos=0 and otherfee=0 and checkfee=0 and receivedfee=0 and returnedfee=0"
+		this.deliveryStateDAO.updateForChongZhiShenHe(ds.getId(), DeliveryStateEnum.WeiFanKui, BigDecimal.ZERO);
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from  express_ops_delivery_state " + "where  cash=0 and pos=0 and otherfee=0 and checkfee=0 and receivedfee=0 and returnedfee=0"
 				+ " and deliverytime='' and gcaid=0 and auditingtime='' and receivedfeeuser=0" + " and sign_typeid=0 and sign_man is null and sign_time is null and issendcustomer=0 and pushtime=''"
 				+ " and deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue() + " and id=" + ds.getId());
 		/*
@@ -255,13 +259,13 @@ public class EditCwbService {
 
 		SystemInstall usedeliverpay = null;
 		try {// 获取 小件员交款 功能使用开关 如果不使用小件员交款，则不调用小件员帐户变动
-			usedeliverpay = systemInstallDAO.getSystemInstallByName("usedeliverpayup");
+			usedeliverpay = this.systemInstallDAO.getSystemInstallByName("usedeliverpayup");
 
 		} catch (Exception e) {
-			logger.error(cwb + " 获取使用小件员交款功能异常，默认不使用小件员交款功能-重置审核状态");
+			this.logger.error(cwb + " 获取使用小件员交款功能异常，默认不使用小件员交款功能-重置审核状态");
 		}
 		FinanceDeliverPayupDetail fdpud = new FinanceDeliverPayupDetail();
-		if (usedeliverpay != null && usedeliverpay.getValue().equals("yes")) {
+		if ((usedeliverpay != null) && usedeliverpay.getValue().equals("yes")) {
 			/*
 			 * 创建小件员帐户交易记录 （如果开启了小件员交款，并且小件员已经归班审核交款）
 			 * finance_deliver_pay_up_detail｛｝
@@ -282,16 +286,16 @@ public class EditCwbService {
 			fdpud.setCredate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			fdpud.setType(FinanceDeliverPayUpDetailTypeEnum.ChongZhiShenHe.getValue());
 			fdpud.setRemark("申请[" + cwb + "]重置审核为[" + DeliveryStateEnum.getByValue((int) ds.getDeliverystate()).getText() + "]的订单为[领货]状态");
-			logger.info(cwb + " 小件员交款产生交易：{}", fdpud.toString());
-			ec_dsd.setFd_payup_detail_id(financeDeliverPayUpDetailDAO.insert(fdpud));
+			this.logger.info(cwb + " 小件员交款产生交易：{}", fdpud.toString());
+			ec_dsd.setFd_payup_detail_id(this.financeDeliverPayUpDetailDAO.insert(fdpud));
 			/*
 			 * 修改小件员帐户余额（如果开启了小件员交款，并且小件员已经归班审核交款） finance_pay_up_audit｛ 将
 			 * deliverAccount 变更为 deliverAccount 加上 反馈表中
 			 * (cash+otherfee+checkfee-returnedfee)后的值 将 deliverPosAccount 变更为
 			 * deliverAccount 加上 反馈表中 pos 后的值 ｝
 			 */
-			userDAO.updateUserAmount(u.getUserid(), fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos());
-			logger.info("EditCwb_SQL:" + cwb + " select * express_set_user where deliverAccount=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverPosAccount="
+			this.userDAO.updateUserAmount(u.getUserid(), fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos());
+			this.logger.info("EditCwb_SQL:" + cwb + " select * express_set_user where deliverAccount=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverPosAccount="
 					+ fdpud.getDeliverpayuparrearage_pos().doubleValue() + " and userid=" + u.getUserid());
 		} else {// 没有使用小件员交款功能 那么要复制小件员交易后的余额为0元
 			fdpud.setDeliverpayuparrearage(BigDecimal.ZERO);
@@ -300,9 +304,9 @@ public class EditCwbService {
 
 		BigDecimal gca_payupamount = gca.getPayupamount().subtract(ds.getCash().add(ds.getOtherfee()).add(ds.getCheckfee()).subtract(ds.getReturnedfee()));
 		BigDecimal gca_payupamount_pos = gca.getPayupamount_pos().subtract(ds.getPos());
-		gotoClassAuditingDAO.updateForChongZhiShenHe(gca.getId(), gca_payupamount, gca_payupamount_pos, fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos(), new SimpleDateFormat(
-				"yyyy-MM-dd HH:mm:ss").format(new Date()));
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_goto_class_auditing where  payupamount=" + gca_payupamount.doubleValue() + " and payupamount_pos="
+		this.gotoClassAuditingDAO.updateForChongZhiShenHe(gca.getId(), gca_payupamount, gca_payupamount_pos, fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos(),
+				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_goto_class_auditing where  payupamount=" + gca_payupamount.doubleValue() + " and payupamount_pos="
 				+ gca_payupamount_pos.doubleValue() + " and deliverpayuparrearage=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverpayuparrearage_pos="
 				+ fdpud.getDeliverpayuparrearage_pos().doubleValue() + " and id =" + gca.getId());
 
@@ -314,8 +318,8 @@ public class EditCwbService {
 		if (payUp != null) {
 			BigDecimal payup_payupamount = payUp.getAmount().subtract(ds.getCash().add(ds.getOtherfee()).add(ds.getCheckfee()).subtract(ds.getReturnedfee()));
 			BigDecimal payup_payupamount_pos = payUp.getAmountPos().subtract(ds.getPos());
-			payUpDAO.updateForChongZhiShenHe(payUp.getId(), payup_payupamount, payup_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_pay_up where amount=" + payup_payupamount.doubleValue() + " and amountpos=" + payup_payupamount_pos.doubleValue()
+			this.payUpDAO.updateForChongZhiShenHe(payUp.getId(), payup_payupamount, payup_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_pay_up where amount=" + payup_payupamount.doubleValue() + " and amountpos=" + payup_payupamount_pos.doubleValue()
 					+ " and id =" + payUp.getId());
 		}
 
@@ -327,17 +331,17 @@ public class EditCwbService {
 		if (financePayUpAudit != null) {
 			BigDecimal fpua_payupamount = financePayUpAudit.getAmount().subtract(ds.getCash().add(ds.getOtherfee()).add(ds.getCheckfee()).subtract(ds.getReturnedfee()));
 			BigDecimal fpua_payupamount_pos = financePayUpAudit.getAmountpos().subtract(ds.getPos());
-			financePayUpAuditDAO.updateForChongZhiShenHe(financePayUpAudit.getId(), fpua_payupamount, fpua_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from finance_pay_up_audit where amount=" + fpua_payupamount.doubleValue() + " and amountpos=" + fpua_payupamount_pos.doubleValue()
+			this.financePayUpAuditDAO.updateForChongZhiShenHe(financePayUpAudit.getId(), fpua_payupamount, fpua_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from finance_pay_up_audit where amount=" + fpua_payupamount.doubleValue() + " and amountpos=" + fpua_payupamount_pos.doubleValue()
 					+ " and id =" + financePayUpAudit.getId());
 
 			// 如果有站点交款审核记录，则一定有帐户变动，所以同时要修改站点欠款金额 由于站点的欠款字段是记录的欠款正数 也就是钱多少钱
 			// 里面的数值就是多少 所以当有款项变动的时候 应该用当前欠款 减去货款
-			Branch b = branchDAO.getBranchByBranchidLock(payUp.getBranchid());
+			Branch b = this.branchDAO.getBranchByBranchidLock(payUp.getBranchid());
 			BigDecimal arrearagepayupaudit = b.getArrearagepayupaudit().subtract(ds.getCash().add(ds.getOtherfee()).add(ds.getCheckfee()).subtract(ds.getReturnedfee()));
 			BigDecimal posarrearagepayupaudit = b.getPosarrearagepayupaudit().subtract(ds.getPos());
-			branchDAO.updateForChongZhiShenHe(b.getBranchid(), arrearagepayupaudit, posarrearagepayupaudit);
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_set_branch where  arrearagepayupaudit=" + arrearagepayupaudit.doubleValue() + " and posarrearagepayupaudit="
+			this.branchDAO.updateForChongZhiShenHe(b.getBranchid(), arrearagepayupaudit, posarrearagepayupaudit);
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_set_branch where  arrearagepayupaudit=" + arrearagepayupaudit.doubleValue() + " and posarrearagepayupaudit="
 					+ posarrearagepayupaudit.doubleValue() + " and branchid=" + b.getBranchid());
 		}
 
@@ -348,13 +352,13 @@ public class EditCwbService {
 		 */
 		if (financeAudit != null) {
 			BigDecimal fa_amount = financeAudit.getShouldpayamount().subtract(co.getReceivablefee().subtract(co.getPaybackfee()));
-			financeAuditDAO.updateForChongZhiShenHe(financeAudit.getId(), fa_amount, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from finance_audit where shouldpayamount=" + fa_amount + " and id =" + financeAudit.getId());
+			this.financeAuditDAO.updateForChongZhiShenHe(financeAudit.getId(), fa_amount, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from finance_audit where shouldpayamount=" + fa_amount + " and id =" + financeAudit.getId());
 		}
 
 		// 根据 cwb 与归班id 获得唯一的express_ops_deliver_cash 小件员工作量统计表对应的记录 并修改
-		deliveryCashDAO.updateForChongZhiShenHe(cwb, gca.getId());
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_deliver_cash  where fankuitime='' and paybackfee=0" + " and receivableNoPosfee=0 and receivablePosfee=0 and deliverystate="
+		this.deliveryCashDAO.updateForChongZhiShenHe(cwb, gca.getId());
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_deliver_cash  where fankuitime='' and paybackfee=0" + " and receivableNoPosfee=0 and receivablePosfee=0 and deliverystate="
 				+ DeliveryStateEnum.WeiFanKui.getValue() + " and guibantime=''" + " and gcaid=0 and cwb='" + cwb + "' and gcaid=" + gca.getId());
 
 		/*
@@ -362,19 +366,19 @@ public class EditCwbService {
 		 * 查询ops_account_cwb_detail表 FlowOrderType为POS数据 1.如果POS退款没交款，就直接删
 		 * 2.如果POS交款了，将已交款的订单poscash-pos金额，posnums-单数，合计金额+pos金额&&删除订单明细记录；
 		 */
-		List<AccountCwbDetail> list_md = accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.Pos.getValue()));
-		if (list_md != null && !list_md.isEmpty()) {
+		List<AccountCwbDetail> list_md = this.accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.Pos.getValue()));
+		if ((list_md != null) && !list_md.isEmpty()) {
 			for (AccountCwbDetail list : list_md) {
 				if (list.getCheckoutstate() > 0) {// 已交款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
 					BigDecimal poscash = o.getPoscash().subtract(list.getPaybackfee());
 					o.setPoscash(poscash);
 					o.setPosnums(o.getPosnums() - 1);
 					o.setHjfee(o.getHjfee().add(list.getPaybackfee()));
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
-				accountCwbDetailDAO.deleteAccountCwbDetailById(list.getAccountcwbid());
-				logger.info("EditCwb_SQL:delete from ops_account_cwb_detail where accountcwbid =" + list.getAccountcwbid());
+				this.accountCwbDetailDAO.deleteAccountCwbDetailById(list.getAccountcwbid());
+				this.logger.info("EditCwb_SQL:delete from ops_account_cwb_detail where accountcwbid =" + list.getAccountcwbid());
 			}
 		}
 
@@ -382,23 +386,23 @@ public class EditCwbService {
 		 * 修改新结算业务——配送结果结算(重置审核状态) 查询ops_account_cwb_detail表
 		 * FlowOrderType为GuiBanShenHe数据
 		 */
-		List<AccountCwbDetail> list_psjg = accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.GuiBanShenHe.getValue()));
-		if (list_psjg != null && !list_psjg.isEmpty()) {
+		List<AccountCwbDetail> list_psjg = this.accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.GuiBanShenHe.getValue()));
+		if ((list_psjg != null) && !list_psjg.isEmpty()) {
 			for (AccountCwbDetail list : list_psjg) {
 				if (list.getDebetstate() > 0) {// 本次欠款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getDebetstate());
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getDebetstate());
 					o.setWjnums(o.getWjnums() - 1);// 本次欠款订单数
 					o.setWjcash(o.getWjcash().subtract(list.getCash()));// 本次欠款现金
 					o.setWjpos(o.getWjpos().subtract(list.getPos()));// 本次欠款pos
 					o.setWjcheck(o.getWjcheck().subtract(list.getCheckfee()));// 本次欠款支票
 					o.setWjother(o.getWjother().subtract(list.getOtherfee()));// 本次欠款其他
 					o.setWjfee(o.getWjfee().subtract(list.getCash()).subtract(list.getPos()).subtract(list.getCheckfee()).subtract(list.getOtherfee()));// 本次欠款合计
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
 
 				if (list.getCheckoutstate() > 0) {// 已交款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
-					if (list.getCheckoutstate() > 0 && list.getDebetstate() == 0) {// 无欠款
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
+					if ((list.getCheckoutstate() > 0) && (list.getDebetstate() == 0)) {// 无欠款
 						o.setTonums(o.getTonums() - 1);// 本次应交订单数
 						o.setTocash(o.getTocash().subtract(list.getCash()));// 本次应交现金
 						o.setTopos(o.getTopos().subtract(list.getPos()));// 本次应交pos
@@ -413,16 +417,16 @@ public class EditCwbService {
 						o.setYjfee(o.getYjfee().subtract(list.getCash()).subtract(list.getPos()).subtract(list.getCheckfee()).subtract(list.getOtherfee()));// 本次实交合计
 					}
 
-					if (list.getCheckoutstate() > 0 && list.getDebetstate() > 0) {// 有欠款
+					if ((list.getCheckoutstate() > 0) && (list.getDebetstate() > 0)) {// 有欠款
 						BigDecimal qkcash = o.getQkcash().subtract(list.getCash()).subtract(list.getPos()).subtract(list.getCheckfee()).subtract(list.getOtherfee());// 欠款金额
 						o.setQknums(o.getQknums() - 1);// 欠款订单数
 						o.setQkcash(qkcash);
 					}
 					o.setHjfee(o.getHjfee().subtract(list.getCash()).subtract(list.getCheckfee()).subtract(list.getOtherfee()));// 合计支付金额
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
-				accountCwbDetailDAO.deleteAccountCwbDetailById(list.getAccountcwbid());
-				logger.info("EditCwb_SQL:delete from ops_account_cwb_detail where accountcwbid =" + list.getAccountcwbid());
+				this.accountCwbDetailDAO.deleteAccountCwbDetailById(list.getAccountcwbid());
+				this.logger.info("EditCwb_SQL:delete from ops_account_cwb_detail where accountcwbid =" + list.getAccountcwbid());
 			}
 		}
 
@@ -431,15 +435,15 @@ public class EditCwbService {
 		 * FlowOrderType为POS数据 1.将已交款的订单汇总fee-pos金额；
 		 * 2.更新站点余额、欠款、伪余额、伪欠款字段(进去返还的POS金额)； 3.删除订单明细记录；
 		 */
-		List<AccountDeducDetail> list_kk = accountDeducDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.Pos.getValue()));
-		if (list_kk != null && !list_kk.isEmpty()) {
+		List<AccountDeducDetail> list_kk = this.accountDeducDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.Pos.getValue()));
+		if ((list_kk != null) && !list_kk.isEmpty()) {
 			for (AccountDeducDetail list : list_kk) {
 				if (list.getRecordid() > 0) {// 已审核
-					AccountDeductRecord o = accountDeductRecordDAO.getAccountDeductRecordByIdLock(list.getRecordid());
+					AccountDeductRecord o = this.accountDeductRecordDAO.getAccountDeductRecordByIdLock(list.getRecordid());
 					o.setFee(o.getFee().subtract(list.getFee()));
-					accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), o.getFee());
+					this.accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), o.getFee());
 					// 事务锁 锁住当前站点
-					Branch branch = branchDAO.getBranchByBranchidLock(list.getBranchid());
+					Branch branch = this.branchDAO.getBranchByBranchidLock(list.getBranchid());
 					BigDecimal credit = branch.getCredit();
 					BigDecimal debt = branch.getDebt();// 欠款
 					BigDecimal balance = branch.getBalance();// 余额
@@ -447,33 +451,79 @@ public class EditCwbService {
 					BigDecimal balancevirt = branch.getBalancevirt();// 伪余额
 					Map feeMap = new HashMap();
 					Map feeMap1 = new HashMap();
-					feeMap = accountDeductRecordService.subBranchFee(credit, balance, debt, list.getFee());
-					feeMap1 = accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, list.getFee());
+					feeMap = this.accountDeductRecordService.subBranchFee(credit, balance, debt, list.getFee());
+					feeMap1 = this.accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, list.getFee());
 					balance = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 					debt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 
 					balancevirt = new BigDecimal("".equals(feeMap1.get("balance").toString()) ? "0" : feeMap1.get("balance").toString());
 					debtvirt = new BigDecimal("".equals(feeMap1.get("debt").toString()) ? "0" : feeMap1.get("debt").toString());
 
-					branchDAO.updateForFeeAndVirt(list.getBranchid(), balance, debt, balancevirt, debtvirt);
+					this.branchDAO.updateForFeeAndVirt(list.getBranchid(), balance, debt, balancevirt, debtvirt);
 				}
-				accountDeducDetailDAO.deleteAccountDeducDetailById(list.getId());
-				logger.info("EditCwb_SQL:delete from ops_account_deduct_detail where id =" + list.getId());
+				this.accountDeducDetailDAO.deleteAccountDeducDetailById(list.getId());
+				this.logger.info("EditCwb_SQL:delete from ops_account_deduct_detail where id =" + list.getId());
 			}
 		}
 
-		logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
-		editCwbDAO.creEditCwb(ec_dsd);
+		this.logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
+		this.editCwbDAO.creEditCwb(ec_dsd);
 		// 清除运费记录表信息
-		accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(cwb);
-		logger.info("EditCwb_SQL:{}重置审核状态 结束", cwb);
+		this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(cwb);
+		this.logger.info("EditCwb_SQL:{}重置审核状态 结束", cwb);
 
+		return ec_dsd;
+	}
+
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public EdtiCwb_DeliveryStateDetail analysisAndSaveByKuaiDiYunFei(String cwb, String isDeliveryState, BigDecimal shouldfare, BigDecimal cash, BigDecimal pos, BigDecimal checkfee,
+			BigDecimal otherfee, Long requestUser, Long editUser) {
+		this.logger.info("EditCwb_JINE_SQL:{}修改快递运费 开始", cwb);
+		// 根据cwb 获得 订单表 express_ops_cwb_detail 有效记录 state lock
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+
+		if (co.getReceivablefee().compareTo(shouldfare) == 0) {
+			throw new ExplinkException(co.getFlowordertype() + "_[失败]快递运费金额没有任何变化，不需要更改数据！");
+		}
+		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
+		DeliveryState ds = this.deliveryStateDAO.getDeliveryByCwbLock(cwb);
+		// 判断是否需要影响到财务分别调用两个方法
+		if (isDeliveryState.equals("no")) {
+			if ((ds != null) && (ds.getDeliverystate() != DeliveryStateEnum.WeiFanKui.getValue()) && (ds.getDeliverystate() != DeliveryStateEnum.JuShou.getValue())
+					&& (ds.getDeliverystate() != DeliveryStateEnum.FenZhanZhiLiu.getValue()) && (ds.getDeliverystate() != DeliveryStateEnum.ShangMenJuTui.getValue())) {
+				throw new ExplinkException(co.getFlowordertype() + "_[失败]变更金额过程中操作了反馈为最终结果的操作，无法完成这次金额修改！");
+			}
+		}
+		/*
+		 * 根据cwb 修改订单表 express_ops_cwb_detail 的快递运费金额 修改 shouldfare
+		 */
+		this.cwbDAO.updateShouldfare(co.getOpscwbid(), shouldfare, (co.getTotalfee()).add(shouldfare.subtract(co.getShouldfare())).doubleValue());
+		this.exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), this.getSessionUser(), "修改快递运费金额:运费金额为：" + shouldfare);
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where shouldfare=" + shouldfare.doubleValue() + " and opscwbid=" + co.getOpscwbid());
+
+		EdtiCwb_DeliveryStateDetail ec_dsd = new EdtiCwb_DeliveryStateDetail();
+		ec_dsd.setEditcwbtypeid(EditCwbTypeEnum.XiuGaiKaiDiYunFeiJinE.getValue());
+		ec_dsd.setRequestUser(requestUser);
+		ec_dsd.setEditUser(editUser);
+		ec_dsd.setFinance_audit_id(0);
+		ec_dsd.setF_payup_audit_id(0);
+		ec_dsd.setFd_payup_detail_id(0);
+		ec_dsd.setNew_shouldfare(shouldfare);
+		ec_dsd.setCwbordertypeid(co.getCwbordertypeid());
+		ec_dsd.setNew_pos(pos);
+		ec_dsd.setNew_flowordertype(co.getFlowordertype());
+		ec_dsd.setNew_deliverystate(DeliveryStateEnum.WeiFanKui.getValue());
+		ec_dsd.setNew_cwbordertypeid(co.getCwbordertypeid());
+
+		this.logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
+		// this.editCwbDAO.creEditCwb(ec_dsd);
+		this.logger.info("EditCwb_SQL:{}修改快递运费金额 结束", cwb);
 		return ec_dsd;
 	}
 
 	/**
 	 * 修改订单 修改金额
-	 * 
+	 *
 	 * @param cwb
 	 *            要修改的订单号
 	 * @param isDeliveryState
@@ -495,19 +545,19 @@ public class EditCwbService {
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public EdtiCwb_DeliveryStateDetail analysisAndSaveByXiuGaiJinE(String cwb, String isDeliveryState, BigDecimal receivablefee, BigDecimal cash, BigDecimal pos, BigDecimal checkfee,
 			BigDecimal otherfee, BigDecimal paybackfee, Long requestUser, Long editUser) {
-		logger.info("EditCwb_JINE_SQL:{}修改金额 开始", cwb);
+		this.logger.info("EditCwb_JINE_SQL:{}修改金额 开始", cwb);
 		// 根据cwb 获得 订单表 express_ops_cwb_detail 有效记录 state lock
-		CwbOrder co = cwbDAO.getCwbByCwbLock(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
-		DeliveryState ds = deliveryStateDAO.getDeliveryByCwbLock(cwb);
+		DeliveryState ds = this.deliveryStateDAO.getDeliveryByCwbLock(cwb);
 		// 判断是否需要影响到财务分别调用两个方法
 		if (isDeliveryState.equals("no")) {
-			if (ds != null && ds.getDeliverystate() != DeliveryStateEnum.WeiFanKui.getValue() && ds.getDeliverystate() != DeliveryStateEnum.JuShou.getValue()
-					&& ds.getDeliverystate() != DeliveryStateEnum.FenZhanZhiLiu.getValue() && ds.getDeliverystate() != DeliveryStateEnum.ShangMenJuTui.getValue()) {
+			if ((ds != null) && (ds.getDeliverystate() != DeliveryStateEnum.WeiFanKui.getValue()) && (ds.getDeliverystate() != DeliveryStateEnum.JuShou.getValue())
+					&& (ds.getDeliverystate() != DeliveryStateEnum.FenZhanZhiLiu.getValue()) && (ds.getDeliverystate() != DeliveryStateEnum.ShangMenJuTui.getValue())) {
 				throw new ExplinkException(co.getFlowordertype() + "_[失败]变更金额过程中操作了反馈为最终结果的操作，无法完成这次金额修改！");
 			}
 		}
-		if (co.getReceivablefee().compareTo(receivablefee) == 0 && co.getPaybackfee().compareTo(paybackfee) == 0) {
+		if ((co.getReceivablefee().compareTo(receivablefee) == 0) && (co.getPaybackfee().compareTo(paybackfee) == 0)) {
 			throw new ExplinkException(co.getFlowordertype() + "_[失败]订单金额没有任何变化，不需要更改数据！");
 		}
 
@@ -515,9 +565,9 @@ public class EditCwbService {
 		 * 根据cwb 修改订单表 express_ops_cwb_detail 的金额 修改 receivablefee 代收金额 修改
 		 * paybackfee 代退金额
 		 */
-		cwbDAO.updateXiuGaiJinE(co.getOpscwbid(), receivablefee, paybackfee);
-		exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), getSessionUser(), "修改金额:应收金额为：" + receivablefee + "\t应退金额为：" + paybackfee);
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where receivablefee=" + receivablefee.doubleValue() + " and paybackfee=" + paybackfee + " and opscwbid="
+		this.cwbDAO.updateXiuGaiJinE(co.getOpscwbid(), receivablefee, paybackfee);
+		this.exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), this.getSessionUser(), "修改金额:应收金额为：" + receivablefee + "\t应退金额为：" + paybackfee);
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where receivablefee=" + receivablefee.doubleValue() + " and paybackfee=" + paybackfee + " and opscwbid="
 				+ co.getOpscwbid());
 
 		/**
@@ -527,7 +577,7 @@ public class EditCwbService {
 			JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=2&cwb=" + co.getCwb() + "&receivablefee=" + receivablefee + "&paybackfee=" + paybackfee, "POST");
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			logger.info("云订单修改订单金额异常:" + co.getCwb());
+			this.logger.info("云订单修改订单金额异常:" + co.getCwb());
 		}
 
 		/*
@@ -538,32 +588,32 @@ public class EditCwbService {
 		String ids = AccountFlowOrderTypeEnum.KuFangChuKu.getValue() + "," + AccountFlowOrderTypeEnum.ZhongZhuanChuKu.getValue() + "," + AccountFlowOrderTypeEnum.TuiHuoChuKu.getValue() + ","
 				+ AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue() + "," + AccountFlowOrderTypeEnum.ZhongZhuanRuKu.getValue() + "," + AccountFlowOrderTypeEnum.TuiHuoRuKu.getValue() + ","
 				+ AccountFlowOrderTypeEnum.Pos.getValue();
-		List<AccountCwbDetail> list_md = accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, ids);
-		if (list_md != null && !list_md.isEmpty()) {
+		List<AccountCwbDetail> list_md = this.accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, ids);
+		if ((list_md != null) && !list_md.isEmpty()) {
 			for (AccountCwbDetail list : list_md) {
 				if (list.getDebetstate() > 0) {// 本次欠款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getDebetstate());
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getDebetstate());
 					o.setWjcash(o.getWjcash().subtract(list.getReceivablefee().subtract(receivablefee)));// 本次欠款
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
 				if (list.getCheckoutstate() > 0) {// 已交款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
 					// 出库
-					if (list.getFlowordertype() == AccountFlowOrderTypeEnum.KuFangChuKu.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanChuKu.getValue()
-							|| list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuoChuKu.getValue()) {
-						if (list.getCheckoutstate() > 0 && list.getDebetstate() == 0) {// 无欠款
+					if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.KuFangChuKu.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanChuKu.getValue())
+							|| (list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuoChuKu.getValue())) {
+						if ((list.getCheckoutstate() > 0) && (list.getDebetstate() == 0)) {// 无欠款
 							o.setTocash(o.getTocash().subtract(list.getReceivablefee().subtract(receivablefee)));// 本次应交
 							o.setYjcash(o.getYjcash().subtract(list.getReceivablefee().subtract(receivablefee)));// 本次实交
 						}
-						if (list.getCheckoutstate() > 0 && list.getDebetstate() > 0) {// 有欠款
+						if ((list.getCheckoutstate() > 0) && (list.getDebetstate() > 0)) {// 有欠款
 							o.setQkcash(o.getQkcash().subtract(list.getReceivablefee().subtract(receivablefee)));// 欠款
 						}
 						o.setHjfee(o.getHjfee().subtract(list.getReceivablefee().subtract(receivablefee)));// 合计支付
 					} else {// 中转
 							// 不同类型订单取不同的金额字段
-						BigDecimal ZZfee = accountCwbDetailService.getZZPaybackfee(list.getCwbordertypeid(), list.getDeliverystate(), receivablefee, paybackfee);
+						BigDecimal ZZfee = this.accountCwbDetailService.getZZPaybackfee(list.getCwbordertypeid(), list.getDeliverystate(), receivablefee, paybackfee);
 						// 中转退款
-						if (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanRuKu.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue()) {
+						if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanRuKu.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue())) {
 							o.setZzcash(o.getZzcash().subtract(list.getPaybackfee().subtract(ZZfee)));// 中转退款=中转退款+原paybackfee-新paybackfee
 																										// (新paybackfee根据不同订单类型取值不同)
 						}
@@ -584,19 +634,20 @@ public class EditCwbService {
 							}
 						}
 					}
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
 
 				// 修改订单明细字段
-				if (list.getFlowordertype() == AccountFlowOrderTypeEnum.KuFangChuKu.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanChuKu.getValue()
-						|| list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuoChuKu.getValue()) {
-					accountCwbDetailDAO.updateXiuGaiJinE(list.getAccountcwbid(), receivablefee, paybackfee);
-					logger.info("EditCwb_SQL:update ops_account_cwb_detail set receivablefee=" + receivablefee + ",paybackfee=" + paybackfee + " where accountcwbid=" + list.getAccountcwbid());
+				if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.KuFangChuKu.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanChuKu.getValue())
+						|| (list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuoChuKu.getValue())) {
+					this.accountCwbDetailDAO.updateXiuGaiJinE(list.getAccountcwbid(), receivablefee, paybackfee);
+					this.logger.info("EditCwb_SQL:update ops_account_cwb_detail set receivablefee=" + receivablefee + ",paybackfee=" + paybackfee + " where accountcwbid=" + list.getAccountcwbid());
 				} else {
-					accountCwbDetailDAO.updateXiuGaiJinE(list.getAccountcwbid(), receivablefee,
-							accountCwbDetailService.getZZPaybackfee(list.getCwbordertypeid(), list.getDeliverystate(), receivablefee, paybackfee));
-					logger.info("EditCwb_SQL:update ops_account_cwb_detail set receivablefee=" + receivablefee + ",paybackfee="
-							+ accountCwbDetailService.getZZPaybackfee(list.getCwbordertypeid(), list.getDeliverystate(), receivablefee, paybackfee) + " where accountcwbid=" + list.getAccountcwbid());
+					this.accountCwbDetailDAO.updateXiuGaiJinE(list.getAccountcwbid(), receivablefee,
+							this.accountCwbDetailService.getZZPaybackfee(list.getCwbordertypeid(), list.getDeliverystate(), receivablefee, paybackfee));
+					this.logger.info("EditCwb_SQL:update ops_account_cwb_detail set receivablefee=" + receivablefee + ",paybackfee="
+							+ this.accountCwbDetailService.getZZPaybackfee(list.getCwbordertypeid(), list.getDeliverystate(), receivablefee, paybackfee) + " where accountcwbid="
+							+ list.getAccountcwbid());
 				}
 			}
 
@@ -608,25 +659,25 @@ public class EditCwbService {
 		 * 已产生过交款记录的订单： 1.修改汇总表中相对应的cash,pos,checkfee,otherfee合计支付金额 2.根据欠款和结算ID
 		 * 来更新相对应的本次应交、本次实交、本次欠款、欠款&&合计支付金额
 		 */
-		List<AccountCwbDetail> list_psjg = accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.GuiBanShenHe.getValue()));
-		if (list_psjg != null && !list_psjg.isEmpty()) {
+		List<AccountCwbDetail> list_psjg = this.accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.GuiBanShenHe.getValue()));
+		if ((list_psjg != null) && !list_psjg.isEmpty()) {
 			for (AccountCwbDetail list : list_psjg) {
 				if (list.getDebetstate() > 0) {// 本次欠款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getDebetstate());
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getDebetstate());
 					o.setWjcash(o.getWjcash().subtract(list.getCash().subtract(cash)));// 本次欠款现金
 					o.setWjpos(o.getWjpos().subtract(list.getPos().subtract(pos)));// 本次欠款pos
 					o.setWjcheck(o.getWjcheck().subtract(list.getCheckfee().subtract(checkfee)));// 本次欠款支票
 					o.setWjother(o.getWjother().subtract(list.getOtherfee().subtract(otherfee)));// 本次欠款其他
 					o.setWjfee(o.getWjcash().add(o.getWjpos()).add(o.getWjcheck()).add(o.getWjother()));// 本次欠款合计
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
 				if (list.getCheckoutstate() > 0) {// 已交款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
 					BigDecimal newcash = list.getCash().subtract(cash);
 					BigDecimal newpos = list.getPos().subtract(pos);
 					BigDecimal newcheck = list.getCheckfee().subtract(checkfee);
 					BigDecimal newother = list.getOtherfee().subtract(otherfee);
-					if (list.getCheckoutstate() > 0 && list.getDebetstate() == 0) {// 无欠款
+					if ((list.getCheckoutstate() > 0) && (list.getDebetstate() == 0)) {// 无欠款
 						o.setTocash(o.getTocash().subtract(newcash));// 本次应交现金
 						o.setTopos(o.getTopos().subtract(newpos));// 本次应交pos
 						o.setTocheck(o.getTocheck().subtract(newcheck));// 本次应交支票
@@ -640,15 +691,15 @@ public class EditCwbService {
 						o.setYjfee(o.getYjcash().add(o.getYjpos()).add(o.getYjcheck()).add(o.getYjother()));
 					}
 
-					if (list.getCheckoutstate() > 0 && list.getDebetstate() > 0) {// 有欠款
+					if ((list.getCheckoutstate() > 0) && (list.getDebetstate() > 0)) {// 有欠款
 						o.setQkcash(o.getQkcash().subtract(newcash.add(newcheck).add(newother)));// 欠款
 					}
 					o.setHjfee(o.getHjfee().subtract(newcash.add(newcheck).add(newother)));// 合计支付
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
 			}
-			accountCwbDetailDAO.updateXiuGaiJinEByCwb(cwb, receivablefee, paybackfee, cash, pos, checkfee, otherfee);
-			logger.info("EditCwb_SQL:update ops_account_cwb_detail set receivablefee=" + receivablefee + ",paybackfee=" + paybackfee + " cash=" + cash + ",pos=" + pos + ",checkfee=" + checkfee
+			this.accountCwbDetailDAO.updateXiuGaiJinEByCwb(cwb, receivablefee, paybackfee, cash, pos, checkfee, otherfee);
+			this.logger.info("EditCwb_SQL:update ops_account_cwb_detail set receivablefee=" + receivablefee + ",paybackfee=" + paybackfee + " cash=" + cash + ",pos=" + pos + ",checkfee=" + checkfee
 					+ ",otherfee=" + otherfee + " where cwb=" + cwb);
 		}
 
@@ -657,16 +708,16 @@ public class EditCwbService {
 		 * FlowOrderType为POS数据 1.将已交款的订单汇总fee-pos金额；
 		 * 2.更新站点余额、欠款、伪余额、伪欠款字段(进去返还的POS金额)； 3.删除订单明细记录；
 		 */
-		List<AccountDeducDetail> list_kk = accountDeducDetailDAO.getDetailByCwb(cwb);
-		if (list_kk != null && !list_kk.isEmpty()) {
+		List<AccountDeducDetail> list_kk = this.accountDeducDetailDAO.getDetailByCwb(cwb);
+		if ((list_kk != null) && !list_kk.isEmpty()) {
 			// 根据不同订单类型 取得应扣款金额
 			// BigDecimal
 			// newfee=accountDeductRecordService.getDetailFee(co.getCwbordertypeid(),receivablefee,paybackfee);
-			BigDecimal newfee = accountDeducDetailService.getTHPaybackfee(co.getCwbordertypeid(), co.getDeliverystate(), receivablefee, paybackfee);
+			BigDecimal newfee = this.accountDeducDetailService.getTHPaybackfee(co.getCwbordertypeid(), co.getDeliverystate(), receivablefee, paybackfee);
 
 			for (AccountDeducDetail list : list_kk) {
 				// 锁住该站点记录
-				Branch branchLock = branchDAO.getBranchByBranchidLock(list.getBranchid());
+				Branch branchLock = this.branchDAO.getBranchByBranchidLock(list.getBranchid());
 				BigDecimal oldfee = list.getFee();// 加减款金额
 				BigDecimal credit = branchLock.getCredit();// 信用额度
 				BigDecimal balance = branchLock.getBalance();// 余额
@@ -675,74 +726,74 @@ public class EditCwbService {
 				BigDecimal balancevirt = branchLock.getBalancevirt();// 伪余额
 
 				if (list.getRecordid() > 0) {// 已结算
-					AccountDeductRecord o = accountDeductRecordDAO.getAccountDeductRecordByIdLock(list.getRecordid());
+					AccountDeductRecord o = this.accountDeductRecordDAO.getAccountDeductRecordByIdLock(list.getRecordid());
 
 					// 冲正
-					if (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuan.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue()
-							|| list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuo.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.Pos.getValue()) {
+					if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuan.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue())
+							|| (list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuo.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.Pos.getValue())) {
 						Map feeMap = new HashMap();
 						if (oldfee.compareTo(newfee) > 0) {
 							// ====减款逻辑=====减款金额：oldfee-newfee
-							feeMap = accountDeductRecordService.subBranchFee(credit, balance, debt, oldfee.subtract(newfee));
+							feeMap = this.accountDeductRecordService.subBranchFee(credit, balance, debt, oldfee.subtract(newfee));
 						} else {
 							// ====加款逻辑=====加款金额：newfee-oldfee
-							feeMap = accountDeductRecordService.addBranchFee(balance, debt, newfee.subtract(oldfee));
+							feeMap = this.accountDeductRecordService.addBranchFee(balance, debt, newfee.subtract(oldfee));
 						}
 						balance = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						// 修改branch表 的余额、欠款
-						branchDAO.updateForFee(list.getBranchid(), balance, debt);
-						accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), o.getFee().subtract(oldfee.subtract(newfee)));
+						this.branchDAO.updateForFee(list.getBranchid(), balance, debt);
+						this.accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), o.getFee().subtract(oldfee.subtract(newfee)));
 					} else {// 出库
 						Map feeMap = new HashMap();
 						if (oldfee.compareTo(newfee) > 0) {
 							// ====加款逻辑=====加款金额：oldfee-newfee
-							feeMap = accountDeductRecordService.addBranchFee(balance, debt, oldfee.subtract(newfee));
+							feeMap = this.accountDeductRecordService.addBranchFee(balance, debt, oldfee.subtract(newfee));
 						} else {
 							// ====减款逻辑=====减款金额：newfee-oldfee
-							feeMap = accountDeductRecordService.subBranchFee(credit, balance, debt, newfee.subtract(oldfee));
+							feeMap = this.accountDeductRecordService.subBranchFee(credit, balance, debt, newfee.subtract(oldfee));
 						}
 						balance = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						// 修改branch表 的余额、欠款
-						branchDAO.updateForFee(list.getBranchid(), balance, debt);
-						accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), newfee);
+						this.branchDAO.updateForFee(list.getBranchid(), balance, debt);
+						this.accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), newfee);
 					}
 				}
 
 				if (list.getRecordidvirt() > 0) {// 已伪结算
 					// 冲正
-					if (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuan.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue()
-							|| list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuo.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.Pos.getValue()) {
+					if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuan.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue())
+							|| (list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuo.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.Pos.getValue())) {
 						Map feeMap = new HashMap();
 						if (oldfee.compareTo(newfee) > 0) {
 							// ====减款逻辑=====减款金额：oldfee-newfee
-							feeMap = accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, oldfee.subtract(newfee));
+							feeMap = this.accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, oldfee.subtract(newfee));
 						} else {
 							// ====加款逻辑=====加款金额：newfee-oldfee
-							feeMap = accountDeductRecordService.addBranchFee(balancevirt, debtvirt, newfee.subtract(oldfee));
+							feeMap = this.accountDeductRecordService.addBranchFee(balancevirt, debtvirt, newfee.subtract(oldfee));
 						}
 						balancevirt = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debtvirt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						// 修改branch表 伪余额、伪欠款
-						branchDAO.updateForVirt(list.getBranchid(), balancevirt, debtvirt);
+						this.branchDAO.updateForVirt(list.getBranchid(), balancevirt, debtvirt);
 					} else {// 出库
 						Map feeMap = new HashMap();
 						if (oldfee.compareTo(newfee) > 0) {
 							// ====加款逻辑=====加款金额：oldfee-newfee
-							feeMap = accountDeductRecordService.addBranchFee(balance, debt, oldfee.subtract(newfee));
+							feeMap = this.accountDeductRecordService.addBranchFee(balance, debt, oldfee.subtract(newfee));
 						} else {
 							// ====减款逻辑=====减款金额：newfee-oldfee
-							feeMap = accountDeductRecordService.subBranchFee(credit, balance, debt, newfee.subtract(oldfee));
+							feeMap = this.accountDeductRecordService.subBranchFee(credit, balance, debt, newfee.subtract(oldfee));
 						}
 						balancevirt = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debtvirt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						// 修改branch表 伪余额、伪欠款
-						branchDAO.updateForVirt(list.getBranchid(), balancevirt, debtvirt);
+						this.branchDAO.updateForVirt(list.getBranchid(), balancevirt, debtvirt);
 					}
 				}
 			}
-			accountDeducDetailDAO.updateXiuGaiJinE(cwb, newfee);
+			this.accountDeducDetailDAO.updateXiuGaiJinE(cwb, newfee);
 		}
 
 		/*
@@ -775,16 +826,16 @@ public class EditCwbService {
 
 		if (ds != null) {
 			// 如果这个订单已经领货 未反馈 或者反馈为 滞留 拒收 上门退拒退，那么 不更改实收金额
-			if (ds.getDeliverystate() == DeliveryStateEnum.WeiFanKui.getValue() || ds.getDeliverystate() == DeliveryStateEnum.JuShou.getValue()
-					|| ds.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue() || ds.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue()) {
-				deliveryStateDAO.updateXiuGaiJinE(ds.getId(), BigDecimal.ZERO, BigDecimal.ZERO, receivablefee.add(paybackfee), cash, pos, checkfee, otherfee, isOut);
-				logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_delivery_state where receivedfee=" + BigDecimal.ZERO.doubleValue() + " and returnedfee=" + BigDecimal.ZERO.doubleValue()
-						+ " and businessfee=" + receivablefee.add(paybackfee).doubleValue() + " and isout=" + isOut + " and cash=" + cash.doubleValue() + " and pos=" + pos.doubleValue()
-						+ " and otherfee=" + otherfee.doubleValue() + " and checkfee=" + checkfee.doubleValue() + " and id=" + ds.getId());
+			if ((ds.getDeliverystate() == DeliveryStateEnum.WeiFanKui.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.JuShou.getValue())
+					|| (ds.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue())) {
+				this.deliveryStateDAO.updateXiuGaiJinE(ds.getId(), BigDecimal.ZERO, BigDecimal.ZERO, receivablefee.add(paybackfee), cash, pos, checkfee, otherfee, isOut);
+				this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_delivery_state where receivedfee=" + BigDecimal.ZERO.doubleValue() + " and returnedfee="
+						+ BigDecimal.ZERO.doubleValue() + " and businessfee=" + receivablefee.add(paybackfee).doubleValue() + " and isout=" + isOut + " and cash=" + cash.doubleValue() + " and pos="
+						+ pos.doubleValue() + " and otherfee=" + otherfee.doubleValue() + " and checkfee=" + checkfee.doubleValue() + " and id=" + ds.getId());
 
 			} else {
-				deliveryStateDAO.updateXiuGaiJinE(ds.getId(), receivablefee, paybackfee, receivablefee.add(paybackfee), cash, pos, checkfee, otherfee, isOut);
-				logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_delivery_state where receivedfee=" + receivablefee.doubleValue() + " and returnedfee=" + paybackfee.doubleValue()
+				this.deliveryStateDAO.updateXiuGaiJinE(ds.getId(), receivablefee, paybackfee, receivablefee.add(paybackfee), cash, pos, checkfee, otherfee, isOut);
+				this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_delivery_state where receivedfee=" + receivablefee.doubleValue() + " and returnedfee=" + paybackfee.doubleValue()
 						+ " and businessfee=" + receivablefee.add(paybackfee).doubleValue() + " and isout=" + isOut + " and cash=" + cash.doubleValue() + " and pos=" + pos.doubleValue()
 						+ " and otherfee=" + otherfee.doubleValue() + " and checkfee=" + checkfee.doubleValue() + " and id=" + ds.getId());
 			}
@@ -801,41 +852,41 @@ public class EditCwbService {
 		}
 
 		if (isDeliveryState.equals("no")) {// 如果订单没有反馈最终配送结果，那么到这里就结束了，因为这次修改不影响其他账务
-			logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
-			editCwbDAO.creEditCwb(ec_dsd);
-			logger.info("EditCwb_SQL:{}修改订单金额 结束", cwb);
+			this.logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
+			this.editCwbDAO.creEditCwb(ec_dsd);
+			this.logger.info("EditCwb_SQL:{}修改订单金额 结束", cwb);
 			return ec_dsd;
 		}
 
 		// 根据 反馈表 中的gcaid 获得 归班表 express_ops_goto_class_auditing 记录 lock
 		// 根据 归班表中的payupid 获得 交款表 express_ops_pay_up 记录 lock
 		GotoClassAuditing gca = null;
-		if (ds != null && ds.getGcaid() > 0) {
-			gca = gotoClassAuditingDAO.getGotoClassAuditingByGcaid(ds.getGcaid());
+		if ((ds != null) && (ds.getGcaid() > 0)) {
+			gca = this.gotoClassAuditingDAO.getGotoClassAuditingByGcaid(ds.getGcaid());
 			ec_dsd.getDs().setGcaid(gca.getId());
 		}
 		PayUp payUp = null;
-		if (gca != null && gca.getPayupid() > 0) {
-			payUp = payUpDAO.getPayUpByIdLock(gca.getPayupid());
+		if ((gca != null) && (gca.getPayupid() > 0)) {
+			payUp = this.payUpDAO.getPayUpByIdLock(gca.getPayupid());
 			ec_dsd.getDs().setPayupid(payUp.getId());
 		}
 
 		// 根据反馈表中的 deliveryid 获得 express_ops_user表 对应的小件员详细信息 用于更改小件员帐户 lock
-		User u = userDAO.getUserByUseridLock(ds.getDeliveryid());
+		User u = this.userDAO.getUserByUseridLock(ds.getDeliveryid());
 
 		// 根据 反馈表的cwb 获取 finance_audit_temp 结算审核明细表中 按配送结果结算的明细记录 中的审核id
 		// 根据 结算审核明细表中的记录 中的 auditid 获取finance_audit 结算审核表 记录 lock
-		Long financeAuditId = financeAuditDAO.getFinanceAuditTempByCwb(cwb);
+		Long financeAuditId = this.financeAuditDAO.getFinanceAuditTempByCwb(cwb);
 		FinanceAudit financeAudit = null;
 		if (financeAuditId > 0) {// 如果存在按配送结果结算和按配送结果结算的
-			financeAudit = financeAuditDAO.getFinanceAuditByIdLock(financeAuditId);
+			financeAudit = this.financeAuditDAO.getFinanceAuditByIdLock(financeAuditId);
 			ec_dsd.setFinance_audit_id(financeAudit.getId());
 		}
 
 		// 根据 归班表 payupid 获得 finance_pay_up_audit 站点交款审核表 记录 lock
 		FinancePayUpAudit financePayUpAudit = null;
-		if (payUp != null && payUp.getAuditid() > 0) {
-			financePayUpAudit = financePayUpAuditDAO.getFinancePayUpAuditByIdLock(payUp.getAuditid());
+		if ((payUp != null) && (payUp.getAuditid() > 0)) {
+			financePayUpAudit = this.financePayUpAuditDAO.getFinancePayUpAuditByIdLock(payUp.getAuditid());
 			ec_dsd.setF_payup_audit_id(financePayUpAudit.getId());
 		}
 
@@ -849,13 +900,13 @@ public class EditCwbService {
 
 			SystemInstall usedeliverpay = null;
 			try {// 获取 小件员交款 功能使用开关 如果不使用小件员交款，则不调用小件员帐户变动
-				usedeliverpay = systemInstallDAO.getSystemInstallByName("usedeliverpayup");
+				usedeliverpay = this.systemInstallDAO.getSystemInstallByName("usedeliverpayup");
 
 			} catch (Exception e) {
-				logger.error(cwb + " 获取使用小件员交款功能异常，默认不使用小件员交款功能-修改订单金额");
+				this.logger.error(cwb + " 获取使用小件员交款功能异常，默认不使用小件员交款功能-修改订单金额");
 			}
 			FinanceDeliverPayupDetail fdpud = new FinanceDeliverPayupDetail();
-			if (usedeliverpay != null && usedeliverpay.getValue().equals("yes")) {
+			if ((usedeliverpay != null) && usedeliverpay.getValue().equals("yes")) {
 				/*
 				 * 创建小件员帐户交易记录 （如果开启了小件员交款，并且小件员已经归班审核交款）
 				 * finance_deliver_pay_up_detail｛｝
@@ -883,15 +934,15 @@ public class EditCwbService {
 				fdpud.setType(FinanceDeliverPayUpDetailTypeEnum.XiuGaiJinE.getValue());
 				fdpud.setRemark("申请[" + cwb + "]代收金额从[" + co.getReceivablefee().doubleValue() + "]改为[" + receivablefee.doubleValue() + "],代退金额从[" + co.getPaybackfee().doubleValue() + "]改为["
 						+ paybackfee.doubleValue() + "]");
-				logger.info("EditCwb_fdpud:" + cwb + " {}", fdpud.toString());
-				ec_dsd.setFd_payup_detail_id(financeDeliverPayUpDetailDAO.insert(fdpud));
+				this.logger.info("EditCwb_fdpud:" + cwb + " {}", fdpud.toString());
+				ec_dsd.setFd_payup_detail_id(this.financeDeliverPayUpDetailDAO.insert(fdpud));
 				/*
 				 * 修改小件员帐户余额（如果开启了小件员交款，并且小件员已经归班审核交款） finance_pay_up_audit｛ 将
 				 * deliverAccount 变更为 fdpud.setDeliverpayuparrearage 将
 				 * deliverPosAccount 变更为 fdpud.setDeliverpayuparrearage_pos ｝
 				 */
-				userDAO.updateUserAmount(u.getUserid(), fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos());
-				logger.info("EditCwb_SQL:" + cwb + " select * express_set_user where deliverAccount=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverPosAccount="
+				this.userDAO.updateUserAmount(u.getUserid(), fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos());
+				this.logger.info("EditCwb_SQL:" + cwb + " select * express_set_user where deliverAccount=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverPosAccount="
 						+ fdpud.getDeliverpayuparrearage_pos().doubleValue() + " and userid=" + u.getUserid());
 			} else {// 没有使用小件员交款功能 那么要复值小件员交易后的余额为0元
 				fdpud.setDeliverpayuparrearage(BigDecimal.ZERO);
@@ -902,9 +953,9 @@ public class EditCwbService {
 			BigDecimal gca_payupamount_pos = gca.getPayupamount_pos().subtract(ds.getPos());
 			gca_payupamount_pos = gca_payupamount_pos.add(pos);
 
-			gotoClassAuditingDAO.updateForChongZhiShenHe(gca.getId(), gca_payupamount, gca_payupamount_pos, fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos(),
+			this.gotoClassAuditingDAO.updateForChongZhiShenHe(gca.getId(), gca_payupamount, gca_payupamount_pos, fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos(),
 					new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_goto_class_auditing where  payupamount=" + gca_payupamount.doubleValue() + " and payupamount_pos="
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_goto_class_auditing where  payupamount=" + gca_payupamount.doubleValue() + " and payupamount_pos="
 					+ gca_payupamount_pos.doubleValue() + " and deliverpayuparrearage=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverpayuparrearage_pos="
 					+ fdpud.getDeliverpayuparrearage_pos().doubleValue() + " and id =" + gca.getId());
 
@@ -921,8 +972,8 @@ public class EditCwbService {
 			BigDecimal payup_payupamount_pos = payUp.getAmountPos().subtract(ds.getPos());
 			payup_payupamount_pos = payup_payupamount_pos.add(pos);
 
-			payUpDAO.updateForChongZhiShenHe(payUp.getId(), payup_payupamount, payup_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_pay_up where amount=" + payup_payupamount.doubleValue() + " and amountpos=" + payup_payupamount_pos.doubleValue()
+			this.payUpDAO.updateForChongZhiShenHe(payUp.getId(), payup_payupamount, payup_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_pay_up where amount=" + payup_payupamount.doubleValue() + " and amountpos=" + payup_payupamount_pos.doubleValue()
 					+ " and id =" + payUp.getId());
 		}
 
@@ -938,20 +989,20 @@ public class EditCwbService {
 			BigDecimal fpua_payupamount_pos = financePayUpAudit.getAmountpos().subtract(ds.getPos());
 			fpua_payupamount_pos = fpua_payupamount_pos.add(pos);
 
-			financePayUpAuditDAO.updateForChongZhiShenHe(financePayUpAudit.getId(), fpua_payupamount, fpua_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from finance_pay_up_audit where amount=" + fpua_payupamount.doubleValue() + " and amountpos=" + fpua_payupamount_pos.doubleValue()
+			this.financePayUpAuditDAO.updateForChongZhiShenHe(financePayUpAudit.getId(), fpua_payupamount, fpua_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from finance_pay_up_audit where amount=" + fpua_payupamount.doubleValue() + " and amountpos=" + fpua_payupamount_pos.doubleValue()
 					+ " and id =" + financePayUpAudit.getId());
 
 			// 如果有站点交款审核记录，则一定有帐户变动，所以同时要修改站点欠款金额 由于站点的欠款字段是记录的欠款正数 也就是钱多少钱
 			// 里面的数值就是多少 所以当有款项变动的时候 应该用当前欠款 减去货款
-			Branch b = branchDAO.getBranchByBranchidLock(payUp.getBranchid());
+			Branch b = this.branchDAO.getBranchByBranchidLock(payUp.getBranchid());
 			BigDecimal arrearagepayupaudit = b.getArrearagepayupaudit().subtract(ds.getCash().add(ds.getOtherfee()).add(ds.getCheckfee()).subtract(ds.getReturnedfee()));
 			arrearagepayupaudit = arrearagepayupaudit.add(cash.add(otherfee).add(checkfee).subtract(paybackfee));
 			BigDecimal posarrearagepayupaudit = b.getPosarrearagepayupaudit().subtract(ds.getPos());
 			posarrearagepayupaudit = posarrearagepayupaudit.add(pos);
 
-			branchDAO.updateForChongZhiShenHe(b.getBranchid(), arrearagepayupaudit, posarrearagepayupaudit);
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_set_branch where  arrearagepayupaudit=" + arrearagepayupaudit.doubleValue() + " and posarrearagepayupaudit="
+			this.branchDAO.updateForChongZhiShenHe(b.getBranchid(), arrearagepayupaudit, posarrearagepayupaudit);
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_set_branch where  arrearagepayupaudit=" + arrearagepayupaudit.doubleValue() + " and posarrearagepayupaudit="
 					+ posarrearagepayupaudit.doubleValue() + " and branchid=" + b.getBranchid());
 		}
 
@@ -964,24 +1015,24 @@ public class EditCwbService {
 		if (financeAudit != null) {
 			BigDecimal fa_amount = financeAudit.getShouldpayamount().subtract(co.getReceivablefee().subtract(co.getPaybackfee()));
 			fa_amount = fa_amount.add(receivablefee.subtract(paybackfee));
-			financeAuditDAO.updateForChongZhiShenHe(financeAudit.getId(), fa_amount, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from finance_audit where shouldpayamount=" + fa_amount + " and id =" + financeAudit.getId());
+			this.financeAuditDAO.updateForChongZhiShenHe(financeAudit.getId(), fa_amount, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from finance_audit where shouldpayamount=" + fa_amount + " and id =" + financeAudit.getId());
 		}
 
 		// 根据 cwb 与归班id 获得唯一的express_ops_deliver_cash 小件员工作量统计表对应的记录 并修改
-		deliveryCashDAO.updateXiuGaiJinE(cwb, ds.getDeliverystate(), receivablefee, pos, paybackfee);
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_deliver_cash where paybackfee=" + paybackfee.doubleValue() + " and receivableNoPosfee="
+		this.deliveryCashDAO.updateXiuGaiJinE(cwb, ds.getDeliverystate(), receivablefee, pos, paybackfee);
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_deliver_cash where paybackfee=" + paybackfee.doubleValue() + " and receivableNoPosfee="
 				+ receivablefee.subtract(pos).doubleValue() + " and receivablePosfee=" + pos.doubleValue() + " and cwb={} and deliverystate={} and deliverystate>0", cwb, ds.getDeliverystate());
 
-		logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
-		editCwbDAO.creEditCwb(ec_dsd);
-		logger.info("EditCwb_SQL:{}修改订单金额 结束", cwb);
+		this.logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
+		this.editCwbDAO.creEditCwb(ec_dsd);
+		this.logger.info("EditCwb_SQL:{}修改订单金额 结束", cwb);
 		return ec_dsd;
 	}
 
 	/**
 	 * 修改订单支付方式
-	 * 
+	 *
 	 * @param cwb
 	 * @param paywayid
 	 *            订单的当前支付方式
@@ -995,37 +1046,37 @@ public class EditCwbService {
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public EdtiCwb_DeliveryStateDetail analysisAndSaveByXiuGaiZhiFuFangShi(String cwb, int paywayid, int newpaywayid, Long requestUser, Long editUser) {
-		logger.info("EditCwb_SQL:{}修改订单支付方式 开始", cwb);
+		this.logger.info("EditCwb_SQL:{}修改订单支付方式 开始", cwb);
 		// 根据cwb 获得 订单表 express_ops_cwb_detail 有效记录 state lock
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
 		// 根据 反馈表 中的gcaid 获得 归班表 express_ops_goto_class_auditing 记录 lock
 		// 根据 归班表中的payupid 获得 交款表 express_ops_pay_up 记录 lock
-		CwbOrder co = cwbDAO.getCwbByCwbLock(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		if (paywayid == newpaywayid) {
 			throw new ExplinkException(PaytypeEnum.getByValue(paywayid).getText() + "_当前订单状态已经是[" + PaytypeEnum.getByValue(newpaywayid).getText() + "]状态！");
 		}
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
-		DeliveryState ds = deliveryStateDAO.getDeliveryByCwbLock(cwb);
+		DeliveryState ds = this.deliveryStateDAO.getDeliveryByCwbLock(cwb);
 		if (ds == null) {
 			throw new ExplinkException(PaytypeEnum.getByValue(paywayid).getText() + "_当前订单还没有反馈！");
-		} else if (ds.getDeliverystate() != DeliveryStateEnum.PeiSongChengGong.getValue() && ds.getDeliverystate() != DeliveryStateEnum.ShangMenHuanChengGong.getValue()
-				&& ds.getDeliverystate() != DeliveryStateEnum.BuFenTuiHuo.getValue()) {
+		} else if ((ds.getDeliverystate() != DeliveryStateEnum.PeiSongChengGong.getValue()) && (ds.getDeliverystate() != DeliveryStateEnum.ShangMenHuanChengGong.getValue())
+				&& (ds.getDeliverystate() != DeliveryStateEnum.BuFenTuiHuo.getValue())) {
 			throw new ExplinkException(PaytypeEnum.getByValue(paywayid).getText() + "_当前订单反馈为[" + DeliveryStateEnum.getByValue((int) ds.getDeliverystate()).getText() + "]无需修改支付方式！");
-		} else if (paywayid == PaytypeEnum.Xianjin.getValue() && ds.getCash().compareTo(BigDecimal.ZERO) == 0) {
+		} else if ((paywayid == PaytypeEnum.Xianjin.getValue()) && (ds.getCash().compareTo(BigDecimal.ZERO) == 0)) {
 			throw new ExplinkException("现金_当前订单支付方式从[现金]修改为[" + PaytypeEnum.getByValue(newpaywayid) + "],但现金金额却为 0 元！");
-		} else if (paywayid == PaytypeEnum.Pos.getValue() && ds.getPos().compareTo(BigDecimal.ZERO) == 0) {
+		} else if ((paywayid == PaytypeEnum.Pos.getValue()) && (ds.getPos().compareTo(BigDecimal.ZERO) == 0)) {
 			throw new ExplinkException("POS刷卡_当前订单支付方式从[POS刷卡]修改为[" + PaytypeEnum.getByValue(newpaywayid) + "],但POS刷卡金额却为 0 元！");
-		} else if (paywayid == PaytypeEnum.Zhipiao.getValue() && ds.getCheckfee().compareTo(BigDecimal.ZERO) == 0) {
+		} else if ((paywayid == PaytypeEnum.Zhipiao.getValue()) && (ds.getCheckfee().compareTo(BigDecimal.ZERO) == 0)) {
 			throw new ExplinkException("支票_当前订单支付方式从[支票]修改为[" + PaytypeEnum.getByValue(newpaywayid) + "],但支票金额却为 0 元！");
-		} else if (paywayid == PaytypeEnum.Qita.getValue() && ds.getOtherfee().compareTo(BigDecimal.ZERO) == 0) {
+		} else if ((paywayid == PaytypeEnum.Qita.getValue()) && (ds.getOtherfee().compareTo(BigDecimal.ZERO) == 0)) {
 			throw new ExplinkException("其他_当前订单支付方式从[其他]修改为[" + PaytypeEnum.getByValue(newpaywayid) + "],但其他金额却为 0 元！");
 		}
 		/*
 		 * 根据cwb 修改订单表 express_ops_cwb_detail 的金额 修改 newpaywayid 现支付方式
 		 */
-		cwbDAO.updateXiuGaiZhiFuFangShi(co.getOpscwbid(), newpaywayid);
-		exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), getSessionUser(), "修改支付方式为：" + PaytypeEnum.getByValue(newpaywayid).getText());
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where newpaywayid=" + newpaywayid + " and opscwbid=" + co.getOpscwbid());
+		this.cwbDAO.updateXiuGaiZhiFuFangShi(co.getOpscwbid(), newpaywayid);
+		this.exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), this.getSessionUser(), "修改支付方式为：" + PaytypeEnum.getByValue(newpaywayid).getText());
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where newpaywayid=" + newpaywayid + " and opscwbid=" + co.getOpscwbid());
 
 		/**
 		 * 修改云订单支付方式
@@ -1034,7 +1085,7 @@ public class EditCwbService {
 			JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=3&cwb=" + co.getCwb() + "&newpaywayid=" + newpaywayid, "POST");
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			logger.info("修改云订单支付方式异常:" + co.getCwb());
+			this.logger.info("修改云订单支付方式异常:" + co.getCwb());
 		}
 
 		/*
@@ -1070,8 +1121,8 @@ public class EditCwbService {
 			otherfee = ds.getReceivedfee();
 		}
 
-		deliveryStateDAO.updateXiuGaiZhiFuFangShi(ds.getId(), cash, pos, checkfee, otherfee);
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_delivery_state where " + "cash=" + cash.doubleValue() + " and pos=" + pos.doubleValue() + " and otherfee="
+		this.deliveryStateDAO.updateXiuGaiZhiFuFangShi(ds.getId(), cash, pos, checkfee, otherfee);
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_delivery_state where " + "cash=" + cash.doubleValue() + " and pos=" + pos.doubleValue() + " and otherfee="
 				+ otherfee.doubleValue() + " and checkfee=" + checkfee.doubleValue() + " and id=" + ds.getId());
 		ec_dsd.setDs(ds);
 		ec_dsd.setDsid(ds.getId());
@@ -1082,23 +1133,23 @@ public class EditCwbService {
 		// 根据 反馈表 中的gcaid 获得 归班表 express_ops_goto_class_auditing 记录 lock
 		// 根据 归班表中的payupid 获得 交款表 express_ops_pay_up 记录 lock
 		GotoClassAuditing gca = null;
-		if (ds != null && ds.getGcaid() > 0) {
-			gca = gotoClassAuditingDAO.getGotoClassAuditingByGcaid(ds.getGcaid());
+		if ((ds != null) && (ds.getGcaid() > 0)) {
+			gca = this.gotoClassAuditingDAO.getGotoClassAuditingByGcaid(ds.getGcaid());
 			ec_dsd.getDs().setGcaid(gca.getId());
 		}
 		PayUp payUp = null;
-		if (gca != null && gca.getPayupid() > 0) {
-			payUp = payUpDAO.getPayUpByIdLock(gca.getPayupid());
+		if ((gca != null) && (gca.getPayupid() > 0)) {
+			payUp = this.payUpDAO.getPayUpByIdLock(gca.getPayupid());
 			ec_dsd.getDs().setPayupid(payUp.getId());
 		}
 
 		// 根据反馈表中的 deliveryid 获得 express_ops_user表 对应的小件员详细信息 用于更改小件员帐户 lock
-		User u = userDAO.getUserByUseridLock(ds.getDeliveryid());
+		User u = this.userDAO.getUserByUseridLock(ds.getDeliveryid());
 
 		// 根据 归班表 payupid 获得 finance_pay_up_audit 站点交款审核表 记录 lock
 		FinancePayUpAudit financePayUpAudit = null;
-		if (payUp != null && payUp.getAuditid() > 0) {
-			financePayUpAudit = financePayUpAuditDAO.getFinancePayUpAuditByIdLock(payUp.getAuditid());
+		if ((payUp != null) && (payUp.getAuditid() > 0)) {
+			financePayUpAudit = this.financePayUpAuditDAO.getFinancePayUpAuditByIdLock(payUp.getAuditid());
 			ec_dsd.setF_payup_audit_id(financePayUpAudit.getId());
 		}
 
@@ -1112,13 +1163,13 @@ public class EditCwbService {
 
 			SystemInstall usedeliverpay = null;
 			try {// 获取 小件员交款 功能使用开关 如果不使用小件员交款，则不调用小件员帐户变动
-				usedeliverpay = systemInstallDAO.getSystemInstallByName("usedeliverpayup");
+				usedeliverpay = this.systemInstallDAO.getSystemInstallByName("usedeliverpayup");
 
 			} catch (Exception e) {
-				logger.error(cwb + " 获取使用小件员交款功能异常，默认不使用小件员交款功能-修改订单金额");
+				this.logger.error(cwb + " 获取使用小件员交款功能异常，默认不使用小件员交款功能-修改订单金额");
 			}
 			FinanceDeliverPayupDetail fdpud = new FinanceDeliverPayupDetail();
-			if (usedeliverpay != null && usedeliverpay.getValue().equals("yes")) {
+			if ((usedeliverpay != null) && usedeliverpay.getValue().equals("yes")) {
 				/*
 				 * 创建小件员帐户交易记录 （如果开启了小件员交款，并且小件员已经归班审核交款）
 				 * finance_deliver_pay_up_detail｛｝
@@ -1146,15 +1197,15 @@ public class EditCwbService {
 				fdpud.setCredate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 				fdpud.setType(FinanceDeliverPayUpDetailTypeEnum.XiuGaiZhiFuFangShi.getValue());
 				fdpud.setRemark("申请[" + cwb + "]支付方式从[" + PaytypeEnum.getByValue(paywayid).getText() + "]改为[" + PaytypeEnum.getByValue(newpaywayid).getText() + "]");
-				logger.info("EditCwb_fdpud:" + cwb + " {}", fdpud.toString());
-				ec_dsd.setFd_payup_detail_id(financeDeliverPayUpDetailDAO.insert(fdpud));
+				this.logger.info("EditCwb_fdpud:" + cwb + " {}", fdpud.toString());
+				ec_dsd.setFd_payup_detail_id(this.financeDeliverPayUpDetailDAO.insert(fdpud));
 				/*
 				 * 修改小件员帐户余额（如果开启了小件员交款，并且小件员已经归班审核交款） finance_pay_up_audit｛ 将
 				 * deliverAccount 变更为 fdpud.setDeliverpayuparrearage 将
 				 * deliverPosAccount 变更为 fdpud.setDeliverpayuparrearage_pos ｝
 				 */
-				userDAO.updateUserAmount(u.getUserid(), fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos());
-				logger.info("EditCwb_SQL:" + cwb + " select * express_set_user where deliverAccount=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverPosAccount="
+				this.userDAO.updateUserAmount(u.getUserid(), fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos());
+				this.logger.info("EditCwb_SQL:" + cwb + " select * express_set_user where deliverAccount=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverPosAccount="
 						+ fdpud.getDeliverpayuparrearage_pos().doubleValue() + " and userid=" + u.getUserid());
 			} else {// 没有使用小件员交款功能 那么要复值小件员交易后的余额为0元
 				fdpud.setDeliverpayuparrearage(BigDecimal.ZERO);
@@ -1165,9 +1216,9 @@ public class EditCwbService {
 			BigDecimal gca_payupamount_pos = gca.getPayupamount_pos().subtract(ds.getPos());
 			gca_payupamount_pos = gca_payupamount_pos.add(pos);
 
-			gotoClassAuditingDAO.updateForChongZhiShenHe(gca.getId(), gca_payupamount, gca_payupamount_pos, fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos(),
+			this.gotoClassAuditingDAO.updateForChongZhiShenHe(gca.getId(), gca_payupamount, gca_payupamount_pos, fdpud.getDeliverpayuparrearage(), fdpud.getDeliverpayuparrearage_pos(),
 					new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_goto_class_auditing where  payupamount=" + gca_payupamount.doubleValue() + " and payupamount_pos="
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_goto_class_auditing where  payupamount=" + gca_payupamount.doubleValue() + " and payupamount_pos="
 					+ gca_payupamount_pos.doubleValue() + " and deliverpayuparrearage=" + fdpud.getDeliverpayuparrearage().doubleValue() + " and deliverpayuparrearage_pos="
 					+ fdpud.getDeliverpayuparrearage_pos().doubleValue() + " and id =" + gca.getId());
 
@@ -1184,8 +1235,8 @@ public class EditCwbService {
 			BigDecimal payup_payupamount_pos = payUp.getAmountPos().subtract(ds.getPos());
 			payup_payupamount_pos = payup_payupamount_pos.add(pos);
 
-			payUpDAO.updateForChongZhiShenHe(payUp.getId(), payup_payupamount, payup_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_pay_up where amount=" + payup_payupamount.doubleValue() + " and amountpos=" + payup_payupamount_pos.doubleValue()
+			this.payUpDAO.updateForChongZhiShenHe(payUp.getId(), payup_payupamount, payup_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_pay_up where amount=" + payup_payupamount.doubleValue() + " and amountpos=" + payup_payupamount_pos.doubleValue()
 					+ " and id =" + payUp.getId());
 		}
 
@@ -1201,29 +1252,29 @@ public class EditCwbService {
 			BigDecimal fpua_payupamount_pos = financePayUpAudit.getAmountpos().subtract(ds.getPos());
 			fpua_payupamount_pos = fpua_payupamount_pos.add(pos);
 
-			financePayUpAuditDAO.updateForChongZhiShenHe(financePayUpAudit.getId(), fpua_payupamount, fpua_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			logger.info("EditCwb_SQL:" + cwb + " select * from finance_pay_up_audit where amount=" + fpua_payupamount.doubleValue() + " and amountpos=" + fpua_payupamount_pos.doubleValue()
+			this.financePayUpAuditDAO.updateForChongZhiShenHe(financePayUpAudit.getId(), fpua_payupamount, fpua_payupamount_pos, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from finance_pay_up_audit where amount=" + fpua_payupamount.doubleValue() + " and amountpos=" + fpua_payupamount_pos.doubleValue()
 					+ " and id =" + financePayUpAudit.getId());
 
 			// 如果有站点交款审核记录，则一定有帐户变动，所以同时要修改站点欠款金额 由于站点的欠款字段是记录的欠款正数 也就是钱多少钱
 			// 里面的数值就是多少 所以当有款项变动的时候 应该用当前欠款 减去货款
-			Branch b = branchDAO.getBranchByBranchidLock(payUp.getBranchid());
+			Branch b = this.branchDAO.getBranchByBranchidLock(payUp.getBranchid());
 			BigDecimal arrearagepayupaudit = b.getArrearagepayupaudit().subtract(ds.getCash().add(ds.getOtherfee()).add(ds.getCheckfee()));
 			arrearagepayupaudit = arrearagepayupaudit.add(cash.add(otherfee).add(checkfee));
 			BigDecimal posarrearagepayupaudit = b.getPosarrearagepayupaudit().subtract(ds.getPos());
 			posarrearagepayupaudit = posarrearagepayupaudit.add(pos);
 
-			branchDAO.updateForChongZhiShenHe(b.getBranchid(), arrearagepayupaudit, posarrearagepayupaudit);
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_set_branch where  arrearagepayupaudit=" + arrearagepayupaudit.doubleValue() + " and posarrearagepayupaudit="
+			this.branchDAO.updateForChongZhiShenHe(b.getBranchid(), arrearagepayupaudit, posarrearagepayupaudit);
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_set_branch where  arrearagepayupaudit=" + arrearagepayupaudit.doubleValue() + " and posarrearagepayupaudit="
 					+ posarrearagepayupaudit.doubleValue() + " and branchid=" + b.getBranchid());
 		}
 
 		// 根据 cwb 与归班id 获得唯一的express_ops_deliver_cash 小件员工作量统计表对应的记录 并修改
-		deliveryCashDAO.updateXiuGaiZhiFuFangShi(cwb, ds.getDeliverystate(), cash.add(otherfee).add(checkfee), pos);
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_deliver_cash where receivableNoPosfee=" + cash.add(otherfee).add(checkfee) + " and receivablePosfee=" + pos
+		this.deliveryCashDAO.updateXiuGaiZhiFuFangShi(cwb, ds.getDeliverystate(), cash.add(otherfee).add(checkfee), pos);
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_deliver_cash where receivableNoPosfee=" + cash.add(otherfee).add(checkfee) + " and receivablePosfee=" + pos
 				+ " and  and cwb={} and deliverystate={} and deliverystate>0", cwb, ds.getDeliverystate());
 
-		Branch accountBranch = branchDAO.getBranchByBranchid(co.getStartbranchid());
+		Branch accountBranch = this.branchDAO.getBranchByBranchid(co.getStartbranchid());
 
 		/*
 		 * 修改新结算业务——买单结算(修改订单支付方式) 1.修改为POS刷卡的订单&&金额>0：产生一条POS退款数据
@@ -1231,31 +1282,32 @@ public class EditCwbService {
 		 */
 		if (accountBranch.getAccounttype() == 1) {
 			// 查询订单是否有买单POS数据
-			List<AccountCwbDetail> list_md = accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.Pos.getValue()));
+			List<AccountCwbDetail> list_md = this.accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.Pos.getValue()));
 			// 修改为POS刷卡&&金额>0:产生一条POS退款数据
 			if (newpaywayid == PaytypeEnum.Pos.getValue()) {
 				if (pos.compareTo(BigDecimal.ZERO) > 0) {
 					if (list_md.isEmpty()) {
-						logger.info("===订单修改开始创建买单结算POS数据===");
+						this.logger.info("===订单修改开始创建买单结算POS数据===");
 						AccountCwbDetail accountCwbDetail = new AccountCwbDetail();
-						accountCwbDetail = accountCwbDetailService.formForAccountCwbDetail(co, ds.getDeliverybranchid(), AccountFlowOrderTypeEnum.Pos.getValue(), editUser, ds.getDeliverybranchid());
-						accountCwbDetailDAO.createAccountCwbDetail(accountCwbDetail);
-						logger.info("用户:{},创建买单结算POS记录,站点:{},订单号:{}", new Object[] { editUser, accountBranch.getBranchname(), co.getCwb() });
+						accountCwbDetail = this.accountCwbDetailService.formForAccountCwbDetail(co, ds.getDeliverybranchid(), AccountFlowOrderTypeEnum.Pos.getValue(), editUser,
+								ds.getDeliverybranchid());
+						this.accountCwbDetailDAO.createAccountCwbDetail(accountCwbDetail);
+						this.logger.info("用户:{},创建买单结算POS记录,站点:{},订单号:{}", new Object[] { editUser, accountBranch.getBranchname(), co.getCwb() });
 					}
 				}
 			} else {// 删除反馈为POS的订单数据
-				if (list_md != null && !list_md.isEmpty()) {
+				if ((list_md != null) && !list_md.isEmpty()) {
 					for (AccountCwbDetail list : list_md) {
 						if (list.getCheckoutstate() > 0) {// 已交款
-							AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
+							AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
 							BigDecimal poscash = o.getPoscash().subtract(ds.getReceivedfee());
 							o.setPoscash(poscash);
 							o.setPosnums(o.getPosnums() - 1);
 							o.setHjfee(o.getHjfee().add(ds.getReceivedfee()));
-							accountCwbSummaryDAO.saveAccountEditCwb(o);
+							this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 						}
-						accountCwbDetailDAO.deleteAccountCwbDetailById(list.getAccountcwbid());
-						logger.info("EditCwb_SQL:delete from ops_account_cwb_detail where accountcwbid =" + list.getAccountcwbid());
+						this.accountCwbDetailDAO.deleteAccountCwbDetailById(list.getAccountcwbid());
+						this.logger.info("EditCwb_SQL:delete from ops_account_cwb_detail where accountcwbid =" + list.getAccountcwbid());
 					}
 				}
 			}
@@ -1264,26 +1316,26 @@ public class EditCwbService {
 		/*
 		 * 修改新结算业务——配送结果结算(修改订单支付方式)
 		 */
-		List<AccountCwbDetail> list_psjg = accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.GuiBanShenHe.getValue()));
-		if (list_psjg != null && !list_psjg.isEmpty()) {
+		List<AccountCwbDetail> list_psjg = this.accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.GuiBanShenHe.getValue()));
+		if ((list_psjg != null) && !list_psjg.isEmpty()) {
 			for (AccountCwbDetail list : list_psjg) {
 				if (list.getDebetstate() > 0) {// 本次欠款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getDebetstate());
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getDebetstate());
 					o.setWjcash(o.getWjcash().subtract(list.getCash().subtract(cash)));// 本次欠款现金
 					o.setWjpos(o.getWjpos().subtract(list.getPos().subtract(pos)));// 本次欠款pos
 					o.setWjcheck(o.getWjcheck().subtract(list.getCheckfee().subtract(checkfee)));// 本次欠款支票
 					o.setWjother(o.getWjother().subtract(list.getOtherfee().subtract(otherfee)));// 本次欠款其他
 					o.setWjfee(o.getWjcash().add(o.getWjpos()).add(o.getWjcheck()).add(o.getWjother()));// 本次欠款合计
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
 
 				if (list.getCheckoutstate() > 0) {// 已交款
-					AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
+					AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
 					BigDecimal newcash = list.getCash().subtract(cash);
 					BigDecimal newpos = list.getPos().subtract(pos);
 					BigDecimal newcheck = list.getCheckfee().subtract(checkfee);
 					BigDecimal newother = list.getOtherfee().subtract(otherfee);
-					if (list.getCheckoutstate() > 0 && list.getDebetstate() == 0) {// 无欠款
+					if ((list.getCheckoutstate() > 0) && (list.getDebetstate() == 0)) {// 无欠款
 						o.setTocash(o.getTocash().subtract(newcash));// 本次应交现金
 						o.setTopos(o.getTopos().subtract(newpos));// 本次应交pos
 						o.setTocheck(o.getTocheck().subtract(newcheck));// 本次应交支票
@@ -1297,15 +1349,15 @@ public class EditCwbService {
 						o.setYjfee(o.getYjcash().add(o.getYjpos()).add(o.getYjcheck()).add(o.getYjother()));
 					}
 
-					if (list.getCheckoutstate() > 0 && list.getDebetstate() > 0) {// 有欠款
+					if ((list.getCheckoutstate() > 0) && (list.getDebetstate() > 0)) {// 有欠款
 						o.setQkcash(o.getQkcash().subtract(newcash.add(newcheck).add(newother)));// 欠款
 					}
 					o.setHjfee(o.getHjfee().subtract(newcash.add(newcheck).add(newother)));// 合计支付
-					accountCwbSummaryDAO.saveAccountEditCwb(o);
+					this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 				}
 			}
-			accountCwbDetailDAO.updateXiuGaiZhiFuFangShi(cwb, cash, pos, checkfee, otherfee);
-			logger.info("EditCwb_SQL:update ops_account_cwb_detail set cash=" + cash + ",pos=" + pos + ",checkfee=" + checkfee + ",otherfee=" + otherfee + " where cwb=" + cwb);
+			this.accountCwbDetailDAO.updateXiuGaiZhiFuFangShi(cwb, cash, pos, checkfee, otherfee);
+			this.logger.info("EditCwb_SQL:update ops_account_cwb_detail set cash=" + cash + ",pos=" + pos + ",checkfee=" + checkfee + ",otherfee=" + otherfee + " where cwb=" + cwb);
 		}
 
 		/*
@@ -1313,28 +1365,29 @@ public class EditCwbService {
 		 * 2.修改为其他支付方式的订单：删除反馈为POS的订单数据 对应修改fee金额 更新站点余额、欠款、伪余额、伪欠款字段
 		 */
 		// 查询订单是否有扣款POS数据
-		List<AccountDeducDetail> list_kk = accountDeducDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.Pos.getValue()));
+		List<AccountDeducDetail> list_kk = this.accountDeducDetailDAO.getEditCwbByFlowordertype(cwb, String.valueOf(AccountFlowOrderTypeEnum.Pos.getValue()));
 		// 修改为POS刷卡&&金额>0:产生一条POS退款数据
 		if (newpaywayid == PaytypeEnum.Pos.getValue()) {
 			if (pos.compareTo(BigDecimal.ZERO) > 0) {
 				if (list_kk.isEmpty()) {
-					logger.info("===订单修改开始创建扣款结算POS数据===");
+					this.logger.info("===订单修改开始创建扣款结算POS数据===");
 					AccountDeducDetail accountDeducDetail = new AccountDeducDetail();
-					accountDeducDetail = accountDeducDetailService.loadFormForAccountDeducDetail(co, accountBranch.getBranchid(), AccountFlowOrderTypeEnum.Pos.getValue(), pos, editUser, "", 0, 0);
-					long id = accountDeducDetailDAO.createAccountDeducDetail(accountDeducDetail);
-					logger.info("用户:{},创建扣款结算POS：站点{},代收货款{}元,id：{}", new Object[] { editUser, accountBranch.getBranchname(), pos, id });
+					accountDeducDetail = this.accountDeducDetailService
+							.loadFormForAccountDeducDetail(co, accountBranch.getBranchid(), AccountFlowOrderTypeEnum.Pos.getValue(), pos, editUser, "", 0, 0);
+					long id = this.accountDeducDetailDAO.createAccountDeducDetail(accountDeducDetail);
+					this.logger.info("用户:{},创建扣款结算POS：站点{},代收货款{}元,id：{}", new Object[] { editUser, accountBranch.getBranchname(), pos, id });
 				}
 			}
 		} else {// 删除反馈为POS的订单数据
-			if (list_kk != null && !list_kk.isEmpty()) {
+			if ((list_kk != null) && !list_kk.isEmpty()) {
 				for (AccountDeducDetail list : list_kk) {
 					if (list.getRecordid() > 0) {// 已审核
-						AccountDeductRecord o = accountDeductRecordDAO.getAccountDeductRecordByIdLock(list.getRecordid());
+						AccountDeductRecord o = this.accountDeductRecordDAO.getAccountDeductRecordByIdLock(list.getRecordid());
 						o.setFee(o.getFee().subtract(list.getFee()));
 						// 更新审核汇总 的 fee
-						accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), o.getFee());
+						this.accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), o.getFee());
 						// 事务锁 锁住当前站点
-						Branch branch = branchDAO.getBranchByBranchidLock(list.getBranchid());
+						Branch branch = this.branchDAO.getBranchByBranchidLock(list.getBranchid());
 						BigDecimal credit = branch.getCredit();
 						BigDecimal debt = branch.getDebt();// 欠款
 						BigDecimal balance = branch.getBalance();// 余额
@@ -1342,30 +1395,30 @@ public class EditCwbService {
 						BigDecimal balancevirt = branch.getBalancevirt();// 伪余额
 						Map feeMap = new HashMap();
 						Map feeMap1 = new HashMap();
-						feeMap = accountDeductRecordService.subBranchFee(credit, balance, debt, list.getFee());
-						feeMap1 = accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, list.getFee());
+						feeMap = this.accountDeductRecordService.subBranchFee(credit, balance, debt, list.getFee());
+						feeMap1 = this.accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, list.getFee());
 						balance = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						balancevirt = new BigDecimal("".equals(feeMap1.get("balance").toString()) ? "0" : feeMap1.get("balance").toString());
 						debtvirt = new BigDecimal("".equals(feeMap1.get("debt").toString()) ? "0" : feeMap1.get("debt").toString());
 						// 更新站点余额、欠款、伪余额、伪欠款
-						branchDAO.updateForFeeAndVirt(list.getBranchid(), balance, debt, balancevirt, debtvirt);
+						this.branchDAO.updateForFeeAndVirt(list.getBranchid(), balance, debt, balancevirt, debtvirt);
 					}
-					accountDeducDetailDAO.deleteAccountDeducDetailById(list.getId());
-					logger.info("EditCwb_SQL:delete from ops_account_deduct_detail where id =" + list.getId());
+					this.accountDeducDetailDAO.deleteAccountDeducDetailById(list.getId());
+					this.logger.info("EditCwb_SQL:delete from ops_account_deduct_detail where id =" + list.getId());
 				}
 			}
 		}
 
-		logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
-		editCwbDAO.creEditCwb(ec_dsd);
-		logger.info("EditCwb_SQL:{}修改订单支付方式 结束", cwb);
+		this.logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
+		this.editCwbDAO.creEditCwb(ec_dsd);
+		this.logger.info("EditCwb_SQL:{}修改订单支付方式 结束", cwb);
 		return ec_dsd;
 	}
 
 	/**
 	 * 修改订单类型
-	 * 
+	 *
 	 * @param cwbordertypeid
 	 *            原始的订单类型
 	 * @param newcwbordertypeid
@@ -1377,28 +1430,28 @@ public class EditCwbService {
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public EdtiCwb_DeliveryStateDetail analysisAndSaveByXiuGaiDingDanLeiXing(String cwb, int cwbordertypeid, int newcwbordertypeid, Long requestUser, long editUser) {
-		logger.info("EditCwb_SQL:{}修改订单类型 开始", cwb);
+		this.logger.info("EditCwb_SQL:{}修改订单类型 开始", cwb);
 		// 根据cwb 获得 订单表 express_ops_cwb_detail 有效记录 state lock
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
-		CwbOrder co = cwbDAO.getCwbByCwbLock(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		if (cwbordertypeid == newcwbordertypeid) {
 			throw new ExplinkException(CwbOrderTypeIdEnum.getByValue(cwbordertypeid).getText() + "_当前订单类型已经是[" + CwbOrderTypeIdEnum.getByValue(newcwbordertypeid).getText() + "]！");
-		} else if (newcwbordertypeid == CwbOrderTypeIdEnum.Peisong.getValue() && co.getPaybackfee().compareTo(BigDecimal.ZERO) > 0) {
+		} else if ((newcwbordertypeid == CwbOrderTypeIdEnum.Peisong.getValue()) && (co.getPaybackfee().compareTo(BigDecimal.ZERO) > 0)) {
 			throw new ExplinkException(CwbOrderTypeIdEnum.getByValue(cwbordertypeid).getText() + "_要修改成[配送]类型的订单，应退金额却大于0！");
-		} else if (newcwbordertypeid == CwbOrderTypeIdEnum.Shangmentui.getValue() && co.getReceivablefee().compareTo(BigDecimal.ZERO) > 0) {
+		} else if ((newcwbordertypeid == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (co.getReceivablefee().compareTo(BigDecimal.ZERO) > 0)) {
 			throw new ExplinkException(CwbOrderTypeIdEnum.getByValue(cwbordertypeid).getText() + "_要修改成[上门退]类型的订单，应收金额却大于0！");
-		} else if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue() && co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) {
+		} else if ((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (co.getInfactfare().compareTo(BigDecimal.ZERO) > 0)) {
 			throw new ExplinkException(CwbOrderTypeIdEnum.getByValue(cwbordertypeid).getText() + "[上门退]类型的订单，应收运费大于0不允许修改订单类型！");
 		}
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
-		DeliveryState ds = deliveryStateDAO.getDeliveryByCwbLock(cwb);
+		DeliveryState ds = this.deliveryStateDAO.getDeliveryByCwbLock(cwb);
 		/*
 		 * 根据cwb 修改订单表 express_ops_cwb_detail 的金额 修改 cwbordertypeid 订单类型
 		 */
 
-		cwbDAO.updateXiuGaiDingDanLeiXing(co.getOpscwbid(), newcwbordertypeid, DeliveryStateEnum.WeiFanKui);
-		exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), getSessionUser(), "修改订单类型为：" + DeliveryStateEnum.getByValue(newcwbordertypeid).getText());
-		logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where cwbordertypeid=" + newcwbordertypeid + " and deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue()
+		this.cwbDAO.updateXiuGaiDingDanLeiXing(co.getOpscwbid(), newcwbordertypeid, DeliveryStateEnum.WeiFanKui);
+		this.exceptionDAO.editCwbofException(co, FlowOrderTypeEnum.GaiDan.getValue(), this.getSessionUser(), "修改订单类型为：" + DeliveryStateEnum.getByValue(newcwbordertypeid).getText());
+		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where cwbordertypeid=" + newcwbordertypeid + " and deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue()
 				+ " and opscwbid=" + co.getOpscwbid());
 
 		/*
@@ -1415,7 +1468,7 @@ public class EditCwbService {
 		DeliveryStateEnum nowDeliveryState = DeliveryStateEnum.WeiFanKui;
 		if (ds != null) {
 			if (newcwbordertypeid == CwbOrderTypeIdEnum.Peisong.getValue()) {
-				if (ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue() || ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) {
+				if ((ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue())) {
 
 					nowDeliveryState = DeliveryStateEnum.PeiSongChengGong;
 
@@ -1427,8 +1480,8 @@ public class EditCwbService {
 					nowDeliveryState = DeliveryStateEnum.getByValue((int) ds.getDeliverystate());
 				}
 			} else if (newcwbordertypeid == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				if (ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()
-						|| ds.getDeliverystate() == DeliveryStateEnum.BuFenTuiHuo.getValue()) {
+				if ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue())
+						|| (ds.getDeliverystate() == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
 
 					nowDeliveryState = DeliveryStateEnum.ShangMenTuiChengGong;
 
@@ -1440,7 +1493,7 @@ public class EditCwbService {
 					nowDeliveryState = DeliveryStateEnum.getByValue((int) ds.getDeliverystate());
 				}
 			} else if (newcwbordertypeid == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) {
-				if (ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) {
+				if ((ds.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 
 					nowDeliveryState = DeliveryStateEnum.ShangMenHuanChengGong;
 
@@ -1452,8 +1505,8 @@ public class EditCwbService {
 					nowDeliveryState = DeliveryStateEnum.getByValue((int) ds.getDeliverystate());
 				}
 			}
-			cwbDAO.updateXiuGaiDingDanLeiXing(co.getOpscwbid(), newcwbordertypeid, nowDeliveryState);
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where cwbordertypeid=" + newcwbordertypeid + " and deliverystate=" + nowDeliveryState.getValue()
+			this.cwbDAO.updateXiuGaiDingDanLeiXing(co.getOpscwbid(), newcwbordertypeid, nowDeliveryState);
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where cwbordertypeid=" + newcwbordertypeid + " and deliverystate=" + nowDeliveryState.getValue()
 					+ " and opscwbid=" + co.getOpscwbid());
 
 			/**
@@ -1464,12 +1517,12 @@ public class EditCwbService {
 						+ nowDeliveryState.getValue(), "POST");
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				logger.info("修改云订单类型异常:" + co.getCwb());
+				this.logger.info("修改云订单类型异常:" + co.getCwb());
 			}
 
-			deliveryStateDAO.updateXiuGaiDingDanLeiXing(ds.getId(), newcwbordertypeid, nowDeliveryState);
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_delivery_state where cwbordertypeid=" + newcwbordertypeid + " and deliverystate=" + nowDeliveryState.getValue() + " and id="
-					+ ds.getId());
+			this.deliveryStateDAO.updateXiuGaiDingDanLeiXing(ds.getId(), newcwbordertypeid, nowDeliveryState);
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_delivery_state where cwbordertypeid=" + newcwbordertypeid + " and deliverystate=" + nowDeliveryState.getValue()
+					+ " and id=" + ds.getId());
 			ec_dsd.setDs(ds);
 			ec_dsd.setDsid(ds.getId());
 			ec_dsd.setNew_businessfee(ds.getBusinessfee());
@@ -1477,9 +1530,9 @@ public class EditCwbService {
 			ec_dsd.setNew_pos(ds.getPos());
 
 			// 根据 cwb 与归班id 获得唯一的express_ops_deliver_cash 小件员工作量统计表对应的记录 并修改
-			deliveryCashDAO.updateXiuGaiDingDanLeiXing(cwb, ds.getDeliverystate(), nowDeliveryState);
-			logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_deliver_cash where delivertState=" + nowDeliveryState.getValue() + "  and cwb={} and deliverystate={} and deliverystate>0",
-					cwb, ds.getDeliverystate());
+			this.deliveryCashDAO.updateXiuGaiDingDanLeiXing(cwb, ds.getDeliverystate(), nowDeliveryState);
+			this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_deliver_cash where delivertState=" + nowDeliveryState.getValue()
+					+ "  and cwb={} and deliverystate={} and deliverystate>0", cwb, ds.getDeliverystate());
 		} else {
 			ec_dsd.setDs(new DeliveryState());
 			ec_dsd.getDs().setCwb(cwb);
@@ -1496,9 +1549,9 @@ public class EditCwbService {
 		ec_dsd.setNew_deliverystate(nowDeliveryState.getValue());
 		ec_dsd.setNew_cwbordertypeid(newcwbordertypeid);
 
-		logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
-		editCwbDAO.creEditCwb(ec_dsd);
-		logger.info("EditCwb_SQL:{}修改订单类型 结束", cwb);
+		this.logger.info("EditCwb_ec_dsd:" + cwb + " {}", ec_dsd.toString());
+		this.editCwbDAO.creEditCwb(ec_dsd);
+		this.logger.info("EditCwb_SQL:{}修改订单类型 结束", cwb);
 
 		/*
 		 * 修改新结算业务——买单结算(修改订单类型)
@@ -1507,19 +1560,19 @@ public class EditCwbService {
 		 */
 		String ids = AccountFlowOrderTypeEnum.KuFangChuKu.getValue() + "," + AccountFlowOrderTypeEnum.ZhongZhuanChuKu.getValue() + "," + AccountFlowOrderTypeEnum.TuiHuoChuKu.getValue() + ","
 				+ AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue() + "," + AccountFlowOrderTypeEnum.ZhongZhuanRuKu.getValue() + "," + AccountFlowOrderTypeEnum.TuiHuoRuKu.getValue();
-		List<AccountCwbDetail> list_md = accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, ids);
-		if (list_md != null && !list_md.isEmpty()) {
+		List<AccountCwbDetail> list_md = this.accountCwbDetailDAO.getEditCwbByFlowordertype(cwb, ids);
+		if ((list_md != null) && !list_md.isEmpty()) {
 			for (AccountCwbDetail list : list_md) {
 				// 中转退款、退货退款
-				if (list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanRuKu.getValue()
-						|| list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuoRuKu.getValue()) {
+				if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanRuKu.getValue())
+						|| (list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuoRuKu.getValue())) {
 					// 不同类型订单取不同的金额字段
-					BigDecimal ZZfee = accountCwbDetailService.getZZPaybackfee(newcwbordertypeid, nowDeliveryState.getValue(), co.getReceivablefee(), co.getPaybackfee());
+					BigDecimal ZZfee = this.accountCwbDetailService.getZZPaybackfee(newcwbordertypeid, nowDeliveryState.getValue(), co.getReceivablefee(), co.getPaybackfee());
 					// 已交款
 					if (list.getCheckoutstate() > 0) {
-						AccountCwbSummary o = accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
+						AccountCwbSummary o = this.accountCwbSummaryDAO.getAccountCwbSummaryByIdLock(list.getCheckoutstate());
 						// 中转退款
-						if (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanRuKu.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue()) {
+						if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuanRuKu.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue())) {
 							o.setZzcash(o.getZzcash().subtract(list.getPaybackfee().subtract(ZZfee)));// 中转退款=中转退款+原paybackfee-新paybackfee
 																										// (新paybackfee根据不同订单类型取值不同)
 						}
@@ -1530,15 +1583,15 @@ public class EditCwbService {
 																										// (新paybackfee根据不同订单类型取值不同)
 						}
 						o.setHjfee(o.getHjfee().add(list.getPaybackfee().subtract(ZZfee)));// 合计支付
-						accountCwbSummaryDAO.saveAccountEditCwb(o);
+						this.accountCwbSummaryDAO.saveAccountEditCwb(o);
 					}
 					// 中转退款、退货退款、改站冲款修改订单类型、反馈结果、应退金额
-					accountCwbDetailDAO.updateXiuGaiDingDanLeiXing(list.getAccountcwbid(), newcwbordertypeid, nowDeliveryState.getValue(), ZZfee);
-					logger.info("EditCwb_SQL:update ops_account_cwb_detail set cwbordertypeid=" + newcwbordertypeid + ",deliverystate=" + nowDeliveryState.getValue() + ",paybackfee=" + ZZfee
+					this.accountCwbDetailDAO.updateXiuGaiDingDanLeiXing(list.getAccountcwbid(), newcwbordertypeid, nowDeliveryState.getValue(), ZZfee);
+					this.logger.info("EditCwb_SQL:update ops_account_cwb_detail set cwbordertypeid=" + newcwbordertypeid + ",deliverystate=" + nowDeliveryState.getValue() + ",paybackfee=" + ZZfee
 							+ " where accountcwbid=" + list.getAccountcwbid());
 				} else {// 出库的订单
-					accountCwbDetailDAO.updateXiuGaiDingDanLeiXing(list.getAccountcwbid(), newcwbordertypeid, nowDeliveryState.getValue(), co.getPaybackfee());
-					logger.info("EditCwb_SQL:update ops_account_cwb_detail set cwbordertypeid=" + newcwbordertypeid + ",deliverystate=" + nowDeliveryState.getValue() + ",paybackfee="
+					this.accountCwbDetailDAO.updateXiuGaiDingDanLeiXing(list.getAccountcwbid(), newcwbordertypeid, nowDeliveryState.getValue(), co.getPaybackfee());
+					this.logger.info("EditCwb_SQL:update ops_account_cwb_detail set cwbordertypeid=" + newcwbordertypeid + ",deliverystate=" + nowDeliveryState.getValue() + ",paybackfee="
 							+ co.getPaybackfee() + " where accountcwbid=" + list.getAccountcwbid());
 				}
 			}
@@ -1549,16 +1602,16 @@ public class EditCwbService {
 		 */
 		String idsKK = AccountFlowOrderTypeEnum.KouKuan.getValue() + "," + AccountFlowOrderTypeEnum.ZhongZhuan.getValue() + "," + AccountFlowOrderTypeEnum.TuiHuo.getValue() + ","
 				+ AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue();
-		List<AccountDeducDetail> list_kk = accountDeducDetailDAO.getEditCwbByFlowordertype(cwb, idsKK);
-		if (list_kk != null && !list_kk.isEmpty()) {
+		List<AccountDeducDetail> list_kk = this.accountDeducDetailDAO.getEditCwbByFlowordertype(cwb, idsKK);
+		if ((list_kk != null) && !list_kk.isEmpty()) {
 			// 根据不同订单类型 取得应扣款金额
 			// BigDecimal
 			// newfee=accountDeductRecordService.getDetailFee(newcwbordertypeid,co.getReceivablefee(),co.getPaybackfee());
-			BigDecimal newfee = accountDeducDetailService.getTHPaybackfee(co.getCwbordertypeid(), co.getDeliverystate(), co.getReceivablefee(), co.getPaybackfee());
+			BigDecimal newfee = this.accountDeducDetailService.getTHPaybackfee(co.getCwbordertypeid(), co.getDeliverystate(), co.getReceivablefee(), co.getPaybackfee());
 
 			for (AccountDeducDetail list : list_kk) {
 				// 锁住该站点记录
-				Branch branchLock = branchDAO.getBranchByBranchidLock(list.getBranchid());
+				Branch branchLock = this.branchDAO.getBranchByBranchidLock(list.getBranchid());
 				BigDecimal oldfee = list.getFee();// 加减款金额
 				BigDecimal credit = branchLock.getCredit();// 信用额度
 				BigDecimal balance = branchLock.getBalance();// 余额
@@ -1567,76 +1620,76 @@ public class EditCwbService {
 				BigDecimal balancevirt = branchLock.getBalancevirt();// 伪余额
 
 				if (list.getRecordid() > 0) {// 已结算
-					AccountDeductRecord o = accountDeductRecordDAO.getAccountDeductRecordByIdLock(list.getRecordid());
+					AccountDeductRecord o = this.accountDeductRecordDAO.getAccountDeductRecordByIdLock(list.getRecordid());
 
 					// 冲正
-					if (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuan.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue()
-							|| list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuo.getValue()) {
+					if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuan.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue())
+							|| (list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuo.getValue())) {
 						Map feeMap = new HashMap();
 						if (oldfee.compareTo(newfee) > 0) {
 							// ====减款逻辑=====减款金额：oldfee-newfee
-							feeMap = accountDeductRecordService.subBranchFee(credit, balance, debt, oldfee.subtract(newfee));
+							feeMap = this.accountDeductRecordService.subBranchFee(credit, balance, debt, oldfee.subtract(newfee));
 						} else {
 							// ====加款逻辑=====加款金额：newfee-oldfee
-							feeMap = accountDeductRecordService.addBranchFee(balance, debt, newfee.subtract(oldfee));
+							feeMap = this.accountDeductRecordService.addBranchFee(balance, debt, newfee.subtract(oldfee));
 						}
 						balance = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						// 修改branch表 的余额、欠款
-						branchDAO.updateForFee(list.getBranchid(), balance, debt);
-						accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), o.getFee().subtract(oldfee.subtract(newfee)));
+						this.branchDAO.updateForFee(list.getBranchid(), balance, debt);
+						this.accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), o.getFee().subtract(oldfee.subtract(newfee)));
 					} else {// 出库
 						Map feeMap = new HashMap();
 						if (oldfee.compareTo(newfee) > 0) {
 							// ====加款逻辑=====加款金额：oldfee-newfee
-							feeMap = accountDeductRecordService.addBranchFee(balance, debt, oldfee.subtract(newfee));
+							feeMap = this.accountDeductRecordService.addBranchFee(balance, debt, oldfee.subtract(newfee));
 						} else {
 							// ====减款逻辑=====减款金额：newfee-oldfee
-							feeMap = accountDeductRecordService.subBranchFee(credit, balance, debt, newfee.subtract(oldfee));
+							feeMap = this.accountDeductRecordService.subBranchFee(credit, balance, debt, newfee.subtract(oldfee));
 						}
 						balance = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						// 修改branch表 的余额、欠款
-						branchDAO.updateForFee(list.getBranchid(), balance, debt);
-						accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), newfee);
+						this.branchDAO.updateForFee(list.getBranchid(), balance, debt);
+						this.accountDeductRecordDAO.updateRecordforFee(list.getRecordid(), newfee);
 					}
 				}
 
 				if (list.getRecordidvirt() > 0) {// 已伪结算
 					// 冲正
-					if (list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuan.getValue() || list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue()
-							|| list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuo.getValue()) {
+					if ((list.getFlowordertype() == AccountFlowOrderTypeEnum.ZhongZhuan.getValue()) || (list.getFlowordertype() == AccountFlowOrderTypeEnum.GaiZhanChongKuan.getValue())
+							|| (list.getFlowordertype() == AccountFlowOrderTypeEnum.TuiHuo.getValue())) {
 						Map feeMap = new HashMap();
 						if (oldfee.compareTo(newfee) > 0) {
 							// ====减款逻辑=====减款金额：oldfee-newfee
-							feeMap = accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, oldfee.subtract(newfee));
+							feeMap = this.accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, oldfee.subtract(newfee));
 						} else {
 							// ====加款逻辑=====加款金额：newfee-oldfee
-							feeMap = accountDeductRecordService.addBranchFee(balancevirt, debtvirt, newfee.subtract(oldfee));
+							feeMap = this.accountDeductRecordService.addBranchFee(balancevirt, debtvirt, newfee.subtract(oldfee));
 						}
 						balancevirt = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debtvirt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						// 修改branch表 伪余额、伪欠款
-						branchDAO.updateForVirt(list.getBranchid(), balancevirt, debtvirt);
+						this.branchDAO.updateForVirt(list.getBranchid(), balancevirt, debtvirt);
 					} else {// 出库
 						Map feeMap = new HashMap();
 						if (oldfee.compareTo(newfee) > 0) {
 							// ====加款逻辑=====加款金额：oldfee-newfee
-							feeMap = accountDeductRecordService.addBranchFee(balancevirt, debtvirt, oldfee.subtract(newfee));
+							feeMap = this.accountDeductRecordService.addBranchFee(balancevirt, debtvirt, oldfee.subtract(newfee));
 						} else {
 							// ====减款逻辑=====减款金额：newfee-oldfee
-							feeMap = accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, newfee.subtract(oldfee));
+							feeMap = this.accountDeductRecordService.subBranchFee(credit, balancevirt, debtvirt, newfee.subtract(oldfee));
 						}
 						balancevirt = new BigDecimal("".equals(feeMap.get("balance").toString()) ? "0" : feeMap.get("balance").toString());
 						debtvirt = new BigDecimal("".equals(feeMap.get("debt").toString()) ? "0" : feeMap.get("debt").toString());
 						// 修改branch表 伪余额、伪欠款
-						branchDAO.updateForVirt(list.getBranchid(), balancevirt, debtvirt);
+						this.branchDAO.updateForVirt(list.getBranchid(), balancevirt, debtvirt);
 					}
 				}
 
 				// 中转退款、退货退款、改站冲款修改订单类型、反馈结果、应退金额
-				accountDeducDetailDAO.updateXiuGaiDingDanLeiXing(list.getId(), newfee);
-				logger.info("EditCwb_SQL:update ops_account_deduct_detail set cwbordertypeid=" + newcwbordertypeid + ",fee=" + newfee + " where id=" + list.getId());
+				this.accountDeducDetailDAO.updateXiuGaiDingDanLeiXing(list.getId(), newfee);
+				this.logger.info("EditCwb_SQL:update ops_account_deduct_detail set cwbordertypeid=" + newcwbordertypeid + ",fee=" + newfee + " where id=" + list.getId());
 			}
 		}
 
@@ -1644,8 +1697,9 @@ public class EditCwbService {
 	}
 
 	public final String omsUrl() {
-		//SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
-		SystemInstall omsUrl = systemInstallDAO.getSystemInstallByName("omsUrl");
+		// SystemInstall omsPathUrl =
+		// systemInstallDAO.getSystemInstallByName("omsPathUrl");
+		SystemInstall omsUrl = this.systemInstallDAO.getSystemInstallByName("omsUrl");
 		String url1 = "";
 		if (omsUrl != null) {
 			url1 = omsUrl.getValue();
@@ -1661,14 +1715,14 @@ public class EditCwbService {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
-    }
-	
-	//获取已经完成了的订单
-	public String getCompletedCwbByCwb (String cwb) {
+	}
+
+	// 获取已经完成了的订单
+	public String getCompletedCwbByCwb(String cwb) {
 		Long completedCount = 0L;
-		CwbOrder co = cwbDAO.getCwbByCwb(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		String cwbMsg = "的订单不允许修改";
 		if (co != null) {
 			int flowordertype = FlowOrderTypeEnum.YiShenHe.getValue();
@@ -1692,25 +1746,24 @@ public class EditCwbService {
 			} else if (CwbOrderTypeIdEnum.Express.getValue() == cwbOrderTypeId) {
 				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
 				cwbMsg = "快递配送成功" + cwbMsg;
-		    } else {
-		    	// do nothing
-		    }
-			completedCount = cwbDAO.getCompletedCwbCount(cwb, cwbOrderTypeId, flowordertype, deliveryState);
+			} else {
+				// do nothing
+			}
+			completedCount = this.cwbDAO.getCompletedCwbCount(cwb, cwbOrderTypeId, flowordertype, deliveryState);
 		}
 		if (completedCount > 0) {
 			return cwbMsg;
 		}
 		return "";
 	}
-	
+
 	// 新增站点重置反馈调整记录
-	public void createFnOrgOrderAdjustRecord(String cwb,
-			EdtiCwb_DeliveryStateDetail ec_dsd) {
+	public void createFnOrgOrderAdjustRecord(String cwb, EdtiCwb_DeliveryStateDetail ec_dsd) {
 		OrgOrderAdjustmentRecord record = new OrgOrderAdjustmentRecord();
 		DeliveryState deliveryState = ec_dsd.getDs();
 		// 查询出对应订单号的账单详细信息
-		CwbOrder order = cwbDao.getCwbByCwb(cwb);
-		if (order != null ) {
+		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
+		if (order != null) {
 			// 根据不同的订单类型
 			record.setOrderNo(order.getCwb());
 			record.setBillNo("");
@@ -1722,22 +1775,19 @@ public class EditCwbService {
 			// 是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
 			record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
 			record.setDeliverId(order.getDeliverid());
-			record.setCreator(getSessionUser().getUsername());
+			record.setCreator(this.getSessionUser().getUsername());
 			record.setCreateTime(new Date());
 			record.setOrderType(order.getCwbordertypeid());
 			// 订单的支付方式可能是新的支付方式
-			Long oldPayWay = Long.valueOf(order.getPaywayid()) == null ? 1L : Long
-					.valueOf(order.getPaywayid());
-			Long newPayWay = order.getNewpaywayid() == null ? 0L : Long
-					.valueOf(order.getNewpaywayid());
+			Long oldPayWay = Long.valueOf(order.getPaywayid()) == null ? 1L : Long.valueOf(order.getPaywayid());
+			Long newPayWay = order.getNewpaywayid() == null ? 0L : Long.valueOf(order.getNewpaywayid());
 			if (oldPayWay.intValue() == newPayWay.intValue()) {
 				record.setPayMethod(oldPayWay.intValue());
 			} else {
 				record.setPayMethod(newPayWay.intValue());
 			}
 			record.setDeliverybranchid(order.getDeliverybranchid());
-			if (order.getPaybackfee() != null
-					&& order.getPaybackfee().compareTo(BigDecimal.ZERO) > 0) {
+			if ((order.getPaybackfee() != null) && (order.getPaybackfee().compareTo(BigDecimal.ZERO) > 0)) {
 				record.setModifyFee(BigDecimal.ZERO);
 				record.setAdjustAmount(order.getPaybackfee());
 			} else {
@@ -1750,7 +1800,7 @@ public class EditCwbService {
 			record.setAdjustType(BillAdjustTypeEnum.OrderFee.getValue());
 			// 记录运费
 			record.setFreightAmount(ec_dsd.getOriInfactfare());
-			fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
+			this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
 
 			// 如果是是上门退订单，生成运单调整记录
 			if (CwbOrderTypeIdEnum.Shangmentui.getValue() == order.getCwbordertypeid()) {
@@ -1758,7 +1808,7 @@ public class EditCwbService {
 				record.setAdjustAmount(ec_dsd.getOriInfactfare().negate());
 				// 调整金额为运费调整
 				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
-				fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
+				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
 			}
 		}
 	}

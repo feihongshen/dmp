@@ -206,6 +206,8 @@ function branchexportWarehouse(pname,scancwb,branchid,driverid,ck_switch,confirm
 						}else{
 							$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
 						}*/
+				}else if(data.statuscode=="000001"){
+					$("#msg").html(data.errorinfo);
 				}else{
 					$("#excelbranch").html("");
 					$("#showcwb").html("");
@@ -431,7 +433,7 @@ function tohome(){
 								onKeyDown="if(event.keyCode==13&&$(this).val().length>0){$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}" />
 						</p>
 						<p>
-							<span>订单号：</span> <input type="text" class="saomiao_inputtxt2"
+							<span>单/包号：</span> <input type="text" class="saomiao_inputtxt2"
 								value="" id="scancwb" name="scancwb"
 								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){branchexportWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#branchid").val(),$("#driverid").val(),$("#ck_switch").val(),$("#confirmflag").attr("checked")=="checked"?1:0);}' />
 						</p>

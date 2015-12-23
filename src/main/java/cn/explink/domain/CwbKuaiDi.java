@@ -41,6 +41,26 @@ public class CwbKuaiDi {
 	private long edituserid;// 修改人
 	private String edittime;// 修改时间
 	private String shoujianrencompany;// 收件人公司
+	private String customercode;//客户编码
+	private long flowordertype;//操作状态
+	private BigDecimal receivablefee;
+	private String lanshoubranchname;
+	
+	public String getLanshoubranchname() {
+		return lanshoubranchname;
+	}
+
+	public void setLanshoubranchname(String lanshoubranchname) {
+		this.lanshoubranchname = lanshoubranchname;
+	}
+
+	public BigDecimal getReceivablefee() {
+		return receivablefee;
+	}
+
+	public void setReceivablefee(BigDecimal receivablefee) {
+		this.receivablefee = receivablefee;
+	}
 
 	public String getShoujianrencompany() {
 		return shoujianrencompany;
@@ -337,5 +357,22 @@ public class CwbKuaiDi {
 	public void setEdittime(String edittime) {
 		this.edittime = edittime;
 	}
+
+	public String getCustomercode() {
+		return customercode;
+	}
+
+	public void setCustomercode(String customercode) {
+		this.customercode = customercode;
+	}
+
+	public long getFlowordertype() {
+		return flowordertype;
+	}
+
+	public void setFlowordertype(long flowordertype) {
+		this.flowordertype = flowordertype;
+	}
+
 
 }

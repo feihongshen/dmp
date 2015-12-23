@@ -69,17 +69,36 @@ public class UserDAO {
 			user.setLastLoginIp(rs.getString("lastip"));
 			user.setLastLoginTime(rs.getString("lasttime"));
 			user.setPfruleid(rs.getLong("pfruleid"));
-			user.setSex(rs.getInt("sex"));//性别
-			user.setStartworkdate(rs.getString("startworkdate"));//入职时间
-			user.setJobnum(StringUtil.nullConvertToEmptyString(rs.getString("jobnum")));//工号
-			user.setJiesuanstate(rs.getInt("jiesuanstate"));//结算状态
-			user.setMaxcutpayment(rs.getBigDecimal("maxcutpayment"));//最高扣款额度
-			user.setFixedadvance(rs.getBigDecimal("fixedadvance"));//固定预付款
-			user.setBasicadvance(rs.getBigDecimal("basicadvance"));//基础预付款
-			user.setFallbacknum(rs.getLong("fallbacknum"));//保底单量
-			user.setLateradvance(rs.getBigDecimal("lateradvance"));//后期预付款
-			user.setBasicfee(rs.getBigDecimal("basicfee"));//基本派费
-			user.setAreafee(rs.getBigDecimal("areafee"));//区域派费
+			user.setSex(rs.getInt("sex"));// 性别
+			user.setStartworkdate(rs.getString("startworkdate"));// 入职时间
+			user.setJobnum(StringUtil.nullConvertToEmptyString(rs.getString("jobnum")));// 工号
+			user.setJiesuanstate(rs.getInt("jiesuanstate"));// 结算状态
+			user.setMaxcutpayment(rs.getBigDecimal("maxcutpayment"));// 最高扣款额度
+			user.setFixedadvance(rs.getBigDecimal("fixedadvance"));// 固定预付款
+			user.setBasicadvance(rs.getBigDecimal("basicadvance"));// 基础预付款
+			user.setFallbacknum(rs.getLong("fallbacknum"));// 保底单量
+			user.setLateradvance(rs.getBigDecimal("lateradvance"));// 后期预付款
+			user.setBasicfee(rs.getBigDecimal("basicfee"));// 基本派费
+			user.setAreafee(rs.getBigDecimal("areafee"));// 区域派费
+			return user;
+		}
+
+	}
+
+	/**
+	 *
+	 * @description
+	 * @author 刘武强
+	 * @data 2015年10月13日
+	 */
+	private final class ImportUserRowMapper implements RowMapper<User> {
+		@Override
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+			User user = new User();
+			user.setUserid(rs.getInt("userid"));
+			user.setUsername(rs.getString("username"));
+			user.setRealname(StringUtil.nullConvertToEmptyString(rs.getString("realname")));
+			user.setBranchid(rs.getLong("branchid"));
 			return user;
 		}
 
@@ -245,95 +264,95 @@ public class UserDAO {
 		String sql = "select * from express_set_user where branchid=?";
 		return this.jdbcTemplate.query(sql, new UserRowMapper(), branchid);
 	}
+
 	@SystemInstallOperation
 	public void creUser(final User user) {
 		this.jdbcTemplate.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,"
 				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,"
-				+ "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-				new PreparedStatementSetter() {
-					@Override
-					public void setValues(PreparedStatement ps) throws SQLException {
-						ps.setString(1, user.getUsername());
-						ps.setString(2, user.getPassword());
-						ps.setString(3, user.getRealname());
-						ps.setString(4, user.getIdcardno());
-						ps.setInt(5, user.getEmployeestatus());
-						ps.setLong(6, user.getBranchid());
-						ps.setString(7, user.getUserphone());
-						ps.setString(8, user.getUsermobile());
-						ps.setString(9, user.getUseraddress());
-						ps.setString(10, user.getUserremark());
-						ps.setBigDecimal(11, user.getUsersalary());
-						ps.setLong(12, user.getUsercustomerid());
-						ps.setLong(13, user.getShowphoneflag());
-						ps.setString(14, user.getUseremail());
-						ps.setString(15, user.getUserwavfile());
-						ps.setLong(16, user.getRoleid());
-						ps.setInt(17, user.getIsImposedOutWarehouse());
-						ps.setLong(18, user.getShownameflag());
-						ps.setLong(19, user.getShowmobileflag());
-						ps.setLong(20, user.getPfruleid());
-						ps.setInt(21, user.getSex());
-						ps.setString(22, user.getStartworkdate());
-						ps.setString(23, user.getJobnum());
-						ps.setInt(24, user.getJiesuanstate());
-						ps.setBigDecimal(25, user.getMaxcutpayment());
-						ps.setBigDecimal(26, user.getFixedadvance());
-						ps.setBigDecimal(27, user.getBasicadvance());
-						ps.setLong(28, user.getFallbacknum());
-						ps.setBigDecimal(29, user.getLateradvance());
-						ps.setBigDecimal(30, user.getBasicfee());//基本派费
-						ps.setBigDecimal(31, user.getAreafee());//区域派费
-					}
+				+ "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setString(1, user.getUsername());
+				ps.setString(2, user.getPassword());
+				ps.setString(3, user.getRealname());
+				ps.setString(4, user.getIdcardno());
+				ps.setInt(5, user.getEmployeestatus());
+				ps.setLong(6, user.getBranchid());
+				ps.setString(7, user.getUserphone());
+				ps.setString(8, user.getUsermobile());
+				ps.setString(9, user.getUseraddress());
+				ps.setString(10, user.getUserremark());
+				ps.setBigDecimal(11, user.getUsersalary());
+				ps.setLong(12, user.getUsercustomerid());
+				ps.setLong(13, user.getShowphoneflag());
+				ps.setString(14, user.getUseremail());
+				ps.setString(15, user.getUserwavfile());
+				ps.setLong(16, user.getRoleid());
+				ps.setInt(17, user.getIsImposedOutWarehouse());
+				ps.setLong(18, user.getShownameflag());
+				ps.setLong(19, user.getShowmobileflag());
+				ps.setLong(20, user.getPfruleid());
+				ps.setInt(21, user.getSex());
+				ps.setString(22, user.getStartworkdate());
+				ps.setString(23, user.getJobnum());
+				ps.setInt(24, user.getJiesuanstate());
+				ps.setBigDecimal(25, user.getMaxcutpayment());
+				ps.setBigDecimal(26, user.getFixedadvance());
+				ps.setBigDecimal(27, user.getBasicadvance());
+				ps.setLong(28, user.getFallbacknum());
+				ps.setBigDecimal(29, user.getLateradvance());
+				ps.setBigDecimal(30, user.getBasicfee());// 基本派费
+				ps.setBigDecimal(31, user.getAreafee());// 区域派费
+			}
 
-				});
+		});
 	}
+
 	@SystemInstallOperation
 	@CacheEvict(value = "userCache", key = "#user.userid")
 	public void saveUser(final User user) {
 		this.jdbcTemplate.update("update express_set_user set username=?,password=?,realname=?,idcardno=?,"
 				+ "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?,"
 				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?,"
-				+ "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?,"
-				+ "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?" + " where userid=? and userDeleteFlag=1 ",
-				new PreparedStatementSetter() {
-					@Override
-					public void setValues(PreparedStatement ps) throws SQLException {
-						ps.setString(1, user.getUsername());
-						ps.setString(2, user.getPassword());
-						ps.setString(3, user.getRealname());
-						ps.setString(4, user.getIdcardno());
-						ps.setInt(5, user.getEmployeestatus());
-						ps.setLong(6, user.getBranchid());
-						ps.setString(7, user.getUserphone());
-						ps.setString(8, user.getUsermobile());
-						ps.setString(9, user.getUseraddress());
-						ps.setString(10, user.getUserremark());
-						ps.setBigDecimal(11, user.getUsersalary());
-						ps.setLong(12, user.getUsercustomerid());
-						ps.setLong(13, user.getShowphoneflag());
-						ps.setString(14, user.getUseremail());
-						ps.setString(15, user.getUserwavfile());
-						ps.setLong(16, user.getRoleid());
-						ps.setInt(17, user.getIsImposedOutWarehouse());
-						ps.setLong(18, user.getShownameflag());
-						ps.setLong(19, user.getShowmobileflag());
-						ps.setLong(20, user.getPfruleid());
-						ps.setInt(21, user.getSex());
-						ps.setString(22, user.getStartworkdate());
-						ps.setString(23, user.getJobnum());
-						ps.setInt(24, user.getJiesuanstate());
-						ps.setBigDecimal(25, user.getMaxcutpayment());
-						ps.setBigDecimal(26, user.getFixedadvance());
-						ps.setBigDecimal(27, user.getBasicadvance());
-						ps.setLong(28, user.getFallbacknum());
-						ps.setBigDecimal(29, user.getLateradvance());
-						ps.setBigDecimal(30, user.getBasicfee());//基本派费
-						ps.setBigDecimal(31, user.getAreafee());//区域派费
-						ps.setLong(32, user.getUserid());
-					}
+				+ "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?," + "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?"
+				+ " where userid=? and userDeleteFlag=1 ", new PreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setString(1, user.getUsername());
+				ps.setString(2, user.getPassword());
+				ps.setString(3, user.getRealname());
+				ps.setString(4, user.getIdcardno());
+				ps.setInt(5, user.getEmployeestatus());
+				ps.setLong(6, user.getBranchid());
+				ps.setString(7, user.getUserphone());
+				ps.setString(8, user.getUsermobile());
+				ps.setString(9, user.getUseraddress());
+				ps.setString(10, user.getUserremark());
+				ps.setBigDecimal(11, user.getUsersalary());
+				ps.setLong(12, user.getUsercustomerid());
+				ps.setLong(13, user.getShowphoneflag());
+				ps.setString(14, user.getUseremail());
+				ps.setString(15, user.getUserwavfile());
+				ps.setLong(16, user.getRoleid());
+				ps.setInt(17, user.getIsImposedOutWarehouse());
+				ps.setLong(18, user.getShownameflag());
+				ps.setLong(19, user.getShowmobileflag());
+				ps.setLong(20, user.getPfruleid());
+				ps.setInt(21, user.getSex());
+				ps.setString(22, user.getStartworkdate());
+				ps.setString(23, user.getJobnum());
+				ps.setInt(24, user.getJiesuanstate());
+				ps.setBigDecimal(25, user.getMaxcutpayment());
+				ps.setBigDecimal(26, user.getFixedadvance());
+				ps.setBigDecimal(27, user.getBasicadvance());
+				ps.setLong(28, user.getFallbacknum());
+				ps.setBigDecimal(29, user.getLateradvance());
+				ps.setBigDecimal(30, user.getBasicfee());// 基本派费
+				ps.setBigDecimal(31, user.getAreafee());// 区域派费
+				ps.setLong(32, user.getUserid());
+			}
 
-				});
+		});
 	}
 
 	public List<User> getUserByRole(int roleid) {
@@ -373,7 +392,7 @@ public class UserDAO {
 		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
 		return userList;
 	}
-	
+
 	public List<User> getAllUsers() {
 		String sql = "select * from express_set_user where userDeleteFlag=1";
 		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
@@ -429,6 +448,28 @@ public class UserDAO {
 		}
 	}
 
+	/**
+	 *
+	 * @Title: getUserByRolesAndBranchidAndDeliveryManNames
+	 * @description 查询某站点（branchid）下名字在DeliveryManNames字符串内的揽件员
+	 * @author 刘武强
+	 * @date 2015年10月12日下午1:20:08
+	 * @param @param roleids
+	 * @param @param branchid
+	 * @param @return
+	 * @return List<User>
+	 * @throws
+	 */
+	public List<User> getUserByRolesAndBranchidAndDeliveryManNames(String roleids, long branchid, String DeliveryManNames) {
+		try {
+			String sql = "SELECT * FROM express_set_user WHERE realname in  " + DeliveryManNames + "  and roleid in(" + roleids + ") and branchid=" + branchid
+					+ " and userDeleteFlag=1 and employeestatus=" + UserEmployeestatusEnum.GongZuo.getValue() + " ORDER BY CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
+			return this.jdbcTemplate.query(sql, new ImportUserRowMapper());
+		} catch (EmptyResultDataAccessException ee) {
+			return null;
+		}
+	}
+
 	public List<User> getDeliveryUserByRolesAndBranchid(String roleids, long branchid) {
 		try {
 			String sql = "SELECT * FROM express_set_user u LEFT JOIN express_set_role_new r ON u.roleid=r.roleid " + "WHERE (r.isdelivery=1 or u.roleid in(" + roleids + ")) and u.branchid="
@@ -476,10 +517,10 @@ public class UserDAO {
 			return null;
 		}
 	}
-	
+
 	public List<User> getUserByBranchids(String branchids) {
 		try {
-			String sql = "SELECT * FROM express_set_user WHERE branchid in("+branchids+") and userDeleteFlag=1 and employeestatus=1";
+			String sql = "SELECT * FROM express_set_user WHERE branchid in(" + branchids + ") and userDeleteFlag=1 and employeestatus=1";
 			return this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
@@ -529,7 +570,8 @@ public class UserDAO {
 	 */
 	public List<User> queryAllUserByBranchId(long branchid) {
 		List<User> list = new ArrayList<User>();
-		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and employeestatus not in("+UserEmployeestatusEnum.LiZhi.getValue()+") and userDeleteFlag=1 and roleid in(2,4)";
+		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and employeestatus not in(" + UserEmployeestatusEnum.LiZhi.getValue()
+				+ ") and userDeleteFlag=1 and roleid in(2,4)";
 		try {
 			list = this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (DataAccessException e) {
@@ -940,18 +982,19 @@ public class UserDAO {
 
 		return deliverNameMap;
 	}
+
 	public Map<Long, String> getDeliverNameMapByBranchid(long branchId) {
-		String sql = "select userid,realname from express_set_user where roleid in (2,4) and employeestatus not in("+UserEmployeestatusEnum.LiZhi.getValue()+") and branchid = ?";
+		String sql = "select userid,realname from express_set_user where roleid in (2,4) and employeestatus not in(" + UserEmployeestatusEnum.LiZhi.getValue() + ") and branchid = ?";
 		Map<Long, String> deliverNameMap = new HashMap<Long, String>();
 		Object[] paras = new Object[] { branchId };
 		this.jdbcTemplate.query(sql, paras, new UserIdNameRCH(deliverNameMap));
-		
+
 		return deliverNameMap;
 	}
-	
+
 	public List<User> getAllDeliverUser(long branchId) {
 		String sql = "select * from express_set_user where roleid in (2,4)";
-		if(branchId != 0){
+		if (branchId != 0) {
 			sql += " and branchid =" + branchId;
 		}
 		return this.jdbcTemplate.query(sql, new UserRowMapper());
@@ -1005,24 +1048,26 @@ public class UserDAO {
 	}
 
 	public List<User> getUsersByuserids(String userids) {
-		String sql = "select * from express_set_user where userid in("+userids+")";
+		String sql = "select * from express_set_user where userid in(" + userids + ")";
 		return this.jdbcTemplate.query(sql, new UserRowMapper());
 	}
+
 	@SystemInstallOperation
 	@CacheEvict(value = "userCache", key = "#userid")
 	public long updatelateradvanceByuserid(long userid, BigDecimal add) {
 		String sql = "update express_set_user set lateradvance=? where userid=?";
-		return this.jdbcTemplate.update(sql,add,userid);
+		return this.jdbcTemplate.update(sql, add, userid);
 	}
+
 	@CacheEvict(value = "userCache", allEntries = true)
-	public void updateCache(){
-		
+	public void updateCache() {
+
 	}
-	
-	public List<User> getMoHuUser(String userName){
-		
-		String sql="select * from express_set_user where realname like '%"+userName+"%'";
-		return  this.jdbcTemplate.query(sql,new UserRowMapper());
-		
+
+	public List<User> getMoHuUser(String userName) {
+
+		String sql = "select * from express_set_user where realname like '%" + userName + "%'";
+		return this.jdbcTemplate.query(sql, new UserRowMapper());
+
 	}
 }

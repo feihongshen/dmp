@@ -559,7 +559,7 @@ public class OperationTimeDAO {
 	 * @return
 	 */
 	public List<String> getyidaohuoByBranchid(long branchid, int flowordertype) {
-		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + " and flowordertype in(" + flowordertype+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()+")";
+		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + " and flowordertype in(" + flowordertype+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() +","+ FlowOrderTypeEnum.LanJianRuZhan.getValue()+")";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 

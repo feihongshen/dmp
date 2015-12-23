@@ -28,8 +28,8 @@ public class MonitorService {
 	private SystemInstallDAO systemInstallDao;
 
 	public void monitorScheduledTasks() {
-		if (ResourceBundleUtil.LABEL != null && (ResourceBundleUtil.LABEL.equals("local") || ResourceBundleUtil.LABEL.equals("test") || ResourceBundleUtil.LABEL.startsWith("version"))) {
-			logger.info("ignore monitor in local/test/version env.");
+		if (ResourceBundleUtil.LABEL != null && (ResourceBundleUtil.LABEL.equals("local") || ResourceBundleUtil.LABEL.equals("ExecelImportAndValidateUtilTest") || ResourceBundleUtil.LABEL.startsWith("version"))) {
+			logger.info("ignore monitor in local/ExecelImportAndValidateUtilTest/version env.");
 			return;
 		}
 		String[] taskTypes = new String[] { Constants.TASK_TYPE_ORDER_FLOW_EDIT_SHOW_INFO, Constants.TASK_TYPE_ORDER_FLOW_OMS1, Constants.TASK_TYPE_ORDER_FLOW_OMSB2C,

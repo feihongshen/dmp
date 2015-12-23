@@ -1,0 +1,85 @@
+.input_button_my { 
+	width:135px; 
+	line-height:24px; 
+	height:30px; 
+	background:url(/images/indexbg.png) no-repeat right 0px; 
+	border:none; 
+	cursor:pointer; 
+	padding:0; 
+	text-align:center;
+	font-family:"Microsoft YaHei", Verdana, Geneva, sans-serif; 
+	font-size:15px;
+}
+.div_20{
+  float:left;
+  margin-left: 20px;
+  margin-top:5px;
+  height: 55px;
+}
+
+.div_30{
+  float:left;
+  margin-left: 30px;
+  margin-top:5px;
+  height: 55px;
+}
+
+.div_level01{
+	float:left;
+	width: 200px;
+	border: 1px solid #303030;
+	height: 60px;
+}
+
+.div_level02{
+
+}
+
+.span_black{
+	margin: 10px 10px 10px 20px;
+	color: black;
+	height:20px;
+	font-size: 18px;
+	font-weight:bold;
+}
+.span_blue{
+	margin: 10px 10px 10px 20px;
+	color: blue;
+	height:20px;
+	font-size: 18px;
+	font-weight:bold;
+}
+.span_red{
+	margin: 10px 10px 10px 20px;
+	color: red;
+	height:20px;
+	font-size: 18px;
+	font-weight:bold;
+}
+.span_green{
+	margin: 10px 10px 10px 20px;
+	color: green;
+	height:20px;
+	font-size: 18px;
+	font-weight:bold;
+}
+.span_black_no{
+	height:20px;
+	color: black;
+	font-weight:bold;
+}
+.span_blue_no{
+	height:20px;
+	color: blue;
+	font-weight:bold;
+}
+.span_red_no{
+	height:20px;
+	color: red;
+	font-weight:bold;
+}
+.span_green_no{
+	height:20px;
+	color: green;
+	font-weight:bold;
+}

@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import cn.explink.b2c.gxdx.xmldto.RequestDto;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
@@ -91,11 +90,10 @@ public class DataImportDAO_B2c {
 			cwbOrder.setShouldfare(rs.getBigDecimal("shouldfare"));
 			cwbOrder.setInfactfare(rs.getBigDecimal("infactfare"));
 			cwbOrder.setResendtime(rs.getString("resendtime"));
-
 			return cwbOrder;
 		}
 	}
-	
+
 	private final class CwbDTO4TempMapper implements RowMapper<CwbOrderDTO> {
 		@Override
 		public CwbOrderDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -162,7 +160,7 @@ public class DataImportDAO_B2c {
 
 	/**
 	 * 插入数据到临时表 然后定时器插入detail表
-	 * 
+	 *
 	 * @param cwbOrderDTO
 	 * @param customerid
 	 * @param branchid
@@ -170,8 +168,8 @@ public class DataImportDAO_B2c {
 	 * @param ed
 	 */
 	public void insertCwbOrder_toTempTable(final CwbOrderDTO cwbOrderDTO, final long customerid, final long branchid, final User user, final EmailDate ed) {
-		logger.info("导入临时表一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
-		jdbcTemplate.update(
+		this.logger.info("导入临时表一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
+		this.jdbcTemplate.update(
 				"insert into express_ops_cwb_detail_b2ctemp (cwb,consigneename,consigneeaddress,consigneepostcode,consigneephone,sendcarname,backcarname,receivablefee,paybackfee,carrealweight,cwbremark,"
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
@@ -245,21 +243,22 @@ public class DataImportDAO_B2c {
 
 	/**
 	 * 查询临时表 未插入到detail表的数据 getDataFlag表示是否插入到detail中
-	 * 
+	 *
 	 * @return
 	 */
 	public List<CwbOrderDTO> getCwbOrderTempByKeys(String customerids) {
 		String sql = "select * from express_ops_cwb_detail_b2ctemp where customerid in (" + customerids + ") and getDataFlag=0 order by credate limit 0,2000 ";
-		List<CwbOrderDTO> cwborderList = jdbcTemplate.query(sql, new CwbDTO4TempMapper());
+		List<CwbOrderDTO> cwborderList = this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 		return cwborderList;
 	}
+
 	/*
 	 * 本来网新增
 	 */
 	public CwbOrderDTO getCwbOrderTempByCwb(String cwb, String customerid) {
 		String sql = "select * from express_ops_cwb_detail_b2ctemp where cwb ='" + cwb + "' and customerid='" + customerid + "' order by credate  ";
 		CwbOrderDTO d = new CwbOrderDTO();
-		List<CwbOrderDTO> list = jdbcTemplate.query(sql, new CwbDTO4TempMapper());
+		List<CwbOrderDTO> list = this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 		if (list.size() > 0) {
 			return d;
 		}
@@ -271,11 +270,11 @@ public class DataImportDAO_B2c {
 	 */
 	public void update_CwbDetailTempByCwb(long opscwbid) {
 		try {
-			jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set getDataFlag=" + opscwbid + " where opscwbid=" + opscwbid);
+			this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set getDataFlag=" + opscwbid + " where opscwbid=" + opscwbid);
 
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
-			logger.error("修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
+			this.logger.error("修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
 		}
 
 	}
@@ -285,96 +284,94 @@ public class DataImportDAO_B2c {
 	 */
 	public void update_CwbDetailTempByCwb(String cwb) {
 		try {
-			jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set getDataFlag=1 where cwb=" + cwb);
+			this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set getDataFlag=1 where cwb=" + cwb);
 
 		} catch (DataAccessException e) {
-			logger.error("修改临时表数据 getDataFlag失败！cwb=" + cwb, e);
+			this.logger.error("修改临时表数据 getDataFlag失败！cwb=" + cwb, e);
 		}
 
 	}
 
 	/**
 	 * 查询 未反馈给B2C状态的数据(如：告知一号店这些数据已经下载成功)
-	 * 
+	 *
 	 * @param customerid
 	 * @param MaxCount
 	 * @return
 	 */
 	public List<CwbOrderDTO> getCwbOrderByCustomerIdAndPageCount(long customerid, long MaxCount) {
-		String beforeTime=DateTimeUtil.getDateBefore(5);
-		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1 and customerid="
-				+ customerid + " and isB2cSuccessFlag=0 and emaildate>='"+beforeTime+"' limit 0," + MaxCount;
-		return jdbcTemplate.query(sql, new CwbDTO4TempMapper());
+		String beforeTime = DateTimeUtil.getDateBefore(5);
+		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1 and customerid=" + customerid + " and isB2cSuccessFlag=0 and emaildate>='" + beforeTime + "' limit 0," + MaxCount;
+		return this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 	}
 
-	public List<CwbOrderDTO> getCwbOrderByCustomerIdsAndPageCount(String  customerids, long MaxCount) {
-		String beforeTime=DateTimeUtil.getDateBefore(5);
-		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1"
-				+ " and customerid in ("+customerids+")"
-				+ " and isB2cSuccessFlag=0 and emaildate>='"+beforeTime+"' limit 0," + MaxCount;
-		return jdbcTemplate.query(sql, new CwbDTO4TempMapper());
+	public List<CwbOrderDTO> getCwbOrderByCustomerIdsAndPageCount(String customerids, long MaxCount) {
+		String beforeTime = DateTimeUtil.getDateBefore(5);
+		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1" + " and customerid in (" + customerids + ")" + " and isB2cSuccessFlag=0 and emaildate>='" + beforeTime + "' limit 0,"
+				+ MaxCount;
+		return this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 	}
-	
+
 	/**
 	 * 修改为已 反馈给B2C（已经成功）
-	 * 
+	 *
 	 * @param cwbs
 	 */
 	public void updateIsB2cSuccessFlagByCwbs(String cwb) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set isB2cSuccessFlag=1 where cwb =? and state=1  and isB2cSuccessFlag=0";
-		jdbcTemplate.update(sql, cwb);
+		this.jdbcTemplate.update(sql, cwb);
 	}
 
 	/**
 	 * 修改为已 反馈给B2C（已经成功）
-	 * 
+	 *
 	 * @param cwbs
 	 */
 	public void updateIsB2cSuccessFlagByIds(String opscwbis) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set isB2cSuccessFlag=1 where opscwbid in (" + opscwbis + ") and state=1  and isB2cSuccessFlag=0";
-		jdbcTemplate.update(sql);
+		this.jdbcTemplate.update(sql);
 	}
 
 	public void updateCarrealweightAndTranscwb(String cwb, float carrealweight, String transcwb) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set carrealweight=carrealweight+" + carrealweight
 				+ ",sendcarnum=sendcarnum+1,transcwb=CONCAT((CASE  WHEN transcwb IS NULL THEN  '' ELSE CONCAT(transcwb,',')  END),'" + transcwb + "')  where cwb =? and state=1  ";
-		jdbcTemplate.update(sql, cwb);
+		this.jdbcTemplate.update(sql, cwb);
 		String sql2 = "update express_ops_cwb_detail set carrealweight=carrealweight+" + carrealweight
 				+ " ,sendcarnum=sendcarnum+1,transcwb=CONCAT((CASE  WHEN transcwb IS NULL THEN  '' ELSE CONCAT(transcwb,',')  END),'" + transcwb + "')  where cwb =? and state=1  ";
-		jdbcTemplate.update(sql2, cwb);
+		this.jdbcTemplate.update(sql2, cwb);
 
 	}
 
 	public void updateCarrealweightAndTranscwb(String cwb) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set sendcarnum=0 ,transcwb='',carrealweight=0 where cwb =? and state=1  ";
-		jdbcTemplate.update(sql, cwb);
+		this.jdbcTemplate.update(sql, cwb);
 		String sql2 = "update express_ops_cwb_detail set sendcarnum=0 ,transcwb='',carrealweight=0 where cwb =? and state=1  ";
-		jdbcTemplate.update(sql2, cwb);
+		this.jdbcTemplate.update(sql2, cwb);
 
 	}
 
 	public void updateCwbAndTranscwb(String transcwb, String cwb, String history) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set cwb=?,cwbremark=?,state=1 where transcwb =? ";
-		jdbcTemplate.update(sql, cwb, history, transcwb);
+		this.jdbcTemplate.update(sql, cwb, history, transcwb);
 		String sql2 = "update express_ops_cwb_detail set cwb=?,cwbremark=? ,state=1 where transcwb =?";
-		jdbcTemplate.update(sql2, cwb, history, transcwb);
+		this.jdbcTemplate.update(sql2, cwb, history, transcwb);
 
 	}
 
 	public void DeleteCwbAndTranscwbtob2ctemp(String cwb) {
 		String sql = "delete from express_ops_cwb_detail_b2ctemp  where cwb ='" + cwb + "'";
-		jdbcTemplate.update(sql);
+		this.jdbcTemplate.update(sql);
 
 	}
 
 	public void DeleteCwbAndTranscwbtodetail(String cwb) {
 		String sql = "update  express_ops_cwb_detail set state=0 where cwb =?";
-		jdbcTemplate.update(sql, cwb);
+		this.jdbcTemplate.update(sql, cwb);
 	}
 
 	public CwbOrderDTO getCwbByCwbB2ctemp(String cwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where cwb=? and state=1 limit 0,1", new CwbDTO4TempMapper(), cwb);
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where cwb=? and state=1 limit 0,1", new CwbDTO4TempMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -382,7 +379,7 @@ public class DataImportDAO_B2c {
 
 	public CwbOrderDTO getTranscwbtemp(String cwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * FROM express_ops_cwb_detail WHERE flowordertype=1 and state=1 and cwb=?  ", new CwbDTOMapper(), cwb);
+			return this.jdbcTemplate.queryForObject("SELECT * FROM express_ops_cwb_detail WHERE flowordertype=1 and state=1 and cwb=?  ", new CwbDTOMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -390,7 +387,7 @@ public class DataImportDAO_B2c {
 
 	public void updateRemark5Bycwb(String cwb, String remark5, String consigneMobile) {
 		String sql = "update express_ops_cwb_detail set remark5=?,consigneeMobile=?  where cwb =? ";
-		jdbcTemplate.update(sql, remark5, consigneMobile, cwb);
+		this.jdbcTemplate.update(sql, remark5, consigneMobile, cwb);
 	}
 
 	// ===============快乐购临时表新增===================
@@ -399,7 +396,7 @@ public class DataImportDAO_B2c {
 	 */
 	public CwbOrderDTO getbranchByCwbandtranscwb(long cwb, String transcwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_toHappyGo where cwb=? and commoncwb=? and state=1 and cwbordertypeid=3 limit 0,1", new CwbDTOMapper(), cwb,
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_toHappyGo where cwb=? and commoncwb=? and state=1 and cwbordertypeid=3 limit 0,1", new CwbDTOMapper(), cwb,
 					transcwb);
 		} catch (Exception e) {
 			return null;
@@ -408,7 +405,7 @@ public class DataImportDAO_B2c {
 
 	/**
 	 * 插入数据到临时表 然后定时器插入detail表
-	 * 
+	 *
 	 * @param cwbOrderDTO
 	 * @param customerid
 	 * @param branchid
@@ -416,8 +413,8 @@ public class DataImportDAO_B2c {
 	 * @param ed
 	 */
 	public void inserHappyGo(final CwbOrderDTO cwbOrderDTO, final long customerid, final long branchid, final User user, final EmailDate ed) {
-		logger.info("导入快乐购临时表一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
-		jdbcTemplate.update(
+		this.logger.info("导入快乐购临时表一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
+		this.jdbcTemplate.update(
 				"insert into express_ops_cwb_detail_toHappyGo (cwb,consigneename,consigneeaddress,consigneepostcode,consigneephone,sendcarname,backcarname,receivablefee,paybackfee,carrealweight,cwbremark,"
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transcwb,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
@@ -489,28 +486,28 @@ public class DataImportDAO_B2c {
 
 	/**
 	 * 关联 两个换货订单（）
-	 * 
+	 *
 	 * @param cwbs
 	 */
 	public void updateTransCwbByCwbs(String transcwb, String commoncwb) {
 		String sql = "update express_ops_cwb_detail_toHappyGo set transcwb=? ,isaudit=2 where commoncwb =? and state=1  and isB2cSuccessFlag=0";
-		jdbcTemplate.update(sql, transcwb, commoncwb);
+		this.jdbcTemplate.update(sql, transcwb, commoncwb);
 	}
 
 	/**
 	 * 查询快乐购临时表 未插入到detail表的数据 getDataFlag表示是否插入到detail中
-	 * 
+	 *
 	 * @return
 	 */
 	public List<CwbOrderDTO> getHappyGoByKeys(String customerids) {
 		String sql = "select * from express_ops_cwb_detail_toHappyGo where customerid in (" + customerids + ") and getDataFlag=0 and isaudit=2 order by credate limit 0,2000 ";
-		List<CwbOrderDTO> cwborderList = jdbcTemplate.query(sql, new CwbDTOMapper());
+		List<CwbOrderDTO> cwborderList = this.jdbcTemplate.query(sql, new CwbDTOMapper());
 		return cwborderList;
 	}
 
 	public CwbOrderDTO getCwbByHappyCwbB2ctemp(String cwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_toHappyGo where cwb=? and state=1 limit 0,1", new CwbDTOMapper(), cwb);
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_toHappyGo where cwb=? and state=1 limit 0,1", new CwbDTOMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -518,13 +515,13 @@ public class DataImportDAO_B2c {
 
 	public List<CwbOrderDTO> getHappyGoInfoByIsaudit(String customerids, String isaudit) {
 		String sql = "select * from express_ops_cwb_detail_toHappyGo where customerid in (" + customerids + ") and getDataFlag=0 and isaudit=1 and cwbordertypeid=3 order by credate limit 0,2000 ";
-		List<CwbOrderDTO> cwborderList = jdbcTemplate.query(sql, new CwbDTOMapper());
+		List<CwbOrderDTO> cwborderList = this.jdbcTemplate.query(sql, new CwbDTOMapper());
 		return cwborderList;
 	}
 
 	public List<CwbOrderDTO> getHappyGoDetailByIsaudit(String commoncwb) {
 		String sql = "select * from express_ops_cwb_detail_toHappyGo where  getDataFlag=0 and isaudit=1 and cwbordertypeid=3 and commoncwb=? order by credate limit 0,2000 ";
-		List<CwbOrderDTO> cwborderList = jdbcTemplate.query(sql, new CwbDTOMapper(), commoncwb);
+		List<CwbOrderDTO> cwborderList = this.jdbcTemplate.query(sql, new CwbDTOMapper(), commoncwb);
 		return cwborderList;
 	}
 
@@ -533,30 +530,30 @@ public class DataImportDAO_B2c {
 	 */
 	public void updateHappyGoByCwb(long opscwbid) {
 		try {
-			jdbcTemplate.update("update express_ops_cwb_detail_toHappyGo set getDataFlag=" + opscwbid + " where opscwbid=" + opscwbid);
+			this.jdbcTemplate.update("update express_ops_cwb_detail_toHappyGo set getDataFlag=" + opscwbid + " where opscwbid=" + opscwbid);
 
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
-			logger.error("修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
+			this.logger.error("修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
 		}
 
 	}
 
 	public void updateHappyGoDetailByIsaudit(String transcwb, String cwb) {
 		String sql = "update express_ops_cwb_detail_toHappyGo set transcwb=" + transcwb + " , isaudit=2 where cwb=" + cwb;
-		jdbcTemplate.update(sql);
+		this.jdbcTemplate.update(sql);
 	}
 
 	public void updateIsaudit(String cwb) {
 		String sql = "update express_ops_cwb_detail_toHappyGo set  isaudit=3 where cwb=" + cwb;
-		jdbcTemplate.update(sql);
+		this.jdbcTemplate.update(sql);
 	}
 
 	// ===============快乐购临时表新增结束===================
 
 	// 根据订单号失效
 	public void dataLoseB2ctempByCwb(String cwb) {
-		jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set state=0  where state =1 and cwb=? ", cwb);
+		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set state=0  where state =1 and cwb=? ", cwb);
 	}
 
 	/**
@@ -564,7 +561,7 @@ public class DataImportDAO_B2c {
 	 */
 	public CwbOrderDTO getCwbFromCwborder(String cwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail where cwb=? and state=1 limit 0,1", new CwbDTOMapper(), cwb);
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail where cwb=? and state=1 limit 0,1", new CwbDTOMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -574,7 +571,7 @@ public class DataImportDAO_B2c {
 		String sql = "update express_ops_cwb_detail_b2ctemp set consigneename=? ,sendcarnum=?,consigneemobile=?,consigneephone=?,consigneepostcode=?,"
 				+ "consigneeaddress=?,receivablefee=?,customercommand=?,remark1=?,remark2=?,remark3=?,remark4=?,remark5=?,carrealweight=?,paywayid=?," + "cartype=?,cwbordertypeid=?,shouldfare=? "
 				+ " where cwb =? and state=1  ";
-		jdbcTemplate.update(sql, new PreparedStatementSetter() {
+		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, order.get("consigneename").toString());
@@ -602,42 +599,44 @@ public class DataImportDAO_B2c {
 		});
 
 	}
-	
+
 	/**
 	 * 获取未反馈给TPS的OXOJIT订单号
-	 * @param count 获取的条数
-	 * @param customerid 客户id
+	 *
+	 * @param count
+	 *            获取的条数
+	 * @param customerid
+	 *            客户id
 	 * @return
 	 */
-	public List<String> getUnfeedbackOXOJITOrders(int count,long customerid){
+	public List<String> getUnfeedbackOXOJITOrders(int count, long customerid) {
 		String sql = "select transcwb from express_ops_cwb_detail_b2ctemp where customerid=? and cwbordertypeid=? and getDataFlag<>0 and oxojitfeedbackflag=0 and state=1 order by credate limit ?";
-		return jdbcTemplate.query(sql, new RowMapper<String>(){
-
+		return this.jdbcTemplate.query(sql, new RowMapper<String>() {
 			@Override
 			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return rs.getString("transcwb");
 			}
-			
+
 		}, customerid, CwbOrderTypeIdEnum.OXO_JIT.getValue(), count);
-		
+
 	}
-	
+
 	/**
 	 * 批量更新oxojitfeedbackflag的值为1
+	 *
 	 * @param cwbs
 	 * @param customerid
 	 */
-	public void updateOXOJITfeedbackflag(String transcwbs,long customerid){
-		
-		String sql = "update express_ops_cwb_detail_b2ctemp set oxojitfeedbackflag=1 where transcwb in("+ transcwbs +") and customerid=? and cwbordertypeid=? and state=1";
-		jdbcTemplate.update(sql, customerid, CwbOrderTypeIdEnum.OXO_JIT.getValue());
-		
-	}
-	
-	public List<CwbOrderDTO> getCwbOrderTempByKeysExtends(String customerids,String cwbordertypeids) {
-		String sql = "select * from express_ops_cwb_detail_b2ctemp where customerid in (" + customerids + ") and getDataFlag=0 and cwbordertypeid in ("+cwbordertypeids+") order by credate limit 0,2000 ";
-		List<CwbOrderDTO> cwborderList = jdbcTemplate.query(sql, new CwbDTO4TempMapper());
-		return cwborderList;
+	public void updateOXOJITfeedbackflag(String transcwbs, long customerid) {
+		String sql = "update express_ops_cwb_detail_b2ctemp set oxojitfeedbackflag=1 where transcwb in(" + transcwbs + ") and customerid=? and cwbordertypeid=? and state=1";
+		this.jdbcTemplate.update(sql, customerid, CwbOrderTypeIdEnum.OXO_JIT.getValue());
+
 	}
 
+	public List<CwbOrderDTO> getCwbOrderTempByKeysExtends(String customerids, String cwbordertypeids) {
+		String sql = "select * from express_ops_cwb_detail_b2ctemp where customerid in (" + customerids + ") and getDataFlag=0 and cwbordertypeid in (" + cwbordertypeids
+				+ ") order by credate limit 0,2000 ";
+		List<CwbOrderDTO> cwborderList = this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
+		return cwborderList;
+	}
 }

@@ -36,20 +36,20 @@ public class ExpressSysMonitorDAO extends BasicJdbcTemplateDaoSupport<ExpressSys
 	}
 
 	public void chooise(ExpressSysMonitorEnum type, long endtime) {
-		ExpressSysMonitor m = getMaxOpt(type.getText());
-		try {
-			Date nextExecuteTime = DateUtils.parseDate(m.getOptime(), pattern);
-			long delay = nextExecuteTime.getTime() - endtime;
-			if (delay <= type.getValue()) {
-				ExpressSysMonitor expressSysMonitor = new ExpressSysMonitor();
-				expressSysMonitor.setType(type.getText());
-				expressSysMonitor.setOptime(DateFormatUtils.format(new Date(), pattern));
-				save(expressSysMonitor);
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		ExpressSysMonitor m = getMaxOpt(type.getText());
+//		try {
+//			Date nextExecuteTime = DateUtils.parseDate(m.getOptime(), pattern);
+//			long delay = nextExecuteTime.getTime() - endtime;
+//			if (delay <= type.getValue()) {
+//				ExpressSysMonitor expressSysMonitor = new ExpressSysMonitor();
+//				expressSysMonitor.setType(type.getText());
+//				expressSysMonitor.setOptime(DateFormatUtils.format(new Date(), pattern));
+//				save(expressSysMonitor);
+//			}
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 

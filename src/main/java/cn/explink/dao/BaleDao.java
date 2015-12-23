@@ -46,12 +46,14 @@ public class BaleDao {
 			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
-				ps = con.prepareStatement("insert into express_ops_bale(baleno,balestate,branchid,nextbranchid,cwbcount) values(?,?,?,?,?)", new String[] { "id" });
+				ps = con.prepareStatement("insert into express_ops_bale(baleno,balestate,branchid,nextbranchid,cwbcount,handlerid,handlername) values(?,?,?,?,?,?,?)", new String[] { "id" });
 				ps.setString(1, bale.getBaleno());
 				ps.setLong(2, bale.getBalestate());
 				ps.setLong(3, bale.getBranchid());
 				ps.setLong(4, bale.getNextbranchid());
 				ps.setLong(5, bale.getCwbcount());
+				ps.setInt(6, bale.getHandlerid());
+				ps.setString(7, bale.getHandlername());
 				return ps;
 			}
 		}, key);
@@ -207,6 +209,7 @@ public class BaleDao {
 		String sql = "update express_ops_bale set cwbcount=cwbcount+1 where baleno=? ";
 		this.jdbcTemplate.update(sql, baleno);
 	}
+
 	public void updateAddBaleScannum(String baleno) {
 		String sql = "update express_ops_bale set scannum=scannum+1 where baleno=? ";
 		this.jdbcTemplate.update(sql, baleno);
@@ -230,6 +233,7 @@ public class BaleDao {
 		}
 		return this.jdbcTemplate.query(sql, new BaleMapper(), branchid);
 	}
+
 	public Bale getBaleById(long baleid) {
 		try {
 			String sql = "select * from express_ops_bale where id=? ";
@@ -237,5 +241,16 @@ public class BaleDao {
 		} catch (DataAccessException e) {
 			return null;
 		}
+	}
+
+	// added by jiangyu
+	public void updateBalesateAndNextBranchId(String baleno, long balestate, long nextBranchId, long currentBranchId) {
+		String sql = "update express_ops_bale set balestate=?,nextbranchid=?,branchid=? where baleno=? ";
+		this.jdbcTemplate.update(sql, balestate, nextBranchId, currentBranchId, baleno);
+	}
+
+	public void updateBranchIdAndNextBranchId(String baleno, long nextBranchId, long currentBranchId) {
+		String sql = "update express_ops_bale set nextbranchid=?,branchid=? where baleno=? ";
+		this.jdbcTemplate.update(sql, nextBranchId, currentBranchId, baleno);
 	}
 }

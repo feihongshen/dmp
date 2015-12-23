@@ -13,6 +13,14 @@ public class Bale {
 	private Timestamp cretime;
 	private long nextbranchid;
 	private long cwbcount;
+	/**
+	 * 合包人id
+	 */
+	private int handlerid;
+	/**
+	 * 合包人姓名
+	 */
+	private String handlername;
 	private long scannum;
 
 	public Bale() {
@@ -93,6 +101,22 @@ public class Bale {
 		this.cwbcount = cwbcount;
 	}
 
+	public int getHandlerid() {
+		return this.handlerid;
+	}
+
+	public void setHandlerid(int handlerid) {
+		this.handlerid = handlerid;
+	}
+
+	public String getHandlername() {
+		return this.handlername;
+	}
+
+	public void setHandlername(String handlername) {
+		this.handlername = handlername;
+	}
+
 	/**
 	 * @return the scannum
 	 */
@@ -101,10 +125,10 @@ public class Bale {
 	}
 
 	/**
-	 * @param scannum the scannum to set
+	 * @param scannum
+	 *            the scannum to set
 	 */
 	public void setScannum(long scannum) {
 		this.scannum = scannum;
 	}
-
 }

@@ -33,5 +33,8 @@ public class ResourceBundleUtil {
 	public static final String addressid = rbint.getString("addressid");
 
 	public static final String addresspassword = rbint.getString("addresspassword");
+	//快递 承运商编码
+	public static final String expressCarrierCode = rbint.getString("expressCarrierCode");
+	
 
 }

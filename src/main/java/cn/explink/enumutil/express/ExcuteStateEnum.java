@@ -5,7 +5,7 @@ import java.util.List;
 
 public enum ExcuteStateEnum {
 	NotAllocatedStation(0, "未分配站点"), AllocatedStation(1, "已分配站点"), AllocatedDeliveryman(2, "已分配快递员"), DelayedEmbrace(3, "延迟揽件"), fail(4, "失败"), StationSuperzone(5, "站点超区"), EmbraceSuperzone(6, "揽件超区"), Succeed(
-			7, "成功");
+			7, "成功"), Closed(8, "预订单关闭"), Back(9, "退回总部");
 
 	private int value;
 	private String text;
@@ -33,9 +33,20 @@ public enum ExcuteStateEnum {
 		excuteTypeEnum.add(StationSuperzone);
 		excuteTypeEnum.add(EmbraceSuperzone);
 		excuteTypeEnum.add(Succeed);
+		excuteTypeEnum.add(Closed);
+		excuteTypeEnum.add(Back);
 		return excuteTypeEnum;
 	}
 
+	public static List<ExcuteStateEnum> getReturnResultList(){
+		List<ExcuteStateEnum> excuteTypeEnum = new ArrayList<ExcuteStateEnum>();
+		excuteTypeEnum.add(AllocatedDeliveryman);
+		excuteTypeEnum.add(DelayedEmbrace);
+		excuteTypeEnum.add(EmbraceSuperzone);
+		return excuteTypeEnum;
+
+	}
+	
 	public static String getTextByValue(int value) {
 		List<ExcuteStateEnum> allStatus = ExcuteStateEnum.getAllStatus();
 		for (ExcuteStateEnum excuteTypeEnum : allStatus) {

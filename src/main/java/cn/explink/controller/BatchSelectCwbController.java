@@ -128,13 +128,12 @@ public class BatchSelectCwbController {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
 	}
 
 	@RequestMapping("/list/{page}")
-	public String list(Model model, HttpServletRequest request, @PathVariable(value = "page") long page, @RequestParam(value = "batchcwb", required = false, defaultValue = "") String batchcwb,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+	public String list(Model model, HttpServletRequest request, @PathVariable(value = "page") long page, @RequestParam(value = "batchcwb", required = false, defaultValue = "") String batchcwb, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
 		Page pageparm = new Page();
 		List<CwbOrder> orderList = new ArrayList<CwbOrder>();
@@ -158,8 +157,8 @@ public class BatchSelectCwbController {
 				}
 			}
 
-			String temporders = dataStatisticsService.getStrings(cwbStrList);
-			List<TranscwbView> tempList = transCwbDao.getTransCwbByTranscwb(temporders);
+			String temporders = this.dataStatisticsService.getStrings(cwbStrList);
+			List<TranscwbView> tempList = this.transCwbDao.getTransCwbByTranscwb(temporders);
 			Map<String, String> transcwbAndCwbMap = new HashMap<String, String>();
 			for (TranscwbView transcwbView : tempList) {
 				transcwbAndCwbMap.put(transcwbView.getTranscwb(), transcwbView.getCwb());
@@ -175,33 +174,33 @@ public class BatchSelectCwbController {
 				lastcwbs = lastcwbs.substring(0, lastcwbs.length() - 1);
 			}
 
-			orderList = cwbDAO.getCwbByCwbsPage(page, lastcwbs);
+			orderList = this.cwbDAO.getCwbByCwbsPage(page, lastcwbs);
 
-			cosum = cwbDAO.getcwborderSumBycwbs(lastcwbs);
-			count = cwbDAO.getCwbOrderCwbsCount(lastcwbs);
+			cosum = this.cwbDAO.getcwborderSumBycwbs(lastcwbs);
+			count = this.cwbDAO.getCwbOrderCwbsCount(lastcwbs);
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
-			List<Customer> customerList = customerDAO.getAllCustomersNew();
-			List<CustomWareHouse> customerWareHouseList = customWareHouseDAO.getAllCustomWareHouse();
-			List<Branch> branchList = branchDAO.getAllBranches();
-			List<User> userList = userDAO.getAllUserByuserDeleteFlag();
-			List<Reason> reasonList = reasonDao.getAllReason();
-			List<Remark> remarkList = remarkDAO.getAllRemark();
-			cwbOrderView = getCwbOrderView(orderList, customerList, customerWareHouseList, branchList, userList, reasonList, "", "", remarkList);
+			List<Customer> customerList = this.customerDAO.getAllCustomersNew();
+			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
+			List<Branch> branchList = this.branchDAO.getAllBranches();
+			List<User> userList = this.userDAO.getAllUserByuserDeleteFlag();
+			List<Reason> reasonList = this.reasonDao.getAllReason();
+			List<Remark> remarkList = this.remarkDAO.getAllRemark();
+			cwbOrderView = this.getCwbOrderView(orderList, customerList, customerWareHouseList, branchList, userList, reasonList, "", "", remarkList);
 		}
-		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
+		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("cosum", cosum);
 		model.addAttribute("count", count);
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", pageparm);
-		logger.info("订单批量查询，当前操作人{},条数{}", getSessionUser().getRealname(), count);
+		this.logger.info("订单批量查询，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return "bacthselectcwb/list";
 	}
 
 	private String translateCwb(String cwb) {
-		for (CwbTranslator cwbTranslator : cwbTranslators) {
+		for (CwbTranslator cwbTranslator : this.cwbTranslators) {
 			String translateCwb = cwbTranslator.translate(cwb);
 			if (StringUtils.hasLength(translateCwb)) {
 				cwb = translateCwb;
@@ -211,8 +210,7 @@ public class BatchSelectCwbController {
 	}
 
 	@RequestMapping("/batchSelectExpore")
-	public void batchSelectExpore(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "batchcwb2", required = false, defaultValue = "") String batchcwb2,
-			@RequestParam(value = "exportmould2", required = false, defaultValue = "") final String mouldfieldids2) {
+	public void batchSelectExpore(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "batchcwb2", required = false, defaultValue = "") String batchcwb2, @RequestParam(value = "exportmould2", required = false, defaultValue = "") final String mouldfieldids2) {
 		String[] cwbs = batchcwb2.trim().split("\r\n");
 
 		List<String> cwbStrList = new ArrayList<String>();
@@ -227,8 +225,8 @@ public class BatchSelectCwbController {
 			}
 		}
 
-		String temporders = dataStatisticsService.getStrings(cwbStrList);
-		List<TranscwbView> tempList = transCwbDao.getTransCwbByTranscwb(temporders);
+		String temporders = this.dataStatisticsService.getStrings(cwbStrList);
+		List<TranscwbView> tempList = this.transCwbDao.getTransCwbByTranscwb(temporders);
 		Map<String, String> transcwbAndCwbMap = new HashMap<String, String>();
 		for (TranscwbView transcwbView : tempList) {
 			transcwbAndCwbMap.put(transcwbView.getTranscwb(), transcwbView.getCwb());
@@ -248,8 +246,8 @@ public class BatchSelectCwbController {
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
 
-		if (mouldfieldids2 != null && !"0".equals(mouldfieldids2) && !"".equals(mouldfieldids2)) { // 选择模板
-			List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs(mouldfieldids2);
+		if ((mouldfieldids2 != null) && !"0".equals(mouldfieldids2) && !"".equals(mouldfieldids2)) { // 选择模板
+			List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs(mouldfieldids2);
 			cloumnName1 = new String[listSetExportField.size()];
 			cloumnName2 = new String[listSetExportField.size()];
 			cloumnName3 = new String[listSetExportField.size()];
@@ -259,7 +257,7 @@ public class BatchSelectCwbController {
 				cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
 			}
 		} else {
-			List<SetExportField> listSetExportField = exportmouldDAO.getSetExportFieldByStrs("0");
+			List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs("0");
 			cloumnName1 = new String[listSetExportField.size()];
 			cloumnName2 = new String[listSetExportField.size()];
 			cloumnName3 = new String[listSetExportField.size()];
@@ -280,44 +278,44 @@ public class BatchSelectCwbController {
 
 		fileName = fileName + otherName + lastStr;
 		try {
-			final String sql = cwbDAO.getSqlByCwb(lastcwbs);
+			final String sql = this.cwbDAO.getSqlByCwb(lastcwbs);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
-					final List<User> uList = userDAO.getUserForALL();
-					final Map<Long, Customer> cMap = customerDAO.getAllCustomersToMap();
-					final List<Branch> bList = branchDAO.getAllBranches();
-					final List<Common> commonList = commonDAO.getAllCommons();
-					final List<CustomWareHouse> cWList = customWareHouseDAO.getAllCustomWareHouse();
-					List<Remark> remarkList = remarkDAO.getAllRemark();
-					final Map<String, Map<String, String>> remarkMap = exportService.getInwarhouseRemarks(remarkList);
-					final List<Reason> reasonList = reasonDAO.getAllReason();
-					jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+					final List<User> uList = BatchSelectCwbController.this.userDAO.getUserForALL();
+					final Map<Long, Customer> cMap = BatchSelectCwbController.this.customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = BatchSelectCwbController.this.branchDAO.getAllBranches();
+					final List<Common> commonList = BatchSelectCwbController.this.commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = BatchSelectCwbController.this.customWareHouseDAO.getAllCustomWareHouse();
+					List<Remark> remarkList = BatchSelectCwbController.this.remarkDAO.getAllRemark();
+					final Map<String, Map<String, String>> remarkMap = BatchSelectCwbController.this.exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = BatchSelectCwbController.this.reasonDAO.getAllReason();
+					BatchSelectCwbController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
 						private int count = 0;
 						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
 						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
 
 						public void processRow(ResultSet rs) throws SQLException {
-							Map<String, Object> mapRow = columnMapRowMapper.mapRow(rs, count);
-							recordbatch.add(mapRow);
-							count++;
-							if (count % 100 == 0) {
-								writeBatch();
+							System.out.println("行数据：" + rs);
+							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
+							this.recordbatch.add(mapRow);
+							this.count++;
+							if ((this.count % 100) == 0) {
+								this.writeBatch();
 							}
 						}
 
-						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
-								Map<String, String> complaintMap) throws SQLException {
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap, Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
-							row.setHeightInPoints((float) 15);
+							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
 								Cell cell = row.createCell((short) i);
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short) (5000));
 								// //设置列宽
-								Object a = exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
-										complaintMap);
+								Object a = BatchSelectCwbController.this.exportService
+										.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap, complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
 								} else {
@@ -331,33 +329,33 @@ public class BatchSelectCwbController {
 							while (rs.next()) {
 								this.processRow(rs);
 							}
-							writeBatch();
+							this.writeBatch();
 							return null;
 						}
 
 						public void writeBatch() throws SQLException {
-							if (recordbatch.size() > 0) {
+							if (this.recordbatch.size() > 0) {
 								List<String> cwbs = new ArrayList<String>();
-								for (Map<String, Object> mapRow : recordbatch) {
+								for (Map<String, Object> mapRow : this.recordbatch) {
 									cwbs.add(mapRow.get("cwb").toString());
 								}
-								Map<String, DeliveryState> deliveryStates = getDeliveryListByCwbs(cwbs);
-								Map<String, TuihuoRecord> tuihuorecoredMap = getTuihuoRecoredMap(cwbs);
-								Map<String, String> cwbspayupMsp = getcwbspayupidMap(cwbs);
-								Map<String, String> complaintMap = getComplaintMap(cwbs);
-								Map<String, Map<String, String>> orderflowList = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
-								int size = recordbatch.size();
+								Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = this.getComplaintMap(cwbs);
+								Map<String, Map<String, String>> orderflowList = BatchSelectCwbController.this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = this.recordbatch.size();
 								for (int i = 0; i < size; i++) {
-									String cwb = recordbatch.get(i).get("cwb").toString();
-									writeSingle(recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), count - size + i, cwbspayupMsp, complaintMap);
+									String cwb = this.recordbatch.get(i).get("cwb").toString();
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp, complaintMap);
 								}
-								recordbatch.clear();
+								this.recordbatch.clear();
 							}
 						}
 
 						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
 							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
-							for (TuihuoRecord tuihuoRecord : tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+							for (TuihuoRecord tuihuoRecord : BatchSelectCwbController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
 								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
 							}
 							return map;
@@ -365,7 +363,7 @@ public class BatchSelectCwbController {
 
 						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
-							for (DeliveryState deliveryState : deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+							for (DeliveryState deliveryState : BatchSelectCwbController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
 								map.put(deliveryState.getCwb(), deliveryState);
 							}
 							return map;
@@ -373,7 +371,7 @@ public class BatchSelectCwbController {
 
 						private Map<String, String> getComplaintMap(List<String> cwbs) {
 							Map<String, String> complaintMap = new HashMap<String, String>();
-							for (Complaint complaint : complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+							for (Complaint complaint : BatchSelectCwbController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
 								complaintMap.put(complaint.getCwb(), complaint.getContent());
 							}
 							return complaintMap;
@@ -395,22 +393,21 @@ public class BatchSelectCwbController {
 	@RequestMapping("/batchRemark")
 	public @ResponseBody String batchRemark(@RequestParam("remarkcwbs") String remarkcwbs, @RequestParam("cwbremark") String cwbremark) {
 		try {
-			cwbOrderService.cwbremark(remarkcwbs, cwbremark, getSessionUser());
+			this.cwbOrderService.cwbremark(remarkcwbs, cwbremark, this.getSessionUser());
 			return "{\"errorCode\":0,\"error\":\"备注成功\"}";
 		} catch (Exception e) {
-			logger.error("批量备注异常：", e);
+			this.logger.error("批量备注异常：", e);
 			return "{\"errorCode\":1,\"error\":\"备注失败\"}";
 		}
 	}
 
-	public List<CwbOrderView> getCwbOrderView(List<CwbOrder> clist, List<Customer> customerList, List<CustomWareHouse> customerWareHouseList, List<Branch> branchList, List<User> userList,
-			List<Reason> reasonList, String begindate, String enddate, List<Remark> remarkList) {
+	public List<CwbOrderView> getCwbOrderView(List<CwbOrder> clist, List<Customer> customerList, List<CustomWareHouse> customerWareHouseList, List<Branch> branchList, List<User> userList, List<Reason> reasonList, String begindate, String enddate, List<Remark> remarkList) {
 		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
 		if (clist.size() > 0) {
 			for (CwbOrder c : clist) {
 				List<String> cwbs = new ArrayList<String>();
 				cwbs.add(c.getCwb());
-				Map<String, Map<String, String>> orderflowList = dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, branchList);
+				Map<String, Map<String, String>> orderflowList = this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, branchList);
 
 				CwbOrderView cwbOrderView = new CwbOrderView();
 
@@ -450,13 +447,23 @@ public class BatchSelectCwbController {
 				cwbOrderView.setRemark5(c.getRemark5());
 				cwbOrderView.setFlowordertype(c.getFlowordertype());
 				cwbOrderView.setReturngoodsremark(this.getOrderFlowByCwbAndType(c.getCwb(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), begindate, enddate).getComment());
-				String ruku = orderflowList.get(c.getCwb()).get("Instoreroomtime");
-				String chukusaomiao = orderflowList.get(c.getCwb()).get("Outstoreroomtime");
-				String daohuosaomiao = orderflowList.get(c.getCwb()).get("InSitetime");
-				String fenzhanlinghuo = orderflowList.get(c.getCwb()).get("PickGoodstime");
-				String yifankui = orderflowList.get(c.getCwb()).get("Gobacktime");
-				String zuixinxiugai = orderflowList.get(c.getCwb()).get("Newchangetime");
-				String yishenhe = orderflowList.get(c.getCwb()).get("Goclasstime");
+				String ruku = "";
+				String chukusaomiao = "";
+				String daohuosaomiao = "";
+				String fenzhanlinghuo = "";
+				String yifankui = "";
+				String zuixinxiugai = "";
+				String yishenhe = "";
+				if (null != orderflowList.get(c.getCwb())) {
+					ruku = orderflowList.get(c.getCwb()).get("Instoreroomtime");
+					chukusaomiao = orderflowList.get(c.getCwb()).get("Outstoreroomtime");
+					daohuosaomiao = orderflowList.get(c.getCwb()).get("InSitetime");
+					fenzhanlinghuo = orderflowList.get(c.getCwb()).get("PickGoodstime");
+					yifankui = orderflowList.get(c.getCwb()).get("Gobacktime");
+					zuixinxiugai = orderflowList.get(c.getCwb()).get("Newchangetime");
+					yishenhe = orderflowList.get(c.getCwb()).get("Goclasstime");
+				}
+
 				cwbOrderView.setInstoreroomtime(ruku != null ? ruku : "");// 入库时间
 				cwbOrderView.setOutstoreroomtime(chukusaomiao != null ? chukusaomiao : "");// 出库时间
 				cwbOrderView.setInSitetime(daohuosaomiao != null ? daohuosaomiao : "");// 到站时间
@@ -469,7 +476,7 @@ public class BatchSelectCwbController {
 				cwbOrderView.setPodremarkStr(this.getQueryReason(reasonList, this.getDeliveryStateByCwb(c.getCwb()).getPodremarkid()));// 配送结果备注
 				cwbOrderView.setCartype(c.getCartype());
 				cwbOrderView.setCwbdelivertypeid(c.getCwbdelivertypeid());
-				cwbOrderView.setInwarhouseremark(exportService.getInwarhouseRemarks(remarkList).get(c.getCwb()) == null ? "" : exportService.getInwarhouseRemarks(remarkList).get(c.getCwb())
+				cwbOrderView.setInwarhouseremark(this.exportService.getInwarhouseRemarks(remarkList).get(c.getCwb()) == null ? "" : this.exportService.getInwarhouseRemarks(remarkList).get(c.getCwb())
 						.get(ReasonTypeEnum.RuKuBeiZhu.getText()));
 				cwbOrderView.setCwbordertypeid(c.getCwbordertypeid() + "");// 订单类型
 				if (deliverystate != null) {
@@ -480,7 +487,7 @@ public class BatchSelectCwbController {
 					cwbOrderView.setDeliverstateremark(deliverystate.getDeliverstateremark());
 					cwbOrderView.setCustomerbrackhouseremark(this.getOrderFlowByCwbAndType(c.getCwb(), FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), begindate, enddate).getComment());
 					cwbOrderView.setDeliverystate(deliverystate.getDeliverystate());
-					if (deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() && yifankui != null) {
+					if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) && (yifankui != null)) {
 						cwbOrderView.setSendSuccesstime(yifankui);// 配送成功时间
 					}
 				}
@@ -492,7 +499,7 @@ public class BatchSelectCwbController {
 
 	public OrderFlow getOrderFlowByCwbAndType(String cwb, long flowordertype, String begindate, String enddate) {
 		List<OrderFlow> orderflowList = new ArrayList<OrderFlow>();
-		orderflowList = orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, flowordertype, begindate, enddate);
+		orderflowList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, flowordertype, begindate, enddate);
 		OrderFlow orderflow = orderflowList.size() > 0 ? orderflowList.get(orderflowList.size() - 1) : new OrderFlow();
 		return orderflow;
 	}
@@ -510,13 +517,13 @@ public class BatchSelectCwbController {
 
 	public DeliveryState getDeliveryStateByCwb(String cwb) {
 		List<DeliveryState> deliveryStateList = new ArrayList<DeliveryState>();
-		deliveryStateList = deliveryStateDAO.getDeliveryStateByCwb(cwb);
+		deliveryStateList = this.deliveryStateDAO.getDeliveryStateByCwb(cwb);
 		DeliveryState deliverState = deliveryStateList.size() > 0 ? deliveryStateList.get(deliveryStateList.size() - 1) : new DeliveryState();
 		return deliverState;
 	}
 
 	public DeliveryState getDeliveryByCwb(String cwb) {
-		List<DeliveryState> delvieryList = deliveryStateDAO.getDeliveryStateByCwb(cwb);
+		List<DeliveryState> delvieryList = this.deliveryStateDAO.getDeliveryStateByCwb(cwb);
 		return delvieryList.size() > 0 ? delvieryList.get(delvieryList.size() - 1) : new DeliveryState();
 	}
 

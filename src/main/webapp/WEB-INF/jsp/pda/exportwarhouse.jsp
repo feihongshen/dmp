@@ -40,8 +40,11 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 <title>出库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script languag  e="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css" />
+<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/express/feedback/comm.js"></script>
+<script src="<%=request.getContextPath()%>/js/datePlugin/My97DatePicker/WdatePicker.js"
+	type="text/javascript"></script>
 <script type="text/javascript">
 	function changBlur(){
 		var isscanbaleTag = 1;
@@ -301,7 +304,12 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 								//	$("#wavPlay",parent.document).attr("src",pname+ "/wavPlay?wavPath="+ pname+ "/images/waverror/success.wav" + "&a="+ Math.random());
 								//} 
 								}
-								}else{
+						}else if(data.statuscode=="0001"){
+							$("#excelbranch").html("");
+							$("#showcwb").html("");
+							$("#msg").html(data.errorinfo);
+							addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
+						}else{
 							$("#excelbranch").html("");
 							$("#showcwb").html("");
 							$("#msg").html(scancwb+"         （异常扫描）"+data.errorinfo);
@@ -378,17 +386,25 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 										$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
 										}
 										}
-									}else{
-										$("#excelbranch").html("");
-										$("#showcwb").html("");
-										$("#msg1").html(scancwb+"         （异常扫描）"+data.errorinfo);
-										$('#find').dialog('open');
-										$("#scancwb").blur();
-										addAndRemoval(scancwb,"errorTable",false,$("#branchid").combobox("getValue"));
-										//errorvedioplay(pname,data);
-									}
-										$("#responsebatchno").val(data.responsebatchno);
-										batchPlayWav(data.wavList);
+								}
+								else if(data.statuscode=="0001"){
+									$("#excelbranch").html("");
+									$("#showcwb").html("");
+									$("#msg1").html(data.errorinfo);
+									$('#find').dialog('open');
+									$("#scancwb").blur();
+									addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
+								}else{
+									$("#excelbranch").html("");
+									$("#showcwb").html("");
+									$("#msg1").html(scancwb+"         （异常扫描）"+data.errorinfo);
+									$('#find').dialog('open');
+									$("#scancwb").blur();
+									addAndRemoval(scancwb,"errorTable",false,$("#branchid").combobox("getValue"));
+									//errorvedioplay(pname,data);
+								}
+								$("#responsebatchno").val(data.responsebatchno);
+								batchPlayWav(data.wavList);
 							}
 						});
 				}
@@ -1003,29 +1019,30 @@ function chuku(){
 						%>
 					<p style="display: none;">
 							<span>包号：</span><input type="text" class="saomiao_inputtxt2" name="baleno" id="baleno"
-								onKeyDown="if(event.keyCode==13&&$(this).val().length>0){if($(this).val().indexOf('@zd_')>-1){$('#branchid').combobox('setValue',$(this).val().split('_')[1]);if($('#branchid').combobox('getValue')!=$(this).val().split('_')[1]){$('#msg').html('         （异常扫描）扫描站点失败');$('#branchid').combobox('setValue',0);}else{$('#msg').html('');}$(this).val('');return false;}if($('#branchid').combobox('getValue')==0){alert('请选择下一站');return;}$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}" />
+								onKeyDown="if(event.keyCode==13&&$(this).val().length>0){if($(this).val().indexOf('@zd_')>-1){$('#branchid').val($(this).val().split('_')[1]);if($('#branchid').val()!=$(this).val().split('_')[1]){$('#msg').html('         （异常扫描）扫描站点失败');$('#branchid').val(0);}else{$('#msg').html('');}$(this).val('');return false;}if($('#branchid').val()==0){alert('请选择下一站');return;}$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#cwbPackageNoSpan').text('订单号：');$('#scancwb').focus();}" />
 							<span>&nbsp;</span> <input type="button" id="randomCreate" value="随机生成" class="button"
 								onclick="ranCreate();" /> <input type="button" id="handCreate" value="手工输入" class="button"
 								onclick="hanCreate();" />
 					
 					</p>
 						<p>
-							<span>订单号：</span> <input type="text" class="saomiao_inputtxt2" value="" id="scancwb"
-								name="scancwb"
-								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){exportWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#branchid").combobox("getValue"),$("#driverid").val(),$("#truckid").val(),$("#requestbatchno").val(),$("#baleno").val(),$("#ck_switch").val(),$("#confirmflag").attr("checked")=="checked"?1:0);}' />
-					</p>
-					<p id="baleBtn">
-						<span>&nbsp;</span>
-						<!-- <input type="submit" name="finish" id="finish" value="完成扫描" class="button" onclick="$('#baleno').removeAttr('readonly');$('#baleno').val('');"/> -->
+							<span id="cwbPackageNoSpan">单/包号：</span> <input type="text" class="saomiao_inputtxt2"
+								value="" id="scancwb" name="scancwb"
+								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){exportWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#branchid").val(),$("#driverid").val(),$("#truckid").val(),$("#requestbatchno").val(),$("#baleno").val(),$("#ck_switch").val(),$("#confirmflag").attr("checked")=="checked"?1:0);}' />
+						</p>
+						<p id="baleBtn">
+							<span>&nbsp;</span>
+							<!-- <input type="submit" name="finish" id="finish" value="完成扫描" class="button" onclick="$('#baleno').removeAttr('readonly');$('#baleno').val('');"/> -->
 							<input type="button" name="fengbao" id="fengbao" value="封包" class="button"
 								onclick="fengbao()" /> <input type="button" name="chuku" id="chuku" value="出库"
 								class="button" onclick="chuku()" />
-					</p>
-				</div>
-				<c:if test="${isOpenDialog=='open'}">
-					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:200px;">
-				 		<div class="saomiao_right2">
-								<p id="msg1" name="msg1" ></p>
+						</p>
+					</div>
+					<c:if test="${isOpenDialog=='open'}">
+						<div id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"
+							style="width: 400px; height: 200px;">
+							<div class="saomiao_right2">
+								<p id="msg1" name="msg1"></p>
 								<p id="showcwb" name="showcwb"></p>
 								<p id="excelbranch" name="excelbranch" ></p>
 								<p id="cwbDetailshow" name="cwbDetailshow" ></p>

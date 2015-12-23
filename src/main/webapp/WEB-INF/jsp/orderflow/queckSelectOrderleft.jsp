@@ -7,7 +7,9 @@
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
 <%@page import="cn.explink.domain.orderflow.*"%>
 <%@page import="cn.explink.domain.*"%>
+<%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML>
@@ -150,6 +152,14 @@ function goForm(cwb){
 									<tr>
 										<td bgcolor="#EBFFD7"><b>应退金额：</b><%=view.getPaybackfee()%></td>
 										<td bgcolor="#EBFFD7"><b>供货商发货仓库：</b><%=view.getCustomerwarehouseid()%></td>
+									</tr>
+										<tr>
+										<% if(cwborder.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()){ %>
+											<td bgcolor="#EBFFD7"><b>应收运费：</b><%=cwborder.getTotalfee()%></td>
+										<%}else{ %>
+											<td bgcolor="#EBFFD7"><b>应收运费：</b><%=cwborder.getShouldfare()%></td>
+										<%} %>
+										<td bgcolor="#EBFFD7"><b>小件员：</b><%=StringUtil.nullConvertToEmptyString(deliveryname.getRealname()==null?view.getExceldeliver():deliveryname.getRealname())%></td>
 									</tr>
 										<tr>
 										<td bgcolor="#EBFFD7"><b>应收运费：</b><%=cwborder.getShouldfare()%></td>

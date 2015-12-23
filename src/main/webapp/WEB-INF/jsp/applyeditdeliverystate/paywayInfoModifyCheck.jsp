@@ -214,6 +214,7 @@ function reserData(){
 												<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue() %>"><%=CwbOrderTypeIdEnum.Peisong.getText() %></option>
 												<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmentui.getText() %></option>
 												<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText() %></option>
+												<option value ="<%=CwbOrderTypeIdEnum.Express.getValue() %>"><%=CwbOrderTypeIdEnum.Express.getText() %></option>
 											</select>
 										</td>
 										<td>
@@ -273,19 +274,20 @@ function reserData(){
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 							<tbody>
 								<tr class="font_1" height="30" >
-									<td  align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">取消</a></td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">申请类型</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单支付方式</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单当前状态</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">申请人</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">申请时间</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
-									<td  align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
+									<td width="40" align="center" valign="middle" bgcolor="#E7F4E3"><a href="#" onclick="btnClick();" id="selectbtn">取消</a></td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单号</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户名称</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请类型</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单金额</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">运费金额</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单支付方式</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前状态</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单当前机构</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请人</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">申请时间</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核人</td>
+									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">审核时间</td>
 								</tr>
 								
 								<%if(zhifulist!=null){
@@ -295,18 +297,19 @@ function reserData(){
 										<td  align="center" valign="middle">
 											<input type="checkbox"  name="checkbox" id="checkbox" checked="checked" value="<%=zav.getOpscwbid()%>"/>
 										</td>
-										<td  align="center" valign="middle" ><%=zav.getCwb() %></td>
-										<td  align="center" valign="middle" ><%=zav.getCustomername()%></td>
-										<td  align="center" valign="middle" ><%=zav.getApplytype() %></td>
-										<td  align="center" valign="middle" ><%=zav.getOldnewCwbordertypename() %></td>
-										<td  align="center" valign="middle" ><%=zav.getOldnewReceivablefee() %></td>
-										<td  align="center" valign="middle" ><%=zav.getOldnewPaytype() %></td>
-										<td  align="center" valign="middle" ><%=zav.getNowState() %></td>
-										<td  align="center" valign="middle" ><%=zav.getBranchname()%></td>
-										<td  align="center" valign="middle" ><%=zav.getApplyuser() %></td>
-										<td  align="center" valign="middle" ><%=zav.getApplytime() %></td>
-										<td  align="center" valign="middle" ><%=zav.getAuditor() %></td>
-										<td  align="center" valign="middle" ><%=zav.getAudittime() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getCwb() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getCustomername()%></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getApplytype() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewCwbordertypename() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewReceivablefee() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getShouldfare() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getOldnewPaytype() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getNowState() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getBranchname()%></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getApplyuser() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getApplytime() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getAuditor() %></td>
+										<td width="100" align="center" valign="middle" ><%=zav.getAudittime() %></td>
 									</tr>
 									<input type="hidden" id="ishandle<%=zav.getOpscwbid() %>" value="<%=zav.getNowapplystate()%>"/>
 								<%} }%>

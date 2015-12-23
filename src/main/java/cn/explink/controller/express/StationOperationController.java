@@ -3,14 +3,14 @@
  */
 package cn.explink.controller.express;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,31 +20,62 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cn.explink.controller.ExplinkResponse;
+import cn.explink.core.utils.StringUtils;
+import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.express.CityDAO;
+import cn.explink.dao.express.ExpressOrderDao;
 import cn.explink.dao.express.PreOrderDao;
-import cn.explink.domain.Customer;
-import cn.explink.domain.CwbDetailView;
+import cn.explink.dao.express.ProvinceDAO;
+import cn.explink.domain.Bale;
+import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Role;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.express.AdressVO;
+import cn.explink.domain.VO.express.CombineQueryView;
+import cn.explink.domain.VO.express.DeliverSummaryItem;
+import cn.explink.domain.VO.express.DeliverSummaryView;
+import cn.explink.domain.VO.express.ExpressOpeAjaxResult;
+import cn.explink.domain.VO.express.ExpressOrderQueryResult;
+import cn.explink.domain.express.CwbOrderForCombine;
 import cn.explink.domain.express.ExpressPreOrder;
+import cn.explink.domain.express.ExpressWeigh;
 import cn.explink.enumutil.express.DistributeConditionEnum;
 import cn.explink.enumutil.express.ExcuteStateEnum;
+import cn.explink.enumutil.express.ExpressCombineTypeEnum;
+import cn.explink.service.CwbOrderService;
+import cn.explink.service.express.ExpressOutStationService;
+import cn.explink.service.express.ExpressWeighService;
+import cn.explink.service.express.StationOperationService;
+import cn.explink.util.ExportUtil4Express;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 /**
- * 揽件分配/调整
+ * 站点操作
  *
  * @author songkaojun 2015年7月30日
  */
 @RequestMapping("/stationOperation")
 @Controller
 public class StationOperationController extends ExpressCommonController {
+
+	private static final String COMMA_SEPARATOR = ",";
+
+	/**
+	 * 库房合包菜单ID
+	 */
+	private static final Long WAREHOUSE_COMBINE_MENU_ID = Long.valueOf(501002);
+
+	/**
+	 * 快递揽件合包菜单ID
+	 */
+	private static final Long STATION_COMBINE_MENU_ID = Long.valueOf(504091);
+
 	@Autowired
 	private UserDAO userDAO;
 
@@ -60,6 +91,30 @@ public class StationOperationController extends ExpressCommonController {
 	@Autowired
 	private ExportmouldDAO exportmouldDAO;
 
+	@Autowired
+	private CwbOrderService cwborderService;
+
+	@Autowired
+	private ExpressOrderDao expressOrderDao;
+
+	@Autowired
+	private StationOperationService stationOperationService;
+
+	@Autowired
+	private ProvinceDAO provinceDAO;
+
+	@Autowired
+	private CityDAO cityDAO;
+
+	@Autowired
+	private BranchDAO branchDAO;
+
+	@Autowired
+	private ExpressOutStationService expressOutStationService;
+
+	@Autowired
+	private ExpressWeighService expressWeighService;
+
 	/**
 	 * 进入揽件分配/调整的功能页面
 	 *
@@ -69,19 +124,34 @@ public class StationOperationController extends ExpressCommonController {
 	 * @return
 	 */
 	@RequestMapping("/takeExpressAssign/{page}")
-	public String branchdeliverdetail(@PathVariable("page") long page, Model model) {
-		this.initViewByPage(page, model);
+	public String branchdeliverdetail(@PathVariable("page") long page, Model model, @RequestParam(value = "distributeCondition", required = false) Integer distributeCondition,
+			@RequestParam(value = "deliverid", required = false) Long deliverid, @RequestParam(value = "returnResult", required = false) Integer returnResult) {
+		this.initAssignViewByPage(page, model, distributeCondition, deliverid, returnResult);
 		return "express/stationOperation/takeExpressAssign";
 	}
 
-	private void initViewByPage(long page, Model model) {
+	private void initAssignViewByPage(long page, Model model, Integer distributeCondition, Long deliverid, Integer returnResult) {
 		List<User> deliverList = this.getDeliverList();
 		List<DistributeConditionEnum> distributeConditionList = DistributeConditionEnum.getAllStatus();
-		List<ExpressPreOrder> preOrderList = this.preOrderDao.getPreOrderByExcuteStateAndDelivermanId(page, null, -1);
+		List<ExcuteStateEnum> returnResultList = ExcuteStateEnum.getReturnResultList();
+
+		List<Integer> executeStateList = this.getExecuteStateByDistributeCondition(distributeCondition, returnResult);
+
+		List<ExpressPreOrder> preOrderList = this.preOrderDao.getPreOrderByConditions(page, executeStateList, deliverid, this.isAdmin(), this.getCurrentBranchid());
+		if (distributeCondition == null) {
+			distributeCondition = 1;
+		}
+		// add by wangzhiyu 添加：分配情况为已分配揽件员时，查询条件增加一个反馈结果下拉框
+		model.addAttribute("returnResult", returnResult);
+		model.addAttribute("returnResultList", returnResultList);
+
 		model.addAttribute("deliverList", deliverList);
+		model.addAttribute("selectedDistributeCondition", distributeCondition);
+		model.addAttribute("selectedDeliverid", deliverid);
 		model.addAttribute("distributeConditionList", distributeConditionList);
 		model.addAttribute("preOrderList", preOrderList);
-		model.addAttribute("page_obj", new Page(this.preOrderDao.getPreOrderCountByExcuteStateAndDelivermanId(page, null, -1), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj",
+				new Page(this.preOrderDao.getPreOrderCountByConditions(page, executeStateList, deliverid, this.isAdmin(), this.getCurrentBranchid()), page, Page.ONE_PAGE_NUMBER));
 	}
 
 	/**
@@ -112,17 +182,16 @@ public class StationOperationController extends ExpressCommonController {
 	public Boolean doAssign(Model model, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders,
 			@RequestParam(value = "deliverid", required = false) Integer deliverid) {
 		List<Integer> preOrderIdList = this.convertToIdList(selectedPreOrders);
-		User deliverman = this.userDAO.getUserByUserid(deliverid);
 		User operateUser = this.getSessionUser();
 
-		this.initViewByPage(1, model);
+		this.initAssignViewByPage(1, model, null, null, null);
 
-		return this.preOrderDao.updateDeliverByIdList(preOrderIdList, deliverid, deliverman.getRealname(), operateUser.getUserid(), operateUser.getRealname());
+		return this.stationOperationService.assignDeliver(preOrderIdList, deliverid, this.getCurrentBranchid(), operateUser);
 	}
 
 	private List<Integer> convertToIdList(String selectedPreOrders) {
 		List<Integer> preOrderIdList = new ArrayList<Integer>();
-		String[] selectedPreOrderArr = StringUtil.splitString(selectedPreOrders, ",");
+		String[] selectedPreOrderArr = StringUtil.splitString(selectedPreOrders, StationOperationController.COMMA_SEPARATOR);
 		for (String selectedPreOrder : selectedPreOrderArr) {
 			preOrderIdList.add(Integer.parseInt(selectedPreOrder));
 		}
@@ -157,134 +226,45 @@ public class StationOperationController extends ExpressCommonController {
 			@RequestParam(value = "note", required = false) String note) {
 		List<Integer> preOrderIdList = this.convertToIdList(selectedPreOrders);
 
-		this.initViewByPage(1, model);
-		return this.preOrderDao.updateExcuteStateByIdList(preOrderIdList, ExcuteStateEnum.StationSuperzone.getValue(), note);
+		User operateUser = this.getSessionUser();
+		this.initAssignViewByPage(1, model, null, null, null);
+		return this.stationOperationService.superzone(preOrderIdList, note, this.getCurrentBranchid(), operateUser);
 	}
 
-	/**
-	 * 查询
-	 *
-	 * @param model
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping("/search")
-	public String search(Model model, HttpServletRequest request, @RequestParam(value = "distributeCondition", required = false) Integer distributeCondition,
-			@RequestParam(value = "deliverid", required = false) Integer deliverid) {
-		// List<ExpressPreOrder> preOrderList =
-		// this.preOrderDao.getPreOrderByExcuteStateAndDelivermanId(this.getExecuteStateByDistributeCondition(distributeCondition),
-		// deliverid);
-		//
-		// List<User> deliverList = this.getDeliverList();
-		// List<DistributeConditionEnum> distributeConditionList =
-		// DistributeConditionEnum.getAllStatus();
-		// model.addAttribute("deliverList", deliverList);
-		// model.addAttribute("distributeConditionList",
-		// distributeConditionList);
-		// model.addAttribute("preOrderList", preOrderList);
-
-		return "express/stationOperation/takeExpressAssign";
-	}
-
-	private List<Integer> getExecuteStateByDistributeCondition(Integer distributeCondition) {
+	private List<Integer> getExecuteStateByDistributeCondition(Integer distributeCondition, Integer returnResult) {
 		List<Integer> executeStateList = new ArrayList<Integer>();
-		if (DistributeConditionEnum.NotDistribute.getValue() == distributeCondition) {
-			executeStateList.add(ExcuteStateEnum.NotAllocatedStation.getValue());
+		if (distributeCondition == null) {// 默认为“未分配”
 			executeStateList.add(ExcuteStateEnum.AllocatedStation.getValue());
-		} else if (DistributeConditionEnum.Distributed.getValue() == distributeCondition) {
-			executeStateList.add(ExcuteStateEnum.AllocatedDeliveryman.getValue());
-			executeStateList.add(ExcuteStateEnum.DelayedEmbrace.getValue());
-			executeStateList.add(ExcuteStateEnum.fail.getValue());
-			executeStateList.add(ExcuteStateEnum.StationSuperzone.getValue());
-			executeStateList.add(ExcuteStateEnum.EmbraceSuperzone.getValue());
-			executeStateList.add(ExcuteStateEnum.Succeed.getValue());
+		} else if (DistributeConditionEnum.NotDistribute.getValue() == distributeCondition) {
+			executeStateList.add(ExcuteStateEnum.AllocatedStation.getValue());
+		} else if (DistributeConditionEnum.AleryDistributed.getValue() == distributeCondition) {
+			if (returnResult == null) {
+				executeStateList.add(ExcuteStateEnum.AllocatedDeliveryman.getValue());
+			} else if (ExcuteStateEnum.DelayedEmbrace.getValue() == returnResult) {
+				executeStateList.add(ExcuteStateEnum.DelayedEmbrace.getValue());
+			} else if (ExcuteStateEnum.EmbraceSuperzone.getValue() == returnResult) {
+				executeStateList.add(ExcuteStateEnum.EmbraceSuperzone.getValue());
+			} else {
+				executeStateList.add(ExcuteStateEnum.AllocatedDeliveryman.getValue());
+			}
 		}
 		return executeStateList;
 	}
 
-	@RequestMapping("/exportExcel")
-	public void exportExcel(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders) {
-
-		// String[] cloumnName1 = {}; // 导出的列名
-		// String[] cloumnName2 = {}; // 导出的英文列名
-		// String[] cloumnName3 = {}; // 导出的数据类型
-		//
-		// List<SetExportField> listSetExportField =
-		// this.exportmouldDAO.getSetExportFieldByStrs("0");
-		// cloumnName1 = new String[listSetExportField.size()];
-		// cloumnName2 = new String[listSetExportField.size()];
-		// cloumnName3 = new String[listSetExportField.size()];
-		// for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
-		// cloumnName1[k] = listSetExportField.get(j).getFieldname();
-		// cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
-		// cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
-		// }
-		// final String[] cloumnName4 = cloumnName1;
-		// final String[] cloumnName5 = cloumnName2;
-		// final String[] cloumnName6 = cloumnName3;
-		// String sheetName = "预订单信息"; // sheet的名称
-		// SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		// String fileName = "PreOrder_" + df.format(new Date()) + ".xlsx"; //
-		// 文件名
-		// ExcelUtils excelUtil = new ExcelUtils() {
-		// @Override
-		// public void fillData(Sheet sheet, CellStyle style) {
-		//
-		// }
-		// };
-		// try {
-		// excelUtil.excel(response, cloumnName4, sheetName, fileName);
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-
-	}
-
 	/**
-	 * 进入批量操作
+	 * 分配后导出
 	 *
 	 * @param model
-	 * @param request
 	 * @param response
-	 * @param cwbs
-	 * @param deliverid
-	 * @return
+	 * @param request
+	 * @param selectedPreOrders
 	 */
-	@RequestMapping("/takeExpressAssignBatch")
-	public String takeExpressAssignBatch(Model model, HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(value = "preOrderNos", required = false, defaultValue = "") String preOrderNos, @RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
-		List<User> deliverList = this.getDeliverList();
+	@RequestMapping("/exportExcel")
+	@ResponseBody
+	public void exportExcel(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "selectedPreOrders", required = false) String selectedPreOrders) {
+		List<ExpressPreOrder> preOrderList = this.preOrderDao.getPreOrderByPreOrderId(this.convertToIdList(selectedPreOrders));
+		ExportUtil4Express.exportXls(request, response, preOrderList, ExpressPreOrder.class, "预订单信息");
 
-		model.addAttribute("deliverList", deliverList);
-
-		User deliveryUser = this.userDAO.getUserByUserid(deliverid);// 获取小件员
-		List<Customer> cList = new ArrayList<Customer>();
-		long allnum = 0;
-
-		long linghuoSuccessCount = 0;
-
-		List<JSONObject> objList = new ArrayList<JSONObject>();
-		model.addAttribute("objList", objList);
-		model.addAttribute("customerlist", cList);
-
-		// TODO 今日待揽收
-		List<CwbOrder> todayToTakeList = new ArrayList<CwbOrder>();
-		List<CwbOrder> historyweilinghuolist = new ArrayList<CwbOrder>();// 历史待领货list
-		List<CwbDetailView> historylistCwbOrders = new ArrayList<CwbDetailView>();
-
-		model.addAttribute("todayToTakeList", todayToTakeList);
-		model.addAttribute("historyweilinghuolist", historylistCwbOrders);
-		model.addAttribute("todayweilinghuocount", todayToTakeList.size());
-		model.addAttribute("historyweilinghuocount", historyweilinghuolist.size());
-		model.addAttribute("yilinghuo", null);
-		model.addAttribute("yilinghuolist", null);
-		String msg = "";
-		if (preOrderNos.length() > 0) {
-			msg = "成功扫描" + linghuoSuccessCount + "单，异常" + (allnum - linghuoSuccessCount) + "单";
-		}
-		model.addAttribute("msg", msg);
-
-		return "express/stationOperation/takeExpressAssignBatch";
 	}
 
 	/**
@@ -300,271 +280,364 @@ public class StationOperationController extends ExpressCommonController {
 				roleids += "," + r.getRoleid();
 			}
 		}
-		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
+		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, this.getCurrentBranchid());
 		return uList;
 	}
 
 	/**
-	 * 获取快递数量
+	 * 进入揽件合包的功能页面
 	 *
+	 * @param model
 	 * @param deliverid
+	 * @param customerid
 	 * @return
 	 */
-	@RequestMapping("/getExpressCount")
-	public @ResponseBody JSONObject getExpressCount(@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
-		JSONObject obj = new JSONObject();
-		obj.put("todayToTakeCount", 23);
-		obj.put("todayTakedCount", 9);
-		return obj;
+	@RequestMapping("/takeExpressCombine/{page}")
+	public String takeExpressCombine(@PathVariable("page") long page, Model model, @RequestParam(value = "packageNo", required = false) String packageNo,
+			@RequestParam(value = "nextBranch", required = false) Long nextBranch, @RequestParam(value = "province", required = false) Integer provinceId,
+			@RequestParam(value = "cities", required = false) String citiesStr, @RequestParam(value = "waybillNo", required = false) String waybillNo,
+			@RequestParam(value = "waybillNos", required = false) String waybillNos, @RequestParam(value = "waybillTotalCount", required = false) Integer waybillTotalCount,
+			@RequestParam(value = "itemTotalCount", required = false) Long itemTotalCount, @RequestParam(value = "addWaybill", required = false) String addWaybill) {
+		this.initCombineView(page, model, provinceId, citiesStr, waybillNos);
+		CwbOrder expressOrder = this.stationOperationService.getExpressOrderByWaybillNo(waybillNo, this.getCurrentBranchid(), this.getCombineType());
+		model.addAttribute("nextBranch", nextBranch);
+		model.addAttribute("provinceId", provinceId);
+		model.addAttribute("selectedCities", citiesStr);
+		model.addAttribute("waybillNos", waybillNos);
+		model.addAttribute("packageNo", packageNo);
+		model.addAttribute("page", page);
+		if ((addWaybill != null) && addWaybill.equals("true")) {
+			if (waybillTotalCount == null) {
+				model.addAttribute("waybillTotalCount", 0);
+			} else {
+				model.addAttribute("waybillTotalCount", ++waybillTotalCount);
+			}
+			if (itemTotalCount == null) {
+				model.addAttribute("itemTotalCount", 0L);
+			} else {
+				model.addAttribute("itemTotalCount", itemTotalCount + (expressOrder == null ? 0 : expressOrder.getSendcarnum()));
+			}
+		} else {
+			model.addAttribute("waybillTotalCount", waybillTotalCount);
+			model.addAttribute("itemTotalCount", itemTotalCount);
+		}
+
+		return "express/stationOperation/takeExpressCombine";
+	}
+
+	private List<ExpressCombineTypeEnum> getCombineType() {
+		List<ExpressCombineTypeEnum> combineTypeEnumList = new ArrayList<ExpressCombineTypeEnum>();
+		Set<Long> menuIdSet = new HashSet<Long>(this.roleDAO.getRoleAndMenuByRoleid(this.getSessionUser().getRoleid()));
+		if (menuIdSet.contains(StationOperationController.WAREHOUSE_COMBINE_MENU_ID)) {
+			combineTypeEnumList.add(ExpressCombineTypeEnum.WAREHOUSE_COMBINE);
+		}
+		if (menuIdSet.contains(StationOperationController.STATION_COMBINE_MENU_ID)) {
+			combineTypeEnumList.add(ExpressCombineTypeEnum.STATION_COMBINE);
+		}
+		return combineTypeEnumList;
+	}
+
+	private void initCombineView(long page, Model model, Integer provinceId, String citiesStr, String excludeWaybillNos) {
+		// 下一站（下一站至可以选择机构类型为“库房”，并且为正向流程的）
+		// modified by songkaojun 2015-10-21 考虑二级站点
+		// modified by songkaojun 2015-10-29 去掉“库房”限制条件
+		List<Branch> nextBranchList = this.expressOutStationService.getNextBranchList4Combine(this.getCurrentBranchid(), this.getSessionUser());
+
+		List<String> excludeWaybillNoList = this.splitStrByComma(excludeWaybillNos);
+
+		List<Integer> cityIdList = this.convertToCityIdList(citiesStr);
+
+		List<CwbOrderForCombine> expressOrderList = this.stationOperationService.getExpressOrderByPage(page, provinceId, cityIdList, excludeWaybillNoList, this.getCurrentBranchid(),
+				this.getCombineType());
+
+		List<AdressVO> provinceList = this.provinceDAO.getProvince();
+		if (provinceId != null) {
+			List<AdressVO> cityOfProvinceList = this.cityDAO.getCityOfProvince(provinceId);
+			model.addAttribute("cityList", cityOfProvinceList);
+		} else {
+			model.addAttribute("cityList", new ArrayList<AdressVO>());
+		}
+		model.addAttribute("provinceList", provinceList);
+		model.addAttribute("nextBranchList", nextBranchList);
+		model.addAttribute("expressOrderList", expressOrderList);
+		model.addAttribute("page_obj", new Page(this.expressOrderDao.getExpressOrderCount(page, provinceId, cityIdList, excludeWaybillNoList, this.getCurrentBranchid(), this.getCombineType()), page,
+				Page.ONE_PAGE_NUMBER));
+	}
+
+	private List<Integer> convertToCityIdList(String citiesStr) {
+		List<Integer> cityIdList = new ArrayList<Integer>();
+		if ((citiesStr == null) || citiesStr.equals("null")) {
+			citiesStr = "";
+		}
+		List<String> cityIdStrList = this.splitStrByComma(citiesStr);
+		for (String cityIdStr : cityIdStrList) {
+			cityIdList.add(Integer.parseInt(cityIdStr));
+		}
+		return cityIdList;
+	}
+
+	@RequestMapping("/getExpressOrderByWaybillNo")
+	@ResponseBody
+	public ExpressOrderQueryResult getExpressOrderByWaybillNo(Model model, HttpServletRequest request, @RequestParam(value = "waybillNo", required = false) String waybillNo) {
+		ExpressOrderQueryResult result = new ExpressOrderQueryResult();
+		boolean expressOrderExist = this.expressOrderDao.isExpressOrderExist(waybillNo, this.getCurrentBranchid());
+		result.setExpressOrderExist(expressOrderExist);
+		if (expressOrderExist) {
+			CwbOrder order = this.stationOperationService.getExpressOrderByWaybillNo(waybillNo, this.getCurrentBranchid(), this.getCombineType());
+			if (order == null) {
+				result.setInPackage(true);
+			} else {
+				result.setInPackage(false);
+				result.setCwbOrder(order);
+			}
+		}
+		return result;
 	}
 
 	/**
-	 * 分配/调整
+	 * 打开移除对话框
 	 *
 	 * @param model
 	 * @param request
+	 * @param waybillNos
+	 * @return
+	 */
+	@RequestMapping("/openRemoveDlg")
+	public String openRemoveDlg(Model model, HttpServletRequest request, @RequestParam(value = "packageNo", required = false) String packageNo,
+			@RequestParam(value = "nextBranch", required = false) Long nextBranch, @RequestParam(value = "provinceId", required = false) Integer provinceId,
+			@RequestParam(value = "cities", required = false) String selectedCities, @RequestParam(value = "waybillNos", required = false) String waybillNos,
+			@RequestParam(value = "waybillTotalCount", required = false) Integer waybillTotalCount, @RequestParam(value = "itemTotalCount", required = false) Long itemTotalCount) {
+		List<String> waybillNoList = new ArrayList<String>(new HashSet<String>(this.splitStrByComma(waybillNos)));
+		List<CwbOrderForCombine> selectedCwbOrderList = this.stationOperationService.getExpressOrderListByWaybillNoList(waybillNoList, this.getCurrentBranchid(), this.getCombineType());
+		model.addAttribute("packageNo", packageNo);
+		model.addAttribute("nextBranch", nextBranch);
+		model.addAttribute("provinceId", provinceId);
+		model.addAttribute("selectedCities", selectedCities);
+		model.addAttribute("waybillNos", waybillNos);
+		model.addAttribute("waybillTotalCount", waybillTotalCount);
+		model.addAttribute("itemTotalCount", itemTotalCount);
+		model.addAttribute("selectedCwbOrderList", selectedCwbOrderList);
+		return "express/stationOperation/removeWaybillNoDlg";
+	}
+
+	@RequestMapping("/doRemove")
+	public String doRemove(Model model, HttpServletRequest request, @RequestParam(value = "packageNo", required = false) String packageNo,
+			@RequestParam(value = "nextBranch", required = false) Long nextBranch, @RequestParam(value = "provinceId", required = false) Integer provinceId,
+			@RequestParam(value = "selectedCities", required = false) String selectedCities, @RequestParam(value = "leftWaybillNos", required = false) String leftWaybillNos,
+			@RequestParam(value = "waybillTotalCount", required = false) Integer waybillTotalCount, @RequestParam(value = "itemTotalCount", required = false) Long itemTotalCount) {
+		this.initCombineView(1, model, provinceId, "", leftWaybillNos);
+		model.addAttribute("packageNo", packageNo);
+		model.addAttribute("nextBranch", nextBranch);
+		model.addAttribute("provinceId", provinceId);
+		model.addAttribute("selectedCities", selectedCities);
+		model.addAttribute("waybillNos", leftWaybillNos);
+		model.addAttribute("waybillTotalCount", waybillTotalCount);
+		model.addAttribute("itemTotalCount", itemTotalCount);
+		return "express/stationOperation/takeExpressCombine";
+	}
+
+	/**
+	 * 合包
+	 *
+	 * @param model
+	 * @param request
+	 * @param packageNo
+	 * @param waybillNos
+	 * @return
+	 */
+	@RequestMapping("/combine")
+	public String combine(Model model, HttpServletRequest request, @RequestParam(value = "packageNo", required = false) String packageNo,
+			@RequestParam(value = "hiddenWaybillNos", required = false) String waybillNos, @RequestParam(value = "nextBranch", required = false) Long nextBranch,
+			@RequestParam(value = "province", required = false) Integer provinceId, @RequestParam(value = "cities", required = false) String selectedCities,
+			@RequestParam(value = "page", required = false) Long page) {
+		List<String> waybillNoList = new ArrayList<String>(new HashSet<String>(this.splitStrByComma(waybillNos)));
+		this.initCombineView(page, model, provinceId, "", waybillNos);
+
+		Bale bale = new Bale();
+		bale.setBaleno(packageNo);
+		// TODO
+		// bale.setBalestate(BaleStateEnum);
+		bale.setBranchid(this.getCurrentBranchid());
+		bale.setNextbranchid(nextBranch);
+		bale.setCwbcount(waybillNoList.size());
+		bale.setHandlerid((int) this.getSessionUser().getUserid());
+		bale.setHandlername(this.getSessionUser().getRealname());
+
+		this.stationOperationService.combinePackage(waybillNoList, this.getCurrentBranchCode(), bale);
+
+		model.addAttribute("packageNo", "");
+		model.addAttribute("nextBranch", nextBranch);
+		model.addAttribute("provinceId", provinceId);
+		model.addAttribute("selectedCities", selectedCities);
+		model.addAttribute("waybillNos", null);
+		model.addAttribute("page", page);
+
+		return "express/stationOperation/takeExpressCombine";
+	}
+
+	/**
+	 * 获取当前机构编码
+	 */
+	private String getCurrentBranchCode() {
+		long branchid = this.getCurrentBranchid();
+		return this.branchDAO.getBranchByBranchid(branchid).getBranchcode();
+	}
+
+	/**
+	 * 获取当前机构名称
+	 *
+	 * @return
+	 */
+	private String getCurrentBranchName() {
+		long branchid = this.getCurrentBranchid();
+		return this.branchDAO.getBranchByBranchid(branchid).getBranchname();
+	}
+
+	private long getCurrentBranchid() {
+		return this.getSessionUser().getBranchid();
+	}
+
+	private List<String> splitStrByComma(String toSplitStr) {
+		List<String> splittedResultList = new ArrayList<String>();
+		if (StringUtils.isEmpty(toSplitStr)) {
+			return splittedResultList;
+		}
+		String[] strArray = StringUtil.splitString(toSplitStr, StationOperationController.COMMA_SEPARATOR);
+		for (String str : strArray) {
+			if (!StringUtils.isEmpty(str)) {
+				splittedResultList.add(str);
+			}
+		}
+		return splittedResultList;
+	}
+
+	/**
+	 * 进入小件员交件汇总单页面
+	 *
+	 * @param page
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/deliverSummary/{page}")
+	public String deliverSummary(@PathVariable("page") long page, Model model, @RequestParam(value = "beginDate", required = false) String beginDate,
+			@RequestParam(value = "endDate", required = false) String endDate) {
+		DeliverSummaryView deliverSummaryView = null;
+		if (StringUtils.isEmpty(beginDate) && StringUtils.isEmpty(endDate)) {
+			model.addAttribute("deliverSummaryView", deliverSummaryView);
+			return "express/stationOperation/deliverSummary";
+		}
+		deliverSummaryView = this.stationOperationService.getDeliverSummary(beginDate, endDate, this.getCurrentBranchid());
+		model.addAttribute("deliverSummaryView", deliverSummaryView);
+
+		model.addAttribute("beginDate", beginDate);
+		model.addAttribute("endDate", endDate);
+
+		return "express/stationOperation/deliverSummary";
+	}
+
+	@RequestMapping("/getSummary")
+	public String getSummary(Model model, HttpServletRequest request, @RequestParam(value = "beginDate", required = false) String beginDate,
+			@RequestParam(value = "endDate", required = false) String endDate) {
+		DeliverSummaryView deliverSummaryView = this.stationOperationService.getDeliverSummary(beginDate, endDate, this.getCurrentBranchid());
+		model.addAttribute("deliverSummaryView", deliverSummaryView);
+
+		return "express/stationOperation/deliverSummary";
+	}
+
+	@RequestMapping("/exportSummary")
+	@ResponseBody
+	public void exportSummary(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "beginDate", required = false) String beginDate,
+			@RequestParam(value = "endDate", required = false) String endDate) {
+		DeliverSummaryView deliverSummaryView = this.stationOperationService.getDeliverSummary(beginDate, endDate, this.getCurrentBranchid());
+
+		List<DeliverSummaryItem> headList = new ArrayList<DeliverSummaryItem>();
+		headList.add(deliverSummaryView.getHeadSummary());
+
+		this.stationOperationService.exportSummaryXls(request, response, headList, deliverSummaryView.getBodySummaryList(), DeliverSummaryItem.class, "小件员交件汇总单");
+	}
+
+	/**
+	 * 校验包号是否已经被使用
+	 *
 	 * @param response
-	 * @param preOrderNo
-	 * @param deliverid
+	 * @param request
+	 * @param packageNo
 	 * @return
-	 * @throws ParseException
 	 */
-	@RequestMapping("/assign/{preOrderNo}")
-	public @ResponseBody ExplinkResponse assign(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("preOrderNo") String preOrderNo,
-			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid) throws ParseException {
-		// String scancwb = cwb;
-		// cwb = this.cwborderService.translateCwb(cwb);
-		// JSONObject obj = new JSONObject();
-		// // 判断当前流程是否为今日，供上门退订单分派使用.(包括重复扫描)
-		// this.addSmtDeliverPickingExtraMsg(obj, cwb);
-		//
-		// User deliveryUser = this.userDAO.getUserByUserid(deliverid);
-		// CwbOrder cwbOrder =
-		// this.cwborderService.receiveGoods(this.getSessionUser(),
-		// deliveryUser, cwb, scancwb);
-		// obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
-		//
-		// if (cwbOrder.getDeliverid() != 0) {
-		// User user = this.userDAO.getUserByUserid(cwbOrder.getDeliverid());
-		//
-		// obj.put("cwbdelivername", user.getRealname());
-		// obj.put("cwbdelivernamewav", request.getContextPath() +
-		// ServiceUtil.wavPath + (user.getUserwavfile() == null ? "" :
-		// user.getUserwavfile()));
-		//
-		// } else {
-		// obj.put("cwbdelivername", "");
-		// obj.put("cwbdelivernamewav", "");
-		// }
-		// //
-		// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
-		// String jyp =
-		// this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
-		// List<JsonContext> list = PDAController.test("[" + jyp + "]",
-		// JsonContext.class);// 把json转换成list
-		// String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
-		// String[] showcustomer = list.get(0).getCustomerid().split(",");
-		// for (String s : showcustomer) {
-		// if (s.equals(cwbcustomerid)) {
-		// CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
-		// Object a;
-		// try {
-		// a = order.getClass().getMethod("get" +
-		// list.get(0).getRemark()).invoke(order);
-		// obj.put("showRemark", a);
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// obj.put("showRemark", "Erro");
-		// }
-		// }
-		// }
-		//
-		// ExplinkResponse explinkResponse = new ExplinkResponse("000000", "",
-		// obj);
-		// // 加入货物类型声音.
-		// this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
-		// String wavPath = null;
-		// if
-		// (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode()))
-		// {
-		// wavPath = request.getContextPath() + ServiceUtil.waverrorPath +
-		// CwbOrderPDAEnum.OK.getVediourl();
-		// } else {
-		// wavPath = request.getContextPath() + ServiceUtil.waverrorPath +
-		// CwbOrderPDAEnum.SYS_ERROR.getVediourl();
-		// }
-		// explinkResponse.addLastWav(wavPath);
-		//
-		// return explinkResponse;
-		return new ExplinkResponse();
+	@RequestMapping("/validatePackageCodeUsed")
+	@ResponseBody
+	public ExpressOpeAjaxResult checkPackageCodeIsUsed(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "packageNo", required = false) String packageNo) {
+		ExpressOpeAjaxResult result = new ExpressOpeAjaxResult();
+		result = this.stationOperationService.checkPackageNoIsUsed(packageNo);
+		return result;
+	}
+
+	@RequestMapping("/checkPackageNoUnique")
+	@ResponseBody
+	public Boolean checkPackageNoUnique(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "packageNo", required = false) String packageNo) {
+		return this.stationOperationService.checkPackageNoUnique(packageNo);
 	}
 
 	/**
-	 * 今日待揽收
+	 * 进入合包查询页面
 	 *
 	 * @param page
-	 * @param deliverid
-	 * @param showCustomerSign
-	 * @param customerlist
+	 * @param model
 	 * @return
 	 */
-	@RequestMapping("/getMoreTodayToTakeList")
-	public @ResponseBody List<CwbDetailView> getMoreTodayToTakeList(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "deliverid", defaultValue = "0") long deliverid) {
-		// List<Branch> branchList = this.branchDAO.getAllBranches();
-		// // 今日到货订单数
-		// // List<String> todaydaohuocwbs =
-		// //
-		// orderFlowDAO.getOrderFlowLingHuoList(getSessionUser().getBranchid(),
-		// //
-		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-		// // DateTimeUtil.getCurrentDayZeroTime(), "");
-		// List<String> todaydaohuocwbs =
-		// this.operationTimeDAO.getOrderFlowLingHuoList(this.getSessionUser().getBranchid(),
-		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
-		// + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-		// DateTimeUtil.getCurrentDayZeroTime());
-		//
-		// // 今日滞留订单数
-		// // List<String> todayzhiliucwbs =
-		// //
-		// orderFlowDAO.getOrderFlowLingHuoList(getSessionUser().getBranchid(),
-		// // FlowOrderTypeEnum.YiShenHe.getValue()+"",
-		// // DateTimeUtil.getCurrentDayZeroTime(), "");
-		// List<String> todayzhiliucwbs =
-		// this.operationTimeDAO.getjinrizhiliu(this.getSessionUser().getBranchid(),
-		// DeliveryStateEnum.FenZhanZhiLiu.getValue(),
-		// FlowOrderTypeEnum.YiShenHe.getValue(),
-		// DateTimeUtil.getCurrentDayZeroTime());
-		// // 今日到货订单
-		// List<CwbOrder> todaydaohuolist = new ArrayList<CwbOrder>();
-		// if (todaydaohuocwbs.size() > 0) {
-		// todaydaohuolist =
-		// this.cwbDAO.getTodayWeiLingDaohuobyBranchid(this.getSessionUser().getBranchid(),
-		// this.getStrings(todaydaohuocwbs));
-		// }
-		// // 今日滞留订单
-		// List<CwbOrder> todayzhiliulist = new ArrayList<CwbOrder>();
-		// if (todayzhiliucwbs.size() > 0) {
-		// todayzhiliulist =
-		// this.cwbDAO.getTodayWeiLingZhiliuByWhereList(DeliveryStateEnum.FenZhanZhiLiu.getValue(),
-		// this.getSessionUser().getBranchid(),
-		// this.getStrings(todayzhiliucwbs));
-		// }
-		// List<CwbOrder> cList = new ArrayList<CwbOrder>();
-		// cList.addAll(todaydaohuolist);
-		// cList.addAll(todayzhiliulist);
-		// // 系统设置是否显示订单备注
-		// String showCustomer =
-		// this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
-		// JSONArray showCustomerjSONArray = JSONArray.fromObject("[" +
-		// showCustomer + "]");
-		// List<CwbOrder> todaylistCwbOrders = new ArrayList<CwbOrder>();
-		// for (int i = 0; (i < Page.DETAIL_PAGE_NUMBER) && (i < cList.size());
-		// i++) {
-		// todaylistCwbOrders.add(cList.get(i));
-		// }
-		// List<CwbDetailView> todayweilingViewlist =
-		// this.getcwbDetail(todaylistCwbOrders, customerlist,
-		// showCustomerjSONArray, branchList, 2);
-		// return todayweilingViewlist;
+	@RequestMapping("/combineQuery/{page}")
+	public String combineQuery(@PathVariable("page") long page, Model model, @RequestParam(value = "packageNo", required = false) String packageNo) {
+		CombineQueryView combineQueryView = null;
+		if (StringUtils.isEmpty(packageNo)) {
+			model.addAttribute("combineQueryView", combineQueryView);
+			return "express/stationOperation/combineQuery";
+		}
+		combineQueryView = this.stationOperationService.queryCombineInfo(packageNo);
+		model.addAttribute("combineQueryView", combineQueryView);
 
-		return new ArrayList<CwbDetailView>();
+		return "express/stationOperation/combineQuery";
 	}
 
 	/**
-	 * 获取今日已揽收
+	 * 进入电子称称重页面
 	 *
-	 * @param deliverid
-	 * @param page
+	 * @param model
 	 * @return
 	 */
-	@RequestMapping("/getMoreTodayTakedList")
-	public @ResponseBody List<CwbDetailView> getMoreTodayTakedList(@RequestParam(value = "deliverid", defaultValue = "0") long deliverid, @RequestParam(value = "page", defaultValue = "1") long page) {
-		// List<Branch> branchList = this.branchDAO.getAllBranches();
-		// // 今日到货订单数
-		// // List<String> todaydaohuocwbs =
-		// //
-		// orderFlowDAO.getOrderFlowLingHuoList(getSessionUser().getBranchid(),
-		// //
-		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-		// // DateTimeUtil.getCurrentDayZeroTime(), "");
-		// // List<String> todaydaohuocwbs =
-		// //
-		// operationTimeDAO.getOrderFlowLingHuoList(getSessionUser().getBranchid(),
-		// //
-		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-		// // DateTimeUtil.getCurrentDayZeroTime());
-		// // 今日滞留订单数
-		// // List<String> todayzhiliucwbs =
-		// //
-		// orderFlowDAO.getOrderFlowLingHuoList(getSessionUser().getBranchid(),
-		// // FlowOrderTypeEnum.YiShenHe.getValue()+"",
-		// // DateTimeUtil.getCurrentDayZeroTime(), "");
-		// // List<String> todayzhiliucwbs =
-		// // operationTimeDAO.getjinrizhiliu(getSessionUser().getBranchid(),
-		// //
-		// DeliveryStateEnum.FenZhanZhiLiu.getValue(),FlowOrderTypeEnum.YiShenHe.getValue(),
-		// // DateTimeUtil.getCurrentDayZeroTime());
-		//
-		// List<CwbOrder> cList = new ArrayList<CwbOrder>();
-		// List<CwbOrder> historydaohuolist = new ArrayList<CwbOrder>();
-		// // 历史到货订单
-		// // List<CwbOrder> historydaohuolist =
-		// //
-		// cwbDAO.getHistoryyWeiLingDaohuobyBranchid(getSessionUser().getBranchid(),getStrings(todaydaohuocwbs));
-		// List<String> historycwbs =
-		// this.operationTimeDAO.getlishidaohuo(this.getSessionUser().getBranchid(),
-		// FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
-		// + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(),
-		// DateTimeUtil.getCurrentDayZeroTime());
-		//
-		// if (historycwbs.size() > 0) {
-		//
-		// historydaohuolist =
-		// this.cwbDAO.getCwbOrderByFlowordertypeAndCwbs(this.getSessionUser().getBranchid(),
-		// FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","
-		// + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(),
-		// this.getStrings(historycwbs));
-		// }
-		//
-		// List<CwbOrder> historyzhiliulist = new ArrayList<CwbOrder>();//
-		// 历史待领货list
-		// // 历史滞留订单
-		// // List<CwbOrder> historyzhiliulist =
-		// //
-		// cwbDAO.getHistoryWeiLingZhiliuByWhereList(DeliveryStateEnum.FenZhanZhiLiu.getValue(),getSessionUser().getBranchid(),getStrings(todayzhiliucwbs));
-		// List<String> historyzhiliucwbs =
-		// this.operationTimeDAO.getlishizhiliu(this.getSessionUser().getBranchid(),
-		// DeliveryStateEnum.FenZhanZhiLiu.getValue(),
-		// FlowOrderTypeEnum.YiShenHe.getValue(),
-		// DateTimeUtil.getCurrentDayZeroTime());
-		//
-		// if (historyzhiliucwbs.size() > 0) {
-		// historyzhiliulist =
-		// this.cwbDAO.getCwbOrderByDeliverystateAndCwbs(DeliveryStateEnum.FenZhanZhiLiu.getValue(),
-		// this.getStrings(historyzhiliucwbs));
-		// }
-		//
-		// cList.addAll(historydaohuolist);
-		// cList.addAll(historyzhiliulist);
-		// List<CwbOrder> historylistCwbOrders = new ArrayList<CwbOrder>();
-		// for (int i = 0; (i < Page.DETAIL_PAGE_NUMBER) && (i < cList.size());
-		// i++) {
-		// historylistCwbOrders.add(cList.get(i));
-		// }
-		//
-		// // 系统设置是否显示订单备注
-		// String showCustomer =
-		// this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
-		// JSONArray showCustomerjSONArray = JSONArray.fromObject("[" +
-		// showCustomer + "]");
-		// // 已入库明细
-		// List<CwbDetailView> weidaohuoViewlist =
-		// this.getcwbDetail(historylistCwbOrders,
-		// this.customerDAO.getAllCustomers(), showCustomerjSONArray,
-		// branchList, 2);
-		// return weidaohuoViewlist;
-		return new ArrayList<CwbDetailView>();
+	@RequestMapping("/weighByScale")
+	public String weighByScale(Model model) {
+		return "express/stationOperation/weighByScale";
+	}
+
+	@RequestMapping("/isExpressOrderExist")
+	@ResponseBody
+	public boolean isExpressOrderExist(Model model, HttpServletRequest request, @RequestParam(value = "waybillNo", required = false) String waybillNo) {
+		return this.expressOrderDao.isExpressOrderExist(waybillNo, this.getCurrentBranchid());
+	}
+
+	@RequestMapping("/submitWeight")
+	public String submitWeight(Model model, @RequestParam(value = "waybillNo", required = false) String waybillNo, @RequestParam(value = "weight", required = false) Double weight) {
+		if (!this.expressWeighService.isWeightExist(waybillNo)) {
+			this.expressWeighService.saveWeight(this.constructExpressWeigh(waybillNo, weight));
+		} else {
+			this.expressWeighService.updateWeight(this.constructExpressWeigh(waybillNo, weight));
+		}
+		model.addAttribute("waybillNo", waybillNo);
+		model.addAttribute("weight", weight);
+
+		return "express/stationOperation/weighByScale";
+	}
+
+	private ExpressWeigh constructExpressWeigh(String waybillNo, Double weight) {
+		ExpressWeigh expressWeigh = new ExpressWeigh();
+		expressWeigh.setCwb(waybillNo);
+		expressWeigh.setWeight(weight);
+		expressWeigh.setBranchid(this.getCurrentBranchid());
+		expressWeigh.setBranchname(this.getCurrentBranchName());
+		expressWeigh.setHandlerid(this.getSessionUser().getUserid());
+		expressWeigh.setHandlername(this.getSessionUser().getRealname());
+		expressWeigh.setHandletime(new Date());
+		return expressWeigh;
 	}
 
 }

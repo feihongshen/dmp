@@ -44,8 +44,15 @@ public enum FlowOrderTypeEnum {
 	YiChangPiPeiYiChuLi(61, "异常匹配已处理"),
 	//退供货商审核(拒收退货)--新加
 	GongYingShangJuShouTuiHuo(62, "退供应商拒收退货"),
-	UpdatePickBranch(63,"更新提货站");
+	UpdatePickBranch(63,"更新提货站"),
 
+	/**
+	 * 快递的三个状态
+	 */
+	YunDanLuRu(1000,"运单录入"),
+	LanJianRuZhan(1001,"揽件入站"),
+	LanJianChuZhan(1002,"揽件出站");
+	
 	private int value;
 	private String text;
 

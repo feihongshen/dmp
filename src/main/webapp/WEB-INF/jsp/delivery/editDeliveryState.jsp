@@ -126,7 +126,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    		<option value ="-1">==请选择==</option>
                    <%if(deliverystate.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue() 
                 	//OXO 订单反馈结果与 PeiSong一样 by jinghui.pan@pjbest.com on 20150729
-                   || deliverystate.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue() ){%>
+                   || deliverystate.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue() ||deliverystate.getCwbordertypeid()==CwbOrderTypeIdEnum.Express.getValue()){%>
                    		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>"><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
 						<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"><%=DeliveryStateEnum.JuShou.getText() %></option>
 						<%if(partReject.equals("yes")){ %>

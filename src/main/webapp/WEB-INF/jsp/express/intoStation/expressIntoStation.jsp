@@ -7,7 +7,7 @@
 <%
 List<User> uList = (List<User>)request.getAttribute("userList");
 Long delivermanId=(Long)session.getAttribute("pageDeliver"); 
-String paytypeStr = request.getParameter("payType")==null?"1":request.getParameter("payType");
+String paytypeStr = request.getParameter("payType")==null||request.getParameter("payType")==""?"34":request.getParameter("payType");
 String processStateStr = request.getParameter("processState")==null?"1":request.getParameter("processState");
 int paytype = Integer.valueOf(paytypeStr);
 int processState = Integer.valueOf(processStateStr);
@@ -38,6 +38,23 @@ $(function(){
 	//初始化的时候默认不能选择
 	$("#processState").val(processState_temp);
 	$("#payType").val(paytype_temp);
+	var _this = $("#processState");
+	if(_this.val()==2){
+		$("#confirm_btn").attr("disabled","disabled");
+	}else{
+		$("#confirm_btn").removeAttr("disabled");
+	}
+// 	$("#deliveryId option:first").prop("selected", 'selected');
+	//add by 王志宇         默认选择一个小贱员
+	if($("#deliveryId ").val()==-1){
+		$("#deliveryId ").get(0).selectedIndex=1;
+	}
+	//实现模糊搜索的事件绑定
+	$("#deliveryId").combobox();
+	//模糊搜索的下拉框右边三角号为空问题
+	$("input.combo-text.validatebox-text.validatebox-f.textbox").css({"width":"128px"});
+	$("span.combo-arrow").css({"margin-right":"-18px","margin-top":"-20px"});
+
 });
 </script>
 </head>
@@ -47,40 +64,76 @@ $(function(){
 <div class="right_box">
 	<div class="inputselect_box">
 		<form id="queryCondition" method="post" action="<%=request.getContextPath()%>/expressIntoStation/expressQueryList/1">
-			
+			<div style="float: left;">
+				<div style="float: left;">
+					<label><font size="2"><span>状态</span></font></label>
+				</div>
+				<div style="float: left;">
+					<select id="processState" name="processState" class="select1" onchange="controlDisplayBtn(this);">
+			    		<option value="1">未交接</option>
+			    		<option value="2">已交接</option>
+			    	</select>
+				</div>
+			</div>
+	    	<div style="float: left;margin-left: 1%;">
+	    		<div style="float: left;">
+		    	<label><font size="2"><span>*小件员</span></font></label>
+	    		</div>
+	    		<div style="float: left;">
+			    	<select id="deliveryId" name="deliveryId" class="select1" ><!-- onchange="controlBtnEnable(this);" -->
+<!-- 			    		<option value="-1"></option> -->
+						<%for(User u : uList){ %>
+							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected='selected'<%} %>    ><%=u.getRealname() %></option>
+						<%} %>
+			        </select>
+	    		</div>
+	    	</div>
+	    	<div style="float: left;margin-left: 1%;">
+	    		<div style="float: left;">
+	    		<label><font size="2"><span>支付方式</span></font></label>
+	    		</div>
+	    		<div style="float: left;">
+	    		<select id="payType" name="payType" class="select1" onchange="controlDisplayBtn(this);">
+	    				<option value>全部</option>
+						<option value="0">月结</option>
+						<option value="1">现付</option>
+						<option value="2">到付</option>
+			    </select>
+	    		</div>
+	    	</div>
+	        <div style="float: left;margin-left: 20%;">
+		        <input class="input_button2" type="button" onclick="queryData();" value="查询"/>
+			    <input class="input_button2" type="button" id="confirm_btn" onclick="confirmIntoStation('listTable');" value="交货确认"/>
+			    <input class="input_button2" type="button" onclick="printFunc();" value="打印"/>
+	        </div>
+	    	<%-- 
 			<table style="width: 100%">
 			    <tr>
-			    	<td align="center"><font size="2"><span>&nbsp;</span></font></td>
+			    	<td align="center"><font size="2"><span>状态</span></font></td>
 			    	<td>
-				    	<font size="2">状态:</font><select id="processState" name="processState" class="select1" onchange="controlDisplayBtn(this);">
+				    	<select id="processState" name="processState" class="select1" onchange="controlDisplayBtn(this);">
 				    		<option value="1">未处理</option>
 				    		<option value="2">已处理</option>
 				    	</select>
 			    	</td>
-			    	<td align="center"><font size="2"><span>&nbsp;</span></font></td>
+			    	
+			    	<td align="center"><font size="2"><span>小件员</span></font></td>
 			    	<td>
-			    		<font size="2">小件员:</font><select id="deliveryId" name="deliveryId" class="select1" ><!-- onchange="controlBtnEnable(this);" -->
+			    		<select id="deliveryId" name="deliveryId" class="select1" ><!-- onchange="controlBtnEnable(this);" -->
 			    		<option value="-1"></option>
 						<%for(User u : uList){ %>
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected='selected'<%} %>    ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
 			    	</td>
-			    	<td align="center"><font size="2"><span>&nbsp;</span></font></td>
-			    	<td>
-			    		<font size="2">付款方式:</font><select id="payType" name="payType" class="select1">
-			    			<option value="1">现结</option>
-				    		<option value="2">月结</option>
-				    		<option value="3">到付</option>
-			    		</select>
-			    	</td>
+			    	
 				    <td>
 					    <input class="input_button2" type="button" onclick="queryData();" value="查询"/>
-					    <input class="input_button2" type="button" id="confirm_btn" onclick="confirmIntoStation('listTable');" value="揽件确认"/>
+					    <input class="input_button2" type="button" id="confirm_btn" onclick="confirmIntoStation('listTable');" value="交货确认"/>
 					    <input class="input_button2" type="button" onclick="printFunc();" value="打印"/>
 			    	</td>
 			    </tr>
-		 </table>
+		 </table> --%>
 		</form>
 		
 	</div>
@@ -98,12 +151,13 @@ $(function(){
 						<td align="center" valign="middle" style="font-weight: bold;"> 小件员</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 揽件时间 </td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 付款方式 </td>
-						<td align="center" valign="middle" style="font-weight: bold;"> 费用合计 </td>
+						<td align="center" valign="middle" style="font-weight: bold;"> 运费合计 </td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 运费</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 包装费用</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 保价费用</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 收件省份</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 收件城市</td>
+						<td align="center" valign="middle" style="font-weight: bold;"> 状态</td>
 					</tr>
 					
 					<c:forEach items="${expresseList}" var="list">
@@ -122,6 +176,7 @@ $(function(){
 						<td align="center" valign="middle" > ${list.saveFee}</td>
 						<td align="center" valign="middle" > ${list.province}</td>
 						<td align="center" valign="middle" > ${list.city}</td>
+						<td align="center" valign="middle" > ${list.processState}</td>
 					</tr>
 					</c:forEach>
 				</table>
@@ -129,30 +184,31 @@ $(function(){
 		</div>
 </div>
 <div>
-	<div id="dlgSubmitExpressBox" class="easyui-dialog" style="width: 880px; height: 250px; top:100px;left:100px; padding: 10px 20px;z-index:400px;" closed="true" buttons="#btnsOfExpress">
+	<div id="dlgSubmitExpressBox" class="easyui-dialog" style="width: 380px; height: 230px; top:150px;left:330px; padding: 10px 20px;z-index:400px;" closed="true" buttons="#btnsOfExpress">
 		<input type="hidden" id="exp_selectIds" value="0" />
 		<input type="hidden" id="deliveryManId" value="0"/>
 		<div style="margin-left: 10px;" id="submitContent">
 			<div style="float: left;">快递员：<span id="deliveryman"></span></div>
-			<div style="margin-left:20px;float: left;">交件时间：<span id="submitTime"><%=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) %></span></div>
+			<br/>
+			<div style="margin-left:0px;float: left;">交件时间：<span id="submitTime"><%=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) %></span></div>
 			<br/>
 			<br/>
-			<div style="width: 830px;height: 100px;">
+			<div style="width: 190px;height: 70px;margin-left: 18%;">
 				<!-- black -->
 				<div class="div_level01">
 					<div class="div_20">
-						<span class="span_black_no">汇总单量</span><br/>
+						<span class="span_red_no">汇总单量</span><br/><!--span_black_no  -->
 						<span>&nbsp;</span><br/>
-						<span id="totalOrderCount" class="span_black">0</span>
+						<span id="totalOrderCount" class="span_red">0</span><!--span_black -->
 					</div>
 					<div class="div_30">
-						<span class="span_black_no">汇总运费</span><br/>
+						<span class="span_red_no">汇总运费</span><br/><!--span_black_no -->
 						<span>&nbsp;</span><br/>
-						<span id="totalTransFee" class="span_black">0</span>
+						<span id="totalTransFee" class="span_red">0</span><!--span_black  -->
 					</div>
 				</div>
-				
-				<!-- blue -->
+				<!-- 
+				blue
 				<div class="div_level01" >
 					<div class="div_20">
 						<span class="span_blue_no">现付汇总单量</span><br/>
@@ -165,7 +221,7 @@ $(function(){
 						<span id="nowPayTransFee" class="span_blue">0</span>
 					</div>
 				</div>
-				<!-- green -->
+				green
 				<div class="div_level01">
 					<div class="div_20">
 						<span class="span_green_no">到付付单量</span><br/><br/>
@@ -177,7 +233,7 @@ $(function(){
 						<span id="arrivePayTransFee" class="span_green">0</span>
 					</div>
 				</div>
-				<!--red  -->
+				red 
 				<div class="div_level01">
 					<div class="div_20">
 						<span class="span_red_no">月结单量</span><br/>
@@ -189,8 +245,8 @@ $(function(){
 						<span>&nbsp;</span><br/>
 						<span id="monthPayTransFee" class="span_red">0</span>
 					</div>
-					
 				</div>
+				 -->
 			</div>
 		</div>
 		<br/>
@@ -204,7 +260,7 @@ $(function(){
 <div class="iframe_bottom"> 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 		<tr>
-			<td height="30" align="center" valign="middle" bgcolor="#eef6ff" style="font-size: 15px;">
+			<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
 			<a href="javascript:$('#queryCondition').attr('action','${pageContext.request.contextPath}/expressIntoStation/expressQueryList/1');$('#queryCondition').submit();" >第一页</a>　
 			<a href="javascript:$('#queryCondition').attr('action','${pageContext.request.contextPath}/expressIntoStation/expressQueryList/${page_obj.previous<1 ? 1 : page_obj.previous }');$('#queryCondition').submit();">上一页</a>　
 			<a href="javascript:$('#queryCondition').attr('action','${pageContext.request.contextPath}/expressIntoStation/expressQueryList/${page_obj.next<1 ? 1 : page_obj.next }');$('#queryCondition').submit();" >下一页</a>　

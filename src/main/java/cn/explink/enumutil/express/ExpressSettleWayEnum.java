@@ -8,9 +8,10 @@ import java.util.Map;
  *
  */
 public enum ExpressSettleWayEnum {
-	NowPay(1, "现结"), 
-	MonthPay(2, "月结"), 
-	ArrivePay(3, "到付");
+	MonthPay(0, "月结"),
+	NowPay(1, "现付"), 
+	ArrivePay(2, "到付"),
+	other(1000,"");
 
 	private Integer value;
 
@@ -31,11 +32,11 @@ public enum ExpressSettleWayEnum {
 
 	public static ExpressSettleWayEnum getByValue(Integer index) {
 		for (ExpressSettleWayEnum typeEnum : ExpressSettleWayEnum.values()) {
-			if (typeEnum.getValue().intValue() == index) {
+			if (typeEnum.getValue().intValue() == index.intValue()) {
 				return typeEnum;
 			}
 		}
-		return null;
+		return ExpressSettleWayEnum.other;
 	}
 
 	public static Map<Integer, String> getMap() {

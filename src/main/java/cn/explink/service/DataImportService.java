@@ -281,8 +281,8 @@ public class DataImportService {
 
 	public void batchedit(long customerwarehouseid, long serviceareaid, String editemaildate, long emaildateid) {
 		try {
-			this.batchedit.sendBodyAndHeader(null, "emaildate", "{\"emaildateid\":" + emaildateid + ",\"editemaildate\":\"" + editemaildate + "\",\"warehouseid\":" + customerwarehouseid + ",\"areaid\":"
-					+ serviceareaid + "}");
+			this.batchedit
+					.sendBodyAndHeader(null, "emaildate", "{\"emaildateid\":" + emaildateid + ",\"editemaildate\":\"" + editemaildate + "\",\"warehouseid\":" + customerwarehouseid + ",\"areaid\":" + serviceareaid + "}");
 		} catch (Exception e) {
 		}
 
@@ -330,13 +330,13 @@ public class DataImportService {
 
 		fileName = fileName + otherName + lastStr;
 		try {
-			if(cwb!=""){
-				if(cwb.contains("\r\n")){
-				StringBuffer sb=new StringBuffer();
-				for (String cwbString:cwb.split("\r\n")) {
-					sb.append("'"+cwbString+"',");
-				}
-				cwb=sb.toString().substring(0, sb.length() - 1);
+			if (cwb != "") {
+				if (cwb.contains("\r\n")) {
+					StringBuffer sb = new StringBuffer();
+					for (String cwbString : cwb.split("\r\n")) {
+						sb.append("'" + cwbString + "',");
+					}
+					cwb = sb.toString().substring(0, sb.length() - 1);
 				}
 			}
 
@@ -370,8 +370,7 @@ public class DataImportService {
 
 						}
 
-						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
-								Map<String, String> complaintMap) throws SQLException {
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap, Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
 							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
@@ -379,8 +378,8 @@ public class DataImportService {
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short) (5000));
 								// //设置列宽
-								Object a = DataImportService.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
-										complaintMap);
+								Object a = DataImportService.this.exportService
+										.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap, complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
 								} else {
@@ -571,8 +570,7 @@ public class DataImportService {
 							}
 						}
 
-						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
-								Map<String, String> complaintMap) throws SQLException {
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap, Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
 							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
@@ -580,8 +578,8 @@ public class DataImportService {
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short) (5000));
 								// //设置列宽
-								Object a = DataImportService.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap,
-										complaintMap);
+								Object a = DataImportService.this.exportService
+										.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap, complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
 								} else {
@@ -828,12 +826,13 @@ public class DataImportService {
 		}
 		return strs;
 	}
+
 	public String getInStrings(List<String> strArr) {
-		String prefixAndsuffix="'";
+		String prefixAndsuffix = "'";
 		String strs = "";
 		if (strArr.size() > 0) {
 			for (String str : strArr) {
-				strs += prefixAndsuffix+str+prefixAndsuffix + ",";
+				strs += prefixAndsuffix + str + prefixAndsuffix + ",";
 			}
 		}
 		if (strs.length() > 0) {
@@ -862,14 +861,16 @@ public class DataImportService {
 		}
 		return list;
 	}
-	public long getWeipipeiCount(){
-		long count=0;
-		List<String> notsuccesscwbList= this.cwbDAO.getEditInfoCountIsNotAddressAdd("", String.valueOf(CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));// 未匹配数量
-		String nosuccesscwbs=this.getInStrings(notsuccesscwbList);
-		List<CwbOrder> orders=cwbDAO.getCwbOrderByDelivery(nosuccesscwbs);
-		if (orders!=null) {
-			count=orders.size();
+
+	public long getWeipipeiCount() {
+		long count = 0;
+		List<String> notsuccesscwbList = this.cwbDAO.getEditInfoCountIsNotAddressAdd("", String.valueOf(CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));// 未匹配数量
+		String nosuccesscwbs = this.getInStrings(notsuccesscwbList);
+		List<CwbOrder> orders = this.cwbDAO.getCwbOrderByDelivery(nosuccesscwbs);
+		if (orders != null) {
+			count = orders.size();
 		}
 		return count;
 	}
+
 }

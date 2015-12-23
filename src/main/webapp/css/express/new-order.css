@@ -1,0 +1,66 @@
+@CHARSET "UTF-8";
+/**
+ * @author ruicheng.huang
+ * @description 
+ */
+.result-dialog{
+	display:none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	height: 340px;
+	width: 480px;
+	border:1px solid #0A436D;
+	margin: -170px 0 0 -240px;
+	background: #fff;
+	z-index: 2000;
+}
+.result-dialog .topbar-content-containner{
+	margin: 0;
+	background-position: -470px -626px;
+}
+.dialog-content{
+	position: relative;
+	width: 100%;
+	height: 300px;
+	text-align: center;
+}
+.dialog-tips{
+	position: absolute;
+	bottom: 10px;
+	left: 0px;
+	width: 100%;
+}
+.tips-info,.dialog-btn{
+	width: 100%;
+	font-size:16px;
+	text-align: center;
+	color: blue;
+}
+.dialog-btn img{
+	width: 34px;
+	height: 34px;
+}
+div.col-xs-7 {
+	width: 350px;
+}
+.tipMessage{
+	line-height: normal;
+	color: #aaa;
+}
+.tips {
+	margin: 10px 20px -10px;
+	font-size: 16px;
+	color: #999;
+}
+#sendTimeDiv{
+	display: none;
+}
+#dest-area-tips{
+	line-height: 34px;
+}
+#time-tips{
+	width:500px;
+	font-weight:bold;
+	color: red;
+}

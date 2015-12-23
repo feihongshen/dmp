@@ -106,6 +106,8 @@ public class BranchService {
 		branch.setBrancheffectflag(StringUtil.nullConvertToEmptyString(request.getParameter("brancheffectflag")));
 		branch.setContractrate(BigDecimal.valueOf(Float.parseFloat(request.getParameter("contractrate") == null ? "0" : request.getParameter("contractrate"))));
 		branch.setBranchcode(StringUtil.nullConvertToEmptyString(request.getParameter("branchcode")));
+		//为快递使用的tps站点编码
+		branch.setTpsbranchcode(StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode").trim()));
 		branch.setNoemailimportflag(StringUtil.nullConvertToEmptyString(request.getParameter("noemailimportflag")));
 		branch.setErrorcwbdeliverflag(StringUtil.nullConvertToEmptyString(request.getParameter("errorcwbdeliverflag")));
 		branch.setErrorcwbbranchflag(StringUtil.nullConvertToEmptyString(request.getParameter("errorcwbbranchflag")));
@@ -158,15 +160,14 @@ public class BranchService {
 		branch.setBacktime(Long.parseLong(request.getParameter("backtime") == null ? "0" : request.getParameter("backtime")));
 
 		//站点保证金
-		if(StringUtils.isEmpty(request.getParameter("branchBail"))){
+		if (StringUtils.isEmpty(request.getParameter("branchBail"))) {
 			branch.setBranchBail(BigDecimal.ZERO);
-		}else{
-			String branchBail=request.getParameter("branchBail");
-			if((branchBail!=null)&&!branchBail.equals("null")) {
-				try{
-				branch.setBranchBail(new BigDecimal(branchBail));
-				}catch(NumberFormatException e)
-				{
+		} else {
+			String branchBail = request.getParameter("branchBail");
+			if ((branchBail != null) && !branchBail.equals("null")) {
+				try {
+					branch.setBranchBail(new BigDecimal(branchBail));
+				} catch (NumberFormatException e) {
 					branch.setBranchBail(new BigDecimal("0"));
 				}
 			}

@@ -200,6 +200,7 @@ function clearSelect(){
 	 订单类型
 			<select name ="cwbordertypeid" id ="cwbordertypeid" multiple="multiple">
 		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
+		         <%--  <%if(c.getValue()!=6){ %> --%>
 						<option value ="<%=c.getValue() %>" 
 		           <%if(!cwbordertypeidList.isEmpty()) 
 			            {for(int i=0;i<cwbordertypeidList.size();i++){
@@ -209,6 +210,7 @@ function clearSelect(){
 			            	}
 			            }
 				     }%> ><%=c.getText()%></option>
+				     <%-- <%} %> --%>
 		          <%} %>
 			</select>
 		

@@ -1,0 +1,56 @@
+.mintd {
+	width: 80px;
+}
+
+.medtd {
+	width: 75px;
+}
+
+.maxtd {
+	width: 180px;
+}
+.maxtd1 {
+	width: 120px;
+}
+.inp01{
+	width: 200px;
+	height: 25px;
+}
+.inp02{
+	width: 100px;
+	height: 25px;
+}
+.inp03{
+	height: 25px;
+	width: 225px;
+}
+
+.trh {
+	height: 40px;
+}
+
+.trhM {
+	height: 30px;
+}
+.lab{
+	width: 45px;
+}
+label{
+	width: 45px;
+}
+.sel_01{
+	height: 25px;
+	width: 200px;
+}
+.sel_02{
+	height: 25px;
+	width: 225px;
+}
+.sel_03{
+	height: 25px;
+	width: 145px;
+}
+.sel_04{
+	height: 25px;
+	width: 75px;
+}

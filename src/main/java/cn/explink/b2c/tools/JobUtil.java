@@ -44,6 +44,7 @@ import cn.explink.b2c.liantong.LiantongInsertCwbDetailTimmer;
 import cn.explink.b2c.maikaolin.MaikaolinInsertCwbDetailTimmer;
 import cn.explink.b2c.maikaolin.MaikolinService;
 import cn.explink.b2c.maisike.MaisikeService_branchSyn;
+import cn.explink.b2c.pjwl.PjwlExpressService;
 import cn.explink.b2c.rufengda.RufengdaService;
 import cn.explink.b2c.saohuobang.SaohuobangInsertCwbDetailTimmer;
 import cn.explink.b2c.sfxhm.SfxhmInsertCwbDetailTimmer;
@@ -207,6 +208,8 @@ public class JobUtil {
 	@Autowired
 	VipShopOXOGetPickStateService vipShopOXOGetPickStateService;
 	@Autowired
+	PjwlExpressService pjwlExpressService;
+	@Autowired
 	VipShopOXOJITFeedbackService vipShopOXOJITFeedbackService;
 	@Autowired
 	PunishInsideService punishInsideService;
@@ -216,16 +219,12 @@ public class JobUtil {
 	OrderLifeCycleReportService orderLifeCycleReportService;
 	@Autowired
 	ZhemengInsertCwbDetailTimmer zhemengInsertCwbDetailTimmer;
-	
 	@Autowired
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
-	
 	@Autowired
 	GxDxInsertCwbDetailTimmer gxDxInsertCwbDetailTimmer;
-	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
-
 		JobUtil.threadMap = new HashMap<String, Integer>();
 		JobUtil.threadMap.put("tmall", 0);
 		JobUtil.threadMap.put("fanke", 0);
@@ -251,6 +250,9 @@ public class JobUtil {
 		JobUtil.threadMap.put("guangzhoutonglu", 0);
 		JobUtil.threadMap.put("vipshop_OXO", 0);
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
+		// 快递
+		JobUtil.threadMap.put("express_preOrder", 0);
+		JobUtil.threadMap.put("express_transNo", 0);
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 		JobUtil.threadMap.put("order_lifecycle_report", 0);
@@ -282,6 +284,9 @@ public class JobUtil {
 		JobUtil.threadMap.put("guangzhoutonglu", 0);
 		JobUtil.threadMap.put("vipshop_OXO", 0);
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
+		// 快递
+		JobUtil.threadMap.put("express_preOrder", 0);
+		JobUtil.threadMap.put("express_transNo", 0);
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 		JobUtil.threadMap.put("order_lifecycle_report", 0);
@@ -1062,31 +1067,31 @@ public class JobUtil {
 		}
 
 	}
+
 	/**
 	 * 定时删除flowLog表
 	 */
 	public void deleteflowlog_Task() {
 		try {
-			
+
 			this.floworderLogService.deteFlow();
 		} catch (Exception e) {
 			this.logger.error("执行了删除flowlog表定时器!", e);
 		}
-		
+
 		this.logger.info("执行了删除flowlog表定时器!");
 	}
-	
-	
+
 	/**
 	 * 定时抓取 唯品会OXO模式销售订单
 	 */
-	public void getVipShopOXOTask(){
+	public void getVipShopOXOTask() {
 		System.out.println("-----getVipShopOXOTask启动执行");
-//		String sysValue = this.getSysOpenValue();
-//		if ("yes".equals(sysValue)) {
-//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
-//			return;
-//		}
+		// String sysValue = this.getSysOpenValue();
+		// if ("yes".equals(sysValue)) {
+		// this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+		// return;
+		// }
 
 		if (JobUtil.threadMap.get("vipshop_OXO") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXO");
@@ -1108,18 +1113,17 @@ public class JobUtil {
 
 		this.logger.info("执行了获取vipshop_OXO订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-	
-	
+
 	/**
 	 * 抓取唯品会OXO订单揽件状态定时任务
 	 */
-	public void getVipShopOXOPickStateTask(){
+	public void getVipShopOXOPickStateTask() {
 		System.out.println("-----getVipShopOXOPickStateTask启动执行");
-//		String sysValue = this.getSysOpenValue();
-//		if ("yes".equals(sysValue)) {
-//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
-//			return;
-//		}
+		// String sysValue = this.getSysOpenValue();
+		// if ("yes".equals(sysValue)) {
+		// this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+		// return;
+		// }
 
 		if (JobUtil.threadMap.get("vipshop_OXO_pickstate") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXO_pickstate");
@@ -1128,29 +1132,85 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXO_pickstate", 1);
 		long starttime = 0;
 		long endtime = 0;
-		try{
+		try {
 			starttime = System.currentTimeMillis();
 			this.vipShopOXOGetPickStateService.getVipShopOXOPickState(B2cEnum.VipShop_OXO.getKey());
 			endtime = System.currentTimeMillis();
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			this.logger.error("执行vipshop_OXO_pickstate定时器异常", e);
-		}finally{
+		} finally {
 			JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
 		}
 		this.logger.info("执行了获取vipshop_OXO_pickstate订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 
-		
 	}
-	
-	
-	public void sendVipShopOXOJITFeedbackTask(){
+
+	/**
+	 * 定时抓取 快递预订单数据
+	 */
+	public void getPjwlExpressPreOrderTask() {
+		System.out.println("-----getPjwlExpressPreOrderTask启动执行");
+
+		if (JobUtil.threadMap.get("express_preOrder") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环express_preOrder");
+			return;
+		}
+		JobUtil.threadMap.put("express_preOrder", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+
+			this.pjwlExpressService.excutePjwlExpressDownLoadTask();
+
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行express_preOrder定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("express_preOrder", 0);
+		}
+
+		this.logger.info("执行了获取express_preOrder订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+
+	/**
+	 * 定时抓取 快递运单数据
+	 */
+	public void getPjwlExpressTransNoTask() {
+		System.out.println("-----getPjwlExpressTransNoTask启动执行");
+
+		if (JobUtil.threadMap.get("express_transNo") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环express_transNo");
+			return;
+		}
+		JobUtil.threadMap.put("express_transNo", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+
+			this.pjwlExpressService.excutePjwlExpressTransNoSinfferTask();
+
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行express_transNo定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("express_transNo", 0);
+		}
+
+		this.logger.info("执行了获取express_transNo订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+
+	public void sendVipShopOXOJITFeedbackTask() {
 		System.out.println("-----sendVipShopOXOJITFeedbackTask启动执行");
-//		String sysValue = this.getSysOpenValue();
-//		if ("yes".equals(sysValue)) {
-//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
-//			return;
-//		}
+		// String sysValue = this.getSysOpenValue();
+		// if ("yes".equals(sysValue)) {
+		// this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+		// return;
+		// }
 
 		if (JobUtil.threadMap.get("vipshop_OXOJIT_feedback") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop_OXOJIT_feedback");
@@ -1159,27 +1219,26 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 1);
 		long starttime = 0;
 		long endtime = 0;
-		try{
+		try {
 			starttime = System.currentTimeMillis();
 			this.vipShopOXOJITFeedbackService.sendVipShopOXOJITFeedback(B2cEnum.VipShop_OXO.getKey());
 			endtime = System.currentTimeMillis();
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			this.logger.error("执行vipshop_OXOJIT_feedback定时器异常", e);
-		}finally{
+		} finally {
 			JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		}
 		this.logger.info("执行了获取vipshop_OXOJIT_feedback订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-	
-	
-	public void sendPunishInsideAutoShenheTask(){
+
+	public void sendPunishInsideAutoShenheTask() {
 		System.out.println("-----sendPunishInsideAutoShenheTask启动执行");
-//		String sysValue = this.getSysOpenValue();
-//		if ("yes".equals(sysValue)) {
-//			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
-//			return;
-//		}
+		// String sysValue = this.getSysOpenValue();
+		// if ("yes".equals(sysValue)) {
+		// this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+		// return;
+		// }
 
 		if (JobUtil.threadMap.get("punishinside_autoshenhe") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环punishinside_autoshenhe");
@@ -1188,19 +1247,19 @@ public class JobUtil {
 		JobUtil.threadMap.put("punishinside_autoshenhe", 1);
 		long starttime = 0;
 		long endtime = 0;
-		try{
+		try {
 			starttime = System.currentTimeMillis();
 			this.punishInsideService.automaticShenheChengli();
 			endtime = System.currentTimeMillis();
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			this.logger.error("执行punishinside_autoshenhe定时器异常", e);
-		}finally{
+		} finally {
 			JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 		}
 		this.logger.info("执行了获取punishinside_autoshenhe订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-	
+
 	/**
 	 * 九曳
 	 */
@@ -1217,6 +1276,7 @@ public class JobUtil {
 		}
 
 	}
+
 	/**
 	 * 广信电信
 	 */
@@ -1226,21 +1286,21 @@ public class JobUtil {
 			this.gxDxInsertCwbDetailTimmer.execute(B2cEnum.GuangXinDianXin.getKey());
 			long endtime = System.currentTimeMillis();
 			this.logger.info("执行了广信电信订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
-			
+
 		} catch (Exception e) {
 			this.logger.error("执行广信电信订单导入定时器异常", e);
 		}
-		
+
 	}
-	
+
 	/**
 	 * 生成前一天的生命周期报表
 	 *
 	 */
-	public void generateOrderLifeCycleReport(){
+	public void generateOrderLifeCycleReport() {
 		System.out.println("-----generateOrderLifeCycleReport启动执行");
 		final String threadKey = "order_lifecycle_report";
-		
+
 		if (JobUtil.threadMap.get(threadKey) == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环generateOrderLifeCycleReport");
 			return;
@@ -1248,31 +1308,31 @@ public class JobUtil {
 		JobUtil.threadMap.put(threadKey, 1);
 		long starttime = 0;
 		long endtime = 0;
-		
-		try{
+
+		try {
 			starttime = System.currentTimeMillis();
 			//
-			String reportDate = DateTimeUtil.getDateBeforeDay(1);//in 'yyyy-MM-dd' format
-			int batchSize = getbatchSizeOfOrderLifeCycleReport();
-			
-			//生成前一天的订单详情列表
+			String reportDate = DateTimeUtil.getDateBeforeDay(1);// in
+																	// 'yyyy-MM-dd'
+																	// format
+			int batchSize = this.getbatchSizeOfOrderLifeCycleReport();
+
+			// 生成前一天的订单详情列表
 			this.orderLifeCycleReportService.genLifeCycleOrderDetail(batchSize, reportDate);
-			
-			//生成前一天的生命周期报表
+
+			// 生成前一天的生命周期报表
 			this.orderLifeCycleReportService.genLifeCycleReport(reportDate);
-			
-			
+
 			endtime = System.currentTimeMillis();
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			this.logger.error("执行generateOrderLifeCycleReport定时器异常", e);
-		}finally{
+		} finally {
 			JobUtil.threadMap.put(threadKey, 0);
 		}
 		this.logger.info("执行了获取generateOrderLifeCycleReport订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
-	
 	public void getZheMeng_Task() {
 		try {
 
@@ -1286,32 +1346,30 @@ public class JobUtil {
 
 	}
 
-	
-	
 	/**
 	 * 订单生命周期报表每批次处理的行数,如果找不到，默认是1000
+	 *
 	 * @return
 	 */
-	private int getbatchSizeOfOrderLifeCycleReport(){
+	private int getbatchSizeOfOrderLifeCycleReport() {
 		// 系统设置 设置开启对外操作
 		int defBatchSize = 1000;
 		int ret = defBatchSize;
 		try {
 			SystemInstall systemInstall = this.systemInstallDAO.getSystemInstall("isOpenJobHand");
 			String sysValue = systemInstall.getValue();
-			if(systemInstall != null){
-					ret = Integer.parseInt(sysValue);
-				
+			if (systemInstall != null) {
+				ret = Integer.parseInt(sysValue);
+
 			}
 		} catch (Exception e) {
 			System.err.println("[getbatchSizeOfOrderLifeCycleReport error:]" + e.getMessage());
 		}
-		
-		
+
 		return ret;
-		
+
 	}
-	
+
 	/**
 	 * 执行获取vipshop临时表插入主表log
 	 */
@@ -1337,6 +1395,5 @@ public class JobUtil {
 
 		this.logger.info("执行了获取vipshoptimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-
 
 }

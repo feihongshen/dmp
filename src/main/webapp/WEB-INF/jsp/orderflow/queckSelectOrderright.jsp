@@ -28,6 +28,28 @@ List<AorderFlowView> aorderFlowViews=(List<AorderFlowView>)request.getAttribute(
 function gotoForm(cwb){
 	window.location.href="<%=request.getContextPath()%>/order/queckSelectOrderright/"+cwb;
 }
+function showTitle(obj){
+	debugger;
+	var id = obj.id;
+	var operateOrgCode = id.split("_")[1];
+	$.ajax({
+		type : "POST",
+		url : "<%=request.getContextPath()%>/order/getStionInfo",
+		dataType : "json",
+		async: false,
+		data:{
+			"operateOrgCode":operateOrgCode
+		},
+		success : function(data) {
+			var titleText = "机构名称：" + data.info.orgName + "\r\n";
+			titleText = titleText + "负责人   ：" + data.info.contactor + "\r\n";
+			titleText = titleText + "固定电话：" + "" + "\r\n";
+			titleText = titleText + "机构手机：" + data.info.telephone + "\r\n";
+			debugger
+			$("#" + id).attr("title", titleText);
+		}
+	});
+}
 </script>
 </HEAD>
 
@@ -80,7 +102,7 @@ function gotoForm(cwb){
 											   <% for(AorderFlowView af : aorderFlowViews){if(af.getContent()!=null){%>
 												<tr>
 													<td align="center"><%=af.getTime().substring(0,19) %></td>
-													<td align="center"><%=af.getUsername()%></td>
+													<td align="center"><%=af.getUsername() == null ? "":af.getUsername()%></td>
 												    <td align="left"><%=af.getContent().replaceAll("null", "") %>
 												    </td>
                                                  </tr>	

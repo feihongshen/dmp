@@ -8312,10 +8312,29 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
+	<changeSet id="jiangyu-2015-09-11-01" author="jiangyu">
+		 <sqlFile path="express_branch_sql.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
+	</changeSet>
+	<changeSet id="liuwuqiang-2015-12-02-01" author="liuwuqiang">
+		 <sqlFile path="express_branch_address_sql.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
+	</changeSet>
+	<changeSet id="mali-2015-09-16-01" author="mali">
+		<sql>
+			INSERT INTO `express_set_customer_info` (`customerid`, `customername`) values (1000, '快递单')
+		</sql>
+	</changeSet>
 	<!-- 唯品会对接添加代签收人相关业务 -->
 	<changeSet id="zhangpengkai-2015-09-15-1" author="zhangpengkai">
 		<sql>
 			ALTER TABLE `express_ops_delivery_state` ADD COLUMN `sign_man_phone` VARCHAR(100) NULL COMMENT '代签收人手机' AFTER `sign_man`;
+		</sql>
+	</changeSet>
+	<changeSet id="jiangyu-2015-09-22-1" author="jiangyu">
+		<sql>
+			INSERT  INTO `express_ops_setexportfield`(`fieldname`,`exportstate`,`fieldenglishname`,`orderlevel`,`exportdatatype`) 
+			VALUES 
+			('重量',1,'Realweight',155,'string'),
+			('付款方式',1,'Paymethod',156,'string');
 		</sql>
 	</changeSet>
 	<!-- 唯品会对接添加代签收人相关业务 -->

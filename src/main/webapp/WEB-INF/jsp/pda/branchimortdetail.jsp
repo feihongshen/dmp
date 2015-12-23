@@ -172,7 +172,22 @@ function submitBranchImport(pname,scancwb,driverid,requestbatchno,rk_switch,comm
 								document.ypdj.Play();
 							}catch (e) {}
 						}*/
-					}else{
+					}else if(data.statuscode=="000001"){
+						
+						$("#excelbranch").hide();
+						$("#customername").hide();
+						$("#address").html("");
+						$("#cwbgaojia").hide();
+						$("cwbDetailshow").hide();
+						$("#damage").hide();
+						$("#multicwbnum").hide();
+						$("#multicwbnum").val("1");
+						$("#showcwb").html("");
+						$("#customercommand").html("");
+
+						$("#msg").html(data.errorinfo);
+					}
+					else{
 						$("#excelbranch").hide();
 						$("#customername").hide();
 						$("#address").html("");
@@ -628,7 +643,7 @@ function baledaohuo(scancwb,driverid,requestbatchno){
 					<p style="display: none;"><span>包号：</span>
 						<input type="text" class="saomiao_inputtxt2" value=""  id="baleno" name="baleno" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}"/>
 					</p>
-					<p><span>订单号：</span>
+					<p><span>单/包号：</span>
 						<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value="" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitBranchImport("<%=request.getContextPath()%>",$(this).val(),-1,$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}'/>
 					</p>
 				</div>

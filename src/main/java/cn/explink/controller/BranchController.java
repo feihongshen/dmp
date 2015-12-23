@@ -122,7 +122,7 @@ public class BranchController {
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
-			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
+			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, file, functionids);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
@@ -166,7 +166,7 @@ public class BranchController {
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
-			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
+			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, null, functionids);
 
@@ -225,7 +225,7 @@ public class BranchController {
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null) && (codeList.get(0).getBranchid() != branchid)) {
-			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
+			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, file, wavh, functionids);
 			branch.setBranchid(branchid);
@@ -274,7 +274,7 @@ public class BranchController {
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null) && (codeList.get(0).getBranchid() != branchid)) {
-			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
+			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, null, wavh, functionids);
 			branch.setBranchid(branchid);

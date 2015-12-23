@@ -12,94 +12,127 @@ public class FeeWayTypeRemark {
 	private BigDecimal checkfee;
 	private BigDecimal otherfee;
 	private BigDecimal Paybackfee;
+	private BigDecimal shouldfare;
 	private long requestUser;
-	
+
 	public long getRequestUser() {
-		return requestUser;
+		return this.requestUser;
 	}
+
 	public void setRequestUser(long requestUser) {
 		this.requestUser = requestUser;
 	}
+
 	//修改支付方式时用到字段
 	private int paywayid;
 	private int newpaywayid;
-	
+
 	//修改订单类型时用到字段
 	private int cwbordertypeid;
 	private int newcwbordertypeid;
-	
-	
+
 	public int getPaywayid() {
-		return paywayid;
+		return this.paywayid;
 	}
+
 	public void setPaywayid(int paywayid) {
 		this.paywayid = paywayid;
 	}
+
 	public int getNewpaywayid() {
-		return newpaywayid;
+		return this.newpaywayid;
 	}
+
 	public void setNewpaywayid(int newpaywayid) {
 		this.newpaywayid = newpaywayid;
 	}
+
 	public int getCwbordertypeid() {
-		return cwbordertypeid;
+		return this.cwbordertypeid;
 	}
+
 	public void setCwbordertypeid(int cwbordertypeid) {
 		this.cwbordertypeid = cwbordertypeid;
 	}
+
 	public int getNewcwbordertypeid() {
-		return newcwbordertypeid;
+		return this.newcwbordertypeid;
 	}
+
 	public void setNewcwbordertypeid(int newcwbordertypeid) {
 		this.newcwbordertypeid = newcwbordertypeid;
 	}
+
 	public String getCwb() {
-		return cwb;
+		return this.cwb;
 	}
+
 	public void setCwb(String cwb) {
 		this.cwb = cwb;
 	}
+
 	public String getIsDeliveryState() {
-		return isDeliveryState;
+		return this.isDeliveryState;
 	}
+
 	public void setIsDeliveryState(String isDeliveryState) {
 		this.isDeliveryState = isDeliveryState;
 	}
+
 	public BigDecimal getReceivablefee() {
-		return receivablefee;
+		return this.receivablefee;
 	}
+
 	public void setReceivablefee(BigDecimal receivablefee) {
 		this.receivablefee = receivablefee;
 	}
+
 	public BigDecimal getCash() {
-		return cash;
+		return this.cash;
 	}
+
 	public void setCash(BigDecimal cash) {
 		this.cash = cash;
 	}
+
 	public BigDecimal getPos() {
-		return pos;
+		return this.pos;
 	}
+
 	public void setPos(BigDecimal pos) {
 		this.pos = pos;
 	}
+
 	public BigDecimal getCheckfee() {
-		return checkfee;
+		return this.checkfee;
 	}
+
 	public void setCheckfee(BigDecimal checkfee) {
 		this.checkfee = checkfee;
 	}
+
 	public BigDecimal getOtherfee() {
-		return otherfee;
+		return this.otherfee;
 	}
+
 	public void setOtherfee(BigDecimal otherfee) {
 		this.otherfee = otherfee;
 	}
+
 	public BigDecimal getPaybackfee() {
-		return Paybackfee;
+		return this.Paybackfee;
 	}
+
 	public void setPaybackfee(BigDecimal paybackfee) {
-		Paybackfee = paybackfee;
+		this.Paybackfee = paybackfee;
 	}
-	
+
+	public BigDecimal getShouldfare() {
+		return this.shouldfare;
+	}
+
+	public void setShouldfare(BigDecimal shouldfare) {
+		this.shouldfare = shouldfare;
+	}
+
 }

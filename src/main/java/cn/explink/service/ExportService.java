@@ -60,7 +60,7 @@ import cn.explink.domain.SalaryImport;
 import cn.explink.domain.SearcheditInfo;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
-import cn.explink.domain.VO.ExpressSetBranchDeliveryFeeBillDetailVO;
+import cn.explink.domain.VO.express.ExpressFeedBackView;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.ComplaintAuditTypeEnum;
 import cn.explink.enumutil.ComplaintTypeEnum;
@@ -71,6 +71,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.RealFlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
+import cn.explink.enumutil.express.ExpressSettleWayEnum;
 
 @Service
 public class ExportService {
@@ -92,8 +93,8 @@ public class ExportService {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
-	public void setcsconsigneeinfo(String[] cloumnName1, String[] cloumnName2){
+
+	public void setcsconsigneeinfo(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "姓名";
 		cloumnName2[0] = "name";
 		cloumnName1[1] = "性别";
@@ -114,24 +115,22 @@ public class ExportService {
 		cloumnName2[8] = "contactLastTime";
 		cloumnName1[9] = "联系次数";
 		cloumnName2[9] = "contactNum";
-	
-	}
-	
-	//工单信息工单号	订单号
-	/*工单类型	工单状态	
-	来电人姓名	来电号码	
-	被投诉机构	工单受理人	
-	受理时间	投诉一级分类	
-	投诉二级分类	投诉处理结果	
-	是否扣罚	客户名称	催件次数*/
 
-	public void setCsComplaintAcceptVO(String[] cloumnName1, String[] cloumnName2){
+	}
+
+	// 工单信息工单号 订单号
+	/*
+	 * 工单类型 工单状态 来电人姓名 来电号码 被投诉机构 工单受理人 受理时间 投诉一级分类 投诉二级分类 投诉处理结果 是否扣罚 客户名称 催件次数
+	 */
+
+	public void setCsComplaintAcceptVO(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "工单号";
 		cloumnName2[0] = "acceptNo";
 		cloumnName1[1] = "订单号";
 		cloumnName2[1] = "orderNo";
-		/*cloumnName1[2] = "工单类型";
-		cloumnName2[2] = "complaintType";*/
+		/*
+		 * cloumnName1[2] = "工单类型"; cloumnName2[2] = "complaintType";
+		 */
 		cloumnName1[2] = "工单状态";
 		cloumnName2[2] = "complaintState";
 		cloumnName1[3] = "来电人姓名";
@@ -156,7 +155,7 @@ public class ExportService {
 		cloumnName2[12] = "customername";
 		cloumnName1[13] = "催件次数";
 		cloumnName2[13] = "cuijianNum";
-	
+
 	}
 
 	public void SetPosPayFields(String[] cloumnName1, String[] cloumnName2, String[] cloumnName3) {
@@ -343,7 +342,7 @@ public class ExportService {
 
 	// 问题件导出view
 	public void SetAbnormalOrderFields(String[] cloumnName1, String[] cloumnName2) {
-		
+
 		cloumnName1[0] = "问题件单号";
 		cloumnName2[0] = "Questionno";
 		cloumnName1[1] = "订单号";
@@ -378,8 +377,9 @@ public class ExportService {
 		cloumnName2[15] = "Isfinecontent";
 		cloumnName1[16] = "是否找回";
 		cloumnName2[16] = "IsfindInfo";
-	
+
 	}
+
 	// 丢失件导出view
 	public void SetMisspieceFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
@@ -401,6 +401,7 @@ public class ExportService {
 		cloumnName1[8] = "丢失件说明";
 		cloumnName2[8] = "Describe";
 	}
+
 	// 对内扣罚单的信息导出
 	public void SetPunishInsideFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "扣罚单号";
@@ -432,6 +433,7 @@ public class ExportService {
 		cloumnName1[13] = "扣罚单状态";
 		cloumnName2[13] = "Punishcwbstate";
 	}
+
 	// 审核页面导出
 	public void SetAuditFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
@@ -630,6 +632,7 @@ public class ExportService {
 		}
 		return a;
 	}
+
 	// 丢失件处理功能导出
 	public Object setMissPieceObject(String[] cloumnName3, List<MissPieceView> views, Object a, int i, int k) {
 		try {
@@ -657,6 +660,7 @@ public class ExportService {
 		}
 		return a;
 	}
+
 	// 对内扣罚单功能导出
 	public Object setPunishInsideObject(String[] cloumnName3, List<PenalizeInsideView> views, Object a, int i, int k) {
 		try {
@@ -678,15 +682,15 @@ public class ExportService {
 				a = views.get(k).getCwbprice();
 			} else if (cloumnName3[i].equals("PunishInsideprice")) {
 				a = views.get(k).getPunishInsideprice();
-			}else if (cloumnName3[i].equals("Punishbigsort")) {
+			} else if (cloumnName3[i].equals("Punishbigsort")) {
 				a = views.get(k).getPunishbigsort();
-			}else if (cloumnName3[i].equals("Punishsmallsort")) {
+			} else if (cloumnName3[i].equals("Punishsmallsort")) {
 				a = views.get(k).getPunishsmallsort();
-			}else if (cloumnName3[i].equals("Createuser")) {
+			} else if (cloumnName3[i].equals("Createuser")) {
 				a = views.get(k).getCreateusername();
-			}else if (cloumnName3[i].equals("CreDate")) {
+			} else if (cloumnName3[i].equals("CreDate")) {
 				a = views.get(k).getCreDate();
-			}else if (cloumnName3[i].equals("Punishcwbstate")) {
+			} else if (cloumnName3[i].equals("Punishcwbstate")) {
 				a = views.get(k).getPunishcwbstate();
 			}
 		} catch (Exception e) {
@@ -694,6 +698,7 @@ public class ExportService {
 		}
 		return a;
 	}
+
 	public Object setCSInfoObject(String[] cloumnName3, List<CsConsigneeInfoVO> ccilist, Object a, int i, int k) {
 		try {
 			if (cloumnName3[i].equals("name")) {
@@ -712,11 +717,9 @@ public class ExportService {
 				a = ccilist.get(k).getCity();
 			} else if (cloumnName3[i].equals("consigneeType")) {
 				a = ccilist.get(k).getConsigneeType();
-			}
-			else if (cloumnName3[i].equals("contactLastTime")) {
+			} else if (cloumnName3[i].equals("contactLastTime")) {
 				a = ccilist.get(k).getContactLastTime();
-			}
-			else if (cloumnName3[i].equals("contactNum")) {
+			} else if (cloumnName3[i].equals("contactNum")) {
 				a = ccilist.get(k).getContactNum();
 			}
 		} catch (Exception e) {
@@ -731,7 +734,7 @@ public class ExportService {
 				a = lc.get(k).getAcceptNo();
 			} else if (cloumnName3[i].equals("orderNo")) {
 				a = lc.get(k).getOrderNo();
-			}else if (cloumnName3[i].equals("complaintState")) {
+			} else if (cloumnName3[i].equals("complaintState")) {
 				a = lc.get(k).getComplaintState();
 			} else if (cloumnName3[i].equals("name")) {
 				a = lc.get(k).getName();
@@ -741,26 +744,19 @@ public class ExportService {
 				a = lc.get(k).getCodOrgId();
 			} else if (cloumnName3[i].equals("handleUser")) {
 				a = lc.get(k).getHandleUser();
-			}
-			else if (cloumnName3[i].equals("acceptTime")) {
+			} else if (cloumnName3[i].equals("acceptTime")) {
 				a = lc.get(k).getAcceptTime();
-			}
-			else if (cloumnName3[i].equals("complaintOneLevel")) {
+			} else if (cloumnName3[i].equals("complaintOneLevel")) {
 				a = lc.get(k).getComplaintOneLevel();
-			}
-			else if (cloumnName3[i].equals("complaintTwoLevel")) {
+			} else if (cloumnName3[i].equals("complaintTwoLevel")) {
 				a = lc.get(k).getComplaintTwoLevel();
-			}
-			else if (cloumnName3[i].equals("complaintResult")) {
+			} else if (cloumnName3[i].equals("complaintResult")) {
 				a = lc.get(k).getComplaintResult();
-			}
-			else if (cloumnName3[i].equals("ifpunish")) {
+			} else if (cloumnName3[i].equals("ifpunish")) {
 				a = lc.get(k).getIfpunish();
-			}
-			else if (cloumnName3[i].equals("customername")) {
+			} else if (cloumnName3[i].equals("customername")) {
 				a = lc.get(k).getCustomername();
-			}
-			else if (cloumnName3[i].equals("cuijianNum")) {
+			} else if (cloumnName3[i].equals("cuijianNum")) {
 				a = lc.get(k).getCuijianNum();
 			}
 		} catch (Exception e) {
@@ -938,6 +934,7 @@ public class ExportService {
 			}
 		}
 		String cloumname = cloumnName3[i];
+
 		cloumname = cloumnName3[i].substring(0, 1).toLowerCase() + cloumnName3[i].substring(1, cloumnName3[i].length());
 		try {
 			if ("orderType".equals(cloumname)) {
@@ -1106,7 +1103,7 @@ public class ExportService {
 			} else if ("branchstreet".equals(cloumname)) {
 				a = currentb.getBranchstreet();
 			}
-			
+
 			else if ("fdelivername".equals(cloumname)) {
 				a = "";
 				if (ds != null) {
@@ -1133,16 +1130,15 @@ public class ExportService {
 						break;
 					}
 				}
-			}else if ("jobnum".equals(cloumname)) {
+			} else if ("jobnum".equals(cloumname)) {
 				a = "";
 				for (User u : uList) {
 					if (u.getUserid() == Long.parseLong(mapRow.get("deliverid").toString())) {
-						a = u.getJobnum();						
+						a = u.getJobnum();
 						break;
 					}
 				}
-			} 
-			else if ("commonid".equals(cloumname)) {
+			} else if ("commonid".equals(cloumname)) {
 				a = "";
 				for (Common c : commonList) {
 					if (c.getId() == Long.parseLong(mapRow.get("commonid").toString())) {
@@ -1250,12 +1246,21 @@ public class ExportService {
 				if ((complaintMap != null) && (complaintMap.size() > 0) && (complaintMap.get(mapRow.get("cwb").toString()) != null)) {
 					a = complaintMap.get(mapRow.get("cwb").toString());
 				}
+			} else if ("paymethod".equals(cloumname)) {
+				a = mapRow.get(cloumname) != null ? mapRow.get(cloumname) : 0;
+				a = ExpressSettleWayEnum.getByValue((Integer) a).getText();
 			} else {
 				a = mapRow.get(cloumname);
 				a = this.setAbyUser(a, cloumname);
 			}
+			// System.out.println("列名:" + cloumname + "   值为：" +
+			// mapRow.get(cloumname));
 		} catch (Exception e) {
-			// System.out.println(cloumname);
+			// System.out.println("出错列名：" + cloumname);
+			// if ("paymethod".equals(cloumname)) {
+			// e.printStackTrace();
+			// }
+			// e.printStackTrace();
 		}
 		// System.out.println("pp:"+System.currentTimeMillis());
 		return a;
@@ -1632,7 +1637,7 @@ public class ExportService {
 				}
 			} else {
 				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
-				
+
 			}
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -1748,6 +1753,49 @@ public class ExportService {
 		cloumnName2[8] = "Flowordertype";
 		cloumnName1[9] = "备注";
 		cloumnName2[9] = "Remark";
+	}
+
+	public void SetCwbKuaiDiFields1(String[] cloumnName1, String[] cloumnName2) {
+		// 单号 揽收人 揽收站点 揽收时间 收件人 收件人手机号 收件人地址 费用总计 当前状态 备注
+		cloumnName1[0] = "快递单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "揽收人";
+		cloumnName2[1] = "Lanshouusername";
+		cloumnName1[2] = "揽收站点";
+		cloumnName2[2] = "Lanshoubranchname";
+		cloumnName1[3] = "揽收时间";
+		cloumnName2[3] = "Lanshoutime";
+		cloumnName1[4] = "收件人";
+		cloumnName2[4] = "Consigneename";
+		cloumnName1[5] = "收件人手机号";
+		cloumnName2[5] = "Consigneemobile";
+		cloumnName1[6] = "收件人地址";
+		cloumnName2[6] = "Consigneeaddress";
+		cloumnName1[7] = "费用总计";
+		cloumnName2[7] = "Allfee";
+		cloumnName1[8] = "当前状态";
+		cloumnName2[8] = "Flowordertype";
+		cloumnName1[9] = "备注";
+		cloumnName2[9] = "Remark";
+
+		cloumnName1[10] = "应收运费";
+		cloumnName2[10] = "Shouldfare";
+		cloumnName1[11] = "包装费";
+		cloumnName2[11] = "Packagefee";
+		cloumnName1[12] = "保价费";
+		cloumnName2[12] = "Insuredrate";
+		cloumnName1[13] = "重量";
+		cloumnName2[13] = "Realweight";
+		cloumnName1[14] = "付款方式";
+		cloumnName2[14] = "Paymethod";
+		cloumnName1[15] = "客户";
+		cloumnName2[15] = "Customername";
+		cloumnName1[16] = "客户编号";
+		cloumnName2[16] = "Customercode";
+		cloumnName1[17] = "代收货款";
+		cloumnName2[17] = "Receivablefee";
+		cloumnName1[18] = "配送站点";
+		cloumnName2[18] = "Paisongbranchname";
 	}
 
 	public Object setCwbKuaiDiObject(String[] cloumnName3, HttpServletRequest request1, List<CwbKuaiDiView> list, Object a, int i, int k) {
@@ -2340,7 +2388,7 @@ public class ExportService {
 
 	/**
 	 * 结算后付类型
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2368,7 +2416,7 @@ public class ExportService {
 
 	/**
 	 * 结算先付类型
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2408,10 +2456,10 @@ public class ExportService {
 		cloumnName2[6] = "oldconsigneeaddress";
 		cloumnName1[7] = "地址（修改）";
 		cloumnName2[7] = "newconsigneeaddress";
-		//cloumnName1[8] = "修改前再次配送时间";
-		//cloumnName2[8] = "oldResendtime";
-		//cloumnName1[9] = "再次配送时间（修改）";
-		//cloumnName2[9] = "newResendtime";
+		// cloumnName1[8] = "修改前再次配送时间";
+		// cloumnName2[8] = "oldResendtime";
+		// cloumnName1[9] = "再次配送时间（修改）";
+		// cloumnName2[9] = "newResendtime";
 		cloumnName1[8] = "修改前供货商需求";
 		cloumnName2[8] = "oldcommand";
 		cloumnName1[9] = "供货商需求（修改）";
@@ -2475,7 +2523,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算订单明细
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2507,7 +2555,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算交易记录
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2545,7 +2593,7 @@ public class ExportService {
 
 	/**
 	 * 退货审核
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2671,7 +2719,7 @@ public class ExportService {
 
 	/**
 	 * 配送结果结算记录
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2744,7 +2792,7 @@ public class ExportService {
 
 	/**
 	 * 扣款结算交易记录
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2763,7 +2811,7 @@ public class ExportService {
 
 	/**
 	 * 账户管理
-	 * 
+	 *
 	 * @param cloumnName1
 	 * @param cloumnName2
 	 */
@@ -2893,13 +2941,13 @@ public class ExportService {
 		return a;
 
 	}
-	
+
 	public Object setBranchDeliveryFeeBillDetailObject(String[] cloumnName3, List<ExpressSetBranchDeliveryFeeBillDetail> detailList, Object a, int i, int k, Map<Long, Customer> cMap) {
 		try {
 			if (cloumnName3[i].equals("Customerid")) {
 				long customerid = Long.parseLong(detailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(detailList.get(k)).toString());
 				a = cMap.get(customerid) == null ? "" : cMap.get(customerid).getCustomername();
-			}  else if (cloumnName3[i].equals("Flowordertype")) {
+			} else if (cloumnName3[i].equals("Flowordertype")) {
 				for (FlowOrderTypeEnum ds : FlowOrderTypeEnum.values()) {
 					if (Long.parseLong(detailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(detailList.get(k)).toString()) == ds.getValue()) {
 						a = ds.getText();
@@ -2933,9 +2981,9 @@ public class ExportService {
 			e.printStackTrace();
 		}
 		return a;
-		
+
 	}
-	
+
 	public void SetBranchDeliveryFeeBillFields(String[] cloumnName1, String[] cloumnName2) {
 		int i = 0;
 		int j = 0;
@@ -2974,7 +3022,7 @@ public class ExportService {
 		cloumnName1[i++] = "拖单补助";
 		cloumnName2[j++] = "PickupAttachSubsidyFee";
 	}
-	
+
 	public void SetAccountCwbFareDetailVerifyFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
@@ -3011,21 +3059,19 @@ public class ExportService {
 
 	public Object setAccountCwbFareDetailVerifyObject(String[] cloumnName3, List<AccountCwbFareDetail> accountCwbFareDetailList, HttpServletRequest request1, Object a, int i, int k,
 			List<Branch> branchList, Map<Long, Customer> cMap, List<User> userList, Map<Long, AccountCwbFare> accountFareMap) {
-		double cashfee =0;
-		double girofee=0;
+		double cashfee = 0;
+		double girofee = 0;
 		try {
 			if (cloumnName3[i].equals("Fee")) {
-				if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())!=null) {
-					if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee()!=null) {
-						cashfee=accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())
-								.getCashfee().doubleValue();
+				if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()) != null) {
+					if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee() != null) {
+						cashfee = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashfee().doubleValue();
 					}
-					if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee()!=null) {
-						girofee=accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())
-								.getGirofee().doubleValue();
+					if (accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee() != null) {
+						girofee = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirofee().doubleValue();
 					}
 				}
-			
+
 				if (girofee > 0) {
 					a = "转账";
 				}
@@ -3037,8 +3083,8 @@ public class ExportService {
 				}
 
 			} else if (cloumnName3[i].equals("User")) {
-				String cashuser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())==null?"":accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashuser();
-				String girouser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())==null?"":accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirouser();
+				String cashuser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()) == null ? "" : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getCashuser();
+				String girouser = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()) == null ? "" : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirouser();
 				if (girouser.length() > 0) {
 					a = girouser;
 				}
@@ -3050,7 +3096,7 @@ public class ExportService {
 				}
 
 			} else if (cloumnName3[i].equals("Griocardno")) {
-				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid())==null?"":accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirocardno();
+				a = accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()) == null ? "" : accountFareMap.get(accountCwbFareDetailList.get(k).getFareid()).getGirocardno();
 			} else if (cloumnName3[i].equals("Customerid")) {
 				long customerid = Long.parseLong(accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k)).toString());
 				a = cMap.get(customerid) == null ? "" : cMap.get(customerid).getCustomername();
@@ -3178,160 +3224,166 @@ public class ExportService {
 		cloumnName1[10] = "审核时间";
 		cloumnName2[10] = "Audittime";
 	}
-		// 退货出站view
-		public void SetTuiHuoChuzhanFields(String[] cloumnName1, String[] cloumnName2) {
-			cloumnName1[0] = "订单号";
-			cloumnName2[0] = "Cwb";
-			cloumnName1[1] = "订单类型";
-			cloumnName2[1] = "Cwbordertypename";
-			cloumnName1[2] = "客户名称";
-			cloumnName2[2] = "Customername";
-			cloumnName1[3] = "配送站点";
-			cloumnName2[3] = "Branchname";
-			cloumnName1[4] = "归班反馈时间";
-			cloumnName2[4] = "Createtime";
-			cloumnName1[5] = "审核人";
-			cloumnName2[5] = "Auditname";
-			cloumnName1[6] = "审核时间";
-			cloumnName2[6] = "Audittime";
-			cloumnName1[7] = "审核状态";
-			cloumnName2[7] = "Checkstatename";
-			cloumnName1[8] = "审核结果";
-			cloumnName2[8] = "Checkresultname";
-		}
-		// 中转出站view
-		public void SetZhongzhuanchuzhanFields(String[] cloumnName1, String[] cloumnName2) {
-			cloumnName1[0] = "订单号";
-			cloumnName2[0] = "Cwb";
-			cloumnName1[1] = "订单类型";
-			cloumnName2[1] = "Cwbordertypename";
-			cloumnName1[2] = "客户名称";
-			cloumnName2[2] = "Customername";
-			cloumnName1[3] = "当前站点";
-			cloumnName2[3] = "Branchname";
-			cloumnName1[4] = "配送站点";
-			cloumnName2[4] = "Matchbranchname";
-			cloumnName1[5] = "到站时间";
-			cloumnName2[5] = "InSitetime";
-			cloumnName1[6] = "审核人";
-			cloumnName2[6] = "Auditor";
-			cloumnName1[7] = "审核时间";
-			cloumnName2[7] = "Audittime";
-			
-		}
-		
-		
-		//反馈状态修改申请
-		public void SetResetFeedBackFields(String[] cloumnName1, String[] cloumnName2) {
-			cloumnName1[0] = "订单号";
-			cloumnName2[0] = "Cwb";
-			cloumnName1[1] = "申请时间";
-			cloumnName2[1] = "Applytime";
-			cloumnName1[2] = "当前站点";
-			cloumnName2[2] = "Currentbranchname";
-			cloumnName1[3] = "申请站点";
-			cloumnName2[3] = "Applybranchname";
-			cloumnName1[4] = "配送结果";
-			cloumnName2[4] = "Nowdeliveryname";
-			cloumnName1[5] = "小件员";
-			cloumnName2[5] = "Delivername";
-			cloumnName1[6] = "处理状态";
-			cloumnName2[6] = "Handlename";
-			cloumnName1[7] = "处理人";
-			cloumnName2[7] = "Editusername";
-			cloumnName1[8] = "修改配送结果";
-			cloumnName2[8] = "Editnowdeliveryname";
-			cloumnName1[9] = "原因备注";
-			cloumnName2[9] = "Reasoncontent";
-			cloumnName1[10] = "备注";
-			cloumnName2[10] = "Editreason";
-			
-		}
-		
-		// 中转出站view
-		public void SetKehuShoutuihuoFields(String[] cloumnName1, String[] cloumnName2) {
-			cloumnName1[0] = "订单号";
-			cloumnName2[0] = "Cwb";
-			cloumnName1[1] = "订单类型";
-			cloumnName2[1] = "Cwbordertypename";
-			cloumnName1[2] = "供货商名";
-			cloumnName2[2] = "Customername";
-			cloumnName1[3] = "收件人";
-			cloumnName2[3] = "Receivablefee";
-			cloumnName1[4] = "发货时间";
-			cloumnName2[4] = "Emaildate";
-			cloumnName1[5] = "退客户出户时间";
-			cloumnName2[5] = "Createtime";
-			cloumnName1[6] = "确认状态";
-			cloumnName2[6] = "Auditstatename";
-			cloumnName1[7] = "确认人";
-			cloumnName2[7] = "Auditor";
-			cloumnName1[8] = "确认时间";
-			cloumnName2[8] = "Audittime";
-			
-		}
 
-	//支付信息修改审核导出
-	public void setEditPIMCheckOrderFields(String[] cloumnName1,String[] cloumnName2) {
+	// 退货出站view
+	public void SetTuiHuoChuzhanFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
-		cloumnName1[1] = "客户名称";
-		cloumnName2[1] = "Customername";
-		cloumnName1[2] = "申请类型";
-		cloumnName2[2] = "Applytype";
-		cloumnName1[3] = "订单类型";
-		cloumnName2[3] = "OldnewCwbordertypename";
-		cloumnName1[4] = "订单金额[元]";
-		cloumnName2[4] = "OldnewReceivablefee";
-		cloumnName1[5] = "订单支付方式";
-		cloumnName2[5] = "OldnewPaytype";
-		cloumnName1[6] = "订单当前状态";
-		cloumnName2[6] = "NowState";
-		cloumnName1[7] = "订单当前机构";
-		cloumnName2[7] = "Branchname";
-		cloumnName1[8] = "申请人";
-		cloumnName2[8] = "Applyuser";
-		cloumnName1[9] = "申请时间";
-		cloumnName2[9] = "Applytime";
-		cloumnName1[10] = "审核人";
-		cloumnName2[10] = "Auditor";
-		cloumnName1[11] = "审核时间";
-		cloumnName2[11] = "Audittime";
-		
-	}
-	
-	//支付信息修改确认导出
-	public void setEditPIMConfirmFields(String[] cloumnName1,String[] cloumnName2) {
-		cloumnName1[0] = "订单号";
-		cloumnName2[0] = "Cwb";
-		cloumnName1[1] = "客户名称";
-		cloumnName2[1] = "Customername";
-		cloumnName1[2] = "申请类型";
-		cloumnName2[2] = "Applytype";
-		cloumnName1[3] = "订单类型";
-		cloumnName2[3] = "OldnewCwbordertypename";
-		cloumnName1[4] = "订单金额[元]";
-		cloumnName2[4] = "OldnewReceivablefee";
-		cloumnName1[5] = "订单支付方式";
-		cloumnName2[5] = "OldnewPaytype";
-		cloumnName1[6] = "订单当前状态";
-		cloumnName2[6] = "NowState";
-		cloumnName1[7] = "订单当前机构";
-		cloumnName2[7] = "Branchname";
-		cloumnName1[8] = "申请人";
-		cloumnName2[8] = "Applyuser";
-		cloumnName1[9] = "审核人";
-		cloumnName2[9] = "Auditor";
-		cloumnName1[10] = "审核时间";
-		cloumnName2[10] = "Audittime";
-		cloumnName1[11] = "确认人";
-		cloumnName2[11] = "Confirmname";
-		cloumnName1[12] = "确认时间";
-		cloumnName2[12] = "Confirmtime";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "客户名称";
+		cloumnName2[2] = "Customername";
+		cloumnName1[3] = "配送站点";
+		cloumnName2[3] = "Branchname";
+		cloumnName1[4] = "归班反馈时间";
+		cloumnName2[4] = "Createtime";
+		cloumnName1[5] = "审核人";
+		cloumnName2[5] = "Auditname";
+		cloumnName1[6] = "审核时间";
+		cloumnName2[6] = "Audittime";
+		cloumnName1[7] = "审核状态";
+		cloumnName2[7] = "Checkstatename";
+		cloumnName1[8] = "审核结果";
+		cloumnName2[8] = "Checkresultname";
 	}
 
-	public void SetResetFeedbackOrderFields(String[] cloumnName1,
-			String[] cloumnName2) {
+	// 中转出站view
+	public void SetZhongzhuanchuzhanFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "客户名称";
+		cloumnName2[2] = "Customername";
+		cloumnName1[3] = "当前站点";
+		cloumnName2[3] = "Branchname";
+		cloumnName1[4] = "配送站点";
+		cloumnName2[4] = "Matchbranchname";
+		cloumnName1[5] = "到站时间";
+		cloumnName2[5] = "InSitetime";
+		cloumnName1[6] = "审核人";
+		cloumnName2[6] = "Auditor";
+		cloumnName1[7] = "审核时间";
+		cloumnName2[7] = "Audittime";
+
+	}
+
+	// 反馈状态修改申请
+	public void SetResetFeedBackFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "申请时间";
+		cloumnName2[1] = "Applytime";
+		cloumnName1[2] = "当前站点";
+		cloumnName2[2] = "Currentbranchname";
+		cloumnName1[3] = "申请站点";
+		cloumnName2[3] = "Applybranchname";
+		cloumnName1[4] = "配送结果";
+		cloumnName2[4] = "Nowdeliveryname";
+		cloumnName1[5] = "小件员";
+		cloumnName2[5] = "Delivername";
+		cloumnName1[6] = "处理状态";
+		cloumnName2[6] = "Handlename";
+		cloumnName1[7] = "处理人";
+		cloumnName2[7] = "Editusername";
+		cloumnName1[8] = "修改配送结果";
+		cloumnName2[8] = "Editnowdeliveryname";
+		cloumnName1[9] = "原因备注";
+		cloumnName2[9] = "Reasoncontent";
+		cloumnName1[10] = "备注";
+		cloumnName2[10] = "Editreason";
+
+	}
+
+	// 中转出站view
+	public void SetKehuShoutuihuoFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "供货商名";
+		cloumnName2[2] = "Customername";
+		cloumnName1[3] = "收件人";
+		cloumnName2[3] = "Receivablefee";
+		cloumnName1[4] = "发货时间";
+		cloumnName2[4] = "Emaildate";
+		cloumnName1[5] = "退客户出户时间";
+		cloumnName2[5] = "Createtime";
+		cloumnName1[6] = "确认状态";
+		cloumnName2[6] = "Auditstatename";
+		cloumnName1[7] = "确认人";
+		cloumnName2[7] = "Auditor";
+		cloumnName1[8] = "确认时间";
+		cloumnName2[8] = "Audittime";
+
+	}
+
+	// 支付信息修改审核导出
+	public void setEditPIMCheckOrderFields(String[] cloumnName1, String[] cloumnName2) {
+		int i = 0;
+		cloumnName1[i] = "订单号";
+		cloumnName2[i++] = "Cwb";
+		cloumnName1[i] = "客户名称";
+		cloumnName2[i++] = "Customername";
+		cloumnName1[i] = "申请类型";
+		cloumnName2[i++] = "Applytype";
+		cloumnName1[i] = "订单类型";
+		cloumnName2[i++] = "OldnewCwbordertypename";
+		cloumnName1[i] = "订单金额[元]";
+		cloumnName2[i++] = "OldnewReceivablefee";
+		cloumnName1[i] = "运费金额[元]";
+		cloumnName2[i++] = "Shouldfare";
+		cloumnName1[i] = "订单支付方式";
+		cloumnName2[i++] = "OldnewPaytype";
+		cloumnName1[i] = "订单当前状态";
+		cloumnName2[i++] = "NowState";
+		cloumnName1[i] = "订单当前机构";
+		cloumnName2[i++] = "Branchname";
+		cloumnName1[i] = "申请人";
+		cloumnName2[i++] = "Applyuser";
+		cloumnName1[i] = "申请时间";
+		cloumnName2[i++] = "Applytime";
+		cloumnName1[i] = "审核人";
+		cloumnName2[i++] = "Auditor";
+		cloumnName1[i] = "审核时间";
+		cloumnName2[i++] = "Audittime";
+
+	}
+
+	// 支付信息修改确认导出
+	public void setEditPIMConfirmFields(String[] cloumnName1, String[] cloumnName2) {
+		int i = 0;
+		cloumnName1[i] = "订单号";
+		cloumnName2[i++] = "Cwb";
+		cloumnName1[i] = "客户名称";
+		cloumnName2[i++] = "Customername";
+		cloumnName1[i] = "申请类型";
+		cloumnName2[i++] = "Applytype";
+		cloumnName1[i] = "订单类型";
+		cloumnName2[i++] = "OldnewCwbordertypename";
+		cloumnName1[i] = "订单金额[元]";
+		cloumnName2[i++] = "OldnewReceivablefee";
+		cloumnName1[i] = "运费金额[元]";
+		cloumnName2[i++] = "Shouldfare";
+		cloumnName1[i] = "订单支付方式";
+		cloumnName2[i++] = "OldnewPaytype";
+		cloumnName1[i] = "订单当前状态";
+		cloumnName2[i++] = "NowState";
+		cloumnName1[i] = "订单当前机构";
+		cloumnName2[i++] = "Branchname";
+		cloumnName1[i] = "申请人";
+		cloumnName2[i++] = "Applyuser";
+		cloumnName1[i] = "审核人";
+		cloumnName2[i++] = "Auditor";
+		cloumnName1[i] = "审核时间";
+		cloumnName2[i++] = "Audittime";
+		cloumnName1[i] = "确认人";
+		cloumnName2[i++] = "Confirmname";
+		cloumnName1[i] = "确认时间";
+		cloumnName2[i++] = "Confirmtime";
+	}
+
+	public void SetResetFeedbackOrderFields(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "订单号";
 		cloumnName2[0] = "Cwb";
 		cloumnName1[1] = "订单类型";
@@ -3361,45 +3413,102 @@ public class ExportService {
 		cloumnName1[13] = "备注";
 		cloumnName2[13] = "Remark4";
 	}
-	//根据工资条导出(工资查询)（设置一个类与filename对应）
-	public void setSalaryImportsFields(String[] cloumnName1,
-			String[] cloumnName2,List<SalaryImport> salaryImports){
+
+	// 根据工资条导出(工资查询)（设置一个类与filename对应）
+	public void setSalaryImportsFields(String[] cloumnName1, String[] cloumnName2, List<SalaryImport> salaryImports) {
 		for (int i = 0; i < salaryImports.size(); i++) {
-			String filename=salaryImports.get(i).getFilename();
-			String zwName=salaryImports.get(i).getFiletext();
+			String filename = salaryImports.get(i).getFilename();
+			String zwName = salaryImports.get(i).getFiletext();
 			cloumnName1[i] = zwName;
 			cloumnName2[i] = (new StringBuilder()).append(Character.toUpperCase(filename.charAt(0))).append(filename.substring(1)).toString();
 		}
-		
-		
+
 	}
-	//工资字段的全部查询
-	public  void setSalaryAllExport(
-			String[] cloumnName1,
-			String[] cloumnName2,Object object,String  flag){
-		Field[] fields=object.getClass().getDeclaredFields();
+
+	// 工资字段的全部查询
+	public void setSalaryAllExport(String[] cloumnName1, String[] cloumnName2, Object object, String flag) {
+		Field[] fields = object.getClass().getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
-			cloumnName2[i]=StringUtils.upperFirst(fields[i].getName());
+			cloumnName2[i] = StringUtils.upperFirst(fields[i].getName());
 			if (flag.equals("SalaryGather")) {
-				String salaryGatherNames=cn.explink.domain.SalaryGatherExport.getAllNames();
-				String[] salaryGatherNamesAll=salaryGatherNames.split("_");
+				String salaryGatherNames = cn.explink.domain.SalaryGatherExport.getAllNames();
+				String[] salaryGatherNamesAll = salaryGatherNames.split("_");
 				for (int j = 0; j < salaryGatherNamesAll.length; j++) {
-					cloumnName1[j]=salaryGatherNamesAll[j];
+					cloumnName1[j] = salaryGatherNamesAll[j];
 				}
 			}
 		}
-		
+
 	}
-	public Object setObjectFinace(String[] cloumnName3, Map<String, Object> mapRow, int i)  {
-		Object a=null;
+
+	public Object setObjectFinace(String[] cloumnName3, Map<String, Object> mapRow, int i) {
+		Object a = null;
 		if ("Cwb".equalsIgnoreCase(cloumnName3[i].toString())) {
 			a = mapRow.get("cwb");
 		}
-		if("Businessfee".equalsIgnoreCase(cloumnName3[i].toString())){
+		if ("Businessfee".equalsIgnoreCase(cloumnName3[i].toString())) {
 			a = mapRow.get("businessfee");
 		}
-		
-		return a==null?"":a;
+
+		return a == null ? "" : a;
 	}
 
+	// 揽件反馈页面导出字段
+	public void setExpressFeedBackFileds(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "预订单编号";
+		cloumnName2[0] = "preOrderNo";
+		cloumnName1[1] = "领货时间";
+		cloumnName2[1] = "distributeDelivermanTime";
+		cloumnName1[2] = "寄件人";
+		cloumnName2[2] = "sendPerson";
+		cloumnName1[3] = "手机号";
+		cloumnName2[3] = "cellphone";
+		cloumnName1[4] = "固定电话";
+		cloumnName2[4] = "telephone";
+		cloumnName1[5] = "收件地址";
+		cloumnName2[5] = "collectAddress";
+	}
+
+	/**
+	 * 揽件反馈
+	 *
+	 * @return
+	 */
+	public Object setExpressUnFeedBackObject(String[] cloumnName3, List<ExpressFeedBackView> views, Object a, int i, int k) {
+		try {
+
+			if (cloumnName3[i].equals("preOrderNo")) {
+				a = views.get(k).getPreOrderNo();
+			} else if (cloumnName3[i].equals("distributeDelivermanTime")) {
+				a = this.sdf.format(views.get(k).getDistributeDelivermanTime());// 时间类型
+			} else if (cloumnName3[i].equals("sendPerson")) {
+				if (this.getSessionUser().getShownameflag() == 1) {
+					a = views.get(k).getSendPerson();
+				} else {
+					a = "******";
+				}
+			} else if (cloumnName3[i].equals("cellphone")) {
+				if (this.getSessionUser().getShowmobileflag() == 1) {
+					a = views.get(k).getCellphone();
+				} else {
+					a = "******";
+				}
+			} else if (cloumnName3[i].equals("telephone")) {
+				if (this.getSessionUser().getShowmobileflag() == 1) {
+					a = views.get(k).getTelephone();
+				} else {
+					a = "******";
+				}
+			} else if (cloumnName3[i].equals("collectAddress")) {
+				a = views.get(k).getCollectAddress();
+				/*
+				 * if (this.getSessionUser().getShowmobileflag() == 1) { } else
+				 * { a = "******"; }
+				 */
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return a;
+	}
 }

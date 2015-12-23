@@ -4,7 +4,7 @@ package cn.explink.service;
 public class OperationRuleServiceTest {
 
 /*	@Test
-	public void test() {
+	public void ExecelImportAndValidateUtilTest() {
 		OperationRuleService operationRuleService=new OperationRuleService();
 		OperationRule rule = new OperationRule();
 		rule.setFlowordertype(0);

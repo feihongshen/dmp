@@ -86,7 +86,7 @@ public class ChinaUmsService {
 		JointEntity obj = null;
 		String posValue = "";
 		try {
-			obj = jiontDAO.getJointEntity(key);
+			obj = this.jiontDAO.getJointEntity(key);
 			posValue = obj.getJoint_property();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -96,8 +96,8 @@ public class ChinaUmsService {
 
 	public ChinaUms getChinaUmsSettingMethod(int key) {
 		ChinaUms chinaUms = new ChinaUms();
-		if (!"".equals(getObjectMethod(key))) {
-			JSONObject jsonObj = JSONObject.fromObject(getObjectMethod(key));
+		if (!"".equals(this.getObjectMethod(key))) {
+			JSONObject jsonObj = JSONObject.fromObject(this.getObjectMethod(key));
 			chinaUms = (ChinaUms) JSONObject.toBean(jsonObj, ChinaUms.class);
 		} else {
 			chinaUms = new ChinaUms();
@@ -109,8 +109,8 @@ public class ChinaUmsService {
 	protected long getUserIdByUserName(String deliver_man) {
 		long deliverid = 0;
 		try {
-			List<User> userlist = userDAO.getUsersByUsername(deliver_man);
-			if (userlist != null && userlist.size() > 0) {
+			List<User> userlist = this.userDAO.getUsersByUsername(deliver_man);
+			if ((userlist != null) && (userlist.size() > 0)) {
 				deliverid = userlist.get(0).getUserid();
 			}
 		} catch (Exception e) {
@@ -126,61 +126,61 @@ public class ChinaUmsService {
 		int isotherdeliveroper = Integer.parseInt(request.getParameter("isotherdeliveroper"));
 
 		String mer_id = StringUtil.nullConvertToEmptyString(request.getParameter("mer_id")); // 商户号
-		
-		String forward_url = StringUtil.nullConvertToEmptyString(request.getParameter("forward_url"));
-		
-		String isforward = StringUtil.nullConvertToEmptyString(request.getParameter("isforward"));
-		int isfW = Integer.parseInt(("".equals(isforward))?"0":isforward);//新加（是否允许转发）---LX 1允许，0禁止
 
-		String version= request.getParameter("version");
-		
-		
-		
-		
+		String forward_url = StringUtil.nullConvertToEmptyString(request.getParameter("forward_url"));
+
+		String isforward = StringUtil.nullConvertToEmptyString(request.getParameter("isforward"));
+		int isfW = Integer.parseInt(("".equals(isforward)) ? "0" : isforward);// 新加（是否允许转发）---LX
+																				// 1允许，0禁止
+
+		String version = request.getParameter("version");
+
 		chinaums.setPrivate_key(private_key);
 		chinaums.setRequest_url(request_url);
 		chinaums.setIsotherdeliveroper(isotherdeliveroper);
 		chinaums.setMer_id(mer_id);
 		chinaums.setForward_url(forward_url);
-		chinaums.setIsForward(isfW);//是否允许转发----LX
+		chinaums.setIsForward(isfW);// 是否允许转发----LX
 		chinaums.setVersion(Integer.valueOf(version));
 		chinaums.setIsAutoSupplementaryProcess(Integer.valueOf(request.getParameter("isAutoSupplementaryProcess")));
-		
+
 		JSONObject jsonObj = JSONObject.fromObject(chinaums);
-		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
+		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
 			jointEntity = new JointEntity();
 			jointEntity.setJoint_num(joint_num);
 			jointEntity.setJoint_property(jsonObj.toString());
-			jiontDAO.Create(jointEntity);
+			this.jiontDAO.Create(jointEntity);
 		} else {
 			jointEntity.setJoint_num(joint_num);
 			jointEntity.setJoint_property(jsonObj.toString());
-			jiontDAO.Update(jointEntity);
+			this.jiontDAO.Update(jointEntity);
 		}
 	}
 
 	protected User getUser(long userid) {
-		return userDAO.getUserByUserid(userid);
+		return this.userDAO.getUserByUserid(userid);
 	}
 
 	/**
 	 * 处理chinaums的请求
-	 * 
+	 *
 	 * @return code
 	 * @throws UnsupportedEncodingException
 	 */
 	public String AnalyzXMLByChinaUms(ChinaUms chinaUms, String xmlstr) {
-		if (xmlstr != null && !"".equals(xmlstr)) {
+		if ((xmlstr != null) && !"".equals(xmlstr)) {
 			try {
 				Transaction rootnote = ChinaumsUnmarchal.Unmarchal(xmlstr);
-				if (!ValidateMAC_publicMethod(rootnote, chinaUms, xmlstr)) {
-					logger.error("chinaums请求签名验证失败!");
+				if (!this.ValidateMAC_publicMethod(rootnote, chinaUms, xmlstr)) {
+					this.logger.error("chinaums请求签名验证失败!");
 					rootnote.getTransaction_Header().setResponse_code(ChinaUmsExptMessageEnum.SignValidateFailed.getResp_code());
 					rootnote.getTransaction_Header().setResponse_msg(ChinaUmsExptMessageEnum.SignValidateFailed.getResp_msg());
-					//return chinaUmsService_public.createXML_toExptFeedBack(chinaUms, rootnote);
+					// return
+					// chinaUmsService_public.createXML_toExptFeedBack(chinaUms,
+					// rootnote);
 				}
-				return DealWithchinaumsInterface(chinaUms, xmlstr, rootnote);
+				return this.DealWithchinaumsInterface(chinaUms, xmlstr, rootnote);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return "Convert XML to Transaction Bean Exception! reason=" + e;
@@ -194,7 +194,7 @@ public class ChinaUmsService {
 
 	/**
 	 * chinaums请求的接口 判断
-	 * 
+	 *
 	 * @param chinaUms
 	 * @param xmlstr
 	 * @param rootnote
@@ -204,52 +204,48 @@ public class ChinaUmsService {
 		String transaction_id = rootnote.getTransaction_Header().getTranstype();
 		String cwb = "";
 		try {
-			if (ChinaUmsEnum.Delivery.getCommand().equals(transaction_id)
-					||ChinaUmsEnum.DeliveryCancel.getCommand().equals(transaction_id)
-					||ChinaUmsEnum.OrderRegistration.getCommand().equals(transaction_id)
-					||ChinaUmsEnum.Search.getCommand().equals(transaction_id)) {// 查询支付反馈异常件需要判断是否要转发
-				
-				if(chinaUms.getIsForward()==1){
-					cwb = cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrderno());
-					CwbOrder co = cwbDAO.getCwbByCwb(cwb);
-					if(co == null){ //转发
-						Map<String,String> paraMap=new HashMap<String,String>();
+			if (ChinaUmsEnum.Delivery.getCommand().equals(transaction_id) || ChinaUmsEnum.DeliveryCancel.getCommand().equals(transaction_id)
+					|| ChinaUmsEnum.OrderRegistration.getCommand().equals(transaction_id) || ChinaUmsEnum.Search.getCommand().equals(transaction_id)) {// 查询支付反馈异常件需要判断是否要转发
+
+				if (chinaUms.getIsForward() == 1) {
+					cwb = this.cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrderno());
+					CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+					if (co == null) { // 转发
+						Map<String, String> paraMap = new HashMap<String, String>();
 						paraMap.put("context", xmlstr);
 						String forwardStr = RestHttpServiceHanlder.sendHttptoServer(paraMap, chinaUms.getForward_url());
-						logger.info("chinaums转发URL返回={}",forwardStr);
+						this.logger.info("chinaums转发URL返回={}", forwardStr);
 						return forwardStr;
 					}
 				}
-				
+
 			}
 		} catch (Exception e) {
-			logger.error("chinaums转发ULR异常,cwb="+cwb,e);
+			this.logger.error("chinaums转发ULR异常,cwb=" + cwb, e);
 		}
-		
 		try {
-			
-			logger.info("获取chinaums的业务编码[" + transaction_id + "];请求XML:" + xmlstr);
+			this.logger.info("获取chinaums的业务编码[" + transaction_id + "];请求XML:" + xmlstr);
 			if (ChinaUmsEnum.Login.getCommand().equals(transaction_id)) {// 派送员登陆
-				return chinaUmsServiceMaster.getChinaUmsService_toLogin().tologin(rootnote, chinaUms);
+				return this.chinaUmsServiceMaster.getChinaUmsService_toLogin().tologin(rootnote, chinaUms);
 			}
 			if (ChinaUmsEnum.LoginOut.getCommand().equals(transaction_id)) {// 登出
-				return chinaUmsServiceMaster.getChinaUmsService_toLogout().tologout(rootnote, chinaUms);
+				return this.chinaUmsServiceMaster.getChinaUmsService_toLogout().tologout(rootnote, chinaUms);
 			}
 			if (ChinaUmsEnum.Delivery.getCommand().equals(transaction_id)) { // 派送运单支付反馈
-				return chinaUmsServiceMaster.getChinaUmsService_toPayAmount().toPayAmountForPos(rootnote, chinaUms);
+				return this.chinaUmsServiceMaster.getChinaUmsService_toPayAmount().toPayAmountForPos(rootnote, chinaUms);
 			}
 			if (ChinaUmsEnum.DeliveryCancel.getCommand().equals(transaction_id)) {// 撤销交易结果反馈
-				return chinaUmsServiceMaster.getChinaUmsService_toBackOut().toBackOut(rootnote, chinaUms);
+				return this.chinaUmsServiceMaster.getChinaUmsService_toBackOut().toBackOut(rootnote, chinaUms);
 			}
 			if (ChinaUmsEnum.OrderRegistration.getCommand().equals(transaction_id)) { // 派件异常反馈
-				return chinaUmsServiceMaster.getChinaUmsService_toExptFeedBack().toExceptionFeedBack(rootnote, chinaUms);
+				return this.chinaUmsServiceMaster.getChinaUmsService_toExptFeedBack().toExceptionFeedBack(rootnote, chinaUms);
 			}
 			if (ChinaUmsEnum.Search.getCommand().equals(transaction_id)) { // 运单查询
-				return chinaUmsServiceMaster.getChinaUmsService_toCwbSearch().toCwbSearch(rootnote, chinaUms);
+				return this.chinaUmsServiceMaster.getChinaUmsService_toCwbSearch().toCwbSearch(rootnote, chinaUms);
 			}
 
 		} catch (Exception e) {
-			logger.error("处理chinaums请求发生异常，异常原因：", e);
+			this.logger.error("处理chinaums请求发生异常，异常原因：", e);
 			e.printStackTrace();
 			return "处理chinaums请求发生异常" + e.getMessage();
 		}
@@ -269,18 +265,18 @@ public class ChinaUmsService {
 		strb.append(xmlsE);
 		String key = chinaUms.getPrivate_key();
 		String str1 = MD5Util.md5(key);// 约定的私钥,加密后得到32位私钥
-		logger.info(transtype + "需要验证的内容:" + strb.toString() + str1);
+		this.logger.info(transtype + "需要验证的内容:" + strb.toString() + str1);
 		System.out.println(transtype + "需要验证的内容:" + strb.toString() + str1);
 		String str2 = MD5Util.md5(strb.toString() + str1).toUpperCase();// 去掉mac节点剩下的所有的报文加上私钥进行ＭＤ５加密
-		logger.info(transtype + "签名验证的内容:" + str2);
-		logger.info(transtype + "签名验证mac:" + mac);
+		this.logger.info(transtype + "签名验证的内容:" + str2);
+		this.logger.info(transtype + "签名验证mac:" + mac);
 		System.out.println(transtype + "签名验证的内容:" + str2);
 		// 验证签名
 		boolean checkMACflag = false;
 		try {
 			checkMACflag = str2.equals(mac);
 		} catch (Exception e) {
-			logger.error("chinaums签名验证异常!");
+			this.logger.error("chinaums签名验证异常!");
 			e.printStackTrace();
 		}
 		return checkMACflag;
@@ -288,7 +284,7 @@ public class ChinaUmsService {
 
 	/**
 	 * 返回一个签名的结果,用于返回给chinaums信息时候加密
-	 * 
+	 *
 	 * @param chinaUms
 	 * @param str
 	 * @return
@@ -298,20 +294,20 @@ public class ChinaUmsService {
 		try {
 			MAC = MD5Util.md5(str.toString() + MD5Util.md5(chinaUms.getPrivate_key()));
 		} catch (Exception e) {
-			logger.error("移动POS(chinaums):返回签名加密异常!", e);
+			this.logger.error("移动POS(chinaums):返回签名加密异常!", e);
 			e.printStackTrace();
 		}
 		return MAC;
 	}
 
 	public void update(int joint_num, int state) {
-		jiontDAO.UpdateState(joint_num, state);
+		this.jiontDAO.UpdateState(joint_num, state);
 	}
 
 	public DangDang getDangDangSettingMethod(int key) {
 		DangDang dangdang = new DangDang();
-		if (!"".equals(getObjectMethod(key))) {
-			JSONObject jsonObj = JSONObject.fromObject(getObjectMethod(key));
+		if (!"".equals(this.getObjectMethod(key))) {
+			JSONObject jsonObj = JSONObject.fromObject(this.getObjectMethod(key));
 			dangdang = (DangDang) JSONObject.toBean(jsonObj, DangDang.class);
 		} else {
 			dangdang = null;
@@ -331,7 +327,7 @@ public class ChinaUmsService {
 
 	/**
 	 * 为ChinaUmsRespNote封装 公用对象
-	 * 
+	 *
 	 * @param rootnote
 	 * @param chinaUmsRespNote
 	 * @return
@@ -339,54 +335,53 @@ public class ChinaUmsService {
 	protected ChinaUmsRespNote BuildChinaumsRespClass(Transaction rootnote) {
 		ChinaUmsRespNote chinaUmsRespNote = new ChinaUmsRespNote();
 
-		chinaUmsRespNote.setDeliverid(getUserIdByUserName(rootnote.getTransaction_Header().getEmployno()));
+		chinaUmsRespNote.setDeliverid(this.getUserIdByUserName(rootnote.getTransaction_Header().getEmployno()));
 
 		long deliverid = chinaUmsRespNote.getDeliverid();
-		ChinaUms chinaUms = getChinaUmsSettingMethod(PosEnum.ChinaUms.getKey());
-		
-		String cwb = cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrderno());
+		ChinaUms chinaUms = this.getChinaUmsSettingMethod(PosEnum.ChinaUms.getKey());
 
-		CwbOrder co = cwbDAO.getCwbDetailByCwbAndDeliverId(0, cwb);
-		
+		String cwb = this.cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrderno());
+
+		CwbOrder co = this.cwbDAO.getCwbDetailByCwbAndDeliverId(0, cwb);
+
 		chinaUmsRespNote.setCwbOrder(co);
-		
+
 		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
-		
-		if(ds==null){
-			if(chinaUms.getIsAutoSupplementaryProcess()==1){  //开启补充流程环节
+
+		if (ds == null) {
+			if (chinaUms.getIsAutoSupplementaryProcess() == 1) { // 开启补充流程环节
 				ds = this.getDeliveryStateAutoSupplementaryProcess(cwb, deliverid);
-				co = cwbDAO.getCwbDetailByCwbAndDeliverId(0, cwb);
-			}else{
+				co = this.cwbDAO.getCwbDetailByCwbAndDeliverId(0, cwb);
+			} else {
 				chinaUmsRespNote.setCwbOrder(null);
 			}
 		}
-		
+
 		if (chinaUms.getIsotherdeliveroper() == 1) { // 限制他人刷卡，只能自己刷自己名下订单
-			if(co.getDeliverid()!=0&&co.getDeliverid()!=deliverid){
+			if ((co.getDeliverid() != 0) && (co.getDeliverid() != deliverid)) {
 				chinaUmsRespNote.setCwbOrder(null);
 			}
 		}
-		
 		chinaUmsRespNote.setDeliverstate(ds);
 		chinaUmsRespNote.setOrder_no(cwb);
 		chinaUmsRespNote.setTransaction_id(rootnote.getTransaction_Header().getTranstype());
 		return chinaUmsRespNote;
 	}
-	
+
 	public DeliveryState getDeliveryStateAutoSupplementaryProcess(String cwb, long deliverid) {
-	
-			this.logger.info("POS支付跳流程，需自动创建数据到deliver_state表，订单号={},deliverid={}", cwb, deliverid);
-			this.cwbOrderService.receiveGoods(this.userDAO.getUserByUserid(deliverid), this.userDAO.getUserByUserid(deliverid), cwb, cwb);
-			DeliveryState deliverstate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
-			return deliverstate;
+
+		this.logger.info("POS支付跳流程，需自动创建数据到deliver_state表，订单号={},deliverid={}", cwb, deliverid);
+		this.cwbOrderService.receiveGoods(this.userDAO.getUserByUserid(deliverid), this.userDAO.getUserByUserid(deliverid), cwb, cwb);
+		DeliveryState deliverstate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+		return deliverstate;
 	}
 
 	protected ChinaUmsRespNote BuildChinaumsRespClassAndSign(Transaction rootnote) {
-		String cwb = cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrderno());
+		String cwb = this.cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrderno());
 		ChinaUmsRespNote chinaUmsRespNote = new ChinaUmsRespNote();
-		chinaUmsRespNote.setDeliverid(getUserIdByUserName(rootnote.getTransaction_Header().getEmployno()));
-		chinaUmsRespNote.setCwbOrder(cwbDAO.getCwbDetailByCwbAndDeliverId(0, cwb));
-		DeliveryState ds = deliveryStateDAO.getDeliveryStateByCwb_posAndSign(cwb, chinaUmsRespNote.getDeliverid()); // 如果根据订单号可以查到对象，则返回，如果查询不到，则调用receiveGoods创建。
+		chinaUmsRespNote.setDeliverid(this.getUserIdByUserName(rootnote.getTransaction_Header().getEmployno()));
+		chinaUmsRespNote.setCwbOrder(this.cwbDAO.getCwbDetailByCwbAndDeliverId(0, cwb));
+		DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb_posAndSign(cwb, chinaUmsRespNote.getDeliverid()); // 如果根据订单号可以查到对象，则返回，如果查询不到，则调用receiveGoods创建。
 		chinaUmsRespNote.setDeliverstate(ds);
 		chinaUmsRespNote.setOrder_no(cwb);
 		chinaUmsRespNote.setTransaction_id(rootnote.getTransaction_Header().getTranstype());

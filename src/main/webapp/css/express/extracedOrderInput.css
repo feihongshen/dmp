@@ -1,0 +1,29 @@
+.tdleft {
+	text-align: left;
+}
+
+.tdcenter {
+	text-align: center;
+}
+
+.tdrigth {
+	text-align: right;
+}
+
+.input_text2 {
+	border: 1px solid #09C;
+	background: url(../images/repeatx.png) repeat-x 0 -175px;
+	line-height: 16px;
+	height: 20px;
+	width: 100%;
+}
+.select2 { 
+	border:1px solid #09C; 
+	background:url(../images/repeatx.png) repeat-x 0 -175px; 
+	width: 100%; 
+	height:20px; 
+	line-height:20px; 
+	color:#000
+}
+
+

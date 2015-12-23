@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.CwbKuaiDi;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -63,13 +64,43 @@ public class CwbKuaiDiDAO {
 			cwbKuaiDi.setWeightfee(rs.getBigDecimal("weightfee"));
 			cwbKuaiDi.setZhongzhuanbranchid(rs.getLong("zhongzhuanbranchid"));
 			cwbKuaiDi.setShoujianrencompany(rs.getString("shoujianrencompany"));
+			cwbKuaiDi.setFlowordertype(rs.getLong("flowordertype"));
+			cwbKuaiDi.setCustomercode(rs.getString("customercode"));
+			return cwbKuaiDi;
+		}
+	}
+
+	private final class ExpressMapper implements RowMapper<CwbKuaiDi> {
+		@Override
+		public CwbKuaiDi mapRow(ResultSet rs, int rowNum) throws SQLException {
+			CwbKuaiDi cwbKuaiDi = new CwbKuaiDi();
+			cwbKuaiDi.setCwb(rs.getString("cwb"));
+			cwbKuaiDi.setAllfee(rs.getBigDecimal("allfee"));
+			cwbKuaiDi.setLanshoubranchid(rs.getLong("lanshoubranchid"));
+			cwbKuaiDi.setLanshouuserid(rs.getLong("lanshouuserid"));
+			cwbKuaiDi.setPaytype(rs.getLong("paytype"));
+			cwbKuaiDi.setLanshoutime(StringUtil.nullConvertToEmptyString(rs.getString("lanshoutime")));
+			cwbKuaiDi.setSendconsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneeaddress")));
+			cwbKuaiDi.setSendconsigneecompany(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneecompany")));
+			cwbKuaiDi.setSendconsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneemobile")));
+			cwbKuaiDi.setSendconsigneename(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneename")));
+			cwbKuaiDi.setRemark(StringUtil.nullConvertToEmptyString(rs.getString("remark")));
+			cwbKuaiDi.setRealweight(rs.getBigDecimal("realweight"));
+			cwbKuaiDi.setTransitfee(rs.getBigDecimal("transitfee"));
+			cwbKuaiDi.setPackagefee(rs.getBigDecimal("packagefee"));
+			cwbKuaiDi.setInsuredrate(rs.getBigDecimal("insuredfee"));
+			cwbKuaiDi.setShoujianrencompany(rs.getString("shoujianrencompany"));
+			cwbKuaiDi.setFlowordertype(rs.getLong("flowordertype"));
+			cwbKuaiDi.setCustomercode(rs.getString("customercode"));
+			cwbKuaiDi.setPaisongbranchid(rs.getLong("deliverybrach"));
+			cwbKuaiDi.setReceivablefee(rs.getBigDecimal("receivablefee"));
 			return cwbKuaiDi;
 		}
 	}
 
 	public CwbKuaiDi getCwbByCwbLock(String cwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from ops_cwbkuaidi_detail where cwb=? and state=1 for update", new CwbKuaiDiMapper(), cwb);
+			return this.jdbcTemplate.queryForObject("SELECT * from ops_cwbkuaidi_detail where cwb=? and state=1 for update", new CwbKuaiDiMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -77,12 +108,12 @@ public class CwbKuaiDiDAO {
 
 	public void saveCwbKuaiDiPaiSongByCwb(CwbKuaiDi cwbKuaiDi) {
 		String sql = "update ops_cwbkuaidi_detail set paisongbranchid=?,paisonguserid=?,paisongtime=?  where cwb=?";
-		jdbcTemplate.update(sql, cwbKuaiDi.getPaisongbranchid(), cwbKuaiDi.getPaisonguserid(), cwbKuaiDi.getPaisongtime(), cwbKuaiDi.getCwb());
+		this.jdbcTemplate.update(sql, cwbKuaiDi.getPaisongbranchid(), cwbKuaiDi.getPaisonguserid(), cwbKuaiDi.getPaisongtime(), cwbKuaiDi.getCwb());
 	}
 
 	public void saveCwbKuaiDiZhongZhuanByCwb(long zhongzhuanbranchid, String cwb) {
 		String sql = "update ops_cwbkuaidi_detail set zhongzhuanbranchid=?  where cwb=?";
-		jdbcTemplate.update(sql, zhongzhuanbranchid, cwb);
+		this.jdbcTemplate.update(sql, zhongzhuanbranchid, cwb);
 	}
 
 	public List<CwbKuaiDi> getCwbKuaiDiListPage(long page, long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
@@ -94,9 +125,33 @@ public class CwbKuaiDiDAO {
 			sql = sql.replace("ops_cwbkuaidi_detail", "ops_cwbkuaidi_detail FORCE INDEX(KD_PaiSongtime_Idx)");
 			sql += " paisongtime >= '" + begindate + "'  and paisongtime <= '" + enddate + "' ";
 		}
-		sql = getCwbKuaiDiByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		return jdbcTemplate.query(sql, new CwbKuaiDiMapper());
+		sql = this.getCwbKuaiDiByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbKuaiDiMapper());
+	}
+
+	// 快递订单查询
+	public List<CwbKuaiDi> getExpressOrderListPage(long page, long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
+		String sql = this.getQueryExpressSql(timeType, begindate, enddate, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new ExpressMapper());
+	}
+
+	/**
+	 * 快递单导出-查询所有
+	 *
+	 * @param timeType
+	 * @param begindate
+	 * @param enddate
+	 * @param lanshoubranchids
+	 * @param lanshouuserid
+	 * @param paisongbranchids
+	 * @param paisonguserid
+	 * @return
+	 */
+	public List<CwbKuaiDi> getExpressOrderListNoPage(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
+		String sql = this.getQueryExpressSql(timeType, begindate, enddate, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		return this.jdbcTemplate.query(sql, new ExpressMapper());
 	}
 
 	public List<CwbKuaiDi> getCwbKuaiDiListNoPage(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
@@ -108,8 +163,8 @@ public class CwbKuaiDiDAO {
 			sql = sql.replace("ops_cwbkuaidi_detail", "ops_cwbkuaidi_detail FORCE INDEX(KD_PaiSongtime_Idx)");
 			sql += " paisongtime >= '" + begindate + "'  and paisongtime <= '" + enddate + "' ";
 		}
-		sql = getCwbKuaiDiByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
-		return jdbcTemplate.query(sql, new CwbKuaiDiMapper());
+		sql = this.getCwbKuaiDiByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		return this.jdbcTemplate.query(sql, new CwbKuaiDiMapper());
 	}
 
 	public long getCwbKuaiDiListCount(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
@@ -121,12 +176,12 @@ public class CwbKuaiDiDAO {
 			sql = sql.replace("ops_cwbkuaidi_detail", "ops_cwbkuaidi_detail FORCE INDEX(KD_PaiSongtime_Idx)");
 			sql += " paisongtime >= '" + begindate + "'  and paisongtime <= '" + enddate + "' ";
 		}
-		sql = getCwbKuaiDiByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
-		return jdbcTemplate.queryForLong(sql);
+		sql = this.getCwbKuaiDiByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	private String getCwbKuaiDiByPageWhereSql(String sql, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
-		if (lanshoubranchids.length() > 0 || lanshouuserid > 0 || paisongbranchids.length() > 0 || paisonguserid > 0) {
+		if ((lanshoubranchids.length() > 0) || (lanshouuserid > 0) || (paisongbranchids.length() > 0) || (paisonguserid > 0)) {
 			StringBuffer w = new StringBuffer();
 			if (lanshoubranchids.length() > 0) {
 				w.append(" and lanshoubranchid in(" + lanshoubranchids + ")");
@@ -145,26 +200,61 @@ public class CwbKuaiDiDAO {
 		return sql;
 	}
 
+	// 4.2快递使用
+	private String getExpressOrderByPageWhereSql(String sql, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
+		if ((lanshoubranchids.length() > 0) || (lanshouuserid > 0) || (paisongbranchids.length() > 0) || (paisonguserid > 0)) {
+			StringBuffer w = new StringBuffer();
+			if (lanshoubranchids.length() > 0) {
+				w.append(" and cd.instationid in(" + lanshoubranchids + ")");
+			}
+			if (lanshouuserid > 0) {
+				w.append(" and cd.collectorid = " + lanshouuserid);
+			}
+			if (paisongbranchids.length() > 0) {
+				w.append(" and cd.deliverybranchid in(" + paisongbranchids + ") and ds.state=1 ");
+			}
+			if (paisonguserid > 0) {
+				w.append(" and ds.deliveryid=" + paisonguserid + " and ds.state=1 ");
+			}
+
+			sql += w.toString();
+		}
+		sql = sql + " and cd.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
+		return sql;
+	}
+
+	// 4.2快递使用
+	public long getExpressOrderListCount(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
+		String sql = "SELECT count(1) from express_ops_cwb_detail as cd " + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb";
+		if (timeType == 1) {
+			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' ";
+		} else if (timeType == 2) {
+			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' ";
+		}
+		sql = this.getExpressOrderByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		return this.jdbcTemplate.queryForLong(sql);
+	}
+
 	/**
 	 * 根据订单号 查询 多个
-	 * 
+	 *
 	 * @param string
 	 * @return
 	 */
 	public List<CwbKuaiDi> getCwbKuaiDiByCwbs(String cwbs) {
 		String sql = " select * from ops_cwbkuaidi_detail where cwb in(" + cwbs + ")";
-		return jdbcTemplate.query(sql, new CwbKuaiDiMapper());
+		return this.jdbcTemplate.query(sql, new CwbKuaiDiMapper());
 	}
 
 	/**
 	 * 根据订单号 查询
-	 * 
+	 *
 	 * @param cwb
 	 * @return
 	 */
 	public CwbKuaiDi getCwbKuaiDiByCwb(String cwb) {
 		try {
-			return jdbcTemplate.queryForObject("SELECT * from ops_cwbkuaidi_detail where cwb=? limit 0,1", new CwbKuaiDiMapper(), cwb);
+			return this.jdbcTemplate.queryForObject("SELECT * from ops_cwbkuaidi_detail where cwb=? limit 0,1", new CwbKuaiDiMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -173,7 +263,7 @@ public class CwbKuaiDiDAO {
 
 	/**
 	 * 更新
-	 * 
+	 *
 	 * @param kd
 	 */
 	public void updateKuDi(final CwbKuaiDi kd) {
@@ -182,7 +272,7 @@ public class CwbKuaiDiDAO {
 				+ "nowfee=?,futurefee=?,weightfee=?,realweight=?,packagefee=?,otherfee=?," + "allfee=?,remark=?,signstate=?,signman=?,signtime=?,edituserid=?,edittime=?,"
 				+ "zhongzhuanbranchid=?,shoujianrencompany=? where cwb=?";
 
-		jdbcTemplate.update(sql, new PreparedStatementSetter() {
+		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 
@@ -223,7 +313,7 @@ public class CwbKuaiDiDAO {
 
 	/**
 	 * 快速补录
-	 * 
+	 *
 	 * @param cwb
 	 * @param signman
 	 * @param signstate
@@ -234,7 +324,27 @@ public class CwbKuaiDiDAO {
 	 */
 	public void updateKuDiQuick(String cwb, String signman, long signstate, String signtime, String remark, long userid, String nowTime) {
 		String sql = " update ops_cwbkuaidi_detail set remark=?,signstate=?,signman=?,signtime=?,edituserid=?," + "edittime=? where cwb=?";
-		jdbcTemplate.update(sql, remark, signstate, signman, signtime, userid, nowTime, cwb);
+		this.jdbcTemplate.update(sql, remark, signstate, signman, signtime, userid, nowTime, cwb);
+	}
+
+	private String getQueryExpressSql(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
+		String sql = "SELECT cd.cwb as cwb, " + " cd.collectorid as lanshouuserid, " + " cd.instationid as lanshoubranchid, " + " cd.credate as lanshoutime, "
+				+ " cd.consigneename as sendconsigneename, " + " cd.consigneemobile as sendconsigneemobile, " + " cd.consigneeaddress as sendconsigneeaddress, " + " cd.shouldfare as transitfee, "
+				+ " cd.totalfee as allfee, " + " cd.flowordertype as flowordertype, " + " cd.cwbremark as remark, " + " cd.paymethod as paytype, " + " cd.monthsettleno as customercode, "
+				+ " cd.customerid as sendconsigneecompany, " + " cd.reccustomerid as shoujianrencompany, " + " cd.carrealweight as realweight,cd.packagefee as packagefee,cd.insuredfee as insuredfee, "
+				+ " ds.deliverybranchid as deliverybrach, " + " cd.receivablefee as receivablefee"
+				+ " from express_ops_cwb_detail as cd ";
+//		if ((timeType == 2) || (paisongbranchids.length() > 0) || (paisonguserid > 0)) {
+			sql = sql + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb";
+//		}
+
+		if (timeType == 1) {
+			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' ";
+		} else if (timeType == 2) {
+			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' ";
+		}
+		sql = this.getExpressOrderByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		return sql;
 	}
 
 }

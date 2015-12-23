@@ -15,14 +15,14 @@ public class CwbOrder {
 	long deliverybranchid; // 配送站点
 	String backtocustomer_awb;// 退供货商封包批次号
 	String cwbflowflag; // 订单流程类型 1正常件 2中转件 3再投件
-	BigDecimal carrealweight; // 货物重量kg
+	BigDecimal carrealweight = BigDecimal.ZERO;; // 货物重量kg
 	String cartype;// 货物类别
 	String carwarehouse;// 发货仓库
 	String carsize;// 商品尺寸
-	BigDecimal backcaramount; // 取回货物金额
+	BigDecimal backcaramount = BigDecimal.ZERO;; // 取回货物金额
 	long sendcarnum;// 发货数量
 	long backcarnum;// 取货数量
-	BigDecimal caramount;// 货物金额
+	BigDecimal caramount = BigDecimal.ZERO;;// 货物金额
 	String backcarname; // 取回商品名称
 	String sendcarname;// 发出商品名称
 	long deliverid; // 小件员id
@@ -46,7 +46,7 @@ public class CwbOrder {
 	long customerid;// 供货商id
 	String shipcwb;// 供货商运单号
 	String consigneeno;// 收件人编号
-	String consigneename;// 收件人名称
+	String consigneename = "";// 收件人名称
 	String consigneeaddress;// 收件人地址
 	String consigneepostcode;// 收件人邮编
 	String consigneephone;// 收件人电话
@@ -56,8 +56,8 @@ public class CwbOrder {
 	String cwbprovince;// 省
 	String cwbcity;// 市
 	String cwbcounty;// 区县
-	BigDecimal receivablefee;// 代收货款应收金额
-	BigDecimal paybackfee;// 上门退货应退金额
+	BigDecimal receivablefee = BigDecimal.ZERO;;// 代收货款应收金额
+	BigDecimal paybackfee = BigDecimal.ZERO;;// 上门退货应退金额
 	String cwb;// 订单号
 	long shipperid;// 退供货商承运商id
 	int cwbordertypeid;// 订单类型（1配送 2上门退 3上门换）
@@ -125,25 +125,318 @@ public class CwbOrder {
 	private String consigneenameOfkf;
 	private String consigneemobileOfkf;
 	private String consigneephoneOfkf;
-	private long zhongzhuanreasonid;//中转id
-	private String zhongzhuanreason;//中转原因
-	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
-	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
-	private long fnorgbillid; //订单站点代收货款账单id
-	private long fnorgfreightbillid; //订单站点运费账单id
-	private int firstlevelid; //一级滞留原因id
-	private String city;//通过百度API匹配的城市
-	private String area;//通过百度API匹配的城区区域
-	
-	private long pickbranchid; //提货站点id
-	private long oxopickstate; //oxo揽件状态  。取值参考 CwbOXOStateEnum枚举类
-	private long oxodeliverystate; //oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
+	private long fnorgbillid; // 订单站点代收货款账单id
+	private long fnorgfreightbillid; // 订单站点运费账单id
+	private long zhongzhuanreasonid;// 中转id
+	private String zhongzhuanreason;// 中转原因
+	private BigDecimal fnorgoffset = BigDecimal.ZERO;// 站点账单回写的冲抵金额
+	private int fnorgoffsetflag;// 订单在站点账单中被冲抵标志位，0：未收款，1：已收款
+	private int firstlevelid; // 一级滞留原因id
+	private String city;// 通过百度API匹配的城市
+	private String area;// 通过百度API匹配的城区区域
 
-	private int branchfeebillexportflag;//加盟商派费账单导出标志
-	
-	private long fncustomerpayablebillid; //应付客户账单id
-	private long fncustomerposbillid; //客户pos抵扣账单 id
+	private long pickbranchid; // 提货站点id
+	private long oxopickstate; // oxo揽件状态 。取值参考 CwbOXOStateEnum枚举类
+	private long oxodeliverystate; // oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
+
+	private int branchfeebillexportflag;// 加盟商派费账单导出标志
+
+	// 以下是快递业务新增字段
+
+	/**
+	 * 寄件人客户编码
+	 */
+	private String sendercustomcode;
+	/**
+	 * 寄件人姓名
+	 */
+	private String sendername;
+	/**
+	 * 寄件人证件号
+	 */
+	private String senderid;
+	/**
+	 * 寄件人省id
+	 */
+	private int senderprovinceid;
+	/**
+	 * 寄件人省
+	 */
+	private String senderprovince;
+	/**
+	 * 寄件人市id
+	 */
+	private int sendercityid;
+	/**
+	 * 寄件人市
+	 */
+	private String sendercity;
+	/**
+	 * 寄件人区id
+	 */
+	private int sendercountyid;
+	/**
+	 * 寄件人区
+	 */
+	private String sendercounty;
+	/**
+	 * 寄件人街道
+	 */
+	private int senderstreetid;
+	/**
+	 * 寄件人街道
+	 */
+	private String senderstreet;
+	/**
+	 * 寄件人手机
+	 */
+	private String sendercellphone;
+	/**
+	 * 寄件人固话
+	 */
+	private String sendertelephone;
+	/**
+	 * 寄件人地址
+	 */
+	private String senderaddress;
+	/**
+	 * 收件人公司
+	 */
+	private Integer reccustomerid;
+	/**
+	 * 收件人证件号
+	 */
+	private String recid;
+	/**
+	 * 收件人省id
+	 */
+	private int recprovinceid;
+	/**
+	 * 收件人市id
+	 */
+	private int reccityid;
+	/**
+	 * 收件人区id
+	 */
+	private int reccountyid;
+	/**
+	 * 收件人街道id
+	 */
+	private int recstreetid;
+	/**
+	 * 收件人街道
+	 */
+	private String recstreet;
+	/**
+	 * 是否补录（0：否，1：是）
+	 */
+	private int isadditionflag;
+	/**
+	 * 委托内容/名称
+	 */
+	private String entrustname;
+	/**
+	 * 数量
+	 */
+	private int sendnum;
+	/**
+	 * 长度（cm）
+	 */
+	private int length;
+	/**
+	 * 宽度（cm）
+	 */
+	private int width;
+	/**
+	 * 高度（cm）
+	 */
+	private int height;
+	/**
+	 * kgs
+	 */
+	private double kgs;
+	/**
+	 * 是否有代收货款（0：否，1：是）
+	 */
+	private int hascod;
+	/**
+	 * 包装费用（元）
+	 */
+	private BigDecimal packagefee = BigDecimal.ZERO;
+	/**
+	 * 是否有保价（0：否，1：是）
+	 */
+	private int hasinsurance;
+	/**
+	 * 保价声明价值（元）
+	 */
+	private BigDecimal announcedvalue = BigDecimal.ZERO;
+	/**
+	 * 保价费用（元）
+	 */
+	private BigDecimal insuredfee = BigDecimal.ZERO;
+	/**
+	 * 计费重量（kg）
+	 */
+	private double chargeweight;
+	/**
+	 * 实际重量（kg）
+	 */
+	private double realweight;
+	/**
+	 * 费用合计（运费+包装+保价）
+	 */
+	private BigDecimal totalfee = BigDecimal.ZERO;
+	/**
+	 * 始发地代码
+	 */
+	private String sendareacode;
+	/**
+	 * 目的地代码
+	 */
+	private String recareacode;
+	/**
+	 * 付款方式（1：现付，2：到付，0：月结）
+	 */
+	private int paymethod;
+	/**
+	 * 月结账号
+	 */
+	private String monthsettleno;
+	/**
+	 * 揽件员id
+	 */
+	private int collectorid;
+	/**
+	 * 揽件员姓名
+	 */
+	private String collectorname;
+	/**
+	 * 入站操作人id
+	 */
+	private int instationhandlerid;
+	/**
+	 * 入站操作人姓名
+	 */
+	private String instationhandlername;
+	/**
+	 * 入站时间
+	 */
+	private String instationdatetime;
+	/**
+	 * 出站操作人id
+	 */
+	private int outstationhandlerid;
+	/**
+	 * 出站操作人姓名
+	 */
+	private String outstationhandlername;
+	/**
+	 * 出站时间
+	 */
+	private String outstationdatetime;
+	/**
+	 * 录入操作人id
+	 */
+	private int inputhandlerid;
+	/**
+	 * 录入操作人姓名
+	 */
+	private String inputhandlername;
+	/**
+	 * 录入时间
+	 */
+	private String inputdatetime;
+	/**
+	 * 补录人id
+	 */
+	private int completehandlerid;
+	/**
+	 * 补录人姓名
+	 */
+	private String completehandlername;
+	/**
+	 * 补录时间
+	 */
+	private String completedatetime;
+
+	/**
+	 * 入站id
+	 */
+	private long instationid;
+	/**
+	 * 入站名称
+	 */
+	private String instationname;
+
+	/**
+	 * 客户运费账单id
+	 */
+	private int customerfreightbillid;
+	/**
+	 * 站点运费账单id
+	 */
+	private int branchfreightbillid;
+	/**
+	 * 跨省应收运费账单id
+	 */
+	private int provincereceivablefreightbillid;
+	/**
+	 * 跨省应收货款账单id
+	 */
+	private int provincereceivablecodbillid;
+	/**
+	 * 是否交接标示
+	 */
+	private int ishandover;
+	/**
+	 * 交接人id
+	 */
+	private int instationhandoverid;
+	/**
+	 * 交接人姓名
+	 */
+	private String instationhandovername;
+	/**
+	 * 交接时间
+	 */
+	private String instationhandovertime;
+
+	public int getIshandover() {
+		return this.ishandover;
+	}
+
+	public void setIshandover(int ishandover) {
+		this.ishandover = ishandover;
+	}
+
+	private long fncustomerpayablebillid; // 应付客户账单id
+	private long fncustomerposbillid; // 客户pos抵扣账单 id
 	private long fncustomerbillid; // 应收客户账单id
+
+	public int getInstationhandoverid() {
+		return this.instationhandoverid;
+	}
+
+	public void setInstationhandoverid(int instationhandoverid) {
+		this.instationhandoverid = instationhandoverid;
+	}
+
+	public String getInstationhandovername() {
+		return this.instationhandovername;
+	}
+
+	public void setInstationhandovername(String instationhandovername) {
+		this.instationhandovername = instationhandovername;
+	}
+
+	public String getInstationhandovertime() {
+		return this.instationhandovertime;
+	}
+
+	public void setInstationhandovertime(String instationhandovertime) {
+		this.instationhandovertime = instationhandovertime;
+	}
 
 	/**
 	 * @return the city
@@ -153,7 +446,8 @@ public class CwbOrder {
 	}
 
 	/**
-	 * @param city the city to set
+	 * @param city
+	 *            the city to set
 	 */
 	public void setCity(String city) {
 		this.city = city;
@@ -167,36 +461,40 @@ public class CwbOrder {
 	}
 
 	/**
-	 * @param area the area to set
+	 * @param area
+	 *            the area to set
 	 */
 	public void setArea(String area) {
 		this.area = area;
 	}
 
 	/**
-	 * @param podfeetoheadtime the podfeetoheadtime to set
+	 * @param podfeetoheadtime
+	 *            the podfeetoheadtime to set
 	 */
 	public void setPodfeetoheadtime(String podfeetoheadtime) {
 		this.podfeetoheadtime = podfeetoheadtime;
 	}
 
 	/**
-	 * @param podfeetoheadchecktime the podfeetoheadchecktime to set
+	 * @param podfeetoheadchecktime
+	 *            the podfeetoheadchecktime to set
 	 */
 	public void setPodfeetoheadchecktime(String podfeetoheadchecktime) {
 		this.podfeetoheadchecktime = podfeetoheadchecktime;
 	}
 
 	/**
-	 * @param deliversubscribeday the deliversubscribeday to set
+	 * @param deliversubscribeday
+	 *            the deliversubscribeday to set
 	 */
 	public void setDeliversubscribeday(String deliversubscribeday) {
 		this.deliversubscribeday = deliversubscribeday;
 	}
 
+	private String changereason; // 中转原因
+	private long firstchangereasonid; // 一级中转原因
 
-	private String changereason; //中转原因
-	private long firstchangereasonid; //一级中转原因
 	public long getFirstchangereasonid() {
 		return this.firstchangereasonid;
 	}
@@ -205,9 +503,7 @@ public class CwbOrder {
 		this.firstchangereasonid = firstchangereasonid;
 	}
 
-
 	private long changereasonid;
-
 
 	public String getChangereason() {
 		return this.changereason;
@@ -216,8 +512,6 @@ public class CwbOrder {
 	public void setChangereason(String changereason) {
 		this.changereason = changereason;
 	}
-
-
 
 	public long getChangereasonid() {
 		return this.changereasonid;
@@ -231,26 +525,21 @@ public class CwbOrder {
 		return this.firstlevelid;
 	}
 
-
 	public void setFirstlevelid(int firstlevelid) {
 		this.firstlevelid = firstlevelid;
 	}
-
 
 	public int getFnorgoffsetflag() {
 		return this.fnorgoffsetflag;
 	}
 
-
 	public void setFnorgoffsetflag(int fnorgoffsetflag) {
 		this.fnorgoffsetflag = fnorgoffsetflag;
 	}
 
-
 	public BigDecimal getFnorgoffset() {
 		return this.fnorgoffset;
 	}
-
 
 	public void setFnorgoffset(BigDecimal fnorgoffset) {
 		this.fnorgoffset = fnorgoffset;
@@ -939,11 +1228,17 @@ public class CwbOrder {
 
 	@JsonIgnore
 	public BigDecimal getBusinessFee() {
+		if (this.receivablefee == null) {
+			return BigDecimal.ZERO.add(this.paybackfee).abs();
+		}
 		return this.receivablefee.add(this.paybackfee).abs();
 	}
 
 	@JsonIgnore
 	public boolean isOut() {
+		if (this.receivablefee == null) {
+			return BigDecimal.ZERO.compareTo(this.paybackfee) > 0;
+		}
 		return this.receivablefee.compareTo(this.paybackfee) > 0;
 	}
 
@@ -1139,7 +1434,6 @@ public class CwbOrder {
 		this.outareaflag = outareaflag;
 	}
 
-
 	public String getConsigneenameOfkf() {
 		return this.consigneenameOfkf;
 	}
@@ -1165,7 +1459,7 @@ public class CwbOrder {
 	}
 
 	public long getPickbranchid() {
-		return pickbranchid;
+		return this.pickbranchid;
 	}
 
 	public void setPickbranchid(long pickbranchid) {
@@ -1173,7 +1467,7 @@ public class CwbOrder {
 	}
 
 	public long getOxopickstate() {
-		return oxopickstate;
+		return this.oxopickstate;
 	}
 
 	public void setOxopickstate(long oxopickstate) {
@@ -1181,23 +1475,27 @@ public class CwbOrder {
 	}
 
 	public long getOxodeliverystate() {
-		return oxodeliverystate;
+		return this.oxodeliverystate;
 	}
 
 	public void setOxodeliverystate(long oxodeliverystate) {
 		this.oxodeliverystate = oxodeliverystate;
 	}
-	
+
 	public int getBranchfeebillexportflag() {
-		return branchfeebillexportflag;
+		return this.branchfeebillexportflag;
 	}
 
 	public void setBranchfeebillexportflag(int branchfeebillexportflag) {
 		this.branchfeebillexportflag = branchfeebillexportflag;
 	}
 
+	public String getSendercustomcode() {
+		return this.sendercustomcode;
+	}
+
 	public long getFnorgbillid() {
-		return fnorgbillid;
+		return this.fnorgbillid;
 	}
 
 	public void setFnorgbillid(long fnorgbillid) {
@@ -1205,7 +1503,7 @@ public class CwbOrder {
 	}
 
 	public long getFnorgfreightbillid() {
-		return fnorgfreightbillid;
+		return this.fnorgfreightbillid;
 	}
 
 	public void setFnorgfreightbillid(long fnorgfreightbillid) {
@@ -1213,7 +1511,7 @@ public class CwbOrder {
 	}
 
 	public long getFncustomerpayablebillid() {
-		return fncustomerpayablebillid;
+		return this.fncustomerpayablebillid;
 	}
 
 	public void setFncustomerpayablebillid(long fncustomerpayablebillid) {
@@ -1221,7 +1519,7 @@ public class CwbOrder {
 	}
 
 	public long getFncustomerposbillid() {
-		return fncustomerposbillid;
+		return this.fncustomerposbillid;
 	}
 
 	public void setFncustomerposbillid(long fncustomerposbillid) {
@@ -1229,12 +1527,486 @@ public class CwbOrder {
 	}
 
 	public long getFncustomerbillid() {
-		return fncustomerbillid;
+		return this.fncustomerbillid;
 	}
 
 	public void setFncustomerbillid(long fncustomerbillid) {
 		this.fncustomerbillid = fncustomerbillid;
 	}
-	
-	
+
+	public void setSendercustomcode(String sendercustomcode) {
+		this.sendercustomcode = sendercustomcode;
+	}
+
+	public String getSendername() {
+		return this.sendername;
+	}
+
+	public void setSendername(String sendername) {
+		this.sendername = sendername;
+	}
+
+	public String getSenderid() {
+		return this.senderid;
+	}
+
+	public void setSenderid(String senderid) {
+		this.senderid = senderid;
+	}
+
+	public int getSenderprovinceid() {
+		return this.senderprovinceid;
+	}
+
+	public void setSenderprovinceid(int senderprovinceid) {
+		this.senderprovinceid = senderprovinceid;
+	}
+
+	public String getSenderprovince() {
+		return this.senderprovince;
+	}
+
+	public void setSenderprovince(String senderprovince) {
+		this.senderprovince = senderprovince;
+	}
+
+	public int getSendercityid() {
+		return this.sendercityid;
+	}
+
+	public void setSendercityid(int sendercityid) {
+		this.sendercityid = sendercityid;
+	}
+
+	public String getSendercity() {
+		return this.sendercity;
+	}
+
+	public void setSendercity(String sendercity) {
+		this.sendercity = sendercity;
+	}
+
+	public int getSendercountyid() {
+		return this.sendercountyid;
+	}
+
+	public void setSendercountyid(int sendercountyid) {
+		this.sendercountyid = sendercountyid;
+	}
+
+	public String getSendercounty() {
+		return this.sendercounty;
+	}
+
+	public void setSendercounty(String sendercounty) {
+		this.sendercounty = sendercounty;
+	}
+
+	public int getSenderstreetid() {
+		return this.senderstreetid;
+	}
+
+	public void setSenderstreetid(int senderstreetid) {
+		this.senderstreetid = senderstreetid;
+	}
+
+	public String getSenderstreet() {
+		return this.senderstreet;
+	}
+
+	public void setSenderstreet(String senderstreet) {
+		this.senderstreet = senderstreet;
+	}
+
+	public String getSendercellphone() {
+		return this.sendercellphone;
+	}
+
+	public void setSendercellphone(String sendercellphone) {
+		this.sendercellphone = sendercellphone;
+	}
+
+	public String getSendertelephone() {
+		return this.sendertelephone;
+	}
+
+	public void setSendertelephone(String sendertelephone) {
+		this.sendertelephone = sendertelephone;
+	}
+
+	public String getSenderaddress() {
+		return this.senderaddress;
+	}
+
+	public void setSenderaddress(String senderaddress) {
+		this.senderaddress = senderaddress;
+	}
+
+	public Integer getReccustomerid() {
+		return this.reccustomerid;
+	}
+
+	public void setReccustomerid(Integer reccustomerid) {
+		this.reccustomerid = reccustomerid;
+	}
+
+	public String getRecid() {
+		return this.recid;
+	}
+
+	public void setRecid(String recid) {
+		this.recid = recid;
+	}
+
+	public int getRecprovinceid() {
+		return this.recprovinceid;
+	}
+
+	public void setRecprovinceid(int recprovinceid) {
+		this.recprovinceid = recprovinceid;
+	}
+
+	public int getReccityid() {
+		return this.reccityid;
+	}
+
+	public void setReccityid(int reccityid) {
+		this.reccityid = reccityid;
+	}
+
+	public int getReccountyid() {
+		return this.reccountyid;
+	}
+
+	public void setReccountyid(int reccountyid) {
+		this.reccountyid = reccountyid;
+	}
+
+	public int getRecstreetid() {
+		return this.recstreetid;
+	}
+
+	public void setRecstreetid(int recstreetid) {
+		this.recstreetid = recstreetid;
+	}
+
+	public String getRecstreet() {
+		return this.recstreet;
+	}
+
+	public void setRecstreet(String recstreet) {
+		this.recstreet = recstreet;
+	}
+
+	public int getIsadditionflag() {
+		return this.isadditionflag;
+	}
+
+	public void setIsadditionflag(int isadditionflag) {
+		this.isadditionflag = isadditionflag;
+	}
+
+	public String getEntrustname() {
+		return this.entrustname;
+	}
+
+	public void setEntrustname(String entrustname) {
+		this.entrustname = entrustname;
+	}
+
+	public int getSendnum() {
+		return this.sendnum;
+	}
+
+	public void setSendnum(int sendnum) {
+		this.sendnum = sendnum;
+	}
+
+	public int getLength() {
+		return this.length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+	public int getWidth() {
+		return this.width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return this.height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public double getKgs() {
+		return this.kgs;
+	}
+
+	public void setKgs(double kgs) {
+		this.kgs = kgs;
+	}
+
+	public int getHascod() {
+		return this.hascod;
+	}
+
+	public void setHascod(int hascod) {
+		this.hascod = hascod;
+	}
+
+	public BigDecimal getPackagefee() {
+		return this.packagefee;
+	}
+
+	public void setPackagefee(BigDecimal packagefee) {
+		this.packagefee = packagefee;
+	}
+
+	public int getHasinsurance() {
+		return this.hasinsurance;
+	}
+
+	public void setHasinsurance(int hasinsurance) {
+		this.hasinsurance = hasinsurance;
+	}
+
+	public BigDecimal getAnnouncedvalue() {
+		return this.announcedvalue;
+	}
+
+	public void setAnnouncedvalue(BigDecimal announcedvalue) {
+		this.announcedvalue = announcedvalue;
+	}
+
+	public BigDecimal getInsuredfee() {
+		return this.insuredfee;
+	}
+
+	public void setInsuredfee(BigDecimal insuredfee) {
+		this.insuredfee = insuredfee;
+	}
+
+	public double getChargeweight() {
+		return this.chargeweight;
+	}
+
+	public void setChargeweight(double chargeweight) {
+		this.chargeweight = chargeweight;
+	}
+
+	public double getRealweight() {
+		return this.realweight;
+	}
+
+	public void setRealweight(double realweight) {
+		this.realweight = realweight;
+	}
+
+	public BigDecimal getTotalfee() {
+		return this.totalfee;
+	}
+
+	public void setTotalfee(BigDecimal totalfee) {
+		this.totalfee = totalfee;
+	}
+
+	public String getSendareacode() {
+		return this.sendareacode;
+	}
+
+	public void setSendareacode(String sendareacode) {
+		this.sendareacode = sendareacode;
+	}
+
+	public String getRecareacode() {
+		return this.recareacode;
+	}
+
+	public void setRecareacode(String recareacode) {
+		this.recareacode = recareacode;
+	}
+
+	public int getPaymethod() {
+		return this.paymethod;
+	}
+
+	public void setPaymethod(int paymethod) {
+		this.paymethod = paymethod;
+	}
+
+	public String getMonthsettleno() {
+		return this.monthsettleno;
+	}
+
+	public void setMonthsettleno(String monthsettleno) {
+		this.monthsettleno = monthsettleno;
+	}
+
+	public int getCollectorid() {
+		return this.collectorid;
+	}
+
+	public void setCollectorid(int collectorid) {
+		this.collectorid = collectorid;
+	}
+
+	public String getCollectorname() {
+		return this.collectorname;
+	}
+
+	public void setCollectorname(String collectorname) {
+		this.collectorname = collectorname;
+	}
+
+	public int getInstationhandlerid() {
+		return this.instationhandlerid;
+	}
+
+	public void setInstationhandlerid(int instationhandlerid) {
+		this.instationhandlerid = instationhandlerid;
+	}
+
+	public String getInstationhandlername() {
+		return this.instationhandlername;
+	}
+
+	public void setInstationhandlername(String instationhandlername) {
+		this.instationhandlername = instationhandlername;
+	}
+
+	public int getOutstationhandlerid() {
+		return this.outstationhandlerid;
+	}
+
+	public void setOutstationhandlerid(int outstationhandlerid) {
+		this.outstationhandlerid = outstationhandlerid;
+	}
+
+	public String getOutstationhandlername() {
+		return this.outstationhandlername;
+	}
+
+	public void setOutstationhandlername(String outstationhandlername) {
+		this.outstationhandlername = outstationhandlername;
+	}
+
+	public int getInputhandlerid() {
+		return this.inputhandlerid;
+	}
+
+	public void setInputhandlerid(int inputhandlerid) {
+		this.inputhandlerid = inputhandlerid;
+	}
+
+	public String getInputhandlername() {
+		return this.inputhandlername;
+	}
+
+	public void setInputhandlername(String inputhandlername) {
+		this.inputhandlername = inputhandlername;
+	}
+
+	public int getCompletehandlerid() {
+		return this.completehandlerid;
+	}
+
+	public void setCompletehandlerid(int completehandlerid) {
+		this.completehandlerid = completehandlerid;
+	}
+
+	public String getCompletehandlername() {
+		return this.completehandlername;
+	}
+
+	public void setCompletehandlername(String completehandlername) {
+		this.completehandlername = completehandlername;
+	}
+
+	public long getInstationid() {
+		return this.instationid;
+	}
+
+	public void setInstationid(long instationid) {
+		this.instationid = instationid;
+	}
+
+	public String getInstationname() {
+		return this.instationname;
+	}
+
+	public void setInstationname(String instationname) {
+		this.instationname = instationname;
+	}
+
+	public int getCustomerfreightbillid() {
+		return this.customerfreightbillid;
+	}
+
+	public void setCustomerfreightbillid(int customerfreightbillid) {
+		this.customerfreightbillid = customerfreightbillid;
+	}
+
+	public int getBranchfreightbillid() {
+		return this.branchfreightbillid;
+	}
+
+	public void setBranchfreightbillid(int branchfreightbillid) {
+		this.branchfreightbillid = branchfreightbillid;
+	}
+
+	public int getProvincereceivablefreightbillid() {
+		return this.provincereceivablefreightbillid;
+	}
+
+	public void setProvincereceivablefreightbillid(int provincereceivablefreightbillid) {
+		this.provincereceivablefreightbillid = provincereceivablefreightbillid;
+	}
+
+	public int getProvincereceivablecodbillid() {
+		return this.provincereceivablecodbillid;
+	}
+
+	public void setProvincereceivablecodbillid(int provincereceivablecodbillid) {
+		this.provincereceivablecodbillid = provincereceivablecodbillid;
+	}
+
+	public String getInstationdatetime() {
+		return this.instationdatetime;
+	}
+
+	public void setInstationdatetime(String instationdatetime) {
+		this.instationdatetime = instationdatetime;
+	}
+
+	public String getOutstationdatetime() {
+		return this.outstationdatetime;
+	}
+
+	public void setOutstationdatetime(String outstationdatetime) {
+		this.outstationdatetime = outstationdatetime;
+	}
+
+	public String getInputdatetime() {
+		return this.inputdatetime;
+	}
+
+	public void setInputdatetime(String inputdatetime) {
+		this.inputdatetime = inputdatetime;
+	}
+
+	public String getCompletedatetime() {
+		return this.completedatetime;
+	}
+
+	public void setCompletedatetime(String completedatetime) {
+		this.completedatetime = completedatetime;
+	}
 }

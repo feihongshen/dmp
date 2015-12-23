@@ -9,38 +9,24 @@
 <head>
 <title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css"
-	type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"
-	type="text/javascript"></script>
-<script
-	src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js"
-	type="text/javascript"></script>
-<script
-	src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js"
-	type="text/javascript"></script>
-<script
-	src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js"
-	type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js"
-	type="text/javascript"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/js/js.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
+	href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css"
+	media="all" />
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
 
 
 <%
-List<JointEntity> b2cList = (List<JointEntity>)request.getAttribute("b2cList");
+	List<JointEntity> b2cList = (List<JointEntity>)request.getAttribute("b2cList");
 List<JointPower> powerlist = (List<JointPower>)request.getAttribute("b2cenumlist");
 %>
 
@@ -70,53 +56,56 @@ function delSuccess(data){
 			<ul>
 				<li><a href="<%=request.getContextPath()%>/jointpower/">对接权限设置</a></li>
 				<li><a href="#" class="light">电商对接</a></li>
-				<li><a
-					href="<%=request.getContextPath()%>/jointManage/jointpos">POS对接</a></li>
-				<li><a
-					href="<%=request.getContextPath()%>/jointManage/poscodemapp/1">POS/商户映射</a></li>
-				<li><a
-					href="<%=request.getContextPath()%>/jointManage/exptreason/1">异常码设置</a></li>
-				<li><a
-					href="<%=request.getContextPath()%>/jointManage/exptcodejoint/1">异常码关联</a></li>
-				<li><a
-					href="<%=request.getContextPath()%>/jointManage/epaiApi/1">系统环形对接</a></li>
-				<li><a
-					href="<%=request.getContextPath()%>/jointManage/encodingsetting/1">供货商编码设置</a></li>
+				<li><a href="<%=request.getContextPath()%>/jointManage/jointpos">POS对接</a></li>
+				<li><a href="<%=request.getContextPath()%>/jointManage/poscodemapp/1">POS/商户映射</a></li>
+				<li><a href="<%=request.getContextPath()%>/jointManage/exptreason/1">异常码设置</a></li>
+				<li><a href="<%=request.getContextPath()%>/jointManage/exptcodejoint/1">异常码关联</a></li>
+				<li><a href="<%=request.getContextPath()%>/jointManage/epaiApi/1">系统环形对接</a></li>
+				<li><a href="<%=request.getContextPath()%>/jointManage/encodingsetting/1">供货商编码设置</a></li>
 			</ul>
 		</div>
-		<form action="<%=request.getContextPath()%>/jointManage/jointb2c"
-			method="post" id="searchForm"></form>
+		<form action="<%=request.getContextPath()%>/jointManage/jointb2c" method="post" id="searchForm"></form>
 		<div class="right_box">
 			<div class="right_title">
-				<table width="100%" border="0" cellspacing="1" cellpadding="0"
-					class="table_2" id="gd_table">
+				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 					<tr class="font_1">
 						<td width="60%" align="center" valign="middle" bgcolor="#eef6ff">机构名称</td>
 						<td width="40%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 
 					</tr>
-					<%for(B2cEnum em:B2cEnum.values()){ 
-									String text=em.getText();
-									int key=em.getKey();
-									for(JointPower power:powerlist){
-										if(power.getJoint_num()!=key){
-											continue;
-										}
-										%>
+					<%
+						for(B2cEnum em:B2cEnum.values()){ 
+																		String text=em.getText();
+																		int key=em.getKey();
+																		for(JointPower power:powerlist){
+																			if(power.getJoint_num()!=key){
+																				continue;
+																			}
+					%>
 					<tr>
-						<td width="60%" align="center" valign="middle"><%=text %></td>
+						<td width="60%" align="center" valign="middle"><%=text%></td>
 						<td width="40%" align="center" valign="middle">
-							<%if(b2cList != null && b2cList.size()>0){ %> <%for(JointEntity jion : b2cList) { %>
-							<%if(jion.getJoint_num() == key){ %> [<a
-							href="javascript:changeUrl('<%=key%>',<%=(jion.getState()==1?0:1) %>);setDelKey('<%=key%>',<%=(jion.getState()==1?0:1) %>);del('<%=key%>');"><font
-								id="<%=key%>"><%=(jion.getState()==1?"停用":"启用") %></font></a>] <%} 
-						 } }%> [<a
-							href="javascript:changeUrl('<%=key%>','');edit_button('<%=key%>');">设置</a>]
+							<%
+								if(b2cList != null && b2cList.size()>0){
+							%> <%
+ 	for(JointEntity jion : b2cList) {
+ %> <%
+ 	if(jion.getJoint_num() == key){
+ %> [<a
+							href="javascript:changeUrl('<%=key%>',<%=(jion.getState()==1?0:1)%>);setDelKey('<%=key%>',<%=(jion.getState()==1?0:1)%>);del('<%=key%>');"><font
+								id="<%=key%>"><%=(jion.getState()==1?"停用":"启用")%></font></a>] <%
+ 	} 
+   				 } }
+ %> [<a href="javascript:changeUrl('<%=key%>','');edit_button('<%=key%>');">设置</a>]
 						</td>
 					</tr>
-					<%}%>
+					<%
+						}
+					%>
 
-					<%} %>
+					<%
+						}
+					%>
 				</table>
 			</div>
 
@@ -127,10 +116,8 @@ function delSuccess(data){
 
 
 		<!-- 修改常用于设置的ajax地址 -->
-		<input type="hidden" id="edit"
-			value="<%=request.getContextPath()%>/explinkInterface/show/" /> <input
-			type="hidden" id="del"
-			value="<%=request.getContextPath()%>/explinkInterface/del/" />
+		<input type="hidden" id="edit" value="<%=request.getContextPath()%>/explinkInterface/show/" /> <input
+			type="hidden" id="del" value="<%=request.getContextPath()%>/explinkInterface/del/" />
 	</div>
 	<script type="text/javascript">
 	function setEditKey(key){
@@ -388,25 +375,18 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/lechong/show/');
 			$("#del").val('<%=request.getContextPath()%>/lechong/del/');
 		}
-
 		else if(obj=='20087'){
 			$("#edit").val('<%=request.getContextPath()%>/sfxhm/show/');
 			$("#del").val('<%=request.getContextPath()%>/sfxhm/del/');
 		}
-		
 		else if(obj=='20086'){
 			$("#edit").val('<%=request.getContextPath()%>/smiled/show/');
 			$("#del").val('<%=request.getContextPath()%>/smiled/del/');
 		}
-
-		
-
 		else if(obj=='20088'){
 			$("#edit").val('<%=request.getContextPath()%>/zhongliang/show/');
 			$("#del").val('<%=request.getContextPath()%>/zhongliang/del/');
 		}
-
-		
 		else if(obj=='20089'){
 			$("#edit").val('<%=request.getContextPath()%>/wenxuan/show/');
 			$("#del").val('<%=request.getContextPath()%>/wenxuan/del/');
@@ -427,7 +407,6 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/vipshopOXO/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshopOXO/del/');
 		}
-		
 		else if(obj=='20101'||obj=='20102'||obj=='20103'||obj=='20104'||obj=='20105'){
 			$("#edit").val('<%=request.getContextPath()%>/jiuye/show/');
 			$("#del").val('<%=request.getContextPath()%>/jiuye/del/');
@@ -457,10 +436,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/vipshop/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
-		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
-			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
+			$("#del").val('<%=request.getContextPath()%>
+		/explinkInterface/del/');
 			}
 		}
 	</script>

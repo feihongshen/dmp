@@ -478,6 +478,11 @@ function clearSelect(){
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >出库时间</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >审核状态</td>
 				
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('receivablefee');" >代收货款</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('shouldfare');" >应收运费</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >付款方式</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >重量</td>
+				
 		</tr>
 		
 		<% for(CwbOrderView  c : orderlist){ %>
@@ -496,6 +501,10 @@ function clearSelect(){
 					<td  align="center" valign="middle"><%=c.getPaytype()%></td>
 					<td  align="center" valign="middle"><%=c.getOutstoreroomtime() %></td>
 					<td  align="center" valign="middle"><%=c.getAuditstateStr() %></td>
+					<td  align="center" valign="middle"><%=c.getReceivablefee() %></td>
+					<td  align="center" valign="middle"><%=c.getShouldfare() %></td>
+					<td  align="center" valign="middle"><%=c.getExpressPayWay() %></td>
+					<td  align="center" valign="middle"><%=c.getRealweight() %></td>
 				 </tr>
 		 <%} %>
 		 <%if(request.getAttribute("count")!= null){ %>
@@ -507,6 +516,10 @@ function clearSelect(){
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle" class="high"><font color="red"><%=request.getAttribute("sum")==null?"0.00":request.getAttribute("sum") %></font>&nbsp;元 </td>
 			<td  align="center" valign="middle" class="high"><font color="red"><%=request.getAttribute("paybackfeesum")==null?"0.00":request.getAttribute("paybackfeesum") %></font>&nbsp;元 </td>
+			<td  align="center" valign="middle">&nbsp;</td>
+			<td  align="center" valign="middle">&nbsp;</td>
+			<td  align="center" valign="middle">&nbsp;</td>
+			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>

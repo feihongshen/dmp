@@ -26,6 +26,7 @@ String message=request.getAttribute("message")==null?"":request.getAttribute("me
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.swfupload.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
@@ -33,7 +34,6 @@ String message=request.getAttribute("message")==null?"":request.getAttribute("me
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/ajaxfileupload.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery.inputer.js"></script>
 <script src="${pageContext.request.contextPath}/js/inputer.js"></script>
-
 <script language="javascript">
 
 $(function(){

@@ -52,6 +52,17 @@ public class CwbStateControlDAO {
 		List<CwbStateControl> cscList = jdbcTemplate.query(sql, new ExcelColumnSetRowMapper());
 		return cscList;
 	}
+	
+	public List<CwbStateControl> getCwbStateControlByFromstate(int fromstate) {
+		String sql = "SELECT * from express_set_cwb_state_control ";
+		StringBuffer w = new StringBuffer();
+		sql += " where ";
+		w.append(" and fromstate=" + fromstate);
+		sql += w.substring(4, w.length());
+
+		List<CwbStateControl> cscList = jdbcTemplate.query(sql, new ExcelColumnSetRowMapper());
+		return cscList;
+	}
 
 	public long getCwbStateControlCount(int fromstate) {
 		String sql = "SELECT count(1) from express_set_cwb_state_control";

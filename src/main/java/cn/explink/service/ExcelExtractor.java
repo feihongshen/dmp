@@ -1,19 +1,24 @@
 package cn.explink.service;
 
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +42,7 @@ import cn.explink.dao.PenalizeTypeDAO;
 import cn.explink.dao.PunishDAO;
 import cn.explink.dao.PunishInsideDao;
 import cn.explink.dao.PunishTypeDAO;
+import cn.explink.dao.RoleDAO;
 import cn.explink.dao.SalaryCountDAO;
 import cn.explink.dao.SalaryErrorDAO;
 import cn.explink.dao.SalaryFixedDAO;
@@ -47,6 +53,11 @@ import cn.explink.dao.ServiceAreaDAO;
 import cn.explink.dao.SetExcelColumnDAO;
 import cn.explink.dao.SwitchDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.express.CityDAO;
+import cn.explink.dao.express.CountyDAO;
+import cn.explink.dao.express.ExpressOrderDao;
+import cn.explink.dao.express.ProvinceDAO;
+import cn.explink.dao.express.TownDAO;
 import cn.explink.domain.AbnormalImportView;
 import cn.explink.domain.AbnormalType;
 import cn.explink.domain.Branch;
@@ -63,6 +74,7 @@ import cn.explink.domain.PenalizeOutImportRecord;
 import cn.explink.domain.PenalizeType;
 import cn.explink.domain.Punish;
 import cn.explink.domain.PunishType;
+import cn.explink.domain.Role;
 import cn.explink.domain.SalaryCount;
 import cn.explink.domain.SalaryFixed;
 import cn.explink.domain.SalaryGather;
@@ -70,21 +82,35 @@ import cn.explink.domain.SalaryImport;
 import cn.explink.domain.SalaryImportRecord;
 import cn.explink.domain.ServiceArea;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.express.AdressVO;
+import cn.explink.domain.VO.express.EmbracedImportErrOrder;
+import cn.explink.domain.VO.express.EmbracedImportOrderVO;
+import cn.explink.domain.VO.express.EmbracedImportResult;
+import cn.explink.domain.VO.express.EmbracedOrderVO;
+import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.JiesuanstateEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.PenalizeSateEnum;
 import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.enumutil.PunishlevelEnum;
 import cn.explink.enumutil.PunishtimeEnum;
+import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.enumutil.switchs.SwitchEnum;
+import cn.explink.service.express.EmbracedOrderInputService;
+import cn.explink.service.express.ExpressCommonService;
+import cn.explink.service.express.TpsInterfaceExecutor;
+import cn.explink.service.express.tps.enums.FeedbackOperateTypeEnum;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
-public abstract class ExcelExtractor {
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+
+public abstract class ExcelExtractor extends ExpressCommonService {
 
 	private static org.slf4j.Logger logger = LoggerFactory.getLogger(ExcelExtractor.class);
 	@Autowired
@@ -153,7 +179,104 @@ public abstract class ExcelExtractor {
 	PaybusinessbenefitsDao paybusinessbenefitsDao;
 	@Autowired
 	SalaryCountDAO salaryCountDAO;
+	@Autowired
+	ProvinceDAO provinceDAO;
+	@Autowired
+	CityDAO cityDAO;
+	@Autowired
+	CountyDAO countyDAO;
+	@Autowired
+	TownDAO townDAO;
+	@Autowired
+	RoleDAO roleDAO;
+	@Autowired
+	ExpressOrderDao expressOrderDao;
+	@Autowired
+	EmbracedOrderInputService embracedOrderInputService;
+	@Autowired
+	TpsInterfaceExecutor tpsInterfaceExecutor;
+	@Autowired
+	CwbOrderService cwbOrderService;
 
+	Map<String, Integer> EmbracedColumnIndexMap = new HashMap<String, Integer>() {
+		{
+			this.put("OrderNo", 1);
+			this.put("Sender_name", 2);
+			this.put("Sender_companyName", 3);
+			this.put("Monthly_account_number", 4);
+			this.put("Sender_provinceName", 5);
+			this.put("Sender_cityName", 6);
+			this.put("Sender_countyName", 7);
+			this.put("Sender_townName", 8);
+			this.put("Sender_adress", 9);
+			this.put("Sender_cellphone", 10);
+			this.put("Sender_telephone", 11);
+			this.put("Goods_name", 12);
+			this.put("Goods_number", 13);
+			this.put("Charge_weight", 14);
+			this.put("Goods_length", 15);
+			this.put("Goods_width", 16);
+			this.put("Goods_high", 17);
+			this.put("Goods_other", 18);
+			this.put("Actual_weight", 19);
+			this.put("Consignee_name", 20);
+			this.put("Consignee_provinceName", 21);
+			this.put("Consignee_cityName", 22);
+			this.put("Consignee_countyName", 23);
+			this.put("Consignee_townName", 24);
+			this.put("Consignee_adress", 25);
+			this.put("Consignee_cellphone", 26);
+			this.put("Consignee_telephone", 27);
+			this.put("DelivermanName", 28);
+			this.put("Xianfu", 29);
+			this.put("Daofu", 30);
+			this.put("Yuejie", 31);
+			this.put("Collection_amount", 32);
+			this.put("Insured_value", 33);
+			this.put("Insured_cost", 34);
+			this.put("Packing_amount", 35);
+		}
+	};
+
+	Map<String, Integer> checkmMap = new HashMap<String, Integer>() {
+		{
+			this.put("OrderNo", 1);
+			this.put("Sender_name", 2);
+			this.put("Sender_companyName", 3);
+			this.put("Monthly_account_number", 4);
+			this.put("Sender_provinceName", 5);
+			this.put("Sender_cityName", 6);
+			this.put("Sender_countyName", 7);
+			this.put("Sender_townName", 8);
+			this.put("Sender_adress", 9);
+			this.put("Sender_cellphone", 10);
+			this.put("Sender_telephone", 11);
+			this.put("Goods_name", 12);
+			this.put("Goods_number", 13);
+			this.put("Charge_weight", 14);
+			this.put("Goods_length", 15);
+			this.put("Goods_width", 16);
+			this.put("Goods_high", 17);
+			this.put("Goods_other", 18);
+			this.put("Actual_weight", 19);
+			this.put("Consignee_name", 20);
+			this.put("Consignee_provinceName", 21);
+			this.put("Consignee_cityName", 22);
+			this.put("Consignee_countyName", 23);
+			this.put("Consignee_townName", 24);
+			this.put("Consignee_adress", 25);
+			this.put("Consignee_cellphone", 26);
+			this.put("Consignee_telephone", 27);
+			this.put("DelivermanName", 28);
+			this.put("Xianfu", 29);
+			this.put("Daofu", 30);
+			this.put("Yuejie", 31);
+			this.put("Collection_amount", 32);
+			this.put("Insured_amount", 33);
+			this.put("Insured_cost", 34);
+			this.put("Packing_amount", 35);
+		}
+	};
 
 	public String strtovalid(String str) {
 		// 2013-8-6 需求： 收件人地址让显示中文符号。最终是替换所有的中文符号为中文即可
@@ -162,15 +285,14 @@ public abstract class ExcelExtractor {
 		for (int i = 0; i < str.length(); i++) {
 			int asc = str.charAt(i);
 			if (((asc >= 32) && (asc <= 127)) || // 英文字符，标点符号，数字
-					(str.charAt(i) + "").matches("[\u4e00-\u9fa5]+")) { // //判断字符是否为中文
+			(str.charAt(i) + "").matches("[\u4e00-\u9fa5]+")) { // //判断字符是否为中文
 				cwb += str.charAt(i);
 			}
 		}
 		return cwb;
 	}
 
-	protected CwbOrderDTO getCwbOrderAccordingtoConf(ExcelColumnSet excelColumnSet, Object row, long customerid, EmailDate ed, List<Branch> branchList, List<Common> commonList, long branchid,
-			Customer customer, Map<String, Long> orderTypeIdMap, Map<String, ServiceArea> serviceAreaMap, Map<String, Long> payWayIdMap, Map<String, Long> customWareHouseIdMap) throws Exception {
+	protected CwbOrderDTO getCwbOrderAccordingtoConf(ExcelColumnSet excelColumnSet, Object row, long customerid, EmailDate ed, List<Branch> branchList, List<Common> commonList, long branchid, Customer customer, Map<String, Long> orderTypeIdMap, Map<String, ServiceArea> serviceAreaMap, Map<String, Long> payWayIdMap, Map<String, Long> customWareHouseIdMap) throws Exception {
 		CwbOrderDTO cwbOrder = new CwbOrderDTO();
 
 		if (excelColumnSet.getCwbordertypeindex() != 0) {
@@ -487,6 +609,22 @@ public abstract class ExcelExtractor {
 		return cwbOrder;
 	}
 
+	protected EmbracedImportOrderVO getEmbracedOrderAccordingtoConf(Map<String, Integer> map, Object row) throws Exception {
+		EmbracedImportOrderVO embracedImportOrder = new EmbracedImportOrderVO();
+		// 反射机制调用方法
+		String methodName = "";
+		Method m;
+		Set<String> keys = map.keySet();
+		for (String key : keys) {
+			methodName = "set" + key;
+			// 获取方法
+			m = embracedImportOrder.getClass().getDeclaredMethod(methodName, String.class);
+			// 调用方法
+			m.invoke(embracedImportOrder, this.getXRowCellData(row, this.EmbracedColumnIndexMap.get(key)).trim());
+		}
+		return embracedImportOrder;
+	}
+
 	public void extract(InputStream f, long customerId, ResultCollector errorCollector, long branchId, EmailDate ed, ExplinkUserDetail userDetail, boolean isRetry) {
 		ExcelColumnSet excelColumnSet = this.setExcelColumnDAO.getExcelColumnSetByCustomerid(customerId);
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();// 获取所有branch记录，用于匹配下一站id
@@ -514,8 +652,8 @@ public abstract class ExcelExtractor {
 				break;
 			}
 			try {
-				CwbOrderDTO cwbOrder = this.getCwbOrderAccordingtoConf(excelColumnSet, row, customerId, ed, branchList, commonList, branchId, customer, orderTypeIdMap, serviceAreaMap, payWayIdMap,
-						customWareHouseIdMap);
+				CwbOrderDTO cwbOrder = this
+						.getCwbOrderAccordingtoConf(excelColumnSet, row, customerId, ed, branchList, commonList, branchId, customer, orderTypeIdMap, serviceAreaMap, payWayIdMap, customWareHouseIdMap);
 				for (CwbOrderValidator cwbOrderValidator : vailidators) {
 					cwbOrderValidator.validate(cwbOrder);
 				}
@@ -553,6 +691,1046 @@ public abstract class ExcelExtractor {
 
 	}
 
+	/**
+	 *
+	 * @Title: extractExbraced
+	 * @description 解析的数据进行保存，保存前校验
+	 * @author 刘武强
+	 * @date 2015年10月13日上午9:10:31
+	 * @param @param cwbImportOrders
+	 * @param @param user
+	 * @return void
+	 * @throws
+	 */
+	public void saveExbracedImport(List<EmbracedImportOrderVO> cwbImportOrders, User user) {
+		List<EmbracedOrderVO> EmbracedOrders = new ArrayList<EmbracedOrderVO>();
+		EmbracedImportResult resultCollector = new EmbracedImportResult();
+		List<EmbracedOrderVO> EmbracedOrdersTps = new ArrayList<EmbracedOrderVO>();
+		// 保存前转化为可以保存的数据形式并校验
+		Map<String, List<EmbracedOrderVO>> map = this.changeAndCheckDate(cwbImportOrders, user, EmbracedOrders, resultCollector);
+		// 将isadditionflag=1的运单调用tps创建运单接口
+		List<String> flowCwbList = new ArrayList<String>();
+		for (EmbracedOrderVO embracedOrderVO : map.get("insertOrders")) {
+			if ((embracedOrderVO.getIsadditionflag() != null) && "1".equals(embracedOrderVO.getIsadditionflag())) {
+				EmbracedOrdersTps.add(embracedOrderVO);
+			}
+			// 新建的运单，要调用状态反馈接口-刘武强11.06
+			this.executeTpsTransInterface(embracedOrderVO, user);
+			flowCwbList.add(embracedOrderVO.getOrderNo());
+		}
+		for (EmbracedOrderVO embracedOrderVO : map.get("updateOrders")) {
+			if ((embracedOrderVO.getIsadditionflag() != null) && "1".equals(embracedOrderVO.getIsadditionflag())) {
+				EmbracedOrdersTps.add(embracedOrderVO);
+			}
+			// 更新的运单中，如果运单的状态为揽件录入，那么需要把状态改为揽件入站，并且发送tps状态反馈接口；否则还是运单原来的状态，不需要改变
+			if ((embracedOrderVO.getFlowordertype() != null) && (FlowOrderTypeEnum.YunDanLuRu.getValue() + "").equals(embracedOrderVO.getFlowordertype())) {
+				this.executeTpsTransInterface(embracedOrderVO, user);
+				embracedOrderVO.setFlowordertype(FlowOrderTypeEnum.LanJianRuZhan.getValue() + "");
+				flowCwbList.add(embracedOrderVO.getOrderNo());
+			}
+		}
+
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		// 保存校验通过的数据
+		this.expressOrderDao.importEmbracedData(map.get("insertOrders"), user, branch);
+		// 更新已经存在的并且可以补录的订单
+		this.expressOrderDao.updateImportEmbracedData(map.get("updateOrders"), user, branch);
+		String[] flowArray = flowCwbList.toArray(new String[flowCwbList.size()]);
+		String cwbs = StringUtils.join(flowArray, "','");
+		cwbs = "'" + cwbs + "'";
+		List<CwbOrder> orders = this.cwbDAO.getcwborderList(cwbs);
+
+		for (EmbracedOrderVO embracedOrderVO : EmbracedOrdersTps) {
+			this.embracedOrderInputService.tpsSender(embracedOrderVO, "inbrace");
+		}
+		for (CwbOrder order : orders) {
+			this.cwbOrderService.createFloworder(user, branch.getBranchid(), order, FlowOrderTypeEnum.LanJianRuZhan, "", System.currentTimeMillis());
+		}
+
+	}
+
+	/**
+	 *
+	 * @Title: changeAndCheckDate
+	 * @description 转化为可以保存的数据形式并校验
+	 * @author 刘武强
+	 * @date 2015年10月13日上午9:14:39
+	 * @param @param cwbImportOrders
+	 * @param @param user
+	 * @param @param EmbracedOrders
+	 * @param @param resultCollector
+	 * @return void
+	 * @throws
+	 */
+	private Map<String, List<EmbracedOrderVO>> changeAndCheckDate(List<EmbracedImportOrderVO> cwbImportOrders, User user, List<EmbracedOrderVO> EmbracedOrders, EmbracedImportResult resultCollector) {
+		Map<String, List<EmbracedOrderVO>> map = new HashMap<String, List<EmbracedOrderVO>>();
+		if (cwbImportOrders.size() > 0) {
+			// 根据解析的数据获取查询条件
+			StringBuffer cwbordersArr = new StringBuffer();// 订单号集合字符串
+			StringBuffer senderProvincesArr = new StringBuffer();// 寄件人省的集合字符串
+			StringBuffer senderCitysArr = new StringBuffer();// 寄件人市的集合字符串
+			StringBuffer senderCountysArr = new StringBuffer();// 寄件人区的集合字符串
+			StringBuffer sendertownsArr = new StringBuffer();// 寄件人街道的集合字符串
+			StringBuffer consigneeProvincesArr = new StringBuffer();// 收件人省的集合字符串
+			StringBuffer consigneeCitysArr = new StringBuffer();// 收件人市的集合字符串
+			StringBuffer consigneeCountysArr = new StringBuffer();// 收件人区的集合字符串
+			StringBuffer senderCompanyNamesArr = new StringBuffer();// 寄件人公司名称的集合字符串
+			StringBuffer delivermanNamesArr = new StringBuffer();// 揽件员的集合字符串
+			StringBuffer consigneeTownsArr = new StringBuffer();// 收件人街道的集合字符串
+
+			// 存放查询数据所用的list
+			List<EmbracedOrderVO> cwbordersList = new ArrayList<EmbracedOrderVO>();// 订单号集合
+			List<AdressVO> senderProvincesList = new ArrayList<AdressVO>();// 寄件人省的集合
+			List<AdressVO> senderCitysList = new ArrayList<AdressVO>();// 寄件人市的集合
+			List<AdressVO> senderCountysList = new ArrayList<AdressVO>();// 寄件人区的集合
+			List<AdressVO> sendertownsList = new ArrayList<AdressVO>();// 寄件人街道的集合
+			List<AdressVO> consigneeProvincesList = new ArrayList<AdressVO>();// 收件人省的集合
+			List<AdressVO> consigneeCitysList = new ArrayList<AdressVO>();// 收件人市的集合
+			List<AdressVO> consigneeCountysList = new ArrayList<AdressVO>();// 收件人区的集合
+			List<AdressVO> consigneeTownsList = new ArrayList<AdressVO>();// 收件人街道的集合
+			List<Customer> senderCompanyNamesList = new ArrayList<Customer>();// 寄件人公司名称的集合
+			List<User> delivermanNamesList = new ArrayList<User>();// 属于本站点的揽件员的集合
+			Set<String> repeatOrdersSet = new HashSet<String>();// 重复订单号集合
+
+			// 初始化StringBuffer
+			this.initArr(cwbImportOrders, cwbordersArr, senderProvincesArr, senderCitysArr, senderCountysArr, sendertownsArr, consigneeProvincesArr, consigneeCitysArr, consigneeCountysArr, senderCompanyNamesArr, delivermanNamesArr, consigneeTownsArr);
+
+			// 根据查询条件，获取查询数据
+			// this.getData(cwbordersArr, senderProvincesArr, senderCitysArr,
+			// senderCountysArr, sendertownsArr, consigneeProvincesArr,
+			// consigneeCitysArr, consigneeCountysArr, senderCompanyNamesArr,
+			// delivermanNamesArr, cwbordersList, senderProvincesList,
+			// senderCitysList, senderCountysList, sendertownsList,
+			// consigneeProvincesList, consigneeCitysList, consigneeCountysList,
+			// senderCompanyNamesList, delivermanNamesList, user);
+			cwbordersList = this.expressOrderDao.getOrderBycwbs(cwbordersArr.toString());
+			senderProvincesList = this.provinceDAO.getProvincesByProviceNames(senderProvincesArr.toString());
+			senderCitysList = this.cityDAO.getCityByCityNames(senderCitysArr.toString());
+			senderCountysList = this.countyDAO.getCountysByCountyNames(senderCountysArr.toString());
+			sendertownsList = this.townDAO.getTownByTownNames(sendertownsArr.toString());
+			consigneeProvincesList = this.provinceDAO.getProvincesByProviceNames(consigneeProvincesArr.toString());
+			consigneeCitysList = this.cityDAO.getCityByCityNames(consigneeCitysArr.toString());
+			consigneeCountysList = this.countyDAO.getCountysByCountyNames(consigneeCountysArr.toString());
+			consigneeTownsList = this.townDAO.getTownByTownNames(consigneeTownsArr.toString());
+			senderCompanyNamesList = this.customerDAO.getCustomerByCustomernames(senderCompanyNamesArr.toString());
+			delivermanNamesList = this.getDeliveryManByDeliveryManNames(delivermanNamesArr.toString(), user);
+			repeatOrdersSet = this.getRepeatOrderNo(cwbImportOrders);
+
+			// 将解析出来的数据转变为可运单类型的实体,同时校验数据，将错误数据放到resultCollector中
+			map = this
+					.changeImportOrder(cwbImportOrders, resultCollector, cwbordersList, senderProvincesList, senderCitysList, senderCountysList, sendertownsList, consigneeProvincesList, consigneeCitysList, consigneeCountysList, consigneeTownsList, senderCompanyNamesList, delivermanNamesList, repeatOrdersSet, user);
+		}
+		return map;
+	}
+
+	/**
+	 *
+	 * @Title: extractExbraced
+	 * @description 导入文件(分为解析、转化、校验、保存)
+	 * @author 刘武强
+	 * @date 2015年10月10日下午2:43:34
+	 * @param @param f
+	 * @param @param resultCollector
+	 * @return void
+	 * @throws
+	 */
+	public void extractExbraced(InputStream f, EmbracedImportResult resultCollector, User user) {
+		List<EmbracedImportOrderVO> cwbImportOrders = new ArrayList<EmbracedImportOrderVO>();
+		List<EmbracedOrderVO> EmbracedOrders = new ArrayList<EmbracedOrderVO>();
+
+		// 解析文件，将解析出来的记录放进cwbImportOrders，正常情况下，所有的记录都会被解析出来，知道结束（有空行或第一个单元格空了）
+		for (Object row : this.getRows(f, 2)) {
+			if (resultCollector.isStoped()) {
+				break;
+			}
+
+			try {
+				/*
+				 * if (!this.getXRowCellType(row,
+				 * this.EmbracedColumnIndexMap.size())) {
+				 * resultCollector.setResultErrMsg("文件格式不对，请将excel设置为文本格式");
+				 * return; }
+				 */
+				this.changeXRowCellTypeToString(row, this.EmbracedColumnIndexMap.size());
+				EmbracedImportOrderVO cwbImportOrder = this.getEmbracedOrderAccordingtoConf(this.EmbracedColumnIndexMap, row);
+				cwbImportOrders.add(cwbImportOrder);
+			} catch (Exception e) {
+				e.printStackTrace();
+				// 失败订单数+1 前台显示
+				// resultCollector.setFailSavcNum(resultCollector.getFailSavcNum()
+				// + 1);
+			}
+		}
+		resultCollector.setAnalysisList(cwbImportOrders);
+		// 转化为可以保存的数据形式并校验
+		Map<String, List<EmbracedOrderVO>> map = this.changeAndCheckDate(cwbImportOrders, user, EmbracedOrders, resultCollector);
+		// 将需要插入新增的订单添加到成功的list当中
+		if (map.size() > 0) {
+			for (int a = 0; a < map.get("insertOrders").size(); a++) {
+				EmbracedOrders.add(map.get("insertOrders").get(a));
+			}
+			for (int a = 0; a < map.get("updateOrders").size(); a++) {
+				EmbracedOrders.add(map.get("updateOrders").get(a));
+			}
+		}
+		resultCollector.setSuccessList(EmbracedOrders);
+
+	}
+
+	/**
+	 *
+	 * @Title: initArr
+	 * @description 根据查询条件，获取保存时需要用的数据
+	 * @author 刘武强
+	 * @date 2015年10月12日下午3:22:29
+	 * @param @param cwbImportOrders
+	 * @param @param cwbordersArr
+	 * @param @param senderProvincesArr
+	 * @param @param senderCitysArr
+	 * @param @param senderCountysArr
+	 * @param @param sendertownsArr
+	 * @param @param consigneeProvincesArr
+	 * @param @param consigneeCitysArr
+	 * @param @param consigneeCountysArr
+	 * @param @param senderCompanyNamesArr
+	 * @param @param delivermanNamesArr
+	 * @return void
+	 * @throws
+	 */
+
+	private void initArr(List<EmbracedImportOrderVO> cwbImportOrders, StringBuffer cwbordersArr, StringBuffer senderProvincesArr, StringBuffer senderCitysArr, StringBuffer senderCountysArr, StringBuffer sendertownsArr, StringBuffer consigneeProvincesArr, StringBuffer consigneeCitysArr, StringBuffer consigneeCountysArr, StringBuffer senderCompanyNamesArr, StringBuffer delivermanNamesArr, StringBuffer consigneeTownsArr) {
+		cwbordersArr.append("('',");
+		senderProvincesArr.append("('',");
+		senderCitysArr.append("('',");
+		senderCountysArr.append("('',");
+		sendertownsArr.append("('',");
+		consigneeProvincesArr.append("('',");
+		consigneeCitysArr.append("('',");
+		consigneeCountysArr.append("('',");
+		consigneeTownsArr.append("('',");
+		senderCompanyNamesArr.append("('',");
+		delivermanNamesArr.append("('',");
+
+		for (EmbracedImportOrderVO temp : cwbImportOrders) {
+			cwbordersArr.append("'").append(temp.getOrderNo()).append("',");
+			senderProvincesArr.append("'").append(temp.getSender_provinceName()).append("',");
+			senderCitysArr.append("'").append(temp.getSender_cityName()).append("',");
+			senderCountysArr.append("'").append(temp.getSender_countyName()).append("',");
+			sendertownsArr.append("'").append(temp.getSender_townName()).append("',");
+			consigneeProvincesArr.append("'").append(temp.getConsignee_provinceName()).append("',");
+			consigneeCitysArr.append("'").append(temp.getConsignee_cityName()).append("',");
+			consigneeCountysArr.append("'").append(temp.getConsignee_countyName()).append("',");
+			consigneeTownsArr.append("'").append(temp.getConsignee_townName()).append("',");
+			senderCompanyNamesArr.append("'").append(temp.getSender_companyName()).append("',");
+			delivermanNamesArr.append("'").append(temp.getDelivermanName()).append("',");
+		}
+		cwbordersArr.delete(cwbordersArr.length() - 1, cwbordersArr.length()).append(")");
+		senderProvincesArr.delete(senderProvincesArr.length() - 1, senderProvincesArr.length()).append(")");
+		senderCitysArr.delete(senderCitysArr.length() - 1, senderCitysArr.length()).append(")");
+		senderCountysArr.delete(senderCountysArr.length() - 1, senderCountysArr.length()).append(")");
+		sendertownsArr.delete(sendertownsArr.length() - 1, sendertownsArr.length()).append(")");
+		consigneeProvincesArr.delete(consigneeProvincesArr.length() - 1, consigneeProvincesArr.length()).append(")");
+		consigneeCitysArr.delete(consigneeCitysArr.length() - 1, consigneeCitysArr.length()).append(")");
+		consigneeCountysArr.delete(consigneeCountysArr.length() - 1, consigneeCountysArr.length()).append(")");
+		consigneeTownsArr.delete(consigneeTownsArr.length() - 1, consigneeTownsArr.length()).append(")");
+		senderCompanyNamesArr.delete(senderCompanyNamesArr.length() - 1, senderCompanyNamesArr.length()).append(")");
+		delivermanNamesArr.delete(delivermanNamesArr.length() - 1, delivermanNamesArr.length()).append(")");
+	}
+
+	/**
+	 *
+	 * @Title: getData
+	 * @description 通过解析出来的数据，获取需要保存的数据信息
+	 * @author 刘武强
+	 * @date 2015年10月12日下午3:38:25
+	 * @param @param senderProvincesArr
+	 * @param @param cwbordersArr
+	 * @param @param senderCitysArr
+	 * @param @param senderCountysArr
+	 * @param @param sendertownsArr
+	 * @param @param consigneeProvincesArr
+	 * @param @param consigneeCitysArr
+	 * @param @param consigneeCountysArr
+	 * @param @param senderCompanyNamesArr
+	 * @param @param delivermanNamesArr
+	 * @param @param cwbordersList
+	 * @param @param senderProvincesList
+	 * @param @param senderCitysList
+	 * @param @param senderCountysList
+	 * @param @param sendertownsList
+	 * @param @param consigneeProvincesList
+	 * @param @param consigneeCitysList
+	 * @param @param consigneeCountysList
+	 * @param @param senderCompanyNamesList
+	 * @param @param delivermanNamesList
+	 * @return void
+	 * @throws
+	 */
+	private void getData(StringBuffer cwbordersArr, StringBuffer senderProvincesArr, StringBuffer senderCitysArr, StringBuffer senderCountysArr, StringBuffer sendertownsArr, StringBuffer consigneeProvincesArr, StringBuffer consigneeCitysArr, StringBuffer consigneeCountysArr, StringBuffer senderCompanyNamesArr, StringBuffer delivermanNamesArr, List<EmbracedOrderVO> cwbordersList, List<AdressVO> senderProvincesList, List<AdressVO> senderCitysList, List<AdressVO> senderCountysList, List<AdressVO> sendertownsList, List<AdressVO> consigneeProvincesList, List<AdressVO> consigneeCitysList, List<AdressVO> consigneeCountysList, List<Customer> senderCompanyNamesList, List<User> delivermanNamesList, User user) {
+		cwbordersList = this.expressOrderDao.getOrderBycwbs(cwbordersArr.toString());
+		senderProvincesList = this.provinceDAO.getProvincesByProviceNames(senderProvincesArr.toString());
+		senderCitysList = this.cityDAO.getCityByCityNames(senderCitysArr.toString());
+		senderCountysList = this.countyDAO.getCountysByCountyNames(senderCountysArr.toString());
+		sendertownsList = this.townDAO.getTownByTownNames(sendertownsArr.toString());
+		consigneeProvincesList = this.provinceDAO.getProvincesByProviceNames(consigneeProvincesArr.toString());
+		consigneeCitysList = this.cityDAO.getCityByCityNames(consigneeCitysArr.toString());
+		consigneeCountysList = this.countyDAO.getCountysByCountyNames(consigneeCountysArr.toString());
+		senderCompanyNamesList = this.customerDAO.getCustomerByCustomernames(senderCompanyNamesArr.toString());
+		delivermanNamesList = this.getDeliveryManByDeliveryManNames(delivermanNamesArr.toString(), user);
+	}
+
+	/**
+	 *
+	 * @Title: changeImportOrder
+	 * @description 将解析出来的数据转变为补录保存的实体
+	 * @author 刘武强
+	 * @date 2015年10月12日下午1:42:53
+	 * @param @param cwbImportOrders
+	 * @param @param resultCollector
+	 * @param @param senderProvincesList
+	 * @param @param senderCitysList
+	 * @param @param senderCountysList
+	 * @param @param sendertownsList
+	 * @param @param consigneeProvincesList
+	 * @param @param consigneeCitysList
+	 * @param @param consigneeCountysList
+	 * @param @param senderCompanyNamesList
+	 * @param @param delivermanNamesList
+	 * @param @return
+	 * @return List<EmbracedOrderVO>
+	 * @throws
+	 */
+	private synchronized Map<String, List<EmbracedOrderVO>> changeImportOrder(List<EmbracedImportOrderVO> cwbImportOrders, EmbracedImportResult resultCollector, List<EmbracedOrderVO> cwbordersList, List<AdressVO> senderProvincesList, List<AdressVO> senderCitysList, List<AdressVO> senderCountysList, List<AdressVO> sendertownsList, List<AdressVO> consigneeProvincesList, List<AdressVO> consigneeCitysList, List<AdressVO> consigneeCountysList, List<AdressVO> consigneeTownsList, List<Customer> senderCompanyNamesList, List<User> delivermanNamesList, Set<String> repeatOrdersSet, User user) {
+		Map<String, List<EmbracedOrderVO>> map = new HashMap<String, List<EmbracedOrderVO>>();
+		List<EmbracedOrderVO> cwbCheckedOrders = new ArrayList<EmbracedOrderVO>();
+		List<EmbracedImportOrderVO> cwbOrders = new ArrayList<EmbracedImportOrderVO>();
+		cwbOrders.addAll(cwbImportOrders);
+		List<EmbracedImportErrOrder> failList = new ArrayList<EmbracedImportErrOrder>();
+		List<EmbracedOrderVO> cwbUpdateOrders = new ArrayList<EmbracedOrderVO>();
+		for (EmbracedImportOrderVO temp : cwbImportOrders) {
+			boolean flag = false; // 出错的标志
+			EmbracedOrderVO embracedOrdervo = new EmbracedOrderVO();
+			EmbracedOrderVO embracedUpdateOrderVO = new EmbracedOrderVO();
+			String addressCode = "";
+			// 校验运单号是否为空
+
+			if (((temp.getOrderNo() == null) || "".equals(temp.getOrderNo().trim()))) {
+				this.createErrNote(temp.getOrderNo(), "运单号为空", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+			for (String str : repeatOrdersSet) {
+				if ((str != null) && str.equals(temp.getOrderNo())) {
+					this.createErrNote(temp.getOrderNo(), "订单号重复", failList);
+					cwbOrders.remove(temp);
+					flag = true; // 已经出错，下面不用在执行
+					break;
+				}
+			}
+			if (flag) {
+				continue;
+			}
+			embracedOrdervo.setOrderNo(temp.getOrderNo());
+			embracedUpdateOrderVO.setOrderNo(temp.getOrderNo());
+			// 校验寄件人是否填写
+			if ((temp.getSender_name() == null) || "".equals(temp.getSender_name().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			}
+			embracedOrdervo.setSender_name(temp.getSender_name());
+			embracedUpdateOrderVO.setSender_name(temp.getSender_name());
+			// 如果是月结账户，那么单位名称和月结账户必填，且单位名称必须存在于数据库
+			int flagnum = 0;
+			if (!"".equals(temp.getXianfu().trim())) {
+				flagnum = 1;
+			}
+			if (!"".equals(temp.getDaofu().trim())) {
+				flagnum = flagnum + 2;
+			}
+			if (!"".equals(temp.getYuejie().trim())) {
+				flagnum = flagnum + 4;
+			}
+			if (flagnum == 1) {
+				if (ExcelExtractor.isPositiveNumber(temp.getXianfu().trim())) {
+					temp.setPayment_method("1");
+					embracedOrdervo.setPayment_method("1");
+					embracedUpdateOrderVO.setPayment_method("1");
+					temp.setFreight(temp.getXianfu().trim());
+					embracedOrdervo.setFreight(temp.getXianfu().trim());
+					embracedUpdateOrderVO.setFreight(temp.getXianfu().trim());
+				} else {
+					this.createErrNote(temp.getOrderNo(), "运费（现付）填写不符合要求", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+			} else if (flagnum == 2) {
+				if (ExcelExtractor.isPositiveNumber(temp.getDaofu().trim())) {
+					temp.setPayment_method("2");
+					embracedOrdervo.setPayment_method("2");
+					embracedUpdateOrderVO.setPayment_method("2");
+					temp.setFreight(temp.getDaofu().trim());
+					embracedOrdervo.setFreight(temp.getDaofu().trim());
+					embracedUpdateOrderVO.setFreight(temp.getDaofu().trim());
+				} else {
+					this.createErrNote(temp.getOrderNo(), "运费（到付）填写不符合要求", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+
+			} else if (flagnum == 4) {
+				if (ExcelExtractor.isPositiveNumber(temp.getYuejie().trim())) {
+					temp.setPayment_method("0");
+					embracedOrdervo.setPayment_method("0");
+					embracedUpdateOrderVO.setPayment_method("0");
+					temp.setFreight(temp.getYuejie().trim());
+					embracedOrdervo.setFreight(temp.getYuejie().trim());
+					embracedUpdateOrderVO.setFreight(temp.getYuejie().trim());
+				} else {
+					this.createErrNote(temp.getOrderNo(), "运费（月结）填写不符合要求", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+			}
+			if ((temp.getPayment_method() == null) || "".equals(temp.getPayment_method().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "付款方式未填写或填写不符合要求",
+				 * failList); cwbOrders.remove(temp); continue;
+				 */
+			} else if ("0".equals(temp.getPayment_method().trim()) && ((temp.getSender_companyName() == null) || "".equals(temp.getSender_companyName().trim()))) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "月结账户单位名称未填写",
+				 * failList); cwbOrders.remove(temp); continue;
+				 */
+			} else if ("0".equals(temp.getPayment_method().trim()) && ((temp.getMonthly_account_number() == null) || "".equals(temp.getMonthly_account_number().trim()))) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "月结账户客户账号未填写",
+				 * failList); cwbOrders.remove(temp); continue;
+				 */
+			} else if ("0".equals(temp.getPayment_method().trim())) {
+				for (Customer senderCompanyName : senderCompanyNamesList) {
+					if (temp.getSender_companyName().equals(senderCompanyName.getCompanyname())) {
+						embracedOrdervo.setSender_customerid(senderCompanyName.getCustomerid());// 从map中对应得到
+																								// 单位名称对应的id
+						embracedOrdervo.setSender_No(senderCompanyName.getCustomercode());// 从map中对应得到
+																							// 单位名称对应的编码
+						embracedUpdateOrderVO.setSender_customerid(senderCompanyName.getCustomerid());// 从map中对应得到
+																										// 单位名称对应的id
+						embracedUpdateOrderVO.setSender_No(senderCompanyName.getCustomercode());// 从map中对应得到
+																								// 单位名称对应的编码
+						break;
+					}
+				}
+				if ((embracedOrdervo.getSender_customerid() == null) || "".equals(embracedOrdervo.getSender_customerid())) {
+					this.createErrNote(temp.getOrderNo(), "月结账户单位名称在系统中没数据", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setSender_companyName(temp.getSender_companyName());
+				embracedUpdateOrderVO.setSender_companyName(temp.getSender_companyName());
+				if ("0".equals(temp.getPayment_method().trim())) {
+					embracedOrdervo.setMonthly_account_number(temp.getMonthly_account_number());
+					embracedUpdateOrderVO.setMonthly_account_number(temp.getMonthly_account_number());
+				}
+			} else if (temp.getSender_companyName() != null) {// 如果不是月结账号，那么也校验客户，如果校验不通过，则不保存这个字段
+																// -----如果非月结，则不校验，不保存
+				/*
+				 * String companyCode = ""; Long customerid = 0L; for (Customer
+				 * senderCompanyName : senderCompanyNamesList) { if
+				 * (temp.getSender_companyName
+				 * ().equals(senderCompanyName.getCompanyname())) { customerid =
+				 * senderCompanyName.getCustomerid();//从map中对应得到 单位名称对应的id
+				 * companyCode = senderCompanyName.getCustomercode();//从map中对应得到
+				 * 单位名称对应的编码 break; } } if (!"".equals(companyCode)) {
+				 * embracedOrdervo.setSender_customerid(customerid);//从map中对应得到
+				 * 单位名称对应的id
+				 * embracedOrdervo.setSender_No(companyCode);//从map中对应得到
+				 * 单位名称对应的编码
+				 * embracedOrdervo.setSender_companyName(temp.getSender_companyName
+				 * ()); }
+				 */
+			}
+
+			// 寄件人省是否填写，是否存在与数据库
+			if ((temp.getSender_provinceName() == null) || "".equals(temp.getSender_provinceName().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				for (AdressVO para : senderProvincesList) {
+					if (temp.getSender_provinceName().equals(para.getName())) {
+						embracedOrdervo.setSender_provinceid(para.getId() + "");
+						embracedOrdervo.setOrigin_adress(para.getId() + "");
+						embracedUpdateOrderVO.setSender_provinceid(para.getId() + "");
+						embracedUpdateOrderVO.setOrigin_adress(para.getId() + "");
+						addressCode = para.getCode();// 用于市的父子关系判断
+						break;
+					}
+				}
+				if ((embracedOrdervo.getSender_provinceid() == null) || "".equals(embracedOrdervo.getSender_provinceid().trim())) {
+					this.createErrNote(temp.getOrderNo(), "寄件人省在系统中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setSender_provinceName(temp.getSender_provinceName());
+				embracedUpdateOrderVO.setSender_provinceName(temp.getSender_provinceName());
+			}
+			// 寄件人市是否填写，是否存在与数据库，父子关系是否正确
+			if ((temp.getSender_cityName() == null) || "".equals(temp.getSender_cityName().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人市未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				for (AdressVO para : senderCitysList) {
+					if (temp.getSender_cityName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
+						embracedOrdervo.setSender_cityid(para.getId() + "");
+						embracedUpdateOrderVO.setSender_cityid(para.getId() + "");
+						addressCode = para.getCode(); // 用于区的父子关系判断
+						break;
+					}
+				}
+				if ((embracedOrdervo.getSender_cityid() == null) || "".equals(embracedOrdervo.getSender_cityid().trim())) {
+					this.createErrNote(temp.getOrderNo(), "寄件人市在系统中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setSender_cityName(temp.getSender_cityName());
+				embracedUpdateOrderVO.setSender_cityName(temp.getSender_cityName());
+			}
+			// 寄件人区是否填写，是否存在与数据库，父子关系是否正确
+			if ((temp.getSender_countyName() == null) || "".equals(temp.getSender_countyName().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				for (AdressVO para : senderCountysList) {
+					if (temp.getSender_countyName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
+						embracedOrdervo.setSender_countyid(para.getId() + "");
+						embracedUpdateOrderVO.setSender_countyid(para.getId() + "");
+						addressCode = para.getCode();// 用于街道的父子关系判断
+						break;
+					}
+				}
+				if ((embracedOrdervo.getSender_countyid() == null) || "".equals(embracedOrdervo.getSender_countyid().trim())) {
+					this.createErrNote(temp.getOrderNo(), "寄件人区/县在系统中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setSender_countyName(temp.getSender_countyName());
+				embracedUpdateOrderVO.setSender_countyName(temp.getSender_countyName());
+			}
+
+			// 寄件人街道是否填写，是否存在与数据库，父子关系是否正确
+			if ((temp.getSender_townName() == null) || "".equals(temp.getSender_townName().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人街道未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				for (AdressVO para : sendertownsList) {
+					if (temp.getSender_townName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
+						embracedOrdervo.setSender_townid(para.getId() + "");
+						embracedUpdateOrderVO.setSender_townid(para.getId() + "");
+						break;
+					}
+				}
+				if ((embracedOrdervo.getSender_townid() == null) || "".equals(embracedOrdervo.getSender_townid().trim())) {
+					this.createErrNote(temp.getOrderNo(), "寄件人街道在系统中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setSender_townName(temp.getSender_townName());
+				embracedUpdateOrderVO.setSender_townName(temp.getSender_townName());
+			}
+			embracedOrdervo.setSender_adress(temp.getSender_adress());
+			embracedUpdateOrderVO.setSender_adress(temp.getSender_adress());
+			// 判断寄件人手机号和固话是否至少有一个，且格式是否正确
+			if (((temp.getSender_cellphone() == null) || "".equals(temp.getSender_cellphone().trim())) && ((temp.getSender_telephone() == null) || "".equals(temp.getSender_telephone().trim()))) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人手机和固话至少填写一个",
+				 * failList); cwbOrders.remove(temp); continue;
+				 */
+			}
+			if (!((temp.getSender_cellphone() == null) || "".equals(temp.getSender_cellphone().trim())) && !ExcelExtractor.isMobiPhoneNum(temp.getSender_cellphone().trim())) {
+				this.createErrNote(temp.getOrderNo(), "寄件人手机号不合法", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+			embracedOrdervo.setSender_cellphone(temp.getSender_cellphone());
+			embracedUpdateOrderVO.setSender_cellphone(temp.getSender_cellphone());
+
+			if (!((temp.getSender_telephone() == null) || "".equals(temp.getSender_telephone().trim())) && !ExcelExtractor.isTelePhoneNum(temp.getSender_telephone().trim())) {
+				this.createErrNote(temp.getOrderNo(), "寄件人固话不合法", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+			embracedOrdervo.setSender_telephone(temp.getSender_telephone());
+			embracedOrdervo.setGoods_name(temp.getGoods_name());
+			embracedUpdateOrderVO.setSender_telephone(temp.getSender_telephone());
+			embracedUpdateOrderVO.setGoods_name(temp.getGoods_name());
+
+			// 数量必须为非负数
+			if ((temp.getGoods_number() == null) || "".equals(temp.getGoods_number().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				if ((temp.getGoods_number() != null) && !"".equals(temp.getGoods_number().trim()) && !ExcelExtractor.isPositiveNumber(temp.getGoods_number().trim())) {
+					this.createErrNote(temp.getOrderNo(), "商品数量不为大于0的数", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setGoods_number(temp.getGoods_number());
+				embracedUpdateOrderVO.setGoods_number(temp.getGoods_number());
+			}
+			// 重量必须为非负数
+			if ((temp.getCharge_weight() == null) || "".equals(temp.getCharge_weight().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				if ((temp.getCharge_weight() != null) && !"".equals(temp.getCharge_weight().trim()) && !ExcelExtractor.isPositiveNumber(temp.getCharge_weight().trim())) {
+					this.createErrNote(temp.getOrderNo(), "计费重量不为大于0的数", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setCharge_weight(temp.getCharge_weight());
+				embracedUpdateOrderVO.setCharge_weight(temp.getCharge_weight());
+			}
+			embracedOrdervo.setConsignee_name(temp.getConsignee_name());
+			embracedUpdateOrderVO.setConsignee_name(temp.getConsignee_name());
+			// 收件人省是否在数据库存在
+			if ((temp.getConsignee_provinceName() == null) || "".equals(temp.getConsignee_provinceName().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else if ((temp.getConsignee_provinceName() != null) && !"".equals(temp.getConsignee_provinceName().trim())) {
+				for (AdressVO para : consigneeProvincesList) {
+					if (temp.getConsignee_provinceName().equals(para.getName())) {
+						embracedOrdervo.setConsignee_provinceid(para.getId() + "");
+						embracedOrdervo.setDestination(para.getId() + "");
+						embracedUpdateOrderVO.setConsignee_provinceid(para.getId() + "");
+						embracedUpdateOrderVO.setDestination(para.getId() + "");
+
+						addressCode = para.getCode();// 用于市的父子关系判断
+						break;
+					}
+				}
+				if ((embracedOrdervo.getConsignee_provinceid() == null) || "".equals(embracedOrdervo.getConsignee_provinceid().trim())) {
+					this.createErrNote(temp.getOrderNo(), "收件人省在系统中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setConsignee_provinceName(temp.getConsignee_provinceName());
+				embracedUpdateOrderVO.setConsignee_provinceName(temp.getConsignee_provinceName());
+			}
+			// 收件人市是否填写，是否存在与数据库，父子关系是否正确
+			if ((temp.getConsignee_cityName() == null) || "".equals(temp.getConsignee_cityName().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "收件人市未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				for (AdressVO para : consigneeCitysList) {
+					if (temp.getConsignee_cityName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
+						embracedOrdervo.setConsignee_cityid(para.getId() + "");
+						embracedUpdateOrderVO.setConsignee_cityid(para.getId() + "");
+						addressCode = para.getCode(); // 用于区的父子关系判断
+						break;
+					}
+				}
+				if ((embracedOrdervo.getConsignee_cityid() == null) || "".equals(embracedOrdervo.getConsignee_cityid().trim())) {
+					this.createErrNote(temp.getOrderNo(), "收件人市在系统中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setConsignee_cityName(temp.getConsignee_cityName());
+				embracedUpdateOrderVO.setConsignee_cityName(temp.getConsignee_cityName());
+			}
+			// 收件人区是否填写，是否存在与数据库，父子关系是否正确
+			if ((temp.getConsignee_countyName() == null) || "".equals(temp.getConsignee_countyName().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "收件人区/县未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				for (AdressVO para : consigneeCountysList) {
+					if (temp.getConsignee_countyName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
+						embracedOrdervo.setConsignee_countyid(para.getId() + "");
+						embracedUpdateOrderVO.setConsignee_countyid(para.getId() + "");
+						addressCode = para.getCode();// 用于街道的父子关系判断
+						break;
+					}
+				}
+				if ((embracedOrdervo.getConsignee_countyid() == null) || "".equals(embracedOrdervo.getConsignee_countyid().trim())) {
+					this.createErrNote(temp.getOrderNo(), "收件人区/县在系统中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setConsignee_countyName(temp.getConsignee_countyName());
+				embracedUpdateOrderVO.setConsignee_countyName(temp.getConsignee_countyName());
+			}
+			// 寄件人街道是否填写，是否存在与数据库，父子关系是否正确
+			if ((temp.getConsignee_townName() == null) || "".equals(temp.getConsignee_townName().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "寄件人街道未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				for (AdressVO para : consigneeTownsList) {
+					if (temp.getConsignee_townName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
+						embracedOrdervo.setConsignee_townid(para.getId() + "");
+						embracedUpdateOrderVO.setConsignee_townid(para.getId() + "");
+						break;
+					}
+				}
+				if ((embracedOrdervo.getConsignee_townid() == null) || "".equals(embracedOrdervo.getConsignee_townid().trim())) {
+					this.createErrNote(temp.getOrderNo(), "收件人街道在系统中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setConsignee_townName(temp.getConsignee_townName());
+				embracedUpdateOrderVO.setConsignee_townName(temp.getConsignee_townName());
+			}
+
+			if ((temp.getConsignee_adress() == null) || "".equals(temp.getConsignee_adress().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "收件人详细地址未填写",
+				 * failList); cwbOrders.remove(temp); continue;
+				 */
+			}
+			embracedOrdervo.setConsignee_adress(temp.getConsignee_adress());
+			embracedUpdateOrderVO.setConsignee_adress(temp.getConsignee_adress());
+			// 判断收件人手机号和固话是否至少有一个，且格式是否正确
+			if (((temp.getConsignee_cellphone() == null) || "".equals(temp.getConsignee_cellphone().trim())) && ((temp.getConsignee_telephone() == null) || "".equals(temp.getConsignee_telephone()
+					.trim()))) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "收件人手机和固话至少填写一个",
+				 * failList); cwbOrders.remove(temp); continue;
+				 */
+			}
+			if (!((temp.getConsignee_cellphone() == null) || "".equals(temp.getConsignee_cellphone().trim())) && !ExcelExtractor.isMobiPhoneNum(temp.getConsignee_cellphone().trim())) {
+				this.createErrNote(temp.getOrderNo(), "收件人手机号不合法", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+			embracedOrdervo.setConsignee_cellphone(temp.getConsignee_cellphone());
+			embracedUpdateOrderVO.setConsignee_cellphone(temp.getConsignee_cellphone());
+
+			if (!((temp.getConsignee_telephone() == null) || "".equals(temp.getConsignee_telephone().trim())) && !ExcelExtractor.isTelePhoneNum(temp.getConsignee_telephone().trim())) {
+				this.createErrNote(temp.getOrderNo(), "收件人固话不合法", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+			embracedOrdervo.setConsignee_telephone(temp.getConsignee_telephone());
+			embracedUpdateOrderVO.setConsignee_telephone(temp.getConsignee_telephone());
+			// 揽件员是否存在于本站点
+			if ((temp.getDelivermanName() != null) && !"".equals(temp.getDelivermanName().trim())) {
+				for (User para : delivermanNamesList) {
+					if (temp.getDelivermanName().equals(para.getRealname())) {
+						embracedOrdervo.setDelivermanId(para.getUserid() + "");
+						embracedUpdateOrderVO.setDelivermanId(para.getUserid() + "");
+						break;
+					}
+				}
+				if ((embracedOrdervo.getDelivermanId() == null) || "".equals(embracedOrdervo.getDelivermanId().trim())) {
+					this.createErrNote(temp.getOrderNo(), "揽件人在本站所属人员在中没找到", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setDelivermanName(temp.getDelivermanName());
+				embracedUpdateOrderVO.setDelivermanName(temp.getDelivermanName());
+			} else {
+				this.createErrNote(temp.getOrderNo(), "揽件人未填写", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+
+			// 代收货款必须为非负数
+			if ((temp.getCollection_amount() == null) || "".equals(temp.getCollection_amount().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "收件人市未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				if ((temp.getCollection_amount() != null) && !"".equals(temp.getCollection_amount().trim()) && !ExcelExtractor.isPositiveNumber(temp.getCollection_amount().trim())) {
+					this.createErrNote(temp.getOrderNo(), "代收货款不为大于0的数", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+			}
+			if ((temp.getCollection_amount() != null) && !"".equals(temp.getCollection_amount())) {
+				embracedOrdervo.setCollection_amount(temp.getCollection_amount());
+				embracedOrdervo.setCollection("1");
+				embracedUpdateOrderVO.setCollection_amount(temp.getCollection_amount());
+				embracedUpdateOrderVO.setCollection("1");
+
+			} else {
+				embracedOrdervo.setCollection_amount(0 + "");
+				embracedOrdervo.setCollection("0");
+				embracedUpdateOrderVO.setCollection_amount(0 + "");
+				embracedUpdateOrderVO.setCollection("0");
+
+			}
+			// 保价费用必须为非负数
+			if ((temp.getInsured_cost() == null) || "".equals(temp.getInsured_cost().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "收件人市未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				if ((temp.getInsured_cost() != null) && !"".equals(temp.getInsured_cost().trim()) && !ExcelExtractor.isPositiveNumber(temp.getInsured_cost().trim())) {
+					this.createErrNote(temp.getOrderNo(), "保价费用不为大于0的数", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+			}
+			if ((temp.getInsured_cost() != null) && !"".equals(temp.getInsured_cost().trim())) {
+				embracedOrdervo.setInsured_cost(temp.getInsured_cost());
+				embracedUpdateOrderVO.setInsured_cost(temp.getInsured_cost());
+			} else {
+				embracedOrdervo.setInsured_cost(0 + "");
+				embracedUpdateOrderVO.setInsured_cost(0 + "");
+			}
+
+			// 长宽高 非负数校验
+			if ((temp.getGoods_length() != null) && !"".equals(temp.getGoods_length().trim()) && !ExcelExtractor.isPositiveNumber(temp.getGoods_length().trim())) {
+				this.createErrNote(temp.getOrderNo(), "商品长度不为大于0的数", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+			// 如果没有填写，那么给一个0，便于后面kgs计算
+			if ((temp.getGoods_length() != null) && !"".equals(temp.getGoods_length().trim())) {
+				embracedOrdervo.setGoods_longth(this.toFixTwo(temp.getGoods_length())); // 10.28--刘武强
+				embracedUpdateOrderVO.setGoods_longth(this.toFixTwo(temp.getGoods_length())); // 10.28--刘武强
+			} else {
+				embracedOrdervo.setGoods_longth(0 + ""); // 10.28--刘武强
+				embracedUpdateOrderVO.setGoods_longth(0 + ""); // 10.28--刘武强
+			}
+
+			if ((temp.getGoods_width() != null) && !"".equals(temp.getGoods_width().trim()) && !ExcelExtractor.isPositiveNumber(temp.getGoods_width().trim())) {
+				this.createErrNote(temp.getOrderNo(), "商品宽度不为大于0的数", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+
+			// 如果没有填写，那么给一个0，便于后面kgs计算
+			if ((temp.getGoods_width() != null) && !"".equals(temp.getGoods_width().trim())) {
+				embracedOrdervo.setGoods_width(this.toFixTwo(temp.getGoods_width())); // 10.28--刘武强
+				embracedUpdateOrderVO.setGoods_width(this.toFixTwo(temp.getGoods_width())); // 10.28--刘武强
+			} else {
+				embracedOrdervo.setGoods_width(0 + ""); // 10.28--刘武强
+				embracedUpdateOrderVO.setGoods_width(0 + ""); // 10.28--刘武强
+			}
+
+			if ((temp.getGoods_high() != null) && !"".equals(temp.getGoods_high().trim()) && !ExcelExtractor.isPositiveNumber(temp.getGoods_high().trim())) {
+				this.createErrNote(temp.getOrderNo(), "商品高度不为大于0的数", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+
+			// 如果没有填写，那么给一个0，便于后面kgs计算
+			if ((temp.getGoods_high() != null) && !"".equals(temp.getGoods_high().trim())) {
+				embracedOrdervo.setGoods_height(this.toFixTwo(temp.getGoods_high())); // 10.28--刘武强
+				embracedUpdateOrderVO.setGoods_height(this.toFixTwo(temp.getGoods_high())); // 10.28--刘武强
+			} else {
+				embracedOrdervo.setGoods_height(0 + ""); // 10.28--刘武强
+				embracedUpdateOrderVO.setGoods_height(0 + ""); // 10.28--刘武强
+			}
+
+			// 保价声明价值 非负数校验
+			if ((temp.getInsured_value() != null) && !"".equals(temp.getInsured_value().trim()) && !ExcelExtractor.isPositiveNumber(temp.getInsured_value().trim())) {
+				this.createErrNote(temp.getOrderNo(), "保价声明价值不为大于0的数", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+
+			// 如果没有填写，那么给一个0，便于后面费用合计计算
+			if ((temp.getInsured_value() != null) && !"".equals(temp.getInsured_value().trim())) {
+				embracedOrdervo.setInsured_amount(temp.getInsured_value()); // 10.28--刘武强
+				embracedUpdateOrderVO.setInsured_amount(temp.getInsured_value()); // 10.28--刘武强
+			} else {
+				embracedOrdervo.setInsured_amount(0 + ""); // 10.28--刘武强
+				embracedUpdateOrderVO.setInsured_amount(0 + ""); // 10.28--刘武强
+			}
+
+			// 包装费用校验 非负数
+			if ((temp.getPacking_amount() != null) && !"".equals(temp.getPacking_amount().trim()) && !ExcelExtractor.isPositiveNumber(temp.getPacking_amount().trim())) {
+				this.createErrNote(temp.getOrderNo(), "包装费用不为大于0的数", failList);
+				cwbOrders.remove(temp);
+				continue;
+			}
+
+			// 如果没有填写，那么给一个0，便于后面费用合计计算
+			if ((temp.getPacking_amount() != null) && !"".equals(temp.getPacking_amount().trim())) {
+				embracedOrdervo.setPacking_amount(temp.getPacking_amount()); // 10.28--刘武强
+				embracedUpdateOrderVO.setPacking_amount(temp.getPacking_amount()); // 10.28--刘武强
+			} else {
+				embracedOrdervo.setPacking_amount(0 + ""); // 10.28--刘武强
+				embracedUpdateOrderVO.setPacking_amount(0 + ""); // 10.28--刘武强
+			}
+
+			// 实际重量校验 非负数
+			if ((temp.getActual_weight() == null) || "".equals(temp.getActual_weight().trim())) {
+				/*
+				 * this.createErrNote(temp.getOrderNo(), "实际重量未填写", failList);
+				 * cwbOrders.remove(temp); continue;
+				 */
+			} else {
+				if ((temp.getActual_weight() != null) && !"".equals(temp.getActual_weight().trim()) && !ExcelExtractor.isPositiveNumber(temp.getActual_weight().trim())) {
+					this.createErrNote(temp.getOrderNo(), "实际重量不为大于0的数", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
+				embracedOrdervo.setActual_weight(temp.getActual_weight()); // 10.28--刘武强
+				embracedUpdateOrderVO.setActual_weight(temp.getActual_weight()); // 10.28--刘武强
+			}
+
+			// embracedOrdervo.setConsignee_townName(temp.getConsignee_townName());
+			// embracedOrdervo.setConsignee_townid("0");
+			embracedOrdervo.setGoods_other(temp.getGoods_other());
+			embracedOrdervo.setNumber(1 + "");
+			embracedUpdateOrderVO.setGoods_other(temp.getGoods_other());
+			embracedUpdateOrderVO.setNumber(1 + "");
+
+			// 计算运费合计
+			embracedOrdervo.setFreight_total((embracedOrdervo.getFreight() == null ? 0 : Double.parseDouble(embracedOrdervo.getFreight())) + (embracedOrdervo.getInsured_cost() == null ? 0 : Double
+					.parseDouble(embracedOrdervo.getInsured_cost())) + (embracedOrdervo.getPacking_amount() == null ? 0 : Double.parseDouble(embracedOrdervo.getPacking_amount())) + "");
+			embracedUpdateOrderVO
+					.setFreight_total((embracedOrdervo.getFreight() == null ? 0 : Double.parseDouble(embracedOrdervo.getFreight())) + (embracedOrdervo.getInsured_cost() == null ? 0 : Double
+							.parseDouble(embracedOrdervo.getInsured_cost())) + (embracedOrdervo.getPacking_amount() == null ? 0 : Double.parseDouble(embracedOrdervo.getPacking_amount())) + "");
+			// 计算kgs
+			Double kgs = ((embracedOrdervo.getGoods_longth() == null ? 0 : Double.parseDouble(embracedOrdervo.getGoods_longth())) * (embracedOrdervo.getGoods_width() == null ? 0 : Double
+					.parseDouble(embracedOrdervo.getGoods_width())) * (embracedOrdervo.getGoods_height() == null ? 0 : Double.parseDouble(embracedOrdervo.getGoods_height()))) / 6000;
+			if (kgs != 0) {
+				embracedOrdervo.setGoods_kgs(kgs + "");
+				embracedUpdateOrderVO.setGoods_kgs(kgs + "");
+			}
+
+			for (EmbracedOrderVO cwborder : cwbordersList) {
+				if ((cwborder.getOrderNo() != null) && cwborder.getOrderNo().equals(temp.getOrderNo())) {
+					if ("1".equals(cwborder.getIsadditionflag())) {
+						this.createErrNote(temp.getOrderNo(), "运单已经保存并且不可补录", failList);
+						cwbOrders.remove(temp);
+						flag = true; // 已经出错，下面不用在执行
+						break;
+					} else {
+						if (this.embracedOrderInputService.checkEmbracedVO(embracedUpdateOrderVO, this.checkmMap)) {
+							embracedUpdateOrderVO.setIsadditionflag("1");
+						} else {
+							embracedUpdateOrderVO.setIsadditionflag("0");
+						}
+						embracedUpdateOrderVO.setInstationhandlerid(cwborder.getInstationhandlerid());
+						embracedUpdateOrderVO.setInstationhandlername(cwborder.getInstationhandlername());
+						embracedUpdateOrderVO.setInstationdatetime(cwborder.getInstationdatetime());
+						embracedUpdateOrderVO.setInstationid(cwborder.getInstationid());
+						embracedUpdateOrderVO.setFlowordertype(cwborder.getFlowordertype());
+
+						embracedOrdervo.setInstationhandlerid(cwborder.getInstationhandlerid());
+						embracedOrdervo.setInstationhandlername(cwborder.getInstationhandlername());
+						embracedOrdervo.setInstationdatetime(cwborder.getInstationdatetime());
+						embracedOrdervo.setInstationid(cwborder.getInstationid());
+						embracedOrdervo.setFlowordertype(cwborder.getFlowordertype());
+
+						cwbUpdateOrders.add(embracedUpdateOrderVO);
+						flag = true; // 已经出错，下面不用在执行
+						break;
+					}
+				}
+			}
+			this.setNullToZero(embracedOrdervo, user);
+			this.setNullToZero(embracedUpdateOrderVO, user);
+			if (flag) {
+				continue;
+			}
+
+			if (this.embracedOrderInputService.checkEmbracedVO(embracedOrdervo, this.checkmMap)) {
+				embracedOrdervo.setIsadditionflag("1");
+			} else {
+				embracedOrdervo.setIsadditionflag("0");
+			}
+
+			cwbCheckedOrders.add(embracedOrdervo);
+		}
+		resultCollector.setFailList(failList);
+		// 订单表中没有的订单需要执行insert语句的订单
+		map.put("insertOrders", cwbCheckedOrders);
+		// 订单表中已有订单需要执行update语句的订单
+		map.put("updateOrders", cwbUpdateOrders);
+		return map;
+		/*
+		 * this.put("OrderNo", 1); /this.put("Sender_name", 2);
+		 * /this.put("Sender_companyName", 3);客户名、客户编号、客户id
+		 * /this.put("Monthly_account_number", 4);
+		 * /this.put("Sender_provinceName", 5);province的id和name
+		 * /this.put("Sender_cityName", 6);city的id和name
+		 * /this.put("Sender_countyName", 7);county的id和name
+		 * /this.put("Sender_townName", 8);town的id和name
+		 * /this.put("Sender_adress", 9); /this.put("Sender_cellphone", 10);
+		 * /this.put("Sender_telephone", 11); /this.put("Goods_name", 12);
+		 * /this.put("Goods_number", 13); /this.put("Goods_weight", 14);
+		 * /this.put("Consignee_name", 15); /this.put("Consignee_provinceName",
+		 * 16);province的id和name /this.put("Consignee_cityName", 17);city的id和name
+		 * /this.put("Consignee_countyName", 18);county的id和name
+		 * /this.put("Consignee_adress", 19); /this.put("Consignee_cellphone",
+		 * 20); /this.put("Consignee_telephone", 21);
+		 * /this.put("DelivermanName", 22);delivermanName和delivermanid
+		 * /this.put("Xianfu", 23); /this.put("Daofu", 24); 这三个决定付款方式
+		 * /this.put("Yuejie", 25); /this.put("Collection_amount", 26);
+		 * /this.put("Insured_cost", 27);
+		 */
+	}
+
+	/**
+	 *
+	 * @Title: createErrNote
+	 * @description
+	 * @author 刘武强
+	 * @date 2015年10月12日下午5:52:01
+	 * @param @param orderNo
+	 * @param @param msg
+	 * @param @param failList
+	 * @return void
+	 * @throws
+	 */
+	private void createErrNote(String orderNo, String msg, List<EmbracedImportErrOrder> failList) {
+		ExcelExtractor.logger.info("cwb:" + orderNo + "   " + msg + "!");
+		EmbracedImportErrOrder errOrder = new EmbracedImportErrOrder();
+		errOrder.setOrderNo(orderNo);
+		errOrder.setErrMsg(msg);
+		failList.add(errOrder);
+	}
+
+	/**
+	 *
+	 * @Title: getDeliveryManByDeliveryManNames
+	 * @description 通过揽件员的名字的集合，查询其中所有揽件员的信息
+	 * @author 刘武强
+	 * @date 2015年10月12日下午1:13:36
+	 * @param @param DeliveryManNames
+	 * @param @return
+	 * @return List<User>
+	 * @throws
+	 */
+	public List<User> getDeliveryManByDeliveryManNames(String DeliveryManNames, User user) {
+		String roleids = "2,4";
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if ((roles != null) && (roles.size() > 0)) {
+			for (Role r : roles) {
+				roleids += "," + r.getRoleid();
+			}
+		}
+		List<User> uList = this.userDAO.getUserByRolesAndBranchidAndDeliveryManNames(roleids, user.getBranchid(), DeliveryManNames);
+		return uList;
+	}
+
 	private String removeZero(String cwb) {
 		int end = cwb.indexOf(".0");
 		if (end > -1) {
@@ -561,13 +1739,19 @@ public abstract class ExcelExtractor {
 		return cwb;
 	}
 
-	protected abstract String getXRowCellData(Object row, int cwbindex);
+	public abstract String getXRowCellData(Object row, int cwbindex);
+
+	public abstract boolean getXRowCellType(Object row, int num);
+
+	public abstract void changeXRowCellTypeToString(Object row, int num);
 
 	protected abstract String getXRowCellData(Object row, int cwbindex, boolean escapeAddress);
 
 	protected abstract String getXRowCellDateData(Object row, int cwbindex);
 
-	protected abstract List<Object> getRows(InputStream f);
+	public abstract List<Object> getRows(InputStream f);
+
+	public abstract List<Object> getRows(InputStream f, int rowindex);
 
 	public int extract(InputStream f) {
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();// 获取所有branch记录，用于匹配下一站id
@@ -895,11 +2079,13 @@ public abstract class ExcelExtractor {
 		try {
 
 			penalizeOutGoodsfee = new BigDecimal(this.getXRowCellData(row, 2));
-			/*if (penalizeOutGoodsfee.compareTo(new BigDecimal(0)) == -1) {
-				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额必须大于0.00！");
-				return null;
-			}*/
-			if ((penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l)) == 1)||(String.valueOf(penalizeOutGoodsfee).length()>14)) {
+			/*
+			 * if (penalizeOutGoodsfee.compareTo(new BigDecimal(0)) == -1) {
+			 * this
+			 * .penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord
+			 * (cwb, systemTime, "货物扣罚金额必须大于0.00！"); return null; }
+			 */
+			if ((penalizeOutGoodsfee.compareTo(new BigDecimal(1000000000000000l)) == 1) || (String.valueOf(penalizeOutGoodsfee).length() > 14)) {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "货物扣罚金额（超过14位长度）有误");
 				return null;
 			}
@@ -916,11 +2102,13 @@ public abstract class ExcelExtractor {
 		try {
 
 			penalizeOutOtherfee = new BigDecimal(this.getXRowCellData(row, 3));
-			/*if (penalizeOutOtherfee.compareTo(new BigDecimal(0)) == -1) {
-				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它扣罚金额必须大于0.00！");
-				return null;
-			}*/
-			if ((penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l)) == 1)||(String.valueOf(penalizeOutOtherfee).length()>14)) {
+			/*
+			 * if (penalizeOutOtherfee.compareTo(new BigDecimal(0)) == -1) {
+			 * this
+			 * .penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord
+			 * (cwb, systemTime, "其它扣罚金额必须大于0.00！"); return null; }
+			 */
+			if ((penalizeOutOtherfee.compareTo(new BigDecimal(1000000000000000l)) == 1) || (String.valueOf(penalizeOutOtherfee).length() > 14)) {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "其它扣罚金额（超过14位长度）有误");
 				return null;
 			}
@@ -978,12 +2166,16 @@ public abstract class ExcelExtractor {
 				// return null;
 			}
 		}
-		//记录已经存在的限制
-	/*	PenalizeInside penalizeInside = this.punishInsideDao.getPenalizeInsideIsNullCheck(cwb, branchid, dutypersonid, penalizeOutsmall, penalizeOutGoodsfee, penalizeOutOtherfee);
-		if (penalizeInside != null) {
-			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
-			return null;
-		}*/
+		// 记录已经存在的限制
+		/*
+		 * PenalizeInside penalizeInside =
+		 * this.punishInsideDao.getPenalizeInsideIsNullCheck(cwb, branchid,
+		 * dutypersonid, penalizeOutsmall, penalizeOutGoodsfee,
+		 * penalizeOutOtherfee); if (penalizeInside != null) {
+		 * this.penalizeOutImportErrorRecordDAO
+		 * .crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！"); return
+		 * null; }
+		 */
 		out.setPunishNo("P" + System.currentTimeMillis() + "");
 		out.setSourceNo(co.getCwb());
 		out.setCwb(co.getCwb());
@@ -1066,21 +2258,20 @@ public abstract class ExcelExtractor {
 	public void extractSalary(InputStream f, long importflag, User user) {
 		List<SalaryFixed> salaryList = new ArrayList<SalaryFixed>();
 		List<User> userList = this.userDAO.getAllUser();
-		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryImports();
-		Map<String,Integer> improtMap=this.SetMapImport(salaryImports);
+		List<SalaryImport> salaryImports = this.salaryImportDao.getAllSalaryImports();
+		Map<String, Integer> improtMap = this.SetMapImport(salaryImports);
 		Map<String, User> userMap = this.SetMapUser(userList);
 		int successCounts = 0;
 		int failCounts = 0;
 		int totalCounts = 0;
-		SalaryImportRecord record=new SalaryImportRecord();
+		SalaryImportRecord record = new SalaryImportRecord();
 		for (Object row : this.getRows(f)) {
 			totalCounts++;
 			try {
-				SalaryFixed salary = this.getSalaryAccordingtoConf(row, userMap, importflag,improtMap);
-				if(salary!=null){
+				SalaryFixed salary = this.getSalaryAccordingtoConf(row, userMap, importflag, improtMap);
+				if (salary != null) {
 					salaryList.add(salary);
-				}
-				else {
+				} else {
 					failCounts++;
 				}
 			} catch (Exception e) {
@@ -1091,13 +2282,13 @@ public abstract class ExcelExtractor {
 		}
 		for (SalaryFixed salary : salaryList) {
 			try {
-				SalaryFixed salary1 =this.salaryFixedDAO.getSalaryByIdcard(salary.getIdcard());
-				if(salary1!=null){
-					this.salaryFixedDAO.deleteSalaryByids(salary1.getId()+"");
+				SalaryFixed salary1 = this.salaryFixedDAO.getSalaryByIdcard(salary.getIdcard());
+				if (salary1 != null) {
+					this.salaryFixedDAO.deleteSalaryByids(salary1.getId() + "");
 				}
 				salary.setCreuserid(user.getUserid());
 				salary.setImportflag(importflag);
-				int nums=this.salaryFixedDAO.creSalaryByRealname(salary);
+				int nums = this.salaryFixedDAO.creSalaryByRealname(salary);
 				successCounts += nums;
 			} catch (Exception e) {
 				failCounts++;
@@ -1119,9 +2310,8 @@ public abstract class ExcelExtractor {
 	 * @return
 	 */
 	private Map<String, Integer> SetMapImport(List<SalaryImport> salaryImports) {
-		Map<String, Integer> map=new HashMap<String, Integer>();
-		for(SalaryImport sip:salaryImports)
-		{
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for (SalaryImport sip : salaryImports) {
 			map.put(sip.getFilename(), sip.getWhichvalue());
 		}
 		return map;
@@ -1133,7 +2323,7 @@ public abstract class ExcelExtractor {
 	 * @param importflag
 	 * @return
 	 */
-	private SalaryFixed getSalaryAccordingtoConf(Object row, Map<String, User> userMap, long importflag,Map<String,Integer> map) {
+	private SalaryFixed getSalaryAccordingtoConf(Object row, Map<String, User> userMap, long importflag, Map<String, Integer> map) {
 		SalaryFixed salary = new SalaryFixed();
 		String realname = this.getXRowCellData(row, 1);
 		String idcard = this.getXRowCellData(row, 2);
@@ -1141,10 +2331,8 @@ public abstract class ExcelExtractor {
 		if (user == null) {
 			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员不存在！", importflag);
 			return null;
-		}
-		else {
-			if(!idcard.trim().equals(user.getIdcardno()))
-			{
+		} else {
+			if (!idcard.trim().equals(user.getIdcardno())) {
 				this.salaryErrorDAO.creSalaryError(realname, idcard, "身份证号码有误！", importflag);
 				return null;
 			}
@@ -1152,139 +2340,136 @@ public abstract class ExcelExtractor {
 		salary.setBranchid(user.getBranchid());
 		salary.setRealname(realname);
 		salary.setIdcard(idcard);
-		try{
-		if((null!=map.get("salarybasic"))&&(map.get("salarybasic")==0)) {
-			salary.setSalarybasic(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 3)));
-		}
-		if((null!=map.get("salaryjob"))&&(map.get("salaryjob")==0)) {
-		salary.setSalaryjob(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 4)));
-		}
-		if((null!=map.get("pushcash"))&&(map.get("pushcash")==0)) {
-		salary.setPushcash(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 5)));
-		}
-		if((null!=map.get("jobpush"))&&(map.get("jobpush")==0)) {
-			salary.setJobpush(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 6)));
-		}
-		if((null!=map.get("agejob"))&&(map.get("agejob")==0)) {
-			salary.setAgejob(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 7)));
-		}
-		if((null!=map.get("bonusroom"))&&(map.get("bonusroom")==0)) {
-		salary.setBonusroom(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 8)));
-		}
-		if((null!=map.get("bonusallday"))&&(map.get("bonusallday")==0)) {
-		salary.setBonusallday(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 9)));
-		}
-		if((null!=map.get("bonusfood"))&&(map.get("bonusfood")==0)) {
-		salary.setBonusfood(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 10)));
-		}
-		if((null!=map.get("bonustraffic"))&&(map.get("bonustraffic")==0)) {
-		salary.setBonustraffic(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 11)));
-		}
-		if((null!=map.get("bonusphone"))&&(map.get("bonusphone")==0)) {
-		salary.setBonusphone(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 12)));
-		}
-		if((null!=map.get("bonusweather"))&&(map.get("bonusweather")==0)) {
-			salary.setBonusweather(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 13)));
-		}
-		if((null!=map.get("penalizecancel_import"))&&(map.get("penalizecancel_import")==0)) {
-			salary.setPenalizecancel_import(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 14)));
-		}
-		if((null!=map.get("bonusother1"))&&(map.get("bonusother1")==0)) {
-			salary.setBonusother1(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 15)));
-		}
-		if((null!=map.get("bonusother2"))&&(map.get("bonusother2")==0)) {
-		salary.setBonusother2(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 16)));
-		}
-		if((null!=map.get("bonusother3"))&&(map.get("bonusother3")==0)) {
-		salary.setBonusother3(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 17)));
-		}
-		if((null!=map.get("bonusother4"))&&(map.get("bonusother4")==0)) {
-		salary.setBonusother4(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 18)));
-		}
-		if((null!=map.get("bonusother5"))&&(map.get("bonusother5")==0)) {
-		salary.setBonusother5(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 19)));
-		}
-		if((null!=map.get("bonusother6"))&&(map.get("bonusother6")==0)) {
-		salary.setBonusother6(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 20)));
-		}
-		if((null!=map.get("overtimework"))&&(map.get("overtimework")==0)) {
-		salary.setOvertimework(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 21)));
-		}
-		if((null!=map.get("attendance"))&&(map.get("attendance")==0)) {
-		salary.setAttendance(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 22)));
-		}
-		if((null!=map.get("security"))&&(map.get("security")==0)) {
-		salary.setSecurity(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 23)));
-		}
-		if((null!=map.get("gongjijin"))&&(map.get("gongjijin")==0)) {
-		salary.setGongjijin(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 24)));
-		}
-		if((null!=map.get("foul_import"))&&(map.get("foul_import")==0)) {
-		salary.setFoul_import(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 25)));
-		}
-		if((null!=map.get("dorm"))&&(map.get("dorm")==0)) {
-			salary.setDorm(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 26)));
-		}
-		if((null!=map.get("penalizeother1"))&&(map.get("penalizeother1")==0)) {
-		salary.setPenalizeother1(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 27)));
-		}
-		if((null!=map.get("penalizeother2"))&&(map.get("penalizeother2")==0)) {
-		salary.setPenalizeother2(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 28)));
-		}
-		if((null!=map.get("penalizeother3"))&&(map.get("penalizeother3")==0)) {
-		salary.setPenalizeother3(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 29)));
-		}
-		if((null!=map.get("penalizeother4"))&&(map.get("penalizeother4")==0)) {
-		salary.setPenalizeother4(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 30)));
-		}
-		if((null!=map.get("penalizeother5"))&&(map.get("penalizeother5")==0)) {
-		salary.setPenalizeother5(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 31)));
-		}
-		if((null!=map.get("penalizeother6"))&&(map.get("penalizeother6")==0)) {
-		salary.setPenalizeother6(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 32)));
-		}
-		if((null!=map.get("imprestother1"))&&(map.get("imprestother1")==0)) {
-		salary.setImprestother1(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 33)));
-		}
-		if((null!=map.get("imprestother2"))&&(map.get("imprestother2")==0)) {
-		salary.setImprestother2(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 34)));
-		}
-		if((null!=map.get("imprestother3"))&&(map.get("imprestother3")==0)) {
-		salary.setImprestother3(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 35)));
-		}
-		if((null!=map.get("imprestother4"))&&(map.get("imprestother4")==0)) {
-		salary.setImprestother4(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 36)));
-		}
-		if((null!=map.get("imprestother5"))&&(map.get("imprestother5")==0)) {
-		salary.setImprestother5(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 37)));
-		}
-		if((null!=map.get("imprestother6"))&&(map.get("imprestother6")==0)) {
-		salary.setImprestother6(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 38)));
-		}
-		if((null!=map.get("carrent"))&&(map.get("carrent")==0)) {
-			salary.setCarrent(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 39)));
-		}
-		if((null!=map.get("carmaintain"))&&(map.get("carmaintain")==0)) {
+		try {
+			if ((null != map.get("salarybasic")) && (map.get("salarybasic") == 0)) {
+				salary.setSalarybasic(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 3)));
+			}
+			if ((null != map.get("salaryjob")) && (map.get("salaryjob") == 0)) {
+				salary.setSalaryjob(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 4)));
+			}
+			if ((null != map.get("pushcash")) && (map.get("pushcash") == 0)) {
+				salary.setPushcash(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 5)));
+			}
+			if ((null != map.get("jobpush")) && (map.get("jobpush") == 0)) {
+				salary.setJobpush(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 6)));
+			}
+			if ((null != map.get("agejob")) && (map.get("agejob") == 0)) {
+				salary.setAgejob(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 7)));
+			}
+			if ((null != map.get("bonusroom")) && (map.get("bonusroom") == 0)) {
+				salary.setBonusroom(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 8)));
+			}
+			if ((null != map.get("bonusallday")) && (map.get("bonusallday") == 0)) {
+				salary.setBonusallday(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 9)));
+			}
+			if ((null != map.get("bonusfood")) && (map.get("bonusfood") == 0)) {
+				salary.setBonusfood(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 10)));
+			}
+			if ((null != map.get("bonustraffic")) && (map.get("bonustraffic") == 0)) {
+				salary.setBonustraffic(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 11)));
+			}
+			if ((null != map.get("bonusphone")) && (map.get("bonusphone") == 0)) {
+				salary.setBonusphone(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 12)));
+			}
+			if ((null != map.get("bonusweather")) && (map.get("bonusweather") == 0)) {
+				salary.setBonusweather(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 13)));
+			}
+			if ((null != map.get("penalizecancel_import")) && (map.get("penalizecancel_import") == 0)) {
+				salary.setPenalizecancel_import(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 14)));
+			}
+			if ((null != map.get("bonusother1")) && (map.get("bonusother1") == 0)) {
+				salary.setBonusother1(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 15)));
+			}
+			if ((null != map.get("bonusother2")) && (map.get("bonusother2") == 0)) {
+				salary.setBonusother2(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 16)));
+			}
+			if ((null != map.get("bonusother3")) && (map.get("bonusother3") == 0)) {
+				salary.setBonusother3(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 17)));
+			}
+			if ((null != map.get("bonusother4")) && (map.get("bonusother4") == 0)) {
+				salary.setBonusother4(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 18)));
+			}
+			if ((null != map.get("bonusother5")) && (map.get("bonusother5") == 0)) {
+				salary.setBonusother5(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 19)));
+			}
+			if ((null != map.get("bonusother6")) && (map.get("bonusother6") == 0)) {
+				salary.setBonusother6(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 20)));
+			}
+			if ((null != map.get("overtimework")) && (map.get("overtimework") == 0)) {
+				salary.setOvertimework(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 21)));
+			}
+			if ((null != map.get("attendance")) && (map.get("attendance") == 0)) {
+				salary.setAttendance(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 22)));
+			}
+			if ((null != map.get("security")) && (map.get("security") == 0)) {
+				salary.setSecurity(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 23)));
+			}
+			if ((null != map.get("gongjijin")) && (map.get("gongjijin") == 0)) {
+				salary.setGongjijin(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 24)));
+			}
+			if ((null != map.get("foul_import")) && (map.get("foul_import") == 0)) {
+				salary.setFoul_import(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 25)));
+			}
+			if ((null != map.get("dorm")) && (map.get("dorm") == 0)) {
+				salary.setDorm(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 26)));
+			}
+			if ((null != map.get("penalizeother1")) && (map.get("penalizeother1") == 0)) {
+				salary.setPenalizeother1(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 27)));
+			}
+			if ((null != map.get("penalizeother2")) && (map.get("penalizeother2") == 0)) {
+				salary.setPenalizeother2(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 28)));
+			}
+			if ((null != map.get("penalizeother3")) && (map.get("penalizeother3") == 0)) {
+				salary.setPenalizeother3(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 29)));
+			}
+			if ((null != map.get("penalizeother4")) && (map.get("penalizeother4") == 0)) {
+				salary.setPenalizeother4(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 30)));
+			}
+			if ((null != map.get("penalizeother5")) && (map.get("penalizeother5") == 0)) {
+				salary.setPenalizeother5(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 31)));
+			}
+			if ((null != map.get("penalizeother6")) && (map.get("penalizeother6") == 0)) {
+				salary.setPenalizeother6(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 32)));
+			}
+			if ((null != map.get("imprestother1")) && (map.get("imprestother1") == 0)) {
+				salary.setImprestother1(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 33)));
+			}
+			if ((null != map.get("imprestother2")) && (map.get("imprestother2") == 0)) {
+				salary.setImprestother2(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 34)));
+			}
+			if ((null != map.get("imprestother3")) && (map.get("imprestother3") == 0)) {
+				salary.setImprestother3(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 35)));
+			}
+			if ((null != map.get("imprestother4")) && (map.get("imprestother4") == 0)) {
+				salary.setImprestother4(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 36)));
+			}
+			if ((null != map.get("imprestother5")) && (map.get("imprestother5") == 0)) {
+				salary.setImprestother5(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 37)));
+			}
+			if ((null != map.get("imprestother6")) && (map.get("imprestother6") == 0)) {
+				salary.setImprestother6(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 38)));
+			}
+			if ((null != map.get("carrent")) && (map.get("carrent") == 0)) {
+				salary.setCarrent(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 39)));
+			}
+			if ((null != map.get("carmaintain")) && (map.get("carmaintain") == 0)) {
 				salary.setCarmaintain(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 40)));
-		}
-		if((null!=map.get("carfuel"))&&(map.get("carfuel")==0)) {
+			}
+			if ((null != map.get("carfuel")) && (map.get("carfuel") == 0)) {
 				salary.setCarfuel(StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 41)));
-		}
-	}
-		catch(Exception e)
-		{
+			}
+		} catch (Exception e) {
 			this.salaryErrorDAO.creSalaryError(realname, idcard, "数据格式有误", importflag);
-			ExcelExtractor.logger.error("配送员工资导入设置异常",e);
+			ExcelExtractor.logger.error("配送员工资导入设置异常", e);
 			return null;
 		}
 		return salary;
 	}
 
-
 	public String extractAbnormal(InputStream f, User user, Long systemTime) {
-		List<AbnormalImportView> abnormalImportViews=new ArrayList<AbnormalImportView>();
-		List<AbnormalType> abnormalTypes=this.abnormalTypeDAO.getAllAbnormalTypeByName();
-		Map<String, Long> abnormalMaps=this.getAbnormalTypeMaps(abnormalTypes);
+		List<AbnormalImportView> abnormalImportViews = new ArrayList<AbnormalImportView>();
+		List<AbnormalType> abnormalTypes = this.abnormalTypeDAO.getAllAbnormalTypeByName();
+		Map<String, Long> abnormalMaps = this.getAbnormalTypeMaps(abnormalTypes);
 		int successCounts = 0;
 		int failCounts = 0;
 		int totalCounts = 0;// this.getRows(f).size();
@@ -1313,7 +2498,7 @@ public abstract class ExcelExtractor {
 		for (AbnormalImportView abnormalImportView : abnormalImportViews) {
 			try {
 				this.abnormalService.creAbnormalOrderExcel(abnormalImportView);
-				successCounts ++;
+				successCounts++;
 			} catch (Exception e) {
 				failCounts++;
 				ExcelExtractor.logger.info("对内扣罚导入异常：cwb={},message={}", abnormalImportView.getCwbOrder().getCwb(), e.toString());
@@ -1331,8 +2516,9 @@ public abstract class ExcelExtractor {
 		this.penalizeOutImportRecordDAO.crePenalizeOutImportRecord(record);
 		return failCounts + "," + successCounts;
 	}
+
 	private AbnormalImportView getAbnormalAccordingtoConf(Object row, Map<String, Long> abnormalTypes, User user, long systemTime) throws Exception {
-		AbnormalImportView abnormalImportView=new AbnormalImportView();
+		AbnormalImportView abnormalImportView = new AbnormalImportView();
 		String cwb = this.getXRowCellData(row, 1);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		if (co == null) {
@@ -1341,17 +2527,17 @@ public abstract class ExcelExtractor {
 		} else {
 			abnormalImportView.setCwbOrder(co);
 		}
-		long abnormaltypeid=0;
-		String abnormalTypeString= this.getXRowCellData(row, 2);
+		long abnormaltypeid = 0;
+		String abnormalTypeString = this.getXRowCellData(row, 2);
 		try {
-			abnormaltypeid=abnormalTypes.get(abnormalTypeString);
+			abnormaltypeid = abnormalTypes.get(abnormalTypeString);
 		} catch (Exception e) {
 			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "问题件类型不存在！");
 			return null;
 		}
-		String abnormalInfo= this.getXRowCellData(row, 3);
+		String abnormalInfo = this.getXRowCellData(row, 3);
 		try {
-			if (abnormalInfo.length()>100) {
+			if (abnormalInfo.length() > 100) {
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "问题件说明字数大于100！");
 				return null;
 			}
@@ -1359,20 +2545,23 @@ public abstract class ExcelExtractor {
 			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "问题件说明字数大于100！");
 			return null;
 		}
-		/*//判断问题件记录是否存在
-		List<AbnormalOrder> abnormalOrders=this.abnormalOrderDAO.checkexcelIsExist(cwb,abnormaltypeid,abnormalInfo);
-		if ((abnormalOrders != null)&&(abnormalOrders.size()>0)) {
-			this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！");
-			return null;
-		}*/
+		/*
+		 * //判断问题件记录是否存在 List<AbnormalOrder>
+		 * abnormalOrders=this.abnormalOrderDAO
+		 * .checkexcelIsExist(cwb,abnormaltypeid,abnormalInfo); if
+		 * ((abnormalOrders != null)&&(abnormalOrders.size()>0)) {
+		 * this.penalizeOutImportErrorRecordDAO
+		 * .crePenalizeOutImportErrorRecord(cwb, systemTime, "该记录已经存在！"); return
+		 * null; }
+		 */
 		long action = AbnormalWriteBackEnum.ChuangJian.getValue();
-		//abnormalOrder的状态为未处理
-		long ishandle=AbnormalOrderHandleEnum.weichuli.getValue();
-		long isfind=0;
-		Branch branch=this.branchDAO.getBranchByBranchid(user.getBranchid());
-		long handleBranch=0;//0为没有操作机构
-		if (branch!=null) {
-			handleBranch=branch.getSitetype();
+		// abnormalOrder的状态为未处理
+		long ishandle = AbnormalOrderHandleEnum.weichuli.getValue();
+		long isfind = 0;
+		Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid());
+		long handleBranch = 0;// 0为没有操作机构
+		if (branch != null) {
+			handleBranch = branch.getSitetype();
 		}
 		abnormalImportView.setAbnormalinfo(abnormalInfo);
 		abnormalImportView.setAbnormaltypeid(abnormaltypeid);
@@ -1381,14 +2570,15 @@ public abstract class ExcelExtractor {
 		abnormalImportView.setHandleBranch(handleBranch);
 		abnormalImportView.setIsfind(isfind);
 		abnormalImportView.setNowtime(DateTimeUtil.getNowTime());
-		abnormalImportView.setQuestionNo("Q"+System.currentTimeMillis());
+		abnormalImportView.setQuestionNo("Q" + System.currentTimeMillis());
 		abnormalImportView.setUser(user);
 		abnormalImportView.setIshandle(ishandle);
 		abnormalImportView.setSystemtime(systemTime);
 		return abnormalImportView;
 	}
-	public Map<String, Long> getAbnormalTypeMaps(List<AbnormalType> abnormalTypes){
-		Map<String, Long> abnormalMaps=new HashMap<String, Long>();
+
+	public Map<String, Long> getAbnormalTypeMaps(List<AbnormalType> abnormalTypes) {
+		Map<String, Long> abnormalMaps = new HashMap<String, Long>();
 		for (Iterator<AbnormalType> iterator = abnormalTypes.iterator(); iterator.hasNext();) {
 			AbnormalType abnormalType = iterator.next();
 			abnormalMaps.put(abnormalType.getName(), abnormalType.getId());
@@ -1398,30 +2588,28 @@ public abstract class ExcelExtractor {
 
 	/*
 	 * importflag
-	 *
 	 */
 	@Transactional
-	public void extractSalaryGather(InputStream input, long importflag, User user,SalaryCount sc) {
+	public void extractSalaryGather(InputStream input, long importflag, User user, SalaryCount sc) {
 		List<SalaryGather> salaryList = new ArrayList<SalaryGather>();
 		List<User> userList = this.userDAO.getAllUsers();
 		List<SalaryFixed> fixedList = this.salaryFixedDAO.getAllFixed();
-		List<SalaryImport> salaryImports=this.salaryImportDao.getAllSalaryImports();//固定值设置描述
-		Map<String,Integer> improtMap=this.SetMapImport(salaryImports);
+		List<SalaryImport> salaryImports = this.salaryImportDao.getAllSalaryImports();// 固定值设置描述
+		Map<String, Integer> improtMap = this.SetMapImport(salaryImports);
 		Map<String, User> userMap = this.SetMapUser(userList);
-		Map<String,SalaryFixed> fixedMap = this.setMapFixed(fixedList);
+		Map<String, SalaryFixed> fixedMap = this.setMapFixed(fixedList);
 		int successCounts = 0;
 		int failCounts = 0;
 		int totalCounts = 0;
-		SalaryImportRecord record=new SalaryImportRecord();
+		SalaryImportRecord record = new SalaryImportRecord();
 		for (Object row : this.getRows(input)) {
 			totalCounts++;
 			try {
-				//工资计算方法
-				SalaryGather salary = this.getSalaryGatherAccordingtoConf(row, userMap, importflag,improtMap,fixedMap,sc);
-				if(salary!=null){
+				// 工资计算方法
+				SalaryGather salary = this.getSalaryGatherAccordingtoConf(row, userMap, importflag, improtMap, fixedMap, sc);
+				if (salary != null) {
 					salaryList.add(salary);
-				}
-				else {
+				} else {
 					failCounts++;
 				}
 			} catch (Exception e) {
@@ -1430,15 +2618,15 @@ public abstract class ExcelExtractor {
 				continue;
 			}
 		}
-		if((salaryList!=null)&&(salaryList.size()>0)&&!salaryList.isEmpty()){
-			//Set<SalaryGather> sgSet = new HashSet<SalaryGather>();
+		if ((salaryList != null) && !salaryList.isEmpty()) {
+			// Set<SalaryGather> sgSet = new HashSet<SalaryGather>();
 			Map<Long, SalaryGather> lsMap = new HashMap<Long, SalaryGather>();
-			for(SalaryGather sg : salaryList){
+			for (SalaryGather sg : salaryList) {
 				lsMap.put(sg.getUserid(), sg);
 			}
-			if(lsMap!=null&&lsMap.size()>0){
+			if ((lsMap != null) && (lsMap.size() > 0)) {
 				Collection<SalaryGather> sgColl = lsMap.values();
-				for(SalaryGather sg : sgColl){
+				for (SalaryGather sg : sgColl) {
 					this.salaryGatherDao.cresalaryGather(sg);
 				}
 			}
@@ -1451,9 +2639,9 @@ public abstract class ExcelExtractor {
 		this.salaryImportRecordDAO.creSalaryImportRecord(record);
 	}
 
-	private Map<String, SalaryFixed> setMapFixed(List<SalaryFixed> fixedList){
+	private Map<String, SalaryFixed> setMapFixed(List<SalaryFixed> fixedList) {
 		Map<String, SalaryFixed> fixedMap = new HashMap<String, SalaryFixed>();
-		for(SalaryFixed sf : fixedList){
+		for (SalaryFixed sf : fixedList) {
 			fixedMap.put(sf.getIdcard(), sf);
 		}
 		return fixedMap;
@@ -1466,80 +2654,79 @@ public abstract class ExcelExtractor {
 	 * @return
 	 */
 	@SuppressWarnings("unused")
-	private SalaryGather getSalaryGatherAccordingtoConf(Object row, Map<String, User> userMap, long importflag,Map<String,Integer> map,Map<String,SalaryFixed> fixedMap,SalaryCount sc) throws Exception {
+	private SalaryGather getSalaryGatherAccordingtoConf(Object row, Map<String, User> userMap, long importflag, Map<String, Integer> map, Map<String, SalaryFixed> fixedMap, SalaryCount sc) throws Exception {
 		SalaryGather salary = new SalaryGather();
 		String realname = this.getXRowCellData(row, 1);
 		String idcard = this.getXRowCellData(row, 2);
 		User user = userMap.get(realname);
-		if(sc.getBatchstate()==1){
+		if (sc.getBatchstate() == 1) {
 			return null;
 		}
 		if (user == null) {
-			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"不存在！", importflag);
+			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:" + user.getRealname() + "不存在！", importflag);
+			return null;
+		} else {
+			if (sc.getBranchid() != user.getBranchid()) {
+				this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:" + user.getRealname() + "不属于该批次指定站点！", importflag);
+				return null;
+			}
+			if (!idcard.trim().equals(user.getIdcardno())) {
+				this.salaryErrorDAO.creSalaryError(realname, idcard, "身份证号码:" + user.getIdcardno() + "有误！", importflag);
+				return null;
+			}
+			if (user.getJiesuanstate() == JiesuanstateEnum.TingzhiJiesuan.getValue()) {
+				this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:" + user.getRealname() + "为离职状态,停止结算！", importflag);
+				return null;
+			}
+		}
+		long count = this.salaryGatherDao.getSalarygatherByuidandbid(user.getUserid(), sc.getBatchid());
+		if (count > 0) {
+			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:" + user.getRealname() + "存在已导入工资条信息!", importflag);
 			return null;
 		}
-		else {
-			if(sc.getBranchid()!=user.getBranchid()){
-				this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"不属于该批次指定站点！", importflag);
-				return null;
-			}
-			if(!idcard.trim().equals(user.getIdcardno())){
-				this.salaryErrorDAO.creSalaryError(realname, idcard, "身份证号码:"+user.getIdcardno()+"有误！", importflag);
-				return null;
-			}
-			if(user.getJiesuanstate() == JiesuanstateEnum.TingzhiJiesuan.getValue()){
-				this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"为离职状态,停止结算！", importflag);
-				return null;
-			}
-		}
-		long count = this.salaryGatherDao.getSalarygatherByuidandbid(user.getUserid(),sc.getBatchid());
-		if(count>0){
-			this.salaryErrorDAO.creSalaryError(realname, idcard, "配送员:"+user.getRealname()+"存在已导入工资条信息!", importflag);
-			return null;
-		}
-		salary.setUserid(user.getUserid());//配送员id
-		salary.setBatchid(sc.getBatchid());//批次编号
-		salary.setBranchid(sc.getBranchid());//直营站点
-		salary.setRealname(realname);//真实姓名
-		salary.setIdcard(idcard);//身份证号
+		salary.setUserid(user.getUserid());// 配送员id
+		salary.setBatchid(sc.getBatchid());// 批次编号
+		salary.setBranchid(sc.getBranchid());// 直营站点
+		salary.setRealname(realname);// 真实姓名
+		salary.setIdcard(idcard);// 身份证号
 		SalaryFixed sf = fixedMap.get(idcard);
 		List<BigDecimal> bdList = new ArrayList<BigDecimal>();
-		//结算单量
-		//小件员在期间内的成功单量(配送，上门退，上门换)
+		// 结算单量
+		// 小件员在期间内的成功单量(配送，上门退，上门换)
 		long accountSingle = this.deliveryStateDAO.getDeliverysCountBytime(sc.getStarttime(), sc.getEndtime(), user.getUserid());
 		salary.setAccountSingle(accountSingle);
 
 		BigDecimal salarybasic = BigDecimal.ZERO;
-		if((null!=map.get("salarybasic"))&&(map.get("salarybasic")==1)) {//基本工资
+		if ((null != map.get("salarybasic")) && (map.get("salarybasic") == 1)) {// 基本工资
 			salarybasic = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 3));
-		}else{
+		} else {
 			salarybasic = sf.getSalarybasic();
 		}
 		salary.setSalarybasic(salarybasic);
 		bdList.add(salarybasic);
 
 		BigDecimal salaryjob = BigDecimal.ZERO;
-		if((null!=map.get("salaryjob"))&&(map.get("salaryjob")==1)) {//岗位工资
+		if ((null != map.get("salaryjob")) && (map.get("salaryjob") == 1)) {// 岗位工资
 			salaryjob = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 4));
-		}else{
+		} else {
 			salaryjob = sf.getSalaryjob();
 		}
 		salary.setSalaryjob(salaryjob);
 		bdList.add(salaryjob);
 
 		BigDecimal pushcash = BigDecimal.ZERO;
-		if((null!=map.get("pushcash"))&&(map.get("pushcash")==1)) {//绩效奖金pushcash
+		if ((null != map.get("pushcash")) && (map.get("pushcash") == 1)) {// 绩效奖金pushcash
 			pushcash = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 5));
-		}else{
+		} else {
 			pushcash = sf.getPushcash();
 		}
 		salary.setPushcash(pushcash);
 		bdList.add(pushcash);
 
 		BigDecimal jobpush = BigDecimal.ZERO;
-		if((null!=map.get("jobpush"))&&(map.get("jobpush")==1)) {//岗位津贴
+		if ((null != map.get("jobpush")) && (map.get("jobpush") == 1)) {// 岗位津贴
 			jobpush = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 6));
-		}else{
+		} else {
 			jobpush = sf.getJobpush();
 		}
 		salary.setJobpush(jobpush);
@@ -1548,519 +2735,743 @@ public abstract class ExcelExtractor {
 		List<DeliveryState> dsList = this.deliveryStateDAO.getDeliverysBytime(sc.getStarttime(), sc.getEndtime(), user.getUserid());
 
 		String cwbsStr = "";
-		if((dsList!=null)&&!dsList.isEmpty()){
-			for(DeliveryState ds : dsList){
-				cwbsStr += "'"+ds.getCwb()+"',";
+		if ((dsList != null) && !dsList.isEmpty()) {
+			for (DeliveryState ds : dsList) {
+				cwbsStr += "'" + ds.getCwb() + "',";
 			}
 		}
-		if(cwbsStr.length()>0){
-			cwbsStr = cwbsStr.substring(0, cwbsStr.length()-1);
+		if (cwbsStr.length() > 0) {
+			cwbsStr = cwbsStr.substring(0, cwbsStr.length() - 1);
 		}
 
-		//妥投率
-		/*List<Map> list = new ArrayList<Map>();
-		List<Map> intemapList = this.salaryGatherService.getCount(user.getUserid(), sc.getStarttime(), sc.getEndtime());
-		if(intemapList!=null&&!intemapList.isEmpty()&&dsList!=null&&!dsList.isEmpty()){
-			for(Map lists:intemapList){
-				Map maps = new HashMap();
-				int customerint = 0;
-				double dbl = 0;
-				BigDecimal bdc = BigDecimal.ZERO;
-				long customerid = (Long)lists.get(1);
-				double bili = (Double)lists.get(2);
-				for(DeliveryState ds : dsList){
-					if(customerid == ds.getCustomerid()){
-						//获取格式化对象
-					    NumberFormat nt = NumberFormat.getPercentInstance();
-					    //设置百分数精确度2即保留两位小数
-					    nt.setMinimumFractionDigits(2);
-					    String biliStr = nt.format(bili);
-					    String[] biliArray  = biliStr.split("%");
-					    double dble = Double.parseDouble(biliArray[0]);
-					    Paybusinessbenefits pbbf = this.paybusinessbenefitsDao.getpbbfBycustomerid(customerid);
-					    bdc = pbbf.getOthersubsidies();
-					    String pbbfStr = pbbf.getPaybusinessbenefits();
-					    String[] strArray = pbbfStr.split("\\|");
-					    for(String str : strArray){
-					    	String[] strarr = str.substring(0,str.indexOf("=")).split("~");
-					    	String starr = str.substring(str.indexOf("=")+1, str.length()).replace(" ", "");
-					    	if(dble>=Double.parseDouble(strarr[0].replace(" ", ""))&&dble<=Double.parseDouble(strarr[1].replace(" ", ""))){
-					    		dbl = Double.parseDouble(starr);
-					    	}else{
-					    		continue;
-					    	}
-					    }
-					    customerint++;
-					}else{
-						continue;
-					}
-				}
-				maps.put(1, customerint);
-				maps.put(2, dbl);
-				maps.put(3, bdc);
-				list.add(maps);
-				customerint = 0;
-				dbl = 0;
-				bdc = BigDecimal.ZERO;
-			}
-		}
-		//kpi业务补助(总和)
-		BigDecimal bd1 = BigDecimal.ZERO;
-		//其他补助(总和)
-		BigDecimal bd2 = BigDecimal.ZERO;
-		if(list!=null&&!list.isEmpty()){
-			for(Map m : list){
-				if(m.size()>0){
-					int mLong = (Integer)(m.get(1));
-					double mDouble = (Double)(m.get(2));
-					bd1 = bd1.add(new BigDecimal(mDouble).multiply(new BigDecimal(mLong)));
-					BigDecimal dbbdc =  (BigDecimal)(m.get(3));
-					bd2 = bd2.add(dbbdc.multiply(new BigDecimal(mLong)));
-				}
-			}
-		}*/
-
+		// 妥投率
+		/*
+		 * List<Map> list = new ArrayList<Map>(); List<Map> intemapList =
+		 * this.salaryGatherService.getCount(user.getUserid(),
+		 * sc.getStarttime(), sc.getEndtime());
+		 * if(intemapList!=null&&!intemapList
+		 * .isEmpty()&&dsList!=null&&!dsList.isEmpty()){ for(Map
+		 * lists:intemapList){ Map maps = new HashMap(); int customerint = 0;
+		 * double dbl = 0; BigDecimal bdc = BigDecimal.ZERO; long customerid =
+		 * (Long)lists.get(1); double bili = (Double)lists.get(2);
+		 * for(DeliveryState ds : dsList){ if(customerid == ds.getCustomerid()){
+		 * //获取格式化对象 NumberFormat nt = NumberFormat.getPercentInstance();
+		 * //设置百分数精确度2即保留两位小数 nt.setMinimumFractionDigits(2); String biliStr =
+		 * nt.format(bili); String[] biliArray = biliStr.split("%"); double dble
+		 * = Double.parseDouble(biliArray[0]); Paybusinessbenefits pbbf =
+		 * this.paybusinessbenefitsDao.getpbbfBycustomerid(customerid); bdc =
+		 * pbbf.getOthersubsidies(); String pbbfStr =
+		 * pbbf.getPaybusinessbenefits(); String[] strArray =
+		 * pbbfStr.split("\\|"); for(String str : strArray){ String[] strarr =
+		 * str.substring(0,str.indexOf("=")).split("~"); String starr =
+		 * str.substring(str.indexOf("=")+1, str.length()).replace(" ", "");
+		 * if(dble>=Double.parseDouble(strarr[0].replace(" ",
+		 * ""))&&dble<=Double.parseDouble(strarr[1].replace(" ", ""))){ dbl =
+		 * Double.parseDouble(starr); }else{ continue; } } customerint++; }else{
+		 * continue; } } maps.put(1, customerint); maps.put(2, dbl); maps.put(3,
+		 * bdc); list.add(maps); customerint = 0; dbl = 0; bdc =
+		 * BigDecimal.ZERO; } } //kpi业务补助(总和) BigDecimal bd1 = BigDecimal.ZERO;
+		 * //其他补助(总和) BigDecimal bd2 = BigDecimal.ZERO;
+		 * if(list!=null&&!list.isEmpty()){ for(Map m : list){ if(m.size()>0){
+		 * int mLong = (Integer)(m.get(1)); double mDouble = (Double)(m.get(2));
+		 * bd1 = bd1.add(new BigDecimal(mDouble).multiply(new
+		 * BigDecimal(mLong))); BigDecimal dbbdc = (BigDecimal)(m.get(3)); bd2 =
+		 * bd2.add(dbbdc.multiply(new BigDecimal(mLong))); } } }
+		 */
 
 		List<Map> list = new ArrayList<Map>();
 		List<BigDecimal> bdecList = this.salaryGatherService.getKpiOthers(user.getUserid(), sc.getStarttime(), sc.getEndtime());
-		//kpi业务补助(总和)
+		// kpi业务补助(总和)
 		BigDecimal bd1 = BigDecimal.ZERO;
-		//其他补助(总和)
+		// 其他补助(总和)
 		BigDecimal bd2 = BigDecimal.ZERO;
-		if((bdecList!=null)&&!bdecList.isEmpty()){
+		if ((bdecList != null) && !bdecList.isEmpty()) {
 			bd1 = bdecList.get(0);
 			bd2 = bdecList.get(1);
 		}
 
-		//cwbsStr
-		if("".equals(cwbsStr)){
+		// cwbsStr
+		if ("".equals(cwbsStr)) {
 			cwbsStr = "''";
 		}
-		List<CwbOrder> cwbList =  this.cwbDAO.getCwbsBycwbs(cwbsStr);
-		
-		//（基本派费+区域派费）*保底单量
-		//BigDecimal basicareafee = BigDecimal.ZERO;
-		/*if(dsList!=null&&!dsList.isEmpty()){
-			BigDecimal basicfe = user.getBasicfee();//人员信息设置的基础派费
-			BigDecimal areafe = user.getAreafee();//人员信息设置的区域派费
-			basicareafee = (basicfe.add(areafe)).multiply(new BigDecimal(user.getFallbacknum()));//（基本+区域）*保底单量
-		}*/
-		
+
+		List<CwbOrder> cwbList = this.cwbDAO.getCwbsBycwbs(cwbsStr);
+
 		BigDecimal bds = BigDecimal.ZERO;
-		//减去kpi+其他派费总和之外的总和
+		// 减去kpi+其他派费总和之外的总和
 		bds = this.salaryGatherService.getSalarypush(user.getPfruleid(), cwbList);
-		//最终计件配送费
-		//bds+业务kpi+其他派费
+		// 最终计件配送费
+		// bds+业务kpi+其他派费
 		BigDecimal bdss = bds.add(bd1).add(bd2);
 
-		//调整额度
-		BigDecimal tiaozheng = (user.getBasicfee().add(user.getAreafee())).multiply(new BigDecimal(user.getFallbacknum())).subtract(salarybasic);//单件标准费用*保底单量-基本工资
+		// 调整额度
+		BigDecimal tiaozheng = (user.getBasicfee().add(user.getAreafee())).multiply(new BigDecimal(user.getFallbacknum())).subtract(salarybasic);// 单件标准费用*保底单量-基本工资
 
-		//提成
+		// 提成
 		BigDecimal salarypush = BigDecimal.ZERO;
-		salarypush = bdss.subtract(salarybasic.add(tiaozheng));//提成=寄件配送费-（基本工资+调整额度）
+		salarypush = bdss.subtract(salarybasic.add(tiaozheng));// 提成=寄件配送费-（基本工资+调整额度）
 		int inte = salarypush.compareTo(BigDecimal.ZERO);
-		if(inte==-1){
+		if (inte == -1) {
 			salarypush = new BigDecimal("0.00");
 		}
 		salary.setSalarypush(salarypush);
 		bdList.add(salarypush);
 
-
 		BigDecimal agejob = BigDecimal.ZERO;
-		if((null!=map.get("agejob"))&&(map.get("agejob")==1)) {//工龄
+		if ((null != map.get("agejob")) && (map.get("agejob") == 1)) {// 工龄
 			agejob = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 7));
-		}else{
+		} else {
 			agejob = sf.getAgejob();
 		}
 		salary.setAgejob(agejob);
 		bdList.add(agejob);
 
 		BigDecimal bonusroom = BigDecimal.ZERO;
-		if((null!=map.get("bonusroom"))&&(map.get("bonusroom")==1)) {//住房补贴
+		if ((null != map.get("bonusroom")) && (map.get("bonusroom") == 1)) {// 住房补贴
 			bonusroom = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 8));
-		}else{
+		} else {
 			bonusroom = sf.getBonusroom();
 		}
 		salary.setBonusroom(bonusroom);
 		bdList.add(bonusroom);
 
 		BigDecimal bonusallday = BigDecimal.ZERO;
-		if((null!=map.get("bonusallday"))&&(map.get("bonusallday")==1)) {//全勤补贴
+		if ((null != map.get("bonusallday")) && (map.get("bonusallday") == 1)) {// 全勤补贴
 			bonusallday = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 9));
-		}else{
+		} else {
 			bonusallday = sf.getBonusallday();
 		}
 		salary.setBonusallday(bonusallday);
 		bdList.add(bonusallday);
 
 		BigDecimal bonusfood = BigDecimal.ZERO;
-		if((null!=map.get("bonusfood"))&&(map.get("bonusfood")==1)) {//餐费补贴
+		if ((null != map.get("bonusfood")) && (map.get("bonusfood") == 1)) {// 餐费补贴
 			bonusfood = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 10));
-		}else{
+		} else {
 			bonusfood = sf.getBonusfood();
 		}
 		salary.setBonusfood(bonusfood);
 		bdList.add(bonusfood);
 
 		BigDecimal bonustraffic = BigDecimal.ZERO;
-		if((null!=map.get("bonustraffic"))&&(map.get("bonustraffic")==1)) {//交通补贴
+		if ((null != map.get("bonustraffic")) && (map.get("bonustraffic") == 1)) {// 交通补贴
 			bonustraffic = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 11));
-		}else{
+		} else {
 			bonustraffic = sf.getBonustraffic();
 		}
 		salary.setBonustraffic(bonustraffic);
 		bdList.add(bonustraffic);
 
 		BigDecimal bonusphone = BigDecimal.ZERO;
-		if((null!=map.get("bonusphone"))&&(map.get("bonusphone")==1)) {//通讯补贴
+		if ((null != map.get("bonusphone")) && (map.get("bonusphone") == 1)) {// 通讯补贴
 			bonusphone = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 12));
-		}else{
+		} else {
 			bonusphone = sf.getBonusphone();
 		}
 		salary.setBonusphone(bonusphone);
 		bdList.add(bonusphone);
 
 		BigDecimal bonusweather = BigDecimal.ZERO;
-		if((null!=map.get("bonusweather"))&&(map.get("bonusweather")==1)) {//高温寒冷补贴
+		if ((null != map.get("bonusweather")) && (map.get("bonusweather") == 1)) {// 高温寒冷补贴
 			bonusweather = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 13));
-		}else{
+		} else {
 			bonusweather = sf.getBonusweather();
 		}
 		salary.setBonusweather(bonusweather);
 		bdList.add(bonusweather);
-		
-		//扣款撤销，违纪扣款扣罚，货损赔偿部分取值
-		List<DeliveryState> deliList = this.deliveryStateDAO.getLinghuoDeliveryStates(sc.getStarttime(),sc.getEndtime(),user.getUserid());
+
+		// 扣款撤销，违纪扣款扣罚，货损赔偿部分取值
+		List<DeliveryState> deliList = this.deliveryStateDAO.getLinghuoDeliveryStates(sc.getStarttime(), sc.getEndtime(), user.getUserid());
 		String cwbsStrs = "";
-		if(deliList!=null&&!deliList.isEmpty()){
-			for(DeliveryState ds : deliList){
-				cwbsStrs += "'"+ds.getCwb()+"',";
+		if ((deliList != null) && !deliList.isEmpty()) {
+			for (DeliveryState ds : deliList) {
+				cwbsStrs += "'" + ds.getCwb() + "',";
 			}
 		}
-		if(cwbsStrs.length()>0){
-			cwbsStrs = cwbsStrs.substring(0,cwbsStrs.length()-1);
-		}else{
+		if (cwbsStrs.length() > 0) {
+			cwbsStrs = cwbsStrs.substring(0, cwbsStrs.length() - 1);
+		} else {
 			cwbsStrs = "''";
 		}
-		//扣款撤销
+		// 扣款撤销
 		BigDecimal penalizecancel = BigDecimal.ZERO;
-		penalizecancel = this.punishInsideDao.getKouFaPrice(sc.getStarttime(),sc.getEndtime(), user.getUserid(), 1);
+		penalizecancel = this.punishInsideDao.getKouFaPrice(sc.getStarttime(), sc.getEndtime(), user.getUserid(), 1);
 		salary.setPenalizecancel(penalizecancel);
 		bdList.add(penalizecancel);
-		//违纪扣款扣罚
+		// 违纪扣款扣罚
 		BigDecimal foul = BigDecimal.ZERO;
-		foul = this.punishInsideDao.getKouFaPrice(sc.getStarttime(),sc.getEndtime(), user.getUserid(), 3);
+		foul = this.punishInsideDao.getKouFaPrice(sc.getStarttime(), sc.getEndtime(), user.getUserid(), 3);
 		salary.setFoul(foul);
 		bdList.add(foul.multiply(new BigDecimal(-1)));
-		//货损赔偿
+		// 货损赔偿
 		BigDecimal goods = BigDecimal.ZERO;
-		goods = this.punishInsideDao.getKouFaPrice(sc.getStarttime(),sc.getEndtime(), user.getUserid(), 2);
+		goods = this.punishInsideDao.getKouFaPrice(sc.getStarttime(), sc.getEndtime(), user.getUserid(), 2);
 		salary.setGoods(goods);
 		bdList.add(goods.multiply(new BigDecimal(-1)));
 
-
 		BigDecimal penalizecancel_import = BigDecimal.ZERO;
-		if((null!=map.get("penalizecancel_import"))&&(map.get("penalizecancel_import")==1)) {//扣款撤销(导入)
+		if ((null != map.get("penalizecancel_import")) && (map.get("penalizecancel_import") == 1)) {// 扣款撤销(导入)
 			penalizecancel_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 14));
-		}else{
+		} else {
 			penalizecancel_import = sf.getPenalizecancel_import();
 		}
 		salary.setPenalizecancel_import(penalizecancel_import);
 		bdList.add(penalizecancel_import);
 
 		BigDecimal bonusother1 = BigDecimal.ZERO;
-		if((null!=map.get("bonusother1"))&&(map.get("bonusother1")==1)) {//其他补贴
+		if ((null != map.get("bonusother1")) && (map.get("bonusother1") == 1)) {// 其他补贴
 			bonusother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 15));
-		}else{
+		} else {
 			bonusother1 = sf.getBonusother1();
 		}
 		salary.setBonusother1(bonusother1);
 		bdList.add(bonusother1);
 
 		BigDecimal bonusother2 = BigDecimal.ZERO;
-		if((null!=map.get("bonusother2"))&&(map.get("bonusother2")==1)) {//其他补贴2
+		if ((null != map.get("bonusother2")) && (map.get("bonusother2") == 1)) {// 其他补贴2
 			bonusother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 16));
-		}else{
+		} else {
 			bonusother2 = sf.getBonusother2();
 		}
 		salary.setBonusother2(bonusother2);
 		bdList.add(bonusother2);
 
 		BigDecimal bonusother3 = BigDecimal.ZERO;
-		if((null!=map.get("bonusother3"))&&(map.get("bonusother3")==1)) {//其他补贴3
+		if ((null != map.get("bonusother3")) && (map.get("bonusother3") == 1)) {// 其他补贴3
 			bonusother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 17));
-		}else{
+		} else {
 			bonusother3 = sf.getBonusother3();
 		}
 		salary.setBonusother3(bonusother3);
 		bdList.add(bonusother3);
 
 		BigDecimal bonusother4 = BigDecimal.ZERO;
-		if((null!=map.get("bonusother4"))&&(map.get("bonusother4")==1)) {//其他补贴4
+		if ((null != map.get("bonusother4")) && (map.get("bonusother4") == 1)) {// 其他补贴4
 			bonusother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 18));
-		}else{
+		} else {
 			bonusother4 = sf.getBonusother4();
 		}
 		salary.setBonusother4(bonusother4);
 		bdList.add(bonusother4);
 
 		BigDecimal bonusother5 = BigDecimal.ZERO;
-		if((null!=map.get("bonusother5"))&&(map.get("bonusother5")==1)) {//其他补贴5
+		if ((null != map.get("bonusother5")) && (map.get("bonusother5") == 1)) {// 其他补贴5
 			bonusother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 19));
-		}else{
+		} else {
 			bonusother5 = sf.getBonusother5();
 		}
 		salary.setBonusother5(bonusother5);
 		bdList.add(bonusother5);
 
 		BigDecimal bonusother6 = BigDecimal.ZERO;
-		if((null!=map.get("bonusother6"))&&(map.get("bonusother6")==1)) {//其他补贴6
+		if ((null != map.get("bonusother6")) && (map.get("bonusother6") == 1)) {// 其他补贴6
 			bonusother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 20));
-		}else{
+		} else {
 			bonusother6 = sf.getBonusother6();
 		}
 		salary.setBonusother6(bonusother6);
 		bdList.add(bonusother6);
 
 		BigDecimal overtimework = BigDecimal.ZERO;
-		if((null!=map.get("overtimework"))&&(map.get("overtimework")==1)) {//加班费
+		if ((null != map.get("overtimework")) && (map.get("overtimework") == 1)) {// 加班费
 			overtimework = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 21));
-		}else{
+		} else {
 			overtimework = sf.getOvertimework();
 		}
 		salary.setOvertimework(overtimework);
 		bdList.add(overtimework);
 
 		BigDecimal attendance = BigDecimal.ZERO;
-		if((null!=map.get("attendance"))&&(map.get("attendance")==1)) {//考勤扣款
+		if ((null != map.get("attendance")) && (map.get("attendance") == 1)) {// 考勤扣款
 			attendance = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 22));
-		}else{
+		} else {
 			attendance = sf.getAttendance();
 		}
 		salary.setAttendance(attendance);
 		bdList.add(attendance.multiply(new BigDecimal(-1)));
 
 		BigDecimal security = BigDecimal.ZERO;
-		if((null!=map.get("security"))&&(map.get("security")==1)) {//个人社保扣款
+		if ((null != map.get("security")) && (map.get("security") == 1)) {// 个人社保扣款
 			security = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 23));
-		}else{
+		} else {
 			security = sf.getSecurity();
 		}
 		salary.setSecurity(security);
 		bdList.add(security.multiply(new BigDecimal(-1)));
 
 		BigDecimal gongjijin = BigDecimal.ZERO;
-		if((null!=map.get("gongjijin"))&&(map.get("gongjijin")==1)) {//个人公积金扣款
+		if ((null != map.get("gongjijin")) && (map.get("gongjijin") == 1)) {// 个人公积金扣款
 			gongjijin = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 24));
-		}else{
+		} else {
 			gongjijin = sf.getGongjijin();
 		}
 		salary.setGongjijin(gongjijin);
 		bdList.add(gongjijin.multiply(new BigDecimal(-1)));
 
 		BigDecimal foul_import = BigDecimal.ZERO;
-		if((null!=map.get("foul_import"))&&(map.get("foul_import")==1)) {//违纪扣款扣罚(导入)
+		if ((null != map.get("foul_import")) && (map.get("foul_import") == 1)) {// 违纪扣款扣罚(导入)
 			foul_import = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 25));
-		}else{
+		} else {
 			foul_import = sf.getFoul_import();
 		}
 		salary.setFoul_import(foul_import);
 		bdList.add(foul_import.multiply(new BigDecimal(-1)));
 
-
 		BigDecimal dorm = BigDecimal.ZERO;
-		if((null!=map.get("dorm"))&&(map.get("dorm")==1)) {//宿舍费用
+		if ((null != map.get("dorm")) && (map.get("dorm") == 1)) {// 宿舍费用
 			dorm = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 26));
-		}else{
+		} else {
 			dorm = sf.getDorm();
 		}
 		salary.setDorm(dorm);
 		bdList.add(dorm.multiply(new BigDecimal(-1)));
 
 		BigDecimal penalizeother1 = BigDecimal.ZERO;
-		if((null!=map.get("penalizeother1"))&&(map.get("penalizeother1")==1)) {//其他扣罚
+		if ((null != map.get("penalizeother1")) && (map.get("penalizeother1") == 1)) {// 其他扣罚
 			penalizeother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 27));
-		}else{
+		} else {
 			penalizeother1 = sf.getPenalizeother1();
 		}
 		salary.setPenalizeother1(penalizeother1);
 		bdList.add(penalizeother1.multiply(new BigDecimal(-1)));
 
 		BigDecimal penalizeother2 = BigDecimal.ZERO;
-		if((null!=map.get("penalizeother2"))&&(map.get("penalizeother2")==1)) {//其他扣罚2
+		if ((null != map.get("penalizeother2")) && (map.get("penalizeother2") == 1)) {// 其他扣罚2
 			penalizeother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 28));
-		}else{
+		} else {
 			penalizeother2 = sf.getPenalizeother2();
 		}
 		salary.setPenalizeother2(penalizeother2);
 		bdList.add(penalizeother2.multiply(new BigDecimal(-1)));
 
 		BigDecimal penalizeother3 = BigDecimal.ZERO;
-		if((null!=map.get("penalizeother3"))&&(map.get("penalizeother3")==1)) {//其他扣罚3
+		if ((null != map.get("penalizeother3")) && (map.get("penalizeother3") == 1)) {// 其他扣罚3
 			penalizeother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 29));
-		}else{
+		} else {
 			penalizeother3 = sf.getPenalizeother3();
 		}
 		salary.setPenalizeother3(penalizeother3);
 		bdList.add(penalizeother3.multiply(new BigDecimal(-1)));
 
 		BigDecimal penalizeother4 = BigDecimal.ZERO;
-		if((null!=map.get("penalizeother4"))&&(map.get("penalizeother4")==1)) {//其他扣罚4
+		if ((null != map.get("penalizeother4")) && (map.get("penalizeother4") == 1)) {// 其他扣罚4
 			penalizeother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 30));
-		}else{
+		} else {
 			penalizeother4 = sf.getPenalizeother4();
 		}
 		salary.setPenalizeother4(penalizeother4);
 		bdList.add(penalizeother4.multiply(new BigDecimal(-1)));
 
 		BigDecimal penalizeother5 = BigDecimal.ZERO;
-		if((null!=map.get("penalizeother5"))&&(map.get("penalizeother5")==1)) {//其他扣罚5
+		if ((null != map.get("penalizeother5")) && (map.get("penalizeother5") == 1)) {// 其他扣罚5
 			penalizeother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 31));
-		}else{
+		} else {
 			penalizeother5 = sf.getPenalizeother5();
 		}
 		salary.setPenalizeother5(penalizeother5);
 		bdList.add(penalizeother5.multiply(new BigDecimal(-1)));
 
 		BigDecimal penalizeother6 = BigDecimal.ZERO;
-		if((null!=map.get("penalizeother6"))&&(map.get("penalizeother6")==1)) {//其他扣罚6
+		if ((null != map.get("penalizeother6")) && (map.get("penalizeother6") == 1)) {// 其他扣罚6
 			penalizeother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 32));
-		}else{
+		} else {
 			penalizeother6 = sf.getPenalizeother6();
 		}
 		salary.setPenalizeother6(penalizeother6);
 		bdList.add(penalizeother6.multiply(new BigDecimal(-1)));
 
 		BigDecimal imprestother1 = BigDecimal.ZERO;
-		if((null!=map.get("imprestother1"))&&(map.get("imprestother1")==1)) {//其他预付款
+		if ((null != map.get("imprestother1")) && (map.get("imprestother1") == 1)) {// 其他预付款
 			imprestother1 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 33));
-		}else{
+		} else {
 			imprestother1 = sf.getImprestother1();
 		}
 		salary.setImprestother1(imprestother1);
 		bdList.add(imprestother1.multiply(new BigDecimal(-1)));
 
 		BigDecimal imprestother2 = BigDecimal.ZERO;
-		if((null!=map.get("imprestother2"))&&(map.get("imprestother2")==1)) {//其他预付款2
+		if ((null != map.get("imprestother2")) && (map.get("imprestother2") == 1)) {// 其他预付款2
 			imprestother2 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 34));
-		}else{
+		} else {
 			imprestother2 = sf.getImprestother2();
 		}
 		salary.setImprestother2(imprestother2);
 		bdList.add(imprestother2.multiply(new BigDecimal(-1)));
 
 		BigDecimal imprestother3 = BigDecimal.ZERO;
-		if((null!=map.get("imprestother3"))&&(map.get("imprestother3")==1)) {//其他预付款3
+		if ((null != map.get("imprestother3")) && (map.get("imprestother3") == 1)) {// 其他预付款3
 			imprestother3 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 35));
-		}else{
+		} else {
 			imprestother3 = sf.getImprestother3();
 		}
 		salary.setImprestother3(imprestother3);
 		bdList.add(imprestother3.multiply(new BigDecimal(-1)));
 
 		BigDecimal imprestother4 = BigDecimal.ZERO;
-		if((null!=map.get("imprestother4"))&&(map.get("imprestother4")==1)) {//其他预付款4
+		if ((null != map.get("imprestother4")) && (map.get("imprestother4") == 1)) {// 其他预付款4
 			imprestother4 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 36));
-		}else{
+		} else {
 			imprestother4 = sf.getImprestother5();
 		}
 		salary.setImprestother4(imprestother4);
 		bdList.add(imprestother4.multiply(new BigDecimal(-1)));
 
 		BigDecimal imprestother5 = BigDecimal.ZERO;
-		if((null!=map.get("imprestother5"))&&(map.get("imprestother5")==1)) {//其他预付款5
+		if ((null != map.get("imprestother5")) && (map.get("imprestother5") == 1)) {// 其他预付款5
 			imprestother5 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 37));
-		}else{
+		} else {
 			imprestother5 = sf.getImprestother5();
 		}
 		salary.setImprestother5(imprestother5);
 		bdList.add(imprestother5.multiply(new BigDecimal(-1)));
 
 		BigDecimal imprestother6 = BigDecimal.ZERO;
-		if((null!=map.get("imprestother6"))&&(map.get("imprestother6")==1)) {//其他预付款6
+		if ((null != map.get("imprestother6")) && (map.get("imprestother6") == 1)) {// 其他预付款6
 			imprestother6 = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 38));
-		}else{
+		} else {
 			imprestother6 = sf.getImprestother6();
 		}
 		salary.setImprestother6(imprestother6);
 		bdList.add(imprestother6.multiply(new BigDecimal(-1)));
 
 		BigDecimal carrent = BigDecimal.ZERO;
-		if((null!=map.get("carrent"))&&(map.get("carrent")==1)) {//租用车辆费用
+		if ((null != map.get("carrent")) && (map.get("carrent") == 1)) {// 租用车辆费用
 			carrent = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 39));
-		}else{
+		} else {
 			carrent = sf.getCarrent();
 		}
 		salary.setCarrent(carrent);
 		bdList.add(carrent);
 
 		BigDecimal carmaintain = BigDecimal.ZERO;
-		if((null!=map.get("carmaintain"))&&(map.get("carmaintain")==1)) {//车子维修给用
+		if ((null != map.get("carmaintain")) && (map.get("carmaintain") == 1)) {// 车子维修给用
 			carmaintain = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 40));
-		}else{
+		} else {
 			carmaintain = sf.getCarmaintain();
 		}
 		salary.setCarmaintain(carmaintain);
 		bdList.add(carmaintain);
 
 		BigDecimal carfuel = BigDecimal.ZERO;
-		if((null!=map.get("carfuel"))&&(map.get("carfuel")==1)) {//油/电费用
+		if ((null != map.get("carfuel")) && (map.get("carfuel") == 1)) {// 油/电费用
 			carfuel = StringUtil.nullOrEmptyConvertToBigDecimal(this.getXRowCellData(row, 41));
-		}else{
+		} else {
 			carfuel = sf.getCarfuel();
 		}
 		salary.setCarfuel(carfuel);
 		bdList.add(carfuel);
 
-		//应发金额
+		// 应发金额
 		BigDecimal salaryaccrual = BigDecimal.ZERO;
-		if((bdList!=null)&&!bdList.isEmpty()){
-			for(BigDecimal bd : bdList){
+		if ((bdList != null) && !bdList.isEmpty()) {
+			for (BigDecimal bd : bdList) {
 				salaryaccrual = salaryaccrual.add(bd);
 			}
 		}
 
-		//货物预付款
+		// 货物预付款
 		BigDecimal imprestgoods = BigDecimal.ZERO;
-		//bdList.add(imprestgoods.multiply(new BigDecimal(-1)));
+		// bdList.add(imprestgoods.multiply(new BigDecimal(-1)));
 		int value = salaryaccrual.compareTo(new BigDecimal(1000));
-		if(value!=-1){
+		if (value != -1) {
 			BigDecimal bmb = user.getMaxcutpayment().subtract(user.getBasicadvance().add(user.getLateradvance()));
 			double dbmb = bmb.doubleValue();
 			double fixed = user.getFixedadvance().doubleValue();
-			if(dbmb>=fixed){
+			if (dbmb >= fixed) {
 				BigDecimal bddown = new BigDecimal(fixed);
 				salary.setImprestgoods(bddown);
 				salaryaccrual = salaryaccrual.subtract(bddown);
 				salary.setSalaryaccrual(salaryaccrual);
-			}else if(dbmb<=0){
+			} else if (dbmb <= 0) {
 				salary.setImprestgoods(imprestgoods);
 				salary.setSalaryaccrual(salaryaccrual);
-			}else{
+			} else {
 				salary.setImprestgoods(bmb);
 				salaryaccrual = salaryaccrual.subtract(bmb);
 				salary.setSalaryaccrual(salaryaccrual);
 			}
 		}
-		//当工资金额小于1000时
-		else{
-			salary.setImprestgoods(imprestgoods);//货物预付款
-			salary.setSalaryaccrual(salaryaccrual);//应发工资
+		// 当工资金额小于1000时
+		else {
+			salary.setImprestgoods(imprestgoods);// 货物预付款
+			salary.setSalaryaccrual(salaryaccrual);// 应发工资
 		}
 
-		//个税
+		// 个税
 		BigDecimal tax = BigDecimal.ZERO;
 		tax = this.salaryGatherService.getTax(salaryaccrual);
 		salary.setTax(tax);
 
-		//实发金额
+		// 实发金额
 		BigDecimal salarys = BigDecimal.ZERO;
 		salarys = salaryaccrual.subtract(tax);
 		salary.setSalary(salarys);
-		
+
 		return salary;
 	}
 
+	/**
+	 *
+	 * @Title: getSessionUser
+	 * @description 获取登录人的信息
+	 * @author 刘武强
+	 * @date 2015年10月12日下午2:09:58
+	 * @param @return
+	 * @return User
+	 * @throws
+	 */
+	/*
+	 * protected User getSessionUser() { return
+	 * this.smbracedOrderInputService.getSessionUser(); }
+	 */
 
+	/**
+	 *
+	 * @Title: isMobiPhoneNum
+	 * @description 判断手机号是否合法（与js一致）
+	 * @author 刘武强
+	 * @date 2015年10月12日下午9:36:57
+	 * @param @param telNum
+	 * @param @return
+	 * @return boolean
+	 * @throws
+	 */
+	public static boolean isMobiPhoneNum(String telNum) {
+		String regex = "^([+][8][6])?1\\d{10}$";
+		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(telNum);
+		return m.matches();
+	}
+
+	/**
+	 *
+	 * @Title: isTelePhoneNum
+	 * @description 判断固话是否合法（与js一致）
+	 * @author 刘武强
+	 * @date 2015年10月12日下午9:40:01
+	 * @param @param telNum
+	 * @param @return
+	 * @return boolean
+	 * @throws
+	 */
+	public static boolean isTelePhoneNum(String telNum) {
+		String regex = "^\\d{3,4}[-]\\d{7,8}$";
+		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(telNum);
+		return m.matches();
+	}
+
+	/**
+	 *
+	 * @Title: isPositiveNumber
+	 * @description 校验输入内容为非负数
+	 * @author 刘武强
+	 * @date 2015年10月12日下午9:48:27
+	 * @param @param value
+	 * @param @return
+	 * @return boolean
+	 * @throws
+	 */
+	public static boolean isPositiveNumber(String value) {
+		String regex = "^(0|[1-9]\\d*|\\d+\\.\\d+)$";
+		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(value);
+		return m.matches();
+	}
+
+	/**
+	 *
+	 * @Title: is
+	 * @description 校验输入内容位0或正整数的方法
+	 * @author 刘武强
+	 * @date 2015年11月3日下午5:03:15
+	 * @param @return
+	 * @return boolean
+	 * @throws
+	 */
+	public static boolean isPositive(String value) {
+		String regex = "^(0|[1-9]\\d*)$";
+		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(value);
+		return m.matches();
+	}
+
+	/**
+	 *
+	 * @Title: getRepeatOrderNo
+	 * @description 从list找出有重复（订单号重复）的订单号
+	 * @author 刘武强
+	 * @date 2015年10月13日上午8:23:00
+	 * @param @param list
+	 * @param @return
+	 * @return List<String>
+	 * @throws
+	 */
+	public Set<String> getRepeatOrderNo(List<EmbracedImportOrderVO> list) {
+		Set<String> repeatOrdersSet = new HashSet<String>();
+		String temp = "";
+		for (int i = 0; i < (list.size() - 1); i++) {
+			temp = list.get(i).getOrderNo();
+			for (int j = i + 1; j < list.size(); j++) {
+				if (temp.equals(list.get(j).getOrderNo())) {
+					repeatOrdersSet.add(temp);
+				}
+			}
+		}
+		return repeatOrdersSet;
+	}
+
+	public void setNullToZero(EmbracedOrderVO vo, User user) {
+		if (vo.getSender_provinceid() == null) {
+			vo.setSender_provinceid("0");
+		}
+		if (vo.getSender_cityid() == null) {
+			vo.setSender_cityid("0");
+		}
+		if (vo.getSender_countyid() == null) {
+			vo.setSender_countyid("0");
+		}
+		if (vo.getSender_townid() == null) {
+			vo.setSender_townid("0");
+		}
+		if (vo.getSender_customerid() == null) {
+			vo.setSender_customerid(1000L);
+		}
+		if (vo.getConsignee_provinceid() == null) {
+			vo.setConsignee_provinceid("0");
+		}
+		if (vo.getConsignee_cityid() == null) {
+			vo.setConsignee_cityid("0");
+		}
+		if (vo.getConsignee_countyid() == null) {
+			vo.setConsignee_countyid("0");
+		}
+		if (vo.getConsignee_townid() == null) {
+			vo.setConsignee_townid("0");
+		}
+		if (vo.getConsignee_customerid() == null) {
+			vo.setConsignee_customerid(1000L);
+		}
+		if (vo.getGoods_longth() == null) {
+			vo.setGoods_longth("0");
+		}
+		if (vo.getGoods_height() == null) {
+			vo.setGoods_height("0");
+		}
+
+		if (vo.getGoods_width() == null) {
+			vo.setGoods_width("0");
+		}
+
+		if (vo.getGoods_kgs() == null) {
+			vo.setGoods_kgs("0");
+		}
+
+		if (vo.getCollection() == null) {
+			vo.setCollection("0");
+		}
+
+		if (vo.getPacking_amount() == null) {
+			vo.setPacking_amount("0.00");
+		}
+
+		if (vo.getInsured() == null) {
+			vo.setInsured("0");
+		}
+
+		if (vo.getInsured_amount() == null) {
+			vo.setInsured_amount("0.00");
+		}
+
+		if (vo.getInsured_cost() == null) {
+			vo.setInsured_cost("0.00");
+		}
+
+		if (vo.getCharge_weight() == null) {
+			vo.setCharge_weight("0.00");
+		}
+
+		if (vo.getActual_weight() == null) {
+			vo.setActual_weight("0.00");
+		}
+
+		if (vo.getFreight_total() == null) {
+			vo.setFreight_total("0.00");
+		}
+
+		if (vo.getFreight() == null) {
+			vo.setFreight("0.00");
+		}
+
+		if (vo.getPayment_method() == null) {
+			vo.setPayment_method("1");
+		}
+
+		if (vo.getDelivermanId() == null) {
+			vo.setDelivermanId("0");
+		}
+
+		if (vo.getFlowordertype() == null) {
+			vo.setFlowordertype(FlowOrderTypeEnum.LanJianRuZhan.getValue() + "");
+		}
+		//
+		Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid());
+		branch = branch == null ? new Branch() : branch;
+		if (vo.getInstationhandlerid() == null) {
+			vo.setInstationhandlerid(user.getUserid() + "");
+		}
+		if (vo.getInstationhandlername() == null) {
+			vo.setInstationhandlername(user.getUsername());
+		}
+		if (vo.getInstationid() == null) {
+			vo.setInstationid((int) (branch.getBranchid()));
+		}
+		if (vo.getInstationname() == null) {
+			vo.setInstationname(branch.getBranchname());
+		}
+		if (vo.getInstationdatetime() == null) {
+			Date date = new Date();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String dd = df.format(date);
+			vo.setInstationdatetime(dd);
+		}
+
+	}
+
+	/**
+	 * 调用tps运单反馈接口 ----揽件入站
+	 *
+	 * @param orders
+	 */
+	private void executeTpsTransInterface(EmbracedOrderVO order, User user) {
+		if (order != null) {
+			ExpressOperationInfo paramObj = new ExpressOperationInfo(ExpressOperationEnum.TransNOFeedBack);
+			PjTransportFeedbackRequest transNoFeedBack = new PjTransportFeedbackRequest();
+			Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid());
+			transNoFeedBack.setTransportNo(order.getOrderNo());
+			transNoFeedBack.setOperateOrg(branch.getTpsbranchcode());
+			transNoFeedBack.setOperater(user.getRealname());
+			transNoFeedBack.setOperateTime(System.currentTimeMillis());
+			transNoFeedBack.setOperateType(FeedbackOperateTypeEnum.InboundScan.getValue());
+			transNoFeedBack.setReason("");
+
+			/*
+			 * //拼接描述 JoinMessageVO contextVar = new JoinMessageVO();
+			 * contextVar.
+			 * setOperationType(TpsOperationEnum.ArrivalScan.getValue(
+			 * ));//揽件入站对应入站扫描
+			 * contextVar.setStation(branch.getBranchname());//站点名称
+			 * contextVar.setOperator(user.getRealname());
+			 * contextVar.connectMessage();
+			 * transNoFeedBack.setTransportDetail(contextVar.getTrackMessage());
+			 */
+			paramObj.setTransNoFeedBack(transNoFeedBack);
+			// 发送JMS消息
+			this.tpsInterfaceExecutor.executTpsInterface(paramObj);
+		}
+	}
+
+	public String toFixTwo(String number) {
+		return String.format("%.0f", Float.valueOf(number));
+	}
 }

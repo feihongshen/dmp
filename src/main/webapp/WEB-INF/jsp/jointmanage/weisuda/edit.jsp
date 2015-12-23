@@ -72,7 +72,6 @@
 					<li><span>接收次数：</span>
  						<input type ="text" id="count" name ="count" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getCount())%>" maxlength="1000"  > 
 					</li>
-					
 					<li><span>是否批量推送：</span>
 							<input type ="radio" id="openbatchflag1" name ="openbatchflag" value="1" <%if(weisuda.getOpenbatchflag()==1){%>checked<%}%>  >开启
 							<input type ="radio" id="openbatchflag1" name ="openbatchflag" value="0" <%if(weisuda.getOpenbatchflag()==0){%>checked<%}%>  >关闭

@@ -26,6 +26,15 @@ public class CwbKuaiDiView {
 	private long lanshouuserid; // 揽收人id
 	private String lanshouusername; // 揽收人
 	private long paisongbranchid; // 派送机构id
+	private String paisongbranchname;//派送机构名称
+	public String getPaisongbranchname() {
+		return paisongbranchname;
+	}
+
+	public void setPaisongbranchname(String paisongbranchname) {
+		this.paisongbranchname = paisongbranchname;
+	}
+
 	private long paisonguserid; // 派送人id
 	private long zhongzhuanbranchid; // 中转站id
 	private String paisongtime;// 派送时间
@@ -69,6 +78,13 @@ public class CwbKuaiDiView {
 	private long chang;
 	private long kuan;
 	private long gao;
+
+	// 快递
+	private BigDecimal shouldfare;// 应收运费
+	private String paymethod;// 付款方式
+	private String customername;// 客户名称
+	private String customercode;// 客户编号
+
 
 	public long getChang() {
 		return chang;
@@ -560,6 +576,37 @@ public class CwbKuaiDiView {
 	public void setConsigneemobilekf(String consigneemobilekf) {
 		this.consigneemobilekf = consigneemobilekf;
 	}
-	
+
+	public BigDecimal getShouldfare() {
+		return shouldfare;
+	}
+
+	public void setShouldfare(BigDecimal shouldfare) {
+		this.shouldfare = shouldfare;
+	}
+
+	public String getPaymethod() {
+		return paymethod;
+	}
+
+	public void setPaymethod(String paymethod) {
+		this.paymethod = paymethod;
+	}
+
+	public String getCustomername() {
+		return customername;
+	}
+
+	public void setCustomername(String customername) {
+		this.customername = customername;
+	}
+
+	public String getCustomercode() {
+		return customercode;
+	}
+
+	public void setCustomercode(String customercode) {
+		this.customercode = customercode;
+	}
 
 }

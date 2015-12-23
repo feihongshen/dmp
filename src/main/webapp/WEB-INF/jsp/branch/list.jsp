@@ -116,24 +116,26 @@ function delSuccess(data){
 
 				<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 				<tr class="font_1">
-						<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">机构名称</td>
-						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">机构编号</td>
+						<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">机构名称</td>
+						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">分拣码</td>
+						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">机构编码</td>
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">地址</td>
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">联系人</td>
 						<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">电话</td>
-						<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">手机</td>
+						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">手机</td>
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">机构类型</td>
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 						
 					</tr>
 					  <% for(Branch b : branches){ %>
 					<tr>
-					 	<td width="20%" align="center" valign="middle"><%=b.getBranchname() %></td>
+					 	<td width="15%" align="center" valign="middle"><%=b.getBranchname() %></td>
 					 	<td width="10%" align="center" valign="middle"><%=b.getBranchcode() %></td>
+					 	<td width="10%" align="center" valign="middle"><%=b.getTpsbranchcode() %></td>
 						<td width="10%" align="left" valign="middle"><%=b.getBranchaddress() %></td>
 						<td width="10%" align="center" valign="middle"><%=b.getBranchcontactman() %></td>
 						<td width="15%" align="center" valign="middle"><%=b.getBranchphone() %></td>
-						<td width="15%" align="center" valign="middle"><%=b.getBranchmobile() %></td>
+						<td width="10%" align="center" valign="middle"><%=b.getBranchmobile() %></td>
 						<td width="10%" align="center" valign="middle"><%=b.getSitetypeName() %></td>
 						
 						<td width="10%" align="center" valign="middle" >

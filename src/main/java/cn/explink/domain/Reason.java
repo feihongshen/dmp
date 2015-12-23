@@ -9,6 +9,16 @@ public class Reason {
 	private int parentid;
 	private int changealowflag; //中转是否要申请 1是  0否
 
+	public Reason() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Reason(long reasonid, String reasoncontent) {
+		super();
+		this.reasonid = reasonid;
+		this.reasoncontent = reasoncontent;
+	}
+
 	public int getChangealowflag() {
 		return changealowflag;
 	}

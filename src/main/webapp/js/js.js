@@ -5276,7 +5276,7 @@ function whenhidden(){
 	$("#div_2").attr('hidden','true');
 	$("#divs").attr('hidden','true');
 	$("#div_changealowflag").attr('hidden','true');
-	if($("#reasontype").val()==2||$("#reasontype").val()==13)
+	if($("#reasontype").val()==2||$("#reasontype").val()==13||$("#reasontype").val()==15||$("#reasontype").val()==16||$("#reasontype").val()==17||$("#reasontype").val()==18)
 	{
 		$("#divs").removeAttr('hidden');
 		if($("#radio2").attr('checked')||$("#radio2").attr('checked')=='checked'){
@@ -5314,7 +5314,7 @@ function to_change(flag){
 			}
 	}*/
 	
-	if($("#reasontype").val()==1||$("#reasontype").val()==2||$("#reasontype").val()==13)
+	if($("#reasontype").val()==1||$("#reasontype").val()==2||$("#reasontype").val()==13||$("#reasontype").val()==15||$("#reasontype").val()==16||$("#reasontype").val()==17||$("#reasontype").val()==18)
 	{
 	
 		$("#divs").removeAttr('hidden');

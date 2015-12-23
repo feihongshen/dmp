@@ -2,17 +2,20 @@ package cn.explink.domain.express;
 
 import java.util.Date;
 
+import cn.explink.util.poi.excel.annotation.Excel;
+
 public class ExpressPreOrder {
 	/*
-	 * 主键  (not null)
+	 * 主键 (not null)
 	 */
 	private int id;
 	/*
 	 * 预订单编号(not null)
 	 */
+	@Excel(exportName = "预订单号", exportFieldWidth = 20)
 	private String preOrderNo;
 	/*
-	 *预订单状态（0：正常，1：关闭，2：退回）
+	 * 预订单状态（0：正常，1：关闭，2：退回）
 	 */
 	private int status;
 	/*
@@ -20,20 +23,31 @@ public class ExpressPreOrder {
 	 */
 	private int excuteState;
 	/*
+	 * add by wangzhiyu
+	 * 等考俊回来了需要将实体改成vo进行传值
+	 * 执行状态(0未匹配站点、1已匹配站点、2已分配小件员、3延迟揽件、4揽件失败、5站点超区、6揽件超区、7揽件成功)
+	 */
+	private String excuteStateStr;
+
+	/*
 	 *
 	 */
+	@Excel(exportName = "寄件人", exportFieldWidth = 20)
 	private String sendPerson;
 	/*
 	 * 手机号码
 	 */
+	@Excel(exportName = "手机号", exportFieldWidth = 20)
 	private String cellphone;
 	/*
 	 * 固定电话
 	 */
+	@Excel(exportName = "固话", exportFieldWidth = 20)
 	private String telephone;
 	/*
 	 * 取件地址
 	 */
+	@Excel(exportName = "取件地址", exportFieldWidth = 20)
 	private String collectAddress;
 	/*
 	 * 原因
@@ -70,6 +84,7 @@ public class ExpressPreOrder {
 	/*
 	 * 预约时间
 	 */
+	@Excel(exportName = "预约时间", exportFieldWidth = 20)
 	private Date arrangeTime;
 	/*
 	 * 小件员id
@@ -123,6 +138,20 @@ public class ExpressPreOrder {
 	 * 反馈时间
 	 */
 	private Date feedbackTime;
+
+	/*
+	 * 预计下次揽件时间
+	 */
+	private Date nextPickTime;
+
+	/*
+	 * 托物资料-其他
+	 */
+	private String other;
+	/*
+	 * 返回tps失败标识，0：成功，1：失败
+	 */
+	private int returnTpsFalseFlag;
 
 	public ExpressPreOrder() {
 		super();
@@ -367,5 +396,43 @@ public class ExpressPreOrder {
 	public void setFeedbackTime(Date feedbackTime) {
 		this.feedbackTime = feedbackTime;
 	}
+
+	public Date getNextPickTime() {
+		return this.nextPickTime;
+	}
+
+	public void setNextPickTime(Date nextPickTime) {
+		this.nextPickTime = nextPickTime;
+	}
+
+	public void setDistributeDelivermanTime(Date distributeDelivermanTime) {
+		this.distributeDelivermanTime = distributeDelivermanTime;
+	}
+
+	public String getOther() {
+		return this.other;
+	}
+
+	public void setOther(String other) {
+		this.other = other;
+	}
+
+	public int getReturnTpsFalseFlag() {
+		return this.returnTpsFalseFlag;
+	}
+
+	public void setReturnTpsFalseFlag(int returnTpsFalseFlag) {
+		this.returnTpsFalseFlag = returnTpsFalseFlag;
+	}
+	
+
+	public String getExcuteStateStr() {
+		return excuteStateStr;
+	}
+
+	public void setExcuteStateStr(String excuteStateStr) {
+		this.excuteStateStr = excuteStateStr;
+	}
+
 
 }

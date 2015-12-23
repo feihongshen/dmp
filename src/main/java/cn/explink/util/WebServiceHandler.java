@@ -60,7 +60,7 @@ public class WebServiceHandler {
 	}
 
 	public static void main(String args[]) throws Exception {
-		String ws_url = "http://bsp-test.sf-express.com:9090/bsp-ois/ws/expressService?wsdl";
+		String ws_url = "http://bsp-ExecelImportAndValidateUtilTest.sf-express.com:9090/bsp-ois/ws/expressService?wsdl";
 		String opName = "sfexpressService";
 		String opArgs = "111";
 		String request = (String) invokeWsByNameAndPassWord1(ws_url, opName, opArgs);
@@ -68,7 +68,7 @@ public class WebServiceHandler {
 	}
 
 	private static String getMessage() {
-		String ws_url = "http://bsp-test.sf-express.com:9090/bsp-ois/ws/expressService?wsdl";
+		String ws_url = "http://bsp-ExecelImportAndValidateUtilTest.sf-express.com:9090/bsp-ois/ws/expressService?wsdl";
 		String opName = "example";
 		Object opArgs[] = { "1111" };
 

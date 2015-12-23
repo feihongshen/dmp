@@ -229,7 +229,7 @@
 	/**
 	 * do the query action
 	 */
-	function doQuery(target, q){
+	/*function doQuery(target, q){
 		var state = $.data(target, 'combobox');
 		var opts = state.options;
 		
@@ -271,7 +271,39 @@
 			});
 			setValues(target, vv, true);
 		}
-	}
+	}*/
+	function doQuery(target, q) {
+	    var opts = $.data(target, "combobox").options;
+	    if (opts.multiple && !q) {
+	        setValues(target, [], true);
+	    } else {
+	        setValues(target, [q], true);
+	    }
+	    if (opts.mode == "remote") { //如果为remote模式，则请求远程数据  
+	        request(target, null, {q: q},true);
+	    } else { //本地模式  
+	        var panel = $(target).combo("panel");
+	        //隐藏所有下拉选项  
+	        panel.find("div.combobox-item").hide();
+	        var data = $.data(target, "combobox").data;
+	        for (var i = 0; i < data.length; i++) {
+	            //如果根据text过滤到(过滤规则为：包含用户输入值即匹配)匹配选项，则显示、设置选项。  
+	            if (opts.filter.call(target, q, data[i])) {
+	                var v = data[i][opts.valueField];
+	                var s = data[i][opts.textField];
+	                var item = panel.find("div.combobox-item[value=\"" + v + "\"]");
+	                //显示item  
+	                item.show();
+	                if (s == q) { //完全匹配(即完全等于)  
+	                    //设置values  
+	                    setValues(target, [v], true);
+	                    //添加选中样式  
+	                    item.addClass("combobox-item-selected");
+	                }
+	            }
+	        }
+	    }
+	};
 	
 	function doEnter(target){
 		var t = $(target);

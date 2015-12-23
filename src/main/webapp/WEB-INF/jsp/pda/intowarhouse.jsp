@@ -448,6 +448,15 @@ function callfunction(cwb){//getEmailDateByIds
 												$("#scancwb").blur();
 											}
 										}
+	}else if(data.statuscode=="103"){
+								$("#scancwb").val("");
+								if("${isOpenDialog}" != "open"){
+									$("#msg").html(data.errorinfo);
+								}else{
+									$("#msg1").html(data.errorinfo);
+									$('#find').dialog('open');
+									$("#scancwb").blur();
+								}
 									}
 									else{
 										$("#scancwb").val("");
@@ -910,7 +919,7 @@ function openLogin(){
 						<input type="text" class="saomiao_inputtxt2" value=""  id="baleno" name="baleno" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}"/>
 						<span>&nbsp;</span>
 					</p>
-					<p id="cwbno"><span>订单号：</span>
+					<p id="cwbno"><span>单/包号：</span>
 						<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitIntoWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#customerid").val(),$("#driverid").val(),$("#requestbatchno").val(),$("#rk_switch").val(),"");}'/>
 					</p>
 					<input type="hidden" id="youhuowudanflag" name="youhuowudanflag" value="0" />

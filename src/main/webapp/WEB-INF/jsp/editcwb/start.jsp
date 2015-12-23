@@ -201,7 +201,8 @@ function checkuser(type){
  			<%-- <input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue() %>)" value="重置审核状态" /> <br/><br/><br/> --%>
  			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiJinE.getValue() %>)" value="修改订单金额申请" /> <br/><br/><br/>
  			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiZhiFuFangShi.getValue() %>)" value="修改订单支付方式申请" /><br/><br/><br/>
- 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiDingDanLeiXing.getValue() %>)" value="修改订单类型申请" />
+ 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiDingDanLeiXing.getValue() %>)" value="修改订单类型申请" /><br/><br/><br/>
+ 			<input type="button" class="input_button1" onclick="checkuser(<%=EditCwbTypeEnum.XiuGaiKaiDiYunFeiJinE.getValue() %>)" value="修改快递运费金额" />
  		</td>
  	</tr>
 </table>

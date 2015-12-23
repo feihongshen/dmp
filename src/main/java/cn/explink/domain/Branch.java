@@ -79,6 +79,12 @@ public class Branch {
 	private long pfruleid;// 派费规则id
 
 
+	private long branchprovinceid;//站点所在省id
+	
+	private long branchcityid;//站点所在市id
+	
+	private String tpsbranchcode;//上传tps时所用的机构编码
+	
 	/**
 	 * @return the pfruleid
 	 */
@@ -597,4 +603,33 @@ public class Branch {
 		this.branchBail = branchBail;
 	}
 
+	public long getBranchprovinceid() {
+		return branchprovinceid;
+	}
+
+	public void setBranchprovinceid(long branchprovinceid) {
+		this.branchprovinceid = branchprovinceid;
+	}
+
+	public long getBranchcityid() {
+		return branchcityid;
+	}
+
+	public void setBranchcityid(long branchcityid) {
+		this.branchcityid = branchcityid;
+	}
+
+	/**
+	 * @return the tpsbranchcode
+	 */
+	public String getTpsbranchcode() {
+		return tpsbranchcode;
+	}
+
+	/**
+	 * @param tpsbranchcode the tpsbranchcode to set
+	 */
+	public void setTpsbranchcode(String tpsbranchcode) {
+		this.tpsbranchcode = tpsbranchcode;
+	}
 }

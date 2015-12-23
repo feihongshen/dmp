@@ -127,8 +127,13 @@
  		<intercept-url pattern="/jiuyeaddressmatch/**" access="permitAll" />
  		<intercept-url pattern="/deliverServer/**" access="permitAll" />
  		<intercept-url pattern="/bjunion/**" access="permitAll" />
- 		
  		<intercept-url pattern="/gxdxAddress/**" access="permitAll" />
+ 		
+ 		<intercept-url pattern="/javax.comm.jar" access="permitAll" />
+		<intercept-url pattern="/ScaleApplet.jar" access="permitAll" />
+		<intercept-url pattern="/ScaleApplet.cert" access="permitAll" />
+		<intercept-url pattern="/ScaleApplet.store" access="permitAll" />
+
 		<intercept-url pattern="/**" access="isAuthenticated()" />
 		<custom-filter before="FORM_LOGIN_FILTER" ref="loginFilter" />
 		<custom-filter position="FORM_LOGIN_FILTER" ref="PDALoginFilter" />

@@ -74,7 +74,6 @@ function multiSelectAll(name,isSelect,text){
 	$("input[name='"+name+"']").parent().parent().prev().children(".multiSelect_txt").val(txt==""?text:txt);
 }
 
-
 function getSelectBranchForUsers(value){
 	var optionstring="";
 	if(value!=""){
@@ -149,8 +148,6 @@ function selectallnexusbranch(path,tagname,branchname){
 		});
 	}
 }
-
-
 
 $(function(){
 	$("#branchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择配送站点' });
@@ -442,7 +439,6 @@ $("#flowOrderTypeEnumid").val(<%=request.getParameter("flowOrderTypeEnumid")%>);
 <%-- $("#branchid").val(<%=request.getParameter("branchid")%>); --%>
 $("#userid").val(<%=request.getParameter("userid")%>);
 <%-- $("#username").val(<%=request.getParameter("username")%>); --%>
-
 $(function(){
 	$("div.panel.combo-p").css({"top":"50px"});
 // 	$("#span.combo-arrow").css({"margin-right":"-18px"});

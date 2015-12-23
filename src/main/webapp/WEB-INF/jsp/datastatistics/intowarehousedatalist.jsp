@@ -164,6 +164,19 @@ function isshowdate(){
 		$("#date").hide();
 	}
 }
+//如果订单类型是快递，则不需要显示发货时间
+function cwbOrderTypeIdChange(){
+	
+	if($("#cwbordertypeid").val()==6){
+		$("#emaildatebegin").val("");
+		$("#emaildateend").val("");
+		$("#emailTimeTd").hide();
+		$("#isruku").val("true");
+	}else{
+		$("#emailTimeTd").show();
+	}
+}
+
 </script>
 </head>
 
@@ -194,7 +207,7 @@ function isshowdate(){
 		        [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
 				[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
 		</td>
-		<td>
+		<td id="emailTimeTd">
 				发货时间
 				<input type ="text" name ="emaildatebegin" id="emaildatebegin"  value="<%=emaildatebegin %>" class="input_text1"/>
 				到
@@ -216,7 +229,7 @@ function isshowdate(){
 		          <%} }%>
 			</select>
 			 订单类型
-			<select name ="cwbordertypeid" id ="cwbordertypeid" class="select1">
+			<select name ="cwbordertypeid" id ="cwbordertypeid" class="select1" onchange="cwbOrderTypeIdChange();">
 				<option value="-2">请选择</option>
 		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
 						<option value ="<%=c.getValue() %>" <%if(c.getValue()== (request.getParameter("cwbordertypeid")==null?0:Long.parseLong(request.getParameter("cwbordertypeid")))){%>selected="selected"<%}%> ><%=c.getText()%></option>
@@ -290,11 +303,12 @@ function isshowdate(){
 	<div style="overflow-x:scroll; width:100% " id="scroll">
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
-				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >订单号</td>
-				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >供货商</td>
-				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >发货时间</td>
-				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >订单类型</td>
-				<td width="16%" align="center" valign="middle" bgcolor="#eef6ff" >配送站点</td>
+				<td width="13%" align="center" valign="middle" bgcolor="#eef6ff" >订单号</td>
+				<td width="13%" align="center" valign="middle" bgcolor="#eef6ff" >供货商</td>
+				<td width="13%" align="center" valign="middle" bgcolor="#eef6ff" >发货时间</td>
+				<td width="13%" align="center" valign="middle" bgcolor="#eef6ff" >订单类型</td>
+				<td width="13%" align="center" valign="middle" bgcolor="#eef6ff" >揽件省</td>
+				<td width="13%" align="center" valign="middle" bgcolor="#eef6ff" >配送站点</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >发货件数</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" >扫描件数</td>
 		</tr>
@@ -305,6 +319,7 @@ function isshowdate(){
 					<td  align="center" valign="middle"><%=c.getCustomername()  %></td>
 					<td  align="center" valign="middle"><%=c.getEmaildate() %></td>
 					<td  align="center" valign="middle"><%=c.getOrderType() %></td>
+					<td  align="center" valign="middle"><%=c.getSenderprovince()==null?"":c.getSenderprovince() %></td>
 					<td  align="center" valign="middle"><%=c.getDeliverybranch() %></td>
 					<td  align="center" valign="middle"><%=c.getSendcarnum() %></td>
 					<td  align="center" valign="middle"><%=c.getScannum() %></td>
@@ -312,6 +327,7 @@ function isshowdate(){
 		 <% }%>
 		<tr bgcolor="#FF3300">
 			<td  align="center" valign="middle" class="high">合计：<font color="red"><%=count %></font>&nbsp;单  </td>
+			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>

@@ -73,35 +73,21 @@ public enum B2cEnum {
 			"sfexpress", 0), EfastERP_bak(20082, "中兴云购ERP", "efastERP_bak", 0), Wangjiu(20083, "网酒网", "wangjiu", 0), HomegoBJ(20084, "家有购物（北京）", "homegoubj", 0),
 
 	LeChong(20085, "乐宠（科捷）", "lechong", 0), Smiled(20086, "思迈下游", "smiled", 0), SFexpressXHM(20087, "顺丰快递(小红帽)", "sfexpressxhm", 0), Zhongliang(20088, "中粮(我买网)", "zhongliang", 0), Wenxuan(20089,
-			"文轩网", "wenxuan", 0), 
-			lefengwang(20093, "乐蜂网_对接", "lefengwang_statereturn", 0), Guangzhoutonglu(20095, "广州通路_对接", "guangzhoutonglu", 0), GuangzhoutongluWaifadan(20096, "广州通路对接_外发单",
-			"guangzhoutongluwaifadanduijie", 0),
-	VipShop_OXO(20090, "唯品会_oxo", "VIP_OXO", 0),// 唯品会OXO vipshop_oxo
-	JiuYe1(20101, "九曵1", "jiuye_1", 0),JiuYe2(20102, "九曵2", "jiuye_2", 0),JiuYe3(20103, "九曵3", "jiuye_3", 0),JiuYe4(20104, "九曵4", "jiuye_4", 0),JiuYe5(20105, "九曵5", "jiuye_5", 0),
-	JiuYeAddressMatch1(20109, "九曳_站点匹配1", "jiuyeaddressmatch_1", 0),
-	JiuYeAddressMatch2(20110, "九曳_站点匹配2", "jiuyeaddressmatch_2", 0),
-	JiuYeAddressMatch3(20111, "九曳_站点匹配3", "jiuyeaddressmatch_3", 0),
-	JiuYeAddressMatch4(20112, "九曳_站点匹配4", "jiuyeaddressmatch_4", 0),
-	JiuYeAddressMatch5(20113, "九曳_站点匹配5", "jiuyeaddressmatch_5", 0),
-	ZheMeng(20117, "哲盟-安达信", "zhemeng", 0),
-	FeiyuanAddress(20118,"ZJ飞远站点匹配","feiyuanAddress",0),
-	HaoYiGou(20120,"好易购","haoyigou",0),
-	
-	GuangXinDianXin(20121,"广信电信","guangxindianxin",0),
-	VipShop_cangku4(20122, "唯品会_仓库4", "vipshop_cangku4",0),
-	VipShop_cangku5(20123, "唯品会_仓库5", "vipshop_cangku5",0),
-	VipShop_cangku6(20124, "唯品会_仓库6", "vipshop_cangku6",0),
-	VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7",0),
-	VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8",0),
-	
-	; 
+			"文轩网", "wenxuan", 0), lefengwang(20093, "乐蜂网_对接", "lefengwang_statereturn", 0), Guangzhoutonglu(20095, "广州通路_对接", "guangzhoutonglu", 0), GuangzhoutongluWaifadan(20096, "广州通路对接_外发单",
+			"guangzhoutongluwaifadanduijie", 0), VipShop_OXO(20090, "唯品会_oxo", "VIP_OXO", 0), // 唯品会OXO
+																								// vipshop_oxo
+	JiuYe1(20101, "九曵1", "jiuye_1", 0), JiuYe2(20102, "九曵2", "jiuye_2", 0), JiuYe3(20103, "九曵3", "jiuye_3", 0), JiuYe4(20104, "九曵4", "jiuye_4", 0), JiuYe5(20105, "九曵5", "jiuye_5", 0), JiuYeAddressMatch1(
+			20109, "九曳_站点匹配1", "jiuyeaddressmatch_1", 0), JiuYeAddressMatch2(20110, "九曳_站点匹配2", "jiuyeaddressmatch_2", 0), JiuYeAddressMatch3(20111, "九曳_站点匹配3", "jiuyeaddressmatch_3", 0), JiuYeAddressMatch4(
+			20112, "九曳_站点匹配4", "jiuyeaddressmatch_4", 0), JiuYeAddressMatch5(20113, "九曳_站点匹配5", "jiuyeaddressmatch_5", 0), ZheMeng(20117, "哲盟-安达信", "zhemeng", 0), FeiyuanAddress(20118, "ZJ飞远站点匹配",
+			"feiyuanAddress", 0), HaoYiGou(20120, "好易购", "haoyigou", 0),
+
+	GuangXinDianXin(20121, "广信电信", "guangxindianxin", 0), VipShop_cangku4(20122, "唯品会_仓库4", "vipshop_cangku4", 0), VipShop_cangku5(20123, "唯品会_仓库5", "vipshop_cangku5", 0), VipShop_cangku6(20124,
+			"唯品会_仓库6", "vipshop_cangku6", 0), VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7", 0), VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8", 0), ;
 
 	private int key;
 	private String text;
 	private String method;
 	private int api_type; // 接口类型
-	
-
 
 	public int getApi_type() {
 		return this.api_type;

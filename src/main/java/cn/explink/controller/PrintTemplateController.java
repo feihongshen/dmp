@@ -104,7 +104,7 @@ public class PrintTemplateController {
 			@RequestParam(value = "detail", required = true) String detail, @RequestParam(value = "shownum", required = false, defaultValue = "1") long shownum,
 			@RequestParam(value = "opertatetype", required = false) long opertatetype) throws Exception {
 		List<PrintTemplate> ptList = this.printTemplateDAO.getPrintTemplateByWhere(name, detail, shownum, opertatetype, customname);
-
+		Integer templatetype = 0;
 		if (ptList.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"该模版设置已存在\"}";
 		} else {
@@ -112,7 +112,21 @@ public class PrintTemplateController {
 			if ((opertatetype % 2) == 0) {
 				shownum = 1;
 			}
-			this.printTemplateDAO.savePrintTemplateById(name, detail, id, shownum, opertatetype, customname, pt.getTemplatetype());
+			if (opertatetype == PrintTemplateOpertatetypeEnum.ChuKuAnDan.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue()
+					|| opertatetype == PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuAnDan.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.TuiHuoChuZhanAnDan.getValue()
+					|| opertatetype == PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanAnDan.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.ZhanDianChuZhanAnDan.getValue()) {
+				templatetype = 1;
+			} else if (opertatetype == PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue()
+					|| opertatetype == PrintTemplateOpertatetypeEnum.TuiGongYingShangChuKuHuiZong.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()
+					|| opertatetype == PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue() || opertatetype == PrintTemplateOpertatetypeEnum.ZhanDianChuZhanHuiZong.getValue()) {
+				templatetype = 2;
+			}else if (opertatetype == PrintTemplateOpertatetypeEnum.TongLuTuiHuoShangChuKu.getValue()) {
+				templatetype = 5;
+			}else if (opertatetype == PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue()) {
+				templatetype = 4;
+			}
+
+			this.printTemplateDAO.savePrintTemplateById(name, detail, id, shownum, opertatetype, customname, templatetype.longValue());
 			this.logger.info("operatorUser={},交接单模版设置->save", this.getSessionUser().getUsername());
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 		}

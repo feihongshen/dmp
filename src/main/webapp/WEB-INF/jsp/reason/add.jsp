@@ -15,7 +15,7 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>创建常用语</h1>
 		<form id="reason_cre_Form" name="reason_cre_Form" onSubmit="if(check_reason()){submitCreateForm(this);}return false;" action="<%=request.getContextPath()%>/reason/create" method="post"  >
-		<div id="box_form">
+			<div id="box_form">
 				<ul>
 					<li><span>类型：</span> 
 					<select name ="reasontype" id="reasontype" class="select1" onchange="whenhidden(),getReasonByFirstReason('<%=request.getContextPath()%>/reason/getfirstreason','parentid',0)">

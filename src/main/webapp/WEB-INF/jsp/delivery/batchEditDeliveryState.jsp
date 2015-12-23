@@ -465,7 +465,7 @@ function resub(form){
 							<textarea name="cwbs" cols="25" rows="4" id="cwbs" style="vertical-align: middle;height:60px"  ></textarea>
 							<input type="hidden" id="isReasonRequired" value="<%=isReasonRequired %>" />
 							<input type="button" name="button" id="button" value="确定" class="input_button2" onclick="sub()" />
-							(只能反馈配送类型的订单)
+							(只能反馈配送或快递类型的订单)
 						</td>
 					</tr>
 				</table>

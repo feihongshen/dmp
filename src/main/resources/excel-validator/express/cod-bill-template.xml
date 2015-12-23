@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<execelImport>
+	<field>运单号</field>
+	<field>件数</field>
+	<field>揽件员</field>
+	<field>派件员</field>
+	<field>代收货款</field>
+	<!-- <field>揽件站点</field> -->
+	<!-- <field>应收省份</field> -->
+	<!-- <field>应付省份</field> -->
+</execelImport>
+							
+

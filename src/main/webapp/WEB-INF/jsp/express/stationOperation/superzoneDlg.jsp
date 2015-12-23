@@ -14,7 +14,7 @@
 			<div id="box_form">
 				<table>
 					<tr>
-						<td>备注：</td>
+						<td>* 备注：</td>
 						<td><textarea id="note" cols="3"></textarea></td>
 					</tr>
 				</table>

@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
@@ -150,21 +151,12 @@ public class DataStatisticsController {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@RequestMapping("/query")
-	public String querypage(Model model, @RequestParam(value = "customerid", required = false, defaultValue = "0") String[] customeridStr,
-			@RequestParam(value = "currentBranchid", required = false, defaultValue = "0") String[] currentBranchid,
-			@RequestParam(value = "orderResultType", required = false, defaultValue = "") String[] orderResultTypes,
-			@RequestParam(value = "operationOrderResultTypes", required = false, defaultValue = "") String[] operationOrderResultTypes,
-			@RequestParam(value = "datatype", required = false, defaultValue = "0") long datatype,
-			@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchidStr,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeidStr,
-			@RequestParam(value = "kufangid", required = false, defaultValue = "") String[] kufangidStr,
-			@RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchidStr,
-			@RequestParam(value = "startbranchid", required = false, defaultValue = "") String[] startbranchidStr) {
+	public String querypage(Model model, @RequestParam(value = "customerid", required = false, defaultValue = "0") String[] customeridStr, @RequestParam(value = "currentBranchid", required = false, defaultValue = "0") String[] currentBranchid, @RequestParam(value = "orderResultType", required = false, defaultValue = "") String[] orderResultTypes, @RequestParam(value = "operationOrderResultTypes", required = false, defaultValue = "") String[] operationOrderResultTypes, @RequestParam(value = "datatype", required = false, defaultValue = "0") long datatype, @RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchidStr, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeidStr, @RequestParam(value = "kufangid", required = false, defaultValue = "") String[] kufangidStr, @RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchidStr, @RequestParam(value = "startbranchid", required = false, defaultValue = "") String[] startbranchidStr) {
 
 		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));// bug546licx
-		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
-				+ BranchEnum.ZhongZhuan.getValue());
+		List<Branch> kufangList = this.branchDAO
+				.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
 
 		if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			if (kufangList.size() == 0) {
@@ -215,8 +207,7 @@ public class DataStatisticsController {
 		model.addAttribute("startbranchidStr", startbranchidlist);
 		model.addAttribute("currentBranchidStr", currentBranchidlist);
 
-		model.addAttribute("notuihuobranchList",
-				this.branchDAO.getBanchByBranchidForStock(BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + "," + BranchEnum.ZhongZhuan.getValue()));
+		model.addAttribute("notuihuobranchList", this.branchDAO.getBanchByBranchidForStock(BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + "," + BranchEnum.ZhongZhuan.getValue()));
 		model.addAttribute("loginUserType", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getSitetype());// 存储当前登录用户所在机构类型
 		if (!model.containsAttribute("page_obj")) {
 			model.addAttribute("page_obj", new Page());
@@ -238,8 +229,8 @@ public class DataStatisticsController {
 		} else if (datatype == 8) {
 			return "datastatistics/daohuodata";
 		}/*
-		 * else if(datatype==9){ return "datastatistics/zhongzhuandata"; }
-		 */
+			* else if(datatype==9){ return "datastatistics/zhongzhuandata"; }
+			*/
 
 		return null;
 	}
@@ -265,16 +256,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/zhiliusearch/{page}")
-	public String zhiliusearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isaudit", required = false, defaultValue = "-1") long isaudit,
-			@RequestParam(value = "isauditTime", required = false, defaultValue = "0") long isauditTime, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
-			@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchid,
-			@RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@RequestParam(value = "firstlevelid", required = false, defaultValue = "0" ) int firstlevelreasonid,
-			@PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
+	public String zhiliusearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isaudit", required = false, defaultValue = "-1") long isaudit, @RequestParam(value = "isauditTime", required = false, defaultValue = "0") long isauditTime, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid, @RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchid, @RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @RequestParam(value = "firstlevelid", required = false, defaultValue = "0") int firstlevelreasonid, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
@@ -283,17 +265,17 @@ public class DataStatisticsController {
 		// 滞留
 		String[] operationOrderResultTypes = { DeliveryStateEnum.FenZhanZhiLiu.getValue() + "" };
 		if (isshow != 0) {
-			this.logger.info(
-					"滞留订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:"
-							+ this.dataStatisticsService.getStrings(customerid) + ",dispatchbranchid:" + this.dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid
-							+ ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:"
-							+ page + "", this.getSessionUser().getRealname());
+			this.logger
+					.info("滞留订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:" + this.dataStatisticsService
+							.getStrings(customerid) + ",dispatchbranchid:" + this.dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid + ",cwbordertypeid:" + this.dataStatisticsService
+							.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page + "", this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 
 			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue()
-					+ "," + BranchEnum.ZhongZhuan.getValue());
+			List<Branch> branchnameList = this.branchDAO
+					.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan
+							.getValue());
 
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (branchnameList.size() == 0) {
@@ -328,8 +310,8 @@ public class DataStatisticsController {
 			}
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
-			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, zhiliucheck, customerids, firstlevelreasonid);
+			List<String> orderFlowList = this.deliveryStateDAO
+					.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, zhiliucheck, customerids, firstlevelreasonid);
 
 			if (orderFlowList.size() > 0) {
 				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
@@ -372,7 +354,7 @@ public class DataStatisticsController {
 		model.addAttribute("page", page);
 		model.addAttribute("check", 1);
 		model.addAttribute("deliverid", deliverid);
-		model.addAttribute("levelreasonlist",levelreasonlist);
+		model.addAttribute("levelreasonlist", levelreasonlist);
 
 		this.logger.info("滞留订单汇总，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return this.querypage(model, customerid, new String[] {}, null, operationOrderResultTypes, 1, dispatchbranchid, cwbordertypeid, new String[] {}, new String[] {}, new String[] {});
@@ -400,17 +382,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/jushousearch/{page}")
-	public String jushousearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isaudit", required = false, defaultValue = "-1") long isaudit,
-			@RequestParam(value = "isauditTime", required = false, defaultValue = "0") long isauditTime, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
-			@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchid,
-			@RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "", required = false, defaultValue = "0" ) int firstlevelreasonid,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@RequestParam(value = "operationOrderResultType", required = false, defaultValue = "") String[] operationOrderResultTypes, @PathVariable(value = "page") long page,
-			HttpServletResponse response, HttpServletRequest request) {
+	public String jushousearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isaudit", required = false, defaultValue = "-1") long isaudit, @RequestParam(value = "isauditTime", required = false, defaultValue = "0") long isauditTime, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid, @RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchid, @RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "", required = false, defaultValue = "0") int firstlevelreasonid, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @RequestParam(value = "operationOrderResultType", required = false, defaultValue = "") String[] operationOrderResultTypes, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
@@ -421,17 +393,18 @@ public class DataStatisticsController {
 		List<User> deliverlist = new ArrayList<User>();
 
 		if (isshow != 0) {
-			this.logger.info(
-					"拒收订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:"
-							+ this.dataStatisticsService.getStrings(customerid) + ",dispatchbranchid:" + this.dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid
-							+ ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow
-							+ ",operationOrderResultType：" + this.dataStatisticsService.getStrings(operationOrderResultTypes) + ",page:" + page, this.getSessionUser().getRealname());
+			this.logger
+					.info("拒收订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:" + this.dataStatisticsService
+							.getStrings(customerid) + ",dispatchbranchid:" + this.dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid + ",cwbordertypeid:" + this.dataStatisticsService
+							.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",operationOrderResultType：" + this.dataStatisticsService
+							.getStrings(operationOrderResultTypes) + ",page:" + page, this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 
 			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue()
-					+ "," + BranchEnum.ZhongZhuan.getValue());
+			List<Branch> branchnameList = this.branchDAO
+					.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan
+							.getValue());
 
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (branchnameList.size() == 0) {
@@ -476,8 +449,8 @@ public class DataStatisticsController {
 
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
-			List<String> orderFlowList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, jushouCheck, customerids,firstlevelreasonid);
+			List<String> orderFlowList = this.deliveryStateDAO
+					.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, jushouCheck, customerids, firstlevelreasonid);
 
 			if (orderFlowList.size() > 0) {
 
@@ -540,13 +513,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/tuigonghuoshangsearch/{page}")
-	public String tuigonghuoshangsearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
-			@RequestParam(value = "flowordertype", required = false, defaultValue = "-1") long flowordertype,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
+	public String tuigonghuoshangsearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid, @RequestParam(value = "flowordertype", required = false, defaultValue = "-1") long flowordertype, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
@@ -554,9 +521,9 @@ public class DataStatisticsController {
 
 		String[] operationOrderResultTypes = {};
 		if (isshow != 0) {
-			this.logger.info("退供货商订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",customerid:" + this.dataStatisticsService.getStrings(customerid) + ",flowordertype:"
-					+ flowordertype + ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow
-					+ ",page:" + page, this.getSessionUser().getRealname());
+			this.logger
+					.info("退供货商订单汇总，操作人{}，选择条件begindate:" + begindate + ",enddate:" + enddate + ",customerid:" + this.dataStatisticsService.getStrings(customerid) + ",flowordertype:" + flowordertype + ",cwbordertypeid:" + this.dataStatisticsService
+							.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 
@@ -567,12 +534,12 @@ public class DataStatisticsController {
 			List<String> orderFlowList = new ArrayList<String>();
 
 			if (flowordertype == -1) {
-				orderFlowList.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), operationOrderResultTypes,
-						new String[] {}, 0, 0));
-				orderFlowList.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue(), operationOrderResultTypes,
-						new String[] {}, 0, 0));
-				orderFlowList.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), operationOrderResultTypes,
-						new String[] {}, 0, 0));
+				orderFlowList
+						.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), operationOrderResultTypes, new String[] {}, 0, 0));
+				orderFlowList
+						.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue(), operationOrderResultTypes, new String[] {}, 0, 0));
+				orderFlowList
+						.addAll(this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), operationOrderResultTypes, new String[] {}, 0, 0));
 			} else {
 				orderFlowList = this.orderFlowDAO.getOrderFlowByCredateAndFlowordertype(begindate, enddate, flowordertype, operationOrderResultTypes, new String[] {}, 0, 0);
 			}
@@ -633,13 +600,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/zaitusearch/{page}")
-	public String zaitusearch(Model model, @RequestParam(value = "datetype", required = false, defaultValue = "1") long datetype,
-			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
-			@RequestParam(value = "kufangid", required = false, defaultValue = "") String[] kufangid, @RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
+	public String zaitusearch(Model model, @RequestParam(value = "datetype", required = false, defaultValue = "1") long datetype, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "") String[] kufangid, @RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchid, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder feeco = new CwbOrder();
@@ -648,9 +609,10 @@ public class DataStatisticsController {
 		// 滞留
 		String[] operationOrderResultTypes = {};
 		if ((isshow != 0) && (kufangid.length > 0) && (nextbranchid.length > 0)) {
-			this.logger.info("库房在途订单汇总，操作人{}，选择条件datetype:" + datetype + "begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid)
-					+ ",nextbranchid:" + this.dataStatisticsService.getStrings(nextbranchid) + ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:"
-					+ orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
+			this.logger
+					.info("库房在途订单汇总，操作人{}，选择条件datetype:" + datetype + "begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid) + ",nextbranchid:" + this.dataStatisticsService
+							.getStrings(nextbranchid) + ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this
+							.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 			// 定义参数
@@ -730,19 +692,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/tuotousearch/{page}")
-	public String tuotousearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isaudit", required = false, defaultValue = "-1") long isaudit,
-			@RequestParam(value = "isauditTime", required = false, defaultValue = "0") long isauditTime, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
-			@RequestParam(value = "paytype", required = false, defaultValue = "-1") long paywayid,
-			@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchid,
-			@RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid,
-			@RequestParam(value = "operationOrderResultType", required = false, defaultValue = "") String[] operationOrderResultTypes,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "", required = false, defaultValue = "0" ) int firstlevelreasonid,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@RequestParam(value = "paybackfeeIsZero", required = false, defaultValue = "-1") Integer paybackfeeIsZero, @PathVariable(value = "page") long page, HttpServletResponse response,
-			HttpServletRequest request) {
+	public String tuotousearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isaudit", required = false, defaultValue = "-1") long isaudit, @RequestParam(value = "isauditTime", required = false, defaultValue = "0") long isauditTime, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid, @RequestParam(value = "paytype", required = false, defaultValue = "-1") long paywayid, @RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchid, @RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid, @RequestParam(value = "operationOrderResultType", required = false, defaultValue = "") String[] operationOrderResultTypes, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "", required = false, defaultValue = "0") int firstlevelreasonid, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @RequestParam(value = "paybackfeeIsZero", required = false, defaultValue = "-1") Integer paybackfeeIsZero, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
@@ -750,18 +700,18 @@ public class DataStatisticsController {
 		List<User> deliverlist = new ArrayList<User>();
 		// 滞留
 		if (isshow != 0) {
-			this.logger.info(
-					"妥投订单汇总，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:"
-							+ this.dataStatisticsService.getStrings(customerid) + ",paywayid:" + paywayid + ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid)
-							+ ",dispatchbranchid:" + this.dataStatisticsService.getStrings(dispatchbranchid) + ",deliverid:" + deliverid + ",operationOrderResultTypes:"
-							+ this.dataStatisticsService.getStrings(operationOrderResultTypes) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page,
-					this.getSessionUser().getRealname());
+			this.logger
+					.info("妥投订单汇总，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",isaudit:" + isaudit + ",isauditTime:" + isauditTime + ",customerid:" + this.dataStatisticsService
+							.getStrings(customerid) + ",paywayid:" + paywayid + ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",dispatchbranchid:" + this.dataStatisticsService
+							.getStrings(dispatchbranchid) + ",deliverid:" + deliverid + ",operationOrderResultTypes:" + this.dataStatisticsService.getStrings(operationOrderResultTypes) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this
+							.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 
 			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue()
-					+ "," + BranchEnum.ZhongZhuan.getValue());
+			List<Branch> branchnameList = this.branchDAO
+					.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan
+							.getValue());
 
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (branchnameList.size() == 0) {
@@ -777,8 +727,8 @@ public class DataStatisticsController {
 			String orderflowcwbs = "";
 			List<CwbOrder> clist = new ArrayList<CwbOrder>();
 			if (operationOrderResultTypes.length == 0) {
-				operationOrderResultTypes = new String[] { DeliveryStateEnum.PeiSongChengGong.getValue() + "", DeliveryStateEnum.ShangMenHuanChengGong.getValue() + "",
-						DeliveryStateEnum.ShangMenTuiChengGong.getValue() + "" };
+				operationOrderResultTypes = new String[] { DeliveryStateEnum.PeiSongChengGong.getValue() + "", DeliveryStateEnum.ShangMenHuanChengGong.getValue() + "", DeliveryStateEnum.ShangMenTuiChengGong
+						.getValue() + "" };
 			}
 			if ((dispatchbranchid.length == 0) & (branchnameList.size() > 0)) {
 				dispatchbranchid = new String[branchnameList.size()];
@@ -792,8 +742,8 @@ public class DataStatisticsController {
 
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
-			List<String> orderFlowLastList = this.deliveryStateDAO.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid,
-					deliverid, 1, customerids,firstlevelreasonid);
+			List<String> orderFlowLastList = this.deliveryStateDAO
+					.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, 1, customerids, firstlevelreasonid);
 			if (orderFlowLastList.size() > 0) {
 				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowLastList);
 			} else {
@@ -852,14 +802,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/outwarehousedata/{page}")
-	public String outwarehousedata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "-1") String[] kufangid,
-			@RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
-			@RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
+	public String outwarehousedata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "-1") String[] kufangid, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid, @RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchid, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
@@ -867,9 +810,10 @@ public class DataStatisticsController {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 
 		if (isshow != 0) {
-			this.logger.info("库房出库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",customerid:" + this.dataStatisticsService.getStrings(customerid)
-					+ ",cwbordertypeid:" + this.dataStatisticsService.getStrings(cwbordertypeid) + ",nextbranchid:" + this.dataStatisticsService.getStrings(nextbranchid) + ",orderbyName:"
-					+ orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
+			this.logger
+					.info("库房出库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",customerid:" + this.dataStatisticsService.getStrings(customerid) + ",cwbordertypeid:" + this.dataStatisticsService
+							.getStrings(cwbordertypeid) + ",nextbranchid:" + this.dataStatisticsService.getStrings(nextbranchid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this
+							.getSessionUser().getRealname());
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 			// 定义参数
@@ -879,8 +823,8 @@ public class DataStatisticsController {
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			String nextbranchids = this.dataStatisticsService.getStrings(nextbranchid);
 			String kufangids = this.dataStatisticsService.getStrings(kufangid);
-			if("-1".equals(kufangids)){
-				kufangids="";
+			if ("-1".equals(kufangids)) {
+				kufangids = "";
 			}
 			// 获取值
 			count = this.cwbDAO.getcwbOrderByOutWarehouseCountNew(begindate, enddate, orderName, customerids, kufangids, nextbranchids, cwbordertypeids, 0);
@@ -905,8 +849,8 @@ public class DataStatisticsController {
 		model.addAttribute("page", page);
 
 		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-		List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + ","
-				+ BranchEnum.ZhongZhuan.getValue());
+		List<Branch> branchnameList = this.branchDAO
+				.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
 		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "");
 		if ((branch.getSitetype() == BranchEnum.KuFang.getValue())) {
 			if (kufangList.size() == 0) {
@@ -966,13 +910,7 @@ public class DataStatisticsController {
 	 * @throws IOException
 	 */
 	@RequestMapping("/intowarehousedata/{page}")
-	public String intowarehousedata(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "emaildatebegin", required = false, defaultValue = "") String emaildatebegin,
-			@RequestParam(value = "emaildateend", required = false, defaultValue = "") String emaildateend, @RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid,
-			@RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerids,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "-2") long cwbordertypeid,
-			@RequestParam(value = "isruku", required = false, defaultValue = "false") String isruku, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			HttpServletResponse response, HttpServletRequest request) throws JsonParseException, JsonMappingException, IOException {
+	public String intowarehousedata(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "emaildatebegin", required = false, defaultValue = "") String emaildatebegin, @RequestParam(value = "emaildateend", required = false, defaultValue = "") String emaildateend, @RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerids, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "-2") long cwbordertypeid, @RequestParam(value = "isruku", required = false, defaultValue = "false") String isruku, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, HttpServletResponse response, HttpServletRequest request) throws JsonParseException, JsonMappingException, IOException {
 		long count = 0;
 		Page pageparm = new Page();
 		if (isruku.equals("true")) {
@@ -986,7 +924,8 @@ public class DataStatisticsController {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		// 蓝生2014/9/26 16:04:23 @李媛媛 去掉库房中统计的中转库
-		List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue()+","+BranchEnum.ZhongZhuan.getValue());
+		List<Branch> kufangList = this.branchDAO
+				.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
 		if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			if (kufangList.size() == 0) {
 				kufangList.add(branch);
@@ -1004,8 +943,9 @@ public class DataStatisticsController {
 		model.addAttribute("customeridStr", customeridList);
 
 		if (isshow != 0) {
-			this.logger.info("库房入库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",cwbordertypeid:" + cwbordertypeid + ",isruku:" + isruku + ",customerids:"
-					+ this.dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
+			this.logger
+					.info("库房入库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",cwbordertypeid:" + cwbordertypeid + ",isruku:" + isruku + ",customerids:" + this.dataStatisticsService
+							.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 			String customers = "";
 			if (customerids.length > 0) {
@@ -1062,8 +1002,8 @@ public class DataStatisticsController {
 			List<Reason> reasonList = this.reasonDao.getAllReason();
 			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate,
-					remarkList);
+			cwbOrderView = this.dataStatisticsService
+					.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 		List<Customer> customerMarkList = new ArrayList<Customer>();
@@ -1097,15 +1037,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/fahuodata/{page}")
-	public String fahuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "") String[] kufangid,
-			@RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId,
-			@RequestParam(value = "flowordertype", required = false, defaultValue = "0") long flowordertype,
-			@RequestParam(value = "servicetype", required = false, defaultValue = "全部") String servicetype, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
+	public String fahuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "") String[] kufangid, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "flowordertype", required = false, defaultValue = "0") long flowordertype, @RequestParam(value = "servicetype", required = false, defaultValue = "全部") String servicetype, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
@@ -1113,9 +1045,9 @@ public class DataStatisticsController {
 
 		String[] operationOrderResultTypes = {};
 		if (isshow != 0) {
-			this.logger.info("客户发货统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid) + ",cwbordertypeid:" + cwbordertypeid
-					+ ",customerid:" + this.dataStatisticsService.getStrings(customerid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this
-					.getSessionUser().getRealname());
+			this.logger
+					.info("客户发货统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid) + ",cwbordertypeid:" + cwbordertypeid + ",customerid:" + this.dataStatisticsService
+							.getStrings(customerid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1127,9 +1059,9 @@ public class DataStatisticsController {
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			String kufangids = this.dataStatisticsService.getStrings(kufangid);
 			// 获取值
-			List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),
-					BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
-			Branch branch=this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+			List<Branch> kufangList = this.branchDAO
+					.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
+			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 			if ((branch.getSitetype() == BranchEnum.KuFang.getValue()) || (branch.getSitetype() == BranchEnum.TuiHuo.getValue()) || (branch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 				if (kufangList.size() == 0) {
 					kufangList.add(branch);
@@ -1139,12 +1071,11 @@ public class DataStatisticsController {
 					}
 				}
 			}
-			if((kufangid.length==0)&&(kufangids.length()==0)){
-				for(Branch kf:kufangList)
-				{
-					kufangids+=kf.getBranchid()+",";
+			if ((kufangid.length == 0) && (kufangids.length() == 0)) {
+				for (Branch kf : kufangList) {
+					kufangids += kf.getBranchid() + ",";
 				}
-				if ((kufangids.length() > 0)&&kufangids.contains(",")) {
+				if ((kufangids.length() > 0) && kufangids.contains(",")) {
 					kufangids = kufangids.substring(0, kufangids.length() - 1);
 				}
 			}
@@ -1195,21 +1126,16 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/daohuodata/{page}")
-	public String daohuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "") String[] kufangid,
-			@RequestParam(value = "customerid", required = false, defaultValue = "") String customerid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
-			@RequestParam(value = "currentBranchid", required = false, defaultValue = "") String[] currentBranchid, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@RequestParam(value = "isnowdata", required = false, defaultValue = "0") long isnowdata, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
+	public String daohuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "") String[] kufangid, @RequestParam(value = "customerid", required = false, defaultValue = "") String customerid, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid, @RequestParam(value = "currentBranchid", required = false, defaultValue = "") String[] currentBranchid, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @RequestParam(value = "isnowdata", required = false, defaultValue = "0") long isnowdata, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
 		List<Customer> customerList = this.customerDAO.getAllCustomers();// 获取全部供货商
 		if (isshow != 0) {
-			this.logger.info("分站到货统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid) + ",cwbordertypeid:" + cwbordertypeid
-					+ ",customerid:" + customerid + ",currentBranchid:" + this.dataStatisticsService.getStrings(currentBranchid) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser()
-					.getRealname());
+			this.logger
+					.info("分站到货统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + this.dataStatisticsService.getStrings(kufangid) + ",cwbordertypeid:" + cwbordertypeid + ",customerid:" + customerid + ",currentBranchid:" + this.dataStatisticsService
+							.getStrings(currentBranchid) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1219,8 +1145,9 @@ public class DataStatisticsController {
 			String orderflowcwbs = "";
 
 			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-			List<Branch> branchnameList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue()
-					+ "," + BranchEnum.ZhongZhuan.getValue());
+			List<Branch> branchnameList = this.branchDAO
+					.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan
+							.getValue());
 
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (branchnameList.size() == 0) {
@@ -1243,8 +1170,9 @@ public class DataStatisticsController {
 
 			}
 
-			List<String> orderFlowList = this.orderFlowDAO.getOrderFlowBySome(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
-					+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), this.dataStatisticsService.getStrings(currentBranchid), isnowdata);
+			List<String> orderFlowList = this.orderFlowDAO
+					.getOrderFlowBySome(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), this.dataStatisticsService
+							.getStrings(currentBranchid), isnowdata);
 			if (orderFlowList.size() > 0) {
 				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
 			} else {
@@ -1268,8 +1196,8 @@ public class DataStatisticsController {
 			List<Reason> reasonList = this.reasonDao.getAllReason();
 			List<Remark> remarkList = this.remarkDAO.getAllRemark();
 			// 赋值显示对象
-			cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate,
-					remarkList);
+			cwbOrderView = this.dataStatisticsService
+					.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		}
 		model.addAttribute("count", count);
@@ -1300,10 +1228,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/noResultsearch/{page}")
-	public String noResultsearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangids", required = false, defaultValue = "") String[] kufangids,
-			@RequestParam(value = "branchids", required = false, defaultValue = "") String[] branchids, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
+	public String noResultsearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangids", required = false, defaultValue = "") String[] kufangids, @RequestParam(value = "branchids", required = false, defaultValue = "") String[] branchids, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		CwbOrder sum = new CwbOrder();
@@ -1336,8 +1261,9 @@ public class DataStatisticsController {
 		model.addAttribute("branchidstr", branchidList);
 		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		if (isshow != 0) {
-			this.logger.info("无结果订单统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangids:" + this.dataStatisticsService.getStrings(kufangids) + ",branchids:"
-					+ this.dataStatisticsService.getStrings(branchids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
+			this.logger
+					.info("无结果订单统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangids:" + this.dataStatisticsService.getStrings(kufangids) + ",branchids:" + this.dataStatisticsService
+							.getStrings(branchids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1376,8 +1302,8 @@ public class DataStatisticsController {
 			 * '11305040007643','113050535325','13050661483039','13050662866339','13050663012338','13050664551938','13050664576638','13050664901335','213050380083','213050592611');
 			 */
 			// 第一步
-			String oneCwbs = this.dataStatisticsService.getCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), begindate,
-					enddate, kufangids, branchids);
+			String oneCwbs = this.dataStatisticsService
+					.getCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), begindate, enddate, kufangids, branchids);
 			String twoCbs = "";
 			String threeCwbs = "";
 			String fourCwbs = "";
@@ -1391,14 +1317,14 @@ public class DataStatisticsController {
 				return "datastatistics/noresultlist";
 			}
 			if (!"".equals(oneCwbs)) {// 如果第一步查不到订单后面的都不用管了
-				List<String> twoCwbsList = this.orderFlowDAO.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-						oneCwbs, enddate);
+				List<String> twoCwbsList = this.orderFlowDAO
+						.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs, enddate);
 				twoCbs = this.dataStatisticsService.getCwbs(twoCwbsList);
 				twoCbs = twoCbs.equals("") ? "'--'" : twoCbs;
 			}
 			if (!"".equals(twoCbs)) {// 如果第二步查不到订单第三步就不用调用了
-				List<String> threeCwbsList = this.orderFlowDAO.getThreeCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-						oneCwbs, twoCbs);
+				List<String> threeCwbsList = this.orderFlowDAO
+						.getThreeCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs, twoCbs);
 				threeCwbs = this.dataStatisticsService.getCwbs(threeCwbsList);
 			}
 			if (!"".equals(threeCwbs)) {// 如果第三步才到订单号
@@ -1414,10 +1340,10 @@ public class DataStatisticsController {
 
 			}
 			if (!"".equals(fourCwbs)) {
-				List<String> fiveCwbsList = this.orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-						threeCwbs, fourCwbs, page);
-				List<String> fiveCwbsAllList = this.orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-						threeCwbs, fourCwbs, -1);
+				List<String> fiveCwbsList = this.orderFlowDAO
+						.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), threeCwbs, fourCwbs, page);
+				List<String> fiveCwbsAllList = this.orderFlowDAO
+						.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), threeCwbs, fourCwbs, -1);
 				fiveCwbs = this.dataStatisticsService.getCwbs(fiveCwbsList);
 				fiveCwbsAll = this.dataStatisticsService.getCwbs(fiveCwbsAllList);
 				count = this.orderFlowDAO.getFiveCwbsCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), threeCwbs, fourCwbs);
@@ -1454,28 +1380,26 @@ public class DataStatisticsController {
 	}
 
 	@RequestMapping("/exportNoresult")
-	public void excel(@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
-			@RequestParam(value = "kufangids", required = false, defaultValue = "") String[] kufangids, @RequestParam(value = "branchids", required = false, defaultValue = "") String[] branchids,
-			@RequestParam(value = "exportmould", required = false, defaultValue = "") String mouldfieldids, HttpServletResponse response) {
+	public void excel(@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangids", required = false, defaultValue = "") String[] kufangids, @RequestParam(value = "branchids", required = false, defaultValue = "") String[] branchids, @RequestParam(value = "exportmould", required = false, defaultValue = "") String mouldfieldids, HttpServletResponse response) {
 
 		String sql = "";
 		begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 		enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
-		String oneCwbs = this.dataStatisticsService.getCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), begindate, enddate,
-				kufangids, branchids);
+		String oneCwbs = this.dataStatisticsService
+				.getCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), begindate, enddate, kufangids, branchids);
 		String twoCbs = "";
 		String threeCwbs = "";
 		String fourCwbs = "";
 		String fiveCwbsAll = "";
 		if (!"".equals(oneCwbs)) {// 如果第一步查不到订单后面的都不用管了
-			List<String> twoCwbsList = this.orderFlowDAO.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs,
-					enddate);
+			List<String> twoCwbsList = this.orderFlowDAO
+					.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs, enddate);
 			twoCbs = this.dataStatisticsService.getCwbs(twoCwbsList);
 			twoCbs = twoCbs.equals("") ? "'--'" : twoCbs;
 		}
 		if (!"".equals(twoCbs)) {// 如果第二步查不到订单第三步就不用调用了
-			List<String> threeCwbsList = this.orderFlowDAO.getThreeCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-					oneCwbs, twoCbs);
+			List<String> threeCwbsList = this.orderFlowDAO
+					.getThreeCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs, twoCbs);
 			threeCwbs = this.dataStatisticsService.getCwbs(threeCwbsList);
 		}
 		if (!"".equals(threeCwbs)) {// 如果第三步才到订单号
@@ -1484,8 +1408,8 @@ public class DataStatisticsController {
 			fourCwbs = fourCwbs.equals("") ? "'--'" : fourCwbs;
 		}
 		if (!"".equals(fourCwbs)) {
-			List<String> fiveCwbsAllList = this.orderFlowDAO.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(),
-					threeCwbs, fourCwbs, -1);
+			List<String> fiveCwbsAllList = this.orderFlowDAO
+					.getFiveCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), threeCwbs, fourCwbs, -1);
 			fiveCwbsAll = this.dataStatisticsService.getCwbs(fiveCwbsAllList);
 			sql = this.cwbDAO.getSqlByCwb(fiveCwbsAll);
 		}
@@ -1513,12 +1437,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/zhongzhuandata/{page}")
-	public String zhongzhuandata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
-			@RequestParam(value = "type", required = false, defaultValue = "startbranchid") String type, @RequestParam(value = "branchid2", required = false, defaultValue = "") String[] branchid2,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			@PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
+	public String zhongzhuandata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid, @RequestParam(value = "type", required = false, defaultValue = "startbranchid") String type, @RequestParam(value = "branchid2", required = false, defaultValue = "") String[] branchid2, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @PathVariable(value = "page") long page, HttpServletResponse response, HttpServletRequest request) {
 		long count = 0;
 		Page pageparm = new Page();
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
@@ -1526,9 +1445,8 @@ public class DataStatisticsController {
 		String[] nextbranchids = null;
 		String[] startbranchids = null;
 		if (isshow != 0) {
-			this.logger.info(
-					"中转订单统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchid:" + branchid + ",type:" + type + ",branchid2:" + this.dataStatisticsService.getStrings(branchid2)
-							+ ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
+			this.logger.info("中转订单统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchid:" + branchid + ",type:" + type + ",branchid2:" + this.dataStatisticsService
+					.getStrings(branchid2) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 			begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 			enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1580,8 +1498,8 @@ public class DataStatisticsController {
 		List<String> branchid2list = this.dataStatisticsService.getList(branchid2);
 		model.addAttribute("branchid2Str", branchid2list);
 
-		model.addAttribute("notuihuobranchList",
-				this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue()));
+		model.addAttribute("notuihuobranchList", this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian
+				.getValue()));
 		model.addAttribute("zhongzhuanbranchList", this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhongZhuan.getValue() + ""));
 		model.addAttribute("count", count);
 		model.addAttribute("orderlist", cwbOrderView);
@@ -1610,13 +1528,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/zhandianchuzhanlist/{page}")
-	public String zhandianchuzhanlist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "startbranchid", required = false, defaultValue = "") String[] startbranchid,
-			@RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchid,
-			@RequestParam(value = "flowordertype", required = false, defaultValue = "6") long flowordertype,
-			@RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName,
-			@RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			HttpServletResponse response, HttpServletRequest request) {
+	public String zhandianchuzhanlist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "startbranchid", required = false, defaultValue = "") String[] startbranchid, @RequestParam(value = "nextbranchid", required = false, defaultValue = "") String[] nextbranchid, @RequestParam(value = "flowordertype", required = false, defaultValue = "6") long flowordertype, @RequestParam(value = "orderbyName", required = false, defaultValue = "emaildate") String orderbyName, @RequestParam(value = "orderbyType", required = false, defaultValue = "DESC") String orderbyId, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, HttpServletResponse response, HttpServletRequest request) {
 		try {
 			long count = 0;
 			Page pageparm = new Page();
@@ -1625,9 +1537,9 @@ public class DataStatisticsController {
 			List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 
 			if ((isshow != 0) && (startbranchid.length > 0) && (nextbranchid.length > 0)) {
-				this.logger.info("站点出站统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",startbranchid:" + this.dataStatisticsService.getStrings(startbranchid) + ",flowordertype:"
-						+ flowordertype + ",nextbranchid:" + this.dataStatisticsService.getStrings(nextbranchid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow
-						+ ",page:" + page, this.getSessionUser().getRealname());
+				this.logger
+						.info("站点出站统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",startbranchid:" + this.dataStatisticsService.getStrings(startbranchid) + ",flowordertype:" + flowordertype + ",nextbranchid:" + this.dataStatisticsService
+								.getStrings(nextbranchid) + ",orderbyName:" + orderbyName + ",orderbyId:" + orderbyId + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 				begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 				enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
@@ -1695,8 +1607,7 @@ public class DataStatisticsController {
 	}
 
 	@RequestMapping("/exportExcle")
-	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begin", required = false, defaultValue = "0") long page,
-			@RequestParam(value = "sign", required = false, defaultValue = "0") long sign) {
+	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begin", required = false, defaultValue = "0") long page, @RequestParam(value = "sign", required = false, defaultValue = "0") long sign) {
 		this.dataStatisticsService.DataStatisticsExportExcelMethod(response, request, page, sign);
 	}
 
@@ -1714,8 +1625,7 @@ public class DataStatisticsController {
 	}
 
 	@RequestMapping("/exportOutWareExcle")
-	public void exportOutWareExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begin", required = false, defaultValue = "0") long page,
-			@RequestParam(value = "sign", required = false, defaultValue = "0") long sign) {
+	public void exportOutWareExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begin", required = false, defaultValue = "0") long page, @RequestParam(value = "sign", required = false, defaultValue = "0") long sign) {
 		this.dataStatisticsService.DataStatisticsExportOutWareExcelMethod(response, request, page, sign);
 	}
 
@@ -1724,8 +1634,7 @@ public class DataStatisticsController {
 		this.dataStatisticsService.DataStatisticsExportIntoWareExcelMethod(response, request, page);
 	}
 
-	private void setSesstion(String begindate, String enddate, long customerid, String orderbyName, long startbranchid, long nextbranchid, long cwbordertypeid, String orderflowcwbs,
-			long currentBranchid, long dispatchbranchid, long kufangid, long flowordertype, long paywayid, long count, HttpServletRequest request) {
+	private void setSesstion(String begindate, String enddate, long customerid, String orderbyName, long startbranchid, long nextbranchid, long cwbordertypeid, String orderflowcwbs, long currentBranchid, long dispatchbranchid, long kufangid, long flowordertype, long paywayid, long count, HttpServletRequest request) {
 		request.getSession().setAttribute("begindate", begindate);
 		request.getSession().setAttribute("enddate", enddate);
 		request.getSession().setAttribute("customerid", customerid);
@@ -1787,11 +1696,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/tuihuochuzhanlist/{page}")
-	public String tuihuochuzhanlist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "branchid", required = false, defaultValue = "") String[] branchids,
-			@RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerids,
-			@RequestParam(value = "istuihuozhanruku", required = false, defaultValue = "0") long istuihuozhanruku, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			HttpServletResponse response, HttpServletRequest request) {
+	public String tuihuochuzhanlist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "branchid", required = false, defaultValue = "") String[] branchids, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerids, @RequestParam(value = "istuihuozhanruku", required = false, defaultValue = "0") long istuihuozhanruku, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, HttpServletResponse response, HttpServletRequest request) {
 		try {
 			long count = 0;
 			Page pageparm = new Page();
@@ -1801,15 +1706,16 @@ public class DataStatisticsController {
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
 
 			if (isshow != 0) {
-				this.logger.info("退货出站统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchids:" + this.dataStatisticsService.getStrings(branchids) + ",istuihuozhanruku:"
-						+ istuihuozhanruku + ",customerids:" + this.dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
+				this.logger
+						.info("退货出站统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchids:" + this.dataStatisticsService.getStrings(branchids) + ",istuihuozhanruku:" + istuihuozhanruku + ",customerids:" + this.dataStatisticsService
+								.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser().getRealname());
 
 				begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 				enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 				// 定义参数
 				List<CwbOrder> clist = new ArrayList<CwbOrder>();
-				List<TuihuoRecord> tuihuoRecordList = this.tuihuoRecordDAO.getTuihuoRecordByTuihuochuzhan(begindate, enddate, this.dataStatisticsService.getStrings(branchids),
-						this.dataStatisticsService.getStrings(customerids), istuihuozhanruku, page);
+				List<TuihuoRecord> tuihuoRecordList = this.tuihuoRecordDAO
+						.getTuihuoRecordByTuihuochuzhan(begindate, enddate, this.dataStatisticsService.getStrings(branchids), this.dataStatisticsService.getStrings(customerids), istuihuozhanruku, page);
 				StringBuffer cwbTemp = new StringBuffer();
 				if (tuihuoRecordList.size() > 0) {
 					for (TuihuoRecord tr : tuihuoRecordList) {// 第一次循环，过滤获取入库时间符合条件的数据
@@ -1820,8 +1726,8 @@ public class DataStatisticsController {
 					String cwbs = cwbTemp.substring(0, cwbTemp.length() - 1);
 					clist = this.cwbDAO.getCwbByCwbs(cwbs);
 					// 获取值
-					count = this.tuihuoRecordDAO.getCountTuihuoRecordByTuihuochuzhan(begindate, enddate, this.dataStatisticsService.getStrings(branchids),
-							this.dataStatisticsService.getStrings(customerids), istuihuozhanruku);
+					count = this.tuihuoRecordDAO.getCountTuihuoRecordByTuihuochuzhan(begindate, enddate, this.dataStatisticsService.getStrings(branchids), this.dataStatisticsService
+							.getStrings(customerids), istuihuozhanruku);
 
 					pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
@@ -1866,11 +1772,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/tuihuozhanrukulist/{page}")
-	public String tuihuozhanrukulist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "branchid", required = false, defaultValue = "") String[] branchids,
-			@RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerids,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeids, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			HttpServletResponse response, HttpServletRequest request) {
+	public String tuihuozhanrukulist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "branchid", required = false, defaultValue = "") String[] branchids, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerids, @RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeids, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, HttpServletResponse response, HttpServletRequest request) {
 		try {
 			long count = 0;
 			Page pageparm = new Page();
@@ -1880,16 +1782,18 @@ public class DataStatisticsController {
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
 
 			if (isshow != 0) {
-				this.logger.info("退货站入库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchids:" + this.dataStatisticsService.getStrings(branchids) + ",cwbordertypeids:"
-						+ this.dataStatisticsService.getStrings(cwbordertypeids) + ",customerids:" + this.dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this
-						.getSessionUser().getRealname());
+				this.logger
+						.info("退货站入库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",branchids:" + this.dataStatisticsService.getStrings(branchids) + ",cwbordertypeids:" + this.dataStatisticsService
+								.getStrings(cwbordertypeids) + ",customerids:" + this.dataStatisticsService.getStrings(customerids) + ",isshow:" + isshow + ",page:" + page, this.getSessionUser()
+								.getRealname());
 
 				begindate = begindate.length() == 0 ? DateTimeUtil.getNowTime() : begindate;
 				enddate = enddate.length() == 0 ? DateTimeUtil.getNowTime() : enddate;
 				// 定义参数
 				List<CwbOrder> clist = new ArrayList<CwbOrder>();
-				List<TuihuoRecord> tuihuoRecordList = this.tuihuoRecordDAO.getTuihuoRecordByTuihuozhanrukuOnPage(begindate, enddate, this.dataStatisticsService.getStrings(branchids),
-						this.dataStatisticsService.getStrings(customerids), this.dataStatisticsService.getStrings(cwbordertypeids), page);
+				List<TuihuoRecord> tuihuoRecordList = this.tuihuoRecordDAO
+						.getTuihuoRecordByTuihuozhanrukuOnPage(begindate, enddate, this.dataStatisticsService.getStrings(branchids), this.dataStatisticsService.getStrings(customerids), this.dataStatisticsService
+								.getStrings(cwbordertypeids), page);
 				StringBuffer cwbTemp = new StringBuffer();
 				if (tuihuoRecordList.size() > 0) {
 					for (TuihuoRecord tr : tuihuoRecordList) {// 第一次循环，过滤获取入库时间符合条件的数据
@@ -1900,8 +1804,8 @@ public class DataStatisticsController {
 					String cwbs = cwbTemp.substring(0, cwbTemp.length() - 1);
 					clist = this.cwbDAO.getCwbByCwbs(cwbs);
 					// 获取值
-					count = this.tuihuoRecordDAO.getCountTuihuoRecordByTuihuozhanruku(begindate, enddate, this.dataStatisticsService.getStrings(branchids),
-							this.dataStatisticsService.getStrings(customerids), this.dataStatisticsService.getStrings(cwbordertypeids));
+					count = this.tuihuoRecordDAO.getCountTuihuoRecordByTuihuozhanruku(begindate, enddate, this.dataStatisticsService.getStrings(branchids), this.dataStatisticsService
+							.getStrings(customerids), this.dataStatisticsService.getStrings(cwbordertypeids));
 
 					pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
@@ -1932,23 +1836,20 @@ public class DataStatisticsController {
 	}
 
 	@RequestMapping("/tuihuoexportExcle")
-	public void tuihuoexportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begindate1", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate1", required = false, defaultValue = "") String enddate, @RequestParam(value = "branchid1", required = false, defaultValue = "") String[] branchids,
-			@RequestParam(value = "customerid1", required = false, defaultValue = "") String[] customerids,
-			@RequestParam(value = "istuihuozhanruku1", required = false, defaultValue = "0") long istuihuozhanruku,
-			@RequestParam(value = "tuihuotype", required = false, defaultValue = "1") long tuihuotype,
-			@RequestParam(value = "cwbordertypeid1", required = false, defaultValue = "") String[] cwbordertypeids, @RequestParam(value = "sign", required = false, defaultValue = "") String sign) {
+	public void tuihuoexportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "begindate1", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate1", required = false, defaultValue = "") String enddate, @RequestParam(value = "branchid1", required = false, defaultValue = "") String[] branchids, @RequestParam(value = "customerid1", required = false, defaultValue = "") String[] customerids, @RequestParam(value = "istuihuozhanruku1", required = false, defaultValue = "0") long istuihuozhanruku, @RequestParam(value = "tuihuotype", required = false, defaultValue = "1") long tuihuotype, @RequestParam(value = "cwbordertypeid1", required = false, defaultValue = "") String[] cwbordertypeids, @RequestParam(value = "sign", required = false, defaultValue = "") String sign) {
 
-		this.dataStatisticsService.cwbExportExcelMethod(response, request, begindate, enddate, this.dataStatisticsService.getStrings(branchids), this.dataStatisticsService.getStrings(customerids),
-				this.dataStatisticsService.getStrings(cwbordertypeids), istuihuozhanruku, tuihuotype);
+		this.dataStatisticsService
+				.cwbExportExcelMethod(response, request, begindate, enddate, this.dataStatisticsService.getStrings(branchids), this.dataStatisticsService.getStrings(customerids), this.dataStatisticsService
+						.getStrings(cwbordertypeids), istuihuozhanruku, tuihuotype);
 	}
 
 	@RequestMapping("/selectallnexusbranch")
 	public @ResponseBody String selectallnexusbranch(@RequestParam(value = "branchname", required = false, defaultValue = "") String branchname) {
 		if (branchname.length() > 0) {
 			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-			List<Branch> branchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + ","
-					+ BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
+			List<Branch> branchList = this.branchDAO
+					.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan
+							.getValue());
 
 			if (branchList.size() == 0) {
 				branchList.add(branch);
@@ -1985,8 +1886,9 @@ public class DataStatisticsController {
 	public @ResponseBody String selectnexusbranchbybranchname(@RequestParam(value = "branchname", required = false, defaultValue = "") String branchname) {
 		if (branchname.length() > 0) {
 			Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
-			List<Branch> branchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + ","
-					+ BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
+			List<Branch> branchList = this.branchDAO
+					.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(), BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan
+							.getValue());
 
 			if (branchList.size() == 0) {
 				branchList.add(branch);
@@ -2036,9 +1938,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/customerfahuodata")
-	public String customerfahuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid,
-			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+	public String customerfahuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<Branch> kufanglist = this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
 		Map<Long, Long> customMap = new HashMap<Long, Long>();
@@ -2065,9 +1965,7 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/customerfahuodatashow/{page}")
-	public String customerfahuodatashow(Model model, @PathVariable("page") long page, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
-			@RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid) {
+	public String customerfahuodatashow(Model model, @PathVariable("page") long page, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid) {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<Branch> kufanglist = this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
 		List<CwbOrder> clist = this.cwbDAO.getCustomerfahuodataList(page, customerid, kufangid, begindate, enddate);
@@ -2092,9 +1990,7 @@ public class DataStatisticsController {
 	 * @param kufangid
 	 */
 	@RequestMapping("/customerfahuodata_excel")
-	public void customerfahuodata_excel(Model model, HttpServletResponse response, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
-			@RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid, @RequestParam(value = "exportmould", required = false, defaultValue = "0") String exportEume) {
+	public void customerfahuodata_excel(Model model, HttpServletResponse response, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "kufangid", required = false, defaultValue = "0") long kufangid, @RequestParam(value = "exportmould", required = false, defaultValue = "0") String exportEume) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -2144,8 +2040,7 @@ public class DataStatisticsController {
 							}
 						}
 
-						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
-								Map<String, String> complaintMap) throws SQLException {
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap, Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
 							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
@@ -2153,8 +2048,8 @@ public class DataStatisticsController {
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short) (5000));
 								// //设置列宽
-								Object a = DataStatisticsController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
-										reasonList, cwbspayupidMap, complaintMap);
+								Object a = DataStatisticsController.this.exportService
+										.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap, complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
 								} else {
@@ -2186,8 +2081,7 @@ public class DataStatisticsController {
 								int size = this.recordbatch.size();
 								for (int i = 0; i < size; i++) {
 									String cwb = this.recordbatch.get(i).get("cwb").toString();
-									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
-											complaintMap);
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp, complaintMap);
 								}
 								this.recordbatch.clear();
 							}
@@ -2255,16 +2149,16 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/zhandiandaohuodata")
-	public String zhandiandaohuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
-			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+	public String zhandiandaohuodata(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
 		List<Branch> zhandianlist = this.branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
 		Map<Long, Long> branchMap = new HashMap<Long, Long>();
 		if (isshow != 0) {
 			this.logger.info("站点到货汇总，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",isshow:" + isshow, this.getSessionUser().getRealname());
 			if (zhandianlist.size() > 0) {
 				for (Branch b : zhandianlist) {
-					List<String> ordercwblist = this.orderFlowDAO.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
-							+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), b.getBranchid());
+					List<String> ordercwblist = this.orderFlowDAO
+							.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), b
+									.getBranchid());
 					branchMap.put(b.getBranchid(), (long) ordercwblist.size());
 				}
 			}
@@ -2287,11 +2181,10 @@ public class DataStatisticsController {
 	 * @return
 	 */
 	@RequestMapping("/zhandiandaohuodatashow/{page}")
-	public String zhandiandaohuodatashow(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
-			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate) {
+	public String zhandiandaohuodatashow(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate) {
 		String orderflowcwbs = "";
-		List<String> ordercwblist = this.orderFlowDAO.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
-				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
+		List<String> ordercwblist = this.orderFlowDAO
+				.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
 
 		if (ordercwblist.size() > 0) {
 			orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(ordercwblist);
@@ -2309,8 +2202,8 @@ public class DataStatisticsController {
 		List<Remark> remarkList = this.remarkDAO.getAllRemark();
 
 		// 赋值显示对象
-		List<CwbOrderView> cwbOrderView = this.dataStatisticsService.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate,
-				enddate, remarkList);
+		List<CwbOrderView> cwbOrderView = this.dataStatisticsService
+				.getCwbOrderView(clist, this.customerDAO.getAllCustomersNew(), customerWareHouseList, branchList, userList, reasonList, begindate, enddate, remarkList);
 
 		model.addAttribute("orderlist", cwbOrderView);
 		model.addAttribute("customerList", customerList);
@@ -2331,9 +2224,7 @@ public class DataStatisticsController {
 	 * @param kufangid
 	 */
 	@RequestMapping("/zhandiandaohuodata_excel")
-	public void zhandiandaohuodata_excel(Model model, HttpServletResponse response, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
-			@RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate,
-			@RequestParam(value = "exportmould", required = false, defaultValue = "0") String exportEume) {
+	public void zhandiandaohuodata_excel(Model model, HttpServletResponse response, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate, @RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "exportmould", required = false, defaultValue = "0") String exportEume) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -2356,8 +2247,8 @@ public class DataStatisticsController {
 		try {
 			// 查询出数据
 			String orderflowcwbs = "";
-			List<String> ordercwblist = this.orderFlowDAO.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + ","
-					+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
+			List<String> ordercwblist = this.orderFlowDAO
+					.getDaohuoOrderFlow(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
 
 			if (ordercwblist.size() > 0) {
 				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(ordercwblist);
@@ -2392,8 +2283,7 @@ public class DataStatisticsController {
 							}
 						}
 
-						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
-								Map<String, String> complaintMap) throws SQLException {
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap, Map<String, String> complaintMap) throws SQLException {
 							Row row = sheet.createRow(rownum + 1);
 							row.setHeightInPoints(15);
 							for (int i = 0; i < cloumnName4.length; i++) {
@@ -2401,8 +2291,8 @@ public class DataStatisticsController {
 								cell.setCellStyle(style);
 								// sheet.setColumnWidth(i, (short) (5000));
 								// //设置列宽
-								Object a = DataStatisticsController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
-										reasonList, cwbspayupidMap, complaintMap);
+								Object a = DataStatisticsController.this.exportService
+										.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap, reasonList, cwbspayupidMap, complaintMap);
 								if (cloumnName6[i].equals("double")) {
 									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
 								} else {
@@ -2434,8 +2324,7 @@ public class DataStatisticsController {
 								int size = this.recordbatch.size();
 								for (int i = 0; i < size; i++) {
 									String cwb = this.recordbatch.get(i).get("cwb").toString();
-									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
-											complaintMap);
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp, complaintMap);
 								}
 								this.recordbatch.clear();
 							}
@@ -2492,6 +2381,7 @@ public class DataStatisticsController {
 			e.printStackTrace();
 		}
 	}
+
 	public boolean checkBranchRepeat(List<Branch> branchlist, Branch branch) {
 		for (int i = 0; i < branchlist.size(); i++) {
 			if (branch.getBranchname().equals(branchlist.get(i).getBranchname())) {
