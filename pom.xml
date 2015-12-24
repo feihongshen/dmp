@@ -82,7 +82,13 @@
   			<groupId>com.pjbest.pjorganization</groupId>
   			<artifactId>pjorganization-service-api</artifactId>
   			<version>1.0.0_12</version>
-			</dependency>
+  			<exclusions>
+  				<exclusion>
+  					<groupId>org.springframework</groupId>
+      				<artifactId>spring-context-support</artifactId>
+  				</exclusion>
+  			</exclusions>
+		</dependency>
 		<dependency>
   			<groupId>osp</groupId>
   			<artifactId>osp-core</artifactId>
