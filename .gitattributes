@@ -774,6 +774,7 @@ src/main/java/cn/explink/b2c/zjfeiyuan/util/XmlToBean.java -text
 src/main/java/cn/explink/client/AccountClient.java -text
 src/main/java/cn/explink/client/OmsClient.java -text
 src/main/java/cn/explink/commoncwborder/CommonCwbOrderController.java -text
+src/main/java/cn/explink/consts/ConstPool.java -text
 src/main/java/cn/explink/controller/AbnormalOrderController.java -text
 src/main/java/cn/explink/controller/AbnormalPunishView.java -text
 src/main/java/cn/explink/controller/AbnormalTypeController.java -text
