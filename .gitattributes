@@ -10562,14 +10562,10 @@ src/test/java/cn/explink/service/CwbRouteServiceTest.java -text
 src/test/java/cn/explink/service/Excel2003ExtractorTest.java -text
 src/test/java/cn/explink/service/Excel2007ExtractorTest.java -text
 src/test/java/cn/explink/service/ExcelExtractorTest.java -text
-src/test/java/cn/explink/service/OperationRuleServiceTest.java -text
 src/test/java/cn/explink/service/YeePay_test.java -text
 src/test/java/cn/explink/service/express/tps/OSPTest.java -text
 src/test/java/cn/explink/service/书飞网.xls -text
-src/test/java/cn/explink/service/跨省代收货款对账（应收）账单明细导入测试.xls -text
-src/test/java/cn/explink/util/ExecelImportAndValidateUtilTest.java -text
 src/test/java/cn/explink/util/StringUtilTest.java -text
-src/test/java/cn/explink/util/跨省代收货款对账（应收）账单明细导入测试.xls -text
 src/test/java/daoTest/BaseTest.java -text
 src/test/java/daoTest/JdbcDaoImplTest.java -text
 src/test/java/daoTest/User.java -text
