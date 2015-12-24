@@ -312,8 +312,9 @@ public class BranchDAO {
 						ps.setLong(44, branch.getBacktime());
 						ps.setBigDecimal(45, branch.getBranchBail());
 						ps.setLong(46, branch.getPfruleid());
-						ps.setLong(47, branch.getBranchid());
-						ps.setString(48, branch.getTpsbranchcode());
+						ps.setString(47, branch.getTpsbranchcode());
+						ps.setLong(48, branch.getBranchid());
+						
 
 					}
 				});
@@ -330,7 +331,7 @@ public class BranchDAO {
 						+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
 						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
 						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,bindmsksid=?,"
-						+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?,,tpsbranchcode=?"
+						+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?,tpsbranchcode=?"
 						+ " where branchid=?", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -388,8 +389,8 @@ public class BranchDAO {
 						ps.setLong(49, branch.getBacktime());
 						ps.setBigDecimal(50, branch.getBranchBail());
 						ps.setLong(51, branch.getPfruleid());
-						ps.setLong(52, branch.getBranchid());
-						ps.setString(53, branch.getTpsbranchcode());
+						ps.setString(52, branch.getTpsbranchcode());
+						ps.setLong(53, branch.getBranchid());
 					}
 				});
 	}
