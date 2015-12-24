@@ -44,7 +44,7 @@ public class AddressCustomerStationVO {
 	 */
 	private Date createtime;
 
-	private String executeBranchid;
+	private String execute_branchid;
 
 	public Integer getId() {
 		return this.id;
@@ -62,21 +62,20 @@ public class AddressCustomerStationVO {
 		this.customerid = customerid;
 	}
 
+	public String getExecute_branchid() {
+		return execute_branchid;
+	}
+
+	public void setExecute_branchid(String execute_branchid) {
+		this.execute_branchid = execute_branchid;
+	}
+
 	public String getBranchid() {
 		return branchid;
 	}
 
 	public void setBranchid(String branchid) {
 		this.branchid = branchid;
-	}
-
-
-	public String getExecuteBranchid() {
-		return executeBranchid;
-	}
-
-	public void setExecuteBranchid(String executeBranchid) {
-		this.executeBranchid = executeBranchid;
 	}
 
 	public Integer getCreatorid() {
@@ -117,14 +116,6 @@ public class AddressCustomerStationVO {
 
 	public void setBranchName(String branchName) {
 		this.branchName = branchName;
-	}
-
-	@Override
-	public String toString() {
-		return "AddressCustomerStationVO [id=" + id + ", customerid=" + customerid + ", customerName=" + customerName
-				+ ", branchid=" + branchid + ", branchName=" + branchName + ", creatorid=" + creatorid
-				+ ", creatorname=" + creatorname + ", createtime=" + createtime + ", execute_branchid="
-				+ executeBranchid + "]";
 	}
 
 }

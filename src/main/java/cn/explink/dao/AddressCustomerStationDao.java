@@ -9,10 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.stringtemplate.v4.compiler.STParser.list_return;
 
+import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.domain.addressvo.AddressCustomerStationVO;
 import cn.explink.util.Page;
+import groovyjarjarantlr.StringUtils;
 
 @Component
 public class AddressCustomerStationDao {
@@ -33,9 +36,18 @@ public class AddressCustomerStationDao {
 			AddressCustomerStationVO addressCustomerStation = new AddressCustomerStationVO();
 			addressCustomerStation.setId(rs.getInt("id"));
 			addressCustomerStation.setCustomerid(rs.getInt("customerid"));
-			addressCustomerStation.setCustomerName(AddressCustomerStationDao.this.customerDao.getCustomerById(rs.getInt("customerid")).getCustomername());
-			addressCustomerStation.setBranchid(rs.getInt("branchid"));
-			addressCustomerStation.setBranchName(AddressCustomerStationDao.this.branchDao.getBranchById(rs.getInt("branchid")).getBranchname());
+			addressCustomerStation.setCustomerName(AddressCustomerStationDao.this.customerDao
+					.getCustomerById(rs.getInt("customerid")).getCustomername());
+			String branchidStr = rs.getString("branchid");
+			addressCustomerStation.setExecute_branchid(rs.getString("execute_branchid"));
+			addressCustomerStation.setBranchid(rs.getString("branchid"));
+			List<Branch> branList = AddressCustomerStationDao.this.branchDao.getBranchListByIdStr(branchidStr);
+			String branName = "";
+			for (Branch b : branList) {
+				branName = b.getBranchname() + ",";
+
+			}
+			addressCustomerStation.setBranchName(branName);
 			return addressCustomerStation;
 		}
 
@@ -49,9 +61,11 @@ public class AddressCustomerStationDao {
 			AddressCustomerStationVO addressCustomerStation = new AddressCustomerStationVO();
 			// addressCustomerStation.setId(rs.getInt("id"));
 			addressCustomerStation.setCustomerid(rs.getInt("customerid"));
-			addressCustomerStation.setCustomerName(AddressCustomerStationDao.this.customerDao.getCustomerById(rs.getInt("customerid")).getCustomername());
-			addressCustomerStation.setBranchid(rs.getInt("branchid"));
-			addressCustomerStation.setBranchName(AddressCustomerStationDao.this.branchDao.getBranchById(rs.getInt("branchid")).getBranchname());
+			addressCustomerStation.setCustomerName(AddressCustomerStationDao.this.customerDao
+					.getCustomerById(rs.getInt("customerid")).getCustomername());
+			addressCustomerStation.setBranchid(rs.getString("branchid"));
+			addressCustomerStation.setBranchName(
+					AddressCustomerStationDao.this.branchDao.getBranchById(rs.getInt("branchid")).getBranchname());
 			return addressCustomerStation;
 		}
 
@@ -65,7 +79,8 @@ public class AddressCustomerStationDao {
 	}
 
 	// 获取全部记录带分页
-	public List<AddressCustomerStationVO> getAllCustomerStationsByPage(Long page, String customerid, String station) {
+	public List<AddressCustomerStationVO> getAllCustomerStationsByPage(Long page, String customerid, String station,
+			String execute_branchid) {
 		String sql = "select * from express_set_customer_station where 1=1 ";
 		List<Object> listParams = new ArrayList<Object>();
 		if ((customerid != null) && !"".equals(customerid)) {
@@ -76,12 +91,18 @@ public class AddressCustomerStationDao {
 			sql += " and branchid=?";
 			listParams.add(station);
 		}
+		if (execute_branchid != null && !"".equals(execute_branchid)) {
+			sql += " and branchid=?";
+			listParams.add(execute_branchid);
+
+		}
 		Object[] obj = new Object[listParams.size()];
 		for (int a = 0; a < listParams.size(); a++) {
 			obj[a] = listParams.get(a);
 		}
 		sql += "  ORDER BY customerid limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		List<AddressCustomerStationVO> list = this.jdbcTemplate.query(sql, obj, new AddressCustomerStationMapper());
+		System.out.println("======" + list);
 		return list;
 	}
 
@@ -122,23 +143,25 @@ public class AddressCustomerStationDao {
 	}
 
 	// 插入一条记录
-	public void create(String customerName, String stationName, Long userid, String userName, String dateTime) {
-		String sql = "INSERT INTO express_set_customer_station (customerid,branchid,creatorid,creatorname,createtime) VALUES (?,?,?,?,?)";
-		this.jdbcTemplate.update(sql, customerName, stationName, userid, userName, dateTime);
+	public void create(String customerName, String stationName, String excute_branckid, Long userid, String userName,
+			String dateTime) {
+		String sql = "INSERT INTO express_set_customer_station (customerid,branchid,execute_branchid,creatorid,creatorname,createtime) VALUES (?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, customerName, stationName, excute_branckid, userid, userName, dateTime);
 	}
 
-	//根据id更新记录
-	public void updateById(Long id, String stationName, Long userid, String userName, String dateTime){
-		String sql = "UPDATE express_set_customer_station SET branchid=?,creatorid=?,creatorname=?,createtime=? WHERE id=?";
-		this.jdbcTemplate.update(sql,stationName,userid,userName,dateTime,id);
+	// 根据id更新记录
+	public void updateById(Long id, String excute_branchid, Integer customerid, String stationName, Long userid, String userName,
+			String dateTime) {
+		String sql = "UPDATE express_set_customer_station SET branchid=?,execute_branchid=?,customerid=?,creatorid=?,creatorname=?,createtime=? WHERE id=?";
+		this.jdbcTemplate.update(sql, stationName, excute_branchid,customerid, userid, userName, dateTime, id);
 	}
-	
+
 	// 根据客户id删除记录
 	public void delByCustomerId(Long customerId) {
 		String sql = "delete from express_set_customer_station where customerid=?";
 		this.jdbcTemplate.update(sql, customerId);
 	}
-	
+
 	// 根据id删除记录
 	public void delById(Long id) {
 		String sql = "delete from express_set_customer_station where id=?";

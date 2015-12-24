@@ -351,7 +351,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 		Set<Long> mappingStationIdList = new TreeSet<Long>();
 		for (AddressCustomerStationVO customerStationMapping : customerStationMappingList) {
-			long branchid = customerStationMapping.getBranchid();
+			
+			long branchid = Integer.parseInt(customerStationMapping.getBranchid());
 			// 过滤掉停用的站点
 			Branch branch = this.branchDAO.getEffectBranchById(branchid);
 			if (StringUtil.isEmpty(branch.getBranchname())) {
