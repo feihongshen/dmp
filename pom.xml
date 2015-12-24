@@ -525,6 +525,14 @@
 		    <artifactId>joda-time</artifactId>
 		    <version>2.3</version>
 		</dependency>
+		
+		<!-- vipshop mq client -->
+		<dependency>
+		      <groupId>com.vip.platform.middleware</groupId>
+		      <artifactId>vms</artifactId>
+		      <version>0.7.5</version>    
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>
