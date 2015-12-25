@@ -193,7 +193,7 @@ public class BranchDAO {
 	}
 
 	public List<Branch> getAllBranches() {
-		return this.jdbcTemplate.query("SELECT * FROM express_set_branch ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
+		return this.jdbcTemplate.query("SELECT * FROM express_set_branch  ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
 	}
 
 	public List<Branch> getAllEffectBranches() {

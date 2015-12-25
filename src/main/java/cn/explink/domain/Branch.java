@@ -633,4 +633,5 @@ public class Branch {
 	public void setTpsbranchcode(String tpsbranchcode) {
 		this.tpsbranchcode = tpsbranchcode;
 	}
+	
 }

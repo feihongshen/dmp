@@ -50,7 +50,7 @@ function del(id){
 function changeCustomer(){
 	$("#searchForm").submit();
 }
-function changeStation(){
+/* function changeStation(){
 	var select = document.getElementById("station");
 	var str = [];
 	for (i = 0; i < select.length; i++) {
@@ -60,7 +60,7 @@ function changeStation(){
 
 	}
 	
-}
+} */
 $(function(){
 	$("#station").val($("#stationValue").val());
 	$("#customerid").val($("#customerValue").val());

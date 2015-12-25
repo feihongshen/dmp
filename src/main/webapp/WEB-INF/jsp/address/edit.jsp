@@ -29,7 +29,7 @@
 	src="<%=request.getContextPath()%>/js/multiple-select.js"></script>
 <script>
 	$(function() {
-		$("#excute_branchid").multipleSelect({
+		$("#excute_branch").multipleSelect({
 			filter : true
 		});
 		$("#branchName").multipleSelect({
@@ -46,11 +46,11 @@
 			}
 
 		}
-		var select1 = document.getElementById("excute_branchid");
+		var select1 = document.getElementById("excute_branch");
 		var strs = [];
 		for (i = 0; i < select1.length; i++) {
 			if (select1.options[i].selected) {
-				strs.push(select[i].value);
+				strs.push(select1[i].value);
 			}
 
 		}
@@ -100,24 +100,24 @@
 			action="<%=request.getContextPath()%>/addressCustomerStationMap/save"
 			method="post">
 			<div style="height: 400px">
-				<input type="hidden" name="executes" id="executes" /> <input
-					type="hidden" name="stations" id="stations" /> <input
-					type="hidden" name="id"
-					value="<%=addressCustomerStationVO.getId()%>"> <span>地址库站点：</span><select
-					id="excute_branchid" class="select1" multiple="multiple">
+				<input type="hidden" name="executes" id="executes" /> 
+				<input type="hidden" name="stations" id="stations" /> 
+				<input type="hidden" name="id" value="<%=addressCustomerStationVO.getId()%>"> 
+				<span>地址库站点：</span><select
+					id="excute_branch" class="select1" multiple="multiple">
 						<%
-							String[] executes = addressCustomerStationVO.getBranchid().split(",");
-							for (Branch branch : listBranchs) {
-						%>
-						<option value="<%=branch.getBranchid()%>"
-							<%for (int i = 0; i < executes.length; i++) {
-							if (Long.parseLong(executes[i]) == branch.getBranchid()) {%>
-							selected="selected" <%}
-							}%>>
-							<%=branch.getBranchname()%></option>
-						<%
-							}
-						%>
+						String[] brans = addressCustomerStationVO.getBranchid().split(",");
+						for (Branch branch : listBranchs) {
+					%>
+					<option value="<%=branch.getBranchid()%>"
+						<%for (int i = 0; i < brans.length; i++) {
+					if (Long.parseLong(brans[i]) == branch.getBranchid()) {%>
+						selected="selected" <%}}%>><%=branch.getBranchname()%></option>
+					<%
+						
+
+						}
+					%>
 				</select>* <span>客户名称：</span><select id="customerName" name="customerName"
 					class="select1">
 					<%

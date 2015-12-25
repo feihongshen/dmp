@@ -218,6 +218,10 @@ public class BranchService {
 	 */
 	public List<Branch> getPageCash() {
 
+		return this.branchDao.getAllEffectBranches();
+	}
+	public List<Branch> getPageCashs() {
+
 		return this.branchDao.getAllBranches();
 	}
 
