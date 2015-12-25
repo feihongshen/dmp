@@ -53,11 +53,26 @@ public class PjDeliveryOrderServiceAdaptor implements ExpressDeliveryOrderServic
 	@Autowired
 	CwbDAO cwbDAO;
 
+	public MainIdService getMainIdService(){
+		if(mainIdService == null){
+			try{
+				this.mainIdService = new MainIdServiceHelper.MainIdServiceClient();
+				InvocationContext.Factory.getInstance().setTimeout(20000);
+			}catch(Exception e){
+				LOGGER.error("获取MainIdService异常："+e.getMessage());
+				throw new RuntimeException("获取MainIdService异常："+e.getMessage());
+			}
+		}
+		return mainIdService;
+	}
+	
+	/*
 	@PostConstruct
 	public void init() {
-		this.mainIdService = new MainIdServiceHelper.MainIdServiceClient();
+		getMainIdService() = new MainIdServiceHelper.MainIdServiceClient();
 		InvocationContext.Factory.getInstance().setTimeout(20000);
 	}
+	*/
 
 	@Override
 	public void assignDeliver(List<String> preOrderNoList, String branchCode, String operator) {
@@ -120,7 +135,7 @@ public class PjDeliveryOrderServiceAdaptor implements ExpressDeliveryOrderServic
 		String seqRuleNo = "PACKAGE_NO";
 		Map<String, String> contextVars = new HashMap<String, String>();
 		try {
-			seqNo = this.mainIdService.getNextSeq(seqRuleNo, contextVars);
+			seqNo = getMainIdService().getNextSeq(seqRuleNo, contextVars);
 		} catch (OspException e) {
 			PjDeliveryOrderServiceAdaptor.LOGGER.error(e.getMessage());
 		}
@@ -139,7 +154,7 @@ public class PjDeliveryOrderServiceAdaptor implements ExpressDeliveryOrderServic
 		try {
 
 			@SuppressWarnings("unused")
-			SeqBatchModel seqNoa = this.mainIdService.getNextBatchSeq(seqRuleNo, contextVars, count);
+			SeqBatchModel seqNoa = getMainIdService().getNextBatchSeq(seqRuleNo, contextVars, count);
 			String firstCode = seqNoa.getStartSeq();
 			Long firstNum = Long.parseLong(firstCode.substring(1, firstCode.length()));
 			//手动拼接包号
