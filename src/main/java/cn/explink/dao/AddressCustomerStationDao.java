@@ -88,12 +88,12 @@ public class AddressCustomerStationDao {
 			listParams.add(customerid);
 		}
 		if ((station != null) && !"".equals(station)) {
-			sql += " and branchid=?";
-			listParams.add(station);
+			sql += " and branchid like ?";
+			listParams.add("%"+station+"%");
 		}
 		if (execute_branchid != null && !"".equals(execute_branchid)) {
-			sql += " and branchid=?";
-			listParams.add(execute_branchid);
+			sql += " and execute_branchid like ?";
+			listParams.add("%"+execute_branchid+"%");
 
 		}
 		Object[] obj = new Object[listParams.size()];

@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 	List<AddressCustomerStationVO> listRalations = (List<AddressCustomerStationVO>) request
-			.getAttribute("listRalations");
+	.getAttribute("listRalations");
 	Page page_obj = (Page) request.getAttribute("page_obj");
 	List<Customer> listCustomers = (List<Customer>) request.getAttribute("listCustomers");
 	List<Branch> listBranchs = (List<Branch>) request.getAttribute("listBranchs");
@@ -34,23 +34,8 @@
 	src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 
-function addInit(){
-	//window.parent.uploadFormInit("user_cre_Form");
-}
-function addSuccess(data){
-	$("#alert_box select", parent.document).val(0);
-	$("#searchForm").submit();
-}
-function editInit(){
-	window.parent.crossCapablePDA();
-	//window.parent.uploadFormInit("user_save_Form");
-}
-function editSuccess(data){
-	$("#searchForm").submit();
-}
-function delSuccess(data){
-	$("#searchForm").submit();
-}
+
+
 function del(id){
 	$.ajax({
 		type: "POST",
@@ -62,15 +47,19 @@ function del(id){
 	});
 }
 
-function blurBranck(){
-	alert(12)
-}
 function changeCustomer(){
 	$("#searchForm").submit();
 }
-
 function changeStation(){
-	$("#searchForm").submit();
+	var select = document.getElementById("station");
+	var str = [];
+	for (i = 0; i < select.length; i++) {
+		if (select.options[i].selected) {
+			$("#searchForm").submit();
+		}
+
+	}
+	
 }
 $(function(){
 	$("#station").val($("#stationValue").val());
@@ -103,7 +92,7 @@ $("#excute_branchid").multipleSelect({
 			</span>
 			<form action="1" method="post" id="searchForm" method="post">
 				数据库站点：<select id="station" name="station" class="select1"
-					multiple="multiple" onblur="blurBranck();" >
+					onchange="changeStation();" multiple="multiple">
 
 					<%
 						for (Branch branch : listBranchs) {
@@ -115,7 +104,7 @@ $("#excute_branchid").multipleSelect({
 
 				</select> 客户：<select id="customerid" name="customerid" class="select1"
 					onChange="changeCustomer();">
-
+					<option></option>
 					<%
 						for (Customer customer : listCustomers) {
 					%>
@@ -158,13 +147,13 @@ $("#excute_branchid").multipleSelect({
 						<%
 							String[] vobranids = addressCustomerStationVO.getBranchid().split(",");
 
-								for (int i = 0; i < vobranids.length; i++) {
-									for (Branch branch : listBranchs) {
-										if (Long.parseLong(vobranids[i]) == branch.getBranchid()) {
+												for (int i = 0; i < vobranids.length; i++) {
+													for (Branch branch : listBranchs) {
+														if (Long.parseLong(vobranids[i]) == branch.getBranchid()) {
 						%> <%=branch.getBranchname()%> <%
  	}
- 			}
- 		}
+  			}
+  		}
  %>
 					</td>
 					<td width="15%" align="center" valign="middle"><%=addressCustomerStationVO.getCustomerName()%></td>
@@ -172,14 +161,16 @@ $("#excute_branchid").multipleSelect({
 						<%
 							String[] exvobranids = addressCustomerStationVO.getExecute_branchid().split(",");
 
-								for (int i = 0; i < exvobranids.length; i++) {
-									for (Branch branch : listBranchs) {
-										if (Long.parseLong(exvobranids[i]) == branch.getBranchid()) {
+												for (int i = 0; i < exvobranids.length; i++) {
+													for (Branch branch : listBranchs) {
+														if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag()==1) {
 						%> <%=branch.getBranchname()%> <%
- 	}
- 			}
+ 	}else{
+ 		%> <%=branch.getBranchname()+"(停用)"%> <%
+  	}
+  			}
 
- 		}
+  		}
  %>
 					</td>
 					<td width="10%" align="center" valign="middle">[<a

@@ -29,11 +29,9 @@
 	src="<%=request.getContextPath()%>/js/multiple-select.js"></script>
 <script>
 	$(function() {
-
 		$("#excute_branchid").multipleSelect({
 			filter : true
 		});
-
 		$("#branchName").multipleSelect({
 			filter : true
 		});
@@ -61,10 +59,13 @@
 		if ($("#customerName").val().length == 0) {
 			alert("名称不能为空");
 			return false;
-		} else if ($("#branchName").val() == 0) {
-			alert("变量不能为空");
+		} else if (str.length == 0) {
+			alert("执行站点不能为空");
 			return false;
-		} else {
+		}  else if (strs.length == 0) {
+			alert("地址库站点不能为空");
+			return false;
+		}else {
 			$.ajax({
 				type : "POST",
 				url : $(form).attr("action"),
@@ -88,19 +89,7 @@
 		}
 	}
 
-	function changeStation() {
-		$.ajax({
-			type : "POST",
-			url : $("#getAreaURL").val(),
-			data : {
-				branchid : $("#branchName").val()
-			},
-			dataType : "json",
-			success : function(data) {
-				$("#areaInput").val(data.error);
-			}
-		});
-	}
+	
 </script>
 <div style="background: #f5f5f5">
 	<div id="box_in_bg">
@@ -110,7 +99,7 @@
 			onSubmit="buttonSave(this);return false;"
 			action="<%=request.getContextPath()%>/addressCustomerStationMap/save"
 			method="post">
-			<div id="box_form" style="height: 120px">
+			<div style="height: 400px">
 				<input type="hidden" name="executes" id="executes" /> <input
 					type="hidden" name="stations" id="stations" /> <input
 					type="hidden" name="id"
@@ -142,6 +131,7 @@
 					%>
 				</select>* <span>执行站点：</span><select id="branchName" class="select1"
 					multiple="multiple">
+					<option></option>
 					<%
 						String[] arcvos = addressCustomerStationVO.getExecute_branchid().split(",");
 						for (Branch branch : listBranchs) {
@@ -160,8 +150,8 @@
 					value="<%=addressCustomerStationVO.getCustomerid()%>">
 			</div>
 			<div align="center">
-				<input type="submit" value="确认" class="button" id="sub" /> <input
-					type="button" value="返回" class="button" id="cancel"
+				<input type="submit" value="确认" class="button" id="sub" />
+ 				<input type="button" value="返回" class="button" id="cancel"
 					onclick="location='<%=request.getContextPath()%>/addressCustomerStationMap/list/1'" />
 			</div>
 		</form>
