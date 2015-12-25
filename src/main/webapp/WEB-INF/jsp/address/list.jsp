@@ -149,8 +149,10 @@ $("#excute_branchid").multipleSelect({
 
 												for (int i = 0; i < vobranids.length; i++) {
 													for (Branch branch : listBranchs) {
-														if (Long.parseLong(vobranids[i]) == branch.getBranchid()) {
+														if (Long.parseLong(vobranids[i]) == branch.getBranchid()&& branch.getBrancheffectflag().equals("1")) {
 						%> <%=branch.getBranchname()%> <%
+ 	}else if(Long.parseLong(vobranids[i]) == branch.getBranchid()){
+ 		%> <%=branch.getBranchname()+"(停用)"%> <%
  	}
   			}
   		}
@@ -163,9 +165,9 @@ $("#excute_branchid").multipleSelect({
 
 												for (int i = 0; i < exvobranids.length; i++) {
 													for (Branch branch : listBranchs) {
-														if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag()==1) {
+														if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag().equals("1")) {
 						%> <%=branch.getBranchname()%> <%
- 	}else{
+ 	}else if(Long.parseLong(exvobranids[i]) == branch.getBranchid()){
  		%> <%=branch.getBranchname()+"(停用)"%> <%
   	}
   			}
