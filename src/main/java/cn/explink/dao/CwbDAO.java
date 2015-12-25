@@ -1630,6 +1630,12 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, nextbranchid, cwb);
 	}
 
+	public void updateNextBranchidAndCwbstate(String cwb, long nextbranchid,CwbStateEnum cwbstate){
+		String sql = "update express_ops_cwb_detail set nextbranchid=?,cwbstate=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, nextbranchid,cwbstate.getValue(),cwb);
+	} 
+	
+	
 	/**
 	 * 修改客户备注信息
 	 *
@@ -7172,4 +7178,5 @@ public class CwbDAO {
 
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
+
 }

@@ -124,15 +124,16 @@ public class OrderBackCheckService {
 					for (long i : cwbRouteService.getNextPossibleBranch(order.getBranchid())) {
 						bList.add(branchDAO.getBranchByBranchid(i));
 					}
-					Branch tuihuoNextBranch = null;
+					Branch tuihuoNextBranch = new Branch();
 					for (Branch b : bList) {
 						if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 							tuihuoNextBranch = b;
 						}
 					}
 					// 更改下一站为退货站
-					cwbDAO.updateNextBranchid(order.getCwb(), tuihuoNextBranch.getBranchid());
-					cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.TuiHuo);
+					/*cwbDAO.updateNextBranchid(order.getCwb(), tuihuoNextBranch.getBranchid());
+					cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.TuiHuo);*/
+					this.cwbDAO.updateNextBranchidAndCwbstate(order.getCwb(),tuihuoNextBranch.getBranchid(),CwbStateEnum.TuiHuo);
 	
 					// 更新checkstate=1 并且更新确认状态为确认退货
 					orderBackCheckDAO.updateOrderBackCheck1(1,order.getId(),user.getRealname(), dateStr);
