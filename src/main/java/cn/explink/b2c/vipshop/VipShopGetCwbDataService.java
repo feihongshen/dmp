@@ -84,6 +84,8 @@ public class VipShopGetCwbDataService {
 
 	public void edit(HttpServletRequest request, int joint_num) {
 		VipShop vipshop = new VipShop();
+		vipshop.setDaysno((request.getParameter("daysno")==null||("".equals(request.getParameter("daysno"))))?5:(Integer.valueOf(request.getParameter("daysno"))));
+		vipshop.setSelb2cnum((request.getParameter("selb2cnum")==null||("".equals(request.getParameter("selb2cnum"))))?200:(Long.valueOf(request.getParameter("selb2cnum"))));
 		vipshop.setShipper_no(request.getParameter("shipper_no"));
 		vipshop.setPrivate_key(request.getParameter("private_key"));
 		vipshop.setGetMaxCount(Integer.parseInt(request.getParameter("getMaxCount")));

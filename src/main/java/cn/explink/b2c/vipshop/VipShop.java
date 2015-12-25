@@ -8,6 +8,8 @@ package cn.explink.b2c.vipshop;
  */
 public class VipShop {
 
+	private int daysno;//干线回单重发天数
+	private long selb2cnum;//货态重发次数
 	private String shipper_no; // 承运商编码
 	private String private_key; // 加密秘钥
 	private int getMaxCount; // 每次获取订单最大数量
@@ -26,6 +28,22 @@ public class VipShop {
 	private int isCreateTimeToEmaildateFlag; //是否唯品会订单出仓时间作为 邮件批次时间，emaildate 默认0 ，开启：1
 	private String lefengCustomerid;
   
+	public int getDaysno() {
+		return daysno;
+	}
+
+	public void setDaysno(int daysno) {
+		this.daysno = daysno;
+	}
+
+	public long getSelb2cnum() {
+		return selb2cnum;
+	}
+
+	public void setSelb2cnum(long selb2cnum) {
+		this.selb2cnum = selb2cnum;
+	}
+
 	public String getLefengCustomerid() {
 		return lefengCustomerid;
 	}
