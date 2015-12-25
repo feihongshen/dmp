@@ -340,10 +340,14 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 		for (AddressCustomerStationVO customerStationVO : customerStationVOList) {
 			String stationIdStr = customerStationVO.getBranchid();
-			String[] stationIdStrArr = StringUtils.split(stationIdStr, ConstPool.COMMA_SEPERATOR);
 			Set<Long> stationIdSet = new HashSet<Long>();
-			for (String sis : stationIdStrArr) {
-				stationIdSet.add(Long.parseLong(sis));
+			if (stationIdStr.contains(ConstPool.COMMA_SEPERATOR)) {
+				String[] stationIdStrArr = StringUtils.split(stationIdStr, ConstPool.COMMA_SEPERATOR);
+				for (String sis : stationIdStrArr) {
+					stationIdSet.add(Long.parseLong(sis));
+				}
+			} else {
+				stationIdSet.add(Long.parseLong(stationIdStr));
 			}
 			if (stationIdSet.contains(stationId)) {
 				String executeBranchidStr = customerStationVO.getExecute_branchid();
