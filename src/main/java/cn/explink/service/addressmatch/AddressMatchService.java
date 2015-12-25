@@ -347,10 +347,16 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			}
 			if (stationIdSet.contains(stationId)) {
 				String executeBranchidStr = customerStationVO.getExecute_branchid();
-				String[] executeBranchidStrArr = StringUtils.split(executeBranchidStr, ConstPool.COMMA_SEPERATOR);
-				for (String ebs : executeBranchidStrArr) {
-					mappingStationIdList.add(Long.parseLong(ebs));
+				// if (!StringUtil.isEmpty(executeBranchidStr)) {
+				if (executeBranchidStr.contains(ConstPool.COMMA_SEPERATOR)) {
+					String[] executeBranchidStrArr = StringUtils.split(executeBranchidStr, ConstPool.COMMA_SEPERATOR);
+					for (String ebs : executeBranchidStrArr) {
+						mappingStationIdList.add(Long.parseLong(ebs));
+					}
+				} else {
+					mappingStationIdList.add(Long.parseLong(executeBranchidStr));
 				}
+				// }
 			}
 		}
 		return mappingStationIdList;
