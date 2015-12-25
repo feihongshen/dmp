@@ -34,8 +34,23 @@
 	src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 
-
-
+function addInit(){
+	//window.parent.uploadFormInit("user_cre_Form");
+}
+function addSuccess(data){
+	$("#alert_box select", parent.document).val(0);
+	$("#searchForm").submit();
+}
+function editInit(){
+	window.parent.crossCapablePDA();
+	//window.parent.uploadFormInit("user_save_Form");
+}
+function editSuccess(data){
+	$("#searchForm").submit();
+}
+function delSuccess(data){
+	$("#searchForm").submit();
+}
 function del(id){
 	$.ajax({
 		type: "POST",
@@ -47,23 +62,20 @@ function del(id){
 	});
 }
 
+function blurBranck(){
+	alert(12)
+}
 function changeCustomer(){
 	$("#searchForm").submit();
 }
-/* function changeStation(){
-	var select = document.getElementById("station");
-	var str = [];
-	for (i = 0; i < select.length; i++) {
-		if (select.options[i].selected) {
-			$("#searchForm").submit();
-		}
 
-	}
-	
-} */
+function changeStation(){
+	$("#searchForm").submit();
+}
 $(function(){
 	$("#station").val($("#stationValue").val());
 	$("#customerid").val($("#customerValue").val());
+	
 })
 
 $(function(){
@@ -76,7 +88,11 @@ $("#station").multipleSelect({
 $("#excute_branchid").multipleSelect({
     filter: true
 });
+$("#station").change(function (){
+	var thisstation=$(this).val();
 
+	
+});
 })
 
 </script>
@@ -92,7 +108,7 @@ $("#excute_branchid").multipleSelect({
 			</span>
 			<form action="1" method="post" id="searchForm" method="post">
 				数据库站点：<select id="station" name="station" class="select1"
-					onchange="changeStation();" multiple="multiple">
+					multiple="multiple">
 
 					<%
 						for (Branch branch : listBranchs) {
@@ -147,15 +163,15 @@ $("#excute_branchid").multipleSelect({
 						<%
 							String[] vobranids = addressCustomerStationVO.getBranchid().split(",");
 
-												for (int i = 0; i < vobranids.length; i++) {
-													for (Branch branch : listBranchs) {
-														if (Long.parseLong(vobranids[i]) == branch.getBranchid()&& branch.getBrancheffectflag().equals("1")) {
+																for (int i = 0; i < vobranids.length; i++) {
+																	for (Branch branch : listBranchs) {
+																		if (Long.parseLong(vobranids[i]) == branch.getBranchid()&& branch.getBrancheffectflag().equals("1")) {
 						%> <%=branch.getBranchname()%> <%
  	}else if(Long.parseLong(vobranids[i]) == branch.getBranchid()){
- 		%> <%=branch.getBranchname()+"(停用)"%> <%
+ %> <%=branch.getBranchname()+"(停用)"%> <%
  	}
-  			}
-  		}
+   			}
+   		}
  %>
 					</td>
 					<td width="15%" align="center" valign="middle"><%=addressCustomerStationVO.getCustomerName()%></td>
@@ -163,16 +179,16 @@ $("#excute_branchid").multipleSelect({
 						<%
 							String[] exvobranids = addressCustomerStationVO.getExecute_branchid().split(",");
 
-												for (int i = 0; i < exvobranids.length; i++) {
-													for (Branch branch : listBranchs) {
-														if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag().equals("1")) {
+																for (int i = 0; i < exvobranids.length; i++) {
+																	for (Branch branch : listBranchs) {
+																		if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag().equals("1")) {
 						%> <%=branch.getBranchname()%> <%
  	}else if(Long.parseLong(exvobranids[i]) == branch.getBranchid()){
- 		%> <%=branch.getBranchname()+"(停用)"%> <%
-  	}
-  			}
+ %> <%=branch.getBranchname()+"(停用)"%> <%
+ 	}
+   			}
 
-  		}
+   		}
  %>
 					</td>
 					<td width="10%" align="center" valign="middle">[<a
@@ -228,14 +244,12 @@ $("#excute_branchid").multipleSelect({
 	<div class="clear"></div>
 
 	<input type="hidden" id="customerValue" value="${customerid}">
-	<input type="hidden" id="stationValue" value="${station}">
-	<script type="text/javascript">
+		<input type="hidden" id="stationValue" value="${station}"> <script
+				type="text/javascript">
 <%-- $("#selectPg").val(<%=request.getAttribute("page") %>); --%>
 <%-- $("#name").val(<%=request.getParameter("name") %>); --%>
 <%-- $("#value").val(<%=request.getParameter("value") %>); --%>
-</script>
-	<!-- 删除订单流程的ajax地址 -->
-	<input type="hidden" id="del"
-		value="<%=request.getContextPath()%>/addressCustomerStationMap/del/" />
+</script> <!-- 删除订单流程的ajax地址 --> <input type="hidden" id="del"
+			value="<%=request.getContextPath()%>/addressCustomerStationMap/del/" />
 </body>
 </html>
