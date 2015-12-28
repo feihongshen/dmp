@@ -4142,9 +4142,12 @@ public class CwbOrderService extends BaseOrderService {
 		long firstchangereasonid = parameters.get("firstchangereasonid") == null ? 0l : (Long) parameters.get("firstchangereasonid");
 
 		String transcwb = parameters.get("transcwb") == null ? "" : (String) parameters.get("transcwb");
+
 		transcwb = transcwb.replaceAll(" ", "");
 		transcwb = transcwb.replaceAll("，", ",");// 全角逗号
 		transcwb = transcwb.replaceAll("\r\n", "");
+
+		this.logger.info("棒棒糖请求参数cwb={},leavedreasonid={},resendtime={},zhiliuremark={}", new Object[] { cwb, leavedreasonid, resendtime, zhiliuremark });
 
 		// 再次判定时间格式是否正确 如果正确 应该去掉空白符共18个字
 		deliverytime = deliverytime.length() != 19 ? DateTimeUtil.getNowTime() : deliverytime;
@@ -4393,6 +4396,7 @@ public class CwbOrderService extends BaseOrderService {
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 
 		}
+
 		// 配送成功添加到历史备注中======LX====ADD====
 		if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) {
 			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
@@ -4406,6 +4410,7 @@ public class CwbOrderService extends BaseOrderService {
 			this.cwbDAO.saveCwbForDiushireason(co.getCwb(), reason.getReasoncontent(), losereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
+
 		if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
 			this.deliveryStateDAO.saveDeliveyStateIsautolinghuoByCwb2(0, co.getCwb(), firstlevelreasonid);
 		}

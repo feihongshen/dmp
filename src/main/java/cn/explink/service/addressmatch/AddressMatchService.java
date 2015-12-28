@@ -244,7 +244,6 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						int successFlag = addressreturn.getResultCode().getCode();
 						if (successFlag == ResultCodeEnum.success.getCode()) {
 							OrderAddressMappingResult mappingResult = addressreturn.getResultMap().get(cwb);
-
 							this.logger.info("阡陌地址库匹配返回json={}", JacksonMapper.getInstance().writeValueAsString(mappingResult));
 							if (mappingResult != null) {
 								List<DeliveryStationVo> deliveryStationList = mappingResult.getDeliveryStationList();
@@ -269,7 +268,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 							}
 						}
 					} catch (Exception e) {
-						this.logger.error("error while doing address match for {}", cwb);
+						this.logger.error("error while doing address match for " + cwb, e);
 					}
 
 				} else {
@@ -351,13 +350,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 		Set<Long> mappingStationIdList = new TreeSet<Long>();
 		for (AddressCustomerStationVO customerStationMapping : customerStationMappingList) {
-			long branchid = customerStationMapping.getBranchid();
-			// 过滤掉停用的站点
-			Branch branch = this.branchDAO.getEffectBranchById(branchid);
-			if (StringUtil.isEmpty(branch.getBranchname())) {
-				continue;
-			}
-			mappingStationIdList.add(Long.valueOf(branchid));
+			mappingStationIdList.add(Long.valueOf(customerStationMapping.getBranchid()));
 		}
 		// 只有既属于地址库匹配的站点，又在映射关系中的站点
 		externalIdList.retainAll(mappingStationIdList);

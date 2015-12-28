@@ -129,6 +129,19 @@ public class BranchService {
 		branch.setAccounttype(Integer.parseInt(request.getParameter("accounttype") == null ? "0" : request.getParameter("accounttype")));
 		branch.setAccountexcesstype(Integer.parseInt(request.getParameter("accountexcesstype") == null ? "0" : request.getParameter("accountexcesstype")));
 		branch.setPfruleid(Long.parseLong(request.getParameter("pfruleid") == null ? "0" : request.getParameter("pfruleid")));
+		//自动核销字段的获取--通联
+		branch.setBankCardNo(request.getParameter("bankCardNo") == null ? "" : request.getParameter("bankCardNo"));
+		branch.setBankCode(request.getParameter("bankCode") == null ? "" : request.getParameter("bankCode"));
+		branch.setOwnerName(request.getParameter("ownerName") == null ? "" : request.getParameter("ownerName"));
+		branch.setBankAccountType(request.getParameter("bankAccountType") == null ? 1 : Integer.parseInt(request.getParameter("bankAccountType")));
+		//自动核销字段的获取--财付通
+		branch.setCftAccountNo(request.getParameter("cftAccountNo") == null ? "" : request.getParameter("cftAccountNo"));
+		branch.setCftBankCode(request.getParameter("cftBankCode") == null ? "" : request.getParameter("cftBankCode"));
+		branch.setCftAccountName(request.getParameter("cftAccountName") == null ? "" : request.getParameter("cftAccountName"));
+		branch.setCftAccountProp(request.getParameter("cftAccountProp") == null ? 1 : Integer.parseInt(request.getParameter("cftAccountProp")));
+		branch.setCftCertId(request.getParameter("cftCertId") == null ? "" : request.getParameter("cftCertId"));
+		branch.setCftCertType(request.getParameter("cftCertType") == null ? 1 : Integer.parseInt(request.getParameter("cftCertType")));
+
 		if ((request.getParameter("accountexcessfee") == null) || request.getParameter("accountexcessfee").toString().equals("")) {
 			branch.setAccountexcessfee(BigDecimal.valueOf(Float.parseFloat("0")));
 		} else {
@@ -158,15 +171,14 @@ public class BranchService {
 		branch.setBacktime(Long.parseLong(request.getParameter("backtime") == null ? "0" : request.getParameter("backtime")));
 
 		//站点保证金
-		if(StringUtils.isEmpty(request.getParameter("branchBail"))){
+		if (StringUtils.isEmpty(request.getParameter("branchBail"))) {
 			branch.setBranchBail(BigDecimal.ZERO);
-		}else{
-			String branchBail=request.getParameter("branchBail");
-			if((branchBail!=null)&&!branchBail.equals("null")) {
-				try{
-				branch.setBranchBail(new BigDecimal(branchBail));
-				}catch(NumberFormatException e)
-				{
+		} else {
+			String branchBail = request.getParameter("branchBail");
+			if ((branchBail != null) && !branchBail.equals("null")) {
+				try {
+					branch.setBranchBail(new BigDecimal(branchBail));
+				} catch (NumberFormatException e) {
 					branch.setBranchBail(new BigDecimal("0"));
 				}
 			}

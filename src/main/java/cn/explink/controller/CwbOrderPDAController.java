@@ -2601,10 +2601,11 @@ public class CwbOrderPDAController {
 			@RequestParam(value = "flowOrderTypeEnumid", required = false, defaultValue = "0") long flowOrderTypeEnumid,
 			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
 			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate, @RequestParam(value = "scopeValue", required = false, defaultValue = "-1") long scope,
-			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid) {
+			@RequestParam(value = "branchid", required = false, defaultValue = "0") String[] branchid) {
 		String[] cloumnName1 = new String[8]; // 导出的列名
 		String[] cloumnName2 = new String[8]; // 导出的英文列名
 
+		String branchids=this.cwborderService.getToString(branchid);
 		this.setExcelstyle(cloumnName1, cloumnName2);
 		final String[] cloumnName3 = cloumnName1;
 		final String[] cloumnName4 = cloumnName2;
@@ -2616,7 +2617,7 @@ public class CwbOrderPDAController {
 
 			final List<Branch> branchs = this.branchDAO.getAllEffectBranches();
 			final List<User> users = this.userDAO.getAllUser();
-			final List<ExceptionCwb> eclist = this.exceptionCwbDAO.getAllECByExcel(1, cwb, flowOrderTypeEnumid, "", branchid, userid, 0, beginemaildate, endemaildate, scope);
+			final List<ExceptionCwb> eclist = this.exceptionCwbDAO.getAllECByExcel(1, cwb, flowOrderTypeEnumid, "", branchids, userid, 0, beginemaildate, endemaildate, scope);
 			final Map<Long, String> branchMap = this.getBranchMap(branchs, eclist);
 			final Map<Long, String> flowOrderTypeEnumMap = this.getFlowOrderTypeEnumMap(eclist);
 			final Map<String, String> errortypeMap = this.getExceptionCwbErrorTypeEnum(eclist);

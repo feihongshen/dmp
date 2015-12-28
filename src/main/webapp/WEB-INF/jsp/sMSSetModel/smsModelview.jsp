@@ -134,7 +134,13 @@ function showAll(){
 			
 			<tr id="tr<%=sms.getFlowordertype()%>">
 			
-				<td width="10%" align="right" valign="middle"><%if(sms.getFlowordertype()<100){%><%=FlowOrderTypeEnum.getText(sms.getFlowordertype()).getText() %><%}
+				<td width="10%" align="right" valign="middle">
+				<%if(sms.getFlowordertype()<100){%><%=FlowOrderTypeEnum.getText(sms.getFlowordertype()).getText() %><%}
+				else if(sms.getFlowordertype()==100){
+					%>
+					站点返款结算（支付平台充值）
+					<%
+				}
 				else{ %>
 				<%=DeliveryStateEnum.getByValue((int)sms.getFlowordertype()-100).getText() %>
 				<%} %>

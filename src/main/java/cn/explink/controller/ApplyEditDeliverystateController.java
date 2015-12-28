@@ -32,6 +32,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ExportmouldDAO;
+import cn.explink.dao.OrgBillDetailDao;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.ZhiFuApplyDao;
@@ -47,6 +48,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
+import cn.explink.enumutil.BillStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
@@ -104,7 +106,9 @@ public class ApplyEditDeliverystateController {
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
 	@Autowired
 	ExportService exportService;
-
+	@Autowired
+	OrgBillDetailDao orgBillDetailDao;
+	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -817,6 +821,10 @@ public class ApplyEditDeliverystateController {
 				}
 				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
 				CwbOrder corder = cwbDAO.getCwborder(cwbStr);
+				if(corder == null){
+					errorCwbs.append(cwbStr + ":无此单号!");
+					continue;
+				}
 				Customer customer = customerDao.getCustomerById(corder.getCustomerid());
 				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbStr);
 				if (corder!=null&&deliverystate!=null) {
@@ -825,6 +833,26 @@ public class ApplyEditDeliverystateController {
 						continue;
 					}
 				}
+				
+				//add by 王志宇 -----限制已关闭的账单下的订单不允许修改
+				if(corder!=null){
+					//代收货款账单
+					if(corder.getFnorgbillid()!=0){
+						Map<String,Object> map = orgBillDetailDao.getByid(corder.getFnorgbillid());
+						if(Long.parseLong(map.get("status").toString())==BillStateEnum.Closed.getValue()){
+							errorCwbs.append("该订单"+cwbStr+"对应的账单"+map.get("bill_no").toString()+"为已关闭状态，故该单不能修改！");
+							continue;
+						}
+					//运费账单
+					}else if(corder.getFnorgfreightbillid()!=0){
+						Map<String,Object> map = orgBillDetailDao.getByid(corder.getFnorgfreightbillid());
+						if(Long.parseLong(map.get("status").toString())==BillStateEnum.Closed.getValue()){
+							errorCwbs.append("该订单"+cwbStr+"对应的账单"+map.get("bill_no").toString()+"为已关闭状态，故该单不能修改！");
+							continue;
+						}
+					}
+				}
+
 				if(corder == null){
 					errorCwbs.append(cwbStr + ":无此单号!");
 					continue;

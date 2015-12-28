@@ -94,16 +94,25 @@ public enum B2cEnum {
 	VipShop_cangku6(20124, "唯品会_仓库6", "vipshop_cangku6",0),
 	VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7",0),
 	VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8",0),
+	
+
+
+
+	Yihaodian_bakup1(20130, "一号店_备用1", "yihaodian_bakup1", 0), 
+	Yihaodian_bakup2(20131, "一号店_备用2", "yihaodian_bakup2", 0), 
+	Yihaodian_bakup3(20132, "一号店_备用3", "yihaodian_bakup3", 0), 
 	meilinkai(20135,"玫琳凯","meilinkai",0),
 	HuanQiuGou(20136, "环球购物", "huanqiugouwu", 0),
-	; 
+	Tonglian(20200,"自动核销-通联-公司信息", "tonglian", 0), 
+	Caifutong(20201, "自动核销-财付通-公司信息", "caifutong", 0); 
+
+
+	 
 
 	private int key;
 	private String text;
 	private String method;
 	private int api_type; // 接口类型
-	
-
 
 	public int getApi_type() {
 		return this.api_type;

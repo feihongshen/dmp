@@ -146,7 +146,7 @@ function delSuccess(data){
 	<!-- 修改常用于设置的ajax地址 -->
 	<script>
 	function changeUrl(obj,state){
-		
+		debugger
 		if(obj=='20001'){
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
@@ -462,23 +462,26 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/vipshop/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
+		else if(obj=='20127'){
+			$("#edit").val('<%=request.getContextPath()%>/suning/show/');
+			$("#del").val('<%=request.getContextPath()%>/suning/del/');
+		}
 		
 		else if(obj=='20135'){
 			$("#edit").val('<%=request.getContextPath()%>/meilinkai/show/');
 			$("#del").val('<%=request.getContextPath()%>/meilinkai/del/');
-		}
-		
-		else if(obj=='20136'){
+		}else if(obj=='20200'){
+			$("#edit").val('<%=request.getContextPath()%>/tonglian/show/');
+			$("#del").val('<%=request.getContextPath()%>/tonglian/del/');
+		}else if(obj=='20136'){
 			$("#edit").val('<%=request.getContextPath()%>/huanqiugou/show/');
 			$("#del").val('<%=request.getContextPath()%>/huanqiugou/del/');
+		}else if(obj=='20201'){
+			$("#edit").val('<%=request.getContextPath()%>/caifutong/show/');
+			$("#del").val('<%=request.getContextPath()%>/caifutong/del/');
 		}
-		
-		
-		else{
-			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
-			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
-			}
-		}
+
+	}
 	</script>
 </body>
 </html>
