@@ -62,23 +62,16 @@ function del(id){
 	});
 }
 
-function blurBranck(){
-	alert(12)
-}
 function changeCustomer(){
 	$("#searchForm").submit();
 }
 
-function changeStation(){
-	$("#searchForm").submit();
-}
+
 $(function(){
 	$("#station").val($("#stationValue").val());
 	$("#customerid").val($("#customerValue").val());
-	
-})
+	$("#excute_branchid").val($("#branckValue").val());
 
-$(function(){
 	
 $("#station").multipleSelect({
     filter: true
@@ -89,9 +82,12 @@ $("#excute_branchid").multipleSelect({
     filter: true
 });
 $("#station").change(function (){
-	var thisstation=$(this).val();
-
-	
+	var thisStation=$(this).val();
+	$("#searchForm").submit();	
+});
+$("#excute_branchid").change(function (){
+	var thisBranch=$(this).val();
+	$("#searchForm").submit();
 });
 })
 
@@ -107,18 +103,18 @@ $("#station").change(function (){
 				onclick="window.location.href='<%=request.getContextPath()%>/addressCustomerStationMap/add';" />
 			</span>
 			<form action="1" method="post" id="searchForm" method="post">
-				数据库站点：<select id="station" name="station" class="select1"
-					multiple="multiple">
+				地址库站点：<select id="station" name="station" class="select1"
+					onchange="" multiple="multiple">
 
 					<%
 						for (Branch branch : listBranchs) {
 					%>
-					<option value="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
+					<option onclick="query()" value="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
 					<%
 						}
 					%>
 
-				</select> 客户：<select id="customerid" name="customerid" class="select1"
+				</select> 客户名称：<select id="customerid" name="customerid" class="select1"
 					onChange="changeCustomer();">
 					<option></option>
 					<%
@@ -128,9 +124,8 @@ $("#station").change(function (){
 					<%
 						}
 					%>
-				</select>执行站点：<select id="excute_branchid" name="excute_branchid"
+				</select>执行站点：<select id="excute_branchid" name="execute_branchid"
 					class="select1" multiple="multiple">
-
 					<%
 						for (Branch branch : listBranchs) {
 					%>
@@ -163,15 +158,15 @@ $("#station").change(function (){
 						<%
 							String[] vobranids = addressCustomerStationVO.getBranchid().split(",");
 
-																for (int i = 0; i < vobranids.length; i++) {
-																	for (Branch branch : listBranchs) {
-																		if (Long.parseLong(vobranids[i]) == branch.getBranchid()&& branch.getBrancheffectflag().equals("1")) {
+																				for (int i = 0; i < vobranids.length; i++) {
+																					for (Branch branch : listBranchs) {
+																						if (Long.parseLong(vobranids[i]) == branch.getBranchid()&& branch.getBrancheffectflag().equals("1")) {
 						%> <%=branch.getBranchname()%> <%
  	}else if(Long.parseLong(vobranids[i]) == branch.getBranchid()){
  %> <%=branch.getBranchname()+"(停用)"%> <%
  	}
-   			}
-   		}
+    			}
+    		}
  %>
 					</td>
 					<td width="15%" align="center" valign="middle"><%=addressCustomerStationVO.getCustomerName()%></td>
@@ -179,16 +174,16 @@ $("#station").change(function (){
 						<%
 							String[] exvobranids = addressCustomerStationVO.getExecute_branchid().split(",");
 
-																for (int i = 0; i < exvobranids.length; i++) {
-																	for (Branch branch : listBranchs) {
-																		if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag().equals("1")) {
+																				for (int i = 0; i < exvobranids.length; i++) {
+																					for (Branch branch : listBranchs) {
+																						if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag().equals("1")) {
 						%> <%=branch.getBranchname()%> <%
  	}else if(Long.parseLong(exvobranids[i]) == branch.getBranchid()){
  %> <%=branch.getBranchname()+"(停用)"%> <%
  	}
-   			}
+    			}
 
-   		}
+    		}
  %>
 					</td>
 					<td width="10%" align="center" valign="middle">[<a
@@ -244,8 +239,11 @@ $("#station").change(function (){
 	<div class="clear"></div>
 
 	<input type="hidden" id="customerValue" value="${customerid}">
-		<input type="hidden" id="stationValue" value="${station}"> <script
+		<input type="hidden" id="stationValue" value="${station}"> 
+		<input type="hidden" id="branckValue" value="${execute_branchid}"> 
+		<script
 				type="text/javascript">
+		
 <%-- $("#selectPg").val(<%=request.getAttribute("page") %>); --%>
 <%-- $("#name").val(<%=request.getParameter("name") %>); --%>
 <%-- $("#value").val(<%=request.getParameter("value") %>); --%>

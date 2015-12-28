@@ -145,7 +145,7 @@
 				type="hidden" name="stations" id="stations" /> <input type="hidden"
 				name="executes" id="executes" /> <input type="hidden"
 				name="stations" id="stations" /> 
-				数据库站点：<select id="station"
+				地址库站点：<select id="station"
 				onchange="stationquery();" class="select1" multiple="multiple">
 
 				<%
@@ -156,7 +156,7 @@
 					}
 				%>
 
-			</select> 客户：<select id="customerName" name="customerName" class="select1"
+			</select> 客户名称：<select id="customerName" name="customerName" class="select1"
 				onChange="changeStation();">
 					<option></option>
 				<%
