@@ -1,6 +1,9 @@
 package cn.explink.b2c.explink.core_down;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.explink.xmldto.OrderEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.util.XmlUtil;
+import cn.explink.util.MD5.MD5Util;
 
 @Controller
 @RequestMapping("/epaiApi")
@@ -38,6 +44,8 @@ public class EpaiApiController {
 	EpaiApiService_ExportCallBack epaiApiService_ExportCallBack;
 	@Autowired
 	EpaiInsertCwbDetailTimmer epaiInsertCwbDetailTimmer;
+	@Autowired
+	AcquisitionOrderService acquisitionOrderService;
 
 	@RequestMapping("/add")
 	public String add(Model model) throws Exception {
@@ -48,7 +56,8 @@ public class EpaiApiController {
 	}
 
 	@RequestMapping("/create")
-	public @ResponseBody String create(HttpServletRequest request, Model model, @RequestParam(value = "customerid", required = false, defaultValue = "") long customerid,
+	public @ResponseBody String create(HttpServletRequest request, Model model,
+			@RequestParam(value = "customerid", required = false, defaultValue = "") long customerid,
 			@RequestParam(value = "userCode", required = false, defaultValue = "") String usercode) {
 
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
@@ -119,17 +128,88 @@ public class EpaiApiController {
 	}
 
 	/**
+	 * 
+	 * @Description: 接收推送过来的订单信息 @param @param
+	 * request @param @param response @param @return @return String @throws
+	 */
+	@RequestMapping("/sendCwbDetail")
+	public @ResponseBody String sendCwbDetail(HttpServletRequest request, HttpServletResponse response) {
+
+		String content = request.getParameter("content"); // xml正文
+		String userCode = request.getParameter("userCode");// 承运商标识
+		String requestTime = request.getParameter("requestTime"); // 请求时间
+		String sign = request.getParameter("sign");// 签名
+		this.logger.info("请求参数:content={},userCode={},requestTime={},sign={}}",
+				new Object[] { content, userCode, requestTime, sign });
+		
+		try {
+			
+			if(content == null || content == "" || userCode == null || userCode == "" || requestTime == null || requestTime ==""
+				||	sign == null || sign == ""){
+				this.logger.info("请求参数为空:content={},userCode={},requestTime={},sign={}}",
+				new Object[] { content, userCode, requestTime, sign });
+				return this.acquisitionOrderService.sendXml("99", "请求参数为空");
+			}
+			
+			content = URLDecoder.decode(content, "UTF-8");// 实际xml信息
+			userCode = URLDecoder.decode(userCode, "UTF-8");
+			requestTime = URLDecoder.decode(requestTime, "UTF-8");
+			
+			//非空判断
+			if (content == null || content.equals("")) {
+				logger.info(userCode+"解析xml之后的数据集为空content={},userCode={}", content, userCode);
+				return this.acquisitionOrderService.sendXml("99", "content为空");
+			}
+			
+			if(userCode == null || userCode.equals("")){
+				logger.info(userCode+"承运商标识为空userCode={}",userCode);
+				return this.acquisitionOrderService.sendXml("99", "userCode为空");
+			}
+			
+			EpaiApi epaiApi = epaiApiDAO.getEpaiApiByUserCode(userCode);
+			
+			if (epaiApi == null) {
+				logger.info("本地没有对应的承运商标识userCode={}",userCode);
+				return this.acquisitionOrderService.sendXml("99", "本地没有对应的承运商标识");
+			}
+			//判断是否开启对接
+			if(epaiApi.getIsopenflag() != 1){
+				logger.info("当前客户没有开启对接！userCode={}",userCode);
+				return this.acquisitionOrderService.sendXml("99", "未开启对接");
+			}
+			
+			// 校验加密是否符合约定
+			String MD5Sign = MD5Util.md5(userCode + requestTime + epaiApi.getPrivate_key());
+			if (!sign.equalsIgnoreCase(MD5Sign)) {
+				this.logger.info(userCode+"MD5验证失败sign={},MD5Sign={}",sign,MD5Sign);
+				return this.acquisitionOrderService.sendXml("02", "签名错误");
+			}
+			
+			
+			OrderEntity order = XmlUtil.toObject(OrderEntity.class, content);
+			/*
+			 * 处理xml中的信息
+			 */
+			return this.acquisitionOrderService.orderDetailExportInterface(order, epaiApi);
+		} catch (Exception e) {
+			this.logger.error(userCode+"处理异常，原因:", e);
+			return acquisitionOrderService.sendXml("99", "未知异常");
+		}
+
+	}
+
+	/**
 	 * 手动执行推送测试类
 	 * 
 	 * @return
 	 */
-	@RequestMapping("/test")
-	public @ResponseBody String epai_test() {
-		epaiApiService_Download.downLoadOrders_controllers();
-		epaiApiService_ExportCallBack.exportCallBack_controllers();
-		epaiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
-		return "系统之间对接-下游电商手动下载数据完成";
-
-	}
+	/*
+	 * @RequestMapping("/test") public @ResponseBody String epai_test() {
+	 * epaiApiService_ExportCallBack.exportCallBack_controllers();
+	 * epaiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(); return
+	 * "系统之间对接-下游电商手动下载数据完成";
+	 * 
+	 * }
+	 */
 
 }

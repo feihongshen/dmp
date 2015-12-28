@@ -184,6 +184,7 @@ src/main/java/cn/explink/b2c/explink/Explink.java -text
 src/main/java/cn/explink/b2c/explink/ExplinkController.java -text
 src/main/java/cn/explink/b2c/explink/ExplinkFlowEnum.java -text
 src/main/java/cn/explink/b2c/explink/ExplinkService.java -text
+src/main/java/cn/explink/b2c/explink/core_down/AcquisitionOrderService.java -text
 src/main/java/cn/explink/b2c/explink/core_down/CwbColumnSetEpaiAPI.java -text
 src/main/java/cn/explink/b2c/explink/core_down/EpaiApi.java -text
 src/main/java/cn/explink/b2c/explink/core_down/EpaiApiController.java -text
@@ -199,6 +200,7 @@ src/main/java/cn/explink/b2c/explink/core_up/CommonCoreService.java -text
 src/main/java/cn/explink/b2c/explink/xmldto/EpaiAPIMarchal.java -text
 src/main/java/cn/explink/b2c/explink/xmldto/EpaiAPIUnmarchal.java -text
 src/main/java/cn/explink/b2c/explink/xmldto/OrderDto.java -text
+src/main/java/cn/explink/b2c/explink/xmldto/OrderEntity.java -text
 src/main/java/cn/explink/b2c/explink/xmldto/OrderExportCallbackDto.java -text
 src/main/java/cn/explink/b2c/explink/xmldto/OrderExportConditionDto.java -text
 src/main/java/cn/explink/b2c/explink/xmldto/OrderExportResultDto.java -text

@@ -47,7 +47,7 @@ public class EpaiApiService {
 		pc.setGetOrder_url(request.getParameter("getOrder_url"));
 		pc.setPageSize(Integer.valueOf(request.getParameter("pageSize")));
 		pc.setPrivate_key(request.getParameter("private_key"));
-
+		pc.setIsPassiveReception(Integer.valueOf(request.getParameter("isPassiveReception")));
 		pc.setUserCode(request.getParameter("userCode"));
 		pc.setWarehouseid(Long.valueOf(request.getParameter("warehouseid")));
 		pc.setCallBack_url(request.getParameter("callBack_url"));

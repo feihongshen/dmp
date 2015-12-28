@@ -7,8 +7,6 @@ package cn.explink.b2c.explink.xmldto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * 订单信息获取
  *

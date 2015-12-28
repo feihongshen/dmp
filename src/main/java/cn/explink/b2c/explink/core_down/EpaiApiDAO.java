@@ -33,7 +33,7 @@ public class EpaiApiDAO {
 			code.setIsopenflag(rs.getInt("isopenflag"));
 			code.setIsfeedbackflag(rs.getInt("isfeedbackflag"));
 			code.setIspostflag(rs.getInt("ispostflag"));
-
+			code.setIsPassiveReception(rs.getInt("isPassiveReception"));
 			return code;
 		}
 	}
@@ -80,9 +80,9 @@ public class EpaiApiDAO {
 
 	public void createEpaiApi(EpaiApi pc) {
 		try {
-			String sql = "insert into b2c_set_epaiapi(usercode,customerid,getorder_url,callback_url,feedback_url,private_key,warehouseid,pagesize,isopenflag,ispostflag)  values(?,?,?,?,?,?,?,?,?,?) ";
+			String sql = "insert into b2c_set_epaiapi(usercode,customerid,getorder_url,callback_url,feedback_url,private_key,warehouseid,pagesize,isopenflag,ispostflag,isPassiveReception)  values(?,?,?,?,?,?,?,?,?,?,?) ";
 			jdbcTemplate.update(sql, pc.getUserCode(), pc.getCustomerid(), pc.getGetOrder_url(), pc.getCallBack_url(), pc.getFeedback_url(), pc.getPrivate_key(), pc.getWarehouseid(),
-					pc.getPageSize(), pc.getIsopenflag(), pc.getIspostflag());
+					pc.getPageSize(), pc.getIsopenflag(), pc.getIspostflag(),pc.getIsPassiveReception());
 		} catch (Exception e) {
 		}
 
@@ -109,12 +109,23 @@ public class EpaiApiDAO {
 		return expt;
 
 	}
+	
+	public EpaiApi getEpaiApiByUserCode(String userCode){
+		EpaiApi expt = null;
+		try {
+			String sql = "select * from b2c_set_epaiapi where usercode='"+userCode+"'";
+			expt = jdbcTemplate.queryForObject(sql, new EpaiApier());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return expt;
+	}
 
 	public void update(EpaiApi pc, long b2cid) {
 		try {
-			String sql = "update b2c_set_epaiapi set usercode=?,customerid=?,getorder_url=?,callback_url=?,feedback_url=?,private_key=?,warehouseid=?,pagesize=?,isopenflag=?,isfeedbackflag=?,ispostflag=?  where b2cid=? ";
+			String sql = "update b2c_set_epaiapi set usercode=?,customerid=?,getorder_url=?,callback_url=?,feedback_url=?,private_key=?,warehouseid=?,pagesize=?,isopenflag=?,isfeedbackflag=?,ispostflag=?,isPassiveReception=?  where b2cid=? ";
 			jdbcTemplate.update(sql, pc.getUserCode(), pc.getCustomerid(), pc.getGetOrder_url(), pc.getCallBack_url(), pc.getFeedback_url(), pc.getPrivate_key(), pc.getWarehouseid(),
-					pc.getPageSize(), pc.getIsopenflag(), pc.getIsfeedbackflag(), pc.getIspostflag(), b2cid);
+					pc.getPageSize(), pc.getIsopenflag(), pc.getIsfeedbackflag(), pc.getIspostflag(),pc.getIsPassiveReception(), b2cid);
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
