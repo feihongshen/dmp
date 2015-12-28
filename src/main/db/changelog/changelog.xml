@@ -8750,4 +8750,26 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
+	<!-- 地址库客户-站点映射功能 -->
+	 <changeSet id="songkaojun-2015-12-28-01" author="songkaojun">
+		<sql>
+		  CREATE TABLE `express_set_customer_station` (
+ 			 `id` int(11) NOT NULL AUTO_INCREMENT,
+  			 `customerid` int(11) NOT NULL COMMENT '客户ID',
+ 			 `branchid` varchar(2000) NOT NULL COMMENT '地址库匹配到的站点ID',
+  		     `execute_branchid` varchar(2000) NOT NULL COMMENT '执行站点',
+  			 `creatorid` int(11) DEFAULT NULL COMMENT '创建人ID',
+  			 `creatorname` varchar(255) DEFAULT NULL COMMENT '创建人名称',
+  			 `createtime` datetime DEFAULT NULL COMMENT '创建时间',
+  			 PRIMARY KEY (`id`),
+  			 KEY `idx_customerid` (`customerid`) USING BTREE
+		 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet>
+	
+	<!-- 财务结算自动核销功能 -->
+	<changeSet id="songkaojun-2015-12-28-02" author="songkaojun">
+		 <sqlFile path="fnc_autoverify.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
+	</changeSet>
+	
 </databaseChangeLog>

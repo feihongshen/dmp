@@ -23,6 +23,7 @@ src/main/db/changelog/eap_quartz_init.sql -text
 src/main/db/changelog/express_branch_address_sql.sql -text
 src/main/db/changelog/express_branch_sql.sql -text
 src/main/db/changelog/fnc.sql -text
+src/main/db/changelog/fnc_autoverify.sql -text
 src/main/db/changelog/order_add_field.sql -text
 src/main/db/changelog/quartz_init.sql -text
 src/main/db/changelog/schedule_init.sql -text
