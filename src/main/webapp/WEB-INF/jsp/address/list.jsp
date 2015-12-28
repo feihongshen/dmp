@@ -1,6 +1,7 @@
 <%@page
 	import="cn.explink.domain.addressvo.AddressCustomerStationVO,cn.explink.domain.Customer,cn.explink.domain.Branch"%>
-<%@page import="cn.explink.enumutil.*,cn.explink.util.Page"%>
+<%@page
+	import="cn.explink.enumutil.*,cn.explink.util.Page,java.lang.String"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
@@ -9,7 +10,8 @@
 	Page page_obj = (Page) request.getAttribute("page_obj");
 	List<Customer> listCustomers = (List<Customer>) request.getAttribute("listCustomers");
 	List<Branch> listBranchs = (List<Branch>) request.getAttribute("listBranchs");
-
+	String stationString=(String)request.getAttribute("station");
+	String execute_branchidString=(String)request.getAttribute("execute_branchid");
 	// 	HashMap<String, List<AddressCustomerStationVO>> map = (HashMap<String, List<AddressCustomerStationVO>>)request.getAttribute("mapRalation");
 %>
 
@@ -68,9 +70,9 @@ function changeCustomer(){
 
 
 $(function(){
-	$("#station").val($("#stationValue").val());
 	$("#customerid").val($("#customerValue").val());
-	$("#excute_branchid").val($("#branckValue").val());
+	/*$("#station").val($("#stationValue").val());
+	$("#excute_branchid").val($("#branckValue").val()); */
 
 	
 $("#station").multipleSelect({
@@ -102,16 +104,26 @@ $("#excute_branchid").change(function (){
 				class="input_button1" id=""
 				onclick="window.location.href='<%=request.getContextPath()%>/addressCustomerStationMap/add';" />
 			</span>
-			<form action="1" method="post" id="searchForm" method="post">
+			<form action="1" id="searchForm" method="post">
 				地址库站点：<select id="station" name="station" class="select1"
-					onchange="" multiple="multiple">
-
+					multiple="multiple">
 					<%
-						for (Branch branch : listBranchs) {
+						if(stationString!=null && !"".equals(stationString)){
+									String[] stations=stationString.split(",");
+								for (Branch branch : listBranchs) {
 					%>
-					<option onclick="query()" value="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
+					<option value="<%=branch.getBranchid()%>"
+						<%for (int i = 0; i < stations.length; i++) {
+						if (Long.parseLong(stations[i]) == branch.getBranchid()) {%>
+						selected="selected" <%}}%>><%=branch.getBranchname()%></option>
 					<%
 						}
+									}else{
+									for (Branch branch : listBranchs) {
+					%>
+					<option value="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
+					<%
+						}}
 					%>
 
 				</select> 客户名称：<select id="customerid" name="customerid" class="select1"
@@ -127,11 +139,22 @@ $("#excute_branchid").change(function (){
 				</select>执行站点：<select id="excute_branchid" name="execute_branchid"
 					class="select1" multiple="multiple">
 					<%
-						for (Branch branch : listBranchs) {
+						if(execute_branchidString!=null && !"".equals(execute_branchidString)){
+						String[] brancks=execute_branchidString.split(",");
+								for (Branch branch : listBranchs) {
+					%>
+					<option value="<%=branch.getBranchid()%>"
+						<%for (int i = 0; i < brancks.length; i++) {
+						if (Long.parseLong(brancks[i]) == branch.getBranchid()) {%>
+						selected="selected" <%}}%>><%=branch.getBranchname()%></option>
+					<%
+						}
+									}else{
+									for (Branch branch : listBranchs) {
 					%>
 					<option value="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
 					<%
-						}
+						}}
 					%>
 				</select>
 
@@ -158,15 +181,15 @@ $("#excute_branchid").change(function (){
 						<%
 							String[] vobranids = addressCustomerStationVO.getBranchid().split(",");
 
-																				for (int i = 0; i < vobranids.length; i++) {
-																					for (Branch branch : listBranchs) {
-																						if (Long.parseLong(vobranids[i]) == branch.getBranchid()&& branch.getBrancheffectflag().equals("1")) {
+																																for (int i = 0; i < vobranids.length; i++) {
+																																	for (Branch branch : listBranchs) {
+																																		if (Long.parseLong(vobranids[i]) == branch.getBranchid()&& branch.getBrancheffectflag().equals("1")) {
 						%> <%=branch.getBranchname()%> <%
  	}else if(Long.parseLong(vobranids[i]) == branch.getBranchid()){
  %> <%=branch.getBranchname()+"(停用)"%> <%
  	}
-    			}
-    		}
+       			}
+       		}
  %>
 					</td>
 					<td width="15%" align="center" valign="middle"><%=addressCustomerStationVO.getCustomerName()%></td>
@@ -174,16 +197,16 @@ $("#excute_branchid").change(function (){
 						<%
 							String[] exvobranids = addressCustomerStationVO.getExecute_branchid().split(",");
 
-																				for (int i = 0; i < exvobranids.length; i++) {
-																					for (Branch branch : listBranchs) {
-																						if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag().equals("1")) {
+																																for (int i = 0; i < exvobranids.length; i++) {
+																																	for (Branch branch : listBranchs) {
+																																		if (Long.parseLong(exvobranids[i]) == branch.getBranchid()&&branch.getBrancheffectflag().equals("1")) {
 						%> <%=branch.getBranchname()%> <%
  	}else if(Long.parseLong(exvobranids[i]) == branch.getBranchid()){
  %> <%=branch.getBranchname()+"(停用)"%> <%
  	}
-    			}
+       			}
 
-    		}
+       		}
  %>
 					</td>
 					<td width="10%" align="center" valign="middle">[<a
@@ -239,15 +262,16 @@ $("#excute_branchid").change(function (){
 	<div class="clear"></div>
 
 	<input type="hidden" id="customerValue" value="${customerid}">
-		<input type="hidden" id="stationValue" value="${station}"> 
-		<input type="hidden" id="branckValue" value="${execute_branchid}"> 
-		<script
-				type="text/javascript">
+		<%-- 	<input type="hidden" id="stationValue" value="${station}">
+	<input type="hidden" id="branckValue" value="${execute_branchid}"> --%>
+	<script type="text/javascript">
 		
 <%-- $("#selectPg").val(<%=request.getAttribute("page") %>); --%>
 <%-- $("#name").val(<%=request.getParameter("name") %>); --%>
 <%-- $("#value").val(<%=request.getParameter("value") %>); --%>
-</script> <!-- 删除订单流程的ajax地址 --> <input type="hidden" id="del"
-			value="<%=request.getContextPath()%>/addressCustomerStationMap/del/" />
+</script>
+	<!-- 删除订单流程的ajax地址 -->
+	<input type="hidden" id="del"
+		value="<%=request.getContextPath()%>/addressCustomerStationMap/del/" />
 </body>
 </html>
