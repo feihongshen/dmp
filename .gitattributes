@@ -767,13 +767,7 @@ src/main/java/cn/explink/b2c/zhemeng/xmldto/RequestItems.java -text
 src/main/java/cn/explink/b2c/zhemeng/xmldto/RequestOrder.java -text
 src/main/java/cn/explink/b2c/zhemeng/xmldto/ResponseAddress.java -text
 src/main/java/cn/explink/b2c/zhemeng/xmldto/ResponseItem.java -text
-src/main/java/cn/explink/b2c/zhongliang/CwbColumnSetZhongliang.java -text
-src/main/java/cn/explink/b2c/zhongliang/VerifyDataUtil.java -text
-src/main/java/cn/explink/b2c/zhongliang/Zhongliang.java -text
-src/main/java/cn/explink/b2c/zhongliang/ZhongliangController.java -text
-src/main/java/cn/explink/b2c/zhongliang/ZhongliangInsertCwbDetailTimmer.java -text
-src/main/java/cn/explink/b2c/zhongliang/ZhongliangService.java -text
-src/main/java/cn/explink/b2c/zhongliang/Zhongliang_WaitOrderCallBack.java -text
+src/main/java/cn/explink/b2c/zhongliang/A.java -text
 src/main/java/cn/explink/b2c/zhongliang/xml/Response_Body.java -text
 src/main/java/cn/explink/b2c/zhongliang/xml/Response_CancleOrder.java -text
 src/main/java/cn/explink/b2c/zhongliang/xml/Response_CancleOrder_Body.java -text
