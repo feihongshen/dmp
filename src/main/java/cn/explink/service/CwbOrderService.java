@@ -8049,20 +8049,21 @@ public class CwbOrderService extends BaseOrderService {
 			} else {
 				CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.om.readValue(orderflow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
 				CwbOrder co = cwbOrderWithDeliveryState.getCwbOrder();
+				Customer customer = this.customerDAO.getCustomerById(co.getCustomerid());
 				// 组装请求VO对象
 				DeliverServerPushVO dspVO = new DeliverServerPushVO();
 				DeliveryState ds = cwbOrderWithDeliveryState.getDeliveryState();
 				dspVO.setOuter_trade_no(paramVO.getCode() + (paramVO.getTradeNum() + 1));
 				dspVO.setUnid(this.userDAO.getUserByid(ds.getDeliveryid()).get(0).getUsername());
 				dspVO.setMerchant_code(paramVO.getCode());
-				dspVO.setDelivery_company_code(paramVO.getCode());
+				dspVO.setDelivery_company_code(paramVO.getDelivery_company_code());
 				dspVO.setMail_num(co.getCwb());
 				dspVO.setDelivery_type(co.getCwbordertypeid() == 1 ? "4" : co.getCwbordertypeid() + "");
-				dspVO.setS_company(this.customerDAO.getCustomerById(co.getCustomerid()).getCustomername());
-				dspVO.setS_contact("");
-				dspVO.setS_address("");
-				dspVO.setS_tel("");
-				dspVO.setS_mobile("");
+				dspVO.setS_company(customer.getCustomername());
+				dspVO.setS_contact(customer.getCustomercontactman());
+				dspVO.setS_address(customer.getCustomeraddress());
+				dspVO.setS_tel(customer.getCustomerphone());
+				dspVO.setS_mobile(customer.getCustomerphone());
 				dspVO.setS_address("");
 				dspVO.setD_company("");
 				dspVO.setGoods_fee(this.buildGoodsFee(co));
