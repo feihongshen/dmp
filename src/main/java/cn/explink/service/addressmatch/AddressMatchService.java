@@ -264,9 +264,6 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 									if (!this.handleCustomerStationMapping(cwbOrder, user, deliveryStationList.get(0).getExternalId(), delivererList, timeLimitList)) {
 										this.setStationNameToOrder(cwbOrder, user, deliveryStationList.get(0).getExternalId(), delivererList, timeLimitList);
 									}
-									if (mappingEnabled.equals(AddressMatchService.ENABLED)) {
-										this.processMultiMatch(cwbOrder, user, deliveryStationList, delivererList, timeLimitList);
-									}
 								}
 							}
 						}
@@ -350,7 +347,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		// 映射中间结果
 		List<Long> tempMappingStationIdList = new ArrayList<Long>();
 		for (AddressCustomerStationVO customerStationVO : customerStationVOList) {
-			String stationIdStr = customerStationVO.getBranchid();
+			String stationIdStr = customerStationVO.getBranchid();			
 			Set<Long> stationIdSet = new HashSet<Long>();
 			if (stationIdStr.contains(ConstPool.COMMA_SEPERATOR)) {
 				String[] stationIdStrArr = stationIdStr.split(ConstPool.COMMA_SEPERATOR);

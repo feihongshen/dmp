@@ -71,8 +71,6 @@ public class BranchController {
 	PaiFeiRuleDAO pfFeiRuleDAO;
 	@Autowired
 	private BankService bankService;
-	@Autowired
-	private BankService bankService;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 

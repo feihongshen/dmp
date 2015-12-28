@@ -22,7 +22,7 @@ public class AddressCustomerStationVO {
 	/**
 	 * 机构id
 	 */
-	private Integer branchid;
+	private String branchid;
 
 	/**
 	 * 机构名称
@@ -44,18 +44,7 @@ public class AddressCustomerStationVO {
 	 */
 	private Date createtime;
 
-	/**
-	 * 区域
-	 */
-	private String area;
-
-	public String getArea() {
-		return this.area;
-	}
-
-	public void setArea(String area) {
-		this.area = area;
-	}
+	private String execute_branchid;
 
 	public Integer getId() {
 		return this.id;
@@ -73,11 +62,19 @@ public class AddressCustomerStationVO {
 		this.customerid = customerid;
 	}
 
-	public Integer getBranchid() {
-		return this.branchid;
+	public String getExecute_branchid() {
+		return execute_branchid;
 	}
 
-	public void setBranchid(Integer branchid) {
+	public void setExecute_branchid(String execute_branchid) {
+		this.execute_branchid = execute_branchid;
+	}
+
+	public String getBranchid() {
+		return branchid;
+	}
+
+	public void setBranchid(String branchid) {
 		this.branchid = branchid;
 	}
 
