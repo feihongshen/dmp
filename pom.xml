@@ -3666,8 +3666,7 @@
 				<addressWebserviceIp>103.229.214.164/addressi</addressWebserviceIp>
 			</properties>
 		</profile>
-<<<<<<< .working
-=======
+
 		<profile>
 			<id>SDPJ</id>
 			<properties>
@@ -3813,7 +3812,6 @@
 				<addressWebserviceIp>221.123.178.101/whfnbjyfxk</addressWebserviceIp>
 			</properties>
 		</profile>
->>>>>>> .merge-right.r17716
 		
 		
 	</profiles>
