@@ -5164,6 +5164,7 @@ public class CwbOrderService extends BaseOrderService {
 				this.adjustmentRecordService.createAdjustment4GoToClassConfirm(co, deliverystate);
 			}
 
+
 		}
 
 		// =======结算逻辑 配送结果结算归班审核产生记录==========
@@ -7701,7 +7702,6 @@ public class CwbOrderService extends BaseOrderService {
 	 */
 	@Transactional
 	private void deliverAppJmsHandel(OrderFlow orderflow) throws JsonParseException, JsonMappingException, IOException {
-
 		if (orderflow.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
 
 			DeliverServerParamVO paramVO = this.deliverService.getDeliverServerParamVO(PosEnum.DeliverServerAPP.getKey());

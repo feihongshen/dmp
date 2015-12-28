@@ -28,7 +28,9 @@ import org.springframework.util.StringUtils;
 import cn.explink.b2c.zjfeiyuan.responsedto.Item;
 import cn.explink.b2c.zjfeiyuan.responsedto.ResponseData;
 import cn.explink.b2c.zjfeiyuan.service.RequestFYService;
+import cn.explink.consts.ConstPool;
 import cn.explink.dao.AddressCustomerStationDao;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
@@ -66,10 +68,13 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+
 	private static final String IS_CUSTOMER_STATION_MAPPING_ENABLED = "is_customer_station_mapping_enabled";
 
 	private static final String ENABLED = "1";
 	private static final String DISABLED = "0";
+
+	private static final String BRANCHEFFECT = "1";
 
 	private String address_url;
 	private String addZhanDian_url;
@@ -252,14 +257,12 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 								if ((deliveryStationList == null) || deliveryStationList.isEmpty()) {
 									return;
 								}
+
 								AddressMappingResultEnum mappingResultEnum = mappingResult.getResult();
 								if (mappingResultEnum.equals(AddressMappingResultEnum.singleResult)) {
-									this.setStationNameToOrder(cwbOrder, user, deliveryStationList.get(0).getExternalId(), delivererList, timeLimitList);
-								} else if (mappingResultEnum.equals(AddressMappingResultEnum.multipleResult)) {
-									// 对于匹配多站按照客户-站点映射关系选择的功能默认不可用
-									String mappingEnabled = this.systemInstallService.getParameter(AddressMatchService.IS_CUSTOMER_STATION_MAPPING_ENABLED, AddressMatchService.DISABLED);
-									if ((mappingEnabled == null) || mappingEnabled.equals(AddressMatchService.DISABLED)) {
-										return;
+									// 如果没有配置映射关系，则依然走原有流程
+									if (!this.handleCustomerStationMapping(cwbOrder, user, deliveryStationList.get(0).getExternalId(), delivererList, timeLimitList)) {
+										this.setStationNameToOrder(cwbOrder, user, deliveryStationList.get(0).getExternalId(), delivererList, timeLimitList);
 									}
 									if (mappingEnabled.equals(AddressMatchService.ENABLED)) {
 										this.processMultiMatch(cwbOrder, user, deliveryStationList, delivererList, timeLimitList);
@@ -297,38 +300,37 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		}
 	}
 
-	/**
-	 * 对匹配多站的处理
-	 *
-	 * @param cwbOrder
-	 * @param user
-	 * @param deliveryStationList
-	 * @param delivererList
-	 * @param timeLimitList
-	 * @throws Exception
-	 */
-	private void processMultiMatch(CwbOrder cwbOrder, User user, List<DeliveryStationVo> deliveryStationList, List<DelivererVo> delivererList, List<Integer> timeLimitList) throws Exception {
-		Long selectedBranchId = null;
-		List<Long> externalIdList = this.mapCustomerToStation(cwbOrder.getCustomerid(), deliveryStationList);
-		if (externalIdList.isEmpty()) {
-			return;
+	private boolean handleCustomerStationMapping(CwbOrder cwbOrder, User user, Long stationId, List<DelivererVo> delivererList, List<Integer> timeLimitList) {
+		String mappingEnabled = this.systemInstallService.getParameter(AddressMatchService.IS_CUSTOMER_STATION_MAPPING_ENABLED, AddressMatchService.DISABLED);
+		if ((mappingEnabled == null) || mappingEnabled.equals(AddressMatchService.DISABLED)) {
+			return false;
 		}
-		int stationCount = externalIdList.size();
+		Long selectedBranchId = null;
+		List<Long> mappingStationIdListResult = this.mapCustomerToStation(cwbOrder.getCustomerid(), stationId);
+		if (mappingStationIdListResult.isEmpty()) {
+			return false;
+		}
+		int stationCount = mappingStationIdListResult.size();
 		if (stationCount == 1) {
-			selectedBranchId = externalIdList.get(0);
+			selectedBranchId = mappingStationIdListResult.get(0);
 		} else {
 			String addressLine = cwbOrder.getConsigneeaddress();
 			if ((addressLine == null) || addressLine.trim().equals("")) {
-				return;
+				return false;
 			}
 			int addressLength = addressLine.trim().length();
 			// 使用取模的方式达到将不同的订单分散到不同的站点中的目的，同时多次请求结果相同（前提是订单地址长度不能改变）
-			selectedBranchId = externalIdList.get(addressLength % stationCount);
+			selectedBranchId = mappingStationIdListResult.get(addressLength % stationCount);
 		}
 		if (selectedBranchId == null) {
-			return;
+			return false;
 		}
-		this.setStationNameToOrder(cwbOrder, user, selectedBranchId, delivererList, timeLimitList);
+		try {
+			this.setStationNameToOrder(cwbOrder, user, selectedBranchId, delivererList, timeLimitList);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -338,23 +340,53 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	 * @param deliveryStationList
 	 * @return
 	 */
-	private List<Long> mapCustomerToStation(long customerid, List<DeliveryStationVo> deliveryStationList) {
-		List<Long> externalIdList = new ArrayList<Long>();
-		for (DeliveryStationVo deliveryStation : deliveryStationList) {
-			externalIdList.add(deliveryStation.getExternalId());
-		}
-		List<AddressCustomerStationVO> customerStationMappingList = this.addressCustomerStationDao.getCustomerStationByCustomerid(customerid);
-		if ((customerStationMappingList == null) || customerStationMappingList.isEmpty()) {
-			return externalIdList;
+	private List<Long> mapCustomerToStation(long customerid, Long stationId) {
+		List<Long> mappingStationIdListResult = new ArrayList<Long>();
+		List<AddressCustomerStationVO> customerStationVOList = this.addressCustomerStationDao.getCustomerStationByCustomerid(customerid);
+		if ((customerStationVOList == null) || customerStationVOList.isEmpty()) {
+			return mappingStationIdListResult;
 		}
 
-		Set<Long> mappingStationIdList = new TreeSet<Long>();
-		for (AddressCustomerStationVO customerStationMapping : customerStationMappingList) {
-			mappingStationIdList.add(Long.valueOf(customerStationMapping.getBranchid()));
+		// 映射中间结果
+		List<Long> tempMappingStationIdList = new ArrayList<Long>();
+		for (AddressCustomerStationVO customerStationVO : customerStationVOList) {
+			String stationIdStr = customerStationVO.getBranchid();
+			Set<Long> stationIdSet = new HashSet<Long>();
+			if (stationIdStr.contains(ConstPool.COMMA_SEPERATOR)) {
+				String[] stationIdStrArr = stationIdStr.split(ConstPool.COMMA_SEPERATOR);
+				for (String sis : stationIdStrArr) {
+					if (StringUtil.isEmpty(sis)) {
+						continue;
+					}
+					stationIdSet.add(Long.parseLong(sis));
+				}
+			} else {
+				stationIdSet.add(Long.parseLong(stationIdStr));
+			}
+			if (stationIdSet.contains(stationId)) {
+				String executeBranchidStr = customerStationVO.getExecute_branchid();
+				if (executeBranchidStr.contains(ConstPool.COMMA_SEPERATOR)) {
+					String[] executeBranchidStrArr = executeBranchidStr.split(ConstPool.COMMA_SEPERATOR);
+					for (String ebs : executeBranchidStrArr) {
+						if (StringUtil.isEmpty(ebs)) {
+							continue;
+						}
+						tempMappingStationIdList.add(Long.parseLong(ebs));
+					}
+				} else {
+					tempMappingStationIdList.add(Long.parseLong(executeBranchidStr));
+				}
+			}
 		}
-		// 只有既属于地址库匹配的站点，又在映射关系中的站点
-		externalIdList.retainAll(mappingStationIdList);
-		return externalIdList;
+		for (Long tempMappingStationId : tempMappingStationIdList) {
+			// 过滤掉停用的站点
+			Branch branch = this.branchDAO.getBranchByIdAdd(tempMappingStationId);
+			if (!branch.getBrancheffectflag().equals(AddressMatchService.BRANCHEFFECT)) {
+				continue;
+			}
+			mappingStationIdListResult.add(tempMappingStationId);
+		}
+		return mappingStationIdListResult;
 	}
 
 	private void setStationNameToOrder(CwbOrder cwbOrder, User user, long branchid, List<DelivererVo> delivererList, List<Integer> timeLimitList) throws Exception {

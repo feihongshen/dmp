@@ -21,6 +21,7 @@ src/main/db/changelog/dmp40_function.sql -text
 src/main/db/changelog/dmp_init.sql -text
 src/main/db/changelog/eap_quartz_init.sql -text
 src/main/db/changelog/fnc.sql -text
+src/main/db/changelog/fnc_autoverify.sql -text
 src/main/db/changelog/order_add_field.sql -text
 src/main/db/changelog/quartz_init.sql -text
 src/main/db/changelog/schedule_init.sql -text
@@ -121,6 +122,9 @@ src/main/java/cn/explink/b2c/bjUnion/sign/BodydataSignResp.java -text
 src/main/java/cn/explink/b2c/bjUnion/sign/SignReq.java -text
 src/main/java/cn/explink/b2c/bjUnion/sign/SignResp.java -text
 src/main/java/cn/explink/b2c/cachesynchro/CacheSynchroController.java -text
+src/main/java/cn/explink/b2c/caifutong/CaiFuTong.java -text
+src/main/java/cn/explink/b2c/caifutong/CaiFuTongController.java -text
+src/main/java/cn/explink/b2c/caifutong/CaiFuTongService.java -text
 src/main/java/cn/explink/b2c/chinamobile/Chinamobile.java -text
 src/main/java/cn/explink/b2c/chinamobile/ChinamobileController.java -text
 src/main/java/cn/explink/b2c/chinamobile/ChinamobileFTPUtils.java -text
@@ -544,6 +548,9 @@ src/main/java/cn/explink/b2c/tmall/TmallInsertCwbDetailTimmer.java -text
 src/main/java/cn/explink/b2c/tmall/TmallService.java -text
 src/main/java/cn/explink/b2c/tmall/TmallTimeRole.java -text
 src/main/java/cn/explink/b2c/tmall/TmallXMLNote.java -text
+src/main/java/cn/explink/b2c/tonglian/TongLian.java -text
+src/main/java/cn/explink/b2c/tonglian/TongLianController.java -text
+src/main/java/cn/explink/b2c/tonglian/TongLianService.java -text
 src/main/java/cn/explink/b2c/tools/B2cEnum.java -text
 src/main/java/cn/explink/b2c/tools/CSVReaderUtil.java -text
 src/main/java/cn/explink/b2c/tools/CommonExptDao.java -text
@@ -793,6 +800,7 @@ src/main/java/cn/explink/b2c/zjfeiyuan/util/XmlToBean.java -text
 src/main/java/cn/explink/client/AccountClient.java -text
 src/main/java/cn/explink/client/OmsClient.java -text
 src/main/java/cn/explink/commoncwborder/CommonCwbOrderController.java -text
+src/main/java/cn/explink/consts/ConstPool.java -text
 src/main/java/cn/explink/controller/AbnormalOrderController.java -text
 src/main/java/cn/explink/controller/AbnormalPunishView.java -text
 src/main/java/cn/explink/controller/AbnormalTypeController.java -text
@@ -1043,6 +1051,7 @@ src/main/java/cn/explink/dao/BackMiddleDAO.java -text
 src/main/java/cn/explink/dao/BackSummaryDAO.java -text
 src/main/java/cn/explink/dao/BaleCwbDao.java -text
 src/main/java/cn/explink/dao/BaleDao.java -text
+src/main/java/cn/explink/dao/BankDao.java -text
 src/main/java/cn/explink/dao/BranchContractDAO.java -text
 src/main/java/cn/explink/dao/BranchContractDetailDAO.java -text
 src/main/java/cn/explink/dao/BranchDAO.java -text
@@ -1123,6 +1132,7 @@ src/main/java/cn/explink/dao/OrderGoodsDAO.java -text
 src/main/java/cn/explink/dao/OrderPartGoodsRtDAO.java -text
 src/main/java/cn/explink/dao/OrderbackRecordDao.java -text
 src/main/java/cn/explink/dao/OrgBillAdjustmentRecordDao.java -text
+src/main/java/cn/explink/dao/OrgBillDetailDao.java -text
 src/main/java/cn/explink/dao/OutWarehouseGroupDAO.java -text
 src/main/java/cn/explink/dao/OverdueExMoDAO.java -text
 src/main/java/cn/explink/dao/PFAreaDAO.java -text
@@ -1424,6 +1434,7 @@ src/main/java/cn/explink/domain/Switch.java -text
 src/main/java/cn/explink/domain/SystemInstall.java -text
 src/main/java/cn/explink/domain/TimeEffectiveVO.java -text
 src/main/java/cn/explink/domain/TimeTypeEnum.java -text
+src/main/java/cn/explink/domain/TlBank.java -text
 src/main/java/cn/explink/domain/TransferReason.java -text
 src/main/java/cn/explink/domain/TransferReasonStastics.java -text
 src/main/java/cn/explink/domain/TransferResMatch.java -text
@@ -1502,6 +1513,7 @@ src/main/java/cn/explink/enumutil/B2cPushStateEnum.java -text
 src/main/java/cn/explink/enumutil/BackTypeEnum.java -text
 src/main/java/cn/explink/enumutil/BalePDAEnum.java -text
 src/main/java/cn/explink/enumutil/BaleStateEnum.java -text
+src/main/java/cn/explink/enumutil/BankEnum.java -text
 src/main/java/cn/explink/enumutil/BatchSateEnum.java -text
 src/main/java/cn/explink/enumutil/BillAdjustTypeEnum.java -text
 src/main/java/cn/explink/enumutil/BillStateEnum.java -text
@@ -1509,6 +1521,7 @@ src/main/java/cn/explink/enumutil/BranchEnum.java -text
 src/main/java/cn/explink/enumutil/BranchLogEnum.java -text
 src/main/java/cn/explink/enumutil/BranchRouteEnum.java -text
 src/main/java/cn/explink/enumutil/BranchTypeEnum.java -text
+src/main/java/cn/explink/enumutil/CftAccountTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ChangeFunctionidEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintAuditTypeEnum.java -text
 src/main/java/cn/explink/enumutil/ComplaintResultEnum.java -text
@@ -1570,6 +1583,7 @@ src/main/java/cn/explink/enumutil/PaiFeiBuZhuTypeEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleStateEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleTabEnum.java -text
 src/main/java/cn/explink/enumutil/PaiFeiRuleTypeEnum.java -text
+src/main/java/cn/explink/enumutil/PayCerTypeEnum.java -text
 src/main/java/cn/explink/enumutil/PayMethodSwitchEnum.java -text
 src/main/java/cn/explink/enumutil/PaytypeEnum.java -text
 src/main/java/cn/explink/enumutil/PenalizeSateEnum.java -text
@@ -1593,6 +1607,7 @@ src/main/java/cn/explink/enumutil/SortReasonEnum.java -text
 src/main/java/cn/explink/enumutil/StockDetailEnum.java -text
 src/main/java/cn/explink/enumutil/StockDetailStocktypeEnum.java -text
 src/main/java/cn/explink/enumutil/StockResultStateEnum.java -text
+src/main/java/cn/explink/enumutil/TlAccountTypeEnum.java -text
 src/main/java/cn/explink/enumutil/TuihuoResultEnum.java -text
 src/main/java/cn/explink/enumutil/UserEmployeestatusEnum.java -text
 src/main/java/cn/explink/enumutil/VerificationEnum.java -text
@@ -1834,6 +1849,7 @@ src/main/java/cn/explink/service/ApplyDeliverstateService.java -text
 src/main/java/cn/explink/service/BackDetailService.java -text
 src/main/java/cn/explink/service/BackSummaryService.java -text
 src/main/java/cn/explink/service/BaleService.java -text
+src/main/java/cn/explink/service/BankService.java -text
 src/main/java/cn/explink/service/BaseOrderService.java -text
 src/main/java/cn/explink/service/BranchAutoWarhouseService.java -text
 src/main/java/cn/explink/service/BranchContractService.java -text
@@ -2264,6 +2280,7 @@ src/main/webapp/WEB-INF/jsp/branchroute/add.jsp -text
 src/main/webapp/WEB-INF/jsp/branchroute/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/branchroute/list.jsp -text
 src/main/webapp/WEB-INF/jsp/branchroute/nextStop.jsp -text
+src/main/webapp/WEB-INF/jsp/caifutong/caifutong.jsp -text
 src/main/webapp/WEB-INF/jsp/changeLog/abnormal.jsp -text
 src/main/webapp/WEB-INF/jsp/changeLog/accountNeedChange.jsp -text
 src/main/webapp/WEB-INF/jsp/changeLog/floworderChange.jsp -text
@@ -2773,6 +2790,9 @@ src/main/webapp/WEB-INF/jsp/template/testprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/testtongluprinting_template.jsp -text
 src/main/webapp/WEB-INF/jsp/template/tuihuozhanruku_template.jsp -text
 src/main/webapp/WEB-INF/jsp/time_effective/timeeffective.jsp -text
+src/main/webapp/WEB-INF/jsp/tonglian/tonglian.jsp -text
+src/main/webapp/WEB-INF/jsp/tonglian/tongliancer.jsp -text
+src/main/webapp/WEB-INF/jsp/tonglian/tonglianpfx.jsp -text
 src/main/webapp/WEB-INF/jsp/top.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/add.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/edit.jsp -text

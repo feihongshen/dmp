@@ -75,7 +75,7 @@ public class Branch {
 
 	private long backtime;// 退货出站超时时效：
 
-	private BigDecimal branchBail;//站点保证金
+	private BigDecimal branchBail;// 站点保证金
 	private long pfruleid;// 派费规则id
 
 	//自动核销用到的字段
@@ -129,7 +129,8 @@ public class Branch {
 	}
 
 	/**
-	 * @param pfruleid the pfruleid to set
+	 * @param pfruleid
+	 *            the pfruleid to set
 	 */
 	public void setPfruleid(long pfruleid) {
 		this.pfruleid = pfruleid;

@@ -194,7 +194,7 @@ public class BranchDAO {
 	}
 
 	public List<Branch> getAllBranches() {
-		return this.jdbcTemplate.query("SELECT * FROM express_set_branch ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
+		return this.jdbcTemplate.query("SELECT * FROM express_set_branch  ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
 	}
 
 	public List<Branch> getAllEffectBranches() {
@@ -229,6 +229,14 @@ public class BranchDAO {
 			} else {
 				return null;
 			}
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+	
+	public List<Branch> getBranchListByIdStr(String branchidStr) {
+		try {
+			return this.jdbcTemplate.query("select * from express_set_branch where branchid in(?)", new BranchRowMapper(), branchidStr);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}

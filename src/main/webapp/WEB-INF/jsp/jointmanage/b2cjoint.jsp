@@ -481,7 +481,12 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/caifutong/del/');
 		}
 
+	}else{
+			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
+			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
+		}
 	}
+
 	</script>
 </body>
 </html>
