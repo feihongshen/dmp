@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.domain.Branch"%>
 <%@page import="cn.explink.b2c.zhongliang.*"%>
@@ -7,6 +8,7 @@
 
 Zhongliang zhongliang=(Zhongliang)request.getAttribute("zhongliang");
 List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
+List<Customer> customerList=(List<Customer>)request.getAttribute("customerList");
 %>
 
 <script type="text/javascript">
@@ -43,13 +45,28 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 					<li><span>订单状态url：</span>
  						<input type ="text" id="orderStatus_url" name ="orderStatus_url" value ="<%=StringUtil.nullConvertToEmptyString(zhongliang.getOrderStatus_url())%>" maxlength="1000"  > 
 					</li>
+					<li><span>意向单接收url：</span>
+ 						<input type ="text" id="backOrder_url" name ="backOrder_url" value ="<%=StringUtil.nullConvertToEmptyString(zhongliang.getBackOrder_url())%>" maxlength="1000"  > 
+					</li>
+					<li><span>意向单取消url：</span>
+ 						<input type ="text" id="backCancel_url" name ="backCancel_url" value ="<%=StringUtil.nullConvertToEmptyString(zhongliang.getBackCancel_url())%>" maxlength="1000"  > 
+					</li>
+					<li><span>意向单状态url：</span>
+ 						<input type ="text" id="backOrderStatus_url" name ="backOrderStatus_url" value ="<%=StringUtil.nullConvertToEmptyString(zhongliang.getBackOrderStatus_url())%>" maxlength="1000"  > 
+					</li>
 					
 					<li><span>推送数量：</span>
  						<input type ="text" id="nums" name ="nums" value ="<%=StringUtil.nullConvertToEmptyString(zhongliang.getNums())%>" maxlength="1000"  > 
 					</li>
 					
 					<li><span>供货商ID：</span>
- 						<input type ="text" id="customerid" name ="customerid" value ="<%=StringUtil.nullConvertToEmptyString(zhongliang.getCustomerid())%>" maxlength="30"  > 
+						<select name="customerid" id="customerid">
+								<option value="0">请选择供货商</option>
+								<%for(Customer c:customerList){
+								%>
+									<option value="<%=c.getCustomerid()%>" <%if(StringUtil.nullConvertToEmptyString(zhongliang.getCustomerid()).equals(c.getCustomerid()+"")){%>selected<%}%>><%=c.getCustomername() %></option>
+								<%}%>
+							</select>
 					</li>
 					<li><span>订单导入库房：</span>
 							<select name="warehouseid">
