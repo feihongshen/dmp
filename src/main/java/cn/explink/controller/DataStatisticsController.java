@@ -1126,6 +1126,7 @@ public class DataStatisticsController {
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			String kufangids = this.dataStatisticsService.getStrings(kufangid);
+			kufangids=!kufangids.isEmpty()?(kufangids+",0"):kufangids;
 			// 获取值
 			List<Branch> kufangList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(this.getSessionUser().getUserid(),
 					BranchEnum.KuFang.getValue() + "," + BranchEnum.TuiHuo.getValue() + "," + BranchEnum.ZhongZhuan.getValue());
