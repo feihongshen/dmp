@@ -37,6 +37,7 @@ import cn.explink.b2c.homegobj.HomegobjInsertCwbDetailTimmer;
 import cn.explink.b2c.homegobj.HomegobjService_getOrderDetailList;
 import cn.explink.b2c.homegou.HomegouInsertCwbDetailTimmer;
 import cn.explink.b2c.homegou.HomegouService_getOrder;
+import cn.explink.b2c.huanqiugou.HuanqiugouInsertCwbDetailTimmer;
 import cn.explink.b2c.huitongtx.HuitongtxInsertCwbDetailTimmer;
 import cn.explink.b2c.hxgdms.HxgdmsInsertCwbDetailTimmer;
 import cn.explink.b2c.hzabc.HangZhouABCInsertCwbDetailTimmer;
@@ -228,6 +229,9 @@ public class JobUtil {
 	FNWInsertCwbDetailTimmer fnwInsertCwbDetailTimmer;
 	@Autowired
 	AcquisitionOrderService acquisitionOrderService;
+	@Autowired
+	HuanqiugouInsertCwbDetailTimmer huanqiugouInsertCwbDetailTimmer;
+	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 
@@ -1306,6 +1310,20 @@ public class JobUtil {
 
 	}
 
+	/**
+	 * 环球购物
+	 */
+	public void getHuanQiuGouWu_Task() {
+		try {
+			long starttime = System.currentTimeMillis();
+			this.huanqiugouInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了-环球购物-订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+		} catch (Exception e) {
+			this.logger.error("执行了-环球购物-订单导入定时器异常", e);
+		}
+	}
 	
 	
 	/**

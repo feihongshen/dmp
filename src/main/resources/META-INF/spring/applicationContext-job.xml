@@ -93,8 +93,8 @@
 							 <ref bean="doTime_vipshopOXOJITFeedback" />	
 							 <ref bean="doTime_sendPunishInsideAutoShenheTask" />
 							 <ref bean="doTime_orderLifecycleReport"/>					 
-							 <ref bean="doTime_guangxindianxin"/>					 
-							 
+							 <ref bean="doTime_guangxindianxin"/>
+							 <ref bean="doTime_huanqiugouwu" />					 
 			           </list>                 
 	               </property>         
 	               <property name="dataSource" ref="dataSource"></property>
@@ -952,6 +952,25 @@
          </property>
          <property name="targetMethod">
              <value>getFeiNiuWang_Task</value>
+         </property>
+     </bean>
+     
+      <!-- 环球购物 -->
+      <bean id="doTime_huanqiugouwu" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getHuanqiugouwu" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+     
+     <bean id="getHuanqiugouwu" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getHuanQiuGouWu_Task</value>
          </property>
      </bean>
      
