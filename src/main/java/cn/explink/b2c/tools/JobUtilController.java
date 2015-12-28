@@ -25,6 +25,7 @@ import cn.explink.b2c.dpfoss.DpfossInsertCwbDetailTimmer;
 import cn.explink.b2c.efast.EfastInsertCwbDetailTimmer;
 import cn.explink.b2c.efast.EfastService_getOrderDetailList;
 import cn.explink.b2c.efast.EfastService_getOrderList;
+import cn.explink.b2c.explink.core_down.AcquisitionOrderService;
 import cn.explink.b2c.explink.core_down.EpaiApiService_Download;
 import cn.explink.b2c.explink.core_down.EpaiApiService_ExportCallBack;
 import cn.explink.b2c.explink.core_down.EpaiInsertCwbDetailTimmer;
@@ -144,6 +145,8 @@ public class JobUtilController {
 	LogToDayByTuihuoService logToDayByTuihuoService;
 	@Autowired
 	LogToDayByWarehouseService logToDayByWarehouseService;
+	@Autowired
+	AcquisitionOrderService acquisitionOrderService;
 
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -991,7 +994,7 @@ public class JobUtilController {
 
 			threadMap.put("epaiDownload", 1);
 
-			long count = epaiApiService_Download.downLoadOrders_controllers();
+			long count = this.acquisitionOrderService.passiveReceptionOrActiveAcquisition();
 			epaiApiService_ExportCallBack.exportCallBack_controllers();
 			epaiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
 
