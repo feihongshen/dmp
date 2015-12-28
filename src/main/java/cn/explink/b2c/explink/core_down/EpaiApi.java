@@ -21,8 +21,18 @@ public class EpaiApi {
 
 	private int isopenflag; // 是否开启对接 下载
 	private int isfeedbackflag; // 是否开启反馈 0关闭， 1开启
-
+	private int isPassiveReception;//1主动下载，  2，被动接收
 	private int ispostflag; // 传输方式 0 数据流 1 POST参数
+
+	
+	
+	public int getIsPassiveReception() {
+		return isPassiveReception;
+	}
+
+	public void setIsPassiveReception(int isPassiveReception) {
+		this.isPassiveReception = isPassiveReception;
+	}
 
 	public int getIspostflag() {
 		return ispostflag;

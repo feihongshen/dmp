@@ -17,6 +17,7 @@ import cn.explink.b2c.dpfoss.DpfossInsertCwbDetailTimmer;
 import cn.explink.b2c.efast.EfastInsertCwbDetailTimmer;
 import cn.explink.b2c.efast.EfastService_getOrderDetailList;
 import cn.explink.b2c.efast.EfastService_getOrderList;
+import cn.explink.b2c.explink.core_down.AcquisitionOrderService;
 import cn.explink.b2c.explink.core_down.EpaiApiService_Download;
 import cn.explink.b2c.explink.core_down.EpaiApiService_ExportCallBack;
 import cn.explink.b2c.explink.core_down.EpaiInsertCwbDetailTimmer;
@@ -223,6 +224,8 @@ public class JobUtil {
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
 	@Autowired
 	GxDxInsertCwbDetailTimmer gxDxInsertCwbDetailTimmer;
+	@Autowired
+	AcquisitionOrderService acquisitionOrderService;
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new HashMap<String, Integer>();
@@ -775,7 +778,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("epaiDownload", 1);
 
 		try {
-			this.epaiApiService_Download.downLoadOrders_controllers();
+			this.acquisitionOrderService.passiveReceptionOrActiveAcquisition();
 			this.epaiApiService_ExportCallBack.exportCallBack_controllers();
 			this.epaiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
 		} catch (Exception e) {

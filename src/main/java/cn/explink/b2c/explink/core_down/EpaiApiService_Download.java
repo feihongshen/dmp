@@ -35,10 +35,10 @@ public class EpaiApiService_Download extends EpaiApiService {
 
 	@Autowired
 	B2cAutoDownloadMonitorDAO b2cAutoDownloadMonitorDAO;
-
-	/**
+/*
+	*//**
 	 * 订单下载入口
-	 */
+	 *//*
 	public long downLoadOrders_controllers() {
 		String customerids = "";
 		String remark = "";
@@ -67,15 +67,15 @@ public class EpaiApiService_Download extends EpaiApiService {
 		if (calcCount > 0) {
 			remark = "下载完成";
 		}
-		b2cAutoDownloadMonitorDAO.saveB2cDownloadRecord(customerids.indexOf(",") > 0 ? customerids.substring(0, customerids.length() - 1) : customerids, DateTimeUtil.getNowTime(), calcCount, remark);
+		//b2cAutoDownloadMonitorDAO.saveB2cDownloadRecord(customerids.indexOf(",") > 0 ? customerids.substring(0, customerids.length() - 1) : customerids, DateTimeUtil.getNowTime(), calcCount, remark);
 		return calcCount;
 
-	}
+	}*/
 
 	/**
 	 * 订单数据下载接口（主动、定时）
 	 */
-	private long downLoadingOrders(EpaiApi epai) {
+	public long downLoadingOrders(EpaiApi epai) {
 
 		try {
 
@@ -140,7 +140,7 @@ public class EpaiApiService_Download extends EpaiApiService {
 	/**
 	 * 返回一个转化为导入接口可识别的对象
 	 */
-	private List<Map<String, String>> parseCwbArrByOrderDto(OrderExportResultDto exportDto, EpaiApi epai) {
+	public List<Map<String, String>> parseCwbArrByOrderDto(OrderExportResultDto exportDto, EpaiApi epai) {
 		List<Map<String, String>> cwbList = null;
 		OrderListDto orderListDto = exportDto.getOrderListDto();
 		if (orderListDto == null || orderListDto.getOrderDtoList() == null || orderListDto.getOrderDtoList().size() == 0) {
@@ -202,7 +202,7 @@ public class EpaiApiService_Download extends EpaiApiService {
 		return cwbList;
 	}
 
-	private long getOrCreateCustomerWarehouse(EpaiApi epai, String warehousename) {
+	public long getOrCreateCustomerWarehouse(EpaiApi epai, String warehousename) {
 		long customerwarehouseid = 0;
 		CustomWareHouse custwarehouse = customWareHouseDAO.getCustomWareHouseByName(warehousename, String.valueOf(epai.getCustomerid()));
 		if (custwarehouse == null) {
