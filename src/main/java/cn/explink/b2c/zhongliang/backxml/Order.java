@@ -1,11 +1,8 @@
-package cn.explink.b2c.zhongliang.xml;
-
-import java.util.ArrayList;
-import java.util.List;
+package cn.explink.b2c.zhongliang.backxml;
 
 import javax.xml.bind.annotation.XmlElement;
 
-public class Response_Order {
+public class Order {
 	private String PurchaseNO = "";//
 	private String SendOrderID = "";//
 	private String WAREHOUSENAME = "";//
@@ -18,15 +15,7 @@ public class Response_Order {
 	private String postalcode = "";//
 	private String expcompany;//
 	private String freight = "";//
-	private String packweight = "";
-	private String taxflag = "";//
-	private String taxtype = "";//
-	private String valuableflag = "";//
-	private String stockoutdate = "";
-	private String orderTemark = "";//
-	private String boxes = "";//
 	private String ordervalue = "";//
-	private String getvalue = "";//
 	private String paytype = "";//
 	private String freshflag = "";//
 	private String sendtime = "";//
@@ -35,59 +24,49 @@ public class Response_Order {
 	private String areaname = "";//
 	private String orderstatus = "";//
 	private String returntaxvalue = "";//
-	private String purlevel = "";//
 	private String returntaxflag = "";//
-	private List<Response_PackageDetail> packageDetail = new ArrayList<Response_PackageDetail>();//
-	private List<Response_GoodDetail> goodDetail = new ArrayList<Response_GoodDetail>();
+	private String orderTemark = "";//
+	private GoodDetail goodDetail = new GoodDetail();
 
 	@XmlElement(name = "PurchaseNO")
 	public String getPurchaseNO() {
-		return PurchaseNO;
+		return this.PurchaseNO;
 	}
 
 	public void setPurchaseNO(String purchaseNO) {
-		PurchaseNO = purchaseNO;
+		this.PurchaseNO = purchaseNO;
 	}
 
 	@XmlElement(name = "SendOrderID")
 	public String getSendOrderID() {
-		return SendOrderID;
+		return this.SendOrderID;
 	}
 
 	public void setSendOrderID(String sendOrderID) {
-		SendOrderID = sendOrderID;
-	}
-
-	@XmlElement(name = "PackageDetail")
-	public List<Response_PackageDetail> getPackageDetail() {
-		return packageDetail;
-	}
-
-	public void setPackageDetail(List<Response_PackageDetail> packageDetail) {
-		this.packageDetail = packageDetail;
+		this.SendOrderID = sendOrderID;
 	}
 
 	@XmlElement(name = "GoodDetail")
-	public List<Response_GoodDetail> getGoodDetail() {
-		return goodDetail;
+	public GoodDetail getGoodDetail() {
+		return this.goodDetail;
 	}
 
-	public void setGoodDetail(List<Response_GoodDetail> goodDetail) {
+	public void setGoodDetail(GoodDetail goodDetail) {
 		this.goodDetail = goodDetail;
 	}
 
 	@XmlElement(name = "OrderID")
 	public String getOrderID() {
-		return OrderID;
+		return this.OrderID;
 	}
 
 	public void setOrderID(String orderID) {
-		OrderID = orderID;
+		this.OrderID = orderID;
 	}
 
 	@XmlElement(name = "OrderType")
 	public String getOrdertype() {
-		return ordertype;
+		return this.ordertype;
 	}
 
 	public void setOrdertype(String ordertype) {
@@ -96,16 +75,16 @@ public class Response_Order {
 
 	@XmlElement(name = "WAREHOUSENAME")
 	public String getWAREHOUSENAME() {
-		return WAREHOUSENAME;
+		return this.WAREHOUSENAME;
 	}
 
 	public void setWAREHOUSENAME(String wAREHOUSENAME) {
-		WAREHOUSENAME = wAREHOUSENAME;
+		this.WAREHOUSENAME = wAREHOUSENAME;
 	}
 
 	@XmlElement(name = "linkMan")
 	public String getLinkman() {
-		return linkman;
+		return this.linkman;
 	}
 
 	public void setLinkman(String linkman) {
@@ -114,7 +93,7 @@ public class Response_Order {
 
 	@XmlElement(name = "TelNO")
 	public String getTelno() {
-		return telno;
+		return this.telno;
 	}
 
 	public void setTelno(String telno) {
@@ -123,7 +102,7 @@ public class Response_Order {
 
 	@XmlElement(name = "HandsetNO")
 	public String getHandsetno() {
-		return handsetno;
+		return this.handsetno;
 	}
 
 	public void setHandsetno(String handsetno) {
@@ -132,7 +111,7 @@ public class Response_Order {
 
 	@XmlElement(name = "Address")
 	public String getAddress() {
-		return address;
+		return this.address;
 	}
 
 	public void setAddress(String address) {
@@ -141,7 +120,7 @@ public class Response_Order {
 
 	@XmlElement(name = "PostalCode")
 	public String getPostalcode() {
-		return postalcode;
+		return this.postalcode;
 	}
 
 	public void setPostalcode(String postalcode) {
@@ -150,7 +129,7 @@ public class Response_Order {
 
 	@XmlElement(name = "ExpCompany")
 	public String getExpcompany() {
-		return expcompany;
+		return this.expcompany;
 	}
 
 	public void setExpcompany(String expcompany) {
@@ -159,97 +138,34 @@ public class Response_Order {
 
 	@XmlElement(name = "Freight")
 	public String getFreight() {
-		return freight;
+		return this.freight;
 	}
 
 	public void setFreight(String freight) {
 		this.freight = freight;
 	}
 
-	@XmlElement(name = "PackWeight")
-	public String getPackweight() {
-		return packweight;
-	}
-
-	public void setPackweight(String packweight) {
-		this.packweight = packweight;
-	}
-
-	@XmlElement(name = "TaxFlag")
-	public String getTaxflag() {
-		return taxflag;
-	}
-
-	public void setTaxflag(String taxflag) {
-		this.taxflag = taxflag;
-	}
-
-	@XmlElement(name = "TaxType")
-	public String getTaxtype() {
-		return taxtype;
-	}
-
-	public void setTaxtype(String taxtype) {
-		this.taxtype = taxtype;
-	}
-
-	@XmlElement(name = "ValuableFlag")
-	public String getValuableflag() {
-		return valuableflag;
-	}
-
-	public void setValuableflag(String valuableflag) {
-		this.valuableflag = valuableflag;
-	}
-
-	@XmlElement(name = "StockoutDate")
-	public String getStockoutdate() {
-		return stockoutdate;
-	}
-
-	public void setStockoutdate(String stockoutdate) {
-		this.stockoutdate = stockoutdate;
-	}
-
-	@XmlElement(name = "OrderTemark")
+	@XmlElement(name = "OrderRemark")
 	public String getOrderTemark() {
-		return orderTemark;
+		return this.orderTemark;
 	}
 
 	public void setOrderTemark(String orderTemark) {
 		this.orderTemark = orderTemark;
 	}
 
-	@XmlElement(name = "Boxes")
-	public String getBoxes() {
-		return boxes;
-	}
-
-	public void setBoxes(String boxes) {
-		this.boxes = boxes;
-	}
-
 	@XmlElement(name = "OrderValue")
 	public String getOrdervalue() {
-		return ordervalue;
+		return this.ordervalue;
 	}
 
 	public void setOrdervalue(String ordervalue) {
 		this.ordervalue = ordervalue;
 	}
 
-	@XmlElement(name = "GetValue")
-	public String getGetvalue() {
-		return getvalue;
-	}
-
-	public void setGetvalue(String getvalue) {
-		this.getvalue = getvalue;
-	}
-
 	@XmlElement(name = "PayType")
 	public String getPaytype() {
-		return paytype;
+		return this.paytype;
 	}
 
 	public void setPaytype(String paytype) {
@@ -258,7 +174,7 @@ public class Response_Order {
 
 	@XmlElement(name = "FreshFlag")
 	public String getFreshflag() {
-		return freshflag;
+		return this.freshflag;
 	}
 
 	public void setFreshflag(String freshflag) {
@@ -267,7 +183,7 @@ public class Response_Order {
 
 	@XmlElement(name = "SendTime")
 	public String getSendtime() {
-		return sendtime;
+		return this.sendtime;
 	}
 
 	public void setSendtime(String sendtime) {
@@ -276,7 +192,7 @@ public class Response_Order {
 
 	@XmlElement(name = "ProvinceName")
 	public String getProvincename() {
-		return provincename;
+		return this.provincename;
 	}
 
 	public void setProvincename(String provincename) {
@@ -285,7 +201,7 @@ public class Response_Order {
 
 	@XmlElement(name = "CityName")
 	public String getCityname() {
-		return cityname;
+		return this.cityname;
 	}
 
 	public void setCityname(String cityname) {
@@ -294,7 +210,7 @@ public class Response_Order {
 
 	@XmlElement(name = "AreaName")
 	public String getAreaname() {
-		return areaname;
+		return this.areaname;
 	}
 
 	public void setAreaname(String areaname) {
@@ -303,7 +219,7 @@ public class Response_Order {
 
 	@XmlElement(name = "OrderStatus")
 	public String getOrderstatus() {
-		return orderstatus;
+		return this.orderstatus;
 	}
 
 	public void setOrderstatus(String orderstatus) {
@@ -312,25 +228,16 @@ public class Response_Order {
 
 	@XmlElement(name = "ReturnTaxValue")
 	public String getReturntaxvalue() {
-		return returntaxvalue;
+		return this.returntaxvalue;
 	}
 
 	public void setReturntaxvalue(String returntaxvalue) {
 		this.returntaxvalue = returntaxvalue;
 	}
 
-	@XmlElement(name = "PurLevel")
-	public String getPurlevel() {
-		return purlevel;
-	}
-
-	public void setPurlevel(String purlevel) {
-		this.purlevel = purlevel;
-	}
-
 	@XmlElement(name = "ReturnTaxFlag")
 	public String getReturntaxflag() {
-		return returntaxflag;
+		return this.returntaxflag;
 	}
 
 	public void setReturntaxflag(String returntaxflag) {

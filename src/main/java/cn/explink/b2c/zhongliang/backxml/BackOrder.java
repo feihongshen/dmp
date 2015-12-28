@@ -1,28 +1,38 @@
-package cn.explink.b2c.zhongliang.xml;
+package cn.explink.b2c.zhongliang.backxml;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "Response")
-public class Response_CancleOrder {
+public class BackOrder {
+
 	private String head;
 	private String service;
 	private String lang;
-	private Response_CancleOrder_Body response_CancleOrder_body;
+	private Body body;
 
 	@XmlElement(name = "Head")
 	public String getHead() {
-		return head;
+		return this.head;
 	}
 
 	public void setHead(String head) {
 		this.head = head;
 	}
 
+	@XmlElement(name = "Body")
+	public Body getBody() {
+		return this.body;
+	}
+
+	public void setBody(Body body) {
+		this.body = body;
+	}
+
 	@XmlAttribute(name = "service")
 	public String getService() {
-		return service;
+		return this.service;
 	}
 
 	public void setService(String service) {
@@ -31,19 +41,11 @@ public class Response_CancleOrder {
 
 	@XmlAttribute(name = "lang")
 	public String getLang() {
-		return lang;
+		return this.lang;
 	}
 
 	public void setLang(String lang) {
 		this.lang = lang;
 	}
 
-	public Response_CancleOrder_Body getResponse_CancleOrder_body() {
-		return response_CancleOrder_body;
-	}
-
-	@XmlElement(name = "Body")
-	public void setResponse_CancleOrder_body(Response_CancleOrder_Body response_CancleOrder_body) {
-		this.response_CancleOrder_body = response_CancleOrder_body;
-	}
 }
