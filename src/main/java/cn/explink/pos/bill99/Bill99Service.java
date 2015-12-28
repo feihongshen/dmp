@@ -22,6 +22,7 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -107,6 +108,8 @@ public class Bill99Service {
 		String isupdateDeliverid = StringUtil.nullConvertToEmptyString(request.getParameter("isupdateDeliverid"));// 他人刷卡是否修改派送员为POS机登录派送员1是，0否
 		String request_url = StringUtil.nullConvertToEmptyString(request.getParameter("request_url"));
 		String isopensignflag = StringUtil.nullConvertToEmptyString(request.getParameter("isopensignflag"));
+		
+		String resultCustomerid = StringUtil.nullConvertToEmptyString(request.getParameter("resultCustomerid"));
 
 		bill99.setVersion(version);
 		bill99.setRequester(requester);
@@ -119,6 +122,7 @@ public class Bill99Service {
 		bill99.setIsupdateDeliverid(Integer.valueOf(isupdateDeliverid));
 		bill99.setRequest_url(request_url);
 		bill99.setIsopensignflag(Integer.valueOf(isopensignflag));
+		bill99.setResultCustomerid(resultCustomerid);
 
 		JSONObject jsonObj = JSONObject.fromObject(bill99);
 		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
@@ -283,8 +287,8 @@ public class Bill99Service {
 	 * @param alipayRespNote
 	 * @return
 	 */
-	protected Bill99RespNote BuildBill99RespClass(Transaction rootnote, Bill99RespNote RespNote) {
-		RespNote.setDeliverid(getUserIdByUserName(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()));
+	protected Bill99RespNote BuildBill99RespClass(Transaction rootnote, Bill99RespNote respNote) {
+		respNote.setDeliverid(getUserIdByUserName(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()));
 		String orderId = rootnote.getTransaction_Body().getOrderId();
 		String order_no = rootnote.getTransaction_Body().getOrder_no();
 		String cwb = null;
@@ -301,23 +305,44 @@ public class Bill99Service {
 		long branchid = 0;
 		Bill99 bill99 = getBill99SettingMethod(PosEnum.Bill99.getKey());
 		if (bill99.getIsotheroperator() == 1) { // 限制他人刷卡，只能自己刷自己名下订单
-			deliverid = RespNote.getDeliverid();
+			deliverid = respNote.getDeliverid();
 			// 获取当前站点id，默认当前登录人所在的id，如果限制刷卡则 branchid为登录人，反之则为领货人所在id
 			branchid = userDAO.getUserByUsername(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()).getBranchid();
 		}
 
-		RespNote.setCwbOrder(cwbDAO.getCwbDetailByCwbAndDeliverId(deliverid, cwbTransCwb));
-		DeliveryState ds = deliveryStateDAO.getDeliveryStateByCwb_posHelper(cwbTransCwb, RespNote.getDeliverid()); // 如果根据订单号可以查到对象，则返回，如果查询不到，则调用receiveGoods创建。
+		CwbOrder co = cwbDAO.getCwbDetailByCwbAndDeliverId(deliverid, cwbTransCwb);
+		respNote.setCwbOrder(cwbDAO.getCwbDetailByCwbAndDeliverId(deliverid, cwbTransCwb));
+		
+		boolean selectPower = validatorSelectPower(bill99, co);
+		
+		if(selectPower){
+			respNote.setCwbOrder(null);
+		}
+		
+		DeliveryState ds = deliveryStateDAO.getDeliveryStateByCwb_posHelper(cwbTransCwb, respNote.getDeliverid()); // 如果根据订单号可以查到对象，则返回，如果查询不到，则调用receiveGoods创建。
 
 		branchid = branchid == 0 ? ds.getDeliverybranchid() : branchid;
 
-		RespNote.setBranchid(branchid);
+		respNote.setBranchid(branchid);
 
-		RespNote.setDeliverstate(ds);
-		RespNote.setOrder_no(cwbTransCwb);
-		RespNote.setTransaction_id(rootnote.getTransaction_Header().getTransaction_id());
-		RespNote.setDelivery_man(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man());
-		return RespNote;
+		respNote.setDeliverstate(ds);
+		respNote.setOrder_no(cwbTransCwb);
+		respNote.setTransaction_id(rootnote.getTransaction_Header().getTransaction_id());
+		respNote.setDelivery_man(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man());
+		return respNote;
+	}
+
+	//是否验证权限允许查询访问
+	private boolean validatorSelectPower(Bill99 bill99, CwbOrder co) {
+		String customeridArrs[]=bill99.getResultCustomerid().split(",");
+		if(customeridArrs!=null&&customeridArrs.length>0){
+			for(String customerid:customeridArrs){
+				if(co.getCustomerid()==Long.valueOf(customerid)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
