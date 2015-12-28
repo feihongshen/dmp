@@ -407,7 +407,7 @@ public class ExplinkService {
 			throw new RuntimeException("配置信息有误");
 		}
 		if (companyname == null) {
-			throw new RuntimeException("缺少参数缺少参数");
+			throw new RuntimeException("缺少参数companyname");
 		}
 		if (cwbs == null) {
 			throw new RuntimeException("缺少参数cwb");

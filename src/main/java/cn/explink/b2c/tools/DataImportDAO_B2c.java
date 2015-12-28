@@ -640,4 +640,12 @@ public class DataImportDAO_B2c {
 		return cwborderList;
 	}
 
+	/**
+	 * 【玫琳凯】业务需要
+	 * @param cwb
+	 */
+	public void updateGetdataflagByCWB(String cwb) {
+		String sql = "update express_ops_cwb_detail_b2ctemp set getDataFlag=1 where cwb=?";
+		this.jdbcTemplate.update(sql,cwb);
+	}
 }

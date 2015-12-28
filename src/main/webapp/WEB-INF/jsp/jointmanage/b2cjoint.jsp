@@ -433,6 +433,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/jiuye/del/');
 		}
 		
+		else if(obj=='20107'){
+			$("#edit").val('<%=request.getContextPath()%>/feiniuwang/show/');
+			$("#del").val('<%=request.getContextPath()%>/feiniuwang/del/');
+		}
+		
 		else if(obj=='20109'||obj=='20110'||obj=='20111'||obj=='20112'||obj=='20113'){
 			$("#edit").val('<%=request.getContextPath()%>/jiuyeaddressmatch/show/');
 			$("#del").val('<%=request.getContextPath()%>/jiuyeaddressmatch/del/');
@@ -457,6 +462,17 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/vipshop/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
+		
+		else if(obj=='20135'){
+			$("#edit").val('<%=request.getContextPath()%>/meilinkai/show/');
+			$("#del").val('<%=request.getContextPath()%>/meilinkai/del/');
+		}
+		
+		else if(obj=='20136'){
+			$("#edit").val('<%=request.getContextPath()%>/huanqiugou/show/');
+			$("#del").val('<%=request.getContextPath()%>/huanqiugou/del/');
+		}
+		
 		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');

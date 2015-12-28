@@ -83,6 +83,7 @@
 							  <ref bean="doTime_lechong" />
 							 <ref bean="doTime_sfxhm" />
 							 <ref bean="doTime_jiuye" />
+							 <ref bean="doTime_feiniuwang"/>
 							 <ref bean="doTime_zhongliang" />
 							 <ref bean="doTime_wenxuan" />
 							  <ref bean="doTime_gztl" />
@@ -935,6 +936,24 @@
              <value>getGuangXinDianXin</value>
          </property>
      </bean>	
+     <!-- 飞牛网定时任务（临时表--主表） -->
+     <bean id="doTime_feiniuwang" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getFeiNiuWang" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+     
+     <bean id="getFeiNiuWang" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getFeiNiuWang_Task</value>
+         </property>
+     </bean>
      
      <!-- 订单生命周期报表生成任务  开始 -->
      <bean id="doTime_orderLifecycleReport" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">

@@ -20,6 +20,7 @@ import cn.explink.b2c.efast.EfastService_getOrderList;
 import cn.explink.b2c.explink.core_down.EpaiApiService_Download;
 import cn.explink.b2c.explink.core_down.EpaiApiService_ExportCallBack;
 import cn.explink.b2c.explink.core_down.EpaiInsertCwbDetailTimmer;
+import cn.explink.b2c.feiniuwang.FNWInsertCwbDetailTimmer;
 import cn.explink.b2c.gome.GomeService;
 import cn.explink.b2c.gxdx.GxDxInsertCwbDetailTimmer;
 import cn.explink.b2c.gzabc.GuangZhouABCInsertCwbDetailTimmer;
@@ -222,6 +223,8 @@ public class JobUtil {
 	
 	@Autowired
 	GxDxInsertCwbDetailTimmer gxDxInsertCwbDetailTimmer;
+	@Autowired
+	FNWInsertCwbDetailTimmer fnwInsertCwbDetailTimmer;
 	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -1217,6 +1220,21 @@ public class JobUtil {
 		}
 
 	}
+	
+	// 飞牛网(http)
+	public void getFeiNiuWang_Task() {
+		try {
+			long starttime = System.currentTimeMillis();
+			this.fnwInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了飞牛网(http)订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+		} catch (Exception e) {
+			this.logger.error("执行飞牛网(http)订单导入定时器异常", e);
+		}
+	}
+	
+	
 	/**
 	 * 广信电信
 	 */

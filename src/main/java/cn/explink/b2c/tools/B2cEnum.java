@@ -78,6 +78,7 @@ public enum B2cEnum {
 			"guangzhoutongluwaifadanduijie", 0),
 	VipShop_OXO(20090, "唯品会_oxo", "VIP_OXO", 0),// 唯品会OXO vipshop_oxo
 	JiuYe1(20101, "九曵1", "jiuye_1", 0),JiuYe2(20102, "九曵2", "jiuye_2", 0),JiuYe3(20103, "九曵3", "jiuye_3", 0),JiuYe4(20104, "九曵4", "jiuye_4", 0),JiuYe5(20105, "九曵5", "jiuye_5", 0),
+	Feiniuwang(20107, "飞牛网(http)", "feiniuwang", 0),
 	JiuYeAddressMatch1(20109, "九曳_站点匹配1", "jiuyeaddressmatch_1", 0),
 	JiuYeAddressMatch2(20110, "九曳_站点匹配2", "jiuyeaddressmatch_2", 0),
 	JiuYeAddressMatch3(20111, "九曳_站点匹配3", "jiuyeaddressmatch_3", 0),
@@ -93,7 +94,8 @@ public enum B2cEnum {
 	VipShop_cangku6(20124, "唯品会_仓库6", "vipshop_cangku6",0),
 	VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7",0),
 	VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8",0),
-	
+	meilinkai(20135,"玫琳凯","meilinkai",0),
+	HuanQiuGou(20136, "环球购物", "huanqiugouwu", 0),
 	; 
 
 	private int key;
