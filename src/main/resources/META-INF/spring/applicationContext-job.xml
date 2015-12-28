@@ -936,7 +936,7 @@
              <value>getGuangXinDianXin</value>
          </property>
      </bean>	
-     <!-- 飞牛网定时任务（临时表--主表） -->
+     <!-- 飞牛网定时任务临时表主表 --> 
      <bean id="doTime_feiniuwang" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
            <property name="jobDetail">
                <ref bean="getFeiNiuWang" />
