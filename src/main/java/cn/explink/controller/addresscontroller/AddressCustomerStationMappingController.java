@@ -58,7 +58,7 @@ public class AddressCustomerStationMappingController {
 		model.addAttribute("listRalations", list);
 		model.addAttribute("execute_branchid", execute_branchid);
 		model.addAttribute("listCustomers", this.customerService.getPageCash());
-		model.addAttribute("listBranchs", this.getBranchs());
+		model.addAttribute("listBranchs",this.getBranchs());
 		model.addAttribute("page_obj", new Page(
 				this.addressCustomerStationService.getAllCount(customerid, station,execute_branchid), page,
 				Page.ONE_PAGE_NUMBER));

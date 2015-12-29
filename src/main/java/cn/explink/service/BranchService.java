@@ -222,7 +222,8 @@ public class BranchService {
 	}
 	public List<Branch> getBranchs() {
 
-		return this.branchDao.getAllBrancks();
+		return this.branchDao.getAllBranches();
 	}
+
 
 }

@@ -39,7 +39,8 @@ public class BranchDAO {
 		public Branch mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Branch branch = new Branch();
 			branch.setBranchid(rs.getLong("branchid"));
-			branch.setBranchname(StringUtil.nullConvertToEmptyString(rs.getString("branchname")));
+			branch.setBranchname(StringUtil.nullConvertToEmptyString(rs
+					.getString("branchname")));
 			branch.setCwbtobranchid(rs.getString("cwbtobranchid"));
 			branch.setFunctionids(rs.getString("functionids"));
 			branch.setBranchprovince(rs.getString("branchprovince"));
@@ -62,11 +63,13 @@ public class BranchDAO {
 			branch.setBrancheffectflag(rs.getString("brancheffectflag"));
 			branch.setContractrate(rs.getBigDecimal("contractrate"));
 			branch.setBranchcode(rs.getString("branchcode"));
-			branch.setTpsbranchcode(StringUtil.nullConvertToEmptyString(rs.getString("tpsbranchcode")));
+			branch.setTpsbranchcode(StringUtil.nullConvertToEmptyString(rs
+					.getString("tpsbranchcode")));
 			branch.setNoemailimportflag(rs.getString("noemailimportflag"));
 			branch.setErrorcwbdeliverflag(rs.getString("errorcwbdeliverflag"));
 			branch.setErrorcwbbranchflag(rs.getString("errorcwbbranchflag"));
-			branch.setBranchcodewavfile(StringUtil.nullConvertToEmptyString(rs.getString("branchcodewavfile")));
+			branch.setBranchcodewavfile(StringUtil.nullConvertToEmptyString(rs
+					.getString("branchcodewavfile")));
 			branch.setImportwavtype(rs.getString("importwavtype"));
 			branch.setExportwavtype(rs.getString("exportwavtype"));
 			branch.setNoemaildeliverflag(rs.getString("noemaildeliverflag"));
@@ -84,8 +87,10 @@ public class BranchDAO {
 			branch.setTuihuoid(rs.getLong("tuihuoid"));
 			branch.setCaiwuid(rs.getLong("caiwuid"));
 
-			branch.setArrearagepayupaudit(rs.getBigDecimal("arrearagepayupaudit"));
-			branch.setPosarrearagepayupaudit(rs.getBigDecimal("posarrearagepayupaudit"));
+			branch.setArrearagepayupaudit(rs
+					.getBigDecimal("arrearagepayupaudit"));
+			branch.setPosarrearagepayupaudit(rs
+					.getBigDecimal("posarrearagepayupaudit"));
 			branch.setBindmsksid(rs.getInt("bindmsksid"));
 
 			branch.setAccounttype(rs.getInt("accounttype"));
@@ -126,12 +131,16 @@ public class BranchDAO {
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchId")
 	public int saveBranchCwbtobranchid(long branchId, String toBranchIds) {
-		return this.jdbcTemplate.update("update express_set_branch set cwbtobranchid = ? where `branchid` = ? order by branchname ", toBranchIds, branchId);
+		return this.jdbcTemplate
+				.update("update express_set_branch set cwbtobranchid = ? where `branchid` = ? order by branchname ",
+						toBranchIds, branchId);
 	}
 
 	public Branch getBranchByBranchid(long branchid) {
 		try {
-			return this.jdbcTemplate.queryForObject("SELECT * from express_set_branch where branchid=? ", new BranchRowMapper(), branchid);
+			return this.jdbcTemplate.queryForObject(
+					"SELECT * from express_set_branch where branchid=? ",
+					new BranchRowMapper(), branchid);
 		} catch (Exception ee) {
 			return new Branch();
 		}
@@ -139,18 +148,25 @@ public class BranchDAO {
 
 	// add by 王志宇
 	public List<Branch> getBranchByBranchIdsNotNull(String branchids) {
-		String sql = "SELECT * from express_set_branch where branchid in(" + branchids + ") and branchid<>0 ";
+		String sql = "SELECT * from express_set_branch where branchid in("
+				+ branchids + ") and branchid<>0 ";
 
 		return this.jdbcTemplate.query(sql, new BranchRowMapper());
 	}
 
 	public Branch getBranchByBranchidLock(long branchid) {
-		return this.jdbcTemplate.queryForObject("SELECT * from express_set_branch where branchid=? for update ", new BranchRowMapper(), branchid);
+		return this.jdbcTemplate
+				.queryForObject(
+						"SELECT * from express_set_branch where branchid=? for update ",
+						new BranchRowMapper(), branchid);
 	}
 
 	public List<Branch> getBranchByIdsAndId(String branchids, long branchid) {
 		try {
-			return this.jdbcTemplate.query("SELECT * from express_set_branch where branchid in(" + branchids + ") and branchid=? ", new BranchRowMapper(), branchid);
+			return this.jdbcTemplate.query(
+					"SELECT * from express_set_branch where branchid in("
+							+ branchids + ") and branchid=? ",
+					new BranchRowMapper(), branchid);
 		} catch (Exception ee) {
 			return null;
 		}
@@ -158,7 +174,10 @@ public class BranchDAO {
 
 	public Branch getBranchByBranchname(String branchname) {
 		try {
-			Branch branchList = this.jdbcTemplate.queryForObject("SELECT * from express_set_branch where branchname=? and brancheffectflag='1' ", new BranchRowMapper(), branchname);
+			Branch branchList = this.jdbcTemplate
+					.queryForObject(
+							"SELECT * from express_set_branch where branchname=? and brancheffectflag='1' ",
+							new BranchRowMapper(), branchname);
 			return branchList;
 		} catch (DataAccessException e) {
 			return new Branch();
@@ -167,7 +186,10 @@ public class BranchDAO {
 
 	public Branch getBranchByBranchnameMatch(String branchname) {
 		try {
-			Branch branchList = this.jdbcTemplate.queryForObject("SELECT * from express_set_branch where branchname=? and brancheffectflag='1' ", new BranchRowMapper(), branchname);
+			Branch branchList = this.jdbcTemplate
+					.queryForObject(
+							"SELECT * from express_set_branch where branchname=? and brancheffectflag='1' ",
+							new BranchRowMapper(), branchname);
 			return branchList;
 		} catch (DataAccessException e) {
 			return null;
@@ -175,43 +197,64 @@ public class BranchDAO {
 	}
 
 	public List<Branch> getBranchByBranchnameCheck(String branchname) {
-		List<Branch> branchList = this.jdbcTemplate.query("SELECT * from express_set_branch where branchname=?", new BranchRowMapper(), branchname);
+		List<Branch> branchList = this.jdbcTemplate.query(
+				"SELECT * from express_set_branch where branchname=?",
+				new BranchRowMapper(), branchname);
 		return branchList;
 	}
 
 	public List<Branch> getBranchByBranchnameMoHu(String branchname) {
-		List<Branch> branchList = this.jdbcTemplate.query("SELECT * from express_set_branch where branchname like '%" + branchname + "%' and brancheffectflag='1' ", new BranchRowMapper());
+		List<Branch> branchList = this.jdbcTemplate.query(
+				"SELECT * from express_set_branch where branchname like '%"
+						+ branchname + "%' and brancheffectflag='1' ",
+				new BranchRowMapper());
 		return branchList;
 	}
 
 	public List<Branch> getBranchByBranchcodeCheck(String branchcode) {
-		return this.jdbcTemplate.query("SELECT * from express_set_branch where branchcode=? and branchcode <> '' ", new BranchRowMapper(), branchcode);
+		return this.jdbcTemplate
+				.query("SELECT * from express_set_branch where branchcode=? and branchcode <> '' ",
+						new BranchRowMapper(), branchcode);
 	}
 
 	public List<Branch> getBranchByBranchcode(String branchcode) {
-		return this.jdbcTemplate.query("SELECT * from express_set_branch where branchcode=? and branchcode <> '' and brancheffectflag='1' ", new BranchRowMapper(), branchcode);
+		return this.jdbcTemplate
+				.query("SELECT * from express_set_branch where branchcode=? and branchcode <> '' and brancheffectflag='1' ",
+						new BranchRowMapper(), branchcode);
 	}
 
-	public List<Branch> getAllBrancks() {
-		return this.jdbcTemplate.query("SELECT * FROM express_set_branch  ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
-				new BranchRowMapper());
+	public List<Branch> getAllBranches() {
+		return this.jdbcTemplate
+				.query("SELECT * FROM express_set_branch  ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
+						new BranchRowMapper());
 	}
 
 	public List<Branch> getAllEffectBranches() {
-		return this.jdbcTemplate.query("SELECT * FROM express_set_branch where brancheffectflag='1' ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
-				new BranchRowMapper());
+		return this.jdbcTemplate
+				.query("SELECT * FROM express_set_branch where brancheffectflag='1' ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
+						new BranchRowMapper());
 	}
 
 	public List<Branch> getBranchesByKuFangAndZhanDian() {
-		return this.jdbcTemplate.query(
-				"select * from express_set_branch where sitetype in (" + BranchEnum.KuFang.getValue() + "," + BranchEnum.ZhanDian.getValue() + "," + BranchEnum.ZhongZhuan.getValue() + ","
-						+ BranchEnum.TuiHuo.getValue() + ") and brancheffectflag='1' ORDER BY  CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
+		return this.jdbcTemplate
+				.query("select * from express_set_branch where sitetype in ("
+						+ BranchEnum.KuFang.getValue()
+						+ ","
+						+ BranchEnum.ZhanDian.getValue()
+						+ ","
+						+ BranchEnum.ZhongZhuan.getValue()
+						+ ","
+						+ BranchEnum.TuiHuo.getValue()
+						+ ") and brancheffectflag='1' ORDER BY  CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
+						new BranchRowMapper());
 	}
 
 	@Cacheable(value = "branchCache", key = "#branchid")
 	public Branch getBranchById(long branchid) {
 		try {
-			List<Branch> list = this.jdbcTemplate.query("select * from express_set_branch where branchid =?", new BranchRowMapper(), branchid);
+			List<Branch> list = this.jdbcTemplate.query(
+					"select * from express_set_branch where branchid =?",
+					new BranchRowMapper(), branchid);
 			if ((list != null) && (list.size() > 0)) {
 				return list.get(0);
 			} else {
@@ -224,7 +267,9 @@ public class BranchDAO {
 
 	public Branch getBranchByIdAdd(long branchid) {
 		try {
-			List<Branch> list = this.jdbcTemplate.query("select * from express_set_branch where branchid =?", new BranchRowMapper(), branchid);
+			List<Branch> list = this.jdbcTemplate.query(
+					"select * from express_set_branch where branchid =?",
+					new BranchRowMapper(), branchid);
 			if ((list != null) && (list.size() > 0)) {
 				return list.get(0);
 			} else {
@@ -234,10 +279,12 @@ public class BranchDAO {
 			return null;
 		}
 	}
-	
+
 	public List<Branch> getBranchListByIdStr(String branchidStr) {
 		try {
-			return this.jdbcTemplate.query("select * from express_set_branch where branchid in(?)", new BranchRowMapper(), branchidStr);
+			return this.jdbcTemplate.query(
+					"select * from express_set_branch where branchid in(?)",
+					new BranchRowMapper(), branchidStr);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -246,7 +293,9 @@ public class BranchDAO {
 	@Cacheable(value = "branchCache", key = "#branchid")
 	public Branch getEffectBranchById(long branchid) {
 		try {
-			List<Branch> list = this.jdbcTemplate.query("select * from express_set_branch where branchid =? and brancheffectflag='1' ", new BranchRowMapper(), branchid);
+			List<Branch> list = this.jdbcTemplate
+					.query("select * from express_set_branch where branchid =? and brancheffectflag='1' ",
+							new BranchRowMapper(), branchid);
 			if ((list != null) && (list.size() > 0)) {
 				return list.get(0);
 			} else {
@@ -271,7 +320,8 @@ public class BranchDAO {
 						+ " where branchid=?", new PreparedStatementSetter() {
 
 					@Override
-					public void setValues(PreparedStatement ps) throws SQLException {
+					public void setValues(PreparedStatement ps)
+							throws SQLException {
 						// TODO Auto-generated method stub
 						ps.setString(1, branch.getBranchname());
 						ps.setString(2, branch.getBranchaddress());
@@ -323,7 +373,6 @@ public class BranchDAO {
 						ps.setLong(46, branch.getPfruleid());
 						ps.setString(47, branch.getTpsbranchcode());
 						ps.setLong(48, branch.getBranchid());
-						
 
 					}
 				});
@@ -343,7 +392,8 @@ public class BranchDAO {
 						+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?,tpsbranchcode=?"
 						+ " where branchid=?", new PreparedStatementSetter() {
 					@Override
-					public void setValues(PreparedStatement ps) throws SQLException {
+					public void setValues(PreparedStatement ps)
+							throws SQLException {
 						// TODO Auto-generated method stub
 						ps.setString(1, branch.getBranchname());
 						ps.setString(2, branch.getBranchaddress());
@@ -412,7 +462,8 @@ public class BranchDAO {
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public void saveBranchArrearageHuo(BigDecimal arrearagehuo, long branchid) {
-		this.jdbcTemplate.update("update express_set_branch set arrearagehuo=?" + " where branchid=?", arrearagehuo, branchid);
+		this.jdbcTemplate.update("update express_set_branch set arrearagehuo=?"
+				+ " where branchid=?", arrearagehuo, branchid);
 	}
 
 	/**
@@ -423,7 +474,8 @@ public class BranchDAO {
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public void saveBranchArrearagePei(BigDecimal arrearagepei, long branchid) {
-		this.jdbcTemplate.update("update express_set_branch set arrearagepei=?" + " where branchid=?", arrearagepei, branchid);
+		this.jdbcTemplate.update("update express_set_branch set arrearagepei=?"
+				+ " where branchid=?", arrearagepei, branchid);
 	}
 
 	/**
@@ -434,7 +486,8 @@ public class BranchDAO {
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
 	public void saveBranchArrearageFa(BigDecimal arrearagefa, long branchid) {
-		this.jdbcTemplate.update("update express_set_branch set arrearagefa=?" + " where branchid=?", arrearagefa, branchid);
+		this.jdbcTemplate.update("update express_set_branch set arrearagefa=?"
+				+ " where branchid=?", arrearagefa, branchid);
 	}
 
 	@SystemInstallOperation
@@ -442,15 +495,18 @@ public class BranchDAO {
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
-			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
+			public PreparedStatement createPreparedStatement(
+					java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
-				ps = con.prepareStatement("insert into express_set_branch(branchid,branchname,branchaddress,branchcontactman,branchphone,branchmobile,"
-						+ "branchfax,branchemail,contractflag,contractrate,cwbtobranchid,branchcode,payfeeupdateflag,backtodeliverflag,"
-						+ "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag,"
-						+ "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag,"
-						+ "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid,"
-						+ "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid,tpsbranchcode) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
+				ps = con.prepareStatement(
+						"insert into express_set_branch(branchid,branchname,branchaddress,branchcontactman,branchphone,branchmobile,"
+								+ "branchfax,branchemail,contractflag,contractrate,cwbtobranchid,branchcode,payfeeupdateflag,backtodeliverflag,"
+								+ "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag,"
+								+ "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag,"
+								+ "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid,"
+								+ "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid,tpsbranchcode) "
+								+ "values(?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+						new String[] { "branchid" });
 				ps.setLong(1, branch.getBranchid());
 				ps.setString(2, branch.getBranchname());
 				ps.setString(3, branch.getBranchaddress());
@@ -511,12 +567,14 @@ public class BranchDAO {
 		return key.getKey().longValue();
 	}
 
-	private String getBranchByPageWhereSql(String sql, String branchname, String branchaddress) {
+	private String getBranchByPageWhereSql(String sql, String branchname,
+			String branchaddress) {
 
 		if ((branchname.length() > 0) || (branchaddress.length() > 0)) {
 			sql += " where";
 			if ((branchname.length() > 0) && (branchaddress.length() > 0)) {
-				sql += " branchname like '%" + branchname + "%' and branchaddress like '%" + branchaddress + "%'";
+				sql += " branchname like '%" + branchname
+						+ "%' and branchaddress like '%" + branchaddress + "%'";
 			} else {
 				if (branchname.length() > 0) {
 					sql += " branchname like '%" + branchname + "%' ";
@@ -529,11 +587,15 @@ public class BranchDAO {
 		return sql;
 	}
 
-	public List<Branch> getBranchByPage(long page, String branchname, String branchaddress) {
+	public List<Branch> getBranchByPage(long page, String branchname,
+			String branchaddress) {
 		String sql = "select * from express_set_branch";
 		sql = this.getBranchByPageWhereSql(sql, branchname, branchaddress);
-		sql += " order by branchid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
+		sql += " order by branchid desc limit "
+				+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
+				+ Page.ONE_PAGE_NUMBER;
+		List<Branch> branchlist = this.jdbcTemplate.query(sql,
+				new BranchRowMapper());
 		return branchlist;
 	}
 
@@ -543,12 +605,14 @@ public class BranchDAO {
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
-	private String getJoinBranchByPageWhereSql(String sql, String branchname, String branchaddress) {
+	private String getJoinBranchByPageWhereSql(String sql, String branchname,
+			String branchaddress) {
 
 		if ((branchname.length() > 0) || (branchaddress.length() > 0)) {
 			sql += " and ";
 			if ((branchname.length() > 0) && (branchaddress.length() > 0)) {
-				sql += " branchname like '%" + branchname + "%' and branchaddress like '%" + branchaddress + "%'";
+				sql += " branchname like '%" + branchname
+						+ "%' and branchaddress like '%" + branchaddress + "%'";
 			} else {
 				if (branchname.length() > 0) {
 					sql += " branchname like '%" + branchname + "%' ";
@@ -561,46 +625,64 @@ public class BranchDAO {
 		return sql;
 	}
 
-	public List<Branch> getJoinBranchByPage(long page, String branchname, String branchaddress) {
-		String sql = "select * from express_set_branch where contractflag in (" + BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + ","
-				+ BranchTypeEnum.JiaMengSanJi.getValue() + ") and brancheffectflag='1'";
+	public List<Branch> getJoinBranchByPage(long page, String branchname,
+			String branchaddress) {
+		String sql = "select * from express_set_branch where contractflag in ("
+				+ BranchTypeEnum.JiaMeng.getValue() + ","
+				+ BranchTypeEnum.JiaMengErJi.getValue() + ","
+				+ BranchTypeEnum.JiaMengSanJi.getValue()
+				+ ") and brancheffectflag='1'";
 		sql = this.getJoinBranchByPageWhereSql(sql, branchname, branchaddress);
 		// sql += " order by branchid desc limit " + ((page - 1) *
 		// Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
-		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
+		List<Branch> branchlist = this.jdbcTemplate.query(sql,
+				new BranchRowMapper());
 		return branchlist;
 	}
 
 	public long getJoinBranchCount(String branchname, String branchaddress) {
-		String sql = "select count(1) from express_set_branch where contractflag in (" + BranchTypeEnum.JiaMeng.getValue() + "," + BranchTypeEnum.JiaMengErJi.getValue() + ","
-				+ BranchTypeEnum.JiaMengSanJi.getValue() + ") and brancheffectflag='1'";
+		String sql = "select count(1) from express_set_branch where contractflag in ("
+				+ BranchTypeEnum.JiaMeng.getValue()
+				+ ","
+				+ BranchTypeEnum.JiaMengErJi.getValue()
+				+ ","
+				+ BranchTypeEnum.JiaMengSanJi.getValue()
+				+ ") and brancheffectflag='1'";
 		sql = this.getJoinBranchByPageWhereSql(sql, branchname, branchaddress);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	public List<Branch> getBanchByBranchidForCwbtobranchid(long branchid) {
-		String sql1 = "select cwbtobranchid from express_set_branch where branchid=" + branchid;
+		String sql1 = "select cwbtobranchid from express_set_branch where branchid="
+				+ branchid;
 		String sql1str = this.jdbcTemplate.queryForObject(sql1, String.class);
 		if (sql1str.length() > 0) {
 			sql1str = "," + sql1str;
 		}
 
-		String sql2 = "select * from express_set_branch where branchid in(0" + sql1str + ") ORDER BY CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
+		String sql2 = "select * from express_set_branch where branchid in(0"
+				+ sql1str
+				+ ") ORDER BY CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
 
-		List<Branch> branchlist = this.jdbcTemplate.query(sql2, new BranchRowMapper());
+		List<Branch> branchlist = this.jdbcTemplate.query(sql2,
+				new BranchRowMapper());
 		return branchlist;
 	}
 
 	public List<Branch> getBanchByBranchidForStock(String sitetypes) {
-		String sql1 = "select * from express_set_branch where sitetype in(" + sitetypes + ") and brancheffectflag='1' ORDER BY CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC ";
-		List<Branch> branchlist = this.jdbcTemplate.query(sql1, new BranchRowMapper());
+		String sql1 = "select * from express_set_branch where sitetype in("
+				+ sitetypes
+				+ ") and brancheffectflag='1' ORDER BY CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC ";
+		List<Branch> branchlist = this.jdbcTemplate.query(sql1,
+				new BranchRowMapper());
 		return branchlist;
 	}
 
 	public List<Branch> getBranchBySiteType(long sitetype) {
 		try {
 			String sql = "select * from express_set_branch where sitetype=? and brancheffectflag='1' ORDER BY CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC ";
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype);
+			return this.jdbcTemplate
+					.query(sql, new BranchRowMapper(), sitetype);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
@@ -609,7 +691,8 @@ public class BranchDAO {
 	public List<Branch> getAllBranchBySiteType(long sitetype) {
 		try {
 			String sql = "select * from express_set_branch where sitetype=? ORDER BY CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC ";
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype);
+			return this.jdbcTemplate
+					.query(sql, new BranchRowMapper(), sitetype);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
@@ -617,7 +700,9 @@ public class BranchDAO {
 
 	public List<Branch> getBranchAllzhandian(String sitetype) {
 		try {
-			String sql = "select * from express_set_branch where sitetype in(" + sitetype + ") order by sitetype ASC ,CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
+			String sql = "select * from express_set_branch where sitetype in("
+					+ sitetype
+					+ ") order by sitetype ASC ,CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
 			return this.jdbcTemplate.query(sql, new BranchRowMapper());
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
@@ -626,7 +711,8 @@ public class BranchDAO {
 
 	public List<Branch> getBranchEffectAllzhandian(String sitetype) {
 		try {
-			String sql = "select * from express_set_branch where sitetype in(" + sitetype
+			String sql = "select * from express_set_branch where sitetype in("
+					+ sitetype
 					+ ") and brancheffectflag='1' order by sitetype ASC ,CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
 			return this.jdbcTemplate.query(sql, new BranchRowMapper());
 		} catch (EmptyResultDataAccessException ee) {
@@ -637,7 +723,8 @@ public class BranchDAO {
 	public List<Branch> getBranchByMyKuFang(long brancheid) {
 		try {
 			String sql = "select * from express_set_branch where sitetype=? and branchid=? and brancheffectflag='1' ";
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), +BranchEnum.KuFang.getValue(), brancheid);
+			return this.jdbcTemplate.query(sql, new BranchRowMapper(),
+					+BranchEnum.KuFang.getValue(), brancheid);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
@@ -652,7 +739,8 @@ public class BranchDAO {
 	public List<Branch> getBranchByMyBranchIsCaiwu(long branchid) {
 		try {
 			String sql = "select * from express_set_branch where  branchid in (select caiwuid from express_set_branch where branchid=? ) and brancheffectflag='1' ";
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), branchid);
+			return this.jdbcTemplate
+					.query(sql, new BranchRowMapper(), branchid);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
@@ -667,7 +755,8 @@ public class BranchDAO {
 	public List<Branch> getBranchByMyBranchIsZhongzhuan(long branchid) {
 		try {
 			String sql = "select * from express_set_branch where  branchid in (select zhongzhuanid from express_set_branch where branchid=? ) and brancheffectflag='1' ";
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), branchid);
+			return this.jdbcTemplate
+					.query(sql, new BranchRowMapper(), branchid);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
@@ -682,7 +771,8 @@ public class BranchDAO {
 	public List<Branch> getBranchByMyBranchIsTuihuo(long branchid) {
 		try {
 			String sql = "select * from express_set_branch where  branchid in (select tuihuoid from express_set_branch where branchid=? ) and brancheffectflag='1' ";
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), branchid);
+			return this.jdbcTemplate
+					.query(sql, new BranchRowMapper(), branchid);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
@@ -697,7 +787,8 @@ public class BranchDAO {
 	public List<Branch> getBranchBelowToCaiwu(long caiwubranchid) {
 		try {
 			String sql = "select * from express_set_branch where  caiwuid=?";
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), caiwubranchid);
+			return this.jdbcTemplate.query(sql, new BranchRowMapper(),
+					caiwubranchid);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
@@ -705,26 +796,34 @@ public class BranchDAO {
 
 	public Branch getQueryBranchByBranchid(long branchid) {
 		try {
-			return this.jdbcTemplate.queryForObject("SELECT * from express_set_branch where branchid=? ", new BranchRowMapper(), branchid);
+			return this.jdbcTemplate.queryForObject(
+					"SELECT * from express_set_branch where branchid=? ",
+					new BranchRowMapper(), branchid);
 		} catch (EmptyResultDataAccessException ee) {
 			return new Branch();
 		}
 	}
 
-	public List<Branch> getQueryBranchByBranchidAndUserid(long userid, long sitetype) {
+	public List<Branch> getQueryBranchByBranchidAndUserid(long userid,
+			long sitetype) {
 		String sql = "SELECT * from express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid=ub.branchid WHERE b.sitetype=? and ub.userid=? and b.brancheffectflag='1' order by CONVERT( b.branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype, userid);
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(), sitetype,
+				userid);
 	}
 
-	public List<Branch> getQueryBranchByBranchsiteAndUserid(long userid, String sitetype) {
-		String sql = "SELECT * from express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid=ub.branchid WHERE b.sitetype in(" + sitetype
+	public List<Branch> getQueryBranchByBranchsiteAndUserid(long userid,
+			String sitetype) {
+		String sql = "SELECT * from express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid=ub.branchid WHERE b.sitetype in("
+				+ sitetype
 				+ ") and ub.userid=? and b.brancheffectflag='1' order by CONVERT( b.branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper(), userid);
 	}
 
-	public List<Branch> getBranchBelowToCaiwuAndUser(long caiwubranchid, long userid) {
+	public List<Branch> getBranchBelowToCaiwuAndUser(long caiwubranchid,
+			long userid) {
 		String sql = "SELECT * from express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid=ub.branchid WHERE b.caiwuid =? and ub.userid=? order by CONVERT( b.branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(), caiwubranchid, userid);
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(),
+				caiwubranchid, userid);
 	}
 
 	public List<Branch> getBranchToUser(long userid) {
@@ -734,8 +833,11 @@ public class BranchDAO {
 
 	public List<Branch> getBranchNotInBranchid(String branchids) {
 		if (branchids.length() > 0) {
-			List<Branch> branchList = this.jdbcTemplate.query("select * from express_set_branch where branchid not in(" + branchids
-					+ ") and sitetype=2 order by CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
+			List<Branch> branchList = this.jdbcTemplate
+					.query("select * from express_set_branch where branchid not in("
+							+ branchids
+							+ ") and sitetype=2 order by CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
+							new BranchRowMapper());
 			return branchList;
 		} else {
 			return null;
@@ -745,8 +847,11 @@ public class BranchDAO {
 
 	public List<Branch> getBranchByBranchids(String branchids) {
 		if (branchids.length() > 0) {
-			List<Branch> branchList = this.jdbcTemplate.query("select * from express_set_branch where branchid in(" + branchids
-					+ ") and sitetype=2 order by CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
+			List<Branch> branchList = this.jdbcTemplate
+					.query("select * from express_set_branch where branchid in("
+							+ branchids
+							+ ") and sitetype=2 order by CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
+							new BranchRowMapper());
 			return branchList;
 		} else {
 			return null;
@@ -755,8 +860,11 @@ public class BranchDAO {
 
 	public List<Branch> getBranchByBranchidsNoType(String branchids) {
 		if (branchids.length() > 0) {
-			List<Branch> branchList = this.jdbcTemplate.query("select * from express_set_branch where branchid in(" + branchids
-					+ ")  order by CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC", new BranchRowMapper());
+			List<Branch> branchList = this.jdbcTemplate
+					.query("select * from express_set_branch where branchid in("
+							+ branchids
+							+ ")  order by CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
+							new BranchRowMapper());
 			return branchList;
 		} else {
 			return null;
@@ -765,9 +873,12 @@ public class BranchDAO {
 
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
-	public int updateQiankuan(long branchid, BigDecimal arrearagepayupaudit, BigDecimal posarrearagepayupaudit) {
-		String sql = "update express_set_branch set arrearagepayupaudit=arrearagepayupaudit+" + arrearagepayupaudit + ",posarrearagepayupaudit=posarrearagepayupaudit+" + posarrearagepayupaudit
-				+ " where branchid=? ";
+	public int updateQiankuan(long branchid, BigDecimal arrearagepayupaudit,
+			BigDecimal posarrearagepayupaudit) {
+		String sql = "update express_set_branch set arrearagepayupaudit=arrearagepayupaudit+"
+				+ arrearagepayupaudit
+				+ ",posarrearagepayupaudit=posarrearagepayupaudit+"
+				+ posarrearagepayupaudit + " where branchid=? ";
 
 		return this.jdbcTemplate.update(sql, branchid);
 
@@ -787,15 +898,20 @@ public class BranchDAO {
 	 */
 	@SystemInstallOperation
 	@CacheEvict(value = "branchCache", key = "#branchid")
-	public void updateForChongZhiShenHe(long branchid, BigDecimal arrearagepayupaudit, BigDecimal posarrearagepayupaudit) {
-		this.jdbcTemplate.update("update express_set_branch set arrearagepayupaudit=?,posarrearagepayupaudit=? where branchid=? ", arrearagepayupaudit, posarrearagepayupaudit, branchid);
+	public void updateForChongZhiShenHe(long branchid,
+			BigDecimal arrearagepayupaudit, BigDecimal posarrearagepayupaudit) {
+		this.jdbcTemplate
+				.update("update express_set_branch set arrearagepayupaudit=?,posarrearagepayupaudit=? where branchid=? ",
+						arrearagepayupaudit, posarrearagepayupaudit, branchid);
 	}
 
 	// ==============================修改订单使用的方法 start
 	// ==================================
 	@SystemInstallOperation
 	public void delBranch(long branchid) {
-		this.jdbcTemplate.update("update express_set_branch set brancheffectflag=(brancheffectflag+1)%2 where branchid=?", branchid);
+		this.jdbcTemplate
+				.update("update express_set_branch set brancheffectflag=(brancheffectflag+1)%2 where branchid=?",
+						branchid);
 	}
 
 	// public List<Branch> getBranchByUseridAndAccounttype(long userid,String
@@ -813,10 +929,15 @@ public class BranchDAO {
 	// BranchRowMapper(),branchid,accounttype);
 	// }
 
-	public List<Branch> getBranchByBranchidAccounttype(long branchid, long accounttype, String sitetype, long userid) {
-		String sql = "SELECT * FROM express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid = ub.branchid " + "WHERE b.sitetype IN (" + sitetype
-				+ ") AND ub.userid =? AND b.accounttype=? AND b.brancheffectflag = '1' AND b.accountbranch=? " + "ORDER BY CONVERT(b.branchname USING gbk) COLLATE gbk_chinese_ci ASC";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(), userid, accounttype, branchid);
+	public List<Branch> getBranchByBranchidAccounttype(long branchid,
+			long accounttype, String sitetype, long userid) {
+		String sql = "SELECT * FROM express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid = ub.branchid "
+				+ "WHERE b.sitetype IN ("
+				+ sitetype
+				+ ") AND ub.userid =? AND b.accounttype=? AND b.brancheffectflag = '1' AND b.accountbranch=? "
+				+ "ORDER BY CONVERT(b.branchname USING gbk) COLLATE gbk_chinese_ci ASC";
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(), userid,
+				accounttype, branchid);
 	}
 
 	// public List<Branch> getBranchByUseridSitetype(long page,long
@@ -842,18 +963,23 @@ public class BranchDAO {
 
 	// SELECT * FROM express_set_branch WHERE accountbranch=? AND accounttype=?
 	// ORDER BY CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC
-	public List<Branch> getBranchByAccountbranch(long page, String branchname, long branchid, long accounttype, String sitetype, long userid) {
+	public List<Branch> getBranchByAccountbranch(long page, String branchname,
+			long branchid, long accounttype, String sitetype, long userid) {
 		try {
-			String sql = "SELECT * FROM express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid = ub.branchid " + "WHERE b.sitetype IN (" + sitetype
+			String sql = "SELECT * FROM express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid = ub.branchid "
+					+ "WHERE b.sitetype IN ("
+					+ sitetype
 					+ ") AND ub.userid =? AND b.accounttype=? AND b.brancheffectflag = '1' AND b.accountbranch=? ";
 			if (!("").equals(branchname)) {
 				sql += " and branchname like '%" + branchname + "%' ";
 			}
 			sql += "ORDER BY CONVERT(b.branchname USING gbk) COLLATE gbk_chinese_ci ASC";
 			if (page > 0) {
-				sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+				sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
+						+ Page.ONE_PAGE_NUMBER;
 			}
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), userid, accounttype, branchid);
+			return this.jdbcTemplate.query(sql, new BranchRowMapper(), userid,
+					accounttype, branchid);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -861,14 +987,18 @@ public class BranchDAO {
 		}
 	}
 
-	public long getBranchByAccountbranchCount(String branchname, long branchid, long accounttype, String sitetype, long userid) {
+	public long getBranchByAccountbranchCount(String branchname, long branchid,
+			long accounttype, String sitetype, long userid) {
 		try {
-			String sql = "SELECT count(1) FROM express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid = ub.branchid " + "WHERE b.sitetype IN (" + sitetype
+			String sql = "SELECT count(1) FROM express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid = ub.branchid "
+					+ "WHERE b.sitetype IN ("
+					+ sitetype
 					+ ") AND ub.userid =? AND b.accounttype=? AND b.brancheffectflag = '1' AND b.accountbranch=? ";
 			if (!("").equals(branchname)) {
 				sql += " and branchname like '%" + branchname + "%' ";
 			}
-			return this.jdbcTemplate.queryForLong(sql, userid, accounttype, branchid);
+			return this.jdbcTemplate.queryForLong(sql, userid, accounttype,
+					branchid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
@@ -877,30 +1007,40 @@ public class BranchDAO {
 
 	@SystemInstallOperation
 	public void updateForFee(long branchid, BigDecimal balance, BigDecimal debt) {
-		this.jdbcTemplate.update("UPDATE express_set_branch SET balance=?,debt=? WHERE branchid=?", balance, debt, branchid);
+		this.jdbcTemplate
+				.update("UPDATE express_set_branch SET balance=?,debt=? WHERE branchid=?",
+						balance, debt, branchid);
 	}
 
 	@SystemInstallOperation
-	public void updateForVirt(long branchid, BigDecimal balancevirt, BigDecimal debtvirt) {
-		this.jdbcTemplate.update("UPDATE express_set_branch SET balancevirt=?,debtvirt=? WHERE branchid=?", balancevirt, debtvirt, branchid);
+	public void updateForVirt(long branchid, BigDecimal balancevirt,
+			BigDecimal debtvirt) {
+		this.jdbcTemplate
+				.update("UPDATE express_set_branch SET balancevirt=?,debtvirt=? WHERE branchid=?",
+						balancevirt, debtvirt, branchid);
 	}
 
 	@SystemInstallOperation
-	public void updateForFeeAndVirt(long branchid, BigDecimal balance, BigDecimal debt, BigDecimal balancevirt, BigDecimal debtvirt) {
-		this.jdbcTemplate.update("UPDATE express_set_branch SET balance=?,debt=?,balancevirt=?,debtvirt=? WHERE branchid=?", balance, debt, balancevirt, debtvirt, branchid);
+	public void updateForFeeAndVirt(long branchid, BigDecimal balance,
+			BigDecimal debt, BigDecimal balancevirt, BigDecimal debtvirt) {
+		this.jdbcTemplate
+				.update("UPDATE express_set_branch SET balance=?,debt=?,balancevirt=?,debtvirt=? WHERE branchid=?",
+						balance, debt, balancevirt, debtvirt, branchid);
 	}
 
 	public List<Branch> getAccessableBranch(long userId, int siteType) {
 		try {
 			String sql = "SELECT b.* FROM express_set_branch b, express_set_user_branch ub WHERE b.branchid = ub.branchid AND ub.userid = ? AND b.sitetype = ? order by sitetype ASC ,CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
-			return this.jdbcTemplate.query(sql, new BranchRowMapper(), userId, siteType);
+			return this.jdbcTemplate.query(sql, new BranchRowMapper(), userId,
+					siteType);
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
 	}
 
 	public Map<Long, String> getBranchNameMap(Set<Long> branchIdSet) {
-		String sql = "select branchid,branchname from  express_set_branch where branchid in (" + this.getBranchIdInPara(branchIdSet) + ")";
+		String sql = "select branchid,branchname from  express_set_branch where branchid in ("
+				+ this.getBranchIdInPara(branchIdSet) + ")";
 		Map<Long, String> nameMap = new HashMap<Long, String>();
 		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
 
@@ -909,7 +1049,11 @@ public class BranchDAO {
 
 	public Map<Long, String> getBranchNameMap(Set<Long> branchIdSet, int page) {
 		int start = (page - 1) * 10;
-		String sql = "select branchid,branchname from  express_set_branch where branchid in (" + this.getBranchIdInPara(branchIdSet) + ") limit " + start + ",10";
+		String sql = "select branchid,branchname from  express_set_branch where branchid in ("
+				+ this.getBranchIdInPara(branchIdSet)
+				+ ") limit "
+				+ start
+				+ ",10";
 		Map<Long, String> nameMap = new HashMap<Long, String>();
 		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
 
@@ -917,7 +1061,8 @@ public class BranchDAO {
 	}
 
 	public Map<Long, String> getBranchNameMap(int siteType) {
-		String sql = "select branchid,branchname from  express_set_branch where siteType = " + siteType + " and brancheffectflag = 1";
+		String sql = "select branchid,branchname from  express_set_branch where siteType = "
+				+ siteType + " and brancheffectflag = 1";
 		Map<Long, String> nameMap = new LinkedHashMap<Long, String>();
 		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap));
 
@@ -927,7 +1072,8 @@ public class BranchDAO {
 	public Map<Long, String> getBranchNameMap(long userid, int siteType) {
 
 		String sql = "SELECT b.branchid as branchid,b.branchname as branchname  from express_set_user_branch ub LEFT OUTER JOIN express_set_branch b ON b.branchid=ub.branchid WHERE b.sitetype in("
-				+ siteType + ") and ub.userid=? and b.brancheffectflag='1' order by CONVERT( b.branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
+				+ siteType
+				+ ") and ub.userid=? and b.brancheffectflag='1' order by CONVERT( b.branchname USING gbk ) COLLATE gbk_chinese_ci ASC";
 		Map<Long, String> nameMap = new LinkedHashMap<Long, String>();
 
 		this.jdbcTemplate.query(sql, new NameMapHandler(nameMap), userid);
@@ -990,7 +1136,8 @@ public class BranchDAO {
 
 	}
 
-	public List<Branch> getBranchByPage(long page, String branchname, String branchaddress, int sitetype, int pagesize) {
+	public List<Branch> getBranchByPage(long page, String branchname,
+			String branchaddress, int sitetype, int pagesize) {
 		String sql = "select * from express_set_branch";
 		sql += " where 1=1 ";
 		if (branchname.length() > 0) {
@@ -1002,12 +1149,15 @@ public class BranchDAO {
 		if (sitetype > 0) {
 			sql += " and sitetype=" + sitetype;
 		}
-		sql += " order by branchid desc limit " + ((page - 1) * pagesize) + " ," + pagesize;
-		List<Branch> branchlist = this.jdbcTemplate.query(sql, new BranchRowMapper());
+		sql += " order by branchid desc limit " + ((page - 1) * pagesize)
+				+ " ," + pagesize;
+		List<Branch> branchlist = this.jdbcTemplate.query(sql,
+				new BranchRowMapper());
 		return branchlist;
 	}
 
-	public long getBranchCount(String branchname, String branchaddress, int sitetype, int pagesize) {
+	public long getBranchCount(String branchname, String branchaddress,
+			int sitetype, int pagesize) {
 		String sql = "select count(1) from express_set_branch";
 		sql += " where 1=1 ";
 		if (branchname.length() > 0) {
@@ -1040,18 +1190,23 @@ public class BranchDAO {
 	}
 
 	public List<Branch> getBranchsBycontractflag(String contractflag) {
-		String sql = "SELECT * from express_set_branch  WHERE contractflag in(" + contractflag + ")  and brancheffectflag='1' ";
+		String sql = "SELECT * from express_set_branch  WHERE contractflag in("
+				+ contractflag + ")  and brancheffectflag='1' ";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper());
 	}
 
-	public List<Branch> getBranchssBycontractflag(String contractflag, long sitetype) {
+	public List<Branch> getBranchssBycontractflag(String contractflag,
+			long sitetype) {
 		String sql = "SELECT * from express_set_branch  WHERE contractflag=? and sitetype=? and brancheffectflag='1' ";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(), contractflag, sitetype);
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(),
+				contractflag, sitetype);
 	}
 
-	public List<Branch> getBranchsByContractflagAndSiteType(long sitetype, String contractflag) {
+	public List<Branch> getBranchsByContractflagAndSiteType(long sitetype,
+			String contractflag) {
 		String sql = "SELECT * from express_set_branch  WHERE contractflag=? and sitetype=?  and brancheffectflag='1' ";
-		return this.jdbcTemplate.query(sql, new BranchRowMapper(), contractflag, sitetype);
+		return this.jdbcTemplate.query(sql, new BranchRowMapper(),
+				contractflag, sitetype);
 	}
 
 	/**
@@ -1069,7 +1224,8 @@ public class BranchDAO {
 	}
 
 	public List<Branch> getMoHuBranch(String branchName) {
-		String sql = "select * from express_set_branch where branchname like '%" + branchName + "%'";
+		String sql = "select * from express_set_branch where branchname like '%"
+				+ branchName + "%'";
 		return this.jdbcTemplate.query(sql, new BranchRowMapper());
 
 	}
@@ -1077,7 +1233,10 @@ public class BranchDAO {
 	@Cacheable(value = "branchCache", key = "#branchcode")
 	public Branch getEffectBranchByCodeStr(String branchcode) {
 		try {
-			Branch branch = this.jdbcTemplate.queryForObject("select * from express_set_branch where branchcode =? and brancheffectflag='1' ", new BranchRowMapper(), branchcode);
+			Branch branch = this.jdbcTemplate
+					.queryForObject(
+							"select * from express_set_branch where branchcode =? and brancheffectflag='1' ",
+							new BranchRowMapper(), branchcode);
 			if (branch == null) {
 				return null;
 			} else {
