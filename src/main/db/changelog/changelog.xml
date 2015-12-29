@@ -8750,6 +8750,34 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
+	<changeSet id="zhouguoting-2015-12-28-01" author="zhouguoting">
+		<sql>
+			CREATE TABLE `fn_customer_check_bill_excel` (
+			  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+			  `batch_no` varchar(100) NOT NULL DEFAULT '' COMMENT '导入批次号',
+			  `cwb` varchar(100) NOT NULL DEFAULT '' COMMENT '订单号',
+			  `amount` varchar(20) NOT NULL DEFAULT '' COMMENT '订单金额',
+			  `check_remark` varchar(100) DEFAULT '' COMMENT '核对备注',
+			  `creator` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
+			  `create_time` varchar(20) DEFAULT '' COMMENT '创建时间',
+			  `is_dirty` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否是脏数据0.不是，1.是',
+			  `billid` bigint(20) DEFAULT '0' COMMENT '最后一次核对过的账单id',
+			  PRIMARY KEY (`id`),
+			  KEY `billcheck_excel_batchno` (`batch_no`),
+			  KEY `billcheck_excel_creator` (`creator`),
+			  KEY `billcheck_excel_cwb` (`cwb`)
+			) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=utf8
+
+		</sql>	
+	</changeSet>
+	
+	<changeSet id="zhouguoting-2015-12-28-02" author="zhouguoting">
+		<sql>
+		   ALTER TABLE `fn_adjustment_record`   
+ 			 ADD  INDEX `index_order_id` (`order_id`);
+		</sql>
+	</changeSet>
+	
 	<!-- 地址库客户-站点映射功能 -->
 	 <changeSet id="songkaojun-2015-12-28-01" author="songkaojun">
 		<sql>
