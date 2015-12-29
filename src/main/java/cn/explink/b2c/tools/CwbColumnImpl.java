@@ -10,6 +10,7 @@ import cn.explink.b2c.dongfangcj.CwbColumnSetDongFangCJ;
 import cn.explink.b2c.dpfoss.CwbColumnSetDpfoss;
 import cn.explink.b2c.efast.CwbColumnSetEfast;
 import cn.explink.b2c.explink.core_down.CwbColumnSetEpaiAPI;
+import cn.explink.b2c.feiniuwang.CwbColumnSetFNW;
 import cn.explink.b2c.gome.CwbColumnSetGome;
 import cn.explink.b2c.gzabc.CwbColumnSetGZABC;
 import cn.explink.b2c.gztl.CwbColumnSetGztl;
@@ -23,6 +24,7 @@ import cn.explink.b2c.hzabc.CwbColumnSetHZABC;
 import cn.explink.b2c.jiuye.CwbColumnSetJiuye;
 import cn.explink.b2c.liantong.CwbColumnSetLiantong;
 import cn.explink.b2c.maikaolin.CwbColumnSetMaikaolin;
+import cn.explink.b2c.meilinkai.CwbColumnSetMLK;
 import cn.explink.b2c.rufengda.CwbColumnSetRufengda;
 import cn.explink.b2c.saohuobang.CwbColumnSetSaohuobang;
 import cn.explink.b2c.sfxhm.CwbColumnSetSfxhm;
@@ -116,6 +118,10 @@ public class CwbColumnImpl implements CwbColumnSet {
 	CwbColumnSetJiuye cwbColumnSetJiuye;
 	@Autowired
 	CwbColumnSetGXDX  cwbColumnsetGXDX;
+	@Autowired
+	CwbColumnSetMLK cwbColumnSetMLK;
+	@Autowired
+	CwbColumnSetFNW cwbColumnSetFNW;
 	
 
 	/**
@@ -207,6 +213,10 @@ public class CwbColumnImpl implements CwbColumnSet {
 			return this.cwbColumnSetJiuye.getEexcelColumnSetByB2c(b2cFlag);
 		}else if(b2cFlag.equals(B2cEnum.GuangXinDianXin.getMethod())){
 			return this.cwbColumnsetGXDX.getEexcelColumnSetByB2c(b2cFlag);
+		}else if(b2cFlag.equals(B2cEnum.meilinkai.getMethod())){
+			return this.cwbColumnSetMLK.getEexcelColumnSetByB2c();
+		}else if(b2cFlag.equals(B2cEnum.Feiniuwang.getMethod())){
+			return this.cwbColumnSetFNW.getEexcelColumnSetByB2c(b2cFlag);
 		}
 
 		return null;
