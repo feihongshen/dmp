@@ -1818,14 +1818,7 @@ src/main/java/cn/explink/pos/chinaums/ChinaUmsService_toPayAmount.java -text
 src/main/java/cn/explink/pos/chinaums/ChinaUmsXMLHandler.java -text
 src/main/java/cn/explink/pos/chinaums/searchpos/ChinaUmsJsonBean.java -text
 src/main/java/cn/explink/pos/chinaums/searchpos/ChinaUmsService_searchPos.java -text
-src/main/java/cn/explink/pos/chinaums/xml/ChinaumsUnmarchal.java -text
-src/main/java/cn/explink/pos/chinaums/xml/Transaction.java -text
-src/main/java/cn/explink/pos/chinaums/xml/Transaction_Body.java -text
-src/main/java/cn/explink/pos/chinaums/xml/Transaction_Header.java -text
-src/main/java/cn/explink/pos/chinaums/xml/exception.java -text
-src/main/java/cn/explink/pos/chinaums/xml/ext_attributes.java -text
-src/main/java/cn/explink/pos/chinaums/xml/item.java -text
-src/main/java/cn/explink/pos/chinaums/xml/merchant_code.java -text
+src/main/java/cn/explink/pos/chinaums/xml/B.java -text
 src/main/java/cn/explink/pos/etong/DeliveryEtong.java -text
 src/main/java/cn/explink/pos/etong/Etong.java -text
 src/main/java/cn/explink/pos/etong/EtongController.java -text
