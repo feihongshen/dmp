@@ -47,7 +47,9 @@ ChinaUms chinaums = (ChinaUms)request.getAttribute("chinaums");
 					<li><span>版本：</span>
 						<input type="radio" name="version" <% if(chinaums.getVersion()==0){ %>checked="checked"<%} %> value="0">默认
 						<input type="radio" name="version" <%  if(chinaums.getVersion()==1){ %>checked="checked"<%} %> value="1">西安品信
+						<input type="radio" name="version" <%  if(chinaums.getVersion()==2){ %>checked="checked"<%} %> value="2">安达信
 					</li>
+					
 					
 					<li><span>是否补充流程：</span>
 						<input type="radio" name="isAutoSupplementaryProcess" <% if(chinaums.getIsAutoSupplementaryProcess()==0){ %>checked="checked"<%} %> value="0">默认
