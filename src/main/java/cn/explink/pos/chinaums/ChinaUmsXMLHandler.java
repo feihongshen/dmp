@@ -147,7 +147,29 @@ public class ChinaUmsXMLHandler {
 						.append(cwbmap.get("response_time")).append("</response_time>" + "<response_code>").append(cwbmap.get("response_code")).append("</response_code>" + "<response_msg>")
 						.append(cwbmap.get("response_msg")).append("</response_msg>" + "</transaction_header>" + "<transaction_body>").append("</transaction_body></transaction>");
 			}
-		}else{
+		}else if(version==2){
+			if (chinaUmsRespNote != null && chinaUmsRespNote.getCwbOrder() != null) {
+				str.append("<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>").append(cwbmap.get("transtype"))
+						.append("</transtype>" + "<employno>").append(cwbmap.get("employno")).append("</employno>" + "<termid>").append(cwbmap.get("termid")).append("</termid>" + "<response_time>")
+						.append(cwbmap.get("response_time")).append("</response_time>" + "<response_code>").append(cwbmap.get("response_code")).append("</response_code>" + "<response_msg>")
+						.append(cwbmap.get("response_msg")).append("</response_msg>" + "</transaction_header>" + "<transaction_body>").append("<netcode>").append(cwbmap.get("netcode"))
+						.append("</netcode>" + "<netname>").append(cwbmap.get("netname")).append("</netname>" + "<weight>").append(cwbmap.get("weight")).append("</weight>" + "<goodscount>")
+						.append(cwbmap.get("goodscount")).append("</goodscount>" + "<cod>").append(cwbmap.get("cod")).append("</cod>" + "<istopay>").append(cwbmap.get("istopay"))
+						.append("</istopay>" + "<address>").append(cwbmap.get("address")).append("</address>" + "<people>").append(cwbmap.get("people")).append("</people>" + "<peopletel>")
+						.append(cwbmap.get("peopletel")).append("</peopletel>" + "<sqpayway>").append(cwbmap.get("sqpayway")).append("</sqpayway>" + "<status>").append(cwbmap.get("status"))
+						.append("</status>" + "<memo>").append(cwbmap.get("memo")).append("</memo>" + "<dssn>").append(cwbmap.get("dssn")).append("</dssn>" + "<dsname>").append(cwbmap.get("dsname"))
+						.append("</dsname><dsorderno>").append(cwbmap.get("dsorderno")).append("</dsorderno>")
+						.append("<dlvryno></dlvryno>").append("</transaction_body></transaction>");
+						
+			} else {
+				str.append("<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>").append(cwbmap.get("transtype"))
+						.append("</transtype>" + "<employno>").append(cwbmap.get("employno")).append("</employno>" + "<termid>").append(cwbmap.get("termid")).append("</termid>" + "<response_time>")
+						.append(cwbmap.get("response_time")).append("</response_time>" + "<response_code>").append(cwbmap.get("response_code")).append("</response_code>" + "<response_msg>")
+						.append(cwbmap.get("response_msg")).append("</response_msg>" + "</transaction_header>" + "<transaction_body>").append("</transaction_body></transaction>");
+			}
+		}
+		
+		else{
 			if (chinaUmsRespNote != null && chinaUmsRespNote.getCwbOrder() != null) {
 				str.append("<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>").append(cwbmap.get("transtype"))
 						.append("</transtype>" + "<employno>").append(cwbmap.get("employno")).append("</employno>" + "<termid>").append(cwbmap.get("termid")).append("</termid>" + "<response_time>")
@@ -201,7 +223,34 @@ public class ChinaUmsXMLHandler {
 						.append("</response_code>" + "<response_msg>").append(cwbmap.get("response_msg")).append("</response_msg>" + "<mac>").append(cwbmap.get("mac"))
 						.append("</mac>" + "</transaction_header>" + "<transaction_body>").append("</transaction_body></transaction>");
 			}
-		}else{
+		}else if(version== 2){
+			System.out.println("2s");
+			if (chinaUmsRespNote != null && chinaUmsRespNote.getCwbOrder() != null) {
+				str.append("<?xml version='1.0' encoding='UTF-8' ?>" + "<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>")
+						.append(cwbmap.get("transtype")).append("</transtype>" + "<employno>").append(cwbmap.get("employno")).append("</employno>" + "<termid>").append(cwbmap.get("termid"))
+						.append("</termid>" + "<response_time>").append(cwbmap.get("response_time")).append("</response_time>" + "<response_code>").append(cwbmap.get("response_code"))
+						.append("</response_code>" + "<response_msg>").append(cwbmap.get("response_msg")).append("</response_msg>" + "<mac>").append(cwbmap.get("mac"))
+						.append("</mac>" + "</transaction_header>" + "<transaction_body>").append("<netcode>").append(cwbmap.get("netcode")).append("</netcode>" + "<netname>")
+						.append(cwbmap.get("netname")).append("</netname>" + "<weight>").append(cwbmap.get("weight")).append("</weight>" + "<goodscount>").append(cwbmap.get("goodscount"))
+						.append("</goodscount>" + "<cod>").append(cwbmap.get("cod")).append("</cod>" + "<istopay>").append(cwbmap.get("istopay")).append("</istopay>" + "<address>")
+						.append(cwbmap.get("address")).append("</address>" + "<people>").append(cwbmap.get("people")).append("</people>" + "<peopletel>").append(cwbmap.get("peopletel"))
+						.append("</peopletel>" + "<sqpayway>").append(cwbmap.get("sqpayway")).append("</sqpayway>" + "<status>").append(cwbmap.get("status")).append("</status>" + "<memo>")
+						.append(cwbmap.get("memo")).append("</memo>" + "<dssn>").append(cwbmap.get("dssn")).append("</dssn>" + "<dsname>").append(cwbmap.get("dsname")).append("</dsname><dsorderno>")
+						.append(cwbmap.get("dsorderno")).append("</dsorderno>")
+						.append("<dlvryno></dlvryno>")
+						.append("</transaction_body></transaction>");
+			} else {
+				str.append("<?xml version='1.0' encoding='UTF-8' ?>" + "<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>")
+						.append(cwbmap.get("transtype")).append("</transtype>" + "<employno>").append(cwbmap.get("employno")).append("</employno>" + "<termid>").append(cwbmap.get("termid"))
+						.append("</termid>" + "<response_time>").append(cwbmap.get("response_time")).append("</response_time>" + "<response_code>").append(cwbmap.get("response_code"))
+						.append("</response_code>" + "<response_msg>").append(cwbmap.get("response_msg")).append("</response_msg>" + "<mac>").append(cwbmap.get("mac"))
+						.append("</mac>" + "</transaction_header>" + "<transaction_body>").append("</transaction_body></transaction>");
+			}
+		}
+		
+		
+		
+		else{
 			if (chinaUmsRespNote != null && chinaUmsRespNote.getCwbOrder() != null) {
 				str.append("<?xml version='1.0' encoding='UTF-8' ?>" + "<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>")
 						.append(cwbmap.get("transtype")).append("</transtype>" + "<employno>").append(cwbmap.get("employno")).append("</employno>" + "<termid>").append(cwbmap.get("termid"))
