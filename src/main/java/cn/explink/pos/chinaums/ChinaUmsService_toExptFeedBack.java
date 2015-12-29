@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.ExptCodeJoint;
+import cn.explink.b2c.tools.ExptReason;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
+import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.chinaums.xml.Transaction;
 import cn.explink.pos.tools.EmployeeInfo;
@@ -41,7 +43,7 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 				return chinaUmsService_public.createXML_toExptFeedBack(chinaUms, rootnote);
 			}
 			chinaUmsRespNote=super.BuildChinaumsRespClassAndSign(rootnote);
-			long deliverystate=getDeliveryByReasonType(rootnote.getTransaction_Body().getBadtype(),rootnote.getTransaction_Body().getErrorcode()); //根据异常码判断
+			long deliverystate=getDeliveryByReasonType(rootnote.getTransaction_Body().getBadtype(),rootnote.getTransaction_Body().getErrorcode(),chinaUms); //根据异常码判断
 			
 			if(chinaUmsRespNote.getCwbOrder()==null){
 				chinaUmsRespNote.setResp_code(ChinaUmsExptMessageEnum.ChaXunYiChang.getResp_code());
@@ -83,6 +85,8 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 			long deliverystate=delivery_state;
 			long backreasonid=0;
 			long leavedreasonid=0;
+			
+			
 			
 			if(rootnote.getTransaction_Body().getBadtype()!=null&&!rootnote.getTransaction_Body().getBadtype().isEmpty()){
 				
@@ -184,8 +188,21 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 	 * @param errcode
 	 * @return
 	 */
-	private int getDeliveryByReasonType(String badtype,String errcode){
+	private int getDeliveryByReasonType(String badtype,String errcode, ChinaUms chinaUms){
 		int deliverystate=-1;
+		if(chinaUms.getVersion()==2){ //安达信版本，直接使用errcode判断是滞留还是拒收
+			ExptReason exptReason =exptReasonDAO.getExptReasonCodeByPos(errcode, PosEnum.ChinaUms.getKey());
+			if(exptReason!=null){
+				int type = exptReason.getExpt_type();
+				if(ReasonTypeEnum.BeHelpUp.getValue()==type){
+					return DeliveryStateEnum.FenZhanZhiLiu.getValue();
+				}
+				if(ReasonTypeEnum.ReturnGoods.getValue()==type){
+					return DeliveryStateEnum.JuShou.getValue();
+				}
+			}
+		}
+		
 		if(badtype==null||badtype.isEmpty()){
 			if("01".equals(errcode)){
 				deliverystate=DeliveryStateEnum.FenZhanZhiLiu.getValue();
