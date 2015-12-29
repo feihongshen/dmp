@@ -12,7 +12,7 @@
 	List<Branch> listBranchs = (List<Branch>) request.getAttribute("listBranchs");
 	String stationString=(String)request.getAttribute("station");
 	String execute_branchidString=(String)request.getAttribute("execute_branchid");
-	// 	HashMap<String, List<AddressCustomerStationVO>> map = (HashMap<String, List<AddressCustomerStationVO>>)request.getAttribute("mapRalation");
+	Long pageNext=(Long)request.getAttribute("page");
 %>
 
 
@@ -107,7 +107,7 @@ $("#excute_branchid").change(function (){
 			<form action="1" id="searchForm" method="post">
 				地址库站点：<select id="station" name="station" class="select1"
 					multiple="multiple">
-					<%
+				 <%
 						if(stationString!=null && !"".equals(stationString)){
 									String[] stations=stationString.split(",");
 								for (Branch branch : listBranchs) {
@@ -124,7 +124,9 @@ $("#excute_branchid").change(function (){
 					<option value="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
 					<%
 						}}
-					%>
+					%> 
+				
+					
 
 				</select> 客户名称：<select id="customerid" name="customerid" class="select1"
 					onChange="changeCustomer();">
@@ -245,7 +247,7 @@ $("#excute_branchid").change(function (){
 							<%
 								for (int i = 1; i <= page_obj.getMaxpage(); i++) {
 							%>
-							<option value="<%=i%>"><%=i%></option>
+							<option <%if(((Long)pageNext).intValue()==i){%>selected="selected"<%} %> value="<%=i%>"><%=i%></option>
 							<%
 								}
 							%>

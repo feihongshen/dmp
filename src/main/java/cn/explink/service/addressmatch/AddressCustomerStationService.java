@@ -7,11 +7,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import cn.explink.dao.AddressCustomerStationDao;
 import cn.explink.dao.BranchDAO;
-import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.domain.addressvo.AddressCustomerStationVO;
 
@@ -30,8 +28,8 @@ public class AddressCustomerStationService {
 	}
 
 	// 查询所有的记录数
-	public int getAllCount() {
-		return this.addressCustomerStationDao.getAllCount();
+	public int getAllCount(String customerid, String station, String execute_branchid) {
+		return this.addressCustomerStationDao.getAllCount(customerid, station,execute_branchid);
 	}
 
 	// 查询客户id不重复的记录数
@@ -59,19 +57,6 @@ public class AddressCustomerStationService {
 		return list;
 	}
 
-	// 根据branchId获取站点区域
-	public String getAreaByBranchId(Long branchid) {
-		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
-		String area = branch.getBranchprovince().length() == 0 ? ""
-				: (branch.getBranchprovince() + "-")
-						+ (branch.getBranchcity().length() == 0 ? "" : (branch.getBranchcity() + "-"))
-						+ (branch.getBrancharea().length() == 0 ? "" : branch.getBrancharea() + "-")
-						+ branch.getBranchstreet();
-		if (area.endsWith("-")) {
-			area = area.substring(0, area.length() - 1);
-		}
-		return area;
-	}
 
 	// 根据id获取一条记录
 	public AddressCustomerStationVO getCustomerStationByid(Long id) {
@@ -83,24 +68,7 @@ public class AddressCustomerStationService {
 		return this.addressCustomerStationDao.getCustomerStationByCustomerid(customerid);
 	}
 
-	// 判断是否添加了相同的数据
-	public int checkSame(String customerid, String stationName) {
-		List<AddressCustomerStationVO> list = this.addressCustomerStationDao
-				.getCustomerStationByCustomerid(Long.parseLong(customerid));
-//		String areaSrc = getAreaByBranchId(Long.parseLong(stationName));
-		int a = 0;
-		for (AddressCustomerStationVO addressCustomerStationVO : list) {
-			/*
-			 * String areaTar =
-			 * getAreaByBranchId(addressCustomerStationVO.getBranchid().
-			 * longValue()); // 根据站点判断 if
-			 * (addressCustomerStationVO.getBranchid() ==
-			 * Integer.parseInt(stationid)) { return 2; } // 根据区域判断 if
-			 * (areaSrc.length() > 0 && areaSrc.equals(areaTar)) { a = 1; }
-			 */
-		}
-		return a;
-	}
+	
 
 	// 根据customerid创建多条记录
 	public void create(String customerName, String stationName, User user, String excute_branckid) {

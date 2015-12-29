@@ -220,9 +220,9 @@ public class BranchService {
 
 		return this.branchDao.getAllEffectBranches();
 	}
-	public List<Branch> getPageCashs() {
+	public List<Branch> getBranchs() {
 
-		return this.branchDao.getAllBranches();
+		return this.branchDao.getAllBrancks();
 	}
 
 }

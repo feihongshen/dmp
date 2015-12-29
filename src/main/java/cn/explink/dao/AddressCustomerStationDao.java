@@ -84,15 +84,15 @@ public class AddressCustomerStationDao {
 		String sql = "select * from express_set_customer_station where 1=1 ";
 		List<Object> listParams = new ArrayList<Object>();
 		if ((customerid != null) && !"".equals(customerid)) {
-			sql += " and customerid=?";
+			sql += " and customerid=? ";
 			listParams.add(customerid);
 		}
 		if ((station != null) && !"".equals(station)) {
-			sql += " and branchid like ?";
+			sql += " and branchid like ? ";
 			listParams.add("%"+station+"%");
 		}
 		if (execute_branchid != null && !"".equals(execute_branchid)) {
-			sql += " and execute_branchid like ?";
+			sql += " and execute_branchid like ? ";
 			listParams.add("%"+execute_branchid+"%");
 
 		}
@@ -100,9 +100,8 @@ public class AddressCustomerStationDao {
 		for (int a = 0; a < listParams.size(); a++) {
 			obj[a] = listParams.get(a);
 		}
-		sql += "  ORDER BY customerid limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		sql +=   "ORDER BY customerid limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		List<AddressCustomerStationVO> list = this.jdbcTemplate.query(sql, obj, new AddressCustomerStationMapper());
-		System.out.println("======" + list);
 		return list;
 	}
 
@@ -125,9 +124,27 @@ public class AddressCustomerStationDao {
 	}
 
 	// 根据客户id分组获取所有记录
-	public int getAllCount() {
-		String sql = "SELECT COUNT(1) FROM express_set_customer_station";
-		return this.jdbcTemplate.queryForInt(sql);
+	public int getAllCount(String customerid, String station, String execute_branchid) {
+		String sql = "SELECT COUNT(1) FROM express_set_customer_station where 1=1 ";
+		List<Object> listParams = new ArrayList<Object>();
+		if ((customerid != null) && !"".equals(customerid)) {
+			sql += " and customerid=? ";
+			listParams.add(customerid);
+		}
+		if ((station != null) && !"".equals(station)) {
+			sql += " and branchid like ? ";
+			listParams.add("%"+station+"%");
+		}
+		if (execute_branchid != null && !"".equals(execute_branchid)) {
+			sql += " and execute_branchid like ? ";
+			listParams.add("%"+execute_branchid+"%");
+
+		}
+		Object[] obj = new Object[listParams.size()];
+		for (int a = 0; a < listParams.size(); a++) {
+			obj[a] = listParams.get(a);
+		}
+		return this.jdbcTemplate.queryForInt(sql,obj);
 	}
 
 	// 根据id获取一条记录
