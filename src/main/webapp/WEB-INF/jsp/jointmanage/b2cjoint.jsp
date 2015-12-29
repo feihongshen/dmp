@@ -438,8 +438,7 @@ function delSuccess(data){
 		}
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
-			$("#del").val('<%=request.getContextPath()%>
-		/explinkInterface/del/');
+			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
 			}
 		}
 	</script>
