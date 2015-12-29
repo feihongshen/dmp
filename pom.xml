@@ -3740,7 +3740,7 @@
 				<expressurl.user>eap</expressurl.user>
 				<expressurl.password>explink</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>tcp://10.199.247.161:61616</jms.brokerURL>
+				<jms.brokerURL>tcp://192.168.0.217:61616</jms.brokerURL>
 				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
 				<wavPath>/home/apps/data/wav/</wavPath>
 				<filePath>/home/apps/data/moule/</filePath>
@@ -3751,7 +3751,7 @@
 				<addresscustomerid>6</addresscustomerid>
 				<addressid>6</addressid>
 				<addresspassword>admin</addresspassword>
-				<addressWebserviceIp>10.199.247.158:8080/address</addressWebserviceIp>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
