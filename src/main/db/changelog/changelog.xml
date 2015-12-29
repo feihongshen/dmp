@@ -8766,7 +8766,7 @@ CREATE TABLE `cs_complaint_accept` (
 			  KEY `billcheck_excel_batchno` (`batch_no`),
 			  KEY `billcheck_excel_creator` (`creator`),
 			  KEY `billcheck_excel_cwb` (`cwb`)
-			) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=utf8
+			) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=utf8;
 
 		</sql>	
 	</changeSet>
