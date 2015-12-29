@@ -178,7 +178,7 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 	}
 
 	private int getSignerType(Transaction rootnote,int version) {
-		if(version==1){
+		if(version==1||version==2){
 			int signflag=rootnote.getTransaction_Body().getSignflag();
 			return signflag==0?1:2;
 		}
@@ -186,7 +186,7 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 	}
 
 	private String getSignpeopleProxy(CwbOrder cwbOrder, Transaction rootnote,int version) {
-		if(version==1){ //陕西城联版本
+		if(version==1||version==2){ //陕西城联版本
 			//int signflag=rootnote.getTransaction_Body().getSignflag();
 			return rootnote.getTransaction_Body().getSigner();
 		}
