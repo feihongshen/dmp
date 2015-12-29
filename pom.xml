@@ -3731,6 +3731,30 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>EXPLINK_TEST</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_test_428?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>eap</expressurl.user>
+				<expressurl.password>explink</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://10.199.247.161:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>EXPLINK_TEST</label>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>admin</addresspassword>
+				<addressWebserviceIp>10.199.247.158:8080/address</addressWebserviceIp>
+			</properties>
+		</profile>
+		<profile>
 			<id>HNPJ</id>
 			<properties>
 				<tomcat.manager.url></tomcat.manager.url>
