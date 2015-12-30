@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation=" http://www.springframework.org/schema/beans   
+            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
+            http://www.springframework.org/schema/context  
+            http://www.springframework.org/schema/context/spring-context-2.5.xsd  
+            http://www.springframework.org/schema/aop  
+            http://www.springframework.org/schema/aop/spring-aop-2.5.xsd  
+            http://www.springframework.org/schema/tx  
+            http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+             http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+ 	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" /> 
+	<bean id="scheduledTaskService" class="cn.explink.service.ScheduledTaskService">
+		<property name="cachedWorkers">
+			<map>
+				<entry key="save.orderFlow" value-ref="orderFlowWorker" />
+				<entry key="omsb2c.orderFlow" value-ref="orderFlowWorker" />
+				<entry key="editshowinfo.orderFlow" value-ref="orderFlowWorker" />
+				<entry key="receivegoods.orderFlow" value-ref="orderFlowWorker" />
+				<entry key="transcwb.orderFlow" value-ref="orderFlowWorker" />
+				<entry key="sms.orderFlow" value-ref="orderFlowWorker" />
+				<entry key="account.orderFlow" value-ref="orderFlowWorker" />
+				<entry key="cleanUpOldTask" value-ref="scheduledTaskCleanUpWorker" />
+				<entry key="synaddresscustomercreat" value-ref="synAddressTaskWorker" />
+				<entry key="synaddresscustomermodify" value-ref="synAddressTaskWorker" />
+				<entry key="synaddresscustomerdelete" value-ref="synAddressTaskWorker" />
+				<entry key="synaddressbranchcreat" value-ref="synAddressTaskWorker" />
+				<entry key="synaddressbranchrmodify" value-ref="synAddressTaskWorker" />
+				<entry key="synaddressbranchdelete" value-ref="synAddressTaskWorker" />
+				<entry key="synaddressusercreat" value-ref="synAddressTaskWorker" />
+				<entry key="synaddressuserrmodify" value-ref="synAddressTaskWorker" />
+				<entry key="synaddressuserdelete" value-ref="synAddressTaskWorker" />
+			</map>
+		</property>
+	</bean>
+	
+	
+	<jaxws:endpoint id="buildOrder" implementor="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl" address="/buildOrder" />
+	<bean name="WebServiceServerByLechongImpl" class="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl">
+	</bean>
+	<!--    
+	<bean id="schedulerFactory" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	</bean> -->
+     
+     
+<!-- ===================================自动生成HTML定时器 结束========================================== -->
+</beans>

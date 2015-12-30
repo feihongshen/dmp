@@ -839,6 +839,7 @@ src/main/java/cn/explink/controller/DeliveryPercentForEmaildateDTO.java -text
 src/main/java/cn/explink/controller/DeliveryStateDTO.java -text
 src/main/java/cn/explink/controller/DeliveryStateView.java -text
 src/main/java/cn/explink/controller/DiliverymanPaifeiBillController.java -text
+src/main/java/cn/explink/controller/DmpJobController.java -text
 src/main/java/cn/explink/controller/EditCwbController.java -text
 src/main/java/cn/explink/controller/EmailDateController.java -text
 src/main/java/cn/explink/controller/ExceedFeeController.java -text
@@ -1252,6 +1253,7 @@ src/main/java/cn/explink/domain/AccountDeductRecordView.java -text
 src/main/java/cn/explink/domain/AccountFeeDetail.java -text
 src/main/java/cn/explink/domain/AccountFeeType.java -text
 src/main/java/cn/explink/domain/AdjustmentRecord.java -text
+src/main/java/cn/explink/domain/AjaxJson.java -text
 src/main/java/cn/explink/domain/AorderFlowView.java -text
 src/main/java/cn/explink/domain/ApplyEditDeliverystate.java -text
 src/main/java/cn/explink/domain/Area.java -text
@@ -2243,6 +2245,7 @@ src/main/resources/META-INF/spring/applicationContext-cache.xml -text
 src/main/resources/META-INF/spring/applicationContext-jms.xml -text
 src/main/resources/META-INF/spring/applicationContext-job.xml -text
 src/main/resources/META-INF/spring/applicationContext-security.xml -text
+src/main/resources/META-INF/spring/applicationContext-without-job.xml -text
 src/main/resources/META-INF/spring/applicationContext.xml -text
 src/main/resources/META-INF/spring/db.properties -text
 src/main/resources/META-INF/xfire/aop.xml -text
@@ -2610,6 +2613,7 @@ src/main/webapp/WEB-INF/jsp/delivery/viewOldSub.jsp -text
 src/main/webapp/WEB-INF/jsp/deliverycash/deliverycashlist.jsp -text
 src/main/webapp/WEB-INF/jsp/deliverycash/show.jsp -text
 src/main/webapp/WEB-INF/jsp/diliverymanpaifeibill/diliverymanpaifeibillPage.jsp -text
+src/main/webapp/WEB-INF/jsp/dmpJobIndex.jsp -text
 src/main/webapp/WEB-INF/jsp/dufaltexport/editf.jsp -text
 src/main/webapp/WEB-INF/jsp/dufaltexport/listf.jsp -text
 src/main/webapp/WEB-INF/jsp/dufaltexport/viewf.jsp -text

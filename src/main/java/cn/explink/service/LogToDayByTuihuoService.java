@@ -61,6 +61,8 @@ public class LogToDayByTuihuoService implements SystemConfigChangeListner {
 	@Autowired
 	CamelContext camelContext;
 
+	/*
+	 * 改为quartz实现
 	@PostConstruct
 	public void init() throws Exception {
 		final SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("tuiHuoDayLogTime");
@@ -83,7 +85,7 @@ public class LogToDayByTuihuoService implements SystemConfigChangeListner {
 			}
 		});
 	}
-
+	*/
 	public List<CwbOrder> getOrderListByBranchidAndType(List<Branch> kufangList, long branchid, String type, String startTime, long page) {
 		List<CwbOrder> list = new ArrayList<CwbOrder>();
 		if ("zhandianyingtuihuo".equals(type)) {
@@ -296,6 +298,8 @@ public class LogToDayByTuihuoService implements SystemConfigChangeListner {
 
 	@Override
 	public void onChange(Map<String, String> parameters) {
+		/*
+		 * 改为quartz实现
 		if (parameters.keySet().contains("tuiHuoDayLogTime")) {
 			try {
 				this.init();
@@ -303,5 +307,6 @@ public class LogToDayByTuihuoService implements SystemConfigChangeListner {
 				logger.error("error while reloading logtoDay camle routes", e);
 			}
 		}
+		*/
 	}
 }

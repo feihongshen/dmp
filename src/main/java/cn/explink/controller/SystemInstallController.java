@@ -46,8 +46,8 @@ public class SystemInstallController {
 	JdbcTemplate jdbcTemplate;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
-	@Autowired
-	Scheduler schedulerFactory;
+//	@Autowired
+//	Scheduler schedulerFactory;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -123,11 +123,11 @@ public class SystemInstallController {
 	 * @throws ParseException
 	 */
 	public void setQuartzTime(String timevalue, String beanId) throws SchedulerException, ParseException {
-		CronTriggerBean trigger = (CronTriggerBean) schedulerFactory.getTrigger(beanId, Scheduler.DEFAULT_GROUP);
+		/*CronTriggerBean trigger = (CronTriggerBean) schedulerFactory.getTrigger(beanId, Scheduler.DEFAULT_GROUP);
 		if (trigger != null) {
 			trigger.setCronExpression(StringUtil.getTimeToQuartzHHMMss(timevalue));
 			schedulerFactory.rescheduleJob(beanId, Scheduler.DEFAULT_GROUP, trigger);
-		}
+		}*/
 	}
 
 }

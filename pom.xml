@@ -540,6 +540,10 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
+				<excludes>
+					<exclude>${excludeJobFile}</exclude>					
+				</excludes>
+				
 			</resource>
 			<resource>
 				<directory>src/main/java/cn/explink/util/pos</directory>
@@ -3407,6 +3411,31 @@
 			</properties>
 		</profile>
 		
+		<profile>
+			<id>GZTLFBZX</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.36:3306/gztl_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://172.20.200.83:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploading/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>GZTLFBZX</label>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>gztl</addresspassword>
+				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
+				<excludeJobFile>**/applicationContext-job.xml</excludeJobFile>
+			</properties>
+		</profile>
 		<profile>
 			<id>GZTL_TEST</id>
 			<properties>

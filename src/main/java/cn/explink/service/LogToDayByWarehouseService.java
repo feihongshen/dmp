@@ -64,6 +64,8 @@ public class LogToDayByWarehouseService implements SystemConfigChangeListner {
 	@Autowired
 	CamelContext camelContext;
 
+	/*
+	 * 改为quartz实现
 	@PostConstruct
 	public void init() throws Exception {
 		final SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("wareHouseDayLogTime");
@@ -86,7 +88,8 @@ public class LogToDayByWarehouseService implements SystemConfigChangeListner {
 			}
 		});
 	}
-
+	*/
+	
 	// 未入库
 	public Map<Long, Long> getWeirukuMap(long branchid, String flowordertypes) {
 
@@ -504,6 +507,8 @@ public class LogToDayByWarehouseService implements SystemConfigChangeListner {
 
 	@Override
 	public void onChange(Map<String, String> parameters) {
+		/*
+		 * 改为quartz实现
 		if (parameters.keySet().contains("wareHouseDayLogTime")) {
 			try {
 				this.init();
@@ -511,5 +516,6 @@ public class LogToDayByWarehouseService implements SystemConfigChangeListner {
 				logger.error("error while reloading logtoDay camle routes", e);
 			}
 		}
+		*/
 	}
 }

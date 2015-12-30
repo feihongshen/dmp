@@ -78,6 +78,8 @@ public class LogToDayService implements SystemConfigChangeListner {
 	@Autowired
 	CamelContext camelContext;
 
+	/*
+	 * 改为quartz实现
 	@PostConstruct
 	public void init() throws Exception {
 		final SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("siteDayLogTime");
@@ -101,6 +103,7 @@ public class LogToDayService implements SystemConfigChangeListner {
 			}
 		});
 	}
+	*/
 
 	/**
 	 * 库房应入库的批次数 需求 查看当前所有未到货的批次
@@ -1656,6 +1659,7 @@ public class LogToDayService implements SystemConfigChangeListner {
 
 	@Override
 	public void onChange(Map<String, String> parameters) {
+		/*改为quartz实现
 		if (parameters.keySet().contains("siteDayLogTime")) {
 			try {
 				this.init();
@@ -1663,6 +1667,7 @@ public class LogToDayService implements SystemConfigChangeListner {
 				logger.error("error while reloading logtoDay camle routes", e);
 			}
 		}
+		*/
 	}
 
 }

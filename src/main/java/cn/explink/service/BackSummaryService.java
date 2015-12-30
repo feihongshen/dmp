@@ -52,7 +52,8 @@ public class BackSummaryService implements SystemConfigChangeListner {
 
 	String time = "";
 	long timeLong = 0;
-
+	/*
+	 * 改为quartz实现
 	@PostConstruct
 	public void init() throws Exception {
 		final SystemInstall backTimeLog = systemInstallDAO.getSystemInstallByName("backTimeLog");
@@ -79,9 +80,11 @@ public class BackSummaryService implements SystemConfigChangeListner {
 			}
 		});
 	}
-
+	*/
 	@Override
 	public void onChange(Map<String, String> parameters) {
+		/*
+		 * 改为quartz实现
 		if (parameters.keySet().contains("backTimeLog")) {
 			try {
 				this.init();
@@ -89,6 +92,7 @@ public class BackSummaryService implements SystemConfigChangeListner {
 				logger.error("error while reloading backTimeLog camle routes", e);
 			}
 		}
+		*/
 	}
 
 	/**
