@@ -115,6 +115,9 @@ public class ChinaUmsService_toCwbSearch extends ChinaUmsService {
 															// 线上电商的客户编号,一般为ERP系统自己的编号。
 			retMap.put("dsname", customerDAO.getCustomerById(order.getCustomerid()).getCustomername());// 电商名称
 			retMap.put("dsorderno", order.getCwb());// 电商订单号
+			if(chinaUms.getVersion()==2){
+				retMap.put("dlvryno", order.getRemark1()==null?"":order.getRemark1());// 家有出库号
+			}
 		}
 		// 生成待加密的字符串
 		String str = ChinaUmsXMLHandler.createMACXML_SearchCwb(retMap, chinaUmsRespNote,chinaUms.getVersion());

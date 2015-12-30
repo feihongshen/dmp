@@ -159,7 +159,7 @@ public class ChinaUmsXMLHandler {
 						.append(cwbmap.get("peopletel")).append("</peopletel>" + "<sqpayway>").append(cwbmap.get("sqpayway")).append("</sqpayway>" + "<status>").append(cwbmap.get("status"))
 						.append("</status>" + "<memo>").append(cwbmap.get("memo")).append("</memo>" + "<dssn>").append(cwbmap.get("dssn")).append("</dssn>" + "<dsname>").append(cwbmap.get("dsname"))
 						.append("</dsname><dsorderno>").append(cwbmap.get("dsorderno")).append("</dsorderno>")
-						.append("<dlvryno></dlvryno>").append("</transaction_body></transaction>");
+						.append("<dlvryno>"+cwbmap.get("dlvryno")+"</dlvryno>").append("</transaction_body></transaction>");
 						
 			} else {
 				str.append("<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>").append(cwbmap.get("transtype"))
@@ -237,7 +237,7 @@ public class ChinaUmsXMLHandler {
 						.append("</peopletel>" + "<sqpayway>").append(cwbmap.get("sqpayway")).append("</sqpayway>" + "<status>").append(cwbmap.get("status")).append("</status>" + "<memo>")
 						.append(cwbmap.get("memo")).append("</memo>" + "<dssn>").append(cwbmap.get("dssn")).append("</dssn>" + "<dsname>").append(cwbmap.get("dsname")).append("</dsname><dsorderno>")
 						.append(cwbmap.get("dsorderno")).append("</dsorderno>")
-						.append("<dlvryno></dlvryno>")
+						.append("<dlvryno>"+cwbmap.get("dlvryno")+"</dlvryno>")
 						.append("</transaction_body></transaction>");
 			} else {
 				str.append("<?xml version='1.0' encoding='UTF-8' ?>" + "<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>")
