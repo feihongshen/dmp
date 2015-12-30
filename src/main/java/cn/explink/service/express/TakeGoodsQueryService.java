@@ -59,7 +59,7 @@ public class TakeGoodsQueryService {
 	 * @throws ParseException 
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> getcwbOrderByPage(Long page,ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,User user,String userIds) throws ParseException{
-		if(cwb4TakeGoodsQuery.getStatus()!=null && cwb4TakeGoodsQuery.getStatus()==3){
+		/*if(cwb4TakeGoodsQuery.getStatus()!=null && cwb4TakeGoodsQuery.getStatus()==3){
 //			List<Branch> nextBranchList = expressOutStationService.getNextBranchList(user.getBranchid(),user);
 			Map<Long,ExpressOutStationInfo> map = expressOutStationInfoDao.getOutStationInfo(cwb4TakeGoodsQuery,user.getBranchid(),userIds);
 			List<ExpressCwbOrderForTakeGoodsQueryVO> list = new ArrayList<ExpressCwbOrderForTakeGoodsQueryVO>();
@@ -85,10 +85,10 @@ public class TakeGoodsQueryService {
 				}
 			}
 			return list;
-		}else{
+		}else{*/
 			
 			return cwbDao.queryCwbExpressTakeGoodsQueryByPage(page, cwb4TakeGoodsQuery,userIds);
-		}
+		/*}*/
 	}
 	
 	/**
@@ -101,14 +101,14 @@ public class TakeGoodsQueryService {
 	 */
 	public Long getcwborderCount(Long page,ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,User user,List<ExpressCwbOrderForTakeGoodsQueryVO> listOrderfdsdsadfsdf,String userIds) throws NumberFormatException, ParseException{
 //		return cwbDao.getcwborderCount(emaildateid);
-		if(cwb4TakeGoodsQuery.getStatus()!=null &&cwb4TakeGoodsQuery.getStatus()==3){
+		/*if(cwb4TakeGoodsQuery.getStatus()!=null &&cwb4TakeGoodsQuery.getStatus()==3){
 
 			List<ExpressCwbOrderForTakeGoodsQueryVO> list = getAllOutStationInfo(cwb4TakeGoodsQuery,user,userIds);
 			
 			return (long)list.size();
-		}else{
+		}else{*/
 			return cwbDao.queryCwbExpressTakeGoodsQueryCountByPage(cwb4TakeGoodsQuery,userIds);
-		}
+		/*}*/
 	}
 	
 	/**
@@ -144,14 +144,14 @@ public class TakeGoodsQueryService {
 	 */
 	public ExpressCwb4TakeGoodsQuery getShouldfareAndCount(Long page,ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,User user,String userIds) throws ParseException{
 		List<ExpressCwbOrderForTakeGoodsQueryVO> OrderList = new ArrayList<ExpressCwbOrderForTakeGoodsQueryVO>();
-		if(cwb4TakeGoodsQuery.getStatus()!=null && cwb4TakeGoodsQuery.getStatus()==3){
+		/*if(cwb4TakeGoodsQuery.getStatus()!=null && cwb4TakeGoodsQuery.getStatus()==3){
 //			List<Branch> nextBranchList = expressOutStationService.getNextBranchList(user.getBranchid(),user);
 
 			OrderList = getAllOutStationInfo(cwb4TakeGoodsQuery,user,userIds);
-		}else{
+		}else{*/
 			
 			OrderList = cwbDao.queryCwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,userIds);
-		}
+		/*}*/
 
 		//查询所有符合cwb4TakeGoodsQuery中条件的订单
 //		List<ExpressCwbOrderForTakeGoodsQueryVO> OrderList = cwbDao.queryCwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery);
