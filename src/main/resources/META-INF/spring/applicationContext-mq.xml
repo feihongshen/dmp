@@ -14,10 +14,6 @@
             </list>  
         </property> 
 	  </bean>
-	  
-	  <bean class="cn.explink.b2c.auto.order.mq.AutoInitProcessor" init-method="autoInit"  lazy-init="false" >
-	  	<property name="consumerStarter" ref="consumerStarter"/> 
-	  </bean>
    
    	  <bean id="autoDispatchStatusCallback" class="cn.explink.b2c.auto.order.mq.AutoDispatchStatusCallback" > 
    	  </bean>

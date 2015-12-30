@@ -56,7 +56,7 @@ public class ConsumerStarter {
 			//consumerContainer.startAllConsumers();
 		} catch (Exception e) {
 			logger.error("rabbit mq start error:",e);
-			throw e;
+			//throw e;
 		}
     }
 

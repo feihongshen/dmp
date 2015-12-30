@@ -8809,4 +8809,36 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
+	<changeSet id="jianronggao-2015-12-30-01" author="jianronggao">
+		<sql>
+		 CREATE TABLE `express_auto_exception`( 
+		   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键', 
+		   `msg` text DEFAULT '' NULL COMMENT '报文', 
+		   `interfacetype` int(4) DEFAULT 0 NULL COMMENT '接口类型', 
+		   `createtime` timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间', 
+		   PRIMARY KEY (`id`)
+		 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		
+		ALTER TABLE `express_auto_exception` ADD INDEX `auto_except_createtime_idx` (`createtime`);
+
+   
+		CREATE TABLE `express_auto_exception_detail`( 
+		   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键', 
+		   `cwb` varchar(100) DEFAULT '' NULL COMMENT '订单号', 
+		   `transportno` varchar(100) DEFAULT '' NULL COMMENT '运单号', 
+		   `errinfo` varchar(500) DEFAULT '' NULL COMMENT '异常信息', 
+		   `status` int(2) DEFAULT 0 NULL COMMENT '状态', 
+		   `msgid` int(11) DEFAULT 0 NULL COMMENT '报文记录的ID', 
+		   `refid` int(11) DEFAULT 0 NULL COMMENT '反馈时关于哪个异常的ID', 
+		   `createtime` timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间', 
+		   PRIMARY KEY (`id`)
+		 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		
+		
+		ALTER TABLE `express_auto_exception_detail` ADD INDEX `auto_except_dtl_cwb_idx` (`cwb`); 
+		ALTER TABLE `express_auto_exception_detail` ADD INDEX `auto_except_dtl_trans_idx` (`transportno`); 
+		ALTER TABLE `express_auto_exception_detail` ADD INDEX `auto_except_dtl_time_idx` (`createtime`);
+		ALTER TABLE `express_auto_exception_detail` ADD INDEX `auto_except_dtl_cwbtrans_idx` (`cwb`,`transportno`); 
+		</sql>
+	</changeSet>
 </databaseChangeLog>
