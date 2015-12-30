@@ -3626,7 +3626,7 @@
 				<addresscustomerid>28</addresscustomerid>
 				<addressid>28</addressid>
 				<addresspassword>wxpw</addresspassword>
-				<addressWebserviceIp>103.229.214.164/addressb</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.44:8081/addressb</addressWebserviceIp>
 			</properties>
 		</profile>
 		
@@ -3849,7 +3849,7 @@
 				<addresscustomerid>47</addresscustomerid>
 				<addressid>47</addressid>
 				<addresspassword>xapx1234</addresspassword>
-				<addressWebserviceIp>103.229.214.164/addressi</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.104:8081/addressi</addressWebserviceIp>
 			</properties>
 		</profile>
 		<profile>
