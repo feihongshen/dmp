@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.explink.b2c.amazon.AmazonService;
+import cn.explink.b2c.auto.order.service.TPSInsertCwbDetailTimmer;
 import cn.explink.b2c.chinamobile.ChinamobileService;
 import cn.explink.b2c.dangdang_dataimport.DangDangSynInsertCwbDetailTimmer;
 import cn.explink.b2c.dongfangcj.DongFangCJInsertCwbDetailTimmer;
@@ -54,6 +55,7 @@ import cn.explink.b2c.smile.SmileInsertCwbDetailTimmer;
 import cn.explink.b2c.telecomsc.TelecomInsertCwbDetailTimmer;
 import cn.explink.b2c.tmall.TmallInsertCwbDetailTimmer;
 import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
+import cn.explink.b2c.tps.TPSCarrierOrderStatusTimmer;
 import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.b2c.vipshop.VipShopService;
 import cn.explink.b2c.vipshop.VipshopInsertCwbDetailTimmer;
@@ -226,6 +228,10 @@ public class JobUtil {
 	GxDxInsertCwbDetailTimmer gxDxInsertCwbDetailTimmer;
 	@Autowired
 	AcquisitionOrderService acquisitionOrderService;
+	@Autowired
+	TPSInsertCwbDetailTimmer tPSInsertCwbDetailTimmer;
+	@Autowired
+	TPSCarrierOrderStatusTimmer tPSCarrierOrderStatusTimmer;
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new HashMap<String, Integer>();
@@ -259,6 +265,9 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 		JobUtil.threadMap.put("order_lifecycle_report", 0);
+		
+		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
+		JobUtil.threadMap.put("vipshop_tps_orderTempInsert", 0);
 	}
 
 	/**
@@ -293,6 +302,8 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 		JobUtil.threadMap.put("order_lifecycle_report", 0);
+		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
+		JobUtil.threadMap.put("vipshop_tps_orderTempInsert", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1397,6 +1408,58 @@ public class JobUtil {
 		}
 
 		this.logger.info("执行了获取vipshoptimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	/**
+	 * 执行将TPS订单临时表数据插入主表log
+	 */
+	public void getTPSCwbTempInsert_Task() {
+
+		if (JobUtil.threadMap.get("vipshop_tps_orderTempInsert") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环tps");
+			return;
+		}
+		JobUtil.threadMap.put("vipshop_tps_orderTempInsert", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.tPSInsertCwbDetailTimmer.selectTempAndInsertToCwbDetails();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行TPS订单临时表数据插入主表定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("vipshop_tps_orderTempInsert", 0);
+		}
+
+		this.logger.info("执行了获取TPS订单临时表数据插入主表的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	/**
+	 * 执行获取物流运单状态接口
+	 */
+	public void getCarrierOrderStatus_Task() {
+		System.out.println("-----getCarrierOrderStatus_Task启动执行");
+		
+		if (JobUtil.threadMap.get("getCarrierOrderStatusTimmer") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环");
+			return;
+		}
+		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 1);
+		
+		try {
+			long starttime = System.currentTimeMillis();
+			
+			this.tPSCarrierOrderStatusTimmer.getCarrierOrderStatus();
+			
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了物流状态查询定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+		} catch (Exception e) {
+			this.logger.error("执行获取物流状态查询定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
+		}
 	}
 
 }

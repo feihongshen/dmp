@@ -86,6 +86,25 @@ src/main/java/cn/explink/b2c/amazon/domain/manifestSummary/TotalActualGrossWeigh
 src/main/java/cn/explink/b2c/amazon/domain/manifestSummary/TotalDeclaredGrossWeight.java -text
 src/main/java/cn/explink/b2c/amazon/domain/manifestSummary/TotalShipmentQuantity.java -text
 src/main/java/cn/explink/b2c/amazon/domain/manifestSummary/TotalShipmentValue.java -text
+src/main/java/cn/explink/b2c/auto/order/dao/TPSDataImportDAO_B2c.java -text
+src/main/java/cn/explink/b2c/auto/order/mq/AutoDispatchStatusCallback.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/mq/AutoExceptionSender.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/mq/AutoInitProcessor.java -text
+src/main/java/cn/explink/b2c/auto/order/mq/AutoMQExceptionDto.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/mq/ConsumerStarter.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/mq/ConsumerTemplate.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/AutoExceptionService.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/AutoInWarehouseService.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/AutoOrderStatusService.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/AutoOutWarehouseService.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/AutoPickStatusVo.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/TPSAutoController.java -text
+src/main/java/cn/explink/b2c/auto/order/service/TPSGetOrderDataService.java -text
+src/main/java/cn/explink/b2c/auto/order/service/TPSInsertCwbDetailTimmer.java -text
+src/main/java/cn/explink/b2c/auto/order/service/TPSOrderAutomateMQCallback.java -text
+src/main/java/cn/explink/b2c/auto/order/service/TPSOrderImportService_B2c.java -text
+src/main/java/cn/explink/b2c/auto/order/vo/TPSOrder.java -text
+src/main/java/cn/explink/b2c/auto/order/vo/TPSOrderDetails.java -text
 src/main/java/cn/explink/b2c/benlaishenghuo/BenLaiShengHuo.java -text
 src/main/java/cn/explink/b2c/benlaishenghuo/BenLaiShengHuoController.java -text
 src/main/java/cn/explink/b2c/benlaishenghuo/BenLaiShengHuoService.java -text
@@ -578,6 +597,10 @@ src/main/java/cn/explink/b2c/tools/poscodeMapp/PoscodeMappService.java -text
 src/main/java/cn/explink/b2c/tools/power/JointPower.java -text
 src/main/java/cn/explink/b2c/tools/power/JointPowerController.java -text
 src/main/java/cn/explink/b2c/tools/power/JointPowerDAO.java -text
+src/main/java/cn/explink/b2c/tps/TPSCarrierOrderStatus.java -text
+src/main/java/cn/explink/b2c/tps/TPSCarrierOrderStatusController.java -text
+src/main/java/cn/explink/b2c/tps/TPSCarrierOrderStatusService.java -text
+src/main/java/cn/explink/b2c/tps/TPSCarrierOrderStatusTimmer.java -text
 src/main/java/cn/explink/b2c/vipshop/CwbColumnSetVipShop.java -text
 src/main/java/cn/explink/b2c/vipshop/ReaderXMLHandler.java -text
 src/main/java/cn/explink/b2c/vipshop/SOAPHandler.java -text
@@ -1592,6 +1615,8 @@ src/main/java/cn/explink/enumutil/AdjustWayEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyEditDeliverystateIshandleEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyStateEnum.java -text
+src/main/java/cn/explink/enumutil/AutoExceptionStatusEnum.java -text svneol=unset#text/plain
+src/main/java/cn/explink/enumutil/AutoInterfaceEnum.java -text svneol=unset#text/plain
 src/main/java/cn/explink/enumutil/B2cPushStateEnum.java -text
 src/main/java/cn/explink/enumutil/BackTypeEnum.java -text
 src/main/java/cn/explink/enumutil/BalePDAEnum.java -text
@@ -2244,6 +2269,7 @@ src/main/java/org/tempuri/WmgwSoapStub.java -text
 src/main/resources/META-INF/spring/applicationContext-cache.xml -text
 src/main/resources/META-INF/spring/applicationContext-jms.xml -text
 src/main/resources/META-INF/spring/applicationContext-job.xml -text
+src/main/resources/META-INF/spring/applicationContext-mq.xml -text svneol=unset#text/plain
 src/main/resources/META-INF/spring/applicationContext-security.xml -text
 src/main/resources/META-INF/spring/applicationContext-without-job.xml -text
 src/main/resources/META-INF/spring/applicationContext.xml -text
@@ -2406,6 +2432,8 @@ src/main/webapp/WEB-INF/jsp/b2cdj/testFile.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/testHappiInfo.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/testPingtai.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/tmall.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/tps/tpsCarrierOrderStatus.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/tpsAutomate.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/vipshop.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/vipshop/test.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/vipshopAddress.jsp -text

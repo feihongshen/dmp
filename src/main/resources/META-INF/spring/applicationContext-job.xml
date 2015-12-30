@@ -99,6 +99,9 @@
 				<ref bean="doTime_dailyDayLogByTuihuoGenerate"/>
 				<ref bean="doTime_dailyDayLogByWareHouseGenerate"/>
 				<ref bean="doTime_dailyDayLogGenerate"/>
+				<ref bean="doTime_getCarrierOrderStatus"/>			
+				<ref bean="doTime_tpsOrderTempToMain"/>
+
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -118,7 +121,7 @@
 		</property>
 
 	</bean>
-	<!-- cn.explink.util.DatabaseCronTriggerBean -->
+	<!-- 唯品会订单临时表转主表：cn.explink.util.DatabaseCronTriggerBean -->
 	<bean id="doTime_vipshoptimmer" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">
 		<property name="jobDetail">
@@ -1057,6 +1060,46 @@
 		</property>
 	</bean>
 	<!-- 订单生命周期报表生成任务 结束 -->
+	
+	  <!-- 从TPS获取物流状态任务  开始 -->
+     <bean id="doTime_getCarrierOrderStatus" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getCarrierOrderStatusTask" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value> 
+           </property>
+     </bean>
+     
+     <bean id="getCarrierOrderStatusTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getCarrierOrderStatus_Task</value>
+         </property>
+     </bean>
+     <!-- 从TPS获取物流状态任务  结束 -->
+	
+	 <!-- TPS自动化订单临时表数据转转主表任务 开始 -->
+     <bean id="doTime_tpsOrderTempToMain" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="tpsOrderTempToMain" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="tpsOrderTempToMain" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getTPSCwbTempInsert_Task</value>
+         </property>
+     </bean>
+     <!-- TPS自动化订单临时表数据转转主表任务  结束-->
 
      <!-- 退货中心出入库跟踪表日志 start-->
      <bean id="doTime_createBackTimeLog" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">

@@ -6,6 +6,7 @@ import javax.servlet.ServletContextListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author gaoll
  *
  */
+@Service
 public class SpringContextUtils implements ServletContextListener, ApplicationContextAware{
 
 	/**

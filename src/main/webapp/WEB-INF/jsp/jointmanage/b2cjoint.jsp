@@ -436,6 +436,18 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/vipshop/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
+
+		else if(obj=='20127'){
+			$("#edit").val('<%=request.getContextPath()%>/tpsAutomate/show/');
+			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+		}
+		
+		else if(obj=='20128'){//唯品会_TPS_运单状态
+			$("#edit").val('<%=request.getContextPath()%>/tpsCarrierOrderStatus/show/');
+			$("#del").val('<%=request.getContextPath()%>/tpsCarrierOrderStatus/del/');
+		}
+
+
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

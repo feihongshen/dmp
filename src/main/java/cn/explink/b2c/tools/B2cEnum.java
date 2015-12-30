@@ -82,7 +82,9 @@ public enum B2cEnum {
 			"feiyuanAddress", 0), HaoYiGou(20120, "好易购", "haoyigou", 0),
 
 	GuangXinDianXin(20121, "广信电信", "guangxindianxin", 0), VipShop_cangku4(20122, "唯品会_仓库4", "vipshop_cangku4", 0), VipShop_cangku5(20123, "唯品会_仓库5", "vipshop_cangku5", 0), VipShop_cangku6(20124,
-			"唯品会_仓库6", "vipshop_cangku6", 0), VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7", 0), VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8", 0), ;
+			"唯品会_仓库6", "vipshop_cangku6", 0), VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7", 0), VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8", 0),VipShop_TPSAutomate(20127, "TPS自动化", "vipshop_tps_automate",0),
+			
+	TPS_CarrierOrderStatus(20128, "唯品会_TPS_运单状态", "TPS_CarrierOrderStatus",0);
 
 	private int key;
 	private String text;

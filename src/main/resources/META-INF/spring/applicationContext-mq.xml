@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+	default-lazy-init="true">
+  
+	  
+	  <bean id="consumerStarter" class="cn.explink.b2c.auto.order.mq.ConsumerStarter" init-method="start"  lazy-init="false">
+	    <property name="callBackList">  
+            <list>  
+                <ref bean="autoDispatchStatusConsumer" />  
+                <ref bean="tpsOrderAutomateConsumer" />  
+            </list>  
+        </property> 
+	  </bean>
+	  
+	  <bean class="cn.explink.b2c.auto.order.mq.AutoInitProcessor" init-method="autoInit"  lazy-init="false" >
+	  	<property name="consumerStarter" ref="consumerStarter"/> 
+	  </bean>
+   
+   	  <bean id="autoDispatchStatusCallback" class="cn.explink.b2c.auto.order.mq.AutoDispatchStatusCallback" > 
+   	  </bean>
+
+   	  <bean id="autoDispatchStatusConsumer" class="cn.explink.b2c.auto.order.mq.ConsumerTemplate" >
+		  	<property name="callBack" ref="autoDispatchStatusCallback"/> 
+		  	<!-- channel -->
+		  	<property name="exchangeName" value="channel.rabbitmq.tps.allot_30113" /> 
+		  	 <!-- 队列 -->
+		  	<property name="queueName" value="queue.rabbitmq.dmp.allot_30113" /> 
+		  	<!-- 每次获取数量 -->
+		  	<property name="fetchCount" value="10"/> 
+		  	<!-- 是否自动提交 -->
+		  	<property name="autoCommit" value="false"/> 
+	  </bean> 
+   
+   	  <bean id="autoExceptionSender" class="cn.explink.b2c.auto.order.mq.AutoExceptionSender" > 
+   	     <property name="channel" value="channel.rabbitmq.tps.exception" /> 
+   	  </bean>
+ 
+  	  
+  	  <!--start....消费下发订单信息-->
+   	  <bean id="tpsOrderAutomateConsumer" class="cn.explink.b2c.auto.order.mq.ConsumerTemplate" >
+		  	<property name="callBack" ref="tpsOrderAutomateMQCallback"/> 
+		  	 <!-- 队列 -->
+		  	<property name="queueName" value="queue.rabbitmq.dmp.do.tps_30113" /> 
+		  	<!-- 每次获取数量 -->
+		  	<property name="fetchCount" value="10"/> 
+		  	<!-- 是否自动提交 -->
+		  	<property name="autoCommit" value="false"/> 
+	  </bean> 
+   
+   	  <bean id="tpsOrderAutomateMQCallback" class="cn.explink.b2c.auto.order.service.TPSOrderAutomateMQCallback" > 
+   	  
+   	  </bean>	
+  	  <!--end....消费下发订单信息-->
+</beans>

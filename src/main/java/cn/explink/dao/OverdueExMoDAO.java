@@ -126,7 +126,7 @@ public class OverdueExMoDAO {
 	private void insertData(CwbOrderDTO dto, long warehouseId, long venderId) {
 		String insertSql = this.getInsertSql();
 		String cwb = dto.getCwb();
-		String createTime = dto.getRemark2();
+		String createTime = dto.getRemark2().equals("") ? null:dto.getRemark2();
 		int payType = (int) dto.getPaywayid();
 		BigDecimal shouleFee = dto.getShouldfare();
 

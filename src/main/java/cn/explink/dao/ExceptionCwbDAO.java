@@ -1,7 +1,10 @@
 package cn.explink.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import net.sourceforge.jtds.jdbc.DateTime;
@@ -9,7 +12,10 @@ import net.sourceforge.jtds.jdbc.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.Branch;
@@ -86,6 +92,57 @@ public class ExceptionCwbDAO {
 		jdbcTemplate.update(sql, cwb, scantype, errortype, branchid, userid, customerid, driverid, truckid, deliverid, interfacetype,scancwb);
 	}
 
+	public long createAutoExceptionMsg(final String msg,final int interfacetype){
+		final String sql = "insert into express_auto_exception (msg,interfacetype,createtime) values(?,?,CURRENT_TIMESTAMP)";
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection)
+					throws SQLException {
+			
+				PreparedStatement ps = connection.prepareStatement(sql, new String[] { "id" });
+				ps.setString(1, msg);
+				ps.setInt(2, interfacetype);
+		
+				return ps;
+			}
+			
+		}, keyHolder);
+		return keyHolder.getKey().longValue();
+	}
+
+	public long createAutoExceptionDetail(final String cwb, final String transportno, final String errinfo, final int status,final long msgid,final long refid) {
+		final String sql = "insert into express_auto_exception_detail (cwb,transportno,errinfo,status,msgid,refid,createtime) " + "values(?,?,?,?,?,?,CURRENT_TIMESTAMP)";
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection)
+					throws SQLException {
+			
+				PreparedStatement ps = connection.prepareStatement(sql, new String[] { "id" });
+				ps.setString(1, cwb);
+				ps.setString(2, transportno);
+				ps.setString(3, errinfo);
+				ps.setInt(4, status);
+				ps.setLong(5, msgid);
+				ps.setLong(6, refid);
+		
+				return ps;
+			}
+			
+		}, keyHolder);
+		return keyHolder.getKey().longValue();
+	}
+	
+	public void updateExceptionStatus(String cwb,String transportno,int status){
+		String sql = "update express_auto_exception_detail set status=? where cwb=? and transportno=?";
+		jdbcTemplate.update(sql, status,cwb,transportno);
+	}
+	
 	public String getECByWhereSql(String sql, String cwb, long scantype, String errortype, String branchid, long userid, long ishanlder, long scope) {
 		if (cwb.length() > 0 || scantype > 0 || errortype.length() > 0 || branchid.length() > 0 || userid > 0 || ishanlder > 0) {
 			StringBuffer w = new StringBuffer();
