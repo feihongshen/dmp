@@ -79,7 +79,7 @@ public class TPSGetOrderDataService {
 	@Autowired
 	VipShopGetCwbDataService vipShopGetCwbDataService;
 	@Autowired
-	TPSOrderImportService_B2c tpsOrderImportService_B2c;
+	TPSOrderImportService_B2c tPSOrderImportService_B2c;
 	@Autowired
 	SOAPHandler soapHandler;
 	@Autowired
@@ -380,7 +380,7 @@ public class TPSGetOrderDataService {
 			String emaildate = order.getRemark2();
 			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, warehouseid, emaildate);
 			//数据导入系统入口
-			tpsOrderImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_TPSAutomate.getMethod(), order, warehouseid,ed);
+			tPSOrderImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_TPSAutomate.getMethod(), order, warehouseid,ed);
 			this.logger.info("TPS自动化普通单在没有开启托运单模式下，数据插入临时表处理成功！");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -406,7 +406,7 @@ public class TPSGetOrderDataService {
 			long warehouseid = vipshop.getWarehouseid();
 			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, warehouseid, emaildate);
 			//数据导入系统入口
-			tpsOrderImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_TPSAutomate.getMethod(), order, warehouseid, ed);
+			tPSOrderImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_TPSAutomate.getMethod(), order, warehouseid, ed);
 			this.logger.error("TPS自动化普通单在开启托运单模式下，数据插入临时表成功!cwb=" + order.getCwb());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -510,7 +510,7 @@ public class TPSGetOrderDataService {
 			orderDTO.setCargotype(cargotype); // 服务类别
 			orderDTO.setRemark5(customer_name+"/"+warehouse_addr); // 仓库地址
 			orderDTO.setCwbordertypeid(Integer.parseInt(cwbordertype));
-			orderDTO.setShouldfare((BigDecimal)(String.valueOf(feight).equals("") ? "0" : feight));
+			orderDTO.setShouldfare((null==feight) ? new BigDecimal(0) : feight);
 			orderDTO.setCargoamount(caramount);
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
 			
@@ -772,7 +772,7 @@ public class TPSGetOrderDataService {
 		}
 
 		if (excelColumnSet.getShouldfareindex() != 0) {
-			BigDecimal b = new BigDecimal("0");
+			BigDecimal b = new BigDecimal(0);
 			cwbOrder.setShouldfare(String.valueOf(order.getShouldfare()) == null ? b : order.getShouldfare());
 		}
 		cwbOrder.setDefaultCargoName();

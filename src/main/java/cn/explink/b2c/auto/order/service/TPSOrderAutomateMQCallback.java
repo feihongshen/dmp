@@ -61,7 +61,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	@Autowired
 	JiontDAO jiontDAO;
 	@Autowired
-	TPSGetOrderDataService tpsGetOrderDataService;
+	TPSGetOrderDataService tPSGetOrderDataService;
 	@Autowired
 	AutoExceptionService autoExceptionService;
 	@Autowired
@@ -140,19 +140,19 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     	//flagOrder = order.getCustOrderNo();
     	try{
     		if(order.getBusinessType()==20 || order.getBusinessType()==40){
-    			tpsGetOrderDataService.extractedOXODataImport(order,vipshop);
+    			tPSGetOrderDataService.extractedOXODataImport(order,vipshop);
     		}else{
     			//普通接口数据导入
     			if(null!=order){
     				//返回的报文订单信息解析
-    				CwbOrderDTO cwbOrder = tpsGetOrderDataService.parseXmlDetailInfo(vipshop,order);
+    				CwbOrderDTO cwbOrder = tPSGetOrderDataService.parseXmlDetailInfo(vipshop,order);
     				//是否开启托运单模式，生成多个批次 0 不开启
     				if (vipshop.getIsTuoYunDanFlag() == 0) {
     					//普通单在没有开启托运单模式下，数据插入临时表
-    					tpsGetOrderDataService.extractedDataImport(vipshop_key, vipshop, cwbOrder);
+    					tPSGetOrderDataService.extractedDataImport(vipshop_key, vipshop, cwbOrder);
     				} else {
     					//普通单在开启托运单模式下，数据插入临时表
-    					tpsGetOrderDataService.extractedDataImportByEmaildate(vipshop_key, vipshop, cwbOrder);
+    					tPSGetOrderDataService.extractedDataImportByEmaildate(vipshop_key, vipshop, cwbOrder);
     				}
     			}
     		}
