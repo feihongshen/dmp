@@ -8813,7 +8813,7 @@ CREATE TABLE `cs_complaint_accept` (
 		<sql>
 		 CREATE TABLE `express_auto_exception`( 
 		   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键', 
-		   `msg` text DEFAULT '' NULL COMMENT '报文', 
+		   `msg` text NULL COMMENT '报文', 
 		   `interfacetype` int(4) DEFAULT 0 NULL COMMENT '接口类型', 
 		   `createtime` timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间', 
 		   PRIMARY KEY (`id`)
