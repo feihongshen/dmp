@@ -25,6 +25,7 @@ import cn.explink.enumutil.AutoInterfaceEnum;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.XmlUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -50,19 +51,23 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	public static final String OPERATE_TYPE_IN="1";//1是入库，3是出库
 	public static final String OPERATE_TYPE_OUT="3";//1是入库，3是出库
 	
+	private User user=null;
+	
 	@Override
 	public void onSuccess(Object sender, VMSEventArgs e) {
 	       this.logger.debug("开始消费分拣状态信息.");
 
 	        String msg = "";
 	        List<AutoMQExceptionDto> errorList=null;
-	        User user=null;
+
 	        try {
 	            msg = new String(e.getPayload(), "utf-8");
 	            this.logger.debug("消费消费分拣状态信息接收到报文：" + msg);
-	            System.out.println(msg);//?????
+	            //System.out.println(msg);//
 	            
-	    		user=this.getSessionUser();
+	    		if(user==null){
+	    			user=this.getSessionUser();
+	    		}
 	            
 	            //解析json
 	            List<AutoPickStatusVo> voList= parseJson(msg);
@@ -102,8 +107,8 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	            // 确认消费
 	            ISubscriber subscriber = (ISubscriber) sender;
 	            subscriber.commit();
-	            logger.debug("subscriber commit ok.");//?????????
-	            System.out.println("consumed ok.");///////////////////????????
+	            logger.debug("subscriber commit ok.");//
+	            //System.out.println("consumed ok.");///////////////////????????
 	        }
 		
 	}
@@ -116,10 +121,10 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 					errorMsg=encodeErrorMsg(err);
 					autoExceptionSender.send(errorMsg);
 				} catch (Throwable et) {
-		        	et.printStackTrace();///??????
+		        	//et.printStackTrace();///??????
 		        	logger.error("反馈异常到TPS时有出错，send exception to TPS error",et);
 
-		        	long refid=err.getRefid();//??????????????????????
+		        	long refid=err.getRefid();//
 		        	long msgid=this.autoExceptionService.createAutoExceptionMsg(errorMsg, AutoInterfaceEnum.fankui_fanjian.getValue());
 		        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"",et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid);
 		        }
@@ -129,7 +134,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	}
 	
 	private String encodeErrorMsg(AutoMQExceptionDto mqe) throws Exception{
-		mqe.setCreate_time("2015-12-28");//
+		mqe.setCreate_time(DateTimeUtil.getNowTime());//
 		mqe.setExchange_name(consumerTemplate.getExchangeName());//
 		mqe.setQueue_name(consumerTemplate.getQueueName());//
 		mqe.setRemark("");
@@ -140,7 +145,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 		String msg=XmlUtil.toXml(AutoMQExceptionDto.class, mqe); 
 		
 		logger.debug("反馈TPS的报文 xml:"+msg);
-		System.out.println("反馈TPS的报文 xml:"+msg);//?????????????
+
 		return msg;
 	}
 	private List<AutoPickStatusVo> parseJson(String json){ 
@@ -165,9 +170,8 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 					throw new RuntimeException("分拣状态报文中未明的操作类型:"+vo.getOperate_type());
 				}
 			} catch (Exception e) {
-				e.printStackTrace();//??????
+				//e.printStackTrace();//??????
 				logger.error("处理分拣状态出错，handleData error:",e);
-				//String err=vo.getOrder_sn()+","+e.getMessage();
 	
 				long flowordertye=FlowOrderTypeEnum.RuKu.getValue();
 				if(e instanceof CwbException){
@@ -220,9 +224,9 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 
 	private User getSessionUser() {
 		User user=new User();
-		user.setUserid(1);//admin ???
+		user.setUserid(1);//admin
 		//user.setBranchid(199);
-		user.setBranchid(getPickBranch());//joint ???199
+		user.setBranchid(getPickBranch());//joint 199
 		user.setRealname("admin");//
 		user.setIsImposedOutWarehouse(1);//
 		return user;

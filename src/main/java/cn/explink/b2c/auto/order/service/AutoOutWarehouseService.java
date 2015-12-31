@@ -1,6 +1,8 @@
 package cn.explink.b2c.auto.order.service;
 
 import java.math.BigDecimal;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.auto.order.mq.AutoDispatchStatusCallback;
+import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -23,14 +27,14 @@ public class AutoOutWarehouseService {
 	@Autowired
 	private CwbOrderService cwborderService;
 	
-	@Autowired
-	private CwbRouteService cwbRouteService;
+
 	
 	@Autowired
 	private AutoOrderStatusService autoOrderStatusService;
 	
 	@Autowired
 	private CwbDAO cwbDAO;
+
 	
 	@Transactional
 	public void autOutWarehouse(AutoPickStatusVo data,User user){
@@ -47,7 +51,7 @@ public class AutoOutWarehouseService {
 			String baleno="";
 			BigDecimal cargorealweight=null;
 			BigDecimal cargovolume = null;
-			int deliveryBranchId=0;
+			String deliveryBranchCode=null;
 
 
 			//try{
@@ -56,7 +60,8 @@ public class AutoOutWarehouseService {
 				cargorealweight=data.getOriginal_weight()==null||data.getOriginal_weight().length()<1?null:new BigDecimal(data.getOriginal_weight());
 				cargovolume=data.getOriginal_volume()==null||data.getOriginal_volume().length()<1?null:new BigDecimal(data.getOriginal_volume());
 				baleno=data.getPackage_no()==null||data.getPackage_no().length()<1?null:data.getPackage_no();
-				deliveryBranchId=data.getDestination_org()==null||data.getDestination_org().length()<1?0:Integer.parseInt(data.getDestination_org());
+				deliveryBranchCode=data.getDestination_org()==null||data.getDestination_org().length()<1?"":data.getDestination_org();
+				deliveryBranchCode=deliveryBranchCode.trim();
 				
 				if(cwb==null||cwb.length()<1){
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"出库报文里订单号不能为空");
@@ -74,10 +79,15 @@ public class AutoOutWarehouseService {
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"不存在此订单");
 				}
 				
+				long deliveryBranchId=autoOrderStatusService.getDeliveryBranchId(deliveryBranchCode);
+				if(deliveryBranchCode.length()>0&&deliveryBranchId==0){
+					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"没找到此目的地站");
+				}
+				
 				//根据TPS目的站算出下一站
 				if(deliveryBranchId>0){
-					branchid=getNextBranch(user.getBranchid(),deliveryBranchId);
-					if(branchid<1){
+					branchid=autoOrderStatusService.getNextBranch(user.getBranchid(),deliveryBranchCode);
+					if(branchid==0){
 						throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"根据目的地站找不到下一站");
 					}
 				}
@@ -121,13 +131,6 @@ public class AutoOutWarehouseService {
 
 		}
 
-	
-	private long getNextBranch(long currentBranchId,long deliveryBranchId){
-		this.cwbRouteService.reload();//?????
-		long nextbranchid = this.cwbRouteService.getNextBranch(currentBranchId, deliveryBranchId);
-		
-		return nextbranchid;
-	}
 	
 
 

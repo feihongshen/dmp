@@ -5,10 +5,14 @@ package cn.explink.b2c.auto.order.mq;
 import com.vip.platform.middleware.vms.SubQoS;
 import com.vip.platform.middleware.vms.VMSClient;
 
+import cn.explink.b2c.tools.B2cEnum;
+import cn.explink.b2c.tools.JointService;
+
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class ConsumerStarter {
@@ -19,8 +23,10 @@ public class ConsumerStarter {
 	//@Resource
    
 
-    Logger logger = LoggerFactory.getLogger(ConsumerStarter.class);
+    private Logger logger = LoggerFactory.getLogger(ConsumerStarter.class);
     
+	@Autowired
+	private JointService jointService;
     
 	public List<ConsumerTemplate> getCallBackList() {
 		return callBackList;
@@ -40,6 +46,14 @@ public class ConsumerStarter {
     public void start() throws Exception{
     	
         try {
+        	int state=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());//
+        	if(state==0){
+        		logger.debug("do NOT connect to rabbit mq,state={}",state);
+        		return;//
+        	}
+        	
+        	logger.debug("start to connect to rabbit mq...");
+        	
 			//consumerContainer = new ConsumerContainer(connectionFactory);
 			VMSClient client= new VMSClient();
 			/*
@@ -54,8 +68,9 @@ public class ConsumerStarter {
 				logger.info("consumer started sucess,queueName={},prefetchCount={},callback={}:"+rabbitTest.getQueueName()+","+rabbitTest.getFetchCount()+","+rabbitTest.getCallBack().toString());
 			}
 			//consumerContainer.startAllConsumers();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			logger.error("rabbit mq start error:",e);
+			//e.printStackTrace();
 			//throw e;
 		}
     }

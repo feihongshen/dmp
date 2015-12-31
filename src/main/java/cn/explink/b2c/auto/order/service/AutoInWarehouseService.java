@@ -79,8 +79,14 @@ public class AutoInWarehouseService {
 				BigDecimal cargorealweight=data.getOriginal_weight()==null||data.getOriginal_weight().length()<1?null:new BigDecimal(data.getOriginal_weight());
 				BigDecimal cargovolume=data.getOriginal_volume()==null||data.getOriginal_volume().length()<1?null:new BigDecimal(data.getOriginal_volume());
 				String baleno=data.getPackage_no()==null||data.getPackage_no().length()<1?null:data.getPackage_no();
-				int deliveryBranchId=data.getDestination_org()==null||data.getDestination_org().length()<1?0:Integer.parseInt(data.getDestination_org());
-
+				String deliveryBranchCode=data.getDestination_org()==null||data.getDestination_org().length()<1?"":data.getDestination_org();
+				deliveryBranchCode=deliveryBranchCode.trim();
+				
+				long deliveryBranchId=autoOrderStatusService.getDeliveryBranchId(deliveryBranchCode);
+				if(deliveryBranchCode.length()>0&&deliveryBranchId==0){
+					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"没找到此目的地站");
+				}
+				
 				this.autoOrderStatusService.updateAutoOrder(cwb,cargovolume,cargorealweight,baleno,deliveryBranchId);
 				
 				String transcwb=cwbOrder.getTranscwb()==null?null:cwbOrder.getTranscwb().trim();
