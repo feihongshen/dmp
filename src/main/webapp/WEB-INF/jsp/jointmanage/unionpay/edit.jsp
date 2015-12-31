@@ -33,6 +33,9 @@ UnionPay unionpay = (UnionPay)request.getAttribute("unionpay");
 					<li><span>请求银联URL：</span>
 						<input type ="text" id="requestPosUrl" name ="requestPosUrl" value ="<%=StringUtil.nullConvertToEmptyString(unionpay.getRequestPosUrl()) %>" maxlength="50"  >
 					</li>
+					<li><span>限制查询：</span>
+ 						<input type ="text" id="resultCustomerid" name ="resultCustomerid" value ="<%=StringUtil.nullConvertToEmptyString(bill99.getResultCustomerid())%>" maxlength="50"  > 
+					</li>
 					<li><span>密码：</span>
  						<input type ="password" id="password" name ="password" value ="" maxlength="30"  > 
 					</li>
