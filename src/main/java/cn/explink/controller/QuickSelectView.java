@@ -763,6 +763,10 @@ public class QuickSelectView {
 	}
 
 	public String getPaytypeName() {
+		if(this.newpaywayid==null||"".equals(this.newpaywayid)){
+			return "";
+		}
+	
 		PaytypeEnum text = PaytypeEnum.getByValue(Integer.parseInt(this.newpaywayid));
 		return text == null ? "" : text.getText();
 		// return (newpaywayid + "").replace("1",
