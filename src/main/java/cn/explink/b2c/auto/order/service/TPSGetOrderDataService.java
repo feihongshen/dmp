@@ -100,6 +100,121 @@ public class TPSGetOrderDataService {
 		VipShop vipshop = (VipShop) JSONObject.toBean(jsonObj, VipShop.class);
 		return vipshop;
 	}
+	 
+		/**
+		 * 构建请求，解析返回信息,获取接口运单信息
+		 */
+		/*public void getOrdersByTPS(int vipshop_key){
+	    	VipShop vipshop = this.getVipShop(vipshop_key);
+			int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
+			if (isOpenFlag == 0) {
+				this.logger.info("未开启TPS自动化[" + vipshop_key + "]对接！");
+				return;
+			}
+			if (vipshop.getIsopendownload() == 0) {
+				this.logger.info("未开启TPS自动化[" + vipshop_key + "]订单下载接口");
+				return;
+			}
+	        this.logger.info("消费下发承运商订单状态接口表的物流状态信息:");
+	        try {
+	        	String msg ="[{'businessType':60,'buyerAddress':'广东省121','buyerName':'104104101',"
+	            		+ "'cmdType':'new','custOrderNo':'huanPS007',"
+	            		+"'details':[],'dirty':false,'extRowStatus':0,'feight':0.00,"
+	            		+"'isCod':false,'isDeleted':false,'isSend':false,'logged':false,'totalPack':12,"
+	            		+"'mobile':'104104101','orderDeliveryBatch':'0','orderSn':'','postCode':'',"
+	            		+"'requiredTime':'','rowStatus':2,'serviceType':1,'storeContacts':'何宇新',"
+	            		+"'storeTel':'13570507226','tel':'104104101','transportDay':0,'transportType':'',"
+	            		+"'valuationValue':0,'vipClub':0,'warehouse':'VIP_NH','warehouseAddr':'花海仓20号',"
+	            		+ "'codAmount':12.0,'originalWeight':12.0,'originalVolume':12.0,'customerName':'唯品会',"
+	            		+"'salesPlatform':'VIP','brandName':'韩都衣舍','storeName':'guag','cnorProv':'广东',"
+	            		+"'cnorCity':'广州','cnorRegion':'荔湾','cnorAddr':'花海','custCode':8,'orgName':'',"
+	            		+"'orderSum':89,'payment':1,'boxNo':'23'}]";
+	        	
+	        	TPSOrder order = new TPSOrder();
+	 		    order.setAddTime(null);
+	 		    order.setBoxNo("");
+	 		    order.setBrandName("");
+	 		    order.setBusinessType(30);
+	 		    order.setBuyerAddress("104104101");
+	 		    order.setBuyerName("104104101");
+	 		    order.setCmdType("003");
+	 		    order.setCnorAddr("13570507226");
+	 		    order.setCnorCity("广州市");
+	 		    order.setCnorProv("广东省");
+	 		    order.setCnorRegion("荔湾区");
+	 		    order.setCod(true);
+	 		    order.setCreateTime(1451280407936L);
+	 		    order.setCodAmount(new BigDecimal(11.0));
+	 		    order.setCustCode("NHLDP089");
+	 		    order.setCustOrderNo("huan100");
+	 		    order.setCustomerName("换");
+	 		    order.setDetails(null);
+	 		    order.setFeight(new BigDecimal(11.0));
+	 		    order.setGoGetReturnTime("");
+	 		    order.setInfCarrierPickTaskSendId(0);
+	 		    order.setIsCod(true);
+	 		    order.setMobile("104104101");
+	 		    order.setOrderDeliveryBatch("0");
+	 		    order.setOrderSn("1020000133830");
+	 		    order.setOrderSum(new BigDecimal(111.0));
+	 		    order.setOrgCode("");
+	 		    order.setOrgName("飞远-荔湾站2");
+	 		    order.setOriginalVolume(new BigDecimal(111.0));
+	 		    order.setOriginalWeight(new BigDecimal(111.0));
+	 		    order.setPayment(-1);
+	 		    order.setPostCode("");
+	 		    order.setRecordVersion(0L);
+	 		    order.setRequiredTime("");
+	 		    order.setSalesPlatform("");
+	 		    order.setStoreContacts("周欢");
+	 		    order.setStoreTel("13570507226");
+	 		    order.setStoreName("");
+	 		    order.setTotalPack(0);
+	 		    order.setTransportDay("0");
+	 		    order.setTransportType("");
+	 		    order.setValuationValue(new BigDecimal(11.0));
+	 		    order.setVipClub(0);
+	 		    order.setWarehouse("VIP_NH");
+	 		    order.setWarehouseAddr("花海仓20号");
+	 		    JSONArray jsonArray = JSONArray.fromObject(order);
+	 		    String json = jsonArray.toString();
+	 		    
+	 		   JSONArray jsonobjArray = JSONArray.fromObject(json);
+	 		   List<TPSOrder> list = (List<TPSOrder>)JSONArray.toCollection(jsonobjArray,TPSOrder.class); 
+		        @SuppressWarnings({ "deprecation", "rawtypes" })
+		        msg = new String(e.getPayload(), "utf-8");
+	            this.logger.info("消费下发承运商订单状态接口表的物流状态信息接收到报文：" + msg);
+	            TPSOrder order1 = (TPSOrder) list.get(0);
+	            //InfCarrierOrderStatusTransportTrackVo trackVo = vo.getItem();
+	            if (null == order1) {
+	                this.logger.error("消费下发承运商订单状态接口表的物流状态信息异常：item部分为空");
+	            }
+	            if ((order1 == null)) {
+	    			this.logger.info("请求TPS自动化订单信息-获取订单信息失败!");
+	    			return;
+	    		}
+	    		if(order1.getBusinessType()==20 || order1.getBusinessType()==40){
+	    			this.extractedOXODataImport(order1,vipshop);
+	    		}else{
+	    			//普通接口数据导入
+	    			if(null!=order1){
+	    				//返回的报文订单信息解析
+	    				CwbOrderDTO cwbOrder = this.parseXmlDetailInfo(vipshop,order1);
+	    				//是否开启托运单模式，生成多个批次 0 不开启
+	    				if (vipshop.getIsTuoYunDanFlag() == 0) {
+	    					//普通单在没有开启托运单模式下，数据插入临时表
+	    					this.extractedDataImport(vipshop_key, vipshop, cwbOrder);
+	    				} else {
+	    					//普通单在开启托运单模式下，数据插入临时表
+	    					this.extractedDataImportByEmaildate(vipshop_key, vipshop, cwbOrder);
+	    				}
+	    			}
+	    		}
+	        }catch(Exception e){
+	        	e.printStackTrace();
+	        }
+		}*/
+
 	
 	/**
 	 * 订单报文实体 转换 为 CwbOrderDTO
@@ -212,20 +327,20 @@ public class TPSGetOrderDataService {
 		orderMap.put("remark5", order.getWarehouse()+"&"+order.getWarehouseAddr());
 		orderMap.put("cargorealweight", order.getOriginalWeight().toString());
 		
-		if(StringUtils.isNotBlank(order.getPayment().toString())){
-			if(order.getPayment().equals("-1")){ //非货到付款
+		if(null!=order.getPayment()){
+			if(order.getPayment().intValue()==-1){ //非货到付款
 				orderMap.put("paywayid", "" + PaytypeEnum.Qita.getValue());
 			}
 			
-			if(order.getPayment().equals("0")){//货到付款现金支付
+			if(order.getPayment().intValue()==0){//货到付款现金支付
 				orderMap.put("paywayid", "" + PaytypeEnum.Xianjin.getValue());
 			}
 			
-			if(order.getPayment().equals("1")){//货到付款刷卡支付
+			if(order.getPayment().intValue()==1){//货到付款刷卡支付
 				orderMap.put("paywayid", "" + PaytypeEnum.Pos.getValue());
 			}
 			
-			if(order.getPayment().equals("2")){//货到付款支付宝 支付
+			if(order.getPayment().intValue()==2){//货到付款支付宝 支付
 				orderMap.put("paywayid", "" + PaytypeEnum.CodPos.getValue());
 			}
 		}
@@ -443,7 +558,7 @@ public class TPSGetOrderDataService {
 			BigDecimal original_weight = order.getOriginalWeight()/*(BigDecimal) (String.valueOf(order.getOriginalWeight()).equals("") ? "0" : order.getOriginalWeight())*/; // 重量
 			BigDecimal original_volume = order.getOriginalVolume()/*(BigDecimal) (String.valueOf(order.getOriginalVolume()).equals("") ? "0" : order.getOriginalVolume())*/; // 体积
 			int ext_pay_type = (null==order.getPayment()||"".equals(order.getPayment().toString())) ? 0 : order.getPayment(); // 扩展支付方式
-			int paywayid = (ext_pay_type==1) ? Integer.valueOf(PaytypeEnum.Pos.getValue()) : Integer.valueOf(PaytypeEnum.Xianjin.getValue());
+			int paywayid = (ext_pay_type==1) ? PaytypeEnum.Pos.getValue() : PaytypeEnum.Xianjin.getValue();
 			String created_dtm_loc = this.toDateForm(order.getCreateTime());//记录生成时间
 			String order_delivery_batch = order.getOrderDeliveryBatch(); // 1（默认）-一配订单：2-二配订单
 			if ("1".equals(order_delivery_batch)) {
@@ -512,6 +627,7 @@ public class TPSGetOrderDataService {
 			orderDTO.setCwbordertypeid(Integer.parseInt(cwbordertype));
 			orderDTO.setShouldfare((null==feight) ? new BigDecimal(0) : feight);
 			orderDTO.setCargoamount(caramount);
+			orderDTO.setNewpaywayid(paywayid + "");
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
