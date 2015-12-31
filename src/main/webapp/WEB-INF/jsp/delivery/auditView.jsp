@@ -35,7 +35,7 @@ String isReasonRequired=(String)request.getAttribute("isReasonRequired");
 
 Long deliveryStateType=(Long)session.getAttribute("deliveryStateType"); 
 //用户角色id
-long userroleid = request.getAttribute("userroleid")==null?0:(Long)request.getAttribute("userroleid");
+long userroleid = request.getAttribute("userroleid")==null?0:((Long)request.getAttribute("userroleid")).longValue();
 String deliveryxiaojianyuan=request.getAttribute("deliveryxiaojianyuan")==null?"yes":(String)request.getAttribute("deliveryxiaojianyuan");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
