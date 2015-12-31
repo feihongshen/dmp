@@ -55,10 +55,10 @@
 				<version>2.0.3</version>
 				<configuration>
 					<changeLogFile>changelog/changelog.xml</changeLogFile>
-					<driver>${drivers}</driver>
-					<url>${expressurl.url}</url>
-					<username>${expressurl.user}</username>
-					<password>${expressurl.password}</password>
+					<driver>com.mysql.jdbc.Driver</driver>
+					<url>jdbc:mysql://10.199.247.161:3306/dmp_test?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</url>
+					<username>root</username>
+					<password>dmpdmp1555</password>
 					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
 				</configuration>
 			</plugin>
