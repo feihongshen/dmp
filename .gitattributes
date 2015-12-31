@@ -1906,17 +1906,6 @@ src/main/java/cn/explink/pos/tools/PosPayService.java -text
 src/main/java/cn/explink/pos/tools/PosTradeDetail.java -text
 src/main/java/cn/explink/pos/tools/SignPayAmountTypeEnum.java -text
 src/main/java/cn/explink/pos/tools/SignTypeEnum.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPay.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayController.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayEnum.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayService.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayServiceMaster.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayService_Delivery.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayService_Login.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayService_LoginOut.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayService_Search.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayService_SearchPos.java -text
-src/main/java/cn/explink/pos/unionpay/UnionPayTradetypeEnum.java -text
 src/main/java/cn/explink/pos/unionpay/json/Reqdata.java -text
 src/main/java/cn/explink/pos/unionpay/json/RespContent.java -text
 src/main/java/cn/explink/pos/unionpay/json/Respdata.java -text
