@@ -6,6 +6,15 @@ public class UnionPay {
 	private String request_url; // 请求URL
 	private int isotherdeliveroper; // 他人刷卡限制 0 关闭 (可刷) 1 开启（不可刷）
 	private String requestPosUrl; // 请求POS url
+	private String resultCustomerid;//拒绝查询的电商
+
+	public String getResultCustomerid() {
+		return resultCustomerid;
+	}
+
+	public void setResultCustomerid(String resultCustomerid) {
+		this.resultCustomerid = resultCustomerid;
+	}
 
 	public String getRequestPosUrl() {
 		return requestPosUrl;

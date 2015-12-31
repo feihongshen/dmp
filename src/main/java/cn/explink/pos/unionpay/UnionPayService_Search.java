@@ -12,6 +12,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.pos.bill99.Bill99;
 import cn.explink.pos.tools.PosEnum;
 
 @Service
@@ -60,12 +61,35 @@ public class UnionPayService_Search extends UnionPayService {
 		if (cwbOrder == null) {
 			return super.RespPublicMsg("01", "没有检索到数据,当前订单=" + cwb + ",username=" + jsondata.getString("LoginName"));
 		}
+		
+		boolean selectPower = validatorSelectPower(unionpay, cwbOrder);
+		
+		if(selectPower){
+			return super.RespPublicMsg("01", "没有权限检索数据,当前订单=" + cwb );
+		}
+		
 		DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 		if (deliverystate != null && deliverystate.getDeliverystate() != 0) {
 			String exptremark = super.getDeliveryStateById(deliverystate.getDeliverystate());
 			return super.RespPublicMsg("01", "该订单已做过反馈[" + exptremark + "],当前订单=" + cwb + ",username=" + jsondata.getString("LoginName"));
 		}
 		return respMsg_toCwbSearch(cwbOrder);
+	}
+	
+	//是否验证权限允许查询访问
+	private boolean validatorSelectPower(UnionPay unionpay, CwbOrder co) {
+		if(unionpay.getResultCustomerid()==null||unionpay.getResultCustomerid().isEmpty()){
+			return false;
+		}
+		String customeridArrs[]=unionpay.getResultCustomerid().split(",");
+		if(customeridArrs!=null&&customeridArrs.length>0){
+			for(String customerid:customeridArrs){
+				if(co.getCustomerid()==Long.valueOf(customerid)){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

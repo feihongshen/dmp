@@ -69,11 +69,14 @@ public class UnionPayService {
 		String request_url = StringUtil.nullConvertToEmptyString(request.getParameter("request_url"));
 		int isotherdeliveroper = Integer.parseInt(request.getParameter("isotherdeliveroper"));
 		String requestPosUrl = StringUtil.nullConvertToEmptyString(request.getParameter("requestPosUrl"));
+		
+		String resultCustomerid = StringUtil.nullConvertToEmptyString(request.getParameter("resultCustomerid"));
 
 		unionpay.setPrivate_key(private_key);
 		unionpay.setRequest_url(request_url);
 		unionpay.setIsotherdeliveroper(isotherdeliveroper);
 		unionpay.setRequestPosUrl(requestPosUrl);
+		unionpay.setResultCustomerid(resultCustomerid);
 		JSONObject jsonObj = JSONObject.fromObject(unionpay);
 		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
