@@ -628,6 +628,11 @@ public class TPSGetOrderDataService {
 			orderDTO.setShouldfare((null==feight) ? new BigDecimal(0) : feight);
 			orderDTO.setCargoamount(caramount);
 			orderDTO.setNewpaywayid(paywayid + "");
+			orderDTO.setExcelbranch(orderDTO.getExcelbranch()==null?"":orderDTO.getExcelbranch());//站点
+			orderDTO.setRemark1(orderDTO.getRemark1()==null?"":orderDTO.getRemark1());
+			orderDTO.setRemark1(orderDTO.getRemark3()==null?"":orderDTO.getRemark3());
+			orderDTO.setRemark1(orderDTO.getRemark4()==null?"":orderDTO.getRemark4());
+			orderDTO.setIsaudit(orderDTO.getIsaudit());
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
