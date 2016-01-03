@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import cn.explink.b2c.auto.order.mq.AutoMQExceptionDto;
 import cn.explink.b2c.auto.order.mq.ConsumerTemplate;
 import cn.explink.b2c.auto.order.vo.TPSOrder;
 import cn.explink.b2c.tools.B2cEnum;
@@ -26,6 +27,8 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
 import cn.explink.enumutil.AutoInterfaceEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.exception.CwbException;
 
 import com.vip.platform.middleware.vms.IPublisher;
 import com.vip.platform.middleware.vms.ISubscriber;
@@ -77,17 +80,18 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     	VipShop vipshop = this.getVipShop(vipshop_key);
     	String flagOrder = "";
 		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
-		if (isOpenFlag == 0) {
+		/*if (isOpenFlag == 1) {
 			//this.logger.info("未开启TPS自动化[" + vipshop_key + "]对接！");
 			return;
 		}
-		if (vipshop.getIsopendownload() == 0) {
+		if (vipshop.getIsopendownload() == 1) {
 			//this.logger.info("未开启TPS自动化[" + vipshop_key + "]订单下载接口");
 			return;
-		}
+		}*/
         this.logger.info("消费下发承运商订单状态接口表的物流状态信息:");
         String msg = "";
     	List<TPSOrder> errorOrderList = null;
+    	List<AutoMQExceptionDto> errorList = null;
         try {
         	msg = new String(e.getPayload(), "utf-8");
         	JsonConfig config=new JsonConfig();  
@@ -102,31 +106,46 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     			this.logger.info("请求TPS自动化订单信息-获取订单信息失败!");
     			return;
     		}
+        	
         	for(TPSOrder order : list){
-        		errorOrderList = handleOrderData(errorOrderList,order,vipshop,vipshop_key,msg);
-            }
+        		AutoMQExceptionDto error = handleOrderData(errorOrderList,order,vipshop,vipshop_key,msg);
+        		errorList.add(error);
+        	}
+        	
         } catch (Throwable ex) {
         	this.logger.error("消费下发订单时解析异常!");
-        	  VMSClient client = new VMSClient();
-        	  String sendXml = StringXMLSend(vipshop,errorOrderList,msg);
-              Message falure = Message.from(sendXml);
-              falure.addRoutingKey("*");
-              falure.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
-              // msg.qos().priority(0); // 数字大的表示优先级高。 在同一个topic中，优先级高的消息先于优先级低的消息被消费。可选设置。
-              // 推送到MQ
-              try{
-	              client.options().setConfirmable(true).setWaitingTimeout(2000).setFailFastEnabled(false);
-	              IPublisher publisher = client.publish("channel.rabbitmq.tps.exception", falure);// 推送，第一个参数channelName，第二个参数报文内容
-	              this.logger.info("错误订单消息推送成功");
-              
-            	  long msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
-    	          long detailId=this.autoExceptionService.createAutoExceptionDetail("","", ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
-              }catch(Exception e1){
-            	  e1.printStackTrace();
-            	  this.logger.error("下发订单信息异常信息保存失败!");
-              }
+        	long msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
+	        long detailId=this.autoExceptionService.createAutoExceptionDetail("","", ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+        	AutoMQExceptionDto mqe=new AutoMQExceptionDto();
+			mqe.setBusiness_id("");
+			mqe.setException_info(ex.getMessage());
+			mqe.setMessage(msg);
+			mqe.setRefid(detailId);
+			if(errorList==null){
+				errorList=new ArrayList<AutoMQExceptionDto>();
+        	}
+			errorList.add(mqe);
 	          
         } finally {
+        	if(errorList!=null){
+        		for(AutoMQExceptionDto err:errorList){
+        			VMSClient client = VMSClient.getDefault();
+              	    String sendXml = StringXMLSend(vipshop,errorOrderList,msg);
+                    Message falure = Message.from(sendXml);
+                    falure.addRoutingKey("*");
+                    falure.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
+                    // msg.qos().priority(0); // 数字大的表示优先级高。 在同一个topic中，优先级高的消息先于优先级低的消息被消费。可选设置。
+                    // 推送到MQ
+                    try{
+        	              client.options().setConfirmable(true).setWaitingTimeout(2000).setFailFastEnabled(false);
+        	              IPublisher publisher = client.publish("channel.rabbitmq.tps.exception", falure);// 推送，第一个参数channelName，第二个参数报文内容
+        	              this.logger.info("错误订单消息推送成功");
+                    }catch(Exception e1){
+                  	  e1.printStackTrace();
+                  	  this.logger.error("下发订单信息异常信息保存失败!");
+                    }
+        		}
+        	}
             // 确认消费
             ISubscriber subscriber = (ISubscriber) sender;
             subscriber.commit();
@@ -134,8 +153,10 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     }
     
     //处理业务逻辑
-    private List<TPSOrder> handleOrderData(List<TPSOrder> errorOrderList,
+    @SuppressWarnings("null")
+	private AutoMQExceptionDto handleOrderData(List<TPSOrder> errorOrderList,
     		TPSOrder order,VipShop vipshop,int vipshop_key,String msg){
+    	AutoMQExceptionDto error=null;
     	long msgid=0;
     	//flagOrder = order.getCustOrderNo();
     	try{
@@ -144,6 +165,10 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     		}else{
     			//普通接口数据导入
     			if(null!=order){
+    				if(order.getAddTime()==null){
+    					this.logger.info("没有出仓时间");
+    					throw new CwbException(order.getCustOrderNo(),FlowOrderTypeEnum.DaoRuShuJu.getValue(),"没有出仓时间");
+    				}
     				//返回的报文订单信息解析
     				CwbOrderDTO cwbOrder = tPSGetOrderDataService.parseXmlDetailInfo(vipshop,order);
     				//是否开启托运单模式，生成多个批次 0 不开启
@@ -162,19 +187,17 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 			if(errorOrderList==null){
 				errorOrderList=new ArrayList<TPSOrder>();
 			}
-			/*AutoMQExceptionDto mqe=new AutoMQExceptionDto();
-			mqe.setBusiness_id(order.getCustOrderNo());
-			mqe.setException_inf(ex.getMessage());
-			mqe.setMessage(msg);
-			User user=this.getSessionUser();*/
 			if(msgid==0){
 				msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
 			}
 	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
-	        
+	        error.setBusiness_id(order.getCustOrderNo());
+	        error.setException_info(ex.getMessage());
+	        error.setMessage(msg);
+	        error.setRefid(detailId);
 	        errorOrderList.add(order);
     	}
-    	return errorOrderList;
+    	return error;
     }
     
     //异常报文返回数据拼接
@@ -212,14 +235,14 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
             forRecover = new String(e.getPayload(), "utf-8");
         } catch (Throwable e1) {
             this.logger.error("消费下发承运商订单状态接口表的物流状态信息，onFailure：" + e1.toString());
-            VMSClient client = new VMSClient();
+            VMSClient client = VMSClient.getDefault();
             Message msg = Message.from(forRecover);
             msg.addRoutingKey("*");
             msg.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
             // msg.qos().priority(0); // 数字大的表示优先级高。 在同一个topic中，优先级高的消息先于优先级低的消息被消费。可选设置。
             // 推送到MQ
             client.options().setConfirmable(true).setWaitingTimeout(2000).setFailFastEnabled(false);
-            IPublisher publisher = client.publish("channel.rabbitmq.tps.do.dmp_30113", msg);// 推送，第一个参数channelName，第二个参数报文内容
+            IPublisher publisher = client.publish("channel.rabbitmq.tps.exception", msg);// 推送，第一个参数channelName，第二个参数报文内容
         } finally {
             // 确认消费
             ISubscriber subscriber = (ISubscriber) sender;
