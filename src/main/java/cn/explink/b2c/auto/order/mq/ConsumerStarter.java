@@ -69,7 +69,7 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
         	logger.info("start to connect to rabbit mq...");
         	
 			//consumerContainer = new ConsumerContainer(connectionFactory);
-			VMSClient client= new VMSClient();
+			VMSClient client= VMSClient.getDefault();//new VMSClient();
 			/*
 			  可同时启动多个consumer实例并行执行。每个实例默认的prefetch account是5，显式ack。
 			     如果需要修改prefetch account或自动ack，请调用相应的重载接口。建议采取默认需要显式ack，这样，消息消费出错还能后续处理

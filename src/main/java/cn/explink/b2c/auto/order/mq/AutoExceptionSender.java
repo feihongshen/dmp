@@ -8,7 +8,7 @@ public class AutoExceptionSender {
 	private String channel;
 
 	public void send(String content){
-		VMSClient client = new VMSClient();//消耗大量的资源,通过VMSClient.getDefault()获取单例????????
+		VMSClient client = VMSClient.getDefault();//new VMSClient();//消耗大量的资源,通过VMSClient.getDefault()获取单例????????
         Message msg = Message.from(content);
         msg.addRoutingKey("*");
         msg.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
