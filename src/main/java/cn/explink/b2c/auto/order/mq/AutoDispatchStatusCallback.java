@@ -67,6 +67,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	            
 	    		if(user==null){
 	    			user=this.getSessionUser();
+	    			this.logger.info("start consume first msg:" + msg);
 	    		}
 	            
 	            //解析json
@@ -82,12 +83,18 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	            	
 	            }
 	        } catch (Throwable ex) {
-	        	logger.error("消费分拣状态信息 onSuccess error",ex);
-	        	ex.printStackTrace();/////////////////
+	        	logger.error("消费分拣状态信息 onSuccess error,msg:"+msg,ex);
+	        	//ex.printStackTrace();/////////////////
 	        	
-	        	long msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.fenjianzhuangtai.getValue());
-	        	long detailId=this.autoExceptionService.createAutoExceptionDetail("","", ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
-	        
+	        	long detailId=0;
+	        	
+	        	try{
+		        	long msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.fenjianzhuangtai.getValue());
+		        	detailId=this.autoExceptionService.createAutoExceptionDetail("","", ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+	        	} catch (Exception ee) {
+	        		logger.error("createAutoException error",ee);
+	        	}
+	        	
 				AutoMQExceptionDto mqe=new AutoMQExceptionDto();
 				mqe.setBusiness_id("");
 				mqe.setException_info(ex.getMessage());
@@ -122,12 +129,16 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 					autoExceptionSender.send(errorMsg);
 				} catch (Throwable et) {
 		        	//et.printStackTrace();///??????
-		        	logger.error("反馈异常到TPS时有出错，send exception to TPS error",et);
+		        	logger.error("反馈异常到TPS时有出错，send exception to TPS error,errorMsg:"+errorMsg,et);
 
 		        	long refid=err.getRefid();//
-		        	long msgid=this.autoExceptionService.createAutoExceptionMsg(errorMsg, AutoInterfaceEnum.fankui_fanjian.getValue());
-		        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"",et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid);
-		        }
+		        	try{
+			        	long msgid=this.autoExceptionService.createAutoExceptionMsg(errorMsg, AutoInterfaceEnum.fankui_fanjian.getValue());
+			        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"",et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid);
+					} catch (Exception ee) {
+		        		logger.error("createAutoException error",ee);
+		        	}
+				}
 			}
 		}
 		
@@ -140,7 +151,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 		mqe.setRemark("");
 		mqe.setRouting_key("*");//
 		mqe.setSystem_name("DMP");//
-		mqe.setMessage("![CDATA["+mqe.getMessage()+"]]");//
+		mqe.setMessage("![CDATA["+mqe.getMessage()+"]]");//250 length?
 		
 		String msg=XmlUtil.toXml(AutoMQExceptionDto.class, mqe); 
 		
@@ -162,18 +173,17 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 			try {
 				if(OPERATE_TYPE_IN.equals(vo.getOperate_type())){
 					autoInWarehouseService.autoInWarehouse(vo,user);
-					this.autoExceptionService.fixException(vo.getOrder_sn(), vo.getTransport_no());
+					//this.autoExceptionService.fixException(vo.getOrder_sn(), "");
 				}else if(OPERATE_TYPE_OUT.equals(vo.getOperate_type())){
 					autoOutWarehouseService.autOutWarehouse(vo,user);
-					this.autoExceptionService.fixException(vo.getOrder_sn(), vo.getTransport_no());
+					//this.autoExceptionService.fixException(vo.getOrder_sn(), "");
 				}else{
 					throw new RuntimeException("分拣状态报文中未明的操作类型:"+vo.getOperate_type());
 				}
 			} catch (Exception e) {
-				//e.printStackTrace();//??????
-				logger.error("处理分拣状态出错，handleData error:",e);
+				logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn(),e);
 	
-				long flowordertye=FlowOrderTypeEnum.RuKu.getValue();
+				/*long flowordertye=FlowOrderTypeEnum.RuKu.getValue();
 				if(e instanceof CwbException){
 					flowordertye=((CwbException)e).getFlowordertye();
 				}else{
@@ -182,13 +192,18 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 					}else if(OPERATE_TYPE_OUT.equals(vo.getOperate_type())){
 						flowordertye=FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
 					}
-				}
+				}*/
 				
-				if(msgid==0){
-					msgid=this.autoExceptionService.createAutoExceptionMsg(msg, AutoInterfaceEnum.fenjianzhuangtai.getValue());
-				}
-				long detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),"",e.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
-
+				long detailId=0;
+				try{
+					if(msgid==0){
+						msgid=this.autoExceptionService.createAutoExceptionMsg(msg, AutoInterfaceEnum.fenjianzhuangtai.getValue());
+					}
+					detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),"",e.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
+				} catch (Exception ee) {
+	        		logger.error("createAutoException error",ee);
+	        	}
+				
 				if(errorList==null){
 					errorList=new ArrayList<AutoMQExceptionDto>();
 				}

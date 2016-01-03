@@ -2827,7 +2827,7 @@ public class CwbOrderService extends BaseOrderService {
 		Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
-		if (this.userDAO.getAllUserByid(user.getUserid()).getIsImposedOutWarehouse() == 0) {// 是否拥有
+		if (user.getIsImposedOutWarehouse() == 0) {// 是否拥有
 			// 请指出库权限
 			// 1是
 			// 0

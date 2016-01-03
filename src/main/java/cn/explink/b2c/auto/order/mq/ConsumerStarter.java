@@ -13,9 +13,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 
-public class ConsumerStarter {
+public class ConsumerStarter implements ApplicationListener<ContextRefreshedEvent> {
     /**
      * 建议connectionFactory交由spring做单例管理，保证只通过一个connection连接rabbitmq server。
      */
@@ -38,9 +40,21 @@ public class ConsumerStarter {
 
 	private List<ConsumerTemplate> callBackList;
 	
-
-	
     //private ConsumerContainer consumerContainer;
+	
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		try {
+			logger.info("Spring context event start");
+			if(event.getApplicationContext().getParent() == null){
+				logger.info("Spring onApplicationEvent start");
+				start();
+				logger.info("Spring onApplicationEvent end");
+			}
+		} catch (Exception e) {
+			logger.error("Spring onApplicationEvent start() error:",e);
+		}
+	}
  
 //    @PostConstruct
     public void start() throws Exception{
@@ -48,11 +62,11 @@ public class ConsumerStarter {
         try {
         	int state=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());//
         	if(state==0){
-        		logger.debug("do NOT connect to rabbit mq,state={}",state);
+        		logger.info("do NOT connect to rabbit mq,state={}",state);
         		return;//
         	}
         	
-        	logger.debug("start to connect to rabbit mq...");
+        	logger.info("start to connect to rabbit mq...");
         	
 			//consumerContainer = new ConsumerContainer(connectionFactory);
 			VMSClient client= new VMSClient();
@@ -64,10 +78,10 @@ public class ConsumerStarter {
 			for(ConsumerTemplate rabbitTest: callBackList){
 				client.subscribe(rabbitTest.getQueueName(), SubQoS.build().prefetchCount(rabbitTest.getFetchCount()).autoCommit(rabbitTest.getAutoCommit()), rabbitTest.getCallBack());
 				
-				//?????????
-				logger.info("consumer started sucess,queueName={},prefetchCount={},callback={}:"+rabbitTest.getQueueName()+","+rabbitTest.getFetchCount()+","+rabbitTest.getCallBack().toString());
+				logger.info("Consumer started sucess! queueName={},prefetchCount={},callback={}:"+rabbitTest.getQueueName()+","+rabbitTest.getFetchCount()+","+rabbitTest.getCallBack().toString());
 			}
 			//consumerContainer.startAllConsumers();
+			logger.info("Completed to connect to rabbit mq.");
 		} catch (Throwable e) {
 			logger.error("rabbit mq start error:",e);
 			//e.printStackTrace();
@@ -84,4 +98,6 @@ public class ConsumerStarter {
       
 
     }
+
+
 }
