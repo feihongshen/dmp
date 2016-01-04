@@ -130,7 +130,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
         	if(errorList!=null){
         		for(AutoMQExceptionDto err:errorList){
         			VMSClient client = VMSClient.getDefault();
-              	    String sendXml = StringXMLSend(vipshop,errorOrderList,msg);
+              	    String sendXml = StringXMLSend(vipshop,err,msg);
                     Message falure = Message.from(sendXml);
                     falure.addRoutingKey("*");
                     falure.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
@@ -201,15 +201,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     }
     
     //异常报文返回数据拼接
-    private String StringXMLSend(VipShop vipshop,List<TPSOrder> errorOrderList,String falure) {
-    	String cwbs = "";
-    	if(null!=errorOrderList && errorOrderList.size()!=0){
-    		for(int i=0;i<errorOrderList.size();i++){
-    			cwbs += errorOrderList.get(i).getCustOrderNo()+",";
-    		}
-    		cwbs = cwbs.substring(0,cwbs.length()-1);
-    	}
-    	
+    private String StringXMLSend(VipShop vipshop,AutoMQExceptionDto error,String falure) {
     	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
     	String date = String.valueOf(df.format(new Date()));
 		StringBuffer sub = new StringBuffer();
@@ -217,9 +209,9 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 		sub.append("<system_name>ZDH_Order</system_name>");
 		sub.append("<queue_name>"+consumerTemplate.getQueueName()+"</queue_name>");
 		sub.append("<exchange_name>"+consumerTemplate.getExchangeName()+"</exchange_name>");
-		sub.append("<routing_key>*<routing_key>");
-		sub.append("<exception_info>订单收取失败</exception_info>");
-		sub.append("<business_id>"+cwbs+"</business_id>");
+		sub.append("<routing_key>*</routing_key>");
+		sub.append("<exception_info>"+error.getException_info()+"</exception_info>");
+		sub.append("<business_id></business_id>");
 		sub.append("<create_time>"+date+"</create_time>");
 		sub.append("<remark></remark>");
 		sub.append("<message>![CDATA["+falure+"]]</message>");
