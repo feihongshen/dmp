@@ -27,12 +27,12 @@ List<Reason> changereasonlist = (List<Reason>)request.getAttribute("changereason
 
 CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
 
-long backreasonid = request.getAttribute("backreasonid")==null?0:(Long)request.getAttribute("backreasonid"); 
-long leavedreasonid = request.getAttribute("leavedreasonid")==null?0:(Long)request.getAttribute("leavedreasonid");
-long weishuakareasonid = request.getAttribute("weishuakareasonid")==null?0:(Long)request.getAttribute("weishuakareasonid");
-long losereasonid = request.getAttribute("losereasonid")==null?0:(Long)request.getAttribute("losereasonid");
+long backreasonid = request.getAttribute("backreasonid")==null?0:((Long)request.getAttribute("backreasonid")).longValue(); 
+long leavedreasonid = request.getAttribute("leavedreasonid")==null?0:((Long)request.getAttribute("leavedreasonid")).longValue();
+long weishuakareasonid = request.getAttribute("weishuakareasonid")==null?0:((Long)request.getAttribute("weishuakareasonid")).longValue();
+long losereasonid = request.getAttribute("losereasonid")==null?0:((Long)request.getAttribute("losereasonid")).longValue();
 
-long changereasonid = request.getAttribute("changereasonid")==null?0:(Long)request.getAttribute("changereasonid"); 
+long changereasonid = request.getAttribute("changereasonid")==null?0:((Long)request.getAttribute("changereasonid")).longValue(); 
 
 String showposandqita = request.getAttribute("showposandqita")==null?"no":(String)request.getAttribute("showposandqita");
 String isShowZLZDLH = request.getAttribute("isShowZLZDLH")==null?"no":(String)request.getAttribute("isShowZLZDLH");
@@ -40,7 +40,7 @@ String isReasonRequired = request.getAttribute("isReasonRequired")==null?"no":(S
 //是否允许反馈为部分拒收
 String partReject = request.getAttribute("partReject")==null?"yes":(String)request.getAttribute("partReject");
 
-int isOpenFlag = request.getAttribute("isOpenFlag")==null?0:(Integer)request.getAttribute("isOpenFlag");
+int isOpenFlag = request.getAttribute("isOpenFlag")==null?0:((Integer)request.getAttribute("isOpenFlag")).intValue();
 
 %>
 <script>
