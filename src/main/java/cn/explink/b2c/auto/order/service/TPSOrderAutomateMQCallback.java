@@ -107,7 +107,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
             		"updatedDtmLoc","updatedOffice","updatedTimeZone","dirty"});  
         	JSONArray jsonArray = JSONArray.fromObject(msg,config);
         	//List<TPSOrder> list = (List<TPSOrder>)JSONArray.toCollection(jsonArray,TPSOrder.class);  
-        	List<TPSOrder> list=null;
+        	List<TPSOrder> list=new ArrayList<TPSOrder>();
         	for (Iterator iterator = jsonArray.iterator(); iterator.hasNext();) {
 				JSONObject jsonObject = (JSONObject) iterator.next();
 				
@@ -121,7 +121,10 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
         	
         	for(TPSOrder order : list){
         		AutoMQExceptionDto error = handleOrderData(errorOrderList,order,vipshop,vipshop_key,msg);
-        		errorList.add(error);
+        		if(error!=null){
+        			errorList = new ArrayList<AutoMQExceptionDto>();
+        			errorList.add(error);
+        		}
         	}
         	
         } catch (Throwable ex) {
@@ -177,7 +180,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     		}else{
     			//普通接口数据导入
     			if(null!=order){
-    				if(order.getAddTime()==null){
+    				if(order.getBusinessType()!=60 && order.getAddTime()==null){
     					this.logger.info("没有出仓时间");
     					throw new CwbException(order.getCustOrderNo(),FlowOrderTypeEnum.DaoRuShuJu.getValue(),"没有出仓时间");
     				}
@@ -198,6 +201,9 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 			logger.error("handleData error:",ex);
 			if(errorOrderList==null){
 				errorOrderList=new ArrayList<TPSOrder>();
+			}
+			if(error==null){
+				error=new AutoMQExceptionDto();
 			}
 			if(msgid==0){
 				msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
