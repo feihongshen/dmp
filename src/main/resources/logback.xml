@@ -6,6 +6,8 @@
 		value="${catalina.base}/logs/dmpLog/" />
 	<substitutionProperty name="logbaseEditCwb"
 		value="${catalina.base}/logs/dmpLog/editCwb/" />
+	<substitutionProperty name="autoLog"
+		value="${catalina.base}/logs/dmpLog/autoLog/" />
 
 	<jmxConfigurator />
 
@@ -50,6 +52,30 @@
             </pattern>   
        </layout> 
 	</appender>
+	
+	<!-- 自动化Log配置 开始 -->
+	<appender name="autoLog"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<Encoding>UTF-8</Encoding>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${autoLog}autoLog.${label}.%d{yyyy-MM-dd}.log.zip
+			</FileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">  
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--> 
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n   
+            </pattern>   
+       </layout> 
+	</appender>
+	
+	<logger name="cn.explink.b2c.tps" level="DEBUG" additivity="false">
+		<appender-ref ref="autoLog"/> 
+	</logger>
+	<logger name="cn.explink.b2c.auto" level="DEBUG" additivity="false">
+		<appender-ref ref="autoLog"/> 
+	</logger>
+	<!-- 自动化Log配置  结束-->
+	
 	<logger name="cn.explink" level="INFO" />
 	<logger name="cn.explink.service.EditCwbService" level="DEBUG" additivity="false">
 		<appender-ref ref="logfileEditCwb"/> 
