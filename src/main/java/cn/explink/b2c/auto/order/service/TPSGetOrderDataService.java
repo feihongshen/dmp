@@ -610,8 +610,8 @@ public class TPSGetOrderDataService {
 			orderDTO.setTranscwb(transcwb);
 			orderDTO.setConsigneename(order.getBuyerName().isEmpty()?"":order.getBuyerName());
 			orderDTO.setSendcargonum(total_pack.toString().isEmpty() ? 1 : total_pack);
+			orderDTO.setConsigneephone(order.getTel());
 			orderDTO.setConsigneemobile(order.getMobile());
-			orderDTO.setConsigneemobile(order.getTel());
 			orderDTO.setConsigneepostcode(order.getPostCode());
 			orderDTO.setConsigneeaddress(order.getBuyerAddress());
 			orderDTO.setReceivablefee(order.getCodAmount());
@@ -639,6 +639,7 @@ public class TPSGetOrderDataService {
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 
 				if ("edit".equalsIgnoreCase(cmd_type)) {
+					orderDTO.setConsignoraddress("");
 					//修改订单表
 					this.tpsDataImportDAO_B2c.updateBycwb(orderDTO);
 					//修改临时表
