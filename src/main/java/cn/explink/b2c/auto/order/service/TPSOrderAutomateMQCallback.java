@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import cn.explink.b2c.auto.order.mq.AutoExceptionSender;
 import cn.explink.b2c.auto.order.mq.AutoMQExceptionDto;
 import cn.explink.b2c.auto.order.mq.ConsumerTemplate;
 import cn.explink.b2c.auto.order.vo.TPSOrder;
@@ -74,6 +75,8 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	@Autowired
 	@Qualifier("tpsOrderAutomateConsumer")
 	private ConsumerTemplate consumerTemplate;
+	@Autowired
+	AutoExceptionSender autoExceptionSender;
 	
     protected Logger logger = LoggerFactory.getLogger(TPSOrderAutomateMQCallback.class);
 	
@@ -186,14 +189,17 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     				}
     				//返回的报文订单信息解析
     				CwbOrderDTO cwbOrder = tPSGetOrderDataService.parseXmlDetailInfo(vipshop,order);
-    				//是否开启托运单模式，生成多个批次 0 不开启
-    				if (vipshop.getIsTuoYunDanFlag() == 0) {
-    					//普通单在没有开启托运单模式下，数据插入临时表
-    					tPSGetOrderDataService.extractedDataImport(vipshop_key, vipshop, cwbOrder);
-    				} else {
-    					//普通单在开启托运单模式下，数据插入临时表
-    					tPSGetOrderDataService.extractedDataImportByEmaildate(vipshop_key, vipshop, cwbOrder);
-    				}
+    				//if(order.getCmdType().equalsIgnoreCase("new")){
+    					//是否开启托运单模式，生成多个批次 0 不开启
+        				if (vipshop.getIsTuoYunDanFlag() == 0) {
+        					//普通单在没有开启托运单模式下，数据插入临时表
+        					tPSGetOrderDataService.extractedDataImport(vipshop_key, vipshop, cwbOrder);
+        				} else {
+        					//普通单在开启托运单模式下，数据插入临时表
+        					tPSGetOrderDataService.extractedDataImportByEmaildate(vipshop_key, vipshop, cwbOrder);
+        				}
+    				//}
+    				
     			}
     		}
     	}catch(Exception ex){
@@ -245,14 +251,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
             forRecover = new String(e.getPayload(), "utf-8");
         } catch (Throwable e1) {
             this.logger.error("消费下发承运商订单状态接口表的物流状态信息，onFailure：" + e1.toString());
-            VMSClient client = VMSClient.getDefault();
-            Message msg = Message.from(forRecover);
-            msg.addRoutingKey("*");
-            msg.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
-            // msg.qos().priority(0); // 数字大的表示优先级高。 在同一个topic中，优先级高的消息先于优先级低的消息被消费。可选设置。
-            // 推送到MQ
-            client.options().setConfirmable(true).setWaitingTimeout(2000).setFailFastEnabled(false);
-            IPublisher publisher = client.publish("channel.rabbitmq.tps.exception", msg);// 推送，第一个参数channelName，第二个参数报文内容
+            autoExceptionSender.send(forRecover); 
         } finally {
             // 确认消费
             ISubscriber subscriber = (ISubscriber) sender;
