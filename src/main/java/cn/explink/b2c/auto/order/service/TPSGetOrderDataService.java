@@ -662,7 +662,7 @@ public class TPSGetOrderDataService {
 						//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 						cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), cust_order_no, cust_order_no,0);
 					}
-					return orderDTO;
+					return null;
 				}
 
 			}
@@ -678,7 +678,6 @@ public class TPSGetOrderDataService {
 
 			this.logger.info("TPS自动化订单cwb={}", cust_order_no);
 		
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.logger.error("TPS自动化订单下载处理转订单对象异常,cwb=" + cust_order_no, e);

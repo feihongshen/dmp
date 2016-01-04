@@ -189,7 +189,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     				}
     				//返回的报文订单信息解析
     				CwbOrderDTO cwbOrder = tPSGetOrderDataService.parseXmlDetailInfo(vipshop,order);
-    				//if(order.getCmdType().equalsIgnoreCase("new")){
+    				if (cwbOrder != null) {
     					//是否开启托运单模式，生成多个批次 0 不开启
         				if (vipshop.getIsTuoYunDanFlag() == 0) {
         					//普通单在没有开启托运单模式下，数据插入临时表
@@ -198,7 +198,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
         					//普通单在开启托运单模式下，数据插入临时表
         					tPSGetOrderDataService.extractedDataImportByEmaildate(vipshop_key, vipshop, cwbOrder);
         				}
-    				//}
+    				}
     				
     			}
     		}
