@@ -167,6 +167,10 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	
 	private List<AutoMQExceptionDto> handleData(List<AutoPickStatusVo> voList,User user,String msg){
 		List<AutoMQExceptionDto> errorList=null;
+		if(voList==null){
+			return errorList;
+		}
+		
 		long msgid=0;
 
 		for(AutoPickStatusVo vo:voList){

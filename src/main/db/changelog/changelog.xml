@@ -8841,4 +8841,14 @@ CREATE TABLE `cs_complaint_accept` (
 		ALTER TABLE `express_auto_exception_detail` ADD INDEX `auto_except_dtl_cwbtrans_idx` (`cwb`,`transportno`); 
 		</sql>
 	</changeSet>
+	<changeSet id="jianronggao-2016-01-04-01" author="jianronggao">
+		<sql>
+		CREATE TABLE `express_auto_param_config`( 
+		   `name` VARCHAR(50) NOT NULL COMMENT '参数名', 
+		   `text` VARCHAR(100) NULL COMMENT '参数值', 
+		   `remark` VARCHAR(100) DEFAULT '' NULL COMMENT '描述', 
+		   PRIMARY KEY (`name`)
+		 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
