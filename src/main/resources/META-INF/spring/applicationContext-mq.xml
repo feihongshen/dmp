@@ -28,7 +28,7 @@
 		  	<!-- channel -->
 		  	<property name="exchangeName" value="MQ_REC_TPS_DISPATCH_CHANNEL" /> 
 		  	 <!-- 队列 -->
-		  	<property name="queueName" value="MQ_REC_TPS_DISPATCH_QUEUE1" /> 
+		  	<property name="queueName" value="MQ_REC_TPS_DISPATCH_QUEUE" /> 
 		  	<!-- 每次获取数量 -->
 		  	<property name="fetchCount" value="10"/> 
 		  	<!-- 是否自动提交 -->
