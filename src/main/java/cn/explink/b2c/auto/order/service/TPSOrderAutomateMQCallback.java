@@ -4,7 +4,10 @@ package cn.explink.b2c.auto.order.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import cn.explink.b2c.auto.order.mq.AutoMQExceptionDto;
 import cn.explink.b2c.auto.order.mq.ConsumerTemplate;
 import cn.explink.b2c.auto.order.vo.TPSOrder;
+import cn.explink.b2c.auto.order.vo.TPSOrderDetails;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
@@ -94,14 +98,22 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     	List<AutoMQExceptionDto> errorList = null;
         try {
         	msg = new String(e.getPayload(), "utf-8");
-        	JsonConfig config=new JsonConfig();  
+        	JsonConfig config=new JsonConfig(); 
+        	Map<String, Class<?>> clazz = new HashMap<String,Class<?>>();
+			clazz.put("details", TPSOrderDetails.class);
         	 //忽略属性  
             config.setExcludes(new String[]{"createdDtmLoc","iDValue","isDeleted","logged",
             		"principalGroupCode","rowStatus","updatedByUser",
             		"updatedDtmLoc","updatedOffice","updatedTimeZone","dirty"});  
         	JSONArray jsonArray = JSONArray.fromObject(msg,config);
-        	//JSONArray jsonArray = JSONArray.fromObject(msg);
-        	List<TPSOrder> list = (List<TPSOrder>)JSONArray.toCollection(jsonArray,TPSOrder.class);  
+        	//List<TPSOrder> list = (List<TPSOrder>)JSONArray.toCollection(jsonArray,TPSOrder.class);  
+        	List<TPSOrder> list=null;
+        	for (Iterator iterator = jsonArray.iterator(); iterator.hasNext();) {
+				JSONObject jsonObject = (JSONObject) iterator.next();
+				
+				TPSOrder tpsOrder = (TPSOrder) JSONObject.toBean(jsonObject,TPSOrder.class,clazz);
+				list.add(tpsOrder);
+			}
         	if ((list == null || list.size()==0)) {
     			this.logger.info("请求TPS自动化订单信息-获取订单信息失败!");
     			return;
