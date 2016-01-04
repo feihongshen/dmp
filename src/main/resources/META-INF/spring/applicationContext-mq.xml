@@ -13,6 +13,11 @@
                 <ref bean="tpsOrderAutomateConsumer" /> 
             </list>  
         </property> 
+        <property name="senderList">  
+            <list>  
+                <ref bean="autoExceptionSender" />  
+            </list>  
+        </property> 
 	  </bean>
    
    	  <bean id="autoDispatchStatusCallback" class="cn.explink.b2c.auto.order.mq.AutoDispatchStatusCallback" > 
@@ -21,9 +26,9 @@
    	  <bean id="autoDispatchStatusConsumer" class="cn.explink.b2c.auto.order.mq.ConsumerTemplate" >
 		  	<property name="callBack" ref="autoDispatchStatusCallback"/> 
 		  	<!-- channel -->
-		  	<property name="exchangeName" value="channel.rabbitmq.tps.allot_30113" /> 
+		  	<property name="exchangeName" value="MQ_REC_TPS_DISPATCH_CHANNEL" /> 
 		  	 <!-- 队列 -->
-		  	<property name="queueName" value="queue.rabbitmq.dmp.allot_30113" /> 
+		  	<property name="queueName" value="MQ_REC_TPS_DISPATCH_QUEUE1" /> 
 		  	<!-- 每次获取数量 -->
 		  	<property name="fetchCount" value="10"/> 
 		  	<!-- 是否自动提交 -->
@@ -31,7 +36,7 @@
 	  </bean> 
    
    	  <bean id="autoExceptionSender" class="cn.explink.b2c.auto.order.mq.AutoExceptionSender" > 
-   	     <property name="channel" value="channel.rabbitmq.tps.exception" /> 
+   	     <property name="channel" value="MQ_SEND_TPS_EXCEPTION_CHANNEL" /> 
    	  </bean>
  
   	  
@@ -39,9 +44,9 @@
    	  <bean id="tpsOrderAutomateConsumer" class="cn.explink.b2c.auto.order.mq.ConsumerTemplate" >
 		  	<property name="callBack" ref="tpsOrderAutomateMQCallback"/> 
 		  	<!-- channel -->
-		  	<property name="exchangeName" value="channel.rabbitmq.tps.do.dmp_30113" /> 
+		  	<property name="exchangeName" value="MQ_REC_TPS_ORDER_CHANNEL" /> 
 		  	 <!-- 队列 -->
-		  	<property name="queueName" value="queue.rabbitmq.dmp.do.tps_30113" /> 
+		  	<property name="queueName" value="MQ_REC_TPS_ORDER_QUEUE" /> 
 		  	<!-- 每次获取数量 -->
 		  	<property name="fetchCount" value="10"/> 
 		  	<!-- 是否自动提交 -->

@@ -93,6 +93,7 @@ src/main/java/cn/explink/b2c/auto/order/mq/AutoInitProcessor.java -text
 src/main/java/cn/explink/b2c/auto/order/mq/AutoMQExceptionDto.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/mq/ConsumerStarter.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/mq/ConsumerTemplate.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/mq/MqConfigService.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/AutoExceptionService.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/AutoInWarehouseService.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/AutoOrderStatusService.java -text svneol=unset#text/plain

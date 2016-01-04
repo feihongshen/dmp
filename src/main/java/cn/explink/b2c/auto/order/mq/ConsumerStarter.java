@@ -29,6 +29,8 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
     
 	@Autowired
 	private JointService jointService;
+	@Autowired
+	private MqConfigService mqConfigService;
     
 	public List<ConsumerTemplate> getCallBackList() {
 		return callBackList;
@@ -38,7 +40,17 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 		this.callBackList = callBackList;
 	}
 
+	public List<AutoExceptionSender> getSenderList() {
+		return senderList;
+	}
+
+	public void setSenderList(List<AutoExceptionSender> senderList) {
+		this.senderList = senderList;
+	}
+
 	private List<ConsumerTemplate> callBackList;
+	
+	private List<AutoExceptionSender> senderList;
 	
     //private ConsumerContainer consumerContainer;
 	
@@ -66,6 +78,10 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
         		return;//
         	}
         	
+        	logger.info("start to load mq config...");
+        	initMqConfig();
+        	logger.info("completed to load mq config.");
+        	
         	logger.info("start to connect to rabbit mq...");
         	
 			//consumerContainer = new ConsumerContainer(connectionFactory);
@@ -78,14 +94,13 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 			for(ConsumerTemplate rabbitTest: callBackList){
 				client.subscribe(rabbitTest.getQueueName(), SubQoS.build().prefetchCount(rabbitTest.getFetchCount()).autoCommit(rabbitTest.getAutoCommit()), rabbitTest.getCallBack());
 				
-				logger.info("Consumer started sucess! queueName={},prefetchCount={},callback={}:"+rabbitTest.getQueueName()+","+rabbitTest.getFetchCount()+","+rabbitTest.getCallBack().toString());
+				logger.info("Consumer started sucessfully! queueName="+rabbitTest.getQueueName()+",prefetchCount="+rabbitTest.getFetchCount());
 			}
 			//consumerContainer.startAllConsumers();
 			logger.info("Completed to connect to rabbit mq.");
 		} catch (Throwable e) {
 			logger.error("rabbit mq start error:",e);
-			//e.printStackTrace();
-			//throw e;
+			throw e;
 		}
     }
 
@@ -99,5 +114,8 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 
     }
 
-
+    //从DB读取MQ配置
+    private void initMqConfig(){
+    	mqConfigService.initMqConfig(this.callBackList, this.senderList);
+    }
 }
