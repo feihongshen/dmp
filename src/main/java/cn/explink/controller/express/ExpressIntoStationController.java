@@ -47,11 +47,14 @@ public class ExpressIntoStationController extends ExpressCommonController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping("/expressQueryList/{page}")
 	public String expressQueryList(@PathVariable("page") long page, Model model, ExpressParamsVO params, HttpServletRequest request) {
+		//获取当前毫秒
 		long startTime = System.currentTimeMillis();
 		//completed
+		
 		List<User> uList = this.getRoleUsers();
-		//查询用户的机构
+		//获取当前用户，查询用户的机构
 		Long branchId = this.getSessionUser().getBranchid();
+		//封装params的branchid站点
 		params.setBranchId(branchId);
 		if (params.getDeliveryId() == null) {
 			if (uList.size() != 0) {
@@ -83,7 +86,7 @@ public class ExpressIntoStationController extends ExpressCommonController {
 			}
 		}
 		model.addAttribute("expresseList", list);
-		this.logger.info("进入揽收交接页面的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
+		logger.info("进入揽收交接页面的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 		return "express/intoStation/expressIntoStation";
 	}
 

@@ -21,6 +21,7 @@ import cn.explink.domain.VO.express.ExpressCwbOrderForTakeGoodsQueryVO;
 import cn.explink.domain.express.ExpressCwb4TakeGoodsQuery;
 import cn.explink.domain.express.ExpressOutStationInfo;
 import cn.explink.enumutil.express.ExpressSettleWayEnum;
+import cn.explink.util.Page;
 
 /**
  * 揽件查询Service
@@ -48,7 +49,8 @@ public class TakeGoodsQueryService {
 	 * @return
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> getcwbOrders(ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,String userIds){
-		return cwbDao.queryCwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,userIds);
+		
+		return cwbDao.queryCwbExpressTakeGoodsQueryByPage(null, cwb4TakeGoodsQuery,userIds);
 	}
 	
 	/**
@@ -59,36 +61,10 @@ public class TakeGoodsQueryService {
 	 * @throws ParseException 
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> getcwbOrderByPage(Long page,ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,User user,String userIds) throws ParseException{
-		/*if(cwb4TakeGoodsQuery.getStatus()!=null && cwb4TakeGoodsQuery.getStatus()==3){
-//			List<Branch> nextBranchList = expressOutStationService.getNextBranchList(user.getBranchid(),user);
-			Map<Long,ExpressOutStationInfo> map = expressOutStationInfoDao.getOutStationInfo(cwb4TakeGoodsQuery,user.getBranchid(),userIds);
-			List<ExpressCwbOrderForTakeGoodsQueryVO> list = new ArrayList<ExpressCwbOrderForTakeGoodsQueryVO>();
-			Set<Long> keySet = map.keySet();
-			String idsId = "";
-			String[] outStationTime = new String[map.size()];
-			int i = 0;
-			//获得所有查询出的id和时间
-			for(Long obj:keySet){
-				idsId += ","+map.get(obj).getCwbId();
-				outStationTime[i]=map.get(obj).getOutstationTime();
-				i++;
-			}
-			i=0;
-//			将对应的时间按id填入到对应的实体当中
-			if(idsId.length()>0){
-				idsId = idsId.substring(1,idsId.length());
-				List<ExpressCwbOrderForTakeGoodsQueryVO> listaaa = this.cwbDao.queryCwbOrdersExpressTakeGoodsQueryLanJianChuZhan(page,idsId,cwb4TakeGoodsQuery.getPayWay());
-				for(ExpressCwbOrderForTakeGoodsQueryVO expressCwbOrderForTakeGoodsQueryVO : listaaa){
-					expressCwbOrderForTakeGoodsQueryVO.setOutstationdatetime(outStationTime[i]);
-					list.add(expressCwbOrderForTakeGoodsQueryVO);
-					i++;
-				}
-			}
-			return list;
-		}else{*/
+	
 			
 			return cwbDao.queryCwbExpressTakeGoodsQueryByPage(page, cwb4TakeGoodsQuery,userIds);
-		/*}*/
+		
 	}
 	
 	/**
