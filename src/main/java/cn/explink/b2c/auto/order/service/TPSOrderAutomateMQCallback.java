@@ -115,7 +115,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
         } catch (Throwable ex) {
         	this.logger.error("消费下发订单时解析异常!");
         	long msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
-	        long detailId=this.autoExceptionService.createAutoExceptionDetail("","", ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+	        long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
         	AutoMQExceptionDto mqe=new AutoMQExceptionDto();
 			mqe.setBusiness_id("");
 			mqe.setException_info(ex.getMessage());
