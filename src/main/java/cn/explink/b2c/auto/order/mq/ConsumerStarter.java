@@ -98,7 +98,7 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 			}
 			//consumerContainer.startAllConsumers();
 			logger.info("Completed to connect to rabbit mq.");
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			logger.error("rabbit mq start error:",e);
 			throw e;
 		}
