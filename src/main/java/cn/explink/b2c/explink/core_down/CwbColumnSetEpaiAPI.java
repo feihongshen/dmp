@@ -16,6 +16,9 @@ public class CwbColumnSetEpaiAPI {
 		excelColumnSet.setCwbindex(1);
 		excelColumnSet.setTranscwbindex(1);
 		excelColumnSet.setConsigneenameindex(1);
+		excelColumnSet.setCwbprovinceindex(1);
+		excelColumnSet.setCwbcityindex(1);
+		excelColumnSet.setCwbcountyindex(1);
 		excelColumnSet.setConsigneeaddressindex(1);
 		excelColumnSet.setConsigneepostcodeindex(1);
 		excelColumnSet.setConsigneemobileindex(1);
