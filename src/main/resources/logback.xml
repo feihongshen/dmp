@@ -68,10 +68,10 @@
        </layout> 
 	</appender>
 	
-	<logger name="cn.explink.b2c.tps" level="DEBUG" additivity="false">
+	<logger name="cn.explink.b2c.tps" level="INFO" additivity="false">
 		<appender-ref ref="autoLog"/> 
 	</logger>
-	<logger name="cn.explink.b2c.auto" level="DEBUG" additivity="false">
+	<logger name="cn.explink.b2c.auto" level="INFO" additivity="false">
 		<appender-ref ref="autoLog"/> 
 	</logger>
 	<!-- 自动化Log配置  结束-->
