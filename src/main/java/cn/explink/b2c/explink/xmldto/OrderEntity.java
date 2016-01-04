@@ -20,6 +20,9 @@ public class OrderEntity{
 	private String cwb;
 	private String transcwb;
 	private String consigneename;// 收件人
+	private String cwbprovince;//省
+	private String cwbcity;//市
+	private String cwbcounty;//县
 	private String consigneeaddress;// 收件人地址
 	private String consigneepostcode;// 收件人邮编
 	private String consigneephone;// 收件人电话
@@ -73,6 +76,34 @@ public class OrderEntity{
 	public void setConsigneename(String consigneename) {
 		this.consigneename = consigneename;
 	}
+
+	@XmlElement(name = "cwbprovince")
+	public String getCwbprovince() {
+		return cwbprovince;
+	}
+	
+	public void setCwbprovince(String cwbprovince) {
+		this.cwbprovince = cwbprovince;
+	}
+	
+	@XmlElement(name = "cwbcity")
+	public String getCwbcity() {
+		return cwbcity;
+	}
+	
+	public void setCwbcity(String cwbcity) {
+		this.cwbcity = cwbcity;
+	}
+	
+	@XmlElement(name = "cwbcounty")
+	public String getCwbcounty() {
+		return cwbcounty;
+	}
+	
+	public void setCwbcounty(String cwbcounty) {
+		this.cwbcounty = cwbcounty;
+	}
+	
 
 	@XmlElement(name = "consigneeaddress")
 	public String getConsigneeaddress() {

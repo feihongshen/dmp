@@ -107,6 +107,9 @@ public class AcquisitionOrderService {
 		cwbMap.put("cwb", order.getCwb());
 		cwbMap.put("transcwb", order.getTranscwb() == null || order.getTranscwb().isEmpty() ? order.getCwb() : order.getTranscwb());
 		cwbMap.put("consigneename", order.getConsigneename() == null ? "" : order.getConsigneename());
+		cwbMap.put("cwbprovince", order.getCwbprovince() == null ? "" : order.getCwbprovince());
+		cwbMap.put("cwbcity", order.getCwbcity() == null ? "" : order.getCwbcity());
+		cwbMap.put("cwbcounty", order.getCwbcounty() == null ? "": order.getCwbcounty());
 		cwbMap.put("consigneeaddress", order.getConsigneeaddress() == null ? "" : order.getConsigneeaddress());
 		cwbMap.put("consigneepostcode", order.getConsigneepostcode() == null ? "" : order.getConsigneepostcode());
 		cwbMap.put("consigneephone", order.getConsigneephone() == null ? "" : order.getConsigneephone());
