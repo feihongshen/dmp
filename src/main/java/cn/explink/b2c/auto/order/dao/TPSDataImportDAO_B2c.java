@@ -101,7 +101,7 @@ public class TPSDataImportDAO_B2c {
 				ps.setString(4, order.getConsigneephone().toString());
 				ps.setString(5, order.getConsigneepostcode().toString());
 
-				ps.setString(6, order.getConsignoraddress().toString());
+				ps.setString(6, order.getConsigneeaddress().toString());
 				ps.setString(7, order.getReceivablefee().toString());
 				ps.setString(8, order.getCustomercommand().toString());
 				ps.setString(9, order.getRemark2().toString());
@@ -133,7 +133,7 @@ public class TPSDataImportDAO_B2c {
 				ps.setString(4, order.getConsigneephone().toString());
 				ps.setString(5, order.getConsigneepostcode().toString());
 
-				ps.setString(6, order.getConsignoraddress().toString());
+				ps.setString(6, order.getConsigneeaddress().toString());
 				ps.setString(7, order.getReceivablefee().toString());
 				ps.setString(8, order.getCustomercommand().toString());
 				ps.setString(9, order.getRemark2().toString());
