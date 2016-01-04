@@ -96,7 +96,7 @@ public class TPSDataImportDAO_B2c {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, order.getConsigneename().toString());
-				ps.setString(2, order.getSendcargoname().toString());
+				ps.setInt(2, order.getSendcargonum());
 				ps.setString(3, order.getConsigneemobile().toString());
 				ps.setString(4, order.getConsigneephone().toString());
 				ps.setString(5, order.getConsigneepostcode().toString());
@@ -128,7 +128,7 @@ public class TPSDataImportDAO_B2c {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, order.getConsigneename().toString());
-				ps.setString(2, order.getSendcargoname().toString());
+				ps.setInt(2, order.getSendcargonum());
 				ps.setString(3, order.getConsigneemobile().toString());
 				ps.setString(4, order.getConsigneephone().toString());
 				ps.setString(5, order.getConsigneepostcode().toString());
