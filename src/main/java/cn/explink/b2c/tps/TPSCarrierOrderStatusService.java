@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
+import cn.explink.core.utils.StringUtils;
+import cn.explink.util.StringUtil;
 
 /**
  * TPS 运单状态太 service
@@ -37,8 +39,10 @@ public class TPSCarrierOrderStatusService {
 	public void edit(HttpServletRequest request, int joint_num) {
 		TPSCarrierOrderStatus carrierOrderStatus =new TPSCarrierOrderStatus();
 		carrierOrderStatus.setShipper_no(request.getParameter("shipper_no"));
-		carrierOrderStatus.setGetMaxCount(Integer.parseInt(request.getParameter("getMaxCount")));
-		carrierOrderStatus.setSeq(Integer.parseInt(request.getParameter("seq")));
+		Integer maxCount= StringUtils.isEmpty(request.getParameter("getMaxCount"))? 0 :Integer.parseInt(request.getParameter("getMaxCount"));
+		Integer seq= StringUtils.isEmpty(request.getParameter("seq"))? 0 :Integer.parseInt(request.getParameter("seq"));
+		carrierOrderStatus.setGetMaxCount(maxCount);
+		carrierOrderStatus.setSeq(seq);
 		JSONObject jsonObj = JSONObject.fromObject(carrierOrderStatus);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {//新增
