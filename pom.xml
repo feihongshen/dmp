@@ -2914,7 +2914,7 @@
 				<addresscustomerid>9</addresscustomerid>
 				<addressid>9</addressid>
 				<addresspassword>fjfy</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.51:8082/addressfjfy</addressWebserviceIp>
 			</properties>
 		</profile>
 		
