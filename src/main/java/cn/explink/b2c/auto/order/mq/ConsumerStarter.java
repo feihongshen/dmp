@@ -125,6 +125,8 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 			}
         }
         subscriberList.clear();
+        
+        logger.info("Completed to stop all MQ subscribers");
 
         if(error){
         	throw new Exception("Stopping MQ subscriber have error,adivse restart whole web application.");
