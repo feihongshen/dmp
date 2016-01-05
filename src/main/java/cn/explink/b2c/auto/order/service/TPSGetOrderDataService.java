@@ -253,22 +253,22 @@ public class TPSGetOrderDataService {
 		cwbOrder.setCargoamount(order.getOrderSum());//商品价格
 		cwbOrder.setReceivablefee(order.getCodAmount());
 		if(StringUtils.isNotBlank(order.getPayment().toString())){
-			if(order.getPayment().equals("-1")){ //非货到付款
+			if(order.getPayment()==-1){ //非货到付款
 				cwbOrder.setPaywayid(PaytypeEnum.Pos.getValue());
 				cwbOrder.setNewpaywayid(PaytypeEnum.Pos.getValue()+"");
 			}
 			
-			if(order.getPayment().equals("0")){//货到付款现金支付
+			if(order.getPayment()==0){//货到付款现金支付
 				cwbOrder.setPaywayid(PaytypeEnum.Xianjin.getValue());
 				cwbOrder.setNewpaywayid(PaytypeEnum.Xianjin.getValue()+"");
 			}
 			
-			if(order.getPayment().equals("1")){//货到付款刷卡支付
+			if(order.getPayment()==1){//货到付款刷卡支付
 				cwbOrder.setPaywayid(PaytypeEnum.Pos.getValue());
 				cwbOrder.setNewpaywayid(PaytypeEnum.Pos.getValue()+"");
 			}
 			
-			if(order.getPayment().equals("2")){//货到付款支付宝 支付
+			if(order.getPayment()==2){//货到付款支付宝 支付
 				cwbOrder.setPaywayid(PaytypeEnum.CodPos.getValue());
 				cwbOrder.setNewpaywayid(PaytypeEnum.CodPos.getValue()+"");
 			}
@@ -393,6 +393,7 @@ public class TPSGetOrderDataService {
 				//如果临时表中已存在对应记录 则 continue
 				if(dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCustOrderNo()) != null){
 					logger.warn("接收到VipShop_OXO发来cmd_type='new'指令，cwb="+order.getCustOrderNo()+"。但express_ops_cwb_detail_b2ctemp表中已存在对应记录，系统将不做任何操作。");
+					//return;
 				}
 				CwbOrderDTO cwbOrder = new CwbOrderDTO();
 				convertOrderVoToCwbOrderDTO(cwbOrder,order,vipshop);

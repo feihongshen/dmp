@@ -90,7 +90,8 @@ public class TPSDataImportDAO_B2c {
 	//修改订单表
 	public void updateBycwb(final CwbOrderDTO order) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set consigneename=? ,sendcarnum=?,consigneemobile=?,consigneephone=?,consigneepostcode=?,"
-				+ "consigneeaddress=?,receivablefee=?,customercommand=?,remark2=?,remark5=?,carrealweight=?,paywayid=?," + "cartype=?,cwbordertypeid=?,shouldfare=? "
+				+ "consigneeaddress=?,receivablefee=?,customercommand=?,remark2=?,remark5=?,carrealweight=?,paywayid=?," 
+				+ "cartype=?,cwbordertypeid=?,shouldfare=? "
 				+ " where cwb =? and state=1  ";
 		jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
