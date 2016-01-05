@@ -168,7 +168,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     
     //处理业务逻辑
     @Transactional
-	private AutoMQExceptionDto handleOrderData(List<TPSOrder> errorOrderList,
+	public AutoMQExceptionDto handleOrderData(List<TPSOrder> errorOrderList,
     		TPSOrder order,VipShop vipshop,int vipshop_key,String msg){
     	AutoMQExceptionDto error=null;
     	long msgid=0;

@@ -349,17 +349,14 @@ public class TPSGetOrderDataService {
 			orderMap.put("paywayid", "" + PaytypeEnum.Qita.getValue());
 		}
 		orderMap.put("cargotype", order.getTransportType());
-		if(StringUtils.isNotBlank(order.getBusinessType().toString())){
+		if(null!=order.getBusinessType()){
 			if(order.getBusinessType()==20){
 				orderMap.put("cwbordertypeid", CwbOrderTypeIdEnum.OXO_JIT.getValue()+"");
 			}
 			else if(order.getBusinessType()==40){
 				orderMap.put("cwbordertypeid", CwbOrderTypeIdEnum.OXO.getValue()+"");
 			}
-			else if(order.getBusinessType()==30){//保留类型
-				//TODO保留类型
-				orderMap.put("cwbordertypeid", ""+4);
-			}else{
+			else{
 				orderMap.put("cwbordertypeid", ""+4);
 			}
 		}
