@@ -10,7 +10,7 @@
 	    <property name="callBackList">  
             <list>  
                 <ref bean="autoDispatchStatusConsumer" />  
-                <ref bean="tpsOrderAutomateConsumer" /> 
+                <ref bean="tpsOrderAutomateConsumer" />  
             </list>  
         </property> 
         <property name="senderList">  

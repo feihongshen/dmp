@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.auto.order.mq.AutoExceptionSender;
 import cn.explink.b2c.auto.order.mq.AutoMQExceptionDto;
@@ -86,54 +87,48 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     	int vipshop_key = B2cEnum.VipShop_TPSAutomate.getKey();
     	VipShop vipshop = this.getVipShop(vipshop_key);
     	String flagOrder = "";
-		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
-		/*if (isOpenFlag == 1) {
-			//this.logger.info("未开启TPS自动化[" + vipshop_key + "]对接！");
-			return;
-		}
-		if (vipshop.getIsopendownload() == 1) {
-			//this.logger.info("未开启TPS自动化[" + vipshop_key + "]订单下载接口");
-			return;
-		}*/
-        this.logger.info("消费下发承运商订单状态接口表的物流状态信息:");
-        String msg = "";
+    	String msg = "";
     	List<TPSOrder> errorOrderList = null;
     	List<AutoMQExceptionDto> errorList = null;
-        try {
-        	msg = new String(e.getPayload(), "utf-8");
-        	JsonConfig config=new JsonConfig(); 
-        	Map<String, Class<?>> clazz = new HashMap<String,Class<?>>();
-			clazz.put("details", TPSOrderDetails.class);
-        	 //忽略属性  
-            config.setExcludes(new String[]{"createdDtmLoc","iDValue","isDeleted","logged",
-            		"principalGroupCode","rowStatus","updatedByUser",
-            		"updatedDtmLoc","updatedOffice","updatedTimeZone","dirty"});  
-        	JSONArray jsonArray = JSONArray.fromObject(msg,config);
-        	//List<TPSOrder> list = (List<TPSOrder>)JSONArray.toCollection(jsonArray,TPSOrder.class);  
-        	List<TPSOrder> list=new ArrayList<TPSOrder>();
-        	for (Iterator iterator = jsonArray.iterator(); iterator.hasNext();) {
-				JSONObject jsonObject = (JSONObject) iterator.next();
-				
-				TPSOrder tpsOrder = (TPSOrder) JSONObject.toBean(jsonObject,TPSOrder.class,clazz);
-				list.add(tpsOrder);
-			}
-        	if ((list == null || list.size()==0)) {
-    			this.logger.info("请求TPS自动化订单信息-获取订单信息失败!");
-    			return;
-    		}
-        	
-        	for(TPSOrder order : list){
-        		AutoMQExceptionDto error = handleOrderData(errorOrderList,order,vipshop,vipshop_key,msg);
-        		if(error!=null){
-        			errorList = new ArrayList<AutoMQExceptionDto>();
-        			errorList.add(error);
-        		}
-        	}
-        	
+		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
+		try {
+			if (isOpenFlag == 1) {
+				this.logger.info("未开启TPS自动化[" + vipshop_key + "]对接！");
+				this.logger.info("消费下发承运商订单状态接口表的物流状态信息:");
+	        	msg = new String(e.getPayload(), "utf-8");
+	        	JsonConfig config=new JsonConfig(); 
+	        	Map<String, Class<?>> clazz = new HashMap<String,Class<?>>();
+				clazz.put("details", TPSOrderDetails.class);
+	        	 //忽略属性  
+	            config.setExcludes(new String[]{"createdDtmLoc","iDValue","isDeleted","logged",
+	            		"principalGroupCode","rowStatus","updatedByUser",
+	            		"updatedDtmLoc","updatedOffice","updatedTimeZone","dirty"});  
+	        	JSONArray jsonArray = JSONArray.fromObject(msg,config);
+	        	//List<TPSOrder> list = (List<TPSOrder>)JSONArray.toCollection(jsonArray,TPSOrder.class);  
+	        	List<TPSOrder> list=new ArrayList<TPSOrder>();
+	        	for (Iterator iterator = jsonArray.iterator(); iterator.hasNext();) {
+					JSONObject jsonObject = (JSONObject) iterator.next();
+					
+					TPSOrder tpsOrder = (TPSOrder) JSONObject.toBean(jsonObject,TPSOrder.class,clazz);
+					list.add(tpsOrder);
+				}
+	        	if ((list == null || list.size()==0)) {
+	    			this.logger.info("请求TPS自动化订单信息-获取订单信息失败!");
+	    			return;
+	    		}
+	        	
+	        	for(TPSOrder order : list){
+	        		AutoMQExceptionDto error = handleOrderData(errorOrderList,order,vipshop,vipshop_key,msg);
+	        		if(error!=null){
+	        			errorList = new ArrayList<AutoMQExceptionDto>();
+	        			errorList.add(error);
+	        		}
+	        	}
+		    }
         } catch (Throwable ex) {
         	this.logger.error("消费下发订单时解析异常!");
         	long msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
-	        long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+	        long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", "下发订单数据异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
         	AutoMQExceptionDto mqe=new AutoMQExceptionDto();
 			mqe.setBusiness_id("");
 			mqe.setException_info(ex.getMessage());
@@ -143,15 +138,15 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 				errorList=new ArrayList<AutoMQExceptionDto>();
         	}
 			errorList.add(mqe);
-	          
         } finally {
         	if(errorList!=null){
         		for(AutoMQExceptionDto err:errorList){
-        			VMSClient client = VMSClient.getDefault();
               	    String sendXml = StringXMLSend(vipshop,err,msg);
-                    Message falure = Message.from(sendXml);
+              	  /*VMSClient client = VMSClient.getDefault();
+              	    Message falure = Message.from(sendXml);
                     falure.addRoutingKey("*");
                     falure.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
+                   
                     // msg.qos().priority(0); // 数字大的表示优先级高。 在同一个topic中，优先级高的消息先于优先级低的消息被消费。可选设置。
                     // 推送到MQ
                     try{
@@ -161,7 +156,8 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
                     }catch(Exception e1){
                   	  e1.printStackTrace();
                   	  this.logger.error("下发订单信息异常信息保存失败!");
-                    }
+                    }*/ 
+                   autoExceptionSender.send(sendXml); 
         		}
         	}
             // 确认消费
@@ -171,7 +167,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     }
     
     //处理业务逻辑
-    @SuppressWarnings("null")
+    @Transactional
 	private AutoMQExceptionDto handleOrderData(List<TPSOrder> errorOrderList,
     		TPSOrder order,VipShop vipshop,int vipshop_key,String msg){
     	AutoMQExceptionDto error=null;
@@ -214,7 +210,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 			if(msgid==0){
 				msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
 			}
-	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), ex.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), "下发订单数据转业务异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
 	        error.setBusiness_id(order.getCustOrderNo());
 	        error.setException_info(ex.getMessage());
 	        error.setMessage(msg);

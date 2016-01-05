@@ -630,8 +630,8 @@ public class TPSGetOrderDataService {
 			orderDTO.setNewpaywayid(paywayid + "");
 			orderDTO.setExcelbranch(orderDTO.getExcelbranch()==null?"":orderDTO.getExcelbranch());//站点
 			orderDTO.setRemark1(orderDTO.getRemark1()==null?"":orderDTO.getRemark1());
-			orderDTO.setRemark1(orderDTO.getRemark3()==null?"":orderDTO.getRemark3());
-			orderDTO.setRemark1(orderDTO.getRemark4()==null?"":orderDTO.getRemark4());
+			orderDTO.setRemark3(orderDTO.getRemark3()==null?"":orderDTO.getRemark3());
+			orderDTO.setRemark4(orderDTO.getRemark4()==null?"":orderDTO.getRemark4());
 			orderDTO.setIsaudit(orderDTO.getIsaudit());
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
 			
@@ -639,7 +639,6 @@ public class TPSGetOrderDataService {
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 
 				if ("edit".equalsIgnoreCase(cmd_type)) {
-					orderDTO.setConsignoraddress("");
 					//修改订单表
 					this.tpsDataImportDAO_B2c.updateBycwb(orderDTO);
 					//修改临时表

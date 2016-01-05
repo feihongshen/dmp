@@ -52,7 +52,7 @@ public class VipShopOXOInsertCwbDetailTimmer {
 	ProducerTemplate addressmatch;
 
 	/**
-	 * 一号店定时器，查询临时表，插入数据到detail表中。
+	 * OXO时器，查询临时表，插入数据到detail表中。
 	 */
 	public void selectTempAndInsertToCwbDetail(int vipshop_key) {
 
