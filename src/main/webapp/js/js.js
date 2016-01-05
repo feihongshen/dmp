@@ -1075,6 +1075,7 @@ function check_user() {
 		alert("员工登录名不能为空");
 		return false;
 	}
+	
 	if (!isLetterAndNumber($("#username").val())) {
 		alert("员工登录名格式不正确");
 		return false;
@@ -1090,6 +1091,12 @@ function check_user() {
 	if ($("#roleid").val() == -1) {
 		alert("请选择员工对应的角色");
 		return false;
+	}
+	if ($("#roleid").val() == 2 || $("#roleid").val() == 4){
+		if ($("#username").val().length > 9) {
+			alert("员工登录名不能超过9位字符！");
+			return false;
+		}
 	}
 	if ($("#tip").html().length > 0) {
 		if ($("#usermobile").val().length == 0) {
