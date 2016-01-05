@@ -102,6 +102,7 @@ src/main/java/cn/explink/b2c/auto/order/service/AutoPickStatusVo.java -text svne
 src/main/java/cn/explink/b2c/auto/order/service/TPSAutoController.java -text
 src/main/java/cn/explink/b2c/auto/order/service/TPSGetOrderDataService.java -text
 src/main/java/cn/explink/b2c/auto/order/service/TPSInsertCwbDetailTimmer.java -text
+src/main/java/cn/explink/b2c/auto/order/service/TPSOrderAutomateHandler.java -text
 src/main/java/cn/explink/b2c/auto/order/service/TPSOrderAutomateMQCallback.java -text
 src/main/java/cn/explink/b2c/auto/order/service/TPSOrderImportService_B2c.java -text
 src/main/java/cn/explink/b2c/auto/order/vo/TPSOrder.java -text

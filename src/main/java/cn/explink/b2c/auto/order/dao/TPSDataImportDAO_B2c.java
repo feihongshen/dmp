@@ -91,7 +91,7 @@ public class TPSDataImportDAO_B2c {
 	public void updateBycwb(final CwbOrderDTO order) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set consigneename=? ,sendcarnum=?,consigneemobile=?,consigneephone=?,consigneepostcode=?,"
 				+ "consigneeaddress=?,receivablefee=?,customercommand=?,remark2=?,remark5=?,carrealweight=?,paywayid=?," 
-				+ "cartype=?,cwbordertypeid=?,shouldfare=? "
+				+ "cartype=?,cwbordertypeid=?,shouldfare=?,cargovolume=? "
 				+ " where cwb =? and state=1  ";
 		jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
@@ -113,7 +113,8 @@ public class TPSDataImportDAO_B2c {
 				ps.setString(13, order.getCargotype().toString());
 				ps.setLong(14, order.getCwbordertypeid());
 				ps.setString(15, order.getShouldfare().toString());
-				ps.setString(16, order.getCwb().toString());
+				ps.setFloat(16, order.getCargovolume().floatValue());
+				ps.setString(17, order.getCwb().toString());
 			}
 		});
 
