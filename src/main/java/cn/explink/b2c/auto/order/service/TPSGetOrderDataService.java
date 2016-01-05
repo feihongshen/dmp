@@ -350,13 +350,13 @@ public class TPSGetOrderDataService {
 		}
 		orderMap.put("cargotype", order.getTransportType());
 		if(StringUtils.isNotBlank(order.getBusinessType().toString())){
-			if(order.getBusinessType().equals("20")){
+			if(order.getBusinessType()==20){
 				orderMap.put("cwbordertypeid", CwbOrderTypeIdEnum.OXO_JIT.getValue()+"");
 			}
-			else if(order.getBusinessType().equals("40")){
+			else if(order.getBusinessType()==40){
 				orderMap.put("cwbordertypeid", CwbOrderTypeIdEnum.OXO.getValue()+"");
 			}
-			else if(order.getBusinessType().equals("30")){//保留类型
+			else if(order.getBusinessType()==30){//保留类型
 				//TODO保留类型
 				orderMap.put("cwbordertypeid", ""+4);
 			}else{
@@ -393,7 +393,7 @@ public class TPSGetOrderDataService {
 				//如果临时表中已存在对应记录 则 continue
 				if(dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCustOrderNo()) != null){
 					logger.warn("接收到VipShop_OXO发来cmd_type='new'指令，cwb="+order.getCustOrderNo()+"。但express_ops_cwb_detail_b2ctemp表中已存在对应记录，系统将不做任何操作。");
-					//return;
+					return;
 				}
 				CwbOrderDTO cwbOrder = new CwbOrderDTO();
 				convertOrderVoToCwbOrderDTO(cwbOrder,order,vipshop);
@@ -407,11 +407,13 @@ public class TPSGetOrderDataService {
 				CwbOrderDTO cwbOrder_temp = dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCustOrderNo());
 				if(cwbOrder_temp == null ){//如果临时表还不存在 指定 cwb的订单数据 ，则continue
 					logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getCustOrderNo()+"。但未在express_ops_cwb_detail_b2ctemp表中找到对应记录，系统将不做任何操作。");
+					return;
 				}
 				
 				if(cwbOrder_temp.getGetDataFlag() == 0){//如果临时表数据没有同步到了主表，只需修改临时表数据
 					//update 临时表
 					dataImportDAO_B2c.updateBycwb(this.convertOrderVoToMap(order));
+					return;
 				}
 				
 				if(cwbOrder_temp.getGetDataFlag() != 0){//如果临时表数据已经同步到了主表,修改主表数据
@@ -420,6 +422,7 @@ public class TPSGetOrderDataService {
 						//如果已揽收成功，不允编辑
 						if(cwbOrder_biz.getOxopickstate() == CwbOXOStateEnum.Processed.getValue()){
 							logger.warn("接收到VipShop_OXO发来cmd_type='edit'指令，cwb="+order.getCustOrderNo()+"。但express_ops_cwb_detail表中该记录的揽收状态为 已处理，系统将不做修改操作。");
+							return;
 						}
 						Map<String,String> orderMap  = this.convertOrderVoToMap(order);
 						cwbDAO.updateBycwb(orderMap);							
