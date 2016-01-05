@@ -489,6 +489,7 @@ public class TPSGetOrderDataService {
 	}
 
 	//普通单在没有开启托运单模式下，数据插入临时表
+	@Transactional
 	public void extractedDataImport(int vipshop_key, VipShop vipshop, CwbOrderDTO order) {
 		long customerid = Long.valueOf(order.getCustomerid());
 		try {
@@ -514,6 +515,7 @@ public class TPSGetOrderDataService {
 	}
 	
 	//普通单在开启托运单模式下，数据插入临时表
+	@Transactional
 	public void extractedDataImportByEmaildate(int vipshop_key,
 			VipShop vipshop, CwbOrderDTO order) throws Exception {
 		long customerid = Long.valueOf(order.getCustomerid());
