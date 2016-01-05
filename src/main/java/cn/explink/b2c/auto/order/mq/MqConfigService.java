@@ -20,17 +20,17 @@ public class MqConfigService {
 	public void initMqConfig(List<ConsumerTemplate> callBackList, List<AutoExceptionSender> senderList){
 		for(ConsumerTemplate callBack:callBackList){
 			//channel
-			String channel=getValue(callBack.getExchangeName());
-			if(channel==null){
-				throw new RuntimeException("MQ parameter "+callBack.getExchangeName()+"is not found");
+			String channel=getValue(callBack.getExchangeKey());
+			if(channel==null||channel.trim().length()<1){
+				throw new RuntimeException("MQ parameter "+callBack.getExchangeKey()+"is not found");
 			}else{
 				callBack.setExchangeName(channel);
 			}
 			
 			//queue
-			String queue=getValue(callBack.getQueueName());
-			if(queue==null){
-				throw new RuntimeException("MQ parameter "+callBack.getQueueName()+"is not found");
+			String queue=getValue(callBack.getQueueKey());
+			if(queue==null||queue.trim().length()<1){
+				throw new RuntimeException("MQ parameter "+callBack.getQueueKey()+"is not found");
 			}else{
 				callBack.setQueueName(queue);
 			}
@@ -38,16 +38,16 @@ public class MqConfigService {
 		
 		for(AutoExceptionSender sender:senderList){
 			//channel
-			String channel=getValue(sender.getChannel());
-			if(channel==null){
-				throw new RuntimeException("MQ parameter "+sender.getChannel()+"is not found");
+			String channel=getValue(sender.getChannelKey());
+			if(channel==null||channel.trim().length()<1){
+				throw new RuntimeException("MQ parameter "+sender.getChannelKey()+"is not found");
 			}else{
 				sender.setChannel(channel);
 			}
 		}
 	}
 	
-	private String getValue(String name){
+	public String getValue(String name){
 		String value=jdbcTemplate.queryForObject(MQ_CONFIG_SQL,new Object[]{name}, String.class);
 		logger.info("mq parameter name={},value={}",name,value);
 		return value;

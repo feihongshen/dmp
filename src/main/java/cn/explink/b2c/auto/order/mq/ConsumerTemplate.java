@@ -7,6 +7,10 @@ public class ConsumerTemplate {
 	
 	private String exchangeName;
 	
+	private String exchangeKey;
+	
+	private String queueKey;
+	
 	private String queueName;
 	
 	private Integer fetchCount;
@@ -51,6 +55,22 @@ public class ConsumerTemplate {
 
 	public void setExchangeName(String exchangeName) {
 		this.exchangeName = exchangeName;
+	}
+
+	public String getExchangeKey() {
+		return exchangeKey;
+	}
+
+	public void setExchangeKey(String exchangeKey) {
+		this.exchangeKey = exchangeKey;
+	}
+
+	public String getQueueKey() {
+		return queueKey;
+	}
+
+	public void setQueueKey(String queueKey) {
+		this.queueKey = queueKey;
 	}
 	
 }

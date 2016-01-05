@@ -5,6 +5,7 @@ import com.vip.platform.middleware.vms.Message;
 import com.vip.platform.middleware.vms.VMSClient;
 
 public class AutoExceptionSender {
+	private String channelKey;
 	private String channel;
 
 	public void send(String content){
@@ -25,6 +26,14 @@ public class AutoExceptionSender {
 
 	public void setChannel(String channel) {
 		this.channel = channel;
+	}
+
+	public String getChannelKey() {
+		return channelKey;
+	}
+
+	public void setChannelKey(String channelKey) {
+		this.channelKey = channelKey;
 	}
 	
 }

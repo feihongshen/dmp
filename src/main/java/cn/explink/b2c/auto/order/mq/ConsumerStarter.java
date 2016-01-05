@@ -2,12 +2,14 @@ package cn.explink.b2c.auto.order.mq;
 
 
 
+import com.vip.platform.middleware.vms.ISubscriber;
 import com.vip.platform.middleware.vms.SubQoS;
 import com.vip.platform.middleware.vms.VMSClient;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -52,6 +54,8 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 	
 	private List<AutoExceptionSender> senderList;
 	
+	private List<ISubscriber> subscriberList=new ArrayList<ISubscriber>();
+	
     //private ConsumerContainer consumerContainer;
 	
 	@Override
@@ -84,24 +88,47 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
         	
         	logger.info("start to connect to rabbit mq...");
         	
-			//consumerContainer = new ConsumerContainer(connectionFactory);
-			VMSClient client= VMSClient.getDefault();//new VMSClient();
+
+			//VMSClient client= VMSClient.getDefault();
+			VMSClient client= new VMSClient();
+			
 			/*
 			  可同时启动多个consumer实例并行执行。每个实例默认的prefetch account是5，显式ack。
 			     如果需要修改prefetch account或自动ack，请调用相应的重载接口。建议采取默认需要显式ack，这样，消息消费出错还能后续处理
 			     请注意显式ack已由fastrabbit 的框架代码实现，业务代码中不需要实现
 			 */
+
 			for(ConsumerTemplate rabbitTest: callBackList){
-				client.subscribe(rabbitTest.getQueueName(), SubQoS.build().prefetchCount(rabbitTest.getFetchCount()).autoCommit(rabbitTest.getAutoCommit()), rabbitTest.getCallBack());
-				
-				logger.info("Consumer started sucessfully! queueName="+rabbitTest.getQueueName()+",prefetchCount="+rabbitTest.getFetchCount());
+				ISubscriber subscriber=client.subscribe(rabbitTest.getQueueName(), SubQoS.build().prefetchCount(rabbitTest.getFetchCount()).autoCommit(rabbitTest.getAutoCommit()), rabbitTest.getCallBack());
+				subscriberList.add(subscriber);
+				logger.info("MQ subscriber started sucessfully! queueName="+rabbitTest.getQueueName()+",prefetchCount="+rabbitTest.getFetchCount());
 			}
-			//consumerContainer.startAllConsumers();
+
 			logger.info("Completed to connect to rabbit mq.");
+			
 		} catch (Exception e) {
 			logger.error("rabbit mq start error:",e);
 			throw e;
 		}
+    }
+    
+    public void stop() throws Exception{
+    	boolean error=false;
+        for(ISubscriber subscriber:subscriberList){
+        	try{
+        		logger.info("start to stop MQ subscriber...");
+        		subscriber.shutdown();
+        		logger.info("completed to stop MQ subscriber");
+	        } catch (Exception e) {
+	        	error=true;
+				logger.error("MQ subscriber stop error:",e);
+			}
+        }
+        subscriberList.clear();
+
+        if(error){
+        	throw new Exception("Stopping MQ subscriber have error,adivse restart whole web application.");
+        }
     }
 
     /**
