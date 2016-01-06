@@ -136,8 +136,8 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						
 					<li><span>业务标识：</span>
-							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0"   >配送
-							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"    >上门退
+							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0" disabled="disabled"  >配送
+							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"  disabled="disabled"  >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"  checked >全部
 						</li>
 						<li><span>取消或拦截：</span>
