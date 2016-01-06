@@ -37,7 +37,7 @@ import com.vip.platform.middleware.vms.IVMSCallback;
 import com.vip.platform.middleware.vms.VMSEventArgs;
 
 /**
- * 消费下发承运商订单状态接口表的物流状态信息
+ * 消费下发订单数据接口
  * <p>
  * 类详细描述
  * </p>
@@ -77,9 +77,9 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     	long msgidDate=0;
 		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
 		try {
+			msg = new String(e.getPayload(), "utf-8");
+			this.logger.info("TPS下发接口报文：" + msg);
 			if (isOpenFlag == 1) {
-				this.logger.info("未开启TPS自动化[" + vipshop_key + "]对接！");
-	        	msg = new String(e.getPayload(), "utf-8");
 	        	JsonConfig config=new JsonConfig(); 
 	        	Map<String, Class<?>> clazz = new HashMap<String,Class<?>>();
 				clazz.put("details", TPSOrderDetails.class);
@@ -125,6 +125,8 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	        	        errorList.add(error);
 	        		}
 	        	}
+		    }else{
+		    	this.logger.info("未开启TPS自动化[" + vipshop_key + "]对接！");
 		    }
         } catch (Throwable ex) {
         	this.logger.error("消费下发订单时解析异常!");
@@ -141,23 +143,9 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 			errorList.add(mqe);
         } finally {
         	if(errorList!=null){
+        		this.logger.info("TPS下发接口异常报文：" + msg);
         		for(AutoMQExceptionDto err:errorList){
               	    String sendXml = StringXMLSend(vipshop,err,msg);
-              	  /*VMSClient client = VMSClient.getDefault();
-              	    Message falure = Message.from(sendXml);
-                    falure.addRoutingKey("*");
-                    falure.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
-                   
-                    // msg.qos().priority(0); // 数字大的表示优先级高。 在同一个topic中，优先级高的消息先于优先级低的消息被消费。可选设置。
-                    // 推送到MQ
-                    try{
-        	              client.options().setConfirmable(true).setWaitingTimeout(2000).setFailFastEnabled(false);
-        	              IPublisher publisher = client.publish("channel.rabbitmq.tps.exception", falure);// 推送，第一个参数channelName，第二个参数报文内容
-        	              this.logger.info("错误订单消息推送成功");
-                    }catch(Exception e1){
-                  	  e1.printStackTrace();
-                  	  this.logger.error("下发订单信息异常信息保存失败!");
-                    }*/ 
                    autoExceptionSender.send(sendXml); 
         		}
         	}
