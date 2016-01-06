@@ -6,7 +6,6 @@ import com.vip.platform.middleware.vms.ISubscriber;
 import com.vip.platform.middleware.vms.SubQoS;
 import com.vip.platform.middleware.vms.VMSClient;
 
-import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 
 import java.util.ArrayList;
@@ -29,8 +28,7 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 
     private Logger logger = LoggerFactory.getLogger(ConsumerStarter.class);
     
-	@Autowired
-	private JointService jointService;
+	
 	@Autowired
 	private MqConfigService mqConfigService;
     
@@ -56,6 +54,8 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 	
 	private List<ISubscriber> subscriberList=new ArrayList<ISubscriber>();
 	
+	private static final String MQ_OPEN_KEY="MQ_OPEN_FLAG";
+	
     //private ConsumerContainer consumerContainer;
 	
 	@Override
@@ -76,7 +76,11 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
     public void start() throws Exception{
     	
         try {
-        	int state=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());//
+        	//int state=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());//
+        	int state=0;
+        	String value=mqConfigService.getValue(MQ_OPEN_KEY);
+        	state=Integer.parseInt(value);
+        	
         	if(state==0){
         		logger.info("do NOT connect to rabbit mq,state={}",state);
         		return;//
