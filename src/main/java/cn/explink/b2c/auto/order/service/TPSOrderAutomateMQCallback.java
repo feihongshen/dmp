@@ -143,7 +143,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 			errorList.add(mqe);
         } finally {
         	if(errorList!=null){
-        		this.logger.info("TPS下发接口异常报文：" + msg);
+        		this.logger.error("TPS下发接口异常报文：" + msg);
         		for(AutoMQExceptionDto err:errorList){
               	    String sendXml = StringXMLSend(vipshop,err,msg);
                    autoExceptionSender.send(sendXml); 
