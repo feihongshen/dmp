@@ -3760,7 +3760,7 @@
 				<addresscustomerid>41</addresscustomerid>
 				<addressid>41</addressid>
 				<addresspassword>hnadx</addresspassword>
-				<addressWebserviceIp>103.229.214.164/addressh</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.80:8081/addressh</addressWebserviceIp>
 				<fileTongLianPath>/home/apps/data/paysource/</fileTongLianPath>
 			</properties>
 		</profile>
