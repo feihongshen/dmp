@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.auto.order.mq.AutoExceptionSender;
 import cn.explink.b2c.auto.order.mq.AutoMQExceptionDto;
@@ -29,31 +28,13 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.vipshop.VipShop;
-import cn.explink.controller.CwbOrderDTO;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
 import cn.explink.enumutil.AutoInterfaceEnum;
-import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.exception.CwbException;
 
-import com.vip.platform.middleware.vms.IPublisher;
 import com.vip.platform.middleware.vms.ISubscriber;
 import com.vip.platform.middleware.vms.IVMSCallback;
-import com.vip.platform.middleware.vms.Message;
-import com.vip.platform.middleware.vms.VMSClient;
 import com.vip.platform.middleware.vms.VMSEventArgs;
-/*import com.vip.tps.common.constant.ExceptionCodeConstant.MqExceptionCode;
-import com.vip.tps.common.constant.MqConstant;
-import com.vip.tps.common.excelimport.exception.ServiceException;
-import com.vip.tps.inf.common.XmlBeanTranslator;
-import com.vip.tps.inf.mqexception.vo.InfCarrierOrderStatusCallbackVO;
-import com.vip.tps.inf.mqexception.vo.InfCarrierOrderStatusTransportTrackVo;
-import com.vip.tps.inf.tms.InfTmsToTpsTransportTrackService;
-import com.vip.tps.inf.tms.vo.InfTmsToTpsTransportTrackVo;
-import com.vip.tps.mq.entity.MqException;
-import com.vip.tps.mq.service.MqExceptionService;
-import com.vip.tps.order.entity.OmOrderTransport;
-import com.vip.tps.order.service.OrderTransportService;*/
 
 /**
  * 消费下发承运商订单状态接口表的物流状态信息
@@ -78,6 +59,8 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	private ConsumerTemplate consumerTemplate;
 	@Autowired
 	AutoExceptionSender autoExceptionSender;
+	@Autowired
+	TPSOrderHandle tPSOrderHandle;
 	
     protected Logger logger = LoggerFactory.getLogger(TPSOrderAutomateMQCallback.class);
 	
@@ -90,11 +73,12 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
     	String msg = "";
     	List<TPSOrder> errorOrderList = null;
     	List<AutoMQExceptionDto> errorList = null;
+    	AutoMQExceptionDto error=null;
+    	long msgidDate=0;
 		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
 		try {
 			if (isOpenFlag == 1) {
 				this.logger.info("未开启TPS自动化[" + vipshop_key + "]对接！");
-				this.logger.info("消费下发承运商订单状态接口表的物流状态信息:");
 	        	msg = new String(e.getPayload(), "utf-8");
 	        	JsonConfig config=new JsonConfig(); 
 	        	Map<String, Class<?>> clazz = new HashMap<String,Class<?>>();
@@ -118,12 +102,27 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	    		}
 	        	
 	        	for(TPSOrder order : list){
-	        		AutoMQExceptionDto error = this.handleOrderData(errorOrderList,order,vipshop,vipshop_key,msg);
-	        		if(error!=null){
-	        			if(errorList==null){
-		        			errorList = new ArrayList<AutoMQExceptionDto>();
-		        		}
-	        			errorList.add(error);
+	        		try{
+	        			tPSOrderHandle.handleOrderData(order,vipshop,vipshop_key,msg);
+	        		}catch(Exception ex){
+	        			error=new AutoMQExceptionDto();
+	        			if(msgidDate==0){
+	        				msgidDate=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
+	        			}
+	        	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), "下发订单数据转业务异常",AutoExceptionStatusEnum.xinjian.getValue(),msgidDate, 0);
+	        	        error.setBusiness_id(order.getCustOrderNo());
+	        	        error.setException_info(ex.getMessage());
+	        	        error.setMessage(msg);
+	        	        error.setRefid(detailId);
+	        	       
+	        	        if(errorOrderList==null){
+	        				errorOrderList=new ArrayList<TPSOrder>();
+	        			}
+	        	        if(errorList==null){
+	        	        	errorList=new ArrayList<AutoMQExceptionDto>();
+	        			}
+	        	        errorOrderList.add(order);
+	        	        errorList.add(error);
 	        		}
 	        	}
 		    }
@@ -168,57 +167,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
         }
     }
     
-    //处理业务逻辑
-	public AutoMQExceptionDto handleOrderData(List<TPSOrder> errorOrderList,
-    		TPSOrder order,VipShop vipshop,int vipshop_key,String msg){
-    	AutoMQExceptionDto error=null;
-    	long msgid=0;
-    	//flagOrder = order.getCustOrderNo();
-    	try{
-    		if(order.getBusinessType()==20 || order.getBusinessType()==40){
-    			tPSGetOrderDataService.extractedOXODataImport(order,vipshop);
-    		}else{
-    			//普通接口数据导入
-    			if(null!=order){
-    				if(order.getBusinessType()!=60 && order.getAddTime()==null){
-    					this.logger.info("没有出仓时间");
-    					throw new CwbException(order.getCustOrderNo(),FlowOrderTypeEnum.DaoRuShuJu.getValue(),"没有出仓时间");
-    				}
-    				//返回的报文订单信息解析
-    				CwbOrderDTO cwbOrder = tPSGetOrderDataService.parseXmlDetailInfo(vipshop,order);
-    				if (cwbOrder != null) {
-    					//是否开启托运单模式，生成多个批次 0 不开启
-        				if (vipshop.getIsTuoYunDanFlag() == 0) {
-        					//普通单在没有开启托运单模式下，数据插入临时表
-        					tPSGetOrderDataService.extractedDataImport(vipshop_key, vipshop, cwbOrder);
-        				} else {
-        					//普通单在开启托运单模式下，数据插入临时表
-        					tPSGetOrderDataService.extractedDataImportByEmaildate(vipshop_key, vipshop, cwbOrder);
-        				}
-    				}
-    			}
-    		}
-    	}catch(Exception ex){
-    		ex.printStackTrace();
-			logger.error("handleData error:",ex);
-			if(errorOrderList==null){
-				errorOrderList=new ArrayList<TPSOrder>();
-			}
-			if(error==null){
-				error=new AutoMQExceptionDto();
-			}
-			if(msgid==0){
-				msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
-			}
-	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), "下发订单数据转业务异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
-	        error.setBusiness_id(order.getCustOrderNo());
-	        error.setException_info(ex.getMessage());
-	        error.setMessage(msg);
-	        error.setRefid(detailId);
-	        errorOrderList.add(order);
-    	}
-    	return error;
-    }
+   
     
     //异常报文返回数据拼接
     private String StringXMLSend(VipShop vipshop,AutoMQExceptionDto error,String falure) {
