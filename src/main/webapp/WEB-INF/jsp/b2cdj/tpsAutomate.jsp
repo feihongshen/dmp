@@ -30,31 +30,31 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 <div id="box_form">
 				<ul>
 					<%if(vipshop != null){ %>
-						<li><span>承运商编码：</span>
+						<li style="display: none;"><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no" value="<%=vipshop.getShipper_no() %>"  maxlength="300">
 						</li>
-						<li><span>加密秘钥：</span>
+						<li style="display: none;"><span>加密秘钥：</span>
 							<input type ="text" id="private_key" name ="private_key" value="<%=vipshop.getPrivate_key() %>"  maxlength="300">
 						</li>
-						<li><span>每次获取订单数量：</span>
-							<input type ="text" id="getMaxCount" name ="getMaxCount" onblur="validate('getMaxCount')"  value="<%=vipshop.getGetMaxCount() %>"  maxlength="300">
+						<li style="display: none;"><span>每次获取订单数量：</span>
+							<input type ="text" id="getMaxCount" name ="getMaxCount" onblur="validate('getMaxCount')"  value="1"  maxlength="300">
 						</li>
-						<li><span>每次推送订单数量：</span>
-							<input type ="text" id="sendMaxCount" name ="sendMaxCount" onblur="validate('sendMaxCount')"  value="<%=vipshop.getSendMaxCount() %>"  maxlength="300">
+						<li style="display: none;"><span>每次推送订单数量：</span>
+							<input type ="text" id="sendMaxCount" name ="sendMaxCount" onblur="validate('sendMaxCount')"  value="1"  maxlength="300">
 						</li>
-						<li><span>获取订单的URL：</span>
+						<li style="display: none;"><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL" value="<%=vipshop.getGetCwb_URL() %>"  maxlength="300">
 						</li>
-						<li><span>反馈URL：</span>
+						<li style="display: none;"><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL" value="<%=vipshop.getSendCwb_URL() %>"  maxlength="300">
 						</li>
-						<li><span>当前SEQ：</span>
-							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')"  value="<%=vipshop.getVipshop_seq() %>"  maxlength="300">
+						<li style="display: none;"><span>当前SEQ：</span>
+							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')"  value="0"  maxlength="300">
 						</li>
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')" value="<%=vipshop.getCustomerids() %>"  maxlength="300">
 						</li>
-						<li><span>乐蜂id：</span>
+						<li style="display: none;"><span>乐蜂id：</span>
 							<input type ="text" id="lefengCustomerid" name ="lefengCustomerid" value="<%=vipshop.getLefengCustomerid() %>"  maxlength="300">
 						</li>
 						<li><span>是否订单下载：</span>
@@ -70,7 +70,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"   <%if(vipshop.getIsShangmentuiFlag()==1){%>checked<%}%>  >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"   <%if(vipshop.getIsShangmentuiFlag()==2){%>checked<%}%>  >全部
 						</li>
-						<li><span>取消或拦截：</span>
+						<li style="display: none;"><span>取消或拦截：</span>
 							<input type ="radio" id="cancelOrIntercept1" name ="cancelOrIntercept" value="0" <%if(vipshop.getCancelOrIntercept()==0){%>checked<%}%>  >取消开启
 							<input type ="radio" id="cancelOrIntercept2" name ="cancelOrIntercept" value="1" <%if(vipshop.getCancelOrIntercept()==1){%>checked<%}%>  >拦截开启
 						</li>
@@ -99,31 +99,31 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	 						<input type ="password" id="password" name ="password"  maxlength="30"    size="20"> 
 						</li>
 					<%}else{ %>
-						<li><span>承运商编码：</span>
+						<li style="display: none;"><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no"  maxlength="300">
 						</li>
-						<li><span>加密秘钥：</span>
+						<li style="display: none;"><span>加密秘钥：</span>
 							<input type ="text" id="private_key" name ="private_key"  maxlength="300">
 						</li>
-						<li><span>每次获取订单数量：</span>
-							<input type ="text" id="getMaxCount" name ="getMaxCount"   maxlength="300" onblur="javascript:validate('getMaxCount')">
+						<li style="display: none;"><span>每次获取订单数量：</span>
+							<input type ="text" id="getMaxCount" name ="getMaxCount" value="1"  maxlength="300" onblur="javascript:validate('getMaxCount')">
 						</li>
-						<li><span>每次推送订单数量：</span>
-							<input type ="text" id="sendMaxCount" name ="sendMaxCount"  maxlength="300" onblur="validate('sendMaxCount')">
+						<li style="display: none;"><span>每次推送订单数量：</span>
+							<input type ="text" id="sendMaxCount" name ="sendMaxCount" value="1"  maxlength="300" onblur="validate('sendMaxCount')">
 						</li>
-						<li><span>获取订单的URL：</span>
+						<li style="display: none;"><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL"   maxlength="300">
 						</li>
-						<li><span>反馈URL：</span>
+						<li style="display: none;"><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL"  maxlength="300"/>
 						</li>
-						<li><span>当前SEQ：</span>
-							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')" value=""  maxlength="300">
+						<li style="display: none;"><span>当前SEQ：</span>
+							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')" value="0"  maxlength="300">
 						</li>
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')"  maxlength="300">
 						</li>
-						<li><span>乐蜂id：</span>
+						<li style="display: none;"><span>乐蜂id：</span>
 							<input type ="text" id="lefengCustomerid" name ="lefengCustomerid" value=""  maxlength="300">
 						</li>
 						<li><span>是否订单下载：</span>
@@ -136,9 +136,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						
 					<li><span>业务标识：</span>
-							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0"  checked >配送
+							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0"   >配送
 							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"    >上门退
-							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"   >全部
+							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"  checked >全部
 						</li>
 						<li><span>取消或拦截：</span>
 							<input type ="radio" id="cancelOrIntercept1" name ="cancelOrIntercept" value="0" checked  >取消开启
