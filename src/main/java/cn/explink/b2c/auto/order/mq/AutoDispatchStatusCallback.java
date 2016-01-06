@@ -60,28 +60,33 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	        String msg = "";
 	        List<AutoMQExceptionDto> errorList=null;
 
+	        int isOpenFlag =0; 
 	        try {
-	            msg = new String(e.getPayload(), "utf-8");
-	            this.logger.debug("消费消费分拣状态信息接收到报文：" + msg);
-	            //System.out.println(msg);//
-	            
-	    		if(user==null){
-	    			user=this.getSessionUser();
-	    			this.logger.info("start consume first msg:" + msg);
-	    		}
-	            
-	            //解析json
-	            List<AutoPickStatusVo> voList= parseJson(msg);
-	            //处理数据
-	            List<AutoMQExceptionDto> dataErrorList=handleData(voList,user,msg);
-	            //反馈错误
-	            if(dataErrorList!=null){
-	            	if(errorList==null){
-	            		errorList=new ArrayList<AutoMQExceptionDto>();
-	            	}
-	            	errorList.addAll(dataErrorList);
-	            	
-	            }
+	        	isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+	           
+	        	if(isOpenFlag==1){
+		        	msg = new String(e.getPayload(), "utf-8");
+		            this.logger.debug("消费消费分拣状态信息接收到报文：" + msg);
+		            //System.out.println(msg);//
+		            
+		    		if(user==null){
+		    			user=this.getSessionUser();
+		    			this.logger.info("start consume first msg:" + msg);
+		    		}
+		            
+		            //解析json
+		            List<AutoPickStatusVo> voList= parseJson(msg);
+		            //处理数据
+		            List<AutoMQExceptionDto> dataErrorList=handleData(voList,user,msg);
+		            //反馈错误
+		            if(dataErrorList!=null){
+		            	if(errorList==null){
+		            		errorList=new ArrayList<AutoMQExceptionDto>();
+		            	}
+		            	errorList.addAll(dataErrorList);
+		            	
+		            }
+	        	}
 	        } catch (Throwable ex) {
 	        	logger.error("消费分拣状态信息 onSuccess error,msg:"+msg,ex);
 	        	//ex.printStackTrace();/////////////////
