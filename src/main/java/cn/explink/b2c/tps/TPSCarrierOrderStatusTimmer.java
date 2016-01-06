@@ -74,7 +74,10 @@ public class TPSCarrierOrderStatusTimmer {
 		TPSCarrierOrderStatusTimmer tPSCarrierOrderStatusTimmer=(TPSCarrierOrderStatusTimmer)context.getBean("tPSCarrierOrderStatusTimmer");
 		// 获取配置信息
 		TPSCarrierOrderStatus property= this.getCarrierOrderStatusProperty(jointEntity);
-		
+		if(property.getGetMaxCount()==0){
+			logger.info(B2cEnum.TPS_CarrierOrderStatus.getText()+"接口对接设置每次获取订单数为0,不从TPS获取运单状态数据！");
+			return;
+		}
 		List<CarrierOrderStatusResponse> carrierOrderStatusList=null;
 		CarrierOrderStatusRequest request=null;
 		try {
