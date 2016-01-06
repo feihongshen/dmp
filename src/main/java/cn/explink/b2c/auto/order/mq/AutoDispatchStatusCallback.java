@@ -66,7 +66,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	           
 	        	if(isOpenFlag==1){
 		        	msg = new String(e.getPayload(), "utf-8");
-		            this.logger.debug("消费消费分拣状态信息接收到报文：" + msg);
+		            this.logger.info("分拣状态信息报文：" + msg);
 		            //System.out.println(msg);//
 		            
 		    		if(user==null){
@@ -119,7 +119,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	            // 确认消费
 	            ISubscriber subscriber = (ISubscriber) sender;
 	            subscriber.commit();
-	            logger.debug("subscriber commit ok.");//
+	            logger.info("dispatch subscriber commit ok.");//
 	            //System.out.println("consumed ok.");///////////////////????????
 	        }
 		
