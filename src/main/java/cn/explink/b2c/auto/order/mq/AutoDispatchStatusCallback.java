@@ -66,7 +66,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	           
 	        	if(isOpenFlag==1){
 		        	msg = new String(e.getPayload(), "utf-8");
-		            this.logger.info("分拣状态信息报文：" + msg);
+		            this.logger.info("分拣状态信息报文dispatch msg:" + msg);
 		            //System.out.println(msg);//
 		            
 		    		if(user==null){

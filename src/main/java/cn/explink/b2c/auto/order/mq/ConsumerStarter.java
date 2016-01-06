@@ -78,12 +78,18 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
         try {
         	//int state=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());//
         	int state=0;
-        	String value=mqConfigService.getValue(MQ_OPEN_KEY);
-        	state=Integer.parseInt(value);
+        	
+        	try{
+	        	String value=mqConfigService.getValue(MQ_OPEN_KEY);
+	        	state=Integer.parseInt(value);
+	        } catch (Exception e) {
+	        	logger.error("get MQ_OPEN_FLAG parameter error:",e);
+	        }
         	
         	if(state==0){
         		logger.info("do NOT connect to rabbit mq,state={}",state);
-        		return;//
+        		throw new Exception("连接MQ服务器的开关未打开");
+        		//return;//
         	}
         	
         	logger.info("start to load mq config...");

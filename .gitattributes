@@ -86,6 +86,7 @@ src/main/java/cn/explink/b2c/amazon/domain/manifestSummary/TotalActualGrossWeigh
 src/main/java/cn/explink/b2c/amazon/domain/manifestSummary/TotalDeclaredGrossWeight.java -text
 src/main/java/cn/explink/b2c/amazon/domain/manifestSummary/TotalShipmentQuantity.java -text
 src/main/java/cn/explink/b2c/amazon/domain/manifestSummary/TotalShipmentValue.java -text
+src/main/java/cn/explink/b2c/auto/order/controller/MqConfigController.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/dao/TPSDataImportDAO_B2c.java -text
 src/main/java/cn/explink/b2c/auto/order/mq/AutoDispatchStatusCallback.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/mq/AutoExceptionSender.java -text svneol=unset#text/plain
@@ -105,6 +106,7 @@ src/main/java/cn/explink/b2c/auto/order/service/TPSInsertCwbDetailTimmer.java -t
 src/main/java/cn/explink/b2c/auto/order/service/TPSOrderAutomateMQCallback.java -text
 src/main/java/cn/explink/b2c/auto/order/service/TPSOrderHandle.java -text
 src/main/java/cn/explink/b2c/auto/order/service/TPSOrderImportService_B2c.java -text
+src/main/java/cn/explink/b2c/auto/order/vo/MqConfigVo.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/vo/TPSOrder.java -text
 src/main/java/cn/explink/b2c/auto/order/vo/TPSOrderDetails.java -text
 src/main/java/cn/explink/b2c/benlaishenghuo/BenLaiShengHuo.java -text
@@ -2367,6 +2369,7 @@ src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiHuo.jsp -text
 src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiHuo1.jsp -text
 src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiHuoCheck.jsp -text
 src/main/webapp/WEB-INF/jsp/auditorderstate/toTuiHuoZaiTou.jsp -text
+src/main/webapp/WEB-INF/jsp/auto/mqconfig.jsp -text svneol=unset#text/plain
 src/main/webapp/WEB-INF/jsp/automaticset/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/automaticset/list.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/Jiuxian.jsp -text
