@@ -60,7 +60,7 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>${autoLog}autoLog.${label}.%d{yyyy-MM-dd}.log.zip
 			</FileNamePattern>
-			<!--日志保存的天数-->>
+			<!--日志保存的天数-->
 			<MaxHistory>14</MaxHistory>
 		</rollingPolicy>
 		<layout class="ch.qos.logback.classic.PatternLayout">  
