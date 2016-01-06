@@ -264,11 +264,11 @@ public class BaleController {
 
 			// 封包检查
 			if (flag == 1) {// 库房出库
-				this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), cwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
+				this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
 			} else if (flag == 2) {// 退货出站
-				this.baleService.baleaddcwbTuiHuoCheck(this.getSessionUser(), baleno, cwb, confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
+				this.baleService.baleaddcwbTuiHuoCheck(this.getSessionUser(), baleno, scancwb, confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
 			} else if (flag == 3) {// 中转出站
-				this.baleService.baleaddcwbzhongzhuanchuzhanCheck(this.getSessionUser(), baleno.trim(), cwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
+				this.baleService.baleaddcwbzhongzhuanchuzhanCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
 			} else if (flag == 4) {// 退供货商出库
 				this.baleService.baleaddcwbToCustomerCheck(this.getSessionUser(), baleno, scancwb, this.getSessionUser().getBranchid(), branchid);
 			} else if(flag == 5){// 中转库出库
