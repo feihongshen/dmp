@@ -45,13 +45,14 @@ public class TranscwbOrderFlowDAO {
 
 	/**
 	 * 创建一条操作记录
-	 * 
+	 *
 	 * @param of
 	 * @return key
 	 */
 	public long creTranscwbOrderFlow(final TranscwbOrderFlow tof) {
 		KeyHolder key = new GeneratedKeyHolder();
-		jdbcTemplate.update(new PreparedStatementCreator() {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement("insert into express_ops_transcwb_orderflow (cwb,scancwb,branchid,userid,floworderdetail,flowordertype,isnow,comment) " + "values(?,?,?,?,?,?,1,?)",
@@ -71,28 +72,32 @@ public class TranscwbOrderFlowDAO {
 	}
 
 	public long creAndUpdateTranscwbOrderFlow(TranscwbOrderFlow tof) {
-		jdbcTemplate.update("update express_ops_transcwb_orderflow set isnow='0' where scancwb=? and isnow='1'", tof.getScancwb());
-		return creTranscwbOrderFlow(tof);
+		this.jdbcTemplate.update("update express_ops_transcwb_orderflow set isnow='0' where scancwb=? and isnow='1'", tof.getScancwb());
+		return this.creTranscwbOrderFlow(tof);
 	}
 
 	public TranscwbOrderFlow getTranscwbOrderFlowByCwbAndState(String scancwb, String cwb) {
 		try {
 			String sql = "select * from express_ops_transcwb_orderflow where scancwb=? and cwb=? and isnow=1";
-			return jdbcTemplate.queryForObject(sql, new TranscwbOrderFlowRowMapper(), scancwb, cwb);
+			return this.jdbcTemplate.queryForObject(sql, new TranscwbOrderFlowRowMapper(), scancwb, cwb);
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	public List<TranscwbOrderFlow> getTranscwbOrderFlowByScanCwb(String scancwb, String cwb) {
-		return jdbcTemplate.query("select * from express_ops_transcwb_orderflow where scancwb= ? and cwb=? order by  credate ASC", new TranscwbOrderFlowRowMapper(), scancwb, cwb);
+		return this.jdbcTemplate.query("select * from express_ops_transcwb_orderflow where scancwb= ? and cwb=? order by  credate ASC", new TranscwbOrderFlowRowMapper(), scancwb, cwb);
+	}
+
+	public List<TranscwbOrderFlow> getTranscwbOrderFlowByCwb(String cwb) {
+		return this.jdbcTemplate.query("select * from express_ops_transcwb_orderflow where  cwb=? order by scancwb, credate ASC", new TranscwbOrderFlowRowMapper(), cwb);
 	}
 
 	public List<TranscwbOrderFlow> getTranscwbOrderFlowByCwbAndFloworderdetail(String scancwb, String cwb, long flowordertype, final long currentbranchid, final long startbranchid,
 			final long nextbranchid) {
 		String sql = "select * from express_ops_transcwb_orderflow where scancwb='" + scancwb + "' and cwb='" + cwb + "' and flowordertype=" + flowordertype + " and isnow=1";
 		final List<TranscwbOrderFlow> cwbList = new ArrayList<TranscwbOrderFlow>();
-		jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
+		this.jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 			@Override
 			public void processRow(ResultSet rs) throws SQLException {
 				try {
@@ -111,7 +116,7 @@ public class TranscwbOrderFlowDAO {
 							isTrue = true;
 						}
 					}
-					if (startbranchid > 0 && isTrue) {
+					if ((startbranchid > 0) && isTrue) {
 						isTrue = false;
 						String startbranchidstr = "startbranchid\":" + startbranchid + ",";
 						if (rs.getString("floworderdetail").indexOf(startbranchidstr) > -1) {
@@ -146,6 +151,6 @@ public class TranscwbOrderFlowDAO {
 	public long getTranscwbOrderFlowByScanCwbCount(String scancwb, String cwb, long flowordertype, long branchid, long nextbranchid) {
 		String sql = "SELECT COUNT(1) FROM express_ops_transcwb_orderflow WHERE scancwb<>? AND cwb=? AND flowordertype=? AND branchid=? and floworderdetail LIKE '%\"nextbranchid\":" + nextbranchid
 				+ ",%' AND isnow=1 ";
-		return jdbcTemplate.queryForLong(sql, scancwb, cwb, flowordertype, branchid);
+		return this.jdbcTemplate.queryForLong(sql, scancwb, cwb, flowordertype, branchid);
 	}
 }
