@@ -39,3 +39,6 @@ ADD COLUMN `mpsallarrivedflag`  int NULL DEFAULT 0 COMMENT '一票多件是否�
 /*客户表*/
 ALTER TABLE `express_set_customer_info`
 ADD COLUMN `mpsswitch`  int NULL DEFAULT 0 COMMENT 'mps开关（0：未开启，1：开启库房集单，2：开启站点集单）';
+
+/*对接临时表 添加最后一箱标识*/
+ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD COLUMN `is_gathercomp` INT(11) DEFAULT 0 NULL COMMENT '最后一箱标识:1表示最后一箱；0默认'; 
