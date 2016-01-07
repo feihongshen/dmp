@@ -1193,6 +1193,7 @@ src/main/java/cn/explink/dao/SwitchDAO.java -text
 src/main/java/cn/explink/dao/SysConfigDAO.java -text
 src/main/java/cn/explink/dao/SystemInstallDAO.java -text
 src/main/java/cn/explink/dao/TimeEffectiveDAO.java -text
+src/main/java/cn/explink/dao/TransCwbDetailDAO.java -text
 src/main/java/cn/explink/dao/TransCwbStateControlDAO.java -text
 src/main/java/cn/explink/dao/TranscwbOrderFlowDAO.java -text
 src/main/java/cn/explink/dao/TransferReasonStasticsDao.java -text
