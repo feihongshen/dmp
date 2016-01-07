@@ -1444,6 +1444,7 @@ src/main/java/cn/explink/domain/SystemInstall.java -text
 src/main/java/cn/explink/domain/TimeEffectiveVO.java -text
 src/main/java/cn/explink/domain/TimeTypeEnum.java -text
 src/main/java/cn/explink/domain/TlBank.java -text
+src/main/java/cn/explink/domain/TransCwbDetail.java -text
 src/main/java/cn/explink/domain/TransCwbStateControl.java -text
 src/main/java/cn/explink/domain/TransferReason.java -text
 src/main/java/cn/explink/domain/TransferReasonStastics.java -text
