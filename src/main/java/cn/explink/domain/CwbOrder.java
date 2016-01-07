@@ -125,25 +125,28 @@ public class CwbOrder {
 	private String consigneenameOfkf;
 	private String consigneemobileOfkf;
 	private String consigneephoneOfkf;
-	private long zhongzhuanreasonid;//中转id
-	private String zhongzhuanreason;//中转原因
-	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
-	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
-	private long fnorgbillid; //订单站点代收货款账单id
-	private long fnorgfreightbillid; //订单站点运费账单id
-	private int firstlevelid; //一级滞留原因id
-	private String city;//通过百度API匹配的城市
-	private String area;//通过百度API匹配的城区区域
-	
-	private long pickbranchid; //提货站点id
-	private long oxopickstate; //oxo揽件状态  。取值参考 CwbOXOStateEnum枚举类
-	private long oxodeliverystate; //oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
+	private long zhongzhuanreasonid;// 中转id
+	private String zhongzhuanreason;// 中转原因
+	private BigDecimal fnorgoffset;// 站点账单回写的冲抵金额
+	private int fnorgoffsetflag;// 订单在站点账单中被冲抵标志位，0：未收款，1：已收款
+	private long fnorgbillid; // 订单站点代收货款账单id
+	private long fnorgfreightbillid; // 订单站点运费账单id
+	private int firstlevelid; // 一级滞留原因id
+	private String city;// 通过百度API匹配的城市
+	private String area;// 通过百度API匹配的城区区域
 
-	private int branchfeebillexportflag;//加盟商派费账单导出标志
-	
-	private long fncustomerpayablebillid; //应付客户账单id
-	private long fncustomerposbillid; //客户pos抵扣账单 id
+	private long pickbranchid; // 提货站点id
+	private long oxopickstate; // oxo揽件状态 。取值参考 CwbOXOStateEnum枚举类
+	private long oxodeliverystate; // oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
+
+	private int branchfeebillexportflag;// 加盟商派费账单导出标志
+
+	private long fncustomerpayablebillid; // 应付客户账单id
+	private long fncustomerposbillid; // 客户pos抵扣账单 id
 	private long fncustomerbillid; // 应收客户账单id
+
+	private int mpsoptstate;// 一票多件操作状态（multiple package shipment,取值同订单操作状态）
+	private int mpsallarrivedflag;// 一票多件是否到齐（0：未到齐，1：到齐）
 
 	/**
 	 * @return the city
@@ -153,7 +156,8 @@ public class CwbOrder {
 	}
 
 	/**
-	 * @param city the city to set
+	 * @param city
+	 *            the city to set
 	 */
 	public void setCity(String city) {
 		this.city = city;
@@ -167,36 +171,40 @@ public class CwbOrder {
 	}
 
 	/**
-	 * @param area the area to set
+	 * @param area
+	 *            the area to set
 	 */
 	public void setArea(String area) {
 		this.area = area;
 	}
 
 	/**
-	 * @param podfeetoheadtime the podfeetoheadtime to set
+	 * @param podfeetoheadtime
+	 *            the podfeetoheadtime to set
 	 */
 	public void setPodfeetoheadtime(String podfeetoheadtime) {
 		this.podfeetoheadtime = podfeetoheadtime;
 	}
 
 	/**
-	 * @param podfeetoheadchecktime the podfeetoheadchecktime to set
+	 * @param podfeetoheadchecktime
+	 *            the podfeetoheadchecktime to set
 	 */
 	public void setPodfeetoheadchecktime(String podfeetoheadchecktime) {
 		this.podfeetoheadchecktime = podfeetoheadchecktime;
 	}
 
 	/**
-	 * @param deliversubscribeday the deliversubscribeday to set
+	 * @param deliversubscribeday
+	 *            the deliversubscribeday to set
 	 */
 	public void setDeliversubscribeday(String deliversubscribeday) {
 		this.deliversubscribeday = deliversubscribeday;
 	}
 
+	private String changereason; // 中转原因
+	private long firstchangereasonid; // 一级中转原因
 
-	private String changereason; //中转原因
-	private long firstchangereasonid; //一级中转原因
 	public long getFirstchangereasonid() {
 		return this.firstchangereasonid;
 	}
@@ -205,9 +213,7 @@ public class CwbOrder {
 		this.firstchangereasonid = firstchangereasonid;
 	}
 
-
 	private long changereasonid;
-
 
 	public String getChangereason() {
 		return this.changereason;
@@ -216,8 +222,6 @@ public class CwbOrder {
 	public void setChangereason(String changereason) {
 		this.changereason = changereason;
 	}
-
-
 
 	public long getChangereasonid() {
 		return this.changereasonid;
@@ -231,26 +235,21 @@ public class CwbOrder {
 		return this.firstlevelid;
 	}
 
-
 	public void setFirstlevelid(int firstlevelid) {
 		this.firstlevelid = firstlevelid;
 	}
-
 
 	public int getFnorgoffsetflag() {
 		return this.fnorgoffsetflag;
 	}
 
-
 	public void setFnorgoffsetflag(int fnorgoffsetflag) {
 		this.fnorgoffsetflag = fnorgoffsetflag;
 	}
 
-
 	public BigDecimal getFnorgoffset() {
 		return this.fnorgoffset;
 	}
-
 
 	public void setFnorgoffset(BigDecimal fnorgoffset) {
 		this.fnorgoffset = fnorgoffset;
@@ -1139,7 +1138,6 @@ public class CwbOrder {
 		this.outareaflag = outareaflag;
 	}
 
-
 	public String getConsigneenameOfkf() {
 		return this.consigneenameOfkf;
 	}
@@ -1165,7 +1163,7 @@ public class CwbOrder {
 	}
 
 	public long getPickbranchid() {
-		return pickbranchid;
+		return this.pickbranchid;
 	}
 
 	public void setPickbranchid(long pickbranchid) {
@@ -1173,7 +1171,7 @@ public class CwbOrder {
 	}
 
 	public long getOxopickstate() {
-		return oxopickstate;
+		return this.oxopickstate;
 	}
 
 	public void setOxopickstate(long oxopickstate) {
@@ -1181,15 +1179,15 @@ public class CwbOrder {
 	}
 
 	public long getOxodeliverystate() {
-		return oxodeliverystate;
+		return this.oxodeliverystate;
 	}
 
 	public void setOxodeliverystate(long oxodeliverystate) {
 		this.oxodeliverystate = oxodeliverystate;
 	}
-	
+
 	public int getBranchfeebillexportflag() {
-		return branchfeebillexportflag;
+		return this.branchfeebillexportflag;
 	}
 
 	public void setBranchfeebillexportflag(int branchfeebillexportflag) {
@@ -1197,7 +1195,7 @@ public class CwbOrder {
 	}
 
 	public long getFnorgbillid() {
-		return fnorgbillid;
+		return this.fnorgbillid;
 	}
 
 	public void setFnorgbillid(long fnorgbillid) {
@@ -1205,7 +1203,7 @@ public class CwbOrder {
 	}
 
 	public long getFnorgfreightbillid() {
-		return fnorgfreightbillid;
+		return this.fnorgfreightbillid;
 	}
 
 	public void setFnorgfreightbillid(long fnorgfreightbillid) {
@@ -1213,7 +1211,7 @@ public class CwbOrder {
 	}
 
 	public long getFncustomerpayablebillid() {
-		return fncustomerpayablebillid;
+		return this.fncustomerpayablebillid;
 	}
 
 	public void setFncustomerpayablebillid(long fncustomerpayablebillid) {
@@ -1221,7 +1219,7 @@ public class CwbOrder {
 	}
 
 	public long getFncustomerposbillid() {
-		return fncustomerposbillid;
+		return this.fncustomerposbillid;
 	}
 
 	public void setFncustomerposbillid(long fncustomerposbillid) {
@@ -1229,12 +1227,27 @@ public class CwbOrder {
 	}
 
 	public long getFncustomerbillid() {
-		return fncustomerbillid;
+		return this.fncustomerbillid;
 	}
 
 	public void setFncustomerbillid(long fncustomerbillid) {
 		this.fncustomerbillid = fncustomerbillid;
 	}
-	
-	
+
+	public int getMpsoptstate() {
+		return this.mpsoptstate;
+	}
+
+	public void setMpsoptstate(int mpsoptstate) {
+		this.mpsoptstate = mpsoptstate;
+	}
+
+	public int getMpsallarrivedflag() {
+		return this.mpsallarrivedflag;
+	}
+
+	public void setMpsallarrivedflag(int mpsallarrivedflag) {
+		this.mpsallarrivedflag = mpsallarrivedflag;
+	}
+
 }

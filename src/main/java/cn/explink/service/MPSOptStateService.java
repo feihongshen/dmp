@@ -3,7 +3,13 @@
  */
 package cn.explink.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +69,7 @@ public class MPSOptStateService {
 			MPSOptStateService.LOGGER.info(MPSOptStateService.LOG_MSG_PREFIX + "传入的运单号为空！");
 			return;
 		}
-		// 1、根据运单号查询订单
+		// 根据运单号查询订单
 		String cwb = this.transCwbDao.getCwbByTransCwb(transCwb);
 		if (StringUtils.isEmpty(cwb)) {
 			MPSOptStateService.LOGGER.info(MPSOptStateService.LOG_MSG_PREFIX + "根据传入的运单号没有查询到相应的订单号！");
@@ -75,26 +81,71 @@ public class MPSOptStateService {
 			return;
 		}
 
-		// 2、查询供应商
+		// 查询供应商，判断该供应商是否开启了集单模式
 		long customerid = cwbOrder.getCustomerid();
 		Customer customer = this.customerDAO.getCustomerById(customerid);
 		if (customer.getCustomerid() == 0L) {
 			MPSOptStateService.LOGGER.info(MPSOptStateService.LOG_MSG_PREFIX + "没有查询到订单的供应商信息！");
 			return;
 		}
-		// customer.get
+		// TODO 如果没有开启集单模式 return
 
-		// 2、获取集单是否开启
+		this.updateMPSOptState(cwb);
 
+		// TODO 更新运单操作状态，上一站 下一站
+	}
+
+	private void updateMPSOptState(String cwb) {
 		List<TranscwbView> transCwbViewList = this.transCwbDao.getTransCwbByCwb(cwb);
+		Map<String, Queue<Integer>> transCwbMap = new HashMap<String, Queue<Integer>>();
+		// express_ops_transcwb_orderflow表中没有订单是否被废弃标志，两个大表连表查询性能太差，并且
+		// 一票多件子订单数量不会太多，所以选择循环查询
+		for (TranscwbView transcwbView : transCwbViewList) {
+			String transcwbInMap = transcwbView.getTranscwb();
+			Queue<Integer> transcwboptstateQueue = new LinkedList<Integer>();
+			transcwboptstateQueue.add(Integer.valueOf(FlowOrderTypeEnum.DaoRuShuJu.getValue()));
+			// 获取运单状态流程信息
+			List<TranscwbOrderFlow> transcwbOrderFlowList = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(transcwbInMap, cwb);
 
-		// 4、获取运单状态流程信息
-		List<TranscwbOrderFlow> transcwbOrderFlowList = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByCwb(cwb);
-		// 5、计算出最晚的状态
-		for (TranscwbOrderFlow transcwbOrderFlow : transcwbOrderFlowList) {
-
+			for (TranscwbOrderFlow transcwbOrderFlow : transcwbOrderFlowList) {
+				transcwboptstateQueue.add(transcwbOrderFlow.getFlowordertype());
+			}
+			transCwbMap.put(transcwbInMap, transcwboptstateQueue);
 		}
-		// 6、更新最晚状态到一票多件状态
+		// 计算出最晚的状态
+		int latestMPSState = this.getLatestState(transCwbMap);
+		// 更新最晚状态到一票多件状态
+		this.cwbDAO.updateMPSOptState(cwb, latestMPSState);
+	}
 
+	private int getLatestState(Map<String, Queue<Integer>> transCwbMap) {
+		Set<String> keySet = transCwbMap.keySet();
+		List<Queue<Integer>> queueList = new ArrayList<Queue<Integer>>();
+
+		int longestQueueLength = 0;
+		for (String key : keySet) {
+			Queue<Integer> queue = transCwbMap.get(key);
+			queueList.add(queue);
+			if (queue.size() > longestQueueLength) {
+				longestQueueLength = queue.size();
+			}
+		}
+		int currentState = FlowOrderTypeEnum.DaoRuShuJu.getValue();
+		boolean hasFoundState = false;
+		for (int i = 0; i < longestQueueLength; i++) {
+			Integer firstState = queueList.get(0).poll();
+			for (int j = 1; j < queueList.size(); j++) {
+				Integer head = queueList.get(j).poll();
+				if ((firstState == null) || (head == null) || (head != firstState)) {
+					hasFoundState = true;
+					break;
+				}
+				currentState = head;
+			}
+			if (hasFoundState) {
+				break;
+			}
+		}
+		return currentState;
 	}
 }

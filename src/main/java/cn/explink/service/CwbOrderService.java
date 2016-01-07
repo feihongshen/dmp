@@ -214,10 +214,7 @@ public class CwbOrderService extends BaseOrderService {
 	CwbDAO cwbDAO;
 	@Autowired
 	StockDetailDAO stockDetailDAO;
-	
-	
-	
-	
+
 	@Autowired
 	StockResultDAO stockResultDAO;
 	@Autowired
@@ -415,6 +412,9 @@ public class CwbOrderService extends BaseOrderService {
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
 	@Autowired
 	AdjustmentRecordService adjustmentRecordService;
+
+	@Autowired
+	private MPSOptStateService mpsOptStateService;
 
 	// private User getSessionUser() {
 	// ExplinkUserDetail userDetail = (ExplinkUserDetail)
@@ -887,6 +887,8 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false);
 		}
+
+		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, 0L);
 
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
@@ -5163,7 +5165,6 @@ public class CwbOrderService extends BaseOrderService {
 
 				this.adjustmentRecordService.createAdjustment4GoToClassConfirm(co, deliverystate);
 			}
-
 
 		}
 

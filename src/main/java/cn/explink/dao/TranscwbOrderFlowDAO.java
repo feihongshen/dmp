@@ -89,10 +89,6 @@ public class TranscwbOrderFlowDAO {
 		return this.jdbcTemplate.query("select * from express_ops_transcwb_orderflow where scancwb= ? and cwb=? order by  credate ASC", new TranscwbOrderFlowRowMapper(), scancwb, cwb);
 	}
 
-	public List<TranscwbOrderFlow> getTranscwbOrderFlowByCwb(String cwb) {
-		return this.jdbcTemplate.query("select * from express_ops_transcwb_orderflow where  cwb=? order by scancwb, credate ASC", new TranscwbOrderFlowRowMapper(), cwb);
-	}
-
 	public List<TranscwbOrderFlow> getTranscwbOrderFlowByCwbAndFloworderdetail(String scancwb, String cwb, long flowordertype, final long currentbranchid, final long startbranchid,
 			final long nextbranchid) {
 		String sql = "select * from express_ops_transcwb_orderflow where scancwb='" + scancwb + "' and cwb='" + cwb + "' and flowordertype=" + flowordertype + " and isnow=1";
