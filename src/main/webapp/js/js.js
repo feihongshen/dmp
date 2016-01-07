@@ -1075,7 +1075,6 @@ function check_user() {
 		alert("员工登录名不能为空");
 		return false;
 	}
-	
 	if (!isLetterAndNumber($("#username").val())) {
 		alert("员工登录名格式不正确");
 		return false;
@@ -1092,19 +1091,21 @@ function check_user() {
 		alert("请选择员工对应的角色");
 		return false;
 	}
+	
 	if ($("#roleid").val() == 2 || $("#roleid").val() == 4){
 		if ($("#username").val().length > 9) {
-			alert("员工登录名不能超过9位字符！");
-			return false;
+			if(!confirm("登录名长度超过9位，将无法使用通联pos刷卡！确认使用当前登录名吗？")){
+				return false;
+			}
 		}
 	}
 	if ($("#tip").html().length > 0) {
 		if ($("#usermobile").val().length == 0) {
 			alert("手机号码不能为空!");
 			return false;
-		}else if ($("#usermobile").val().length != 11 ||isMobileNumber($("#usermobile").val()) == false) {
-			alert("手机号码格式有误!");
-			return false; }
+		}else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
+		  alert("手机号码格式有误!"); return false; 
+		}
 	}
 	
 	if ($("#idcardno").val().length == 0) {
@@ -4383,6 +4384,12 @@ function check_userbranch() {
 		alert("员工登录名格式不正确");
 		return false;
 	}
+	
+	if ($("#username").val().length > 9) {
+		if(!confirm("登录名长度超过9位，将无法使用通联pos刷卡！确认使用当前登录名吗？")){
+			return false;
+		}
+	}
 	if ($("#password").val().length == 0) {
 		alert("员工登录密码不能为空");
 		return false;
@@ -4394,6 +4401,9 @@ function check_userbranch() {
 	if ($("#usermobile").val().length == 0) {
 		alert("员工手机不能为空");
 		return false;
+	}else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
+		 alert("手机号码格式有误!"); 
+		 return false; 
 	}
 	if ($("#idcardno").val().length == 0) {
 		alert("身份证号不能为空!");
