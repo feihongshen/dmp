@@ -1903,6 +1903,7 @@ src/main/java/cn/explink/service/LogToDayByTuihuoService.java -text
 src/main/java/cn/explink/service/LogToDayByWarehouseService.java -text
 src/main/java/cn/explink/service/LogToDayExportService.java -text
 src/main/java/cn/explink/service/LogToDayService.java -text
+src/main/java/cn/explink/service/MPSOptStateService.java -text
 src/main/java/cn/explink/service/MatchExceptionHandleService.java -text
 src/main/java/cn/explink/service/MonitorLogService.java -text
 src/main/java/cn/explink/service/MonitorService.java -text
