@@ -24,6 +24,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
 
@@ -81,6 +82,8 @@ public class MPSOptStateService {
 			return;
 		}
 
+		// TODO 判断订单是否是一票多件，否则return
+
 		// 查询供应商，判断该供应商是否开启了集单模式
 		long customerid = cwbOrder.getCustomerid();
 		Customer customer = this.customerDAO.getCustomerById(customerid);
@@ -90,30 +93,36 @@ public class MPSOptStateService {
 		}
 		// TODO 如果没有开启集单模式 return
 
-		this.updateMPSOptState(cwb);
+		this.updateMPSOptState(cwbOrder);
 
 		// TODO 更新运单操作状态，上一站 下一站
 	}
 
-	private void updateMPSOptState(String cwb) {
-		List<TranscwbView> transCwbViewList = this.transCwbDao.getTransCwbByCwb(cwb);
-		Map<String, Queue<Integer>> transCwbMap = new HashMap<String, Queue<Integer>>();
-		// express_ops_transcwb_orderflow表中没有订单是否被废弃标志，两个大表连表查询性能太差，并且
-		// 一票多件子订单数量不会太多，所以选择循环查询
-		for (TranscwbView transcwbView : transCwbViewList) {
-			String transcwbInMap = transcwbView.getTranscwb();
-			Queue<Integer> transcwboptstateQueue = new LinkedList<Integer>();
-			transcwboptstateQueue.add(Integer.valueOf(FlowOrderTypeEnum.DaoRuShuJu.getValue()));
-			// 获取运单状态流程信息
-			List<TranscwbOrderFlow> transcwbOrderFlowList = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(transcwbInMap, cwb);
+	private void updateMPSOptState(CwbOrder cwbOrder) {
+		String cwb = cwbOrder.getCwb();
+		int mpsallarrivedflag = cwbOrder.getMpsallarrivedflag();
+		// 如果一票多件没有到齐，则更新为初始状态（导入数据）
+		int latestMPSState = FlowOrderTypeEnum.DaoRuShuJu.getValue();
+		if (MPSAllArrivedFlagEnum.YES.getValue() == mpsallarrivedflag) {
+			List<TranscwbView> transCwbViewList = this.transCwbDao.getTransCwbByCwb(cwb);
+			Map<String, Queue<Integer>> transCwbMap = new HashMap<String, Queue<Integer>>();
+			// express_ops_transcwb_orderflow表中没有订单是否被废弃标志，两个大表连表查询性能太差，并且
+			// 一票多件子订单数量不会太多，所以选择循环查询
+			for (TranscwbView transcwbView : transCwbViewList) {
+				String transcwbInMap = transcwbView.getTranscwb();
+				Queue<Integer> transcwboptstateQueue = new LinkedList<Integer>();
+				transcwboptstateQueue.add(Integer.valueOf(FlowOrderTypeEnum.DaoRuShuJu.getValue()));
+				// 获取运单状态流程信息
+				List<TranscwbOrderFlow> transcwbOrderFlowList = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(transcwbInMap, cwb);
 
-			for (TranscwbOrderFlow transcwbOrderFlow : transcwbOrderFlowList) {
-				transcwboptstateQueue.add(transcwbOrderFlow.getFlowordertype());
+				for (TranscwbOrderFlow transcwbOrderFlow : transcwbOrderFlowList) {
+					transcwboptstateQueue.add(transcwbOrderFlow.getFlowordertype());
+				}
+				transCwbMap.put(transcwbInMap, transcwboptstateQueue);
 			}
-			transCwbMap.put(transcwbInMap, transcwboptstateQueue);
+			// 计算出最晚的状态
+			latestMPSState = this.getLatestState(transCwbMap);
 		}
-		// 计算出最晚的状态
-		int latestMPSState = this.getLatestState(transCwbMap);
 		// 更新最晚状态到一票多件状态
 		this.cwbDAO.updateMPSOptState(cwb, latestMPSState);
 	}

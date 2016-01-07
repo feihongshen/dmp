@@ -146,7 +146,7 @@ public class CwbOrder {
 	private long fncustomerbillid; // 应收客户账单id
 
 	private int mpsoptstate;// 一票多件操作状态（multiple package shipment,取值同订单操作状态）
-	private int mpsallarrivedflag;// 一票多件是否到齐（0：未到齐，1：到齐）
+	private int mpsallarrivedflag;// 一票多件是否到齐（0：未到齐，1：到齐） MPSAllArrivedFlagEnum
 
 	/**
 	 * @return the city
