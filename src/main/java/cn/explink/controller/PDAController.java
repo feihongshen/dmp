@@ -4734,11 +4734,13 @@ public class PDAController {
 	 * @param model
 	 * @param request
 	 * @param response
-	 * @param cwb
-	 * @param deliverid
+	 * @param cwb 订单
+	 * @param deliverid 快递员
 	 * @param requestbatchno
 	 * @return
 	 * @throws ParseException
+	 * 
+	 * 
 	 */
 	@RequestMapping("/cwbbranchdeliver/{cwb}")
 	public @ResponseBody
@@ -4748,6 +4750,7 @@ public class PDAController {
 			defaultValue = "0") long deliverid) throws ParseException {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
+		//json对象
 		JSONObject obj = new JSONObject();
 		// 判断当前流程是否为今日，供上门退订单分派使用.(包括重复扫描)
 		this.addSmtDeliverPickingExtraMsg(obj, cwb);

@@ -14,15 +14,17 @@ DIUSHI(1,"丢失"),POSUN(2,"破损"),PEISONG(3,"配送"),TUIHUO(4,"退货"),TUIG
 	public void setValue(int value) {
 		this.value = value;
 	}
+	
+
+	
+	private TransCwbStateEnum(int value, String test) {
+		this.value = value;
+		this.test = test;
+	}
 	public String getTest() {
 		return test;
 	}
 	public void setTest(String test) {
-		this.test = test;
-	}
-	
-	private TransCwbStateEnum(int value, String test) {
-		this.value = value;
 		this.test = test;
 	}
 	public static TransCwbStateEnum getByValue(long value){

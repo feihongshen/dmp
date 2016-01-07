@@ -949,6 +949,7 @@ src/main/java/cn/explink/controller/SwitchController.java -text
 src/main/java/cn/explink/controller/SystemInstallController.java -text
 src/main/java/cn/explink/controller/SystemStateController.java -text
 src/main/java/cn/explink/controller/TimeEffectiveController.java -text
+src/main/java/cn/explink/controller/TransCwbStateControlController.java -text
 src/main/java/cn/explink/controller/TranscwbOrderFlowView.java -text
 src/main/java/cn/explink/controller/TransferReasonStasticsController.java -text
 src/main/java/cn/explink/controller/TransferResMatchController.java -text
@@ -1192,6 +1193,7 @@ src/main/java/cn/explink/dao/SwitchDAO.java -text
 src/main/java/cn/explink/dao/SysConfigDAO.java -text
 src/main/java/cn/explink/dao/SystemInstallDAO.java -text
 src/main/java/cn/explink/dao/TimeEffectiveDAO.java -text
+src/main/java/cn/explink/dao/TransCwbStateControlDAO.java -text
 src/main/java/cn/explink/dao/TranscwbOrderFlowDAO.java -text
 src/main/java/cn/explink/dao/TransferReasonStasticsDao.java -text
 src/main/java/cn/explink/dao/TransferResMatchDao.java -text
@@ -1441,6 +1443,7 @@ src/main/java/cn/explink/domain/SystemInstall.java -text
 src/main/java/cn/explink/domain/TimeEffectiveVO.java -text
 src/main/java/cn/explink/domain/TimeTypeEnum.java -text
 src/main/java/cn/explink/domain/TlBank.java -text
+src/main/java/cn/explink/domain/TransCwbStateControl.java -text
 src/main/java/cn/explink/domain/TransferReason.java -text
 src/main/java/cn/explink/domain/TransferReasonStastics.java -text
 src/main/java/cn/explink/domain/TransferResMatch.java -text
