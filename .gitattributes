@@ -1614,6 +1614,7 @@ src/main/java/cn/explink/enumutil/StockDetailEnum.java -text
 src/main/java/cn/explink/enumutil/StockDetailStocktypeEnum.java -text
 src/main/java/cn/explink/enumutil/StockResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/TlAccountTypeEnum.java -text
+src/main/java/cn/explink/enumutil/TransCwbStateEnum.java -text
 src/main/java/cn/explink/enumutil/TuihuoResultEnum.java -text
 src/main/java/cn/explink/enumutil/UserEmployeestatusEnum.java -text
 src/main/java/cn/explink/enumutil/VerificationEnum.java -text
