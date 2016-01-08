@@ -3494,6 +3494,7 @@
 				<addresspassword>gztl</addresspassword>
 				<addressWebserviceIp>183.61.89.252/addressgztl</addressWebserviceIp>
 				<expressCarrierCode>30113</expressCarrierCode>
+				<excludeJobFile>**/applicationContext-job.xml</excludeJobFile>
 			</properties>
 		</profile>
 		
