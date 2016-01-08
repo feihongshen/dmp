@@ -17,17 +17,18 @@ public class TransCwbDetail implements Serializable{
 	private int nextbranchid;  //下一站id
 	private String createtime;  //创建时间（运单流入系统时间）
 	private String modifiedtime; //修改时间
-	private String datetime; //发货时间
+	private String emaildate; //发货时间
 	private int commonphraseid; //常用语id
 	private String commonphrase; //常用语
 	
 	
 	
-	public String getDatetime() {
-		return datetime;
+
+	public String getEmaildate() {
+		return emaildate;
 	}
-	public void setDatetime(String datetime) {
-		this.datetime = datetime;
+	public void setEmaildate(String emaildate) {
+		this.emaildate = emaildate;
 	}
 	public int getCommonphraseid() {
 		return commonphraseid;
