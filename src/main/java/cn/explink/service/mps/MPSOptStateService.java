@@ -1,7 +1,7 @@
 /**
  *
  */
-package cn.explink.service;
+package cn.explink.service.mps;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,17 +11,12 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cn.explink.core.utils.StringUtils;
-import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
-import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
@@ -37,13 +32,9 @@ import cn.explink.util.Tools;
  * @author songkaojun 2016年1月6日
  */
 @Component
-public class MPSOptStateService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(MPSOptStateService.class);
+public class MPSOptStateService extends AbstractMPSService {
 
 	private static final String UPDATE_MPS_STATE = "[更新一票多件状态]";
-
-	private static final String VALIDATE_RELEASE_CONDITION = "[判断一票多件是否放行]";
 
 	@Autowired
 	private TransCwbDao transCwbDao;
@@ -55,17 +46,7 @@ public class MPSOptStateService {
 	private CwbDAO cwbDAO;
 
 	@Autowired
-	private CustomerDAO customerDAO;
-
-	@Autowired
 	private TransCwbDetailDAO transCwbDetailDAO;
-
-	public void validateReleaseCondition(String transCwb) {
-		CwbOrder cwbOrder = this.getCwbOrder(transCwb, MPSOptStateService.VALIDATE_RELEASE_CONDITION);
-		if (cwbOrder == null) {
-			return;
-		}
-	}
 
 	/**
 	 *
@@ -95,36 +76,6 @@ public class MPSOptStateService {
 		transCwbDetail.setNextbranchid((int) nextbranchid);
 		transCwbDetail.setTranscwboptstate(transcwboptstate.getValue());
 		this.transCwbDetailDAO.updateTransCwbDetail(transCwbDetail);
-	}
-
-	private CwbOrder getCwbOrder(String transCwb, String logPrefix) {
-		if (StringUtils.isEmpty(transCwb)) {
-			MPSOptStateService.LOGGER.info(logPrefix + "传入的运单号为空！");
-			return null;
-		}
-		// 根据运单号查询订单
-		String cwb = this.transCwbDao.getCwbByTransCwb(transCwb);
-		if (StringUtils.isEmpty(cwb)) {
-			MPSOptStateService.LOGGER.info(logPrefix + "根据传入的运单号没有查询到相应的订单号！");
-			return null;
-		}
-		CwbOrder cwbOrder = this.cwbDAO.getCwborder(cwb);
-		if (cwbOrder == null) {
-			MPSOptStateService.LOGGER.info(logPrefix + "没有查询到订单数据！");
-			return null;
-		}
-
-		// TODO 判断订单是否是一票多件，否则return
-
-		// 查询供应商，判断该供应商是否开启了集单模式
-		long customerid = cwbOrder.getCustomerid();
-		Customer customer = this.customerDAO.getCustomerById(customerid);
-		if (customer.getCustomerid() == 0L) {
-			MPSOptStateService.LOGGER.info(logPrefix + "没有查询到订单的供应商信息！");
-			return null;
-		}
-		// TODO 如果没有开启集单模式 return
-		return cwbOrder;
 	}
 
 	private void updateMPSOptState(CwbOrder cwbOrder) {
@@ -191,14 +142,14 @@ public class MPSOptStateService {
 	 * @Title: checkTransCwbIsIntercept
 	 * @description 根据传入的单号（订单或者运单），判断是否被拦截，并返回提示（所处操作流程不同，提示不同，如果没有被拦截，则返回null）
 	 * @author 刘武强
-	 * @date  2016年1月8日下午1:53:01
-	 * @param  @param transCwb
-	 * @param  @return
-	 * @return  String
+	 * @date 2016年1月8日下午1:53:01
+	 * @param @param transCwb
+	 * @param @return
+	 * @return String
 	 * @throws
 	 */
 	public String checkTransCwbIsIntercept(String transCwb) {
-		//TODO 判断主体待完善
+		// TODO 判断主体待完善
 		return "";
 	}
 }
