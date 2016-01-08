@@ -14,15 +14,12 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cn.explink.dao.CwbDAO;
-import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
-import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.Tools;
 
@@ -37,16 +34,7 @@ public class MPSOptStateService extends AbstractMPSService {
 	private static final String UPDATE_MPS_STATE = "[更新一票多件状态]";
 
 	@Autowired
-	private TransCwbDao transCwbDao;
-
-	@Autowired
 	private TranscwbOrderFlowDAO transcwbOrderFlowDAO;
-
-	@Autowired
-	private CwbDAO cwbDAO;
-
-	@Autowired
-	private TransCwbDetailDAO transCwbDetailDAO;
 
 	/**
 	 *
@@ -70,12 +58,12 @@ public class MPSOptStateService extends AbstractMPSService {
 		this.updateMPSOptState(cwbOrder);
 
 		// 更新运单操作状态，上一站 下一站
-		TransCwbDetail transCwbDetail = this.transCwbDetailDAO.findTransCwbDetailByTransCwb(transCwb);
+		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
 		transCwbDetail.setCurrentbranchid((int) currentbranchid);
 		transCwbDetail.setModifiedtime(Tools.getCurrentTime(null));
 		transCwbDetail.setNextbranchid((int) nextbranchid);
 		transCwbDetail.setTranscwboptstate(transcwboptstate.getValue());
-		this.transCwbDetailDAO.updateTransCwbDetail(transCwbDetail);
+		this.getTransCwbDetailDAO().updateTransCwbDetail(transCwbDetail);
 	}
 
 	private void updateMPSOptState(CwbOrder cwbOrder) {
@@ -84,7 +72,7 @@ public class MPSOptStateService extends AbstractMPSService {
 		// 如果一票多件没有到齐，则更新为初始状态（导入数据）
 		int latestMPSState = FlowOrderTypeEnum.DaoRuShuJu.getValue();
 		if (MPSAllArrivedFlagEnum.YES.getValue() == mpsallarrivedflag) {
-			List<TranscwbView> transCwbViewList = this.transCwbDao.getTransCwbByCwb(cwb);
+			List<TranscwbView> transCwbViewList = this.getTransCwbDao().getTransCwbByCwb(cwb);
 			Map<String, Queue<Integer>> transCwbMap = new HashMap<String, Queue<Integer>>();
 			// express_ops_transcwb_orderflow表中没有订单是否被废弃标志，两个大表连表查询性能太差，并且
 			// 一票多件子订单数量不会太多，所以选择循环查询
@@ -104,7 +92,7 @@ public class MPSOptStateService extends AbstractMPSService {
 			latestMPSState = this.getLatestState(transCwbMap);
 		}
 		// 更新最晚状态到一票多件状态
-		this.cwbDAO.updateMPSOptState(cwb, latestMPSState);
+		this.getCwbDAO().updateMPSOptState(cwb, latestMPSState);
 	}
 
 	private int getLatestState(Map<String, Queue<Integer>> transCwbMap) {

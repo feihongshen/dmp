@@ -13,18 +13,18 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import cn.explink.domain.TransCwbDetail;
+import cn.explink.util.Tools;
 
 @Repository
 public class TransCwbDetailDAO {
-	
+
 	@Autowired
 	JdbcTemplate jdbcTemplate;
-	
-	private final class TransCwbRowMapper implements RowMapper<TransCwbDetail>{
+
+	private final class TransCwbRowMapper implements RowMapper<TransCwbDetail> {
 
 		@Override
-		public TransCwbDetail mapRow(ResultSet rs, int rowNum)
-				throws SQLException {
+		public TransCwbDetail mapRow(ResultSet rs, int rowNum) throws SQLException {
 			TransCwbDetail tcd = new TransCwbDetail();
 			tcd.setId(rs.getInt("id"));
 			tcd.setCwb(rs.getString("cwb"));
@@ -34,23 +34,24 @@ public class TransCwbDetailDAO {
 			tcd.setCurrentbranchid(rs.getInt("currentbranchid"));
 			tcd.setPreviousbranchid(rs.getInt("previousbranchid"));
 			tcd.setNextbranchid(rs.getInt("nextbranchid"));
-			tcd.setCreatetime(rs.getDate("createtime")+"");
-			tcd.setModifiedtime(rs.getTimestamp("modifiedtime")+"");
-			tcd.setDatetime(rs.getDate("datetime")+"");
+			tcd.setCreatetime(rs.getDate("createtime") + "");
+			tcd.setModifiedtime(rs.getTimestamp("modifiedtime") + "");
+			tcd.setDatetime(rs.getDate("datetime") + "");
 			tcd.setCommonphraseid(rs.getInt("commonphraseid"));
 			tcd.setCommonphrase(rs.getString("commonphrase"));
 			return tcd;
 		}
 	}
-	
+
 	/**
 	 * 添加TransCwbDetail
+	 *
 	 * @return
 	 */
-	public void addTransCwbDetail(final TransCwbDetail tc){
-		String sql="insert into express_ops_transcwb_detail(cwb,transcwb,transcwbstate,transcwboptstate,currentbranchid,previousbranchid,nextbranchid,createtime,modifiedtime,datetime,commonphraseid,commonphrase) values(?,?,?,?,?,?,?,?,?,?,?,?)";
-		this.jdbcTemplate.update(sql,new PreparedStatementSetter() {
-			
+	public void addTransCwbDetail(final TransCwbDetail tc) {
+		String sql = "insert into express_ops_transcwb_detail(cwb,transcwb,transcwbstate,transcwboptstate,currentbranchid,previousbranchid,nextbranchid,createtime,modifiedtime,datetime,commonphraseid,commonphrase) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
+
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, tc.getCwb());
@@ -65,19 +66,20 @@ public class TransCwbDetailDAO {
 				ps.setString(10, tc.getDatetime());
 				ps.setInt(11, tc.getCommonphraseid());
 				ps.setString(12, tc.getCommonphrase());
-				
+
 			}
 		});
 	}
-	
+
 	/**
 	 * 修改TransCwbDetail
+	 *
 	 * @return
 	 */
-	public void updateTransCwbDetail(final TransCwbDetail tc){
-		String sql="update express_ops_transcwb_detail set cwb=?,transcwb=?,transcwbstate=?,transcwboptstate=?,currentbranchid=?,previousbranchid=?,nextbranchid=?,createtime=?,modifiedtime=?,datetime=?,commonphraseid=?,commonphrase=? where id=?";
-		this.jdbcTemplate.update(sql,new PreparedStatementSetter() {
-			
+	public void updateTransCwbDetail(final TransCwbDetail tc) {
+		String sql = "update express_ops_transcwb_detail set cwb=?,transcwb=?,transcwbstate=?,transcwboptstate=?,currentbranchid=?,previousbranchid=?,nextbranchid=?,createtime=?,modifiedtime=?,datetime=?,commonphraseid=?,commonphrase=? where id=?";
+		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
+
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, tc.getCwb());
@@ -93,44 +95,60 @@ public class TransCwbDetailDAO {
 				ps.setInt(11, tc.getCommonphraseid());
 				ps.setString(12, tc.getCommonphrase());
 				ps.setInt(13, tc.getId());
-				
+
 			}
 		});
 	}
-	
+
 	/**
 	 * 查找全部
+	 *
 	 * @return
 	 */
-	public List<TransCwbDetail> findTransCwbDetail(){
-		String sql="select * from express_ops_transcwb_detail";
-		return jdbcTemplate.query(sql, new TransCwbRowMapper());
+	public List<TransCwbDetail> findTransCwbDetail() {
+		String sql = "select * from express_ops_transcwb_detail";
+		return this.jdbcTemplate.query(sql, new TransCwbRowMapper());
 	}
-	
+
 	/**
 	 * 查找通过运单号
+	 *
 	 * @return
 	 */
-	public TransCwbDetail findTransCwbDetailByTransCwb(String transcwb){
-		String sql="select * from express_ops_transcwb_detail where transcwb=?";
+	public TransCwbDetail findTransCwbDetailByTransCwb(String transcwb) {
+		String sql = "select * from express_ops_transcwb_detail where transcwb=?";
 		try {
-			return jdbcTemplate.queryForObject(sql, new TransCwbRowMapper(),transcwb);
+			return this.jdbcTemplate.queryForObject(sql, new TransCwbRowMapper(), transcwb);
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			return null;
 		}
 	}
-	
-	
+
 	/**
-	 * 通过id删除实体
+	 *
+	 * 通过运单号列表查询运单
+	 *
+	 * @param transCwbList
 	 * @return
 	 */
-	public void removeTransCwbDetailById(int id){
-		String sql="delete from express_ops_transcwb_detail where id="+id;
-		jdbcTemplate.update(sql);
+	public List<TransCwbDetail> getTransCwbDetailListByTransCwbList(List<String> transCwbList) {
+		String sql = "select * from express_ops_transcwb_detail where transcwb " + Tools.assembleInByList(transCwbList);
+		try {
+			return this.jdbcTemplate.query(sql, new TransCwbRowMapper());
+		} catch (DataAccessException e) {
+			return null;
+		}
 	}
-	
-	
+
+	/**
+	 * 通过id删除实体
+	 *
+	 * @return
+	 */
+	public void removeTransCwbDetailById(int id) {
+		String sql = "delete from express_ops_transcwb_detail where id=" + id;
+		this.jdbcTemplate.update(sql);
+	}
 
 }

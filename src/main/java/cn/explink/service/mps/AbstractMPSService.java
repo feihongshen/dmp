@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.enumutil.IsmpsflagEnum;
@@ -31,6 +32,9 @@ public abstract class AbstractMPSService {
 
 	@Autowired
 	private CustomerDAO customerDAO;
+
+	@Autowired
+	private TransCwbDetailDAO transCwbDetailDAO;
 
 	private MpsswitchTypeEnum mpsswitchType;
 
@@ -75,6 +79,22 @@ public abstract class AbstractMPSService {
 
 	public MpsswitchTypeEnum getMpsswitchType() {
 		return this.mpsswitchType;
+	}
+
+	public TransCwbDao getTransCwbDao() {
+		return this.transCwbDao;
+	}
+
+	public CwbDAO getCwbDAO() {
+		return this.cwbDAO;
+	}
+
+	public CustomerDAO getCustomerDAO() {
+		return this.customerDAO;
+	}
+
+	public TransCwbDetailDAO getTransCwbDetailDAO() {
+		return this.transCwbDetailDAO;
 	}
 
 }
