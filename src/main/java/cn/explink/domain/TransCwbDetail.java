@@ -17,7 +17,33 @@ public class TransCwbDetail implements Serializable{
 	private int nextbranchid;  //下一站id
 	private String createtime;  //创建时间（运单流入系统时间）
 	private String modifiedtime; //修改时间
+	private String datetime; //发货时间
+	private int commonphraseid; //常用语id
+	private String commonphrase; //常用语
 	
+	
+	
+	public String getDatetime() {
+		return datetime;
+	}
+	public void setDatetime(String datetime) {
+		this.datetime = datetime;
+	}
+	public int getCommonphraseid() {
+		return commonphraseid;
+	}
+	public void setCommonphraseid(int commonphraseid) {
+		this.commonphraseid = commonphraseid;
+	}
+	public String getCommonphrase() {
+		return commonphrase;
+	}
+	public void setCommonphrase(String commonphrase) {
+		this.commonphrase = commonphrase;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 	public int getId() {
 		return id;
 	}
