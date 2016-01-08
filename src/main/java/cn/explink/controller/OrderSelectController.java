@@ -67,6 +67,7 @@ import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
 import cn.explink.dao.ReturnCwbsDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
@@ -104,6 +105,7 @@ import cn.explink.enumutil.ComplaintTypeEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
+import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.service.ComplaintService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
@@ -112,6 +114,7 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.support.transcwb.TranscwbView;
+import cn.explink.support.transcwb.TranscwbViewJiDanType;
 import cn.explink.util.DateDayUtil;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
@@ -167,6 +170,8 @@ public class OrderSelectController {
 	ReturnCwbsDAO returnCwbsDAO;
 	@Autowired
 	JointService jointService;
+	@Autowired
+	TransCwbDetailDAO tc;
 	private Logger logger = LoggerFactory.getLogger(OrderSelectController.class);
 
 	@Autowired
@@ -604,7 +609,7 @@ public class OrderSelectController {
 					TranscwbView transcwbview = new TranscwbView();
 					transcwbview.setCwb(order.getCwb());
 					transcwbview.setTranscwb(transcwb);
-					transcwbview.setFlowordername(tcof == null ? FlowOrderTypeEnum.DaoRuShuJu.getText() : tcof.getFlowordertypeText());
+					transcwbview.setFlowordername(tcof == null ? FlowOrderTypeEnum.DaoRuShuJu.getText() : tcof.getFlowordertypeText());					
 					transcwbList.add(transcwbview);
 				}
 			} else {
@@ -617,6 +622,8 @@ public class OrderSelectController {
 					transcwbList.add(transcwbview);
 				}
 			}
+			
+			
 		}
 		model.addAttribute("transcwbList", transcwbList);
 
@@ -636,7 +643,18 @@ public class OrderSelectController {
 					a.setUsername(this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname());
 					fororder.add(a);
 				}
+				//如果开启集单模式走下面
+				if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
+				
+					model.addAttribute("jdtype", 1); //1为开启集单模式
+					if(order.getMpsoptstate() == 0){
+						model.addAttribute("slowtranscwbtype","");
+					}else{
+						model.addAttribute("slowtranscwbtype", FlowOrderTypeEnum.getText(order.getMpsoptstate()).getText());
+					}
+				} 
 			} else {// 就获取运单号的订单过程
+				String ypdjcurrentstate="";
 				List<TranscwbOrderFlow> datalist = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(scancwb, cwb);
 				for (TranscwbOrderFlow transcwborderFlowAll : datalist) {
 					AorderFlowView a = new AorderFlowView();
@@ -645,6 +663,22 @@ public class OrderSelectController {
 					a.setContent(this.getDetailForYPDJ(transcwborderFlowAll));
 					a.setUsername(this.userDAO.getUserByUserid(transcwborderFlowAll.getUserid()).getRealname());
 					forTrans.add(a);
+					if(transcwborderFlowAll.getIsnow()==1){
+						ypdjcurrentstate=transcwborderFlowAll.getFlowordertypeText() == null ?  FlowOrderTypeEnum.DaoRuShuJu.getText() : transcwborderFlowAll.getFlowordertypeText();
+					}
+				}
+				//如果开启集单模式走下面
+				if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
+					model.addAttribute("jdtranstype",1);
+				
+					model.addAttribute("ypdjcurrentstate",ypdjcurrentstate);
+					
+					if(tc.findTransCwbDetailByTransCwb(scancwb) != null){
+						model.addAttribute("transcwbstate",TransCwbStateEnum.getByValue(tc.findTransCwbDetailByTransCwb(scancwb).getTranscwbstate()).getText());
+					}else{
+						model.addAttribute("transcwbstate","");
+					}
+					
 				}
 			}
 
@@ -810,12 +844,30 @@ public class OrderSelectController {
 					if ("".equals(transcwb.trim())) {
 						continue;
 					}
+					
 					TranscwbOrderFlow tcof = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
 					TranscwbView transcwbview = new TranscwbView();
 					transcwbview.setCwb(order.getCwb());
 					transcwbview.setTranscwb(transcwb);
 					transcwbview.setFlowordername(tcof == null ? FlowOrderTypeEnum.DaoRuShuJu.getText() : tcof.getFlowordertypeText());
+					//如果开启集单模式走下面
+					if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
+					
+						model.addAttribute("jdtype", 1); //1为开启集单模式
+						
+						if(tc.findTransCwbDetailByTransCwb(transcwb) != null){
+							transcwbview.setTranscwbstate(TransCwbStateEnum.getByValue(tc.findTransCwbDetailByTransCwb(transcwb).getTranscwbstate()).getText());
+						}else{
+							transcwbview.setTranscwbstate("");
+						}
+					} 
+					
 					transcwbList.add(transcwbview);
+					
+//					TranscwbViewJiDanType  transcwbviewjd = new TranscwbViewJiDanType();
+//					transcwbviewjd.setCwb(order.getCwb());
+//					transcwbviewjd.setTranscwb(transcwb);
+//					transcwbviewjd.setFlowordername(tc.findTransCwbDetailByTransCwb(transcwb).getTranscwbstate());
 				}
 			} else {
 				for (String transcwb : order.getTranscwb().split(":")) {
@@ -827,6 +879,17 @@ public class OrderSelectController {
 					transcwbview.setCwb(order.getCwb());
 					transcwbview.setTranscwb(transcwb);
 					transcwbview.setFlowordername(tcof == null ? FlowOrderTypeEnum.DaoRuShuJu.getText() : tcof.getFlowordertypeText());
+					//如果开启集单模式走下面
+					if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
+					
+						model.addAttribute("jdtype", 1); //1为开启集单模式
+						
+						if(tc.findTransCwbDetailByTransCwb(transcwb) != null){
+							transcwbview.setTranscwbstate(TransCwbStateEnum.getByValue(tc.findTransCwbDetailByTransCwb(transcwb).getTranscwbstate()).getText());
+						}else{
+							transcwbview.setTranscwbstate("");
+						}
+					} 
 					transcwbList.add(transcwbview);
 				}
 			}

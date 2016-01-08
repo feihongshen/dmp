@@ -26,7 +26,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 							<option value="1">按发货时间结算</option>
 							<option value="2">按配送结果结算</option>
 						</select>*
-					</li>
+					</li>					
 					<li><span>派费规则：</span>
 					<select id ="pfruleid" name ="pfruleid" >
 					<option value="0">请选择</option>
@@ -35,6 +35,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 						<%} %>
 			           </select>
 			        </li>
+			       
 					<li><span>一票多件用运单号：</span>
 						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1">
 							<option value="0">否</option>
@@ -97,7 +98,14 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 					<li>
 						<span>上传声音文件：</span>
 						<iframe id="update" name="update" src="customer/update?fromAction=customer_cre_Form&wavFilePath=&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
-					</li>  
+					</li>
+					 <li><span>是否启用集单模式：</span>
+						<select id ="ifjidan" class="select1" onchange="changejd()">
+							<option value="0">否</option>
+							<option value="1">是</option>							
+						</select>*
+					</li>
+					<li style="display: none"><input type="radio" name="mpsswitch" value="1" id="jdType1"/>库房集单&nbsp;&nbsp;&nbsp;<input type="radio" name="mpsswitch" value="2" id="jdType2"/>站点集单</li>  
 				</ul>
 		</div>
 		 <div align="center"><input type="submit" value="确认" class="button" /></div>

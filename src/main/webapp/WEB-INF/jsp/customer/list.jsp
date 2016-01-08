@@ -55,20 +55,21 @@ function delSuccess(data){
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	   <tr class="font_1">
 			<td width="4%" align="center" valign="middle" bgcolor="#eef6ff">序号</td>
-			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">客户名称</td>
-			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">公司名称</td>
+			<td width="9%" align="center" valign="middle" bgcolor="#eef6ff">客户名称</td>
+			<td width="9%" align="center" valign="middle" bgcolor="#eef6ff">公司名称</td>
 			<!-- <td width="10%" align="center" valign="middle" bgcolor="#eef6ff">对接枚举编号</td> -->
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">客户编码</td>
-			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">地址</td>
+			<td width="11%" align="center" valign="middle" bgcolor="#eef6ff">地址</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">联系人</td>
-			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">电话</td>
-			<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">结算类型</td>
+			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">电话</td>
+			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">结算类型</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">一票多件用运单号</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">是否扫描运单号</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">是否进行返单操作</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">是否生成订/运单号</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">订/运单号前缀</td>
-			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">短信渠道</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">是否启用集单模式</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">短信渠道</td>			
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">单号是否区分大小写</td>
 			<td width="14%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
@@ -88,6 +89,7 @@ function delSuccess(data){
 			<td  align="center" valign="middle"><%if(c.getIsFeedbackcwb()==1){%>是<%}else{ %>否<%} %></td>
 			<td  align="center" valign="middle"><%if(c.getIsAutoProductcwb()==1){%>是<%}else{ %>否<%} %></td>
 			<td  align="center" valign="middle"><%=c.getAutoProductcwbpre()%></td>
+			<td  align="center" valign="middle"><%if(c.getMpsswitch() == 1 || c.getMpsswitch()==2){%>是<%}else{ %>否<%} %></td>
 			<td  align="center" valign="middle"><%if(c.getSmschannel()==1){%>亿美<%}else{ %>默认<%} %></td>
 			<td  align="center" valign="middle"><%if(c.getIsqufendaxiaoxie()==1){%>区分<%}else{ %>不区分<%} %></td>
 			<td  align="center" valign="middle" >

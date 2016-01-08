@@ -97,6 +97,16 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 						<span>上传声音文件：</span>
 						<iframe id="update" name="update" src="customer/update?fromAction=customer_save_Form&wavFilePath=<%=customer.getWavFilePath()==null?"":customer.getWavFilePath()%>&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 					</li>  
+					<li><span>是否启用集单模式：</span>
+						<select id ="ifjidan" class="select1" onchange="changejd()">
+							<option value="0" <%if(customer.getMpsswitch() == 0){ %>selected<%} %>>否</option>
+							<option value="1" <%if(customer.getMpsswitch() == 1 ||customer.getMpsswitch() == 2 ){ %>selected<%} %>>是</option>							
+						</select>*
+					</li>
+					<li <%if(customer.getMpsswitch() == 0){%>style="display: none"<% }%>><input type="radio" name="mpsswitch" value="1" id="jdType1" <%if(customer.getMpsswitch() == 1){ %>checked<%} %>/>库房集单
+						&nbsp;&nbsp;&nbsp;<input type="radio" name="mpsswitch" value="2" id="jdType2" <%if(customer.getMpsswitch() == 2){ %>checked<%} %>/>站点集单					
+					</li>  
+					
 				</ul>
 		</div>
 		 <div align="center"><input type="submit" value="保存" class="button" /></div>

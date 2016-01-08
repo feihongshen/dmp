@@ -2005,6 +2005,7 @@ src/main/java/cn/explink/support/transcwb/OneTransToMoreCwbDao.java -text
 src/main/java/cn/explink/support/transcwb/TransCwbDao.java -text
 src/main/java/cn/explink/support/transcwb/TransCwbService.java -text
 src/main/java/cn/explink/support/transcwb/TranscwbView.java -text
+src/main/java/cn/explink/support/transcwb/TranscwbViewJiDanType.java -text
 src/main/java/cn/explink/system/charging/JMSScanListenService.java -text
 src/main/java/cn/explink/system/charging/On_Off.java -text
 src/main/java/cn/explink/test/AccountAttrVo.java -text

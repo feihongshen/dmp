@@ -1084,6 +1084,15 @@ function check_customer() {
 		 * if($("#autoProductcwbpre").val().length>6){ alert("订单号前缀不超过6位");
 		 * return false; }
 		 */
+	}else if($('#ifjidan').val() == "1"){
+		if($('input:radio[name="mpsswitch"]:checked').val() == null && $('input:radio[name="mpsswitch"]:checked').val() == null){
+			alert("当前您已启用集单模式，请根据业务情况选择「库房集单」还是「站点集单」");
+			return false;
+		}
+		if($('#isypdjusetranscwb').val() != "1" || $('#isUsetranscwb').val() != "0"){
+			alert("当前您已启用集单模式，「一票多件用运单号」与「扫描运单号」均需选择「是」");
+			return false;
+		}
 	}
 
 	return true;
@@ -7385,5 +7394,19 @@ function submitCreateFormShenheKoufa(form) {
 		}
 	});
 	
+}
+
+function changejd(){
+	if($('#ifjidan').val() == "0"){
+		
+		$('#jdType1').parent().hide();
+		$('#jdType1').val("0");
+		$('#jdType2').val("0");		
+		
+	}
+	if($('#ifjidan').val() == "1"){
+	
+		$('#jdType1').parent().show();
+	}
 }
 
