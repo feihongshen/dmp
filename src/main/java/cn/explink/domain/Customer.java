@@ -24,6 +24,7 @@ public class Customer {
 	private long isqufendaxiaoxie;// 单号是否区分大小写0不区分 1区分
 	private long pfruleid;// 派费规则id
 
+	private int mpsswitch;//mps开关（0：未开启，1：开启库房集单，2：开启站点集单）
 
 	/**
 	 * @return the pfruleid
@@ -191,6 +192,14 @@ public class Customer {
 
 	public void setWavFilePath(String wavFilePath) {
 		this.wavFilePath = wavFilePath;
+	}
+
+	public int getMpsswitch() {
+		return this.mpsswitch;
+	}
+
+	public void setMpsswitch(int mpsswitch) {
+		this.mpsswitch = mpsswitch;
 	}
 
 }

@@ -71,6 +71,16 @@ function sub(){
 	for(var i = 0 ; i < $("select[name^='reason']").length ; i++){
 		datavalue = datavalue +"\""+$("select[name^='reason']")[i].value+"\",";
 	}
+	
+	for(var i = 0 ; i < $("input[name^='interceptReason']").length ; i++){
+		datavalue = datavalue +"\""+$("input[name^='reason']")[i].value+"\",";
+	}
+	
+	for(var i = 0 ; i < $("select[name^='interceptReason']").length ; i++){
+		datavalue = datavalue +"\""+$("select[name^='reason']")[i].value+"\",";
+	}
+	
+	
 	if(datavalue.length>1){
 		datavalue= datavalue.substring(0, datavalue.length-1);
 	}
@@ -149,7 +159,8 @@ function exportField(){
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前位置</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
 									<td align="center" valign="middle" bgcolor="#E7F4E3">收件地址</td>
-									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3">退货原因</td>
+									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3" style="display:none;">退货原因</td>
+									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3" >拦截原因</td>
 								</tr>
 							</tbody>
 						</table>
@@ -177,7 +188,7 @@ function exportField(){
 									<td width="100" align="center" valign="middle"><%for(Branch b:branchList){if(cwb.getCurrentbranchid()==b.getBranchid()){out.print(b.getBranchname());} } %></td>
 									<td width="100" align="center" valign="middle"><%=cwb.getConsigneename() %></td>
 									<td align="left" valign="middle"><%=cwb.getConsigneeaddress() %></td>
-									<td width="150" align="center" valign="middle">
+									<td width="150" align="center" valign="middle" style="display:none;">
 									<%if((cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
@@ -191,6 +202,37 @@ function exportField(){
 									<select name="reason_<%=cwb.getCwb() %>">
 									<option value="">请选择退货原因</option>
 									<%for(Reason r :reasonList) {%><option value="<%=cwb.getScancwb() %>_s_<%=r.getReasonid() %>"><%=r.getReasoncontent() %></option><%} %>
+										</select>
+									<%} %>
+									</td>
+									<td width="150" align="center" valign="middle">
+									<%if((cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
+											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
+											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
+											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
+											||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
+											||cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue())&&
+											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue())){ %>
+											<%=cwb.getBackreason() %>
+									<input type="hidden" name="interceptReason_<%=cwb.getCwb() %>" value="<%=cwb.getScancwb() %>_intercept_0"/>
+									<%}else{ %>
+										<select name="interceptReason_<%=cwb.getCwb() %>">
+										<option value="">请选择拦截原因</option>
+										<%for(Reason r :reasonList) {
+											if(cwb.getMpsswitch() != 0 && cwb.getIsmpsflag() != 0) {%>
+											<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>">
+												<%if(r.getInterceptType() == 1){ %>
+												【丢失】
+												<%}else if(r.getInterceptType() == 2){ %>
+												【破损】
+												<%}else{ %>
+												【退货】
+												<%} %>
+												<%=r.getReasoncontent() %></option>
+											<%}else{
+												if(r.getInterceptType() == 3){%>
+													<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>">【退货】<%=r.getReasoncontent() %></option>																								
+										<%}}} %>
 										</select>
 									<%} %>
 									</td>

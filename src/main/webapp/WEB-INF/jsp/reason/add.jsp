@@ -42,7 +42,13 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 					       <option value ="0">请选择</option>
 			           </select>*</li>
 		           </div>		
-		              
+		           <div hidden="true" id="div_intercept">
+			           <li><span id="interceptType" style="margin-left: 50px;width:180px;" align="left">
+				           <input type="radio" id="intercept_3" name="interceptType"  checked="checked" value='3'>退货
+				           <input type="radio" id="intercept_1" name="interceptType"   value='1'>丢失
+				           <input type="radio" id="intercept_2" name="interceptType"   value='2'>破损 
+			           </span></li>
+		           </div>   
 					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" maxlength="30" class="input_text1"></li>				
 				 	
 				</ul>

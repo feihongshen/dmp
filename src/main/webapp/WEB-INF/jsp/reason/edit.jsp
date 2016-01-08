@@ -37,6 +37,29 @@ String firstreason= request.getAttribute("firstreason")==null?null:(String)reque
 			   			<%if(reason.getWhichreason()==2){%>
 		           		 <li><span>一级原因：</span><%=firstreason %> </li>
 		          	  <%} %>
+		          	  
+		          	   <%if(reason.getReasontype()==15){ %> 
+			           <li><span id="interceptType" style="margin-left: 50px;width:180px;" align="left">
+				           <%if( reason.getInterceptType() == 3){ %> 
+				          		<input type="radio" id="intercept_3" name="intercept_type"  checked="checked" value='3'>退货
+				           <%}else{ %>
+				           		<input type="radio" id="intercept_3" name="intercept_type"  value='3'>退货
+				           <%} %>
+				          <%if( reason.getInterceptType() == 1){ %> 
+				          		<input type="radio" id="intercept_1" name="intercept_type"  checked="checked" value='1'>丢失
+				           <%}else{ %>
+				           		<input type="radio" id="intercept_1" name="intercept_type" value='1'>丢失
+				           <%} %>
+				            <%if(reason.getInterceptType() == 2){ %> 
+				          		<input type="radio" id="intercept_2" name="intercept_type" checked="checked"  value='2'>破损 
+				           <%}else{ %>
+				           		<input type="radio" id="intercept_2" name="intercept_type"  value='2'>破损 
+				           <%} %>
+				           
+			           </span></li>
+			           <%} %>
+		       
+		              
 					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" value ="<%=reason.getReasoncontent() %><%-- ${reason.reasoncontent} --%>" maxlength="30" class="input_text1"></li>
 		
 				</ul>

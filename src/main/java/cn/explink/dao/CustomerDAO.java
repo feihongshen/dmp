@@ -54,6 +54,8 @@ public class CustomerDAO {
 			customer.setNeedchecked(rs.getInt("needchecked"));
 			customer.setPfruleid(rs.getLong("pfruleid"));
 			customer.setWavFilePath(rs.getString("wav_filepath"));
+
+			customer.setMpsswitch(rs.getInt("mpsswitch"));//供应商的集单开关
 			return customer;
 		}
 	}
@@ -86,9 +88,8 @@ public class CustomerDAO {
 	}
 
 	public List<Customer> getAllCustomersByExistRules() {
-		return this.jdbcTemplate.query(
-				"select * from (select customerid from express_set_excel_column ) co left join express_set_customer_info ci on co.customerid=ci.customerid where ci.ifeffectflag='1' ",
-				new CustomerRowMapper());
+		return this.jdbcTemplate
+				.query("select * from (select customerid from express_set_excel_column ) co left join express_set_customer_info ci on co.customerid=ci.customerid where ci.ifeffectflag='1' ", new CustomerRowMapper());
 	}
 
 	public List<Customer> getCustomerByCustomername(String customername, String code, long customerid) {
@@ -123,6 +124,7 @@ public class CustomerDAO {
 		}
 		return this.jdbcTemplate.queryForInt(sql);
 	}
+
 	@SystemInstallOperation
 	public void creCustomer(final Customer customer) {
 		final String insertsql = "insert into express_set_customer_info(customername,customercode,customeraddress,customercontactman,customerphone,b2cEnum,paytype,isypdjusetranscwb,isUsetranscwb,isAutoProductcwb,autoProductcwbpre,isFeedbackcwb,companyname,smschannel,isqufendaxiaoxie,wav_filepath,pfruleid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -167,13 +169,13 @@ public class CustomerDAO {
 			return new Customer();
 		}
 	}
+
 	@SystemInstallOperation
 	@CacheEvict(value = "customerCache", key = "#customer.customerid")
 	public void save(final Customer customer) {
 
 		this.jdbcTemplate
-				.update("update express_set_customer_info set customername=?,customercode=?,customeraddress=?,customercontactman=?,customerphone=? ,paytype=?,isypdjusetranscwb=?,isUsetranscwb=?,isAutoProductcwb=?,autoProductcwbpre=?,isFeedbackcwb=?,companyname=?,smschannel=?,isqufendaxiaoxie=? ,needchecked=?,wav_filepath=? ,pfruleid=?"
-						+ " where customerid = ? ", new PreparedStatementSetter() {
+				.update("update express_set_customer_info set customername=?,customercode=?,customeraddress=?,customercontactman=?,customerphone=? ,paytype=?,isypdjusetranscwb=?,isUsetranscwb=?,isAutoProductcwb=?,autoProductcwbpre=?,isFeedbackcwb=?,companyname=?,smschannel=?,isqufendaxiaoxie=? ,needchecked=?,wav_filepath=? ,pfruleid=?" + " where customerid = ? ", new PreparedStatementSetter() {
 
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -200,6 +202,7 @@ public class CustomerDAO {
 				});
 
 	}
+
 	@SystemInstallOperation
 	@CacheEvict(value = "customerCache", key = "#customerid")
 	public void delCustomer(long customerid) {
@@ -235,6 +238,7 @@ public class CustomerDAO {
 		}
 
 	}
+
 	@SystemInstallOperation
 	@CacheEvict(value = "customerCache", allEntries = true)
 	public void updateB2cEnumByJoint_num(String customerids, String oldCustomerids, int joint_num) {
@@ -324,6 +328,7 @@ public class CustomerDAO {
 		String sql = "select * from express_set_customer_info ";
 		return this.jdbcTemplate.query(sql, new CustomerRowMapper());
 	}
+
 	public List<Customer> getCustomerByCustomerName(String customername) {
 		String sql = "select * from express_set_customer_info";
 		if (customername.length() > 0) {
@@ -338,29 +343,28 @@ public class CustomerDAO {
 	 * @return
 	 */
 	public List<Customer> getCustomerByPFruleId(long pfruleid) {
-		String sql="select * from express_set_customer_info where ifeffectflag=1 and pfruleid=?";
-		return this.jdbcTemplate.query(sql, new CustomerRowMapper(),pfruleid);
+		String sql = "select * from express_set_customer_info where ifeffectflag=1 and pfruleid=?";
+		return this.jdbcTemplate.query(sql, new CustomerRowMapper(), pfruleid);
 
 	}
+
 	@CacheEvict(value = "customerCache", allEntries = true)
-	public void updateCache(){
-		
+	public void updateCache() {
+
 	}
-	
+
 	/**
 	 * 根据b2cenum获取供货商
 	 */
-	public Customer getCustomerbyB2cenum(String b2cEnum){
+	public Customer getCustomerbyB2cenum(String b2cEnum) {
 		String sql = "select * from express_set_customer_info where b2cEnum=? limit 1";
-		try{
-			return this.jdbcTemplate.queryForObject(sql, new CustomerRowMapper(),b2cEnum);
-		}catch(Exception e){
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new CustomerRowMapper(), b2cEnum);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 	}
-	
-	
-	
+
 }

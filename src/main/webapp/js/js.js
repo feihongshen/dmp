@@ -1039,6 +1039,11 @@ function check_reason() {
 		alert("请选择一级原因");
 		return false;
 	}
+	
+	if ($("#reasontype").val() == 15 && $("#intercept_1").attr("checked") != "checked" && $("#intercept_2").attr("checked") != "checked" && $("#intercept_3").attr("checked") != "checked") {
+		alert("请根据填写的具体内容描述标识其含义");
+		return false;
+	}
 	if ($("#reasoncontent").val().length == 0) {
 		alert("常用语不能为空");
 		return false;
@@ -5414,6 +5419,7 @@ function whenhidden(){
 	$("#div_2").attr('hidden','true');
 	$("#divs").attr('hidden','true');
 	$("#div_changealowflag").attr('hidden','true');
+	$("#div_intercept").attr('hidden','true');
 	if($("#reasontype").val()==2||$("#reasontype").val()==13)
 	{
 		$("#divs").removeAttr('hidden');
@@ -5432,6 +5438,10 @@ function whenhidden(){
 			$("#div_2").removeAttr('hidden');
 			$("#div_changealowflag").attr('hidden');
 		}
+	}
+	if($("#reasontype").val()==15)
+	{
+		$("#div_intercept").removeAttr('hidden');
 	}
 	
 } 

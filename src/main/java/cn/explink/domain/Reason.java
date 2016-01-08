@@ -8,9 +8,10 @@ public class Reason {
 	private int whichreason;
 	private int parentid;
 	private int changealowflag; //中转是否要申请 1是  0否
+	private int interceptType; //拦截原因的类型
 
 	public int getChangealowflag() {
-		return changealowflag;
+		return this.changealowflag;
 	}
 
 	public void setChangealowflag(int changealowflag) {
@@ -18,15 +19,15 @@ public class Reason {
 	}
 
 	public int getParentid() {
-		return parentid;
+		return this.parentid;
 	}
 
 	public void setParentid(int parentid) {
 		this.parentid = parentid;
 	}
-	
+
 	public int getWhichreason() {
-		return whichreason;
+		return this.whichreason;
 	}
 
 	public void setWhichreason(int whichreason) {
@@ -34,7 +35,7 @@ public class Reason {
 	}
 
 	public long getReasonid() {
-		return reasonid;
+		return this.reasonid;
 	}
 
 	public void setReasonid(long reasonid) {
@@ -42,7 +43,7 @@ public class Reason {
 	}
 
 	public String getReasoncontent() {
-		return reasoncontent;
+		return this.reasoncontent;
 	}
 
 	public void setReasoncontent(String reasoncontent) {
@@ -50,11 +51,19 @@ public class Reason {
 	}
 
 	public long getReasontype() {
-		return reasontype;
+		return this.reasontype;
 	}
 
 	public void setReasontype(long reasontype) {
 		this.reasontype = reasontype;
+	}
+
+	public int getInterceptType() {
+		return this.interceptType;
+	}
+
+	public void setInterceptType(int interceptType) {
+		this.interceptType = interceptType;
 	}
 
 }
