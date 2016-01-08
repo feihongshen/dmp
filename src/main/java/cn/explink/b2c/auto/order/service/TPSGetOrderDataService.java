@@ -493,8 +493,10 @@ public class TPSGetOrderDataService {
 		long customerid = Long.valueOf(order.getCustomerid());
 		try {
 			long warehouseid = vipshop.getWarehouseid();
+			long ewarehouseid = warehouseid == 0 ? dataImportService_B2c.getTempWarehouseIdForB2c() : warehouseid;
+			//开启以出仓时间作为批次标记
 			String emaildate = order.getRemark2();
-			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, warehouseid, emaildate);
+			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, ewarehouseid, emaildate);
 			//数据导入系统入口
 			tPSOrderImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_TPSAutomate.getMethod(), order, warehouseid,ed);
 			this.logger.info("TPS自动化普通单在没有开启托运单模式下，数据插入临时表处理成功！");
@@ -521,7 +523,8 @@ public class TPSGetOrderDataService {
 		try {
 			String emaildate = order.getRemark4();
 			long warehouseid = vipshop.getWarehouseid();
-			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, warehouseid, emaildate);
+			long ewarehouseid = warehouseid == 0 ? dataImportService_B2c.getTempWarehouseIdForB2c() : warehouseid;
+			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, ewarehouseid, emaildate);
 			//数据导入系统入口
 			tPSOrderImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_TPSAutomate.getMethod(), order, warehouseid, ed);
 			this.logger.error("TPS自动化普通单在开启托运单模式下，数据插入临时表成功!cwb=" + order.getCwb());
@@ -645,7 +648,7 @@ public class TPSGetOrderDataService {
 					this.tpsDataImportDAO_B2c.updateBycwb(orderDTO);
 					//修改临时表
 					this.tpsDataImportDAO_B2c.updateTempBycwb(orderDTO);
-					return orderDTO;
+					return null;
 				}
 				// 订单取消
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
@@ -667,6 +670,11 @@ public class TPSGetOrderDataService {
 				}
 
 			}
+			
+			if ((this.cwbDAO.getCwbByCwb(cust_order_no) != null)) {
+				this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cust_order_no);
+				return null;
+			}
 
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 
@@ -675,6 +683,11 @@ public class TPSGetOrderDataService {
 					this.insertOrderGoods(order, cust_order_no);
 				}
 
+			}
+			
+			if ("".equals(cust_order_no)) { // 若订单号为空，则继续。
+				this.logger.info("获取订单信息为空");
+				return null;
 			}
 
 			this.logger.info("TPS自动化订单cwb={}", cust_order_no);

@@ -54,7 +54,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')" value="<%=vipshop.getCustomerids() %>"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>乐蜂id：</span>
+						<li><span>乐蜂id：</span>
 							<input type ="text" id="lefengCustomerid" name ="lefengCustomerid" value="<%=vipshop.getLefengCustomerid() %>"  maxlength="300">
 						</li>
 						<li><span>是否订单下载：</span>
@@ -66,11 +66,11 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isTuoYunDanFlag2" name ="isTuoYunDanFlag" value="0"  checked="checked" >关闭
 						</li>
 						<li><span>业务标识：</span>
-							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0" <%if(vipshop.getIsShangmentuiFlag()==0){%>checked<%}%>  >配送
-							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"   <%if(vipshop.getIsShangmentuiFlag()==1){%>checked<%}%>  >上门退
+							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0" disabled="disabled" <%if(vipshop.getIsShangmentuiFlag()==0){%>checked<%}%>  >配送
+							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1" disabled="disabled" <%if(vipshop.getIsShangmentuiFlag()==1){%>checked<%}%>  >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"   <%if(vipshop.getIsShangmentuiFlag()==2){%>checked<%}%>  >全部
 						</li>
-						<li style="display: none;"><span>取消或拦截：</span>
+						<li><span>取消或拦截：</span>
 							<input type ="radio" id="cancelOrIntercept1" name ="cancelOrIntercept" value="0" <%if(vipshop.getCancelOrIntercept()==0){%>checked<%}%>  >取消开启
 							<input type ="radio" id="cancelOrIntercept2" name ="cancelOrIntercept" value="1" <%if(vipshop.getCancelOrIntercept()==1){%>checked<%}%>  >拦截开启
 						</li>
@@ -123,7 +123,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>系统中客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>乐蜂id：</span>
+						<li><span>乐蜂id：</span>
 							<input type ="text" id="lefengCustomerid" name ="lefengCustomerid" value=""  maxlength="300">
 						</li>
 						<li><span>是否订单下载：</span>
@@ -135,7 +135,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isTuoYunDanFlag2" name ="isTuoYunDanFlag" value="0" checked>关闭
 						</li>
 						
-					<li><span>业务标识：</span>
+					    <li><span>业务标识：</span>
 							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0" disabled="disabled"  >配送
 							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"  disabled="disabled"  >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"  checked >全部
