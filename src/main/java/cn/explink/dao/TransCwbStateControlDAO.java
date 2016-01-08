@@ -24,7 +24,7 @@ public class TransCwbStateControlDAO {
 		public TransCwbStateControl mapRow(ResultSet rs, int rowNum)
 				throws SQLException {
 			TransCwbStateControl  tsc=new TransCwbStateControl();
-			tsc.setTranscwbstate(rs.getInt("transcwbstate"));
+			tsc.setTranscwbstate(rs.getInt("tanscwbstate"));
 			tsc.setToflowtype(rs.getInt("toflowtype"));
 			return tsc;
 		}
@@ -36,7 +36,7 @@ public class TransCwbStateControlDAO {
 			int transcwbstate, int toflowtype) {
 
 		return this.jdbcTemplate
-				.query("select * from  express_set_transcwb_allstate_control where transcwbstate=? and toflowtype in("
+				.query("select * from  express_set_transcwb_allstate_control where tanscwbstate=? and toflowtype in("
 						+ toflowtype + ")", new TransStateControlRowMapper(),
 						transcwbstate);
 
@@ -48,7 +48,7 @@ public class TransCwbStateControlDAO {
 		try {
 			return this.jdbcTemplate
 					.queryForObject(
-							"select * from  express_set_transcwb_allstate_control where transcwbstate=? and toflowtype=?",
+							"select * from  express_set_transcwb_allstate_control where tanscwbstate=? and toflowtype=?",
 							new TransStateControlRowMapper(), transcwbstate,
 							toflowtype);
 		} catch (DataAccessException e) {
@@ -59,7 +59,7 @@ public class TransCwbStateControlDAO {
 	
 	//新增
 	public int createTransStateControl(int transcwbstate,int toflowtype){
-		return this.jdbcTemplate.update("insert into express_set_transcwb_allstate_control(transcwbstate,toflowtype)  values(?,?)",transcwbstate,toflowtype);
+		return this.jdbcTemplate.update("insert into express_set_transcwb_allstate_control(tanscwbstate,toflowtype)  values(?,?)",transcwbstate,toflowtype);
 		
 	}
 	//运单全部集合
@@ -74,7 +74,7 @@ public class TransCwbStateControlDAO {
 			String sql) {
 		StringBuffer sb=new StringBuffer(sql);
 		if(transcwbstate>0){
-			sb.append(" and transcwbstate="+transcwbstate);
+			sb.append(" and tanscwbstate="+transcwbstate);
 		}
 		if(toflowtype>0){
 			sb.append(" and toflowtype="+toflowtype);		
@@ -91,7 +91,7 @@ public class TransCwbStateControlDAO {
 	
 	//删除
 	public int deleteTranStateControl(int transcwbstate){
-		String sql="delete from express_set_transcwb_allstate_control where transcwbstate=?";
+		String sql="delete from express_set_transcwb_allstate_control where tanscwbstate=?";
 		return this.jdbcTemplate.update(sql, transcwbstate);
 		
 	}
