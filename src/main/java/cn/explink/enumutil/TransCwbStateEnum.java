@@ -7,7 +7,7 @@ DIUSHI(1,"丢失"),POSUN(2,"破损"),PEISONG(3,"配送"),TUIHUO(4,"退货"),TUIG
 	
 	
 	private int value;
-	private String test;
+	private String text;
 	public int getValue() {
 		return value;
 	}
@@ -17,15 +17,15 @@ DIUSHI(1,"丢失"),POSUN(2,"破损"),PEISONG(3,"配送"),TUIHUO(4,"退货"),TUIG
 	
 
 	
-	private TransCwbStateEnum(int value, String test) {
+	private TransCwbStateEnum(int value, String text) {
 		this.value = value;
-		this.test = test;
+		this.text = text;
 	}
-	public String getTest() {
-		return test;
+	public String getText() {
+		return text;
 	}
-	public void setTest(String test) {
-		this.test = test;
+	public void setText(String test) {
+		this.text = test;
 	}
 	public static TransCwbStateEnum getByValue(long value){
 		for (TransCwbStateEnum em : TransCwbStateEnum.values()) {
@@ -39,7 +39,7 @@ DIUSHI(1,"丢失"),POSUN(2,"破损"),PEISONG(3,"配送"),TUIHUO(4,"退货"),TUIG
 	public static Map<Integer, String> getMap(){
 		Map<Integer, String> map=new java.util.HashMap<Integer, String>();
 		for (TransCwbStateEnum em : TransCwbStateEnum.values()) {
-			map.put(em.getValue(), em.getTest());
+			map.put(em.getValue(), em.getText());
 		}
 		return map;
 		
