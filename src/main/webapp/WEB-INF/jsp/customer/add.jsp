@@ -105,7 +105,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 							<option value="1">是</option>							
 						</select>*
 					</li>
-					<li style="display: none"><input type="radio" name="mpsswitch" value="1" id="jdType1"/>库房集单&nbsp;&nbsp;&nbsp;<input type="radio" name="mpsswitch" value="2" id="jdType2"/>站点集单</li>  
+					<li style="display: none"><input type="radio" name="mpsswitch" value="1" id="jdType1" checked="checked"/>库房集单&nbsp;&nbsp;&nbsp;<input type="radio" name="mpsswitch" value="2" id="jdType2"/>站点集单</li>  
 				</ul>
 		</div>
 		 <div align="center"><input type="submit" value="确认" class="button" /></div>
