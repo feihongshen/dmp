@@ -1581,6 +1581,7 @@ src/main/java/cn/explink/enumutil/FrameEnumExcp.java -text
 src/main/java/cn/explink/enumutil/FundsEnum.java -text
 src/main/java/cn/explink/enumutil/GoodsBacktypeEnum.java -text
 src/main/java/cn/explink/enumutil/HandleResultEnum.java -text
+src/main/java/cn/explink/enumutil/IsmpsflagEnum.java -text
 src/main/java/cn/explink/enumutil/JiesuanstateEnum.java -text
 src/main/java/cn/explink/enumutil/JobCodeEnum.java -text
 src/main/java/cn/explink/enumutil/KuaiDiPayEnum.java -text
