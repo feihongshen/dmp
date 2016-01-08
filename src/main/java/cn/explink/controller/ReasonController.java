@@ -66,7 +66,7 @@ public class ReasonController {
 	}
 
 	@RequestMapping("/save/{id}")
-	public @ResponseBody String save(Model model, HttpServletRequest request, @PathVariable("id") long reasonid, @RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent, @RequestParam(value = "changealowflag", defaultValue = "0", required = false) int changealowflag, @RequestParam(value = "interceptType", defaultValue = "0", required = false) int interceptType) {
+	public @ResponseBody String save(Model model, HttpServletRequest request, @PathVariable("id") long reasonid, @RequestParam(value = "reasoncontent", defaultValue = "", required = false) String reasoncontent, @RequestParam(value = "changealowflag", defaultValue = "0", required = false) int changealowflag, @RequestParam(value = "intercept_type", defaultValue = "0", required = false) int interceptType) {
 		List<Reason> list = this.reasonDao.getReasonByReasoncontent(reasoncontent);
 		if (list.size() > 0) {
 			if (this.validateReason(changealowflag, list)) {
