@@ -11,6 +11,9 @@ CREATE TABLE `express_ops_transcwb_detail` (
   `previousbranchid` int(11) DEFAULT 0 COMMENT '上一站id',
   `nextbranchid` int(11) DEFAULT 0 COMMENT '站一站id',
   `createtime` datetime DEFAULT NULL COMMENT '创建时间（运单流入系统时间）',
+  `emaildate` datetime DEFAULT NULL COMMENT '发货时间', 
+  `commonphraseid` int(11) DEFAULT 0 NULL COMMENT '常用语id',
+  `commonphrase` varchar(50) DEFAULT NULL NULL COMMENT '常用语',
   `modifiedtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`),
   KEY `cwb_idx` (`cwb`) USING BTREE,
@@ -42,3 +45,29 @@ ADD COLUMN `mpsswitch`  int NULL DEFAULT 0 COMMENT 'mps开关（0：未开启，
 
 /*对接临时表 添加最后一箱标识*/
 ALTER TABLE `mpsallarrivedflag` ADD COLUMN `is_gathercomp` INT(11) DEFAULT 0 NULL COMMENT '最后一箱标识:1表示最后一箱；0默认'; 
+
+
+/*--------------------------------------------------预置数据---------------------------------------------------------------*/
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('1','7');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('1','40');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('2','7');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('2','15');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('2','40');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','1');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','4');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','6');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','7');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','9');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','12');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','14');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','35');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','36');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('3','42');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('4','7');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('4','15');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('4','40');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('5','27');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('5','28');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('6','6');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('6','12');
+insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype`) values('6','14');
