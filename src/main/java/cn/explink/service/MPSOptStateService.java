@@ -19,14 +19,17 @@ import org.springframework.stereotype.Component;
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
+import cn.explink.util.Tools;
 
 /**
  *
@@ -38,7 +41,9 @@ public class MPSOptStateService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MPSOptStateService.class);
 
-	private static final String LOG_MSG_PREFIX = "[更新一票多件状态]";
+	private static final String UPDATE_MPS_STATE = "[更新一票多件状态]";
+
+	private static final String VALIDATE_RELEASE_CONDITION = "[判断一票多件是否放行]";
 
 	@Autowired
 	private TransCwbDao transCwbDao;
@@ -51,6 +56,16 @@ public class MPSOptStateService {
 
 	@Autowired
 	private CustomerDAO customerDAO;
+
+	@Autowired
+	private TransCwbDetailDAO transCwbDetailDAO;
+
+	public void validateReleaseCondition(String transCwb) {
+		CwbOrder cwbOrder = this.getCwbOrder(transCwb, MPSOptStateService.VALIDATE_RELEASE_CONDITION);
+		if (cwbOrder == null) {
+			return;
+		}
+	}
 
 	/**
 	 *
@@ -66,20 +81,37 @@ public class MPSOptStateService {
 	 *            下一机构信息
 	 */
 	public void updateMPSInfo(String transCwb, FlowOrderTypeEnum transcwboptstate, long currentbranchid, long nextbranchid) {
-		if (StringUtils.isEmpty(transCwb)) {
-			MPSOptStateService.LOGGER.info(MPSOptStateService.LOG_MSG_PREFIX + "传入的运单号为空！");
+		CwbOrder cwbOrder = this.getCwbOrder(transCwb, MPSOptStateService.UPDATE_MPS_STATE);
+		if (cwbOrder == null) {
 			return;
+		}
+
+		this.updateMPSOptState(cwbOrder);
+
+		// 更新运单操作状态，上一站 下一站
+		TransCwbDetail transCwbDetail = this.transCwbDetailDAO.findTransCwbDetailByTransCwb(transCwb);
+		transCwbDetail.setCurrentbranchid((int) currentbranchid);
+		transCwbDetail.setModifiedtime(Tools.getCurrentTime(null));
+		transCwbDetail.setNextbranchid((int) nextbranchid);
+		transCwbDetail.setTranscwboptstate(transcwboptstate.getValue());
+		this.transCwbDetailDAO.updateTransCwbDetail(transCwbDetail);
+	}
+
+	private CwbOrder getCwbOrder(String transCwb, String logPrefix) {
+		if (StringUtils.isEmpty(transCwb)) {
+			MPSOptStateService.LOGGER.info(logPrefix + "传入的运单号为空！");
+			return null;
 		}
 		// 根据运单号查询订单
 		String cwb = this.transCwbDao.getCwbByTransCwb(transCwb);
 		if (StringUtils.isEmpty(cwb)) {
-			MPSOptStateService.LOGGER.info(MPSOptStateService.LOG_MSG_PREFIX + "根据传入的运单号没有查询到相应的订单号！");
-			return;
+			MPSOptStateService.LOGGER.info(logPrefix + "根据传入的运单号没有查询到相应的订单号！");
+			return null;
 		}
 		CwbOrder cwbOrder = this.cwbDAO.getCwborder(cwb);
 		if (cwbOrder == null) {
-			MPSOptStateService.LOGGER.info(MPSOptStateService.LOG_MSG_PREFIX + "没有查询到订单数据！");
-			return;
+			MPSOptStateService.LOGGER.info(logPrefix + "没有查询到订单数据！");
+			return null;
 		}
 
 		// TODO 判断订单是否是一票多件，否则return
@@ -88,14 +120,11 @@ public class MPSOptStateService {
 		long customerid = cwbOrder.getCustomerid();
 		Customer customer = this.customerDAO.getCustomerById(customerid);
 		if (customer.getCustomerid() == 0L) {
-			MPSOptStateService.LOGGER.info(MPSOptStateService.LOG_MSG_PREFIX + "没有查询到订单的供应商信息！");
-			return;
+			MPSOptStateService.LOGGER.info(logPrefix + "没有查询到订单的供应商信息！");
+			return null;
 		}
 		// TODO 如果没有开启集单模式 return
-
-		this.updateMPSOptState(cwbOrder);
-
-		// TODO 更新运单操作状态，上一站 下一站
+		return cwbOrder;
 	}
 
 	private void updateMPSOptState(CwbOrder cwbOrder) {
