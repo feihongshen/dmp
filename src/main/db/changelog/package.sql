@@ -37,7 +37,8 @@ ADD COLUMN `contentmeaning` int(11) DEFAULT 0 COMMENT '原因含义（1：丢失
 /*订单主表*/
 ALTER TABLE `express_ops_cwb_detail`
 ADD COLUMN `mpsoptstate`  int NULL DEFAULT 0 COMMENT '一票多件操作状态（multiple package shipment,取值同订单操作状态）',
-ADD COLUMN `mpsallarrivedflag`  int NULL DEFAULT 0 COMMENT '一票多件是否到齐（0：未到齐，1：到齐）' AFTER `mpsoptstate`;
+ADD COLUMN `mpsallarrivedflag`  int NULL DEFAULT 0 COMMENT '一票多件是否到齐（0：未到齐，1：到齐）' AFTER `mpsoptstate`,
+ADD COLUMN `ismpsflag` INT(11) DEFAULT 0 NULL COMMENT '是否一票多件：0默认；1是一票多件';
 
 /*客户表*/
 ALTER TABLE `express_set_customer_info`
