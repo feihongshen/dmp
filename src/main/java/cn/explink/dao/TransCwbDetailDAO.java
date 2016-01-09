@@ -37,7 +37,7 @@ public class TransCwbDetailDAO {
 			tcd.setNextbranchid(rs.getInt("nextbranchid"));
 			tcd.setCreatetime(rs.getDate("createtime") + "");
 			tcd.setModifiedtime(rs.getTimestamp("modifiedtime") + "");
-			tcd.setEmaildate(rs.getDate("emaildate") + "");
+			tcd.setEmaildate(rs.getTimestamp("emaildate") + "");
 			tcd.setCommonphraseid(rs.getInt("commonphraseid"));
 			tcd.setCommonphrase(rs.getString("commonphrase"));
 			return tcd;
@@ -153,4 +153,23 @@ public class TransCwbDetailDAO {
 		this.jdbcTemplate.update(sql);
 	}
 
+	/**
+	 *
+	 * @Title: getTransCwbDetailListByTransCwbs
+	 * @description 根据输入的子单集合，获取所有的子单详情
+	 * @author 刘武强
+	 * @date  2016年1月8日下午5:17:19
+	 * @param  @param transcwbs
+	 * @param  @return
+	 * @return  List<TransCwbDetail>
+	 * @throws
+	 */
+	public List<TransCwbDetail> getTransCwbDetailListByTransCwbs(String transcwbs) {
+		String sql = "select * from express_ops_transcwb_detail where transcwb in " + transcwbs;
+		try {
+			return this.jdbcTemplate.query(sql, new TransCwbRowMapper());
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
 }
