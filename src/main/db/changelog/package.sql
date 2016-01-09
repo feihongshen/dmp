@@ -45,9 +45,9 @@ ALTER TABLE `express_set_customer_info`
 ADD COLUMN `mpsswitch`  int NULL DEFAULT 0 COMMENT 'mps开关（0：未开启，1：开启库房集单，2：开启站点集单）';
 
 /*对接临时表 添加最后一箱标识*/
-ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD COLUMN `mpsallarrivedflag` INT(11) DEFAULT 0 NULL COMMENT '最后一箱标识:1表示最后一箱；0默认',
-ADD COLUMN `ismpsflag` INT(11) DEFAULT 0 NULL COMMENT '是否一票多件：0默认；1是一票多件; 
-
+ALTER TABLE `express_ops_cwb_detail_b2ctemp` 
+ADD COLUMN `mpsallarrivedflag` INT(11) DEFAULT 0 NULL COMMENT '最后一箱标识:1表示最后一箱；0默认',
+ADD COLUMN `ismpsflag` INT(11) DEFAULT 0 NULL COMMENT '是否一票多件：0默认；1是一票多件'; 
 
 /*--------------------------------------------------预置数据---------------------------------------------------------------*/
 /*运单状态流程表*/
@@ -140,3 +140,6 @@ insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('10','36');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('10','40');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('10','46');
+
+/*菜单预置*/
+insert into `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) values('303040','2','运单状态流程','303040','transCwbStateControl/list?','3030');
