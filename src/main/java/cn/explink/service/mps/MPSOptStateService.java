@@ -59,9 +59,9 @@ public class MPSOptStateService extends AbstractMPSService {
 
 		// 更新运单操作状态，上一站 下一站
 		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
-		transCwbDetail.setCurrentbranchid((int) currentbranchid);
+		transCwbDetail.setCurrentbranchid(currentbranchid);
 		transCwbDetail.setModifiedtime(Tools.getCurrentTime(null));
-		transCwbDetail.setNextbranchid((int) nextbranchid);
+		transCwbDetail.setNextbranchid(nextbranchid);
 		transCwbDetail.setTranscwboptstate(transcwboptstate.getValue());
 		this.getTransCwbDetailDAO().updateTransCwbDetail(transCwbDetail);
 	}

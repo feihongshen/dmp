@@ -191,6 +191,7 @@ import cn.explink.pos.tools.PosPayDAO;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.service.mps.MPSOptStateService;
+import cn.explink.service.mps.OrderInterceptService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TransCwbService;
 import cn.explink.support.transcwb.TranscwbView;
@@ -416,6 +417,8 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	private MPSOptStateService mpsOptStateService;
+	@Autowired
+	OrderInterceptService orderInterceptService;
 
 	// private User getSessionUser() {
 	// ExplinkUserDetail userDetail = (ExplinkUserDetail)
@@ -2696,9 +2699,15 @@ public class CwbOrderService extends BaseOrderService {
 	@Transactional
 	public CwbOrder outWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment,
 			String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku) {
+		
+		orderInterceptService.checkTransCwbIsIntercept(scancwb); //订单拦截公共方法
+		
+		
 		Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
-
+		
+		
+		
 		if (this.userDAO.getAllUserByid(user.getUserid()).getIsImposedOutWarehouse() == 0) {// 是否拥有
 			// 请指出库权限
 			// 1是
@@ -2900,6 +2909,8 @@ public class CwbOrderService extends BaseOrderService {
 		// //包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
+		mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, branchid);//更新订单一票多件状态和运单状态
+		
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
