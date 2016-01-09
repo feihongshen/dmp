@@ -45,7 +45,9 @@ public abstract class AbstractMPSService {
 
 	protected CwbOrder getMPSCwbOrderConsideringMPSSwitchType(String transCwb, String logPrefix) {
 		CwbOrder cwbOrder = this.getMPSCwbOrder(transCwb, logPrefix);
-		this.setCwbOrderMPSSwitchType(logPrefix, cwbOrder);
+		if (cwbOrder != null) {
+			this.setCwbOrderMPSSwitchType(logPrefix, cwbOrder);
+		}
 		return cwbOrder;
 	}
 

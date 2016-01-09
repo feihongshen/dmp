@@ -34,6 +34,7 @@ public class OrderInterceptService extends AbstractMPSService {
 	static {
 		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.FenZhanLingHuo.getValue());
+		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
 	}
 
 	/**
