@@ -1976,6 +1976,7 @@ src/main/java/cn/explink/service/mps/AbstractMPSReleaseService.java -text
 src/main/java/cn/explink/service/mps/AbstractMPSService.java -text
 src/main/java/cn/explink/service/mps/DeliverTakeGoodsMPSReleaseService.java -text
 src/main/java/cn/explink/service/mps/MPSOptStateService.java -text
+src/main/java/cn/explink/service/mps/OrderInterceptService.java -text
 src/main/java/cn/explink/service/mps/OutWarehouseMPSReleaseService.java -text
 src/main/java/cn/explink/service/validator/BackCargoAmountShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/BackCargoNumShouldAboveZero.java -text

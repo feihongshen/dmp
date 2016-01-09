@@ -126,18 +126,4 @@ public class MPSOptStateService extends AbstractMPSService {
 		return currentState;
 	}
 
-	/**
-	 * @Title: checkTransCwbIsIntercept
-	 * @description 根据传入的单号（订单或者运单），判断是否被拦截，并返回提示（所处操作流程不同，提示不同，如果没有被拦截，则返回null）
-	 * @author 刘武强
-	 * @date 2016年1月8日下午1:53:01
-	 * @param @param transCwb
-	 * @param @return
-	 * @return String
-	 * @throws
-	 */
-	public String checkTransCwbIsIntercept(String transCwb) {
-		// TODO 判断主体待完善
-		return "";
-	}
 }

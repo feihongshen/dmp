@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -137,6 +136,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
+import cn.explink.service.mps.OutWarehouseMPSReleaseService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
@@ -254,7 +254,9 @@ public class PDAController {
 	@Autowired
 	KfzdOrderService kfzdOrderService;
 
-	
+	@Autowired
+	private OutWarehouseMPSReleaseService outWarehouseMPSReleaseService;
+
 	private ObjectMapper om = new ObjectMapper();
 
 	private boolean playGPSound = true;
@@ -278,16 +280,14 @@ public class PDAController {
 	}
 
 	@RequestMapping("/submitGoodsTypeChange")
-	public @ResponseBody
-	ChangeGoodsTypeResult submitGoodsTypeChange(String orderNos, int goodsType) {
+	public @ResponseBody ChangeGoodsTypeResult submitGoodsTypeChange(String orderNos, int goodsType) {
 		ChangeGoodsTypeResult result = this.cwborderService.changeGoodsType(orderNos, goodsType);
 
 		return result;
 	}
 
 	@RequestMapping("/getpdaMenu")
-	public @ResponseBody
-	String getpdaMenu(Model model) {
+	public @ResponseBody String getpdaMenu(Model model) {
 		List<Menu> mList = this.menuDAO.getMenusByUserRoleidToPDA(this.getSessionUser().getRoleid());
 		String functionids = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getFunctionids();
 		String pdaMenu = "";
@@ -470,10 +470,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getimportweirukulist")
-	public @ResponseBody
-	List<CwbDetailView> getimportweirukulist(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(
-			value = "emaildate",
-			defaultValue = "0") long emaildate) {
+	public @ResponseBody List<CwbDetailView> getimportweirukulist(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "customerid", defaultValue = "0") long customerid,
+			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -493,10 +491,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getimportyiruku")
-	public @ResponseBody
-	List<CwbDetailView> getimportyiruku(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(
-			value = "emaildate",
-			defaultValue = "0") long emaildate) {
+	public @ResponseBody List<CwbDetailView> getimportyiruku(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "customerid", defaultValue = "0") long customerid,
+			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
@@ -609,8 +605,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchimportyidaolist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchimportyidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbranchimportyidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		List<String> yidaohuocwbs = this.operationTimeDAO.getyidaohuoByBranchid(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
 		String yidaohuo = "";
@@ -634,8 +629,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchimportjinriweidaolist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchimportjinriweidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbranchimportjinriweidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		String showintowarehousedata = "no";
 		try {
@@ -673,8 +667,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchimporthistoryweidaolist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchimporthistoryweidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbranchimporthistoryweidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		String showintowarehousedata = "no";
 		try {
@@ -713,10 +706,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbbranchintowarhouseBatch")
-	public String cwbbranchintowarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "-1") long customerid) {
+	public String cwbbranchintowarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {
 		long allcwbnum = 0;
 		long SuccessCount = 0;
 		// 系统设置是否显示订单备注
@@ -767,7 +758,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -866,8 +857,7 @@ public class PDAController {
 	 */
 
 	@RequestMapping("/getbranchimportbatchyidaolist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchimportbatchyidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbranchimportbatchyidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		List<CwbOrder> cList = this.cwbDAO.getYiDaohuobyBranchidList(this.getSessionUser().getBranchid(), page);
 		// 系统设置是否显示订单备注
@@ -1001,8 +991,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchbackexportyisaomiaolist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchbackexportyisaomiaolist(@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid) {
+	public @ResponseBody List<CwbDetailView> getbranchbackexportyisaomiaolist(@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid) {
 		List<CwbOrder> cList = this.cwbDAO.getCwbByFlowOrderTypeAndNextbranchidAndStartbranchidList(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid(), 0);
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -1019,8 +1008,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchbackexportdaichuhuolist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchbackexportdaichuhuolist() {
+	public @ResponseBody List<CwbDetailView> getbranchbackexportdaichuhuolist() {
 		List<CwbOrder> cwbAllList = this.getAuditTuiHuo();
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -1069,8 +1057,7 @@ public class PDAController {
 	 */
 
 	@RequestMapping("/getbackbranchbackexportyichuzhanlist")
-	public @ResponseBody
-	List<CwbDetailView> getbackbranchbackexportyichuzhanlist(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
+	public @ResponseBody List<CwbDetailView> getbackbranchbackexportyichuzhanlist(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
 		List<CwbOrder> cList = this.cwbDAO.getYiChuKubyBranchidList(this.getSessionUser().getBranchid(), branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), 1);
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -1089,8 +1076,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbackbranchbackexportweichuzhanlist")
-	public @ResponseBody
-	List<CwbDetailView> getbackbranchbackexportweichuzhanlist(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
+	public @ResponseBody List<CwbDetailView> getbackbranchbackexportweichuzhanlist(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
 		List<CwbOrder> cList = this.cwbDAO.getKDKChukuForCwbOrder(this.getSessionUser().getBranchid(), branchid, CwbStateEnum.TuiHuo.getValue());
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -1191,7 +1177,7 @@ public class PDAController {
 		model.addAttribute("weichukulist", weichukuViewlist);
 		model.addAttribute("yichukulist", yichukuViewlist);
 		model.addAttribute("customerlist", cList);
-		model.addAttribute("isOpenDialog",isOpenDialog);
+		model.addAttribute("isOpenDialog", isOpenDialog);
 		model.addAttribute("branchlist", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
@@ -1255,10 +1241,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getexportyichukulist")
-	public @ResponseBody
-	List<CwbDetailView> getexportyichukulist(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(
-			value = "flowordertype",
-			defaultValue = "6") long flowordertype) {
+	public @ResponseBody List<CwbDetailView> getexportyichukulist(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "page", defaultValue = "1") long page,
+			@RequestParam(value = "flowordertype", defaultValue = "6") long flowordertype) {
 		List<String> cwbyichukuList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(this.getSessionUser().getBranchid(), branchid, flowordertype);
 
 		String cwbs = "";
@@ -1287,8 +1271,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getexportweichukulist")
-	public @ResponseBody
-	List<CwbDetailView> getexportweichukulist(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getexportweichukulist(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "page", defaultValue = "1") long page) {
 		Branch localbranch = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 		int cwbstate = CwbStateEnum.PeiShong.getValue();
 		if (localbranch.getSitetype() == BranchEnum.TuiHuo.getValue()) {
@@ -1393,8 +1376,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchexportwarehouseyisaomiao")
-	public @ResponseBody
-	List<CwbDetailView> getbranchexportwarehouseyisaomiao(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
+	public @ResponseBody List<CwbDetailView> getbranchexportwarehouseyisaomiao(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
 		List<String> cwbs = this.operationTimeDAO.getchaoqi(this.getSessionUser().getBranchid(), branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		List<CwbOrder> cList = this.cwbDAO.getZhanDianYiChuZhanbyBranchidList(cwbs);
 		// 系统设置是否显示订单备注
@@ -1413,8 +1395,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchexportwarehousedaichuku")
-	public @ResponseBody
-	List<CwbDetailView> getbranchexportwarehousedaichuku(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
+	public @ResponseBody List<CwbDetailView> getbranchexportwarehousedaichuku(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
 		List<CwbOrder> cList = this.cwbDAO.getZhanDianChuZhanbyBranchidList(this.getSessionUser().getBranchid(), branchid, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -1476,8 +1457,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getkdkexportyichukulist")
-	public @ResponseBody
-	List<CwbDetailView> getkdkexportyichukulist(@RequestParam(value = "nextbranchid", defaultValue = "0") long nextbranchid) {
+	public @ResponseBody List<CwbDetailView> getkdkexportyichukulist(@RequestParam(value = "nextbranchid", defaultValue = "0") long nextbranchid) {
 		// List<Branch> bList =
 		// cwborderService.getNextPossibleKuFangBranches(getSessionUser());
 		List<CwbOrder> cList = this.cwbDAO.getYiChuKubyBranchidList(this.getSessionUser().getBranchid(), nextbranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), 1);
@@ -1497,8 +1477,7 @@ public class PDAController {
 	 */
 
 	@RequestMapping("/getkdkexporweichukutlist")
-	public @ResponseBody
-	List<CwbDetailView> getkdkexporweichukutlist() {
+	public @ResponseBody List<CwbDetailView> getkdkexporweichukutlist() {
 		List<Branch> bList = this.cwborderService.getNextPossibleKuFangBranches(this.getSessionUser());
 		List<CwbOrder> cList = this.cwbDAO.getKDKChukuForCwbOrder(this.getSessionUser().getBranchid(), bList.size() > 0 ? bList.get(0).getBranchid() : 0, -1);
 		// 系统设置是否显示订单备注
@@ -1571,8 +1550,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/getBranchDeliver")
-	public @ResponseBody
-	List<User> getBranchDeliver(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
+	public @ResponseBody List<User> getBranchDeliver(@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
 		String roleids = "2,4";
 		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
 		if ((roles != null) && (roles.size() > 0)) {
@@ -1758,8 +1736,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchideliverweilinghistorylist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchideliverweilinghistorylist(@RequestParam(value = "deliverid", defaultValue = "0") long deliverid, @RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbranchideliverweilinghistorylist(@RequestParam(value = "deliverid", defaultValue = "0") long deliverid,
+			@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		// 今日到货订单数
 		// List<String> todaydaohuocwbs =
@@ -1826,8 +1804,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchideliveryilinglist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchideliveryilinglist(@RequestParam(value = "deliverid", defaultValue = "0") long deliverid, @RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbranchideliveryilinglist(@RequestParam(value = "deliverid", defaultValue = "0") long deliverid,
+			@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		List<String> linghuocwbs = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchid(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanLingHuo.getValue());
 		String yilinghuocwbs = "";
@@ -1854,10 +1832,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchideliverweilinglist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchideliverweilinglist(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "deliverid", defaultValue = "0") long deliverid, @RequestParam(
-			value = "showCustomerSign",
-			defaultValue = "false") Boolean showCustomerSign, @RequestParam(value = "clist", defaultValue = "") List<Customer> customerlist) {
+	public @ResponseBody List<CwbDetailView> getbranchideliverweilinglist(@RequestParam(value = "page", defaultValue = "1") long page,
+			@RequestParam(value = "deliverid", defaultValue = "0") long deliverid, @RequestParam(value = "showCustomerSign", defaultValue = "false") Boolean showCustomerSign,
+			@RequestParam(value = "clist", defaultValue = "") List<Customer> customerlist) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		// 今日到货订单数
 		// List<String> todaydaohuocwbs =
@@ -1956,10 +1933,9 @@ public class PDAController {
 				obj.put("errorcode", "000000");
 				linghuoSuccessCount++;
 			} catch (CwbException ce) {// 出现验证错误
-				if (ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen
-						.equals(ce.getError())) { //订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
-					//领货失败
-					if (alertErrorMsg != null && alertErrorMsg.length() > 0) {
+				if (ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen.equals(ce.getError())) { // 订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
+					// 领货失败
+					if ((alertErrorMsg != null) && (alertErrorMsg.length() > 0)) {
 						alertErrorMsg += "," + cwb;
 					} else {
 						alertErrorMsg = cwb;
@@ -1986,9 +1962,9 @@ public class PDAController {
 					}
 					obj.put("showRemark", a);
 				}
-				
+
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -2010,45 +1986,45 @@ public class PDAController {
 			}
 			objList.add(obj);
 		}
-		
-		if (alertErrorMsg != null && alertErrorMsg.length() > 0) {
+
+		if ((alertErrorMsg != null) && (alertErrorMsg.length() > 0)) {
 			alertErrorMsg += "有修改未审核，请联系客服人员！";
 			alertWarnMsg = "";
 		} else {
 			StringBuilder editCwbs = new StringBuilder();
-			if (cwbs != null && !cwbs.isEmpty()) {
-				String searchCwbs = getCwbs(cwbs);
+			if ((cwbs != null) && !cwbs.isEmpty()) {
+				String searchCwbs = this.getCwbs(cwbs);
 				Map<String, List<String>> editCwbMap = this.cwborderService.getEditCwb(searchCwbs);
-				if (editCwbMap != null && !editCwbMap.isEmpty()) {
+				if ((editCwbMap != null) && !editCwbMap.isEmpty()) {
 					List<String> editCwbInfoList = editCwbMap.get("cwbInfo");
 					List<String> editCwbPayList = editCwbMap.get("cwbPay");
-					
-					if (editCwbPayList != null && !editCwbPayList.isEmpty()) {
+
+					if ((editCwbPayList != null) && !editCwbPayList.isEmpty()) {
 						for (String editCwb : editCwbPayList) {
-							if ( editCwbs.indexOf(editCwb) == -1) {
+							if (editCwbs.indexOf(editCwb) == -1) {
 								if (editCwbs.length() > 0) {
-									editCwbs.append(","+editCwb);
+									editCwbs.append("," + editCwb);
 								} else {
 									editCwbs.append(editCwb);
 								}
 							}
 						}
-					} 
-					
-					if (editCwbInfoList != null && !editCwbInfoList.isEmpty()) {
+					}
+
+					if ((editCwbInfoList != null) && !editCwbInfoList.isEmpty()) {
 						for (String editCwb : editCwbInfoList) {
-							if ( editCwbs.indexOf(editCwb) == -1) {
+							if (editCwbs.indexOf(editCwb) == -1) {
 								if (editCwbs.length() > 0) {
-									editCwbs.append(","+editCwb);
+									editCwbs.append("," + editCwb);
 								} else {
 									editCwbs.append(editCwb);
 								}
 							}
 						}
-					} 
+					}
 				}
 			}
-			
+
 			if (editCwbs.length() > 0) {
 				alertWarnMsg = editCwbs.toString() + "有修改，请及时核对！";
 			}
@@ -2161,8 +2137,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/getBatchLinghuoSum")
-	public @ResponseBody
-	JSONObject getBatchLinghuoSum(@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
+	public @ResponseBody JSONObject getBatchLinghuoSum(@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
 		JSONObject obj = new JSONObject();
 		String todaytime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 		obj.put("linghuoSuccessCount",
@@ -2457,21 +2432,20 @@ public class PDAController {
 		return cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "";
 
 	}
-	
-	
+
 	private String getCwbs(String cwbs) {
 		StringBuffer strs = new StringBuffer("");
-		if(!cwbs.equals("")){
-			for(String str:cwbs.split("\r\n")){
+		if (!cwbs.equals("")) {
+			for (String str : cwbs.split("\r\n")) {
 				strs.append("'").append(str).append("',");
 			}
 		}
 		String cwbss = "";
-		if(strs.length()>0){
-			cwbss = strs.substring(0, strs.length()-1);
+		if (strs.length() > 0) {
+			cwbss = strs.substring(0, strs.length() - 1);
 		}
 		return cwbss;
-	}	
+	}
 
 	/**
 	 * 退货站入库 得到未入库 list
@@ -2479,8 +2453,7 @@ public class PDAController {
 	 */
 
 	@RequestMapping("/getbackimportweirukulist")
-	public @ResponseBody
-	List<CwbDetailView> getbackimportweiruku(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbackimportweiruku(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<CwbOrder> cList = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), page);
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -2496,8 +2469,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbackimportyirukulist")
-	public @ResponseBody
-	List<CwbDetailView> getbackimportyiruku(@RequestParam(value = "page") long page) {
+	public @ResponseBody List<CwbDetailView> getbackimportyiruku(@RequestParam(value = "page") long page) {
 		List<CwbOrder> cList = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), page);
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -2663,8 +2635,7 @@ public class PDAController {
 	 */
 
 	@RequestMapping("/getbacktocustomerdaichukulist")
-	public @ResponseBody
-	List<CwbDetailView> getbacktocustomerdaichukulist(@RequestParam(value = "page", required = true, defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbacktocustomerdaichukulist(@RequestParam(value = "page", required = true, defaultValue = "1") long page) {
 		List<CwbOrder> cList = this.cwbDAO.getTGYSCKListbyBranchid(this.getSessionUser().getBranchid(), page);
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -2681,8 +2652,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbacktocustomeryichukulist")
-	public @ResponseBody
-	List<CwbDetailView> getbacktocustomeryichukulist(@RequestParam(value = "page", required = true, defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbacktocustomeryichukulist(@RequestParam(value = "page", required = true, defaultValue = "1") long page) {
 		List<CwbOrder> cList = this.cwbDAO.getTuiGongHuoShangYiChuKu(this.getSessionUser().getBranchid(), page);
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -2714,8 +2684,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getcustomerrefusedbackyifankulist")
-	public @ResponseBody
-	List<CwbDetailView> getcustomerrefusedbackyifankulist() {
+	public @ResponseBody List<CwbDetailView> getcustomerrefusedbackyifankulist() {
 		List<CwbOrder> cList = this.cwbDAO.getCustomerRefusedListForScan(this.getSessionUser().getBranchid());
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -2732,8 +2701,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getcustomerrefusedbackdaifankulist")
-	public @ResponseBody
-	List<CwbDetailView> getcustomerrefusedbackdaifankulist() {
+	public @ResponseBody List<CwbDetailView> getcustomerrefusedbackdaifankulist() {
 		List<CwbOrder> cList = this.cwbDAO.getCustomerRefusedListByBranchid(this.getSessionUser().getBranchid());
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -2745,10 +2713,8 @@ public class PDAController {
 
 	@RequestMapping("/cwbintoWarehousForGetGoodsBatch")
 	public String cwbintoWarehousForGetGoodsBatch(Model model, HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(
-					value = "driverid",
-					required = false,
-					defaultValue = "0") long driverid) {
+			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid) {
 		List<Customer> customerlist = this.customerDAO.getAllCustomers();
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
@@ -2759,7 +2725,7 @@ public class PDAController {
 				continue;
 			}
 			JSONObject obj = new JSONObject();
-			String scancwb=cwb;
+			String scancwb = cwb;
 			cwb = this.cwborderService.translateCwb(cwb);
 			CwbOrder cwbOrder = new CwbOrder();
 			obj.put("cwb", cwb);
@@ -2792,7 +2758,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -2831,14 +2797,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbintowarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(
-			value = "requestbatchno",
-			required = true,
-			defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
+	public @ResponseBody ExplinkResponse cwbintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
 			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate, @RequestParam(value = "youhuowudanflag", defaultValue = "-1") String youhuowudanflag
 
 	) {
@@ -2959,8 +2920,8 @@ public class PDAController {
 			return resp;
 		} catch (CwbException e) {
 			cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+					: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
 				ExplinkResponse explinkResponse = new ExplinkResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
@@ -3049,10 +3010,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbintowarhouseBatch")
-	public String cwbintowarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
+	public String cwbintowarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		long allcwbnum = 0;
 		long thissuccess = 0;
@@ -3133,7 +3092,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -3202,14 +3161,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbChangeintowarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbChangeintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "0") long customerid, @RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(
-			value = "comment",
-			required = true,
-			defaultValue = "") String comment) {
+	public @ResponseBody ExplinkResponse cwbChangeintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 
@@ -3284,8 +3238,8 @@ public class PDAController {
 			return explinkResponse;
 		} catch (CwbException e) {
 			cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-					cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
+					: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
 				ExplinkResponse explinkResponse = new ExplinkResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError() + " "
@@ -3319,10 +3273,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbChangeintowarhouseBatch")
-	public String cwbChangeintowarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "0") long customerid) {
+	public String cwbChangeintowarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid) {
 		long allcwbnum = 0;
 		long thissuccess = 0;
 		Branch b = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
@@ -3376,7 +3328,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
 				obj.put("errorinfo", ce.getMessage());
@@ -3434,9 +3386,8 @@ public class PDAController {
 	 * 得到入库扫描批量 未入库list======================= getintowarehousebacthweiruku
 	 */
 	@RequestMapping("/getintowarehousebacthweiruku")
-	public @ResponseBody
-	List<CwbDetailView> getintowarehousebacthweiruku(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "customerid", defaultValue = "0") long customerid,
-			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
+	public @ResponseBody List<CwbDetailView> getintowarehousebacthweiruku(@RequestParam(value = "page", defaultValue = "1") long page,
+			@RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 		List<CwbOrder> weirukulist = this.cwbDAO.getRukuByBranchidForList(b.getBranchid(), b.getSitetype(), page, customerid, emaildate);
 		// 系统设置是否显示订单备注
@@ -3451,10 +3402,8 @@ public class PDAController {
 	 * 得到入库扫描 批量 已入库 =================================
 	 */
 	@RequestMapping("/getintowarhousebatchyiruku")
-	public @ResponseBody
-	List<CwbDetailView> getintowarhousebatchyiruku(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(
-			value = "emaildate",
-			defaultValue = "0") long emaildate) {
+	public @ResponseBody List<CwbDetailView> getintowarhousebatchyiruku(@RequestParam(value = "page", defaultValue = "1") long page,
+			@RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 		List<CwbOrder> yirukulist = this.cwbDAO.getYiRukubyBranchidList(b.getBranchid(), customerid, page, emaildate);
 		// 系统设置是否显示订单备注
@@ -3478,21 +3427,16 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbsubstationGoods/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbsubstationGoods(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "driverid",
-			required = false,
-			defaultValue = "0") long driverid, @RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(
-			value = "comment",
-			required = true,
-			defaultValue = "") String comment) {
+	public @ResponseBody ExplinkResponse cwbsubstationGoods(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno,
+			@RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
-		CwbOrder cwbOrderOld = cwbDAO.getCwbByCwb(cwb);
-		if(cwbOrderOld == null){
+		CwbOrder cwbOrderOld = this.cwbDAO.getCwbByCwb(cwb);
+		if (cwbOrderOld == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-		
+
 		CwbOrder cwbOrder = this.cwborderService.substationGoods(this.getSessionUser(), cwb, scancwb, driverid, requestbatchno, comment, "", false);
 		JSONObject obj = new JSONObject();
 		String deliveryname = "";
@@ -3503,9 +3447,9 @@ public class PDAController {
 				}
 			}
 		}
-		if((int)cwbOrderOld.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()){//订单拦截显示在页面上
+		if ((int) cwbOrderOld.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {// 订单拦截显示在页面上
 			obj.put("dingdanlanjie", "订单拦截");
-		}else{
+		} else {
 			obj.put("dingdanlanjie", "");
 		}
 		obj.put("deliveryname", deliveryname);
@@ -3588,11 +3532,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbintowarhouseByPackageCode/{packageCode}")
-	public @ResponseBody
-	ExplinkResponse cwbintowarhouseByPackageCode(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("packageCode") String packageCode, @RequestParam(
-			value = "driverid",
-			required = false,
-			defaultValue = "0") long driverid) {
+	public @ResponseBody ExplinkResponse cwbintowarhouseByPackageCode(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("packageCode") String packageCode,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid) {
 
 		/*
 		 * List<CwbOrder> coList = cwbDAO.getCwbByPackageCode(packageCode);
@@ -3630,14 +3571,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/forremark/{cwb}")
-	public @ResponseBody
-	ExplinkResponse forremark(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "csremarkid",
-			required = false,
-			defaultValue = "0") long csremarkid, @RequestParam(value = "multicwbnum", required = false, defaultValue = "0") long multicwbnum, @RequestParam(
-			value = "content",
-			required = false,
-			defaultValue = "") String content) {
+	public @ResponseBody ExplinkResponse forremark(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "csremarkid", required = false, defaultValue = "0") long csremarkid, @RequestParam(value = "multicwbnum", required = false, defaultValue = "0") long multicwbnum,
+			@RequestParam(value = "content", required = false, defaultValue = "") String content) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		if (csremarkid == 1) {
 			content = "破损";
@@ -3675,25 +3611,19 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbexportwarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(
-			value = "requestbatchno",
-			required = true,
-			defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
-			value = "comment",
-			required = false,
-			defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid) {
+	public @ResponseBody ExplinkResponse cwbexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid) {
 		JSONObject obj = new JSONObject();
 
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 
 		long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
+
+		this.outWarehouseMPSReleaseService.validateReleaseCondition(cwb);
+
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwborderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid,
@@ -3786,97 +3716,117 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbchangeoutwarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbchangeoutwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(
-			value = "requestbatchno",
-			required = true,
-			defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
-			value = "comment",
-			required = false,
-			defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid) {
-//		JSONObject obj = new JSONObject();
-//
-//		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
-//
-//		long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
-//		String scancwb = cwb;
-//		cwb = this.cwborderService.translateCwb(cwb);
-//		CwbOrder cwbOrder = this.cwborderService.changeoutWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0
-//				: Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
-//
-//		obj.put("packageCode", baleno);
-//		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
-//		obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
-//		if (cwbOrder.getNextbranchid() != 0) {
-//			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
-//			obj.put("cwbbranchname", branch.getBranchname());
-//			obj.put("cwbbranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
-//		} else {
-//			obj.put("cwbbranchname", "");
-//
-//		}
-//		if (cwbOrder.getDeliverybranchid() != 0) {
-//			Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
-//			obj.put("cwbdeliverybranchname", branch.getBranchname());
-//			obj.put("cwbdeliverybranchnamewav", request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
-//		} else {
-//			obj.put("cwbdeliverybranchname", "");
-//			obj.put("cwbdeliverybranchnamewav", "");
-//		}
-//		if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
-//			obj.put("cwbgaojia", "true");
-//			explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.GJ));
-//		} else {
-//			obj.put("cwbgaojia", "");
-//		}
-//		// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
-//		String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
-//		List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
-//		String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
-//		String[] showcustomer = list.get(0).getCustomerid().split(",");
-//		for (String s : showcustomer) {
-//			if (s.equals(cwbcustomerid)) {
-//				CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
-//				Object a;
-//				try {
-//					a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
-//					obj.put("showRemark", a);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					obj.put("showRemark", "Erro");
-//				}
-//			}
-//		}
-//		// 加入货物类型音频文件.
-//		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
-//		String wavPath = null;
-//		if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
-//			if (this.isPlayYPDJSound()) {
-//				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
-//			}
-//		}
-//
-//		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
-//			if (!baleno.equals("") && !baleno.equals("0")) {
-//				successCount++;
-//				request.getSession().setAttribute(baleno + "-successCount", successCount);
-//				explinkResponse.setErrorinfo("\n按包出库成功，已出库" + successCount + "件");
-//				obj.put("successCount", successCount);
-//			}
-//			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
-//		} else {
-//			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
-//		}
-//		explinkResponse.addLastWav(wavPath);
-//
-//		return explinkResponse;
-		
+	public @ResponseBody ExplinkResponse cwbchangeoutwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid) {
+		// JSONObject obj = new JSONObject();
+		//
+		// ExplinkResponse explinkResponse = new ExplinkResponse("000000", "",
+		// obj);
+		//
+		// long successCount = request.getSession().getAttribute(baleno +
+		// "-successCount") == null ? 0 :
+		// Long.parseLong(request.getSession().getAttribute(baleno +
+		// "-successCount").toString());
+		// String scancwb = cwb;
+		// cwb = this.cwborderService.translateCwb(cwb);
+		// CwbOrder cwbOrder =
+		// this.cwborderService.changeoutWarehous(this.getSessionUser(), cwb,
+		// scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 :
+		// requestbatchno.length() == 0 ? 0
+		// : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno,
+		// reasonid, false, false);
+		//
+		// obj.put("packageCode", baleno);
+		// obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+		// obj.put("cwbcustomername",
+		// this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
+		// if (cwbOrder.getNextbranchid() != 0) {
+		// Branch branch =
+		// this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+		// obj.put("cwbbranchname", branch.getBranchname());
+		// obj.put("cwbbranchnamewav", request.getContextPath() +
+		// ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" :
+		// branch.getBranchwavfile()));
+		// } else {
+		// obj.put("cwbbranchname", "");
+		//
+		// }
+		// if (cwbOrder.getDeliverybranchid() != 0) {
+		// Branch branch =
+		// this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+		// obj.put("cwbdeliverybranchname", branch.getBranchname());
+		// obj.put("cwbdeliverybranchnamewav", request.getContextPath() +
+		// ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" :
+		// branch.getBranchwavfile()));
+		// } else {
+		// obj.put("cwbdeliverybranchname", "");
+		// obj.put("cwbdeliverybranchnamewav", "");
+		// }
+		// if ((cwbOrder.getReceivablefee() != null) &&
+		// (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee())
+		// > 0)) {
+		// obj.put("cwbgaojia", "true");
+		// explinkResponse.addShortWav(this.getErrorWavFullPath(request,
+		// WavFileName.GJ));
+		// } else {
+		// obj.put("cwbgaojia", "");
+		// }
+		// //
+		// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
+		// String jyp =
+		// this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		// List<JsonContext> list = PDAController.test("[" + jyp + "]",
+		// JsonContext.class);// 把json转换成list
+		// String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
+		// String[] showcustomer = list.get(0).getCustomerid().split(",");
+		// for (String s : showcustomer) {
+		// if (s.equals(cwbcustomerid)) {
+		// CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
+		// Object a;
+		// try {
+		// a = order.getClass().getMethod("get" +
+		// list.get(0).getRemark()).invoke(order);
+		// obj.put("showRemark", a);
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// obj.put("showRemark", "Erro");
+		// }
+		// }
+		// }
+		// // 加入货物类型音频文件.
+		// this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+		// String wavPath = null;
+		// if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1))
+		// {
+		// if (this.isPlayYPDJSound()) {
+		// wavPath = request.getContextPath() + ServiceUtil.waverrorPath +
+		// CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+		// }
+		// }
+		//
+		// if
+		// (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode()))
+		// {
+		// if (!baleno.equals("") && !baleno.equals("0")) {
+		// successCount++;
+		// request.getSession().setAttribute(baleno + "-successCount",
+		// successCount);
+		// explinkResponse.setErrorinfo("\n按包出库成功，已出库" + successCount + "件");
+		// obj.put("successCount", successCount);
+		// }
+		// wavPath = request.getContextPath() + ServiceUtil.waverrorPath +
+		// CwbOrderPDAEnum.OK.getVediourl();
+		// } else {
+		// wavPath = request.getContextPath() + ServiceUtil.waverrorPath +
+		// CwbOrderPDAEnum.SYS_ERROR.getVediourl();
+		// }
+		// explinkResponse.addLastWav(wavPath);
+		//
+		// return explinkResponse;
+
 		return this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, true);
 	}
 
@@ -3899,23 +3849,12 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbchangeexportwarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbchangeexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(
-			value = "requestbatchno",
-			required = true,
-			defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
-			value = "comment",
-			required = false,
-			defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid, @RequestParam(
-			value = "deliverybranchid",
-			required = false,
-			defaultValue = "0") long deliverybranchid) {	
+	public @ResponseBody ExplinkResponse cwbchangeexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
+			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
 		JSONObject obj = new JSONObject();
 
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
@@ -4031,14 +3970,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbbranchexportwarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbbranchexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "confirmflag",
-			required = false,
-			defaultValue = "0") long confirmflag) {
+	public @ResponseBody ExplinkResponse cwbbranchexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
 		JSONObject obj = new JSONObject();
 
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
@@ -4104,13 +4038,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbbranchexportwarhouseBatch")
-	public String cwbbranchexportwarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "confirmflag",
-			required = false,
-			defaultValue = "0") long confirmflag) {
+	public String cwbbranchexportwarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
 		long thissuccess = 0;
 		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
 		List<User> uList = this.userDAO.getUserByRole(3);
@@ -4160,7 +4090,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -4245,20 +4175,11 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbkdkexportwarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbkdkexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(
-			value = "requestbatchno",
-			required = true,
-			defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
-			value = "comment",
-			required = false,
-			defaultValue = "") String comment) {
+	public @ResponseBody ExplinkResponse cwbkdkexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment) {
 		JSONObject obj = new JSONObject();
 
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
@@ -4333,13 +4254,10 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbkdkexportwarhouseBatch")
-	public String cwbkdkexportwarhouseBatch(Model model, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(
-			value = "driverid",
-			required = true,
-			defaultValue = "0") long driverid, @RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(
-			value = "confirmflag",
-			required = false,
-			defaultValue = "0") long confirmflag, @RequestParam(value = "scancwbs", required = false, defaultValue = "") String cwbs, HttpServletRequest request) {
+	public String cwbkdkexportwarhouseBatch(Model model, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid,
+			@RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid,
+			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(value = "scancwbs", required = false, defaultValue = "") String cwbs,
+			HttpServletRequest request) {
 		long SuccessCount = 0;
 		long alloutnum = 0;
 
@@ -4383,7 +4301,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -4460,16 +4378,11 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbexportUntreadWarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbexportUntreadWarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, 
-			@RequestParam(value = "branchid",required = true,defaultValue = "0") long branchid, 
-			@RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, 
-			@RequestParam(value = "truckid",required = false,defaultValue = "0") long truckid, 
-			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, 
-			@RequestParam(value = "requestbatchno",required = true,defaultValue = "0") long requestbatchno, 
-			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, 
-			@RequestParam(value = "comment",required = false,defaultValue = "") String comment) 
-	{
+	public @ResponseBody ExplinkResponse cwbexportUntreadWarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment) {
 
 		String scancwb = cwb;
 		long SuccessCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
@@ -4541,10 +4454,8 @@ public class PDAController {
 	 */
 	@RequestMapping("/cwbbranchbackexportBatch")
 	public String cwbbranchbackexportBatch(Model model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-					value = "confirmflag",
-					required = false,
-					defaultValue = "0") long confirmflag) {
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
 		long thissuccess = 0;
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 
@@ -4593,7 +4504,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -4673,20 +4584,11 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbbackexportUntreadWarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbbackexportUntreadWarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(
-			value = "requestbatchno",
-			required = true,
-			defaultValue = "0") long requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
-			value = "comment",
-			required = false,
-			defaultValue = "") String comment) {
+	public @ResponseBody ExplinkResponse cwbbackexportUntreadWarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwborderService.outUntreadWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, comment, baleno, false);// 为包号修改
@@ -4734,23 +4636,22 @@ public class PDAController {
 	 * @param model
 	 * @param request
 	 * @param response
-	 * @param cwb 订单
-	 * @param deliverid 快递员
+	 * @param cwb
+	 *            订单
+	 * @param deliverid
+	 *            快递员
 	 * @param requestbatchno
 	 * @return
 	 * @throws ParseException
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@RequestMapping("/cwbbranchdeliver/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbbranchdeliver(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "deliverid",
-			required = true,
-			defaultValue = "0") long deliverid) throws ParseException {
+	public @ResponseBody ExplinkResponse cwbbranchdeliver(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid) throws ParseException {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
-		//json对象
+		// json对象
 		JSONObject obj = new JSONObject();
 		// 判断当前流程是否为今日，供上门退订单分派使用.(包括重复扫描)
 		this.addSmtDeliverPickingExtraMsg(obj, cwb);
@@ -4758,20 +4659,20 @@ public class PDAController {
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
 		CwbOrder cwbOrder = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
-		
+
 		String searchCwb = "'" + cwb + "'";
-		Map<String,List<String>> editCwbMap = this.cwborderService.getEditCwb(searchCwb);
-		if (editCwbMap != null && !editCwbMap.isEmpty()) {
+		Map<String, List<String>> editCwbMap = this.cwborderService.getEditCwb(searchCwb);
+		if ((editCwbMap != null) && !editCwbMap.isEmpty()) {
 			String alertInfo = "";
 			List<String> editCwbInfoList = editCwbMap.get("cwbInfo");
 			List<String> editCwbPayList = editCwbMap.get("cwbPay");
-			if ((editCwbPayList != null && !editCwbPayList.isEmpty()) && (editCwbInfoList != null && !editCwbInfoList.isEmpty()) ) {
+			if (((editCwbPayList != null) && !editCwbPayList.isEmpty()) && ((editCwbInfoList != null) && !editCwbInfoList.isEmpty())) {
 				alertInfo = "订单信息和订单支付信息存在修改，请及时核对！";
-			} else if (editCwbPayList != null && !editCwbPayList.isEmpty()) {
+			} else if ((editCwbPayList != null) && !editCwbPayList.isEmpty()) {
 				alertInfo = "订单涉及财务修改，请及时核对！";
-			} else if (editCwbInfoList != null && !editCwbInfoList.isEmpty()) {
+			} else if ((editCwbInfoList != null) && !editCwbInfoList.isEmpty()) {
 				alertInfo = "订单信息存在修改，请及时核对！";
-			} else {//没有修改订单
+			} else {// 没有修改订单
 				// do nothing
 			}
 			obj.put("editCwb", alertInfo);
@@ -4817,12 +4718,12 @@ public class PDAController {
 		} else {
 			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 		}
-		
+
 		explinkResponse.addLastWav(wavPath);
-		
-		if(cwbOrder.getSendcarnum()>1){
-			if(cwbOrder.getScannum()==cwbOrder.getSendcarnum()){
-				
+
+		if (cwbOrder.getSendcarnum() > 1) {
+			if (cwbOrder.getScannum() == cwbOrder.getSendcarnum()) {
+
 				this.cwborderService.delYpdjFlowordertypeMethod(cwb);
 			}
 		}
@@ -4874,17 +4775,10 @@ public class PDAController {
 	 * @throws UnsupportedEncodingException
 	 */
 	@RequestMapping("/cwbdeliverpod/{cwbs}")
-	public @ResponseBody
-	ExplinkResponse cwbdeliverpod(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwbs") String cwbs, @RequestParam(
-			value = "deliverid",
-			required = true,
-			defaultValue = "0") long deliverid, @RequestParam(value = "podresultid", required = true, defaultValue = "0") long podresultid, @RequestParam(
-			value = "paywayid",
-			required = false,
-			defaultValue = "0") long paywayid, @RequestParam(value = "backreasonid", required = false, defaultValue = "0") long backreasonid, @RequestParam(
-			value = "leavedreasonid",
-			required = false,
-			defaultValue = "0") long leavedreasonid) throws UnsupportedEncodingException {
+	public @ResponseBody ExplinkResponse cwbdeliverpod(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwbs") String cwbs,
+			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid, @RequestParam(value = "podresultid", required = true, defaultValue = "0") long podresultid,
+			@RequestParam(value = "paywayid", required = false, defaultValue = "0") long paywayid, @RequestParam(value = "backreasonid", required = false, defaultValue = "0") long backreasonid,
+			@RequestParam(value = "leavedreasonid", required = false, defaultValue = "0") long leavedreasonid) throws UnsupportedEncodingException {
 		String statuscode = CwbOrderPDAEnum.OK.getCode();
 		StringBuilder errorMsg = new StringBuilder();
 		for (String cwb : cwbs.split(",")) {
@@ -4912,7 +4806,7 @@ public class PDAController {
 			} catch (CwbException e) {
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				statuscode = CwbOrderPDAEnum.SYS_ERROR.getCode();
 				errorMsg = errorMsg.append(cwb).append("@").append(e.getMessage()).append(";");
@@ -4940,14 +4834,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbbackintowarhouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbbackintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "driverid",
-			required = false,
-			defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "0") long customerid, @RequestParam(value = "checktype", required = false, defaultValue = "0") int checktype) {
+	public @ResponseBody ExplinkResponse cwbbackintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "checktype", required = false, defaultValue = "0") int checktype) {
 
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
@@ -5070,10 +4959,8 @@ public class PDAController {
 	}
 
 	@RequestMapping("/cwbbackintowarhouseBatch")
-	public String cwbbackintowarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "driverid",
-			required = false,
-			defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
+	public String cwbbackintowarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		long allcwbnum = 0;
 		long thissuccess = 0;
 		List<Reason> backreasonList = this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.TuiHuoZhanRuKuBeiZhu.getValue());
@@ -5124,7 +5011,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -5170,8 +5057,7 @@ public class PDAController {
 	 * 退货站入库 批量 list 未入库
 	 */
 	@RequestMapping("/getbackintowarehouseweirukulist")
-	public @ResponseBody
-	List<CwbDetailView> getbackintowarehouseweirukulist(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbackintowarehouseweirukulist(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<CwbOrder> weirukulist = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), page);
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -5186,8 +5072,7 @@ public class PDAController {
 	 * 退货站入库 批量 list 已入库
 	 */
 	@RequestMapping("/getbackintowarehouseyirukulist")
-	public @ResponseBody
-	List<CwbDetailView> getbackintowarehouseyirukulist(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbackintowarehouseyirukulist(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<CwbOrder> weirukulist = this.cwbDAO.getBackYiRukuListbyBranchid(this.getSessionUser().getBranchid(), page);
 
 		// 系统设置是否显示订单备注
@@ -5209,8 +5094,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbscancwbbranch/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbbranchfinishchangeexport(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
+	public @ResponseBody ExplinkResponse cwbbranchfinishchangeexport(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 
@@ -5237,8 +5121,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/cwbscancwbbranchnew/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbbranchfinishchangeexportnew(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
+	public @ResponseBody ExplinkResponse cwbbranchfinishchangeexportnew(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 
@@ -5268,8 +5151,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/cwbscancwbbranchnew1")
-	public @ResponseBody
-	ExplinkResponse cwbbranchfinishchangeexportnew1(HttpServletRequest request) {
+	public @ResponseBody ExplinkResponse cwbbranchfinishchangeexportnew1(HttpServletRequest request) {
 		String cwb = request.getParameter("cwb");
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -5300,8 +5182,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/cwbscancwbbranchruku/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbbranchfinishchangeexportruku(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
+	public @ResponseBody ExplinkResponse cwbbranchfinishchangeexportruku(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);// 获取到运单号
 		// 获取到该订单的对应所有数据
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -5343,11 +5224,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbbacktocustomer/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbbacktocustomer(HttpServletRequest request, @PathVariable("cwb") String cwb, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "-1") long customerid) {// 为包号修改
+	public @ResponseBody ExplinkResponse cwbbacktocustomer(HttpServletRequest request, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {// 为包号修改
 		String scancwb = cwb;
 
 		long successCount = request.getSession().getAttribute(baleno + "-TuigonghuoshangsuccessCount") == null ? 0 : Long.parseLong(request.getSession()
@@ -5389,10 +5267,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbbacktocustomerBatch")
-	public String cwbbacktocustomerBatch(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "-1") long customerid) {
+	public String cwbbacktocustomerBatch(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {
 		long thissuccess = 0;
 		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
 
@@ -5441,7 +5317,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -5497,11 +5373,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbcustomerrefuseback/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbcustomerrefuseback(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "remarkcontent",
-			required = false,
-			defaultValue = "") String remarkcontent) {
+	public @ResponseBody ExplinkResponse cwbcustomerrefuseback(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "remarkcontent", required = false, defaultValue = "") String remarkcontent) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwborderService.customrefuseback(this.getSessionUser(), cwb, scancwb, 0, remarkcontent);
@@ -5530,8 +5403,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getRefusedSum")
-	public @ResponseBody
-	JSONObject getRefusedSum(Model model) {
+	public @ResponseBody JSONObject getRefusedSum(Model model) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
 		obj.put("count", this.cwbDAO.getCustomerRefusedCount(branchid));
@@ -5548,11 +5420,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getcwbbybaleno/{baleno}")
-	public @ResponseBody
-	JSONObject getcwbbybaleno(@PathVariable("baleno") String baleno, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "sysintowarhouse",
-			required = true,
-			defaultValue = "0") long sysintowarhouse) {
+	public @ResponseBody JSONObject getcwbbybaleno(@PathVariable("baleno") String baleno, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "sysintowarhouse", required = true, defaultValue = "0") long sysintowarhouse) {
 		JSONObject obj = new JSONObject();
 
 		List<Bale> balesinglelist = this.baleDAO.getBaleByBalestate(baleno, BaleStateEnum.WeiDaoZhan.getValue());
@@ -5606,8 +5475,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getcwbsdataForCustomer")
-	public @ResponseBody
-	JSONArray getcwbsdataForCustomer(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
+	public @ResponseBody JSONArray getcwbsdataForCustomer(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid) {
 		JSONObject obj = new JSONObject();
 		JSONArray objarr = new JSONArray();
@@ -5639,8 +5507,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getTGYSCKSum")
-	public @ResponseBody
-	JSONObject getTGYSCKSum() {
+	public @ResponseBody JSONObject getTGYSCKSum() {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
 		// Smtcount wsmtcount = this.cwbDAO.getTGYSCKbyBranchidsmt(branchid);
@@ -5669,8 +5536,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getWeiLingHuoSum")
-	public @ResponseBody
-	JSONObject getWeiLingHuoSum(@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
+	public @ResponseBody JSONObject getWeiLingHuoSum(@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
 		JSONObject obj = new JSONObject();
 		List<CwbOrder> todayweilinghuolist = new ArrayList<CwbOrder>();// 今日待领货list
 		List<CwbOrder> historyweilinghuolist = new ArrayList<CwbOrder>();// 历史待领货list
@@ -5815,9 +5681,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getOutSum")
-	public @ResponseBody
-	JSONObject getOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
-			@RequestParam(value = "cwbstate", required = false, defaultValue = "1") int cwbstate,Model model) {
+	public @ResponseBody JSONObject getOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
+			@RequestParam(value = "cwbstate", required = false, defaultValue = "1") int cwbstate, Model model) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
 		Branch b = this.branchDAO.getBranchById(branchid);
@@ -5833,22 +5698,19 @@ public class PDAController {
 		obj.put("weichukusum", weichukudata.get(0).get("sum"));
 		obj.put("daizhongzhuan", daizhongzhuan);
 
-
 		obj.put("yichukucount", this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNextCount(branchid, nextbranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue()));
 		List<String> cwbList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(branchid, nextbranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
-		List<CwbOrder> yisaomiaocwOrders=new ArrayList<CwbOrder>();
+		List<CwbOrder> yisaomiaocwOrders = new ArrayList<CwbOrder>();
 		if ((null != cwbList) && (cwbList.size() > 0)) {
 			String cwbs = "";
 			for (String cwb : cwbList) {
 				cwbs += "'" + cwb + "',";
 			}
-			if(cwbs.contains(","))
-			{
-				cwbs=cwbs.substring(0,cwbs.lastIndexOf(","));
+			if (cwbs.contains(",")) {
+				cwbs = cwbs.substring(0, cwbs.lastIndexOf(","));
 			}
-			if(cwbs.length()>0)
-			{
-				yisaomiaocwOrders=this.cwbDAO.getCwbByCwbsByPage(cwbs, 0,Page.EXCEL_PAGE_NUMBER);
+			if (cwbs.length() > 0) {
+				yisaomiaocwOrders = this.cwbDAO.getCwbByCwbsByPage(cwbs, 0, Page.EXCEL_PAGE_NUMBER);
 			}
 			obj.put("yisaomiaocwOrders", yisaomiaocwOrders);
 			obj.put("customerList", this.customerDAO.getAllCustomers());
@@ -5865,8 +5727,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getChangeOutSum")
-	public @ResponseBody
-	JSONObject getChangeOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid) {
+	public @ResponseBody JSONObject getChangeOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid) {
 		JSONObject obj = new JSONObject();
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 
@@ -5889,8 +5750,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getkdkOutSum")
-	public @ResponseBody
-	JSONObject getkdkOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
+	public @ResponseBody JSONObject getkdkOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
 			@RequestParam(value = "cwbstate", required = false, defaultValue = "1") int cwbstate) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
@@ -5910,8 +5770,7 @@ public class PDAController {
 	 * 退货站退货出站统计数据
 	 */
 	@RequestMapping("/getBackBranchBackOutSum")
-	public @ResponseBody
-	JSONObject getBackBranchBackOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid) {
+	public @ResponseBody JSONObject getBackBranchBackOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
 
@@ -5928,8 +5787,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getOutQueSum")
-	public @ResponseBody
-	JSONObject getOutQueSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
+	public @ResponseBody JSONObject getOutQueSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
 		JSONObject obj = new JSONObject();
 		obj.put("lesscwbnum", this.ypdjHandleRecordDAO.getChukuQuejianbyBranchid(this.getSessionUser().getBranchid(), nextbranchid));
 
@@ -5995,8 +5853,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/getOutQueListPage")
-	public @ResponseBody
-	List<JSONObject> getOutQueListPage(Model model, @RequestParam(value = "page", defaultValue = "1") long page,
+	public @ResponseBody List<JSONObject> getOutQueListPage(Model model, @RequestParam(value = "page", defaultValue = "1") long page,
 			@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getChukuQuejianbyBranchidList(this.getSessionUser().getBranchid(), nextbranchid, page, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
@@ -6021,8 +5878,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getZhanDianChuZhanSum")
-	public @ResponseBody
-	JSONObject getZhanDianChuZhanSum(@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
+	public @ResponseBody JSONObject getZhanDianChuZhanSum(@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
 		obj.put("size", this.cwbDAO.getZhanDianChuZhanbyBranchid(branchid, deliverybranchid, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()));
@@ -6036,8 +5892,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getZhanDianYiChuZhanSum")
-	public @ResponseBody
-	JSONObject getZhanDianYiChuZhanSum(@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
+	public @ResponseBody JSONObject getZhanDianYiChuZhanSum(@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
 		JSONObject obj = new JSONObject();
 		obj.put("size", this.cwbDAO.getZhanDianYiChuZhanbyBranchid(this.getSessionUser().getBranchid(), deliverybranchid, deliverybranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue()));
 		return obj;
@@ -6052,8 +5907,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getTuiHuoOutSum")
-	public @ResponseBody
-	JSONObject getTuiHuoOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid) {
+	public @ResponseBody JSONObject getTuiHuoOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
 		Branch b = this.branchDAO.getBranchById(branchid);
@@ -6082,8 +5936,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getTuiHuoYiOutSum")
-	public @ResponseBody
-	JSONObject getTuiHuoYiOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid) {
+	public @ResponseBody JSONObject getTuiHuoYiOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid) {
 		JSONObject obj = new JSONObject();
 		long size = this.cwbDAO.getCwbByFlowOrderTypeAndNextbranchidAndStartbranchid(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid(), nextbranchid);
 
@@ -6100,8 +5953,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getDaoRuSum")
-	public @ResponseBody
-	JSONObject getDaoRuSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {
+	public @ResponseBody JSONObject getDaoRuSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
 		obj.put("daiTiCount", this.cwbDAO.getDaoRubyBranchid(branchid, customerid).getOpscwbid());
@@ -6118,9 +5970,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getInSum")
-	public @ResponseBody
-	JSONObject getInSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
-			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
+	public @ResponseBody JSONObject getInSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
+			@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		JSONObject obj = new JSONObject();
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
@@ -6140,8 +5991,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getZhongZhuanZhanInSum")
-	public @ResponseBody
-	JSONObject getZhongZhuanZhanInSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
+	public @ResponseBody JSONObject getZhongZhuanZhanInSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
 			@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		JSONObject obj = new JSONObject();
@@ -6160,8 +6010,8 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getInQueSum")
-	public @ResponseBody
-	JSONObject getInQueSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
+	public @ResponseBody JSONObject getInQueSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
+			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		JSONObject obj = new JSONObject();
 		obj.put("lesscwbnum", this.ypdjHandleRecordDAO.getRukuQuejianbyBranchid(this.getSessionUser().getBranchid(), customerid, emaildate));
 
@@ -6175,8 +6025,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getZhongZhuanZhanInQueSum")
-	public @ResponseBody
-	JSONObject getZhongZhuanZhanInQueSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {
+	public @ResponseBody JSONObject getZhongZhuanZhanInQueSum(@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {
 		JSONObject obj = new JSONObject();
 		obj.put("lesscwbnum", this.ypdjHandleRecordDAO.getZhongZhuanZhanRukuQuejianbyBranchid(this.getSessionUser().getBranchid(), customerid));
 
@@ -6241,8 +6090,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/getDaoHuoQueSum")
-	public @ResponseBody
-	JSONObject getDaoHuoQueSum() {
+	public @ResponseBody JSONObject getDaoHuoQueSum() {
 		JSONObject obj = new JSONObject();
 		obj.put("lesscwbnum", this.ypdjHandleRecordDAO.getDaoHuoQuejianCount(this.getSessionUser().getBranchid()));
 
@@ -6250,8 +6098,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/getDaoHuoQueList")
-	public @ResponseBody
-	List<JSONObject> getDaoHuoQueList(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<JSONObject> getDaoHuoQueList(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getDaoHuoQuejianList(this.getSessionUser().getBranchid(), 1);
 		for (JSONObject obj : quejianList) {
@@ -6270,8 +6117,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/getInQueListPage")
-	public @ResponseBody
-	List<JSONObject> getInQueListPage(Model model, @RequestParam(value = "page", defaultValue = "1") long page,
+	public @ResponseBody List<JSONObject> getInQueListPage(Model model, @RequestParam(value = "page", defaultValue = "1") long page,
 			@RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getRukuQuejianbyBranchidList(this.getSessionUser().getBranchid(), customerid, page, emaildate);
@@ -6295,8 +6141,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getZhanDianInSum")
-	public @ResponseBody
-	JSONObject getZhanDianInSum(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
+	public @ResponseBody JSONObject getZhanDianInSum(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
@@ -6366,8 +6211,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getBackInSum")
-	public @ResponseBody
-	JSONObject getBackInSum(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
+	public @ResponseBody JSONObject getBackInSum(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		JSONObject obj = new JSONObject();
 		long branchid = this.getSessionUser().getBranchid();
@@ -6397,8 +6241,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getBackAndChangeInSum")
-	public @ResponseBody
-	JSONObject getBackAndChangeInSum(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
+	public @ResponseBody JSONObject getBackAndChangeInSum(@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
 		cwb = this.cwborderService.translateCwb(cwb);
 		JSONObject obj = new JSONObject();
 		String tbranchids = "-1";
@@ -6456,8 +6299,7 @@ public class PDAController {
 	 */
 
 	@RequestMapping("/getswitchbyparam/{parm}")
-	public @ResponseBody
-	JSONObject getswitchbyparam(Model model, @PathVariable("parm") String parm) {
+	public @ResponseBody JSONObject getswitchbyparam(Model model, @PathVariable("parm") String parm) {
 		JSONObject obj = new JSONObject();
 		if (parm.equals("fzdh")) {
 			obj.put("switchstate", this.switchDAO.getSwitchBySwitchname(SwitchEnum.DaoHuoFengBao.getText()).getState());
@@ -6480,8 +6322,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/supplierbacksuccess/{cwb}")
-	public @ResponseBody
-	ExplinkResponse supplierbacksuccess(@PathVariable("cwb") String cwb, HttpServletRequest request) {
+	public @ResponseBody ExplinkResponse supplierbacksuccess(@PathVariable("cwb") String cwb, HttpServletRequest request) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwborderService.supplierBackSuccess(this.getSessionUser(), cwb, scancwb, this.getSessionUser().getUserid());
@@ -6507,13 +6348,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbexportwarhouseBatch")
-	public String cwbexportwarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "branchid",
-			required = false,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
+	public String cwbexportwarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
 		long thissuccess = 0;
 		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
 		List<User> uList = this.userDAO.getUserByRole(3);
@@ -6564,7 +6401,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -6650,13 +6487,9 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbchangeoutwarhouseBatch")
-	public String cwbchangeoutwarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "branchid",
-			required = false,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
+	public String cwbchangeoutwarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
 		long thissuccess = 0;
 		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
 		List<User> uList = this.userDAO.getUserByRole(3);
@@ -6707,7 +6540,7 @@ public class PDAController {
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -6775,8 +6608,8 @@ public class PDAController {
 	 * 库房出库 批量 得到未出库 list
 	 */
 	@RequestMapping("/getexportwarehousebatchweirukulist")
-	public @ResponseBody
-	List<CwbDetailView> getexportwarehousebatchweirukulist(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "branchid", defaultValue = "0") long branchid) {
+	public @ResponseBody List<CwbDetailView> getexportwarehousebatchweirukulist(@RequestParam(value = "page", defaultValue = "1") long page,
+			@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
 		Branch localbranch = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 		int cwbstate = CwbStateEnum.PeiShong.getValue();
 		if (localbranch.getSitetype() == BranchEnum.TuiHuo.getValue()) {
@@ -6796,8 +6629,8 @@ public class PDAController {
 	 * 库房出库 批量 得到已出库 list
 	 */
 	@RequestMapping("/getexportwarehousebatchyirukulist")
-	public @ResponseBody
-	List<CwbDetailView> getexportwarehousebatchyirukulist(@RequestParam(value = "page", defaultValue = "1") long page, @RequestParam(value = "branchid", defaultValue = "0") long branchid) {
+	public @ResponseBody List<CwbDetailView> getexportwarehousebatchyirukulist(@RequestParam(value = "page", defaultValue = "1") long page,
+			@RequestParam(value = "branchid", defaultValue = "0") long branchid) {
 		List<CwbOrder> yirukulist = this.cwbDAO.getYiChuKubyBranchidList(this.getSessionUser().getBranchid(), branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), page);
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -6871,8 +6704,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getEmaildateid/{cwb}")
-	public @ResponseBody
-	JSONObject getEmaildateid(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
+	public @ResponseBody JSONObject getEmaildateid(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
@@ -6898,18 +6730,16 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/updateEmaildateid")
-	public @ResponseBody
-	List<EmailDate> updateEmaildateid(Model model, @RequestParam(value = "customerid", defaultValue = "0") long customerid) {
+	public @ResponseBody List<EmailDate> updateEmaildateid(Model model, @RequestParam(value = "customerid", defaultValue = "0") long customerid) {
 		return this.emaildateDAO.getEmailDateByCustomerid(customerid);
 	}
 
 	@ExceptionHandler(CwbException.class)
-	public @ResponseBody
-	ExplinkResponse handleCwbException(CwbException ex, HttpServletRequest request) {
+	public @ResponseBody ExplinkResponse handleCwbException(CwbException ex, HttpServletRequest request) {
 		this.logger.error("系统异常", ex);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(ex.getCwb());
 		this.exceptionCwbDAO.createExceptionCwbScan(ex.getCwb(), ex.getFlowordertye(), ex.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
-				co == null ? 0 : co.getCustomerid(), 0, 0, 0, "",ex.getCwb());
+				co == null ? 0 : co.getCustomerid(), 0, 0, 0, "", ex.getCwb());
 		ExplinkResponse explinkResponse = new ExplinkResponse(ex.getError().getValue() + "", ex.getMessage(), null);
 		// 添加异常报声.
 		boolean existExceptionWav = this.addExceptionWav(request, ex, explinkResponse, co);
@@ -6972,8 +6802,7 @@ public class PDAController {
 	}
 
 	@ExceptionHandler(Exception.class)
-	public @ResponseBody
-	ExplinkResponse handleException(Exception ex, HttpServletRequest request) {
+	public @ResponseBody ExplinkResponse handleException(Exception ex, HttpServletRequest request) {
 		this.logger.error("系统异常", ex);
 		ExplinkResponse explinkResponse = new ExplinkResponse("000001", ex.getMessage(), null);
 		String wavPath = null;
@@ -7132,7 +6961,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7144,16 +6973,16 @@ public class PDAController {
 					/*
 					 * jdbcTemplate.query(new StreamingStatementCreator(sql),
 					 * new RowCallbackHandler(){ private int count=0;
-					 *
+					 * 
 					 * @Override public void processRow(ResultSet rs) throws
 					 * SQLException { Row row = sheet.createRow(count + 1);
 					 * row.setHeightInPoints((float) 15);
-					 *
+					 * 
 					 * DeliveryState ds = getDeliveryByCwb(rs.getString("cwb"));
 					 * Map<String,String> allTime =
 					 * getOrderFlowByCredateForDetailAndExportAllTime
 					 * (rs.getString("cwb"));
-					 *
+					 * 
 					 * for (int i = 0; i < cloumnName4.length; i++) { Cell cell
 					 * = row.createCell((short) i); cell.setCellStyle(style);
 					 * Object a = exportService.setObjectA(cloumnName5, rs, i ,
@@ -7166,7 +6995,7 @@ public class PDAController {
 					 * .doubleValue():Double.parseDouble(a.toString())); }else{
 					 * cell.setCellValue(a == null ? "" : a.toString()); } }
 					 * count++;
-					 *
+					 * 
 					 * }});
 					 */
 
@@ -7214,7 +7043,7 @@ public class PDAController {
 	 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	 * if(clist.size()>0){ for(CwbOrder c: clist){ CwbOrderView cwbOrderView =
 	 * new CwbOrderView();
-	 *
+	 * 
 	 * cwbOrderView.setCwb(c.getCwb());
 	 * cwbOrderView.setEmaildate(c.getEmaildate());
 	 * cwbOrderView.setCarrealweight(c.getCarrealweight());
@@ -7229,7 +7058,7 @@ public class PDAController {
 	 * cwbOrderView.setConsigneephone(c.getConsigneephone());
 	 * cwbOrderView.setConsigneepostcode(c.getConsigneepostcode());
 	 * cwbOrderView.setResendtime(c.getResendtime()==null?"":c.getResendtime());
-	 *
+	 * 
 	 * cwbOrderView.setCustomerid(c.getCustomerid());
 	 * cwbOrderView.setCustomername
 	 * (dataStatisticsService.getQueryCustomerName(customerList,
@@ -7259,7 +7088,7 @@ public class PDAController {
 	 * cwbOrderView.setReceivablefee(c.getReceivablefee());
 	 * cwbOrderView.setCaramount(c.getCaramount());
 	 * cwbOrderView.setPaybackfee(c.getPaybackfee());
-	 *
+	 * 
 	 * DeliveryState deliverystate =
 	 * dataStatisticsService.getDeliveryByCwb(c.getCwb());
 	 * cwbOrderView.setPaytype
@@ -7279,7 +7108,7 @@ public class PDAController {
 	 * currentBranch =dataStatisticsService.getQueryBranchName(branchList,
 	 * c.getCurrentbranchid());
 	 * cwbOrderView.setCurrentbranchname(currentBranch);
-	 *
+	 * 
 	 * Date ruku =orderFlowDAO.getOrderFlowByCwbAndFlowordertype(c.getCwb(),
 	 * FlowOrderTypeEnum.RuKu.getValue()).getCredate(); Date chukusaomiao
 	 * =orderFlowDAO.getOrderFlowByCwbAndFlowordertype(c.getCwb(),
@@ -7337,9 +7166,9 @@ public class PDAController {
 	 * .getInwarhouseRemarks(remarkList).
 	 * get(c.getCwb()).get(ReasonTypeEnum.RuKuBeiZhu.getText()));
 	 * cwbOrderView.setCwbordertypeid(c.getCwbordertypeid()+"");//订单类型
-	 *
+	 * 
 	 * cwbOrderViewList.add(cwbOrderView);
-	 *
+	 * 
 	 * } } return cwbOrderViewList; }
 	 */
 
@@ -7369,8 +7198,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getStockSum")
-	public @ResponseBody
-	JSONObject getStockSum() {
+	public @ResponseBody JSONObject getStockSum() {
 		JSONObject obj = new JSONObject();
 		long kucunnum = this.cwborderService.getkucunList(this.getSessionUser()).size();
 		long linghuokucunnum = this.cwborderService.getlinghuokucunlist(this.getSessionUser()).size();
@@ -7388,8 +7216,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/cwbtakestock")
-	public @ResponseBody
-	JSONObject cwbtakestock(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
+	public @ResponseBody JSONObject cwbtakestock(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb) {
 		JSONObject obj = new JSONObject();
 		try {
 			StockResult stockResult = this.cwborderService.stock(this.getSessionUser(), cwb);
@@ -7404,8 +7231,7 @@ public class PDAController {
 	}
 
 	@RequestMapping("/takestockfinish")
-	public @ResponseBody
-	JSONObject takestockfinish(Model model) {
+	public @ResponseBody JSONObject takestockfinish(Model model) {
 		JSONObject obj = this.cwborderService.StockFinish(this.getSessionUser());
 		JSONObject finishobj = new JSONObject();
 
@@ -7430,9 +7256,8 @@ public class PDAController {
 	 *
 	 */
 	@RequestMapping("/exportByCustomerid")
-	public void exportByCustomerid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(
-			value = "type",
-			defaultValue = "") String type, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
+	public void exportByCustomerid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "customerid", defaultValue = "0") long customerid,
+			@RequestParam(value = "type", defaultValue = "") String type, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -7590,7 +7415,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7618,9 +7443,8 @@ public class PDAController {
 	 *
 	 */
 	@RequestMapping("/exportBybranchid")
-	public void exportByBranchid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(
-			value = "type",
-			defaultValue = "") String type) {
+	public void exportByBranchid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "branchid", defaultValue = "0") long branchid,
+			@RequestParam(value = "type", defaultValue = "") String type) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -7807,7 +7631,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -7835,9 +7659,8 @@ public class PDAController {
 	 *
 	 */
 	@RequestMapping("/backimportexport")
-	public void exportByBranchid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type, @RequestParam(
-			value = "extype",
-			defaultValue = "") String extype) {
+	public void exportByBranchid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type,
+			@RequestParam(value = "extype", defaultValue = "") String extype) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -8045,7 +7868,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -8269,7 +8092,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -8296,9 +8119,8 @@ public class PDAController {
 	 */
 
 	@RequestMapping("/exportExcleForBackToCustomer")
-	public void exportExcleForBackToCustomer(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type, @RequestParam(
-			value = "extype",
-			defaultValue = "") String extype) {
+	public void exportExcleForBackToCustomer(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "type", defaultValue = "") String type,
+			@RequestParam(value = "extype", defaultValue = "") String extype) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -8489,7 +8311,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -8516,9 +8338,8 @@ public class PDAController {
 	 * @param type
 	 */
 	@RequestMapping("/exportByDeliverid")
-	public void exportByDeliverid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "deliverid", defaultValue = "0") long deliverid, @RequestParam(
-			value = "type",
-			defaultValue = "") String type) {
+	public void exportByDeliverid(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "deliverid", defaultValue = "0") long deliverid,
+			@RequestParam(value = "type", defaultValue = "") String type) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
 		String[] cloumnName3 = {}; // 导出的数据类型
@@ -8807,7 +8628,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -9035,7 +8856,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -9087,56 +8908,69 @@ public class PDAController {
 	}
 
 	public List<CwbDetailView> getcwbDetail(List<CwbOrder> cwbList, List<Customer> customerList, JSONArray showCustomerjSONArray, List<Branch> branchList, long sign) {
-//		Map<String, Map<String, String>> allTime = this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(this.getcwbs(cwbList), branchList);
-//		List<CwbDetailView> cwbViewlist = new ArrayList<CwbDetailView>();
-//		if (cwbList.size() > 0) {
-//			for (CwbOrder wco : cwbList) {
-//				CwbDetailView view = new CwbDetailView();
-//				Map<String, String> cwbMap = allTime.isEmpty() ? new HashMap<String, String>() : (allTime.get(wco.getCwb()));
-//
-//				view.setOpscwbid(wco.getOpscwbid());
-//				view.setCwb(wco.getCwb());
-//				view.setCwbordertypeid(wco.getCwbordertypeid());
-//				view.setPackagecode(wco.getPackagecode());
-//				view.setConsigneeaddress(wco.getConsigneeaddress());
-//				view.setConsigneename(wco.getConsigneename());
-//				view.setReceivablefee(wco.getReceivablefee());
-//				view.setEmaildate(wco.getEmaildate());
-//				view.setTranscwb(wco.getTranscwb());
-//				view.setCustomerid(wco.getCustomerid());
-//				view.setNextbranchid(wco.getNextbranchid());
-//
-//				view.setRemarkView(this.getShowCustomer(showCustomerjSONArray, wco));
-//				view.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, wco.getCustomerid()));
-//				view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") == null ? "" : cwbMap.get("InSitetime")));
-//				view.setPickGoodstime(cwbMap == null ? "" : (cwbMap.get("PickGoodstime") == null ? "" : cwbMap.get("PickGoodstime")));
-//				view.setOutstoreroomtime(cwbMap == null ? "" : (cwbMap.get("Outstoreroomtime") == null ? "" : cwbMap.get("Outstoreroomtime")));
-//
-//				view.setCwbordertype(CwbOrderTypeIdEnum.getTextByValue(wco.getCwbordertypeid()));
-//				view.setPickaddress(wco.getRemark4());
-//
-//				cwbViewlist.add(view);
-//			}
-//		}
-//
-//		List<CwbDetailView> views = new ArrayList<CwbDetailView>();
-//		Map<String, CwbDetailView> map = new HashMap<String, CwbDetailView>();
-//		for (CwbDetailView weirukuView : cwbViewlist) {
-//			if (sign == 1) {// 按出库时间排序
-//				map.put(weirukuView.getOutstoreroomtime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
-//			} else if (sign == 2) {// 按到货时间排序
-//				map.put(weirukuView.getInSitetime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
-//			} else if (sign == 3) {// 按领货时间排序
-//				map.put(weirukuView.getPickGoodstime() + weirukuView.getOpscwbid() + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
-//			}
-//		}
-//		List<String> keys = new ArrayList<String>(map.keySet());
-//		Collections.sort(keys, Collections.reverseOrder());
-//		for (int i = 0; i < keys.size(); i++) {
-//			views.add(map.get(keys.get(i)));
-//		}
-//		return sign == 0 ? cwbViewlist : views;
-		
+		// Map<String, Map<String, String>> allTime =
+		// this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(this.getcwbs(cwbList),
+		// branchList);
+		// List<CwbDetailView> cwbViewlist = new ArrayList<CwbDetailView>();
+		// if (cwbList.size() > 0) {
+		// for (CwbOrder wco : cwbList) {
+		// CwbDetailView view = new CwbDetailView();
+		// Map<String, String> cwbMap = allTime.isEmpty() ? new HashMap<String,
+		// String>() : (allTime.get(wco.getCwb()));
+		//
+		// view.setOpscwbid(wco.getOpscwbid());
+		// view.setCwb(wco.getCwb());
+		// view.setCwbordertypeid(wco.getCwbordertypeid());
+		// view.setPackagecode(wco.getPackagecode());
+		// view.setConsigneeaddress(wco.getConsigneeaddress());
+		// view.setConsigneename(wco.getConsigneename());
+		// view.setReceivablefee(wco.getReceivablefee());
+		// view.setEmaildate(wco.getEmaildate());
+		// view.setTranscwb(wco.getTranscwb());
+		// view.setCustomerid(wco.getCustomerid());
+		// view.setNextbranchid(wco.getNextbranchid());
+		//
+		// view.setRemarkView(this.getShowCustomer(showCustomerjSONArray, wco));
+		// view.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList,
+		// wco.getCustomerid()));
+		// view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") ==
+		// null ? "" : cwbMap.get("InSitetime")));
+		// view.setPickGoodstime(cwbMap == null ? "" :
+		// (cwbMap.get("PickGoodstime") == null ? "" :
+		// cwbMap.get("PickGoodstime")));
+		// view.setOutstoreroomtime(cwbMap == null ? "" :
+		// (cwbMap.get("Outstoreroomtime") == null ? "" :
+		// cwbMap.get("Outstoreroomtime")));
+		//
+		// view.setCwbordertype(CwbOrderTypeIdEnum.getTextByValue(wco.getCwbordertypeid()));
+		// view.setPickaddress(wco.getRemark4());
+		//
+		// cwbViewlist.add(view);
+		// }
+		// }
+		//
+		// List<CwbDetailView> views = new ArrayList<CwbDetailView>();
+		// Map<String, CwbDetailView> map = new HashMap<String,
+		// CwbDetailView>();
+		// for (CwbDetailView weirukuView : cwbViewlist) {
+		// if (sign == 1) {// 按出库时间排序
+		// map.put(weirukuView.getOutstoreroomtime() + weirukuView.getOpscwbid()
+		// + "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
+		// } else if (sign == 2) {// 按到货时间排序
+		// map.put(weirukuView.getInSitetime() + weirukuView.getOpscwbid() + "_"
+		// + cwbViewlist.indexOf(weirukuView), weirukuView);
+		// } else if (sign == 3) {// 按领货时间排序
+		// map.put(weirukuView.getPickGoodstime() + weirukuView.getOpscwbid() +
+		// "_" + cwbViewlist.indexOf(weirukuView), weirukuView);
+		// }
+		// }
+		// List<String> keys = new ArrayList<String>(map.keySet());
+		// Collections.sort(keys, Collections.reverseOrder());
+		// for (int i = 0; i < keys.size(); i++) {
+		// views.add(map.get(keys.get(i)));
+		// }
+		// return sign == 0 ? cwbViewlist : views;
+
 		return this.kfzdOrderService.getcwbDetail(cwbList, customerList, showCustomerjSONArray, branchList, sign);
 	}
 
@@ -9151,10 +8985,8 @@ public class PDAController {
 	}
 
 	@RequestMapping("/cwblanshoudaohuoBatch")
-	public String cwblanshoudaohuoBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "deliverid",
-			required = true,
-			defaultValue = "0") long deliverid) {
+	public String cwblanshoudaohuoBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid) {
 		long allcwbnum = 0;
 		long thissuccess = 0;
 		String msg = "";
@@ -9184,8 +9016,8 @@ public class PDAController {
 					thissuccess++;
 				} catch (CwbException ce) {// 出现验证错误
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-					this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-							: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+					this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
+							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 					obj.put("cwbOrder", cwbOrder);
 					obj.put("errorcode", ce.getError().getValue());
 					obj.put("errorinfo", ce.getMessage());
@@ -9226,11 +9058,8 @@ public class PDAController {
 	}
 
 	@RequestMapping("/showgoodsdetail/{cwb}")
-	public @ResponseBody
-	ExplinkResponse showgoodsdetail(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "customerid",
-			required = false,
-			defaultValue = "0") long customerid) {
+	public @ResponseBody ExplinkResponse showgoodsdetail(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid) {
 		JSONObject obj = new JSONObject();
 		String code = "111111";
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -9251,15 +9080,10 @@ public class PDAController {
 	}
 
 	@RequestMapping("/updategoodthzrkcount")
-	public @ResponseBody
-	ExplinkResponse updategoodthzrkcount(Model model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
-			@RequestParam(value = "comment", required = true, defaultValue = "") String comment, @RequestParam(value = "cwb", required = true, defaultValue = "") String cwb, @RequestParam(
-					value = "jasonval",
-					required = true,
-					defaultValue = "0") String jasonval, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(
-					value = "checktype",
-					required = false,
-					defaultValue = "0") int checktype) {
+	public @ResponseBody ExplinkResponse updategoodthzrkcount(Model model, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
+			@RequestParam(value = "cwb", required = true, defaultValue = "") String cwb, @RequestParam(value = "jasonval", required = true, defaultValue = "0") String jasonval,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "checktype", required = false, defaultValue = "0") int checktype) {
 		JSONArray ids = (JSONArray) JSONObject.fromObject(jasonval).get("id");
 		JSONArray thzrkcounts = (JSONArray) JSONObject.fromObject(jasonval).get("thzrkcount");
 
@@ -9339,10 +9163,9 @@ public class PDAController {
 
 	// ------------------------入库排序-----------------
 	@RequestMapping("/orderbyweiruku")
-	public @ResponseBody
-	List<CwbDetailView> orderbyweiruku(@RequestParam(value = "orderby", defaultValue = "") String orderby, @RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(
-			value = "emaildate",
-			defaultValue = "0") long emaildate, @RequestParam(value = "asc", defaultValue = "0") long asc) {
+	public @ResponseBody List<CwbDetailView> orderbyweiruku(@RequestParam(value = "orderby", defaultValue = "") String orderby,
+			@RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(value = "emaildate", defaultValue = "0") long emaildate,
+			@RequestParam(value = "asc", defaultValue = "0") long asc) {
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -9356,10 +9179,8 @@ public class PDAController {
 	}
 
 	@RequestMapping("/orderbyyiruku")
-	public @ResponseBody
-	List<CwbDetailView> orderbyyiruku(@RequestParam(value = "orderby", defaultValue = "") String orderby, @RequestParam(value = "customerid", defaultValue = "0") long customerid, @RequestParam(
-			value = "emaildate",
-			defaultValue = "0") long emaildate, @RequestParam(value = "asc", defaultValue = "0") long asc) {
+	public @ResponseBody List<CwbDetailView> orderbyyiruku(@RequestParam(value = "orderby", defaultValue = "") String orderby, @RequestParam(value = "customerid", defaultValue = "0") long customerid,
+			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate, @RequestParam(value = "asc", defaultValue = "0") long asc) {
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
@@ -9372,9 +9193,9 @@ public class PDAController {
 	}
 
 	@RequestMapping("/orderbygetrukucwbquejiandataList")
-	public String orderbygetrukucwbquejiandataList(Model model, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid, @RequestParam(
-			value = "emaildate",
-			defaultValue = "0") long emaildate, @RequestParam(value = "orderby", defaultValue = "") String orderby, @RequestParam(value = "asc", defaultValue = "0") long asc) {
+	public String orderbygetrukucwbquejiandataList(Model model, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
+			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate, @RequestParam(value = "orderby", defaultValue = "") String orderby,
+			@RequestParam(value = "asc", defaultValue = "0") long asc) {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getRukuQuejianbyBranchidList(this.getSessionUser().getBranchid(), customerid, orderby, emaildate, asc);
 		for (JSONObject obj : quejianList) {
@@ -9397,10 +9218,8 @@ public class PDAController {
 
 	// ------------------------出库排序-----------------
 	@RequestMapping("/orderbyweichuku")
-	public @ResponseBody
-	List<CwbDetailView> orderbyweichuku(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "orderby", defaultValue = "") String orderby, @RequestParam(
-			value = "asc",
-			defaultValue = "0") long asc) {
+	public @ResponseBody List<CwbDetailView> orderbyweichuku(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "orderby", defaultValue = "") String orderby,
+			@RequestParam(value = "asc", defaultValue = "0") long asc) {
 		Branch localbranch = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
 		int cwbstate = CwbStateEnum.PeiShong.getValue();
 		if (localbranch.getSitetype() == BranchEnum.TuiHuo.getValue()) {
@@ -9421,10 +9240,8 @@ public class PDAController {
 	}
 
 	@RequestMapping("/orderbyyichuku")
-	public @ResponseBody
-	List<CwbDetailView> orderbyyichuku(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "orderby", defaultValue = "0") String orderby, @RequestParam(
-			value = "flowordertype",
-			defaultValue = "6") long flowordertype, @RequestParam(value = "asc", defaultValue = "0") long asc) {
+	public @ResponseBody List<CwbDetailView> orderbyyichuku(@RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "orderby", defaultValue = "0") String orderby,
+			@RequestParam(value = "flowordertype", defaultValue = "6") long flowordertype, @RequestParam(value = "asc", defaultValue = "0") long asc) {
 		List<String> cwbyichukuList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(this.getSessionUser().getBranchid(), branchid, flowordertype);
 
 		String cwbs = "";
@@ -9494,8 +9311,7 @@ public class PDAController {
 	 * @return
 	 */
 	@RequestMapping("/getbranchimportlanjianweidaolist")
-	public @ResponseBody
-	List<CwbDetailView> getbranchimportlanjianweidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getbranchimportlanjianweidaolist(@RequestParam(value = "page", defaultValue = "1") long page) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 		List<CwbOrder> lanjianweidaohuolist = new ArrayList<CwbOrder>();
 		lanjianweidaohuolist = this.cwbDAO.getLanJianWeiDaoZhanByBranchidForList(this.getSessionUser().getBranchid(), page);
@@ -9663,7 +9479,7 @@ public class PDAController {
 							 * gotoClassAuditingDAO
 							 * .getGotoClassAuditingByGcaid(deliveryState
 							 * .getGcaid());
-							 *
+							 * 
 							 * if(goclass!=null&&goclass.getPayupid()!=0){
 							 * ispayup = "是"; }
 							 * cwbspayupidMap.put(deliveryState.getCwb(),
@@ -9681,31 +9497,32 @@ public class PDAController {
 		}
 	}
 
-@RequestMapping("/daizhongzhuanysmExport")
-public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequest request,@RequestParam(value = "nextbranchid", defaultValue = "0") long nextbranchid) {
-	String[] cloumnName1 = {}; // 导出的列名
-	String[] cloumnName2 = {}; // 导出的英文列名
-	String[] cloumnName3 = {}; // 导出的数据类型
+	@RequestMapping("/daizhongzhuanysmExport")
+	public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "nextbranchid", defaultValue = "0") long nextbranchid) {
+		String[] cloumnName1 = {}; // 导出的列名
+		String[] cloumnName2 = {}; // 导出的英文列名
+		String[] cloumnName3 = {}; // 导出的数据类型
 
-	List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs("0");
-	cloumnName1 = new String[listSetExportField.size()];
-	cloumnName2 = new String[listSetExportField.size()];
-	cloumnName3 = new String[listSetExportField.size()];
-	for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
-		cloumnName1[k] = listSetExportField.get(j).getFieldname();
-		cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
-		cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
-	}
-	final String[] cloumnName4 = cloumnName1;
-	final String[] cloumnName5 = cloumnName2;
-	final String[] cloumnName6 = cloumnName3;
-	String sheetName = "订单信息"; // sheet的名称
-	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-	String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
+		List<SetExportField> listSetExportField = this.exportmouldDAO.getSetExportFieldByStrs("0");
+		cloumnName1 = new String[listSetExportField.size()];
+		cloumnName2 = new String[listSetExportField.size()];
+		cloumnName3 = new String[listSetExportField.size()];
+		for (int k = 0, j = 0; j < listSetExportField.size(); j++, k++) {
+			cloumnName1[k] = listSetExportField.get(j).getFieldname();
+			cloumnName2[k] = listSetExportField.get(j).getFieldenglishname();
+			cloumnName3[k] = listSetExportField.get(j).getExportdatatype();
+		}
+		final String[] cloumnName4 = cloumnName1;
+		final String[] cloumnName5 = cloumnName2;
+		final String[] cloumnName6 = cloumnName3;
+		String sheetName = "订单信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
 
-	try {
-		String sqlstr ="";
-		List<String> cwbList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(this.getSessionUser().getBranchid(), nextbranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+		try {
+			String sqlstr = "";
+			List<String> cwbList = this.operationTimeDAO
+					.getOperationTimeByFlowordertypeAndBranchidAndNext(this.getSessionUser().getBranchid(), nextbranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 			if ((null != cwbList) && (cwbList.size() > 0)) {
 				String cwbs = "";
 				for (String cwb : cwbList) {
@@ -9715,148 +9532,147 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 					cwbs = cwbs.substring(0, cwbs.lastIndexOf(","));
 				}
 				if (cwbs.length() > 0) {
-					sqlstr= "SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ";
+					sqlstr = "SELECT * from express_ops_cwb_detail where cwb in(" + cwbs + ") and state=1 ";
 				}
 			}
-		// 查询出数据
+			// 查询出数据
 
-		if (sqlstr.length() == 0) {
-			return;
-		}
-		final String sql = sqlstr;
-
-		ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
-			@Override
-			public void fillData(final Sheet sheet, final CellStyle style) {
-				final List<User> uList = PDAController.this.userDAO.getAllUser();
-				final Map<Long, Customer> cMap = PDAController.this.customerDAO.getAllCustomersToMap();
-				final List<Branch> bList = PDAController.this.branchDAO.getAllBranches();
-				final List<Common> commonList = PDAController.this.commonDAO.getAllCommons();
-				final List<CustomWareHouse> cWList = PDAController.this.customWareHouseDAO.getAllCustomWareHouse();
-				List<Remark> remarkList = PDAController.this.remarkDAO.getRemarkByCwbs("");
-				final Map<String, Map<String, String>> remarkMap = PDAController.this.exportService.getInwarhouseRemarks(remarkList);
-				final List<Reason> reasonList = PDAController.this.reasonDAO.getAllReason();
-				PDAController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
-					private int count = 0;
-					ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
-					private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
-
-					public void processRow(ResultSet rs) throws SQLException {
-						Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
-						this.recordbatch.add(mapRow);
-						this.count++;
-						if ((this.count % 100) == 0) {
-							this.writeBatch();
-						}
-					}
-
-					private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
-							Map<String, String> complaintMap) throws SQLException {
-						Row row = sheet.createRow(rownum + 1);
-						row.setHeightInPoints(15);
-						for (int i = 0; i < cloumnName4.length; i++) {
-							Cell cell = row.createCell((short) i);
-							cell.setCellStyle(style);
-							// sheet.setColumnWidth(i, (short) (5000));
-							// //设置列宽
-							Object a = PDAController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
-									reasonList, cwbspayupidMap, complaintMap);
-							if (cloumnName6[i].equals("double")) {
-								cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
-							} else {
-								cell.setCellValue(a == null ? "" : a.toString());
-							}
-						}
-					}
-
-					@Override
-					public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-						while (rs.next()) {
-							this.processRow(rs);
-						}
-						this.writeBatch();
-						return null;
-					}
-
-					public void writeBatch() throws SQLException {
-						if (this.recordbatch.size() > 0) {
-							List<String> cwbs = new ArrayList<String>();
-							for (Map<String, Object> mapRow : this.recordbatch) {
-								cwbs.add(mapRow.get("cwb").toString());
-							}
-							Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
-							Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
-							Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
-							Map<String, String> complaintMap = this.getComplaintMap(cwbs);
-							Map<String, Map<String, String>> orderflowList = PDAController.this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
-							int size = this.recordbatch.size();
-							for (int i = 0; i < size; i++) {
-								String cwb = this.recordbatch.get(i).get("cwb").toString();
-								this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
-										complaintMap);
-							}
-							this.recordbatch.clear();
-						}
-					}
-
-					private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
-						Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
-						for (TuihuoRecord tuihuoRecord : PDAController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
-							map.put(tuihuoRecord.getCwb(), tuihuoRecord);
-						}
-						return map;
-					}
-
-					private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
-						Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
-						for (DeliveryState deliveryState : PDAController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
-							map.put(deliveryState.getCwb(), deliveryState);
-						}
-						return map;
-					}
-
-					private Map<String, String> getComplaintMap(List<String> cwbs) {
-						Map<String, String> complaintMap = new HashMap<String, String>();
-						for (Complaint complaint : PDAController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
-							complaintMap.put(complaint.getCwb(), complaint.getContent());
-						}
-						return complaintMap;
-					}
-
-					private Map<String, String> getcwbspayupidMap(List<String> cwbs) {
-						Map<String, String> cwbspayupidMap = new HashMap<String, String>();
-						/*
-						 * for(DeliveryState deliveryState:deliveryStateDAO.
-						 * getActiveDeliveryStateByCwbs(cwbs)){ String
-						 * ispayup = "否"; GotoClassAuditing goclass =
-						 * gotoClassAuditingDAO
-						 * .getGotoClassAuditingByGcaid(deliveryState
-						 * .getGcaid());
-						 *
-						 * if(goclass!=null&&goclass.getPayupid()!=0){
-						 * ispayup = "是"; }
-						 * cwbspayupidMap.put(deliveryState.getCwb(),
-						 * ispayup); }
-						 */
-						return cwbspayupidMap;
-					}
-				});
+			if (sqlstr.length() == 0) {
+				return;
 			}
-		};
-		excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			final String sql = sqlstr;
 
-	} catch (Exception e) {
-		e.printStackTrace();
+			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+				@Override
+				public void fillData(final Sheet sheet, final CellStyle style) {
+					final List<User> uList = PDAController.this.userDAO.getAllUser();
+					final Map<Long, Customer> cMap = PDAController.this.customerDAO.getAllCustomersToMap();
+					final List<Branch> bList = PDAController.this.branchDAO.getAllBranches();
+					final List<Common> commonList = PDAController.this.commonDAO.getAllCommons();
+					final List<CustomWareHouse> cWList = PDAController.this.customWareHouseDAO.getAllCustomWareHouse();
+					List<Remark> remarkList = PDAController.this.remarkDAO.getRemarkByCwbs("");
+					final Map<String, Map<String, String>> remarkMap = PDAController.this.exportService.getInwarhouseRemarks(remarkList);
+					final List<Reason> reasonList = PDAController.this.reasonDAO.getAllReason();
+					PDAController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+						private int count = 0;
+						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
+						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
+
+						public void processRow(ResultSet rs) throws SQLException {
+							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
+							this.recordbatch.add(mapRow);
+							this.count++;
+							if ((this.count % 100) == 0) {
+								this.writeBatch();
+							}
+						}
+
+						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
+								Map<String, String> complaintMap) throws SQLException {
+							Row row = sheet.createRow(rownum + 1);
+							row.setHeightInPoints(15);
+							for (int i = 0; i < cloumnName4.length; i++) {
+								Cell cell = row.createCell((short) i);
+								cell.setCellStyle(style);
+								// sheet.setColumnWidth(i, (short) (5000));
+								// //设置列宽
+								Object a = PDAController.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
+										reasonList, cwbspayupidMap, complaintMap);
+								if (cloumnName6[i].equals("double")) {
+									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
+								} else {
+									cell.setCellValue(a == null ? "" : a.toString());
+								}
+							}
+						}
+
+						@Override
+						public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+							while (rs.next()) {
+								this.processRow(rs);
+							}
+							this.writeBatch();
+							return null;
+						}
+
+						public void writeBatch() throws SQLException {
+							if (this.recordbatch.size() > 0) {
+								List<String> cwbs = new ArrayList<String>();
+								for (Map<String, Object> mapRow : this.recordbatch) {
+									cwbs.add(mapRow.get("cwb").toString());
+								}
+								Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
+								Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
+								Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
+								Map<String, String> complaintMap = this.getComplaintMap(cwbs);
+								Map<String, Map<String, String>> orderflowList = PDAController.this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+								int size = this.recordbatch.size();
+								for (int i = 0; i < size; i++) {
+									String cwb = this.recordbatch.get(i).get("cwb").toString();
+									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
+											complaintMap);
+								}
+								this.recordbatch.clear();
+							}
+						}
+
+						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
+							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
+							for (TuihuoRecord tuihuoRecord : PDAController.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
+							}
+							return map;
+						}
+
+						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
+							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
+							for (DeliveryState deliveryState : PDAController.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+								map.put(deliveryState.getCwb(), deliveryState);
+							}
+							return map;
+						}
+
+						private Map<String, String> getComplaintMap(List<String> cwbs) {
+							Map<String, String> complaintMap = new HashMap<String, String>();
+							for (Complaint complaint : PDAController.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+								complaintMap.put(complaint.getCwb(), complaint.getContent());
+							}
+							return complaintMap;
+						}
+
+						private Map<String, String> getcwbspayupidMap(List<String> cwbs) {
+							Map<String, String> cwbspayupidMap = new HashMap<String, String>();
+							/*
+							 * for(DeliveryState deliveryState:deliveryStateDAO.
+							 * getActiveDeliveryStateByCwbs(cwbs)){ String
+							 * ispayup = "否"; GotoClassAuditing goclass =
+							 * gotoClassAuditingDAO
+							 * .getGotoClassAuditingByGcaid(deliveryState
+							 * .getGcaid());
+							 * 
+							 * if(goclass!=null&&goclass.getPayupid()!=0){
+							 * ispayup = "是"; }
+							 * cwbspayupidMap.put(deliveryState.getCwb(),
+							 * ispayup); }
+							 */
+							return cwbspayupidMap;
+						}
+					});
+				}
+			};
+			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-}
 
 	/**
-	 * ==============================================
-	 * 代码块：分拣中转功能
-	 * 
-	 * @since  DMP v4.2.3
+	 * ============================================== 代码块：分拣中转功能
+	 *
+	 * @since DMP v4.2.3
 	 * @author jinghui.pan@pjbest.com
-	 * ===============================================
+	 *         ===============================================
 	 */
 
 	/**
@@ -9866,41 +9682,42 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 	 * @return
 	 */
 	@RequestMapping("/sortingAndChangeExportWarehouse")
-	public String sortingAndChangeExportWarehouse(Model model, 
-			@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid, 
+	public String sortingAndChangeExportWarehouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long nextbranchid,
 			@RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
-		
-//		List<Branch> bList = this.cwborderService.getNextPossibleBranches(this.getSessionUser());
-		
+
+		// List<Branch> bList =
+		// this.cwborderService.getNextPossibleBranches(this.getSessionUser());
+
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
-	
+
 		List<Customer> cList = this.customerDAO.getAllCustomers();
-		
+
 		long kfBranchid = this.getSessionUser().getBranchid();
-		long zzBranchid= this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
-		
-		//获取下一站的列表哦
-		List<Branch> bList = this.cwborderService.getNextPossibleBranches(kfBranchid,zzBranchid);
-		
-		
+		long zzBranchid = this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
+
+		// 获取下一站的列表哦
+		List<Branch> bList = this.cwborderService.getNextPossibleBranches(kfBranchid, zzBranchid);
+
 		// 系统设置是否显示订单备注
 		boolean showCustomerSign = this.kfzdOrderService.isShowCustomerSign();
-		
-//		List<CwbDetailView> weichukuViewList = kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(1, nextbranchid);
-//		List<CwbDetailView> yichukuViewList = kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(1, nextbranchid);
-//		
-//		model.addAttribute("weichukulist", weichukuViewList);
-//		model.addAttribute("yichukulist", yichukuViewList);
-//		
-		String isOpenDialog = this.systemInstallDAO.getSystemInstallByName("Dialog").getValue();//是否显示提示框
+
+		// List<CwbDetailView> weichukuViewList =
+		// kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(1,
+		// nextbranchid);
+		// List<CwbDetailView> yichukuViewList =
+		// kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(1,
+		// nextbranchid);
+		//
+		// model.addAttribute("weichukulist", weichukuViewList);
+		// model.addAttribute("yichukulist", yichukuViewList);
+		//
+		String isOpenDialog = this.systemInstallDAO.getSystemInstallByName("Dialog").getValue();// 是否显示提示框
 		String isConfigZhongZhuan = zzBranchid != 0 ? "true" : "false";
-		
-		
-		
+
 		model.addAttribute("customerlist", cList);
-		model.addAttribute("isConfigZhongZhuan",isConfigZhongZhuan);//“区域权限设置”是否配置了中转站
-		model.addAttribute("isOpenDialog",isOpenDialog);
+		model.addAttribute("isConfigZhongZhuan", isConfigZhongZhuan);// “区域权限设置”是否配置了中转站
+		model.addAttribute("isOpenDialog", isOpenDialog);
 		model.addAttribute("branchlist", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
@@ -9910,7 +9727,7 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 		model.addAttribute("isscanbaleTag", isscanbaleTag);
 		return "pda/sortingAndChangeExportWarehouse";
 	}
-	
+
 	/**
 	 * 得到中转分拣出库的订单总数
 	 *
@@ -9920,56 +9737,42 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 	 * @return
 	 */
 	@RequestMapping("/getSortAndChangeOutSum")
-	public @ResponseBody
-	JSONObject getSortAndChangeOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
-			@RequestParam(value = "cwbstate", required = false, defaultValue = "1") int cwbstate,Model model) {
+	public @ResponseBody JSONObject getSortAndChangeOutSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "0") long nextbranchid,
+			@RequestParam(value = "cwbstate", required = false, defaultValue = "1") int cwbstate, Model model) {
 		JSONObject obj = new JSONObject();
-		
+
 		long kfBranchid = this.getSessionUser().getBranchid();
 		long zzBranchId = this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
-		
-		//统计分拣库出库扫描的数据
+
+		// 统计分拣库出库扫描的数据
 		List<Map<String, Object>> weichukudata = this.cwbDAO.getChukubyBranchid(kfBranchid, nextbranchid, CwbStateEnum.PeiShong.getValue());
 		obj.put("weichukucount_fj", weichukudata.get(0).get("count"));
 		obj.put("weichukusum_fj", weichukudata.get(0).get("sum"));
-		
-		//统计中转出库扫描的数据
+
+		// 统计中转出库扫描的数据
 		weichukudata = this.cwbDAO.getZhongZhuanZhanChukubyBranchid(zzBranchId, nextbranchid);
 		obj.put("weichukucount_zz", weichukudata.get(0).get("count"));
 		obj.put("weichukusum_zz", weichukudata.get(0).get("sum"));
-		
-		//已出库总数
-		long yichukucount = kfzdOrderService.getSortAndChangeYiChuKuCount(nextbranchid);
-		
-		obj.put("yichukucount",yichukucount);
-		
+
+		// 已出库总数
+		long yichukucount = this.kfzdOrderService.getSortAndChangeYiChuKuCount(nextbranchid);
+
+		obj.put("yichukucount", yichukucount);
+
 		return obj;
 	}
-	
-	
+
 	/**
 	 * 分拣中转出站扫描
 	 *
 	 */
 	@RequestMapping("/cwbSortingAndChangeExportWarehouse/{cwb}")
-	public @ResponseBody
-	ExplinkResponse cwbSortingAndChangeExportWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb, @RequestParam(
-			value = "branchid",
-			required = true,
-			defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag, @RequestParam(
-			value = "requestbatchno",
-			required = true,
-			defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(
-			value = "comment",
-			required = false,
-			defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid, @RequestParam(
-			value = "deliverybranchid",
-			required = false,
-			defaultValue = "0") long deliverybranchid) {
-
+	public @ResponseBody ExplinkResponse cwbSortingAndChangeExportWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
+			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
 
 		ExplinkResponse explinkResponse = null;
 		String translated = this.cwborderService.translateCwb(cwb);
@@ -9977,43 +9780,38 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-		//判断订单状态是否为中转
-		if(isZhongzhuanOrder(co)){
-			//调用中转出库扫描逻辑
-			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid,false);
-		}else{
-			//调用分拣出库扫描逻辑
+		// 判断订单状态是否为中转
+		if (this.isZhongzhuanOrder(co)) {
+			// 调用中转出库扫描逻辑
+			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, false);
+		} else {
+			// 调用分拣出库扫描逻辑
 			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
 		}
-		
+
 		return explinkResponse;
 	}
-	
+
 	/**
-	 *判断订单是否为中转，通过订单操作环节是否为中转入库或中转出库或者订单的下站点是中转
+	 * 判断订单是否为中转，通过订单操作环节是否为中转入库或中转出库或者订单的下站点是中转
 	 */
-	private boolean isZhongzhuanOrder(CwbOrder co){
+	private boolean isZhongzhuanOrder(CwbOrder co) {
 		long nextbranchid = co.getNextbranchid();
 		Branch nextbranch = this.branchDAO.getBranchById(nextbranchid);
-		
-		return (FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() == co.getFlowordertype() 
-				|| FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() == co.getFlowordertype())
-				|| nextbranch == null ? true : nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue();
-				
+
+		return ((FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() == co.getFlowordertype()) || (FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() == co.getFlowordertype())) || (nextbranch == null) ? true
+				: nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue();
+
 	}
-	
+
 	/**
 	 * 分拣中转出库批量功能======================================
 	 *
 	 */
 	@RequestMapping("/cwbSortingAndChangeExportWarehouseBatch")
-	public String cwbSortingAndChangeExportWarehouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs, @RequestParam(
-			value = "branchid",
-			required = false,
-			defaultValue = "0") long nextbranchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid, @RequestParam(
-			value = "truckid",
-			required = false,
-			defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
+	public String cwbSortingAndChangeExportWarehouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "branchid", required = false, defaultValue = "0") long nextbranchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
 		long thissuccess = 0;
 		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
 		List<User> uList = this.userDAO.getUserByRole(3);
@@ -10031,24 +9829,23 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 			cwb = this.cwborderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 			try {// 成功订单
-				
-				
+
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 				if (co == null) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 				}
-				
+
 				CwbOrder cwbOrder = null;
-				
-				//判断订单状态是否为中转
-				if(isZhongzhuanOrder(co)){
-					
+
+				// 判断订单状态是否为中转
+				if (this.isZhongzhuanOrder(co)) {
+
 					cwbOrder = this.cwborderService.sortAndChangeOutWarehouse(this.getSessionUser(), cwb, scancwb, driverid, truckid, nextbranchid, 0, confirmflag == 1, "", "", 0, false, false);
-					
-				}else{
+
+				} else {
 					cwbOrder = this.cwborderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, nextbranchid, 0, confirmflag == 1, "", "", 0, false, false);
 				}
-				
+
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				for (Customer c : cList) {
@@ -10081,7 +9878,7 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 					obj.put("showRemark", a);
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-						: cwbOrder.getCustomerid(), 0, 0, 0, "",scancwb);
+						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
@@ -10101,65 +9898,65 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 			objList.add(obj);
 		}
 		model.addAttribute("objList", objList);
-		
+
 		long kfBranchid = this.getSessionUser().getBranchid();
 		long zzBranchid = this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
-		
+
 		// 系统设置是否显示订单备注
 		boolean showCustomerSign = this.kfzdOrderService.isShowCustomerSign();
-		
+
 		/*
 		 * 计算中转出库明细 start
 		 */
-		//统计中转出库扫描的数据
+		// 统计中转出库扫描的数据
 		List<Map<String, Object>> weichukudata = this.cwbDAO.getZhongZhuanZhanChukubyBranchid(zzBranchid, nextbranchid);
-		
+
 		model.addAttribute("weichukucount_zz", weichukudata.get(0).get("count"));
 		model.addAttribute("weichukusum_zz", weichukudata.get(0).get("sum"));
-		/* *  end * */
-		
+		/* * end * */
+
 		/* * 计算分拣库出库明细 start */
 		int cwbstate = CwbStateEnum.PeiShong.getValue();
 
-		//统计分拣库出库扫描的数据
+		// 统计分拣库出库扫描的数据
 		weichukudata = this.cwbDAO.getChukubyBranchid(kfBranchid, nextbranchid, cwbstate);
-		
+
 		model.addAttribute("weichukucount_fj", weichukudata.get(0).get("count"));
 		model.addAttribute("weichukusum_fj", weichukudata.get(0).get("sum"));
-		/* *  end * */
-		
-		//未出库分页列表
-		List<CwbDetailView> weichukuViewList = kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(1, nextbranchid);
-		
-		//已出库分页列表
-		List<CwbDetailView> yichukuViewList = kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(1, nextbranchid);
-		
-		//一票多件缺货数量
-		long lesscwbnum = kfzdOrderService.getSortAndChangeYpdjLessCwbNum(nextbranchid);
-		
-		//已出库总数
-		long yichukucount = kfzdOrderService.getSortAndChangeYiChuKuCount(nextbranchid);
-		
+		/* * end * */
+
+		// 未出库分页列表
+		List<CwbDetailView> weichukuViewList = this.kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(1, nextbranchid);
+
+		// 已出库分页列表
+		List<CwbDetailView> yichukuViewList = this.kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(1, nextbranchid);
+
+		// 一票多件缺货数量
+		long lesscwbnum = this.kfzdOrderService.getSortAndChangeYpdjLessCwbNum(nextbranchid);
+
+		// 已出库总数
+		long yichukucount = this.kfzdOrderService.getSortAndChangeYiChuKuCount(nextbranchid);
+
 		model.addAttribute("weiChuKuList", weichukuViewList);
 		model.addAttribute("yiChuKuList", yichukuViewList);
 		model.addAttribute("yichukucount", yichukucount);
 		String isConfigZhongZhuan = zzBranchid != 0 ? "true" : "false";
-		
-//		List<Branch> bList = this.cwborderService.getNextPossibleBranches(this.getSessionUser());
-		//获取下一站的列表哦
-		List<Branch> bList = this.cwborderService.getNextPossibleBranches(kfBranchid,zzBranchid);
-		
-		
-		model.addAttribute("isConfigZhongZhuan",isConfigZhongZhuan);//“区域权限设置”是否配置了中转站
+
+		// List<Branch> bList =
+		// this.cwborderService.getNextPossibleBranches(this.getSessionUser());
+		// 获取下一站的列表哦
+		List<Branch> bList = this.cwborderService.getNextPossibleBranches(kfBranchid, zzBranchid);
+
+		model.addAttribute("isConfigZhongZhuan", isConfigZhongZhuan);// “区域权限设置”是否配置了中转站
 		model.addAttribute("branchList", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
 		model.addAttribute("customerList", cList);
-//		model.addAttribute("weiChuKuList", weichukuViewlist);// 待出库数据
-//		model.addAttribute("yiChuKuList", yichukuViewlist);
-//		model.addAttribute("count", cwbObj.get(0).get("count"));// 待出库总数
-//		model.addAttribute("sum", cwbObj.get(0).get("sum"));// 待出库件数总数
-//		model.addAttribute("yichukucount", cwbyichukuList.size());
+		// model.addAttribute("weiChuKuList", weichukuViewlist);// 待出库数据
+		// model.addAttribute("yiChuKuList", yichukuViewlist);
+		// model.addAttribute("count", cwbObj.get(0).get("count"));// 待出库总数
+		// model.addAttribute("sum", cwbObj.get(0).get("sum"));// 待出库件数总数
+		// model.addAttribute("yichukucount", cwbyichukuList.size());
 		model.addAttribute("lesscwbnum", lesscwbnum);// 缺货件数
 
 		String msg = "";
@@ -10178,57 +9975,54 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 	 * @return
 	 */
 	@RequestMapping("/getSortAndChangeOutQueSum")
-	public @ResponseBody
-	JSONObject getSortAndChangeOutQueSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
+	public @ResponseBody JSONObject getSortAndChangeOutQueSum(@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
 		JSONObject obj = new JSONObject();
 		obj.put("lesscwbnum", this.kfzdOrderService.getSortAndChangeYpdjLessCwbNum(nextbranchid));
 
 		return obj;
 	}
-	
+
 	/**
-	 * 得到  分拣和中转出库 一票多件缺件的分页
+	 * 得到 分拣和中转出库 一票多件缺件的分页
 	 *
 	 * @return
 	 */
 	@RequestMapping("/getSortAndChangeOutQueListPage")
-	public @ResponseBody
-	List<JSONObject> getSortAndChangeOutQueListPage(Model model, @RequestParam(value = "page", defaultValue = "1") long page,
+	public @ResponseBody List<JSONObject> getSortAndChangeOutQueListPage(Model model, @RequestParam(value = "page", defaultValue = "1") long page,
 			@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
-		List<JSONObject> quejianList = this.kfzdOrderService.getSortAndChangeYpdjLessCwbList(nextbranchid,page);
+		List<JSONObject> quejianList = this.kfzdOrderService.getSortAndChangeYpdjLessCwbList(nextbranchid, page);
 		return quejianList;
 	}
-	
+
 	/**
 	 * 得到 分拣和中转出库明细 未入库 list
 	 *
 	 * @return
 	 */
 	@RequestMapping("/getSortAndChangeExportWeiChuKuList")
-	public @ResponseBody
-	List<CwbDetailView> getSortAndChangeExportWeiChuKuList(@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid,
+	public @ResponseBody List<CwbDetailView> getSortAndChangeExportWeiChuKuList(@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid,
 			@RequestParam(value = "page", defaultValue = "1") long page) {
 		// 未出库明细
-		List<CwbDetailView> weichukuViewList = kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(page, nextbranchid);
+		List<CwbDetailView> weichukuViewList = this.kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(page, nextbranchid);
 		return weichukuViewList;
 	}
-	
+
 	/**
 	 * 得到 分拣和中转出库明细 已入库 list
 	 *
 	 * @return
 	 */
 	@RequestMapping("/getSortAndChangeExportYiChuKuList")
-	public @ResponseBody
-	List<CwbDetailView> getSortAndChangeExportYiChuKuList(@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid, @RequestParam(value = "page", defaultValue = "1") long page) {
+	public @ResponseBody List<CwbDetailView> getSortAndChangeExportYiChuKuList(@RequestParam(value = "branchid", defaultValue = "0") long nextbranchid,
+			@RequestParam(value = "page", defaultValue = "1") long page) {
 		// 已出库明细
-		List<CwbDetailView> yichukuViewList = kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(page, nextbranchid);
+		List<CwbDetailView> yichukuViewList = this.kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(page, nextbranchid);
 		return yichukuViewList;
 	}
-	
+
 	/**
 	 * 中转库出库扫描公共逻辑
-	 * 
+	 *
 	 * @param model
 	 * @param request
 	 * @param response
@@ -10242,15 +10036,15 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 	 * @param comment
 	 * @param reasonid
 	 * @param deliverybranchid
-	 * @param isSingleZhongzhuan 是否当前页面只有中转库出库扫描
+	 * @param isSingleZhongzhuan
+	 *            是否当前页面只有中转库出库扫描
 	 * @return
 	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
-	private	ExplinkResponse _cwbchangeexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, 
-			String cwb, long branchid,  long driverid,  long truckid, long confirmflag, String requestbatchno, String baleno,  String comment,long reasonid, boolean isSingleZhongzhuan) {
-		
-		
+	private ExplinkResponse _cwbchangeexportwarhouse(Model model, HttpServletRequest request, HttpServletResponse response, String cwb, long branchid, long driverid, long truckid, long confirmflag,
+			String requestbatchno, String baleno, String comment, long reasonid, boolean isSingleZhongzhuan) {
+
 		JSONObject obj = new JSONObject();
 
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
@@ -10258,13 +10052,13 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 		long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
-		
+
 		CwbOrder cwbOrder = null;
-		
-		if(isSingleZhongzhuan) {
-			cwbOrder = this.cwborderService.changeoutWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0
-					: Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
-		}else{
+
+		if (isSingleZhongzhuan) {
+			cwbOrder = this.cwborderService.changeoutWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid,
+					requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
+		} else {
 			cwbOrder = this.cwborderService.sortAndChangeOutWarehouse(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0
 					: Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
 		}
@@ -10333,14 +10127,13 @@ public void daizhongzhuanysmExport(HttpServletResponse response, HttpServletRequ
 			wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 		}
 		explinkResponse.addLastWav(wavPath);
-		
+
 		return explinkResponse;
 	}
-	
+
 	/**
-	 * ==============================================
-	 * 代码块：分拣中转功能 end
+	 * ============================================== 代码块：分拣中转功能 end
 	 * ===============================================
 	 */
-	
+
 }

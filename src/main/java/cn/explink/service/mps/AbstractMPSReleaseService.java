@@ -39,7 +39,7 @@ public abstract class AbstractMPSReleaseService extends AbstractMPSService {
 	 *
 	 * @param transCwb
 	 */
-	protected abstract void validateReleaseCondition(String transCwb);
+	public abstract void validateReleaseCondition(String transCwb) throws CwbException;
 
 	protected void validateMPS(String transCwb, CwbOrder cwbOrder, CwbException exception, Set<Integer> beforeStateSet) {
 		int mpsallarrivedflag = cwbOrder.getMpsallarrivedflag();

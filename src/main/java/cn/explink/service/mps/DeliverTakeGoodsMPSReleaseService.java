@@ -21,7 +21,7 @@ import cn.explink.exception.CwbException;
 public class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseService {
 
 	@Override
-	public void validateReleaseCondition(String transCwb) {
+	public void validateReleaseCondition(String transCwb) throws CwbException {
 		CwbOrder cwbOrder = this.getCwbOrder(transCwb, AbstractMPSReleaseService.VALIDATE_RELEASE_CONDITION);
 		if (cwbOrder == null) {
 			return;
