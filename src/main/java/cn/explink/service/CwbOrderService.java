@@ -2939,7 +2939,9 @@ public class CwbOrderService extends BaseOrderService {
 		// //包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
-		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, branchid);// 更新订单一票多件状态和运单状态
+		// added by songkaojun
+		// 更新订单一票多件状态和运单状态
+		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, branchid);
 
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
@@ -4860,7 +4862,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * updateDeliveryBranch(user, co, deliverybranch, addressCodeEditType);
 	 * logger.info("审核为中转，操作人是{}，配送站点是{}",userDAO.getUserByid(user.getUserid()),
 	 * deliverybranch.getBranchname()+"--"+deliverybranchid);
-	 *
+	 * 
 	 * }
 	 */
 
@@ -5550,7 +5552,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * == null ? 0 : (Long) parameterMap.get("truckid"); long baleid =
 	 * parameterMap.get("baleid") == null ? 0 : (Long)
 	 * parameterMap.get("baleid");
-	 *
+	 * 
 	 * if (!StringUtils.hasLength(comment)) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "备注"); }
 	 * if (branchid != 0) { throw new
@@ -5563,7 +5565,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "车辆"); }
 	 * if (baleid != 0) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "包号"); }
-	 *
+	 * 
 	 * } }
 	 */
 
@@ -5647,7 +5649,7 @@ public class CwbOrderService extends BaseOrderService {
 	private void handleSupplierBackSuccess(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
 		/*
 		 * validateCwbState(co, flowOrderTypeEnum);
-		 *
+		 * 
 		 * validateStateTransfer(co, flowOrderTypeEnum);
 		 */
 
@@ -5679,11 +5681,11 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder auditToTuihuoHandle(User user, String
 	 * cwb,long flowOrderType, long reasonid) {
-	 *
+	 * 
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new CwbException(cwb,FlowOrderTypeEnum.DingDanLanJie.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 *
+	 * 
 	 * Reason r = reasonDAO.getReasonByReasonid(reasonid); // 更新订单状态 String sql
 	 * =
 	 * "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1"
@@ -5922,12 +5924,12 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder SpecialCwbHandle(User user, String cwb,
 	 * long handleresult, long handleperson, String handlereason) {
-	 *
+	 * 
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new
 	 * CwbException(cwb,FlowOrderTypeEnum.YiChangDingDanChuLi.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 *
+	 * 
 	 * validateDeliveryState(cwbOrder, FlowOrderTypeEnum.YiChangDingDanChuLi);
 	 * // 更新订单状态 String sql =
 	 * "update express_ops_cwb_detail set currentbranchid=" + user.getBranchid()
