@@ -419,6 +419,13 @@ public class DataImportService_B2c {
 		if (excelColumnSet.getShouldfareindex() != 0) {
 			cwbOrder.setShouldfare(row.get("shouldfare") == null ? "0" : row.get("shouldfare"));
 		}
+		
+		if (excelColumnSet.getMpsallarrivedflagindex() != 0) {
+			cwbOrder.setMpsallarrivedflag(Integer.valueOf(row.get("mpsallarrivedflag") == null ? "0" : row.get("mpsallarrivedflag")));
+		}
+		if (excelColumnSet.getIsmpsflagindex() != 0) {
+			cwbOrder.setIsmpsflag(Integer.valueOf(row.get("ismpsflag") == null ? "0" : row.get("ismpsflag")));
+		}
 		cwbOrder.setDefaultCargoName();
 
 		return cwbOrder;

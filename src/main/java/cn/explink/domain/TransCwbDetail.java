@@ -12,9 +12,9 @@ public class TransCwbDetail implements Serializable{
 	private String transcwb; //运单号
 	private int transcwbstate; //运单状态（配送、退货等 ）
 	private int transcwboptstate; //运单操作状态（枚举值同订单操作状态 flowordertype）
-	private int currentbranchid; //当前站点
-	private int previousbranchid; //上一站id
-	private int nextbranchid;  //下一站id
+	private long currentbranchid; //当前站点
+	private long previousbranchid; //上一站id
+	private long nextbranchid;  //下一站id
 	private String createtime;  //创建时间（运单流入系统时间）
 	private String modifiedtime; //修改时间
 	private String emaildate; //发货时间
@@ -75,20 +75,24 @@ public class TransCwbDetail implements Serializable{
 	public void setTranscwboptstate(int transcwboptstate) {
 		this.transcwboptstate = transcwboptstate;
 	}
-	public int getCurrentbranchid() {
+
+	public long getCurrentbranchid() {
 		return currentbranchid;
 	}
-	public void setCurrentbranchid(int currentbranchid) {
+	public void setCurrentbranchid(long currentbranchid) {
 		this.currentbranchid = currentbranchid;
 	}
-	public int getPreviousbranchid() {
+	public long getPreviousbranchid() {
 		return previousbranchid;
 	}
-	public void setPreviousbranchid(int previousbranchid) {
+	public void setPreviousbranchid(long previousbranchid) {
 		this.previousbranchid = previousbranchid;
 	}
-	public int getNextbranchid() {
+	public long getNextbranchid() {
 		return nextbranchid;
+	}
+	public void setNextbranchid(long nextbranchid) {
+		this.nextbranchid = nextbranchid;
 	}
 	public void setNextbranchid(int nextbranchid) {
 		this.nextbranchid = nextbranchid;

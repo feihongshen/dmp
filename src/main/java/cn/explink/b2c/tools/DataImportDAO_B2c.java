@@ -155,7 +155,9 @@ public class DataImportDAO_B2c {
 			cwbOrder.setInfactfare(rs.getBigDecimal("infactfare"));
 			cwbOrder.setResendtime(rs.getString("resendtime"));
 			cwbOrder.setGetDataFlag(rs.getLong("getDataFlag"));
-
+			
+			cwbOrder.setIsmpsflag(rs.getInt("ismpsflag"));
+			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
 			return cwbOrder;
 		}
 	}
@@ -176,8 +178,8 @@ public class DataImportDAO_B2c {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,nextbranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "paywayid,newpaywayid,multi_shipcwb,cargovolume,consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,? )", new PreparedStatementSetter() {
+						+ "paywayid,newpaywayid,multi_shipcwb,cargovolume,consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare,ismpsflag,mpsallarrivedflag) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,? )", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, cwbOrderDTO.getCwb());
@@ -239,6 +241,8 @@ public class DataImportDAO_B2c {
 						ps.setString(57, cwbOrderDTO.getRemark5());
 						ps.setString(58, cwbOrderDTO.getCommoncwb());
 						ps.setFloat(59, cwbOrderDTO.getShouldfare().floatValue());
+						ps.setInt(60, cwbOrderDTO.getIsmpsflag());
+						ps.setInt(61, cwbOrderDTO.getMpsallarrivedflag());
 					}
 				});
 	}
@@ -647,5 +651,9 @@ public class DataImportDAO_B2c {
 	public void updateGetdataflagByCWB(String cwb) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set getDataFlag=1 where cwb=?";
 		this.jdbcTemplate.update(sql,cwb);
+	}
+	
+	public void updateTmsPackageCondition(String cwb, String  transcwb,int sendcarnum,int mpsallarrivedflag) {
+		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=? where cwb=? and state = 1  ", transcwb,sendcarnum,mpsallarrivedflag,cwb);
 	}
 }

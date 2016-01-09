@@ -86,6 +86,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==0){%>checked<%}%>  >关闭
 							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==1){%>checked<%}%>  >开启（订单出仓时间作为标识,开启必须关闭托运模式）
 						</li>
+						<li><span>是否开启集单：</span>
+							<input type ="radio" id="openpackageflag1" name ="openpackageflag" value="0" <%if(vipshop.getOpenpackageflag()==0){%>checked<%}%>  >关闭
+							<input type ="radio" id="openpackageflag2" name ="openpackageflag" value="1" <%if(vipshop.getOpenpackageflag()==1){%>checked<%}%>  >开启
+						</li>
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
 								<option value="0">请选择库房</option>
@@ -155,6 +159,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>生成批次标识：</span>
 							<input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0"  >关闭
 							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1"  >开启（订单生成时间作为标识）
+						</li>
+						<li><span>是否开启集单：</span>
+							<input type ="radio" id="openpackageflag1" name ="openpackageflag" value="0" <%if(vipshop.getOpenpackageflag()==0){%>checked<%}%>  >关闭
+							<input type ="radio" id="openpackageflag2" name ="openpackageflag" value="1" <%if(vipshop.getOpenpackageflag()==1){%>checked<%}%>  >开启
 						</li>
 						
 						<li><span>订单导入库房：</span>

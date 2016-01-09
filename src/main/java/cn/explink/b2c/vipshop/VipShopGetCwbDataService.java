@@ -1,7 +1,5 @@
 package cn.explink.b2c.vipshop;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,13 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import scala.math.BigInt;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
@@ -31,9 +29,9 @@ import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.OrderGoods;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.CwbOrderService;
+import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -65,6 +63,10 @@ public class VipShopGetCwbDataService {
 	
 	@Autowired
 	CwbOrderService cwbOrderService;
+	@Autowired
+	TransCwbDao transCwbDao;
+	@Autowired
+	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
 
 	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -112,6 +114,7 @@ public class VipShopGetCwbDataService {
 		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
 		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
 		
+		vipshop.setOpenpackageflag(Integer.valueOf(request.getParameter("openpackageflag")));
 		
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
@@ -157,6 +160,9 @@ public class VipShopGetCwbDataService {
 		vip.setIsOpenLefengflag(vipshop.getIsOpenLefengflag());
 		vip.setLefengCustomerid(vipshop.getLefengCustomerid());
 		vip.setIsCreateTimeToEmaildateFlag(vipshop.getIsCreateTimeToEmaildateFlag());
+		vip.setOpenpackageflag(vipshop.getOpenpackageflag());
+		
+		
 		
 		JSONObject jsonObj = JSONObject.fromObject(vip);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
@@ -383,7 +389,7 @@ public class VipShopGetCwbDataService {
 		if ((orderlist != null) && (orderlist.size() > 0)) {
 			for (Map<String, Object> datamap : orderlist) {
 				
-				seq_arrs = this.SaveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap);
+				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap);
 			}
 		}
 		long maxSEQ = this.getMaxSEQ(seq_arrs.split(","));
@@ -393,7 +399,7 @@ public class VipShopGetCwbDataService {
 		return paraList;
 	}
 
-	private String SaveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap) {
+	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap) {
 		
 		
 		
@@ -414,7 +420,7 @@ public class VipShopGetCwbDataService {
 			String order_batch_no = VipShopGetCwbDataService.convertEmptyString("order_batch_no", datamap);
 			String add_time = VipShopGetCwbDataService.convertEmptyString("add_time", datamap);
 
-			String total_pack = VipShopGetCwbDataService.convertEmptyString("total_pack", datamap); // 新增箱数
+			
 
 			String customer_name = VipShopGetCwbDataService.convertEmptyString("customer_name", datamap); // 客户
 
@@ -465,16 +471,34 @@ public class VipShopGetCwbDataService {
 
 			String cmd_type = VipShopGetCwbDataService.convertEmptyString("cmd_type", datamap); // 操作指令new
 			
-			String pack_nos = VipShopGetCwbDataService.convertEmptyString("pack_nos", datamap); // 箱号
+			
 			
 			String last_fetch_time = VipShopGetCwbDataService.convertEmptyString("last_fetch_time", datamap); // 简易最迟配送时间
 			
 			String go_get_return_time = VipShopGetCwbDataService.convertEmptyString("go_get_return_time", datamap); //预约上门揽退时间
-			// : 新建
-			// edit:修改
-			// cancel
-			// : 删除
-			// 客退上门揽件会有修改/删除
+		
+			
+			
+			String is_gatherpack = VipShopGetCwbDataService.convertEmptyString("is_gatherpack", datamap); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
+			
+			String is_gathercomp = VipShopGetCwbDataService.convertEmptyString("is_gathercomp", datamap); //最后一箱:1最后一箱 ，0默认 
+
+			String pack_nos = VipShopGetCwbDataService.convertEmptyString("pack_nos", datamap); // 箱号会随着集单次数追加
+			
+			String total_pack = VipShopGetCwbDataService.convertEmptyString("total_pack", datamap); // 新增箱数
+			
+			
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(order_sn);
+			
+			//集包相关代码处理
+			mpsallPackage(vipshop, order_sn, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO);
+			
+			
+			String ismpsflag="0"; //'是否一票多件(集包模式)：0默认；1是一票多件'; 
+			if("1".equals(is_gatherpack)){
+				ismpsflag="1";
+			}
+			
 
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 				double freight_d = Double.valueOf((freight != null) && !freight.isEmpty() ? freight : "0");
@@ -535,66 +559,108 @@ public class VipShopGetCwbDataService {
 			dataMap.put("cwbordertypeid", cwbordertype);
 			dataMap.put("shouldfare", freight.isEmpty() ? "0" : freight);
 			dataMap.put("cwbordertypeid", cwbordertype);
+			dataMap.put("ismpsflag", ismpsflag);
+			dataMap.put("mpsallarrivedflag", is_gathercomp);
 
 			
 			
 			
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 
-				if ("edit".equalsIgnoreCase(cmd_type)) {
-					this.dataImportDAO_B2c.updateBycwb(dataMap);
-					this.cwbDAO.updateBycwb(dataMap);
-					seq_arrs += seq + ",";
-					return seq_arrs;
-				}
-				// 订单取消
-				if ("cancel".equalsIgnoreCase(cmd_type)) {
-					
-					if(vipshop.getCancelOrIntercept()==0){ //取消
-						this.dataImportDAO_B2c.dataLoseB2ctempByCwb(order_sn);
-						this.cwbDAO.dataLoseByCwb(order_sn);
-						orderGoodsDAO.loseOrderGoods(order_sn);
-						cwbOrderService.datalose_vipshop(order_sn);
-					}else{ //拦截
-						//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
-						cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);
-					}
-					
-					filterRepeatCwbs(paraList, order_sn);
-					
-					seq_arrs += seq + ",";
-					return seq_arrs;
-				}
+				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 
 			}
 
-			if ((this.cwbDAO.getCwbByCwb(order_sn) != null)) {
+			
+			
+			if (cwbOrderDTO!= null) {
 				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
 				seq_arrs += seq + ",";
 				return seq_arrs;
 			}
 
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-
 				if ("new".equalsIgnoreCase(cmd_type)) {
-					// 插入商品列表,try防止异常
-					this.insertOrderGoods(datamap, order_sn);
+					this.insertOrderGoods(datamap, order_sn);// 插入商品列表,try防止异常
 				}
-
 			}
 
 			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);
 
-			if ("".equals(dataMap.get("cwb").toString())) { // 若订单号为空，则继续。
+			if (dataMap.get("cwb").isEmpty()) { // 若订单号为空，则继续。
 				seq_arrs += seq + ",";
 				return seq_arrs;
 			}
-		
-			paraList.add(dataMap);
 			seq_arrs += seq + ",";
+			
+			
+			paraList.add(dataMap);
+			
 
 		} catch (Exception e) {
 			this.logger.error("唯品会订单下载处理单条信息异常,cwb=" + order_sn, e);
+		}
+		return seq_arrs;
+	}
+
+	private void mpsallPackage(VipShop vipshop, String order_sn,
+			String is_gatherpack, String is_gathercomp, String pack_nos,
+			String total_pack, CwbOrderDTO cwbOrderDTO) {
+		if(vipshop.getOpenpackageflag()==0){
+			return ;
+		}
+		
+		if("1".equals(is_gatherpack)){ //需要集包
+			if(cwbOrderDTO!=null){
+				if(cwbOrderDTO.getGetDataFlag()==0){
+					dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp));
+					vipshopInsertCwbDetailTimmer.insertTransCwbDetail(cwbOrderDTO);
+					
+				}else{
+					dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp));
+					cwbDAO.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp));
+					for(String pack_no:pack_nos.split(",")){
+						String selectCwb=transCwbDao.getCwbByTransCwb(pack_no);
+						if(selectCwb==null){
+							transCwbDao.saveTranscwb(pack_no, order_sn);
+							cwbOrderDTO.setTranscwb(pack_no);
+							vipshopInsertCwbDetailTimmer.insertTransCwbDetail(cwbOrderDTO);
+						}
+					}
+				}
+				
+				
+			}
+		}
+	}
+
+	private String interceptShangmentui(VipShop vipshop,
+			List<Map<String, String>> paraList, String seq_arrs,
+			String order_sn, Map<String, String> dataMap, String seq,
+			String cmd_type) {
+		if ("edit".equalsIgnoreCase(cmd_type)) {
+			this.dataImportDAO_B2c.updateBycwb(dataMap);
+			this.cwbDAO.updateBycwb(dataMap);
+			seq_arrs += seq + ",";
+			return seq_arrs;
+		}
+		// 订单取消
+		if ("cancel".equalsIgnoreCase(cmd_type)) {
+			
+			if(vipshop.getCancelOrIntercept()==0){ //取消
+				this.dataImportDAO_B2c.dataLoseB2ctempByCwb(order_sn);
+				this.cwbDAO.dataLoseByCwb(order_sn);
+				orderGoodsDAO.loseOrderGoods(order_sn);
+				cwbOrderService.datalose_vipshop(order_sn);
+			}else{ //拦截
+				//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
+				cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);
+			}
+			
+			filterRepeatCwbs(paraList, order_sn);
+			
+			seq_arrs += seq + ",";
+			return seq_arrs;
 		}
 		return seq_arrs;
 	}

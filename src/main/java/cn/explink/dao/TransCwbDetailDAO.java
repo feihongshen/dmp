@@ -58,9 +58,9 @@ public class TransCwbDetailDAO {
 				ps.setString(2, tc.getTranscwb());
 				ps.setInt(3, tc.getTranscwbstate());
 				ps.setInt(4, tc.getTranscwboptstate());
-				ps.setInt(5, tc.getCurrentbranchid());
-				ps.setInt(6, tc.getPreviousbranchid());
-				ps.setInt(7, tc.getNextbranchid());
+				ps.setLong(5, tc.getCurrentbranchid());
+				ps.setLong(6, tc.getPreviousbranchid());
+				ps.setLong(7, tc.getNextbranchid());
 				ps.setString(8, tc.getCreatetime());
 				ps.setString(9, tc.getModifiedtime());
 				ps.setString(10, tc.getEmaildate());
@@ -86,9 +86,9 @@ public class TransCwbDetailDAO {
 				ps.setString(2, tc.getTranscwb());
 				ps.setInt(3, tc.getTranscwbstate());
 				ps.setInt(4, tc.getTranscwboptstate());
-				ps.setInt(5, tc.getCurrentbranchid());
-				ps.setInt(6, tc.getPreviousbranchid());
-				ps.setInt(7, tc.getNextbranchid());
+				ps.setLong(5, tc.getCurrentbranchid());
+				ps.setLong(6, tc.getPreviousbranchid());
+				ps.setLong(7, tc.getNextbranchid());
 				ps.setString(8, tc.getCreatetime());
 				ps.setString(9, tc.getModifiedtime());
 				ps.setString(10, tc.getEmaildate());

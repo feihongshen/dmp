@@ -37,6 +37,8 @@ public class CwbColumnSetVipShop {
 
 		excelColumnSet.setCwbordertypeindex(1);
 		excelColumnSet.setShouldfareindex(1);
+		excelColumnSet.setIsmpsflagindex(1);
+		excelColumnSet.setMpsallarrivedflagindex(1);
 
 		return excelColumnSet;
 	}

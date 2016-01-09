@@ -63,6 +63,28 @@ public class ExcelColumnSet {
 	int consignoraddressindex; // 取件地址
 	int tmall_notifyidindex; // tmall发送数据唯一标示
 	int multi_shipcwbindex; // 多个运单号逗号隔开
+	public int getMpsallarrivedflagindex() {
+		return mpsallarrivedflagindex;
+	}
+
+	public void setMpsallarrivedflagindex(int mpsallarrivedflagindex) {
+		this.mpsallarrivedflagindex = mpsallarrivedflagindex;
+	}
+
+	public int getIsmpsflagindex() {
+		return ismpsflagindex;
+	}
+
+	public void setIsmpsflagindex(int ismpsflagindex) {
+		this.ismpsflagindex = ismpsflagindex;
+	}
+
+	int mpsallarrivedflagindex; //'最后一箱标识:1表示最后一箱；0默认';
+	int ismpsflagindex; //是否一票多件（集包模式）：0默认；1是一票多件'; 
+	
+
+	
+
 
 	// /////唯品会会应收运费////////
 	int cwbordertypeidindex;// 订单类型
