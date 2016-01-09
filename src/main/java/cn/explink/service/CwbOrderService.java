@@ -448,87 +448,92 @@ public class CwbOrderService extends BaseOrderService {
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
 						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag) "
-						+ "values(?,?,?,?,?,?,?,?,?,?," + "  ?,?,?,?,?,?,?,?,?,?," + "  ?,?,?,?,?,?,?,?,?,?," + " ?,?,?,?,?,?,?,?,?,? ," + "?,?,?,?,?,?,?,?,?,? ," + "?,?,?,?,?,?,?,?,?,? ," + "?,?,?,?,?)",
-						new PreparedStatementSetter() {
+						+ "values(?,?,?,?,?,?,?,?,?,?,"
+						+ "  ?,?,?,?,?,?,?,?,?,?,"
+						+ "  ?,?,?,?,?,?,?,?,?,?,"
+						+ " ?,?,?,?,?,?,?,?,?,? ,"
+						+ "?,?,?,?,?,?,?,?,?,? ,"
+						+ "?,?,?,?,?,?,?,?,?,? ,"
+						+ "?,?,?,?,?)", new PreparedStatementSetter() {
 
-							@Override
-							public void setValues(PreparedStatement ps) throws SQLException {
+					@Override
+					public void setValues(PreparedStatement ps) throws SQLException {
 
-								ps.setString(1, cwbOrderDTO.getCwb());
-								ps.setString(2, cwbOrderDTO.getConsigneename());
-								ps.setString(3, cwbOrderDTO.getConsigneeaddress());
-								ps.setString(4, cwbOrderDTO.getConsigneepostcode());
-								ps.setString(5, cwbOrderDTO.getConsigneephone());
-								ps.setString(6, cwbOrderDTO.getSendcargoname());
-								ps.setString(7, cwbOrderDTO.getBackcargoname());
-								ps.setFloat(8, cwbOrderDTO.getReceivablefee().floatValue());
-								ps.setFloat(9, cwbOrderDTO.getPaybackfee().floatValue());
-								ps.setFloat(10, cwbOrderDTO.getCargorealweight().floatValue());
-								ps.setString(11, cwbOrderDTO.getCwbremark());
-								ps.setLong(12, customerid);
-								ps.setString(13, cwbOrderDTO.getEmaildate().length() == 0 ? ed.getEmaildatetime() : cwbOrderDTO.getEmaildate());
-								ps.setString(14, cwbOrderDTO.getConsigneemobile());
-								ps.setLong(15, 0);
-								ps.setString(16, cwbOrderDTO.getExceldeliver());
-								ps.setString(17, cwbOrderDTO.getConsigneeno());
-								ps.setString(18, cwbOrderDTO.getExcelbranch());
-								ps.setFloat(19, cwbOrderDTO.getCargoamount().floatValue());
-								ps.setString(20, cwbOrderDTO.getCustomercommand());
-								ps.setString(21, cwbOrderDTO.getCargotype());
-								ps.setString(22, cwbOrderDTO.getCargosize());
-								ps.setFloat(23, cwbOrderDTO.getBackcargoamount().floatValue());
-								ps.setString(24, cwbOrderDTO.getDestination());
-								ps.setString(25, cwbOrderDTO.getTransway());
-								ps.setLong(26, cwbOrderDTO.getShipperid());
-								ps.setInt(27, cwbOrderDTO.getSendcargonum());
-								ps.setInt(28, cwbOrderDTO.getBackcargonum());
-								ps.setLong(29, user.getUserid());
-								ps.setLong(30, cwbOrderDTO.getCwbordertypeid());
-								ps.setLong(31, cwbOrderDTO.getCwbdelivertypeid());
-								ps.setLong(32, cwbOrderDTO.getCustomerwarehouseid());
-								ps.setString(33, cwbOrderDTO.getCwbprovince());
-								ps.setString(34, cwbOrderDTO.getCwbcity());
-								ps.setString(35, cwbOrderDTO.getCwbcounty());
-								ps.setString(36, cwbOrderDTO.getShipcwb());
-								ps.setString(37, cwbOrderDTO.getTranscwb());
-								ps.setLong(38, cwbOrderDTO.getServiceareaid());
-								ps.setLong(39, cwbOrderDTO.getDeliverybranchid());
-								ps.setLong(40, 0);
-								ps.setInt(41, FlowOrderTypeEnum.DaoRuShuJu.getValue());
-								ps.setInt(42, EmailFinishFlagEnum.WeiDaoHuo.getValue());
-								ps.setLong(43, (cwbOrderDTO.getCommon() == null ? 0 : cwbOrderDTO.getCommon().getId()));
-								ps.setString(44, cwbOrderDTO.getModelname());
-								ps.setLong(45, ed.getEmaildateid());
-								ps.setLong(46, ed.getBranchid());
-								ps.setString(47, cwbOrderDTO.getRemark1());
-								ps.setString(48, cwbOrderDTO.getRemark2());
-								ps.setString(49, cwbOrderDTO.getRemark3());
-								ps.setString(50, cwbOrderDTO.getRemark4());
-								ps.setString(51, cwbOrderDTO.getRemark5());
-								ps.setLong(52, cwbOrderDTO.getPaywayid());
-								ps.setString(53, cwbOrderDTO.getNewpaywayid());
-								ps.setLong(54, cwbOrderDTO.getStartbranchid());
-								ps.setLong(55, 0);
-								ps.setFloat(56, cwbOrderDTO.getCargovolume().floatValue()); // 货物体积
-								ps.setString(57, cwbOrderDTO.getConsignoraddress()); // 取件地址
-								ps.setString(58, cwbOrderDTO.getMulti_shipcwb()); // 不可去掉
-								ps.setInt(59, cwbOrderDTO.getAddresscodeedittype());
-								ps.setString(60, cwbOrderDTO.getPrinttime());
-								ps.setString(61, cwbOrderDTO.getCommoncwb());
-								ps.setFloat(62, cwbOrderDTO.getShouldfare().floatValue());
+						ps.setString(1, cwbOrderDTO.getCwb());
+						ps.setString(2, cwbOrderDTO.getConsigneename());
+						ps.setString(3, cwbOrderDTO.getConsigneeaddress());
+						ps.setString(4, cwbOrderDTO.getConsigneepostcode());
+						ps.setString(5, cwbOrderDTO.getConsigneephone());
+						ps.setString(6, cwbOrderDTO.getSendcargoname());
+						ps.setString(7, cwbOrderDTO.getBackcargoname());
+						ps.setFloat(8, cwbOrderDTO.getReceivablefee().floatValue());
+						ps.setFloat(9, cwbOrderDTO.getPaybackfee().floatValue());
+						ps.setFloat(10, cwbOrderDTO.getCargorealweight().floatValue());
+						ps.setString(11, cwbOrderDTO.getCwbremark());
+						ps.setLong(12, customerid);
+						ps.setString(13, cwbOrderDTO.getEmaildate().length() == 0 ? ed.getEmaildatetime() : cwbOrderDTO.getEmaildate());
+						ps.setString(14, cwbOrderDTO.getConsigneemobile());
+						ps.setLong(15, 0);
+						ps.setString(16, cwbOrderDTO.getExceldeliver());
+						ps.setString(17, cwbOrderDTO.getConsigneeno());
+						ps.setString(18, cwbOrderDTO.getExcelbranch());
+						ps.setFloat(19, cwbOrderDTO.getCargoamount().floatValue());
+						ps.setString(20, cwbOrderDTO.getCustomercommand());
+						ps.setString(21, cwbOrderDTO.getCargotype());
+						ps.setString(22, cwbOrderDTO.getCargosize());
+						ps.setFloat(23, cwbOrderDTO.getBackcargoamount().floatValue());
+						ps.setString(24, cwbOrderDTO.getDestination());
+						ps.setString(25, cwbOrderDTO.getTransway());
+						ps.setLong(26, cwbOrderDTO.getShipperid());
+						ps.setInt(27, cwbOrderDTO.getSendcargonum());
+						ps.setInt(28, cwbOrderDTO.getBackcargonum());
+						ps.setLong(29, user.getUserid());
+						ps.setLong(30, cwbOrderDTO.getCwbordertypeid());
+						ps.setLong(31, cwbOrderDTO.getCwbdelivertypeid());
+						ps.setLong(32, cwbOrderDTO.getCustomerwarehouseid());
+						ps.setString(33, cwbOrderDTO.getCwbprovince());
+						ps.setString(34, cwbOrderDTO.getCwbcity());
+						ps.setString(35, cwbOrderDTO.getCwbcounty());
+						ps.setString(36, cwbOrderDTO.getShipcwb());
+						ps.setString(37, cwbOrderDTO.getTranscwb());
+						ps.setLong(38, cwbOrderDTO.getServiceareaid());
+						ps.setLong(39, cwbOrderDTO.getDeliverybranchid());
+						ps.setLong(40, 0);
+						ps.setInt(41, FlowOrderTypeEnum.DaoRuShuJu.getValue());
+						ps.setInt(42, EmailFinishFlagEnum.WeiDaoHuo.getValue());
+						ps.setLong(43, (cwbOrderDTO.getCommon() == null ? 0 : cwbOrderDTO.getCommon().getId()));
+						ps.setString(44, cwbOrderDTO.getModelname());
+						ps.setLong(45, ed.getEmaildateid());
+						ps.setLong(46, ed.getBranchid());
+						ps.setString(47, cwbOrderDTO.getRemark1());
+						ps.setString(48, cwbOrderDTO.getRemark2());
+						ps.setString(49, cwbOrderDTO.getRemark3());
+						ps.setString(50, cwbOrderDTO.getRemark4());
+						ps.setString(51, cwbOrderDTO.getRemark5());
+						ps.setLong(52, cwbOrderDTO.getPaywayid());
+						ps.setString(53, cwbOrderDTO.getNewpaywayid());
+						ps.setLong(54, cwbOrderDTO.getStartbranchid());
+						ps.setLong(55, 0);
+						ps.setFloat(56, cwbOrderDTO.getCargovolume().floatValue()); // 货物体积
+						ps.setString(57, cwbOrderDTO.getConsignoraddress()); // 取件地址
+						ps.setString(58, cwbOrderDTO.getMulti_shipcwb()); // 不可去掉
+						ps.setInt(59, cwbOrderDTO.getAddresscodeedittype());
+						ps.setString(60, cwbOrderDTO.getPrinttime());
+						ps.setString(61, cwbOrderDTO.getCommoncwb());
+						ps.setFloat(62, cwbOrderDTO.getShouldfare().floatValue());
 
-								// 如果是OXO_JIT类型的订单，则订单状态设为CwbOrderTypeIdEnum.OXO_JIT
-								// add by zhouguoting 2015-08-05
-								if (cwbOrderDTO.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue()) {
-									ps.setLong(63, CwbStateEnum.OXO_JIT.getValue());
-								} else {// 其他类型的订单默认为配送状态
-									ps.setLong(63, CwbStateEnum.PeiShong.getValue());
-								}
-								ps.setInt(64, cwbOrderDTO.getIsmpsflag());
-								ps.setInt(65, cwbOrderDTO.getMpsallarrivedflag());
-							}
+						// 如果是OXO_JIT类型的订单，则订单状态设为CwbOrderTypeIdEnum.OXO_JIT
+						// add by zhouguoting 2015-08-05
+						if (cwbOrderDTO.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue()) {
+							ps.setLong(63, CwbStateEnum.OXO_JIT.getValue());
+						} else {// 其他类型的订单默认为配送状态
+							ps.setLong(63, CwbStateEnum.PeiShong.getValue());
+						}
+						ps.setInt(64, cwbOrderDTO.getIsmpsflag());
+						ps.setInt(65, cwbOrderDTO.getMpsallarrivedflag());
+					}
 
-						});
+				});
 		this.createFloworder(user, user.getBranchid(), cwbOrderDTO.getCwb(), FlowOrderTypeEnum.DaoRuShuJu, "", System.currentTimeMillis(), cwbOrderDTO.getCwb());
 		this.logger.info("结算区域accountareaid:{}", cwbOrderDTO.getAccountareaid());
 	}
@@ -2699,15 +2704,12 @@ public class CwbOrderService extends BaseOrderService {
 	@Transactional
 	public CwbOrder outWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment,
 			String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku) {
-		
-		orderInterceptService.checkTransCwbIsIntercept(scancwb); //订单拦截公共方法
-		
-		
+
+		// orderInterceptService.checkTransCwbIsIntercept(scancwb); //订单拦截公共方法
+
 		Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentbranchid);
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
-		
-		
-		
+
 		if (this.userDAO.getAllUserByid(user.getUserid()).getIsImposedOutWarehouse() == 0) {// 是否拥有
 			// 请指出库权限
 			// 1是
@@ -2909,8 +2911,8 @@ public class CwbOrderService extends BaseOrderService {
 		// //包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
-		mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, branchid);//更新订单一票多件状态和运单状态
-		
+		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, branchid);// 更新订单一票多件状态和运单状态
+
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -4830,7 +4832,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * updateDeliveryBranch(user, co, deliverybranch, addressCodeEditType);
 	 * logger.info("审核为中转，操作人是{}，配送站点是{}",userDAO.getUserByid(user.getUserid()),
 	 * deliverybranch.getBranchname()+"--"+deliverybranchid);
-	 * 
+	 *
 	 * }
 	 */
 
@@ -5520,7 +5522,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * == null ? 0 : (Long) parameterMap.get("truckid"); long baleid =
 	 * parameterMap.get("baleid") == null ? 0 : (Long)
 	 * parameterMap.get("baleid");
-	 * 
+	 *
 	 * if (!StringUtils.hasLength(comment)) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "备注"); }
 	 * if (branchid != 0) { throw new
@@ -5533,7 +5535,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "车辆"); }
 	 * if (baleid != 0) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "包号"); }
-	 * 
+	 *
 	 * } }
 	 */
 
@@ -5617,7 +5619,7 @@ public class CwbOrderService extends BaseOrderService {
 	private void handleSupplierBackSuccess(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
 		/*
 		 * validateCwbState(co, flowOrderTypeEnum);
-		 * 
+		 *
 		 * validateStateTransfer(co, flowOrderTypeEnum);
 		 */
 
@@ -5649,11 +5651,11 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder auditToTuihuoHandle(User user, String
 	 * cwb,long flowOrderType, long reasonid) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new CwbException(cwb,FlowOrderTypeEnum.DingDanLanJie.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * Reason r = reasonDAO.getReasonByReasonid(reasonid); // 更新订单状态 String sql
 	 * =
 	 * "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1"
@@ -5892,12 +5894,12 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder SpecialCwbHandle(User user, String cwb,
 	 * long handleresult, long handleperson, String handlereason) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new
 	 * CwbException(cwb,FlowOrderTypeEnum.YiChangDingDanChuLi.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * validateDeliveryState(cwbOrder, FlowOrderTypeEnum.YiChangDingDanChuLi);
 	 * // 更新订单状态 String sql =
 	 * "update express_ops_cwb_detail set currentbranchid=" + user.getBranchid()

@@ -43,7 +43,29 @@ public abstract class AbstractMPSService {
 
 	private MpsswitchTypeEnum mpsswitchType;
 
-	protected CwbOrder getCwbOrder(String transCwb, String logPrefix) {
+	protected CwbOrder getMPSCwbOrderConsideringMPSSwitchType(String transCwb, String logPrefix) {
+		CwbOrder cwbOrder = this.getMPSCwbOrder(transCwb, logPrefix);
+		this.setCwbOrderMPSSwitchType(logPrefix, cwbOrder);
+		return cwbOrder;
+	}
+
+	private void setCwbOrderMPSSwitchType(String logPrefix, CwbOrder cwbOrder) {
+		// 查询供应商，判断该供应商是否开启了集单模式
+		long customerid = cwbOrder.getCustomerid();
+		Customer customer = this.customerDAO.getCustomerById(customerid);
+		if (customer.getCustomerid() == 0L) {
+			AbstractMPSService.LOGGER.error(logPrefix + "没有查询到订单的供应商信息！");
+			return;
+		}
+		int mpsswitch = customer.getMpsswitch();
+		if (mpsswitch == MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()) {
+			AbstractMPSService.LOGGER.info(logPrefix + customer.getCustomername() + "未启用集单模式！");
+			return;
+		}
+		this.mpsswitchType = MpsswitchTypeEnum.getByValue(mpsswitch);
+	}
+
+	protected CwbOrder getMPSCwbOrder(String transCwb, String logPrefix) {
 		if (StringUtils.isEmpty(transCwb)) {
 			AbstractMPSService.LOGGER.error(logPrefix + "传入的运单号为空！");
 			return null;
@@ -65,20 +87,6 @@ public abstract class AbstractMPSService {
 			AbstractMPSService.LOGGER.info(logPrefix + cwbOrder.getCwb() + "不是一票多件订单，不处理！");
 			return null;
 		}
-
-		// 查询供应商，判断该供应商是否开启了集单模式
-		long customerid = cwbOrder.getCustomerid();
-		Customer customer = this.customerDAO.getCustomerById(customerid);
-		if (customer.getCustomerid() == 0L) {
-			AbstractMPSService.LOGGER.error(logPrefix + "没有查询到订单的供应商信息！");
-			return null;
-		}
-		int mpsswitch = customer.getMpsswitch();
-		if (mpsswitch == MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()) {
-			AbstractMPSService.LOGGER.info(logPrefix + customer.getCustomername() + "未启用集单模式！");
-			return null;
-		}
-		this.mpsswitchType = MpsswitchTypeEnum.getByValue(mpsswitch);
 		return cwbOrder;
 	}
 

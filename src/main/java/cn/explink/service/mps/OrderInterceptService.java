@@ -44,7 +44,7 @@ public class OrderInterceptService extends AbstractMPSService {
 	 * @return
 	 */
 	public void checkTransCwbIsIntercept(String transCwb, FlowOrderTypeEnum transcwboptstate) throws CwbException {
-		CwbOrder cwbOrder = this.getCwbOrder(transCwb, OrderInterceptService.ORDER_INTERCEPT);
+		CwbOrder cwbOrder = this.getMPSCwbOrderConsideringMPSSwitchType(transCwb, OrderInterceptService.ORDER_INTERCEPT);
 		if (cwbOrder == null) {
 			return;
 		}

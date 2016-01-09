@@ -50,7 +50,7 @@ public class MPSOptStateService extends AbstractMPSService {
 	 *            下一机构信息
 	 */
 	public void updateMPSInfo(String transCwb, FlowOrderTypeEnum transcwboptstate, long currentbranchid, long nextbranchid) {
-		CwbOrder cwbOrder = this.getCwbOrder(transCwb, MPSOptStateService.UPDATE_MPS_STATE);
+		CwbOrder cwbOrder = this.getMPSCwbOrderConsideringMPSSwitchType(transCwb, MPSOptStateService.UPDATE_MPS_STATE);
 		if (cwbOrder == null) {
 			return;
 		}
