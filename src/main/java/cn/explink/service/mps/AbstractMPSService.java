@@ -3,6 +3,9 @@
  */
 package cn.explink.service.mps;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +16,11 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.support.transcwb.TransCwbDao;
+import cn.explink.support.transcwb.TranscwbView;
 
 /**
  * @author songkaojun 2016年1月8日
@@ -75,6 +80,19 @@ public abstract class AbstractMPSService {
 		}
 		this.mpsswitchType = MpsswitchTypeEnum.getByValue(mpsswitch);
 		return cwbOrder;
+	}
+
+	protected List<TransCwbDetail> getSiblingTransCwbDetailList(String transCwb, String cwb) {
+		List<TranscwbView> transCwbViewList = this.getTransCwbDao().getTransCwbByCwb(cwb);
+		List<String> siblingTransCwbList = new ArrayList<String>();
+		for (TranscwbView transcwbView : transCwbViewList) {
+			if (transcwbView.getTranscwb().equals(transCwb)) {
+				continue;
+			}
+			siblingTransCwbList.add(transcwbView.getTranscwb());
+		}
+		List<TransCwbDetail> siblingTransCwbDetailList = this.getTransCwbDetailDAO().getTransCwbDetailListByTransCwbList(siblingTransCwbList);
+		return siblingTransCwbDetailList;
 	}
 
 	public MpsswitchTypeEnum getMpsswitchType() {
