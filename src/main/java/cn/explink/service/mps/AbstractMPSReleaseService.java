@@ -45,9 +45,6 @@ public abstract class AbstractMPSReleaseService extends AbstractMPSService {
 			throw exception;
 		} else {
 			List<TransCwbDetail> siblingTransCwbDetailList = this.getSiblingTransCwbDetailList(transCwb, cwbOrder.getCwb());
-			if (siblingTransCwbDetailList == null) {
-				return;
-			}
 			for (TransCwbDetail siblingTransCwbDetail : siblingTransCwbDetailList) {
 				if (beforeStateSet.contains(siblingTransCwbDetail.getTranscwboptstate())) {
 					throw exception;

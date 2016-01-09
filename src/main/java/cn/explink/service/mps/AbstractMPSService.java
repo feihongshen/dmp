@@ -91,8 +91,7 @@ public abstract class AbstractMPSService {
 			}
 			siblingTransCwbList.add(transcwbView.getTranscwb());
 		}
-		List<TransCwbDetail> siblingTransCwbDetailList = this.getTransCwbDetailDAO().getTransCwbDetailListByTransCwbList(siblingTransCwbList);
-		return siblingTransCwbDetailList;
+		return this.getTransCwbDetailDAO().getTransCwbDetailListByTransCwbList(siblingTransCwbList);
 	}
 
 	public MpsswitchTypeEnum getMpsswitchType() {

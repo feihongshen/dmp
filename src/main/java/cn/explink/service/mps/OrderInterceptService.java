@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.TransCwbDetail;
@@ -20,6 +21,8 @@ import cn.explink.exception.CwbException;
 /**
  * @author songkaojun 2016年1月8日
  */
+
+@Component
 public class OrderInterceptService extends AbstractMPSService {
 
 	private static final String ORDER_INTERCEPT = "[订单拦截]";
@@ -56,14 +59,23 @@ public class OrderInterceptService extends AbstractMPSService {
 			return;
 		}
 		String reason = transCwbDetail.getCommonphrase();
+		String cwb = cwbOrder.getCwb();
 		if (transcwbstate == TransCwbStateEnum.DIUSHI.getValue()) {
-			throw new CwbException(cwbOrder.getCwb(), transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_LOST, transCwb, reason);
+			throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_LOST, transCwb, reason);
 		} else if (transcwbstate == TransCwbStateEnum.POSUN.getValue()) {
-			throw new CwbException(cwbOrder.getCwb(), transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_BROKEN, transCwb, reason);
+			throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_BROKEN, transCwb, reason);
 		} else if (transcwbstate == TransCwbStateEnum.TUIHUO.getValue()) {
-			// TRANSORDER_LOST_RETURN
-			List<TransCwbDetail> siblingTransCwbDetailList = this.getSiblingTransCwbDetailList(transCwb, cwbOrder.getCwb());
-			throw new CwbException(cwbOrder.getCwb(), transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_BROKEN, transCwb, reason);
+			List<TransCwbDetail> siblingTransCwbDetailList = this.getSiblingTransCwbDetailList(transCwb, cwb);
+			for (TransCwbDetail siblingTransCwbDetail : siblingTransCwbDetailList) {
+				int siblingState = siblingTransCwbDetail.getTranscwbstate();
+				String siblingTransCwb = siblingTransCwbDetail.getTranscwb();
+				if (siblingState == TransCwbStateEnum.DIUSHI.getValue()) {
+					throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_LOST_RETURN, cwb, transCwb, siblingTransCwb);
+				}
+				if (siblingState == TransCwbStateEnum.POSUN.getValue()) {
+					throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_BROKEN_RETURN, cwb, transCwb, siblingTransCwb);
+				}
+			}
 		}
 	}
 }

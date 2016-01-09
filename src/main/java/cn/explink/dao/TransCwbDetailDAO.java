@@ -3,6 +3,7 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,12 +134,13 @@ public class TransCwbDetailDAO {
 	 * @return
 	 */
 	public List<TransCwbDetail> getTransCwbDetailListByTransCwbList(List<String> transCwbList) {
+		List<TransCwbDetail> transCwbDetailList = new ArrayList<TransCwbDetail>();
 		String sql = "select * from express_ops_transcwb_detail where transcwb " + Tools.assembleInByList(transCwbList);
 		try {
-			return this.jdbcTemplate.query(sql, new TransCwbRowMapper());
+			transCwbDetailList = this.jdbcTemplate.query(sql, new TransCwbRowMapper());
 		} catch (DataAccessException e) {
-			return null;
 		}
+		return transCwbDetailList;
 	}
 
 	/**
