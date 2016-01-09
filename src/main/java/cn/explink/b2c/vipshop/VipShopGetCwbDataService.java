@@ -27,8 +27,11 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Customer;
 import cn.explink.domain.OrderGoods;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.MpsTypeEnum;
+import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.support.transcwb.TransCwbDao;
@@ -114,7 +117,6 @@ public class VipShopGetCwbDataService {
 		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
 		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
 		
-		vipshop.setOpenpackageflag(Integer.valueOf(request.getParameter("openpackageflag")));
 		
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
@@ -160,7 +162,6 @@ public class VipShopGetCwbDataService {
 		vip.setIsOpenLefengflag(vipshop.getIsOpenLefengflag());
 		vip.setLefengCustomerid(vipshop.getLefengCustomerid());
 		vip.setIsCreateTimeToEmaildateFlag(vipshop.getIsCreateTimeToEmaildateFlag());
-		vip.setOpenpackageflag(vipshop.getOpenpackageflag());
 		
 		
 		
@@ -385,11 +386,12 @@ public class VipShopGetCwbDataService {
 		
 		List<Map<String, Object>> orderlist = (List<Map<String, Object>>) paseXmlMap.get("orderlist");
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();
+		Customer customer=customerDAO.getCustomerById(Long.valueOf(vipshop.getCustomerids()));
 		String seq_arrs = "";
 		if ((orderlist != null) && (orderlist.size() > 0)) {
 			for (Map<String, Object> datamap : orderlist) {
 				
-				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap);
+				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap,customer.getMpsswitch());
 			}
 		}
 		long maxSEQ = this.getMaxSEQ(seq_arrs.split(","));
@@ -399,7 +401,7 @@ public class VipShopGetCwbDataService {
 		return paraList;
 	}
 
-	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap) {
+	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch) {
 		
 		
 		
@@ -490,8 +492,9 @@ public class VipShopGetCwbDataService {
 			
 			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(order_sn);
 			
+			
 			//集包相关代码处理
-			mpsallPackage(vipshop, order_sn, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO);
+			mpsallPackage(vipshop, order_sn, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch);
 			
 			
 			String ismpsflag="0"; //'是否一票多件(集包模式)：0默认；1是一票多件'; 
@@ -605,33 +608,38 @@ public class VipShopGetCwbDataService {
 
 	private void mpsallPackage(VipShop vipshop, String order_sn,
 			String is_gatherpack, String is_gathercomp, String pack_nos,
-			String total_pack, CwbOrderDTO cwbOrderDTO) {
-		if(vipshop.getOpenpackageflag()==0){
+			String total_pack, CwbOrderDTO cwbOrderDTO,int mpsswitch) {
+		
+		if(mpsswitch==MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()){
 			return ;
 		}
 		
-		if("1".equals(is_gatherpack)){ //需要集包
-			if(cwbOrderDTO!=null){
-				if(cwbOrderDTO.getGetDataFlag()==0){
-					dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp));
-					vipshopInsertCwbDetailTimmer.insertTransCwbDetail(cwbOrderDTO);
-					
-				}else{
-					dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp));
-					cwbDAO.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp));
-					for(String pack_no:pack_nos.split(",")){
-						String selectCwb=transCwbDao.getCwbByTransCwb(pack_no);
-						if(selectCwb==null){
-							transCwbDao.saveTranscwb(pack_no, order_sn);
-							cwbOrderDTO.setTranscwb(pack_no);
-							vipshopInsertCwbDetailTimmer.insertTransCwbDetail(cwbOrderDTO);
-						}
+		if(!"1".equals(is_gatherpack)){ //是否集包模式
+			return;
+		}
+		
+		//需要集包
+		if(cwbOrderDTO!=null){
+			if(cwbOrderDTO.getGetDataFlag()==0){
+				dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp),MpsTypeEnum.YiPiaoDuoJian.getValue());
+				vipshopInsertCwbDetailTimmer.insertTransCwbDetail(cwbOrderDTO);
+				
+			}else{
+				dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp),MpsTypeEnum.YiPiaoDuoJian.getValue());
+				cwbDAO.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp),MpsTypeEnum.YiPiaoDuoJian.getValue());
+				for(String pack_no:pack_nos.split(",")){
+					String selectCwb=transCwbDao.getCwbByTransCwb(pack_no);
+					if(selectCwb==null){
+						transCwbDao.saveTranscwb(pack_no, order_sn);
+						cwbOrderDTO.setTranscwb(pack_no);
+						vipshopInsertCwbDetailTimmer.insertTransCwbDetail(cwbOrderDTO);
 					}
 				}
-				
-				
 			}
+			
+			
 		}
+		
 	}
 
 	private String interceptShangmentui(VipShop vipshop,

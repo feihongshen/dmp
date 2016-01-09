@@ -101,6 +101,7 @@ import cn.explink.dao.ShiXiaoDAO;
 import cn.explink.dao.StockDetailDAO;
 import cn.explink.dao.StockResultDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.dao.TransferReasonStasticsDao;
 import cn.explink.dao.TransferResMatchDao;
@@ -151,6 +152,7 @@ import cn.explink.domain.ShangMenTuiCwbDetail;
 import cn.explink.domain.StockDetail;
 import cn.explink.domain.StockResult;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TransferReasonStastics;
 import cn.explink.domain.TransferResMatch;
 import cn.explink.domain.TuihuoRecord;
@@ -186,6 +188,7 @@ import cn.explink.enumutil.StockDetailEnum;
 import cn.explink.enumutil.StockDetailStocktypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.pos.tools.PosPayDAO;
 import cn.explink.pos.tools.SignTypeEnum;
@@ -295,6 +298,10 @@ public class CwbOrderService extends BaseOrderService {
 	// account数据失效
 	@Produce(uri = "jms:topic:dataLoseByCwb")
 	ProducerTemplate dataLoseByCwb;
+	
+	@Produce(uri = "jms:topic:transCwbOrderFlow")
+	ProducerTemplate transCwbOrderFlowProducerTemplate;
+	
 	@Autowired
 	List<CwbTranslator> cwbTranslators;
 	@Autowired
@@ -419,6 +426,8 @@ public class CwbOrderService extends BaseOrderService {
 	private MPSOptStateService mpsOptStateService;
 	@Autowired
 	OrderInterceptService orderInterceptService;
+	@Autowired
+	TransCwbDetailDAO transCwbDetailDAO;
 
 	// private User getSessionUser() {
 	// ExplinkUserDetail userDetail = (ExplinkUserDetail)
@@ -2192,6 +2201,10 @@ public class CwbOrderService extends BaseOrderService {
 		CwbOrderWithDeliveryState cwbOrderWithDeliveryState = new CwbOrderWithDeliveryState();
 		cwbOrderWithDeliveryState.setCwbOrder(cwbOrder);
 		cwbOrderWithDeliveryState.setDeliveryState(deliveryState);
+		
+		
+		additionalTransCwbOrderFlow(scancwb, cwbOrderWithDeliveryState); //追加运单号明细流程
+		
 		try {
 			TranscwbOrderFlow tof = new TranscwbOrderFlow(0, cwb, scancwb, branchid, new Timestamp(System.currentTimeMillis()), user.getUserid(), this.om.writeValueAsString(cwbOrderWithDeliveryState)
 					.toString(), flowOrdertype.getValue(), comment);
@@ -2203,11 +2216,23 @@ public class CwbOrderService extends BaseOrderService {
 
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, flowOrdertype.getValue(), "", user.getBranchid(), user.getUserid(), 0, 0, 0, 0, "", scancwb);
 			}
-
-			// sendTranscwbOrderFlow(tof);
+			sendTranscwbOrderFlow(tof);
 		} catch (Exception e) {
-			this.logger.error("error while saveing orderflow", e);
+			this.logger.error("error while saveing transorderflow", e);
 			throw new ExplinkException(ExceptionCwbErrorTypeEnum.SYS_ERROR, cwb);
+		}
+	}
+
+	/**
+	 * 创建运单号detail 流程
+	 * @param scancwb
+	 * @param cwbOrderWithDeliveryState
+	 */
+	private void additionalTransCwbOrderFlow(String scancwb,
+			CwbOrderWithDeliveryState cwbOrderWithDeliveryState) {
+		TransCwbDetail transCwbDetail = this.transCwbDetailDAO.findTransCwbDetailByTransCwb(scancwb);
+		if(transCwbDetail!=null){
+			cwbOrderWithDeliveryState.setTransCwbDetail(transCwbDetail); //运单号主表
 		}
 	}
 
@@ -2281,15 +2306,18 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 
-	// public void sendTranscwbOrderFlow(TranscwbOrderFlow tof) {
-	//
-	// try {
-	// orderFlowProducerTemplate.sendBodyAndHeader(null, "transcwborderFlow",
-	// om.writeValueAsString(tof));
-	// } catch (Exception ee) {
-	// logger.error("send transcwborderflow message error", ee);
-	// }
-	// }
+	/**
+	 * 发送运单推送JMS
+	 * @param tof
+	 */
+	 public void sendTranscwbOrderFlow(TranscwbOrderFlow tof) {
+	
+		 try {
+			 transCwbOrderFlowProducerTemplate.sendBodyAndHeader(null, "transCwbOrderFlow", JacksonMapper.getInstance().writeValueAsString(tof));
+		 } catch (Exception ee) {
+			 logger.error("send transCwbOrderFlow message error,scancwb="+tof.getScancwb(), ee);
+		 }
+	 }
 
 	/**
 	 * 中转站出库扫描

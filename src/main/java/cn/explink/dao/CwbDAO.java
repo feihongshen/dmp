@@ -6466,8 +6466,8 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
-	public void updateTmsPackageCondition(String cwb, String transcwb, int sendcarnum, int mpsallarrivedflag) {
-		this.jdbcTemplate.update("update express_ops_cwb_detail set transcwb=?,sendcarnum=?,mpsallarrivedflag=? where cwb=? and state = 1  ", transcwb, sendcarnum, mpsallarrivedflag, cwb);
+	public void updateTmsPackageCondition(String cwb, String transcwb, int sendcarnum, int mpsallarrivedflag,int ismpsflag) {
+		this.jdbcTemplate.update("update express_ops_cwb_detail set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=?  where cwb=? and state = 1  ", transcwb, sendcarnum, mpsallarrivedflag,ismpsflag, cwb);
 	}
 
 	public void updateMPSOptState(String cwb, int mpsoptstate) {

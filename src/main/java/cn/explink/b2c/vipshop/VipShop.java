@@ -25,15 +25,7 @@ public class VipShop {
 	private int resuseReasonFlag;  //拒收原因是否回传默认 0，  0回传， 1不回传
 	private int isCreateTimeToEmaildateFlag; //是否唯品会订单出仓时间作为 邮件批次时间，emaildate 默认0 ，开启：1
 	private String lefengCustomerid;
-	private int openpackageflag; //集单模式。 0关闭， 1开启
 	
-	public int getOpenpackageflag() {
-		return openpackageflag;
-	}
-
-	public void setOpenpackageflag(int openpackageflag) {
-		this.openpackageflag = openpackageflag;
-	}
 
 	public String getLefengCustomerid() {
 		return lefengCustomerid;

@@ -1586,6 +1586,7 @@ src/main/java/cn/explink/enumutil/JiesuanstateEnum.java -text
 src/main/java/cn/explink/enumutil/JobCodeEnum.java -text
 src/main/java/cn/explink/enumutil/KuaiDiPayEnum.java -text
 src/main/java/cn/explink/enumutil/MPSAllArrivedFlagEnum.java -text
+src/main/java/cn/explink/enumutil/MpsTypeEnum.java -text
 src/main/java/cn/explink/enumutil/MpsswitchTypeEnum.java -text
 src/main/java/cn/explink/enumutil/OperationTimeEnum.java -text
 src/main/java/cn/explink/enumutil/OpertaionResultEnum.java -text

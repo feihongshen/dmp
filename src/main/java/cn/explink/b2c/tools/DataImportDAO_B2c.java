@@ -653,7 +653,7 @@ public class DataImportDAO_B2c {
 		this.jdbcTemplate.update(sql,cwb);
 	}
 	
-	public void updateTmsPackageCondition(String cwb, String  transcwb,int sendcarnum,int mpsallarrivedflag) {
-		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=? where cwb=? and state = 1  ", transcwb,sendcarnum,mpsallarrivedflag,cwb);
+	public void updateTmsPackageCondition(String cwb, String  transcwb,int sendcarnum,int mpsallarrivedflag,int ismpsflag) {
+		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=? where cwb=? and state = 1  ", transcwb,sendcarnum,mpsallarrivedflag,ismpsflag,cwb);
 	}
 }
