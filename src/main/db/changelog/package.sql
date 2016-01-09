@@ -77,29 +77,6 @@ insert into `express_set_transcwb_allstate_control` (`tanscwbstate`, `toflowtype
 
 
 /*订单状态流程表*/
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','1');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','2');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','4');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','6');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','7');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','8');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','9');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','12');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','14');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','29');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','35');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','36');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','38');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','42');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('1','46');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('2','6');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('2','15');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('2','27');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('2','28');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('2','35');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('2','36');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('2','40');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('2','46');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('3','6');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('3','15');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('3','27');
@@ -108,14 +85,6 @@ insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('3','36');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('3','40');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('3','46');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('5','6');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('5','15');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('5','27');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('5','28');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('6','6');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('6','7');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('6','12');
-insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('6','14');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('8','6');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('8','15');
 insert into `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) values('8','27');
