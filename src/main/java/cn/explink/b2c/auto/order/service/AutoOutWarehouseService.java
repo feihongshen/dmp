@@ -71,6 +71,18 @@ public class AutoOutWarehouseService {
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"不是出库操作类型");
 				}
 				
+				if(cargorealweight==null){
+					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"出库报文里重量不能为空");
+				}
+				
+				if(cargovolume==null){
+					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"出库报文里体积不能为空");
+				}
+				
+				if(deliveryBranchCode.length()==0){
+					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"出库报文里目的地站点不能为空");
+				}
+				
 				cwb=cwb.trim();
 				cwb = this.cwborderService.translateCwb(cwb);//???
 				
