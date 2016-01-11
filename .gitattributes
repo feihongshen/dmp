@@ -1973,13 +1973,13 @@ src/main/java/cn/explink/service/fnc/OrderLifeCycleBaseBatchHandler.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleFeeNotReturnFeeHandler.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleReportService.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleTuiKeHuWeiShouKuanHandler.java -text
-src/main/java/cn/explink/service/mps/AbstractMPSReleaseService.java -text
 src/main/java/cn/explink/service/mps/AbstractMPSService.java -text
-src/main/java/cn/explink/service/mps/DeliverTakeGoodsMPSReleaseService.java -text
 src/main/java/cn/explink/service/mps/MPSOptStateService.java -text
 src/main/java/cn/explink/service/mps/OrderInterceptService.java -text
-src/main/java/cn/explink/service/mps/OutWarehouseMPSReleaseService.java -text
-src/main/java/cn/explink/service/mps/ReturnToSupplierReleaseService.java -text
+src/main/java/cn/explink/service/mps/release/AbstractMPSReleaseService.java -text
+src/main/java/cn/explink/service/mps/release/DeliverTakeGoodsMPSReleaseService.java -text
+src/main/java/cn/explink/service/mps/release/OutWarehouseMPSReleaseService.java -text
+src/main/java/cn/explink/service/mps/release/ReturnToCustomerReleaseService.java -text
 src/main/java/cn/explink/service/validator/BackCargoAmountShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/BackCargoNumShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/CargoAmountShouldAboveZeroAndBelowBillon.java -text

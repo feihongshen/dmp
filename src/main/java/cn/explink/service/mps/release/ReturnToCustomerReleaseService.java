@@ -1,7 +1,7 @@
 /**
  *
  */
-package cn.explink.service.mps;
+package cn.explink.service.mps.release;
 
 import org.springframework.stereotype.Component;
 
@@ -16,8 +16,8 @@ import cn.explink.exception.CwbException;
  *
  * @author songkaojun 2016年1月8日
  */
-@Component("returnToSupplierReleaseService")
-public class ReturnToSupplierReleaseService extends AbstractMPSReleaseService {
+@Component("returnToCustomerReleaseService")
+public class ReturnToCustomerReleaseService extends AbstractMPSReleaseService {
 
 	@Override
 	public void validateReleaseCondition(String transCwb) throws CwbException {
@@ -26,7 +26,7 @@ public class ReturnToSupplierReleaseService extends AbstractMPSReleaseService {
 			return;
 		}
 		CwbException exception = new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED);
-		this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_RETURN_TO_SUPPLIER_STATE);
+		this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE);
 	}
 
 }

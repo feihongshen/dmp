@@ -1,7 +1,7 @@
 /**
  *
  */
-package cn.explink.service.mps;
+package cn.explink.service.mps.release;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +12,7 @@ import cn.explink.domain.TransCwbDetail;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.service.mps.AbstractMPSService;
 
 /**
  * @author songkaojun 2016年1月8日
@@ -21,7 +22,7 @@ public abstract class AbstractMPSReleaseService extends AbstractMPSService {
 	protected static final String VALIDATE_RELEASE_CONDITION = "[判断一票多件是否放行]";
 	protected static final Set<Integer> BEFORE_INTOWAREHOUSE_STATE = new HashSet<Integer>();
 	protected static final Set<Integer> BEFORE_SUBSTATION_GOODS_ARRIVED_STATE = new HashSet<Integer>();
-	protected static final Set<Integer> BEFORE_RETURN_TO_SUPPLIER_STATE = new HashSet<Integer>();
+	protected static final Set<Integer> BEFORE_RETURN_TO_CUSTOMER_STATE = new HashSet<Integer>();
 
 	static {
 		AbstractMPSReleaseService.BEFORE_INTOWAREHOUSE_STATE.add(FlowOrderTypeEnum.DaoRuShuJu.getValue());
@@ -32,12 +33,12 @@ public abstract class AbstractMPSReleaseService extends AbstractMPSService {
 		AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE.add(FlowOrderTypeEnum.RuKu.getValue());
 		AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE.add(FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 
-		AbstractMPSReleaseService.BEFORE_RETURN_TO_SUPPLIER_STATE.addAll(AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE);
-		AbstractMPSReleaseService.BEFORE_RETURN_TO_SUPPLIER_STATE.add(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
-		AbstractMPSReleaseService.BEFORE_RETURN_TO_SUPPLIER_STATE.add(FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue());
-		AbstractMPSReleaseService.BEFORE_RETURN_TO_SUPPLIER_STATE.add(FlowOrderTypeEnum.FenZhanLingHuo.getValue());
-		AbstractMPSReleaseService.BEFORE_RETURN_TO_SUPPLIER_STATE.add(FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue());
-		AbstractMPSReleaseService.BEFORE_RETURN_TO_SUPPLIER_STATE.add(FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.addAll(AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE);
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue());
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.FenZhanLingHuo.getValue());
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue());
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
 	}
 
 	/**

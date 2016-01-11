@@ -1,7 +1,7 @@
 /**
  *
  */
-package cn.explink.service.mps;
+package cn.explink.service.mps.release;
 
 import org.springframework.stereotype.Component;
 
@@ -13,12 +13,12 @@ import cn.explink.exception.CwbException;
 
 /**
  *
- * 小件员领货对于一票多件放行的处理
+ * 出库操作对于一票多件放行的处理
  *
  * @author songkaojun 2016年1月8日
  */
-@Component("deliverTakeGoodsMPSReleaseService")
-public class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseService {
+@Component("outWarehouseMPSReleaseService")
+public class OutWarehouseMPSReleaseService extends AbstractMPSReleaseService {
 
 	@Override
 	public void validateReleaseCondition(String transCwb) throws CwbException {
@@ -26,8 +26,10 @@ public class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseService
 		if (cwbOrder == null) {
 			return;
 		}
-		CwbException exception = new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DELIVERTAKEGOODS_MPS_NOT_ALL_ARRIVED);
-		if (this.getMpsswitchType().getValue() == MpsswitchTypeEnum.ZhanDianJiDan.getValue()) {
+		CwbException exception = new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED);
+		if (this.getMpsswitchType().getValue() == MpsswitchTypeEnum.KuFangJiDan.getValue()) {
+			this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_INTOWAREHOUSE_STATE);
+		} else if (this.getMpsswitchType().getValue() == MpsswitchTypeEnum.ZhanDianJiDan.getValue()) {
 			this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE);
 		}
 	}
