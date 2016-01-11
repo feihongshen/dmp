@@ -7569,6 +7569,7 @@ public class CwbOrderService extends BaseOrderService {
 			CwbOrder cwborder = this.cwbDAO.getCwbByCwb(cwb);
 			for (String transcwb : cwborder.getTranscwb().split(",")) {
 				this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, transcwb, flowOrderTypeEnum, "");
+				this.mpsOptStateService.updateMPSInfo(transcwb, flowOrderTypeEnum, co.getCurrentbranchid(), co.getNextbranchid());
 			}
 		}
 	}
