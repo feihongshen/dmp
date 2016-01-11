@@ -468,8 +468,8 @@ public class CwbOrderService extends BaseOrderService {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate) "
-						+ "values(?,?,?,?,?,?,?,?,?,?," + "  ?,?,?,?,?,?,?,?,?,?," + "  ?,?,?,?,?,?,?,?,?,?," + " ?,?,?,?,?,?,?,?,?,? ," + "?,?,?,?,?,?,?,?,?,? ," + "?,?,?,?,?,?,?,?,?,? ," + "?,?,?)",
+						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag) "
+						+ "values(?,?,?,?,?,?,?,?,?,?," + "  ?,?,?,?,?,?,?,?,?,?," + "  ?,?,?,?,?,?,?,?,?,?," + " ?,?,?,?,?,?,?,?,?,? ," + "?,?,?,?,?,?,?,?,?,? ," + "?,?,?,?,?,?,?,?,?,? ," + "?,?,?,?,?)",
 						new PreparedStatementSetter() {
 
 							@Override
@@ -545,6 +545,9 @@ public class CwbOrderService extends BaseOrderService {
 								} else {// 其他类型的订单默认为配送状态
 									ps.setLong(63, CwbStateEnum.PeiShong.getValue());
 								}
+								ps.setInt(64, cwbOrderDTO.getIsmpsflag());
+								ps.setInt(65, cwbOrderDTO.getMpsallarrivedflag());
+								
 							}
 
 						});
@@ -2232,7 +2235,10 @@ public class CwbOrderService extends BaseOrderService {
 
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, flowOrdertype.getValue(), "", user.getBranchid(), user.getUserid(), 0, 0, 0, 0, "", scancwb);
 			}
-			this.sendTranscwbOrderFlow(tof);
+			if(cwbOrder.getIsmpsflag()==IsmpsflagEnum.yes.getValue()){
+				this.sendTranscwbOrderFlow(tof);
+			}
+			
 		} catch (Exception e) {
 			this.logger.error("error while saveing orderflow", e);
 			throw new ExplinkException(ExceptionCwbErrorTypeEnum.SYS_ERROR, cwb);

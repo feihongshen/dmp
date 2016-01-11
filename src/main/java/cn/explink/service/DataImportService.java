@@ -71,8 +71,8 @@ import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
@@ -896,7 +896,7 @@ public class DataImportService {
 			transcwbdetail.setNextbranchid(cwbOrder.getStartbranchid());
 			transcwbdetail.setPreviousbranchid(0);
 			transcwbdetail.setTranscwboptstate(FlowOrderTypeEnum.DaoRuShuJu.getValue());
-			transcwbdetail.setTranscwbstate(CwbStateEnum.PeiShong.getValue());
+			transcwbdetail.setTranscwbstate(TransCwbStateEnum.PEISONG.getValue());
 			
 			transCwbDetailDAO.addTransCwbDetail(transcwbdetail);
 		}

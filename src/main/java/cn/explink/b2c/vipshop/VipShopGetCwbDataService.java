@@ -625,7 +625,7 @@ public class VipShopGetCwbDataService {
 		if(cwbOrderDTO==null){
 			return;
 		}
-		//需要集包
+		//需要集包 ？风险，线程不安全?
 		if(cwbOrderDTO.getGetDataFlag()==0){
 			dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp),MpsTypeEnum.YiPiaoDuoJian.getValue());
 			//dataImportService.insertTransCwbDetail(cwbOrderDTO);

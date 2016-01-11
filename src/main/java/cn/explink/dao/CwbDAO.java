@@ -239,6 +239,12 @@ public class CwbDAO {
 			cwbOrder.setFncustomerposbillid(rs.getLong("fncustomerposbillid")); //客户POS抵扣账单id
 			cwbOrder.setFncustomerpayablebillid(rs.getLong("fncustomerpayablebillid")); //应付客户账单id
 			cwbOrder.setIsmpsflag(rs.getInt("ismpsflag")); // 是否一票多件：0默认；1是一票多件
+			//mpsoptstate
+			//mpsallarrivedflag
+			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
+			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
+			
+			
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;
@@ -349,6 +355,11 @@ public class CwbDAO {
 			obj.put("receivedfee", rs.getBigDecimal("receivedfee"));
 			obj.put("deliverytime", rs.getString("deliverytime"));
 			obj.put("pushtime", rs.getString("pushtime"));
+			
+			
+			obj.put("mpsoptstate", rs.getInt("mpsoptstate"));
+			obj.put("mpsallarrivedflag", rs.getInt("mpsallarrivedflag"));
+			
 			return obj;
 		}
 
@@ -445,6 +456,8 @@ public class CwbDAO {
 			obj.put("receivedfee", rs.getBigDecimal("receivedfee"));
 			obj.put("deliverystate", rs.getInt("deliverystate"));
 			obj.put("deliverytime", rs.getString("deliverytime"));
+			obj.put("mpsoptstate", rs.getInt("mpsoptstate"));
+			obj.put("mpsallarrivedflag", rs.getInt("mpsallarrivedflag"));
 			CwbDAO.this.setValueByUser(rs, obj);
 			return obj;
 		}
@@ -786,6 +799,9 @@ public class CwbDAO {
 
 			cwbOrder.setFankuitime(rs.getString("fankuitime"));
 			cwbOrder.setShenhetime(rs.getString("shenhetime"));
+			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
+			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
+			
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			try {
 				if (rs.getString("chuzhantime") != null) {

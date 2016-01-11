@@ -91,6 +91,8 @@ public class DataImportDAO_B2c {
 			cwbOrder.setShouldfare(rs.getBigDecimal("shouldfare"));
 			cwbOrder.setInfactfare(rs.getBigDecimal("infactfare"));
 			cwbOrder.setResendtime(rs.getString("resendtime"));
+			cwbOrder.setIsmpsflag(rs.getInt("ismpsflag"));
+			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
 
 			return cwbOrder;
 		}

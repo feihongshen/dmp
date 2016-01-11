@@ -2,6 +2,8 @@ package cn.explink.domain;
 
 import java.io.Serializable;
 
+import net.sourceforge.jtds.jdbc.DateTime;
+
 public class TransCwbDetail implements Serializable {
 
 	private static final long serialVersionUID = 5162533003345792685L;
@@ -19,7 +21,7 @@ public class TransCwbDetail implements Serializable {
 	private String emaildate; // 发货时间
 	private int commonphraseid; // 常用语id
 	private String commonphrase; // 常用语
-
+	
 	public String getEmaildate() {
 		return this.emaildate;
 	}
