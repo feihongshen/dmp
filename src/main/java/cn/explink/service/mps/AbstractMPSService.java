@@ -46,25 +46,28 @@ public abstract class AbstractMPSService {
 	protected CwbOrder getMPSCwbOrderConsideringMPSSwitchType(String transCwb, String logPrefix) {
 		CwbOrder cwbOrder = this.getMPSCwbOrder(transCwb, logPrefix);
 		if (cwbOrder != null) {
-			this.setCwbOrderMPSSwitchType(logPrefix, cwbOrder);
+			if (!this.setCwbOrderMPSSwitchType(logPrefix, cwbOrder)) {
+				return null;
+			}
 		}
 		return cwbOrder;
 	}
 
-	private void setCwbOrderMPSSwitchType(String logPrefix, CwbOrder cwbOrder) {
+	private boolean setCwbOrderMPSSwitchType(String logPrefix, CwbOrder cwbOrder) {
 		// 查询供应商，判断该供应商是否开启了集单模式
 		long customerid = cwbOrder.getCustomerid();
 		Customer customer = this.customerDAO.getCustomerById(customerid);
 		if (customer.getCustomerid() == 0L) {
 			AbstractMPSService.LOGGER.error(logPrefix + "没有查询到订单的供应商信息！");
-			return;
+			return false;
 		}
 		int mpsswitch = customer.getMpsswitch();
 		if (mpsswitch == MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()) {
 			AbstractMPSService.LOGGER.info(logPrefix + customer.getCustomername() + "未启用集单模式！");
-			return;
+			return false;
 		}
 		this.mpsswitchType = MpsswitchTypeEnum.getByValue(mpsswitch);
+		return true;
 	}
 
 	protected CwbOrder getMPSCwbOrder(String transCwb, String logPrefix) {
