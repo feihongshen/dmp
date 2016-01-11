@@ -212,9 +212,13 @@ public class WorkOrderController {
 	public String CreateComplainWorkOrder(Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid,@RequestParam(value="CallerPhoneValue",defaultValue="",required=true) String CallerPhoneValue){
 		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);
 		CsComplaintAccept co=workorderdao.getCsComplaintAcceptByAcceptNo(transcwb);
-		while(co!=null){
-			transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);
-			co=workorderdao.getCsComplaintAcceptByAcceptNo(transcwb);
+//		while(co!=null){
+//			transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);
+//			co=workorderdao.getCsComplaintAcceptByAcceptNo(transcwb);
+//		}
+		
+		if(co != null){
+			transcwb=transcwb+"1";
 		}
 		CwbOrder cl=cwbdao.getCwbOrderByOpscwbid(opscwbid);
 		CsComplaintAccept ca = new CsComplaintAccept();
