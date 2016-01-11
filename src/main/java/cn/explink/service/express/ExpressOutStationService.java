@@ -153,7 +153,7 @@ public class ExpressOutStationService {
 			// 2.订单操作出站
 			CwbOrder opeOrder = this.expressOrderIntoStationOperation(scanNo, order, currentBranchId, nextBranchId, params, user, false);
 			// jms调用接口
-			this.executeTpsInterface(opeOrder, user, nextBranch == null ? "" : nextBranch.getBranchcode() + "");
+			this.executeTpsInterface(opeOrder, user, nextBranch == null ? "" : nextBranch.getTpsbranchcode() + "");
 			// 3.下一站转换
 			resultMap = this.orgnizeAttributes(resultMap, "nextBranchName", opeOrder.getNextbranchid(), params.getContextPath());
 			// 4.目的站转换
@@ -310,7 +310,7 @@ public class ExpressOutStationService {
 				CwbOrder opeOrder = this.expressOrderIntoStationOperation(order.getCwb(), order, currentBranchId, nextBranchId, params, user, true);
 				succList.add(opeOrder);
 				Branch nextBranch = this.branchDAO.getBranchByBranchid(nextBranchId);
-				String nextBranchCode = nextBranch.getBranchcode();
+				String nextBranchCode = nextBranch.getTpsbranchcode();
 				// 运单状态反馈接口
 				this.executeTpsInterface(order, user, nextBranchCode);
 				successCount++;
