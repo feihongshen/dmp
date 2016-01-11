@@ -30,10 +30,12 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.OrderGoods;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.enumutil.MpsTypeEnum;
 import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.DataImportService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 
@@ -70,6 +72,8 @@ public class VipShopGetCwbDataService {
 	TransCwbDao transCwbDao;
 	@Autowired
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
+	@Autowired
+	DataImportService dataImportService;
 
 	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -618,27 +622,32 @@ public class VipShopGetCwbDataService {
 			return;
 		}
 		
+		if(cwbOrderDTO==null){
+			return;
+		}
 		//需要集包
-		if(cwbOrderDTO!=null){
-			if(cwbOrderDTO.getGetDataFlag()==0){
-				dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp),MpsTypeEnum.YiPiaoDuoJian.getValue());
-				vipshopInsertCwbDetailTimmer.insertTransCwbDetail(cwbOrderDTO);
-				
-			}else{
-				dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp),MpsTypeEnum.YiPiaoDuoJian.getValue());
-				cwbDAO.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp),MpsTypeEnum.YiPiaoDuoJian.getValue());
-				for(String pack_no:pack_nos.split(",")){
-					String selectCwb=transCwbDao.getCwbByTransCwb(pack_no);
-					if(selectCwb==null){
-						transCwbDao.saveTranscwb(pack_no, order_sn);
-						cwbOrderDTO.setTranscwb(pack_no);
-						vipshopInsertCwbDetailTimmer.insertTransCwbDetail(cwbOrderDTO);
-					}
+		if(cwbOrderDTO.getGetDataFlag()==0){
+			dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), Integer.valueOf(is_gathercomp),MpsTypeEnum.YiPiaoDuoJian.getValue());
+			//dataImportService.insertTransCwbDetail(cwbOrderDTO);
+			
+		}else{
+			int mpsallarrivedflag=0;
+			if(Integer.valueOf(is_gathercomp)==VipGathercompEnum.Last.getValue()){ //到齐
+				mpsallarrivedflag=MPSAllArrivedFlagEnum.YES.getValue();
+			}
+			dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
+			cwbDAO.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
+			for(String pack_no:pack_nos.split(",")){
+				String selectCwb=transCwbDao.getCwbByTransCwb(pack_no);
+				if(selectCwb==null){
+					transCwbDao.saveTranscwb(pack_no, order_sn);
+					cwbOrderDTO.setTranscwb(pack_no);
+					dataImportService.insertTransCwbDetail(cwbOrderDTO);
 				}
 			}
-			
-			
 		}
+			
+			
 		
 	}
 

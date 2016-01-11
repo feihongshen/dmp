@@ -180,6 +180,7 @@ import cn.explink.enumutil.EmailFinishFlagEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FinanceDeliverPayUpDetailTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.OutwarehousegroupOperateEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
@@ -435,6 +436,8 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	private OutWarehouseMPSReleaseService outWarehouseMPSReleaseService;
+	@Autowired
+	DataImportService dataImportService;
 
 	// private User getSessionUser() {
 	// ExplinkUserDetail userDetail = (ExplinkUserDetail)
@@ -444,6 +447,8 @@ public class CwbOrderService extends BaseOrderService {
 
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		this.logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
+		
+		
 
 		// 保存操作记录并返回对应的操作记录的id 将id保存到express_ops_cwb_detail记录中 用作双向1对1
 		if ((cwbOrderDTO.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) && (cwbOrderDTO.getSendcargonum() == 0)) {
@@ -543,6 +548,15 @@ public class CwbOrderService extends BaseOrderService {
 							}
 
 						});
+		
+		
+		if(cwbOrderDTO.getIsmpsflag()==IsmpsflagEnum.yes.getValue()){
+			dataImportService.insertTransCwbDetail(cwbOrderDTO);
+		}
+		
+		
+		
+		
 		this.createFloworder(user, user.getBranchid(), cwbOrderDTO.getCwb(), FlowOrderTypeEnum.DaoRuShuJu, "", System.currentTimeMillis(), cwbOrderDTO.getCwb());
 		this.logger.info("结算区域accountareaid:{}", cwbOrderDTO.getAccountareaid());
 	}
@@ -2314,16 +2328,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param tof
 	 */
 	public void sendTranscwbOrderFlow(TranscwbOrderFlow tof) {
-		// public void sendTranscwbOrderFlow(TranscwbOrderFlow tof) {
-		//
-		// try {
-		// orderFlowProducerTemplate.sendBodyAndHeader(null,
-		// "transcwborderFlow",
-		// om.writeValueAsString(tof));
-		// } catch (Exception ee) {
-		// logger.error("send transcwborderflow message error", ee);
-		// }
-		// }
+	
 		try {
 			this.transCwbOrderFlowProducerTemplate.sendBodyAndHeader(null, "transCwbOrderFlow", JacksonMapper.getInstance().writeValueAsString(tof));
 		} catch (Exception ee) {

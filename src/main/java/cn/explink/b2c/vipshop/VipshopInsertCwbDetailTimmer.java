@@ -53,8 +53,8 @@ public class VipshopInsertCwbDetailTimmer {
 	ProducerTemplate addressmatch;
 	@Autowired
 	DataImportService dataImportService;
-	@Autowired
-	TransCwbDetailDAO transCwbDetailDAO;
+	
+	
 
 	/**
 	 * 唯品会定时器，查询临时表，插入数据到detail表中。
@@ -169,7 +169,7 @@ public class VipshopInsertCwbDetailTimmer {
 			emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
 			cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), warehouseid, user, ed);
 			
-			insertTransCwbDetail(cwbOrder);
+			
 			
 			logger.info("[唯品会]定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
 
@@ -183,27 +183,6 @@ public class VipshopInsertCwbDetailTimmer {
 		dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
 	}
 
-	public void insertTransCwbDetail(CwbOrderDTO cwbOrder) {
-		for(String transcwb:cwbOrder.getTranscwb().split(",")){
-			TransCwbDetail td =	transCwbDetailDAO.findTransCwbDetailByTransCwb(transcwb);
-			if(td!=null){
-				continue;
-			}
-			
-			TransCwbDetail transcwbdetail = new TransCwbDetail();
-			transcwbdetail.setCwb(cwbOrder.getCwb());
-			transcwbdetail.setTranscwb(transcwb);
-			transcwbdetail.setCreatetime(DateTimeUtil.getNowTime());
-			transcwbdetail.setCurrentbranchid(0);
-			transcwbdetail.setNextbranchid(cwbOrder.getStartbranchid());
-			transcwbdetail.setPreviousbranchid(0);
-			transcwbdetail.setTranscwboptstate(FlowOrderTypeEnum.DaoRuShuJu.getValue());
-			transcwbdetail.setTranscwbstate(CwbStateEnum.PeiShong.getValue());
-			
-			transCwbDetailDAO.addTransCwbDetail(transcwbdetail);
-		}
-		
-		
-	}
+	
 
 }

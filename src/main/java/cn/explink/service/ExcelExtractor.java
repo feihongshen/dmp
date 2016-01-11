@@ -74,7 +74,10 @@ import cn.explink.enumutil.AbnormalOrderHandleEnum;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.JiesuanstateEnum;
+import cn.explink.enumutil.MPSAllArrivedFlagEnum;
+import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.PenalizeSateEnum;
 import cn.explink.enumutil.PunishInsideStateEnum;
@@ -153,6 +156,8 @@ public abstract class ExcelExtractor {
 	PaybusinessbenefitsDao paybusinessbenefitsDao;
 	@Autowired
 	SalaryCountDAO salaryCountDAO;
+	@Autowired
+	CwbOrderService cwbOrderService;
 
 
 	public String strtovalid(String str) {
@@ -481,10 +486,27 @@ public abstract class ExcelExtractor {
 		} else {
 			cwbOrder.setShouldfare(BigDecimal.ZERO);
 		}
+		
+		extendsImportColumn(customer, cwbOrder);
+		
 
 		cwbOrder.setDefaultCargoName();
 
 		return cwbOrder;
+	}
+
+	/**
+	 * 扩展导入列方法,主要处理一票多件集包模式
+	 * @param customer
+	 * @param cwbOrder
+	 */
+	private void extendsImportColumn(Customer customer, CwbOrderDTO cwbOrder) {
+		if(customer.getMpsswitch()!=0){ //开启集单模式
+			if(cwbOrder.getTranscwb().split(cwbOrderService.getSplitstring(cwbOrder.getTranscwb())).length>1){
+				cwbOrder.setIsmpsflag((int)IsmpsflagEnum.yes.getValue()); //默认是一票多件模式
+				cwbOrder.setMpsallarrivedflag(MPSAllArrivedFlagEnum.YES.getValue()); //excel导入默认到齐
+			}
+		}
 	}
 
 	public void extract(InputStream f, long customerId, ResultCollector errorCollector, long branchId, EmailDate ed, ExplinkUserDetail userDetail, boolean isRetry) {

@@ -605,6 +605,7 @@ src/main/java/cn/explink/b2c/tools/power/JointPowerDAO.java -text
 src/main/java/cn/explink/b2c/vipshop/CwbColumnSetVipShop.java -text
 src/main/java/cn/explink/b2c/vipshop/ReaderXMLHandler.java -text
 src/main/java/cn/explink/b2c/vipshop/SOAPHandler.java -text
+src/main/java/cn/explink/b2c/vipshop/VipGathercompEnum.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShop.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShopConfig.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShopController.java -text
