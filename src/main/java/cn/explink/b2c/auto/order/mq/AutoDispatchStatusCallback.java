@@ -156,7 +156,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 		mqe.setRemark("");
 		mqe.setRouting_key("*");//
 		mqe.setSystem_name("DMP");//
-		mqe.setMessage("![CDATA["+mqe.getMessage()+"]]");//250 length?
+		mqe.setMessage("<![CDATA["+mqe.getMessage()+"]]>");//250 length?
 		
 		String msg=XmlUtil.toXml(AutoMQExceptionDto.class, mqe); 
 		

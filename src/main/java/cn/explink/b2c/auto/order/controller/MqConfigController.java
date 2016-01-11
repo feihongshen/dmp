@@ -3,19 +3,15 @@ package cn.explink.b2c.auto.order.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.auto.order.mq.ConsumerStarter;
@@ -37,7 +33,20 @@ public class MqConfigController {
 	
 	@RequestMapping("/list")
 	public  String list(Model model) {
+		List<MqConfigVo> cfgList =mqConfigService.querAll();
+		Map<String,String> queueMap=consumerStarter.getMqSubscribers();
 		
+		if(cfgList!=null){
+			for(MqConfigVo vo:cfgList){
+				if(queueMap.get(vo.getName())!=null){
+					vo.setConnected(1);
+				}
+			}
+		}else{
+			cfgList=new ArrayList<MqConfigVo>();
+		}
+		
+		model.addAttribute("cfgList", cfgList);
 		return "auto/mqconfig";
 	}
 	
@@ -74,9 +83,21 @@ public class MqConfigController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("mq config save error",e);
-			return "{\"errorCode\":1,\"error\":\"新增MQ配置失败，"+e.getMessage()+"\"}";
+			return "{\"errorCode\":1,\"error\":\"保存MQ配置失败，"+e.getMessage()+"\"}";
 		}
-		return "{\"errorCode\":0,\"error\":\"新增MQ配置成功\"}";
+		return "{\"errorCode\":0,\"error\":\"保存MQ配置成功\"}";
+	}
+	
+	@RequestMapping("/del")
+	public @ResponseBody String del(Model model,MqConfigVo vo) {
+		try{
+		mqConfigService.delete(vo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("mq config save error",e);
+			return "{\"errorCode\":1,\"error\":\"删除MQ配置失败，"+e.getMessage()+"\"}";
+		}
+		return "{\"errorCode\":0,\"error\":\"删除MQ配置成功\"}";
 	}
 
 }

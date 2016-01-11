@@ -62,7 +62,12 @@ public class MqConfigService {
 	}
 	
 	public String getValue(String name){
-		String value=jdbcTemplate.queryForObject(MQ_CONFIG_SQL,new Object[]{name}, String.class);
+		String value=null;
+		List<String> list=jdbcTemplate.queryForList(MQ_CONFIG_SQL, String.class, name);
+		if(list!=null&&list.size()>0){
+			value=list.get(0);
+		}
+		//String value=jdbcTemplate.queryForObject(MQ_CONFIG_SQL,new Object[]{name}, String.class);
 		logger.info("mq parameter name={},value={}",name,value);
 		return value;
 	}
@@ -97,6 +102,7 @@ public class MqConfigService {
 	}
 	
 	public int delete(MqConfigVo vo){
+		trimData(vo);
 		int cnt= jdbcTemplate.update(MQ_CONFIG_DELETE_SQL,vo.getName());
 		return cnt;
 	}

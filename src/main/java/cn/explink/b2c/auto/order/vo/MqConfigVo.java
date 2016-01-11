@@ -5,6 +5,8 @@ private String name;
 private String text;
 private String remark;
 
+private int connected;
+
 public String getName() {
 	return name;
 }
@@ -22,6 +24,12 @@ public String getRemark() {
 }
 public void setRemark(String remark) {
 	this.remark = remark;
+}
+public int getConnected() {
+	return connected;
+}
+public void setConnected(int connected) {
+	this.connected = connected;
 }
 
 

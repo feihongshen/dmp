@@ -8851,4 +8851,9 @@ CREATE TABLE `cs_complaint_accept` (
 		 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 		</sql>
 	</changeSet>
+	<changeSet id="jianronggao-2016-01-11-01" author="jianronggao">
+		<sql>
+		INSERT INTO `dmp40_function` VALUES ('3042', 1, '自动化MQ连接管理', '3042', 'mqconfig/list?', '30');
+		</sql>
+	</changeSet>
 </databaseChangeLog>

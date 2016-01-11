@@ -9,7 +9,10 @@ import com.vip.platform.middleware.vms.VMSClient;
 import cn.explink.b2c.tools.JointService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +55,7 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 	
 	private List<AutoExceptionSender> senderList;
 	
-	private List<ISubscriber> subscriberList=new ArrayList<ISubscriber>();
+	private Map<String,ISubscriber> subscriberMap=new HashMap<String,ISubscriber>();
 	
 	private static final String MQ_OPEN_KEY="MQ_OPEN_FLAG";
 	
@@ -81,7 +84,9 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
         	
         	try{
 	        	String value=mqConfigService.getValue(MQ_OPEN_KEY);
-	        	state=Integer.parseInt(value);
+	        	if(value!=null&&value.length()>0){
+	        		state=Integer.parseInt(value);
+	        	}
 	        } catch (Exception e) {
 	        	logger.error("get MQ_OPEN_FLAG parameter error:",e);
 	        }
@@ -108,10 +113,10 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 			     请注意显式ack已由fastrabbit 的框架代码实现，业务代码中不需要实现
 			 */
 
-			for(ConsumerTemplate rabbitTest: callBackList){
-				ISubscriber subscriber=client.subscribe(rabbitTest.getQueueName(), SubQoS.build().prefetchCount(rabbitTest.getFetchCount()).autoCommit(rabbitTest.getAutoCommit()), rabbitTest.getCallBack());
-				subscriberList.add(subscriber);
-				logger.info("MQ subscriber started sucessfully! queueName="+rabbitTest.getQueueName()+",prefetchCount="+rabbitTest.getFetchCount());
+			for(ConsumerTemplate template: callBackList){
+				ISubscriber subscriber=client.subscribe(template.getQueueName(), SubQoS.build().prefetchCount(template.getFetchCount()).autoCommit(template.getAutoCommit()), template.getCallBack());
+				subscriberMap.put(template.getQueueKey(), subscriber);
+				logger.info("MQ subscriber started sucessfully! queueName="+template.getQueueName()+",prefetchCount="+template.getFetchCount()+",autoCommit="+template.getAutoCommit());
 			}
 
 			logger.info("Completed to connect to rabbit mq.");
@@ -124,23 +129,38 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
     
     public void stop() throws Exception{
     	boolean error=false;
-        for(ISubscriber subscriber:subscriberList){
+    	Iterator it=subscriberMap.keySet().iterator();
+        while(it.hasNext()){
         	try{
+        		String key=(String)it.next();
+        		ISubscriber subscriber=subscriberMap.get(key);
         		logger.info("start to stop MQ subscriber...");
-        		subscriber.shutdown();
+        		if(subscriber!=null){
+        			subscriber.shutdown();
+        		}
         		logger.info("completed to stop MQ subscriber");
 	        } catch (Exception e) {
 	        	error=true;
 				logger.error("MQ subscriber stop error:",e);
 			}
         }
-        subscriberList.clear();
+        subscriberMap.clear();
         
         logger.info("Completed to stop all MQ subscribers");
 
         if(error){
         	throw new Exception("Stopping MQ subscriber have error,adivse restart whole web application.");
         }
+    }
+    
+    public Map<String,String> getMqSubscribers(){
+    	Map<String,String> queueMap=new HashMap<String,String>();
+    	Iterator it=subscriberMap.keySet().iterator();
+        while(it.hasNext()){
+        	String key=(String)it.next();
+        	queueMap.put(key, key);
+        }
+        return queueMap;
     }
 
     /**
