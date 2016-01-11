@@ -2,6 +2,7 @@ package cn.explink.support.transcwb;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,24 @@ public class TransCwbDao {
 
 	}
 
+	private final class TranscwbForcwbRowMapper implements RowMapper<String> {
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getString("cwb");
+		}
+	}
+
+	private final class TranscwbForTransRowMapper implements RowMapper<String> {
+		@Override
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getString("transcwb");
+		}
+	}
+
 	public String getCwbByTransCwb(String transcwb) {
 		String sql = "select cwb from express_ops_transcwb where transcwb=?";
 		try {
-			return jdbcTemplate.queryForObject(sql, String.class, transcwb);
+			return this.jdbcTemplate.queryForObject(sql, String.class, transcwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -40,16 +55,16 @@ public class TransCwbDao {
 	public List<TranscwbView> getTransCwbByCwb(String cwb) {
 		String sql = "select * from express_ops_transcwb where cwb=?";
 		try {
-			return jdbcTemplate.query(sql, new TranscwbRowMapper(), cwb);
+			return this.jdbcTemplate.query(sql, new TranscwbRowMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
 	}
-	
+
 	public List<TranscwbView> getcwbBytranscwb(String transcwb) {
 		String sql = "select * from express_ops_transcwb where transcwb=?";
 		try {
-			return jdbcTemplate.query(sql, new TranscwbRowMapper(), transcwb);
+			return this.jdbcTemplate.query(sql, new TranscwbRowMapper(), transcwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -57,26 +72,24 @@ public class TransCwbDao {
 
 	public void saveTranscwb(String transcwb, String cwb) {
 		try {
-			jdbcTemplate.update("INSERT INTO express_ops_transcwb (transcwb, cwb) VALUES (?, ?)", transcwb, cwb);
+			this.jdbcTemplate.update("INSERT INTO express_ops_transcwb (transcwb, cwb) VALUES (?, ?)", transcwb, cwb);
 		} catch (DataAccessException e) {
 		}
 	}
 
 	public void deleteTranscwb(String cwb) {
 		try {
-			jdbcTemplate.update("DELETE FROM express_ops_transcwb where cwb=?", cwb);
+			this.jdbcTemplate.update("DELETE FROM express_ops_transcwb where cwb=?", cwb);
 		} catch (DataAccessException e) {
 		}
 	}
 
 	public void deleteTranscwbByCwbs(String cwbs) {
 		try {
-			jdbcTemplate.update("DELETE FROM express_ops_transcwb where cwb in(" + cwbs + ")");
+			this.jdbcTemplate.update("DELETE FROM express_ops_transcwb where cwb in(" + cwbs + ")");
 		} catch (DataAccessException e) {
 		}
 	}
-	
-	
 
 	public void delTranscwb() {
 		// 这真是一条超牛的sql JM
@@ -85,7 +98,42 @@ public class TransCwbDao {
 
 	public List<TranscwbView> getTransCwbByTranscwb(String temporders) {
 		String sql = " select * from express_ops_transcwb where transcwb in(" + temporders + ")";
-		return jdbcTemplate.query(sql, new TranscwbRowMapper());
+		return this.jdbcTemplate.query(sql, new TranscwbRowMapper());
 	}
-	
+
+	/**
+	 * @Title: getCwbsByCwbList
+	 * @description 根据输入的单号集合（子单号或主单号），查询所对应的TranscwbView集合
+	 * @author 刘武强
+	 * @date  2016年1月8日下午4:01:16
+	 * @param  @param cwbs
+	 * @param  @return
+	 * @return  List<String>
+	 * @throws
+	 */
+	public List<TranscwbView> getTransCwbByOrderNoList(String cwbs) {
+		List<TranscwbView> list = new ArrayList<TranscwbView>();
+		String sql = "select distinct * from express_ops_transcwb where cwb in " + cwbs + " or transcwb in  " + cwbs;
+		list = this.jdbcTemplate.query(sql, new TranscwbRowMapper());
+		return list;
+	}
+
+	/**
+	 *
+	 * @Title: getTransCwbByTransCwbList
+	 * @description 根据输入的主单号集合，查询所对应的TranscwbView集合
+	 * @author 刘武强
+	 * @date  2016年1月11日上午9:24:46
+	 * @param  @param cwbs
+	 * @param  @return
+	 * @return  List<TranscwbView>
+	 * @throws
+	 */
+	public List<TranscwbView> getTransCwbByCwbNoList(String cwbs) {
+		List<TranscwbView> list = new ArrayList<TranscwbView>();
+		String sql = "select distinct * from express_ops_transcwb where  cwb in  " + cwbs;
+		list = this.jdbcTemplate.query(sql, new TranscwbRowMapper());
+		return list;
+	}
+
 }

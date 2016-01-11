@@ -1487,6 +1487,24 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, cwbstate.getValue(), cwb);
 	}
 
+	/**
+	 *
+	 * @Title: updateCwbOnIntercept
+	 * @description 拦截功能里面一票多件的主单更新方法
+	 * @author 刘武强
+	 * @date  2016年1月11日下午8:24:08
+	 * @param  @param cwb
+	 * @param  @param cwbstate
+	 * @param  @param flowOrderTypeEnum
+	 * @param  @param nextBranchid
+	 * @return  void
+	 * @throws
+	 */
+	public void updateCwbOnIntercept(String cwb, Long cwbstate, Long flowOrderTypeEnum, Long nextBranchid, Long backreasonid, String backreason) {
+		String sql = "update express_ops_cwb_detail set cwbstate=?,flowordertype=?,nextbranchid=?,backreasonid=?,backreason=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, cwbstate, flowOrderTypeEnum, nextBranchid, backreasonid, backreason, cwb);
+	}
+
 	public void updateNextBranchid(String cwb, long nextbranchid) {
 		String sql = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, nextbranchid, cwb);
@@ -6489,5 +6507,22 @@ public class CwbDAO {
 	public void updateMPSOptState(String cwb, int mpsoptstate) {
 		String sql = "update express_ops_cwb_detail set mpsoptstate=? where cwb=?";
 		this.jdbcTemplate.update(sql, mpsoptstate, cwb);
+	}
+
+	/**
+	 * @Title: getCwbsByCwbList
+	 * @description 根据传入的单号集合，去查询订单详情
+	 * @author 刘武强
+	 * @date  2016年1月8日下午3:24:37
+	 * @param  @param cwbList
+	 * @param  @return
+	 * @return  List<CwbOrder>
+	 * @throws
+	 */
+	public List<CwbOrder> getCwbOrdersByCwbList(String cwbs) {
+		List<CwbOrder> list = new ArrayList<CwbOrder>();
+		String sql = "select * from express_ops_cwb_detail where cwb in " + cwbs;
+		list = this.jdbcTemplate.query(sql, new CwbMapper());
+		return list;
 	}
 }

@@ -86,6 +86,7 @@ import cn.explink.domain.SetExportField;
 import cn.explink.domain.ShangMenTuiCwbDetail;
 import cn.explink.domain.ShiXiao;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.lefengVo;
@@ -108,6 +109,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.LogToDayService;
 import cn.explink.support.transcwb.TransCwbDao;
+import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.ExcelUtilsHandler;
@@ -830,7 +832,6 @@ public class CwbOrderController {
 	@RequestMapping("/toTuiHuo")
 	public String toTuiHuo(Model model, HttpServletRequest request, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb// 订单状态类型
 	) {
-		String quot = "'", quotAndComma = "',";
 		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
 		model.addAttribute("amazonIsOpen", isOpenFlag);
 		String isUseAuditTuiHuo = this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditTuiHuo").getValue();
@@ -838,36 +839,54 @@ public class CwbOrderController {
 		String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan").getValue();
 		model.addAttribute("isUseAuditZhongZhuan", isUseAuditZhongZhuan);
 		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
+		String quot = "'", quotAndComma = "',";
 
 		if (cwb.length() > 0) {
 			List<String> scancwblist = new ArrayList<String>();
-			List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
+
+			//拦截新增--刘武强
+			List<String> allScanList = new ArrayList<String>();//扫描进入系统的单号集合
+			List<String> transCwbList = new ArrayList<String>();//运单号集合
+			List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();//订单集合
+			List<TransCwbDetail> transOrderList = new ArrayList<TransCwbDetail>();//运单集合
 
 			StringBuffer cwbs = new StringBuffer();
 			for (String cwbStr : cwb.split("\r\n")) {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				allScanList.add(cwbStr);
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
 				if (co != null) {
 					scancwblist.add(cwbStr);
-					cwborderlist.add(co);
+					cwborderlist.add(co);//找出所有的订单详细信息
 				}
 			}
+
+			List<TranscwbView> TranscwbViewList = this.cwborderService.getTransCwbsListByOrderNos(allScanList);//根据输入的单号集合，获取订单-运单对应表中的信息
+			for (TranscwbView temp : TranscwbViewList) {//把所有的子单号找出来
+				if (!transCwbList.contains(temp.getTranscwb())) {
+					transCwbList.add(temp.getTranscwb());
+				}
+			}
+			transOrderList = this.cwborderService.getCwbOrderListByCwb(transCwbList);//找出所有子单对应的详细信息
 			request.getSession().setAttribute("exportcwbs", cwbs.substring(0, cwbs.length() - 1));
 			List<Customer> customerList = this.customerDao.getAllCustomers();
-			List<CustomWareHouse> customerWareHouseList = this.customWareHouseDAO.getAllCustomWareHouse();
 			List<Branch> branchList = this.branchDAO.getAllEffectBranches();
-			List<User> userList = this.userDAO.getAllUser();
 			List<Reason> reasonList = this.reasonDAO.getAllReason();
-			List<Remark> remarkList = this.remarkDAO.getRemarkByCwbs(cwbs.substring(0, cwbs.length() - 1));
-			model.addAttribute("cwbList", this.getCwbOrderView(scancwblist, cwborderlist, customerList, customerWareHouseList, branchList, userList, reasonList, remarkList));
+			//model.addAttribute("cwbList", this.getCwbOrderView(scancwblist, cwborderlist, customerList, customerWareHouseList, branchList, userList, reasonList, remarkList));
+			/*
+			 * 1、判断是否是子单？主单？普通件？
+			 * 2、如果是子单，就去运单详情表查询出子单的信息，并去订单详情表查询主单信息，综合得到子单完整的显示信息，在根据供应商集单开关和；
+			 * 	    如果是主单，则查询主单信息，并查询出所有的子单信息，综合主单信息，得到所有子单完整的显示信息
+			 * 	    如果是普通件，直接去订单详情表查询订单详情
+			 */
+			model.addAttribute("cwbList", this.cwborderService.getCwbOrderViewOfIntercept(scancwblist, cwborderlist, customerList, reasonList, transOrderList));
 			model.addAttribute("branchList", branchList);
-			model.addAttribute("customerList", customerList);
 			//model.addAttribute("reasonList", this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue()));
-			model.addAttribute("reasonList", this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.Intercept.getValue()));
+			model.addAttribute("reasonList", this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.Intercept.getValue()));//只显示拦截原因
 		}
 
 		return "auditorderstate/toTuiHuo";
@@ -1034,12 +1053,20 @@ public class CwbOrderController {
 	}
 
 	/**
-	 * 审为退货 针对所在机构是库房的不是退货状态的订单
+	 * @throws Exception
 	 *
-	 * @param model
-	 * @param request
-	 * @param cwb
-	 * @return
+	 * @Title: auditTuiHuo
+	 * @description 拦截保存方法，  1、如果是普通件，那么走原来的逻辑，（订单=主单，运单=子单）
+	 * 						 2、如果是一票多件，其子单中有部分为丢失，订单变化走原来逻辑，但是订单状态变为部分丢失，再根据货物流向配置里面下一站确定是哪一个退货组，如果没有配置，则拦截失败；子单中丢失的状态变为丢失，破损的状态变为破损，正常的变为退货
+	 * 						 3、如果是一票多件，其子单中有部分为破损，其他都是正常，订单变化走原来逻辑，但是订单状态变为部分破损，再根据货物流向配置里面下一站确定是哪一个退货组，如果没有配置，则拦截失败；子单中破损的状态变为破损，正常的变为退货
+	 * 						 4、如果是一票多件，所有子单位丢失/破损，订单变化走原来逻辑，但是订单状态变为部分丢失/破损，再根据货物流向配置里面下一站确定是哪一个退货组，如果没有配置，则拦截失败；所有子单状态变为丢失/破损
+	 * @author 刘武强
+	 * @date  2016年1月9日下午4:05:44
+	 * @param  @param model
+	 * @param  @param request
+	 * @param  @return
+	 * @return  String
+	 * @throws
 	 */
 	@RequestMapping("/auditTuiHuo")
 	public @ResponseBody String auditTuiHuo(Model model, HttpServletRequest request) {
@@ -1048,30 +1075,51 @@ public class CwbOrderController {
 		if (reasons == null) {
 			return 0 + "_s_" + 0;
 		}
+
+		List<Map<String, String>> cwbsList = new ArrayList<Map<String, String>>();//主单map集合
+		List<Map<String, Object>> transList = new ArrayList<Map<String, Object>>();//子单map集合
+		List<String> transNoList = new ArrayList<String>();//子单号集合
+		List<String> cwbNoList = new ArrayList<String>();//所有子单对应的主单号集合
 		JSONArray rJson = JSONArray.fromObject(reasons);
 		long successCount = 0;
 		long failureCount = rJson.size();
-		for (int i = 0; i < rJson.size(); i++) {
-			String reason = rJson.getString(i);
-			if (reason.equals("") || (reason.indexOf("_s_") == -1)) {
-				continue;
+
+		this.cwborderService.dealInterceptForegroundDate(rJson, cwbsList, transList, cwbNoList);//将前台的数据处理一下，便于接下来操作
+
+		for (int i = 0; i < cwbsList.size(); i++) {//普通件，按原有逻辑走，不用修改
+			Map<String, String> map = cwbsList.get(i);
+			try {
+				String scancwb = map.get("cwb");
+				this.cwborderService.auditToTuihuo(this.getSessionUser(), scancwb, scancwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), Long.valueOf(map.get("reasonid")));
+				successCount++;
+				failureCount--;
+				this.logger.info("{} 成功", map.get("cwb") + "_" + map.get("reasonid"));
+			} catch (Exception e) {
+				e.printStackTrace();
+				this.logger.error("{} 失败", map.get("cwb") + "_" + map.get("reasonid"));
 			}
-			String[] cwb_reasonid = reason.split("_s_");
-			if (cwb_reasonid.length == 2) {
-				try {
-					if (!cwb_reasonid[1].equals("0")) {
-						String scancwb = cwb_reasonid[0];
-						this.cwborderService.auditToTuihuo(this.getSessionUser(), cwb_reasonid[0], scancwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), Long.valueOf(cwb_reasonid[1]));
-						successCount++;
-						failureCount--;
-					}
-					this.logger.info("{} 成功", reason);
-				} catch (Exception e) {
-					e.printStackTrace();
-					this.logger.error("{} 失败", reason);
-				}
-			} else {
-				this.logger.info("{} 失败，格式不正确", reason);
+		}
+
+		List<TranscwbView> TranscwbViewList = this.cwborderService.getTransCwbsListByCwbNos(cwbNoList);//根据输入的主单号集合，获取订单-运单对应表中的信息
+		for (TranscwbView temp : TranscwbViewList) {//把所有的子单号找出来
+			if (!transNoList.contains(temp.getTranscwb())) {
+				transNoList.add(temp.getTranscwb());
+			}
+		}
+		List<TransCwbDetail> transOrderList = this.cwborderService.getCwbOrderListByCwb(transNoList);//找出所有子单对应的详细信息
+		List<CwbOrder> cwbOrderList = this.cwborderService.getCwbOrderListByCwbs(cwbNoList);//找出所有子单对应的主单信息
+		//处理一票多件
+		//修改子单的运单状态、操作状态、下一站、拦截原因，修改主单的订单状态、操作状态、下一站
+		for (CwbOrder cwbTemp : cwbOrderList) {
+			try {
+				this.cwborderService.dealMpsTrans(cwbTemp, transOrderList, transList, cwbOrderList);
+				//this.cwborderService.auditToTuihuo(this.getSessionUser(), scancwb, scancwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), Long.valueOf(map.get("reasonid")));
+				successCount++;
+				failureCount--;
+				//this.logger.info("{} 成功", map.get("cwb") + "_" + map.get("reasonid"));
+			} catch (Exception e) {
+				e.printStackTrace();
+				//this.logger.error("{} 失败", map.get("cwb") + "_" + map.get("reasonid"));
 			}
 		}
 

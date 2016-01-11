@@ -13,7 +13,7 @@ import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 
 @XmlRootElement
-public class CwbOrderView {
+public class CwbOrderView implements Cloneable {
 	long opscwbid; // 主键id
 	long startbranchid; // 当前所在机构id
 	long nextbranchid; // 下一站目的机构id
@@ -2176,6 +2176,15 @@ public class CwbOrderView {
 
 	public void setIsmpsflag(int ismpsflag) {
 		this.ismpsflag = ismpsflag;
+	}
+
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
 	}
 
 	public static void main(String[] args) {

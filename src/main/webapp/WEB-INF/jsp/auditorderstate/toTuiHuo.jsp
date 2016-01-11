@@ -9,7 +9,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
-List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
@@ -64,20 +63,22 @@ $(function(){
 
 function sub(){
 	var datavalue = "[";
-	for(var i = 0 ; i < $("input[name^='reason']").length ; i++){
+	
+	//原先的退货原因不用再传了，现在直传
+	/* for(var i = 0 ; i < $("input[name^='reason']").length ; i++){
 		datavalue = datavalue +"\""+$("input[name^='reason']")[i].value+"\",";
 	}
 	
 	for(var i = 0 ; i < $("select[name^='reason']").length ; i++){
 		datavalue = datavalue +"\""+$("select[name^='reason']")[i].value+"\",";
-	}
+	} */
 	
 	for(var i = 0 ; i < $("input[name^='interceptReason']").length ; i++){
-		datavalue = datavalue +"\""+$("input[name^='reason']")[i].value+"\",";
+		datavalue = datavalue +"\""+$("input[name^='interceptReason']")[i].value+"\",";
 	}
 	
 	for(var i = 0 ; i < $("select[name^='interceptReason']").length ; i++){
-		datavalue = datavalue +"\""+$("select[name^='reason']")[i].value+"\",";
+		datavalue = datavalue +"\""+$("select[interceptReason^='reason']")[i].value+"\",";
 	}
 	
 	
@@ -152,15 +153,17 @@ function exportField(){
 							<tbody>
 								<tr class="font_1" height="30" >
 									<td width="150" align="center" valign="middle" bgcolor="#f3f3f3">订单号</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">客户</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前状态</td>
-									<td width="120" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
+									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3">运单号</td>
+									<td width="70" align="center" valign="middle" bgcolor="#E7F4E3">客户</td>
+									<td width="70" align="center" valign="middle" bgcolor="#E7F4E3">订单类型</td>
+									<td width="70" align="center" valign="middle" bgcolor="#E7F4E3">当前状态</td>
+									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3">发货时间</td>
 									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">当前位置</td>
-									<td width="100" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
+									<td width="70" align="center" valign="middle" bgcolor="#E7F4E3">收件人</td>
 									<td align="center" valign="middle" bgcolor="#E7F4E3">收件地址</td>
 									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3" style="display:none;">退货原因</td>
 									<td width="150" align="center" valign="middle" bgcolor="#E7F4E3" >拦截原因</td>
+									<td width="70" align="center" valign="middle" bgcolor="#E7F4E3" >操作</td>
 								</tr>
 							</tbody>
 						</table>
@@ -175,19 +178,20 @@ function exportField(){
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
-											||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
 											||cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue())&&
 											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue())){
 									out.print("no");
 								} %>"	>
 									<td width="150" align="center" valign="middle"><%=cwb.getCwb() %></td>
-									<td width="100" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCustomername()) %></td>
-									<td width="100" align="center" valign="middle"><%=CwbOrderTypeIdEnum.getTextByValue( Integer.parseInt(cwb.getCwbordertypeid()) ) %></td>
-									<td width="100" align="center" valign="middle"><%=FlowOrderTypeEnum.getText(cwb.getFlowordertype()).getText() %></td>
-									<td width="120" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
+									<td width="150" align="center" valign="middle"><%=cwb.getTranscwb()%></td>
+									<td width="70" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCustomername()) %></td>
+									<td width="70" align="center" valign="middle"><%=CwbOrderTypeIdEnum.getTextByValue( Integer.parseInt(cwb.getCwbordertypeid()) ) %></td>
+									<td width="70" align="center" valign="middle"><%=FlowOrderTypeEnum.getText(cwb.getFlowordertype()).getText() %></td>
+									<td width="150" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
 									<td width="100" align="center" valign="middle"><%for(Branch b:branchList){if(cwb.getCurrentbranchid()==b.getBranchid()){out.print(b.getBranchname());} } %></td>
-									<td width="100" align="center" valign="middle"><%=cwb.getConsigneename() %></td>
+									<td width="70" align="center" valign="middle"><%=cwb.getConsigneename() %></td>
 									<td align="left" valign="middle"><%=cwb.getConsigneeaddress() %></td>
+									<!-- 201601109 把退货原因改为拦截原因,原先的隐藏起来 -->
 									<td width="150" align="center" valign="middle" style="display:none;">
 									<%if((cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
@@ -205,35 +209,47 @@ function exportField(){
 										</select>
 									<%} %>
 									</td>
+									
+									
 									<td width="150" align="center" valign="middle">
 									<%if((cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
-											||cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue())&&
+											||cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()
+											||cwb.getCwbstate()==CwbStateEnum.BUFENDIUSHI.getValue()
+											||cwb.getCwbstate()==CwbStateEnum.WANQUANPOSUN.getValue()
+											||cwb.getCwbstate()==CwbStateEnum.BUFENPOSUN.getValue()
+											||cwb.getCwbstate()==CwbStateEnum.DiuShi.getValue())&&
 											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue())){ %>
 											<%=cwb.getBackreason() %>
-									<input type="hidden" name="interceptReason_<%=cwb.getCwb() %>" value="<%=cwb.getScancwb() %>_intercept_0"/>
+									<input type="hidden" name="interceptReason_<%=cwb.getCwb() %>" value="<%=cwb.getScancwb() %>_intercept_0_intercept_0_intercept_<%=cwb.getCwb() %>"/>
 									<%}else{ %>
-										<select name="interceptReason_<%=cwb.getCwb() %>">
+										<select name="interceptReason_<%=cwb.getCwb() %>" style="width:140;">
 										<option value="">请选择拦截原因</option>
 										<%for(Reason r :reasonList) {
-											if(cwb.getMpsswitch() != 0 && cwb.getIsmpsflag() != 0) {%>
-											<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>">
-												<%if(r.getInterceptType() == 1){ %>
-												【丢失】
-												<%}else if(r.getInterceptType() == 2){ %>
-												【破损】
-												<%}else{ %>
-												【退货】
-												<%} %>
-												<%=r.getReasoncontent() %></option>
+											if(cwb.getIsmpsflag() != IsmpsflagEnum.no.getValue()) {%>
+												<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>_intercept_<%=cwb.getIsmpsflag() %>_intercept_<%=cwb.getCwb() %>">
+													<%if(r.getInterceptType() == InterceptTypeEnum.diushi.getValue()){ %>
+													【丢失】
+													<%}else if(r.getInterceptType() == InterceptTypeEnum.posun.getValue()){ %>
+													【破损】
+													<%}else{ %>
+													【退货】
+													<%} %>
+													<%=r.getReasoncontent() %>
+												</option>
 											<%}else{
-												if(r.getInterceptType() == 3){%>
-													<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>">【退货】<%=r.getReasoncontent() %></option>																								
+												if(r.getInterceptType() == InterceptTypeEnum.tuihuo.getValue()){%>
+													<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>_intercept_<%=cwb.getIsmpsflag() %>_intercept_<%=cwb.getCwb() %>">【退货】<%=r.getReasoncontent() %></option>																								
 										<%}}} %>
 										</select>
+									<%} %>
+									</td>
+									<td width="70" align="center" valign="middle">
+									<%if(cwb.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()){ %>
+										撤销
 									<%} %>
 									</td>
 								</tr>

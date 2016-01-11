@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
@@ -35,7 +36,7 @@ public class TransCwbDetailDAO {
 			tcd.setTranscwboptstate(rs.getInt("transcwboptstate"));
 			tcd.setCurrentbranchid(rs.getInt("currentbranchid"));
 			tcd.setPreviousbranchid(rs.getInt("previousbranchid"));
-			tcd.setNextbranchid(rs.getInt("nextbranchid"));
+			tcd.setNextbranchid(rs.getLong("nextbranchid"));
 			tcd.setCreatetime(rs.getDate("createtime") + "");
 			tcd.setModifiedtime(rs.getTimestamp("modifiedtime") + "");
 			tcd.setEmaildate(rs.getTimestamp("emaildate") + "");
@@ -66,7 +67,7 @@ public class TransCwbDetailDAO {
 				ps.setString(8, tc.getCreatetime());
 				ps.setString(9, tc.getModifiedtime());
 				ps.setString(10, tc.getEmaildate());
-				ps.setInt(11, tc.getCommonphraseid());
+				ps.setLong(11, tc.getCommonphraseid());
 				ps.setString(12, tc.getCommonphrase());
 
 			}
@@ -94,7 +95,7 @@ public class TransCwbDetailDAO {
 				ps.setString(8, tc.getCreatetime());
 				ps.setString(9, tc.getModifiedtime());
 				ps.setString(10, tc.getEmaildate());
-				ps.setInt(11, tc.getCommonphraseid());
+				ps.setLong(11, tc.getCommonphraseid());
 				ps.setString(12, tc.getCommonphrase());
 				ps.setInt(13, tc.getId());
 
@@ -181,4 +182,60 @@ public class TransCwbDetailDAO {
 			return null;
 		}
 	}
+
+	/**
+	 *
+	 * @Title: importEmbracedData
+	 * @description TODO
+	 * @author 刘武强
+	 * @date  2016年1月11日下午8:56:29
+	 * @param  @param list
+	 * @param  @param userparam
+	 * @param  @param branch
+	 * @return  void
+	 * @throws
+	 */
+	public void saveWithMount(List<TransCwbDetail> list) {
+		final String sql = "insert into express_ops_transcwb_detail(cwb,transcwb,transcwbstate,transcwboptstate,currentbranchid,previousbranchid,nextbranchid,createtime,modifiedtime,emaildate,commonphraseid,commonphrase) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
+
+		for (int i = 0; i < circleTimes; i++) {
+			int startIndex = Tools.DB_OPERATION_MAX * i;
+			int endIndex = Tools.DB_OPERATION_MAX * (i + 1);
+			if (endIndex > list.size()) {
+				endIndex = list.size();
+			}
+			if (endIndex <= 0) {
+				break;
+			}
+			final List<TransCwbDetail> tempList = list.subList(startIndex, endIndex);
+			if ((null != tempList) && !tempList.isEmpty()) {
+				this.jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps, int i) throws SQLException {
+						TransCwbDetail tc = tempList.get(i);
+						ps.setString(1, tc.getCwb());
+						ps.setString(2, tc.getTranscwb());
+						ps.setInt(3, tc.getTranscwbstate());
+						ps.setInt(4, tc.getTranscwboptstate());
+						ps.setLong(5, tc.getCurrentbranchid());
+						ps.setLong(6, tc.getPreviousbranchid());
+						ps.setLong(7, tc.getNextbranchid());
+						ps.setString(8, tc.getCreatetime());
+						ps.setString(9, tc.getModifiedtime());
+						ps.setString(10, tc.getEmaildate());
+						ps.setLong(11, tc.getCommonphraseid());
+						ps.setString(12, tc.getCommonphrase());
+					}
+
+					@Override
+					public int getBatchSize() {
+
+						return tempList.size();
+					}
+				});
+			}
+		}
+	}
+
 }
