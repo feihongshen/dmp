@@ -1994,7 +1994,7 @@ public class CwbOrderService extends BaseOrderService {
 			String sqlstr = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
 			this.jdbcTemplate.update(sqlstr, currentbranchid, co.getCwb());
 		}
-		mpsOptStateService.updateMPSInfo(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, currentbranchid,0);
+		mpsOptStateService.updateMPSInfo(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, currentbranchid,0L);
 		// ======按包到货时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
@@ -5000,10 +5000,10 @@ public class CwbOrderService extends BaseOrderService {
 			branchid = this
 					.getNextBranchid(branchid, forceOut, co, user, false);// xiugai
 		}
-		mpsOptStateService.updateMPSInfo(cwb, flowOrderTypeEnum.TuiHuoChuZhan, currentbranchid, branchid);
 		String sql = "update express_ops_cwb_detail set flowordertype=?,currentbranchid=?,startbranchid=?,nextbranchid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), 0,
 				user.getBranchid(), branchid, cwb);
+		mpsOptStateService.updateMPSInfo(cwb, flowOrderTypeEnum.TuiHuoChuZhan, currentbranchid, branchid);
 
 		// 更新订单打印的包号信息
 		if (!"".equals(co.getPackagecode())) {
