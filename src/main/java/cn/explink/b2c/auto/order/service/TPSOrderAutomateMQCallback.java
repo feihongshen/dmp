@@ -178,7 +178,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 		sub.append("<business_id></business_id>");
 		sub.append("<create_time>"+date+"</create_time>");
 		sub.append("<remark></remark>");
-		sub.append("<message>![CDATA["+falure+"]]</message>");
+		sub.append("<message><![CDATA["+falure+"]]></message>");
 		sub.append("</root>");
 		return sub.toString();
 	}
