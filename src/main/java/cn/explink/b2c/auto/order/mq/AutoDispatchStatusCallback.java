@@ -3,6 +3,7 @@ package cn.explink.b2c.auto.order.mq;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,6 @@ import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AutoInterfaceEnum;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
-import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.exception.CwbException;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.XmlUtil;
 import net.sf.json.JSONArray;
@@ -159,9 +158,10 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 		mqe.setMessage("<![CDATA["+mqe.getMessage()+"]]>");//250 length?
 		
 		String msg=XmlUtil.toXml(AutoMQExceptionDto.class, mqe); 
+		msg=StringEscapeUtils.unescapeXml(msg);
 		
 		logger.debug("反馈TPS的报文 xml:"+msg);
-
+		
 		return msg;
 	}
 	private List<AutoPickStatusVo> parseJson(String json){ 
