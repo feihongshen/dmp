@@ -10171,7 +10171,6 @@ src/main/webapp/ueditor/dialogs/wordimage/wordimage.html -text
 src/main/webapp/ueditor/dialogs/wordimage/wordimage.js -text
 src/main/webapp/ueditor/hello.html -text
 src/main/webapp/ueditor/index.html -text
-src/main/webapp/ueditor/jsp/Uploader.java -text
 src/main/webapp/ueditor/jsp/commons-fileupload-1.2.2.jar -text
 src/main/webapp/ueditor/jsp/config.properties -text
 src/main/webapp/ueditor/jsp/fileUp.jsp -text
