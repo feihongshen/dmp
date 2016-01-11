@@ -76,7 +76,7 @@ public abstract class AbstractMPSService {
 			return null;
 		}
 		// 根据运单号查询订单
-		String cwb = this.transCwbDao.getCwbByTransCwb(transCwb);
+		String cwb = this.transCwbDetailDAO.getCwbByTransCwb(transCwb);
 		if (StringUtils.isEmpty(cwb)) {
 			AbstractMPSService.LOGGER.error(logPrefix + "根据传入的运单号没有查询到相应的订单号！");
 			return null;

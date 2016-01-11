@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +34,8 @@ import cn.explink.util.Tools;
 public class MPSOptStateService extends AbstractMPSService {
 
 	private static final String UPDATE_MPS_STATE = "[更新一票多件状态]";
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MPSOptStateService.class);
 
 	@Autowired
 	private TranscwbOrderFlowDAO transcwbOrderFlowDAO;
@@ -59,6 +63,10 @@ public class MPSOptStateService extends AbstractMPSService {
 
 		// 更新运单操作状态，上一站 下一站
 		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
+		if (transCwbDetail == null) {
+			MPSOptStateService.LOGGER.error(MPSOptStateService.UPDATE_MPS_STATE + "没有查询到运单号" + transCwb + "对应的运单信息！");
+			return;
+		}
 		transCwbDetail.setCurrentbranchid(currentbranchid);
 		transCwbDetail.setModifiedtime(Tools.getCurrentTime(null));
 		transCwbDetail.setNextbranchid(nextbranchid);

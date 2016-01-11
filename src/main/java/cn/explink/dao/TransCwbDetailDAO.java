@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
@@ -121,7 +122,6 @@ public class TransCwbDetailDAO {
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new TransCwbRowMapper(), transcwb);
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
 			return null;
 		}
 	}
@@ -143,6 +143,15 @@ public class TransCwbDetailDAO {
 		return transCwbDetailList;
 	}
 
+	public String getCwbByTransCwb(String transcwb) {
+		String sql = "select cwb from express_ops_transcwb_detail where transcwb=?";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, String.class, transcwb);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * 通过id删除实体
 	 *
@@ -158,10 +167,10 @@ public class TransCwbDetailDAO {
 	 * @Title: getTransCwbDetailListByTransCwbs
 	 * @description 根据输入的子单集合，获取所有的子单详情
 	 * @author 刘武强
-	 * @date  2016年1月8日下午5:17:19
-	 * @param  @param transcwbs
-	 * @param  @return
-	 * @return  List<TransCwbDetail>
+	 * @date 2016年1月8日下午5:17:19
+	 * @param @param transcwbs
+	 * @param @return
+	 * @return List<TransCwbDetail>
 	 * @throws
 	 */
 	public List<TransCwbDetail> getTransCwbDetailListByTransCwbs(String transcwbs) {
