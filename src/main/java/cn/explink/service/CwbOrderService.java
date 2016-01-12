@@ -8196,4 +8196,29 @@ public class CwbOrderService extends BaseOrderService {
 		// 保存子单
 		this.transCwbDetailDAO.saveWithMount(cwbTransOrderList);
 	}
+
+	/**
+	 *
+	 * @Title: getNextBranchid
+	 * @description 入库前、站点到货前、中转入库前被拦截，那么入的时候下一站的获取方法
+	 * @author 刘武强
+	 * @date  2016年1月12日下午3:36:46
+	 * @param  @param currentbranchid
+	 * @param  @return
+	 * @param  @throws Exception
+	 * @return  long
+	 * @throws
+	 */
+	public long getNextBranchid(Long currentbranchid) throws Exception {
+		long nextBranchid = 0;
+		List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(currentbranchid);// 根据站点的流向配置，找到他对应的退货组
+		if ((branchidList.size() > 1)) {
+			throw new Exception("配置的下一站不唯一");
+		} else if ((branchidList.size() == 0)) {
+			throw new Exception("没有配置下一站");
+		} else {
+			nextBranchid = branchidList.get(0).getBranchid();
+		}
+		return nextBranchid;
+	}
 }
