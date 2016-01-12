@@ -1498,9 +1498,9 @@ public class CwbDAO {
 	 * @return  void
 	 * @throws
 	 */
-	public void updateCwbOnIntercept(String cwb, Long cwbstate, Long flowOrderTypeEnum, Long nextBranchid, Long backreasonid, String backreason) {
-		String sql = "update express_ops_cwb_detail set cwbstate=?,flowordertype=?,nextbranchid=?,backreasonid=?,backreason=? where cwb=? and state=1";
-		this.jdbcTemplate.update(sql, cwbstate, flowOrderTypeEnum, nextBranchid, backreasonid, backreason, cwb);
+	public void updateCwbOnIntercept(String cwb, Long cwbstate, Long flowOrderType, Long nextBranchid, Long backreasonid, String backreason, int mpsoptstate) {
+		String sql = "update express_ops_cwb_detail set cwbstate=?,flowordertype=?,nextbranchid=?,backreasonid=?,backreason=?,mpsoptstate=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, cwbstate, flowOrderType, nextBranchid, backreasonid, backreason, cwb, mpsoptstate);
 	}
 
 	public void updateNextBranchid(String cwb, long nextbranchid) {
@@ -2156,24 +2156,23 @@ public class CwbDAO {
 	// 订单拦截list(ismpsflag=1表示开启集单模式)
 	public List<CwbOrder> getBackRukuByInterceptList(long branchid, String cwbstatestrs, long page) {
 		return this.jdbcTemplate
-				.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype=? and cwbstate in("+cwbstatestrs+") and ismpsflag=1 and state=1 limit ?,? ", new CwbMapper(), branchid, FlowOrderTypeEnum.DingDanLanJie
+				.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype=? and cwbstate in(" + cwbstatestrs + ") and ismpsflag=1 and state=1 limit ?,? ", new CwbMapper(), branchid, FlowOrderTypeEnum.DingDanLanJie
 						.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
-	
+
 	public List<CwbOrder> getBackRukuByBranchidForList(long branchid, long page, long cwbordertypeid) {
 		return this.jdbcTemplate
 				.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype=? and state=1 and cwbordertypeid=? limit ?,? ", new CwbMapper(), branchid, FlowOrderTypeEnum.TuiHuoChuZhan
 						.getValue(), cwbordertypeid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
-	
+
 	// 订单拦截list(ismpsflag=1表示开启集单模式)并且订单类型为配送的
-	public List<CwbOrder> getBackRukuByInterceptList(long branchid, String cwbstatestrs,int cwbordertypeid, long page) {
+	public List<CwbOrder> getBackRukuByInterceptList(long branchid, String cwbstatestrs, int cwbordertypeid, long page) {
 		return this.jdbcTemplate
-				.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype=? and cwbstate in("+cwbstatestrs+") and ismpsflag=1 and cwbordertypeid=? and state=1 limit ?,? ", new CwbMapper(), branchid, FlowOrderTypeEnum.DingDanLanJie
-						.getValue(),cwbordertypeid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+				.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype=? and cwbstate in(" + cwbstatestrs + ") and ismpsflag=1 and cwbordertypeid=? and state=1 limit ?,? ", new CwbMapper(), branchid, FlowOrderTypeEnum.DingDanLanJie
+						.getValue(), cwbordertypeid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
-	
-	
+
 	public long getWeiLingbyBranchid(long branchid) {
 		String sql = "SELECT COUNT(1) FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=? and flowordertype in('" + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + "','" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao
 				.getValue() + "') and state=1 ";
