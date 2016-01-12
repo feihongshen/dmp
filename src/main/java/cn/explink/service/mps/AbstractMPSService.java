@@ -20,7 +20,6 @@ import cn.explink.domain.TransCwbDetail;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.support.transcwb.TransCwbDao;
-import cn.explink.support.transcwb.TranscwbView;
 
 /**
  * @author songkaojun 2016年1月8日
@@ -96,13 +95,13 @@ public abstract class AbstractMPSService {
 	}
 
 	protected List<TransCwbDetail> getSiblingTransCwbDetailList(String transCwb, String cwb) {
-		List<TranscwbView> transCwbViewList = this.getTransCwbDao().getTransCwbByCwb(cwb);
+		List<TransCwbDetail> transCwbDetailList = this.getTransCwbDetailDAO().getTransCwbDetailListByCwb(cwb);
 		List<String> siblingTransCwbList = new ArrayList<String>();
-		for (TranscwbView transcwbView : transCwbViewList) {
-			if (transcwbView.getTranscwb().equals(transCwb)) {
+		for (TransCwbDetail transCwbDetail : transCwbDetailList) {
+			if (transCwbDetail.getTranscwb().equals(transCwb)) {
 				continue;
 			}
-			siblingTransCwbList.add(transcwbView.getTranscwb());
+			siblingTransCwbList.add(transCwbDetail.getTranscwb());
 		}
 		return this.getTransCwbDetailDAO().getTransCwbDetailListByTransCwbList(siblingTransCwbList);
 	}

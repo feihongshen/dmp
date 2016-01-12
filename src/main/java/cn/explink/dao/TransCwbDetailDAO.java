@@ -37,9 +37,9 @@ public class TransCwbDetailDAO {
 			tcd.setCurrentbranchid(rs.getInt("currentbranchid"));
 			tcd.setPreviousbranchid(rs.getInt("previousbranchid"));
 			tcd.setNextbranchid(rs.getLong("nextbranchid"));
-			tcd.setCreatetime(rs.getDate("createtime") + "");
-			tcd.setModifiedtime(rs.getTimestamp("modifiedtime") + "");
-			tcd.setEmaildate(rs.getTimestamp("emaildate") + "");
+			tcd.setCreatetime(rs.getString("createtime"));
+			tcd.setModifiedtime(rs.getString("modifiedtime"));
+			tcd.setEmaildate(rs.getString("emaildate"));
 			tcd.setCommonphraseid(rs.getInt("commonphraseid"));
 			tcd.setCommonphrase(rs.getString("commonphrase"));
 			return tcd;
@@ -153,6 +153,16 @@ public class TransCwbDetailDAO {
 		}
 	}
 
+	public List<TransCwbDetail> getTransCwbDetailListByCwb(String cwb) {
+		List<TransCwbDetail> transCwbDetailList = new ArrayList<TransCwbDetail>();
+		String sql = "select * from express_ops_transcwb_detail where cwb=?";
+		try {
+			transCwbDetailList = this.jdbcTemplate.query(sql, new TransCwbRowMapper(), cwb);
+		} catch (DataAccessException e) {
+		}
+		return transCwbDetailList;
+	}
+
 	/**
 	 * 通过id删除实体
 	 *
@@ -188,11 +198,11 @@ public class TransCwbDetailDAO {
 	 * @Title: importEmbracedData
 	 * @description TODO
 	 * @author 刘武强
-	 * @date  2016年1月11日下午8:56:29
-	 * @param  @param list
-	 * @param  @param userparam
-	 * @param  @param branch
-	 * @return  void
+	 * @date 2016年1月11日下午8:56:29
+	 * @param @param list
+	 * @param @param userparam
+	 * @param @param branch
+	 * @return void
 	 * @throws
 	 */
 	public void saveWithMount(List<TransCwbDetail> list) {

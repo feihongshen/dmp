@@ -22,7 +22,6 @@ import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
-import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.Tools;
 
 /**
@@ -80,12 +79,12 @@ public class MPSOptStateService extends AbstractMPSService {
 		// 如果一票多件没有到齐，则更新为初始状态（导入数据）
 		int latestMPSState = FlowOrderTypeEnum.DaoRuShuJu.getValue();
 		if (MPSAllArrivedFlagEnum.YES.getValue() == mpsallarrivedflag) {
-			List<TranscwbView> transCwbViewList = this.getTransCwbDao().getTransCwbByCwb(cwb);
+			List<TransCwbDetail> transCwbDetailList = this.getTransCwbDetailDAO().getTransCwbDetailListByCwb(cwb);
 			Map<String, Queue<Integer>> transCwbMap = new HashMap<String, Queue<Integer>>();
 			// express_ops_transcwb_orderflow表中没有订单是否被废弃标志，两个大表连表查询性能太差，并且
 			// 一票多件子订单数量不会太多，所以选择循环查询
-			for (TranscwbView transcwbView : transCwbViewList) {
-				String transcwbInMap = transcwbView.getTranscwb();
+			for (TransCwbDetail transCwbDetail : transCwbDetailList) {
+				String transcwbInMap = transCwbDetail.getTranscwb();
 				Queue<Integer> transcwboptstateQueue = new LinkedList<Integer>();
 				transcwboptstateQueue.add(Integer.valueOf(FlowOrderTypeEnum.DaoRuShuJu.getValue()));
 				// 获取运单状态流程信息
