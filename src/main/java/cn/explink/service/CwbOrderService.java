@@ -8127,13 +8127,13 @@ public class CwbOrderService extends BaseOrderService {
 				transNum++;
 				flowOrderType = cwbTemp.getFlowordertype();
 				if ((cwbTemp.getCurrentbranchid() != 0)) {//如果下一站为0，那么说明它处于数据导入、入库、入站之前，那么这个时候下一站不变，从而使得数据导入状态直接入退货入库，未入库、未入站允许进入入库/入站
-					List<BranchRoute> branchidList = this.cwbRouteService.getNextInterceptBranch(cwbTemp.getCurrentbranchid());
+					List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(cwbTemp.getCurrentbranchid());
 					if ((branchidList.size() > 1) && (flowOrderType != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {//如果不等于导入数据，那么说明配置是错的
 						throw new Exception("配置的下一站不唯一");
 					} else if ((branchidList.size() == 0) && (flowOrderType != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {//如果不等于导入数据，那么说明配置是错的
 						throw new Exception("没有配置下一站");
 					} else {
-						nextBranchid = branchidList.get(0).getToBranchId();
+						nextBranchid = branchidList.get(0).getBranchid();
 					}
 				}
 				//先默认该运单为非拦截的，把属性set上（运单状态、操作状态、下一站），如果是拦截，可以在下面的for循环里面重新赋值

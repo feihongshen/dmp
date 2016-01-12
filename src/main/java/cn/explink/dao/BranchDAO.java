@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -233,7 +234,7 @@ public class BranchDAO {
 			return null;
 		}
 	}
-	
+
 	public List<Branch> getBranchListByIdStr(String branchidStr) {
 		try {
 			return this.jdbcTemplate.query("select * from express_set_branch where branchid in(?)", new BranchRowMapper(), branchidStr);
@@ -1094,4 +1095,23 @@ public class BranchDAO {
 			return null;
 		}
 	}
+
+	/**
+	 *
+	 * @Title: getTransCwbByOrderNoList
+	 * @description 通过站点类型和站点id集合，查找符合条件的站点
+	 * @author 刘武强
+	 * @date  2016年1月12日上午9:41:05
+	 * @param  @param cwbs
+	 * @param  @return
+	 * @return  List<TranscwbView>
+	 * @throws
+	 */
+	public List<Branch> getBranchsByBranchidAndType(String branchids, int type) {
+		List<Branch> list = new ArrayList<Branch>();
+		String sql = "select distinct * from express_set_branch where branchid in " + branchids + " and sitetype=" + type;
+		list = this.jdbcTemplate.query(sql, new BranchRowMapper());
+		return list;
+	}
+
 }

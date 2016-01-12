@@ -15,6 +15,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.BranchRouteDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchRoute;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchRouteEnum;
 
 @Service
@@ -211,9 +212,33 @@ public class CwbRouteService {
 	 * @return  List<BranchRoute>
 	 * @throws
 	 */
-	public List<BranchRoute> getNextInterceptBranch(long currentBranchid) {
-		List<BranchRoute> branchList = this.branchRouteDAO.getNextBranch(currentBranchid, BranchRouteEnum.JinDaoXiang.getValue());
+	public List<Branch> getNextInterceptBranch(long currentBranchid) {
+		List<BranchRoute> branchRouteList = this.branchRouteDAO.getNextBranch(currentBranchid, BranchRouteEnum.JinDaoXiang.getValue());
+		List<Branch> branchList = this.getKufangByBranchRoutes(branchRouteList);
 		return branchList;
+	}
+
+	/**
+	 *
+	 * @Title: getKufangByBranchRoutes
+	 * @description 根据站点配置的流向站点，查询出他对应的退货站
+	 * @author 刘武强
+	 * @date  2016年1月12日上午9:47:18
+	 * @param  @param branchList
+	 * @param  @return
+	 * @return  List<Branch>
+	 * @throws
+	 */
+	private List<Branch> getKufangByBranchRoutes(List<BranchRoute> branchList) {
+		List<Branch> list = new ArrayList<Branch>();
+		StringBuffer inStr = new StringBuffer();
+		inStr.append("('',");
+		for (int i = 0; i < branchList.size(); i++) {
+			String temp = branchList.get(i).getToBranchId() + "";
+			inStr.append("'").append(temp).append("'").append(",");
+		}
+		list = this.branchDAO.getBranchsByBranchidAndType(inStr.substring(0, inStr.length() - 1) + ")", BranchEnum.TuiHuo.getValue());
+		return list;
 	}
 
 }
