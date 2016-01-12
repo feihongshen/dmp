@@ -1897,7 +1897,7 @@ public class CwbOrderService extends BaseOrderService {
 			try {
 				NextBranchid = this.getNextBranchid(currentbranchid);
 			} catch (Exception e) {
-				throw new CwbException(cwb,flowOrderTypeEnum.DingDanLanJie.getText());
+				throw new CwbException(scancwb, e.getMessage());
 			}
 		}
 		this.mpsOptStateService.updateMPSInfo(scancwb,
@@ -2023,8 +2023,7 @@ public class CwbOrderService extends BaseOrderService {
 			try {
 				NextBranchid = this.getNextBranchid(currentbranchid);
 			} catch (Exception e) {
-				throw new CwbException(cwb,
-						flowOrderTypeEnum.DingDanLanJie.getText());
+				throw new CwbException(cwb, e.getMessage());
 			}
 		}
 
@@ -11200,6 +11199,7 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	/**
+	 * @throws Exception 
 	 *
 	 * @Title: getNextBranchid
 	 * @description 入库前、站点到货前、中转入库前被拦截，那么入的时候下一站的获取方法
@@ -11211,7 +11211,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @return long
 	 * @throws
 	 */
-	public long getNextBranchid(Long currentbranchid) throws Exception {
+	public long getNextBranchid(Long currentbranchid) throws Exception  {
 		long nextBranchid = 0;
 		List<Branch> branchidList = this.cwbRouteService
 				.getNextInterceptBranch(currentbranchid);// 根据站点的流向配置，找到他对应的退货组
