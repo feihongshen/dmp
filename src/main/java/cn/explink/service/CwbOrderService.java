@@ -8297,7 +8297,7 @@ public class CwbOrderService extends BaseOrderService {
 				cwbTransOrderList.add(temp);
 				transNum++;
 				flowOrderType = cwbTemp.getFlowordertype();
-				if ((cwbTemp.getCurrentbranchid() != 0)) {// 如果下一站为0，那么说明它处于数据导入、入库、入站之前，那么这个时候下一站不变，从而使得数据导入状态直接入退货入库，未入库、未入站允许进入入库/入站
+				if ((temp.getCurrentbranchid() != 0)) {// 如果下一站为0，那么说明它处于数据导入、入库、入站之前，那么这个时候下一站不变，从而使得数据导入状态直接入退货入库，未入库、未入站允许进入入库/入站
 					List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(cwbTemp.getCurrentbranchid());// 根据站点的流向配置，找到他对应的退货组
 					if ((branchidList.size() > 1) && (flowOrderType != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {// 如果不等于导入数据，那么说明配置是错的
 						throw new Exception("配置的下一站不唯一");

@@ -185,7 +185,13 @@ function exportField(){
 									<td width="150" align="center" valign="middle"><%=cwb.getCwb() %></td>
 									<td width="150" align="center" valign="middle"><%=cwb.getTranscwb()%></td>
 									<td width="70" align="center" valign="middle"><%=StringUtil.nullConvertToEmptyString(cwb.getCustomername()) %></td>
-									<td width="70" align="center" valign="middle"><%=CwbOrderTypeIdEnum.getTextByValue( Integer.parseInt(cwb.getCwbordertypeid()) ) %></td>
+									<td width="70" align="center" valign="middle">
+									<%if(cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue()) {%>
+										<%=CwbStateEnum.getTextByValue((int)cwb.getCwbstate() ) %>
+									<%}else{ %>
+										<%=TransCwbStateEnum.getTextByValue( (int)cwb.getCwbstate() ) %>
+									<%} %>
+									</td>
 									<td width="70" align="center" valign="middle"><%=FlowOrderTypeEnum.getText(cwb.getFlowordertype()).getText() %></td>
 									<td width="150" align="center" valign="middle"><%=cwb.getEmaildate() %></td>
 									<td width="100" align="center" valign="middle"><%for(Branch b:branchList){if(cwb.getCurrentbranchid()==b.getBranchid()){out.print(b.getBranchname());} } %></td>
@@ -253,7 +259,7 @@ function exportField(){
 									<%} %>
 									</td>
 									<td width="70" align="center" valign="middle">
-									<%if(cwb.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()){ %>
+									<%if(cwb.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue() && cwb.getCwbstate() == InterceptTypeEnum.diushi.getValue()){ %>
 										撤销
 									<%} %>
 									</td>
