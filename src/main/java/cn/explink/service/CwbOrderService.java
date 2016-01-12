@@ -1897,11 +1897,9 @@ public class CwbOrderService extends BaseOrderService {
 			try {
 				NextBranchid = this.getNextBranchid(currentbranchid);
 			} catch (Exception e) {
-				throw new CwbException(cwb,
-						flowOrderTypeEnum.DingDanLanJie.getText());
+				throw new CwbException(cwb,flowOrderTypeEnum.DingDanLanJie.getText());
 			}
 		}
-
 		this.mpsOptStateService.updateMPSInfo(scancwb,
 				FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, currentbranchid,
 				NextBranchid);
