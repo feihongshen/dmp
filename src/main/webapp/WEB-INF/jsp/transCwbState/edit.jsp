@@ -23,8 +23,11 @@
 
 $(function(){
 	$("#toflowtype").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择可操作的环节' }); 
-	$("#button").click(function(){	
-		$.post($("#from").attr("action"),{"toflowtype":$("#from").serialize()},function(data,state){
+	$("#button").click(function(){
+		
+		$.post($("#from").attr("action"),
+				{"toflowtypes":$("#from").serialize()},
+				function(data,state){
 			location.href='<%=request.getContextPath()%>/transCwbStateControl/list';
 		}	
 		,"json");	
