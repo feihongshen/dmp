@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
@@ -1387,8 +1388,9 @@ public class CwbOrderService extends BaseOrderService {
 	 */
 
 	public CwbOrder substationGoods(User user, String cwb, String scancwb, long driverid, long requestbatchno, String comment, String baleno, boolean anbaochuku) {
+		//打印日志
 		this.logger.info("开始分站到货处理,cwb:{}", cwb);
-
+		//运单获取订单
 		cwb = this.translateCwb(cwb);
 
 		return this.substationGoodsHandle(user, cwb, scancwb, user.getBranchid(), driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku);
@@ -1396,12 +1398,17 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Transactional
 	public CwbOrder substationGoodsHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long requestbatchno, String comment, boolean isauto, String baleno, Long credate, boolean anbaochuku) {
+		
+		//
 		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.SYS_SCAN_ERROR);
 		}
 
+		//added shenhongfei 分站到货验证 2016-1-21
+
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao);
 
+		//查询有没有该订单
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		/*
@@ -1410,14 +1417,15 @@ public class CwbOrderService extends BaseOrderService {
 		 * CwbException(cwb,FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(),
 		 * ExceptionCwbErrorTypeEnum.BAO_HAO_BU_CUN_ZAI); }
 		 */
-
+		//根据当前站点查询list
 		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
-
+		
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 
 		Branch cwbBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid() == 0 ? co.getNextbranchid() : co.getCurrentbranchid());
+		
 		if ((cwbBranch.getBranchid() != currentbranchid) && (userbranch.getSitetype() != BranchEnum.ZhongZhuan.getValue()) && (cwbBranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.ZHONG_ZHUAN_HUO);
 		}
@@ -1447,7 +1455,8 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-
+		//added shenhongfei 分站到货状态修改 2016.1.12
+		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, currentbranchid, 0L);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -1474,6 +1483,7 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false);
 		}
+		
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -1587,8 +1597,8 @@ public class CwbOrderService extends BaseOrderService {
 			String sqlstr = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
 			this.jdbcTemplate.update(sqlstr, currentbranchid, co.getCwb());
 		}
-		//added shenhongfei 2016.1.12
-		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, currentbranchid, 0L);
+		
+		
 		// ======按包到货时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
@@ -1746,8 +1756,9 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Transactional
 	private CwbOrder backIntoWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long requestbatchno, String comment, boolean anbaochuku) {
-		//added shenhongfei 2016-1-12
+		//added shenhongfei 退货站入库 2016-1-12
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.TuiHuoZhanRuKu);
+		
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		if (co == null) {
@@ -1771,13 +1782,14 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			} else {
 				this.handleBackIntoWarehous(user, cwb, scancwb, currentbranchid, requestbatchno, comment, co, flowOrderTypeEnum, isypdjusetranscwb, false, anbaochuku, driverid);
-				//added shenhongfei 2016-1-12
-				this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoZhanRuKu, currentbranchid, 0L);
+
+				
 			}
 		} else {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-
+		//added shenhongfei 退货站入库 2016-1-12
+		mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum.TuiHuoZhanRuKu, currentbranchid, 0L);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3486,7 +3498,9 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Transactional
 	public CwbOrder outUntreadWarehousHandle(User user, long currentbranchid, String cwb, String scancwb, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean anbaochuku) {
-
+		//added shenhongfei 退货出站 2016-1-12
+		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.TuiHuoChuZhan);
+		
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		if (co == null) {
@@ -3529,7 +3543,9 @@ public class CwbOrderService extends BaseOrderService {
 		// //原包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
-
+		
+		//added shenhongfei 退货出站 2016-1-12
+		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoChuZhan, currentbranchid, branchid);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3562,6 +3578,7 @@ public class CwbOrderService extends BaseOrderService {
 			this.handleOutUntreadWarehous(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, co, flowOrderTypeEnum, isypdjusetranscwb, true, false);
 		}
 		// disposePackageCode(packagecode, scancwb, user, co);
+		
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3628,9 +3645,7 @@ public class CwbOrderService extends BaseOrderService {
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 		}
-		//added shenhongfei 2016-1-12
-		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoChuZhan, currentbranchid, branchid);
-
+		
 	}
 
 	public CwbOrder handleDaocuohuo(User user, String cwb, String scancwb, String comment) {
@@ -3793,7 +3808,7 @@ public class CwbOrderService extends BaseOrderService {
 	@Transactional
 	public CwbOrder receiveGoodsHandle(User user, long currentbranchid, User deliveryUser, String cwb, String scancwb, boolean isauto) {
 
-		//added shenhongfei 2016-1-12
+		//added shenhongfei 小件员领货扫描 2016-1-12
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.FenZhanLingHuo);
 
 		this.deliverTakeGoodsMPSReleaseService.validateReleaseCondition(scancwb);
@@ -3838,7 +3853,8 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-
+		//added shenhongfei 领货扫描 状态修改 2016-1-12
+		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanLingHuo, currentbranchid, 0L);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3977,8 +3993,8 @@ public class CwbOrderService extends BaseOrderService {
 				.getValue(), deliveryUser.getUserid(), DeliveryStateEnum.WeiFanKui.getValue(), cwb);
 		this.cwbDAO.updateScannum(co.getCwb(), 1);
 		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.FenZhanLingHuo, "", System.currentTimeMillis(), scancwb);
-		//added shenhongfei 2016-1-12
-		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanLingHuo, currentbranchid, 0L);
+		
+
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
