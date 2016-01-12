@@ -22,7 +22,6 @@ import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
-import cn.explink.util.Tools;
 
 /**
  *
@@ -67,7 +66,6 @@ public class MPSOptStateService extends AbstractMPSService {
 			return;
 		}
 		transCwbDetail.setCurrentbranchid(currentbranchid);
-		transCwbDetail.setModifiedtime(Tools.getCurrentTime(null));
 		transCwbDetail.setNextbranchid(nextbranchid);
 		transCwbDetail.setTranscwboptstate(transcwboptstate.getValue());
 		this.getTransCwbDetailDAO().updateTransCwbDetail(transCwbDetail);
