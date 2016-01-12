@@ -188,6 +188,7 @@ import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
 import cn.explink.enumutil.StockDetailEnum;
 import cn.explink.enumutil.StockDetailStocktypeEnum;
+import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.JacksonMapper;
@@ -2047,9 +2048,9 @@ public class CwbOrderService extends BaseOrderService {
 				this.backDetailService.createBackDetail(user, cwb, flowordertype.getValue(), credate);
 			}
 			if ((customer.getIsypdjusetranscwb() == 1) && (flowordertype.getValue() == FlowOrderTypeEnum.YiFanKui.getValue())) {
-				this.fankuiAddTranscwbFlow(cwb, cwbOrder, user, flowordertype);
+				this.fankuiAddTranscwbFlow(cwb, cwbOrder, user, flowordertype,deliveryState.getDeliverystate());
 			} else if ((customer.getIsypdjusetranscwb() == 1) && (flowordertype.getValue() == FlowOrderTypeEnum.YiShenHe.getValue())) {
-				this.fankuiAddTranscwbFlow(cwb, cwbOrder, user, flowordertype);
+				this.fankuiAddTranscwbFlow(cwb, cwbOrder, user, flowordertype,deliveryState.getDeliverystate());
 			}
 		} catch (Exception e) {
 			this.logger.error("error while saveing orderflow", e);
@@ -7614,13 +7615,21 @@ public class CwbOrderService extends BaseOrderService {
 
 	}
 
-	public void fankuiAddTranscwbFlow(String cwb, CwbOrder co, User user, FlowOrderTypeEnum flowOrderTypeEnum) {
+	public void fankuiAddTranscwbFlow(String cwb, CwbOrder co, User user, FlowOrderTypeEnum flowOrderTypeEnum,long deliverystate) {
 
 		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 			CwbOrder cwborder = this.cwbDAO.getCwbByCwb(cwb);
 			for (String transcwb : cwborder.getTranscwb().split(",")) {
 				this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, transcwb, flowOrderTypeEnum, "");
-				this.mpsOptStateService.updateMPSInfo(transcwb, flowOrderTypeEnum, co.getCurrentbranchid(), co.getNextbranchid());
+				
+				if (cwborder.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
+					this.mpsOptStateService.updateMPSInfo(transcwb, flowOrderTypeEnum, co.getCurrentbranchid(), co.getNextbranchid());
+					if(deliverystate==DeliveryStateEnum.BuFenTuiHuo.getValue()||deliverystate==DeliveryStateEnum.JuShou.getValue()){
+						this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transcwb, TransCwbStateEnum.TUIHUO.getValue());
+					}
+				}
+				
+				
 			}
 		}
 	}

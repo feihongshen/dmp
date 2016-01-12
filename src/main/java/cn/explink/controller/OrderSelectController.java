@@ -94,6 +94,7 @@ import cn.explink.domain.Remark;
 import cn.explink.domain.ReturnCwbs;
 import cn.explink.domain.SetExportField;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
@@ -114,7 +115,6 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.support.transcwb.TranscwbView;
-import cn.explink.support.transcwb.TranscwbViewJiDanType;
 import cn.explink.util.DateDayUtil;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
@@ -648,13 +648,13 @@ public class OrderSelectController {
 				
 					model.addAttribute("jdtype", 1); //1为开启集单模式
 					if(order.getMpsoptstate() == 0){
-						model.addAttribute("slowtranscwbtype","");
+						model.addAttribute("slowtranscwbtype",FlowOrderTypeEnum.DaoRuShuJu.getText());
 					}else{
-						model.addAttribute("slowtranscwbtype", FlowOrderTypeEnum.getText(order.getMpsoptstate()).getText());
+						model.addAttribute("slowtranscwbtype", FlowOrderTypeEnum.getByValue(order.getMpsoptstate()) == null ? FlowOrderTypeEnum.DaoRuShuJu.getText() : FlowOrderTypeEnum.getByValue(order.getMpsoptstate()).getText());
 					}
 				} 
 			} else {// 就获取运单号的订单过程
-				String ypdjcurrentstate="";
+				//String ypdjcurrentstate="";
 				List<TranscwbOrderFlow> datalist = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(scancwb, cwb);
 				for (TranscwbOrderFlow transcwborderFlowAll : datalist) {
 					AorderFlowView a = new AorderFlowView();
@@ -663,20 +663,22 @@ public class OrderSelectController {
 					a.setContent(this.getDetailForYPDJ(transcwborderFlowAll));
 					a.setUsername(this.userDAO.getUserByUserid(transcwborderFlowAll.getUserid()).getRealname());
 					forTrans.add(a);
-					if(transcwborderFlowAll.getIsnow()==1){
-						ypdjcurrentstate=transcwborderFlowAll.getFlowordertypeText() == null ?  FlowOrderTypeEnum.DaoRuShuJu.getText() : transcwborderFlowAll.getFlowordertypeText();
-					}
+//					if(transcwborderFlowAll.getIsnow()==1){
+//						ypdjcurrentstate=transcwborderFlowAll.getFlowordertypeText() == null ?  FlowOrderTypeEnum.DaoRuShuJu.getText() : transcwborderFlowAll.getFlowordertypeText();
+//					}
 				}
 				//如果开启集单模式走下面
 				if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
+					TransCwbDetail transCwbDetail = tc.findTransCwbDetailByTransCwb(scancwb);
 					model.addAttribute("jdtranstype",1);
-				
-					model.addAttribute("ypdjcurrentstate",ypdjcurrentstate);
+					 
 					
-					if(tc.findTransCwbDetailByTransCwb(scancwb) != null){
-						model.addAttribute("transcwbstate",TransCwbStateEnum.getByValue(tc.findTransCwbDetailByTransCwb(scancwb).getTranscwbstate()).getText());
+					if(transCwbDetail != null){
+						model.addAttribute("transcwbstate",TransCwbStateEnum.getByValue(transCwbDetail.getTranscwbstate()) == null ? TransCwbStateEnum.PEISONG.getText() : TransCwbStateEnum.getByValue(transCwbDetail.getTranscwbstate()).getText());
+						model.addAttribute("ypdjcurrentstate",FlowOrderTypeEnum.getByValue(transCwbDetail.getTranscwboptstate()) == null ? FlowOrderTypeEnum.DaoRuShuJu.getText() : FlowOrderTypeEnum.getByValue(transCwbDetail.getTranscwboptstate()).getText());
 					}else{
-						model.addAttribute("transcwbstate","");
+						model.addAttribute("transcwbstate",TransCwbStateEnum.PEISONG.getText());
+						model.addAttribute("ypdjcurrentstate",FlowOrderTypeEnum.DaoRuShuJu.getText());
 					}
 					
 				}
@@ -854,11 +856,14 @@ public class OrderSelectController {
 					if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
 					
 						model.addAttribute("jdtype", 1); //1为开启集单模式
+						TransCwbDetail transCwbDetail = tc.findTransCwbDetailByTransCwb(transcwb);
 						
-						if(tc.findTransCwbDetailByTransCwb(transcwb) != null){
-							transcwbview.setTranscwbstate(TransCwbStateEnum.getByValue(tc.findTransCwbDetailByTransCwb(transcwb).getTranscwbstate()).getText());
+						if(transCwbDetail != null){
+							transcwbview.setTranscwbstate(TransCwbStateEnum.getByValue(transCwbDetail.getTranscwbstate()).getText());
+							transcwbview.setFlowordername(FlowOrderTypeEnum.getByValue(transCwbDetail.getTranscwboptstate()).getText());
 						}else{
-							transcwbview.setTranscwbstate("");
+							transcwbview.setTranscwbstate(TransCwbStateEnum.PEISONG.getText());
+							transcwbview.setFlowordername(FlowOrderTypeEnum.DaoRuShuJu.getText());
 						}
 					} 
 					

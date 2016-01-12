@@ -241,5 +241,22 @@ public class TransCwbDetailDAO {
 			}
 		}
 	}
+		
+	/**
+	 * 修改TransCwbstateByTranscwb
+	 *
+	 * @return
+	 */
+	public void updateTransCwbDetailBytranscwb(final String transcwb,final int transcwbstate) {
+		String sql = "update express_ops_transcwb_detail set transcwbstate=? where transcwb=?";
+		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
+
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setInt(1, transcwbstate);
+				ps.setString(2, transcwb);				
+			}
+		});
+	}
 
 }
