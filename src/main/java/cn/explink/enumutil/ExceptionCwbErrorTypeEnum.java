@@ -53,7 +53,7 @@ public enum ExceptionCwbErrorTypeEnum {
 			"{0}类型的订单,不允许反馈为{1}"), PeisongDan_vipshop_weiwanjie(147, "唯品会配送单状态未完结，不能操作当前揽退单:{0}"), Shangmentui_vipshop_shixiao(148, "当前操作订单{0}已失效，请关联订单{1}"), LingHuo_ZhiFuXinxiWeiQueRen(149,
 			"订单修改未审核，请联系客服人员！"), FANKUI_KUAIDIDANHAO_YIGUANLIAN(150, "此快递单号已经和其它订单关联！"), OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED(160, "一票多件货物未到齐，需要库房集单完成之后才能够处理出库操作!"), DELIVERTAKEGOODS_MPS_NOT_ALL_ARRIVED(
 			161, "一票多件货物未到齐，需要站点集单完成之后才能够分配小件员进行配送操作!"), TRANSORDER_LOST(162, "此{0}运单因{1}已导致丢失，已被客服人员操作拦截!"), TRANSORDER_BROKEN(163, "此{0}运单因{1}已导致破损，已被客服人员操作拦截，请将此件货物给到退货组！"), TRANSORDER_LOST_RETURN(
-			164, "{0}订单中的{1}运单，因{3}已丢失，请将此件货物给到退货组!"), TRANSORDER_BROKEN_RETURN(165, "{0}订单中的{1}运单，因{3}已破损，请将此件货物给到退货组!"), TRANSCWB_STATE_CONTROL_ERROR(166, "状态为{0}的运单不允许进行{1}操作");
+			164, "{0}订单中的{1}运单，因{2}已丢失，请将此件货物给到退货组!"), TRANSORDER_BROKEN_RETURN(165, "{0}订单中的{1}运单，因{2}已破损，请将此件货物给到退货组!"), TRANSCWB_STATE_CONTROL_ERROR(166, "状态为{0}的运单不允许进行{1}操作");
 
 	private int value;
 	private String text;
