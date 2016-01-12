@@ -28,6 +28,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.OrderGoods;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
@@ -635,6 +636,7 @@ public class VipShopGetCwbDataService {
 			if(Integer.valueOf(is_gathercomp)==VipGathercompEnum.Last.getValue()){ //到齐
 				mpsallarrivedflag=MPSAllArrivedFlagEnum.YES.getValue();
 			}
+			CwbOrder co =cwbDAO.getCwbByCwb(order_sn);
 			dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
 			cwbDAO.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
 			for(String pack_no:pack_nos.split(",")){
@@ -642,7 +644,7 @@ public class VipShopGetCwbDataService {
 				if(selectCwb==null){
 					transCwbDao.saveTranscwb(pack_no, order_sn);
 					cwbOrderDTO.setTranscwb(pack_no);
-					dataImportService.insertTransCwbDetail(cwbOrderDTO);
+					dataImportService.insertTransCwbDetail(cwbOrderDTO,co.getEmaildate());
 				}
 			}
 		}

@@ -547,7 +547,7 @@ public class CwbOrderService extends BaseOrderService {
 				});
 
 		if (cwbOrderDTO.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
-			this.dataImportService.insertTransCwbDetail(cwbOrderDTO);
+			this.dataImportService.insertTransCwbDetail(cwbOrderDTO,ed.getEmaildatetime());
 		}
 
 		this.createFloworder(user, user.getBranchid(), cwbOrderDTO.getCwb(), FlowOrderTypeEnum.DaoRuShuJu, "", System.currentTimeMillis(), cwbOrderDTO.getCwb());

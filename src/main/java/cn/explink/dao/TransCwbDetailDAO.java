@@ -52,7 +52,7 @@ public class TransCwbDetailDAO {
 	 * @return
 	 */
 	public void addTransCwbDetail(final TransCwbDetail tc) {
-		String sql = "insert into express_ops_transcwb_detail(cwb,transcwb,transcwbstate,transcwboptstate,currentbranchid,previousbranchid,nextbranchid,createtime,modifiedtime,emaildate,commonphraseid,commonphrase) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "insert into express_ops_transcwb_detail(cwb,transcwb,transcwbstate,transcwboptstate,currentbranchid,previousbranchid,nextbranchid,createtime,emaildate,commonphraseid,commonphrase) values(?,?,?,?,?,?,?,?,?,?,?)";
 		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
 			@Override
@@ -65,10 +65,9 @@ public class TransCwbDetailDAO {
 				ps.setLong(6, tc.getPreviousbranchid());
 				ps.setLong(7, tc.getNextbranchid());
 				ps.setString(8, tc.getCreatetime());
-				ps.setString(9, tc.getModifiedtime());
-				ps.setString(10, tc.getEmaildate());
-				ps.setLong(11, tc.getCommonphraseid());
-				ps.setString(12, tc.getCommonphrase());
+				ps.setString(9, tc.getEmaildate());
+				ps.setLong(10, tc.getCommonphraseid());
+				ps.setString(11, tc.getCommonphrase());
 
 			}
 		});

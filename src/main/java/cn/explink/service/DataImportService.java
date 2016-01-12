@@ -881,7 +881,7 @@ public class DataImportService {
 		return count;
 	}
 	
-	public void insertTransCwbDetail(CwbOrderDTO cwbOrder) {
+	public void insertTransCwbDetail(CwbOrderDTO cwbOrder,String  emaildate) {
 		for(String transcwb:cwbOrder.getTranscwb().split(",")){
 			TransCwbDetail td =	transCwbDetailDAO.findTransCwbDetailByTransCwb(transcwb);
 			if(td!=null){
@@ -897,6 +897,7 @@ public class DataImportService {
 			transcwbdetail.setPreviousbranchid(0);
 			transcwbdetail.setTranscwboptstate(FlowOrderTypeEnum.DaoRuShuJu.getValue());
 			transcwbdetail.setTranscwbstate(TransCwbStateEnum.PEISONG.getValue());
+			transcwbdetail.setEmaildate(emaildate);
 			
 			transCwbDetailDAO.addTransCwbDetail(transcwbdetail);
 		}
