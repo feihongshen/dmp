@@ -63,7 +63,7 @@ public class OrderInterceptService extends AbstractMPSService {
 		this.validateTransCwbState(transCwbDetail, transcwboptstate);
 
 		int transcwbstate = transCwbDetail.getTranscwbstate();
-		if (!OrderInterceptService.OUT_STATE_SET.contains(transcwboptstate)) {
+		if (!OrderInterceptService.OUT_STATE_SET.contains(transcwboptstate.getValue())) {
 			OrderInterceptService.LOGGER.info(OrderInterceptService.ORDER_INTERCEPT + "此操作不是【出】的环节，不需要拦截!");
 			return;
 		}

@@ -20,6 +20,7 @@ import cn.explink.service.mps.AbstractMPSService;
 public abstract class AbstractMPSReleaseService extends AbstractMPSService {
 
 	protected static final String VALIDATE_RELEASE_CONDITION = "[判断一票多件是否放行]";
+
 	protected static final Set<Integer> BEFORE_INTOWAREHOUSE_STATE = new HashSet<Integer>();
 	protected static final Set<Integer> BEFORE_SUBSTATION_GOODS_ARRIVED_STATE = new HashSet<Integer>();
 	protected static final Set<Integer> BEFORE_RETURN_TO_CUSTOMER_STATE = new HashSet<Integer>();

@@ -98,6 +98,9 @@ public class MPSOptStateService extends AbstractMPSService {
 		}
 		// 更新最晚状态到一票多件状态
 		this.getCwbDAO().updateMPSOptState(cwb, latestMPSState);
+		if (MPSOptStateService.LOGGER.isInfoEnabled()) {
+			MPSOptStateService.LOGGER.info(MPSOptStateService.UPDATE_MPS_STATE + "订单" + cwb + "一票多件状态更新为" + FlowOrderTypeEnum.getText(latestMPSState));
+		}
 	}
 
 	private int getLatestState(Map<String, Queue<Integer>> transCwbMap) {
