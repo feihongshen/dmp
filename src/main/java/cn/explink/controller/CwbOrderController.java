@@ -1079,7 +1079,8 @@ public class CwbOrderController {
 		List<Map<String, String>> cwbsList = new ArrayList<Map<String, String>>();//主单map集合
 		List<Map<String, Object>> transList = new ArrayList<Map<String, Object>>();//子单map集合
 		List<String> transNoList = new ArrayList<String>();//子单号集合
-		List<String> cwbNoList = new ArrayList<String>();//所有子单对应的主单号集合
+		List<String> cwbNoList = new ArrayList<String>();//所有子单对应的主单号集合、
+		String errMsg = "";
 		JSONArray rJson = JSONArray.fromObject(reasons);
 
 		this.cwborderService.dealInterceptForegroundDate(rJson, cwbsList, transList, cwbNoList);//将前台的数据处理一下，便于接下来操作
@@ -1103,6 +1104,7 @@ public class CwbOrderController {
 				failureCount--;
 			} catch (Exception e) {
 				e.printStackTrace();
+				errMsg = "订单号：" + map.get("cwb") + ",失败原因：" + e.getMessage() + "\n";
 			}
 		}
 
@@ -1115,10 +1117,11 @@ public class CwbOrderController {
 				failureCount--;
 			} catch (Exception e) {
 				e.printStackTrace();
+				errMsg = "订单号：" + cwbTemp.getCwb() + ",失败原因：" + e.getMessage() + "\n";
 			}
 		}
 
-		return successCount + "_s_" + failureCount;
+		return successCount + "_s_" + failureCount + "_s_" + errMsg;
 	}
 
 	/**

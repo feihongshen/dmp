@@ -93,7 +93,7 @@ function sub(){
 		data:{reasons:datavalue},
 		dataType:"html",
 		success : function(data) {
-			alert("成功修改状态："+data.split("_s_")[0]+"单\n订单状态无变动："+data.split("_s_")[1]+"单");
+			alert("成功修改状态："+data.split("_s_")[0]+"单\n订单状态无变动："+data.split("_s_")[1]+"单\n"+data.split("_s_")[2]);
 			searchForm.submit();
 		}
 	});
@@ -217,14 +217,13 @@ function exportField(){
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
-											||(cwb.getCwbstate()==TransCwbStateEnum.TUIHUO.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 											||(cwb.getCwbstate()==TransCwbStateEnum.DIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
-											||(cwb.getCwbstate()==TransCwbStateEnum.POSUN.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 											||(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
 											||(cwb.getCwbstate()==CwbStateEnum.WANQUANPOSUN.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
-											||(cwb.getCwbstate()==CwbStateEnum.BUFENDIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
-											||(cwb.getCwbstate()==CwbStateEnum.BUFENPOSUN.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
 											||(cwb.getCwbstate()==CwbStateEnum.DiuShi.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())){ %>
+											<%if((cwb.getCwbstate()==TransCwbStateEnum.DIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())){ %>
+												【丢失】
+											<%} %>
 											<%=cwb.getBackreason() %>
 									<input type="hidden" name="interceptReason_<%=cwb.getCwb() %>" value="<%=cwb.getScancwb() %>_intercept_0_intercept_0_intercept_<%=cwb.getCwb() %>"/>
 									<%}else{ %>
@@ -232,7 +231,11 @@ function exportField(){
 										<option value="">请选择拦截原因</option>
 										<%for(Reason r :reasonList) {
 											if(cwb.getIsmpsflag() != IsmpsflagEnum.no.getValue()) {%>
-												<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>_intercept_<%=cwb.getIsmpsflag() %>_intercept_<%=cwb.getCwb() %>">
+												<%if(cwb.getCwbstate() == r.getInterceptType()){ %>
+													<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>_intercept_<%=cwb.getIsmpsflag() %>_intercept_<%=cwb.getCwb() %>" selected = "selected" >
+												<%}else{ %>
+													<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>_intercept_<%=cwb.getIsmpsflag() %>_intercept_<%=cwb.getCwb() %>">
+												<%} %>
 													<%if(r.getInterceptType() == InterceptTypeEnum.diushi.getValue()){ %>
 													【丢失】
 													<%}else if(r.getInterceptType() == InterceptTypeEnum.posun.getValue()){ %>
