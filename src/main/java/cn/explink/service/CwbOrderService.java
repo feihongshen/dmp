@@ -1311,7 +1311,7 @@ public class CwbOrderService extends BaseOrderService {
 			String comment, String baleno, boolean anbaochuku, int checktype,
 			long nextbranchid) {
 		this.logger.info("开始中转站入库处理,cwb:{}", cwb);
-
+		
 		cwb = this.translateCwb(cwb);
 		long branchid = user.getBranchid();
 		if ((nextbranchid > 0) && (checktype == 1)) {
@@ -1445,7 +1445,25 @@ public class CwbOrderService extends BaseOrderService {
 					requestbatchno, comment, isauto, co, flowOrderTypeEnum,
 					isypdjusetranscwb, true, credate, false, driverid);
 		}
-
+		//中转站入库一票多件操作===LX
+		//=======开始=======
+		long nextBranchid = 0;
+		long flowOrderType = co.getFlowordertype();
+		if ((co.getCurrentbranchid() != 0)) {// 如果下一站为0，那么说明它处于数据导入、入库、入站之前，那么这个时候下一站不变，从而使得数据导入状态直接入退货入库，未入库、未入站允许进入入库/入站
+			List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(co.getCurrentbranchid());// 根据站点的流向配置，找到他对应的退货组
+			if ((branchidList.size() > 1) && (flowOrderType != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {// 如果不等于导入数据，那么说明配置是错的
+				//throw new Exception("配置的下一站不唯一");
+				nextBranchid = 0;
+			} else if ((branchidList.size() == 0) && (flowOrderType != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {// 如果不等于导入数据，那么说明配置是错的
+				//throw new Exception("没有配置下一站");
+				nextBranchid = 0;
+			} else {
+				nextBranchid = branchidList.get(0).getBranchid();
+			}
+		}
+		long nextbranchid = co.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue()?nextBranchid:0;
+		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, nextbranchid);//更新订单一票多件状态和运单状态
+		//=======结束=======
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3122,6 +3140,7 @@ public class CwbOrderService extends BaseOrderService {
 			long reasonid, boolean iszhongzhuanout, boolean anbaochuku) {
 
 		this.logger.info("开始中转站出库处理,cwb:{}", cwb);
+		
 		cwb = this.translateCwb(cwb);
 
 		return this.changeOutWarehousHandle(user, cwb, scancwb,
@@ -3138,6 +3157,9 @@ public class CwbOrderService extends BaseOrderService {
 			String comment, String packagecode, boolean isauto, long reasonid,
 			boolean iszhongzhuanout, Long credate, boolean anbaochuku,
 			boolean checkUserBranchZhongZhuang) {
+		// 如果被拦截，则给出提示
+		this.orderInterceptService.checkTransCwbIsIntercept(scancwb,FlowOrderTypeEnum.ZhongZhuanZhanChuKu);
+		
 		Branch ifBranch = this.branchDAO
 				.getQueryBranchByBranchid(currentbranchid);
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
@@ -3333,6 +3355,8 @@ public class CwbOrderService extends BaseOrderService {
 		// //包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
+		//一票多件（新增业务处理）更新==LX==
+		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, branchid);//更新订单一票多件状态和运单状态
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
