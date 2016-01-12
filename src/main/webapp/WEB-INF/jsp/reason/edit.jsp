@@ -1,5 +1,7 @@
+<%@page import="cn.explink.enumutil.InterceptTypeEnum"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.enumutil.ReasonTypeEnum"%>
+<%@page import="cn.explink.enumutil.InterceptTypeEnum"%>
 <%@page import="cn.explink.domain.Reason"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
@@ -41,19 +43,19 @@ String firstreason= request.getAttribute("firstreason")==null?null:(String)reque
 		          	   <%if(reason.getReasontype()==15){ %> 
 			           <li><span id="interceptType" style="margin-left: 50px;width:180px;" align="left">
 				           <%if( reason.getInterceptType() == 3){ %> 
-				          		<input type="radio" id="intercept_3" name="intercept_type"  checked="checked" value='3'>退货
+				          		<input type="radio" id="intercept_3" name="intercept_type"  checked="checked" value='<%=InterceptTypeEnum.tuihuo.getValue() %>'><%=InterceptTypeEnum.tuihuo.getText() %>
 				           <%}else{ %>
-				           		<input type="radio" id="intercept_3" name="intercept_type"  value='3'>退货
+				           		<input type="radio" id="intercept_3" name="intercept_type"  value='<%=InterceptTypeEnum.tuihuo.getValue() %>'><%=InterceptTypeEnum.tuihuo.getText() %>
 				           <%} %>
 				          <%if( reason.getInterceptType() == 1){ %> 
-				          		<input type="radio" id="intercept_1" name="intercept_type"  checked="checked" value='1'>丢失
+				          		<input type="radio" id="intercept_1" name="intercept_type"  checked="checked" value='<%=InterceptTypeEnum.diushi.getValue() %>'><%=InterceptTypeEnum.diushi.getText() %>
 				           <%}else{ %>
-				           		<input type="radio" id="intercept_1" name="intercept_type" value='1'>丢失
+				           		<input type="radio" id="intercept_1" name="intercept_type" value='<%=InterceptTypeEnum.diushi.getValue() %>'><%=InterceptTypeEnum.diushi.getText() %>
 				           <%} %>
 				            <%if(reason.getInterceptType() == 2){ %> 
-				          		<input type="radio" id="intercept_2" name="intercept_type" checked="checked"  value='2'>破损 
+				          		<input type="radio" id="intercept_2" name="intercept_type" checked="checked"  value='<%=InterceptTypeEnum.posun.getValue() %>'><%=InterceptTypeEnum.posun.getText() %>
 				           <%}else{ %>
-				           		<input type="radio" id="intercept_2" name="intercept_type"  value='2'>破损 
+				           		<input type="radio" id="intercept_2" name="intercept_type"  value='<%=InterceptTypeEnum.posun.getValue() %>'><%=InterceptTypeEnum.posun.getText() %>
 				           <%} %>
 				           
 			           </span></li>

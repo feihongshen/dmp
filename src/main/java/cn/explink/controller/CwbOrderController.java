@@ -1081,25 +1081,8 @@ public class CwbOrderController {
 		List<String> transNoList = new ArrayList<String>();//子单号集合
 		List<String> cwbNoList = new ArrayList<String>();//所有子单对应的主单号集合
 		JSONArray rJson = JSONArray.fromObject(reasons);
-		long successCount = 0;
-		long failureCount = rJson.size();
 
 		this.cwborderService.dealInterceptForegroundDate(rJson, cwbsList, transList, cwbNoList);//将前台的数据处理一下，便于接下来操作
-
-		for (int i = 0; i < cwbsList.size(); i++) {//普通件，按原有逻辑走，不用修改
-			Map<String, String> map = cwbsList.get(i);
-			try {
-				String scancwb = map.get("cwb");
-				this.cwborderService.auditToTuihuo(this.getSessionUser(), scancwb, scancwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), Long.valueOf(map.get("reasonid")));
-				successCount++;
-				failureCount--;
-				this.logger.info("{} 成功", map.get("cwb") + "_" + map.get("reasonid"));
-			} catch (Exception e) {
-				e.printStackTrace();
-				this.logger.error("{} 失败", map.get("cwb") + "_" + map.get("reasonid"));
-			}
-		}
-
 		List<TranscwbView> TranscwbViewList = this.cwborderService.getTransCwbsListByCwbNos(cwbNoList);//根据输入的主单号集合，获取订单-运单对应表中的信息
 		for (TranscwbView temp : TranscwbViewList) {//把所有的子单号找出来
 			if (!transNoList.contains(temp.getTranscwb())) {
@@ -1108,18 +1091,30 @@ public class CwbOrderController {
 		}
 		List<TransCwbDetail> transOrderList = this.cwborderService.getCwbOrderListByCwb(transNoList);//找出所有子单对应的详细信息
 		List<CwbOrder> cwbOrderList = this.cwborderService.getCwbOrderListByCwbs(cwbNoList);//找出所有子单对应的主单信息
+
+		long successCount = 0;
+		long failureCount = cwbsList.size() + cwbOrderList.size();
+		for (int i = 0; i < cwbsList.size(); i++) {//普通件，按原有逻辑走，不用修改
+			Map<String, String> map = cwbsList.get(i);
+			try {
+				String scancwb = map.get("cwb");
+				this.cwborderService.auditToTuihuo(this.getSessionUser(), scancwb, scancwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), Long.valueOf(map.get("reasonid")));
+				successCount++;
+				failureCount--;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		//处理一票多件
 		//修改子单的运单状态、操作状态、下一站、拦截原因，修改主单的订单状态、操作状态、下一站
 		for (CwbOrder cwbTemp : cwbOrderList) {
 			try {
 				this.cwborderService.dealMpsTrans(cwbTemp, transOrderList, transList, cwbOrderList);
-				//this.cwborderService.auditToTuihuo(this.getSessionUser(), scancwb, scancwb, FlowOrderTypeEnum.DingDanLanJie.getValue(), Long.valueOf(map.get("reasonid")));
 				successCount++;
 				failureCount--;
-				//this.logger.info("{} 成功", map.get("cwb") + "_" + map.get("reasonid"));
 			} catch (Exception e) {
 				e.printStackTrace();
-				//this.logger.error("{} 失败", map.get("cwb") + "_" + map.get("reasonid"));
 			}
 		}
 

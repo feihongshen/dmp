@@ -78,7 +78,7 @@ function sub(){
 	}
 	
 	for(var i = 0 ; i < $("select[name^='interceptReason']").length ; i++){
-		datavalue = datavalue +"\""+$("select[interceptReason^='reason']")[i].value+"\",";
+		datavalue = datavalue +"\""+$("select[name^='interceptReason']")[i].value+"\",";
 	}
 	
 	
@@ -212,17 +212,19 @@ function exportField(){
 									
 									
 									<td width="150" align="center" valign="middle">
-									<%if((cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
+									<%if(cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
-											||cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue()
-											||cwb.getCwbstate()==CwbStateEnum.BUFENDIUSHI.getValue()
-											||cwb.getCwbstate()==CwbStateEnum.WANQUANPOSUN.getValue()
-											||cwb.getCwbstate()==CwbStateEnum.BUFENPOSUN.getValue()
-											||cwb.getCwbstate()==CwbStateEnum.DiuShi.getValue())&&
-											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue())){ %>
+											||(cwb.getCwbstate()==TransCwbStateEnum.TUIHUO.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+											||(cwb.getCwbstate()==TransCwbStateEnum.DIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+											||(cwb.getCwbstate()==TransCwbStateEnum.POSUN.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+											||(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
+											||(cwb.getCwbstate()==CwbStateEnum.WANQUANPOSUN.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
+											||(cwb.getCwbstate()==CwbStateEnum.BUFENDIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
+											||(cwb.getCwbstate()==CwbStateEnum.BUFENPOSUN.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
+											||(cwb.getCwbstate()==CwbStateEnum.DiuShi.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())){ %>
 											<%=cwb.getBackreason() %>
 									<input type="hidden" name="interceptReason_<%=cwb.getCwb() %>" value="<%=cwb.getScancwb() %>_intercept_0_intercept_0_intercept_<%=cwb.getCwb() %>"/>
 									<%}else{ %>

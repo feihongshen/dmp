@@ -243,8 +243,7 @@ public class CwbDAO {
 			//mpsallarrivedflag
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
-			
-			
+
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 
 			return cwbOrder;
@@ -355,11 +354,10 @@ public class CwbDAO {
 			obj.put("receivedfee", rs.getBigDecimal("receivedfee"));
 			obj.put("deliverytime", rs.getString("deliverytime"));
 			obj.put("pushtime", rs.getString("pushtime"));
-			
-			
+
 			obj.put("mpsoptstate", rs.getInt("mpsoptstate"));
 			obj.put("mpsallarrivedflag", rs.getInt("mpsallarrivedflag"));
-			
+
 			return obj;
 		}
 
@@ -801,7 +799,7 @@ public class CwbDAO {
 			cwbOrder.setShenhetime(rs.getString("shenhetime"));
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
-			
+
 			CwbDAO.this.setValueByUser(rs, cwbOrder);
 			try {
 				if (rs.getString("chuzhantime") != null) {
@@ -6210,7 +6208,7 @@ public class CwbDAO {
 
 	public List<CwbOrder> getCwbsBycwbs(String cwbsStr) {
 		try {
-			String sql = "select * from express_ops_cwb_detail where cwb in(" + cwbsStr + ") and state=1";
+			String sql = "select * from express_ops_cwb_detail where cwb in" + cwbsStr + " and state=1";
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -6500,8 +6498,9 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
-	public void updateTmsPackageCondition(String cwb, String transcwb, int sendcarnum, int mpsallarrivedflag,int ismpsflag) {
-		this.jdbcTemplate.update("update express_ops_cwb_detail set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=?  where cwb=? and state = 1  ", transcwb, sendcarnum, mpsallarrivedflag,ismpsflag, cwb);
+	public void updateTmsPackageCondition(String cwb, String transcwb, int sendcarnum, int mpsallarrivedflag, int ismpsflag) {
+		this.jdbcTemplate
+				.update("update express_ops_cwb_detail set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=?  where cwb=? and state = 1  ", transcwb, sendcarnum, mpsallarrivedflag, ismpsflag, cwb);
 	}
 
 	public void updateMPSOptState(String cwb, int mpsoptstate) {

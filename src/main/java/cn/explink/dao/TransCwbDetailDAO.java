@@ -205,7 +205,7 @@ public class TransCwbDetailDAO {
 	 * @throws
 	 */
 	public void saveWithMount(List<TransCwbDetail> list) {
-		final String sql = "insert into express_ops_transcwb_detail(cwb,transcwb,transcwbstate,transcwboptstate,currentbranchid,previousbranchid,nextbranchid,createtime,modifiedtime,emaildate,commonphraseid,commonphrase) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+		final String sql = "update express_ops_transcwb_detail set cwb=?,transcwbstate=?,transcwboptstate=?,nextbranchid=?,commonphraseid=?,commonphrase=? where transcwb=?";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
 
 		for (int i = 0; i < circleTimes; i++) {
@@ -224,17 +224,12 @@ public class TransCwbDetailDAO {
 					public void setValues(PreparedStatement ps, int i) throws SQLException {
 						TransCwbDetail tc = tempList.get(i);
 						ps.setString(1, tc.getCwb());
-						ps.setString(2, tc.getTranscwb());
-						ps.setInt(3, tc.getTranscwbstate());
-						ps.setInt(4, tc.getTranscwboptstate());
-						ps.setLong(5, tc.getCurrentbranchid());
-						ps.setLong(6, tc.getPreviousbranchid());
-						ps.setLong(7, tc.getNextbranchid());
-						ps.setString(8, tc.getCreatetime());
-						ps.setString(9, tc.getModifiedtime());
-						ps.setString(10, tc.getEmaildate());
-						ps.setLong(11, tc.getCommonphraseid());
-						ps.setString(12, tc.getCommonphrase());
+						ps.setInt(2, tc.getTranscwbstate());
+						ps.setInt(3, tc.getTranscwboptstate());
+						ps.setLong(4, tc.getNextbranchid());
+						ps.setLong(5, tc.getCommonphraseid());
+						ps.setString(6, tc.getCommonphrase());
+						ps.setString(7, tc.getTranscwb());
 					}
 
 					@Override
