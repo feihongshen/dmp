@@ -1911,7 +1911,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		// added shenhongfei 分站到货状态修改 2016.1.12
 		Long NextBranchid = 0L;
-		if (co.getFlowordertype() == flowOrderTypeEnum.getValue()) {
+		if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
 			try {
 				NextBranchid = this.getNextBranchid(currentbranchid);
 			} catch (Exception e) {
@@ -2037,7 +2037,7 @@ public class CwbOrderService extends BaseOrderService {
 				flowOrderTypeEnum.getValue(), co.getCwb());
 		// added shenhongfei 分站到货状态修改 2016.1.12
 		Long NextBranchid = 0L;
-		if (co.getFlowordertype() == flowOrderTypeEnum.getValue()) {
+		if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
 			try {
 				NextBranchid = this.getNextBranchid(currentbranchid);
 			} catch (Exception e) {
