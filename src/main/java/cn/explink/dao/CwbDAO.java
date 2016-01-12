@@ -2093,11 +2093,26 @@ public class CwbDAO {
 	}
 
 	public Smtcount getBackRukubyBranchidsmt(long branchid) {
-		String sql = "SELECT COUNT(1) count," + "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount," + "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount," + "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount" + " FROM express_ops_cwb_detail FORCE INDEX(detail_nextbranchid_idx) ";
+		String sql =  "SELECT COUNT(1) count," 
+					+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount," 
+					+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount," 
+					+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount" 
+					+ " FROM express_ops_cwb_detail FORCE INDEX(detail_nextbranchid_idx) ";
 		sql += "WHERE nextbranchid =? and currentbranchid=0 and flowordertype='" + FlowOrderTypeEnum.TuiHuoChuZhan.getValue() + "' and state=1 ";
 		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid);
 	}
 
+	//统计订单拦截时配送单的量
+	public Smtcount getBackRukubyInterceptsmt(long branchid) {
+		String sql =  "SELECT COUNT(1) count," 
+				 	+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount," 
+				 	+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount," 
+				 	+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount" 
+				 	+ " FROM express_ops_cwb_detail FORCE INDEX(detail_nextbranchid_idx) ";
+		sql += "WHERE nextbranchid =? and currentbranchid=0 and flowordertype='" + FlowOrderTypeEnum.DingDanLanJie.getValue() + "' and state=1 and ismpsflag=1";
+		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid);
+	}
+	
 	public Smtcount getBackAndChangeRukubyBranchids(String branchids, long flowordertype) {
 		String sql = "SELECT COUNT(1) count," + "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount," + "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount," + "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount" + " FROM express_ops_operation_time FORCE INDEX(OTime_nextbranchid_Idx) ";
 		sql += "WHERE nextbranchid in(" + branchids + ") and flowordertype=" + flowordertype + " ";

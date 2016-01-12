@@ -6249,7 +6249,10 @@ public class PDAController {
 		obj.put("yps", ysmtcount.getPscount());
 		obj.put("ysmh", ysmtcount.getSmhcount());
 		obj.put("ysmt", ysmtcount.getSmtcount());
-		obj.put("wps", wsmtcount.getPscount());
+		//新增一票多件处理时【订单拦截】订单统计到退后站待入库（未入库）明细
+		Smtcount wsmtInterceptcount = this.cwbDAO.getBackRukubyInterceptsmt(branchid);
+		long pscount = wsmtcount.getPscount() + wsmtInterceptcount.getPscount();
+		obj.put("wps", pscount);
 		obj.put("wsmh", wsmtcount.getSmhcount());
 		obj.put("wsmt", wsmtcount.getSmtcount());
 		return obj;
