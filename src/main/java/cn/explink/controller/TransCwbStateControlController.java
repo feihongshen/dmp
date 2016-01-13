@@ -48,18 +48,27 @@ public String getEdittransCwbStateControl(Model model,@PathVariable(value="trans
 	
 }
 @RequestMapping("/save/{transcwbstate}")
-public @ResponseBody String saveTransCwbStateControl(@PathVariable(value="transcwbstate")int transcwbstate,@RequestParam(value="toflowtype",required=false,defaultValue="")String[] toflowtype){
+public  @ResponseBody String saveTransCwbStateControl(@PathVariable(value="transcwbstate")int transcwbstate,@RequestParam(value = "toflowtype", required = false, defaultValue = "") String[] toflowtype){
 	
 	this.transcwbstateControlDAO.deleteTranStateControl(transcwbstate);
-	if(toflowtype.length>0){
+	
 		for (String flowtype : toflowtype) {
 			this.transcwbstateControlDAO.createTransStateControl(transcwbstate, Integer.parseInt(flowtype));
 		}
-	}
+	
 	
 	return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 }
+/*@RequestMapping("/save/{transcwbstate}")
+public @ResponseBody String save(@PathVariable("transcwbstate") int transcwbstate, @RequestParam(value = "tostate", required = false, defaultValue = "") String[] tostates) {
+
+	this.transcwbstateControlDAO.deleteTranStateControl(transcwbstate);
+		for (String tostate : tostates) {
+			this.transcwbstateControlDAO.createTransStateControl(transcwbstate, Integer.parseInt(tostate));
+		}
 	
+	return "{\"errorCode\":0,\"error\":\"保存成功\"}";
+}*/
 
 
 }

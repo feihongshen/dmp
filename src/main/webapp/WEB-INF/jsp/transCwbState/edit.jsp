@@ -23,15 +23,27 @@
 
 $(function(){
 	$("#toflowtype").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择可操作的环节' }); 
-	$("#button").click(function(){	
-		$.post($("#from").attr("action"),{"toflowtypes":$("#from").serialize()},function(data,state){
-			location.href='<%=request.getContextPath()%>/transCwbStateControl/list';
+	<%--  $("#button").click(function(){	
+		$.post($("#from").attr("action"),{"toflowtypes":$("#from").serialize()},
+				function(data,state){
+			alert(data)
+			window.location.href='<%=request.getContextPath()%>/transCwbStateControl/list';
 		}	
 		,"json");	
-	}); 
+	});   --%>
 });
 
-
+ function buttonSave(form){
+	$.ajax({
+		type: "POST",
+		url:$(form).attr("action"),
+		data:$(form).serialize(),
+		dataType:"json",
+		success : function(data) {
+			location.href='<%=request.getContextPath()%>/transCwbStateControl/list';
+		}
+	});
+} 
 
 </script>
 </head>
@@ -39,7 +51,7 @@ $(function(){
 <div id="box_in_bg">
 <h2>运单状态修改</h2>
 </div> 
-<form id="from"   action="<%=request.getContextPath() %>/transCwbStateControl/save/<%=transcwbstate %>" method="post">
+<form id="from" onSubmit="buttonSave(this);return false;"   action="<%=request.getContextPath() %>/transCwbStateControl/save/<%=transcwbstate %>" method="post">
 <div id="box_form">
 <ul>
 <li><span >当前状态：</span><% for(TransCwbStateEnum em:TransCwbStateEnum.values()){ if(em.getValue()==transcwbstate){%><%=em.getText() %><% } }%></li>
