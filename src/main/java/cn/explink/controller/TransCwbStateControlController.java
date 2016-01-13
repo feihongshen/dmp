@@ -48,11 +48,11 @@ public String getEdittransCwbStateControl(Model model,@PathVariable(value="trans
 	
 }
 @RequestMapping("/save/{transcwbstate}")
-public @ResponseBody String saveTransCwbStateControl(@PathVariable(value="transcwbstate")int transcwbstate,@RequestParam(value="toflowtypes",required=false,defaultValue="")String[] toflowtypes){
+public @ResponseBody String saveTransCwbStateControl(@PathVariable(value="transcwbstate")int transcwbstate,@RequestParam(value="toflowtype",required=false,defaultValue="")String[] toflowtype){
 	
 	this.transcwbstateControlDAO.deleteTranStateControl(transcwbstate);
-	if(toflowtypes.length>0){
-		for (String flowtype : toflowtypes) {
+	if(toflowtype.length>0){
+		for (String flowtype : toflowtype) {
 			this.transcwbstateControlDAO.createTransStateControl(transcwbstate, Integer.parseInt(flowtype));
 		}
 	}
