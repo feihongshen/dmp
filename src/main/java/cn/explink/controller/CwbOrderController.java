@@ -879,7 +879,7 @@ public class CwbOrderController {
 			//model.addAttribute("cwbList", this.getCwbOrderView(scancwblist, cwborderlist, customerList, customerWareHouseList, branchList, userList, reasonList, remarkList));
 			/*
 			 * 1、判断是否是子单？主单？普通件？
-			 * 2、如果是子单，就去运单详情表查询出子单的信息，并去订单详情表查询主单信息，综合得到子单完整的显示信息，在根据供应商集单开关和；
+			 * 2、如果是子单，就去运单详情表查询出子单的信息，并去订单详情表查询主单信息，综合得到子单完整的显示信息；
 			 * 	    如果是主单，则查询主单信息，并查询出所有的子单信息，综合主单信息，得到所有子单完整的显示信息
 			 * 	    如果是普通件，直接去订单详情表查询订单详情
 			 */
