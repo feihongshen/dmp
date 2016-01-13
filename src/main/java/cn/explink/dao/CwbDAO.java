@@ -1500,7 +1500,7 @@ public class CwbDAO {
 	 */
 	public void updateCwbOnIntercept(String cwb, Long cwbstate, Long flowOrderType, Long nextBranchid, Long backreasonid, String backreason, int mpsoptstate) {
 		String sql = "update express_ops_cwb_detail set cwbstate=?,flowordertype=?,nextbranchid=?,backreasonid=?,backreason=?,mpsoptstate=? where cwb=? and state=1";
-		this.jdbcTemplate.update(sql, cwbstate, flowOrderType, nextBranchid, backreasonid, backreason, cwb, mpsoptstate);
+		this.jdbcTemplate.update(sql, cwbstate, flowOrderType, nextBranchid, backreasonid, backreason, mpsoptstate, cwb);
 	}
 
 	public void updateNextBranchid(String cwb, long nextbranchid) {
