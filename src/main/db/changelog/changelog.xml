@@ -8743,13 +8743,7 @@ CREATE TABLE `cs_complaint_accept` (
 			  ADD COLUMN `ifjidan` BIGINT(5) DEFAULT 0  NULL  COMMENT '是否开启集单' AFTER `pfruleid`;		
 		</sql>
 	</changeSet>
-	
-		<changeSet id="wangzhiyong-2016-01-07-01" author="wangzhiyong">
-		<sql>
-			ALTER TABLE `express_set_customer_info`
-			  ADD COLUMN `jd_type` BIGINT(5) DEFAULT 0  NULL  COMMENT '集单类型' AFTER `ifjidan`;		
-		</sql>
-	</changeSet>
+
 	
 	<changeSet id="zhangpengkai-2016-01-13-01" author="zhangpengkai">
 		<sql>
