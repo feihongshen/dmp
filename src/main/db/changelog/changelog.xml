@@ -8856,4 +8856,11 @@ CREATE TABLE `cs_complaint_accept` (
 		INSERT INTO `dmp40_function` VALUES ('3042', 1, '自动化MQ连接管理', '3042', 'mqconfig/list?', '30');
 		</sql>
 	</changeSet>
+		<changeSet id="zhangpengkai-2016-01-13" author="zhangpengkai">
+		<sql>
+			ALTER TABLE `express_ops_transcwb` ADD INDEX `cwb_idx` (`cwb`); 
+		</sql>
+	</changeSet> 
+	
+	
 </databaseChangeLog>
