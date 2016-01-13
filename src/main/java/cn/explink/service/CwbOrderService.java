@@ -1199,7 +1199,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		// 中转站入库一票多件操作===LX
 		// =======开始=======
-		long nextBranchid = 0;
+		/*long nextBranchid = 0;
 		long flowOrderType = co.getFlowordertype();
 		if ((co.getCurrentbranchid() != 0)) {// 如果下一站为0，那么说明它处于数据导入、入库、入站之前，那么这个时候下一站不变，从而使得数据导入状态直接入退货入库，未入库、未入站允许进入入库/入站
 			List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(co.getCurrentbranchid());// 根据站点的流向配置，找到他对应的退货组
@@ -1212,8 +1212,11 @@ public class CwbOrderService extends BaseOrderService {
 			} else {
 				nextBranchid = branchidList.get(0).getBranchid();
 			}
+		}*/
+		Long nextbranchid = co.getNextbranchid();
+		if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
+			nextbranchid = this.getNextBranchid(cwb, currentbranchid);
 		}
-		long nextbranchid = co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue() ? nextBranchid : 0;
 		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, nextbranchid);// 更新订单一票多件状态和运单状态
 		// =======结束=======
 		return this.cwbDAO.getCwbByCwb(cwb);
