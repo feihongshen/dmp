@@ -2101,7 +2101,17 @@ public class CwbDAO {
 		sql += "WHERE nextbranchid =? and currentbranchid=0 and flowordertype='" + FlowOrderTypeEnum.TuiHuoChuZhan.getValue() + "' and state=1 ";
 		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid);
 	}
-
+	//包含订单拦截的统计数量
+	public Smtcount getBackRukubyBranchidsmtAll(long branchid) {
+		String sql =  "SELECT COUNT(1) count," 
+					+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount," 
+					+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount," 
+					+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount" 
+					+ " FROM express_ops_cwb_detail FORCE INDEX(detail_nextbranchid_idx) ";
+		sql += "WHERE nextbranchid =? and currentbranchid=0 and state=1 ";
+		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid);
+	}
+	
 	//统计订单拦截时配送单的量
 	public Smtcount getBackRukubyInterceptsmt(long branchid) {
 		String sql =  "SELECT COUNT(1) count," 
@@ -2168,6 +2178,13 @@ public class CwbDAO {
 						.getValue(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
+	// 退货入库待入库list(包含订单拦截的待退货入库)
+	public List<CwbOrder> getBackRukuByBranchidForListAll(long branchid, long page) {
+		return this.jdbcTemplate
+				.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and state=1 limit ?,? ", new CwbMapper(), branchid,
+				(page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+	
 	// 订单拦截list(ismpsflag=1表示开启集单模式)
 	public List<CwbOrder> getBackRukuByInterceptList(long branchid, String cwbstatestrs, long page) {
 		return this.jdbcTemplate
@@ -2181,6 +2198,13 @@ public class CwbDAO {
 						.getValue(), cwbordertypeid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
+	//包含订单拦截的待退货入库的配送单明细
+	public List<CwbOrder> getBackRukuByBranchidForListAll(long branchid, long page, long cwbordertypeid) {
+		return this.jdbcTemplate
+				.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and state=1 and cwbordertypeid=? limit ?,? ", new CwbMapper(), branchid,
+						cwbordertypeid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+	}
+	
 	// 订单拦截list(ismpsflag=1表示开启集单模式)并且订单类型为配送的
 	public List<CwbOrder> getBackRukuByInterceptList(long branchid, String cwbstatestrs, int cwbordertypeid, long page) {
 		return this.jdbcTemplate

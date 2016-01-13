@@ -2201,11 +2201,12 @@ public class PDAController {
 		 * CwbOrderTypeIdEnum.Shangmentui.getValue()) { yshangmentui.add(cwb); }
 		 * }
 		 */
-		List<CwbOrder> cwbAllList = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1);
-		
+		//List<CwbOrder> cwbAllList = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1);
+		//包含订单拦截后的 待退货入库===LX
+		List<CwbOrder> cwbAllList = this.cwbDAO.getBackRukuByBranchidForListAll(this.getSessionUser().getBranchid(), 1);
 		//退货站未入库统计增加订单拦截订单====LX
 		//========新增（开始）===========
-		String cwbstatestrs = CwbStateEnum.TuiHuo.getValue()+","
+		/*String cwbstatestrs = CwbStateEnum.TuiHuo.getValue()+","
 							+ CwbStateEnum.DiuShi.getValue()+","
 							+ CwbStateEnum.BUFENDIUSHI.getValue()+","
 							+ CwbStateEnum.WANQUANPOSUN.getValue()+","
@@ -2214,21 +2215,23 @@ public class PDAController {
 		
 		if((cwbInterceptList!=null)&&(!cwbInterceptList.isEmpty())){
 			cwbAllList.addAll(cwbInterceptList);
-		}
+		}*/
 		//========新增（结束）===========
 		
 		List<CwbOrder> wpeisong = new ArrayList<CwbOrder>();
 		List<CwbOrder> wshangmenhuan = new ArrayList<CwbOrder>();
 		List<CwbOrder> wshangmentui = new ArrayList<CwbOrder>();
-		wpeisong = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
+		//wpeisong = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
+		//增加订单拦截后的退货未入库统计===LX
+		wpeisong = this.cwbDAO.getBackRukuByBranchidForListAll(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Peisong.getValue());
 		wshangmenhuan = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmenhuan.getValue());
 		wshangmentui = this.cwbDAO.getBackRukuByBranchidForList(this.getSessionUser().getBranchid(), 1, CwbOrderTypeIdEnum.Shangmentui.getValue());
 		
-		//订单拦截配送单类型统计（退货未入库）====LX		
+		/*//订单拦截配送单类型统计（退货未入库）====LX		
 		List<CwbOrder> cwbInterceptListPS = this.cwbDAO.getBackRukuByInterceptList(this.getSessionUser().getBranchid(),cwbstatestrs,CwbOrderTypeIdEnum.Peisong.getValue(),1);
 		if((cwbInterceptListPS!=null)&&(!cwbInterceptListPS.isEmpty())){
 			wpeisong.addAll(cwbInterceptListPS);
-		}
+		}*/
 		/*
 		 * for (CwbOrder cwb : cwbAllList) { if (cwb.getCwbordertypeid() ==
 		 * CwbOrderTypeIdEnum.Peisong.getValue()) { wpeisong.add(cwb); } else if
@@ -6244,15 +6247,17 @@ public class PDAController {
 		 * obj.put("yirukucount",
 		 * this.cwbDAO.getBackYiRukubyBranchid(branchid));
 		 */
-		Smtcount wsmtcount = this.cwbDAO.getBackRukubyBranchidsmt(branchid);
+		//Smtcount wsmtcount = this.cwbDAO.getBackRukubyBranchidsmt(branchid);
+		//增加订单拦截后的统计数目===LX
+		Smtcount wsmtcount = this.cwbDAO.getBackRukubyBranchidsmtAll(branchid);
 		Smtcount ysmtcount = this.cwbDAO.getBackYiRukubyBranchidsmt(branchid);
 		obj.put("yps", ysmtcount.getPscount());
 		obj.put("ysmh", ysmtcount.getSmhcount());
 		obj.put("ysmt", ysmtcount.getSmtcount());
 		//新增一票多件处理时【订单拦截】订单统计到退后站待入库（未入库）明细
-		Smtcount wsmtInterceptcount = this.cwbDAO.getBackRukubyInterceptsmt(branchid);
-		long pscount = wsmtcount.getPscount() + wsmtInterceptcount.getPscount();
-		obj.put("wps", pscount);
+		/*Smtcount wsmtInterceptcount = this.cwbDAO.getBackRukubyInterceptsmt(branchid);
+		long pscount = wsmtcount.getPscount() + wsmtInterceptcount.getPscount();*/
+		obj.put("wps", wsmtcount.getPscount());
 		obj.put("wsmh", wsmtcount.getSmhcount());
 		obj.put("wsmt", wsmtcount.getSmtcount());
 		return obj;
