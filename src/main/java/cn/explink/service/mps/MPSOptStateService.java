@@ -5,10 +5,8 @@ package cn.explink.service.mps;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -77,20 +75,20 @@ public class MPSOptStateService extends AbstractMPSService {
 		int latestMPSState = FlowOrderTypeEnum.DaoRuShuJu.getValue();
 		if (MPSAllArrivedFlagEnum.YES.getValue() == mpsallarrivedflag) {
 			List<TransCwbDetail> transCwbDetailList = this.getTransCwbDetailDAO().getTransCwbDetailListByCwb(cwb);
-			Map<String, Queue<Integer>> transCwbMap = new HashMap<String, Queue<Integer>>();
+			Map<String, List<Integer>> transCwbMap = new HashMap<String, List<Integer>>();
 			// express_ops_transcwb_orderflow表中没有订单是否被废弃标志，两个大表连表查询性能太差，并且
 			// 一票多件子订单数量不会太多，所以选择循环查询
 			for (TransCwbDetail transCwbDetail : transCwbDetailList) {
 				String transcwbInMap = transCwbDetail.getTranscwb();
-				Queue<Integer> transcwboptstateQueue = new LinkedList<Integer>();
-				transcwboptstateQueue.add(Integer.valueOf(FlowOrderTypeEnum.DaoRuShuJu.getValue()));
+				List<Integer> transCwbOptStateList = new ArrayList<Integer>();
 				// 获取运单状态流程信息
-				List<TranscwbOrderFlow> transcwbOrderFlowList = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(transcwbInMap, cwb);
+				List<TranscwbOrderFlow> transcwbOrderFlowList = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwbReverseOrder(transcwbInMap, cwb);
 
 				for (TranscwbOrderFlow transcwbOrderFlow : transcwbOrderFlowList) {
-					transcwboptstateQueue.add(transcwbOrderFlow.getFlowordertype());
+					transCwbOptStateList.add(transcwbOrderFlow.getFlowordertype());
 				}
-				transCwbMap.put(transcwbInMap, transcwboptstateQueue);
+				transCwbOptStateList.add(Integer.valueOf(FlowOrderTypeEnum.DaoRuShuJu.getValue()));
+				transCwbMap.put(transcwbInMap, transCwbOptStateList);
 			}
 			// 计算出最晚的状态
 			latestMPSState = this.getLatestState(transCwbMap);
@@ -102,35 +100,37 @@ public class MPSOptStateService extends AbstractMPSService {
 		}
 	}
 
-	private int getLatestState(Map<String, Queue<Integer>> transCwbMap) {
+	private int getLatestState(Map<String, List<Integer>> transCwbMap) {
 		Set<String> keySet = transCwbMap.keySet();
-		List<Queue<Integer>> queueList = new ArrayList<Queue<Integer>>();
+		List<List<Integer>> transCwbOptStateListList = new ArrayList<List<Integer>>();
 
-		int longestQueueLength = 0;
+		int shortestListLength = Integer.MAX_VALUE;
 		for (String key : keySet) {
-			Queue<Integer> queue = transCwbMap.get(key);
-			queueList.add(queue);
-			if (queue.size() > longestQueueLength) {
-				longestQueueLength = queue.size();
+			List<Integer> transCwbOptStateList = transCwbMap.get(key);
+			transCwbOptStateListList.add(transCwbOptStateList);
+			if (transCwbOptStateList.size() < shortestListLength) {
+				shortestListLength = transCwbOptStateList.size();
 			}
 		}
-		int currentState = FlowOrderTypeEnum.DaoRuShuJu.getValue();
-		boolean hasFoundState = false;
-		for (int i = 0; i < longestQueueLength; i++) {
-			Integer firstState = queueList.get(0).poll();
-			for (int j = 1; j < queueList.size(); j++) {
-				Integer head = queueList.get(j).poll();
-				if ((firstState == null) || (head == null) || (head != firstState)) {
-					hasFoundState = true;
-					break;
+		// 当前状态
+		Integer currentOptState = transCwbOptStateListList.get(0).get(0);
+		for (int i = 0; i < shortestListLength; i++) {
+			currentOptState = transCwbOptStateListList.get(0).get(i);
+			int count = 0;
+			for (int j = 1; j < transCwbOptStateListList.size(); j++) {
+				List<Integer> transCwbOptStateList = transCwbOptStateListList.get(j);
+				for (Integer transCwbOptState : transCwbOptStateList) {
+					if (currentOptState == transCwbOptState) {
+						count++;
+					}
 				}
-				currentState = head;
 			}
-			if (hasFoundState) {
+			// 最短的状态系列中的某个状态与其他每个状态系列都有相等的状态
+			if (count == (transCwbOptStateListList.size() - 1)) {
 				break;
 			}
 		}
-		return currentState;
+		return currentOptState;
 	}
 
 }
