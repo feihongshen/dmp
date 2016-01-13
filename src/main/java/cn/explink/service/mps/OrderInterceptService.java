@@ -63,12 +63,16 @@ public class OrderInterceptService extends AbstractMPSService {
 		this.validateTransCwbState(transCwbDetail, transcwboptstate);
 
 		int transcwbstate = transCwbDetail.getTranscwbstate();
+		String reason = transCwbDetail.getCommonphrase();
+		String cwb = cwbOrder.getCwb();
+		// 对于丢失的运单，任何环节都需要给出提示
+		if (transcwbstate == TransCwbStateEnum.DIUSHI.getValue()) {
+			throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_LOST, transCwb, reason);
+		}
 		if (!OrderInterceptService.OUT_STATE_SET.contains(transcwboptstate.getValue())) {
 			OrderInterceptService.LOGGER.info(OrderInterceptService.ORDER_INTERCEPT + "此操作不是【出】的环节，不需要拦截!");
 			return;
 		}
-		String reason = transCwbDetail.getCommonphrase();
-		String cwb = cwbOrder.getCwb();
 		if (transcwbstate == TransCwbStateEnum.DIUSHI.getValue()) {
 			throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_LOST, transCwb, reason);
 		} else if (transcwbstate == TransCwbStateEnum.POSUN.getValue()) {

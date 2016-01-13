@@ -58,8 +58,6 @@ public class MPSOptStateService extends AbstractMPSService {
 		}
 
 		this.updateMPSOptState(cwbOrder);
-		// 处理拦截后下一站更新
-		this.getCwbDAO().updateNextBranchid(cwbOrder.getCwb(), nextbranchid);
 		// 更新运单操作状态，上一站 下一站
 		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
 		if (transCwbDetail == null) {
