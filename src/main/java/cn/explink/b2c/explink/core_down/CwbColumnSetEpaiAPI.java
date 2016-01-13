@@ -43,6 +43,9 @@ public class CwbColumnSetEpaiAPI {
 		excelColumnSet.setRemark3index(1);
 		excelColumnSet.setRemark4index(1);
 		excelColumnSet.setRemark5index(1);
+		excelColumnSet.setCwbprovinceindex(1);
+		excelColumnSet.setCwbcityindex(1);
+		excelColumnSet.setCwbcountyindex(1);
 
 		return excelColumnSet;
 	}

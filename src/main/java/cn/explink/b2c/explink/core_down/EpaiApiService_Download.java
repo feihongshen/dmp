@@ -191,6 +191,10 @@ public class EpaiApiService_Download extends EpaiApiService {
 					cwbMap.put("remark3", order.getRemark3());
 					cwbMap.put("remark4", order.getRemark4());
 					cwbMap.put("remark5", order.getRemark5());
+					
+					cwbMap.put("cwbprovince", order.getCwbprovince());
+					cwbMap.put("cwbcity", order.getCwbcity());
+					cwbMap.put("cwbcounty", order.getCwbcounty());
 
 					cwbList.add(cwbMap);
 				} catch (Exception e) {
