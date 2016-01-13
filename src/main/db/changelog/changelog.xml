@@ -8751,4 +8751,12 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	
+	<changeSet id="zhangpengkai-2016-01-13-01" author="zhangpengkai">
+		<sql>
+			ALTER TABLE `express_ops_transcwb` ADD INDEX `cwb_idx` (`cwb`);		
+		</sql>
+	</changeSet>
+	
+	 
+	
 </databaseChangeLog>
