@@ -8260,7 +8260,7 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			cwbTemp.setCwbstate(CwbStateEnum.BUFENPOSUN.getValue());
 		}
-		if (nextBranchid != 0) {
+		if (cwbTemp.getCurrentbranchid() != 0) {//当订单处于“未入”（未入库、未入站、未入中转库），则下一站不变
 			cwbTemp.setNextbranchid(nextBranchid);// 修改主单的下一站
 		}
 		cwbTemp.setFlowordertype(FlowOrderTypeEnum.DingDanLanJie.getValue());// 修改主单的操作流程
