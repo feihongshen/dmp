@@ -29,8 +29,6 @@ public class OutWarehouseMPSReleaseService extends AbstractMPSReleaseService {
 		CwbException exception = new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED);
 		if (this.getMpsswitchType().getValue() == MpsswitchTypeEnum.KuFangJiDan.getValue()) {
 			this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_INTOWAREHOUSE_STATE);
-		} else if (this.getMpsswitchType().getValue() == MpsswitchTypeEnum.ZhanDianJiDan.getValue()) {
-			this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE);
 		}
 	}
 

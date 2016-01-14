@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.CwbOrder;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.exception.CwbException;
 
 /**
@@ -26,10 +25,9 @@ public class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseService
 		if (cwbOrder == null) {
 			return;
 		}
+		// 不管是库房集单还是站点集单，都须要进行校验
 		CwbException exception = new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DELIVERTAKEGOODS_MPS_NOT_ALL_ARRIVED);
-		if (this.getMpsswitchType().getValue() == MpsswitchTypeEnum.ZhanDianJiDan.getValue()) {
-			this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE);
-		}
+		this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE);
 	}
 
 }
