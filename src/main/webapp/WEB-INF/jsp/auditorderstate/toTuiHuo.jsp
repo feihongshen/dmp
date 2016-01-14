@@ -111,7 +111,22 @@ function exportField(){
 		alert("没有做查询操作，不能导出！");
 	}
 }
-
+function cancelIntercept(transcwb){
+	debugger
+	$.ajax({
+		type: "POST",
+		url:$("#cancelInterceptPath").val(),
+		data:{"transCwb":transcwb},
+		success : function(data) {
+			if(data == 1){
+				alert("撤销成功！");
+			}else{
+				alert("撤销成功！");
+			}
+			searchForm.submit();			
+		}
+	});	
+}
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -260,7 +275,7 @@ function exportField(){
 									</td>
 									<td width="70" align="center" valign="middle">
 									<%if(cwb.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue() && cwb.getCwbstate() == InterceptTypeEnum.diushi.getValue()){ %>
-										撤销
+										<a href="javascript:cancelIntercept('<%=cwb.getTranscwb() %>')" style="text-decoration:underline;color:red;" onclick=""> 撤销</a>
 									<%} %>
 									</td>
 								</tr>
@@ -282,5 +297,6 @@ function exportField(){
 		</div>
 	</div>
 </div>
+<input id="cancelInterceptPath" type="hidden" value="<%=request.getContextPath() %>/cwborder/cancelIntercept">
 </BODY>
 </HTML>
