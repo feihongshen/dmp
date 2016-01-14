@@ -2187,6 +2187,24 @@ public class CwbOrderView implements Cloneable {
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final CwbOrderView other = (CwbOrderView) obj;
+		if ((this.getTranscwb().equals(other.getTranscwb())) && (this.getCwb().equals(other.getCwb()))) {
+			return true;
+		}
+		return false;
+	}
+
 	public static void main(String[] args) {
 		String consigneeaddress = "中国北京北京市丰台区西罗园一区22-6-503100077";
 		String infos = consigneeaddress.replaceAll("#", "").replaceAll("[*]", "").replaceAll(" ", "").replaceAll("\\p{Pc}|\\p{Ps}|\\p{Pe}|\\p{Pi}|\\p{Pf}|\\p{Po}", "");

@@ -8091,7 +8091,9 @@ public class CwbOrderService extends BaseOrderService {
 					cwbOrderView.setFlowordertype(c.getFlowordertype());
 					cwbOrderView.setCwbstate(c.getCwbstate());
 					cwbOrderView.setBackreason(c.getBackreason());
-					cwbOrderViewList.add(cwbOrderView);
+					if (!cwbOrderViewList.contains(cwbOrderView)) {
+						cwbOrderViewList.add(cwbOrderView);
+					}
 				} else {// 如果是一票多件，那么找出他的所有子单，挨个把子单的显示信息带上
 					for (TransCwbDetail temp : transOrderList) {
 						if (c.getCwb().equals(temp.getCwb())) {
@@ -8102,7 +8104,9 @@ public class CwbOrderService extends BaseOrderService {
 							cwbOrderView.setFlowordertype(temp.getTranscwboptstate());
 							cwbOrderView.setCwbstate(temp.getTranscwbstate());
 							cwbOrderView.setBackreason(temp.getCommonphrase());
-							cwbOrderViewList.add(cwbOrderView);
+							if (!cwbOrderViewList.contains(cwbOrderView)) {
+								cwbOrderViewList.add(cwbOrderView);
+							}
 						}
 					}
 				}
