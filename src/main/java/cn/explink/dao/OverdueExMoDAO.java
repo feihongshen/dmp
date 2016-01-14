@@ -1,6 +1,7 @@
 package cn.explink.dao;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -127,6 +128,10 @@ public class OverdueExMoDAO {
 		String insertSql = this.getInsertSql();
 		String cwb = dto.getCwb();
 		String createTime = dto.getRemark2();
+		//if((createTime==null)||("".equals(createTime))){
+			String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+			createTime = datetime;
+		//}
 		int payType = (int) dto.getPaywayid();
 		BigDecimal shouleFee = dto.getShouldfare();
 

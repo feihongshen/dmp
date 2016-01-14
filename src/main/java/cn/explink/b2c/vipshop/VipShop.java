@@ -26,6 +26,24 @@ public class VipShop {
 	private int isCreateTimeToEmaildateFlag; //是否唯品会订单出仓时间作为 邮件批次时间，emaildate 默认0 ，开启：1
 	private String lefengCustomerid;
 	
+	private int openmpspackageflag; // 开启集包:0 默认  1开启，a.用于接口回传判断是否存储和推送  b.用于订单下载控制是否处理集包订单 
+	private String transflowUrl; //运单推送集包URL
+
+	public String getTransflowUrl() {
+		return transflowUrl;
+	}
+
+	public void setTransflowUrl(String transflowUrl) {
+		this.transflowUrl = transflowUrl;
+	}
+
+	public int getOpenmpspackageflag() {
+		return openmpspackageflag;
+	}
+
+	public void setOpenmpspackageflag(int openmpspackageflag) {
+		this.openmpspackageflag = openmpspackageflag;
+	}
 
 	public String getLefengCustomerid() {
 		return lefengCustomerid;

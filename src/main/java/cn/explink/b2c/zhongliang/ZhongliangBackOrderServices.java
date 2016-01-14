@@ -195,7 +195,7 @@ public class ZhongliangBackOrderServices {
 			if ("85".equals(orderType)) {
 				cwbordertypeid = CwbOrderTypeIdEnum.Shangmentui.getValue();
 			} else if ("90".equals(orderType) || "95".equals(orderType)) {
-				cwbordertypeid = Integer.parseInt(orderType);
+				cwbordertypeid = CwbOrderTypeIdEnum.Shangmentui.getValue();
 			}
 			int paywayid = 1;
 
@@ -239,7 +239,7 @@ public class ZhongliangBackOrderServices {
 			cwbMap.put("caramount", order.getOrdervalue());// 订单金额
 			// cwbMap.put("cargotype", order.getValuableflag());// 货物金额
 			// cwbMap.put("receivablefee", order.getGetvalue()); // 代收货款应收金额
-			cwbMap.put("paybackfee", order.getReturntaxvalue()); // 上门退货应退金额
+			cwbMap.put("paybackfee", Math.abs(Double.valueOf(order.getReturntaxvalue()))+""); // 上门退货应退金额
 			cwbMap.put("cwbordertypeid", String.valueOf(cwbordertypeid));
 			cwbMap.put("cargosize", size); // 尺寸
 			cwbMap.put("sendcarname", sendcarname); // 发货货物名称

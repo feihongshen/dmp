@@ -48,6 +48,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL" value="<%=vipshop.getSendCwb_URL() %>"  maxlength="300">
 						</li>
+						<li><span>集包运单推送URL：</span>
+							<input type ="text" id="transflowUrl" name ="transflowUrl" value="<%=vipshop.getTransflowUrl()%>"  maxlength="300">
+						</li>
 						<li><span>当前SEQ：</span>
 							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')"  value="<%=vipshop.getVipshop_seq() %>"  maxlength="300">
 						</li>
@@ -86,6 +89,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==0){%>checked<%}%>  >关闭
 							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==1){%>checked<%}%>  >开启（订单出仓时间作为标识,开启必须关闭托运模式）
 						</li>
+							<li><span>是否开启集包：</span>
+							<input type ="radio" id="openmpspackageflag1" name ="openmpspackageflag" value="0" <%if(vipshop.getOpenmpspackageflag()==0){%>checked<%}%>  >关闭
+							<input type ="radio" id="openmpspackageflag2" name ="openmpspackageflag" value="1" <%if(vipshop.getOpenmpspackageflag()==1){%>checked<%}%>  >开启
+						</li>
 						
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
@@ -118,6 +125,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL"  maxlength="300"/>
 						</li>
+						<li><span>集包运单推送URL：</span>
+							<input type ="text" id="transflowUrl" name ="transflowUrl" value=""  maxlength="300">
+						</li>
 						<li><span>当前SEQ：</span>
 							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')" value=""  maxlength="300">
 						</li>
@@ -146,7 +156,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="cancelOrIntercept2" name ="cancelOrIntercept" value="1"  >拦截开启
 						</li>
 						<li><span>只下载乐蜂：</span>
-							<input type ="radio" id="isOpenLefengflag1" name ="isOpenLefengflag" value="0"  >关闭
+							<input type ="radio" id="isOpenLefengflag1" name ="isOpenLefengflag" value="0"  checked>关闭
 							<input type ="radio" id="isOpenLefengflag2" name ="isOpenLefengflag" value="1"  >开启
 						</li>
 						<li><span>拒收原因回传：</span>
@@ -157,7 +167,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0"  >关闭
 							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1"  >开启（订单生成时间作为标识）
 						</li>
-						
+						<li><span>是否开启集包：</span>
+							<input type ="radio" id="openmpspackageflag1" name ="openmpspackageflag" value="0"  >关闭
+							<input type ="radio" id="openmpspackageflag2" name ="openmpspackageflag" value="1"  >开启
+						</li>
 						
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
