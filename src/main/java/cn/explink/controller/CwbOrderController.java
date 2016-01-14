@@ -2586,4 +2586,24 @@ public class CwbOrderController {
 
 	}
 
+	/**
+	 *
+	 * @Title: cancelIntercept
+	 * @description 撤销拦截的方法
+	 * @author 刘武强
+	 * @date  2016年1月13日下午8:49:41
+	 * @param  @param model
+	 * @param  @param transCwb
+	 * @param  @param request
+	 * @param  @return
+	 * @return  String
+	 * @throws
+	 */
+	@RequestMapping("/cancelIntercept")
+	@ResponseBody
+	public String cancelIntercept(Model model, String transCwb, HttpServletRequest request) {
+		boolean flag = this.cwborderService.dealCancelIntercept(transCwb);
+		return flag == true ? "1" : "0";//如果成功返回1，失败返回0
+	}
+
 }

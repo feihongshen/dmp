@@ -241,22 +241,38 @@ public class TransCwbDetailDAO {
 			}
 		}
 	}
-		
+
 	/**
 	 * 修改TransCwbstateByTranscwb
 	 *
 	 * @return
 	 */
-	public void updateTransCwbDetailBytranscwb(final String transcwb,final int transcwbstate) {
+	public void updateTransCwbDetailBytranscwb(final String transcwb, final int transcwbstate) {
 		String sql = "update express_ops_transcwb_detail set transcwbstate=? where transcwb=?";
 		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setInt(1, transcwbstate);
-				ps.setString(2, transcwb);				
+				ps.setString(2, transcwb);
 			}
 		});
+	}
+
+	/**
+	 *
+	 * @Title: queryTransCwbDetailBytranscwb
+	 * @description 找出运单的所有兄弟运单的运单详情（包括自己）
+	 * @author 刘武强
+	 * @date  2016年1月14日上午9:38:52
+	 * @param  @param transcwb
+	 * @param  @return
+	 * @return  List<TransCwbDetail>
+	 * @throws
+	 */
+	public List<TransCwbDetail> queryTransCwbDetailBytranscwb(String transcwb) {
+		String sql = "select * from express_ops_transcwb_detail where cwb =(select cwb from express_ops_transcwb_detail where transcwb=?)";
+		return this.jdbcTemplate.query(sql, new TransCwbRowMapper(), transcwb);
 	}
 
 }

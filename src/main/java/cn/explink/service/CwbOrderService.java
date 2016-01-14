@@ -8297,4 +8297,49 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		return nextBranchid;
 	}
+
+	/**
+	 *
+	 * @Title: dealCancelIntercept
+	 * @description 撤销拦截的处理方法：被撤销的运单一定变为退货；找出所有兄弟运单，如果兄弟中有丢失，那主单变部分丢失；如果兄弟中含有破损，但没有丢失，主单为部分破损；否则主单变退货；
+	 * @author 刘武强
+	 * @date  2016年1月14日上午9:42:21
+	 * @param  @param transCwb
+	 * @param  @return
+	 * @param  @throws CwbException
+	 * @return  boolean
+	 * @throws
+	 */
+	public boolean dealCancelIntercept(String transCwb) throws CwbException {
+		try {
+			List<TransCwbDetail> transCwbDetailList = this.transCwbDetailDAO.queryTransCwbDetailBytranscwb(transCwb);
+			int posunNum = 0;
+			int diushiNum = 0;
+			int cwbState = CwbStateEnum.TuiHuo.getValue();
+			String cwb = "";
+			for (TransCwbDetail temp : transCwbDetailList) {//根据运单的状态，判断主单的状态
+				if (temp.getTranscwbstate() == TransCwbStateEnum.DIUSHI.getValue()) {
+					diushiNum++;
+				} else if (temp.getTranscwbstate() == TransCwbStateEnum.POSUN.getValue()) {
+					posunNum++;
+				}
+				cwb = temp.getCwb();
+			}
+			if (diushiNum > 1) { //如果兄弟运单中有丢失（被撤销的这个运单目前状态依然为丢失，所以丢失的个数至少为1），那么主单变为部分丢失
+				cwbState = CwbStateEnum.BUFENDIUSHI.getValue();
+			} else if ((diushiNum == 1) && (posunNum > 0)) {//如果兄弟运单中没有丢失，但是含有破损，那么主单变为部分破损
+				cwbState = CwbStateEnum.BUFENPOSUN.getValue();
+			} else {//其余的情况都是退货
+				cwbState = CwbStateEnum.TuiHuo.getValue();
+			}
+			//更新运单的状态
+			this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transCwb, TransCwbStateEnum.TUIHUO.getValue());
+			//更新主单状态
+			this.cwbDAO.updateCwbStateByCwb(cwb, cwbState);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }
