@@ -3622,7 +3622,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// added shenhongfei 退货出站 2016-1-12
-		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoChuZhan, currentbranchid, branchid);
+		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoChuZhan, 0L, branchid);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3664,7 +3664,7 @@ public class CwbOrderService extends BaseOrderService {
 		String sql = "update express_ops_cwb_detail set flowordertype=?,currentbranchid=?,startbranchid=?,nextbranchid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), 0, user.getBranchid(), branchid, cwb);
 		// added shenhongfei 退货出站 2016-1-12
-		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoChuZhan, currentbranchid, branchid);
+		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoChuZhan, 0L, branchid);
 		// 更新订单打印的包号信息
 		if (!"".equals(co.getPackagecode())) {
 			Bale bale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
@@ -3854,9 +3854,9 @@ public class CwbOrderService extends BaseOrderService {
 	public CwbOrder receiveGoodsHandle(User user, long currentbranchid, User deliveryUser, String cwb, String scancwb, boolean isauto) {
 
 		// added shenhongfei 小件员领货扫描 2016-1-12
+		this.deliverTakeGoodsMPSReleaseService.validateReleaseCondition(scancwb);
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.FenZhanLingHuo);
 
-		this.deliverTakeGoodsMPSReleaseService.validateReleaseCondition(scancwb);
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
