@@ -274,7 +274,7 @@ function cancelIntercept(transcwb){
 									<%} %>
 									</td>
 									<td width="70" align="center" valign="middle">
-									<%if(cwb.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue() && cwb.getCwbstate() == InterceptTypeEnum.diushi.getValue()){ %>
+									<%if(cwb.getCwbstate() == InterceptTypeEnum.diushi.getValue()){ %>
 										<a href="javascript:cancelIntercept('<%=cwb.getTranscwb() %>')" style="text-decoration:underline;color:red;" onclick=""> 撤销</a>
 									<%} %>
 									</td>
