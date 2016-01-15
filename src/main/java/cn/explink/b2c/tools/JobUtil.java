@@ -73,7 +73,6 @@ import cn.explink.b2c.yihaodian.YihaodianService;
 import cn.explink.b2c.yixun.YiXunInsertCwbDetailTimmer;
 import cn.explink.b2c.yonghuics.YonghuiService;
 import cn.explink.b2c.zhemeng.ZhemengInsertCwbDetailTimmer;
-import cn.explink.b2c.zhongliang.ZhongliangBackOrderServices;
 import cn.explink.b2c.zhongliang.ZhongliangInsertCwbDetailTimmer;
 import cn.explink.b2c.zhongliang.ZhongliangService;
 import cn.explink.dao.ExpressSysMonitorDAO;
@@ -154,8 +153,6 @@ public class JobUtil {
 	TelecomInsertCwbDetailTimmer telecomInsertCwbDetailTimmer;
 	@Autowired
 	EpaiApiService_Download epaiApiService_Download;
-	@Autowired
-	ZhongliangBackOrderServices zhongliangBackOrderServices;
 	@Autowired
 	EpaiApiService_ExportCallBack epaiApiService_ExportCallBack;
 	@Autowired
@@ -1039,7 +1036,6 @@ public class JobUtil {
 			this.zhongliangService.waitOrder();
 			this.zhongliangInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
 			this.zhongliangService.CancelOrders();
-			this.zhongliangBackOrderServices.BackOrdercounts();
 
 			this.logger.info("执行了中粮订单导入定时器！");
 		} catch (Exception e) {
