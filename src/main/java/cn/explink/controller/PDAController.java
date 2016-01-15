@@ -6063,6 +6063,8 @@ public class PDAController {
 	 *
 	 * @param customerid
 	 * @return
+	 * 
+	 * 1104 运单号不显示 shf 2016-01-15
 	 */
 	@RequestMapping("/getInQueList")
 	public String getInQueList(Model model, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid,
@@ -6071,10 +6073,13 @@ public class PDAController {
 		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getRukuQuejianbyBranchidList(this.getSessionUser().getBranchid(), customerid, 1, emaildate);
 		for (JSONObject obj : quejianList) {
 			String transcwb = "";
-			if (obj.getString("transcwb").indexOf("explink") > -1) {
-
+			String explink="explink";
+			if (obj.getString("transcwb").indexOf(explink) > -1) {
+				transcwb=obj.getString("transcwb").substring(explink.length()+1, obj.getString("transcwb").length());
 			} else if (obj.getString("transcwb").indexOf("havetranscwb") > -1) {
 				transcwb = obj.getString("transcwb").split("_")[1];
+			}else{
+				transcwb=obj.getString("transcwb");
 			}
 			obj.put("transcwb", transcwb);
 			obj.put("customername", this.dataStatisticsService.getQueryCustomerName(customerList, obj.getLong("customerid")));
