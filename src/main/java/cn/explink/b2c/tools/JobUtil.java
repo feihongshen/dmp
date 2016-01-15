@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import cn.explink.b2c.amazon.AmazonService;
 import cn.explink.b2c.auto.order.service.TPSInsertCwbDetailTimmer;
@@ -80,7 +81,11 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.ExpressSysMonitorEnum;
 import cn.explink.service.AccountDeductRecordService;
 import cn.explink.service.AppearWindowService;
+import cn.explink.service.BackSummaryService;
 import cn.explink.service.FloworderLogService;
+import cn.explink.service.LogToDayByTuihuoService;
+import cn.explink.service.LogToDayByWarehouseService;
+import cn.explink.service.LogToDayService;
 import cn.explink.service.PunishInsideService;
 import cn.explink.service.fnc.OrderLifeCycleReportService;
 import cn.explink.util.DateTimeUtil;
@@ -238,6 +243,15 @@ public class JobUtil {
 	TPSCarrierOrderStatusTimmer tPSCarrierOrderStatusTimmer;
 	@Autowired
 	VipShopOXOInsertCwbDetailTimmer vipShopOXOInsertCwbDetailTimmer;
+	@Autowired
+	BackSummaryService backSummaryService;
+	@Autowired
+	LogToDayByTuihuoService logToDayByTuihuoService;
+	@Autowired
+	LogToDayByWarehouseService logToDayByWarehouseService;
+	@Autowired
+	LogToDayService logToDayService;
+	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new HashMap<String, Integer>();
@@ -1470,6 +1484,69 @@ public class JobUtil {
 		this.logger.info("执行了获取TPS订单临时表数据插入主表的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 			
+	/**
+	 * 退货中心出入库跟踪表日志
+	 */
+	public void createBackTimeLog(){
+		try {
+			SystemInstall backTimeLog = systemInstallDAO.getSystemInstallByName("backTimeLog");
+			if (backTimeLog == null || !StringUtils.hasLength(backTimeLog.getValue())) {
+				logger.info("退货中心出入库跟踪表日志未启用，没有找到参数{}", backTimeLog);
+				return;
+			}
+			backSummaryService.createBackTimeLog();
+		}catch(Exception e){
+			logger.error("退货中心出入库跟踪表日志生成异常："+e.getMessage());
+		}
+		
+	}
 	
+	/**
+	 * 退货日志
+	 */
+	public void dailyDayLogByTuihuoGenerate(){
+		try {
+			SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("tuiHuoDayLogTime");
+			if (siteDayLogTime == null || !StringUtils.hasLength(siteDayLogTime.getValue())) {
+				logger.info("退货日志未启用，没有找到参数{}", siteDayLogTime);
+				return;
+			}
+			logToDayByTuihuoService.dailyDayLogByTuihuoGenerate();
+		}catch(Exception e){
+			logger.error("退货日志生成异常："+e.getMessage());
+		}
+	}
+	
+	/**
+	 * 库房日志
+	 */
+	public void dailyDayLogByWareHouseGenerate(){
+		try {
+			SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("wareHouseDayLogTime");
+			if (siteDayLogTime == null || !StringUtils.hasLength(siteDayLogTime.getValue())) {
+				logger.info("库房日志未启用，没有找到参数{}", siteDayLogTime);
+				return;
+			}
+			logToDayByWarehouseService.dailyDayLogByWareHouseGenerate();
+		}catch(Exception e){
+			logger.error("库房日志生成异常："+e.getMessage());
+		}
+	}
+	
+	/**
+	 * 站点日志
+	 */
+	public void dailyDayLogGenerate(){
+		try{
+			final SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("siteDayLogTime");
+			if (siteDayLogTime == null || !StringUtils.hasLength(siteDayLogTime.getValue())) {
+				logger.warn("站点日志未启用，没有找到参数{}", siteDayLogTime);
+				return;
+			}
+			logToDayService.dailyDayLogGenerate();
+		}catch(Exception e){
+			logger.error("站点日志生成异常："+e.getMessage());
+		}
+	}
 
 }
