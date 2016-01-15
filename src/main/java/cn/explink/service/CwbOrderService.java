@@ -199,6 +199,7 @@ import cn.explink.service.mps.MPSOptStateService;
 import cn.explink.service.mps.OrderInterceptService;
 import cn.explink.service.mps.release.DeliverTakeGoodsMPSReleaseService;
 import cn.explink.service.mps.release.OutWarehouseMPSReleaseService;
+import cn.explink.service.mps.release.ReturnToCustomerReleaseService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TransCwbService;
 import cn.explink.support.transcwb.TranscwbView;
@@ -440,6 +441,8 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	DataImportService dataImportService;
 
+	@Autowired
+	ReturnToCustomerReleaseService customerReleaseService;
 	// private User getSessionUser() {
 	// ExplinkUserDetail userDetail = (ExplinkUserDetail)
 	// this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -5371,7 +5374,8 @@ public class CwbOrderService extends BaseOrderService {
 	public CwbOrder backtocustom(User user, String cwb, String scancwb, long requestbatchno, String baleno, boolean anbaochuku, long customerid) {
 		// orderInterceptService.checkTransCwbIsIntercept(scancwb,
 		// FlowOrderTypeEnum.TuiGongYingShangChuKu);
-
+		
+		customerReleaseService.validateReleaseCondition(scancwb);
 		cwb = this.translateCwb(cwb);
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
@@ -5402,6 +5406,7 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private CwbOrder handleBacktocustomYipiaoduojian(User user, String cwb, String scancwb, long requestbatchno, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, String baleno) {
+		
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 		}
