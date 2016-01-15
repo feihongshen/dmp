@@ -54,7 +54,7 @@ public class YpdjHandleRecordDAO {
 			obj.put("branchid", rs.getLong("branchid"));
 			obj.put("nextbranchid", rs.getLong("nextbranchid"));
 			obj.put("emaildate", rs.getString("emaildate"));
-			obj.put("consigneename", rs.getString("consigneename"));
+			obj.put("consigneename", rs.getString("consigneename") == null ? "" : rs.getString("consigneename"));
 			obj.put("consigneeaddress", rs.getString("consigneeaddress"));
 			obj.put("receivablefee", rs.getBigDecimal("receivablefee"));
 			return obj;
@@ -179,7 +179,7 @@ public class YpdjHandleRecordDAO {
 		}
 		return this.jdbcTemplate.queryForLong(sql, branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 	}
-	
+
 	// 得到出库缺货件数的统计
 	public long getChukuQuejianbyBranchid(long branchid, long nextbranchid, long flowordertype) {
 		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND cd.state=1 AND yp.flowordertype =? ";
@@ -207,8 +207,8 @@ public class YpdjHandleRecordDAO {
 	 * @return
 	 */
 	public List<String> getSQLExportforypdj(long branchid, long customerid, long emaildateid) {
-		String sql = "SELECT yp.cwb,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` AS yp LEFT JOIN `express_ops_cwb_detail` AS cd ON yp.cwb=cd.cwb WHERE  yp.branchid="
-				+ branchid + " AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =" + FlowOrderTypeEnum.RuKu.getValue();
+		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` AS yp LEFT JOIN `express_ops_cwb_detail` AS cd ON yp.cwb=cd.cwb WHERE  yp.branchid=" + branchid
+				+ " AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =" + FlowOrderTypeEnum.RuKu.getValue();
 		if (customerid > 0) {
 			sql += " and cd.customerid =" + customerid;
 		}
@@ -232,15 +232,14 @@ public class YpdjHandleRecordDAO {
 	 * @return
 	 */
 	public List<String> getSQLExportforchukuypdj(long branchid, long nextbranchid, int flowordertypeid) {
-//		String sql = "SELECT cwb FROM `ops_ypdjhandlerecord` WHERE branchid=" + branchid + " AND flowordertype =" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
-//		if (nextbranchid > 0) {
-//			sql += " and nextbranchid =" + nextbranchid;
-//		}
-		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail` cd "
-				 + " ON yp.cwb=cd.cwb "
-				 + " WHERE  yp.branchid = " + branchid
-				 + " AND cd.state=1 "
-				 + " AND yp.flowordertype = " + flowordertypeid;
+		// String sql = "SELECT cwb FROM `ops_ypdjhandlerecord` WHERE branchid="
+		// + branchid + " AND flowordertype =" +
+		// FlowOrderTypeEnum.ChuKuSaoMiao.getValue();
+		// if (nextbranchid > 0) {
+		// sql += " and nextbranchid =" + nextbranchid;
+		// }
+		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail` cd " + " ON yp.cwb=cd.cwb " + " WHERE  yp.branchid = " + branchid + " AND cd.state=1 "
+				+ " AND yp.flowordertype = " + flowordertypeid;
 		if (nextbranchid > 0) {
 			sql += " AND yp.nextbranchid = " + nextbranchid;
 		}
@@ -264,9 +263,9 @@ public class YpdjHandleRecordDAO {
 		sql += " limit " + Page.DETAIL_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new YpdjHandleRecordAndCwbOrderMapper(), branchid);
 	}
-	
-	public void delypdjflowordertype(String cwb){
-		String sql="delete from ops_ypdjhandlerecord where cwb='"+cwb+"'";
+
+	public void delypdjflowordertype(String cwb) {
+		String sql = "delete from ops_ypdjhandlerecord where cwb='" + cwb + "'";
 		this.jdbcTemplate.update(sql);
 	}
 }

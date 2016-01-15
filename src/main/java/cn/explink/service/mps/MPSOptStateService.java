@@ -56,6 +56,9 @@ public class MPSOptStateService extends AbstractMPSService {
 		}
 
 		this.updateMPSOptState(cwbOrder);
+
+		this.updateCwbOrderNextBranch(cwbOrder, nextbranchid);
+
 		// 更新运单操作状态，上一站 下一站
 		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
 		if (transCwbDetail == null) {
@@ -66,6 +69,10 @@ public class MPSOptStateService extends AbstractMPSService {
 		transCwbDetail.setNextbranchid(nextbranchid);
 		transCwbDetail.setTranscwboptstate(transcwboptstate.getValue());
 		this.getTransCwbDetailDAO().updateTransCwbDetail(transCwbDetail);
+	}
+
+	private void updateCwbOrderNextBranch(CwbOrder cwbOrder, long nextbranchid) {
+		this.getCwbDAO().updateNextBranchid(cwbOrder.getCwb(), nextbranchid);
 	}
 
 	private void updateMPSOptState(CwbOrder cwbOrder) {
