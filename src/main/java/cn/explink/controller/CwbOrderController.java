@@ -887,6 +887,7 @@ public class CwbOrderController {
 			model.addAttribute("branchList", branchList);
 			//model.addAttribute("reasonList", this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.ReturnGoods.getValue()));
 			model.addAttribute("reasonList", this.reasonDAO.getAllReasonByReasonType(ReasonTypeEnum.Intercept.getValue()));//只显示拦截原因
+			model.addAttribute("scanCwbs", cwb.trim());
 		}
 
 		return "auditorderstate/toTuiHuo";
