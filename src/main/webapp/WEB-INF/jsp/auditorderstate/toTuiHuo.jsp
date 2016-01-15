@@ -12,7 +12,7 @@ List<Branch> branchList = (List<Branch>)request.getAttribute("branchList");
 List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
-
+String scanCwbs = (String)request.getAttribute("scanCwbs");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -112,7 +112,6 @@ function exportField(){
 	}
 }
 function cancelIntercept(transcwb){
-	debugger
 	$.ajax({
 		type: "POST",
 		url:$("#cancelInterceptPath").val(),
@@ -123,6 +122,8 @@ function cancelIntercept(transcwb){
 			}else{
 				alert("撤销成功！");
 			}
+			debugger
+			$("#scanArea").val('<%=scanCwbs%>') ;
 			searchForm.submit();			
 		}
 	});	
@@ -153,7 +154,7 @@ function cancelIntercept(transcwb){
 							
 								<input name="" type="button" id="btnval" value="导出excel" class="input_button2" onclick="exportField();"/>
 								</span> <%} %>订单号：
-								<textarea name="cwb" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
+								<textarea name="cwb" id="scanArea" rows="3" class="kfsh_text" id="cwb" onFocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" onBlur="if(this.value==''){this.value='查询多个订单用回车隔开'}" >查询多个订单用回车隔开</textarea>
 								
 								<input type="submit" value="确定" class="input_button2">
 							</form>
