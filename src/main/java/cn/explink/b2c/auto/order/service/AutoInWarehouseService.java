@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.auto.order.mq.AutoDispatchStatusCallback;
 import cn.explink.dao.BranchDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
@@ -59,7 +58,7 @@ public class AutoInWarehouseService {
 					throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"入库报文里订单号不能为空");
 				}
 				
-				if(data.getOperate_type()==null||!data.getOperate_type().equals(AutoDispatchStatusCallback.OPERATE_TYPE_IN)){
+				if(data.getOperate_type()==null||!data.getOperate_type().equals(AutoDispatchStatusService.OPERATE_TYPE_IN)){
 					throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"不是入库操作类型");
 				}
 				

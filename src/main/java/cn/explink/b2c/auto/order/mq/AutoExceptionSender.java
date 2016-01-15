@@ -7,8 +7,18 @@ import com.vip.platform.middleware.vms.VMSClient;
 public class AutoExceptionSender {
 	private String channelKey;
 	private String channel;
+	
+	private MqConfigService mqConfigService;
+	
+	public void init(){
+		mqConfigService.initSender(this);
+	}
 
 	public void send(String content){
+		if(this.channel==null||this.channel.length()<1){
+			init();
+		}
+		
 		VMSClient client = VMSClient.getDefault();//new VMSClient();//消耗大量的资源,通过VMSClient.getDefault()获取单例????????
         Message msg = Message.from(content);
         msg.addRoutingKey("*");
@@ -34,6 +44,14 @@ public class AutoExceptionSender {
 
 	public void setChannelKey(String channelKey) {
 		this.channelKey = channelKey;
+	}
+
+	public MqConfigService getMqConfigService() {
+		return mqConfigService;
+	}
+
+	public void setMqConfigService(MqConfigService mqConfigService) {
+		this.mqConfigService = mqConfigService;
 	}
 	
 }

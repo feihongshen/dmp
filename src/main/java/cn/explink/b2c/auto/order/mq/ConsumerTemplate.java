@@ -16,6 +16,12 @@ public class ConsumerTemplate {
 	private Integer fetchCount;
 	
 	private Boolean autoCommit;
+	
+	private MqConfigService mqConfigService;
+	
+	public void init(){
+		mqConfigService.initConsumer(this);
+	}
 
 	public IVMSCallback getCallBack() {
 		return callBack;
@@ -73,4 +79,11 @@ public class ConsumerTemplate {
 		this.queueKey = queueKey;
 	}
 	
+	public MqConfigService getMqConfigService() {
+		return mqConfigService;
+	}
+
+	public void setMqConfigService(MqConfigService mqConfigService) {
+		this.mqConfigService = mqConfigService;
+	}
 }

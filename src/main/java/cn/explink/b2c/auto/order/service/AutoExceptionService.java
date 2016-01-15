@@ -6,13 +6,18 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.ExceptionCwbDAO;
+import cn.explink.enumutil.AutoCommonStatusEnum;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
+import cn.explink.enumutil.AutoInterfaceEnum;
 
 
 @Service
 public class AutoExceptionService {
 	@Autowired
 	private ExceptionCwbDAO exceptionCwbDAO;
+	
+	@Autowired
+	private AutoOrderStatusService autoOrderStatusService;
 	
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public long createAutoExceptionMsg(String msg,int interfacetype) {
@@ -28,5 +33,13 @@ public class AutoExceptionService {
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void fixException(String cwb,String transportno){
 		this.exceptionCwbDAO.updateExceptionStatus(cwb, transportno, AutoExceptionStatusEnum.yixiufu.getValue());
+	}
+	
+	@Transactional
+	public long createAutoDispatchTimeoutException(AutoOrderStatusTmpVo vo,String errinfo){
+		long msgid=this.exceptionCwbDAO.createAutoExceptionMsg(vo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
+		long detailid=this.exceptionCwbDAO.createAutoExceptionDetail(vo.getCwb(), "", errinfo, AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
+		autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getCwb(),vo.getOperatetype());
+		return detailid;
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import cn.explink.b2c.amazon.AmazonService;
+import cn.explink.b2c.auto.order.service.AutoDispatchStatusService;
 import cn.explink.b2c.auto.order.service.TPSInsertCwbDetailTimmer;
 import cn.explink.b2c.chinamobile.ChinamobileService;
 import cn.explink.b2c.dangdang_dataimport.DangDangSynInsertCwbDetailTimmer;
@@ -251,6 +252,8 @@ public class JobUtil {
 	LogToDayByWarehouseService logToDayByWarehouseService;
 	@Autowired
 	LogToDayService logToDayService;
+	@Autowired
+	AutoDispatchStatusService autoDispatchStatusService;
 	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -288,6 +291,7 @@ public class JobUtil {
 		
 		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
 		JobUtil.threadMap.put("vipshop_OXO_orderTempInsert", 0);
+		JobUtil.threadMap.put("autoDispatchStatus", 0);
 	}
 
 	/**
@@ -324,6 +328,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("order_lifecycle_report", 0);
 		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
 		JobUtil.threadMap.put("vipshop_OXO_orderTempInsert", 0);
+		JobUtil.threadMap.put("autoDispatchStatus", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1547,6 +1552,32 @@ public class JobUtil {
 		}catch(Exception e){
 			logger.error("站点日志生成异常："+e.getMessage());
 		}
+	}
+	
+	/*
+	 * 自动化分拣状态数据从临时表转业务表
+	 */
+	public void getAutoDispatchStatus_Task() {
+
+		if (JobUtil.threadMap.get("autoDispatchStatus") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环autoDispatch");
+			return;
+		}
+		JobUtil.threadMap.put("autoDispatchStatus", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			autoDispatchStatusService.process();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行自动化分拣状态数据从临时表转业务表时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("autoDispatchStatus", 0);
+		}
+
+		this.logger.info("执行了自动化分拣状态数据从临时表转业务表的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
 }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.auto.order.vo.MqConfigVo;
-import cn.explink.controller.CwbOrderDTO;
 
 @Transactional
 @Service
@@ -31,33 +30,30 @@ public class MqConfigService {
 	private static final String MQ_CONFIG_QUERY_BY_NAME_SQL="select * from express_auto_param_config where name=?";
 	private static final String MQ_CONFIG_DELETE_SQL="delete from express_auto_param_config where name=?";
 	
-	public void initMqConfig(List<ConsumerTemplate> callBackList, List<AutoExceptionSender> senderList){
-		for(ConsumerTemplate callBack:callBackList){
-			//channel
-			String channel=getValue(callBack.getExchangeKey());
-			if(channel==null||channel.trim().length()<1){
-				throw new RuntimeException("MQ parameter "+callBack.getExchangeKey()+"is not found");
-			}else{
-				callBack.setExchangeName(channel);
-			}
-			
-			//queue
-			String queue=getValue(callBack.getQueueKey());
-			if(queue==null||queue.trim().length()<1){
-				throw new RuntimeException("MQ parameter "+callBack.getQueueKey()+"is not found");
-			}else{
-				callBack.setQueueName(queue);
-			}
+	public void initConsumer(ConsumerTemplate consumer){
+		//channel
+		String channel=getValue(consumer.getExchangeKey());
+		if(channel==null||channel.trim().length()<1){
+			throw new RuntimeException("MQ parameter "+consumer.getExchangeKey()+" is not found");
+		}else{
+			consumer.setExchangeName(channel);
 		}
 		
-		for(AutoExceptionSender sender:senderList){
-			//channel
-			String channel=getValue(sender.getChannelKey());
-			if(channel==null||channel.trim().length()<1){
-				throw new RuntimeException("MQ parameter "+sender.getChannelKey()+"is not found");
-			}else{
-				sender.setChannel(channel);
-			}
+		//queue
+		String queue=getValue(consumer.getQueueKey());
+		if(queue==null||queue.trim().length()<1){
+			throw new RuntimeException("MQ parameter "+consumer.getQueueKey()+" is not found");
+		}else{
+			consumer.setQueueName(queue);
+		}
+	}
+	
+	public void initSender(AutoExceptionSender sender){
+		String channel=getValue(sender.getChannelKey());
+		if(channel==null||channel.trim().length()<1){
+			throw new RuntimeException("MQ parameter "+sender.getChannelKey()+" is not found");
+		}else{
+			sender.setChannel(channel);
 		}
 	}
 	

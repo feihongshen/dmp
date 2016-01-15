@@ -1,7 +1,6 @@
 package cn.explink.b2c.auto.order.service;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,16 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.auto.order.mq.AutoDispatchStatusCallback;
-import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
-import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
-import cn.explink.service.CwbRouteService;
+
 
 @Service
 public class AutoOutWarehouseService {
@@ -67,7 +63,7 @@ public class AutoOutWarehouseService {
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"出库报文里订单号不能为空");
 				}
 				
-				if(data.getOperate_type()==null||!data.getOperate_type().equals(AutoDispatchStatusCallback.OPERATE_TYPE_OUT)){
+				if(data.getOperate_type()==null||!data.getOperate_type().equals(AutoDispatchStatusService.OPERATE_TYPE_OUT)){
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"不是出库操作类型");
 				}
 				

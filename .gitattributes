@@ -95,10 +95,13 @@ src/main/java/cn/explink/b2c/auto/order/mq/AutoMQExceptionDto.java -text svneol=
 src/main/java/cn/explink/b2c/auto/order/mq/ConsumerStarter.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/mq/ConsumerTemplate.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/mq/MqConfigService.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/AutoDispatchStatusService.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/AutoExceptionService.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/AutoInWarehouseService.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/AutoOrderStatusService.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/AutoOrderStatusTmpVo.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/AutoOutWarehouseService.java -text svneol=unset#text/plain
+src/main/java/cn/explink/b2c/auto/order/service/AutoPickStatusMsgVo.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/AutoPickStatusVo.java -text svneol=unset#text/plain
 src/main/java/cn/explink/b2c/auto/order/service/TPSAutoController.java -text
 src/main/java/cn/explink/b2c/auto/order/service/TPSGetOrderDataService.java -text
@@ -1619,6 +1622,7 @@ src/main/java/cn/explink/enumutil/AdjustWayEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyEditDeliverystateIshandleEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyEnum.java -text
 src/main/java/cn/explink/enumutil/ApplyStateEnum.java -text
+src/main/java/cn/explink/enumutil/AutoCommonStatusEnum.java -text svneol=unset#text/plain
 src/main/java/cn/explink/enumutil/AutoExceptionStatusEnum.java -text svneol=unset#text/plain
 src/main/java/cn/explink/enumutil/AutoInterfaceEnum.java -text svneol=unset#text/plain
 src/main/java/cn/explink/enumutil/B2cPushStateEnum.java -text

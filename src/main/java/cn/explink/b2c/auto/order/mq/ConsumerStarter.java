@@ -6,9 +6,6 @@ import com.vip.platform.middleware.vms.ISubscriber;
 import com.vip.platform.middleware.vms.SubQoS;
 import com.vip.platform.middleware.vms.VMSClient;
 
-import cn.explink.b2c.tools.JointService;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -174,7 +171,12 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
     }
 
     //从DB读取MQ配置
-    private void initMqConfig(){
-    	mqConfigService.initMqConfig(this.callBackList, this.senderList);
+    private void initMqConfig(){	
+    	for(ConsumerTemplate consumer:this.callBackList){
+    		consumer.init();
+    	}
+    	for(AutoExceptionSender sender:this.senderList){
+    		sender.init();
+    	}
     }
 }
