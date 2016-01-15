@@ -161,6 +161,12 @@ public class AutoDispatchStatusService {
 
 	
 	private List<AutoMQExceptionDto> handleData(List<AutoPickStatusMsgVo> msgVoList,User user){
+		long cnt=0;
+		if(msgVoList!=null){
+			cnt=msgVoList.size();
+		}
+		logger.info("auto dispatch normal msg num:"+cnt);
+		
 		List<AutoMQExceptionDto> errorList=null;
 		if(msgVoList==null||msgVoList.size()<1){
 			return errorList;
@@ -208,6 +214,12 @@ public class AutoDispatchStatusService {
 	
 	private void handleTimeoutData(){
 		List<AutoOrderStatusTmpVo> timeOutVoList= autoOrderStatusService.retrieveTimeoutOrderStatusMsg(50);//?????
+		long cnt=0;
+		if(timeOutVoList!=null){
+			cnt=timeOutVoList.size();
+		}
+		logger.info("auto dispatch timeout msg num:"+cnt);
+		
 		if(timeOutVoList==null||timeOutVoList.size()<1){
 			return;
 		}
