@@ -8861,6 +8861,19 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `express_ops_transcwb` ADD INDEX `cwb_idx` (`cwb`); 
 		</sql>
 	</changeSet> 
-	
+	<changeSet id="jianronggao-2016-01-15-01" author="jianronggao">
+		<sql>
+		CREATE TABLE `express_auto_order_status_tmp`( 
+		   `cwb` varchar(100) NOT NULL COMMENT '订单号', 
+		   `operatetype` varchar(20) NOT NULL COMMENT '操作类型',
+		   `msg` text NULL COMMENT '一个订单的报文', 
+		   `createtime` timestamp NULL COMMENT '创建时间', 
+		   `status` int(4) COMMENT '状态：1未处理，2完成转业务，3错误'
+		 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+		
+		ALTER TABLE `express_auto_order_status_tmp` ADD INDEX `auto_order_status_cwb_idx` (`cwb`); 
+		ALTER TABLE `express_auto_order_status_tmp` ADD INDEX `auto_order_status_time_idx` (`createtime`); 
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>

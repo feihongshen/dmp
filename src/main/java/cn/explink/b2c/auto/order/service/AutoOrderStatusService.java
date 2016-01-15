@@ -44,7 +44,7 @@ public class AutoOrderStatusService {
 	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,operatetype,msg,createtime,status) values(?,?,?,CURRENT_TIMESTAMP,?)";
 	private final static String ORDER_STATUS_TMP_UPDATE_SQL="update express_auto_order_status_tmp set status=? where cwb=? and operatetype=? and status=1";
 
-	private final static String ORDER_STATUS_TMP_QUERY_SQL="SELECT * FROM express_auto_order_status_tmp t WHERE status=1 AND EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb and c.state=1) ORDER BY t.createtime LIMIT 0,?";
+	private final static String ORDER_STATUS_TMP_QUERY_SQL="SELECT t.* FROM express_auto_order_status_tmp t INNER JOIN express_ops_cwb_detail c ON t.cwb=c.cwb WHERE t.status=1 AND c.state=1 ORDER BY t.createtime LIMIT 0,?";
 	private final static String ORDER_STATUS_TMP_TIMEOUT_QUERY_SQL=
 			"SELECT * FROM express_auto_order_status_tmp t WHERE STATUS=1 AND t.createtime<DATE_ADD(NOW(),INTERVAL -1 HOUR)" 
 			+" AND NOT EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb AND c.state=1) ORDER BY t.createtime LIMIT 0,?";
