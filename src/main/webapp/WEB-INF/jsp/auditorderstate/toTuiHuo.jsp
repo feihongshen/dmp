@@ -123,8 +123,9 @@ function cancelIntercept(transcwb){
 				alert("撤销成功！");
 			}
 			debugger
-			$("#scanArea").val('<%=scanCwbs%>') ;
-			searchForm.submit();			
+			$("#scanArea").val($("#scanCwbs").val()) ;
+ 			searchForm.submit();	
+
 		}
 	});	
 }
@@ -299,5 +300,6 @@ function cancelIntercept(transcwb){
 	</div>
 </div>
 <input id="cancelInterceptPath" type="hidden" value="<%=request.getContextPath() %>/cwborder/cancelIntercept">
+<input id="scanCwbs" type="hidden" value="<%=scanCwbs%>"/>
 </BODY>
 </HTML>
