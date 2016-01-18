@@ -17,6 +17,7 @@ import cn.explink.b2c.tools.ExptReasonDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
+import cn.explink.dao.ReasonDao;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
@@ -47,6 +48,8 @@ public class UnionPayService_Delivery extends UnionPayService {
 
 	@Autowired
 	BranchDAO branchDAO;
+	@Autowired
+	ReasonDao reasonDao;
 
 	/**
 	 * 运单处理结果
@@ -83,6 +86,7 @@ public class UnionPayService_Delivery extends UnionPayService {
 			BigDecimal paybackedfee = BigDecimal.ZERO;
 			long backedreasonid = 0;
 			long leavedreasonid = 0;
+			long firstlevelreasonid=0;
 
 			String sign_man = "";
 			int SignFlag = jsondata.get("SignFlag") != null ? jsondata.getInt("SignFlag") : 0;
@@ -129,6 +133,7 @@ public class UnionPayService_Delivery extends UnionPayService {
 				String expt_code = jsondata.get("UntreadReasonCode") != null ? jsondata.getString("UntreadReasonCode") : "";
 				if (exptcodeJointDAO.getExpMatchListByPosCode(expt_code, PosEnum.UnionPay.getKey()) != null) {
 					leavedreasonid = (exptcodeJointDAO.getExpMatchListByPosCode(expt_code, PosEnum.UnionPay.getKey())).getReasonid();
+					firstlevelreasonid=this.reasonDao.getReasonByReasonid(leavedreasonid).getParentid();
 				}
 				sign_man = "";
 				SignFlag = 0;
@@ -148,6 +153,7 @@ public class UnionPayService_Delivery extends UnionPayService {
 			parameters.put("podresultid", deliverystate);
 			parameters.put("backreasonid", backedreasonid);
 			parameters.put("leavedreasonid", leavedreasonid);
+			parameters.put("firstlevelreasonid", firstlevelreasonid);
 			parameters.put("receivedfeecash", cash);
 			parameters.put("receivedfeepos", pos);
 			parameters.put("receivedfeecheque", check);
