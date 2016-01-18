@@ -443,6 +443,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	ReturnToCustomerReleaseService customerReleaseService;
+
 	// private User getSessionUser() {
 	// ExplinkUserDetail userDetail = (ExplinkUserDetail)
 	// this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -3862,7 +3863,6 @@ public class CwbOrderService extends BaseOrderService {
 		this.deliverTakeGoodsMPSReleaseService.validateReleaseCondition(scancwb);
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.FenZhanLingHuo);
 
-
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		if (co == null) {
@@ -5376,8 +5376,8 @@ public class CwbOrderService extends BaseOrderService {
 	public CwbOrder backtocustom(User user, String cwb, String scancwb, long requestbatchno, String baleno, boolean anbaochuku, long customerid) {
 		// orderInterceptService.checkTransCwbIsIntercept(scancwb,
 		// FlowOrderTypeEnum.TuiGongYingShangChuKu);
-		
-		customerReleaseService.validateReleaseCondition(scancwb);
+
+		this.customerReleaseService.validateReleaseCondition(scancwb);
 		cwb = this.translateCwb(cwb);
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
@@ -5408,7 +5408,7 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private CwbOrder handleBacktocustomYipiaoduojian(User user, String cwb, String scancwb, long requestbatchno, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, String baleno) {
-		
+
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 		}
@@ -5851,7 +5851,7 @@ public class CwbOrderService extends BaseOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
 		}
 		this.cwbDAO.updateCwbOnIntercept(cwb, co.getCwbstate(), co.getFlowordertype(), co.getNextbranchid(), r.getReasonid(), r.getReasoncontent(), co.getMpsoptstate());
-		this.createFloworder(user, user.getBranchid(), co, FlowOrderTypeEnum.getByValue((int) co.getFlowordertype()), r == null ? "" : r.getReasoncontent(), System.currentTimeMillis(), scancwb);
+		// TODO 撤销的时候，轨迹如果做 this.createFloworder(user, user.getBranchid(), co, 999, "", System.currentTimeMillis(), scancwb);
 		this.shangMenTuiCwbDetailDAO.deletePrintRecord(cwb);
 		if ((co.getTranscwb() != null) && (co.getTranscwb().length() > 0)) {
 			String[] cwbList = co.getTranscwb().split(",");
@@ -8226,7 +8226,8 @@ public class CwbOrderService extends BaseOrderService {
 				cwbTransOrderList.add(temp);
 				transNum++;
 				flowOrderType = cwbTemp.getFlowordertype();
-				if ((temp.getCurrentbranchid() != 0)) {// 如果下一站为0，那么说明它处于数据导入、入库、入站之前，那么这个时候下一站不变，从而使得数据导入状态直接入退货入库，未入库、未入站允许进入入库/入站
+				// 如果下一站为0，那么说明它处于数据导入、入库、入站之前，那么这个时候下一站不变，从而使得数据导入状态直接入退货入库，未入库、未入站允许进入入库/入站(如果运单已经在退货组，那么就不需要在去匹配退货组了)
+				if ((temp.getCurrentbranchid() != 0) && (temp.getTranscwboptstate() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
 					List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(cwbTemp.getCurrentbranchid());// 根据站点的流向配置，找到他对应的退货组
 					if ((branchidList.size() > 1) && (flowOrderType != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {// 如果不等于导入数据，那么说明配置是错的
 						throw new Exception("配置的下一站不唯一");
