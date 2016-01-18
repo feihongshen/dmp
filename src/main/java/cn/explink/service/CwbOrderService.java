@@ -1544,11 +1544,19 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		// added shenhongfei 分站到货状态修改 2016.1.12
 		Long NextBranchid = 0L;
-		if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
+		if (this.getCwbState(co)) {
 			NextBranchid = this.getNextBranchid(cwb, currentbranchid);
 		}
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, currentbranchid, NextBranchid);
 		return this.cwbDAO.getCwbByCwb(cwb);
+	}
+
+	private boolean getCwbState(CwbOrder co) {
+		return co.getCwbstate() == CwbStateEnum.BUFENDIUSHI.getValue()
+				||CwbStateEnum.BUFENPOSUN.getValue()==co.getCwbstate()
+				||CwbStateEnum.WANQUANPOSUN.getValue()==co.getCwbstate()
+				||CwbStateEnum.DiuShi.getValue()==co.getCwbstate()
+				||CwbStateEnum.TuiHuo.getValue()==co.getCwbstate();
 	}
 
 	/**
@@ -1643,7 +1651,7 @@ public class CwbOrderService extends BaseOrderService {
 		this.jdbcTemplate.update(sql, currentbranchid, flowOrderTypeEnum.getValue(), co.getCwb());
 		// added shenhongfei 分站到货状态修改 2016.1.12
 		Long NextBranchid = 0L;
-		if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
+		if (this.getCwbState(co)) {
 			NextBranchid = this.getNextBranchid(cwb, currentbranchid);
 		}
 
