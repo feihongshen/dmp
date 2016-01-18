@@ -1976,6 +1976,7 @@ src/main/java/cn/explink/service/fnc/OrderLifeCycleFeeNotReturnFeeHandler.java -
 src/main/java/cn/explink/service/fnc/OrderLifeCycleReportService.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleTuiKeHuWeiShouKuanHandler.java -text
 src/main/java/cn/explink/service/mps/AbstractMPSService.java -text
+src/main/java/cn/explink/service/mps/CwbOrderBranchInfoModificationService.java -text
 src/main/java/cn/explink/service/mps/MPSOptStateService.java -text
 src/main/java/cn/explink/service/mps/OrderInterceptService.java -text
 src/main/java/cn/explink/service/mps/release/AbstractMPSReleaseService.java -text

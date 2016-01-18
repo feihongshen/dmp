@@ -57,7 +57,7 @@ public class MPSOptStateService extends AbstractMPSService {
 
 		this.updateMPSOptState(cwbOrder);
 
-		this.updateCwbOrderNextBranch(cwbOrder, nextbranchid);
+		this.updateCwbOrderNextBranch(cwbOrder, currentbranchid, nextbranchid);
 
 		// 更新运单操作状态，上一站 下一站
 		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
@@ -65,14 +65,25 @@ public class MPSOptStateService extends AbstractMPSService {
 			MPSOptStateService.LOGGER.error(MPSOptStateService.UPDATE_MPS_STATE + "没有查询到运单号" + transCwb + "对应的运单信息！");
 			return;
 		}
-		transCwbDetail.setCurrentbranchid(currentbranchid);
-		transCwbDetail.setNextbranchid(nextbranchid);
+		transCwbDetail.setPreviousbranchid(transCwbDetail.getCurrentbranchid());
+		if (currentbranchid >= 0) {
+			transCwbDetail.setCurrentbranchid(currentbranchid);
+		}
+		if (nextbranchid >= 0) {
+			transCwbDetail.setNextbranchid(nextbranchid);
+		}
 		transCwbDetail.setTranscwboptstate(transcwboptstate.getValue());
 		this.getTransCwbDetailDAO().updateTransCwbDetail(transCwbDetail);
 	}
 
-	private void updateCwbOrderNextBranch(CwbOrder cwbOrder, long nextbranchid) {
-		this.getCwbDAO().updateNextBranchid(cwbOrder.getCwb(), nextbranchid);
+	private void updateCwbOrderNextBranch(CwbOrder cwbOrder, long currentbranchid, long nextbranchid) {
+		if (currentbranchid < 0) {
+			currentbranchid = cwbOrder.getCurrentbranchid();
+		}
+		if (nextbranchid < 0) {
+			nextbranchid = cwbOrder.getNextbranchid();
+		}
+		this.getCwbDAO().updateBranchInfo(cwbOrder.getCwb(), cwbOrder.getCurrentbranchid(), currentbranchid, nextbranchid);
 	}
 
 	private void updateMPSOptState(CwbOrder cwbOrder) {

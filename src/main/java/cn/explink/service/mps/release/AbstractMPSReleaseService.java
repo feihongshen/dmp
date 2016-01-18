@@ -40,6 +40,7 @@ public abstract class AbstractMPSReleaseService extends AbstractMPSService {
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.FenZhanLingHuo.getValue());
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue());
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.TuiHuoChuZhan.getValue());
 	}
 
 	/**
