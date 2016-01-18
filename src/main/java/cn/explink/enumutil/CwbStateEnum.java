@@ -7,7 +7,7 @@ import cn.explink.exception.ExplinkException;
 
 public enum CwbStateEnum {
 	WUShuju(0, "无数据"), PeiShong(1, "配送"), TuiHuo(2, "退货"), DiuShi(3, "全部丢失"), WuXiaoShuJu(4, "无效数据"), TuiGongYingShang(5, "退供货商"), ZhongZhuan(6, "中转"), OXO_JIT(7, "OXO_JIT"), BUFENDIUSHI(8, "部分丢失"), WANQUANPOSUN(
-			9, "完全破损"), BUFENPOSUN(10, "部分破损");
+			9, "全部破损"), BUFENPOSUN(10, "部分破损");
 
 	private int value;
 	private String text;
