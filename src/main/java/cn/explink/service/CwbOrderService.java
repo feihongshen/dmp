@@ -3546,6 +3546,8 @@ public class CwbOrderService extends BaseOrderService {
 	@Transactional
 	public CwbOrder outUntreadWarehousHandle(User user, long currentbranchid, String cwb, String scancwb, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean anbaochuku) {
 		// added shenhongfei 退货出站 2016-1-12
+		
+		
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.TuiHuoChuZhan);
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
