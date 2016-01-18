@@ -53,7 +53,7 @@ function gotoForm(cwb){
 									订单号：<strong><%=view.getCwb() %></strong>&nbsp;&nbsp;
 									<font <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if> >订单号当前状态：</font><strong <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if>><%if(view.getFlowordertypeMethod()=="已审核"){%>审核为：<%=view.getDeliveryStateText() %><%}else if(view.getFlowordertypeMethod()=="已反馈") {%>反馈为：<%=view.getDeliveryStateText() %><%}else{ %><%=view.getFlowordertypeMethod() %><%} %></strong>
 									<c:if test="${jdtype == 1}">
-										&nbsp;&nbsp;<font color="red">一票多件当前状态：<strong>${slowtranscwbtype}</strong></font>
+										&nbsp;&nbsp;<font>一票多件当前状态：<strong>${slowtranscwbtype}</strong></font>
 									</c:if>
 									<font <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if> >&nbsp;&nbsp;配送状态:</font><strong <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if>><%=view.getCwbdelivertypeStr() %></strong>
 									<font <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if> >订单状态：</font><strong <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if>>

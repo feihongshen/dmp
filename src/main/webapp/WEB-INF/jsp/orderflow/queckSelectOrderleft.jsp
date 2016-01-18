@@ -86,8 +86,8 @@ function goForm(cwb){
 								<td align="center" bgcolor="#F1F1F1">运单号</td>
 								<c:choose>
 								<c:when test="${jdtype == 1}">
-								<td align="center" bgcolor="#F1F1F1"><font color="red">一票多件当前状态</font></td>
-								<td align="center" bgcolor="#F1F1F1"><font color="red">运单状态<font></td>
+								<td align="center" bgcolor="#F1F1F1"><font>一票多件当前状态</font></td>
+								<td align="center" bgcolor="#F1F1F1"><font>运单状态<font></td>
 								</c:when>
 								<c:otherwise>
 								<td align="center" bgcolor="#F1F1F1">运单号当前状态</td>
