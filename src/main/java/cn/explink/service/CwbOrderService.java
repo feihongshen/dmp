@@ -5417,6 +5417,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @return
 	 */
 	public CwbOrder backtocustom(User user, String cwb, String scancwb, long requestbatchno, String baleno, boolean anbaochuku) {
+		this.orderInterceptService.checkTransCwbIsIntercept(scancwb,FlowOrderTypeEnum.TuiGongYingShangChuKu);
 		cwb = this.translateCwb(cwb);
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
@@ -5580,7 +5581,7 @@ public class CwbOrderService extends BaseOrderService {
 	 */
 	public CwbOrder customrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment) {
 		this.logger.info("{} 将订单 {} 审核为供货商拒收返库", FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), cwb);
-
+		this.orderInterceptService.checkTransCwbIsIntercept(scancwb,FlowOrderTypeEnum.GongYingShangJuShouFanKu);
 		cwb = this.translateCwb(cwb);
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
