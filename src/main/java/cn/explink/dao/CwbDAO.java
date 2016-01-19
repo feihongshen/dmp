@@ -1536,6 +1536,11 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, startbranchid, currentbranchid, nextbranchid, cwb);
 	}
 
+	public void updateBranchAndCwbstateAndFlowOrderTypeInfo(String cwb, long startbranchid, long currentbranchid, long nextbranchid, long cwbstate, int flowordertype) {
+		String sql = "update express_ops_cwb_detail set startbranchid=?,currentbranchid=?,nextbranchid=?,cwbstate=?,flowordertype=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, startbranchid, currentbranchid, nextbranchid, cwbstate, flowordertype, cwb);
+	}
+
 	/**
 	 * 修改客户备注信息
 	 *

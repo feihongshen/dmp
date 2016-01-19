@@ -898,8 +898,6 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			} else {
 				this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, false, credate, anbaochuku);
-				// added by songkaojun 2016-01-11
-				this.updateMPSInfo(co, scancwb, flowOrderTypeEnum, currentbranchid);
 			}
 		} else {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -935,16 +933,14 @@ public class CwbOrderService extends BaseOrderService {
 			this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false);
 		}
 
-		// added by songkaojun 2016-01-11
-		this.updateMPSInfo(co, scancwb, flowOrderTypeEnum, currentbranchid);
-
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
 	private void updateMPSInfo(CwbOrder co, String scancwb, FlowOrderTypeEnum flowOrderTypeEnum, long currentbranchid) {
 		long nextbranchid = 0L;
-		if (FlowOrderTypeEnum.DingDanLanJie.getValue() == co.getFlowordertype()) {
+		if (this.isIntercepted(co)) {
 			nextbranchid = this.getNextBranchid(co.getCwb(), currentbranchid);
+			currentbranchid = 0L;
 		}
 		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, nextbranchid);
 	}
@@ -1052,6 +1048,8 @@ public class CwbOrderService extends BaseOrderService {
 			this.logger.info("重复入库");
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 		}
+		// added by songkaojun 2016-01-11
+		this.updateMPSInfo(co, scancwb, flowOrderTypeEnum, currentbranchid);
 
 		// ==========结算中转入库扫描逻辑=======
 		// 起始站为站点类型
@@ -1544,19 +1542,16 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		// added shenhongfei 分站到货状态修改 2016.1.12
 		Long NextBranchid = 0L;
-		if (this.getCwbState(co)) {
+		if (this.isIntercepted(co)) {
 			NextBranchid = this.getNextBranchid(cwb, currentbranchid);
 		}
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, currentbranchid, NextBranchid);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	private boolean getCwbState(CwbOrder co) {
-		return co.getCwbstate() == CwbStateEnum.BUFENDIUSHI.getValue()
-				||CwbStateEnum.BUFENPOSUN.getValue()==co.getCwbstate()
-				||CwbStateEnum.WANQUANPOSUN.getValue()==co.getCwbstate()
-				||CwbStateEnum.DiuShi.getValue()==co.getCwbstate()
-				||CwbStateEnum.TuiHuo.getValue()==co.getCwbstate();
+	private boolean isIntercepted(CwbOrder co) {
+		return (co.getCwbstate() == CwbStateEnum.BUFENDIUSHI.getValue()) || (CwbStateEnum.BUFENPOSUN.getValue() == co.getCwbstate()) || (CwbStateEnum.WANQUANPOSUN.getValue() == co.getCwbstate())
+				|| (CwbStateEnum.DiuShi.getValue() == co.getCwbstate()) || (CwbStateEnum.TuiHuo.getValue() == co.getCwbstate());
 	}
 
 	/**
@@ -1651,7 +1646,7 @@ public class CwbOrderService extends BaseOrderService {
 		this.jdbcTemplate.update(sql, currentbranchid, flowOrderTypeEnum.getValue(), co.getCwb());
 		// added shenhongfei 分站到货状态修改 2016.1.12
 		Long NextBranchid = 0L;
-		if (this.getCwbState(co)) {
+		if (this.isIntercepted(co)) {
 			NextBranchid = this.getNextBranchid(cwb, currentbranchid);
 		}
 
@@ -4990,7 +4985,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * updateDeliveryBranch(user, co, deliverybranch, addressCodeEditType);
 	 * logger.info("审核为中转，操作人是{}，配送站点是{}",userDAO.getUserByid(user.getUserid()),
 	 * deliverybranch.getBranchname()+"--"+deliverybranchid);
-	 * 
+	 *
 	 * }
 	 */
 
@@ -5688,7 +5683,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * == null ? 0 : (Long) parameterMap.get("truckid"); long baleid =
 	 * parameterMap.get("baleid") == null ? 0 : (Long)
 	 * parameterMap.get("baleid");
-	 * 
+	 *
 	 * if (!StringUtils.hasLength(comment)) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "备注"); }
 	 * if (branchid != 0) { throw new
@@ -5701,7 +5696,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "车辆"); }
 	 * if (baleid != 0) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "包号"); }
-	 * 
+	 *
 	 * } }
 	 */
 
@@ -5787,7 +5782,7 @@ public class CwbOrderService extends BaseOrderService {
 	private void handleSupplierBackSuccess(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
 		/*
 		 * validateCwbState(co, flowOrderTypeEnum);
-		 * 
+		 *
 		 * validateStateTransfer(co, flowOrderTypeEnum);
 		 */
 
@@ -5819,11 +5814,11 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder auditToTuihuoHandle(User user, String
 	 * cwb,long flowOrderType, long reasonid) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new CwbException(cwb,FlowOrderTypeEnum.DingDanLanJie.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * Reason r = reasonDAO.getReasonByReasonid(reasonid); // 更新订单状态 String sql
 	 * =
 	 * "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1"
@@ -6165,12 +6160,12 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder SpecialCwbHandle(User user, String cwb,
 	 * long handleresult, long handleperson, String handlereason) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new
 	 * CwbException(cwb,FlowOrderTypeEnum.YiChangDingDanChuLi.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * validateDeliveryState(cwbOrder, FlowOrderTypeEnum.YiChangDingDanChuLi);
 	 * // 更新订单状态 String sql =
 	 * "update express_ops_cwb_detail set currentbranchid=" + user.getBranchid()
@@ -8401,7 +8396,7 @@ public class CwbOrderService extends BaseOrderService {
 	/**
 	 *
 	 * @Title: dealCancelIntercept
-	 * @description 
+	 * @description
 	 *              撤销拦截的处理方法：被撤销的运单一定变为退货；找出所有兄弟运单，如果兄弟中有丢失，那主单变部分丢失；如果兄弟中含有破损，但没有丢失
 	 *              ，主单为部分破损；否则主单变退货；
 	 * @author 刘武强
