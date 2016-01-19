@@ -83,7 +83,7 @@ public class MPSOptStateService extends AbstractMPSService {
 		if (nextbranchid < 0) {
 			nextbranchid = cwbOrder.getNextbranchid();
 		}
-		this.getCwbDAO().updateBranchInfo(cwbOrder.getCwb(), cwbOrder.getCurrentbranchid(), currentbranchid, nextbranchid);
+		this.getCwbDAO().updateBranchInfo(cwbOrder.getCwb(), currentbranchid, nextbranchid);
 	}
 
 	private void updateMPSOptState(CwbOrder cwbOrder) {

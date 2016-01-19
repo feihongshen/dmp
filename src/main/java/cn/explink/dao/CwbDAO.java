@@ -1531,9 +1531,9 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, nextbranchid, cwb);
 	}
 
-	public void updateBranchInfo(String cwb, long startbranchid, long currentbranchid, long nextbranchid) {
-		String sql = "update express_ops_cwb_detail set startbranchid=?,currentbranchid=?,nextbranchid=? where cwb=? and state=1";
-		this.jdbcTemplate.update(sql, startbranchid, currentbranchid, nextbranchid, cwb);
+	public void updateBranchInfo(String cwb, long currentbranchid, long nextbranchid) {
+		String sql = "update express_ops_cwb_detail set currentbranchid=?,nextbranchid=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, currentbranchid, nextbranchid, cwb);
 	}
 
 	public void updateBranchAndCwbstateAndFlowOrderTypeInfo(String cwb, long startbranchid, long currentbranchid, long nextbranchid, long cwbstate, int flowordertype) {
@@ -6235,11 +6235,11 @@ public class CwbDAO {
 	 * +
 	 * " or cwb=? or emaildate=? or consigneename=? order by emaildate desc limit 10"
 	 * ;
-	 *
+	 * 
 	 * return this.jdbcTemplate.query(sql, new
 	 * CwbMapper(),coc.getConsigneemobile
 	 * (),coc.getCwb(),coc.getEmaildate(),coc.getConsigneename());
-	 *
+	 * 
 	 * }
 	 */
 

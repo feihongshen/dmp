@@ -89,6 +89,7 @@ public class OrderInterceptService extends AbstractMPSService {
 					throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_BROKEN_RETURN, cwb, transCwb, siblingTransCwb);
 				}
 			}
+			throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_RETURN, cwb, transCwb);
 		}
 	}
 
