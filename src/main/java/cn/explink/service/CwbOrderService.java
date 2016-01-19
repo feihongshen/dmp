@@ -6045,7 +6045,7 @@ public class CwbOrderService extends BaseOrderService {
 		// CwbException(cwb,FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue(),
 		// ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		// }
-
+		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.ShenHeWeiZaiTou, co.getCurrentbranchid(), co.getNextbranchid());
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
