@@ -3002,6 +3002,7 @@ public class CwbOrderService extends BaseOrderService {
 		// //包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
+		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, 0L, branchid);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -6045,7 +6046,11 @@ public class CwbOrderService extends BaseOrderService {
 		// CwbException(cwb,FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue(),
 		// ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		// }
-		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.ShenHeWeiZaiTou, co.getCurrentbranchid(), co.getNextbranchid());
+		if(co.getTranscwb() !=null && !co.getTranscwb().isEmpty()){
+			for(String strs : co.getTranscwb().split(",")){				
+				this.mpsOptStateService.updateMPSInfo(strs, FlowOrderTypeEnum.ShenHeWeiZaiTou, co.getCurrentbranchid(), co.getNextbranchid());
+			}
+		}
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
