@@ -2030,7 +2030,8 @@ public class CwbDAO {
 	 */
 	public List<CwbOrder> getRukuByBranchidForList(long branchid, long sitetype, long page, long customerid, long emaildateid) {
 
-		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  nextbranchid =? and currentbranchid=0 and state=1 and flowordertype<>" + FlowOrderTypeEnum.FenZhanLingHuo.getValue();
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  nextbranchid =? and currentbranchid=0 and state=1  and (cwbstate<>" + CwbStateEnum.DiuShi.getValue() + " and cwbstate<>"
+				+ CwbStateEnum.BUFENDIUSHI.getValue() + ") and flowordertype<>" + FlowOrderTypeEnum.FenZhanLingHuo.getValue();
 		if (sitetype == BranchEnum.ZhanDian.getValue()) {
 			sql = "SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype='" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "' and state=1 ";
 		}
@@ -2234,8 +2235,8 @@ public class CwbDAO {
 
 	// 退货入库待入库list(包含订单拦截的待退货入库)
 	public List<CwbOrder> getBackRukuByBranchidForListAll(long branchid, long page) {
-		return this.jdbcTemplate.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and  state=1 order by opscwbid desc  limit ?,? ", new CwbMapper(), branchid,
-				(page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+		return this.jdbcTemplate.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and  state=1 order by opscwbid desc  limit ?,? ", new CwbMapper(), branchid, (page - 1)
+				* Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
 
 	// 订单拦截list(ismpsflag=1表示开启集单模式)
