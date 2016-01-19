@@ -100,7 +100,7 @@ function goForm(cwb){
 								<td align="center" bgcolor="#EBFFD7"><%=ts.getTranscwb() %></td>
 								<td align="center" bgcolor="#EBFFD7"><%=ts.getFlowordername() %></td>
 								<c:if test="${jdtype == 1}">
-								<td align="center" bgcolor="#EBFFD7"><font color="red"><%=ts.getTranscwbstate() %></font></td>
+								<td align="center" bgcolor="#EBFFD7"><font><%=ts.getTranscwbstate() %></font></td>
 								</c:if>
 							</tr>
 							<%} %>

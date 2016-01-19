@@ -75,8 +75,8 @@ function gotoForm(cwb){
 									<%} %>
 									</strong>
 									<c:if test="${jdtranstype == 1}">
-										&nbsp;&nbsp;<font color="red">一票多件当前状态：</font><strong>${ypdjcurrentstate}</strong>
-										&nbsp;&nbsp;<font color="red">运单状态：</font><strong>${transcwbstate}</strong>
+										&nbsp;&nbsp;<font>一票多件当前状态：</font><strong>${ypdjcurrentstate}</strong>
+										&nbsp;&nbsp;<font>运单状态：</font><strong>${transcwbstate}</strong>
 									</c:if>
 										<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5"  style="font-size:14px;">
 											<tr>
