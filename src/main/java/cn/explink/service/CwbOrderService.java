@@ -5384,8 +5384,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @return
 	 */
 	public CwbOrder backtocustom(User user, String cwb, String scancwb, long requestbatchno, String baleno, boolean anbaochuku, long customerid) {
-		// orderInterceptService.checkTransCwbIsIntercept(scancwb,
-		// FlowOrderTypeEnum.TuiGongYingShangChuKu);
+		orderInterceptService.checkTransCwbIsIntercept(scancwb,FlowOrderTypeEnum.TuiGongYingShangChuKu);
 
 		this.customerReleaseService.validateReleaseCondition(scancwb);
 		cwb = this.translateCwb(cwb);
