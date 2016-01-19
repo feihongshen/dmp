@@ -882,7 +882,8 @@ public class DataImportService {
 	}
 	
 	public void insertTransCwbDetail(CwbOrderDTO cwbOrder,String  emaildate) {
-		for(String transcwb:cwbOrder.getTranscwb().split(",")){
+		
+		for (String transcwb : cwbOrder.getTranscwb().split(cwbOrderService.getSplitstring(cwbOrder.getTranscwb()))) {
 			TransCwbDetail td =	transCwbDetailDAO.findTransCwbDetailByTransCwb(transcwb);
 			if(td!=null){
 				continue;
