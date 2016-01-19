@@ -914,7 +914,8 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), currentbranchid, 0, 0, ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 		}
-		if ((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
+		boolean newMPSOrder = this.mpsCommonService.isNewMPSOrder(scancwb);
+		if (((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) || (newMPSOrder && (co.getScannum() > 0))) {
 			if (co.getScannum() < 1) {
 				this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, false);
 			}
@@ -928,7 +929,7 @@ public class CwbOrderService extends BaseOrderService {
 					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 				}
-				if (this.mpsCommonService.isNewMPSOrder(scancwb)) {
+				if (newMPSOrder) {
 					this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, true);
 				}
 			} else {
