@@ -8240,9 +8240,9 @@ public class CwbOrderService extends BaseOrderService {
 				if ((temp.getCurrentbranchid() != 0) && (temp.getTranscwboptstate() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) && (flowOrderType != FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao
 						.getValue())) {
 					List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(cwbTemp.getCurrentbranchid());// 根据站点的流向配置，找到他对应的退货组
-					if ((branchidList.size() > 1) && (flowOrderType != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {// 如果不等于导入数据、，那么说明配置是错的
+					if ((branchidList.size() > 1)) {
 						throw new Exception("配置的逆向退货组不唯一");
-					} else if ((branchidList.size() == 0) && (flowOrderType != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {// 如果不等于导入数据，那么说明配置是错的
+					} else if ((branchidList.size() == 0)) {
 						throw new Exception("没有配置逆向退货组");
 					} else {
 						nextBranchid = branchidList.get(0).getBranchid();
