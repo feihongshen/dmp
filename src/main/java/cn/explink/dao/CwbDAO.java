@@ -2189,7 +2189,7 @@ public class CwbDAO {
 				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
 				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
 				+ " FROM express_ops_cwb_detail FORCE INDEX(detail_currentbranchid_idx) ";
-		sql += " WHERE currentbranchid=? and flowordertype=? and state=1";
+		sql += " WHERE currentbranchid=? and flowordertype=? and state=1 AND cwbstate!=3 ";
 
 		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
 	}
@@ -2236,7 +2236,7 @@ public class CwbDAO {
 	public List<CwbOrder> getBackRukuByBranchidForListAll(long branchid, long page) {
 
 		return this.jdbcTemplate
-				.query("SELECT* FROM express_ops_cwb_detail de,express_set_branch br WHERE de.currentbranchid=br.branchid  AND de.nextbranchid=? AND de.state=1 AND(de.currentbranchid=0 OR de.currentbranchid!=0 AND br.sitetype IN (3,4) AND de.ismpsflag=1 ) order by opscwbid desc  limit ?,? ",
+				.query("SELECT* FROM express_ops_cwb_detail de,express_set_branch br WHERE de.currentbranchid=br.branchid  AND de.nextbranchid=? AND de.state=1 AND(de.currentbranchid=0 OR de.currentbranchid!=0 AND br.sitetype IN (3,4) AND de.ismpsflag=1 ) AND cwbstate!=3  order by opscwbid desc  limit ?,? ",
 						new CwbMapper(), branchid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 
 	}
