@@ -8239,6 +8239,7 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			cwbOrderView.setCurrentbranchid(c.getCurrentbranchid());
 		}
+		cwbOrderView.setDeliverystate(c.getDeliverystate());
 		cwbOrderView.setCwbordertypeid(c.getCwbordertypeid() + "");// 订单类型
 		cwbOrderView.setIsmpsflag(c.getIsmpsflag());
 		// 针对每个订单的供应商，查看他的集单开关是否打开，用于前台显示拦截原因是否过滤破损和丢失---刘武强16.01.07
@@ -8372,10 +8373,12 @@ public class CwbOrderService extends BaseOrderService {
 			cwbTemp.setCwbstate(CwbStateEnum.WANQUANPOSUN.getValue());
 		} else if (transNum == diushiNum) {
 			cwbTemp.setCwbstate(CwbStateEnum.DiuShi.getValue());
-		} else if ((transNum != (diushiNum + posunNum)) && (diushiNum > 0)) {
+		} else if (diushiNum > 0) {
 			cwbTemp.setCwbstate(CwbStateEnum.BUFENDIUSHI.getValue());
-		} else {
+		} else if (posunNum > 0) {
 			cwbTemp.setCwbstate(CwbStateEnum.BUFENPOSUN.getValue());
+		} else {
+			cwbTemp.setCwbstate(CwbStateEnum.TuiHuo.getValue());
 		}
 		if (cwbTemp.getCurrentbranchid() != 0) {// 当订单处于“未入”（未入库、未入站、未入中转库），则下一站不变
 			cwbTemp.setNextbranchid(nextBranchid);// 修改主单的下一站
