@@ -24,7 +24,6 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
 
-
 <%
 	List<JointEntity> b2cList = (List<JointEntity>)request.getAttribute("b2cList");
 List<JointPower> powerlist = (List<JointPower>)request.getAttribute("b2cenumlist");
@@ -447,6 +446,10 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/tpsCarrierOrderStatus/del/');
 		}
 
+		else if(obj=='20129'){ //外单推DO
+			$("#edit").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/show/');
+			$("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
+		}
 
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');

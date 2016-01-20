@@ -608,6 +608,9 @@ src/main/java/cn/explink/b2c/tps/TPSCarrierOrderStatus.java -text
 src/main/java/cn/explink/b2c/tps/TPSCarrierOrderStatusController.java -text
 src/main/java/cn/explink/b2c/tps/TPSCarrierOrderStatusService.java -text
 src/main/java/cn/explink/b2c/tps/TPSCarrierOrderStatusTimmer.java -text
+src/main/java/cn/explink/b2c/tps/ThirdPartyOrder2DOCfg.java -text
+src/main/java/cn/explink/b2c/tps/ThirdPartyOrder2DOCfgController.java -text
+src/main/java/cn/explink/b2c/tps/ThirdPartyOrder2DOCfgService.java -text
 src/main/java/cn/explink/b2c/vipshop/CwbColumnSetVipShop.java -text
 src/main/java/cn/explink/b2c/vipshop/ReaderXMLHandler.java -text
 src/main/java/cn/explink/b2c/vipshop/SOAPHandler.java -text
@@ -2447,6 +2450,7 @@ src/main/webapp/WEB-INF/jsp/b2cdj/testFile.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/testHappiInfo.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/testPingtai.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/tmall.jsp -text
+src/main/webapp/WEB-INF/jsp/b2cdj/tps/thirdPartyOrder2DOCfg.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/tps/tpsCarrierOrderStatus.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/tpsAutomate.jsp -text
 src/main/webapp/WEB-INF/jsp/b2cdj/vipshop.jsp -text
