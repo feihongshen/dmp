@@ -191,12 +191,19 @@ function cancelIntercept(transcwb){
 							<tbody>
 							<%for(CwbOrderView cwb :cwbList){ %>
 								<tr height="30" cwbFlowordertype="<%=cwb.getFlowordertype() %>"  cwbstate="<%
-								if((cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
-											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
-											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
-											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
-											||cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue())&&
-											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue())){
+									if(cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
+										||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
+										||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
+										||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() && cwb.getDeliverystate()!=DeliveryStateEnum.DaiZhongZhuan.getValue() 
+										  && cwb.getDeliverystate()!=DeliveryStateEnum.JuShou.getValue() && cwb.getDeliverystate()!=DeliveryStateEnum.BuFenTuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+										||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
+										||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
+										||(cwb.getFlowordertype()==FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+										||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+										||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+										||(cwb.getCwbstate()==TransCwbStateEnum.DIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+										||(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
+										||(cwb.getCwbstate()==CwbStateEnum.DiuShi.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())){
 									out.print("no");
 								} %>"	>
 									<td width="150" align="center" valign="middle"><%=cwb.getCwb() %></td>
@@ -218,11 +225,11 @@ function cancelIntercept(transcwb){
 									<td width="150" align="center" valign="middle" style="display:none;">
 									<%if((cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
-											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() 
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
 											||cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue())&&
-											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue())){ %>
+											!((cwb.getSendcarnum()>0||cwb.getBackcarnum()>0)&&cwb.getTranscwb().length()>0&&!cwb.getCwb().equals(cwb.getTranscwb())&&cwb.getFlowordertype()==FlowOrderTypeEnum.DingDanLanJie.getValue()))){ %>
 											<%=cwb.getBackreason() %>
 									<input type="hidden" name="reason_<%=cwb.getCwb() %>" value="<%=cwb.getScancwb() %>_s_0"/>
 									<%}else{ %>
@@ -237,12 +244,16 @@ function cancelIntercept(transcwb){
 									<td width="150" align="center" valign="middle">
 									<%if(cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
-											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue()
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() && cwb.getDeliverystate()!=DeliveryStateEnum.DaiZhongZhuan.getValue() 
+										  		&& cwb.getDeliverystate()!=DeliveryStateEnum.JuShou.getValue() && cwb.getDeliverystate()!=DeliveryStateEnum.BuFenTuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 											||(cwb.getCwbstate()==TransCwbStateEnum.DIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 											||(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
-											||(cwb.getCwbstate()==CwbStateEnum.WANQUANPOSUN.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
 											||(cwb.getCwbstate()==CwbStateEnum.DiuShi.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())){ %>
 											<%if((cwb.getCwbstate()==TransCwbStateEnum.DIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())){ %>
 												【丢失】
