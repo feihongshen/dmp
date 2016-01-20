@@ -136,6 +136,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
+import cn.explink.service.mps.CwbOrderBranchInfoModificationService;
 import cn.explink.service.mps.OrderInterceptService;
 import cn.explink.service.mps.release.OutWarehouseMPSReleaseService;
 import cn.explink.support.transcwb.TransCwbDao;
@@ -261,6 +262,9 @@ public class PDAController {
 	@Autowired
 	private OrderInterceptService orderInterceptService;
 
+	@Autowired
+	private CwbOrderBranchInfoModificationService cwbOrderBranchInfoModificationService;
+	
 	private ObjectMapper om = new ObjectMapper();
 
 	private boolean playGPSound = true;
@@ -985,6 +989,7 @@ public class PDAController {
 				.getBranchid()));
 		cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndCurrentbranchid(FlowOrderTypeEnum.YiShenHe, DeliveryStateEnum.ShangMenTuiChengGong, this.getSessionUser()
 				.getBranchid()));
+		cwbAllList.addAll(this.cwbDAO.getCwbOrderByFlowOrderTypeAndDeliveryStateAndIsmpsflagAndCurrentbranchid( DeliveryStateEnum.WeiFanKui, this.getSessionUser().getBranchid()));
 		// }
 		return cwbAllList;
 	}
@@ -4850,6 +4855,9 @@ public class PDAController {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		
+		
+		
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}

@@ -2149,11 +2149,11 @@ public class CwbDAO {
 	// 包含订单拦截的统计数量
 	public Smtcount getBackRukubyBranchidsmtAll(long branchid) {
 		String sql = "SELECT COUNT(1) count,"
-				+ "(CASE when sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
-				+ "(CASE when sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
-				+ "(CASE when sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
-				+ " FROM express_ops_cwb_detail FORCE INDEX(detail_nextbranchid_idx) ";
-		sql += "WHERE nextbranchid =? and  state=1 ";
+				+ "(CASE when sum(CASE WHEN de.cwbordertypeid=1  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN de.cwbordertypeid=1  THEN 1  else 0 END ) end) as pscount,"
+				+ "(CASE when sum(CASE WHEN de.cwbordertypeid=2  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN de.cwbordertypeid=2  THEN 1  else 0 END ) end) as smtcount,"
+				+ "(CASE when sum(CASE WHEN de.cwbordertypeid=3  THEN 1  else 0 END ) is null then 0 else sum(CASE WHEN de.cwbordertypeid=3  THEN 1  else 0 END ) end) as smhcount"
+				+ " FROM express_set_branch br, express_ops_cwb_detail de FORCE INDEX(detail_nextbranchid_idx) ";
+		sql += "WHERE de.currentbranchid=br.branchid  AND de.nextbranchid=? AND de.state=1 AND(de.currentbranchid=0 OR de.currentbranchid!=0 AND br.sitetype IN (3,4) AND de.ismpsflag=1 )";
 		return this.jdbcTemplate.queryForObject(sql, new SmtCountMapper(), branchid);
 	}
 
@@ -2236,7 +2236,7 @@ public class CwbDAO {
 	// 退货入库待入库list(包含订单拦截的待退货入库)
 	public List<CwbOrder> getBackRukuByBranchidForListAll(long branchid, long page) {
 
-		return this.jdbcTemplate.query("SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=0  and nextbranchid =? and  state=1 order by opscwbid desc  limit ?,? ", new CwbMapper(), branchid, (page - 1)
+		return this.jdbcTemplate.query("SELECT* FROM express_ops_cwb_detail de,express_set_branch br WHERE de.currentbranchid=br.branchid  AND de.nextbranchid=? AND de.state=1 AND(de.currentbranchid=0 OR de.currentbranchid!=0 AND br.sitetype IN (3,4) AND de.ismpsflag=1 ) order by opscwbid desc  limit ?,? ", new CwbMapper(), branchid, (page - 1)
 				* Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 
 	}
