@@ -2,6 +2,8 @@ package cn.explink.domain;
 
 import java.math.BigDecimal;
 
+import cn.explink.util.StringUtil;
+
 //对内扣罚
 public class PenalizeInside {
 	private long id;//主键id
@@ -268,6 +270,17 @@ public class PenalizeInside {
 	}
 	public BigDecimal getPunishInsideprice() {
 		return punishInsideprice;
+	}
+	
+	public String getShowPunishInsideprice() {
+		//view.getPunishInsideprice()==null||(view.getGoodpriceremark().length()>0&&view.getQitapriceremark().length()>0))?"":view.getPunishInsideprice()
+		if (punishInsideprice == null) {
+			if (!(StringUtil.isEmpty(goodpriceremark) && StringUtil.isEmpty(qitapriceremark))){
+				return ""; 
+			}
+		}		
+		return punishInsideprice.toString();
+				
 	}
 	public void setPunishInsideprice(BigDecimal punishInsideprice) {
 		this.punishInsideprice = punishInsideprice;

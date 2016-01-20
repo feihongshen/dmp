@@ -58,6 +58,7 @@ import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.EditCwbService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
+import cn.explink.service.FnDfAdjustmentRecordService;
 import cn.explink.service.OrgBillAdjustmentRecordService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtilsHandler;
@@ -104,7 +105,9 @@ public class ApplyEditDeliverystateController {
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
 	@Autowired
 	ExportService exportService;
-
+	@Autowired
+	FnDfAdjustmentRecordService fnDfAdjustmentRecordService;
+	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -296,7 +299,9 @@ public class ApplyEditDeliverystateController {
 							this.adjustmentRecordService.createAdjustment4ReFeedBack(cwb);
 							// 站内调整单逻辑入口
 							this.orgBillAdjustmentRecordService.createAdjustment4ReFeedBack(cwb, ec_dsd);
-
+                            // 派费调整单逻辑入口
+							this.fnDfAdjustmentRecordService.createAdjustment4ReFeedBack(cwb);
+							
 							String auditingTime = ec_dsd.getDs().getAuditingtime();
 							if (StringUtils.isNotEmpty(auditingTime)) {
 								String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);

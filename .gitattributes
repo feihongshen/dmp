@@ -1129,6 +1129,8 @@ src/main/java/cn/explink/dao/FinanceDeliverPayUpDetailDAO.java -text
 src/main/java/cn/explink/dao/FinancePayUpAuditDAO.java -text
 src/main/java/cn/explink/dao/FindLocationDao.java -text
 src/main/java/cn/explink/dao/FnCustomerBillDetailDAO.java -text
+src/main/java/cn/explink/dao/FnDfAdjustmentRecordDAO.java -text
+src/main/java/cn/explink/dao/FnDfBillDetailDAO.java -text
 src/main/java/cn/explink/dao/FnOrgBillDetailDAO.java -text
 src/main/java/cn/explink/dao/FnOrgOrderAdjustRecordDAO.java -text
 src/main/java/cn/explink/dao/GoodsStatusNumDao.java -text
@@ -1364,6 +1366,8 @@ src/main/java/cn/explink/domain/FinanceDeliverPayupDetail.java -text
 src/main/java/cn/explink/domain/FinancePayUpAudit.java -text
 src/main/java/cn/explink/domain/FnCustomerBill.java -text
 src/main/java/cn/explink/domain/FnCustomerBillDetail.java -text
+src/main/java/cn/explink/domain/FnDfAdjustmentRecord.java -text
+src/main/java/cn/explink/domain/FnDfBillDetail.java -text
 src/main/java/cn/explink/domain/FnOrgBillDetail.java -text
 src/main/java/cn/explink/domain/Function.java -text
 src/main/java/cn/explink/domain/GotoClassAuditing.java -text
@@ -1680,6 +1684,7 @@ src/main/java/cn/explink/enumutil/ExpressSysMonitorEnum.java -text
 src/main/java/cn/explink/enumutil/FinanceAuditTypeEnum.java -text
 src/main/java/cn/explink/enumutil/FinanceDeliverPayUpDetailTypeEnum.java -text
 src/main/java/cn/explink/enumutil/FlowOrderTypeEnum.java -text
+src/main/java/cn/explink/enumutil/FnDfAdjustStateEnum.java -text
 src/main/java/cn/explink/enumutil/FrameEnumExcp.java -text
 src/main/java/cn/explink/enumutil/FundsEnum.java -text
 src/main/java/cn/explink/enumutil/GoodsBacktypeEnum.java -text
@@ -2023,6 +2028,7 @@ src/main/java/cn/explink/service/ExportService.java -text
 src/main/java/cn/explink/service/ExportmouldService.java -text
 src/main/java/cn/explink/service/ExpressExcel2003Extractor.java -text
 src/main/java/cn/explink/service/FloworderLogService.java -text
+src/main/java/cn/explink/service/FnDfAdjustmentRecordService.java -text
 src/main/java/cn/explink/service/ImportCwbErrorService.java -text
 src/main/java/cn/explink/service/KfzdOrderService.java -text
 src/main/java/cn/explink/service/LogToDayByTuihuoService.java -text

@@ -421,6 +421,8 @@ public class CwbOrderService extends BaseOrderService {
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
 	@Autowired
 	AdjustmentRecordService adjustmentRecordService;
+	@Autowired
+	FnDfAdjustmentRecordService fnDfAdjustmentRecordService;
 
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		this.logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
@@ -5413,6 +5415,7 @@ public class CwbOrderService extends BaseOrderService {
 			if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (deliverystate
 					.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 				this.orgBillAdjustmentRecordService.createAdjustment4GoToClassConfirm(co, deliverystate);
+				this.fnDfAdjustmentRecordService.createAdjustment4GoToClassConfirm(co);//派费调整记录
 			}
 
 			/**
