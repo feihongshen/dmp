@@ -2029,9 +2029,8 @@ public class CwbDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getRukuByBranchidForList(long branchid, long sitetype, long page, long customerid, long emaildateid) {
-
-		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  nextbranchid =? and currentbranchid=0 and state=1  and (cwbstate<>" + CwbStateEnum.DiuShi.getValue() + " and cwbstate<>"
-				+ CwbStateEnum.BUFENDIUSHI.getValue() + ") and flowordertype<>" + FlowOrderTypeEnum.FenZhanLingHuo.getValue();
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  nextbranchid =? and currentbranchid=0 and state=1  and cwbstate<>" + CwbStateEnum.DiuShi.getValue() + " and flowordertype<>"
+				+ FlowOrderTypeEnum.FenZhanLingHuo.getValue();
 		if (sitetype == BranchEnum.ZhanDian.getValue()) {
 			sql = "SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype='" + FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "' and state=1 ";
 		}
@@ -2236,8 +2235,9 @@ public class CwbDAO {
 	// 退货入库待入库list(包含订单拦截的待退货入库)
 	public List<CwbOrder> getBackRukuByBranchidForListAll(long branchid, long page) {
 
-		return this.jdbcTemplate.query("SELECT* FROM express_ops_cwb_detail de,express_set_branch br WHERE de.currentbranchid=br.branchid  AND de.nextbranchid=? AND de.state=1 AND(de.currentbranchid=0 OR de.currentbranchid!=0 AND br.sitetype IN (3,4) AND de.ismpsflag=1 ) order by opscwbid desc  limit ?,? ", new CwbMapper(), branchid, (page - 1)
-				* Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
+		return this.jdbcTemplate
+				.query("SELECT* FROM express_ops_cwb_detail de,express_set_branch br WHERE de.currentbranchid=br.branchid  AND de.nextbranchid=? AND de.state=1 AND(de.currentbranchid=0 OR de.currentbranchid!=0 AND br.sitetype IN (3,4) AND de.ismpsflag=1 ) order by opscwbid desc  limit ?,? ",
+						new CwbMapper(), branchid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 
 	}
 
@@ -4400,10 +4400,12 @@ public class CwbDAO {
 		String sql = "SELECT * FROM  express_ops_cwb_detail   WHERE currentbranchid=?  AND  flowordertype=?   AND deliverystate=?  AND state=1 and cwbstate=2";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), currentbranchid, flowordertype.getValue(), deliveryState.getValue());
 	}
-	public List<CwbOrder> getCwbOrderByFlowOrderTypeAndDeliveryStateAndIsmpsflagAndCurrentbranchid( DeliveryStateEnum deliveryState, long currentbranchid) {
+
+	public List<CwbOrder> getCwbOrderByFlowOrderTypeAndDeliveryStateAndIsmpsflagAndCurrentbranchid(DeliveryStateEnum deliveryState, long currentbranchid) {
 		String sql = "SELECT * FROM  express_ops_cwb_detail   WHERE currentbranchid=?  AND deliverystate=? AND ismpsflag=1  AND state=1 AND cwbstate=2";
-		return this.jdbcTemplate.query(sql, new CwbMapper(), currentbranchid,  deliveryState.getValue());
+		return this.jdbcTemplate.query(sql, new CwbMapper(), currentbranchid, deliveryState.getValue());
 	}
+
 	public List<CwbOrder> getCwbOrderByTypeAndDeliveryStates(FlowOrderTypeEnum flowordertype, String deliveryStates, long currentbranchid) {
 		String sql = "SELECT ocd.* FROM  express_ops_cwb_detail as ocd   right  join (select * from express_set_customer_info where needchecked=0) as esc on ocd.customerid= esc.customerid  WHERE currentbranchid=?  AND flowordertype=? AND deliverystate in( "
 				+ deliveryStates + " ) AND state=1 ";
