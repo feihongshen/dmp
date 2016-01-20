@@ -50,6 +50,10 @@ public class CwbOrderBranchInfoModificationService extends AbstractMPSService {
 
 		this.getCwbDAO().updateBranchAndCwbstateAndFlowOrderTypeInfo(cwbOrder.getCwb(), transCwbDetail.getPreviousbranchid(), transCwbDetail.getCurrentbranchid(), transCwbDetail.getNextbranchid(),
 				cwbstate, transCwbDetail.getTranscwboptstate());
+		// 如果一票多件所有件都扫描了，则scannum置为0
+		if (cwbOrder.getSendcarnum() == cwbOrder.getScannum()) {
+			this.getCwbDAO().updateScannum(cwbOrder.getCwb(), 0);
+		}
 	}
 
 }
