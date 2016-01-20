@@ -2934,7 +2934,7 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			} else {
 				this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.ChuKuSaoMiao,
-						isypdjusetranscwb, false, iszhongzhuanout, aflag, credate, anbaochuku, driverid, truckid);
+						isypdjusetranscwb, false, iszhongzhuanout, aflag, credate, anbaochuku, driverid, truckid, false);
 			}
 		} else {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -3032,7 +3032,7 @@ public class CwbOrderService extends BaseOrderService {
 				|| (newMPSOrder && (co.getScannum() > 0))) {
 			if (co.getScannum() < 1) {
 				this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb,
-						true, iszhongzhuanout, aflag, credate, false, driverid, truckid);
+						true, iszhongzhuanout, aflag, credate, false, driverid, truckid, false);
 			}
 			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum()) || anbaochuku) {
 				long realscannum = co.getScannum() + 1;
@@ -3053,18 +3053,21 @@ public class CwbOrderService extends BaseOrderService {
 					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid);
 				}
+				if (newMPSOrder) {
+					this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb,
+							true, iszhongzhuanout, aflag, credate, false, driverid, truckid, true);
+				}
 			} else {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, forceOut);
 			this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true,
-					iszhongzhuanout, aflag, credate, false, driverid, truckid);
+					iszhongzhuanout, aflag, credate, false, driverid, truckid, false);
 		}
 		// //包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
 		// //包号结束
-		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, 0L, branchid);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -3119,7 +3122,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	private void handleOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode,
 			boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, boolean iszhongzhuanout, boolean aflag, Long credate,
-			boolean anbaochuku, long driverid, long truckid) {
+			boolean anbaochuku, long driverid, long truckid, boolean newMPSOrder) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 		if ((co.getFlowordertype() != FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getStartbranchid() != currentbranchid)) {
 			this.validateStateTransfer(co, FlowOrderTypeEnum.ChuKuSaoMiao);
@@ -3241,11 +3244,12 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		this.createFloworder(user, currentbranchid, co, FlowOrderTypeEnum.ChuKuSaoMiao, comment, credate, scancwb);
 
-		if ((isypdjusetranscwb == 1) && isypdj) {
-			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
-			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid);
+		if (!newMPSOrder) {
+			if ((isypdjusetranscwb == 1) && isypdj) {
+				this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
+				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid);
+			}
 		}
-
 		// ============结算逻辑出库扫描=======================
 		Branch userbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
 		Branch nextbranch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
@@ -5009,7 +5013,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * updateDeliveryBranch(user, co, deliverybranch, addressCodeEditType);
 	 * logger.info("审核为中转，操作人是{}，配送站点是{}",userDAO.getUserByid(user.getUserid()),
 	 * deliverybranch.getBranchname()+"--"+deliverybranchid);
-	 * 
+	 *
 	 * }
 	 */
 
@@ -5706,7 +5710,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * == null ? 0 : (Long) parameterMap.get("truckid"); long baleid =
 	 * parameterMap.get("baleid") == null ? 0 : (Long)
 	 * parameterMap.get("baleid");
-	 * 
+	 *
 	 * if (!StringUtils.hasLength(comment)) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "备注"); }
 	 * if (branchid != 0) { throw new
@@ -5719,7 +5723,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "车辆"); }
 	 * if (baleid != 0) { throw new
 	 * ExplinkException(ExceptionCwbErrorTypeEnum.Field_IS_Mandatory, "包号"); }
-	 * 
+	 *
 	 * } }
 	 */
 
@@ -5805,7 +5809,7 @@ public class CwbOrderService extends BaseOrderService {
 	private void handleSupplierBackSuccess(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
 		/*
 		 * validateCwbState(co, flowOrderTypeEnum);
-		 * 
+		 *
 		 * validateStateTransfer(co, flowOrderTypeEnum);
 		 */
 
@@ -5837,11 +5841,11 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder auditToTuihuoHandle(User user, String
 	 * cwb,long flowOrderType, long reasonid) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new CwbException(cwb,FlowOrderTypeEnum.DingDanLanJie.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * Reason r = reasonDAO.getReasonByReasonid(reasonid); // 更新订单状态 String sql
 	 * =
 	 * "update express_ops_cwb_detail set flowordertype=?,backreason=?,backreasonid=? where cwb=? and state=1"
@@ -6187,12 +6191,12 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * @Transactional public CwbOrder SpecialCwbHandle(User user, String cwb,
 	 * long handleresult, long handleperson, String handlereason) {
-	 * 
+	 *
 	 * CwbOrder cwbOrder = cwbDAO.getCwbByCwbLock(cwb); if (cwbOrder == null) {
 	 * throw new
 	 * CwbException(cwb,FlowOrderTypeEnum.YiChangDingDanChuLi.getValue(),
 	 * ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO); }
-	 * 
+	 *
 	 * validateDeliveryState(cwbOrder, FlowOrderTypeEnum.YiChangDingDanChuLi);
 	 * // 更新订单状态 String sql =
 	 * "update express_ops_cwb_detail set currentbranchid=" + user.getBranchid()
@@ -8427,7 +8431,7 @@ public class CwbOrderService extends BaseOrderService {
 	/**
 	 *
 	 * @Title: dealCancelIntercept
-	 * @description 
+	 * @description
 	 *              撤销拦截的处理方法：被撤销的运单一定变为退货；找出所有兄弟运单，如果兄弟中有丢失，那主单变部分丢失；如果兄弟中含有破损，但没有丢失
 	 *              ，主单为部分破损；否则主单变退货；
 	 * @author 刘武强
