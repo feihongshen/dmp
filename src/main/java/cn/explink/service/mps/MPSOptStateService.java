@@ -31,6 +31,8 @@ public class MPSOptStateService extends AbstractMPSService {
 
 	private static final String UPDATE_MPS_STATE = "[更新一票多件状态]";
 
+	private static final String UPDATE_TRANSCWB_INFO = "[更新运单信息]";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(MPSOptStateService.class);
 
 	@Autowired
@@ -59,6 +61,26 @@ public class MPSOptStateService extends AbstractMPSService {
 
 		this.updateCwbOrderNextBranch(cwbOrder, currentbranchid, nextbranchid);
 
+		this.updateTransCwbDetail(transCwb, transcwboptstate, currentbranchid, nextbranchid);
+	}
+
+	/**
+	 * 更新运单的状态，上一站，当前站，下一站
+	 *
+	 * @param transCwb
+	 * @param transcwboptstate
+	 * @param currentbranchid
+	 * @param nextbranchid
+	 */
+	public void updateTransCwbDetailInfo(String transCwb, FlowOrderTypeEnum transcwboptstate, long currentbranchid, long nextbranchid) {
+		CwbOrder cwbOrder = this.getMPSCwbOrderConsideringMPSSwitchType(transCwb, MPSOptStateService.UPDATE_TRANSCWB_INFO);
+		if (cwbOrder == null) {
+			return;
+		}
+		this.updateTransCwbDetail(transCwb, transcwboptstate, currentbranchid, nextbranchid);
+	}
+
+	private void updateTransCwbDetail(String transCwb, FlowOrderTypeEnum transcwboptstate, long currentbranchid, long nextbranchid) {
 		// 更新运单操作状态，上一站 下一站
 		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
 		if (transCwbDetail == null) {
