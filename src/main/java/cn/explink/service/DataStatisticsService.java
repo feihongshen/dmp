@@ -391,6 +391,7 @@ public class DataStatisticsService {
 
 		Map<String, Map<String, String>> map = new HashMap<String, Map<String, String>>();
 		try {
+			//订单的集合 
 			List<OrderFlow> ofList = this.orderFlowDAO.getOrderFlowByCwbs(cwbs);
 			for (OrderFlow of : ofList) {
 				if (of.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()) {

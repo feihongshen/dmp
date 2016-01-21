@@ -389,6 +389,7 @@ public class OperationTimeDAO {
 	 * @param currentDayZeroTime
 	 * @param page
 	 * @return
+	 * 
 	 */
 	public List<String> getOrderFlowJinRiChuKuORRuKuListAll(long branchid, String flowordertypes, String currentDayZeroTime) {
 		long time = 0l;
@@ -397,6 +398,7 @@ public class OperationTimeDAO {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+		// 下一站 ， 时间， 状态
 		String sql = "select cwb from express_ops_operation_time  where nextbranchid=" + branchid + " " + "and credate>=" + time + " and flowordertype in(" + flowordertypes + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
