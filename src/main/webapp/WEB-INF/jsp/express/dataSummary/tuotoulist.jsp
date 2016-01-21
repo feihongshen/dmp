@@ -262,7 +262,8 @@ function clearSelect(){
 	<td>
 	  订单类型
 			<select name ="cwbordertypeid" id ="cwbordertypeid" multiple="multiple" style="width:120px;">
-		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
+		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ 
+		          if(c.getValue() == CwbOrderTypeIdEnum.Express.getValue()){%>
 						<option value ="<%=c.getValue() %>" 
 		           <%if(!cwbordertypeidList.isEmpty()) 
 			            {for(int i=0;i<cwbordertypeidList.size();i++){
@@ -272,7 +273,7 @@ function clearSelect(){
 			            	}
 			            }
 				     }%> ><%=c.getText()%></option>
-		          <%} %>
+		          <%}} %>
 			</select>
 			 小件员
 			<select name ="deliverid" id ="deliverid" onclick="changeBranchDeliver();" class="select1">

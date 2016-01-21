@@ -628,10 +628,6 @@
         	$.messager.alert("提示","运单号不能为空！", "warning");
         	return false;
         }
-        //校验运单号是否只由字母和数字组成
-        if(!numberOrLetterValidater(orderNo,"运单号")){
-        	return false;
-        } 
 		//校验运单号是否超长
         if(!checkLength(orderNo, 100, '运单号', 100)){
         	return false;
@@ -1037,6 +1033,15 @@
 	}
 	
 	/*
+	 * 校验输入内容只能为数字的方法
+	 */
+	function numberOnlyValidater(el, msg){
+		var regExp = "/^[0-9]*$/";
+		msg = msg + "只能由数字组成";
+		return formatRegValidater(el, msg, regExp);
+	}
+	
+	/*
 	 * 校验输入内容位0或正整数的方法
 	 */
 	function numberValidater(el, msg){
@@ -1267,6 +1272,10 @@
 	 */
 	function getCwbOrderEmbraced(){
 		var orderNo = $.trim($("#orderNo_id").val());
+		if(!numberOnlyValidater($("#orderNo_id"),"运单号")){
+			$("#orderNo_id").val("");
+			return ;
+		}
 		if(orderNo != ""){
 			$.ajax({
 				type : "POST",

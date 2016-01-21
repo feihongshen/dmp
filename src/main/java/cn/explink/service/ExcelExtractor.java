@@ -1018,6 +1018,10 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				this.createErrNote(temp.getOrderNo(), "运单号为空", failList);
 				cwbOrders.remove(temp);
 				continue;
+			} else if (!ExcelExtractor.isOnlyNum(temp.getOrderNo().trim())) {
+				this.createErrNote(temp.getOrderNo(), "运单号输入不合法：不是由数字组成", failList);
+				cwbOrders.remove(temp);
+				continue;
 			}
 			for (String str : repeatOrdersSet) {
 				if ((str != null) && str.equals(temp.getOrderNo())) {
@@ -1042,17 +1046,9 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			embracedOrdervo.setSender_name(temp.getSender_name());
 			embracedUpdateOrderVO.setSender_name(temp.getSender_name());
 			// 如果是月结账户，那么单位名称和月结账户必填，且单位名称必须存在于数据库
-			int flagnum = 0;
-			if (!"".equals(temp.getXianfu().trim())) {
-				flagnum = 1;
-			}
-			if (!"".equals(temp.getDaofu().trim())) {
-				flagnum = flagnum + 2;
-			}
-			if (!"".equals(temp.getYuejie().trim())) {
-				flagnum = flagnum + 4;
-			}
-			if (flagnum == 1) {
+			//数据库会默认付款方式为月结0元，所有运费必须要填
+
+			if (this.getBoolean(temp.getXianfu(), temp.getDaofu(), temp.getYuejie())) {
 				if (ExcelExtractor.isPositiveNumber(temp.getXianfu().trim())) {
 					temp.setPayment_method("1");
 					embracedOrdervo.setPayment_method("1");
@@ -1065,7 +1061,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					cwbOrders.remove(temp);
 					continue;
 				}
-			} else if (flagnum == 2) {
+			} else if (this.getBoolean(temp.getDaofu(), temp.getXianfu(), temp.getYuejie())) {
 				if (ExcelExtractor.isPositiveNumber(temp.getDaofu().trim())) {
 					temp.setPayment_method("2");
 					embracedOrdervo.setPayment_method("2");
@@ -1079,7 +1075,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					continue;
 				}
 
-			} else if (flagnum == 4) {
+			} else if (this.getBoolean(temp.getYuejie(), temp.getDaofu(), temp.getXianfu())) {
 				if (ExcelExtractor.isPositiveNumber(temp.getYuejie().trim())) {
 					temp.setPayment_method("0");
 					embracedOrdervo.setPayment_method("0");
@@ -1092,6 +1088,10 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					cwbOrders.remove(temp);
 					continue;
 				}
+			} else {
+				this.createErrNote(temp.getOrderNo(), "运费没有填写或者填写不符合要求", failList);
+				cwbOrders.remove(temp);
+				continue;
 			}
 			if ((temp.getPayment_method() == null) || "".equals(temp.getPayment_method().trim())) {
 				/*
@@ -3245,6 +3245,24 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 
 	/**
 	 *
+	 * @Title: isOnlyNum
+	 * @description 判断是否全为数字
+	 * @author 刘武强
+	 * @date  2016年1月20日下午2:16:18
+	 * @param  @param telNum
+	 * @param  @return
+	 * @return  boolean
+	 * @throws
+	 */
+	public static boolean isOnlyNum(String telNum) {
+		String regex = "^[0-9]*$";
+		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(telNum);
+		return m.matches();
+	}
+
+	/**
+	 *
 	 * @Title: isTelePhoneNum
 	 * @description 判断固话是否合法（与js一致）
 	 * @author 刘武强
@@ -3473,5 +3491,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 
 	public String toFixTwo(String number) {
 		return String.format("%.0f", Float.valueOf(number));
+	}
+
+	public boolean getBoolean(String a, String b, String c) {
+		boolean flag = (!"0".equals(a.trim()) && !"".equals(a.trim()) && ("0".equals(b.trim()) || "".equals(b.trim())) && ("0".equals(c.trim()) || "".equals(c.trim()))) || ("0".equals(a.trim()) && ""
+				.equals(b.trim()) && "".equals(c.trim()));
+		return flag;
 	}
 }

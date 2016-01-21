@@ -113,23 +113,23 @@ public class UserDAO {
 	}
 
 	public User getUserByUsername(String username) {
-		try{
+		try {
 			return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where username=? and userDeleteFlag=1", new UserRowMapper(), username);
-		}catch(Exception e){
+		} catch (Exception e) {
 			return null;
 		}
-		
+
 	}
 
 	public User getUserByJobnum(String username) {
-		try{
+		try {
 			return this.jdbcTemplate.queryForObject("SELECT * from express_set_user where jobnum=? and userDeleteFlag=1", new UserRowMapper(), username);
-		}catch(Exception e){
+		} catch (Exception e) {
 			return null;
 		}
-		
+
 	}
-	
+
 	public List<User> getUsersByUsernameLogin(String username) {
 		List<User> userList = this.jdbcTemplate.query("SELECT * from express_set_user where username=? and userDeleteFlag=1 and employeestatus<>3", new UserRowMapper(), username);
 		return userList;
@@ -267,92 +267,88 @@ public class UserDAO {
 
 	@SystemInstallOperation
 	public void creUser(final User user) {
-		this.jdbcTemplate.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,"
-				+ "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,"
-				+ "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
-			@Override
-			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setString(1, user.getUsername());
-				ps.setString(2, user.getPassword());
-				ps.setString(3, user.getRealname());
-				ps.setString(4, user.getIdcardno());
-				ps.setInt(5, user.getEmployeestatus());
-				ps.setLong(6, user.getBranchid());
-				ps.setString(7, user.getUserphone());
-				ps.setString(8, user.getUsermobile());
-				ps.setString(9, user.getUseraddress());
-				ps.setString(10, user.getUserremark());
-				ps.setBigDecimal(11, user.getUsersalary());
-				ps.setLong(12, user.getUsercustomerid());
-				ps.setLong(13, user.getShowphoneflag());
-				ps.setString(14, user.getUseremail());
-				ps.setString(15, user.getUserwavfile());
-				ps.setLong(16, user.getRoleid());
-				ps.setInt(17, user.getIsImposedOutWarehouse());
-				ps.setLong(18, user.getShownameflag());
-				ps.setLong(19, user.getShowmobileflag());
-				ps.setLong(20, user.getPfruleid());
-				ps.setInt(21, user.getSex());
-				ps.setString(22, user.getStartworkdate());
-				ps.setString(23, user.getJobnum());
-				ps.setInt(24, user.getJiesuanstate());
-				ps.setBigDecimal(25, user.getMaxcutpayment());
-				ps.setBigDecimal(26, user.getFixedadvance());
-				ps.setBigDecimal(27, user.getBasicadvance());
-				ps.setLong(28, user.getFallbacknum());
-				ps.setBigDecimal(29, user.getLateradvance());
-				ps.setBigDecimal(30, user.getBasicfee());// 基本派费
-				ps.setBigDecimal(31, user.getAreafee());// 区域派费
-			}
+		this.jdbcTemplate
+				.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary," + "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment," + "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps) throws SQLException {
+						ps.setString(1, user.getUsername());
+						ps.setString(2, user.getPassword());
+						ps.setString(3, user.getRealname());
+						ps.setString(4, user.getIdcardno());
+						ps.setInt(5, user.getEmployeestatus());
+						ps.setLong(6, user.getBranchid());
+						ps.setString(7, user.getUserphone());
+						ps.setString(8, user.getUsermobile());
+						ps.setString(9, user.getUseraddress());
+						ps.setString(10, user.getUserremark());
+						ps.setBigDecimal(11, user.getUsersalary());
+						ps.setLong(12, user.getUsercustomerid());
+						ps.setLong(13, user.getShowphoneflag());
+						ps.setString(14, user.getUseremail());
+						ps.setString(15, user.getUserwavfile());
+						ps.setLong(16, user.getRoleid());
+						ps.setInt(17, user.getIsImposedOutWarehouse());
+						ps.setLong(18, user.getShownameflag());
+						ps.setLong(19, user.getShowmobileflag());
+						ps.setLong(20, user.getPfruleid());
+						ps.setInt(21, user.getSex());
+						ps.setString(22, user.getStartworkdate());
+						ps.setString(23, user.getJobnum());
+						ps.setInt(24, user.getJiesuanstate());
+						ps.setBigDecimal(25, user.getMaxcutpayment());
+						ps.setBigDecimal(26, user.getFixedadvance());
+						ps.setBigDecimal(27, user.getBasicadvance());
+						ps.setLong(28, user.getFallbacknum());
+						ps.setBigDecimal(29, user.getLateradvance());
+						ps.setBigDecimal(30, user.getBasicfee());// 基本派费
+						ps.setBigDecimal(31, user.getAreafee());// 区域派费
+					}
 
-		});
+				});
 	}
 
 	@SystemInstallOperation
 	@CacheEvict(value = "userCache", key = "#user.userid")
 	public void saveUser(final User user) {
-		this.jdbcTemplate.update("update express_set_user set username=?,password=?,realname=?,idcardno=?,"
-				+ "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?,"
-				+ "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?,"
-				+ "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?," + "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?"
-				+ " where userid=? and userDeleteFlag=1 ", new PreparedStatementSetter() {
-			@Override
-			public void setValues(PreparedStatement ps) throws SQLException {
-				ps.setString(1, user.getUsername());
-				ps.setString(2, user.getPassword());
-				ps.setString(3, user.getRealname());
-				ps.setString(4, user.getIdcardno());
-				ps.setInt(5, user.getEmployeestatus());
-				ps.setLong(6, user.getBranchid());
-				ps.setString(7, user.getUserphone());
-				ps.setString(8, user.getUsermobile());
-				ps.setString(9, user.getUseraddress());
-				ps.setString(10, user.getUserremark());
-				ps.setBigDecimal(11, user.getUsersalary());
-				ps.setLong(12, user.getUsercustomerid());
-				ps.setLong(13, user.getShowphoneflag());
-				ps.setString(14, user.getUseremail());
-				ps.setString(15, user.getUserwavfile());
-				ps.setLong(16, user.getRoleid());
-				ps.setInt(17, user.getIsImposedOutWarehouse());
-				ps.setLong(18, user.getShownameflag());
-				ps.setLong(19, user.getShowmobileflag());
-				ps.setLong(20, user.getPfruleid());
-				ps.setInt(21, user.getSex());
-				ps.setString(22, user.getStartworkdate());
-				ps.setString(23, user.getJobnum());
-				ps.setInt(24, user.getJiesuanstate());
-				ps.setBigDecimal(25, user.getMaxcutpayment());
-				ps.setBigDecimal(26, user.getFixedadvance());
-				ps.setBigDecimal(27, user.getBasicadvance());
-				ps.setLong(28, user.getFallbacknum());
-				ps.setBigDecimal(29, user.getLateradvance());
-				ps.setBigDecimal(30, user.getBasicfee());// 基本派费
-				ps.setBigDecimal(31, user.getAreafee());// 区域派费
-				ps.setLong(32, user.getUserid());
-			}
+		this.jdbcTemplate
+				.update("update express_set_user set username=?,password=?,realname=?,idcardno=?," + "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?," + "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?," + "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?," + "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?" + " where userid=? and userDeleteFlag=1 ", new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps) throws SQLException {
+						ps.setString(1, user.getUsername());
+						ps.setString(2, user.getPassword());
+						ps.setString(3, user.getRealname());
+						ps.setString(4, user.getIdcardno());
+						ps.setInt(5, user.getEmployeestatus());
+						ps.setLong(6, user.getBranchid());
+						ps.setString(7, user.getUserphone());
+						ps.setString(8, user.getUsermobile());
+						ps.setString(9, user.getUseraddress());
+						ps.setString(10, user.getUserremark());
+						ps.setBigDecimal(11, user.getUsersalary());
+						ps.setLong(12, user.getUsercustomerid());
+						ps.setLong(13, user.getShowphoneflag());
+						ps.setString(14, user.getUseremail());
+						ps.setString(15, user.getUserwavfile());
+						ps.setLong(16, user.getRoleid());
+						ps.setInt(17, user.getIsImposedOutWarehouse());
+						ps.setLong(18, user.getShownameflag());
+						ps.setLong(19, user.getShowmobileflag());
+						ps.setLong(20, user.getPfruleid());
+						ps.setInt(21, user.getSex());
+						ps.setString(22, user.getStartworkdate());
+						ps.setString(23, user.getJobnum());
+						ps.setInt(24, user.getJiesuanstate());
+						ps.setBigDecimal(25, user.getMaxcutpayment());
+						ps.setBigDecimal(26, user.getFixedadvance());
+						ps.setBigDecimal(27, user.getBasicadvance());
+						ps.setLong(28, user.getFallbacknum());
+						ps.setBigDecimal(29, user.getLateradvance());
+						ps.setBigDecimal(30, user.getBasicfee());// 基本派费
+						ps.setBigDecimal(31, user.getAreafee());// 区域派费
+						ps.setLong(32, user.getUserid());
+					}
 
-		});
+				});
 	}
 
 	public List<User> getUserByRole(int roleid) {
@@ -369,8 +365,8 @@ public class UserDAO {
 
 	public User getUsersByRealnameAndRole(String realname, int roleid) {
 		try {
-			User user = this.jdbcTemplate.queryForObject("SELECT * from express_set_user where realname=? and roleid=? and userDeleteFlag=1 and employeestatus=1", new UserRowMapper(), realname,
-					roleid);
+			User user = this.jdbcTemplate
+					.queryForObject("SELECT * from express_set_user where realname=? and roleid=? and userDeleteFlag=1 and employeestatus=1", new UserRowMapper(), realname, roleid);
 			return user;
 		} catch (EmptyResultDataAccessException e) {
 			return null;
@@ -440,8 +436,29 @@ public class UserDAO {
 
 	public List<User> getUserByRolesAndBranchid(String roleids, long branchid) {
 		try {
-			String sql = "SELECT * FROM express_set_user WHERE roleid in(" + roleids + ") and branchid=" + branchid + " and userDeleteFlag=1 and employeestatus="
-					+ UserEmployeestatusEnum.GongZuo.getValue() + " ORDER BY CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
+			String sql = "SELECT * FROM express_set_user WHERE roleid in(" + roleids + ") and branchid=" + branchid + " and userDeleteFlag=1 and employeestatus=" + UserEmployeestatusEnum.GongZuo
+					.getValue() + " ORDER BY CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
+			return this.jdbcTemplate.query(sql, new UserRowMapper());
+		} catch (EmptyResultDataAccessException ee) {
+			return null;
+		}
+	}
+
+	/**
+	 *
+	 * @Title: getAllUserByRoleidsAndBranchid
+	 * @description 通过角色编号和站点id获取小件员（工作、休假、离职的都查出来）
+	 * @author 刘武强
+	 * @date  2016年1月20日下午3:42:00
+	 * @param  @param roleids
+	 * @param  @param branchid
+	 * @param  @return
+	 * @return  List<User>
+	 * @throws
+	 */
+	public List<User> getAllUserByRoleidsAndBranchid(String roleids, long branchid) {
+		try {
+			String sql = "SELECT * FROM express_set_user WHERE roleid in(" + roleids + ") and branchid=" + branchid + " and userDeleteFlag=1  ORDER BY CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
 			return this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
@@ -462,8 +479,8 @@ public class UserDAO {
 	 */
 	public List<User> getUserByRolesAndBranchidAndDeliveryManNames(String roleids, long branchid, String DeliveryManNames) {
 		try {
-			String sql = "SELECT * FROM express_set_user WHERE realname in  " + DeliveryManNames + "  and roleid in(" + roleids + ") and branchid=" + branchid
-					+ " and userDeleteFlag=1 and employeestatus=" + UserEmployeestatusEnum.GongZuo.getValue() + " ORDER BY CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
+			String sql = "SELECT * FROM express_set_user WHERE realname in  " + DeliveryManNames + "  and roleid in(" + roleids + ") and branchid=" + branchid + " and userDeleteFlag=1 and employeestatus=" + UserEmployeestatusEnum.GongZuo
+					.getValue() + " ORDER BY CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
 			return this.jdbcTemplate.query(sql, new ImportUserRowMapper());
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
@@ -472,9 +489,8 @@ public class UserDAO {
 
 	public List<User> getDeliveryUserByRolesAndBranchid(String roleids, long branchid) {
 		try {
-			String sql = "SELECT * FROM express_set_user u LEFT JOIN express_set_role_new r ON u.roleid=r.roleid " + "WHERE (r.isdelivery=1 or u.roleid in(" + roleids + ")) and u.branchid="
-					+ branchid + " and u.userDeleteFlag=1 " + "and u.employeestatus=" + UserEmployeestatusEnum.GongZuo.getValue()
-					+ " ORDER BY CONVERT( u.realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
+			String sql = "SELECT * FROM express_set_user u LEFT JOIN express_set_role_new r ON u.roleid=r.roleid " + "WHERE (r.isdelivery=1 or u.roleid in(" + roleids + ")) and u.branchid=" + branchid + " and u.userDeleteFlag=1 " + "and u.employeestatus=" + UserEmployeestatusEnum.GongZuo
+					.getValue() + " ORDER BY CONVERT( u.realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
 			return this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
@@ -570,8 +586,7 @@ public class UserDAO {
 	 */
 	public List<User> queryAllUserByBranchId(long branchid) {
 		List<User> list = new ArrayList<User>();
-		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and employeestatus not in(" + UserEmployeestatusEnum.LiZhi.getValue()
-				+ ") and userDeleteFlag=1 and roleid in(2,4)";
+		String sql = "SELECT * FROM express_set_user WHERE branchid = '" + branchid + "' and employeestatus not in(" + UserEmployeestatusEnum.LiZhi.getValue() + ") and userDeleteFlag=1 and roleid in(2,4)";
 		try {
 			list = this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (DataAccessException e) {
@@ -676,8 +691,7 @@ public class UserDAO {
 	 * @param deliverPosAccountStartStr
 	 * @param deliverPosAccountEndStr
 	 */
-	public List<User> getDeliverAccountList(long page, long branchid, String realname, String deliverAccountStartStr, String deliverAccountEndStr, String deliverPosAccountStartStr,
-			String deliverPosAccountEndStr, int uee) {
+	public List<User> getDeliverAccountList(long page, long branchid, String realname, String deliverAccountStartStr, String deliverAccountEndStr, String deliverPosAccountStartStr, String deliverPosAccountEndStr, int uee) {
 		String sql = "SELECT * from express_set_user where roleid in(2,4)";
 		sql += this.getDeliverAccountListWhere(branchid, realname, deliverAccountStartStr, deliverAccountEndStr, deliverPosAccountStartStr, deliverPosAccountEndStr, uee);
 		sql += " order by deliverAccount asc , deliverPosAccount asc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
@@ -713,16 +727,14 @@ public class UserDAO {
 	 * @param deliverPosAccountStartStr
 	 * @param deliverPosAccountEndStr
 	 */
-	public Long getDeliverAccountListCount(long branchid, String realname, String deliverAccountStartStr, String deliverAccountEndStr, String deliverPosAccountStartStr,
-			String deliverPosAccountEndStr, int uee) {
+	public Long getDeliverAccountListCount(long branchid, String realname, String deliverAccountStartStr, String deliverAccountEndStr, String deliverPosAccountStartStr, String deliverPosAccountEndStr, int uee) {
 		String sql = "SELECT count(1) from express_set_user where roleid in(2,4)";
 		sql += this.getDeliverAccountListWhere(branchid, realname, deliverAccountStartStr, deliverAccountEndStr, deliverPosAccountStartStr, deliverPosAccountEndStr, uee);
 		return this.jdbcTemplate.queryForLong(sql);
 
 	}
 
-	private String getDeliverAccountListWhere(long branchid, String realname, String deliverAccountStartStr, String deliverAccountEndStr, String deliverPosAccountStartStr,
-			String deliverPosAccountEndStr, int uee) {
+	private String getDeliverAccountListWhere(long branchid, String realname, String deliverAccountStartStr, String deliverAccountEndStr, String deliverPosAccountStartStr, String deliverPosAccountEndStr, int uee) {
 		String sql = "";
 		if (branchid > -1) {
 			sql += " and branchid=" + branchid;
