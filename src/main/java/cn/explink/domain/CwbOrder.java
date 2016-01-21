@@ -34,9 +34,9 @@ public class CwbOrder {
 	long cwbreachbranchid;// 订单入库机构id
 	long cwbreachdeliverbranchid;// 订单到货派送机构id
 	String podfeetoheadflag;// 站点收款是否已上交总部 0未上交 1已上交
-	String podfeetoheadtime;// 站点上交款时间
+	String podfeetoheadtime;// 站点上交款时间总部交款审
 	String podfeetoheadchecktime;// 站点交款总部审核时
-	String podfeetoheadcheckflag;// 总部交款审核状态
+	String podfeetoheadcheckflag;// 核状态
 	long leavedreasonid;// 滞留原因id
 	String deliversubscribeday;// 滞留预约派送日
 	String customerwarehouseid;// 客户发货仓库id

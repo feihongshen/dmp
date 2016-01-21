@@ -1549,7 +1549,9 @@ public class CwbOrderService extends BaseOrderService {
 					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 				}
-
+				if(newMPSOrder){
+					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false);
+				}
 			} else {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			}
@@ -4025,6 +4027,9 @@ public class CwbOrderService extends BaseOrderService {
 				if (isypdjusetranscwb == 1) {
 					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 
+				}
+				if(newMPSOrder){
+					this.handleReceiveGoods(user, cwb, scancwb, currentbranchid, deliveryUser, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true);
 				}
 			}
 		} else {
@@ -8473,5 +8478,10 @@ public class CwbOrderService extends BaseOrderService {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	@Transactional
+	public void updateCwbFlowOrderType(String cwb) {
+		this.cwbDAO.updateCwbFlowOrdertype(cwb, FlowOrderTypeEnum.DingDanLanJie.getValue());
 	}
 }

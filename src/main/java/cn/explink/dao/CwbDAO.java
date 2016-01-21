@@ -6850,5 +6850,16 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set cwbstate=? where cwb =? and state=1";
 		this.jdbcTemplate.update(sql, cwbstate, cwb);
 	}
+	
+	/**
+	 * 退货库入库修改flowordertype 为订单拦截
+	 * @author 申鸿飞 
+	 * @date 2016-1-20
+	 * 
+	 */
+	public void updateCwbFlowOrdertype(String cwb,int flowOrderType){
+		String sql="UPDATE express_ops_cwb_detail SET flowordertype=? WHERE cwb=?";
+		this.jdbcTemplate.update(sql,flowOrderType,cwb);
+	}
 
 }
