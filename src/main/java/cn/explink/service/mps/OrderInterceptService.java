@@ -41,6 +41,7 @@ public class OrderInterceptService extends AbstractMPSService {
 		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.FenZhanLingHuo.getValue());
 		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
+		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class OrderInterceptService extends AbstractMPSService {
 			throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_LOST, transCwb, reason);
 		}
 		if (!OrderInterceptService.OUT_STATE_SET.contains(transcwboptstate.getValue())) {
-			OrderInterceptService.LOGGER.info(OrderInterceptService.ORDER_INTERCEPT + "此操作不是【出】的环节，不需要拦截!");
+			OrderInterceptService.LOGGER.info(OrderInterceptService.ORDER_INTERCEPT + "此操作不是【出库】【领货】【中转出库】【退货入库】环节，不需要拦截!");
 			return;
 		}
 		if (transcwbstate == TransCwbStateEnum.DIUSHI.getValue()) {
