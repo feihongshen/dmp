@@ -41,10 +41,12 @@ public class ThirdPartyOrder2DOCfgService {
 		Integer openFlag = StringUtils.isEmpty(request.getParameter("openFlag"))? 0 :Integer.parseInt(request.getParameter("openFlag"));
 		Integer maxTryTime= StringUtils.isEmpty(request.getParameter("maxTryTime"))? 0 :Integer.parseInt(request.getParameter("maxTryTime"));
 		String customerIds = StringUtils.isEmpty(request.getParameter("customerids")) ? "" : request.getParameter("customerids");
-		
+		String carrierCode = StringUtils.isEmpty(request.getParameter("carrierCode")) ? "" : request.getParameter("carrierCode");
+
 		thirdPartyOrder2DO.setOpenFlag(openFlag);
 		thirdPartyOrder2DO.setMaxTryTime(maxTryTime);
 		thirdPartyOrder2DO.setCustomerids(customerIds);
+		thirdPartyOrder2DO.setCarrierCode(carrierCode);
 		JSONObject jsonObj = JSONObject.fromObject(thirdPartyOrder2DO);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {//新增
