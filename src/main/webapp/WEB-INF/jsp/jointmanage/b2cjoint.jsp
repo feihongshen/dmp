@@ -457,6 +457,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/vipshop/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
+		else if(obj=='20129'){ //外单推DO
+			$("#edit").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/show/');
+			$("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
+		}
 		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
