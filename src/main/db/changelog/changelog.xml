@@ -8716,4 +8716,10 @@ CREATE TABLE `cs_complaint_accept` (
 			  ADD COLUMN `fncustomerposbillid` BIGINT(20) DEFAULT 0  NULL  COMMENT '客户POS抵扣账单id' AFTER `fncustomerbillid`;		
 		</sql>
 	</changeSet>
+	
+	<changeSet id="zhouguoting-2016-22-01" author="zhouguoting">
+		<sql>
+			INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('3042', '1', 'OMS定时任务管理', '3042', '${omsUrl}omsJob/index?', '30');
+		</sql>
+	</changeSet>
 </databaseChangeLog>
