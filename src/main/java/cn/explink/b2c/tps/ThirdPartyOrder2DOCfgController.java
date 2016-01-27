@@ -38,7 +38,11 @@ public class ThirdPartyOrder2DOCfgController {
 		String[] customeridArray = StringUtils.isEmpty(customerids) ? new String[]{} : customerids.split(",|，");
 		List<Long> customeridList = new ArrayList<Long>();
 		for(String customerid : customeridArray){
-			customeridList.add(Long.valueOf(customerid));
+			try{
+				customeridList.add(Long.valueOf(customerid));
+			}catch(Exception e){
+				//DO nothing
+			}
 		}
 		List<Customer> customerList  = customerDAO.getAllCustomers();
 		model.addAttribute("thirdPartyOrder2DO", ThirdPartyOrder2DO);
