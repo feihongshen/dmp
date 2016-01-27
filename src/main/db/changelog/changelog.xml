@@ -8881,4 +8881,7 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('3042', '1', 'OMS定时任务管理', '3042', '${omsUrl}omsJob/index?', '30');
 		</sql>
 	</changeSet>
+	<changeSet id="yedongliang-2016-01-27-01" author="yedongliang">
+		 <sqlFile path="delivery_fee.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
+	</changeSet>
 </databaseChangeLog>
