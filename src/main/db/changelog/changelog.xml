@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog
      xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -8856,6 +8856,11 @@ CREATE TABLE `cs_complaint_accept` (
 		INSERT INTO `dmp40_function` VALUES ('3042', 1, '自动化MQ连接管理', '3042', 'mqconfig/list?', '30');
 		</sql>
 	</changeSet>
+		<changeSet id="zhangpengkai-2016-01-13" author="zhangpengkai">
+		<sql>
+			ALTER TABLE `express_ops_transcwb` ADD INDEX `cwb_idx` (`cwb`); 
+		</sql>
+	</changeSet> 
 	<changeSet id="jianronggao-2016-01-15-01" author="jianronggao">
 		<sql>
 		CREATE TABLE `express_auto_order_status_tmp`( 
