@@ -8856,11 +8856,6 @@ CREATE TABLE `cs_complaint_accept` (
 		INSERT INTO `dmp40_function` VALUES ('3042', 1, '自动化MQ连接管理', '3042', 'mqconfig/list?', '30');
 		</sql>
 	</changeSet>
-		<changeSet id="zhangpengkai-2016-01-13" author="zhangpengkai">
-		<sql>
-			ALTER TABLE `express_ops_transcwb` ADD INDEX `cwb_idx` (`cwb`); 
-		</sql>
-	</changeSet> 
 	<changeSet id="jianronggao-2016-01-15-01" author="jianronggao">
 		<sql>
 		CREATE TABLE `express_auto_order_status_tmp`( 
@@ -8878,7 +8873,7 @@ CREATE TABLE `cs_complaint_accept` (
 	
 	<changeSet id="zhouguoting-2016-22-01" author="zhouguoting">
 		<sql>
-			INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('3042', '1', 'OMS定时任务管理', '3042', '${omsUrl}omsJob/index?', '30');
+			INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('3043', '1', 'OMS定时任务管理', '3043', '${omsUrl}omsJob/index?', '30');
 		</sql>
 	</changeSet>
 	<changeSet id="yedongliang-2016-01-27-01" author="yedongliang">
