@@ -3,8 +3,9 @@
 <%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.domain.Branch"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
+<%-- 
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
-
+--%>
 <%
 	boolean addresstart = (Boolean) request.getAttribute("addressStart");
 	List<Branch> branchlist = (List<Branch>) request.getAttribute("branches");
@@ -17,7 +18,8 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
+ <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> 
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/My97DatePicker/WdatePicker.js"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
@@ -31,9 +33,7 @@
 
 var file_id;
 	$(function() {
-
-		
-		$("#customerid").combobox({
+		<%--	$("#customerid").combobox({
 			onChange: function (n,o) {
 				//alert($('#customerid').combobox('getValue') );
 				if($('#customerid').combobox('getValue')==0){
@@ -71,6 +71,8 @@ var file_id;
 					});
 			}
 			});
+		--%>
+		
 		$("#emaildate").datetimepicker({
 		    changeMonth: true,
 		    changeYear: true,
@@ -80,9 +82,7 @@ var file_id;
 		    dateFormat: 'yy-mm-dd'
 		});
 		
-	 
-		
-		<%-- $("#customerid").change(function(){
+		 $("#customerid").change(function(){
 			if($(this).val()==0){
 				return;
 			}
@@ -116,14 +116,14 @@ var file_id;
 						$("#serviceareaidflag").html(optionstring);
 					}
 				});
-		}); --%>
+		}); 
 		
 		$("#importButton").click(function(){
 			if($("#branchid").val()==null){
 				alert("请先创建数据入库的仓库");
 				return;		
 			}
-			if($('#customerid').combobox('getValue')=="0"){
+			if($('#customerid').val()=="0"){
 				alert("请选择发货供货商");
 				return;
 			}
@@ -139,7 +139,7 @@ var file_id;
 					dataType : "json",
 					data : {
 						emaildate : $("#emaildate").val(),
-						customerid : $('#customerid').combobox('getValue'),
+						customerid : $('#customerid').val(),
 						warehouseid : $("#warehouseidflag").val(),
 						areaid : $("#serviceareaidflag").val()
 					},
@@ -275,7 +275,7 @@ var file_id;
 							$("#importButton").val("正在上传");
 							$("#stop").removeAttr("disabled"); 
 							//$('#swfupload-control').swfupload('addPostParam','dizhikuflag',$("#dizhikuflag").val());
-							$('#swfupload-control').swfupload('addPostParam','customerid',$('#customerid').combobox('getValue'));
+							$('#swfupload-control').swfupload('addPostParam','customerid',$('#customerid').val());
 							$('#swfupload-control').swfupload('addPostParam','warehouseid',$("#warehouseidflag").val());
 							$('#swfupload-control').swfupload('addPostParam','areaid',$("#serviceareaidflag").val());
 							$('#swfupload-control').swfupload('addPostParam','branchid',$("#branchid").val());
@@ -320,7 +320,7 @@ var file_id;
 							<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername()%></option>
 							<%}%>
 						</select>* --%>
-								<select name="customerid" id="customerid" style="width:150px;">
+								<select name="customerid" id="customerid" style="width:150px;"  >
 									<option value="0">请选择</option>
 									<%for (Customer customer : customerlist) {%>
 										<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername()%></option>
@@ -345,7 +345,7 @@ var file_id;
 					<td>发货批次：
 					
 					<span style="height: 25">
-					<input type="text" id="emaildate" name="emaildate">
+					<input type="text" id="emaildate" name="emaildate" >
 					</span></td>
 					<td>EXCEL表格导入：
 						<label for="fileField"></label>
