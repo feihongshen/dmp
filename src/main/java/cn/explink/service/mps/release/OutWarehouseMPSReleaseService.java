@@ -18,11 +18,11 @@ import cn.explink.exception.CwbException;
  * @author songkaojun 2016年1月8日
  */
 @Component("outWarehouseMPSReleaseService")
-public class OutWarehouseMPSReleaseService extends AbstractMPSReleaseService {
+public final class OutWarehouseMPSReleaseService extends AbstractMPSReleaseService {
 
 	@Override
 	public void validateReleaseCondition(String transCwb) throws CwbException {
-		CwbOrder cwbOrder = this.getMPSCwbOrderConsideringMPSSwitchType(transCwb, AbstractMPSReleaseService.VALIDATE_RELEASE_CONDITION);
+		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwbConsideringMPSSwitchType(transCwb, AbstractMPSReleaseService.VALIDATE_RELEASE_CONDITION);
 		if (cwbOrder == null) {
 			return;
 		}

@@ -1,5 +1,6 @@
 package cn.explink.domain.orderflow;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -8,7 +9,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TranscwbOrderFlow {
+public class TranscwbOrderFlow implements Serializable  {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected long floworderid;
 	protected String cwb;
 	protected String scancwb;

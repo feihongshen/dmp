@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import cn.explink.domain.TransCwbDetail;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Tools;
 
 @Repository
@@ -162,6 +163,26 @@ public class TransCwbDetailDAO {
 		return transCwbDetailList;
 	}
 
+	public List<String> getTransCwbListByCwb(String cwb) {
+		List<String> transCwbList = new ArrayList<String>();
+		String sql = "select transcwb from express_ops_transcwb_detail where cwb=?";
+		try {
+			transCwbList = this.jdbcTemplate.queryForList(sql, String.class, cwb);
+		} catch (DataAccessException e) {
+		}
+		return transCwbList;
+	}
+
+	public List<String> getTransCwbListByCwb(String cwb, FlowOrderTypeEnum flowordertype) {
+		List<String> transCwbList = new ArrayList<String>();
+		String sql = "select transcwb from express_ops_transcwb_detail where cwb=? and flowordertype!=?";
+		try {
+			transCwbList = this.jdbcTemplate.queryForList(sql, String.class, cwb, flowordertype.getValue());
+		} catch (DataAccessException e) {
+		}
+		return transCwbList;
+	}
+
 	/**
 	 * 通过id删除实体
 	 *
@@ -205,7 +226,7 @@ public class TransCwbDetailDAO {
 	 * @throws
 	 */
 	public void saveWithMount(List<TransCwbDetail> list) {
-		final String sql = "update express_ops_transcwb_detail set cwb=?,transcwbstate=?,transcwboptstate=?,nextbranchid=?,commonphraseid=?,commonphrase=? where transcwb=?";
+		final String sql = "update express_ops_transcwb_detail set cwb=?,transcwbstate=?,transcwboptstate=?,nextbranchid=?,commonphraseid=?,commonphrase=?,currentbranchid=? where transcwb=?";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
 
 		for (int i = 0; i < circleTimes; i++) {
@@ -229,7 +250,8 @@ public class TransCwbDetailDAO {
 						ps.setLong(4, tc.getNextbranchid());
 						ps.setLong(5, tc.getCommonphraseid());
 						ps.setString(6, tc.getCommonphrase());
-						ps.setString(7, tc.getTranscwb());
+						ps.setLong(7, tc.getCurrentbranchid());
+						ps.setString(8, tc.getTranscwb());
 					}
 
 					@Override
@@ -248,9 +270,21 @@ public class TransCwbDetailDAO {
 	 * @return
 	 */
 	public void updateTransCwbDetailBytranscwb(final String transcwb, final int transcwbstate) {
-		String sql = "update express_ops_transcwb_detail set transcwbstate=? where transcwb=?";
+		String sql = "update express_ops_transcwb_detail set transcwbstate=?,commonphraseid=0,commonphrase=? where transcwb=?";
 		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setInt(1, transcwbstate);
+				ps.setString(2, "");
+				ps.setString(3, transcwb);
+			}
+		});
+	}
+
+	public void updateTransCwbStateByTranscwb(final String transcwb, final int transcwbstate) {
+		String sql = "update express_ops_transcwb_detail set transcwbstate=? where transcwb=?";
+		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setInt(1, transcwbstate);
@@ -264,10 +298,10 @@ public class TransCwbDetailDAO {
 	 * @Title: queryTransCwbDetailBytranscwb
 	 * @description 找出运单的所有兄弟运单的运单详情（包括自己）
 	 * @author 刘武强
-	 * @date  2016年1月14日上午9:38:52
-	 * @param  @param transcwb
-	 * @param  @return
-	 * @return  List<TransCwbDetail>
+	 * @date 2016年1月14日上午9:38:52
+	 * @param @param transcwb
+	 * @param @return
+	 * @return List<TransCwbDetail>
 	 * @throws
 	 */
 	public List<TransCwbDetail> queryTransCwbDetailBytranscwb(String transcwb) {

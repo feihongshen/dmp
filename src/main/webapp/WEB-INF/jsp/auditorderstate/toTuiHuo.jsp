@@ -199,9 +199,9 @@ function cancelIntercept(transcwb){
 										||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
 										||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
 										||(cwb.getFlowordertype()==FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
-										||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+										||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 										||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
-										||(cwb.getCwbstate()==TransCwbStateEnum.DIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+										||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 										||(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
 										||(cwb.getCwbstate()==CwbStateEnum.DiuShi.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())){
 									out.print("no");
@@ -250,8 +250,9 @@ function cancelIntercept(transcwb){
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.CheXiaoFanKui.getValue()
 											||cwb.getFlowordertype()==FlowOrderTypeEnum.PosZhiFu.getValue()
 											||(cwb.getFlowordertype()==FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
-											||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 											||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 											||(cwb.getCwbstate()==TransCwbStateEnum.DIUSHI.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
 											||(cwb.getCwbstate()==CwbStateEnum.TuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
 											||(cwb.getCwbstate()==CwbStateEnum.DiuShi.getValue()&& cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())){ %>
@@ -265,7 +266,7 @@ function cancelIntercept(transcwb){
 										<option value="">请选择拦截原因</option>
 										<%for(Reason r :reasonList) {
 											if(cwb.getIsmpsflag() != IsmpsflagEnum.no.getValue()) {%>
-												<%if(cwb.getCwbstate() == r.getInterceptType()){ %>
+												<%if(cwb.getReasonid() == r.getReasonid()){ %>
 													<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>_intercept_<%=cwb.getIsmpsflag() %>_intercept_<%=cwb.getCwb() %>" selected = "selected" >
 												<%}else{ %>
 													<option value="<%=cwb.getScancwb() %>_intercept_<%=r.getReasonid() %>_intercept_<%=cwb.getIsmpsflag() %>_intercept_<%=cwb.getCwb() %>">
@@ -287,7 +288,8 @@ function cancelIntercept(transcwb){
 									<%} %>
 									</td>
 									<td width="70" align="center" valign="middle">
-									<%if(cwb.getCwbstate() == InterceptTypeEnum.diushi.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue()){ %>
+									<!-- 一票多件中拦截为丢失的运单可以撤销，但是退供应商之后的活接就不能再撤消了 -->
+									<%if(cwb.getCwbstate() == InterceptTypeEnum.diushi.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue() && cwb.getFlowordertype() != FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue() &&  cwb.getFlowordertype() != FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue() &&  cwb.getFlowordertype() != FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue() ){ %>
 										<a href="javascript:cancelIntercept('<%=cwb.getTranscwb() %>')" style="text-decoration:underline;color:red;" onclick=""> 撤销</a>
 									<%} %>
 									</td>

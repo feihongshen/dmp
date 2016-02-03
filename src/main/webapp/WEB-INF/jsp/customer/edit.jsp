@@ -10,7 +10,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>修改供货商</h1>
-		<form id="customer_save_Form" name="customer_save_Form" onSubmit="if(check_customer()){submitEditCustomer(this,${customer.customerid });}return false;"  action="<%=request.getContextPath()%>/customer/saveFile/${customer.customerid }" method="post"  >
+		<form id="customer_save_Form" name="customer_save_Form"  onSubmit="if(check_customer()){submitEditCustomer(this,${customer.customerid });}return false;"  action="<%=request.getContextPath()%>/customer/saveFile/${customer.customerid }" method="post"  >
 		<div id="box_form">
 				<ul style="width:450px;height: 400px;overflow-y: scroll;">
 					<li><span>客户名称：</span><input type ="text" id ="customername" name ="customername" value ="${customer.customername}"  maxlength="30" class="input_text1"/>*</li>
@@ -36,7 +36,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 			           </select>
 			        </li>
 					<li><span>一票多件用运单号：</span>
-						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1">
+						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1" onchange="transcwbswitch()">
 							<option value="0" <%if(customer.getIsypdjusetranscwb()==0){ %>selected<%} %>>否</option>
 							<option value="1" <%if(customer.getIsypdjusetranscwb()==1){ %>selected<%} %>>是</option>
 						</select>

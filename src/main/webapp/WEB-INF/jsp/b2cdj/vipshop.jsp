@@ -30,6 +30,13 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 <div id="box_form">
 				<ul>
 					<%if(vipshop != null){ %>
+					
+						<li><span>干线回单重发天数：</span>
+							<input type ="text" id="daysno" name ="daysno" value="<%=vipshop.getDaysno() %>"  maxlength="300">
+						</li>
+						<li><span>限制货态重发次数：</span>
+							<input type ="text" id="selb2cnum" name ="selb2cnum" value="<%=vipshop.getSelb2cnum() %>"  maxlength="300">
+						</li>	
 						<li><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no" value="<%=vipshop.getShipper_no() %>"  maxlength="300">
 						</li>
@@ -107,6 +114,13 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	 						<input type ="password" id="password" name ="password"  maxlength="30"    size="20"> 
 						</li>
 					<%}else{ %>
+					
+						<li><span>干线回单重发天数：</span>
+							<input type ="text" id="daysno" name ="daysno" value=""  maxlength="300">
+						</li>
+						<li><span>限制货态重发次数：</span>
+							<input type ="text" id="selb2cnum" name ="selb2cnum" value=""  maxlength="300">
+						</li>	
 						<li><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no"  maxlength="300">
 						</li>

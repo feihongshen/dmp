@@ -632,7 +632,8 @@ public class OrderSelectController {
 		List<AorderFlowView> forTrans = new ArrayList<AorderFlowView>();
 		List<AorderFlowView> fororder = new ArrayList<AorderFlowView>();
 		if (((order.getSendcarnum() > 1) || (order.getBackcarnum() > 1)) && ((order.getTranscwb().split(",").length > 1) || (order.getTranscwb().split(":").length > 1)) && (isypdjusetranscwb == 1)) {
-
+			boolean mpsSwitch =order.getIsmpsflag()>0;
+			
 			if (oldCwb.equals(order.getCwb())) {// 如果是原订单号查询，就获取和原来的订单流程
 				List<OrderFlow> datalist = this.orderFlowDAO.getOrderFlowByCwb(cwb);
 				for (OrderFlow orderFlowAll : datalist) {
@@ -644,7 +645,7 @@ public class OrderSelectController {
 					fororder.add(a);
 				}
 				//如果开启集单模式走下面
-				if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
+				if(mpsSwitch){
 				
 					model.addAttribute("jdtype", 1); //1为开启集单模式
 					if(order.getMpsoptstate() == 0){
@@ -653,6 +654,7 @@ public class OrderSelectController {
 						model.addAttribute("slowtranscwbtype", FlowOrderTypeEnum.getByValue(order.getMpsoptstate()) == null ? FlowOrderTypeEnum.DaoRuShuJu.getText() : FlowOrderTypeEnum.getByValue(order.getMpsoptstate()).getText());
 					}
 				} 
+				
 			} else {// 就获取运单号的订单过程
 				//String ypdjcurrentstate="";
 				List<TranscwbOrderFlow> datalist = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByScanCwb(scancwb, cwb);
@@ -668,7 +670,7 @@ public class OrderSelectController {
 //					}
 				}
 				//如果开启集单模式走下面
-				if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
+				if(mpsSwitch){
 					TransCwbDetail transCwbDetail = tc.findTransCwbDetailByTransCwb(scancwb);
 					model.addAttribute("jdtranstype",1);
 					 
@@ -853,7 +855,9 @@ public class OrderSelectController {
 					transcwbview.setTranscwb(transcwb);
 					transcwbview.setFlowordername(tcof == null ? FlowOrderTypeEnum.DaoRuShuJu.getText() : tcof.getFlowordertypeText());
 					//如果开启集单模式走下面
-					if(this.customerDAO.getCustomerById(order.getCustomerid()).getMpsswitch() != 0){
+					boolean mpsSwitch=order.getIsmpsflag()>0;
+					
+					if(mpsSwitch){
 					
 						model.addAttribute("jdtype", 1); //1为开启集单模式
 						TransCwbDetail transCwbDetail = tc.findTransCwbDetailByTransCwb(transcwb);

@@ -12,6 +12,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import cn.explink.enumutil.TransCwbStateEnum;
+
 @Component
 public class TransCwbDao {
 
@@ -105,10 +107,10 @@ public class TransCwbDao {
 	 * @Title: getCwbsByCwbList
 	 * @description 根据输入的单号集合（子单号或主单号），查询所对应的TranscwbView集合
 	 * @author 刘武强
-	 * @date  2016年1月8日下午4:01:16
-	 * @param  @param cwbs
-	 * @param  @return
-	 * @return  List<String>
+	 * @date 2016年1月8日下午4:01:16
+	 * @param @param cwbs
+	 * @param @return
+	 * @return List<String>
 	 * @throws
 	 */
 	public List<TranscwbView> getTransCwbByOrderNoList(String cwbs) {
@@ -123,10 +125,10 @@ public class TransCwbDao {
 	 * @Title: getTransCwbByTransCwbList
 	 * @description 根据输入的主单号集合，查询所对应的TranscwbView集合
 	 * @author 刘武强
-	 * @date  2016年1月11日上午9:24:46
-	 * @param  @param cwbs
-	 * @param  @return
-	 * @return  List<TranscwbView>
+	 * @date 2016年1月11日上午9:24:46
+	 * @param @param cwbs
+	 * @param @return
+	 * @return List<TranscwbView>
 	 * @throws
 	 */
 	public List<TranscwbView> getTransCwbByCwbNoList(String cwbs) {
@@ -134,6 +136,11 @@ public class TransCwbDao {
 		String sql = "select distinct * from express_ops_transcwb where  cwb in  " + cwbs;
 		list = this.jdbcTemplate.query(sql, new TranscwbRowMapper());
 		return list;
+	}
+
+	public void updateTransCwbState(String transCwb, TransCwbStateEnum transCwbStateEnum) {
+		String sql = "update express_ops_transcwb_detail set transcwbstate=? where transcwb=?";
+		this.jdbcTemplate.update(sql, transCwbStateEnum.getValue(), transCwb);
 	}
 
 }

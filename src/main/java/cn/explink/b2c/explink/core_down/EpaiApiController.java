@@ -203,13 +203,14 @@ public class EpaiApiController {
 	 * 
 	 * @return
 	 */
-	/*
-	 * @RequestMapping("/test") public @ResponseBody String epai_test() {
-	 * epaiApiService_ExportCallBack.exportCallBack_controllers();
-	 * epaiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(); return
-	 * "系统之间对接-下游电商手动下载数据完成";
-	 * 
-	 * }
-	 */
+	
+	 @RequestMapping("/test") 
+	 public @ResponseBody String epai_test() {
+		 epaiApiService_ExportCallBack.exportCallBack_controllers();
+		 epaiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(); 
+		 return "系统之间对接-下游电商手动下载数据完成";
+	 
+	 }
+	
 
 }

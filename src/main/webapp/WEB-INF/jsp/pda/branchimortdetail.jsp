@@ -145,7 +145,7 @@ function submitBranchImport(pname,scancwb,driverid,requestbatchno,rk_switch,comm
 							deliveryname="   <font color='red'>配送员："+deliveryname+"</font>";
 						}
 						$("#scansuccesscwb").val(scancwb);
-						$("#showcwb").html("订 单 号："+scancwb+deliveryname);
+						$("#showcwb").html("订 单 号："+data.body.cwbOrder.cwb+deliveryname);
 						//getcwbsdataForDaoHuo(scancwb);
 						//将成功扫描的订单放到已入库明细中
 						//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true);

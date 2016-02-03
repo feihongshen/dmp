@@ -17,17 +17,20 @@ import cn.explink.exception.CwbException;
  * @author songkaojun 2016年1月8日
  */
 @Component("deliverTakeGoodsMPSReleaseService")
-public class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseService {
+public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseService {
 
 	@Override
-	public void validateReleaseCondition(String transCwb) throws CwbException {
-		CwbOrder cwbOrder = this.getMPSCwbOrderConsideringMPSSwitchType(transCwb, AbstractMPSReleaseService.VALIDATE_RELEASE_CONDITION);
+	public void validateReleaseCondition(String cwbOrTransCwb) throws CwbException {
+		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwbConsideringMPSSwitchType(cwbOrTransCwb, AbstractMPSReleaseService.VALIDATE_RELEASE_CONDITION);
 		if (cwbOrder == null) {
-			return;
+			cwbOrder = this.getMPSCwbOrderByCwbConsideringMPSSwitchType(cwbOrTransCwb, AbstractMPSReleaseService.VALIDATE_RELEASE_CONDITION);
+			if (cwbOrder == null) {
+				return;
+			}
 		}
 		// 不管是库房集单还是站点集单，都须要进行校验
 		CwbException exception = new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.DELIVERTAKEGOODS_MPS_NOT_ALL_ARRIVED);
-		this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE);
+		this.validateMPS(cwbOrTransCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_SUBSTATION_GOODS_ARRIVED_STATE);
 	}
 
 }

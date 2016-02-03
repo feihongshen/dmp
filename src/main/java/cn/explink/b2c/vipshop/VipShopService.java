@@ -108,6 +108,39 @@ public class VipShopService {
 
 	}
 	
+	public void excuteVipshopDownLoadTaskSigngle() {
+
+		try {
+
+			for (B2cEnum enums : B2cEnum.values()) { // 遍历唯品会enum，可能有多个枚举
+				if (enums.getMethod().contains("vipshop")) {
+					int isOpenFlag = jointService.getStateForJoint(enums.getKey());
+					if (isOpenFlag == 0) {
+						logger.info("未开启vipshop[" + enums.getKey() + "]对接！");
+						continue;
+					}
+
+					try {
+						excuteGetOrdersByVipshopSingle(enums);
+					} catch (Exception e) {
+						logger.error("唯品会对接循环处理异常",e);
+					}
+
+				}
+			}
+
+		} catch (Exception e) {
+			logger.error("vipshop下载遇未知异常", e);
+		}
+
+		// b2cAutoDownloadMonitorDAO.saveB2cDownloadRecord(customerids.indexOf(",")>0?customerids.substring(0,customerids.length()-1):"",cretime,count,remark);
+
+	}
+	
+	private void excuteGetOrdersByVipshopSingle(B2cEnum enums) {
+		long resultflag = vipShopGetCwbDataService.getOrdersByVipShop(enums.getKey());
+	}
+	
 	private void excuteGetOrdersByVipshopOXO(B2cEnum enums) {
 		int loopcount = 20;
 		for (int i = 0; i < loopcount; i++) {

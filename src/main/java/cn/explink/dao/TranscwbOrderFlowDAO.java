@@ -4,9 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -16,10 +20,15 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
+import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.util.StreamingStatementCreator;
 
 @Component
 public class TranscwbOrderFlowDAO {
+
+	private static final String SCANNUM_MAP_SCANCWB = "scancwb";
+
+	private static final String SCANNUM_MAP_COUNT = "scannum";
 
 	private final class TranscwbOrderFlowRowMapper implements RowMapper<TranscwbOrderFlow> {
 		@Override
@@ -149,8 +158,77 @@ public class TranscwbOrderFlowDAO {
 	}
 
 	public long getTranscwbOrderFlowByScanCwbCount(String scancwb, String cwb, long flowordertype, long branchid, long nextbranchid) {
-		String sql = "SELECT COUNT(1) FROM express_ops_transcwb_orderflow WHERE scancwb<>? AND cwb=? AND flowordertype=? AND branchid=? and floworderdetail LIKE '%\"nextbranchid\":" + nextbranchid
-				+ ",%' AND isnow=1 ";
-		return this.jdbcTemplate.queryForLong(sql, scancwb, cwb, flowordertype, branchid);
+		if (this.isMPSOrder(cwb) == IsmpsflagEnum.no.getValue()) {
+			String sql = "SELECT COUNT(1) FROM express_ops_transcwb_orderflow WHERE scancwb<>? AND cwb=? AND flowordertype=? " + "AND branchid=? and floworderdetail LIKE '%\"nextbranchid\":"
+					+ nextbranchid + ",%' AND isnow=1 ";
+			return this.jdbcTemplate.queryForLong(sql, scancwb, cwb, flowordertype, branchid);
+		} else {
+			return this.getScanNumByTranscwbOrderFlow(scancwb, cwb, flowordertype, branchid);
+		}
+
+	}
+
+	private int isMPSOrder(String cwb) {
+		String sql = "select ismpsflag from express_ops_cwb_detail where cwb = ? and state = 1 ";
+		int ismpsflag = (int) IsmpsflagEnum.no.getValue();
+		try {
+			ismpsflag = this.jdbcTemplate.queryForInt(sql, cwb);
+		} catch (DataAccessException e) {
+		}
+		return ismpsflag;
+	}
+
+	public int getScanNumByTranscwbOrderFlow(String scancwb, String cwb, long flowordertype, long branchid) {
+		List<Map<String, Object>> resultList = this.getScanCwbCountMapByTranscwbOrderFlow(cwb, flowordertype, branchid);
+		// 当前运单扫描次数
+		Integer currentTransCwbCount = Integer.valueOf(0);
+		// 兄弟运单
+		Map<String, Integer> siblingTransCwbMap = new HashMap<String, Integer>();
+		for (Map<String, Object> resultMap : resultList) {
+			Object transcwbObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB);
+			Object countObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT);
+			Integer count = Integer.valueOf(0);
+			if (transcwbObj != null) {
+				String transcwb = (String) transcwbObj;
+				// 当前扫描的运单
+				if (scancwb.equals(transcwb)) {
+					currentTransCwbCount = Integer.parseInt(((Long) countObj).toString());
+					continue;
+				}
+				if (countObj != null) {
+					count = Integer.parseInt(((Long) countObj).toString());
+				}
+				siblingTransCwbMap.put(transcwb, count);
+			}
+		}
+
+		int scannum = 0;
+		Set<String> siblingTransCwbKeySet = siblingTransCwbMap.keySet();
+		for (String siblingTransCwbKey : siblingTransCwbKeySet) {
+			// 当前运单某个操作状态扫描次数比某个兄弟运单的小，说明兄弟运单扫描过，所以++
+			if (currentTransCwbCount.compareTo(siblingTransCwbMap.get(siblingTransCwbKey)) < 0) {
+				scannum++;
+			}
+		}
+		return scannum;
+	}
+
+	/**
+	 *
+	 * @param scancwb
+	 * @param cwb
+	 * @param flowordertype
+	 * @param branchid
+	 * @return key:运单号 value:扫描次数
+	 */
+	private List<Map<String, Object>> getScanCwbCountMapByTranscwbOrderFlow(String cwb, long flowordertype, long branchid) {
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB + ",count(scancwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
+				+ " FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND branchid=? " + " group by scancwb ";
+		try {
+			result = this.jdbcTemplate.queryForList(sql, cwb, flowordertype, branchid);
+		} catch (DataAccessException e) {
+		}
+		return result;
 	}
 }

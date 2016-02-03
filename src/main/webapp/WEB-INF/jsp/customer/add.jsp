@@ -37,7 +37,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 			        </li>
 			       
 					<li><span>一票多件用运单号：</span>
-						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1">
+						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1" onchange="transcwbswitch()">
 							<option value="0">否</option>
 							<option value="1">是</option>
 						</select>
@@ -100,7 +100,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 						<iframe id="update" name="update" src="customer/update?fromAction=customer_cre_Form&wavFilePath=&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 					</li>
 					 <li><span>是否启用集单模式：</span>
-						<select id ="ifjidan" class="select1" onchange="changejd()">
+						<select id ="ifjidan" class="select1" disabled="disabled" onchange="changejd()">
 							<option value="0">否</option>
 							<option value="1">是</option>							
 						</select>*

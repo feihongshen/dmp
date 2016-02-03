@@ -8750,7 +8750,10 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `express_ops_transcwb` ADD INDEX `cwb_idx` (`cwb`);		
 		</sql>
 	</changeSet>
-	
+	<!-- 取消集包功能-->
+	<changeSet id="liuwuqiang-2016-01-26-01" author="liuwuqiang">
+		 <sqlFile path="package.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
+	</changeSet>
 	 
 	
 </databaseChangeLog>

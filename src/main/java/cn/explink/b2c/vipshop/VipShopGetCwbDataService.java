@@ -31,6 +31,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.OrderGoods;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.enumutil.MpsTypeEnum;
 import cn.explink.enumutil.MpsswitchTypeEnum;
@@ -121,6 +122,10 @@ public class VipShopGetCwbDataService {
 		vipshop.setLefengCustomerid(lefengCustomerid);
 		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
 		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
+		String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
+		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
+		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
+		vipshop.setDaysno(Integer.parseInt(daysno));
 		
 		String openmpspackageflag=request.getParameter("openmpspackageflag");
 		vipshop.setOpenmpspackageflag(Integer.valueOf(openmpspackageflag));
@@ -171,6 +176,9 @@ public class VipShopGetCwbDataService {
 		vip.setIsCreateTimeToEmaildateFlag(vipshop.getIsCreateTimeToEmaildateFlag());
 		vip.setOpenmpspackageflag(vipshop.getOpenmpspackageflag());
 		vip.setTransflowUrl(vipshop.getTransflowUrl());
+		vip.setSelb2cnum(vipshop.getSelb2cnum());
+		vip.setDaysno(vipshop.getDaysno());
+		
 		
 		JSONObject jsonObj = JSONObject.fromObject(vip);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
@@ -467,7 +475,7 @@ public class VipShopGetCwbDataService {
 					original_weight, paywayid, attemper_no, created_dtm_loc,
 					rec_create_time, order_delivery_batch, freight,
 					cwbordertype, warehouse_addr, go_get_return_time,
-					is_gatherpack, is_gathercomp, total_pack, transcwb);
+					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch);
 			
 			
 			//集包相关代码处理
@@ -554,13 +562,14 @@ public class VipShopGetCwbDataService {
 			String order_delivery_batch, String freight, String cwbordertype,
 			String warehouse_addr, String go_get_return_time,
 			String is_gatherpack, String is_gathercomp, String total_pack,
-			String transcwb) {
+			String transcwb,int mpsswitch) {
+		String sendcarnum=total_pack.isEmpty() ? "1" : total_pack;
 		
 		dataMap.put("cwb", order_sn);
 		dataMap.put("transcwb", transcwb);
 		
 		dataMap.put("consigneename", buyer_name);
-		dataMap.put("sendcarnum", (total_pack.isEmpty() ? "1" : total_pack));
+		dataMap.put("sendcarnum", sendcarnum);
 		dataMap.put("consigneemobile", mobile);
 		dataMap.put("consigneephone", tel);
 		dataMap.put("consigneepostcode", post_code);
@@ -586,9 +595,24 @@ public class VipShopGetCwbDataService {
 		dataMap.put("cwbordertypeid", cwbordertype);
 		dataMap.put("shouldfare", freight.isEmpty() ? "0" : freight);
 		dataMap.put("cwbordertypeid", cwbordertype);
-		dataMap.put("ismpsflag", choseIsmpsflag(is_gatherpack));
-		dataMap.put("mpsallarrivedflag", is_gathercomp);
+		
+		dataMap.put("ismpsflag", choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
+		dataMap.put("mpsallarrivedflag", choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
 		return dataMap;
+		
+	}
+
+	private String choseMspallarrivedflag(String is_gathercomp,String is_gatherpack,String sendcarnum,int mpsswitch) {
+		
+		if(mpsswitch!=MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()){
+			//集包并且是最后一箱并且箱号大于1
+			if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&Long.valueOf(sendcarnum)>1){ 
+				return String.valueOf(VipGathercompEnum.Last.getValue());
+			}
+		}
+		
+		return String.valueOf(VipGathercompEnum.Default.getValue());
+		
 		
 	}
 
@@ -604,11 +628,26 @@ public class VipShopGetCwbDataService {
 		return order_delivery_batch;
 	}
 
-	private String choseIsmpsflag(String is_gatherpack) {
-		String ismpsflag="0"; //'是否一票多件(集包模式)：0默认；1是一票多件'; 
-		if("1".equals(is_gatherpack)){
-			ismpsflag="1";
+	private String choseIsmpsflag(String is_gatherpack,String is_gathercomp,String sendcarnum,int mpsswitch) {
+		String ismpsflag=String.valueOf(IsmpsflagEnum.no.getValue()); //'是否一票多件(集包模式)：0默认；1是一票多件'; 
+		
+		//开启集单，并且运单为多个，则默认为一票多件
+		if(mpsswitch!=MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()){
+			
+			//拦截 开启集单模式，总件数只有一件的数据 is_gatherpack=1，is_gathercomp=1，total_pack=1  --->这就是个单包裹(罗冬确认)
+			if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&"1".equals(sendcarnum)){
+				return String.valueOf(IsmpsflagEnum.no.getValue());
+			}
+			if("1".equals(is_gatherpack)&&Long.valueOf(sendcarnum)>1){
+				return String.valueOf(IsmpsflagEnum.yes.getValue());
+			}
+			if("1".equals(is_gatherpack)&&"0".equals(is_gathercomp)){
+				return String.valueOf(IsmpsflagEnum.yes.getValue());
+			}
+			
 		}
+		
+		
 		return ismpsflag;
 	}
 
@@ -645,10 +684,19 @@ public class VipShopGetCwbDataService {
 		if(!"1".equals(is_gatherpack)){ //是否集包模式
 			return null;
 		}
+		//拦截 开启集单模式，总件数只有一件的数据 is_gatherpack=1，is_gathercomp=1，total_pack=1  --->这就是个单包裹(罗冬确认)
+		if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&"1".equals(total_pack)){
+			return null;
+		}
 		
 		filterMpsPackageOrderDto(paraList, paraMap);
 		
+		//订单不存在，则不需要处理
 		if(cwbOrderDTO==null){
+			return null;
+		}
+		//一票多件，并且到齐了，排重returen
+		if(cwbOrderDTO!=null&&cwbOrderDTO.getMpsallarrivedflag()==MPSAllArrivedFlagEnum.YES.getValue()){
 			return null;
 		}
 		
@@ -664,6 +712,9 @@ public class VipShopGetCwbDataService {
 		}else{
 			
 			CwbOrder co =cwbDAO.getCwbByCwb(order_sn);
+			if(co==null){
+				return null;
+			}
 			dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
 			cwbDAO.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
 			for(String pack_no:pack_nos.split(",")){
@@ -686,24 +737,36 @@ public class VipShopGetCwbDataService {
 	 * false: 
 	 */
 	private void filterMpsPackageOrderDto(List<Map<String, String>> paraList,Map<String,String> currentMap){
-		if(paraList==null){
+		if(paraList==null||paraList.size()==0){
 			return ;
 		}
-		for(Map<String,String> map:paraList){
-			if(!map.get("cwb").equals(currentMap.get("cwb"))){
+		for(Map<String,String> oldMap:paraList){
+			if(!oldMap.get("cwb").equals(currentMap.get("cwb"))){
 				continue;
 			}
-			String oldTranscwb = map.get("transcwb");
+			String oldTranscwb = oldMap.get("transcwb");
 			String currentTranscwb = currentMap.get("transcwb");
 			//后者大于前者，移除前者
 			if(oldTranscwb.split(",").length<currentTranscwb.split(",").length){
-				paraList.remove(map);
+				paraList.remove(oldMap);
 				return;
 			}
 			//后者小于前者，移除后者
 			if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
 				currentMap=null;
 				return;
+			}
+			//后者==前者，移除不是最后一箱的
+			if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
+					
+				if(Integer.valueOf(currentMap.get("mpsallarrivedflag"))==VipGathercompEnum.Default.getValue()
+						&&Integer.valueOf(oldMap.get("mpsallarrivedflag"))==VipGathercompEnum.Default.getValue()){
+					paraList.remove(oldMap);
+				}
+				if(Integer.valueOf(currentMap.get("mpsallarrivedflag"))==VipGathercompEnum.Last.getValue()){
+					paraList.remove(oldMap);
+					return;
+				}
 			}
 			
 		}

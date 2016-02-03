@@ -281,7 +281,7 @@ function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,
 								$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
 								
 								$("#scansuccesscwb").val(scancwb);
-								$("#showcwb").html("订 单 号："+scancwb);
+								$("#showcwb").html("订 单 号："+data.body.cwbOrder.cwb);
 								if(data.body.showRemark!=null){
 								$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
 								}

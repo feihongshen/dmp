@@ -851,7 +851,8 @@ public class CwbOrderController {
 			List<TransCwbDetail> transOrderList = new ArrayList<TransCwbDetail>();//运单集合
 
 			StringBuffer cwbs = new StringBuffer();
-			for (String cwbStr : cwb.split("\r\n")) {
+			for (String temp : cwb.split("\r\n")) {
+				String cwbStr = temp.trim();
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}

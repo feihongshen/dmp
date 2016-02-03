@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OperationTime;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 
 @Component
@@ -399,7 +400,7 @@ public class OperationTimeDAO {
 			e.printStackTrace();
 		}
 		// 下一站 ， 时间， 状态
-		String sql = "select cwb from express_ops_operation_time  where nextbranchid=" + branchid + " " + "and credate>=" + time + " and flowordertype in(" + flowordertypes + ") ";
+		String sql = "select cwb from express_ops_operation_time  where nextbranchid=" + branchid + " " + "and credate>=" + time + " and flowordertype in(" + flowordertypes + ")  ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
@@ -421,6 +422,7 @@ public class OperationTimeDAO {
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate >=" + time + " and flowordertype in(" + flowordertypes + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
+
 	
 	/**
 	 * 小件员领货 今日未领
@@ -439,11 +441,11 @@ public class OperationTimeDAO {
 			e.printStackTrace();
 		}
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate >=" + time + " and flowordertype in(" + flowordertypes + ") "
-				+ " and cwbordertypeid in(" + cwbordertypeids + ") ";
+				+ " and cwbordertypeid in(" + cwbordertypeids + ")";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
-
 	/**
+
 	 * 小件员领货 今日未领
 	 *
 	 * @param branchid

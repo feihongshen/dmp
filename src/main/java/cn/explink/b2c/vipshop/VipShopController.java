@@ -94,6 +94,21 @@ public class VipShopController {
 		return "手动请求下载成功";
 
 	}
+	/**
+	 * vipshop请求接口 2012-10-25
+	 *
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/downloadsigngle")
+	public @ResponseBody String downloadsigngle(HttpServletRequest request, HttpServletResponse response) {
+
+		this.vipShopService.excuteVipshopDownLoadTaskSigngle();
+
+		return "手动请求下载成功";
+
+	}
 	
 	@RequestMapping("/lanjie/{cwb}")
 	public @ResponseBody String lanjie(HttpServletRequest request, @PathVariable("cwb") String  cwb) {

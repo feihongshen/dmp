@@ -11,10 +11,10 @@ public enum ExceptionCwbErrorTypeEnum {
 			36, "分站退货异常，订单不在可退货数据中"), FEN_ZHAN_ZHONG_ZHUAN_YI_CHANG_DING_DAN_BU_ZAI_KE_ZHONG_ZHUAN_SHU_JU_ZHONG(37, "分站中转异常，订单不在可退货数据中"), MEI_YOU_FEN_HUO_KU_FANG(38, "没有分货库房"), FEI_BEN_KU_FAN_HUO_WU(
 			39, "非本库房货物"), BU_SHI_ZHE_GE_XIAO_JIAN_YUAN_DE_HUO(40, "不是这个小件员的货"), GUI_BAN_SHEN_HE_DING_DAN_BU_NENG_ZAI_FAN_KUI(41, "归班审核订单不能再次反馈"), STATE_CONTROL_ERROR(42, "状态为{0}的订单不允许进行{1}操作"), YI_FAN_KUI_BU_NENG_ZAI_LING(
 			43, "已反馈的未归班订单不能再领"), YI_FAN_KUI_BU_NENG_PI_LIANG_ZAI_FAN_KUI(44, "已反馈的订单不能进行批量再次反馈"), WU_FA_ZI_DONG_PAN_DUAN_XIA_YI_ZHAN(45, "无法自动判断下一站"), YI_JIAO_FEI_SHEN_HE_BU_NENG_QU_XIAO(46,
-			"已缴费审核不能取消"), SYS_SCAN_ERROR(47, "已欠费"), BU_SHI_ZHE_GE_SI_JI(48, "不是这个司机"), BU_SHI_ZHE_GE_MU_DI_DI(49, "不是这个目的地的货，目的站：{0}"), PEi_SONG_LEI_XING_WEI_ZHAO_DAO(50, "配送类型{0}没有找到"), MU_DI_ZHAN_WEI_ZHI(
-			51, "目的站未知"), Invalid_Cwb_State(52, "无效的订单状态"), Field_IS_Mandatory(53, "{0}字段不能为空"), Field_IS_Cwb_State(54, "订单状态不对"), Operation_Repeat(55, "重复扫描"), Invalid_Operation(56, "不可识别的操作"), DingDanYiZhiFu(
-			57, "订单已支付"), ZhiFuAmountExceiton(58, "支付金额有误"), ChongFuShenHe(59, "{0}重复审核"), BaoHaoBuZhengQue(60, "包号不正确"), BAO_HAO_BU_CUN_ZAI(61, "包号不可以为0"), XiaoJianYuanYouQianKuan(62,
-			"此小件员上次交款有欠款，补齐欠款才能继续领货！"), YPDJSTATE_CONTROL_ERROR(63, "一票多件上一状态为{0}的订单未完成，不允许进行{1}操作"), Qing_SAO_MIAO_YUN_DAN_HAO(64, "请扫描运单号"), Qing_Xuan_Ze_Xiao_Jian_Yuan(555555, "请检查小件员是否选择"), Fen_Zhan_Dao_Huo_Ding_Dan_Bu_Yun_Xu_Shi_Xiao(
+			"已缴费审核不能取消"), SYS_SCAN_ERROR(47, "已欠费"), BU_SHI_ZHE_GE_SI_JI(48, "不是这个司机"), BU_SHI_ZHE_GE_MU_DI_DI(49, "不是这个目的地的货，目的站：{0}"), BU_SHI_ZHE_GE_MU_DI_DI_zong(200, "不是这个目的地的货"), PEi_SONG_LEI_XING_WEI_ZHAO_DAO(
+			50, "配送类型{0}没有找到"), MU_DI_ZHAN_WEI_ZHI(51, "目的站未知"), Invalid_Cwb_State(52, "无效的订单状态"), Field_IS_Mandatory(53, "{0}字段不能为空"), Field_IS_Cwb_State(54, "订单状态不对"), Operation_Repeat(55, "重复扫描"), Invalid_Operation(
+			56, "不可识别的操作"), DingDanYiZhiFu(57, "订单已支付"), ZhiFuAmountExceiton(58, "支付金额有误"), ChongFuShenHe(59, "{0}重复审核"), BaoHaoBuZhengQue(60, "包号不正确"), BAO_HAO_BU_CUN_ZAI(61, "包号不可以为0"), XiaoJianYuanYouQianKuan(
+			62, "此小件员上次交款有欠款，补齐欠款才能继续领货！"), YPDJSTATE_CONTROL_ERROR(63, "一票多件上一状态为{0}的订单未完成，不允许进行{1}操作"), Qing_SAO_MIAO_YUN_DAN_HAO(64, "请扫描运单号"), Qing_Xuan_Ze_Xiao_Jian_Yuan(555555, "请检查小件员是否选择"), Fen_Zhan_Dao_Huo_Ding_Dan_Bu_Yun_Xu_Shi_Xiao(
 			70, "分站到货订单不允许失效"), Fei_Dai_Fan_Dan(71, "非待返单"), Chong_Fu_Sao_Miao(72, "重复扫描"), FEI_BEN_ZHAN_HUO(73, "非本站货"), Wei_Shua_Ka_Yuan_Yin(74, "请选择未刷卡原因"), Bei_Zhu_Tai_Chang(75, "备注太长"), Shen_Qing_Zhong_Zhuan_Wei_Shen_He_Cheng_Gong_Error(
 			76, "订单未申请中转或者未审核成功，不允许进行中转出站操作"), Bao_Hao_Bu_Keyi_Duozhan_Shiyong(77, "当前包号出给【{0}】,不能再出给【{1}】"), Fei_Kuai_Di_Dan_Bu_Yun_Xu_Lan_Shou_Dao_Huo(78, "非快递单不允许进行揽收到货操作"), JieSuanQianKuan(79,
 			"结算欠款金额验证不通过"), JieSuanJiaKuan(80, "结算加款金额验证不通过"), JieSuanJianKuan(81, "结算减款金额验证不通过"), JieSuanChongFuTiJiao(82, "结算重复提交!"), ZhanDianYuEBuZu(83, "站点余额不足"), ZhangDanWeiJieSuan(84,
@@ -54,7 +54,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			"订单修改未审核，请联系客服人员！"), FANKUI_KUAIDIDANHAO_YIGUANLIAN(150, "此快递单号已经和其它订单关联！"), OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED(160, "一票多件货物未到齐，需要库房集单完成之后才能够处理出库操作!"), DELIVERTAKEGOODS_MPS_NOT_ALL_ARRIVED(
 			161, "一票多件货物未到齐，需要站点集单完成之后才能够分配小件员进行配送操作!"), TRANSORDER_LOST(162, "此{0}运单因{1}已导致丢失，已被客服人员操作拦截!"), TRANSORDER_BROKEN(163, "此{0}运单因{1}已导致破损，已被客服人员操作拦截，请将此件货物给到退货组！"), TRANSORDER_LOST_RETURN(
 			164, "{0}订单中的{1}运单，因{2}已丢失，请将此件货物给到退货组!"), TRANSORDER_BROKEN_RETURN(165, "{0}订单中的{1}运单，因{2}已破损，请将此件货物给到退货组!"), TRANSCWB_STATE_CONTROL_ERROR(166, "状态为{0}的运单不允许进行{1}操作"), NEXT_STATION_NOT_UNIQUE_ERROR(
-			167, "配置的逆向退货组不唯一"), NONE_NEXT_STATION_ERROR(168, "没有配置逆向的退货组"), TRANSORDER_RETURN(169, "{0}订单中的{1}运单已退货，请将此件货物给到退货组!");
+			167, "配置的逆向退货组不唯一"), NONE_NEXT_STATION_ERROR(168, "没有配置逆向的退货组"), TRANSORDER_RETURN(169, "{0}订单中的{1}运单已退货，请将此件货物给到退货组!"), TUIHUOZHONGZHUANRUKU_NONSUPPORT_MPS(170, "退货中转入库不支持一票多件订单!"), FENJIANZHONGZHUANCHUKU_NONSUPPORT_MPS(
+			171, "分拣中转出库不支持一票多件订单!");
 
 	private int value;
 	private String text;

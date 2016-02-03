@@ -88,6 +88,7 @@ function getcwbsdataForCustomer(){
 			$("#yps").html(data.yps);
 			$("#ysmt").html(data.ysmt);
 			$("#ysmh").html(data.ysmh);
+			
 			$("#wps").html(data.wps);
 			$("#wsmt").html(data.wsmt);
 			$("#wsmh").html(data.wsmh);

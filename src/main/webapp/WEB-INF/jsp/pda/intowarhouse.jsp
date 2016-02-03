@@ -347,8 +347,8 @@ function callfunction(cwb){//getEmailDateByIds
 											data.body.cwbcustomername);
 									$("#multicwbnum").val(
 											data.body.cwbOrder.sendcarnum);
-									$("#msg").html(scancwb+ data.errorinfo/* + "（共"+ data.body.cwbOrder.sendcarnum
-													+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）" */);
+									$("#msg").html(scancwb+ data.errorinfo + "（共"+ data.body.cwbOrder.sendcarnum
+													+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）" );
 									
 									//将成功扫描的订单放到已入库明细中
 									//addAndRemoval(data.body.cwbOrder.cwb,"successTable",true,$("#customerid").val());
@@ -378,7 +378,7 @@ function callfunction(cwb){//getEmailDateByIds
 									}
 
 									$("#scansuccesscwb").val(scancwb);
-									$("#showcwb").html("订 单 号：" + scancwb);
+									$("#showcwb").html("订 单 号：" + data.body.cwbOrder.cwb);
 									$("#consigneeaddress").html("地 址："+ data.body.cwbOrder.consigneeaddress);
 									if(data.body.showRemark!=null){
 									$("#cwbDetailshow").html("订单备注："+data.body.showRemark);

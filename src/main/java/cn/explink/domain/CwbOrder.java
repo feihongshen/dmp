@@ -125,30 +125,30 @@ public class CwbOrder {
 	private String consigneenameOfkf;
 	private String consigneemobileOfkf;
 	private String consigneephoneOfkf;
-	private long zhongzhuanreasonid;//中转id
-	private String zhongzhuanreason;//中转原因
-	private BigDecimal fnorgoffset;//站点账单回写的冲抵金额
-	private int fnorgoffsetflag;//订单在站点账单中被冲抵标志位，0：未收款，1：已收款
-	private long fnorgbillid; //订单站点代收货款账单id
-	private long fnorgfreightbillid; //订单站点运费账单id
-	private int firstlevelid; //一级滞留原因id
-	private String city;//通过百度API匹配的城市
-	private String area;//通过百度API匹配的城区区域
+	private long zhongzhuanreasonid;// 中转id
+	private String zhongzhuanreason;// 中转原因
+	private BigDecimal fnorgoffset;// 站点账单回写的冲抵金额
+	private int fnorgoffsetflag;// 订单在站点账单中被冲抵标志位，0：未收款，1：已收款
+	private long fnorgbillid; // 订单站点代收货款账单id
+	private long fnorgfreightbillid; // 订单站点运费账单id
+	private int firstlevelid; // 一级滞留原因id
+	private String city;// 通过百度API匹配的城市
+	private String area;// 通过百度API匹配的城区区域
 
-	private long pickbranchid; //提货站点id
-	private long oxopickstate; //oxo揽件状态  。取值参考 CwbOXOStateEnum枚举类
-	private long oxodeliverystate; //oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
+	private long pickbranchid; // 提货站点id
+	private long oxopickstate; // oxo揽件状态 。取值参考 CwbOXOStateEnum枚举类
+	private long oxodeliverystate; // oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
-	private int branchfeebillexportflag;//加盟商派费账单导出标志
+	private int branchfeebillexportflag;// 加盟商派费账单导出标志
 
-	private long fncustomerpayablebillid; //应付客户账单id
-	private long fncustomerposbillid; //客户pos抵扣账单 id
+	private long fncustomerpayablebillid; // 应付客户账单id
+	private long fncustomerposbillid; // 客户pos抵扣账单 id
 	private long fncustomerbillid; // 应收客户账单id
 
 	private int mpsoptstate;// 一票多件操作状态（multiple package shipment,取值同订单操作状态）
 	private int mpsallarrivedflag;// 一票多件是否到齐（0：未到齐，1：到齐） MPSAllArrivedFlagEnum
 
-	private int ismpsflag; // 是否一票多件：0默认；1是一票多件   注意：这里只描述开启集单模式才起作用
+	private int ismpsflag; // 是否一票多件：0默认；1是一票多件 注意：这里只描述开启集单模式才起作用
 
 	/**
 	 * @return the city
@@ -158,7 +158,8 @@ public class CwbOrder {
 	}
 
 	/**
-	 * @param city the city to set
+	 * @param city
+	 *            the city to set
 	 */
 	public void setCity(String city) {
 		this.city = city;
@@ -172,35 +173,39 @@ public class CwbOrder {
 	}
 
 	/**
-	 * @param area the area to set
+	 * @param area
+	 *            the area to set
 	 */
 	public void setArea(String area) {
 		this.area = area;
 	}
 
 	/**
-	 * @param podfeetoheadtime the podfeetoheadtime to set
+	 * @param podfeetoheadtime
+	 *            the podfeetoheadtime to set
 	 */
 	public void setPodfeetoheadtime(String podfeetoheadtime) {
 		this.podfeetoheadtime = podfeetoheadtime;
 	}
 
 	/**
-	 * @param podfeetoheadchecktime the podfeetoheadchecktime to set
+	 * @param podfeetoheadchecktime
+	 *            the podfeetoheadchecktime to set
 	 */
 	public void setPodfeetoheadchecktime(String podfeetoheadchecktime) {
 		this.podfeetoheadchecktime = podfeetoheadchecktime;
 	}
 
 	/**
-	 * @param deliversubscribeday the deliversubscribeday to set
+	 * @param deliversubscribeday
+	 *            the deliversubscribeday to set
 	 */
 	public void setDeliversubscribeday(String deliversubscribeday) {
 		this.deliversubscribeday = deliversubscribeday;
 	}
 
-	private String changereason; //中转原因
-	private long firstchangereasonid; //一级中转原因
+	private String changereason; // 中转原因
+	private long firstchangereasonid; // 一级中转原因
 
 	public long getFirstchangereasonid() {
 		return this.firstchangereasonid;
@@ -878,7 +883,16 @@ public class CwbOrder {
 	}
 
 	public long getScannum() {
+		// if (!(this.ismpsflag == IsmpsflagEnum.yes.getValue())) {
 		return this.scannum;
+		// } else {
+		// (YpdjHandleRecordDAO)
+		// ApplicationContextUtil.getBean("ypdjHandleRecordDAO");
+		// long scannedNumber = ().getScannedNumber(this.cwb,
+		// this.currentbranchid, this.flowordertype);
+		// return this.sendcarnum - scannedNumber;
+		// }
+
 	}
 
 	public void setScannum(long scannum) {

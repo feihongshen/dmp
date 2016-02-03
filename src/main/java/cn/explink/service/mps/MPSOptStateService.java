@@ -20,6 +20,7 @@ import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
+import cn.explink.enumutil.TransCwbStateEnum;
 
 /**
  *
@@ -27,11 +28,13 @@ import cn.explink.enumutil.MPSAllArrivedFlagEnum;
  * @author songkaojun 2016年1月6日
  */
 @Component
-public class MPSOptStateService extends AbstractMPSService {
+public final class MPSOptStateService extends AbstractMPSService {
 
 	private static final String UPDATE_MPS_STATE = "[更新一票多件状态]";
 
 	private static final String UPDATE_TRANSCWB_INFO = "[更新运单信息]";
+
+	private static final String UPDATE_TRANSCWBSTATE = "[更新运单状态]";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MPSOptStateService.class);
 
@@ -51,8 +54,8 @@ public class MPSOptStateService extends AbstractMPSService {
 	 * @param nextbranchid
 	 *            下一机构信息
 	 */
-	public void updateMPSInfo(String transCwb, FlowOrderTypeEnum transcwboptstate, long currentbranchid, long nextbranchid) {
-		CwbOrder cwbOrder = this.getMPSCwbOrderConsideringMPSSwitchType(transCwb, MPSOptStateService.UPDATE_MPS_STATE);
+	public void updateMPSInfo(String transCwb, FlowOrderTypeEnum transcwboptstate, long previousbranchid, long currentbranchid, long nextbranchid) {
+		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, MPSOptStateService.UPDATE_MPS_STATE);
 		if (cwbOrder == null) {
 			return;
 		}
@@ -61,7 +64,21 @@ public class MPSOptStateService extends AbstractMPSService {
 
 		this.updateCwbOrderNextBranch(cwbOrder, currentbranchid, nextbranchid);
 
-		this.updateTransCwbDetail(transCwb, transcwboptstate, currentbranchid, nextbranchid);
+		this.updateTransCwbDetail(transCwb, transcwboptstate, previousbranchid, currentbranchid, nextbranchid);
+	}
+
+	public void updateTranscwbstate(String transCwb, TransCwbStateEnum transCwbStateEnum) {
+		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, MPSOptStateService.UPDATE_TRANSCWBSTATE);
+		if (cwbOrder == null) {
+			return;
+		}
+		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
+		if (transCwbDetail == null) {
+			MPSOptStateService.LOGGER.debug(MPSOptStateService.UPDATE_TRANSCWBSTATE + "没有查询到运单号" + transCwb + "对应的运单信息！");
+			return;
+		}
+		transCwbDetail.setTranscwbstate(transCwbStateEnum.getValue());
+		this.getTransCwbDetailDAO().updateTransCwbDetail(transCwbDetail);
 	}
 
 	/**
@@ -72,22 +89,24 @@ public class MPSOptStateService extends AbstractMPSService {
 	 * @param currentbranchid
 	 * @param nextbranchid
 	 */
-	public void updateTransCwbDetailInfo(String transCwb, FlowOrderTypeEnum transcwboptstate, long currentbranchid, long nextbranchid) {
-		CwbOrder cwbOrder = this.getMPSCwbOrderConsideringMPSSwitchType(transCwb, MPSOptStateService.UPDATE_TRANSCWB_INFO);
+	public void updateTransCwbDetailInfo(String transCwb, FlowOrderTypeEnum transcwboptstate, long previousbranchid, long currentbranchid, long nextbranchid) {
+		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, MPSOptStateService.UPDATE_TRANSCWB_INFO);
 		if (cwbOrder == null) {
 			return;
 		}
-		this.updateTransCwbDetail(transCwb, transcwboptstate, currentbranchid, nextbranchid);
+		this.updateTransCwbDetail(transCwb, transcwboptstate, previousbranchid, currentbranchid, nextbranchid);
 	}
 
-	private void updateTransCwbDetail(String transCwb, FlowOrderTypeEnum transcwboptstate, long currentbranchid, long nextbranchid) {
+	private void updateTransCwbDetail(String transCwb, FlowOrderTypeEnum transcwboptstate, long previousbranchid, long currentbranchid, long nextbranchid) {
 		// 更新运单操作状态，上一站 下一站
 		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
 		if (transCwbDetail == null) {
 			MPSOptStateService.LOGGER.error(MPSOptStateService.UPDATE_MPS_STATE + "没有查询到运单号" + transCwb + "对应的运单信息！");
 			return;
 		}
-		transCwbDetail.setPreviousbranchid(transCwbDetail.getCurrentbranchid());
+		if (previousbranchid >= 0) {
+			transCwbDetail.setPreviousbranchid(previousbranchid);
+		}
 		if (currentbranchid >= 0) {
 			transCwbDetail.setCurrentbranchid(currentbranchid);
 		}
@@ -95,6 +114,10 @@ public class MPSOptStateService extends AbstractMPSService {
 			transCwbDetail.setNextbranchid(nextbranchid);
 		}
 		transCwbDetail.setTranscwboptstate(transcwboptstate.getValue());
+		// 对于退供货商特殊处理
+		if (transcwboptstate.getValue() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) {
+			transCwbDetail.setTranscwbstate(TransCwbStateEnum.TUIGONGYINGSHANG.getValue());
+		}
 		this.getTransCwbDetailDAO().updateTransCwbDetail(transCwbDetail);
 	}
 
@@ -145,23 +168,31 @@ public class MPSOptStateService extends AbstractMPSService {
 		List<List<Integer>> transCwbOptStateListList = new ArrayList<List<Integer>>();
 
 		int shortestListLength = Integer.MAX_VALUE;
+		int shortestListIndex = 0;
+		int index = 0;
 		for (String key : keySet) {
 			List<Integer> transCwbOptStateList = transCwbMap.get(key);
 			transCwbOptStateListList.add(transCwbOptStateList);
 			if (transCwbOptStateList.size() < shortestListLength) {
 				shortestListLength = transCwbOptStateList.size();
+				shortestListIndex = index;
 			}
+			index++;
 		}
 		// 当前状态
-		Integer currentOptState = transCwbOptStateListList.get(0).get(0);
+		Integer currentOptState = transCwbOptStateListList.get(shortestListIndex).get(0);
 		for (int i = 0; i < shortestListLength; i++) {
-			currentOptState = transCwbOptStateListList.get(0).get(i);
+			currentOptState = transCwbOptStateListList.get(shortestListIndex).get(i);
 			int count = 0;
-			for (int j = 1; j < transCwbOptStateListList.size(); j++) {
+			for (int j = 0; j < transCwbOptStateListList.size(); j++) {
+				if (j == shortestListIndex) {
+					continue;
+				}
 				List<Integer> transCwbOptStateList = transCwbOptStateListList.get(j);
 				for (Integer transCwbOptState : transCwbOptStateList) {
 					if (currentOptState == transCwbOptState) {
 						count++;
+						break;
 					}
 				}
 			}
@@ -172,5 +203,4 @@ public class MPSOptStateService extends AbstractMPSService {
 		}
 		return currentOptState;
 	}
-
 }

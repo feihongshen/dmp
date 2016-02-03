@@ -18,14 +18,14 @@ import cn.explink.enumutil.TransCwbStateEnum;
  * @author songkaojun 2016年1月18日
  */
 @Component
-public class CwbOrderBranchInfoModificationService extends AbstractMPSService {
+public final class CwbOrderBranchInfoModificationService extends AbstractMPSService {
 
 	private static final String UPDATE_BRANCH = "[更新站点信息]";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CwbOrderBranchInfoModificationService.class);
 
 	public void modifyBranchInfo(String transCwb) {
-		CwbOrder cwbOrder = this.getMPSCwbOrder(transCwb, CwbOrderBranchInfoModificationService.UPDATE_BRANCH);
+		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, CwbOrderBranchInfoModificationService.UPDATE_BRANCH);
 		if (cwbOrder == null) {
 			return;
 		}
@@ -39,10 +39,6 @@ public class CwbOrderBranchInfoModificationService extends AbstractMPSService {
 
 		this.getCwbDAO().updateBranchAndCwbstateAndFlowOrderTypeInfo(cwbOrder.getCwb(), transCwbDetail.getPreviousbranchid(), transCwbDetail.getCurrentbranchid(), transCwbDetail.getNextbranchid(),
 				cwbstate, transCwbDetail.getTranscwboptstate());
-		// 如果一票多件所有件都扫描了，则scannum置为0
-		if (cwbOrder.getSendcarnum() == cwbOrder.getScannum()) {
-			this.getCwbDAO().updateScannum(cwbOrder.getCwb(), 0);
-		}
 	}
 
 	/**

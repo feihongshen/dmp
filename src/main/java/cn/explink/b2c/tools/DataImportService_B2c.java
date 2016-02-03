@@ -36,7 +36,7 @@ import cn.explink.util.DateTimeUtil;
 
 @Service
 public class DataImportService_B2c {
-	private Logger logger = LoggerFactory.getLogger(DataImportService.class);
+	private Logger logger = LoggerFactory.getLogger(DataImportService_B2c.class);
 	@Produce(uri = "jms:topic:addressmatch")
 	ProducerTemplate addressmatch;
 	@Autowired

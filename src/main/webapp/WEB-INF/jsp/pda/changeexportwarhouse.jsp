@@ -144,7 +144,7 @@ function addAndRemoval(cwb,tab,isRemoval,branchid){
 	function getcwbsquejiandataForBranchid(nextbranchid) {
 		$.ajax({
 			type : "POST",
-			url : "<%=request.getContextPath()%>/PDA/getOutQueSum",
+			url : "<%=request.getContextPath()%>/PDA/getZhongZhuanOutQueSum",
 			data : {
 				"nextbranchid" : nextbranchid
 			},

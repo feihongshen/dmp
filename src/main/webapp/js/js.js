@@ -202,10 +202,19 @@ function getEditBox(key) {
 		success : function(data) {
 			// alert(data);
 			$("#alert_box", parent.document).html(data);
+			
 		},
 		complete : function() {
 			editInit();// 初始化ajax弹出页面
 			viewBox();
+			//////////////      liumurong
+			if($('#isypdjusetranscwb',parent.document).val() == "0"){
+				//一票多件用运单号如果为否，那么集单为否并且不可修改。
+				$("#ifjidan",parent.document).attr("disabled","disabled");
+				$('#ifjidan',parent.document).val("0");
+			}		
+			// 有其他需求可以参阅 transcwbswitch() 这个方法
+			////////////////////////
 		}
 	});
 }
@@ -7407,6 +7416,25 @@ function changejd(){
 	if($('#ifjidan').val() == "1"){
 	
 		$('#jdType1').parent().show();
+	}
+}
+
+function transcwbswitch(){
+	if($('#isypdjusetranscwb').val() == "0"){
+		//集单开关为否
+		$("#ifjidan").attr("disabled","disabled");
+		$('#ifjidan').val("0");
+		
+		$('#jdType1').parent().hide();
+		$('#jdType1').val("0");
+		$('#jdType2').val("0");		
+		
+	}
+	if($('#isypdjusetranscwb').val() == "1"){
+		$("#ifjidan").removeAttr("disabled");
+		if($('#ifjidan').val() == "1"){	
+			$('#jdType1').parent().show();
+		}
 	}
 }
 

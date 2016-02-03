@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import cn.explink.dao.CwbStateControlDAO;
 import cn.explink.dao.TransCwbStateControlDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.TransCwbDetail;
@@ -26,7 +27,7 @@ import cn.explink.exception.CwbException;
  */
 
 @Component
-public class OrderInterceptService extends AbstractMPSService {
+public final class OrderInterceptService extends AbstractMPSService {
 
 	private static final String ORDER_INTERCEPT = "[订单拦截]";
 
@@ -37,11 +38,14 @@ public class OrderInterceptService extends AbstractMPSService {
 	@Autowired
 	private TransCwbStateControlDAO transCwbStateControlDAO;
 
+	@Autowired
+	private CwbStateControlDAO cwbStateControlDAO;
+
 	static {
 		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.FenZhanLingHuo.getValue());
 		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
-		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());
+		OrderInterceptService.OUT_STATE_SET.add(FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue());
 	}
 
 	/**
@@ -52,26 +56,27 @@ public class OrderInterceptService extends AbstractMPSService {
 	 * @return
 	 */
 	public void checkTransCwbIsIntercept(String transCwb, FlowOrderTypeEnum transcwboptstate) throws CwbException {
-		CwbOrder cwbOrder = this.getMPSCwbOrderConsideringMPSSwitchType(transCwb, OrderInterceptService.ORDER_INTERCEPT);
+		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, OrderInterceptService.ORDER_INTERCEPT);
 		if (cwbOrder == null) {
 			return;
 		}
 		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
 		if (transCwbDetail == null) {
-			OrderInterceptService.LOGGER.error(OrderInterceptService.ORDER_INTERCEPT + "没有查询到运单号为" + transCwb + "的运单！");
+			OrderInterceptService.LOGGER.debug(OrderInterceptService.ORDER_INTERCEPT + "没有查询到运单号为" + transCwb + "的运单！");
 			return;
 		}
+
 		this.validateTransCwbState(transCwbDetail, transcwboptstate);
 
 		int transcwbstate = transCwbDetail.getTranscwbstate();
-		String reason = transCwbDetail.getCommonphrase();
+		String reason = transCwbDetail.getCommonphrase() == null ? "" : transCwbDetail.getCommonphrase();
 		String cwb = cwbOrder.getCwb();
 		// 对于丢失的运单，任何环节都需要给出提示
 		if (transcwbstate == TransCwbStateEnum.DIUSHI.getValue()) {
 			throw new CwbException(cwb, transcwboptstate.getValue(), ExceptionCwbErrorTypeEnum.TRANSORDER_LOST, transCwb, reason);
 		}
 		if (!OrderInterceptService.OUT_STATE_SET.contains(transcwboptstate.getValue())) {
-			OrderInterceptService.LOGGER.info(OrderInterceptService.ORDER_INTERCEPT + "此操作不是【出库】【领货】【中转出库】【退货入库】环节，不需要拦截!");
+			OrderInterceptService.LOGGER.info(OrderInterceptService.ORDER_INTERCEPT + "此操作不是【出库】【到货】【领货】【中转出库】【退货出站】【库对库出库】环节，不需要拦截!");
 			return;
 		}
 		if (transcwbstate == TransCwbStateEnum.DIUSHI.getValue()) {

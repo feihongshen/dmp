@@ -203,7 +203,8 @@ function submitBackIntoWarehouse(pname,scancwb,driverid,comment){
 				type: "POST",
 				url:pname+"/PDA/cwbbackintowarhouse/"+scancwb+"?driverid="+driverid+"&customerid="+$("#customerid").val()+"&checktype=1",
 				data:{
-					"comment":comment
+					"comment":comment,
+					"thzzrkFlag":1
 				},
 				dataType:"json",
 				success : function(data) {
