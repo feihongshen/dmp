@@ -61,6 +61,10 @@ EpaiApi epai=(EpaiApi)request.getAttribute("epaiapi");
 							<%} %>
  						</select> 
 					</li>
+					<li><span>订单获取模式：</span>
+	 						<input type ="radio" id="isPassiveReception1" name ="isPassiveReception" value="1" <%if(epai.getIsPassiveReception()==1){%>checked<%}%>> 主动获取
+	 						<input type ="radio" id="isPassiveReception2" name ="isPassiveReception" value="2" <%if(epai.getIsPassiveReception()==2){%>checked<%}%>> 被动接收
+					</li>
 					<li><span>是否开启(下载)：</span>
 	 						<input type ="radio" id="isopenflag1" name ="isopenflag" value="1" <%if(epai.getIsopenflag()==1){%>checked<%}%>> 开启
 	 						<input type ="radio" id="isopenflag2" name ="isopenflag"  value="0" <%if(epai.getIsopenflag()==0){%>checked<%}%> > 关闭

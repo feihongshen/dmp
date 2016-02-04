@@ -83,8 +83,16 @@ public class AddressCustomerStationMappingController {
 			@RequestParam("executes") String excute_branchid,
 			@RequestParam("checkFlag") String checkFlag) throws Exception {
 		User user = this.getSessionUser();
-		this.addressCustomerStationService.create(customerName, stationName,
-				user, excute_branchid);
+		if (checkFlag.endsWith("0")) {
+			// 校验是否添加相同数据
+			int checkF = this.addressCustomerStationService.checkSame(customerName, stationName);
+			if (checkF == 1) {
+				return "{\"errorCode\":1,\"error\":\"相同的客户、区域已存在该站点，系统将平均分配执行站点，是否继续创建？\"}";
+			} else if (checkF == 2) {
+				return "{\"errorCode\":2,\"error\":\"相同客户存在相同站点，创建失败\"}";
+			}
+		}
+		this.addressCustomerStationService.create(customerName, stationName, user, excute_branchid);
 		return "{\"errorCode\":0,\"error\":\"创建成功\"}";
 	}
 
@@ -108,8 +116,16 @@ public class AddressCustomerStationMappingController {
 			@RequestParam("executes") String excute_branchid,
 			@RequestParam("id") String id) throws Exception {
 		User user = this.getSessionUser();
-		this.addressCustomerStationService.updateById(Long.parseLong(id),
-				branchName, customerName, user, excute_branchid);
+		if (checkFlag.endsWith("0")) {
+			// 校验是否添加相同数据
+			int checkF = this.addressCustomerStationService.checkSame(id, branchName);
+			if (checkF == 1) {
+				return "{\"errorCode\":1,\"error\":\"相同的客户、区域已存在该站点，系统将平均分配执行站点，是否继续修改？\"}";
+			} else if (checkF == 2) {
+				return "{\"errorCode\":0,\"error\":\"相同客户存在相同站点，保存失败\"}";
+			}
+		}
+		this.addressCustomerStationService.updateById(Long.parseLong(id),branchName,customerName,  user, excute_branchid);
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 	}
 

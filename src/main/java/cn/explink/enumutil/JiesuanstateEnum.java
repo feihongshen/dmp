@@ -24,4 +24,19 @@ public enum JiesuanstateEnum {
 		this.value = value;
 		this.text = text;
 	}
+	
+	/**
+	 *  By Comet
+	 * @param value
+	 * @return
+	 */
+	public static JiesuanstateEnum getByValue(long value) {
+		for (JiesuanstateEnum cc : JiesuanstateEnum.values()) {
+			if (value == cc.getValue()) {
+				return cc;
+			}
+		}
+		
+		return null;
+	}
 }

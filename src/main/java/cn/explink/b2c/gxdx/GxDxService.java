@@ -22,6 +22,7 @@ import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
+import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.util.StringUtil;
@@ -105,8 +106,10 @@ public class GxDxService {
 
 			cwb = xmllist.get(0).get("cwb").toString();
 
-			dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(gxdx.getCustomerid()), B2cEnum.GuangXinDianXin.getMethod(), xmllist, gxdx.getExportbranchid(), true);
-
+			List<CwbOrderDTO> cwbdto = dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(gxdx.getCustomerid()), B2cEnum.GuangXinDianXin.getMethod(), xmllist, gxdx.getExportbranchid(), true);
+			if(cwbdto == null){
+				return responseXml(request.getWaybillNo(), request.getLogisticProviderID(), "False", "失败");
+			}
 			logger.info("处理广信电信导入后的订单信息成功,cwb={}", cwb);
 
 			return responseXml(request.getWaybillNo(), request.getLogisticProviderID(), "True", "成功");

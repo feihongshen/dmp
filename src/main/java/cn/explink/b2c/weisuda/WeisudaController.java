@@ -40,10 +40,9 @@ public class WeisudaController {
 
 	@RequestMapping("/edit/{id}")
 	public String edit(@PathVariable("id") int key, Model model) {
-		model.addAttribute("weisudalist", this.weisudaService.getWeisudaSettingMethod(PosEnum.Weisuda.getKey()));
+		model.addAttribute("weisudalist",this.weisudaService.getWeisudaSettingMethod(PosEnum.Weisuda.getKey()));
 		model.addAttribute("joint_num", key);
 		return "jointmanage/weisuda/edit";
-
 	}
 
 	@RequestMapping("/save/{id}")

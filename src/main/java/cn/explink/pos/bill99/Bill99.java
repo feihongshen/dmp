@@ -19,6 +19,17 @@ public class Bill99 {
 	private int isupdateDeliverid; // 是否在刷卡或签收的时候更改派送员
 	private String request_url; // 请求URL
 	private int isopensignflag; // 是否开启签名限制
+	private String resultCustomerid;//拒绝查询的电商
+
+
+
+	public String getResultCustomerid() {
+		return resultCustomerid;
+	}
+
+	public void setResultCustomerid(String resultCustomerid) {
+		this.resultCustomerid = resultCustomerid;
+	}
 
 	public int getIsopensignflag() {
 		return isopensignflag;

@@ -17,6 +17,15 @@ public class Yihaodian {
 	private int isopenywaddressflag; //是否开启药网专用地址下载   0关闭 默认  1开启
 	private String ywexportCwb_URL;
 	private String ywexportSuccess_URL; // 订单数据导出成功后回调URL，告知一号店已经获取成功
+	private String ywUserCode;
+	public String getYwUserCode() {
+		return ywUserCode;
+	}
+
+	public void setYwUserCode(String ywUserCode) {
+		this.ywUserCode = ywUserCode;
+	}
+
 	public String getYwexportSuccess_URL() {
 		return ywexportSuccess_URL;
 	}

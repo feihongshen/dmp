@@ -37,39 +37,39 @@ public class Response_Order {
 	private String returntaxvalue = "";//
 	private String purlevel = "";//
 	private String returntaxflag = "";//
-	private List<Response_PackageDetail> packageDetail = new ArrayList<Response_PackageDetail>();//
+	private Response_PackageDetail packageDetail;//
 	private List<Response_GoodDetail> goodDetail = new ArrayList<Response_GoodDetail>();
 
 	@XmlElement(name = "PurchaseNO")
 	public String getPurchaseNO() {
-		return PurchaseNO;
+		return this.PurchaseNO;
 	}
 
 	public void setPurchaseNO(String purchaseNO) {
-		PurchaseNO = purchaseNO;
+		this.PurchaseNO = purchaseNO;
 	}
 
 	@XmlElement(name = "SendOrderID")
 	public String getSendOrderID() {
-		return SendOrderID;
+		return this.SendOrderID;
 	}
 
 	public void setSendOrderID(String sendOrderID) {
-		SendOrderID = sendOrderID;
+		this.SendOrderID = sendOrderID;
 	}
 
 	@XmlElement(name = "PackageDetail")
-	public List<Response_PackageDetail> getPackageDetail() {
-		return packageDetail;
+	public Response_PackageDetail getPackageDetail() {
+		return this.packageDetail;
 	}
 
-	public void setPackageDetail(List<Response_PackageDetail> packageDetail) {
+	public void setPackageDetail(Response_PackageDetail packageDetail) {
 		this.packageDetail = packageDetail;
 	}
 
 	@XmlElement(name = "GoodDetail")
 	public List<Response_GoodDetail> getGoodDetail() {
-		return goodDetail;
+		return this.goodDetail;
 	}
 
 	public void setGoodDetail(List<Response_GoodDetail> goodDetail) {
@@ -78,16 +78,16 @@ public class Response_Order {
 
 	@XmlElement(name = "OrderID")
 	public String getOrderID() {
-		return OrderID;
+		return this.OrderID;
 	}
 
 	public void setOrderID(String orderID) {
-		OrderID = orderID;
+		this.OrderID = orderID;
 	}
 
 	@XmlElement(name = "OrderType")
 	public String getOrdertype() {
-		return ordertype;
+		return this.ordertype;
 	}
 
 	public void setOrdertype(String ordertype) {
@@ -96,16 +96,16 @@ public class Response_Order {
 
 	@XmlElement(name = "WAREHOUSENAME")
 	public String getWAREHOUSENAME() {
-		return WAREHOUSENAME;
+		return this.WAREHOUSENAME;
 	}
 
 	public void setWAREHOUSENAME(String wAREHOUSENAME) {
-		WAREHOUSENAME = wAREHOUSENAME;
+		this.WAREHOUSENAME = wAREHOUSENAME;
 	}
 
 	@XmlElement(name = "linkMan")
 	public String getLinkman() {
-		return linkman;
+		return this.linkman;
 	}
 
 	public void setLinkman(String linkman) {
@@ -114,7 +114,7 @@ public class Response_Order {
 
 	@XmlElement(name = "TelNO")
 	public String getTelno() {
-		return telno;
+		return this.telno;
 	}
 
 	public void setTelno(String telno) {
@@ -123,7 +123,7 @@ public class Response_Order {
 
 	@XmlElement(name = "HandsetNO")
 	public String getHandsetno() {
-		return handsetno;
+		return this.handsetno;
 	}
 
 	public void setHandsetno(String handsetno) {
@@ -132,7 +132,7 @@ public class Response_Order {
 
 	@XmlElement(name = "Address")
 	public String getAddress() {
-		return address;
+		return this.address;
 	}
 
 	public void setAddress(String address) {
@@ -141,7 +141,7 @@ public class Response_Order {
 
 	@XmlElement(name = "PostalCode")
 	public String getPostalcode() {
-		return postalcode;
+		return this.postalcode;
 	}
 
 	public void setPostalcode(String postalcode) {
@@ -150,7 +150,7 @@ public class Response_Order {
 
 	@XmlElement(name = "ExpCompany")
 	public String getExpcompany() {
-		return expcompany;
+		return this.expcompany;
 	}
 
 	public void setExpcompany(String expcompany) {
@@ -159,7 +159,7 @@ public class Response_Order {
 
 	@XmlElement(name = "Freight")
 	public String getFreight() {
-		return freight;
+		return this.freight;
 	}
 
 	public void setFreight(String freight) {
@@ -168,7 +168,7 @@ public class Response_Order {
 
 	@XmlElement(name = "PackWeight")
 	public String getPackweight() {
-		return packweight;
+		return this.packweight;
 	}
 
 	public void setPackweight(String packweight) {
@@ -177,7 +177,7 @@ public class Response_Order {
 
 	@XmlElement(name = "TaxFlag")
 	public String getTaxflag() {
-		return taxflag;
+		return this.taxflag;
 	}
 
 	public void setTaxflag(String taxflag) {
@@ -186,7 +186,7 @@ public class Response_Order {
 
 	@XmlElement(name = "TaxType")
 	public String getTaxtype() {
-		return taxtype;
+		return this.taxtype;
 	}
 
 	public void setTaxtype(String taxtype) {
@@ -195,7 +195,7 @@ public class Response_Order {
 
 	@XmlElement(name = "ValuableFlag")
 	public String getValuableflag() {
-		return valuableflag;
+		return this.valuableflag;
 	}
 
 	public void setValuableflag(String valuableflag) {
@@ -204,16 +204,16 @@ public class Response_Order {
 
 	@XmlElement(name = "StockoutDate")
 	public String getStockoutdate() {
-		return stockoutdate;
+		return this.stockoutdate;
 	}
 
 	public void setStockoutdate(String stockoutdate) {
 		this.stockoutdate = stockoutdate;
 	}
 
-	@XmlElement(name = "OrderTemark")
+	@XmlElement(name = "OrderRemark")
 	public String getOrderTemark() {
-		return orderTemark;
+		return this.orderTemark;
 	}
 
 	public void setOrderTemark(String orderTemark) {
@@ -222,7 +222,7 @@ public class Response_Order {
 
 	@XmlElement(name = "Boxes")
 	public String getBoxes() {
-		return boxes;
+		return this.boxes;
 	}
 
 	public void setBoxes(String boxes) {
@@ -231,7 +231,7 @@ public class Response_Order {
 
 	@XmlElement(name = "OrderValue")
 	public String getOrdervalue() {
-		return ordervalue;
+		return this.ordervalue;
 	}
 
 	public void setOrdervalue(String ordervalue) {
@@ -240,7 +240,7 @@ public class Response_Order {
 
 	@XmlElement(name = "GetValue")
 	public String getGetvalue() {
-		return getvalue;
+		return this.getvalue;
 	}
 
 	public void setGetvalue(String getvalue) {
@@ -249,7 +249,7 @@ public class Response_Order {
 
 	@XmlElement(name = "PayType")
 	public String getPaytype() {
-		return paytype;
+		return this.paytype;
 	}
 
 	public void setPaytype(String paytype) {
@@ -258,7 +258,7 @@ public class Response_Order {
 
 	@XmlElement(name = "FreshFlag")
 	public String getFreshflag() {
-		return freshflag;
+		return this.freshflag;
 	}
 
 	public void setFreshflag(String freshflag) {
@@ -267,7 +267,7 @@ public class Response_Order {
 
 	@XmlElement(name = "SendTime")
 	public String getSendtime() {
-		return sendtime;
+		return this.sendtime;
 	}
 
 	public void setSendtime(String sendtime) {
@@ -276,7 +276,7 @@ public class Response_Order {
 
 	@XmlElement(name = "ProvinceName")
 	public String getProvincename() {
-		return provincename;
+		return this.provincename;
 	}
 
 	public void setProvincename(String provincename) {
@@ -285,7 +285,7 @@ public class Response_Order {
 
 	@XmlElement(name = "CityName")
 	public String getCityname() {
-		return cityname;
+		return this.cityname;
 	}
 
 	public void setCityname(String cityname) {
@@ -294,7 +294,7 @@ public class Response_Order {
 
 	@XmlElement(name = "AreaName")
 	public String getAreaname() {
-		return areaname;
+		return this.areaname;
 	}
 
 	public void setAreaname(String areaname) {
@@ -303,7 +303,7 @@ public class Response_Order {
 
 	@XmlElement(name = "OrderStatus")
 	public String getOrderstatus() {
-		return orderstatus;
+		return this.orderstatus;
 	}
 
 	public void setOrderstatus(String orderstatus) {
@@ -312,7 +312,7 @@ public class Response_Order {
 
 	@XmlElement(name = "ReturnTaxValue")
 	public String getReturntaxvalue() {
-		return returntaxvalue;
+		return this.returntaxvalue;
 	}
 
 	public void setReturntaxvalue(String returntaxvalue) {
@@ -321,7 +321,7 @@ public class Response_Order {
 
 	@XmlElement(name = "PurLevel")
 	public String getPurlevel() {
-		return purlevel;
+		return this.purlevel;
 	}
 
 	public void setPurlevel(String purlevel) {
@@ -330,7 +330,7 @@ public class Response_Order {
 
 	@XmlElement(name = "ReturnTaxFlag")
 	public String getReturntaxflag() {
-		return returntaxflag;
+		return this.returntaxflag;
 	}
 
 	public void setReturntaxflag(String returntaxflag) {

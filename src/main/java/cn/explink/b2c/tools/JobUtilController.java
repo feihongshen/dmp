@@ -56,6 +56,7 @@ import cn.explink.b2c.yixun.YiXunInsertCwbDetailTimmer;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.JobCodeEnum;
+import cn.explink.service.FlowExpService;
 import cn.explink.service.LogToDayByTuihuoService;
 import cn.explink.service.LogToDayByWarehouseService;
 import cn.explink.service.LogToDayService;
@@ -147,6 +148,9 @@ public class JobUtilController {
 	LogToDayByWarehouseService logToDayByWarehouseService;
 	@Autowired
 	AcquisitionOrderService acquisitionOrderService;
+	@Autowired
+	FlowExpService flowExpService;
+	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		threadMap = new HashMap<String, Integer>();
@@ -1308,4 +1312,18 @@ public class JobUtilController {
 		this.logger.info("执行了获取vipshop_OXO订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
+	@RequestMapping("/sendflowexp")
+	public void setFlowExp() {
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.flowExpService.sendFlowExp();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行sendFlow定时器异常", e);
+		} 
+
+		this.logger.info("执行sendFlow定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
 }

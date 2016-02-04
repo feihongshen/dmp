@@ -15,52 +15,56 @@ import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 
+
 @Controller
 @RequestMapping("/wanxiang")
 public class WanxiangController {
-	private Logger logger = LoggerFactory.getLogger(WanxiangController.class);
+	private Logger logger =LoggerFactory.getLogger(WanxiangController.class);
 	@Autowired
 	WanxiangService liantongService;
-
+	
 	@Autowired
-	BranchDAO branchDAO;
+	BranchDAO branchDAO; 
 	@Autowired
 	JointService jointService;
-
+	
 	@RequestMapping("/show/{id}")
-	public String jointShow(@PathVariable("id") int key, Model model) {
+	public String  jointShow(@PathVariable("id") int key ,Model model){
 		String editJsp = "";
-		for (B2cEnum fote : B2cEnum.values()) {
-			if (fote.getKey() == key) {
+		for (B2cEnum fote :B2cEnum.values()) {
+			if(fote.getKey()==key){
 				editJsp = fote.getMethod();
-				break;
+			     break;
 			}
 		}
 		model.addAttribute("wanxiangObject", liantongService.getLianTong(key));
 		model.addAttribute("joint_num", key);
 		return "b2cdj/wanxiang";
-
+	
 	}
-
 	@RequestMapping("/save/{id}")
-	public @ResponseBody String dangdangSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
-
-		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-
+	public @ResponseBody  String dangdangSave(Model model,@PathVariable("id") int key ,HttpServletRequest request){
+		
+		if(request.getParameter("password")!= null && "explink".equals(request.getParameter("password"))){
+			
 			liantongService.edit(request, key);
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
-		} else {
+		}else{
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}
-		// 保存
-
+		//保存
+		
 	}
-
 	@RequestMapping("/del/{state}/{id}")
-	public @ResponseBody String updateState(Model model, @PathVariable("id") int key, @PathVariable("state") int state) {
+	public @ResponseBody  String updateState(Model model,@PathVariable("id") int key ,@PathVariable("state") int state ){
 		liantongService.update(key, state);
-		// 保存
+		//保存
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
+	
+	
+			
 
+	
+	
 }

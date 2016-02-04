@@ -153,7 +153,12 @@ public class VipshopInsertCwbDetailTimmer {
 			user.setBranchid(warehouseid);
 			EmailDate ed = null;
 			if (vipshop.getIsTuoYunDanFlag() == 0) {
-				ed = dataImportService.getOrCreateEmailDate(cwbOrder.getCustomerid(), 0, warehouseid);
+				
+				if(vipshop.getIsCreateTimeToEmaildateFlag()==1){
+					ed = dataImportService.getEmailDate_B2CByEmaildate(Integer.valueOf(customerid), 0, warehouseid, cwbOrder.getEmaildate());
+				}else{
+					ed = dataImportService.getOrCreateEmailDate(cwbOrder.getCustomerid(), 0, warehouseid);
+				}
 
 			} else {
 				ed = dataImportService.getEmailDate_B2CByEmaildate(cwbOrder.getCustomerid(), cwbOrder.getCustomerwarehouseid(), warehouseid, cwbOrder.getEmaildate());

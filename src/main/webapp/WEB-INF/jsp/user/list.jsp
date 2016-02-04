@@ -1,4 +1,5 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Branch,cn.explink.domain.Role,cn.explink.util.Page"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<User> userList = (List<User>)request.getAttribute("userList");
@@ -103,32 +104,43 @@ $(function(){
 	<div class="inputselect_box">
 	<span><input name="" type="button" value="创建用户" class="input_button1"  id="add_button"  />
 	</span>
-	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
-		所属机构：<select name="branchid" class="select1">
-				 	<option value="-1">全部</option>
-				 	<%if(brancheEffectList!=null&&brancheEffectList.size()>0){
-				 		for(Branch b:brancheEffectList){
-				 			%>
-				 			<option value="<%=b.getBranchid()%>" <%if(branchid==b.getBranchid()){%>selected <%} %>><%=b.getBranchname() %></option>
-				 		<%}
-				 	} %>
-				 	
-				 </select>
-		角    色：<select name="roleid" class="select1">
-				 	<option value="-1">全部</option>
-				 	<%if(roleList!=null&&roleList.size()>0){
-				 		for(Role r:roleList){
-				 			%>
-				 			<option value="<%=r.getRoleid()%>" <%if(roleid==r.getRoleid()){%>selected <%} %>><%=r.getRolename() %></option>
-				 		<%}
-				 	} %>
-				 	
-				 </select>	 
-		用户登录名：<input  class="input_text1" value="<%=request.getParameter("username")==null?"":request.getParameter("username") %>" name="username"/>
-		姓    名：<input   class="input_text1" value="<%=request.getParameter("realname")==null?"":request.getParameter("realname") %>" name="realname"/>
-		<input type="submit" onclick="$('#searchForm').attr('action',1);return true;" id="find" value="查询" class="input_button2" />
-		<input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
-	</form>
+ <table>
+	<tr>
+		<td>
+			<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
+				所属机构：<select name="branchid" class="select1">
+						 	<option value="-1">全部</option>
+						 	<%if(brancheEffectList!=null&&brancheEffectList.size()>0){
+						 		for(Branch b:brancheEffectList){
+						 			%>
+						 			<option value="<%=b.getBranchid()%>" <%if(branchid==b.getBranchid()){%>selected <%} %>><%=b.getBranchname() %></option>
+						 		<%}
+						 	} %>
+						 	
+						 </select>
+				角    色：<select name="roleid" class="select1">
+						 	<option value="-1">全部</option>
+						 	<%if(roleList!=null&&roleList.size()>0){
+						 		for(Role r:roleList){
+						 			%>
+						 			<option value="<%=r.getRoleid()%>" <%if(roleid==r.getRoleid()){%>selected <%} %>><%=r.getRolename() %></option>
+						 		<%}
+						 	} %>
+						 	
+						 </select>	 
+				用户登录名：<input  class="input_text1" value="<%=request.getParameter("username")==null?"":request.getParameter("username") %>" name="username"/>
+				姓    名：<input   class="input_text1" value="<%=request.getParameter("realname")==null?"":request.getParameter("realname") %>" name="realname"/>
+				<input type="submit" onclick="$('#searchForm').attr('action',1);return true;" id="find" value="查询" class="input_button2" />
+				<input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
+			</form>
+		</td>
+			<c:if test="${flag == true }">
+			<td>
+				<input style="margin-left: 10%;"  class="input_button2" onclick="exportUserInfoExcle()" id="exInfo" value="导出" align="right"/>
+			</td>	
+		</c:if>
+	</tr>
+ </table>
 	</div>
 	<div class="right_title">
 	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
@@ -164,6 +176,14 @@ $(function(){
 		</tr>
 		<%} %>
 	</table>
+	
+	<form action="<%=request.getContextPath()%>/user/exportuserinfo" id="UserExport">		
+		<input type="hidden" value="<%=request.getParameter("branchid") == null ? "-1" : request.getParameter("branchid") %>" name="branchid"/>
+		<input type="hidden" value="<%=request.getParameter("roleid") == null ? "-1" : request.getParameter("roleid") %>" name="roleid"/>
+		<input type="hidden" value="<%=request.getParameter("username") == null ? "" : request.getParameter("username") %>" name="username"/>
+		<input type="hidden" value="<%=request.getParameter("realname") == null ? "" : request.getParameter("realname")%>" name="realname"/>
+	</form>
+
 	<div class="jg_10"></div><div class="jg_10"></div>
 	</div>
 	<%if(page_obj.getMaxpage()>1){ %>
@@ -197,6 +217,16 @@ $(function(){
 	<div class="clear"></div>
 
 <script type="text/javascript">
+
+function exportUserInfoExcle(){
+	if(<%=userList != null && userList.size() > 0 %>){
+	 	$("#exInfo").val("请稍后……");
+	 	$("#UserExport").submit();
+	}else{
+		alert("没有做查询操作，不能导出！");
+	};
+	
+}	
 $("#selectPg").val(<%=request.getAttribute("page") %>);
 </script>
 <!-- 创建订单类型的ajax地址 -->

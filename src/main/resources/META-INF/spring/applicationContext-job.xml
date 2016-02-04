@@ -93,6 +93,12 @@
 				<ref bean="doTime_sendPunishInsideAutoShenheTask" />
 				<ref bean="doTime_orderLifecycleReport" />
 				<ref bean="doTime_guangxindianxin" />
+				<ref bean="doTime_huanqiugouwu" />		
+				<ref bean="doTime_zhemeng" />			 
+				<ref bean="doTime_suning"/>
+				<ref bean="doTime_yonghui" />
+				<ref bean="doTime_pinhaohuo" />
+				<ref bean="doTime_sendFlow" />
 				<ref bean="doTime_expressPreOrder" />
 				<ref bean="doTime_expressTransOrder" />
 				<ref bean="doTime_createBackTimeLog"/>
@@ -1039,7 +1045,79 @@
 			<value>getGuangXinDianXin</value>
 		</property>
 	</bean>
-
+	 <!-- 飞牛网定时任务临时表主表 --> 
+     <bean id="doTime_feiniuwang" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getFeiNiuWang" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+     
+     <bean id="getFeiNiuWang" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getFeiNiuWang_Task</value>
+         </property>
+     </bean>
+     
+      <!-- 环球购物 -->
+      <bean id="doTime_huanqiugouwu" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getHuanqiugouwu" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+     
+     <bean id="getHuanqiugouwu" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getHuanQiuGouWu_Task</value>
+         </property>
+     </bean>
+     
+     <bean id="doTime_yonghui" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getYonghui" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="getYonghui" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+         <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getYongHui_Task</value>
+         </property>
+     </bean>  
+     
+     <bean id="doTime_suning" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="suning" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+      <bean id="suning" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      	<property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getSuNing_Task</value>
+         </property>
+     </bean>
+     
 	<!-- 订单生命周期报表生成任务 开始 -->
 	<bean id="doTime_orderLifecycleReport" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">

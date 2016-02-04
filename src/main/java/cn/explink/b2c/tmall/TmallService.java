@@ -474,6 +474,12 @@ public class TmallService {
 		if (order_flag.contains("9")) {
 			customercommand += "上门";
 		}
+		if (order_flag.contains("34")) {
+			customercommand += "常温";
+		}
+		if (order_flag.contains("35")) {
+			customercommand += "冷链";
+		}
 		return customercommand;
 	}
 

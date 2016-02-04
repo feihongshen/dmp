@@ -95,6 +95,16 @@ public class VipShopController {
 
 	}
 	
+	
+	@RequestMapping("/download")
+	public @ResponseBody String download(HttpServletRequest request, HttpServletResponse response) {
+
+		this.vipShopService.excuteGetOrdersByVipshopSigle();
+
+		return "单次手动请求下载成功";
+
+	}
+	
 	@RequestMapping("/lanjie/{cwb}")
 	public @ResponseBody String lanjie(HttpServletRequest request, @PathVariable("cwb") String  cwb) {
 

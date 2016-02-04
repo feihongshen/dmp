@@ -68,6 +68,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	private static final String IS_CUSTOMER_STATION_MAPPING_ENABLED = "is_customer_station_mapping_enabled";
 
+	private static final String ENABLED = "1";
 	private static final String DISABLED = "0";
 
 	private static final String BRANCHEFFECT = "1";
@@ -264,7 +265,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 							}
 						}
 					} catch (Exception e) {
-						this.logger.error("error while doing address match for {}", cwb);
+						this.logger.error("error while doing address match for " + cwb, e);
 					}
 
 				} else {
@@ -289,7 +290,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			}
 		} catch (Exception e) {
 			// e.printStackTrace();
-			this.logger.error("error while doing address match for {}", cwb);
+			this.logger.error("error while doing address match for "+cwb,e );
 		}
 	}
 
@@ -484,6 +485,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	 *
 	 * @param itemno
 	 * @param Address
+	 * @param printflag 0 打印站点名称   1打印编码
 	 * @return
 	 */
 	public JSONObject matchAddressByInterface(String itemno, String Address, int printflag) {
@@ -700,7 +702,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.logger.error("error while doing address match for {}", cwb);
+			this.logger.error("error while doing address match for "+cwb,e);
 		}
 	}
 
@@ -721,6 +723,9 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		}
 		if (parameters.keySet().contains("addressMatch.consumerCount")) {
 			this.addressMatchConsumerCount = this.systemInstallService.getParameter("addressMatch.consumerCount");
+		}
+		if (parameters.keySet().contains("requestFEIYUANaddress")) {
+			this.value = this.systemInstallService.getParameter("requestFEIYUANaddress");
 		}
 
 	}

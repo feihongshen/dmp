@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.explink.b2c.happyGo.FunctionForHappy;
+import cn.explink.b2c.happyGo.HappyGo;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
@@ -52,6 +54,7 @@ public class YihaodianService {
 	public void edit(HttpServletRequest request, int joint_num) {
 		Yihaodian yihaodian = new Yihaodian();
 		yihaodian.setUserCode(request.getParameter("userCode"));
+		yihaodian.setYwUserCode(request.getParameter("ywUserCode"));
 		yihaodian.setExportCwb_pageSize(Integer.parseInt(request.getParameter("exportCwb_pageSize")));
 		yihaodian.setExportCwb_URL(request.getParameter("exportCwb_URL"));
 		yihaodian.setDeliveryResult_URL(request.getParameter("deliveryResult_URL"));
@@ -164,21 +167,21 @@ public class YihaodianService {
 			return -1;
 		}
 		int loopcount = yihaodian.getLoopcount() == 0 ? 5 : yihaodian.getLoopcount();
-		calcCount = this.downloadByUrl(yihaodian, yhd_key, calcCount, loopcount, yihaodian.getExportCwb_URL(), yihaodian.getExportSuccess_URL(), 0); // 老地址下载
-		if (yihaodian.getIsopenywaddressflag() == 1) {
-			calcCount = this.downloadByUrl(yihaodian, yhd_key, calcCount, loopcount, yihaodian.getYwexportCwb_URL(), yihaodian.getExportSuccess_URL(), 1); // 新地址下载
+		calcCount = downloadByUrl(yihaodian,yhd_key, calcCount, loopcount,yihaodian.getExportCwb_URL(),yihaodian.getExportSuccess_URL(),0,yihaodian.getUserCode()); //老地址下载
+		if(yihaodian.getIsopenywaddressflag()==1){
+			calcCount = downloadByUrl(yihaodian,yhd_key, calcCount, loopcount,yihaodian.getYwexportCwb_URL(),yihaodian.getYwexportSuccess_URL(),1,yihaodian.getYwUserCode()); //新地址下载
 		}
 		this.yihaodianTimmer.selectTempAndInsertToCwbDetail(yhd_key); // 临时表数据插入到detail中
 
 		return calcCount;
 	}
 
-	private long downloadByUrl(Yihaodian yihaodian, int yhd_key, long calcCount, int loopcount, String url, String callUrl, int urlFlag) {
+	private long downloadByUrl(Yihaodian yihaodian ,int yhd_key, long calcCount, int loopcount,String url,String callUrl,int urlFlag,String userCode) {
 		for (int i = 0; i < loopcount; i++) {
-			calcCount += this.yihaodian_Master.getYihaodian_DownloadCwb().DownLoadCwbDetailByYiHaoDian(yhd_key, i + 1, url, urlFlag); // 订单数据下载接口
-
-			String customerid = this.getMatchCustomerId(yihaodian, yhd_key, url, urlFlag, i);
-			this.yihaodian_Master.getYihaodian_ExportCallBack().ExportCallBackByYiHaoDian(yhd_key, i + 1, callUrl, customerid); // 下载成功回传接口
+			calcCount += yihaodian_Master.getYihaodian_DownloadCwb().DownLoadCwbDetailByYiHaoDian(yhd_key, i + 1,url,urlFlag,userCode); // 订单数据下载接口
+			
+			String customerid = getMatchCustomerId(yihaodian, yhd_key, url,urlFlag, i);
+			yihaodian_Master.getYihaodian_ExportCallBack().ExportCallBackByYiHaoDian(yhd_key, i + 1,callUrl,customerid,userCode); // 下载成功回传接口
 		}
 		return calcCount;
 	}
@@ -191,7 +194,6 @@ public class YihaodianService {
 			} else {
 				customerid = yihaodian.getYwcustomerid();
 			}
-			this.yihaodian_Master.getYihaodian_ExportCallBack().ExportCallBackByYiHaoDian(yhd_key, i + 1, url, customerid); // 下载成功回传接口
 		} else {
 			customerid = yihaodian.getCustomerids() + "," + yihaodian.getYwcustomerid();
 		}

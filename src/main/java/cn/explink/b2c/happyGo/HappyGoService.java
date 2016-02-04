@@ -747,7 +747,7 @@ public class HappyGoService {
 			hcon.setRequestProperty("Content-type", "text/html");
 			hcon.setRequestProperty("Content-length", String.valueOf(-1));
 			hcon.setRequestProperty("HTTP-Version", "HTTP/1.0");
-			hcon.setConnectTimeout(1000);
+			hcon.setConnectTimeout(10000);
 			hcon.setReadTimeout(6000);
 			hcon.setUseCaches(false);
 			hcon.setDefaultUseCaches(false);

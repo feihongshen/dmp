@@ -32,6 +32,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ExportmouldDAO;
+import cn.explink.dao.OrgBillDetailDao;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.ZhiFuApplyDao;
@@ -47,6 +48,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
+import cn.explink.enumutil.BillStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
@@ -107,7 +109,8 @@ public class ApplyEditDeliverystateController {
 	ExportService exportService;
 	@Autowired
 	FnDfAdjustmentRecordService fnDfAdjustmentRecordService;
-	
+	@Autowired
+	OrgBillDetailDao orgBillDetailDao;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -801,6 +804,26 @@ public class ApplyEditDeliverystateController {
 						continue;
 					}
 				}
+				
+				//add by 王志宇 -----限制已关闭的账单下的订单不允许修改
+				if(corder!=null){
+					//代收货款账单
+					if(corder.getFnorgbillid()!=0){
+						Map<String,Object> map = orgBillDetailDao.getByid(corder.getFnorgbillid());
+						if(Long.parseLong(map.get("status").toString())==BillStateEnum.Closed.getValue()){
+							errorCwbs.append("该订单"+cwbStr+"对应的账单"+map.get("bill_no").toString()+"为已关闭状态，故该单不能修改！");
+							continue;
+						}
+					//运费账单
+					}else if(corder.getFnorgfreightbillid()!=0){
+						Map<String,Object> map = orgBillDetailDao.getByid(corder.getFnorgfreightbillid());
+						if(Long.parseLong(map.get("status").toString())==BillStateEnum.Closed.getValue()){
+							errorCwbs.append("该订单"+cwbStr+"对应的账单"+map.get("bill_no").toString()+"为已关闭状态，故该单不能修改！");
+							continue;
+						}
+					}
+				}
+
 				if (corder == null) {
 					errorCwbs.append(cwbStr + ":无此单号!");
 					continue;
@@ -922,6 +945,58 @@ public class ApplyEditDeliverystateController {
 	 * return "{\"errorCode\":0,\"error\":\"再次提交申请\"}"; }
 	 */
 
+	/*@RequestMapping("/toCreateApplyEditDeliverystateAgin")
+	public @ResponseBody String toCreateApplyEditDeliverystateAgin(Model model,
+			//处理在修改时应该
+			@RequestParam(value="cwbss",defaultValue = "", required = false) String cwbss,
+			@RequestParam(value = "editnowdeliverystate", defaultValue = "0", required = false) long editnowdeliverystate,
+			@RequestParam(value = "editreason", defaultValue = "", required = false) String editreason
+			
+			) {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String nowtime = df.format(date);
+			StringBuffer errorCwbs = new StringBuffer();
+
+				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
+				DeliveryState deliverystate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbss);
+				if (deliverystate == null || deliverystate.getDeliverystate() == 0) {
+					errorCwbs.append(cwbss + ":未反馈的订单不能申请修改反馈状态！");
+				} else if (deliverystate != null && deliverystate.getPayupid() == 0 && deliverystate.getIssendcustomer() == 0) {
+					CwbOrder co = cwbDAO.getCwbByCwbLock(cwbss);
+					List<ApplyEditDeliverystate> aedsLists = applyEditDeliverystateDAO.getAppliedEditDeliverystateByCwb(cwbss);
+					DeliveryState ds = deliveryStateDAO.getDeliveryByCwb(cwbss);
+					ApplyEditDeliverystate aeds = new ApplyEditDeliverystate();
+					if(co!=null&&aedsLists!=null&&!"".equals(cwbss)){//如果订单已经被修改过则直接添加字段插入表中(实现多次存储已修改数据)
+						aeds.setCwb(cwbss);
+						aeds.setOpscwbid(co.getOpscwbid());
+						aeds.setDeliverystateid(ds.getId());
+						aeds.setCwbordertypeid(co.getCwbordertypeid());
+						aeds.setNowdeliverystate(ds.getDeliverystate());
+						aeds.setNopos(ds.getCash().add(ds.getCheckfee()).add(ds.getOtherfee()));
+						aeds.setPos(ds.getPos());
+						aeds.setDeliverid(ds.getDeliveryid());
+						aeds.setCwbstate(co.getCwbstate());
+						aeds.setApplyuserid(getSessionUser().getUserid());
+						aeds.setApplybranchid(getSessionUser().getBranchid());
+						aeds.setApplytime(nowtime);
+						aeds.setShenhestate(1);
+						aeds.setEditreason(editreason);
+						aeds.setState(1);
+						applyEditDeliverystateDAO.creApplyEditDeliverystateNew(aeds);
+					}
+						
+				} else {
+					if (deliverystate.getPayupid() > 0) {
+						errorCwbs.append(cwbss + ":已上交款不能申请修改反馈状态！");
+					} else {
+						errorCwbs.append(cwbss + ":状态已推送给电商不能申请修改反馈状态！");
+					}
+				}
+			
+		return "{\"errorCode\":0,\"error\":\"再次提交申请\"}";
+	}*/
+	
 	/**
 	 * 提交申请的每个订单的修改后的配送结果和原因
 	 *

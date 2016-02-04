@@ -28,34 +28,37 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>物流公司id标识：</span>
 							<input type ="text" id="userCode" name ="userCode" value="<%=yihaodian.getUserCode() %>"  maxlength="300">
 						</li>
-						<li><span>导出订单数据URL：</span>
+						<li><span>药网id标识：</span>
+							<input type ="text" id="ywUserCode" name ="ywUserCode" value="<%=yihaodian.getYwUserCode() %>"  maxlength="300">
+						</li>
+						<li><span>导出数据URL：</span>
 	 						<input type ="text" id="exportCwb_URL" name ="exportCwb_URL" maxlength="300"   value="<%=yihaodian.getExportCwb_URL()%>"   > 
 						</li>
-						<li><span>每次获取数量：</span>
+						<li><span>获取数量：</span>
 	 						<input type ="text" id="exportCwb_pageSize" name ="exportCwb_pageSize" maxlength="300"  size="15"  value="<%=yihaodian.getExportCwb_pageSize()%>"  > 
 						</li>
-						<li><span>每次下载次数：</span>
+						<li><span>下载次数：</span>
 	 						<input type ="text" id="loopcount" name ="loopcount" maxlength="300"  size="15"  value="<%=yihaodian.getLoopcount()%>"  > 
 						</li>
-						<li><span>导出数据回调URL：</span>
+						<li><span>导出回调URL：</span>
 	 						<input type ="text" id="exportSuccess_URL" name ="exportSuccess_URL"  maxlength="300"  value="<%=yihaodian.getExportSuccess_URL() %>"  > 
 						</li>
-						<li><span>每次回调订单数量：</span>
+						<li><span>回调订单数量：</span>
 	 						<input type ="text" id="callBackCount" name ="callBackCount" maxlength="300"  size="15"  value="<%=yihaodian.getCallBackCount()%>"  > 
 						</li>
-						<li><span>配送结果反馈URL：</span>
+						<li><span>配送结果URL：</span>
 	 						<input type ="text" id="deliveryResult_URL" name ="deliveryResult_URL"  maxlength="300"  value="<%=yihaodian.getDeliveryResult_URL() %>"  > 
 						</li>
-						<li><span>支付信息修改URL：</span>
+						<li><span>支付修改URL：</span>
 	 						<input type ="text" id="updatePayResult_URL" name ="updatePayResult_URL"  maxlength="300"  value="<%=yihaodian.getUpdatePayResult_URL() %>"  > 
 						</li>
-						<li><span>跟踪日志反馈URL：</span>
+						<li><span>跟踪反馈URL：</span>
 	 						<input type ="text" id="trackLog_URL" name ="trackLog_URL"  maxlength="300"  value="<%=yihaodian.getTrackLog_URL()%>"    > 
 						</li>
 						<li><span>私钥信息：</span>
 	 						<input type ="text" id="private_key" name ="private_key"  maxlength="300"  value="<%=yihaodian.getPrivate_key()%>"  > 
 						</li>
-						<li><span>在配送公司中id：</span>
+						<li><span>配送公司id：</span>
 	 						<input type ="text" id="customerids" name ="customerids"  maxlength="300"  value="<%=yihaodian.getCustomerids()%>"  size="15" > 
 						</li>
 						<li><span>药网customerid：</span>
@@ -69,16 +72,16 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	 						<input type="radio" name="isopenywaddressflag" value="1" <%if(yihaodian.getIsopenywaddressflag()==1){%>checked<%}%>/> 开启
 	 						<input type="radio" name="isopenywaddressflag" value="0"  <%if(yihaodian.getIsopenywaddressflag()==0){%>checked<%}%> /> 关闭
 						</li>
-						<li><span>药网导出订单URL：</span>
+						<li><span>药网导出URL：</span>
 	 						<input type ="text" id="ywexportCwb_URL" name ="ywexportCwb_URL" maxlength="300"   value="<%=yihaodian.getYwexportCwb_URL()%>"   > 
 						</li>
-							<li><span>药网导出回调URL：</span>
+							<li><span>药网回调URL：</span>
 	 						<input type ="text" id="ywexportSuccess_URL" name ="ywexportSuccess_URL"  maxlength="300"  value="<%=yihaodian.getYwexportSuccess_URL() %>"  > 
 						</li>
-						<li><span>药网配送反馈URL：</span>
+						<li><span>药网配送URL：</span>
 	 						<input type ="text" id="ywdeliveryResult_URL" name ="ywdeliveryResult_URL"  maxlength="300"  value="<%=yihaodian.getYwdeliveryResult_URL() %>"  > 
 						</li>
-						<li><span>药网跟踪反馈URL：</span>
+						<li><span>药网跟踪URL：</span>
 	 						<input type ="text" id="ywtrackLog_URL" name ="ywtrackLog_URL"  maxlength="300"  value="<%=yihaodian.getYwtrackLog_URL()%>"    > 
 						</li>
 						
@@ -101,28 +104,31 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>物流公司id标识：</span>
 							<input type ="text" id="userCode" name ="userCode" value=""  maxlength="300">
 						</li>
-						<li><span>导出订单数据URL：</span>
+						<li><span>药网id标识：</span>
+							<input type ="text" id="ywUserCode" name ="ywUserCode" value=""  maxlength="300">
+						</li>
+						<li><span>导出数据URL：</span>
 	 						<input type ="text" id="exportCwb_URL" name ="exportCwb_URL" maxlength="300"  value=""   > 
 						</li>
-						<li><span>每次获取数量：</span>
+						<li><span>获取数量：</span>
 	 						<input type ="text" id="exportCwb_pageSize" name ="exportCwb_pageSize" size="15"  maxlength="300"   value=""  > 
 						</li>
-						<li><span>每次下载次数：</span>
+						<li><span>下载次数：</span>
 	 						<input type ="text" id="loopcount" name ="loopcount" maxlength="300"  size="15"  value=""  > 
 						</li>
-						<li><span>导出数据回调URL：</span>
+						<li><span>导出回调URL：</span>
 	 						<input type ="text" id="exportSuccess_URL" name ="exportSuccess_URL"  maxlength="300"  value=""  > 
 						</li>
-						<li><span>每次回调订单数量：</span>
+						<li><span>回调订单数量：</span>
 	 						<input type ="text" id="callBackCount" name ="callBackCount" maxlength="300"  size="15"  value=""  > 
 						</li>
-						<li><span>配送结果反馈URL：</span>
+						<li><span>配送反馈URL：</span>
 	 						<input type ="text" id="deliveryResult_URL" name ="deliveryResult_URL"  maxlength="300"  value=""  > 
 						</li>
-						<li><span>支付信息修改URL：</span>
+						<li><span>支付修改URL：</span>
 	 						<input type ="text" id="updatePayResult_URL" name ="updatePayResult_URL"  maxlength="300"  value=""  > 
 						</li>
-						<li><span>跟踪日志反馈URL：</span>
+						<li><span>跟踪反馈URL：</span>
 	 						<input type ="text" id="trackLog_URL" name ="trackLog_URL"  maxlength="300"  value=""    > 
 						</li>
 						<li><span>私钥信息：</span>
@@ -146,16 +152,16 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	 						<input type="radio" name="isopenywaddressflag" value="1" /> 开启
 	 						<input type="radio" name="isopenywaddressflag" value="0" checked /> 关闭
 						</li>
-						<li><span>药网导出订单URL：</span>
+						<li><span>药网导出URL：</span>
 	 						<input type ="text" id="ywexportCwb_URL" name ="ywexportCwb_URL" maxlength="300"   value=""   > 
 						</li>
-							<li><span>药网导出回调URL：</span>
+							<li><span>药网回调URL：</span>
 	 						<input type ="text" id="ywexportSuccess_URL" name ="ywexportSuccess_URL"  maxlength="300"  value=""  > 
 						</li>
-						<li><span>药网配送反馈URL：</span>
+						<li><span>药网配送URL：</span>
 	 						<input type ="text" id="ywdeliveryResult_URL" name ="ywdeliveryResult_URL"  maxlength="300"  value=""  > 
 						</li>
-						<li><span>药网跟踪反馈URL：</span>
+						<li><span>药网跟踪URL：</span>
 	 						<input type ="text" id="ywtrackLog_URL" name ="ywtrackLog_URL"  maxlength="300"  value=""    > 
 						</li>
 						

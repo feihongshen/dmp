@@ -208,6 +208,9 @@ public class EpaiApiService_Download extends EpaiApiService {
 
 	public long getOrCreateCustomerWarehouse(EpaiApi epai, String warehousename) {
 		long customerwarehouseid = 0;
+		if(warehousename==null||warehousename.isEmpty()){
+			return 0;
+		}
 		CustomWareHouse custwarehouse = customWareHouseDAO.getCustomWareHouseByName(warehousename, String.valueOf(epai.getCustomerid()));
 		if (custwarehouse == null) {
 			customerwarehouseid = customWareHouseDAO.creCustomerGetId(epai.getCustomerid(), warehousename);

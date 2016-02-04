@@ -28,6 +28,7 @@ import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ReasonDao;
+import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AccountCwbDetailView;
 import cn.explink.domain.AccountCwbFare;
@@ -68,6 +69,8 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliverPayupArrearageapprovedEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.JiesuanstateEnum;
+import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.enumutil.RealFlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
@@ -91,6 +94,9 @@ public class ExportService {
 	BranchDAO branchDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	@Autowired
+	RoleDAO roleDAO;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -157,6 +163,63 @@ public class ExportService {
 		cloumnName2[13] = "cuijianNum";
 
 	}
+	 /*realname
+	 * sex
+	 * branchid
+	 * roleid
+	 * employeestatus
+	 * jiesuanstate
+	 * idcardno
+	 * usermobile*/
+	public void setUserInfo(String[] cloumnName1, String[] cloumnName2){
+		cloumnName1[0] = "用户名";
+		cloumnName2[0] = "realname";
+		cloumnName1[1] = "性别";
+		cloumnName2[1] = "sex";
+		cloumnName1[2] = "所属机构";
+		cloumnName2[2] = "branchid";
+		cloumnName1[3] = "用户角色";
+		cloumnName2[3] = "roleid";
+		cloumnName1[4] = "员工状态";
+		cloumnName2[4] = "employeestatus";
+		cloumnName1[5] = "身份证";
+		cloumnName2[5] = "idcardno";
+		cloumnName1[6] = "手机号";
+		cloumnName2[6] = "usermobile";
+		cloumnName1[7] = "结算状态";
+		cloumnName2[7] = "jiesuanstate";
+		cloumnName1[8] = "Email/QQ/MSN";//pfruleid
+		cloumnName2[8] = "useremail";
+		cloumnName1[9] = "入职日期";
+		cloumnName2[9] = "startworkdate";
+		cloumnName1[10] = "工号";
+		cloumnName2[10] = "jobnum";
+		cloumnName1[11] = "派费规则";
+		cloumnName2[11] = "pfruleid";
+		cloumnName1[12] = "登录名";
+		cloumnName2[12] = "username";
+	
+	};
+	
+	public void setBranchInfo(String[] cloumnName1, String[] cloumnName2){
+		cloumnName1[0] = "机构ID";
+		cloumnName2[0] = "branchid";
+		cloumnName1[1] = "机构名称";
+		cloumnName2[1] = "branchname";
+		cloumnName1[2] = "机构编号";
+		cloumnName2[2] = "branchcode";
+		cloumnName1[3] = "地址";
+		cloumnName2[3] = "branchaddress";
+		cloumnName1[4] = "联系人";
+		cloumnName2[4] = "branchcontactman";
+		cloumnName1[5] = "电话";
+		cloumnName2[5] = "branchphone";
+		cloumnName1[6] = "手机";
+		cloumnName2[6] = "branchmobile";
+		cloumnName1[7] = "机构类型";
+		cloumnName2[7] = "SitetypeName";
+	
+	};
 
 	public void SetPosPayFields(String[] cloumnName1, String[] cloumnName2, String[] cloumnName3) {
 
@@ -722,6 +785,108 @@ public class ExportService {
 			} else if (cloumnName3[i].equals("contactNum")) {
 				a = ccilist.get(k).getContactNum();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return a;
+	}
+
+	public Object setUserInfoObject(String[] cloumnName3, List<User> userList, Object a, int i, int k) {
+		try {
+			if (cloumnName3[i].equals("realname")) {
+				a = userList.get(k).getRealname();
+			} else if (cloumnName3[i].equals("sex")) {
+				int sex = userList.get(k).getSex();
+				if(sex == 1){
+					a = "男";
+				}else{
+					a = "女";
+				}
+			} else if (cloumnName3[i].equals("branchid")) {
+				
+				 a = branchDAO.getBranchName(userList.get(k).getBranchid());
+				 
+			} else if (cloumnName3[i].equals("roleid")) {
+			
+				a = roleDAO.getRolesByRoleid(userList.get(k).getRoleid()).getRolename();
+				
+			} else if (cloumnName3[i].equals("employeestatus")) {
+				
+				a =UserEmployeestatusEnum.getByValue(userList.get(k).getEmployeestatus()) == null ? "" : UserEmployeestatusEnum.getByValue(userList.get(k).getEmployeestatus()).getText();
+				
+			} else if (cloumnName3[i].equals("idcardno")) {
+				
+				a = userList.get(k).getIdcardno();
+				
+			} else if (cloumnName3[i].equals("usermobile")) {
+				
+				a = userList.get(k).getUsermobile();
+
+			} else if (cloumnName3[i].equals("jiesuanstate")) {
+				
+				a =JiesuanstateEnum.getByValue(userList.get(k).getJiesuanstate()) == null ? "" :  JiesuanstateEnum.getByValue(userList.get(k).getJiesuanstate()).getText();
+				
+			} else if (cloumnName3[i].equals("useremail")) {
+				
+				a = userList.get(k).getUseremail();
+				
+			} else if (cloumnName3[i].equals("startworkdate")) {
+				
+				a = userList.get(k).getStartworkdate();
+				
+			} else if (cloumnName3[i].equals("jobnum")) {
+				
+				a = userList.get(k).getJobnum();
+				
+			} else if (cloumnName3[i].equals("pfruleid")) {
+				
+				a =PaiFeiRuleTypeEnum.getByValue(userList.get(k).getPfruleid()) == null ? "" : PaiFeiRuleTypeEnum.getByValue(userList.get(k).getPfruleid()).getText();
+				
+			} else if (cloumnName3[i].equals("username")) {
+				
+				a = userList.get(k).getUsername();
+				
+			} 
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return a;
+	}
+	
+	public Object setBranchInfoObject(String[] cloumnName3, List<Branch> branchList, Object a, int i, int k) {
+		try {
+			if (cloumnName3[i].equals("branchname")) {
+				a = branchList.get(k).getBranchname();
+			} else if (cloumnName3[i].equals("branchid")) {
+				a = branchList.get(k).getBranchid();
+				
+			} else if (cloumnName3[i].equals("branchaddress")) {
+				
+				 a = branchList.get(k).getBranchaddress();
+				 
+			} else if (cloumnName3[i].equals("branchcontactman")) {
+			
+				a = branchList.get(k).getBranchcontactman();
+				
+			} else if (cloumnName3[i].equals("branchphone")) {
+				
+				a = branchList.get(k).getBranchphone();
+				
+			} else if (cloumnName3[i].equals("branchmobile")) {
+				
+				a = branchList.get(k).getBranchmobile();
+				
+			} else if (cloumnName3[i].equals("branchcode")) {
+				
+				a = branchList.get(k).getBranchcode();
+				
+			}else if (cloumnName3[i].equals("SitetypeName")) {
+				
+				a = branchList.get(k).getSitetypeName();
+				
+			} 
+	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

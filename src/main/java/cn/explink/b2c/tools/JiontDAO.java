@@ -171,7 +171,7 @@ public class JiontDAO {
 
 	public EmployeeInfo getEmployeeByUserNameAndPassWord(String username, String password) {
 		try {
-			String sql = " select u.userid,u.username,u.password,u.realname,b.branchname,b.branchid,b.branchaddress,b.branchphone,b.branchmobile "
+			String sql = " select u.userid,u.username,u.password,u.realname,b.branchname,b.branchid,b.branchaddress,b.branchcode,b.branchphone,b.branchmobile "
 					+ " from express_set_branch b,express_set_user u where u.branchid=b.branchid and u.username=? and u.password=? and u.userdeleteflag=1  and employeestatus=1   ";
 			return jdbcTemplate.queryForObject(sql, new EmployeeMapper(), username, password);
 		} catch (Exception e) {
@@ -179,6 +179,7 @@ public class JiontDAO {
 		}
 
 	}
+	
 
 	private final class EmployeeMapper implements RowMapper<EmployeeInfo> {
 		@Override

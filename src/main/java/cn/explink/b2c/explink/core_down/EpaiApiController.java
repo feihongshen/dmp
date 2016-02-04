@@ -57,7 +57,7 @@ public class EpaiApiController {
 
 	@RequestMapping("/create")
 	public @ResponseBody String create(HttpServletRequest request, Model model,
-			@RequestParam(value = "customerid", required = false, defaultValue = "") long customerid,
+			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
 			@RequestParam(value = "userCode", required = false, defaultValue = "") String usercode) {
 
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
@@ -201,7 +201,8 @@ public class EpaiApiController {
 	/**
 	 * 手动执行推送测试类
 	 * 
-	 * @return
+	 * @Description: 接收推送过来的订单信息 @param @param
+	 * request @param @param response @param @return @return String @throws
 	 */
 	/*
 	 * @RequestMapping("/test") public @ResponseBody String epai_test() {
@@ -211,5 +212,49 @@ public class EpaiApiController {
 	 * 
 	 * }
 	 */
+
+	/**
+	 * 手动执行推送测试类
+	 * 下单
+	 * @return
+	 */
+
+	
+	 @RequestMapping("/test") 
+	 public @ResponseBody String epai_test() {
+		 
+		 acquisitionOrderService.passiveReceptionOrActiveAcquisition();
+		 epaiApiService_ExportCallBack.exportCallBack_controllers();
+		 epaiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(); 
+	 return "系统之间对接-下游电商手动下载数据完成";
+	 
+	 }
+
+	 
+	 /**
+	 * 手动执行推送测试类
+	 * 下单确认
+	 * @return
+	 */
+
+	
+	 @RequestMapping("/orderExportCallback") 
+	 public @ResponseBody String orderExportCallback() {
+		 this.epaiApiService_ExportCallBack.exportCallBack_controllers();
+		 return "系统之间对接-下游电商手动下载数据完成（下单确认）";
+	  }
+	 
+	 /**
+	 * 手动执行推送测试类
+	 * 导入主表
+	 * @return
+	 */
+	
+	 @RequestMapping("/timmer") 
+	 public @ResponseBody String timmer() {
+		 this.epaiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(); 
+		 return "系统之间对接-下游电商手动下载数据完成（导入主表）";
+	  }
+
 
 }

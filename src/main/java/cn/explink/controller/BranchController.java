@@ -1,11 +1,18 @@
 package cn.explink.controller;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,10 +40,13 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.schedule.Constants;
+import cn.explink.service.BankService;
 import cn.explink.service.BranchService;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.ExportService;
 import cn.explink.service.ScheduledTaskService;
 import cn.explink.service.SystemInstallService;
+import cn.explink.util.ExcelUtils;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
@@ -68,6 +79,10 @@ public class BranchController {
 	SystemInstallService systemInstallService;
 	@Autowired
 	PaiFeiRuleDAO pfFeiRuleDAO;
+	@Autowired
+	private BankService bankService;
+	@Autowired
+	ExportService exportService;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -102,7 +117,8 @@ public class BranchController {
 		model.addAttribute("bindmsksid", this.systemInstallDAO.getSystemInstallByName("maisike_id_flag"));
 		model.addAttribute("mskbranchlist", this.storesDAO.getMaisiBranchList());
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()));
-
+		model.addAttribute("tlBankList", this.bankService.getTlBankList());
+		model.addAttribute("cftBankList", this.bankService.getCftBankList());
 		// 站点结算对象设置
 		String accountBranch = "";
 		accountBranch = String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue());
@@ -112,9 +128,7 @@ public class BranchController {
 	}
 
 	@RequestMapping("/createFile")
-	public @ResponseBody
-	String createFile(@RequestParam(value = "Filedata", required = false) MultipartFile file, @RequestParam(value = "functionids", required = false) List<String> functionids, Model model,
-			HttpServletRequest request) {
+	public @ResponseBody String createFile(@RequestParam(value = "Filedata", required = false) MultipartFile file, @RequestParam(value = "functionids", required = false) List<String> functionids, Model model, HttpServletRequest request) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
@@ -157,8 +171,7 @@ public class BranchController {
 	}
 
 	@RequestMapping("/create")
-	public @ResponseBody
-	String create(Model model, HttpServletRequest request, @RequestParam(value = "functionids", required = false) List<String> functionids) {
+	public @ResponseBody String create(Model model, HttpServletRequest request, @RequestParam(value = "functionids", required = false) List<String> functionids) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
@@ -201,8 +214,7 @@ public class BranchController {
 	}
 
 	@RequestMapping("/branchnamecheck")
-	public @ResponseBody
-	boolean branchnamecheck(@RequestParam("branchname") String branchname) throws Exception {
+	public @ResponseBody boolean branchnamecheck(@RequestParam("branchname") String branchname) throws Exception {
 		branchname = new String(branchname.getBytes("ISO8859-1"), "utf-8");
 		List<Map<String, Object>> list = this.jdbcTemplate.queryForList("SELECT * from express_set_branch where branchname=?", branchname);
 		if (list.size() == 0) {
@@ -213,9 +225,7 @@ public class BranchController {
 	}
 
 	@RequestMapping("/saveFile/{id}")
-	public @ResponseBody
-	String saveFile(@PathVariable("id") long branchid, @RequestParam(value = "functionids", required = false) List<String> functionids, @RequestParam(value = "wavh", required = false) String wavh,
-			@RequestParam(value = "Filedata", required = false) MultipartFile file, Model model, HttpServletRequest request) {
+	public @ResponseBody String saveFile(@PathVariable("id") long branchid, @RequestParam(value = "functionids", required = false) List<String> functionids, @RequestParam(value = "wavh", required = false) String wavh, @RequestParam(value = "Filedata", required = false) MultipartFile file, Model model, HttpServletRequest request) {
 
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
@@ -263,9 +273,7 @@ public class BranchController {
 	}
 
 	@RequestMapping("/save/{id}")
-	public @ResponseBody
-	String save(@PathVariable("id") long branchid, @RequestParam(value = "functionids", required = false) List<String> functionids, @RequestParam(value = "wavh", required = false) String wavh,
-			Model model, HttpServletRequest request) {
+	public @ResponseBody String save(@PathVariable("id") long branchid, @RequestParam(value = "functionids", required = false) List<String> functionids, @RequestParam(value = "wavh", required = false) String wavh, Model model, HttpServletRequest request) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
@@ -326,7 +334,8 @@ public class BranchController {
 
 		model.addAttribute("bindmsksid", this.systemInstallDAO.getSystemInstallByName("maisike_id_flag"));
 		model.addAttribute("mskbranchlist", this.storesDAO.getMaisiBranchList());
-
+		model.addAttribute("tlBankList", this.bankService.getTlBankList());
+		model.addAttribute("cftBankList", this.bankService.getCftBankList());
 		// 站点结算对象设置
 		String accountBranch = "";
 		accountBranch = String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue());
@@ -335,12 +344,14 @@ public class BranchController {
 	}
 
 	@RequestMapping("/list/{page}")
-	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "branchname", required = false, defaultValue = "") String branchname,
-			@RequestParam(value = "branchaddress", required = false, defaultValue = "") String branchaddress) {
+	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "branchname", required = false, defaultValue = "") String branchname, @RequestParam(value = "branchaddress", required = false, defaultValue = "") String branchaddress) {
 
 		model.addAttribute("branches", this.branchDAO.getBranchByPage(page, branchname, branchaddress));
 		model.addAttribute("page_obj", new Page(this.branchDAO.getBranchCount(branchname, branchaddress), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
+		User user=this.getSessionUser();
+		String userloginname=user.getUsername();
+		model.addAttribute("flag", userloginname.equals("admin") ? true : false);
 		return "branch/list";
 	}
 
@@ -385,7 +396,7 @@ public class BranchController {
 		final String url = url1;
 		try {
 			String dmpid = request.getSession().getId() == null ? "" : request.getSession().getId();
-			String result = JSONReslutUtil.getResultMessageChangeLog(url + "jmsCenter/pushBranchMap", "dmpid=" + dmpid, "POST",1).toString();
+			String result = JSONReslutUtil.getResultMessageChangeLog(url + "jmsCenter/pushBranchMap", "dmpid=" + dmpid, "POST", 1).toString();
 			if ((result == null) || result.equals("")) {
 				this.logger.info("msg", "请求account的站点异常");
 			} else if (result.indexOf("01") > -1) {
@@ -398,8 +409,7 @@ public class BranchController {
 	}
 
 	@RequestMapping("/del/{id}")
-	public @ResponseBody
-	String del(@PathVariable("id") long branchid) {
+	public @ResponseBody String del(@PathVariable("id") long branchid) {
 		this.branchDAO.delBranch(branchid);
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this.getSessionUser().getUsername(), branchid);
@@ -419,6 +429,46 @@ public class BranchController {
 			}
 		}
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+	}
+	
+	@RequestMapping(value="/exportbranchinfo",method=RequestMethod.POST)
+	public void exportbranchinfo(HttpServletRequest request,HttpServletResponse response){
+		String[] cloumnName1 = new String[8]; // 导出的列名
+		String[] cloumnName2 = new String[8]; // 导出的英文列名
+		exportService.setBranchInfo(cloumnName1, cloumnName2);
+		final String[] cloumnName = cloumnName1;
+		final String[] cloumnName3 = cloumnName2;
+		String sheetName = "机构信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "BranchInfo_" + df.format(new Date()) + ".xlsx"; // 文件名
+		
+	try{		
+		String branchname=request.getParameter("branchname");
+		String branchaddress=request.getParameter("branchaddress");
+		final List<Branch> branchList=branchDAO.getBranchByBranchnameAndBranchaddress(branchname, branchaddress);
+		ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+			@Override
+			public void fillData(Sheet sheet, CellStyle style) {
+				for (int k = 0; k < branchList.size(); k++) {
+					Row row = sheet.createRow(k + 1);
+					row.setHeightInPoints(15);
+					for (int i = 0; i < cloumnName.length; i++) {
+						Cell cell = row.createCell((short) i);
+						cell.setCellStyle(style);
+						Object a = null;
+						// 给导出excel赋值
+						a = exportService.setBranchInfoObject(cloumnName3,branchList,a, i, k);
+						cell.setCellValue(a == null ? "" : a.toString());
+					}
+				}
+			}
+		};
+		
+		excelUtil.excel(response, cloumnName, sheetName, fileName);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	
 	}
 
 }

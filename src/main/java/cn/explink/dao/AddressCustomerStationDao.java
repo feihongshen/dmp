@@ -147,6 +147,12 @@ public class AddressCustomerStationDao {
 		return this.jdbcTemplate.queryForInt(sql,obj);
 	}
 
+	// 根据客户id分组获取所有记录
+	public int getAllCount() {
+		String sql = "SELECT COUNT(1) FROM express_set_customer_station";
+		return this.jdbcTemplate.queryForInt(sql);
+	}
+
 	// 根据id获取一条记录
 	public AddressCustomerStationVO getCustomerStationByid(Long id) {
 		String sql = "select * from express_set_customer_station where id=?";

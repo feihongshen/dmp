@@ -51,6 +51,14 @@
 	 						<input id="version1" name ="version" type="radio" value="0" <%if(lt.getVersion()==0){%>checked<%} %>  size="15">旧版
 	 						<input  id="version2" name ="version" type="radio" value="1" <%if(lt.getVersion()==1){%>checked<%} %>  size="15">新版
 						</li>
+						<li><span>拒收是否推送：</span>
+	 						<input id="jushousendflag1" name ="jushousendflag" type="radio" value="0" <%if(lt.getJushousendflag()==0){%>checked<%} %>  size="15">推送
+	 						<input  id="jushousendflag2" name ="jushousendflag" type="radio" value="1" <%if(lt.getJushousendflag()==1){%>checked<%} %>  size="15">不推送
+						</li>
+						<li><span>上门退是否推送：</span>
+	 						<input id="shangmentuiSupport1" name ="shangmentuiSupport" type="radio" value="0" <%if(lt.getShangmentuiSupport()==0){%>checked<%} %>  size="15">推送
+	 						<input  id="shangmentuiSupport2" name ="shangmentuiSupport" type="radio" value="1" <%if(lt.getShangmentuiSupport()==1){%>checked<%} %>  size="15">不推送
+						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" > 
 						</li>
@@ -80,6 +88,14 @@
 						<li><span>查询版本：</span>
 	 						<input  id="version1" name ="version" type="radio" value="0" checked  size="15">旧版
 	 						<input  id="version2" name ="version" type="radio" value="1"   size="15">新版
+						</li>
+						<li><span>拒收是否推送：</span>
+	 						<input id="jushousendflag1" name ="jushousendflag" type="radio" value="0"   size="15">推送
+	 						<input  id="jushousendflag2" name ="jushousendflag" type="radio" value="1"  size="15">不推送
+						</li>
+						<li><span>上门退是否推送：</span>
+	 						<input id="shangmentuiSupport1" name ="shangmentuiSupport" type="radio" value="0"   size="15">推送
+	 						<input  id="shangmentuiSupport2" name ="shangmentuiSupport" type="radio" value="1"  size="15">不推送
 						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" > 

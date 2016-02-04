@@ -1,9 +1,16 @@
 package cn.explink.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +38,12 @@ import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.ExportService;
 import cn.explink.service.ScheduledTaskService;
 import cn.explink.service.SystemInstallService;
 import cn.explink.service.UserMonitorService;
 import cn.explink.service.UserService;
+import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -68,6 +77,8 @@ public class UserController {
 	PaiFeiRuleDAO pfFeiRuleDAO;
 	@Autowired
 	CwbOrderService cs;
+	@Autowired
+	ExportService exportService;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -211,6 +222,9 @@ public class UserController {
 		model.addAttribute("roles", this.roleDAO.getRoles());
 		model.addAttribute("page_obj", new Page(this.userDAO.getUserCount(username, realname, branchid, roleid), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
+		User user=this.getSessionUser();
+		String userloginname=user.getUsername();
+		model.addAttribute("flag", userloginname.equals("admin") ? true : false);
 		return "user/list";
 	}
 
@@ -436,6 +450,66 @@ public class UserController {
 		}else{
 			return "{\"errorCode\":3,\"error\":\"离职\"}";
 		}
+	}
+	/**
+	 * realname
+	 * sex
+	 * branchid
+	 * roleid
+	 * employeestatus
+	 * jiesuanstate
+	 * idcardno
+	 * usermobile
+	 * 
+	 * Comet
+	 * @return
+	 */
+	@RequestMapping(value="/exportuserinfo")
+	public void exportuserinfo(HttpServletRequest request,HttpServletResponse response){
+		String[] cloumnName1 = new String[13]; // 导出的列名
+		String[] cloumnName2 = new String[13]; // 导出的英文列名
+		exportService.setUserInfo(cloumnName1, cloumnName2);
+		final String[] cloumnName = cloumnName1;
+		final String[] cloumnName3 = cloumnName2;
+		String sheetName = "用户信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "UserInfo_" + df.format(new Date()) + ".xlsx"; // 文件名
+		
+	try{		
+		
+		String branchid = request.getParameter("branchid");
+		String roleid = request.getParameter("roleid");
+		String username = request.getParameter("username");
+		String realname = request.getParameter("realname");
+		
+		
+		final List<User> userList=this.userDAO.getExportUserInfo(username, realname, Long.valueOf(branchid), Long.valueOf(roleid));
+		
+		ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+			@Override
+			public void fillData(Sheet sheet, CellStyle style) {
+				for (int k = 0; k < userList.size(); k++) {
+					Row row = sheet.createRow(k + 1);
+					row.setHeightInPoints(15);
+					for (int i = 0; i < cloumnName.length; i++) {
+						Cell cell = row.createCell((short) i);
+						cell.setCellStyle(style);
+						Object a = null;
+						// 给导出excel赋值
+						a = exportService.setUserInfoObject(cloumnName3,userList,a, i, k);
+						cell.setCellValue(a == null ? "" : a.toString());
+					}
+				}
+			}
+		};
+		
+		excelUtil.excel(response, cloumnName, sheetName, fileName);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	
+		
+		
 	}
 	
 }

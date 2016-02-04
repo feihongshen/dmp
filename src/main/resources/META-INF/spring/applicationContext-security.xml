@@ -124,9 +124,19 @@
 		<intercept-url pattern="/cacheSynchro/**" access="permitAll" />
 
 		<intercept-url pattern="/jiuye/**" access="permitAll" />
+		<intercept-url pattern="/feiniuwang/**" access="permitAll" />
+		<intercept-url pattern="/huanqiugou/**" access="permitAll" />
+		
  		<intercept-url pattern="/jiuyeaddressmatch/**" access="permitAll" />
+ 		<intercept-url pattern="/yonghui/**" access="permitAll" />
+ 		<intercept-url pattern="/feiniuwang/**" access="permitAll" />
+		<intercept-url pattern="/huanqiugou/**" access="permitAll" />
+ 		
  		<intercept-url pattern="/deliverServer/**" access="permitAll" />
  		<intercept-url pattern="/bjunion/**" access="permitAll" />
+ 		<intercept-url pattern="/suning/**" access="permitAll" />
+ 		<intercept-url pattern="/pinhaohuo/**" access="permitAll" />
+ 		
  		<intercept-url pattern="/gxdxAddress/**" access="permitAll" />
  		
  		<intercept-url pattern="/javax.comm.jar" access="permitAll" />

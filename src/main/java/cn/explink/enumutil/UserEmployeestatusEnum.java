@@ -23,4 +23,19 @@ public enum UserEmployeestatusEnum {
 	public String getText() {
 		return text;
 	}
+	
+	/**
+	 *  By Comet
+	 * @param value
+	 * @return
+	 */
+	public static UserEmployeestatusEnum getByValue(long value) {
+		for (UserEmployeestatusEnum cc : UserEmployeestatusEnum.values()) {
+			if (value == cc.getValue()) {
+				return cc;
+			}
+		}
+		
+		return null;
+	}
 }

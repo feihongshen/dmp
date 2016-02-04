@@ -24,6 +24,7 @@ import cn.explink.b2c.explink.core_down.AcquisitionOrderService;
 import cn.explink.b2c.explink.core_down.EpaiApiService_Download;
 import cn.explink.b2c.explink.core_down.EpaiApiService_ExportCallBack;
 import cn.explink.b2c.explink.core_down.EpaiInsertCwbDetailTimmer;
+import cn.explink.b2c.feiniuwang.FNWInsertCwbDetailTimmer;
 import cn.explink.b2c.gome.GomeService;
 import cn.explink.b2c.gxdx.GxDxInsertCwbDetailTimmer;
 import cn.explink.b2c.gzabc.GuangZhouABCInsertCwbDetailTimmer;
@@ -39,6 +40,7 @@ import cn.explink.b2c.homegobj.HomegobjInsertCwbDetailTimmer;
 import cn.explink.b2c.homegobj.HomegobjService_getOrderDetailList;
 import cn.explink.b2c.homegou.HomegouInsertCwbDetailTimmer;
 import cn.explink.b2c.homegou.HomegouService_getOrder;
+import cn.explink.b2c.huanqiugou.HuanqiugouInsertCwbDetailTimmer;
 import cn.explink.b2c.huitongtx.HuitongtxInsertCwbDetailTimmer;
 import cn.explink.b2c.hxgdms.HxgdmsInsertCwbDetailTimmer;
 import cn.explink.b2c.hzabc.HangZhouABCInsertCwbDetailTimmer;
@@ -48,12 +50,15 @@ import cn.explink.b2c.liantong.LiantongInsertCwbDetailTimmer;
 import cn.explink.b2c.maikaolin.MaikaolinInsertCwbDetailTimmer;
 import cn.explink.b2c.maikaolin.MaikolinService;
 import cn.explink.b2c.maisike.MaisikeService_branchSyn;
+import cn.explink.b2c.meilinkai.MLKService;
+import cn.explink.b2c.pinhaohuo.PinhaohuoInsertCwbDetailTimmer;
 import cn.explink.b2c.pjwl.PjwlExpressService;
 import cn.explink.b2c.rufengda.RufengdaService;
 import cn.explink.b2c.saohuobang.SaohuobangInsertCwbDetailTimmer;
 import cn.explink.b2c.sfxhm.SfxhmInsertCwbDetailTimmer;
 import cn.explink.b2c.sfxhm.SfxhmService_getOrder;
 import cn.explink.b2c.smile.SmileInsertCwbDetailTimmer;
+import cn.explink.b2c.suning.SuNingInsertCwbDetailTimmer;
 import cn.explink.b2c.telecomsc.TelecomInsertCwbDetailTimmer;
 import cn.explink.b2c.tmall.TmallInsertCwbDetailTimmer;
 import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
@@ -71,8 +76,10 @@ import cn.explink.b2c.yangguang.YangGuangInsertCwbDetailTimmer;
 import cn.explink.b2c.yangguang.YangGuangService_download;
 import cn.explink.b2c.yihaodian.YihaodianService;
 import cn.explink.b2c.yixun.YiXunInsertCwbDetailTimmer;
+import cn.explink.b2c.yonghui.YongHuiInsertCwbDetailTimmer;
 import cn.explink.b2c.yonghuics.YonghuiService;
 import cn.explink.b2c.zhemeng.ZhemengInsertCwbDetailTimmer;
+import cn.explink.b2c.zhongliang.ZhongliangBackOrderServices;
 import cn.explink.b2c.zhongliang.ZhongliangInsertCwbDetailTimmer;
 import cn.explink.b2c.zhongliang.ZhongliangService;
 import cn.explink.dao.ExpressSysMonitorDAO;
@@ -82,6 +89,7 @@ import cn.explink.enumutil.ExpressSysMonitorEnum;
 import cn.explink.service.AccountDeductRecordService;
 import cn.explink.service.AppearWindowService;
 import cn.explink.service.BackSummaryService;
+import cn.explink.service.FlowExpService;
 import cn.explink.service.FloworderLogService;
 import cn.explink.service.LogToDayByTuihuoService;
 import cn.explink.service.LogToDayByWarehouseService;
@@ -206,6 +214,8 @@ public class JobUtil {
 	@Autowired
 	ZhongliangService zhongliangService;
 	@Autowired
+	ZhongliangBackOrderServices zhongliangBackOrderServices;
+	@Autowired
 	WenxuanInsertCwbDetailTimmer wenxuanInsertCwbDetailTimmer;
 	@Autowired
 	WenxuanService_getOrder wenxuanService_getOrder;
@@ -234,6 +244,8 @@ public class JobUtil {
 	@Autowired
 	GxDxInsertCwbDetailTimmer gxDxInsertCwbDetailTimmer;
 	@Autowired
+	FNWInsertCwbDetailTimmer fnwInsertCwbDetailTimmer;
+	@Autowired
 	AcquisitionOrderService acquisitionOrderService;
 	@Autowired
 	TPSInsertCwbDetailTimmer tPSInsertCwbDetailTimmer;
@@ -251,6 +263,21 @@ public class JobUtil {
 	LogToDayService logToDayService;
 	@Autowired
 	AutoDispatchStatusService autoDispatchStatusService;
+	@Autowired
+	HuanqiugouInsertCwbDetailTimmer huanqiugouInsertCwbDetailTimmer;
+	
+	@Autowired
+	SuNingInsertCwbDetailTimmer suNingInsertCwbDetailTimmer;
+
+	@Autowired
+	MLKService mlkService;
+	
+	@Autowired
+	YongHuiInsertCwbDetailTimmer yongHuiInsertCwbDetailTimmer;
+	@Autowired
+	PinhaohuoInsertCwbDetailTimmer pinhaohuoInsertCwbDetailTimmer;
+	@Autowired
+	FlowExpService flowExpService;
 	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -1033,9 +1060,11 @@ public class JobUtil {
 	public void getZhongliang_Task() {
 		try {
 
-			this.zhongliangService.waitOrder();
-			this.zhongliangInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			this.zhongliangService.waitOrdercounts();
 			this.zhongliangService.CancelOrders();
+			this.zhongliangBackOrderServices.BackOrdercounts();
+			this.zhongliangBackOrderServices.CancelOrders();
+			this.zhongliangInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
 
 			this.logger.info("执行了中粮订单导入定时器！");
 		} catch (Exception e) {
@@ -1313,6 +1342,20 @@ public class JobUtil {
 
 	}
 
+	// 飞牛网(http)
+	public void getFeiNiuWang_Task() {
+		try {
+			long starttime = System.currentTimeMillis();
+			this.fnwInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了飞牛网(http)订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+		} catch (Exception e) {
+			this.logger.error("执行飞牛网(http)订单导入定时器异常", e);
+		}
+	}
+	
+	
 	/**
 	 * 广信电信
 	 */
@@ -1348,10 +1391,8 @@ public class JobUtil {
 		try {
 			starttime = System.currentTimeMillis();
 			//
-			String reportDate = DateTimeUtil.getDateBeforeDay(1);// in
-																	// 'yyyy-MM-dd'
-																	// format
-			int batchSize = this.getbatchSizeOfOrderLifeCycleReport();
+			String reportDate = DateTimeUtil.getDateBeforeDay(1);//in 'yyyy-MM-dd' format
+			int batchSize = getbatchSizeOfOrderLifeCycleReport();
 
 			// 生成前一天的订单详情列表
 			this.orderLifeCycleReportService.genLifeCycleOrderDetail(batchSize, reportDate);
@@ -1382,6 +1423,22 @@ public class JobUtil {
 
 	}
 
+	/**
+	 * 环球购物
+	 */
+	public void getHuanQiuGouWu_Task() {
+		try {
+			long starttime = System.currentTimeMillis();
+			this.huanqiugouInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了-环球购物-订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+		} catch (Exception e) {
+			this.logger.error("执行了-环球购物-订单导入定时器异常", e);
+		}
+	}
+	
+	
 	/**
 	 * 订单生命周期报表每批次处理的行数,如果找不到，默认是1000
 	 *
@@ -1431,6 +1488,60 @@ public class JobUtil {
 
 		this.logger.info("执行了获取vipshoptimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
+	
+	/**
+	 * 永辉超市
+	 */
+	public void getYongHui_Task() {
+		try {
+			long starttime = System.currentTimeMillis();
+			this.yongHuiInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了-永辉-订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+		} catch (Exception e) {
+			this.logger.error("执行了-永辉-订单导入定时器异常", e);
+		}
+	}
+	
+	/**
+	 * 【苏宁易购】定时器任务调用
+	 */
+	public void getSuNing_Task() {
+		try {
+			this.suNingInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			this.logger.info("执行了【苏宁易购】订单导入detail表定时器！");
+		} catch (Exception e) {
+			this.logger.error("执行【苏宁易购】订单导入detail表异常", e);
+		}
+
+	}
+	//拼好货
+		public void getPinhaohuo_Task() {
+				try {
+					long starttime = System.currentTimeMillis();
+					this.pinhaohuoInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+					long endtime = System.currentTimeMillis();
+					this.logger.info("执行了拼好货订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+				} catch (Exception e) {
+					this.logger.error("执行拼好货订单导入定时器异常", e);
+				}
+
+			}
+			
+			public void setFlowExp() {
+				long starttime = 0;
+				long endtime = 0;
+				try {
+					starttime = System.currentTimeMillis();
+					this.flowExpService.sendFlowExp();
+					endtime = System.currentTimeMillis();
+				} catch (Exception e) {
+					this.logger.error("执行sendFlow定时器异常", e);
+				} 
+				this.logger.info("执行sendFlow定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+				}
 	
 	/**
 	 * 执行获取物流运单状态接口

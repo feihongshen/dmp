@@ -1198,13 +1198,13 @@ function checkwithdiferenttype(type){
 						<td width="100" align="center"  valign="middle"><%=view.getDutypersonname() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwbstatename() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwbPrice() %></td>
-						<%-- <td width="100" align="center" valign="middle"><%=(view.getPunishInsideprice()==null||(view.getGoodpriceremark().length()>0&&view.getQitapriceremark().length()>0))?"":view.getPunishInsideprice() %></td> --%>
+						<td width="100" align="center" valign="middle"><%=(view.getPunishInsideprice()==null||(view.getGoodpriceremark().length()>0&&view.getQitapriceremark().length()>0))?"":view.getPunishInsideprice() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getShowPunishInsideprice() %></td>
-						<td width="100" align="center" valign="middle"><%=view.getPunishbigsortname() %></td>
-						<td width="100" align="center" valign="middle"><%=view.getPunishsmallsortname() %></td>
-						<td width="100" align="center" valign="middle"><%=view.getCreUserName() %></td>
-						<td width="100" align="center" valign="middle"><%=view.getCreDate() %></td>
-						<td width="100" align="center" valign="middle"><%=view.getPunishcwbstatename() %></td>
+						<td width="100" align="center" valign="middle"><%=view.getPunishbigsortname() ==null ? "" : view.getPunishbigsortname()%></td>
+						<td width="100" align="center" valign="middle"><%=view.getPunishsmallsortname() ==null ? "" : view.getPunishsmallsortname()%></td>
+						<td width="100" align="center" valign="middle"><%=view.getCreUserName() ==null ? "" : view.getCreUserName()%></td>
+						<td width="100" align="center" valign="middle"><%=view.getCreDate() ==null ? "" : view.getCreDate()%></td>
+						<td width="100" align="center" valign="middle"><%=view.getPunishcwbstatename() ==null ? "" : view.getPunishcwbstatename()%></td>
 						<td width="160" align="center" valign="middle">
 						<a href="javascript:reviseopteration('<%=view.getId() %>');" <%if(view.getPunishcwbstate()==3||view.getPunishcwbstate()==4||roleid!=1){ %> style="display:none"   <%} %>><font color="blue">修改</font></a>
 						<a href="javascript:shenheopteration('<%=view.getId() %>');"  <%if(roleid!=1){ %> style="display:none"   <%} %>><font color="blue">审核</font></a>

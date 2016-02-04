@@ -262,10 +262,8 @@ public class HxgdmsService {
 	private int getCwbOrdertypeId(int WorkType, int cwbordertypeid) {
 		if (WorkType == WorkTypeEnum.PeiSongDan.getDmsState()) {
 			cwbordertypeid = CwbOrderTypeIdEnum.Peisong.getValue();
-		} else if (WorkType == WorkTypeEnum.HuanHuodan.getDmsState()
-
-		) {
-			cwbordertypeid = CwbOrderTypeIdEnum.Peisong.getValue();
+		} else if (WorkType == WorkTypeEnum.HuanHuodan.getDmsState()) {
+			cwbordertypeid = CwbOrderTypeIdEnum.Shangmenhuan.getValue();
 		} else if (WorkType == WorkTypeEnum.TuiHuoDan.getDmsState() || WorkType == WorkTypeEnum.TuiHuoDan_posun.getDmsState() || WorkType == WorkTypeEnum.TuiHuo_cancel.getDmsState()
 				|| WorkType == WorkTypeEnum.TuiHuo_TuiKuan.getDmsState() || WorkType == WorkTypeEnum.TuiHuo_BuTuiKuan.getDmsState() || WorkType == WorkTypeEnum.HuanHuo_tuihui.getDmsState()) {
 			cwbordertypeid = CwbOrderTypeIdEnum.Shangmentui.getValue();

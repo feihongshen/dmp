@@ -35,10 +35,10 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 	/**
 	 * 下载一号店订单信息
 	 */
-	public long DownLoadCwbDetailByYiHaoDian(int yhd_key, int loopcount, String url, int urlFlag) {
+	public long DownLoadCwbDetailByYiHaoDian(int yhd_key, int loopcount,String url,int urlFlag,String userCode) {
 		Yihaodian yihaodian = this.getYihaodian(yhd_key);
 		try {
-			OrderExportResultDto exportDto = this.BuildOrderExportCondition(yihaodian, url);
+			OrderExportResultDto exportDto = this.BuildOrderExportCondition(yihaodian, url,userCode);
 			if ((exportDto != null) && !exportDto.getErrCode().equals(YihaodianExpEmum.Success.getErrCode())) {
 				this.logger.info("Invoke export cwb detail interface business exception!errCode={},errMsg={},yhd_key=" + yhd_key + ",loopcount=" + loopcount, exportDto.getErrCode(),
 						exportDto.getErrMsg());
@@ -78,14 +78,14 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 	 * @param yihaodian
 	 * @return
 	 */
-	private OrderExportResultDto BuildOrderExportCondition(Yihaodian yihaodian, String url) {
+	private OrderExportResultDto BuildOrderExportCondition(Yihaodian yihaodian,String url,String userCode) {
 		OrderExportConditionDto condto = new OrderExportConditionDto();
-		condto.setUserCode(yihaodian.getUserCode());
+		condto.setUserCode(userCode);
 		condto.setPageSize(yihaodian.getExportCwb_pageSize());
 		String nowtime = DateTimeUtil.getNowTime();
 		condto.setRequestTime(nowtime);
 
-		condto.setSign(MD5Util.md5(yihaodian.getUserCode() + nowtime + yihaodian.getPrivate_key()));
+		condto.setSign(MD5Util.md5(userCode + nowtime + yihaodian.getPrivate_key()));
 		OrderExportResultDto exportDto = this.restTemplate.exportOrder(url, condto);
 		return exportDto;
 	}

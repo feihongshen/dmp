@@ -79,6 +79,7 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ExportwarhousesummaryDAO;
 import cn.explink.dao.ExpressSysMonitorDAO;
 import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
+import cn.explink.dao.FlowExpDao;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.GotoClassOldDAO;
 import cn.explink.dao.GroupDetailDao;
@@ -410,6 +411,8 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	CwbApplyZhongZhuanDAO applyZhongZhuanDAO;
 	@Autowired
+	CustomerDAO customerdao;
+	@Autowired
 	ZhiFuApplyDao zhiFuApplyDao;
 	@Autowired
 	searchEditCwbInfoDao editCwbInfoDao;
@@ -423,6 +426,9 @@ public class CwbOrderService extends BaseOrderService {
 	AdjustmentRecordService adjustmentRecordService;
 	@Autowired
 	FnDfAdjustmentRecordService fnDfAdjustmentRecordService;
+	
+	@Autowired
+	FlowExpDao flowExpDao;
 
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		this.logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
@@ -2354,6 +2360,22 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 
+	public int resend(OrderFlow of) {
+			try {
+				this.orderFlowProducerTemplate.sendBodyAndHeader(null, "orderFlow", this.om.writeValueAsString(of));
+			     return 1;
+			} catch (Exception ee) {
+				if (of.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {// 导入数据的话，手工调用保存订单号和运单号的表
+					this.logger.info("调接口执行运单号保存 单号：{}", of.getCwb());
+					this.transCwbService.saveTransCwbByFloworderdetail(of.getFloworderdetail());
+				}
+				this.logger.info("重发JMS异常：{}", of.getCwb());
+				flowExpDao.createFlowExp(of.getCwb(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+				this.logger.error("resend flow message error", ee);
+				return 0;
+			}
+	}
+	
 	/**
 	 * 创建5个任务对应原分发给5个queue
 	 *

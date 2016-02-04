@@ -10,6 +10,7 @@ import cn.explink.b2c.dongfangcj.CwbColumnSetDongFangCJ;
 import cn.explink.b2c.dpfoss.CwbColumnSetDpfoss;
 import cn.explink.b2c.efast.CwbColumnSetEfast;
 import cn.explink.b2c.explink.core_down.CwbColumnSetEpaiAPI;
+import cn.explink.b2c.feiniuwang.CwbColumnSetFNW;
 import cn.explink.b2c.gome.CwbColumnSetGome;
 import cn.explink.b2c.gxdx.CwbColumnSetGXDX;
 import cn.explink.b2c.gzabc.CwbColumnSetGZABC;
@@ -24,10 +25,13 @@ import cn.explink.b2c.hzabc.CwbColumnSetHZABC;
 import cn.explink.b2c.jiuye.CwbColumnSetJiuye;
 import cn.explink.b2c.liantong.CwbColumnSetLiantong;
 import cn.explink.b2c.maikaolin.CwbColumnSetMaikaolin;
+import cn.explink.b2c.meilinkai.CwbColumnSetMLK;
+import cn.explink.b2c.pinhaohuo.CwbColumnSetPinhaohuo;
 import cn.explink.b2c.rufengda.CwbColumnSetRufengda;
 import cn.explink.b2c.saohuobang.CwbColumnSetSaohuobang;
 import cn.explink.b2c.sfxhm.CwbColumnSetSfxhm;
 import cn.explink.b2c.smile.CwbColumnSetSmile;
+import cn.explink.b2c.suning.CwbColumnSetSuNing;
 import cn.explink.b2c.telecomsc.CwbColumnSetTelecom;
 import cn.explink.b2c.tmall.CwbColumnSet;
 import cn.explink.b2c.tmall.CwbColumnSetTmall;
@@ -37,6 +41,7 @@ import cn.explink.b2c.wenxuan.CwbColumnSetWenxuan;
 import cn.explink.b2c.yangguang.CwbColumnSetYangGuang;
 import cn.explink.b2c.yihaodian.CwbColumnSetYihaodian;
 import cn.explink.b2c.yixun.CwbColumnSetYiXun;
+import cn.explink.b2c.yonghui.CwbColumnSetYH;
 import cn.explink.b2c.yonghuics.CwbColumnSetYonghui;
 import cn.explink.b2c.zhongliang.CwbColumnSetZhongliang;
 import cn.explink.domain.ExcelColumnSet;
@@ -115,7 +120,17 @@ public class CwbColumnImpl implements CwbColumnSet {
 	@Autowired
 	CwbColumnSetJiuye cwbColumnSetJiuye;
 	@Autowired
-	CwbColumnSetGXDX cwbColumnsetGXDX;
+	CwbColumnSetGXDX  cwbColumnsetGXDX;
+	@Autowired
+	CwbColumnSetSuNing cwbColumnSetSuNing;
+	@Autowired
+	CwbColumnSetMLK cwbColumnSetMLK;
+	@Autowired
+	CwbColumnSetFNW cwbColumnSetFNW;
+	@Autowired
+	CwbColumnSetYH cwbColumnSetYH;
+	@Autowired
+	CwbColumnSetPinhaohuo cwbColumnSetPinhaohuo;
 
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
@@ -196,11 +211,26 @@ public class CwbColumnImpl implements CwbColumnSet {
 			return this.cwbColumnSetWenxuan.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Guangzhoutonglu.getMethod())) {
 			return this.cwbClolumSetGztl.getEexcelColumnSetByB2c(b2cFlag);
-		} else if ((b2cFlag.equals(B2cEnum.JiuYe1.getMethod()) || (b2cFlag.equals(B2cEnum.JiuYe2.getMethod())) || (b2cFlag.equals(B2cEnum.JiuYe3.getMethod()))
-				|| (b2cFlag.equals(B2cEnum.JiuYe4.getMethod())) || (b2cFlag.equals(B2cEnum.JiuYe5.getMethod())))) {
+		}else if (
+				(b2cFlag.equals(B2cEnum.JiuYe1.getMethod())
+				||(b2cFlag.equals(B2cEnum.JiuYe2.getMethod()))
+				||(b2cFlag.equals(B2cEnum.JiuYe3.getMethod()))
+				||(b2cFlag.equals(B2cEnum.JiuYe4.getMethod()))
+				||(b2cFlag.equals(B2cEnum.JiuYe5.getMethod())))) 
+		{
 			return this.cwbColumnSetJiuye.getEexcelColumnSetByB2c(b2cFlag);
-		} else if (b2cFlag.equals(B2cEnum.GuangXinDianXin.getMethod())) {
+		}else if (b2cFlag.equals(B2cEnum.Yonghui.getMethod())) {
+			return this.cwbColumnSetYH.getEexcelColumnSetByB2c(b2cFlag);
+		}else if(b2cFlag.equals(B2cEnum.GuangXinDianXin.getMethod())){
 			return this.cwbColumnsetGXDX.getEexcelColumnSetByB2c(b2cFlag);
+		}else if(b2cFlag.equals(B2cEnum.SuNing.getMethod())){
+			return this.cwbColumnSetSuNing.getEexcelColumnSetByB2c(b2cFlag);
+		}else if(b2cFlag.equals(B2cEnum.meilinkai.getMethod())){
+			return this.cwbColumnSetMLK.getEexcelColumnSetByB2c();
+		}else if(b2cFlag.equals(B2cEnum.Feiniuwang.getMethod())){
+			return this.cwbColumnSetFNW.getEexcelColumnSetByB2c(b2cFlag);
+		}else if(b2cFlag.equals(B2cEnum.PinHaoHuo.getMethod())){
+			return this.cwbColumnSetPinhaohuo.getEexcelColumnSetByB2c(b2cFlag);
 		}
 
 		return null;

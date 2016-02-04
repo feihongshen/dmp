@@ -153,7 +153,9 @@ public class RestTemplateHanlder {
 			HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
 
 			httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
+			//U掌柜对接时新增=====LX(设置请求头，验证返回xml格式，否则返回json)
+			httpURLConnection.setRequestProperty("accept", "application/xml");
+			
 			httpURLConnection.setDoOutput(true);
 			httpURLConnection.setDoInput(true);
 			httpURLConnection.setUseCaches(false);

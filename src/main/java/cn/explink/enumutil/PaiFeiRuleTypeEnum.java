@@ -40,4 +40,19 @@ public enum PaiFeiRuleTypeEnum {
 	{
 		return PaiFeiRuleTypeEnum.map.get(value);
 	}
+	
+	/**
+	 *  By Comet
+	 * @param value
+	 * @return
+	 */
+	public static PaiFeiRuleTypeEnum getByValue(long value) {
+		for (PaiFeiRuleTypeEnum cc : PaiFeiRuleTypeEnum.values()) {
+			if (value == cc.getValue()) {
+				return cc;
+			}
+		}
+		
+		return null;
+	}
 }

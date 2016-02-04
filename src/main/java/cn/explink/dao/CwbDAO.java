@@ -9339,5 +9339,13 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1)
 				* Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
-
+	
+	//针对【苏宁易购】业务
+	public CwbOrder getCwbByRemark(String remark4) {
+		try {
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail where remark4=? and state=1 limit 0,1", new CwbMapper(), remark4);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 }

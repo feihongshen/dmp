@@ -639,4 +639,24 @@ public class DataImportDAO_B2c {
 		List<CwbOrderDTO> cwborderList = this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 		return cwborderList;
 	}
+	/**
+	 * 根据remark4来查询【苏宁易购】业务
+	 */
+	public CwbOrderDTO getCwbByremark4(String remark4) {
+		try {
+			return jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where remark4=? and state=1 limit 0,1", new CwbDTOMapper(), remark4);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+	/**
+	 * 【玫琳凯】业务需要
+	 * @param cwb
+	 */
+	public void updateGetdataflagByCWB(String cwb) {
+		String sql = "update express_ops_cwb_detail_b2ctemp set getDataFlag=1 where cwb=?";
+		this.jdbcTemplate.update(sql,cwb);
+	}
+
+	
 }

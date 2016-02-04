@@ -267,12 +267,42 @@ function submitSaveForm(form) {
 		data : $(form).serialize(),
 		dataType : "json",
 		success : function(data) {
-
 			$(".tishi_box").html(data.error);
 			$(".tishi_box").show();
 			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			if (data.errorCode == 0) {
 				//$("#WORK_AREA")[0].contentWindow.editSuccess(data);
+				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
+				closeBox();
+			}
+		}
+	});
+}
+
+/**
+ * 
+ * @description 通联接口参数设置时的保存方法
+ * @author 刘武强
+ * @date  2015年12月14日上午9:49:26
+ * @param  @param form
+ * @return  void
+ */
+function tongLianSaveForm(formName) {
+	var formData = new FormData($("#"+formName)[0]);
+	$.ajax({
+		type : "POST",
+		url : $("#savePath").val(),
+		data: formData, 
+		dataType : "json",
+        async: false,  
+        cache: false,  
+        contentType: false,  
+        processData: false,  
+		success : function(data) {
+			$(".tishi_box").html(data.error);
+			$(".tishi_box").show();
+			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			if (data.errorCode == 0) {
 				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
 				closeBox();
 			}
@@ -473,6 +503,60 @@ function uploadFormInit(form, contextPath) {
 	});
 }
 
+//上传文件初始化上传组件-通联
+function uploadFormTonglianInit(name,form,btname,contextPath) {
+	$('#swfupload-control').swfupload({
+		upload_url : $("#" + form, parent.document).attr("action")+"?type="+name,
+		file_size_limit : "10240",
+		file_types : "*.p12;*.cer",
+		file_types_description : "All Files",
+		file_upload_limit : "0",
+		file_queue_limit : "1",
+		flash_url : contextPath + "/js/swfupload/swfupload.swf",
+		button_image_url : contextPath + "/images/indexbg.png",
+		button_text : '选择文件',
+		button_width : 50,
+		button_height : 20,
+		button_placeholder : $("#"+btname)[0]
+	}).bind('fileQueued', function(event, file) {
+		$("#"+name).val(file.name);
+		$("#"+name).attr("selectedUploadFile", true);
+	}).bind('fileQueueError', function(event, file, errorCode, message) {
+	}).bind('fileDialogStart', function(event) {
+		$(this).swfupload('cancelQueue');
+	}).bind('fileDialogComplete', function(event, numFilesSelected, numFilesQueued) {
+	}).bind('uploadStart', function(event, file) {
+	}).bind('uploadProgress', function(event, file, bytesLoaded, bytesTotal) {
+		/*
+		 * 进度条 var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
+		 * $("#progressbar").progressbar({ value : percent });
+		 * $("#progressstatus").text(percent);
+		 */
+
+	}).bind('uploadSuccess', function(event, file, serverData) {
+		var dataObj = eval("(" + serverData + ")");
+		$(".tishi_box", parent.document).html(dataObj.error);
+		$(".tishi_box", parent.document).show();
+		setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+		// $("#wavText").val("");
+		if (dataObj.errorCode == 0) {
+			if (dataObj.type == "add") {
+				$("#WORK_AREA", parent.document)[0].contentWindow.addSuccess(dataObj);
+				$("#sub", parent.document).removeAttr("disabled");
+				$("#sub", parent.document).val("确认");
+			} else if (dataObj.type == "edit") {
+				$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+				$("#sub", parent.document).removeAttr("disabled");
+				$("#sub", parent.document).val("保存");
+			}
+		}
+		// setTimeout(queryProgress, 10);
+	}).bind('uploadComplete', function(event, file) {
+		$(this).swfupload('startUpload');
+	}).bind('uploadError', function(event, file, errorCode, message) {
+	});
+}
+
 // ///////////订单类型设置////////////////
 function check_cwbOrderType() {
 	if ($("#importtypeid").val() < 0) {
@@ -550,7 +634,25 @@ function init_branch() {
 	$("#wav").hide();
 	$("#bindmsksid").parent().hide();
 	$("#branchBail").parent().hide();
-
+	
+	//自动核销的组件隐藏
+	$("#tl").parent().hide();
+	$("#cft").parent().hide();
+	
+	//通联
+	$("#bankCardNo").parent().hide();
+	$("#bankCode").parent().hide();
+	$("#ownerName").parent().hide();
+	$("#bankAccountType").parent().hide();
+	$("#bankCode").combobox();
+	//财付通
+	$("#cftAccountNo").parent().hide();
+	$("#cftBankCode").parent().hide();
+	$("#cftAccountName").parent().hide();
+	$("#cftAccountProp").parent().hide();
+	$("#cftBankCode").combobox();
+	$("#cftCertId").parent().hide();
+	$("#cftCertType").parent().hide();
 }
 function gonggongObj_branch() {
 	$("#branchname").parent().show();
@@ -558,6 +660,34 @@ function gonggongObj_branch() {
 	$("#branchcontactman").parent().show();
 	$("#insert").parent().show();
 
+}
+function payMthodchange(obj){
+	if(obj.id == "tl"){//通联显示，	财付通隐藏
+		
+		$("#bankCardNo").parent().show();
+		$("#bankCode").parent().show();
+		$("#ownerName").parent().show();
+		$("#bankAccountType").parent().show();
+	
+		$("#cftAccountNo").parent().hide();
+		$("#cftBankCode").parent().hide();
+		$("#cftAccountName").parent().hide();
+		$("#cftAccountProp").parent().hide();
+		$("#cftCertId").parent().hide();
+		$("#cftCertType").parent().hide();
+	}else{//财付通显示，通联隐藏
+		$("#cftAccountNo").parent().show();
+		$("#cftBankCode").parent().show();
+		$("#cftAccountName").parent().show();
+		$("#cftAccountProp").parent().show();
+		$("#cftCertId").parent().show();
+		$("#cftCertType").parent().show();
+		
+		$("#bankCardNo").parent().hide();
+		$("#bankCode").parent().hide();
+		$("#ownerName").parent().hide();
+		$("#bankAccountType").parent().hide();		
+	}
 }
 function zhandianObj() {
 	gonggongObj_branch();
@@ -583,6 +713,14 @@ function zhandianObj() {
 	$("#wav").show();
 	$(".zhandian").parent().show();
 	$("#bindmsksid").parent().show();
+	//自动核销站点信息组件
+	$("#tl").parent().show();
+	$("#cft").parent().show();
+	//通联
+	$("#bankCardNo").parent().show();
+	$("#bankCode").parent().show();
+	$("#ownerName").parent().show();
+	$("#bankAccountType").parent().show();
 }
 function yunyingObj() {
 	gonggongObj_branch();
@@ -7249,5 +7387,6 @@ function submitCreateFormShenheKoufa(form) {
 			}
 		}
 	});
+	
 }
 

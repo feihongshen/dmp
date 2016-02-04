@@ -36,5 +36,6 @@ public class ResourceBundleUtil {
 	//快递 承运商编码
 	public static final String expressCarrierCode = rbint.getString("expressCarrierCode");
 	
-
+	// 上传通联证书路径
+	public static final String FileTongLianPath = ResourceBundleUtil.rbint.getString("fileTongLianPath");
 }

@@ -115,6 +115,11 @@ public class VipShopGetCwbDataService {
 		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
 		
 		
+		String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
+		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
+		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
+		vipshop.setDaysno(Integer.parseInt(daysno));
+		
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
@@ -159,6 +164,8 @@ public class VipShopGetCwbDataService {
 		vip.setIsOpenLefengflag(vipshop.getIsOpenLefengflag());
 		vip.setLefengCustomerid(vipshop.getLefengCustomerid());
 		vip.setIsCreateTimeToEmaildateFlag(vipshop.getIsCreateTimeToEmaildateFlag());
+		vipshop.setSelb2cnum(vipshop.getSelb2cnum());
+		vipshop.setDaysno(vipshop.getDaysno());
 		
 		JSONObject jsonObj = JSONObject.fromObject(vip);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);

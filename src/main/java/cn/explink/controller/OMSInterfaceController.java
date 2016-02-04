@@ -255,7 +255,7 @@ public class OMSInterfaceController {
 	public @ResponseBody String getBranchByAllZhanDian() {
 		return JSONArray.fromObject(branchDAO.getBranchAllzhandian(BranchEnum.ZhanDian.getValue() + "")).toString();
 	}
-
+	
 	@RequestMapping("/getAccessableBranch/{userId}")
 	public @ResponseBody String getAccessableBranch(@PathVariable("userId") long userId) {
 		return JSONArray.fromObject(branchDAO.getAccessableBranch(userId, BranchEnum.ZhanDian.getValue())).toString();
@@ -931,7 +931,7 @@ public class OMSInterfaceController {
 			return "SUCCESS";
 		} catch (Exception e) {
 			logger.error("处理唯速达反馈请求异常", e);
-			return "处理唯速达反馈请求异:" + e.getMessage();
+			return "处理唯速达反馈请求异常:" + e.getMessage();
 		}
 
 	}

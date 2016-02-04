@@ -224,7 +224,7 @@ public class ChinaUmsXMLHandler {
 						.append("</mac>" + "</transaction_header>" + "<transaction_body>").append("</transaction_body></transaction>");
 			}
 		}else if(version== 2){
-			System.out.println("2s");
+		
 			if (chinaUmsRespNote != null && chinaUmsRespNote.getCwbOrder() != null) {
 				str.append("<?xml version='1.0' encoding='UTF-8' ?>" + "<transaction><transaction_header>" + "<version>").append(cwbmap.get("version")).append("</version>" + "<transtype>")
 						.append(cwbmap.get("transtype")).append("</transtype>" + "<employno>").append(cwbmap.get("employno")).append("</employno>" + "<termid>").append(cwbmap.get("termid"))

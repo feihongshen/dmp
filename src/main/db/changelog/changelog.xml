@@ -8735,7 +8735,16 @@ CREATE TABLE `cs_complaint_accept` (
 			  ADD COLUMN `fncustomerposbillid` BIGINT(20) DEFAULT 0  NULL  COMMENT '客户POS抵扣账单id' AFTER `fncustomerbillid`;		
 		</sql>
 	</changeSet>
-	
+	<changeSet id="liuxiao-2015-12-01-01" author="liuxiao">
+		<sql>
+			ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD index(`remark4`);
+		</sql>
+	</changeSet>
+	<changeSet id="wangqiang-2015-12-04" author="wangqiang">
+		<sql>
+			ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `isPassiveReception` INT(4) DEFAULT 0 NULL AFTER `ispostflag`;
+		</sql>
+	</changeSet> 
 	 <changeSet id="zhouguoting-2015-12-10-01" author="zhouguoting">
 		<sql>
 		   ALTER TABLE `fn_adjustment_record`   
@@ -8881,6 +8890,18 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('3043', '1', 'OMS定时任务管理', '3043', '${omsUrl}omsJob/index?', '30');
 		</sql>
 	</changeSet>
+	<changeSet id="lansheng-2016-01-26" author="lansheng">
+		<sql>
+			CREATE TABLE `express_ops_flowexp` (
+ 				 `id` BIGINT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  				  `cwb` VARCHAR(200) DEFAULT NULL,
+				  `cretime` VARCHAR(30) DEFAULT NULL,
+				  KEY `id` (`id`),
+				  KEY `cwb_IDx` (`cwb`),
+				  KEY `cretime_IDx` (`cretime`)
+				) ENGINE=INNODB DEFAULT CHARSET=utf8;
+		</sql>
+	</changeSet> 
 	<changeSet id="yedongliang-2016-01-27-01" author="yedongliang">
 		 <sqlFile path="delivery_fee.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
 	</changeSet>

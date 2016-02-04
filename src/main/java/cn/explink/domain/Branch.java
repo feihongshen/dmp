@@ -84,6 +84,49 @@ public class Branch {
 	
 	private String tpsbranchcode;//上传tps时所用的机构编码
 	
+	//自动核销用到的字段
+	/*
+	 * 通联-银行账号
+	 */
+	private String bankCardNo;
+	/*
+	 * 通联-银行编码
+	 */
+	private String bankCode;
+	/*
+	 * 通联-持卡人姓名
+	 */
+	private String ownerName;
+	/*
+	 * 通联-银行账号类型  0：私人   1：企业
+	 */
+	private int bankAccountType;
+
+	/*
+	 * 财付通-银行账号
+	 */
+	private String cftAccountNo;
+	/*
+	 * 通联-银行编码
+	 */
+	private String cftBankCode;
+	/*
+	 * 通联-持卡人姓名
+	 */
+	private String cftAccountName;
+	/*
+	 * 通联-银行账号类型  0：私人   1：企业
+	 */
+	private int cftAccountProp;
+	/*
+	 * 财付通-持卡人证件类型  身份证1；护照2；军官证3；士兵证4；回乡证5；临时身份证6；户口簿7；警官证8；台胞证9；营业执照10；其它证件11
+	 */
+	private int cftCertType;
+	/*
+	 * 证件号
+	 */
+	private String cftCertId;
+	
 	/**
 	 * @return the pfruleid
 	 */
@@ -632,6 +675,86 @@ public class Branch {
 	 */
 	public void setTpsbranchcode(String tpsbranchcode) {
 		this.tpsbranchcode = tpsbranchcode;
+	}
+	
+	public String getBankCardNo() {
+		return this.bankCardNo;
+	}
+
+	public void setBankCardNo(String bankCardNo) {
+		this.bankCardNo = bankCardNo;
+	}
+
+	public String getBankCode() {
+		return this.bankCode;
+	}
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+
+	public String getOwnerName() {
+		return this.ownerName;
+	}
+
+	public void setOwnerName(String ownerName) {
+		this.ownerName = ownerName;
+	}
+
+	public int getBankAccountType() {
+		return this.bankAccountType;
+	}
+
+	public void setBankAccountType(int bankAccountType) {
+		this.bankAccountType = bankAccountType;
+	}
+
+	public String getCftAccountNo() {
+		return this.cftAccountNo;
+	}
+
+	public void setCftAccountNo(String cftAccountNo) {
+		this.cftAccountNo = cftAccountNo;
+	}
+
+	public String getCftBankCode() {
+		return this.cftBankCode;
+	}
+
+	public void setCftBankCode(String cftBankCode) {
+		this.cftBankCode = cftBankCode;
+	}
+
+	public String getCftAccountName() {
+		return this.cftAccountName;
+	}
+
+	public void setCftAccountName(String cftAccountName) {
+		this.cftAccountName = cftAccountName;
+	}
+
+	public int getCftAccountProp() {
+		return this.cftAccountProp;
+	}
+
+	public void setCftAccountProp(int cftAccountProp) {
+		this.cftAccountProp = cftAccountProp;
+	}
+
+	public int getCftCertType() {
+		return this.cftCertType;
+	}
+
+	public void setCftCertType(int cftCertType) {
+		this.cftCertType = cftCertType;
+	}
+
+	public String getCftCertId() {
+		return this.cftCertId;
+	}
+
+	public void setCftCertId(String cftCertId) {
+		this.cftCertId = cftCertId;
 	}
 	
 }

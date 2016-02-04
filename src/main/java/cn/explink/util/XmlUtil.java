@@ -9,6 +9,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+
 public class XmlUtil {
 	
 	/**
@@ -45,7 +47,7 @@ public class XmlUtil {
 			//context = JAXBContext.newInstance(clazz);
 			Map<String, Object> props = new HashMap<String, Object>(1);
 			props.put(" javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
-			context=org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(new Class[] {clazz}, props,Thread.currentThread().getContextClassLoader() );
+			context=JAXBContextFactory.createContext(new Class[] {clazz}, props,Thread.currentThread().getContextClassLoader() );
 			marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			StringWriter stringWriter = new StringWriter();

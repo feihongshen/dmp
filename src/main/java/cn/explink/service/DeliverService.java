@@ -166,8 +166,15 @@ public class DeliverService {
 		feeMap.put("receivedfeeother", BigDecimal.ZERO);//其他实收
 		String posremark = "";//POS备注
 		String checkremark = "";//支票号备注
-		Long backreasonid = this.getBackReasonId(pullVO);//拒收原因
-		Long leavedreasonid = this.getLeavedReasonId(pullVO);//滞留原因
+		Long backreasonid = 0l;//拒收原因
+		Long leavedreasonid = 0l;//滞留原因
+		if(podresultid==DeliveryStateEnum.FenZhanZhiLiu.getValue()){
+			leavedreasonid=Long.valueOf(pullVO.getFail_code());
+		}
+		if(podresultid==DeliveryStateEnum.JuShou.getValue()||podresultid==DeliveryStateEnum.ShangMenJuTui.getValue()){
+			backreasonid= Long.valueOf(pullVO.getFail_code());
+		}
+		
 		Long weishuakareasonid = Long.valueOf(0); //未刷卡原因
 		Long losereasonid = Long.valueOf(0);//货物丢失原因
 		String deliverytime_now = pullVO.getTime_stamp();//真实反馈时间
@@ -203,6 +210,8 @@ public class DeliverService {
 		parameters.put("losereasonid", losereasonid);
 		parameters.put("deliverytime_now", deliverytime_now);
 		parameters.put("sign_man_phone", sign_man_phone);
+		parameters.put("resendtime", pullVO.getD_time());
+		parameters.put("zhiliuremark", pullVO.getD_address());
 		return parameters;
 	}
 

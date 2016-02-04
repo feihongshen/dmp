@@ -28,6 +28,20 @@ public class DeliverServerPullVO {
 	private Integer postrace = Integer.valueOf(1);
 	private Integer sign_code = Integer.valueOf(1);
 	private String fail_code = "";
+	private String d_time;  //修改时间
+	public String getD_time() {
+		return d_time;
+	}
+	public void setD_time(String d_time) {
+		this.d_time = d_time;
+	}
+	public String getD_address() {
+		return d_address;
+	}
+	public void setD_address(String d_address) {
+		this.d_address = d_address;
+	}
+	private String d_address; //修改地址
 	
 	public String getSign() {
 		return sign;
@@ -128,6 +142,8 @@ public class DeliverServerPullVO {
 				,"cod"
 				,"time_stamp"
 				,"unid"
+				,"d_address"
+				,"d_time"
 			};
 		Arrays.sort(simpleFieldArr);
 		//拼装待签名字符串

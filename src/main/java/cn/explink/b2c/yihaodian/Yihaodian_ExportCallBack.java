@@ -35,7 +35,7 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 	/**
 	 * 回传下载成功记录
 	 */
-	public void ExportCallBackByYiHaoDian(int yhd_key, int loopcount, String url, String customerid) {
+	public void ExportCallBackByYiHaoDian(int yhd_key, int loopcount,String url,String customerid,String userCode) {
 		Yihaodian yihaodian = this.getYihaodian(yhd_key);
 		try {
 			List<CwbOrderDTO> datalist = this.dataImportDAO_B2c.getCwbOrderByCustomerIdsAndPageCount(customerid, yihaodian.getCallBackCount());
@@ -43,16 +43,16 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 				return;
 			}
 			OrderExportCallbackDto condto = new OrderExportCallbackDto();
-			condto.setUserCode(yihaodian.getUserCode());
+			condto.setUserCode(userCode);
 			String nowtime = DateTimeUtil.getNowTime();
 			condto.setRequestTime(nowtime);
-			condto.setSign(MD5Util.md5(yihaodian.getUserCode() + nowtime + yihaodian.getPrivate_key()));
-			String multiCwbs = this.getCwbArrStr(datalist);
+			condto.setSign(MD5Util.md5(userCode + nowtime + yihaodian.getPrivate_key()));
+			String multiCwbs = getCwbArrStr(datalist);
 			condto.setShipmentCode(multiCwbs.replaceAll("'", ""));
 
-			ReturnDto returnDto = this.restTemplate.exportCallBack(url, condto); // 返回dto
+			ReturnDto returnDto = restTemplate.exportCallBack(url, condto); // 返回dto
 			if (!returnDto.getErrCode().equals(YihaodianExpEmum.Success.getErrCode())) {
-				this.logger.info("回调[一号店]的订单信息导出成功的接口-返回异常:errCode={},errMsg={},loopcount=" + loopcount, returnDto.getErrCode(), returnDto.getErrMsg());
+				logger.info("回调[一号店]的订单信息导出成功的接口-返回异常:errCode={},errMsg={},loopcount=" + loopcount, returnDto.getErrCode(), returnDto.getErrMsg());
 				return;
 			} else {
 				for (String cwb : condto.getShipmentCode().split(",")) {
@@ -63,7 +63,7 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 			}
 
 			if (datalist != null) {
-				this.ExportCallBackByYiHaoDian(yhd_key, loopcount + 1, url, customerid);
+				ExportCallBackByYiHaoDian(yhd_key, loopcount + 1,url,customerid,userCode);
 			}
 
 		} catch (Exception e) {

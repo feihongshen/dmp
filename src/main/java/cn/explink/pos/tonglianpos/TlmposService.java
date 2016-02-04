@@ -289,22 +289,8 @@ public class TlmposService {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// //String
-		// pub="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDPWwKu7qE/gq6XAZKK56McLfeR 0Hgc+LgcFQeHnr6x34HQtsYq6cRnl4kGBkZ2n3Qy5Q39VE5uqHWsDBMwcleIWqca blg5B//JwvP9T202QKuwnpjLTKeB/vy00uP3BQ2GzF03Bg583eppp0JHUetZoqOK oAIOwl6pHK85df9WtwIDAQAB";
-		// String
-		// pub="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDGKKX6GVBtxlnWclJ0U6/SPOzKRS4UyhudDTukoFyAYwuBT9Niuld77mhq+55m7lgPzimmRDAxaGWtBkT3A9Nnl8vf2j8pYrO/Z+IZv4KV6/AJYZ9ewrxRa32QAJPe4gxoqAvJWe+oPYPPexCiIGj5zMcjLBlMRvH61Zk5FjajCQIDAQAB";
-		// String
-		// MAC="L15N2o+pJOgzcKd03ijZJPUUevJsjvI8koa8PNk7in42QIzlT0M+7bSrNDV1mNWQFgnU0f3Tct/UvAewXDRoRuaLDzdStf+rN1gH7zLx6/G24s+NQbMqkw+Q5obuAZXl31GDy7f677heMtzRBJ7FkfM/9gXXZF5u+tYK2vouqWA=";
-		// String checkMACdata="0123456789abc";
-		//
-		// boolean heckMACflag =
-		// RSACoder.verify(checkMACdata.getBytes(),pub,MAC);
-		// System.out.println(heckMACflag);
-		String privatekey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMYopfoZUG3GWdZyUnRTr9I87MpFLhTKG50NO6SgXIBjC4FP02K6V3vuaGr7nmbuWA/OKaZEMDFoZa0GRPcD02eXy9/aPylis79n4hm/gpXr8Alhn17CvFFrfZAAk97iDGioC8lZ76g9g897EKIgaPnMxyMsGUxG8frVmTkWNqMJAgMBAAECgYEAsQYROLsymc7P5P7eYGN+t6+Lzis9Pn9LaeMvfCNyX5Ob7JqWeiWEEAfsql48pTGZ5AzGMm3KK+lao9bs90soqFloafA9OEprpM5A1dDNR0wbvmsN8YkthSfVaX5WPmCPH+iF0YUFTteMJOFULU1Ot7Ql+JnwKYqU6g8bswIH1I0CQQDnQ56S4GdBWktSpMmDHwk2DSTsGDPJTRPM7nDENt3YcBCn2spzuqe0XBsM5rlx1J6TfOWACkulJ3wCes7NhPUrAkEA21qNMTa2TvbWlX8y4449DLHILaRAY/5TpZH2dnrmhNO/EVrYYdHnMWyYz6rFDWBd2i8Y4KBiKtaHvp3ws62WmwJBAN3sa71yjmOObH2wGJg1LjeqQWY2i2t/BaNApQIFzLmoQLNzJ5gK5GgVgvfMaOStLkdGMU2/k3u2+i++/bkG/+UCQAzV+Ksnk3V9dkMbRWQRf7sNcDRThz0StdxbdTurp2+gYG7ojP70ZH3859hHGu7Uc8l/tgn2+KefFCRwY5RwFP8CQBI4kMxBCd1AV6iIOkKIBKky5q6hr+mcdnqBRLiVhQrRJPfFCWSnMt5wgvEyy2lg80ni+a/FbkCW3GQp7xkliuM=";
-		String str = "0123456789abc";
-		String MAC = RSACoder.sign(str.getBytes(), privatekey);
 
-		System.out.println(MAC);
+		System.out.println(isAcronym("ABC1DE"));
 
 	}
 
@@ -350,7 +336,30 @@ public class TlmposService {
 			return DeliveryStateEnum.PeiSongChengGong.getValue();
 		}
 	}
-
+	
+	/**
+	 * 判断字符串是否含有大写字母 true 全大写，false有小写
+	 * @param word
+	 * @return
+	 */
+	public static boolean isAcronym(String word)
+	 {
+		 int flag=0;
+		  for(int i = 0; i < word.length(); i++)
+		  {
+			   char c = word.charAt(i);
+			   if (!Character.isLowerCase(c))
+			   {
+				   flag++;
+			   }
+		  }
+		  if(flag==word.length()){
+			  return true;
+		  }
+		  return false;
+	 }
+	
+	
 	/**
 	 * 为tlmposRespNote封装 公用对象
 	 * 
@@ -362,18 +371,13 @@ public class TlmposService {
 		
 		String cwbTransCwb = this.cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrder_no()); // 可能是订单号也可能是运单号
 		
-		User pjdUser = getPjdUserName(cwbTransCwb);
-		if(pjdUser!=null){
-			String pjdUname = rootnote.getTransaction_Header().getExt_attributes().getDelivery_man();
-			if(pjdUser.getUsername().toUpperCase().equals(pjdUname)){
-				tlmposRespNote.setDeliverid(pjdUser.getUserid());
-			}else{
-				tlmposRespNote.setDeliverid(0);
-			}
-			
-		}else{
-			tlmposRespNote.setDeliverid(this.getUserIdByUserName(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()));
+		String userName=rootnote.getTransaction_Header().getExt_attributes().getDelivery_man();
+		
+		if(isAcronym(userName)){ //如果全部为大写，很可能是品骏达一体机,系统中不允许有大小写混合的
+			userName=userName.toLowerCase();
 		}
+		
+		tlmposRespNote.setDeliverid(this.getUserIdByUserName(userName));
 		
 
 		long deliverid = 0;
@@ -382,21 +386,20 @@ public class TlmposService {
 			deliverid = tlmposRespNote.getDeliverid() == 0 ? -1 : tlmposRespNote.getDeliverid();
 		}
 		
-		 
 		
 		tlmposRespNote.setCwbOrder(this.cwbDAO.getCwbDetailByCwbAndDeliverId(deliverid, cwbTransCwb));
 		if (tlmposRespNote.getCwbOrder() == null) {
 			return tlmposRespNote;
 		}
 
-		tlmposRespNote.setBranchid(this.userDAO.getUserByUsername(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man()).getBranchid());
+		tlmposRespNote.setBranchid(this.userDAO.getUserByUsername(userName).getBranchid());
 
 		DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb_posHelper(cwbTransCwb, tlmposRespNote.getDeliverid()); // 如果根据订单号可以查到对象，则返回，如果查询不到，则调用receiveGoods创建。
 
 		tlmposRespNote.setDeliverstate(ds);
 		tlmposRespNote.setOrder_no(cwbTransCwb);
 		tlmposRespNote.setTransaction_id(rootnote.getTransaction_Header().getTransaction_id());
-		tlmposRespNote.setDelivery_man(rootnote.getTransaction_Header().getExt_attributes().getDelivery_man());
+		tlmposRespNote.setDelivery_man(userName);
 
 		return tlmposRespNote;
 	}

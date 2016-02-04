@@ -311,7 +311,7 @@ function baleaddcwbCheck(){
    		type: "POST",
    		url:"<%=request.getContextPath()%>/bale/baleaddcwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=4",
    		dataType : "json",
-   		data:"customerid="+$("#customerid").val(),
+   		data:{"customerid":$("#customerid").val(),"typeflag":"tuigonghuoshangchuku"}, //"customerid="+$("#customerid").val()
    		success : function(data) {
    			$("#msg").html("");
    			if(data.body.errorcode=="111111"){

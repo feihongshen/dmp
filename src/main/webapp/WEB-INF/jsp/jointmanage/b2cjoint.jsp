@@ -170,7 +170,7 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/smile/show/');
 			$("#del").val('<%=request.getContextPath()%>/smile/del/');
 		}
-		else if(obj=='20009'||obj=='20050'){
+		else if(obj=='20009'||obj=='20050'||obj=='20130'||obj=='20131'||obj=='20132'){
 			$("#edit").val('<%=request.getContextPath()%>/yihaodian/show/');
 			$("#del").val('<%=request.getContextPath()%>/yihaodian/del/');
 		}
@@ -374,6 +374,7 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/lechong/show/');
 			$("#del").val('<%=request.getContextPath()%>/lechong/del/');
 		}
+
 		else if(obj=='20087'){
 			$("#edit").val('<%=request.getContextPath()%>/sfxhm/show/');
 			$("#del").val('<%=request.getContextPath()%>/sfxhm/del/');
@@ -382,7 +383,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/smiled/show/');
 			$("#del").val('<%=request.getContextPath()%>/smiled/del/');
 		}
-		else if(obj=='20088'){
+
+		
+
+		else if(obj=='20088'||obj=='21001'||obj=='21002'){
 			$("#edit").val('<%=request.getContextPath()%>/zhongliang/show/');
 			$("#del").val('<%=request.getContextPath()%>/zhongliang/del/');
 		}
@@ -410,10 +414,22 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/jiuye/show/');
 			$("#del").val('<%=request.getContextPath()%>/jiuye/del/');
 		}
+		else if(obj=='20107'){
+			$("#edit").val('<%=request.getContextPath()%>/feiniuwang/show/');
+			$("#del").val('<%=request.getContextPath()%>/feiniuwang/del/');
+		}
+		else if(obj=='20108'){
+			$("#edit").val('<%=request.getContextPath()%>/yonghui/show/');
+			$("#del").val('<%=request.getContextPath()%>/yonghui/del/');
+		}
 		
 		else if(obj=='20109'||obj=='20110'||obj=='20111'||obj=='20112'||obj=='20113'){
 			$("#edit").val('<%=request.getContextPath()%>/jiuyeaddressmatch/show/');
 			$("#del").val('<%=request.getContextPath()%>/jiuyeaddressmatch/del/');
+		}
+		else if(obj=='20117'){
+			$("#edit").val('<%=request.getContextPath()%>/zhemeng/show/');
+			$("#del").val('<%=request.getContextPath()%>/zhemeng/del/');
 		}
 		
 		else if(obj=='20118'){
@@ -436,21 +452,45 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
 
-		else if(obj=='20127'){
+		else if(obj=='20227'){
 			$("#edit").val('<%=request.getContextPath()%>/tpsAutomate/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
 		
-		else if(obj=='20128'){//唯品会_TPS_运单状态
+		else if(obj=='20228'){//唯品会_TPS_运单状态
 			$("#edit").val('<%=request.getContextPath()%>/tpsCarrierOrderStatus/show/');
 			$("#del").val('<%=request.getContextPath()%>/tpsCarrierOrderStatus/del/');
 		}
 
-		else if(obj=='20129'){ //外单推DO
+		else if(obj=='20229'){ //外单推DO
 			$("#edit").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/show/');
 			$("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
 		}
+		
+		else if(obj=='20127'){
+			$("#edit").val('<%=request.getContextPath()%>/suning/show/');
+			$("#del").val('<%=request.getContextPath()%>/suning/del/');
+		}
+		
+		else if(obj=='20135'){
+			$("#edit").val('<%=request.getContextPath()%>/meilinkai/show/');
+			$("#del").val('<%=request.getContextPath()%>/meilinkai/del/');
+		}else if(obj=='20200'){
+			$("#edit").val('<%=request.getContextPath()%>/tonglian/show/');
+			$("#del").val('<%=request.getContextPath()%>/tonglian/del/');
+		}else if(obj=='20136'){
+			$("#edit").val('<%=request.getContextPath()%>/huanqiugou/show/');
+			$("#del").val('<%=request.getContextPath()%>/huanqiugou/del/');
+		}else if(obj=='20201'){
+			$("#edit").val('<%=request.getContextPath()%>/caifutong/show/');
+			$("#del").val('<%=request.getContextPath()%>/caifutong/del/');
+		}
 
+		else if(obj=='20140'){
+			$("#edit").val('<%=request.getContextPath()%>/pinhaohuo/show/');
+			$("#del").val('<%=request.getContextPath()%>/pinhaohuo/del/');
+		}
+		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

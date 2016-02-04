@@ -1,7 +1,5 @@
 package cn.explink.domain;
 
-import java.math.BigDecimal;
-
 public class ExcelColumnSet {
 
 	long columnid;

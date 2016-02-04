@@ -52,19 +52,21 @@ public class ZhongliangInsertCwbDetailTimmer {
 	Zhongliang_WaitOrderCallBack callBack;
 
 	public void selectTempAndInsertToCwbDetail() {
-		int efastKey = B2cEnum.Zhongliang.getKey();
-		int isOpenFlag = jointService.getStateForJoint(efastKey);
-		if (isOpenFlag == 0) {
-			logger.info("未开启[中粮]对接！efastKey={}", efastKey);
-			return;
+		List<B2cEnum> b2cEnums = this.zhongliangService.getB2cEnum(B2cEnum.Zhongliang.getMethod());
+		for (B2cEnum b2c : b2cEnums) {
+			int efastKey = b2c.getKey();
+			int isOpenFlag = this.jointService.getStateForJoint(efastKey);
+			if (isOpenFlag == 0) {
+				this.logger.info("未开启[" + b2c.getText() + "]对接！efastKey={}", efastKey);
+				continue;
+			}
+			this.dealWithEfastMethod(efastKey);
 		}
-		dealWithEfastMethod(efastKey);
-
 	}
 
 	private void dealWithEfastMethod(int efastKey) {
-		Zhongliang zl = zhongliangService.getZhongliang(efastKey);
-		List<CwbOrderDTO> cwbOrderList = dataImportDAO_B2c.getCwbOrderTempByKeys(zl.getCustomerid());
+		Zhongliang zl = this.zhongliangService.getZhongliang(efastKey);
+		List<CwbOrderDTO> cwbOrderList = this.dataImportDAO_B2c.getCwbOrderTempByKeys(zl.getCustomerid());
 		if (cwbOrderList == null) {
 			return;
 		}
@@ -79,11 +81,11 @@ public class ZhongliangInsertCwbDetailTimmer {
 				break;
 			}
 			int toIdx = k * batch;
-			if (k * batch > cwbOrderList.size()) {
+			if ((k * batch) > cwbOrderList.size()) {
 				toIdx = cwbOrderList.size();
 			}
 			List<CwbOrderDTO> subList = cwbOrderList.subList(fromIndex, toIdx);
-			ImportSubList(zl, subList);
+			this.ImportSubList(zl, subList);
 			k++;
 		}
 	}
@@ -93,41 +95,44 @@ public class ZhongliangInsertCwbDetailTimmer {
 
 		for (CwbOrderDTO cwbOrder : cwbOrderList) {
 			try {
-				ImportSignOrder(zl, cwbOrder);
+				if ((cwbOrder.getCwbordertypeid() == 90) || (cwbOrder.getCwbordertypeid() == 95)) {
+					continue;
+				}
+				this.ImportSignOrder(zl, cwbOrder);
 			} catch (Exception e) {
-				logger.error("定时器临时表插入或修改方法执行异常!cwb=" + cwbOrder.getCwb(), e);
+				this.logger.error("定时器临时表插入或修改方法执行异常!cwb=" + cwbOrder.getCwb(), e);
 			}
 		}
 	}
 
 	private void ImportSignOrder(Zhongliang zl, CwbOrderDTO cwbOrder) {
-		CwbOrder order = cwbDAO.getCwbByCwb(cwbOrder.getCwb());
+		CwbOrder order = this.cwbDAO.getCwbByCwb(cwbOrder.getCwb());
 		if (order != null) { // 要合单子
-			logger.warn("查询临时表-检测到0好享购0有重复数据,已过滤!订单号：{},运单号:{}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
+			this.logger.warn("查询临时表-检测到0好享购0有重复数据,已过滤!订单号：{},运单号:{}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
 		} else {
 			// insert
 			User user = new User();
 			user.setUserid(1);
 			long warehouse_id = zl.getWarehouseid();
-			long warehouseid = warehouse_id != 0 ? warehouse_id : dataImportService_B2c.getTempWarehouseIdForB2c(); // 获取虚拟库房
-																													// Id,所有的B2C对接都会导入默认的虚拟库房里面，方便能够统计到。
+			long warehouseid = warehouse_id != 0 ? warehouse_id : this.dataImportService_B2c.getTempWarehouseIdForB2c(); // 获取虚拟库房
+																															// Id,所有的B2C对接都会导入默认的虚拟库房里面，方便能够统计到。
 			user.setBranchid(warehouseid);
-			EmailDate ed = dataImportService.getOrCreateEmailDate(cwbOrder.getCustomerid(), 0, warehouseid);
+			EmailDate ed = this.dataImportService.getOrCreateEmailDate(cwbOrder.getCustomerid(), 0, warehouseid);
 
-			emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
+			this.emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
 
-			cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), ed.getWarehouseid(), user, ed);
-			logger.info("定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
+			this.cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), ed.getWarehouseid(), user, ed);
+			this.logger.info("定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
 
-			if (cwbOrder.getExcelbranch() == null || cwbOrder.getExcelbranch().length() == 0) {
+			if ((cwbOrder.getExcelbranch() == null) || (cwbOrder.getExcelbranch().length() == 0)) {
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", "1");
-				addressmatch.sendBodyAndHeaders(null, map);
+				this.addressmatch.sendBodyAndHeaders(null, map);
 			}
 
 		}
-		dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
-		callBack.ExportCallBackByZhongliang();
+		this.dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
+		// callBack.ExportCallBackByZhongliang();
 	}
 }

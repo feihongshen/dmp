@@ -30,7 +30,7 @@ public class JSONReslutUtil {
 		String responseXml = "";
 		// HttpClient httpClient = new HttpClient();
 		HttpClient httpClient = new HttpClient(new HttpClientParams(), new SimpleHttpConnectionManager(true));
-		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(10000);
+		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(20000);
 		httpClient.getHttpConnectionManager().getParams().setSoTimeout(40000);
 		PostMethod postMethod = new PostMethod(url);
 		postMethod.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");

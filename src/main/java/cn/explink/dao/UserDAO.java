@@ -1082,4 +1082,35 @@ public class UserDAO {
 		return this.jdbcTemplate.query(sql, new UserRowMapper());
 
 	}
+	
+	public List<User> getExportUserInfo(String username,String realname,long branchid,long roleid){
+		String sql= "select * from express_set_user where 1=1";
+		if ((username.length() > 0) || (realname.length() > 0)) {
+			sql += " and ";
+			if ((username.length() > 0) && (realname.length() > 0)) {
+				sql += " username like '%" + username + "%' and  realname like '%" + realname + "%' and userDeleteFlag=1 ";
+			} else {
+				if (username.length() > 0) {
+					sql += " username like '%" + username + "%' and userDeleteFlag=1 ";
+				}
+				if (realname.length() > 0) {
+					sql += " realname like '%" + realname + "%' and userDeleteFlag=1 ";
+				}
+			}
+
+		}
+		if (branchid > -1) {
+			sql += " and branchid=" + branchid;
+		}
+
+		if (roleid > -1) {
+			sql += " and roleid=" + roleid;
+		}
+		sql += " order by CONVERT( realname USING gbk ) COLLATE gbk_chinese_ci ASC ";
+
+		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
+		
+		return userList;
+	}
+	
 }
