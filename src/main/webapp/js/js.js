@@ -202,10 +202,19 @@ function getEditBox(key) {
 		success : function(data) {
 			// alert(data);
 			$("#alert_box", parent.document).html(data);
+			
 		},
 		complete : function() {
 			editInit();// 初始化ajax弹出页面
 			viewBox();
+			//////////////      liumurong
+			if($('#isypdjusetranscwb',parent.document).val() == "0"){
+				//一票多件用运单号如果为否，那么集单为否并且不可修改。
+				$("#ifjidan",parent.document).attr("disabled","disabled");
+				$('#ifjidan',parent.document).val("0");
+			}		
+			// 有其他需求可以参阅 transcwbswitch() 这个方法
+			////////////////////////
 		}
 	});
 }
@@ -1039,6 +1048,11 @@ function check_reason() {
 		alert("请选择一级原因");
 		return false;
 	}
+	
+	if ($("#reasontype").val() == 15 && $("#intercept_1").attr("checked") != "checked" && $("#intercept_2").attr("checked") != "checked" && $("#intercept_3").attr("checked") != "checked") {
+		alert("请根据填写的具体内容描述标识其含义");
+		return false;
+	}
 	if ($("#reasoncontent").val().length == 0) {
 		alert("常用语不能为空");
 		return false;
@@ -1079,6 +1093,15 @@ function check_customer() {
 		 * if($("#autoProductcwbpre").val().length>6){ alert("订单号前缀不超过6位");
 		 * return false; }
 		 */
+	}else if($('#ifjidan').val() == "1"){
+		if($('input:radio[name="mpsswitch"]:checked').val() == null && $('input:radio[name="mpsswitch"]:checked').val() == null){
+			alert("当前您已启用集单模式，请根据业务情况选择「库房集单」还是「站点集单」");
+			return false;
+		}
+		if($('#isypdjusetranscwb').val() != "1" || $('#isUsetranscwb').val() != "0"){
+			alert("当前您已启用集单模式，「一票多件用运单号」与「扫描运单号」均需选择「是」");
+			return false;
+		}
 	}
 
 	return true;
@@ -5446,6 +5469,10 @@ function whenhidden(){
 			$("#div_changealowflag").attr('hidden');
 		}
 	}
+	if($("#reasontype").val()==15)
+	{
+		$("#div_intercept").removeAttr('hidden');
+	}
 	
 } 
 
@@ -7388,5 +7415,38 @@ function submitCreateFormShenheKoufa(form) {
 		}
 	});
 	
+}
+
+function changejd(){
+	if($('#ifjidan').val() == "0"){
+		
+		$('#jdType1').parent().hide();
+		$('#jdType1').val("0");
+		$('#jdType2').val("0");		
+		
+	}
+	if($('#ifjidan').val() == "1"){
+	
+		$('#jdType1').parent().show();
+	}
+}
+
+function transcwbswitch(){
+	if($('#isypdjusetranscwb').val() == "0"){
+		//集单开关为否
+		$("#ifjidan").attr("disabled","disabled");
+		$('#ifjidan').val("0");
+		
+		$('#jdType1').parent().hide();
+		$('#jdType1').val("0");
+		$('#jdType2').val("0");		
+		
+	}
+	if($('#isypdjusetranscwb').val() == "1"){
+		$("#ifjidan").removeAttr("disabled");
+		if($('#ifjidan').val() == "1"){	
+			$('#jdType1').parent().show();
+		}
+	}
 }
 

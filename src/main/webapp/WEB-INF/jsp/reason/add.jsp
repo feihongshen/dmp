@@ -2,7 +2,7 @@
 <%@page import="cn.explink.dao.ReasonDao"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.enumutil.ReasonTypeEnum"%>
-
+<%@page import="cn.explink.enumutil.InterceptTypeEnum"%>
 <%
 
 List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
@@ -42,7 +42,13 @@ List<Reason>  rslist = (List<Reason>)request.getAttribute("reasonList");
 					       <option value ="0">请选择</option>
 			           </select>*</li>
 		           </div>		
-		              
+		           <div hidden="true" id="div_intercept">
+			           <li><span id="interceptType" style="margin-left: 50px;width:180px;" align="left">
+				           <input type="radio" id="intercept_3" name="interceptType"  checked="checked" value='<%=InterceptTypeEnum.tuihuo.getValue() %>'><%=InterceptTypeEnum.tuihuo.getText() %>
+				           <input type="radio" id="intercept_1" name="interceptType"   value='<%=InterceptTypeEnum.diushi.getValue() %>'><%=InterceptTypeEnum.diushi.getText() %>
+				           <input type="radio" id="intercept_2" name="interceptType"   value='<%=InterceptTypeEnum.posun.getValue() %>'><%=InterceptTypeEnum.posun.getText() %>
+			           </span></li>
+		           </div>   
 					<li><span>内容：</span><input type ="text" id="reasoncontent" name ="reasoncontent" maxlength="30" class="input_text1"></li>				
 				 	
 				</ul>

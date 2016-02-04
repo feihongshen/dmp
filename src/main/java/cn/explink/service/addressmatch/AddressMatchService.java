@@ -29,6 +29,7 @@ import cn.explink.b2c.zjfeiyuan.responsedto.ResponseData;
 import cn.explink.b2c.zjfeiyuan.service.RequestFYService;
 import cn.explink.consts.ConstPool;
 import cn.explink.dao.AddressCustomerStationDao;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
@@ -65,6 +66,7 @@ import cn.explink.util.baiduAPI.ReGeoCoderResult;
 public class AddressMatchService implements SystemConfigChangeListner, ApplicationListener<ContextRefreshedEvent> {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
 	private static final String IS_CUSTOMER_STATION_MAPPING_ENABLED = "is_customer_station_mapping_enabled";
 
@@ -246,7 +248,6 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						int successFlag = addressreturn.getResultCode().getCode();
 						if (successFlag == ResultCodeEnum.success.getCode()) {
 							OrderAddressMappingResult mappingResult = addressreturn.getResultMap().get(cwb);
-
 							this.logger.info("阡陌地址库匹配返回json={}", JacksonMapper.getInstance().writeValueAsString(mappingResult));
 							if (mappingResult != null) {
 								List<DeliveryStationVo> deliveryStationList = mappingResult.getDeliveryStationList();
@@ -255,6 +256,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 								if ((deliveryStationList == null) || deliveryStationList.isEmpty()) {
 									return;
 								}
+
 								AddressMappingResultEnum mappingResultEnum = mappingResult.getResult();
 								if (mappingResultEnum.equals(AddressMappingResultEnum.singleResult)) {
 									// 如果没有配置映射关系，则依然走原有流程

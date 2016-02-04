@@ -8,6 +8,7 @@
 <%@page import="cn.explink.domain.orderflow.*"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -33,7 +34,6 @@ CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
 List<AbnormalWriteBackView> backViewList = (List<AbnormalWriteBackView>)request.getAttribute("abnormalWriteBackViewList");
 List<ComplaintsView> comViewList = (List<ComplaintsView>)request.getAttribute("comViewList");
 List<TranscwbView> transcwbList = request.getAttribute("transcwbList")==null?null:(List<TranscwbView>)request.getAttribute("transcwbList");
-
 
 %>
 <HEAD>
@@ -86,13 +86,24 @@ function goForm(cwb){
 							<tr>
 								<td align="center" bgcolor="#F1F1F1">订单号</td>
 								<td align="center" bgcolor="#F1F1F1">运单号</td>
+								<c:choose>
+								<c:when test="${jdtype == 1}">
+								<td align="center" bgcolor="#F1F1F1"><font>一票多件当前状态</font></td>
+								<td align="center" bgcolor="#F1F1F1"><font>运单状态<font></td>
+								</c:when>
+								<c:otherwise>
 								<td align="center" bgcolor="#F1F1F1">运单号当前状态</td>
+								</c:otherwise>
+								</c:choose>
 							</tr>
 							<%for(TranscwbView ts : transcwbList){ %>
 							<tr onclick="goForm('<%=ts.getTranscwb() %>');">
 								<td align="center" bgcolor="#EBFFD7"><%=ts.getCwb() %></td>
 								<td align="center" bgcolor="#EBFFD7"><%=ts.getTranscwb() %></td>
 								<td align="center" bgcolor="#EBFFD7"><%=ts.getFlowordername() %></td>
+								<c:if test="${jdtype == 1}">
+								<td align="center" bgcolor="#EBFFD7"><font><%=ts.getTranscwbstate() %></font></td>
+								</c:if>
 							</tr>
 							<%} %>
 						</tbody>

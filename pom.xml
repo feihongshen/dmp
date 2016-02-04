@@ -819,6 +819,7 @@
 				<addresspassword>shpj</addresspassword>
 				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
 				<expressCarrierCode>30102000000</expressCarrierCode>
+				<fileTongLianPath>E:\paysource\</fileTongLianPath>
 			</properties>
 		</profile>
 		<profile>
@@ -847,6 +848,7 @@
 		</profile>
 		
 		<profile>
+
 			<id>HNJH_ADDRESS_TEST</id>
 			<properties>
 				<tomcat.manager.url></tomcat.manager.url>

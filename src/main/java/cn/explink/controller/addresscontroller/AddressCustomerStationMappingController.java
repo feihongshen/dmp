@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.domain.Branch;
+import cn.explink.domain.Customer;
 import cn.explink.domain.User;
 import cn.explink.domain.addressvo.AddressCustomerStationVO;
 import cn.explink.enumutil.BranchEnum;
@@ -103,6 +104,10 @@ public class AddressCustomerStationMappingController {
 				.getCustomerStationByid(id);
 		model.addAttribute("addressCustomerStationVO", addressCustomerStationVO);
 		model.addAttribute("listCustomers", this.customerService.getPageCash());
+		
+		
+		
+		
 		model.addAttribute("listBranchs", this.getStations());
 		return "/address/edit";
 	}
@@ -160,5 +165,13 @@ public class AddressCustomerStationMappingController {
 		return listStation;
 	}
 
+	public List<Branch> getStation() {
+		List<Branch> list = this.branchService.getPageCashs();
+	
+		
+		
+		
+		return list;
+	}
 
 }

@@ -33,6 +33,7 @@ public class ReasonDao {
 			reason.setWhichreason(rs.getInt("whichreason"));
 			reason.setParentid(rs.getInt("parentid"));
 			reason.setChangealowflag(rs.getInt("changealowflag"));
+			reason.setInterceptType(rs.getInt("contentmeaning"));
 			return reason;
 		}
 	}
@@ -50,21 +51,21 @@ public class ReasonDao {
 	public List<Reason> getReasonByPage(long page, long reasontype) {
 		String sql = "select * from express_set_reason";
 		sql = this.getReasonByPageWhereSql(sql, reasontype);
-		sql += " order by reasonid desc limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		List<Reason> reasonList = jdbcTemplate.query(sql, new ReasonRowMapper());
+		sql += " order by reasonid desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		List<Reason> reasonList = this.jdbcTemplate.query(sql, new ReasonRowMapper());
 		return reasonList;
 	}
 
 	public long getReasonCount(long reasontype) {
 		String sql = "select count(1) from express_set_reason";
 		sql = this.getReasonByPageWhereSql(sql, reasontype);
-		return jdbcTemplate.queryForInt(sql);
+		return this.jdbcTemplate.queryForInt(sql);
 	}
 
 	@Cacheable(value = "reasonCache", key = "#reasonid")
 	public Reason getReasonByReasonid(long reasonid) {
 		try {
-			return jdbcTemplate.queryForObject("select * from express_set_reason where reasonid=?", new ReasonRowMapper(), reasonid);
+			return this.jdbcTemplate.queryForObject("select * from express_set_reason where reasonid=?", new ReasonRowMapper(), reasonid);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -72,23 +73,24 @@ public class ReasonDao {
 
 	public List<Reason> getReasonByReasoncontent(String reasoncontent) {
 		try {
-			return jdbcTemplate.query("select * from express_set_reason where reasoncontent=?", new ReasonRowMapper(), reasoncontent);
+			return this.jdbcTemplate.query("select * from express_set_reason where reasoncontent=?", new ReasonRowMapper(), reasoncontent);
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	public List<Reason> getReasonByReasoncontentAndParentid(String reasoncontent,int parentid) {
+
+	public List<Reason> getReasonByReasoncontentAndParentid(String reasoncontent, int parentid) {
 		try {
-			return jdbcTemplate.query("select * from express_set_reason where reasoncontent=? and parentid=?", new ReasonRowMapper(), reasoncontent,parentid);
+			return this.jdbcTemplate.query("select * from express_set_reason where reasoncontent=? and parentid=?", new ReasonRowMapper(), reasoncontent, parentid);
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	
+
 	public List<Reason> getReasonByReasontype(long reasontype) {
-		if(reasontype==2){
+		if (reasontype == 2) {
 			try {
-				return jdbcTemplate.query("select * from express_set_reason where reasontype=? and whichreason=1", new ReasonRowMapper(), reasontype);
+				return this.jdbcTemplate.query("select * from express_set_reason where reasontype=? and whichreason=1", new ReasonRowMapper(), reasontype);
 			} catch (Exception e) {
 				return null;
 			}
@@ -98,23 +100,24 @@ public class ReasonDao {
 
 	@CacheEvict(value = "reasonCache", key = "#reason.reasonid")
 	public void saveReason(final Reason reason) {
-			
-			jdbcTemplate.update("update express_set_reason set reasoncontent=?,changealowflag=? where reasonid=?", new PreparedStatementSetter() {
 
-				@Override
-				public void setValues(PreparedStatement ps) throws SQLException {
-					ps.setString(1, reason.getReasoncontent());
-					ps.setInt(2, reason.getChangealowflag());
-					ps.setLong(3, reason.getReasonid());
-					
-				}
-			});
-		
+		this.jdbcTemplate.update("update express_set_reason set reasoncontent=?,changealowflag=?,contentmeaning=? where reasonid=?", new PreparedStatementSetter() {
+
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setString(1, reason.getReasoncontent());
+				ps.setInt(2, reason.getChangealowflag());
+				ps.setInt(3, reason.getInterceptType());
+				ps.setLong(4, reason.getReasonid());
+
+			}
+		});
+
 	}
 
 	public void creReason(final Reason reason) {
 
-		jdbcTemplate.update("insert into express_set_reason(reasoncontent,reasontype,whichreason,parentid,changealowflag) values(?,?,?,?,?)", new PreparedStatementSetter() {
+		this.jdbcTemplate.update("insert into express_set_reason(reasoncontent,reasontype,whichreason,parentid,changealowflag,contentmeaning) values(?,?,?,?,?,?)", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, reason.getReasoncontent());
@@ -122,6 +125,7 @@ public class ReasonDao {
 				ps.setInt(3, reason.getWhichreason());
 				ps.setInt(4, reason.getParentid());
 				ps.setInt(5, reason.getChangealowflag());
+				ps.setInt(6, reason.getInterceptType());
 			}
 		});
 	}
@@ -129,23 +133,23 @@ public class ReasonDao {
 	public List<Reason> getAllReasonByReasonType(long reasontype) {
 		try {
 			String sql = "select * from express_set_reason where reasontype=" + reasontype;
-			return jdbcTemplate.query(sql, new ReasonRowMapper());
+			return this.jdbcTemplate.query(sql, new ReasonRowMapper());
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
 		}
 	}
 
 	public List<Reason> getAllReason() {
-		return jdbcTemplate.query("select * from express_set_reason ", new ReasonRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_reason ", new ReasonRowMapper());
 	}
-	
+
 	public List<Reason> getKeHuLeiXingAllReason() {
-		return jdbcTemplate.query("select * from express_set_reason where reasontype=14", new ReasonRowMapper());
+		return this.jdbcTemplate.query("select * from express_set_reason where reasontype=14", new ReasonRowMapper());
 	}
 
 	/**
 	 * 根据 异常编码id查询 异常类型
-	 * 
+	 *
 	 * @return
 	 */
 	public long getReasonTypeByExptCode(String code) {
@@ -153,7 +157,7 @@ public class ReasonDao {
 		long reasontype = 0;
 		Reason reason = null;
 		try {
-			reason = jdbcTemplate.queryForObject(sql, new ReasonRowMapper());
+			reason = this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper());
 			if (reason != null) {
 				reasontype = reason.getReasontype();
 			}
@@ -164,69 +168,72 @@ public class ReasonDao {
 
 		return reasontype;
 	}
+
 	//查出所有的一级原因
-	public List<Reason> add(){
+	public List<Reason> add() {
 		String sql = "SELECT * FROM express_set_reason where whichreason=1";
-		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper());
+		List<Reason> list = this.jdbcTemplate.query(sql, new ReasonRowMapper());
 		return list;
 	}
-	
+
 	//查出所有的一级原因
-	public List<Reason> getFirstReasonByType(long reasontype){
+	public List<Reason> getFirstReasonByType(long reasontype) {
 		String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype=?";
-		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper(),reasontype);
+		List<Reason> list = this.jdbcTemplate.query(sql, new ReasonRowMapper(), reasontype);
 		return list;
 	}
-		
+
 	//查出所有的二级原因
-	public List<Reason> getAllSecondLevelReason(long firstreasonid){
-		String sql = "SELECT * FROM express_set_reason where parentid="+firstreasonid;
-		List<Reason> list = jdbcTemplate.query(sql,  new ReasonRowMapper());
+	public List<Reason> getAllSecondLevelReason(long firstreasonid) {
+		String sql = "SELECT * FROM express_set_reason where parentid=" + firstreasonid;
+		List<Reason> list = this.jdbcTemplate.query(sql, new ReasonRowMapper());
 		return list;
 	}
-	public List<Reason> getSecondLevelReason(long rid){
-		String sql ="";
-		List<Reason> lr = null;		
-		try {			
-				sql = "SELECT * FROM express_set_reason where whichreason=2 and parentid=?";
-				lr=jdbcTemplate.query(sql,new ReasonRowMapper(),rid);	
+
+	public List<Reason> getSecondLevelReason(long rid) {
+		String sql = "";
+		List<Reason> lr = null;
+		try {
+			sql = "SELECT * FROM express_set_reason where whichreason=2 and parentid=?";
+			lr = this.jdbcTemplate.query(sql, new ReasonRowMapper(), rid);
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			return null;
 		}
-		
+
 		return lr;
 	}
-	
+
 	//查出所有的一级原因
-	public List<Reason> addWO(){
-		int reasonGongdantousu=ReasonTypeEnum.GongDanTouSuYuanYin.getValue();
-		String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype="+reasonGongdantousu;
-		List<Reason> list = jdbcTemplate.query(sql,new ReasonRowMapper());
+	public List<Reason> addWO() {
+		int reasonGongdantousu = ReasonTypeEnum.GongDanTouSuYuanYin.getValue();
+		String sql = "SELECT * FROM express_set_reason where whichreason=1 and reasontype=" + reasonGongdantousu;
+		List<Reason> list = this.jdbcTemplate.query(sql, new ReasonRowMapper());
 		return list;
 	}
-	
-	public List<Reason> getAllTwoLevelReason(){
+
+	public List<Reason> getAllTwoLevelReason() {
 		String sql = "SELECT * FROM express_set_reason where whichreason=2";
-		List<Reason> list = jdbcTemplate.query(sql,new ReasonRowMapper());
+		List<Reason> list = this.jdbcTemplate.query(sql, new ReasonRowMapper());
 		return list;
 	}
 
 	public Reason getRcontentByReasonid(int reasonid) {
-		String sql = "select * from express_set_reason where reasonid="+reasonid;
+		String sql = "select * from express_set_reason where reasonid=" + reasonid;
 		return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper());
 	}
-	public void saveReasonAdd(final long reasonid,final int changealowflag) {
-		
-		jdbcTemplate.update("update express_set_reason set changealowflag=? where reasonid=?", new PreparedStatementSetter() {
+
+	public void saveReasonAdd(final long reasonid, final int changealowflag) {
+
+		this.jdbcTemplate.update("update express_set_reason set changealowflag=? where reasonid=?", new PreparedStatementSetter() {
 
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setInt(1, changealowflag);
 				ps.setLong(2, reasonid);
-				
+
 			}
 		});
-	
-}
+
+	}
 }

@@ -121,7 +121,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
 					
 					$("#scansuccesscwb").val(scancwb);
-					$("#showcwb").html("订 单 号："+scancwb);
+					$("#showcwb").html("订 单 号："+data.body.cwbOrder.cwb);
 					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);
 					if(data.body.cwbOrder.customercommand.indexOf('预约')>=0&&data.yuyuedaService=='yes')
 					{	

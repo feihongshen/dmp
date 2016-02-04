@@ -54,6 +54,8 @@ public class CustomerDAO {
 			customer.setNeedchecked(rs.getInt("needchecked"));
 			customer.setPfruleid(rs.getLong("pfruleid"));
 			customer.setWavFilePath(rs.getString("wav_filepath"));
+
+			customer.setMpsswitch(rs.getInt("mpsswitch"));//供应商的集单开关
 			return customer;
 		}
 	}
@@ -120,9 +122,8 @@ public class CustomerDAO {
 	}
 
 	public List<Customer> getAllCustomersByExistRules() {
-		return this.jdbcTemplate.query(
-				"select * from (select customerid from express_set_excel_column ) co left join express_set_customer_info ci on co.customerid=ci.customerid where ci.ifeffectflag='1' ",
-				new CustomerRowMapper());
+		return this.jdbcTemplate
+				.query("select * from (select customerid from express_set_excel_column ) co left join express_set_customer_info ci on co.customerid=ci.customerid where ci.ifeffectflag='1' ", new CustomerRowMapper());
 	}
 
 	public List<Customer> getCustomerByCustomername(String customername, String code, long customerid) {
@@ -165,7 +166,7 @@ public class CustomerDAO {
 
 	@SystemInstallOperation
 	public void creCustomer(final Customer customer) {
-		final String insertsql = "insert into express_set_customer_info(customername,customercode,customeraddress,customercontactman,customerphone,b2cEnum,paytype,isypdjusetranscwb,isUsetranscwb,isAutoProductcwb,autoProductcwbpre,isFeedbackcwb,companyname,smschannel,isqufendaxiaoxie,wav_filepath,pfruleid) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		final String insertsql = "insert into express_set_customer_info(customername,customercode,customeraddress,customercontactman,customerphone,b2cEnum,paytype,isypdjusetranscwb,isUsetranscwb,isAutoProductcwb,autoProductcwbpre,isFeedbackcwb,companyname,smschannel,isqufendaxiaoxie,wav_filepath,pfruleid,mpsswitch) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
@@ -188,6 +189,7 @@ public class CustomerDAO {
 				ps.setLong(15, customer.getIsqufendaxiaoxie());
 				ps.setString(16, customer.getWavFilePath());
 				ps.setLong(17, customer.getPfruleid());
+				ps.setInt(18, customer.getMpsswitch());
 				return ps;
 			}
 		}, keyHolder);
@@ -213,8 +215,7 @@ public class CustomerDAO {
 	public void save(final Customer customer) {
 
 		this.jdbcTemplate
-				.update("update express_set_customer_info set customername=?,customercode=?,customeraddress=?,customercontactman=?,customerphone=? ,paytype=?,isypdjusetranscwb=?,isUsetranscwb=?,isAutoProductcwb=?,autoProductcwbpre=?,isFeedbackcwb=?,companyname=?,smschannel=?,isqufendaxiaoxie=? ,needchecked=?,wav_filepath=? ,pfruleid=?"
-						+ " where customerid = ? ", new PreparedStatementSetter() {
+				.update("update express_set_customer_info set customername=?,customercode=?,customeraddress=?,customercontactman=?,customerphone=? ,paytype=?,isypdjusetranscwb=?,isUsetranscwb=?,isAutoProductcwb=?,autoProductcwbpre=?,isFeedbackcwb=?,companyname=?,smschannel=?,isqufendaxiaoxie=? ,needchecked=?,wav_filepath=? ,pfruleid=? , mpsswitch=?" + " where customerid = ? ", new PreparedStatementSetter() {
 
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
@@ -236,7 +237,8 @@ public class CustomerDAO {
 						ps.setInt(15, customer.getNeedchecked());
 						ps.setString(16, customer.getWavFilePath());
 						ps.setLong(17, customer.getPfruleid());
-						ps.setLong(18, customer.getCustomerid());
+						ps.setInt(18, customer.getMpsswitch());
+						ps.setLong(19, customer.getCustomerid());
 					}
 				});
 

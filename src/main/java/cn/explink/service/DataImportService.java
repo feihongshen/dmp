@@ -51,6 +51,7 @@ import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
@@ -65,10 +66,13 @@ import cn.explink.domain.ImportValidationManager;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
@@ -151,6 +155,9 @@ public class DataImportService {
 	ProducerTemplate editInsert;
 	@Autowired
 	ExcelImportEditDao excelImportEditDao;
+	@Autowired
+	TransCwbDetailDAO transCwbDetailDAO;
+	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -245,6 +252,7 @@ public class DataImportService {
 			this.cwbOrderService.insertCwbOrder(cwbOrderDTO, customerid, warhouseid, user, ed);
 			return;
 		}
+		
 		if (cwbOrder.getEmaildateid() > 0) {
 			if (!isReImport) {
 				throw new RuntimeException("重复单号");
@@ -872,5 +880,29 @@ public class DataImportService {
 		}
 		return count;
 	}
-
+	
+	public void insertTransCwbDetail(CwbOrderDTO cwbOrder,String  emaildate) {
+		
+		for (String transcwb : cwbOrder.getTranscwb().split(cwbOrderService.getSplitstring(cwbOrder.getTranscwb()))) {
+			TransCwbDetail td =	transCwbDetailDAO.findTransCwbDetailByTransCwb(transcwb);
+			if(td!=null){
+				continue;
+			}
+			
+			TransCwbDetail transcwbdetail = new TransCwbDetail();
+			transcwbdetail.setCwb(cwbOrder.getCwb());
+			transcwbdetail.setTranscwb(transcwb);
+			transcwbdetail.setCreatetime(DateTimeUtil.getNowTime());
+			transcwbdetail.setCurrentbranchid(0);
+			transcwbdetail.setNextbranchid(cwbOrder.getStartbranchid());
+			transcwbdetail.setPreviousbranchid(0);
+			transcwbdetail.setTranscwboptstate(FlowOrderTypeEnum.DaoRuShuJu.getValue());
+			transcwbdetail.setTranscwbstate(TransCwbStateEnum.PEISONG.getValue());
+			transcwbdetail.setEmaildate(emaildate);
+			
+			transCwbDetailDAO.addTransCwbDetail(transcwbdetail);
+		}
+		
+		
+	}
 }

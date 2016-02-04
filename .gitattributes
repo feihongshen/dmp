@@ -24,6 +24,7 @@ src/main/db/changelog/express_branch_sql.sql -text
 src/main/db/changelog/fnc.sql -text
 src/main/db/changelog/fnc_autoverify.sql -text
 src/main/db/changelog/order_add_field.sql -text
+src/main/db/changelog/package.sql -text
 src/main/db/changelog/quartz_init.sql -text
 src/main/db/changelog/schedule_init.sql -text
 src/main/db/pom.xml -text
@@ -662,6 +663,7 @@ src/main/java/cn/explink/b2c/tps/ThirdPartyOrder2DOCfgService.java -text
 src/main/java/cn/explink/b2c/vipshop/CwbColumnSetVipShop.java -text
 src/main/java/cn/explink/b2c/vipshop/ReaderXMLHandler.java -text
 src/main/java/cn/explink/b2c/vipshop/SOAPHandler.java -text
+src/main/java/cn/explink/b2c/vipshop/VipGathercompEnum.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShop.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShopConfig.java -text
 src/main/java/cn/explink/b2c/vipshop/VipShopController.java -text
@@ -1030,6 +1032,7 @@ src/main/java/cn/explink/controller/SwitchController.java -text
 src/main/java/cn/explink/controller/SystemInstallController.java -text
 src/main/java/cn/explink/controller/SystemStateController.java -text
 src/main/java/cn/explink/controller/TimeEffectiveController.java -text
+src/main/java/cn/explink/controller/TransCwbStateControlController.java -text
 src/main/java/cn/explink/controller/TranscwbOrderFlowView.java -text
 src/main/java/cn/explink/controller/TransferReasonStasticsController.java -text
 src/main/java/cn/explink/controller/TransferResMatchController.java -text
@@ -1298,6 +1301,8 @@ src/main/java/cn/explink/dao/SwitchDAO.java -text
 src/main/java/cn/explink/dao/SysConfigDAO.java -text
 src/main/java/cn/explink/dao/SystemInstallDAO.java -text
 src/main/java/cn/explink/dao/TimeEffectiveDAO.java -text
+src/main/java/cn/explink/dao/TransCwbDetailDAO.java -text
+src/main/java/cn/explink/dao/TransCwbStateControlDAO.java -text
 src/main/java/cn/explink/dao/TranscwbOrderFlowDAO.java -text
 src/main/java/cn/explink/dao/TransferReasonStasticsDao.java -text
 src/main/java/cn/explink/dao/TransferResMatchDao.java -text
@@ -1570,6 +1575,8 @@ src/main/java/cn/explink/domain/SystemInstall.java -text
 src/main/java/cn/explink/domain/TimeEffectiveVO.java -text
 src/main/java/cn/explink/domain/TimeTypeEnum.java -text
 src/main/java/cn/explink/domain/TlBank.java -text
+src/main/java/cn/explink/domain/TransCwbDetail.java -text
+src/main/java/cn/explink/domain/TransCwbStateControl.java -text
 src/main/java/cn/explink/domain/TransferReason.java -text
 src/main/java/cn/explink/domain/TransferReasonStastics.java -text
 src/main/java/cn/explink/domain/TransferResMatch.java -text
@@ -1773,9 +1780,14 @@ src/main/java/cn/explink/enumutil/FrameEnumExcp.java -text
 src/main/java/cn/explink/enumutil/FundsEnum.java -text
 src/main/java/cn/explink/enumutil/GoodsBacktypeEnum.java -text
 src/main/java/cn/explink/enumutil/HandleResultEnum.java -text
+src/main/java/cn/explink/enumutil/InterceptTypeEnum.java -text
+src/main/java/cn/explink/enumutil/IsmpsflagEnum.java -text
 src/main/java/cn/explink/enumutil/JiesuanstateEnum.java -text
 src/main/java/cn/explink/enumutil/JobCodeEnum.java -text
 src/main/java/cn/explink/enumutil/KuaiDiPayEnum.java -text
+src/main/java/cn/explink/enumutil/MPSAllArrivedFlagEnum.java -text
+src/main/java/cn/explink/enumutil/MpsTypeEnum.java -text
+src/main/java/cn/explink/enumutil/MpsswitchTypeEnum.java -text
 src/main/java/cn/explink/enumutil/OperationTimeEnum.java -text
 src/main/java/cn/explink/enumutil/OpertaionResultEnum.java -text
 src/main/java/cn/explink/enumutil/OrderTypeEnum.java -text
@@ -1811,6 +1823,7 @@ src/main/java/cn/explink/enumutil/StockDetailEnum.java -text
 src/main/java/cn/explink/enumutil/StockDetailStocktypeEnum.java -text
 src/main/java/cn/explink/enumutil/StockResultStateEnum.java -text
 src/main/java/cn/explink/enumutil/TlAccountTypeEnum.java -text
+src/main/java/cn/explink/enumutil/TransCwbStateEnum.java -text
 src/main/java/cn/explink/enumutil/TuihuoResultEnum.java -text
 src/main/java/cn/explink/enumutil/UserEmployeestatusEnum.java -text
 src/main/java/cn/explink/enumutil/VerificationEnum.java -text
@@ -2212,6 +2225,15 @@ src/main/java/cn/explink/service/fnc/OrderLifeCycleBaseBatchHandler.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleFeeNotReturnFeeHandler.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleReportService.java -text
 src/main/java/cn/explink/service/fnc/OrderLifeCycleTuiKeHuWeiShouKuanHandler.java -text
+src/main/java/cn/explink/service/mps/AbstractMPSService.java -text
+src/main/java/cn/explink/service/mps/CwbOrderBranchInfoModificationService.java -text
+src/main/java/cn/explink/service/mps/MPSCommonService.java -text
+src/main/java/cn/explink/service/mps/MPSOptStateService.java -text
+src/main/java/cn/explink/service/mps/OrderInterceptService.java -text
+src/main/java/cn/explink/service/mps/release/AbstractMPSReleaseService.java -text
+src/main/java/cn/explink/service/mps/release/DeliverTakeGoodsMPSReleaseService.java -text
+src/main/java/cn/explink/service/mps/release/OutWarehouseMPSReleaseService.java -text
+src/main/java/cn/explink/service/mps/release/ReturnToCustomerReleaseService.java -text
 src/main/java/cn/explink/service/validator/BackCargoAmountShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/BackCargoNumShouldAboveZero.java -text
 src/main/java/cn/explink/service/validator/CargoAmountShouldAboveZeroAndBelowBillon.java -text
@@ -2240,6 +2262,7 @@ src/main/java/cn/explink/support/transcwb/OneTransToMoreCwbDao.java -text
 src/main/java/cn/explink/support/transcwb/TransCwbDao.java -text
 src/main/java/cn/explink/support/transcwb/TransCwbService.java -text
 src/main/java/cn/explink/support/transcwb/TranscwbView.java -text
+src/main/java/cn/explink/support/transcwb/TranscwbViewJiDanType.java -text
 src/main/java/cn/explink/system/charging/JMSScanListenService.java -text
 src/main/java/cn/explink/system/charging/On_Off.java -text
 src/main/java/cn/explink/test/AccountAttrVo.java -text
@@ -3145,6 +3168,8 @@ src/main/webapp/WEB-INF/jsp/tonglian/tonglian.jsp -text
 src/main/webapp/WEB-INF/jsp/tonglian/tongliancer.jsp -text
 src/main/webapp/WEB-INF/jsp/tonglian/tonglianpfx.jsp -text
 src/main/webapp/WEB-INF/jsp/top.jsp -text
+src/main/webapp/WEB-INF/jsp/transCwbState/edit.jsp -text
+src/main/webapp/WEB-INF/jsp/transCwbState/list.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/add.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/edit.jsp -text
 src/main/webapp/WEB-INF/jsp/transferResmatch/list.jsp -text
@@ -10566,7 +10591,6 @@ src/main/webapp/ueditor/dialogs/wordimage/wordimage.html -text
 src/main/webapp/ueditor/dialogs/wordimage/wordimage.js -text
 src/main/webapp/ueditor/hello.html -text
 src/main/webapp/ueditor/index.html -text
-src/main/webapp/ueditor/jsp/Uploader.java -text
 src/main/webapp/ueditor/jsp/commons-fileupload-1.2.2.jar -text
 src/main/webapp/ueditor/jsp/config.properties -text
 src/main/webapp/ueditor/jsp/fileUp.jsp -text
@@ -10725,8 +10749,11 @@ target/db/changelog/DMP4.0base_kefu.sql -text
 target/db/changelog/changelog.xml -text
 target/db/changelog/dmp40_function.sql -text
 target/db/changelog/dmp_init.sql -text
+target/db/changelog/eap_quartz_init.sql -text
 target/db/changelog/fnc.sql -text
+target/db/changelog/fnc_autoverify.sql -text
 target/db/changelog/order_add_field.sql -text
+target/db/changelog/package.sql -text
 target/db/changelog/quartz_init.sql -text
 target/db/changelog/schedule_init.sql -text
 target/db/pom.xml -text

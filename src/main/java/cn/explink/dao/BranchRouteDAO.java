@@ -30,15 +30,15 @@ public class BranchRouteDAO {
 
 	public List<BranchRoute> getAllBranchRoute() {
 		String sql = "select * from express_set_branch_route ";
-		return jdbcTemplate.query(sql, new BranchRouteRowMapper());
+		return this.jdbcTemplate.query(sql, new BranchRouteRowMapper());
 	}
 
 	public List<BranchRoute> getBranchRouteByWhere(long page, long fromBranchId, long toBranchId, long type) {
 		String sql = "select * from express_set_branch_route ";
 		sql = this.getBranchRouteByPageWhereSql(sql, fromBranchId, toBranchId, type);
-		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
-		List<BranchRoute> brList = jdbcTemplate.query(sql, new BranchRouteRowMapper());
+		List<BranchRoute> brList = this.jdbcTemplate.query(sql, new BranchRouteRowMapper());
 		return brList;
 	}
 
@@ -46,18 +46,18 @@ public class BranchRouteDAO {
 		String sql = "select * from express_set_branch_route ";
 		sql = this.getBranchRouteByPageWhereSql(sql, fromBranchId, toBranchId, type);
 
-		List<BranchRoute> brList = jdbcTemplate.query(sql, new BranchRouteRowMapper());
+		List<BranchRoute> brList = this.jdbcTemplate.query(sql, new BranchRouteRowMapper());
 		return brList;
 	}
 
 	public long getBranchRouteCount(long fromBranchId, long toBranchId, long type) {
 		String sql = "SELECT count(1) from express_set_branch_route";
 		sql = this.getBranchRouteByPageWhereSql(sql, fromBranchId, toBranchId, type);
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	private String getBranchRouteByPageWhereSql(String sql, long fromBranchId, long toBranchId, long type) {
-		if (fromBranchId > 0 || toBranchId > 0 || type > 0) {
+		if ((fromBranchId > 0) || (toBranchId > 0) || (type > 0)) {
 			StringBuffer w = new StringBuffer();
 			sql += " where ";
 			if (fromBranchId > 0) {
@@ -76,40 +76,72 @@ public class BranchRouteDAO {
 
 	public void creBranchRoute(long fromBranchId, long toBranchId, long type) {
 		String sql = "insert into express_set_branch_route (fromBranchId,toBranchId,type) values(?,?,?)";
-		jdbcTemplate.update(sql, fromBranchId, toBranchId, type);
+		this.jdbcTemplate.update(sql, fromBranchId, toBranchId, type);
 	}
 
 	public void saveBranchRouteByWhere(long oldfromBranchId, long oldtoBranchId, long oldtype, long fromBranchId, long toBranchId, long type) {
 		String sql = "update express_set_branch_route set fromBranchId=?,toBranchId=?,type=? where fromBranchId=? and toBranchId=? and type=? ";
-		jdbcTemplate.update(sql, fromBranchId, toBranchId, type, oldfromBranchId, oldtoBranchId, oldtype);
+		this.jdbcTemplate.update(sql, fromBranchId, toBranchId, type, oldfromBranchId, oldtoBranchId, oldtype);
 	}
 
 	public void deleteBranchRouteByWhere(long fromBranchId, long toBranchId, long type) {
 		String sql = "DELETE FROM express_set_branch_route WHERE fromBranchId = ? and toBranchId=? and type=? ";
-		jdbcTemplate.update(sql, fromBranchId, toBranchId, type);
+		this.jdbcTemplate.update(sql, fromBranchId, toBranchId, type);
 	}
 
 	public void deleteBranchRouteBatch(long fromBranchId, long type) {
 		String sql = "DELETE FROM express_set_branch_route WHERE fromBranchId = ? and type=? ";
-		jdbcTemplate.update(sql, fromBranchId, type);
+		this.jdbcTemplate.update(sql, fromBranchId, type);
 	}
 
-	
 	/**
-	 * 
-	 * @param fromBranchId 
-	 * @param toBranchIds 
-	 * @param type 
+	 *
+	 * @param fromBranchId
+	 * @param toBranchIds
+	 * @param type
 	 */
-	public void setBranchRoutesql(long fromBranchId,List<Long> toBranchIds, int type) {
-		
-		for(Long l:toBranchIds){			
-		String sql="insert into express_set_branch_route(fromBranchId,toBranchId,type) values(?,?,?)";
-		jdbcTemplate.update(sql,fromBranchId,l.longValue(),type);
+	public void setBranchRoutesql(long fromBranchId, List<Long> toBranchIds, int type) {
+
+		for (Long l : toBranchIds) {
+			String sql = "insert into express_set_branch_route(fromBranchId,toBranchId,type) values(?,?,?)";
+			this.jdbcTemplate.update(sql, fromBranchId, l.longValue(), type);
 		}
 		// TODO Auto-generated method stub
 		//查询（已经保存的不进行  处理）
 		//未保存的 （凭借  保存语句）
-		
+
+	}
+
+	/**
+	 *
+	 * @Title: getInterceptBranch
+	 * @description 查询流向配置里数据
+	 * @author 刘武强
+	 * @date  2016年1月11日下午4:59:03
+	 * @param  @param fromBranchId
+	 * @param  @param type
+	 * @param  @return
+	 * @return  List<BranchRoute>
+	 * @throws
+	 */
+	public List<BranchRoute> getNextBranch(Long fromBranchId, long type) {
+		String sql = "SELECT * FROM express_set_branch_route WHERE fromBranchId = ? and type=?";
+		return this.jdbcTemplate.query(sql, new BranchRouteRowMapper(), fromBranchId, type);
+	}
+
+	/**
+	 *
+	 * @Title: getNextBranchByType
+	 * @description 通过路由类型（type）查询流向配置里数据
+	 * @author 刘武强
+	 * @date  2016年1月11日下午5:07:03
+	 * @param  @param type
+	 * @param  @return
+	 * @return  List<BranchRoute>
+	 * @throws
+	 */
+	public List<BranchRoute> getNextBranchByType(long type) {
+		String sql = "SELECT * FROM express_set_branch_route WHERE type=?";
+		return this.jdbcTemplate.query(sql, new BranchRouteRowMapper(), type);
 	}
 }

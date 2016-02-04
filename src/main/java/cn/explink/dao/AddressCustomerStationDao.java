@@ -102,6 +102,7 @@ public class AddressCustomerStationDao {
 		}
 		sql +=   "ORDER BY customerid limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 		List<AddressCustomerStationVO> list = this.jdbcTemplate.query(sql, obj, new AddressCustomerStationMapper());
+		System.out.println("======" + list);
 		return list;
 	}
 

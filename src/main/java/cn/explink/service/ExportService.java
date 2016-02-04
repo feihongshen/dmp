@@ -1414,6 +1414,13 @@ public class ExportService {
 			} else if ("paymethod".equals(cloumname)) {
 				a = mapRow.get(cloumname) != null ? mapRow.get(cloumname) : 0;
 				a = ExpressSettleWayEnum.getByValue((Integer) a).getText();
+			}// 对于一票多件缺件的运单，只把缺的件的运单号显示出来
+			else if ("transcwb".equals(cloumname)) {
+				if ((mapRow != null) && !StringUtils.isEmpty((String) mapRow.get("lack_transcwb"))) {
+					a = mapRow.get("lack_transcwb");
+				} else {
+					a = mapRow.get("transcwb");
+				}
 			} else {
 				a = mapRow.get(cloumname);
 				a = this.setAbyUser(a, cloumname);
@@ -3485,6 +3492,150 @@ public class ExportService {
 
 	// 支付信息修改审核导出
 	public void setEditPIMCheckOrderFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "客户名称";
+		cloumnName2[1] = "Customername";
+		cloumnName1[2] = "申请类型";
+		cloumnName2[2] = "Applytype";
+		cloumnName1[3] = "订单类型";
+		cloumnName2[3] = "OldnewCwbordertypename";
+		cloumnName1[4] = "订单金额[元]";
+		cloumnName2[4] = "OldnewReceivablefee";
+		cloumnName1[5] = "订单支付方式";
+		cloumnName2[5] = "OldnewPaytype";
+		cloumnName1[6] = "订单当前状态";
+		cloumnName2[6] = "NowState";
+		cloumnName1[7] = "订单当前机构";
+		cloumnName2[7] = "Branchname";
+		cloumnName1[8] = "申请人";
+		cloumnName2[8] = "Applyuser";
+		cloumnName1[9] = "申请时间";
+		cloumnName2[9] = "Applytime";
+		cloumnName1[10] = "审核人";
+		cloumnName2[10] = "Auditor";
+		cloumnName1[11] = "审核时间";
+		cloumnName2[11] = "Audittime";
+
+	}
+
+	// 支付信息修改确认导出
+	public void setEditPIMConfirmFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "客户名称";
+		cloumnName2[2] = "Customername";
+		cloumnName1[3] = "当前站点";
+		cloumnName2[3] = "Branchname";
+		cloumnName1[4] = "配送站点";
+		cloumnName2[4] = "Matchbranchname";
+		cloumnName1[5] = "到站时间";
+		cloumnName2[5] = "InSitetime";
+		cloumnName1[6] = "审核人";
+		cloumnName2[6] = "Auditor";
+		cloumnName1[7] = "审核时间";
+		cloumnName2[7] = "Audittime";
+
+	}
+
+// 中转出站view
+	public void SetZhongzhuanchuzhanFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "客户名称";
+		cloumnName2[1] = "Customername";
+		cloumnName1[2] = "申请类型";
+		cloumnName2[2] = "Applytype";
+		cloumnName1[3] = "订单类型";
+		cloumnName2[3] = "OldnewCwbordertypename";
+		cloumnName1[4] = "订单金额[元]";
+		cloumnName2[4] = "OldnewReceivablefee";
+		cloumnName1[5] = "订单支付方式";
+		cloumnName2[5] = "OldnewPaytype";
+		cloumnName1[6] = "订单当前状态";
+		cloumnName2[6] = "NowState";
+		cloumnName1[7] = "订单当前机构";
+		cloumnName2[7] = "Branchname";
+		cloumnName1[8] = "申请人";
+		cloumnName2[8] = "Applyuser";
+		cloumnName1[9] = "审核人";
+		cloumnName2[9] = "Auditor";
+		cloumnName1[10] = "审核时间";
+		cloumnName2[10] = "Audittime";
+		cloumnName1[11] = "确认人";
+		cloumnName2[11] = "Confirmname";
+		cloumnName1[12] = "确认时间";
+		cloumnName2[12] = "Confirmtime";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "客户名称";
+		cloumnName2[2] = "Customername";
+		cloumnName1[3] = "当前站点";
+		cloumnName2[3] = "Branchname";
+		cloumnName1[4] = "配送站点";
+		cloumnName2[4] = "Matchbranchname";
+		cloumnName1[5] = "到站时间";
+		cloumnName2[5] = "InSitetime";
+		cloumnName1[6] = "审核人";
+		cloumnName2[6] = "Auditor";
+		cloumnName1[7] = "审核时间";
+		cloumnName2[7] = "Audittime";
+
+	}
+
+	public void SetResetFeedbackOrderFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "申请时间";
+		cloumnName2[1] = "Applytime";
+		cloumnName1[2] = "当前站点";
+		cloumnName2[2] = "Currentbranchname";
+		cloumnName1[3] = "申请站点";
+		cloumnName2[3] = "Applybranchname";
+		cloumnName1[4] = "配送结果";
+		cloumnName2[4] = "Nowdeliveryname";
+		cloumnName1[5] = "小件员";
+		cloumnName2[5] = "Delivername";
+		cloumnName1[6] = "处理状态";
+		cloumnName2[6] = "Handlename";
+		cloumnName1[7] = "处理人";
+		cloumnName2[7] = "Editusername";
+		cloumnName1[8] = "修改配送结果";
+		cloumnName2[8] = "Editnowdeliveryname";
+		cloumnName1[9] = "原因备注";
+		cloumnName2[9] = "Reasoncontent";
+		cloumnName1[10] = "备注";
+		cloumnName2[10] = "Editreason";
+
+	}
+
+	// 中转出站view
+	public void SetKehuShoutuihuoFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "供货商名";
+		cloumnName2[2] = "Customername";
+		cloumnName1[3] = "收件人";
+		cloumnName2[3] = "Receivablefee";
+		cloumnName1[4] = "发货时间";
+		cloumnName2[4] = "Emaildate";
+		cloumnName1[5] = "退客户出户时间";
+		cloumnName2[5] = "Createtime";
+		cloumnName1[6] = "确认状态";
+		cloumnName2[6] = "Auditstatename";
+		cloumnName1[7] = "确认人";
+		cloumnName2[7] = "Auditor";
+		cloumnName1[8] = "确认时间";
+		cloumnName2[8] = "Audittime";
+
+	}
+
+	// 支付信息修改审核导出
+	public void setEditPIMCheckOrderFields(String[] cloumnName1, String[] cloumnName2) {
 		int i = 0;
 		cloumnName1[i] = "订单号";
 		cloumnName2[i++] = "Cwb";
@@ -3675,5 +3826,120 @@ public class ExportService {
 			e.printStackTrace();
 		}
 		return a;
+	}
+
+// 反馈状态修改申请
+	public void SetResetFeedBackFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "申请时间";
+		cloumnName2[1] = "Applytime";
+		cloumnName1[2] = "当前站点";
+		cloumnName2[2] = "Currentbranchname";
+		cloumnName1[3] = "申请站点";
+		cloumnName2[3] = "Applybranchname";
+		cloumnName1[4] = "配送结果";
+		cloumnName2[4] = "Nowdeliveryname";
+		cloumnName1[5] = "小件员";
+		cloumnName2[5] = "Delivername";
+		cloumnName1[6] = "处理状态";
+		cloumnName2[6] = "Handlename";
+		cloumnName1[7] = "处理人";
+		cloumnName2[7] = "Editusername";
+		cloumnName1[8] = "修改配送结果";
+		cloumnName2[8] = "Editnowdeliveryname";
+		cloumnName1[9] = "原因备注";
+		cloumnName2[9] = "Reasoncontent";
+		cloumnName1[10] = "备注";
+		cloumnName2[10] = "Editreason";
+
+	}
+
+	// 中转出站view
+	public void SetKehuShoutuihuoFields(String[] cloumnName1, String[] cloumnName2) {
+		cloumnName1[0] = "订单号";
+		cloumnName2[0] = "Cwb";
+		cloumnName1[1] = "订单类型";
+		cloumnName2[1] = "Cwbordertypename";
+		cloumnName1[2] = "供货商名";
+		cloumnName2[2] = "Customername";
+		cloumnName1[3] = "收件人";
+		cloumnName2[3] = "Receivablefee";
+		cloumnName1[4] = "发货时间";
+		cloumnName2[4] = "Emaildate";
+		cloumnName1[5] = "退客户出户时间";
+		cloumnName2[5] = "Createtime";
+		cloumnName1[6] = "确认状态";
+		cloumnName2[6] = "Auditstatename";
+		cloumnName1[7] = "确认人";
+		cloumnName2[7] = "Auditor";
+		cloumnName1[8] = "确认时间";
+		cloumnName2[8] = "Audittime";
+
+	}
+
+	// 支付信息修改审核导出
+	public void setEditPIMCheckOrderFields(String[] cloumnName1, String[] cloumnName2) {
+		int i = 0;
+		cloumnName1[i] = "订单号";
+		cloumnName2[i++] = "Cwb";
+		cloumnName1[i] = "客户名称";
+		cloumnName2[i++] = "Customername";
+		cloumnName1[i] = "申请类型";
+		cloumnName2[i++] = "Applytype";
+		cloumnName1[i] = "订单类型";
+		cloumnName2[i++] = "OldnewCwbordertypename";
+		cloumnName1[i] = "订单金额[元]";
+		cloumnName2[i++] = "OldnewReceivablefee";
+		cloumnName1[i] = "运费金额[元]";
+		cloumnName2[i++] = "Shouldfare";
+		cloumnName1[i] = "订单支付方式";
+		cloumnName2[i++] = "OldnewPaytype";
+		cloumnName1[i] = "订单当前状态";
+		cloumnName2[i++] = "NowState";
+		cloumnName1[i] = "订单当前机构";
+		cloumnName2[i++] = "Branchname";
+		cloumnName1[i] = "申请人";
+		cloumnName2[i++] = "Applyuser";
+		cloumnName1[i] = "申请时间";
+		cloumnName2[i++] = "Applytime";
+		cloumnName1[i] = "审核人";
+		cloumnName2[i++] = "Auditor";
+		cloumnName1[i] = "审核时间";
+		cloumnName2[i++] = "Audittime";
+
+	}
+
+	// 支付信息修改确认导出
+	public void setEditPIMConfirmFields(String[] cloumnName1, String[] cloumnName2) {
+		int i = 0;
+		cloumnName1[i] = "订单号";
+		cloumnName2[i++] = "Cwb";
+		cloumnName1[i] = "客户名称";
+		cloumnName2[i++] = "Customername";
+		cloumnName1[i] = "申请类型";
+		cloumnName2[i++] = "Applytype";
+		cloumnName1[i] = "订单类型";
+		cloumnName2[i++] = "OldnewCwbordertypename";
+		cloumnName1[i] = "订单金额[元]";
+		cloumnName2[i++] = "OldnewReceivablefee";
+		cloumnName1[i] = "运费金额[元]";
+		cloumnName2[i++] = "Shouldfare";
+		cloumnName1[i] = "订单支付方式";
+		cloumnName2[i++] = "OldnewPaytype";
+		cloumnName1[i] = "订单当前状态";
+		cloumnName2[i++] = "NowState";
+		cloumnName1[i] = "订单当前机构";
+		cloumnName2[i++] = "Branchname";
+		cloumnName1[i] = "申请人";
+		cloumnName2[i++] = "Applyuser";
+		cloumnName1[i] = "审核人";
+		cloumnName2[i++] = "Auditor";
+		cloumnName1[i] = "审核时间";
+		cloumnName2[i++] = "Audittime";
+		cloumnName1[i] = "确认人";
+		cloumnName2[i++] = "Confirmname";
+		cloumnName1[i] = "确认时间";
+		cloumnName2[i++] = "Confirmtime";
 	}
 }

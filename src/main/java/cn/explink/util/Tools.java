@@ -572,7 +572,7 @@ public class Tools {
 	 * public static String obj2json(Object obj) { try { if (obj == null) {
 	 * return "{}"; } mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
 	 * mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
-	 * 
+	 *
 	 * return mapper.writeValueAsString(obj); } catch (Exception e) {
 	 * System.out.println("==>> Object to JSON occer error: " + e); } return
 	 * "{}"; }

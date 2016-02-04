@@ -1065,6 +1065,7 @@ public class JobUtil {
 			this.zhongliangBackOrderServices.BackOrdercounts();
 			this.zhongliangBackOrderServices.CancelOrders();
 			this.zhongliangInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			this.zhongliangBackOrderServices.BackOrdercounts();
 
 			this.logger.info("执行了中粮订单导入定时器！");
 		} catch (Exception e) {

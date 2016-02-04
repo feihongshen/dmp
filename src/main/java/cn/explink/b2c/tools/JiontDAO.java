@@ -169,6 +169,7 @@ public class JiontDAO {
 
 	}
 
+
 	public EmployeeInfo getEmployeeByUserNameAndPassWord(String username, String password) {
 		try {
 			String sql = " select u.userid,u.username,u.password,u.realname,b.branchname,b.branchid,b.branchaddress,b.branchcode,b.branchphone,b.branchmobile "

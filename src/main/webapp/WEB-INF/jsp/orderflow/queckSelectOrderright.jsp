@@ -9,6 +9,7 @@
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
 <%@page import="cn.explink.domain.orderflow.*"%>
 <%@page import="cn.explink.domain.*"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -72,8 +73,12 @@ function showTitle(obj){
 									<td width="10%" height="26" align="left" valign="top">
 									<div style=" overflow-y:auto; overflow-x:hidden">
 									订单号：<strong><%=view.getCwb() %></strong>&nbsp;&nbsp;
-									订单号当前状态：<strong><%if(view.getFlowordertypeMethod()=="已审核"){%>审核为：<%=view.getDeliveryStateText() %><%}else if(view.getFlowordertypeMethod()=="已反馈") {%>反馈为：<%=view.getDeliveryStateText() %><%}else{ %><%=view.getFlowordertypeMethod() %><%} %></strong>&nbsp;&nbsp;配送状态:<strong><%=view.getCwbdelivertypeStr() %></strong>
-									订单状态：<strong>
+									<font <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if> >订单号当前状态：</font><strong <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if>><%if(view.getFlowordertypeMethod()=="已审核"){%>审核为：<%=view.getDeliveryStateText() %><%}else if(view.getFlowordertypeMethod()=="已反馈") {%>反馈为：<%=view.getDeliveryStateText() %><%}else{ %><%=view.getFlowordertypeMethod() %><%} %></strong>
+									<c:if test="${jdtype == 1}">
+										&nbsp;&nbsp;<font>一票多件当前状态：<strong>${slowtranscwbtype}</strong></font>
+									</c:if>
+									<font <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if> >&nbsp;&nbsp;配送状态:</font><strong <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if>><%=view.getCwbdelivertypeStr() %></strong>
+									<font <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if> >订单状态：</font><strong <c:if test="${jdtranstype == 1}"> style="display: none;"</c:if>>
 										<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==view.getCwbstate()) {%>
 										<%=cwb.getText()%>
 										<% }}%>
@@ -91,6 +96,10 @@ function showTitle(obj){
 									<%=view.getTranscwb() %>
 									<%} %>
 									</strong>
+									<c:if test="${jdtranstype == 1}">
+										&nbsp;&nbsp;<font>一票多件当前状态：</font><strong>${ypdjcurrentstate}</strong>
+										&nbsp;&nbsp;<font>运单状态：</font><strong>${transcwbstate}</strong>
+									</c:if>
 										<table width="100%" border="0" cellspacing="0" cellpadding="2" class="table_5"  style="font-size:14px;">
 											<tr>
 												<td width="150" align="center" bgcolor="#f1f1f1">操作时间</td>

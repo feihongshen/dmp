@@ -86,6 +86,7 @@ public class BaseOrderService {
 	}
 	
 	public List<CwbDetailView> getcwbDetail(List<CwbOrder> cwbList, List<Customer> customerList, JSONArray showCustomerjSONArray, List<Branch> branchList, long sign) {
+		//订单集合 站点集合
 		Map<String, Map<String, String>> allTime = this.dataStatisticsService.getOrderFlowByCredateForDetailAndExportAllTime(
 				this.getcwbs(cwbList), branchList);
 		List<CwbDetailView> cwbViewlist = new ArrayList<CwbDetailView>();

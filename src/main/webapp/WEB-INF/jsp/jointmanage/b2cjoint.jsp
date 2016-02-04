@@ -132,7 +132,7 @@ function delSuccess(data){
 	<!-- 修改常用于设置的ajax地址 -->
 	<script>
 	function changeUrl(obj,state){
-		
+		debugger
 		if(obj=='20001'){
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
@@ -423,6 +423,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/yonghui/del/');
 		}
 		
+		else if(obj=='20107'){
+			$("#edit").val('<%=request.getContextPath()%>/feiniuwang/show/');
+			$("#del").val('<%=request.getContextPath()%>/feiniuwang/del/');
+		}
+		
 		else if(obj=='20109'||obj=='20110'||obj=='20111'||obj=='20112'||obj=='20113'){
 			$("#edit").val('<%=request.getContextPath()%>/jiuyeaddressmatch/show/');
 			$("#del").val('<%=request.getContextPath()%>/jiuyeaddressmatch/del/');
@@ -452,6 +457,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
 
+       else if(obj=='20127'){
+			$("#edit").val('<%=request.getContextPath()%>/suning/show/');
+			$("#del").val('<%=request.getContextPath()%>/suning/del/');
+		}
+
 		else if(obj=='20227'){
 			$("#edit").val('<%=request.getContextPath()%>/tpsAutomate/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
@@ -466,7 +476,16 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/show/');
 			$("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
 		}
-		
+		}else if(obj=='20200'){
+			$("#edit").val('<%=request.getContextPath()%>/tonglian/show/');
+			$("#del").val('<%=request.getContextPath()%>/tonglian/del/');
+		}else if(obj=='20136'){
+			$("#edit").val('<%=request.getContextPath()%>/huanqiugou/show/');
+			$("#del").val('<%=request.getContextPath()%>/huanqiugou/del/');
+		}else if(obj=='20201'){
+			$("#edit").val('<%=request.getContextPath()%>/caifutong/show/');
+			$("#del").val('<%=request.getContextPath()%>/caifutong/del/');
+		}
 		else if(obj=='20127'){
 			$("#edit").val('<%=request.getContextPath()%>/suning/show/');
 			$("#del").val('<%=request.getContextPath()%>/suning/del/');
@@ -494,8 +513,9 @@ function delSuccess(data){
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
-			}
 		}
+	}
+
 	</script>
 </body>
 </html>

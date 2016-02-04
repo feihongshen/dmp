@@ -34,9 +34,9 @@ public class CwbOrder {
 	long cwbreachbranchid;// 订单入库机构id
 	long cwbreachdeliverbranchid;// 订单到货派送机构id
 	String podfeetoheadflag;// 站点收款是否已上交总部 0未上交 1已上交
-	String podfeetoheadtime;// 站点上交款时间
+	String podfeetoheadtime;// 站点上交款时间总部交款审
 	String podfeetoheadchecktime;// 站点交款总部审核时
-	String podfeetoheadcheckflag;// 总部交款审核状态
+	String podfeetoheadcheckflag;// 核状态
 	long leavedreasonid;// 滞留原因id
 	String deliversubscribeday;// 滞留预约派送日
 	String customerwarehouseid;// 客户发货仓库id
@@ -413,6 +413,11 @@ public class CwbOrder {
 	private long fncustomerpayablebillid; // 应付客户账单id
 	private long fncustomerposbillid; // 客户pos抵扣账单 id
 	private long fncustomerbillid; // 应收客户账单id
+
+	private int mpsoptstate;// 一票多件操作状态（multiple package shipment,取值同订单操作状态）
+	private int mpsallarrivedflag;// 一票多件是否到齐（0：未到齐，1：到齐） MPSAllArrivedFlagEnum
+
+	private int ismpsflag; // 是否一票多件：0默认；1是一票多件 注意：这里只描述开启集单模式才起作用
 
 	public int getInstationhandoverid() {
 		return this.instationhandoverid;
@@ -1171,7 +1176,16 @@ public class CwbOrder {
 	}
 
 	public long getScannum() {
+		// if (!(this.ismpsflag == IsmpsflagEnum.yes.getValue())) {
 		return this.scannum;
+		// } else {
+		// (YpdjHandleRecordDAO)
+		// ApplicationContextUtil.getBean("ypdjHandleRecordDAO");
+		// long scannedNumber = ().getScannedNumber(this.cwb,
+		// this.currentbranchid, this.flowordertype);
+		// return this.sendcarnum - scannedNumber;
+		// }
+
 	}
 
 	public void setScannum(long scannum) {
@@ -2009,4 +2023,29 @@ public class CwbOrder {
 	public void setCompletedatetime(String completedatetime) {
 		this.completedatetime = completedatetime;
 	}
+
+	public int getMpsoptstate() {
+		return this.mpsoptstate;
+	}
+
+	public void setMpsoptstate(int mpsoptstate) {
+		this.mpsoptstate = mpsoptstate;
+	}
+
+	public int getMpsallarrivedflag() {
+		return this.mpsallarrivedflag;
+	}
+
+	public void setMpsallarrivedflag(int mpsallarrivedflag) {
+		this.mpsallarrivedflag = mpsallarrivedflag;
+	}
+
+	public int getIsmpsflag() {
+		return this.ismpsflag;
+	}
+
+	public void setIsmpsflag(int ismpsflag) {
+		this.ismpsflag = ismpsflag;
+	}
+
 }

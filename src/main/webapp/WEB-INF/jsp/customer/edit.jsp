@@ -10,7 +10,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>修改供货商</h1>
-		<form id="customer_save_Form" name="customer_save_Form" onSubmit="if(check_customer()){submitEditCustomer(this,${customer.customerid });}return false;"  action="<%=request.getContextPath()%>/customer/saveFile/${customer.customerid }" method="post"  >
+		<form id="customer_save_Form" name="customer_save_Form"  onSubmit="if(check_customer()){submitEditCustomer(this,${customer.customerid });}return false;"  action="<%=request.getContextPath()%>/customer/saveFile/${customer.customerid }" method="post"  >
 		<div id="box_form">
 				<ul style="width:450px;height: 400px;overflow-y: scroll;">
 					<li><span>客户名称：</span><input type ="text" id ="customername" name ="customername" value ="${customer.customername}"  maxlength="30" class="input_text1"/>*</li>
@@ -36,7 +36,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 			           </select>
 			        </li>
 					<li><span>一票多件用运单号：</span>
-						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1">
+						<select id ="isypdjusetranscwb" name ="isypdjusetranscwb" class="select1" onchange="transcwbswitch()">
 							<option value="0" <%if(customer.getIsypdjusetranscwb()==0){ %>selected<%} %>>否</option>
 							<option value="1" <%if(customer.getIsypdjusetranscwb()==1){ %>selected<%} %>>是</option>
 						</select>
@@ -97,6 +97,16 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 						<span>上传声音文件：</span>
 						<iframe id="update" name="update" src="customer/update?fromAction=customer_save_Form&wavFilePath=<%=customer.getWavFilePath()==null?"":customer.getWavFilePath()%>&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 					</li>  
+					<li><span>是否启用集单模式：</span>
+						<select id ="ifjidan" class="select1" onchange="changejd()">
+							<option value="0" <%if(customer.getMpsswitch() == 0){ %>selected<%} %>>否</option>
+							<option value="1" <%if(customer.getMpsswitch() == 1 ||customer.getMpsswitch() == 2 ){ %>selected<%} %>>是</option>							
+						</select>*
+					</li>
+					<li <%if(customer.getMpsswitch() == 0){%>style="display: none"<% }%>><input type="radio" name="mpsswitch" value="1" id="jdType1" <%if(customer.getMpsswitch() == 1){ %>checked<%} %>/>库房集单
+						&nbsp;&nbsp;&nbsp;<input type="radio" name="mpsswitch" value="2" id="jdType2" <%if(customer.getMpsswitch() == 2){ %>checked<%} %>/>站点集单					
+					</li>  
+					
 				</ul>
 		</div>
 		 <div align="center"><input type="submit" value="保存" class="button" /></div>

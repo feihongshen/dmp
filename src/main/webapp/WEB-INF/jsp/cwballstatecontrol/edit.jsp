@@ -22,6 +22,7 @@ $(function(){
 	$("#toflowtype").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择可操作的环节' });
 })
 function buttonSave(form){
+
 	$.ajax({
 		type: "POST",
 		url:$(form).attr("action"),
@@ -33,6 +34,8 @@ function buttonSave(form){
 	});
 }
 </script>
+</head>
+<body>
 <div style="background:#f5f5f5">
 	<div id="box_in_bg">
 		<h2>修改订单状态设置</h2>
@@ -76,5 +79,7 @@ function buttonSave(form){
 	</form>
 	</div>
 </div>
+</body>
+</html>
 
 

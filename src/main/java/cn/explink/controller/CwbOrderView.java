@@ -13,7 +13,7 @@ import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 
 @XmlRootElement
-public class CwbOrderView {
+public class CwbOrderView implements Cloneable {
 	long opscwbid; // 主键id
 	long startbranchid; // 当前所在机构id
 	long nextbranchid; // 下一站目的机构id
@@ -2164,6 +2164,49 @@ public class CwbOrderView {
 
 	public void setTimelimited(String timelimited) {
 		this.timelimited = timelimited;
+	}
+
+	public int getMpsswitch() {
+		return this.mpsswitch;
+	}
+
+	public void setMpsswitch(int mpsswitch) {
+		this.mpsswitch = mpsswitch;
+	}
+
+	public int getIsmpsflag() {
+		return this.ismpsflag;
+	}
+
+	public void setIsmpsflag(int ismpsflag) {
+		this.ismpsflag = ismpsflag;
+	}
+
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final CwbOrderView other = (CwbOrderView) obj;
+		if ((this.getTranscwb().equals(other.getTranscwb())) && (this.getCwb().equals(other.getCwb()))) {
+			return true;
+		}
+		return false;
 	}
 
 	public static void main(String[] args) {

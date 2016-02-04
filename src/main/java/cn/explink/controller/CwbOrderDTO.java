@@ -81,7 +81,25 @@ public class CwbOrderDTO {
 	BigDecimal shouldfare = BigDecimal.ZERO;
 	BigDecimal infactfare = BigDecimal.ZERO;
 	long getDataFlag; //是否已同步到主表	
+	int mpsallarrivedflag; // '最后一箱标识:1表示最后一箱；0默认';
+	int ismpsflag; // 是否一票多件：0默认；1是一票多件'; 
 	
+	public int getIsmpsflag() {
+		return ismpsflag;
+	}
+
+	public void setIsmpsflag(int ismpsflag) {
+		this.ismpsflag = ismpsflag;
+	}
+
+	public int getMpsallarrivedflag() {
+		return mpsallarrivedflag;
+	}
+
+	public void setMpsallarrivedflag(int mpsallarrivedflag) {
+		this.mpsallarrivedflag = mpsallarrivedflag;
+	}
+
 	public long getGetDataFlag() {
 		return getDataFlag;
 	}

@@ -15,6 +15,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.BranchRouteDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchRoute;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchRouteEnum;
 
 @Service
@@ -33,15 +34,15 @@ public class CwbRouteService {
 	public void reload() {
 		Map<Long, List<Long>> tempbranchRoutes = new HashMap<Long, List<Long>>();
 		Map<Long, List<Long>> tempbranchbackRoutes = new HashMap<Long, List<Long>>();
-		List<BranchRoute> allBranchRoute = branchRouteDAO.getAllBranchRoute();
+		List<BranchRoute> allBranchRoute = this.branchRouteDAO.getAllBranchRoute();
 		for (BranchRoute branchRoute : allBranchRoute) {
 			switch (branchRoute.getType()) {
 			case 2:
-				tempbranchRoutes.put(branchRoute.getFromBranchId(), addToRouts(tempbranchRoutes, branchRoute));
+				tempbranchRoutes.put(branchRoute.getFromBranchId(), this.addToRouts(tempbranchRoutes, branchRoute));
 				break;
 
 			case 3:
-				tempbranchbackRoutes.put(branchRoute.getFromBranchId(), addToRouts(tempbranchbackRoutes, branchRoute));
+				tempbranchbackRoutes.put(branchRoute.getFromBranchId(), this.addToRouts(tempbranchbackRoutes, branchRoute));
 				break;
 
 			default:
@@ -65,7 +66,7 @@ public class CwbRouteService {
 		if (destinationid == 0) {// 如果没有目的站 则直接返回0
 			return 0L;
 		}
-		List<Long> children = branchRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : branchRoutes.get(currentBranchid);
+		List<Long> children = this.branchRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : this.branchRoutes.get(currentBranchid);
 		int routtype = 0;
 		for (long routes : children) {
 			if (routes == destinationid) {// 有
@@ -74,20 +75,20 @@ public class CwbRouteService {
 			}
 		}
 		if (routtype == 0) {
-			Branch branch = branchDAO.getBranchByBranchid(destinationid);
-			if (branch != null && !"1".equals(branch.getContractflag())) {// 如果不是二及站，直接返回0
+			Branch branch = this.branchDAO.getBranchByBranchid(destinationid);
+			if ((branch != null) && !"1".equals(branch.getContractflag())) {// 如果不是二及站，直接返回0
 				return 0L;
 			}
 		}
 
-		List<Long> nextBranchList = getNextBranch(currentBranchid, destinationid, new ArrayList<Long>(), new ArrayList<Long>(), -1);
+		List<Long> nextBranchList = this.getNextBranch(currentBranchid, destinationid, new ArrayList<Long>(), new ArrayList<Long>(), -1);
 		long nextBranch = nextBranchList.size() > 0 ? nextBranchList.get(0) : 0L;
 		return nextBranch == currentBranchid ? 0 : nextBranch;
 	}
 
 	/**
 	 * 计算下一站
-	 * 
+	 *
 	 * @param currentBranchid
 	 *            当前站点id
 	 * @param destinationid
@@ -102,7 +103,7 @@ public class CwbRouteService {
 	 */
 	private List<Long> getNextBranch(long currentBranchid, long destinationid, List<Long> routes, List<Long> NextBranchidList, int times) {
 		times++;
-		List<Long> children = branchRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : branchRoutes.get(currentBranchid);
+		List<Long> children = this.branchRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : this.branchRoutes.get(currentBranchid);
 		for (long childid : children) {
 			if (childid == destinationid) {// 如果匹配到了下一站，并且比之前匹配到的路线要短的话 就更新
 				NextBranchidList.add(times, childid);
@@ -123,22 +124,22 @@ public class CwbRouteService {
 			List<Long> currentRoutes = new ArrayList<Long>(routes);
 			currentRoutes.add(childid);
 			List<Long> samsaraNextBranchidList = new ArrayList<Long>(NextBranchidList);
-			samsaraNextBranchidList = getNextBranch(childid, destinationid, currentRoutes, samsaraNextBranchidList, times);
+			samsaraNextBranchidList = this.getNextBranch(childid, destinationid, currentRoutes, samsaraNextBranchidList, times);
 			// 如果 计算出的路程List长度为0或者最后一站id为0，则认为此路线无效
-			if (samsaraNextBranchidList.size() > 0 && samsaraNextBranchidList.get(samsaraNextBranchidList.size() - 1) > 0) {
+			if ((samsaraNextBranchidList.size() > 0) && (samsaraNextBranchidList.get(samsaraNextBranchidList.size() - 1) > 0)) {
 				samsaraNextBranchidList.set(times, childid);
 				// 如果排序使用的路程List最后一站id是0，则表示从未获得计算数据，则进行初始化
-				if (orderBySamsaraNextBranchidList.size() == 0 || orderBySamsaraNextBranchidList.get(orderBySamsaraNextBranchidList.size() - 1) == 0) {
+				if ((orderBySamsaraNextBranchidList.size() == 0) || (orderBySamsaraNextBranchidList.get(orderBySamsaraNextBranchidList.size() - 1) == 0)) {
 
 					orderBySamsaraNextBranchidList = samsaraNextBranchidList;
 
 					// 如果 排序使用的路程List长度大于0，并且递归返回的路程List长度小于排序使用的List
 					// 那么就更新排序list
-				} else if (orderBySamsaraNextBranchidList.size() > 0 && samsaraNextBranchidList.size() < orderBySamsaraNextBranchidList.size()) {
+				} else if ((orderBySamsaraNextBranchidList.size() > 0) && (samsaraNextBranchidList.size() < orderBySamsaraNextBranchidList.size())) {
 
 					orderBySamsaraNextBranchidList = samsaraNextBranchidList;
 				}
-				if (times == 0 && samsaraNextBranchidList.size() == 2) {// 在筛选过程中，如果获得的列表距离为2，则表示已经是递归取值中最短路程了。
+				if ((times == 0) && (samsaraNextBranchidList.size() == 2)) {// 在筛选过程中，如果获得的列表距离为2，则表示已经是递归取值中最短路程了。
 					return orderBySamsaraNextBranchidList;
 				}
 			}
@@ -148,12 +149,12 @@ public class CwbRouteService {
 	}
 
 	public long getPreviousBranch(long currentBranchid, long destinationid) {
-		long previousBranch = getPreviousBranch(currentBranchid, destinationid, new ArrayList<Long>());
+		long previousBranch = this.getPreviousBranch(currentBranchid, destinationid, new ArrayList<Long>());
 		return previousBranch == currentBranchid ? 0 : previousBranch;
 	}
 
 	private long getPreviousBranch(long currentBranchid, long destinationid, List<Long> routes) {
-		List<Long> children = branchbackRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : branchbackRoutes.get(currentBranchid);
+		List<Long> children = this.branchbackRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : this.branchbackRoutes.get(currentBranchid);
 		for (long childid : children) {
 			if (childid == destinationid) {
 				return childid;
@@ -165,7 +166,7 @@ public class CwbRouteService {
 			}
 			List<Long> currentRoutes = new ArrayList<Long>(routes);
 			currentRoutes.add(childid);
-			List<Long> nextBranchList = getNextBranch(childid, destinationid, currentRoutes, new ArrayList<Long>(), -1);
+			List<Long> nextBranchList = this.getNextBranch(childid, destinationid, currentRoutes, new ArrayList<Long>(), -1);
 			long nextBranch = nextBranchList.size() > 0 ? nextBranchList.get(0) : 0L;
 			if (nextBranch != 0) {
 				return childid;
@@ -175,29 +176,69 @@ public class CwbRouteService {
 	}
 
 	public List<Long> getNextPossibleBranch(long currentBranchid) {
-		return branchRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : branchRoutes.get(currentBranchid);
+		return this.branchRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : this.branchRoutes.get(currentBranchid);
 	}
 
 	public List<Long> getNextPossibleBackBranch(long currentBranchid) {
-		return branchbackRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : branchbackRoutes.get(currentBranchid);
+		return this.branchbackRoutes.get(currentBranchid) == null ? new ArrayList<Long>() : this.branchbackRoutes.get(currentBranchid);
 	}
 
 	@Transactional
 	public void saveNextPossileBranch(long currentBranchid, List<Long> possibleNextBranchIds) {
-		branchRouteDAO.deleteBranchRouteBatch(currentBranchid, BranchRouteEnum.JinZhengXiang.getValue());
+		this.branchRouteDAO.deleteBranchRouteBatch(currentBranchid, BranchRouteEnum.JinZhengXiang.getValue());
 		for (long nextBranchId : possibleNextBranchIds) {
-			branchRouteDAO.creBranchRoute(currentBranchid, nextBranchId, BranchRouteEnum.JinZhengXiang.getValue());
+			this.branchRouteDAO.creBranchRoute(currentBranchid, nextBranchId, BranchRouteEnum.JinZhengXiang.getValue());
 		}
-		reload();
+		this.reload();
 	}
 
 	@Transactional
 	public void saveNextPossileBackBranch(long currentBranchid, List<Long> possibleNextBackBranchIds) {
-		branchRouteDAO.deleteBranchRouteBatch(currentBranchid, BranchRouteEnum.JinDaoXiang.getValue());
+		this.branchRouteDAO.deleteBranchRouteBatch(currentBranchid, BranchRouteEnum.JinDaoXiang.getValue());
 		for (long nextBranchId : possibleNextBackBranchIds) {
-			branchRouteDAO.creBranchRoute(currentBranchid, nextBranchId, BranchRouteEnum.JinDaoXiang.getValue());
+			this.branchRouteDAO.creBranchRoute(currentBranchid, nextBranchId, BranchRouteEnum.JinDaoXiang.getValue());
 		}
-		reload();
+		this.reload();
+	}
+
+	/**
+	 * @throws Exception
+	 * @Title: getNextInterceptBranch
+	 * @description TODO
+	 * @author 刘武强
+	 * @date  2016年1月11日下午5:01:22
+	 * @param  @param currentBranchid
+	 * @param  @return
+	 * @return  List<BranchRoute>
+	 * @throws
+	 */
+	public List<Branch> getNextInterceptBranch(long currentBranchid) {
+		List<BranchRoute> branchRouteList = this.branchRouteDAO.getNextBranch(currentBranchid, BranchRouteEnum.JinDaoXiang.getValue());
+		List<Branch> branchList = this.getKufangByBranchRoutes(branchRouteList);
+		return branchList;
+	}
+
+	/**
+	 *
+	 * @Title: getKufangByBranchRoutes
+	 * @description 根据站点配置的流向站点，查询出他对应的退货站
+	 * @author 刘武强
+	 * @date  2016年1月12日上午9:47:18
+	 * @param  @param branchList
+	 * @param  @return
+	 * @return  List<Branch>
+	 * @throws
+	 */
+	private List<Branch> getKufangByBranchRoutes(List<BranchRoute> branchList) {
+		List<Branch> list = new ArrayList<Branch>();
+		StringBuffer inStr = new StringBuffer();
+		inStr.append("('',");
+		for (int i = 0; i < branchList.size(); i++) {
+			String temp = branchList.get(i).getToBranchId() + "";
+			inStr.append("'").append(temp).append("'").append(",");
+		}
+		list = this.branchDAO.getBranchsByBranchidAndType(inStr.substring(0, inStr.length() - 1) + ")", BranchEnum.TuiHuo.getValue());
+		return list;
 	}
 
 }

@@ -21,12 +21,11 @@ public class Response_GoodDetail {
 	public void setID(String iD) {
 		ID = iD;
 	}
-
 	@XmlElement(name = "SendOrderID")
 	public String getSendOrderID() {
 		return SendOrderID;
 	}
-
+	
 	public void setSendOrderID(String sendOrderID) {
 		SendOrderID = sendOrderID;
 	}

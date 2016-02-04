@@ -237,6 +237,9 @@ public class BranchService {
 
 		return this.branchDao.getAllBranches();
 	}
-
+	
+    public List<Branch> getPageCashs() {
+		return this.branchDao.getAllBranches();
+	}
 
 }

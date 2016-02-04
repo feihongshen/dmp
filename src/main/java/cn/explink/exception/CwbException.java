@@ -22,7 +22,7 @@ public class CwbException extends ExplinkException {
 		this.cwb = cwb;
 		this.flowordertye = flowordertye;
 	}
-
+	
 	public CwbException(String cwb, long flowordertye, String error) {
 		super(error);
 		this.cwb = cwb;
@@ -40,5 +40,8 @@ public class CwbException extends ExplinkException {
 	public long getFlowordertye() {
 		return flowordertye;
 	}
-
+	public CwbException(String cwb,String error){
+		super(error);
+		this.cwb=cwb;
+	}
 }
