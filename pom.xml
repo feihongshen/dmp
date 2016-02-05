@@ -5,7 +5,7 @@
 	<groupId>com.explink</groupId>
 	<artifactId>dmp1</artifactId>
 	<packaging>war</packaging>
-	<version>0.1.0.BUILD-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>dmp</name>
 	<properties>
 		<cxf.version>2.2.5</cxf.version>
@@ -16,28 +16,13 @@
 		<spring.version>3.1.0.RELEASE</spring.version>
 		<database.driverClassName>com.mysql.jdbc.Driver</database.driverClassName>
 		<spring-security.version>3.1.0.RELEASE</spring-security.version>
-		<aspectj.version>1.6.12.M2</aspectj.version>
+		<aspectj.version>1.8.8</aspectj.version>
 	</properties>
 	<repositories>
 		<repository>
-			<id>spring-maven-release</id>
-			<name>Spring Maven Release Repository</name>
-			<url>http://maven.springframework.org/release</url>
-		</repository>
-		<repository>
-			<id>spring-maven-milestone</id>
-			<name>Spring Maven Milestone Repository</name>
-			<url>http://maven.springframework.org/milestone</url>
-		</repository>
-		<repository>
-			<id>momoplan-maven-release</id>
-			<name>momoplan maven release</name>
-			<url>https://raw.github.com/momoplan/maven-repository/master/releases</url>
-		</repository>
-		<repository>
-			<id>explink</id>
-			<name>explink Repository</name>
-			<url>http://explink.wicp.net:21122/nexus/content/repositories/releases/</url>
+			<id>vipshopRepository</id>
+			<name>vipshop Repository</name>
+			<url>http://mvn1.tools.vipshop.com/nexus/content/groups/public/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
@@ -156,9 +141,9 @@
 	    </dependency>
 		
 		 <dependency>
-		  <groupId>com.codahale</groupId>
+		  <groupId>com.codahale.metrics</groupId>
 		  <artifactId>metrics-core</artifactId>
-		  <version>3.1.0</version>
+		  <version>3.0.2</version>
 		</dependency>
 		
 		<dependency>
@@ -180,7 +165,7 @@
 		</dependency>
 		
 		<dependency>
-		     <groupId>org.apache</groupId> 
+		     <groupId>org.apache.zookeeper</groupId> 
 			<artifactId>zookeeper</artifactId> 
 			<version>3.4.6</version> 
 		</dependency>
