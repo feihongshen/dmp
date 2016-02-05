@@ -275,6 +275,9 @@ public class CwbOrderView implements Cloneable {
 	private BigDecimal shouldfare = BigDecimal.ZERO; // 应收运费
 	private String expressPayWay;// 支付方式
 
+	private int mpsswitch;//mps开关（0：未开启，1：开启库房集单，2：开启站点集单）
+	private int ismpsflag;//是否一票多件：0默认；1是一票多件
+	
 	// 添加揽件省 added by songkaojun 2015-11-17
 	private String senderprovince;
 

@@ -132,10 +132,6 @@ public class VipShopGetCwbDataService {
 		String openmpspackageflag=request.getParameter("openmpspackageflag");
 		vipshop.setOpenmpspackageflag(Integer.valueOf(openmpspackageflag));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
-		String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
-		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
-		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
-		vipshop.setDaysno(Integer.parseInt(daysno));
 		
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		

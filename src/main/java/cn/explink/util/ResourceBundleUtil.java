@@ -37,6 +37,4 @@ public class ResourceBundleUtil {
 	
 	// 上传通联证书路径
 	public static final String FileTongLianPath = ResourceBundleUtil.rbint.getString("fileTongLianPath");
-	// 上传通联证书路径
-	public static final String FileTongLianPath = ResourceBundleUtil.rbint.getString("fileTongLianPath");
 }

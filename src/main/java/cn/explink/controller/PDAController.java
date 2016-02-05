@@ -2988,7 +2988,7 @@ public class PDAController {
 								// 判断订单当前环节的下一环节是否包含入库
 								if (cwbStateControlList.get(a).getTostate() == FlowOrderTypeEnum.RuKu.getValue()) {
 									// 创建流程跟踪信息表
-									this.cwbOrderService.createFloworder(user, co.getCurrentbranchid(), co, FlowOrderTypeEnum.LanJianChuZhan, "", System.currentTimeMillis(), scancwb);
+									this.cwbOrderService.createFloworder(user, co.getCurrentbranchid(), co, FlowOrderTypeEnum.LanJianChuZhan, "", System.currentTimeMillis(), scancwb, false);
 									// 状态回传tps
 									// this.expressOutStationService.executeTpsTransInterface4TransFeedBack(co.getCwb(),
 									// user, co.getNextbranchid());
@@ -3125,32 +3125,8 @@ public class PDAController {
 			resp = new ExplinkResponse("103", msg, promt);
 			this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 			return resp;
-		} catch (CwbException e) {
-			cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
-					: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
-			if (e.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
-				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
-				String errorinfo = cwb + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError();
-				if (this.mpsCommonService.isNewMPSOrder(scancwb)) {
-					errorinfo = scancwb + " " + CwbOrderPDAEnum.CHONG_FU_RU_KU.getError();
-				}
-				ExplinkResponse explinkResponse = new ExplinkResponse(CwbOrderPDAEnum.CHONG_FU_RU_KU.getCode(), errorinfo + " " + StringUtil.nullConvertToEmptyString(branch.getBranchname()), null);
-				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl());
-				// 添加货物类型声音.
-				this.addGoodsTypeWaveJSON(request, co, explinkResponse);
-				explinkResponse.addLongWav(this.getErrorWavFullPath(request, CwbOrderPDAEnum.CHONG_FU_RU_KU.getVediourl()));
-				return explinkResponse;
-			} else {
-				ExplinkResponse explinkResponse = new ExplinkResponse(e.getError().getValue() + "", e.getMessage(), null);
-				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
-				// 添加货物类型声音.
-				this.addGoodsTypeWaveJSON(request, co, explinkResponse);
-				// 单号不存在异常.
-				this.addNoOrderWav(request, e, explinkResponse);
-				explinkResponse.addShortWav(this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl()));
-				return explinkResponse;
-			}
+		} 
+	}
 
 	private String validateSecondLevelStationPackage(List<String> cwbList) {
 		String msg = "";
@@ -3774,7 +3750,7 @@ public class PDAController {
 						if ((cwbStateControlList.get(a).getTostate() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue())) {
 							if (cwbOrderOld.getFlowordertype() != FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()) {
 								// 创建流程跟踪信息表
-								this.cwbOrderService.createFloworder(user, cwbOrderOld.getCurrentbranchid(), cwbOrderOld, FlowOrderTypeEnum.LanJianChuZhan, "", System.currentTimeMillis(), scancwb);
+								this.cwbOrderService.createFloworder(user, cwbOrderOld.getCurrentbranchid(), cwbOrderOld, FlowOrderTypeEnum.LanJianChuZhan, "", System.currentTimeMillis(), scancwb, false);
 							}
 							// 状态回传tps
 							// expressOutStationService.executeTpsTransInterface4TransFeedBack(cwbOrderOld.getCwb(),
@@ -5279,7 +5255,7 @@ public class PDAController {
 
 		String scancwb = cwb;
 		// 根据运单找到订单
-		cwb = this.cwborderService.translateCwb(cwb);
+		cwb = this.cwbOrderService.translateCwb(cwb);
 		// 订单详细信息
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		if (co == null) {
@@ -5287,7 +5263,7 @@ public class PDAController {
 		}
 		if (thzzrkFlag == 1) {// 这个参数为1，那么就是从退货中转入库进来的
 			// 一票多件不支持退货中转入库的校验
-			this.cwborderService.nonSupportMpsValid(co);
+			this.cwbOrderService.nonSupportMpsValid(co);
 		}
 
 		CwbOrder cwbOrder = null;
@@ -5329,15 +5305,15 @@ public class PDAController {
 						} else {
 							branchid = op.getNextbranchid();
 						}
-						cwbOrder = this.cwborderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, comment, "", false, 1, branchid);
+						cwbOrder = this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, comment, "", false, 1, branchid);
 					}
 				} else if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
-					cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, 0);
+					cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, 0);
 				} else if (((co.getCwbstate() == CwbStateEnum.BUFENDIUSHI.getValue()) || (co.getCwbstate() == CwbStateEnum.BUFENPOSUN.getValue())
 						|| (co.getCwbstate() == CwbStateEnum.WANQUANPOSUN.getValue()) || (co.getCwbstate() == CwbStateEnum.DiuShi.getValue()) || (co.getCwbstate() == CwbStateEnum.TuiHuo.getValue()))
 						&& (co.getIsmpsflag() == 1) && (co.getNextbranchid() == this.getSessionUser().getBranchid())) {
-					this.cwborderService.updateCwbFlowOrderType(cwb);
-					cwbOrder = this.cwborderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, 0);
+					this.cwbOrderService.updateCwbFlowOrderType(cwb);
+					cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, 0);
 				} else {
 					throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.Fei_ZhongZhuan_Tuihuo);
 				}
@@ -6654,11 +6630,11 @@ public class PDAController {
 			this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 		}
 
+		// add by 王志宇-------未到货统计二级站出站给一级站
 		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()
                 + FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue() + ","
 				+ FlowOrderTypeEnum.DingDanLanJie.getValue();
-		// add by 王志宇-------未到货统计二级站出站给一级站
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() + "," + FlowOrderTypeEnum.LanJianChuZhan.getValue();
+		
 		if (showintowarehousedata.equals("yes")) {
 			flowordertypes += "," + FlowOrderTypeEnum.RuKu.getValue();
 		}
@@ -6867,7 +6843,7 @@ public class PDAController {
 	public String cwbexportwarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
 			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
-		long thissuccess = 0;
+		BatchCount batchCount = new BatchCount(0, 0, 0);
 		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
@@ -8678,14 +8654,12 @@ public class PDAController {
 			String sqlstr = "";
 			if (type.length() > 0) {
 
-				String flowordertypes = FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() + "," + FlowOrderTypeEnum.DingDanLanJie.getValue();
-
 				if (type.equals("weichuku")) {
 					if (extype.equals("wall") || extype.isEmpty()) {
-						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), 0, flowordertypes);
+						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), 0);
 					}
 					if (extype.equals("wshangmengtui")) {
-						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue(), flowordertypes);
+						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmentui.getValue());
 
 						// sqlstr =
 						// this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(),
@@ -8695,14 +8669,14 @@ public class PDAController {
 						// sqlstr =
 						// this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(),
 						// CwbOrderTypeIdEnum.Shangmenhuan.getValue());
-						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue(), flowordertypes);
+						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Shangmenhuan.getValue());
 
 					}
 					if (extype.equals("wpeisong")) {
 						// sqlstr =
 						// this.cwbDAO.getSqlExportBackToCustomerWeichukuOfcwbtype(this.getSessionUser().getBranchid(),
 						// CwbOrderTypeIdEnum.Peisong.getValue());
-						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue(), flowordertypes);
+						sqlstr = this.cwbDAO.getBackYiRukuListbyBranchidSQL(this.getSessionUser().getBranchid(), CwbOrderTypeIdEnum.Peisong.getValue());
 
 					}
 				}
@@ -10229,7 +10203,7 @@ public class PDAController {
 		long zzBranchid = this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
 
 		// 获取下一站的列表哦
-		List<Branch> bList = this.cwborderService.getNextPossibleBranches(kfBranchid, zzBranchid);
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(kfBranchid, zzBranchid);
 
 		// 系统设置是否显示订单备注
 		boolean showCustomerSign = this.kfzdOrderService.isShowCustomerSign();
@@ -10292,37 +10266,6 @@ public class PDAController {
 		obj.put("yichukucount", yichukucount);
 
 		return obj;
-	}
-
-	/**
-	 * 分拣中转出站扫描
-	 *
-	 */
-	@RequestMapping("/cwbSortingAndChangeExportWarehouse/{cwb}")
-	public @ResponseBody ExplinkResponse cwbSortingAndChangeExportWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
-			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
-			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
-			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
-			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
-
-		ExplinkResponse explinkResponse = null;
-		String translated = this.cwborderService.translateCwb(cwb);
-		CwbOrder co = this.cwbDAO.getCwbByCwb(translated);
-		if (co == null) {
-			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
-		}
-		this.cwborderService.nonSupportMpsValid(co);
-		// 判断订单状态是否为中转
-		if (this.isZhongzhuanOrder(co)) {
-			// 调用中转出库扫描逻辑
-			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, false);
-		} else {
-			// 调用分拣出库扫描逻辑
-			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
-		}
-
-		return explinkResponse;
 	}
 
 	/**
@@ -10622,122 +10565,7 @@ public class PDAController {
 			objList.add(obj);
 		}
 	}
-
-	/**
-	 * ============================================== 代码块：分拣中转功能
-	 *
-	 * @since DMP v4.2.3
-	 * @author jinghui.pan@pjbest.com
-	 *         ===============================================
-	 */
-
-	/**
-	 * 进入分拣中转出库的功能页面（明细）
-	 *
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping("/sortingAndChangeExportWarehouse")
-	public String sortingAndChangeExportWarehouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long nextbranchid,
-			@RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
-
-		// List<Branch> bList =
-		// this.cwborderService.getNextPossibleBranches(this.getSessionUser());
-
-		List<User> uList = this.userDAO.getUserByRole(3);
-		List<Truck> tlist = this.truckDAO.getAllTruck();
-
-		List<Customer> cList = this.customerDAO.getAllCustomers();
-
-		long kfBranchid = this.getSessionUser().getBranchid();
-		long zzBranchid = this.kfzdOrderService.getBranchIdFromUserBranchMapping(BranchEnum.ZhongZhuan);
-
-		// 获取下一站的列表哦
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(kfBranchid, zzBranchid);
-
-		// 系统设置是否显示订单备注
-		boolean showCustomerSign = this.kfzdOrderService.isShowCustomerSign();
-
-		// List<CwbDetailView> weichukuViewList =
-		// kfzdOrderService.getSortAndChangeExportWeiChuKuCwbViewList(1,
-		// nextbranchid);
-		// List<CwbDetailView> yichukuViewList =
-		// kfzdOrderService.getSortAndChangeExportYiChuKuCwbViewList(1,
-		// nextbranchid);
-		//
-		// model.addAttribute("weichukulist", weichukuViewList);
-		// model.addAttribute("yichukulist", yichukuViewList);
-		//
-		String isOpenDialog = this.systemInstallDAO.getSystemInstallByName("Dialog").getValue();// 是否显示提示框
-		String isConfigZhongZhuan = zzBranchid != 0 ? "true" : "false";
-
-		model.addAttribute("customerlist", cList);
-		model.addAttribute("isConfigZhongZhuan", isConfigZhongZhuan);// “区域权限设置”是否配置了中转站
-		model.addAttribute("isOpenDialog", isOpenDialog);
-		model.addAttribute("branchlist", bList);
-		model.addAttribute("userList", uList);
-		model.addAttribute("truckList", tlist);
-		model.addAttribute("ck_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.ChuKuBuYunXu.getText()));
-		model.addAttribute("ckfb_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.ChuKuFengBao.getText()));
-		model.addAttribute("showCustomerSign", showCustomerSign);
-		model.addAttribute("isscanbaleTag", isscanbaleTag);
-		return "pda/sortingAndChangeExportWarehouse";
-	}
-
-	/**
-	 * 分拣中转出站扫描
-	 *
-	 */
-	@RequestMapping("/cwbSortingAndChangeExportWarehouse/{cwb}")
-	public @ResponseBody ExplinkResponse cwbSortingAndChangeExportWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
-			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
-			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
-			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
-			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
-
-		ExplinkResponse explinkResponse = null;
-		String translated = this.cwbOrderService.translateCwb(cwb);
-		CwbOrder co = this.cwbDAO.getCwbByCwb(translated);
-		if (co == null) {
-			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
-		}
-		// 判断订单状态是否为中转
-		if (this.isZhongzhuanOrder(co)) {
-			// 调用中转出库扫描逻辑
-			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, false);
-		} else {
-			// 调用分拣出库扫描逻辑
-			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
-		}
-
-		return explinkResponse;
-	}
-
-	/**
-	 * 判断订单是否为中转，通过订单操作环节是否为中转入库或中转出库或者订单的下站点是中转
-	 */
-	private boolean isZhongzhuanOrder(CwbOrder co) {
-		long nextbranchid = co.getNextbranchid();
-		Branch nextbranch = this.branchDAO.getBranchById(nextbranchid);
-
-		return ((FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() == co.getFlowordertype()) || (FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() == co.getFlowordertype())) || (nextbranch == null) ? true
-				: nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue();
-
-	}
-
-	/**
-	 * 得到 分拣和中转出库 一票多件缺件的分页
-	 *
-	 * @return
-	 */
-	@RequestMapping("/getSortAndChangeOutQueListPage")
-	public @ResponseBody List<JSONObject> getSortAndChangeOutQueListPage(Model model, @RequestParam(value = "page", defaultValue = "1") long page,
-			@RequestParam(value = "nextbranchid", required = false, defaultValue = "-1") long nextbranchid) {
-		List<JSONObject> quejianList = this.kfzdOrderService.getSortAndChangeYpdjLessCwbList(nextbranchid, page);
-		return quejianList;
-	}
-
+	
 	/**
 	 * 中转库出库扫描公共逻辑
 	 *

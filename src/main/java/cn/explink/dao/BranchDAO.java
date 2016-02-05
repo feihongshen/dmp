@@ -505,22 +505,6 @@ public class BranchDAO {
 						ps.setLong(63, branch.getBranchid());
 					}
 				});
-						ps.setString(52, branch.getBankCardNo());
-						ps.setString(53, branch.getBankCode());
-						ps.setString(54, branch.getOwnerName());
-						ps.setInt(55, branch.getBankAccountType());
-
-						ps.setString(56, branch.getCftAccountNo());
-						ps.setString(57, branch.getCftBankCode());
-						ps.setString(58, branch.getCftAccountName());
-						ps.setInt(59, branch.getCftAccountProp());
-						ps.setString(60, branch.getCftCertId());
-						ps.setInt(61, branch.getCftCertType());
-
-						ps.setLong(62, branch.getBranchid());
-					}
-				});
-
 	}
 
 	/**

@@ -27,8 +27,7 @@ public class VipShop {
 	private int resuseReasonFlag;  //拒收原因是否回传默认 0，  0回传， 1不回传
 	private int isCreateTimeToEmaildateFlag; //是否唯品会订单出仓时间作为 邮件批次时间，emaildate 默认0 ，开启：1
 	private String lefengCustomerid;
-	private int daysno;//干线回单重发天数
-	private long selb2cnum;//货态重发次数
+
 	public int getDaysno() {
 		return daysno;
 	}
@@ -62,22 +61,6 @@ public class VipShop {
 
 	public void setOpenmpspackageflag(int openmpspackageflag) {
 		this.openmpspackageflag = openmpspackageflag;
-	}
-
-	public int getDaysno() {
-		return daysno;
-	}
-
-	public void setDaysno(int daysno) {
-		this.daysno = daysno;
-	}
-
-	public long getSelb2cnum() {
-		return selb2cnum;
-	}
-
-	public void setSelb2cnum(long selb2cnum) {
-		this.selb2cnum = selb2cnum;
 	}
 
 	public String getLefengCustomerid() {

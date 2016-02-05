@@ -3082,14 +3082,6 @@ public class CwbDAO {
 
 	}
 
-	public List<CwbOrder> getBackRukuByBranchidForList(long branchid,
-			long page, long cwbordertypeid) {
-		return this.jdbcTemplate
-				.query("SELECT * FROM express_ops_cwb_detail WHERE nextbranchid =? and currentbranchid=0 and flowordertype=? and state=1 and cwbordertypeid=? limit ?,? ",
-						new CwbMapper(), branchid,
-						FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),
-						cwbordertypeid, (page - 1) * Page.DETAIL_PAGE_NUMBER,
-						Page.DETAIL_PAGE_NUMBER);
 	// 退货入库待入库list(包含订单拦截的待退货入库)
 	public List<CwbOrder> getBackRukuByBranchidForListAll(long branchid, long page) {
 
@@ -7996,7 +7988,7 @@ public class CwbDAO {
 	public String getBackYiRukuListbyBranchidSQL(long branchid,
 			long cwbordertypeid) {
 
-		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + branchid + " and flowordertype in (" + flowordertypes + ") and state=1";
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid=" + branchid + " and flowordertype in (" + FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue() + ") and state=1";
 		if (cwbordertypeid > 0) {
 			sql += "  and cwbordertypeid=" + cwbordertypeid;
 		}
@@ -8265,9 +8257,6 @@ public class CwbDAO {
 						+ (branchid.length() > 0 ? " and nextbranchid in("
 								+ branchid + ") " : " ") + ") AND state=1  "
 						+ "");
-
-		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  (" + wheresql + "  " + (branchid.length() > 0 ? " and nextbranchid in(" + branchid + ") " : " ")
-				+ ") AND state=1  " + "");
 
 		System.out.println(sql);
 

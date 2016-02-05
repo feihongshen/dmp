@@ -50,7 +50,15 @@ public enum ExceptionCwbErrorTypeEnum {
 			140, "一票多件订单到货不全,不许领货操作!"), SHANGMENJUTUI_BUYUNXU_TUIHUOCHUZHAN(141, "审核为上门拒退的订单不允许做退货出站操作!"), TUIKEHU_DAIQUEREN(142, "退客户待确认的订单禁止退客户拒收返库!"), TUIKEHU_SUCCESS(143, "退客户成功的订单禁止退客户拒收返库!"), YIJINGSHANGXIAN(
 			144, "此单发货件数已经达到上限了,不允许{0}操作"), YIJINGFENGBAO(145, "此单已经在{0}封包了,不允许{1}操作"), SMHorSMTBXYTHCZ(146, "{0}类型的订单,不允许反馈为{1}"), PeisongDan_vipshop_weiwanjie(147, "唯品会配送单状态未完结，不能操作当前揽退单:{0}"), Shangmentui_vipshop_shixiao(
 			148, "当前操作订单{0}已失效，请关联订单{1}"), LingHuo_ZhiFuXinxiWeiQueRen(149, "订单修改未审核，请联系客服人员！"), Do_Not_Have_Addition_Record(150, "快递单未完成录入，不能入库！"), ZHANDIANHEBAOBUYUNXUBENZHANDAOHUO(151,
-			"快递揽件合包后不允许本站直接按包到货扫描"), Second_Level_Station_Validation(152, "二级站的订单或包不允许直接入库！");
+			"快递揽件合包后不允许本站直接按包到货扫描"), Second_Level_Station_Validation(152, "二级站的订单或包不允许直接入库！"),
+			
+			OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED(160, "一票多件货物未到齐，需要库房集单完成之后才能够处理出库操作!"), DELIVERTAKEGOODS_MPS_NOT_ALL_ARRIVED(
+					161, "一票多件货物未到齐，需要站点集单完成之后才能够分配小件员进行配送操作!"), TRANSORDER_LOST(162, "此{0}运单因{1}已导致丢失，已被客服人员操作拦截!"), TRANSORDER_BROKEN(163, "此{0}运单因{1}已导致破损，已被客服人员操作拦截，请将此件货物给到退货组！"), TRANSORDER_LOST_RETURN(
+					164, "{0}订单中的{1}运单，因{2}已丢失，请将此件货物给到退货组!"), TRANSORDER_BROKEN_RETURN(165, "{0}订单中的{1}运单，因{2}已破损，请将此件货物给到退货组!"), TRANSCWB_STATE_CONTROL_ERROR(166, "状态为{0}的运单不允许进行{1}操作"), NEXT_STATION_NOT_UNIQUE_ERROR(
+					167, "配置的逆向退货组不唯一"), NONE_NEXT_STATION_ERROR(168, "没有配置逆向的退货组"), TRANSORDER_RETURN(169, "{0}订单中的{1}运单已退货，请将此件货物给到退货组!"), TUIHUOZHONGZHUANRUKU_NONSUPPORT_MPS(170, "退货中转入库不支持一票多件订单!"), FENJIANZHONGZHUANCHUKU_NONSUPPORT_MPS(
+					171, "分拣中转出库不支持一票多件订单!"),
+	
+			BU_SHI_ZHE_GE_MU_DI_DI_zong(200, "不是这个目的地的货");
 
 	private int value;
 	private String text;

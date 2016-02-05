@@ -6,7 +6,9 @@ public enum ReasonTypeEnum {
 	
 	WeiShuaKa(8, "未刷卡原因"), DiuShi(9, "丢失原因"), WeiTuiShangPin(10, "未退商品原因"), TuiHuoZhanRuKuBeiZhu(11, "退货站入库备注"), ShiXiaoReason(12, "失效原因"), GongDanTouSuYuanYin(13, "工单投诉原因"), KeHuLeiXing(14, "客户类型"),
 
-	PickFailed(15, "揽件失败原因"), WrongArea(16, "站点超区原因"), PickWrong(17, "揽件超区原因"), PickDelay(18, "延迟揽件原因");
+	Intercept(15, "拦截原因"),
+	
+	PickFailed(19, "揽件失败原因"), WrongArea(16, "站点超区原因"), PickWrong(17, "揽件超区原因"), PickDelay(18, "延迟揽件原因");
 
 	private int value;
 	private String text;

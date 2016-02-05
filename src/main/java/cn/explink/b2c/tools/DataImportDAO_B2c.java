@@ -664,15 +664,6 @@ public class DataImportDAO_B2c {
 		String sql = "update express_ops_cwb_detail_b2ctemp set getDataFlag=1 where cwb=?";
 		this.jdbcTemplate.update(sql,cwb);
 	}
-
-	/**
-	 * 【玫琳凯】业务需要
-	 * @param cwb
-	 */
-	public void updateGetdataflagByCWB(String cwb) {
-		String sql = "update express_ops_cwb_detail_b2ctemp set getDataFlag=1 where cwb=?";
-		this.jdbcTemplate.update(sql,cwb);
-	}
 	
 	public void updateTmsPackageCondition(String cwb, String  transcwb,int sendcarnum,int mpsallarrivedflag,int ismpsflag) {
 		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=? where cwb=? and state = 1  ", transcwb,sendcarnum,mpsallarrivedflag,ismpsflag,cwb);
