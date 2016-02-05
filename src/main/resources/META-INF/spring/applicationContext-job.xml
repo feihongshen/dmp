@@ -1140,6 +1140,25 @@
 	</bean>
 	<!-- 订单生命周期报表生成任务 结束 -->
 	
+	 <bean id="doTime_pinhaohuo" class="cn.explink.util.DatabaseInitCronTriggerBean"
+		dependency-check="default">
+		<property name="jobDetail">
+			<ref bean="getPinhaohuo" />
+		</property>
+		<property name="cronExpression">
+			<value>0 */15 * * * ?</value>
+		</property>
+	</bean>
+		<bean id="getPinhaohuo" class="cn.explink.util.BeanInvokingJobDetailFactoryBean"
+		dependency-check="default">
+		<property name="targetBean">
+			<value>excuteTimmer</value>
+		</property>
+		<property name="targetMethod">
+			<value>getPinhaohuo_Task</value>
+		</property>
+	</bean>
+	
 	  <!-- 从TPS获取物流状态任务  开始 -->
      <bean id="doTime_getCarrierOrderStatus" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
            <property name="jobDetail">
@@ -1160,6 +1179,16 @@
      </bean>
      <!-- 从TPS获取物流状态任务  结束 -->
 	
+    <!-- 订单生命周期报表生成任务 结束-->
+     <bean id="doTime_sendFlow" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="doTime_sendFlowTask" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value> <!-- 每天凌晨3点30分 触发一次 -->
+           </property>
+     </bean>
+     
 	 <!-- TPS自动化订单临时表数据转转主表任务 开始 -->
      <bean id="doTime_tpsOXOOrderTempToMain" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
            <property name="jobDetail">
@@ -1256,48 +1285,9 @@
          </property>
      </bean>
      <!-- 库房日志 end-->
-     <!-- 飞牛网定时任务临时表主表 --> 
-     <bean id="doTime_feiniuwang" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
-           <property name="jobDetail">
-               <ref bean="getFeiNiuWang" />
-           </property>
-             <property name="cronExpression">
-               <value>0 */15 * * * ?</value>
-           </property>
-      </bean>
-     
+
      <!-- 站点日志 start-->
      <bean id="doTime_dailyDayLogGenerate" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
-     <bean id="getFeiNiuWang" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
-      <property name="targetBean">
-             <value>excuteTimmer</value>
-         </property>
-         <property name="targetMethod">
-             <value>getFeiNiuWang_Task</value>
-         </property>
-     </bean>
-     
-      <!-- 环球购物 -->
-      <bean id="doTime_huanqiugouwu" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
-           <property name="jobDetail">
-               <ref bean="getHuanqiugouwu" />
-           </property>
-             <property name="cronExpression">
-               <value>0 */15 * * * ?</value>
-           </property>
-      </bean>
-     
-     <bean id="getHuanqiugouwu" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
-      <property name="targetBean">
-             <value>excuteTimmer</value>
-         </property>
-         <property name="targetMethod">
-             <value>getHuanQiuGouWu_Task</value>
-         </property>
-     </bean>
-     
-     <!-- 订单生命周期报表生成任务  开始 -->
-     <bean id="doTime_orderLifecycleReport" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
            <property name="jobDetail">
                <ref bean="dailyDayLogGenerateTask" />
            </property>
@@ -1314,5 +1304,33 @@
          </property>
      </bean>
      <!-- 站点日志 end-->
+
 	<!-- ===================================自动生成HTML定时器 结束========================================== -->
+	
+	<bean id="doTime_zhemeng" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getZhemeng" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */15 * * * ?</value>
+           </property>
+      </bean>
+     
+     <bean id="getZhemeng" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getZheMeng_Task</value>
+         </property>
+     </bean>
+	     
+     <bean id="doTime_sendFlowTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>setFlowExp</value>
+         </property>
+     </bean>
 </beans>
