@@ -4,6 +4,15 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
   
+	<!-- 新建存储过程，用于检查column, index, fk是否存在，不存在则创建 -->
+	 <changeSet id="wangwei-2016-02-05-merge-001" author="wangwei">
+		<sqlFile endDelimiter="//" path="proc_create_index_if_not_exists.sql" encoding="UTF-8" relativeToChangelogFile="true" />
+  	    <sqlFile endDelimiter="//" path="proc_add_column_if_not_exists.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
+		<sqlFile endDelimiter="//" path="proc_change_column_if_exists.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
+		<sqlFile endDelimiter="//" path="proc_change_index_if_exists.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
+		<sqlFile endDelimiter="//" path="proc_add_foreignkey_if_not_exists.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
+	</changeSet>
+	  
   	 <changeSet id="zhangxiaofeng-001" author="zhangxiaofeng">
   	      <sqlFile path="dmp_init.sql" encoding="UTF-8"	relativeToChangelogFile="true" />
      </changeSet>
@@ -8574,6 +8583,12 @@ CREATE TABLE `cs_complaint_accept` (
 			fn_order_details_snapshot(`fnrptlifecycleid`);
 		</sql>
 	</changeSet>
+	
+	<!-- fn_order_recharge.record_bill_id之前执行，补上已执行过上脚本以防报错 -->
+	<changeSet id="wangwei-2016-02-05-merge-002" author="wangwei">
+		<sqlFile path="catch_up_ran_script_at_first.sql" encoding="UTF-8" relativeToChangelogFile="true" />
+	</changeSet>
+	
 	<changeSet id="zhouguoting-2015-10-30-1" author="zhouguoting">
 		<sql>
 			ALTER TABLE `fn_order_recharge`   
@@ -8729,22 +8744,26 @@ CREATE TABLE `cs_complaint_accept` (
 		</sql>
 	</changeSet>
 	 
+	
+	<changeSet id="liuxiao-2015-12-01-01" author="liuxiao">
+		<sql>
+			ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD index(`remark4`);
+		</sql>
+	</changeSet> 
+	<changeSet id="wangqiang-2015-12-04" author="wangqiang">
+		<sql>
+			ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `isPassiveReception` INT(4) DEFAULT 0 NULL AFTER `ispostflag`;
+		</sql>
+	</changeSet>
+	
+	
 	 <changeSet id="zhouguoting-2015-11-29-01" author="zhouguoting">
 		<sql>
 			ALTER TABLE `express_ops_cwb_detail`
 			  ADD COLUMN `fncustomerposbillid` BIGINT(20) DEFAULT 0  NULL  COMMENT '客户POS抵扣账单id' AFTER `fncustomerbillid`;		
 		</sql>
 	</changeSet>
-	<changeSet id="liuxiao-2015-12-01-01" author="liuxiao">
-		<sql>
-			ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD index(`remark4`);
-		</sql>
-	</changeSet>
-	<changeSet id="wangqiang-2015-12-04" author="wangqiang">
-		<sql>
-			ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `isPassiveReception` INT(4) DEFAULT 0 NULL AFTER `ispostflag`;
-		</sql>
-	</changeSet> 
+	
 	 <changeSet id="zhouguoting-2015-12-10-01" author="zhouguoting">
 		<sql>
 		   ALTER TABLE `fn_adjustment_record`   
@@ -8890,38 +8909,24 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('3043', '1', 'OMS定时任务管理', '3043', '${omsUrl}omsJob/index?', '30');
 		</sql>
 	</changeSet>
-	<changeSet id="lansheng-2016-01-26" author="lansheng">
-		<sql>
-			CREATE TABLE `express_ops_flowexp` (
- 				 `id` BIGINT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  				  `cwb` VARCHAR(200) DEFAULT NULL,
-				  `cretime` VARCHAR(30) DEFAULT NULL,
-				  KEY `id` (`id`),
-				  KEY `cwb_IDx` (`cwb`),
-				  KEY `cretime_IDx` (`cretime`)
-				) ENGINE=INNODB DEFAULT CHARSET=utf8;
-		</sql>
-	</changeSet> 
 	<changeSet id="yedongliang-2016-01-27-01" author="yedongliang">
 		 <sqlFile path="delivery_fee.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
 	</changeSet>
+	
 	<changeSet id="wangzhiyong-2016-01-07-01" author="wangzhiyong">
 		<sql>
 			ALTER TABLE `express_set_customer_info`
 			  ADD COLUMN `ifjidan` BIGINT(5) DEFAULT 0  NULL  COMMENT '是否开启集单' AFTER `pfruleid`;		
 		</sql>
 	</changeSet>
-
 	
-	<changeSet id="zhangpengkai-2016-01-13-01" author="zhangpengkai">
-		<sql>
-			ALTER TABLE `express_ops_transcwb` ADD INDEX `cwb_idx` (`cwb`);		
-		</sql>
-	</changeSet>
 	<!-- 取消集包功能-->
 	<changeSet id="liuwuqiang-2016-01-26-01" author="liuwuqiang">
 		 <sqlFile path="package.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
 	</changeSet>
-	 
 	
+	<!-- 最后执行，同步所有数据库的结构 -->
+	<changeSet id="wangwei-2016-02-05-merge-003" author="wangwei">
+		<sqlFile path="merge_all_db_at_last.sql" encoding="UTF-8" relativeToChangelogFile="true" />
+	</changeSet>
 </databaseChangeLog>
