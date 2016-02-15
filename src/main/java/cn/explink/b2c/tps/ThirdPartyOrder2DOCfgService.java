@@ -42,11 +42,19 @@ public class ThirdPartyOrder2DOCfgService {
 		Integer maxTryTime= StringUtils.isEmpty(request.getParameter("maxTryTime"))? 0 :Integer.parseInt(request.getParameter("maxTryTime"));
 		String customerIds = StringUtils.isEmpty(request.getParameter("customerids")) ? "" : request.getParameter("customerids");
 		String carrierCode = StringUtils.isEmpty(request.getParameter("carrierCode")) ? "" : request.getParameter("carrierCode");
-
+		Integer trackOpenFlag = StringUtils.isEmpty(request.getParameter("trackOpenFlag"))? 0 :Integer.parseInt(request.getParameter("trackOpenFlag"));
+		Integer trackMaxTryTime= StringUtils.isEmpty(request.getParameter("trackMaxTryTime"))? 0 :Integer.parseInt(request.getParameter("trackMaxTryTime"));
+		Integer trackHousekeepDay= StringUtils.isEmpty(request.getParameter("trackHousekeepDay"))? 0 :Integer.parseInt(request.getParameter("trackHousekeepDay"));
+		Integer housekeepDay= StringUtils.isEmpty(request.getParameter("housekeepDay"))? 0 :Integer.parseInt(request.getParameter("housekeepDay"));
+		
 		thirdPartyOrder2DO.setOpenFlag(openFlag);
 		thirdPartyOrder2DO.setMaxTryTime(maxTryTime);
 		thirdPartyOrder2DO.setCustomerids(customerIds);
 		thirdPartyOrder2DO.setCarrierCode(carrierCode);
+		thirdPartyOrder2DO.setTrackOpenFlag(trackOpenFlag);
+		thirdPartyOrder2DO.setTrackMaxTryTime(trackMaxTryTime);
+		thirdPartyOrder2DO.setTrackHousekeepDay(trackHousekeepDay);
+		thirdPartyOrder2DO.setHousekeepDay(housekeepDay);
 		JSONObject jsonObj = JSONObject.fromObject(thirdPartyOrder2DO);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {//新增

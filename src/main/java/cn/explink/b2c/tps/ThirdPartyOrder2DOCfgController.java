@@ -67,6 +67,9 @@ public class ThirdPartyOrder2DOCfgController {
 		if(StringUtils.isBlank(request.getParameter("customerids"))){
 			return "{\"errorCode\":1,\"error\":\"外单客户必填\"}";
 		}		
+		if(StringUtils.isBlank(request.getParameter("trackMaxTryTime"))){
+			return "{\"errorCode\":1,\"error\":\"轨迹最大尝试次数必填\"}";
+		}
 		if(StringUtils.isBlank(request.getParameter("password")) || !"explink".equals(request.getParameter("password"))){
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}
