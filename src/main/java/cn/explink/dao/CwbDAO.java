@@ -2322,9 +2322,7 @@ public class CwbDAO {
 		String sql = "SELECT COUNT(1) count,(CASE WHEN SUM(sendcarnum) IS NULL THEN 0 ELSE SUM(sendcarnum) END ) sum FROM express_ops_cwb_detail WHERE currentbranchid=? and flowordertype<>? and state=1";
 
 		if ((nextbranchid == 0) || (nextbranchid == -1)) {
-
-			// sql += " and nextbranchid<>0 ";
-
+			sql += " and nextbranchid<>0 ";
 		} else {
 			sql += " and nextbranchid =" + nextbranchid;
 		}

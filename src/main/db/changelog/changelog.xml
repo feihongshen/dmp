@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog
      xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -8904,22 +8904,6 @@ CREATE TABLE `cs_complaint_accept` (
 	</changeSet> 
 	<changeSet id="yedongliang-2016-01-27-01" author="yedongliang">
 		 <sqlFile path="delivery_fee.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
-	</changeSet>
-	<!-- 地址库客户-站点映射功能 -->
-	 <changeSet id="songkaojun-2015-12-28-01" author="songkaojun">
-		<sql>
-		  CREATE TABLE `express_set_customer_station` (
- 			 `id` int(11) NOT NULL AUTO_INCREMENT,
-  			 `customerid` int(11) NOT NULL COMMENT '客户ID',
- 			 `branchid` varchar(2000) NOT NULL COMMENT '地址库匹配到的站点ID',
-  		     `execute_branchid` varchar(2000) NOT NULL COMMENT '执行站点',
-  			 `creatorid` int(11) DEFAULT NULL COMMENT '创建人ID',
-  			 `creatorname` varchar(255) DEFAULT NULL COMMENT '创建人名称',
-  			 `createtime` datetime DEFAULT NULL COMMENT '创建时间',
-  			 PRIMARY KEY (`id`),
-  			 KEY `idx_customerid` (`customerid`) USING BTREE
-		 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-		</sql>
 	</changeSet>
 	<changeSet id="wangzhiyong-2016-01-07-01" author="wangzhiyong">
 		<sql>

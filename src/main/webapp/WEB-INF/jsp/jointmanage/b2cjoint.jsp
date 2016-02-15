@@ -132,7 +132,7 @@ function delSuccess(data){
 	<!-- 修改常用于设置的ajax地址 -->
 	<script>
 	function changeUrl(obj,state){
-		debugger
+		
 		if(obj=='20001'){
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
@@ -421,11 +421,6 @@ function delSuccess(data){
 		else if(obj=='20108'){
 			$("#edit").val('<%=request.getContextPath()%>/yonghui/show/');
 			$("#del").val('<%=request.getContextPath()%>/yonghui/del/');
-		}
-		
-		else if(obj=='20107'){
-			$("#edit").val('<%=request.getContextPath()%>/feiniuwang/show/');
-			$("#del").val('<%=request.getContextPath()%>/feiniuwang/del/');
 		}
 		
 		else if(obj=='20109'||obj=='20110'||obj=='20111'||obj=='20112'||obj=='20113'){

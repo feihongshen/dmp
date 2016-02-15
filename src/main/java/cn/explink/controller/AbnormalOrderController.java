@@ -1163,7 +1163,7 @@ public class AbnormalOrderController {
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = AbnormalOrderController.this.exportService.setAbnormalOrderObject(cloumnName3, views, a, i, k);
+							a = exportService.setAbnormalOrderObject(cloumnName3, views, a, i, k);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
@@ -1547,7 +1547,7 @@ public class AbnormalOrderController {
 							cell.setCellStyle(style);
 							Object a = null;
 							// 给导出excel赋值
-							a = AbnormalOrderController.this.exportService.setMissPieceObject(cloumnName3, missPieceViews, a, i, k);
+							a = exportService.setMissPieceObject(cloumnName3, missPieceViews, a, i, k);
 							cell.setCellValue(a == null ? "" : a.toString());
 						}
 					}
