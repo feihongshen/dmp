@@ -406,7 +406,7 @@ public class CwbOrderController {
 		return "/cwborder/selectforgomeprint";
 	}
 
-	@RequestMapping("/selectforsmtbdprint")
+@RequestMapping("/selectforsmtbdprint")
 	
 	public String selectforsmtbdprint(Model model, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint,
 			@RequestParam(value = "modal", defaultValue = "0", required = false) long modal) {
@@ -432,11 +432,15 @@ public class CwbOrderController {
 		}
 
 		List<ShangMenTuiCwbDetail> smtlist = shangMenTuiCwbDetailDAO.getShangMenTuiCwbDetailByCwbs(cwbs.substring(0, cwbs.length() - 1));
-
+		List<CwbOrder> clist = cwbDao.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1));
+		
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		String printtime = df.format(date);
-		updatePrinttimeState(smtlist, printtime);
+		for (CwbOrder smtcd : clist) {
+			cwborderService.updatePrinttimeState(smtcd, printtime);
+		}
+		
 		List<Customer> customerlist = customerDao.getAllCustomers();
 
 		SystemInstall companyName = systemInstallDAO.getSystemInstallByName("CompanyName");
@@ -450,15 +454,6 @@ public class CwbOrderController {
 		return "cwborder/selectforsmtprint";
 	}
 
-	@Transactional
-	private void updatePrinttimeState(List<ShangMenTuiCwbDetail> smtlist,String printtime) {
-		for (ShangMenTuiCwbDetail smtcd : smtlist) {
-			logger.info("上门退订单打印记录cwb={}",smtcd.getCwb());
-			cwbDao.saveCwbForPrinttime(smtcd.getCwb(), printtime);
-			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);
-		}
-	}
-
 	// 家有购物模板
 	@RequestMapping("/selectforjiayougouwu")
 	private String selectforjiayougouwu(Model model, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint) {
@@ -467,12 +462,14 @@ public class CwbOrderController {
 			cwbs += "'" + isprint[i] + "',";
 		}
 		List<ShangMenTuiCwbDetail> smtlist = shangMenTuiCwbDetailDAO.getShangMenTuiCwbDetailByCwbs(cwbs.substring(0, cwbs.length() - 1));
+		List<CwbOrder> clist = cwbDao.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1));
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		String printtime = df.format(date);
-		for (ShangMenTuiCwbDetail smtcd : smtlist) {
-			cwbDao.saveCwbForPrinttime(smtcd.getCwb(), printtime);
-			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);
+		for (CwbOrder smtcd : clist) {
+			cwborderService.updatePrinttimeState(smtcd,printtime);
+			/*cwbDao.saveCwbForPrinttime(smtcd.getCwb(), printtime);
+			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);*/
 		}
 		model.addAttribute("smtlist", smtlist);
 		return "/cwborder/selectForJiaYouGouWuPrint";
@@ -522,8 +519,9 @@ public class CwbOrderController {
 		Date date = new Date();
 		String printtime = df.format(date);
 		for (CwbOrder c : clist) {
-			cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
-			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);
+			cwborderService.updatePrinttimeState(c,printtime);
+			/*cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
+			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);*/
 		}
 		List<Customer> customerlist = customerDao.getAllCustomers();
 
@@ -560,8 +558,9 @@ public class CwbOrderController {
 		for (CwbOrder c : clist) {
 			orderGoods = orderGoodsDAO.getOrderGoodsList(c.getCwb());
 			mapOrderGoods.put(c.getCwb(), orderGoods);
-			cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
-			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);
+			cwborderService.updatePrinttimeState(c,printtime);
+			/*cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
+			shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);*/
 		}
 		List<Customer> customerlist = customerDao.getAllCustomers();
 

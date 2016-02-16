@@ -8136,4 +8136,10 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		return flag;
 	}
+	
+	public void updatePrinttimeState(CwbOrder smtcd,String printtime) {
+		logger.info("上门退订单打印记录cwb={}",smtcd.getCwb());
+		cwbDAO.saveCwbForPrinttime(smtcd.getCwb(), printtime);
+		shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);
+	}
 }
