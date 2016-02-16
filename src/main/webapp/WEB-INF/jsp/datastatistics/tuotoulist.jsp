@@ -514,9 +514,9 @@ function clearSelect(){
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
+			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle" class="high"><font color="red"><%=request.getAttribute("sum")==null?"0.00":request.getAttribute("sum") %></font>&nbsp;元 </td>
 			<td  align="center" valign="middle" class="high"><font color="red"><%=request.getAttribute("paybackfeesum")==null?"0.00":request.getAttribute("paybackfeesum") %></font>&nbsp;元 </td>
-			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
