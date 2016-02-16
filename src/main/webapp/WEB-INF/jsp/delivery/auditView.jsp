@@ -285,7 +285,7 @@ function editInit(){
    			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
    			<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>,<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>,
    			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>,
-   			$("#backreasonid", parent.document).val(),$("#leavedreasonid", parent.document).val(),$("#podremarkid", parent.document).val(),$("#newpaywayid", parent.document).val(),
+   			$("#backreasonid", parent.document).val(),$("#leavedreasonid", parent.document).val(),$("#firstlevelreasonid", parent.document).val(),$("#podremarkid", parent.document).val(),$("#newpaywayid", parent.document).val(),
    			$("#weishuakareasonid", parent.document).val(),$("#losereasonid", parent.document).val(),false);
 	$("input[type='text']", parent.document).focus(function(){
 		$(this).select();
@@ -313,27 +313,32 @@ function checkpodresultid(podresultid){
 	if(podresultid==<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>){
 		$("#paywayid_p").show();
 		$("#backreasonid_p").hide();
-		$("#leavedreasonid_p").hide();
+		$("#leavedreasonid").hide();
+		$("#firstlevelreasonid").hide();
 		$("#content").hide();
 	}else if(podresultid==<%=DeliveryStateEnum.JuShou.getValue() %>){
 		$("#paywayid_p").hide();
 		$("#backreasonid_p").show();
-		$("#leavedreasonid_p").hide();
+		$("#leavedreasonid").hide();
+		$("#firstlevelreasonid").hide();
 		$("#content").show();
 	}else if(podresultid==<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>){
 		$("#paywayid_p").hide();
 		$("#backreasonid_p").hide();
-		$("#leavedreasonid_p").show();
+		$("#leavedreasonid").show();
+		$("#firstlevelreasonid").show();
 		$("#content").show();
 	}else{
 		$("#paywayid_p").hide();
 		$("#backreasonid_p").hide();
-		$("#leavedreasonid_p").hide();
+		$("#leavedreasonid").hide();
+		$("#firstlevelreasonid").hide();
 		$("#content").hide();
 	}
 	$("#paywayid_p").val("0");
 	$("#backreasonid_p").val("0");
-	$("#leavedreasonid_p").val("0");
+	$("#leavedreasonid").val("0");
+	$("#firstlevelreasonid").val("0");
 }
 
 function isshowpl(){
@@ -1056,14 +1061,33 @@ function exportYifankui(){
 								<option value="<%=r1.getReasonid() %>" ><%=r1.getReasoncontent() %></option>
 							<%} %>
 				        </select>
-				        <select id="leavedreasonid_p" name="leavedreasonid_p" style="display: none;">
+				        <%-- <select id="leavedreasonid" name="leavedreasonid" style="display: none;">
 							<option value="0" selected>滞留原因</option>
 							<%for(Reason r : staylist){ %>
 								<option value="<%=r.getReasonid() %>" ><%=r.getReasoncontent() %></option>
 							<%} %>
+				        </select> --%>
+			        
+				        <select name="firstlevelreasonid" id="firstlevelreasonid"  onchange="getSecondReasonByFirstreasonid('<%=request.getContextPath()%>/reason/getSecondreason','leavedreasonid',this.value)"  >
+				        	<option value ="0" selected>==滞留一级原因==</option>
+				        	<%
+				        	for(Reason r :staylist){
+				        		if(r.getWhichreason()!=1){
+				        			continue;
+				        		}
+				        	%>
+				        		<option value="<%=r.getReasonid()%>"><%=r.getReasoncontent() %></option>
+				        	<%}%>
 				        </select>
+				        <select name="leavedreasonid" id="leavedreasonid">
+				        	<option value ="0">==滞留二级原因==</option>
+				        </select>
+				        
+				        
+				        
+				        
 				        <span id="content" style="display: none;">反馈备注输入内容：<input type="text" name="deliverstateremark" id="deliverstateremark" value ="" maxlength="50"></span>
-				    	请扫描反馈： <span style="height: 25"> <input id="scancwb_p" name="scancwb_p" value="" onkeydown='if(event.keyCode==13&&$("#scancwb_p").val().length>0){deliverpod("<%=request.getContextPath()%>",$("#deliveryid").val(),$("#scancwb_p").val(),$("#podresultid_p").val(),$("#paywayid_p").val(),$("#backreasonid_p").val(),$("#leavedreasonid_p").val(),$("#deliverstateremark").val(),"N","<%=isReasonRequired %>",<%=DeliveryStateEnum.JuShou.getValue()%>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>);}'/><font color="red">（批量反馈的操作只针对正常配送的订单）</font></span>
+				    	请扫描反馈： <span style="height: 25"> <input id="scancwb_p" name="scancwb_p" value="" onkeydown='if(event.keyCode==13&&$("#scancwb_p").val().length>0){deliverpod("<%=request.getContextPath()%>",$("#deliveryid").val(),$("#scancwb_p").val(),$("#podresultid_p").val(),$("#paywayid_p").val(),$("#backreasonid_p").val(),$("#leavedreasonid").val(),$("#firstlevelreasonid").val(),$("#deliverstateremark").val(),"N","<%=isReasonRequired %>",<%=DeliveryStateEnum.JuShou.getValue()%>,<%=DeliveryStateEnum.FenZhanZhiLiu.getValue()%>);}'/><font color="red">（批量反馈的操作只针对正常配送的订单）</font></span>
 				    	
 				    	<input id="flashpage" style="display: none;" type="button" value="完成" onclick="getDeliveryStateByDeliveryId();"/>
 					</td>

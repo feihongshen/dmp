@@ -2769,7 +2769,7 @@ function checkpodresultid(id, podresultid) {
 /**
  * 小件员批量反馈ddd
  */
-function deliverpod(pname, deliverid, scancwb, podresultid, paywayid, backreasonid, leavedreasonid, deliverstateremark, type, isReasonRequired,
+function deliverpod(pname, deliverid, scancwb, podresultid, paywayid, backreasonid, leavedreasonid,firstlevelreasonid, deliverstateremark, type, isReasonRequired,
 		jushou, zhiliu) {
 	if ($("#podresultid_p").val() == 0) {
 		alert("请选择反馈结果");
@@ -2819,6 +2819,7 @@ function deliverpod(pname, deliverid, scancwb, podresultid, paywayid, backreason
 					paywayid : paywayid,
 					backreasonid : backreasonid,
 					leavedreasonid : leavedreasonid,
+					firstlevelreasonid : firstlevelreasonid,
 					deliverstateremark : encodeURI(deliverstateremark)
 				},
 				success : function(data) {

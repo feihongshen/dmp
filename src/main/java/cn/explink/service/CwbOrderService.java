@@ -4729,8 +4729,13 @@ public class CwbOrderService extends BaseOrderService {
 
 		String sql2 = "update express_ops_cwb_detail set flowordertype=?,deliverystate=?,newpaywayid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql2, FlowOrderTypeEnum.YiFanKui.getValue(), deliveryState.getDeliverystate(), newpaywayid, co.getCwb());
-		this.createFloworder(user, sessionbranchid, co, FlowOrderTypeEnum.YiFanKui, (reason.getReasoncontent() == null ? "" : reason.getReasoncontent()) + " " + deliverstateremark, System
-				.currentTimeMillis(), scancwb);
+		if((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue())&& zhiliuremark.length() > 0){
+			this.createFloworder(user, sessionbranchid, co, FlowOrderTypeEnum.YiFanKui, (reason.getReasoncontent() == null ? "" : reason.getReasoncontent()) + " " + zhiliuremark, System
+					.currentTimeMillis(), scancwb);
+		}else{
+			this.createFloworder(user, sessionbranchid, co, FlowOrderTypeEnum.YiFanKui, (reason.getReasoncontent() == null ? "" : reason.getReasoncontent()) + " " + deliverstateremark, System
+					.currentTimeMillis(), scancwb);
+		}
 
 		// 反馈时更新订单的反馈的操作时间
 		this.operationTimeDAO
