@@ -3825,6 +3825,32 @@
 				<addressWebserviceIp>10.199.247.158:8080/address</addressWebserviceIp>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>PJ_MERGE_TEST</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://10.199.247.161:3306/merge_gztl_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>dmpdmp1555</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://10.199.244.183:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>PJ_MERGE_TEST_SERVER</label>
+				<addresscustomerid>6</addresscustomerid>
+				<addressid>6</addressid>
+				<addresspassword>PJ_MERGE</addresspassword>
+				<addressWebserviceIp>10.199.247.158:8080/address</addressWebserviceIp>
+			</properties>
+		</profile>
+		
 		<profile>
 			<id>EXPLINK_TEST</id>
 			<properties>
