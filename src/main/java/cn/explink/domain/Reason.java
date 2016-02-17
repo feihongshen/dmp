@@ -1,7 +1,9 @@
 package cn.explink.domain;
 
-public class Reason {
+public class Reason implements java.io.Serializable {
 
+	private static final long serialVersionUID = -7044007969710540156L;
+	
 	private long reasonid;
 	private String reasoncontent;
 	private long reasontype;

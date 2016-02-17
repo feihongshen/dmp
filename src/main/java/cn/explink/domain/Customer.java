@@ -1,6 +1,9 @@
 package cn.explink.domain;
 
-public class Customer {
+public class Customer implements java.io.Serializable {
+	
+	private static final long serialVersionUID = 1749332998491732909L;
+	
 	private long customerid;
 	private String customername;
 	private String companyname;// 公司名称

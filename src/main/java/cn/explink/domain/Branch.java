@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 
 import cn.explink.enumutil.BranchEnum;
 
-public class Branch {
+public class Branch implements java.io.Serializable {
+	
+	private static final long serialVersionUID = -7873112119688063347L;
+	
 	private long branchid;
 	private String branchname;
 	private String branchprovince;

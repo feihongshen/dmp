@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 import cn.explink.enumutil.UserEmployeestatusEnum;
 
 public class User implements Serializable {
+	
+	private static final long serialVersionUID = 4430175434189183927L;
+	
 	long userid;
 	String oldusername;
 	String username;
