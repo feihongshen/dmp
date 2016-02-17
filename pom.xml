@@ -592,7 +592,28 @@
 		      <artifactId>vms</artifactId>
 		      <version>0.7.5</version>    
 		</dependency>
-		
+														
+		<dependency>
+			  <groupId>org.springframework.data</groupId>
+			  <artifactId>spring-data-redis</artifactId>
+			  <version>1.6.2.RELEASE</version>
+		</dependency>		
+		<dependency>
+			  <groupId>org.apache.commons</groupId>
+			  <artifactId>commons-pool2</artifactId>
+			  <version>2.4.2</version>
+		</dependency>
+		<dependency>
+			  <groupId>org.springframework</groupId>
+			  <artifactId>spring-context-support</artifactId>
+			  <version>4.0.0.RELEASE</version>
+		</dependency>				
+		<dependency>
+    		  <groupId>redis.clients</groupId>
+   		      <artifactId>jedis</artifactId>
+    		  <version>2.6.1</version>
+		</dependency>
+															
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>
@@ -775,9 +796,9 @@
 <!-- 				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url> -->
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://192.168.0.222:3306/pxwl_express_update?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
- 				<expressurl.user>pj</expressurl.user>
-				<expressurl.password>pjexplink</expressurl.password>
+				<expressurl.url>jdbc:mysql://10.199.247.161:3306/merge_gztl_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>dmpdmp1555</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
