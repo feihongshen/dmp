@@ -470,7 +470,7 @@ function delSuccess(data){
 		else if(obj=='20229'){ //外单推DO
 			$("#edit").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/show/');
 			$("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
-		}
+		
 		}else if(obj=='20200'){
 			$("#edit").val('<%=request.getContextPath()%>/tonglian/show/');
 			$("#del").val('<%=request.getContextPath()%>/tonglian/del/');
