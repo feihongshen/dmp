@@ -3,6 +3,7 @@ package cn.explink.b2c.auto.order.service;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,12 +43,16 @@ public class AutoOrderStatusService {
 	private CwbRouteService cwbRouteService;
 	
 	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,operatetype,msg,createtime,status) values(?,?,?,CURRENT_TIMESTAMP,?)";
-	private final static String ORDER_STATUS_TMP_UPDATE_SQL="update express_auto_order_status_tmp set status=? where cwb=? and operatetype=? and status=1";
+	//private final static String ORDER_STATUS_TMP_UPDATE_SQL="update express_auto_order_status_tmp set status=? where cwb=? and operatetype=? and status=1";
+	private final static String ORDER_STATUS_TMP_DELETE_SQL="delete from express_auto_order_status_tmp where cwb=? and operatetype=?";
 
-	private final static String ORDER_STATUS_TMP_QUERY_SQL="SELECT t.* FROM express_auto_order_status_tmp t INNER JOIN express_ops_cwb_detail c ON t.cwb=c.cwb WHERE t.status=1 AND c.state=1 ORDER BY t.createtime LIMIT 0,?";
+	private final static String ORDER_STATUS_TMP_QUERY_SQL="SELECT t.* FROM (SELECT * FROM express_auto_order_status_tmp order by createtime LIMIT ?,?) t"
+			+" WHERE EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb)";
 	private final static String ORDER_STATUS_TMP_TIMEOUT_QUERY_SQL=
-			"SELECT * FROM express_auto_order_status_tmp t WHERE STATUS=1 AND t.createtime<DATE_ADD(NOW(),INTERVAL -1 HOUR)" 
-			+" AND NOT EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb AND c.state=1) ORDER BY t.createtime LIMIT 0,?";
+			"SELECT t.* FROM (SELECT * FROM express_auto_order_status_tmp WHERE createtime<DATE_SUB(NOW(),INTERVAL 12 HOUR) LIMIT 0,?) t" 
+			+" WHERE NOT EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb)";
+	
+	private final static String ORDER_STATUS_TMP_QUERY_COUNT_SQL="SELECT COUNT(createtime) FROM express_auto_order_status_tmp";
 	
 	@Transactional
 	public void updateAutoOrder(String cwb,BigDecimal cargovolume,BigDecimal cargoweight,String packagecode,long deliverybranchid){
@@ -145,14 +150,41 @@ public class AutoOrderStatusService {
 	
 	@Transactional
 	public void completedOrderStatusMsg(int status,String cwb,String operatetype){
-		this.jdbcTemplate.update(ORDER_STATUS_TMP_UPDATE_SQL, status,cwb,operatetype);
+		//this.jdbcTemplate.update(ORDER_STATUS_TMP_UPDATE_SQL, status,cwb,operatetype);
+		this.jdbcTemplate.update(ORDER_STATUS_TMP_DELETE_SQL,cwb,operatetype);
 	}
 	
 	@Transactional
 	public List<AutoOrderStatusTmpVo> retrieveOrderStatusMsg(int size){
-		List<AutoOrderStatusTmpVo> rowList=jdbcTemplate.query(ORDER_STATUS_TMP_QUERY_SQL, new AutoOrderStatusTmpVoMapper(), size);
-
-		return rowList;
+		List<AutoOrderStatusTmpVo> resultList=new ArrayList<AutoOrderStatusTmpVo>();
+		List<AutoOrderStatusTmpVo> rowList=null;
+		int offset=0;
+		int len=size;
+		int total=0;
+		boolean again=true;
+		boolean isCount=true;
+		do{
+			rowList=jdbcTemplate.query(ORDER_STATUS_TMP_QUERY_SQL, new AutoOrderStatusTmpVoMapper(), offset,len);
+			if(isCount&&(rowList==null||rowList.size()<size)){
+				total=jdbcTemplate.queryForInt(ORDER_STATUS_TMP_QUERY_COUNT_SQL);
+				isCount=false;
+			}
+			
+			if(rowList!=null&&rowList.size()>0){
+				resultList.addAll(rowList);
+			}
+			
+			//翻页
+			offset=offset+len;
+			len=size-resultList.size();
+			
+			if(resultList.size()>=size||total<=size||offset>=total||len<1){
+				again=false;
+			}
+			
+		}while(again);
+		
+		return resultList;
 	}
 	
 	@Transactional
