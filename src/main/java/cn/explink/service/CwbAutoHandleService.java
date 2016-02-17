@@ -233,7 +233,7 @@ public class CwbAutoHandleService {
 	 */
 
 	private CwbOrder isIntoWarehouse(User user, long branchid, CwbOrder co, long requestbatchno, String comment, String scancwb, Long credate) {
-		co = this.cwborderService.intoWarehousHandle(user, co.getCwb(), scancwb, branchid, co.getCustomerid(), 0, requestbatchno, comment, true, "", credate, false);
+		co = this.cwborderService.intoWarehousHandle(user, co.getCwb(), scancwb, branchid, co.getCustomerid(), 0, requestbatchno, comment, true, "", credate, false, false);
 		return co;
 	}
 
@@ -242,7 +242,7 @@ public class CwbAutoHandleService {
 	 */
 
 	private CwbOrder isSubstationGoods(User user, long branchid, CwbOrder co, long requestbatchno, String comment, String scancwb, Long credate) {
-		co = this.cwborderService.substationGoodsHandle(user, co.getCwb(), scancwb, branchid, 0, requestbatchno, comment, true, "", credate, false);
+		co = this.cwborderService.substationGoodsHandle(user, co.getCwb(), scancwb, branchid, 0, requestbatchno, comment, true, "", credate, false, false);
 		return co;
 	}
 
@@ -257,7 +257,7 @@ public class CwbAutoHandleService {
 			forceOut = true;
 		}
 		co = this.cwborderService.outWarehousHandle(user, co.getCwb(), scancwb, co.getCurrentbranchid(), 0, 0, branchid, requestbatchno, forceOut, comment, "", true, 0, iszhongzhuanout, credate,
-				false);
+				false, false);
 		return co;
 	}
 
