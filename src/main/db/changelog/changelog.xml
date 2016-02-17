@@ -8929,5 +8929,4 @@ CREATE TABLE `cs_complaint_accept` (
 	<changeSet id="wangwei-2016-02-05-merge-003" author="wangwei">
 		<sqlFile path="merge_all_db_at_last.sql" encoding="UTF-8" relativeToChangelogFile="true" />
 	</changeSet>
-	
 </databaseChangeLog>
