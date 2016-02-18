@@ -24,6 +24,10 @@
 		p:connectionFactory-ref="jedisConnectionFactory" />
 	<!-- declare Redis Cache Manager <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager" 
 		c:template-ref="redisTemplate" /> -->
+	<bean id="cachePrefix"
+		class="org.springframework.data.redis.cache.DefaultRedisCachePrefix">
+		<constructor-arg value=":DMP_TEST:" />
+	</bean>
 	<bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
 		<constructor-arg index="0" ref="redisTemplate"></constructor-arg>
 		<constructor-arg index="1">
@@ -48,6 +52,8 @@
 				</bean>
 			</set>
 		</constructor-arg>
+		<property name="usePrefix" value="true" />
+		<property name="cachePrefix" ref="cachePrefix" />
 	</bean>
 
 	<!-- spring自己的换管理器，这里定义了两个缓存位置名称 ，既注解中的value -->
