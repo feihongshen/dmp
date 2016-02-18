@@ -1185,9 +1185,14 @@ public class CwbDAO {
 	 */
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
+//			return this.jdbcTemplate
+//					.queryForObject(
+//							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
+//							new CwbMapper(), cwb);
+			
 			return this.jdbcTemplate
 					.queryForObject(
-							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
+							"SELECT * from express_ops_cwb_detail where cwb=? and state=1",
 							new CwbMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
