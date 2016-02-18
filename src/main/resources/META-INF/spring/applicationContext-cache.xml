@@ -8,26 +8,23 @@
 			http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
 			http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-context-3.1.xsd
 			">
+
 	<!-- 启用缓存注解功能，这个是必须的，否则注解不会生效，另外，该注解一定要声明在spring主配置文件中才会生效 -->
 	<cache:annotation-driven cache-manager="cacheManager" />
 
-	<!-- turn on declarative caching -->
-	<!-- <cache:annotation-driven /> <context:annotation-config /> -->
-	<!-- Jedis ConnectionFactory -->
 	<bean id="jedisConnectionFactory"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
 		p:hostName="10.199.195.128" p:port="6379" p:usePool="true" />
-	<!-- redis template definition -->
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
 		p:connectionFactory-ref="jedisConnectionFactory" />
 	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
 		p:connectionFactory-ref="jedisConnectionFactory" />
-	<!-- declare Redis Cache Manager <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager" 
-		c:template-ref="redisTemplate" /> -->
 	<bean id="cachePrefix"
 		class="org.springframework.data.redis.cache.DefaultRedisCachePrefix">
 		<constructor-arg value=":DMP_TEST:" />
 	</bean>
+
+	<!-- spring自己的换管理器，这里定义了两个缓存位置名称 ，既注解中的value -->
 	<bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
 		<constructor-arg index="0" ref="redisTemplate"></constructor-arg>
 		<constructor-arg index="1">
@@ -56,29 +53,4 @@
 		<property name="cachePrefix" ref="cachePrefix" />
 	</bean>
 
-	<!-- spring自己的换管理器，这里定义了两个缓存位置名称 ，既注解中的value -->
-	<bean id="cacheManager_orig" class="org.springframework.cache.support.SimpleCacheManager">
-		<property name="caches">
-			<set>
-				<bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
-					p:name="default" />
-				<bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
-					p:name="reasonCache" />
-				<bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
-					p:name="jointCache" />
-				<bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
-					p:name="branchCache" />
-				<bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
-					p:name="customerCache" />
-				<bean
-					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
-					p:name="userCache" />
-			</set>
-		</property>
-	</bean>
 </beans>
