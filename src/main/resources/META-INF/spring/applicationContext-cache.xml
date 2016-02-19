@@ -49,11 +49,16 @@
 				</bean>
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="scheduledTaskEnv" />
-				</bean>				
+				</bean>
 			</set>
 		</constructor-arg>
 		<property name="usePrefix" value="true" />
 		<property name="cachePrefix" ref="cachePrefix" />
+		<property name="expires">
+			<map>
+				<entry key="scheduledTaskEnv" value="25000" />
+			</map>
+		</property>
 	</bean>
 
 </beans>
