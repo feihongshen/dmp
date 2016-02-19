@@ -56,9 +56,9 @@
 				<configuration>
 					<changeLogFile>changelog/changelog.xml</changeLogFile>
 					<driver>com.mysql.jdbc.Driver</driver>
-					<url>jdbc:mysql://192.168.0.217:3306/fjfy_liuwuqiang?zeroDateTimeBehavior=convertToNull&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=false&amp;useCursorFetch=true&amp;defaultFetchSize=1000</url>
-					<username>eap</username>
-					<password>explink</password>
+					<url>jdbc:mysql://192.168.0.217:3306/fjfy_shf?zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&amp;failOverReadOnly=false&amp;useCursorFetch=true&amp;defaultFetchSize=1000</url>
+					<username>root</username>
+					<password>root</password>
 					<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
 				</configuration>
 			</plugin>

@@ -1,7 +1,7 @@
 <%-- <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> --%>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%@page import="cn.explink.domain.VO.PreOrderVO;"%>
+<%@page import="cn.explink.domain.VO.PreOrderVO"%>
 <%@page import="cn.explink.util.*"%>
 <%
   List<PreOrderVO> preOrderList = (List<PreOrderVO>)request.getAttribute("preOrderList");

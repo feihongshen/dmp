@@ -8743,12 +8743,17 @@ CREATE TABLE `cs_complaint_accept` (
 			  ADD COLUMN `ifjidan` BIGINT(5) DEFAULT 0  NULL  COMMENT '是否开启集单' AFTER `pfruleid`;		
 		</sql>
 	</changeSet>
+
 	
-		<changeSet id="wangzhiyong-2016-01-07-01" author="wangzhiyong">
+	<changeSet id="zhangpengkai-2016-01-13-01" author="zhangpengkai">
 		<sql>
-			ALTER TABLE `express_set_customer_info`
-			  ADD COLUMN `jd_type` BIGINT(5) DEFAULT 0  NULL  COMMENT '集单类型' AFTER `ifjidan`;		
+			ALTER TABLE `express_ops_transcwb` ADD INDEX `cwb_idx` (`cwb`);		
 		</sql>
 	</changeSet>
+	<!-- 取消集包功能-->
+	<changeSet id="liuwuqiang-2016-01-26-01" author="liuwuqiang">
+		 <sqlFile path="package.sql" encoding="UTF-8"  relativeToChangelogFile="true" />
+	</changeSet>
+	 
 	
 </databaseChangeLog>
