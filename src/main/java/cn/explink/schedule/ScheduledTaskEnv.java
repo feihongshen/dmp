@@ -1,9 +1,10 @@
 package cn.explink.schedule;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,31 @@ public class ScheduledTaskEnv {
 
 	private static String macAddress = null;
 
+	private InetAddress get_current_ip() {
+		try {
+			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface
+					.getNetworkInterfaces();
+			while (networkInterfaces.hasMoreElements()) {
+				NetworkInterface ni = (NetworkInterface) networkInterfaces
+						.nextElement();
+				Enumeration<InetAddress> nias = ni.getInetAddresses();
+				while (nias.hasMoreElements()) {
+					InetAddress ia = (InetAddress) nias.nextElement();
+					if (!ia.isLinkLocalAddress() && !ia.isLoopbackAddress()
+							&& ia instanceof Inet4Address) {
+						return ia;
+					}
+				}
+			}
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	private String lookup_mac() {
 		try {
-			InetAddress ip = InetAddress.getLocalHost();
+			InetAddress ip = get_current_ip();
 			System.out.println("[ScheduledTaskEnv] Current IP address : "
 					+ ip.getHostAddress());
 			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
@@ -41,9 +64,9 @@ public class ScheduledTaskEnv {
 			if (sb.length() > 0) {
 				return sb.toString();
 			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
