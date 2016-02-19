@@ -1,16 +1,6 @@
 package cn.explink.util;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import cn.explink.service.UserService;
 
 /**
  *
@@ -18,32 +8,7 @@ import cn.explink.service.UserService;
  *
  */
 public class ResourceBundleUtil {
-	
-	private static Logger logger = LoggerFactory.getLogger(UserService.class);
-	
-	private static ResourceBundle rbint = null;
-	//初始化
-	 static {   
-        String proFilePath = "/home/apps/javaconf/"+ System.getProperty("company") + "/dmp-webapp.properties";
-	    //开发使用
-	    if(StringUtil.length(System.getProperty("development")) > 0){
-	    	proFilePath = "dmp-webapp";//开发直接读取classpath下文件
-	    	rbint = ResourceBundle.getBundle(proFilePath);
-	    }else{
-	    	BufferedInputStream inputStream = null;
-	        try {  
-	            inputStream = new BufferedInputStream(new FileInputStream(proFilePath));
-	            rbint = new PropertyResourceBundle(inputStream);  
-	        } catch (FileNotFoundException e) {  
-	        	logger.error("生成配置，找不到配置文件");
-	            e.printStackTrace();  
-	        } catch (IOException e) {  
-	        	logger.error("生成配置，读取配置文件失败"); 
-	            e.printStackTrace();  
-	        }  
-	    }
-	}  
-	
+	private static ResourceBundle rbint = ResourceBundle.getBundle("filepath");
 	// 承运商模版上传图片路径
 	public static final String UPLOADIMGPATH = ResourceBundleUtil.rbint.getString("uploadimgPath");
 	// 上传声音路径

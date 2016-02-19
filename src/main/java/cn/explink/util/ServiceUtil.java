@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.springframework.web.multipart.MultipartFile;
 
 public class ServiceUtil {
 
+	private static ResourceBundle dmp = ResourceBundle.getBundle("filepath");
+	public static final String omsSysUrl = dmp.getString("omsUrl");
+	public static final String financeSysUrl = dmp.getString("financeUrl");
 	public static final String jspPath = File.separator + "mould" + File.separator;
 	public static final String xlsPath = "xls\\";
 	public static final String wavPath = "/wav/";
