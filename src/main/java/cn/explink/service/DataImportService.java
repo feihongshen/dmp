@@ -866,7 +866,7 @@ public class DataImportService {
 		long count = 0;
 		List<String> notsuccesscwbList = this.cwbDAO.getEditInfoCountIsNotAddressAdd("", String.valueOf(CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));// 未匹配数量
 		String nosuccesscwbs = this.getInStrings(notsuccesscwbList);
-		List<CwbOrder> orders = this.cwbDAO.getCwbOrderByDelivery(nosuccesscwbs);
+		List<CwbOrder> orders = this.cwbDAO.getCwbOrderByDelivery(nosuccesscwbs, "WEIPIPEI");
 		if (orders != null) {
 			count = orders.size();
 		}
