@@ -129,6 +129,9 @@ public class ScheduledTaskEnv {
 			if (cache.get(taskId) != null) {
 				String value = (String) cache.get(taskId).get();
 				if (value != null && value.compareTo(macAddress) != 0) {
+					System.out.println("[ScheduledTaskEnv] taskId : " + taskId
+							+ ", running in : " + value + ", my id : "
+							+ macAddress);
 					return true;
 				}
 			}
