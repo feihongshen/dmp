@@ -25,6 +25,19 @@ public class ScheduledTaskEnv {
 
 	private static String macAddress = null;
 
+	private static boolean show_msg = true;
+
+	private void print_exception(Exception e) {
+		if (show_msg) {
+			try {
+				e.printStackTrace();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			show_msg = false;
+		}
+	}
+
 	private InetAddress get_current_ip() {
 		try {
 			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface
@@ -42,7 +55,7 @@ public class ScheduledTaskEnv {
 				}
 			}
 		} catch (SocketException e) {
-			e.printStackTrace();
+			print_exception(e);
 		}
 		return null;
 	}
@@ -65,9 +78,9 @@ public class ScheduledTaskEnv {
 				return sb.toString();
 			}
 		} catch (SocketException e) {
-			e.printStackTrace();
+			print_exception(e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			print_exception(e);
 		}
 		return null;
 	}
