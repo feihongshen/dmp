@@ -47,6 +47,9 @@
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="userCache" />
 				</bean>
+				<bean class="java.lang.String">
+					<constructor-arg type="java.lang.String" value="scheduledTaskEnv" />
+				</bean>				
 			</set>
 		</constructor-arg>
 		<property name="usePrefix" value="true" />
