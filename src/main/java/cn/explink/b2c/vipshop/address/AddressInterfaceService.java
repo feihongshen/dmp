@@ -14,16 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
-import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.b2c.vipshop.address.domain.request.RequestHead;
 import cn.explink.b2c.vipshop.address.domain.request.RequestItem;
 import cn.explink.b2c.vipshop.address.domain.request.RequestXML;
 import cn.explink.b2c.vipshop.address.domain.response.ResponseItem;
 import cn.explink.dao.SystemInstallDAO;
-import cn.explink.domain.SystemInstall;
 import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.util.MD5.MD5Util;
 
@@ -39,15 +36,15 @@ public class AddressInterfaceService {
 	private Logger logger = LoggerFactory.getLogger(AddressInterfaceService.class);
 
 	public String getObjectMethod(int key) {
-		JointEntity obj = jiontDAO.getJointEntity(key);
+		JointEntity obj = this.jiontDAO.getJointEntity(key);
 		return obj == null ? null : obj.getJoint_property();
 	}
 
 	public VipShopAddress getVipShopAdrress(int key) {
-		if (getObjectMethod(key) == null) {
+		if (this.getObjectMethod(key) == null) {
 			return null;
 		}
-		JSONObject jsonObj = JSONObject.fromObject(getObjectMethod(key));
+		JSONObject jsonObj = JSONObject.fromObject(this.getObjectMethod(key));
 		VipShopAddress vipshop = (VipShopAddress) JSONObject.toBean(jsonObj, VipShopAddress.class);
 		return vipshop;
 	}
@@ -59,37 +56,37 @@ public class AddressInterfaceService {
 		vipshop.setGetMaxCount(Integer.parseInt(request.getParameter("getMaxCount")));
 		vipshop.setPrintflag(Integer.parseInt(request.getParameter("printflag")));
 		JSONObject jsonObj = JSONObject.fromObject(vipshop);
-		JointEntity jointEntity = jiontDAO.getJointEntity(joint_num);
+		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {
 			jointEntity = new JointEntity();
 			jointEntity.setJoint_num(joint_num);
 			jointEntity.setJoint_property(jsonObj.toString());
-			jiontDAO.Create(jointEntity);
+			this.jiontDAO.Create(jointEntity);
 		} else {
 
 			jointEntity.setJoint_num(joint_num);
 			jointEntity.setJoint_property(jsonObj.toString());
-			jiontDAO.Update(jointEntity);
+			this.jiontDAO.Update(jointEntity);
 		}
 	}
 
 	public void update(int joint_num, int state) {
-		jiontDAO.UpdateState(joint_num, state);
+		this.jiontDAO.UpdateState(joint_num, state);
 	}
 
 	public String getAddress(String xml, VipShopAddress vip) {
 		try {
 			if (vip == null) {
-				return returnExp("未开启唯品会请求地址库对接");
+				return this.returnExp("未开启唯品会请求地址库对接");
 			}
 			RequestXML requestXML = AddressUnmarchal.Unmarchal(xml);
-			if (!checkKey(requestXML.getHead(), vip.getPrivate_key())) {
-				logger.info("唯品会请求地址库 key错误！");
-				return returnExp("key错误");
+			if (!this.checkKey(requestXML.getHead(), vip.getPrivate_key())) {
+				this.logger.info("唯品会请求地址库 key错误！");
+				return this.returnExp("key错误");
 			} else {// 请求地址库
 				if (!vip.getShipper_no().equals(requestXML.getHead().getUsercode())) {
-					logger.info("唯品会匹配站点: 地址：唯品会请求地址库账号错误 ,Usercode:{}", requestXML.getHead().getUsercode());
-					return returnExp("唯品会请求地址库账号错误");
+					this.logger.info("唯品会匹配站点: 地址：唯品会请求地址库账号错误 ,Usercode:{}", requestXML.getHead().getUsercode());
+					return this.returnExp("唯品会请求地址库账号错误");
 				}
 				int count = 100;
 				try {
@@ -98,51 +95,55 @@ public class AddressInterfaceService {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if (requestXML.getItems().getItem() == null || requestXML.getItems().getItem().size() > count) {
+				if ((requestXML.getItems().getItem() == null) || (requestXML.getItems().getItem().size() > count)) {
 					if (requestXML.getItems().getItem() == null) {
-						return returnExp("请求的地址为空");
+						return this.returnExp("请求的地址为空");
 					}
-					return returnExp("请求地址数量单次超过" + count);
+					return this.returnExp("请求地址数量单次超过" + count);
 				}
-				List<ResponseItem> items = getBranchByAddress(requestXML.getItems().getItem(),vip);
-				if (items != null && items.size() > 0) {
+				List<ResponseItem> items = this.getBranchByAddress(requestXML.getItems().getItem(), vip);
+				if ((items != null) && (items.size() > 0)) {
 					for (ResponseItem responseItem : items) {
 						if (!responseItem.getNetid().equals("")) {
-							return returnXml("", items);
+							return this.returnXml("", items);
 						}
 					}
-					return returnExp("没有匹配到任何站点");
+					return this.returnExp("没有匹配到任何站点");
 				} else {
-					return returnExp("没有匹配到任何站点");
+					return this.returnExp("没有匹配到任何站点");
 				}
 			}
 		} catch (UnsupportedEncodingException e) {
-			logger.error("唯品会匹配站点: 地址：唯品会请求地址库 xml异常", e);
-			return returnExp("xml报文格式不正确");
+			this.logger.error("唯品会匹配站点: 地址：唯品会请求地址库 xml异常", e);
+			return this.returnExp("xml报文格式不正确");
 		} catch (JAXBException e) {
-			logger.error("唯品会匹配站点: 地址：唯品会请求地址库 xml异常", e);
-			return returnExp("xml报文格式不正确");
+			this.logger.error("唯品会匹配站点: 地址：唯品会请求地址库 xml异常", e);
+			return this.returnExp("xml报文格式不正确");
 		}
 	}
 
 	/**
 	 * 返回异常的xml
-	 * 
+	 *
 	 * @param expMsg
 	 * @return
 	 */
 	public String returnExp(String expMsg) {
 		String xml = "<response><head>" + "<msg><![CDATA[" + expMsg + "]]></msg>" + "</head>" + "</response>";
-		logger.info("唯品会匹配站点: 地址：唯品会请求地址库 返回xml:{}", xml);
+		this.logger.info("唯品会匹配站点: 地址：唯品会请求地址库 返回xml:{}", xml);
 		return xml;
 	}
 
-	public List<ResponseItem> getBranchByAddress(List<RequestItem> items,VipShopAddress vip) {
+	public List<ResponseItem> getBranchByAddress(List<RequestItem> items, VipShopAddress vip) {
 		List<ResponseItem> reItems = new ArrayList<ResponseItem>();
 		for (RequestItem requestItem : items) {
 			ResponseItem res = new ResponseItem();
-			String address = requestItem.getProvince() + requestItem.getCity() + requestItem.getArea() + requestItem.getAddress();
-			JSONObject json = addressMatchService.matchAddressByInterface(requestItem.getItemno(), address,vip.getPrintflag());
+			// modified by songkaojun 2016-02-18 苏州品骏--分拨中心出现大量白单 去掉重复的省市区
+			// String address = requestItem.getProvince() +
+			// requestItem.getCity() + requestItem.getArea() +
+			// requestItem.getAddress();
+			String address = requestItem.getAddress();
+			JSONObject json = this.addressMatchService.matchAddressByInterface(requestItem.getItemno(), address, vip.getPrintflag());
 			res.setItemno(json.getString("itemno"));
 			res.setNetid(json.getString("netid"));
 			res.setNetpoint(json.getString("netpoint"));
@@ -154,7 +155,7 @@ public class AddressInterfaceService {
 
 	/**
 	 * 返回头部信息+站点匹配情况
-	 * 
+	 *
 	 * @param expMsg
 	 * @param responseItems
 	 * @return
@@ -166,7 +167,7 @@ public class AddressInterfaceService {
 					+ "]]></netpoint>" + "<remark><![CDATA[" + responseItem.getRemark() + "]]></remark>" + "</item>";
 		}
 		String xmlEnd = "</items>" + "</response>";
-		logger.info("唯品会请求地址库 返回xml:{}", xmlbegin + xmlEnd);
+		this.logger.info("唯品会请求地址库 返回xml:{}", xmlbegin + xmlEnd);
 		return xmlbegin + xmlEnd;
 	}
 
@@ -178,7 +179,7 @@ public class AddressInterfaceService {
 		// systemInstallDAO.getSystemInstallByName("vipshopAddressKey");
 		// String key = systemInstall.getValue();//后期在页面中传进来
 		String checkMac = MD5Util.md5(usercode + key + batchno);
-		logger.info("唯品会请求地址库  正确的mac:" + checkMac);
+		this.logger.info("唯品会请求地址库  正确的mac:" + checkMac);
 		return checkMac.equals(mac);
 	}
 

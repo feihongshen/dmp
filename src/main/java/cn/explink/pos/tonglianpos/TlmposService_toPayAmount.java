@@ -75,6 +75,26 @@ public class TlmposService_toPayAmount extends TlmposService {
 
 				cwbOrderService.posPay(cwbOrder.getCwb(), BigDecimal.valueOf(receivablefee_add), cwbOrder.getReceivablefee(), respNote.getPay_type(), respNote.getPodremark(), respNote.getTrackinfo(),
 						deliverid, respNote.getDeliverstate(), "single", 0);
+				
+				//leoliao 2016-02-03
+				try{
+					//获取派送员所属机构(站点)-leoliao 2016-02-03
+					long deliverybranchid = 0;
+					User deliverUser = getUser(deliverid);
+					if(deliverUser != null){
+						deliverybranchid = deliverUser.getBranchid();
+					}
+					
+					//更新反馈表deliverybranchid字段值为派送员所属机构id
+					if(deliverid > 0 && deliverybranchid > 0){
+						deliveryStateDAO.updateDeliverybranchid(cwbOrder.getCwb(), deliverybranchid);
+					}
+				}catch(Exception ex){
+					logger.error("TlmposService_toPayAmount deliverid={} Exception={}", deliverid, ex.getMessage());
+					ex.printStackTrace(System.out);
+				}
+				//leoliao 2016-02-03 end
+				
 				posPayDAO.save_PosTradeDetailRecord(cwbOrder.getCwb(), respNote.getPodremark(), receivablefee_add, deliverid, respNote.getPay_type(), respNote.getTrackinfo(), "", 0, "", 1, 1,
 						rootnote.getTransaction_Body().getAcq_type(), PosEnum.TongLianPos.getMethod(), 0, "");
 

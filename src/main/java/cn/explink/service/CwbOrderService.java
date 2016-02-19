@@ -6106,7 +6106,8 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
-			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), co.getCurrentbranchid(), 0, 0, ExceptionCwbErrorTypeEnum.Operation_Repeat);
+			//针对一票多件多个运单号的订单，如果一个运单号同样的机构下同样的环节重复扫描的验证
+			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), 0, user.getBranchid(), 0, ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 		}
 		if ((co.getStartbranchid() == user.getBranchid()) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 			if (co.getScannum() < 1) {
@@ -8034,7 +8035,7 @@ public class CwbOrderService extends BaseOrderService {
 		if ((optList.size() > 0) && (orderlist.size() > 0)) {
 			for (OperationTime ot : optList) {
 				for (CwbOrder c : orderlist) {
-					if (ot.getCwb().equals(c.getCwb())) {
+					if (ot.getCwb().trim().equals(c.getCwb().trim())) {
 						CwbOrderView cwbOrderView = new CwbOrderView();
 						cwbOrderView.setCwb(c.getCwb());
 						cwbOrderView.setCwbstate(c.getCwbstate());
@@ -8752,6 +8753,12 @@ public class CwbOrderService extends BaseOrderService {
 			flag = true;
 		}
 		return flag;
+	}
+	
+	public void updatePrinttimeState(CwbOrder smtcd,String printtime) {
+		logger.info("上门退订单打印记录cwb={}",smtcd.getCwb());
+		cwbDAO.saveCwbForPrinttime(smtcd.getCwb(), printtime);
+		shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);
 	}
 
 	/**

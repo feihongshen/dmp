@@ -1709,5 +1709,14 @@ public class DeliveryStateDAO {
 		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 	}
 	
-	
+	/**
+	 * 更新反馈站点id字段
+	 * @author leo01.liao
+	 * @param cwb 订单号
+	 * @param deliverybranchid 反馈站点id
+	 */
+	public void updateDeliverybranchid(String cwb, long deliverybranchid){
+		String sql = "update express_ops_delivery_state set deliverybranchid=? where cwb='" + cwb + "' and state=1";
+		this.jdbcTemplate.update(sql, deliverybranchid);
+	}
 }
