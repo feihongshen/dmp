@@ -10443,6 +10443,36 @@ public class PDAController {
 		model.addAttribute("showCustomerSign", showCustomerSign);
 		return "pda/sortingAndChangeExportWarehouseBatch";
 	}
+	
+	/**
+	 * 分拣中转出站扫描
+	 *
+	 */
+	@RequestMapping("/cwbSortingAndChangeExportWarehouse/{cwb}")
+	public @ResponseBody ExplinkResponse cwbSortingAndChangeExportWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
+			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
+
+		ExplinkResponse explinkResponse = null;
+		String translated = this.cwbOrderService.translateCwb(cwb);
+		CwbOrder co = this.cwbDAO.getCwbByCwb(translated);
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		// 判断订单状态是否为中转
+		if (this.isZhongzhuanOrder(co)) {
+			// 调用中转出库扫描逻辑
+			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, false);
+		} else {
+			// 调用分拣出库扫描逻辑
+			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+		}
+
+		return explinkResponse;
+	}
 
 	/**
 	 * 得到分拣中转出库一票多件缺货件数的统计
