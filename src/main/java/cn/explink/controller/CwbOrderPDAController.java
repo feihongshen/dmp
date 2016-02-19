@@ -1245,7 +1245,6 @@ public class CwbOrderPDAController {
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("beginemaildate", beginemaildate);
 		model.addAttribute("endemaildate", endemaildate);
-		model.addAttribute("username", username);
 		model.addAttribute("ulist", this.userDAO.getAllUser());
 		return "/control/list";
 	}

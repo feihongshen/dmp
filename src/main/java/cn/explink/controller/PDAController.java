@@ -3,7 +3,6 @@ package cn.explink.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -5152,8 +5151,6 @@ public class PDAController {
 	public @ResponseBody ExplinkResponse cwbdeliverpod(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwbs") String cwbs,
 			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid, @RequestParam(value = "podresultid", required = true, defaultValue = "0") long podresultid,
 			@RequestParam(value = "paywayid", required = false, defaultValue = "0") long paywayid, @RequestParam(value = "backreasonid", required = false, defaultValue = "0") long backreasonid,
-			@RequestParam(defaultValue = "0", required = false, value = "firstlevelreasonid") long firstlevelreasonid,
-			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
 			@RequestParam(value = "leavedreasonid", required = false, defaultValue = "0") long leavedreasonid) throws UnsupportedEncodingException {
 		String statuscode = CwbOrderPDAEnum.OK.getCode();
 		StringBuilder errorMsg = new StringBuilder();
@@ -5161,21 +5158,17 @@ public class PDAController {
 			this.logger.info("web-cwbdeliverpod小件员批量反馈扫描-进入单票反馈,cwb={}", cwb);
 			String scancwb = cwb;
 			try {
-				/*if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
-					deliverstateremark = "";// 分站滞留时将反馈备注为空
-				}*/
 				cwb = this.cwbOrderService.translateCwb(cwb);
 				Map<String, Object> parameters = new HashMap<String, Object>();
 				parameters.put("deliverid", deliverid);
 				parameters.put("podresultid", podresultid);
 				parameters.put("backreasonid", backreasonid);
-				parameters.put("firstlevelreasonid", firstlevelreasonid);
 				parameters.put("leavedreasonid", leavedreasonid);
 				parameters.put("paywayid", paywayid);
 				parameters.put("podremarkid", 0l);
 				parameters.put("posremark", "");
 				parameters.put("checkremark", "");
-				parameters.put("deliverstateremark", URLDecoder.decode(deliverstateremark, "utf-8"));
+				parameters.put("deliverstateremark", "");
 				parameters.put("owgid", 0);
 				parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 				parameters.put("sessionuserid", this.getSessionUser().getUserid());
