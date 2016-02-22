@@ -35,7 +35,6 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
-import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderPDAEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
@@ -795,7 +794,7 @@ public class BaleController {
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 			}
 
-			// =====封包成功后出库======
+			/*// =====封包成功后出库======
 			if (flag) {
 				// 根据包号查找订单信息
 				List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(baleno.trim());
@@ -836,6 +835,14 @@ public class BaleController {
 						this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 					}
 				}
+			}*/
+			
+			//参考 baleChuKu的实现，只是更新包的状态
+			if( flag ){
+				Bale bale=this.baleDAO.getBaleByBaleno(baleno,BaleStateEnum.YiFengBao.getValue());
+				obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
+				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+				this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
 			}
 		}
 		return explinkResponse;
