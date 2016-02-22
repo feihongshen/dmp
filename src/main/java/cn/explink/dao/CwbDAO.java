@@ -6621,7 +6621,8 @@ public class CwbDAO {
 	public long getCustomerRefusedCount(long branchid) {
 		String sql = "SELECT COUNT(1) FROM express_ops_cwb_detail WHERE startbranchid =? and flowordertype=?  and state=1 ";
 		return this.jdbcTemplate.queryForLong(sql, branchid,
-				FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());
+				FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue());//退供应商拒收退货
+//				FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());//退供货商出库
 	}
 
 	/**
