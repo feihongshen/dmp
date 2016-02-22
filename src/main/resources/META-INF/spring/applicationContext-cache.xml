@@ -14,14 +14,14 @@
 
 	<bean id="jedisConnectionFactory"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:hostName="10.199.195.128" p:port="6379" p:usePool="true" />
+		p:hostName="${redis.host}" p:port="${redis.port}" p:usePool="true" />
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
 		p:connectionFactory-ref="jedisConnectionFactory" />
 	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
 		p:connectionFactory-ref="jedisConnectionFactory" />
 	<bean id="cachePrefix"
 		class="org.springframework.data.redis.cache.DefaultRedisCachePrefix">
-		<constructor-arg value=":DMP_TEST:" />
+		<constructor-arg value="${redis.prefix}" />
 	</bean>
 
 	<!-- spring自己的换管理器，这里定义了两个缓存位置名称 ，既注解中的value -->
