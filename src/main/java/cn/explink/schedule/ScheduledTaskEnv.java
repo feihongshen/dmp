@@ -10,6 +10,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationContext;
+import cn.explink.core.utils.SpringContextUtils;
 
 /**
  * 任务调度运行环境，引入CacheManager改造成分布式缓存，后续待完善。
@@ -92,6 +94,13 @@ public class ScheduledTaskEnv {
 		if (cacheManager != null) {
 			return cacheManager.getCache(cacheName);
 		}
+		ApplicationContext ac = SpringContextUtils.getContext();
+		if (ac != null) {
+			cacheManager = ac.getBean("cacheManager", CacheManager.class);
+		}
+		if (cacheManager != null) {
+			return cacheManager.getCache(cacheName);
+		}
 		return null;
 	}
 
@@ -128,12 +137,20 @@ public class ScheduledTaskEnv {
 		if (cache != null) {
 			if (cache.get(taskId) != null) {
 				String value = (String) cache.get(taskId).get();
-				if (value != null && value.compareTo(macAddress) != 0) {
-					System.out.println("[ScheduledTaskEnv] taskId : " + taskId
-							+ ", running in : " + value + ", my id : "
-							+ macAddress);
-					return true;
+				if (value != null) {
+					if (value.compareTo(macAddress) != 0) {
+						System.out.println("[ScheduledTaskEnv] taskId : "
+								+ taskId + ", running in : " + value
+								+ ", my id : " + macAddress);
+						return true;
+					} else {
+						System.out.println("[ScheduledTaskEnv] taskId : "
+								+ taskId + ", running in : " + value);
+					}
 				}
+			} else {
+				System.out.println("[ScheduledTaskEnv] taskId : " + taskId
+						+ ", new task.");
 			}
 		}
 		return taskIds.contains(taskId);
