@@ -213,7 +213,7 @@ public class AutoDispatchStatusService {
 	}
 	
 	private void handleTimeoutData(){
-		List<AutoOrderStatusTmpVo> timeOutVoList= autoOrderStatusService.retrieveTimeoutOrderStatusMsg(50);//?????
+		List<AutoOrderStatusTmpVo> timeOutVoList= autoOrderStatusService.retrieveTimeoutOrderStatusMsg(3000);//?????
 		long cnt=0;
 		if(timeOutVoList!=null){
 			cnt=timeOutVoList.size();
@@ -235,6 +235,7 @@ public class AutoDispatchStatusService {
 				mqe.setMessage(vo.getMsg());
 				mqe.setRefid(detailid);
 				errorList.add(mqe);
+				
 			}
 		} catch (Exception ee) {
 	    	logger.error("handleTimeoutData error",ee);
@@ -260,12 +261,11 @@ public class AutoDispatchStatusService {
 			} catch (Exception e) {
 	    		logger.error("retrieveOrderStatusMsg json error,cwb="+row.getCwb()+",operatetype="+row.getOperatetype(),e);
 	    		String errinfo="DMP分拣状态数据转业务时出错."+e.getMessage();
-	    		
-	    		autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(), row.getCwb(), row.getOperatetype());
    		
 				long msgid=this.autoExceptionService.createAutoExceptionMsg(row.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
 				this.autoExceptionService.createAutoExceptionDetail(row.getCwb(),"",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
-		
+				
+				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(), row.getCwb(), row.getOperatetype());
 	    	}
 		}
 		return dataList;

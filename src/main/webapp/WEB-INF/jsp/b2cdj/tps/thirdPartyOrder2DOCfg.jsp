@@ -31,12 +31,12 @@ List<Customer> customerList = request.getAttribute("customerList") == null ? new
 						<li><span>承运商编码：</span>
 							<input type ="text" id="carrierCode" name ="carrierCode" value="<%=thirdPartyOrder2DO.getCarrierCode()%>" maxlength="32">*
 						</li>
-						<li><span>是否开启对接：</span>
+						<li><span>是否开启外单对接：</span>
 							<input type ="radio" id="openFlag1" name ="openFlag" value="1"  <%if(thirdPartyOrder2DO.getOpenFlag()==1){%>checked<%}%> >开启
 							<input type ="radio" id="openFlag2" name ="openFlag" value="0"  <%if(thirdPartyOrder2DO.getOpenFlag()==0){%>checked<%}%> >关闭
 						</li>
-						<li><span>最大尝试推送次数：</span>
-							<input type ="text" id="maxTryTime" name ="maxTryTime" value="<%=thirdPartyOrder2DO.getMaxTryTime()%>" maxlength="2" onblur="validate('maxTryTime')">*
+						<li><span>外单尝试推送次数：</span>
+							<input type ="text" id="maxTryTime" name ="maxTryTime" value="<%=thirdPartyOrder2DO.getMaxTryTime()%>" maxlength="4" onblur="validate('maxTryTime')">*
 						</li>
 						<li><span>外单客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" value="<%=thirdPartyOrder2DO.getCustomerids()%>" maxlength="500">*多个客户id之间以逗号隔开
@@ -53,6 +53,19 @@ List<Customer> customerList = request.getAttribute("customerList") == null ? new
 						    [<a href="javascript:multiSelectAll('customerids',1,'请选择');">全选</a>]
 							[<a href="javascript:multiSelectAll('customerids',0,'请选择');">取消全选</a>] --%>
 						</li>
+						<li><span>是否开启轨迹对接：</span>
+							<input type ="radio" id="trackOpenFlag1" name ="trackOpenFlag" value="1" <%if(thirdPartyOrder2DO.getTrackOpenFlag()==1){%>checked<%}%> >开启
+							<input type ="radio" id="trackOpenFlag2" name ="trackOpenFlag" value="0" <%if(thirdPartyOrder2DO.getTrackOpenFlag()==0){%>checked<%}%> >关闭
+						</li>
+						<li><span>轨迹尝试推送次数：</span>
+							<input type ="text" id="trackMaxTryTime" name ="trackMaxTryTime" value="<%=thirdPartyOrder2DO.getTrackMaxTryTime()%>" maxlength="4" >*
+						</li>
+						<li><span>轨迹保留天数：</span>
+							<input type ="text" id="trackHousekeepDay" name ="trackHousekeepDay" value="<%=thirdPartyOrder2DO.getTrackHousekeepDay()%>" maxlength="4">*
+						</li>
+						<li><span>外单保留天数：</span>
+							<input type ="text" id="housekeepDay" name ="housekeepDay" value="<%=thirdPartyOrder2DO.getHousekeepDay()%>" maxlength="4">*
+						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" >* 
 						</li>
@@ -61,12 +74,12 @@ List<Customer> customerList = request.getAttribute("customerList") == null ? new
 						<li><span>承运商编码：</span>
 							<input type ="text" id="carrierCode" name ="carrierCode" maxlength="32">*
 						</li>
-						<li><span>是否开启对接：</span>
+						<li><span>是否开启外单对接：</span>
 							<input type ="radio" id="openFlag1" name ="openFlag" value="1">开启
 							<input type ="radio" id="openFlag2" name ="openFlag" value="0" checked>关闭
 						</li>
-						<li><span>最大尝试推送次数：</span>
-							<input type ="text" id="maxTryTime" name ="maxTryTime"  maxlength="2" onblur="validate('maxTryTime')">*
+						<li><span>外单尝试推送次数：</span>
+							<input type ="text" id="maxTryTime" name ="maxTryTime"  maxlength="4" onblur="validate('maxTryTime')">*
 						</li>
 						<li><span>外单客户id：</span>
 							<input type ="text" id="customerids" name ="customerids"  maxlength="500">*多个客户id之间以逗号隔开
@@ -83,6 +96,19 @@ List<Customer> customerList = request.getAttribute("customerList") == null ? new
 						    </select>
 						    [<a href="javascript:multiSelectAll('customerids',1,'请选择');">全选</a>]
 							[<a href="javascript:multiSelectAll('customerids',0,'请选择');">取消全选</a>] --%>
+						</li>
+						<li><span>是否开启轨迹对接：</span>
+							<input type ="radio" id="trackOpenFlag1" name ="trackOpenFlag" value="1">开启
+							<input type ="radio" id="trackOpenFlag2" name ="trackOpenFlag" value="0" checked>关闭
+						</li>
+						<li><span>轨迹尝试推送次数：</span>
+							<input type ="text" id="trackMaxTryTime" name ="trackMaxTryTime"  maxlength="4" >*
+						</li>
+						<li><span>轨迹保留天数：</span>
+							<input type ="text" id="trackHousekeepDay" name ="trackHousekeepDay"  maxlength="4">*
+						</li>
+						<li><span>外单保留天数：</span>
+							<input type ="text" id="housekeepDay" name ="housekeepDay"  maxlength="4">*
 						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" >* 

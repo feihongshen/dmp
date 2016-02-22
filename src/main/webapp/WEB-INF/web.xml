@@ -30,6 +30,18 @@
     <filter-name>CharacterEncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
+  <!-- mercury trace begin--> 
+	<filter> 
+		<filter-name>traceFilter</filter-name> 
+		<filter-class>com.vipshop.mercury.client.filter.MercuryTraceFilter</filter-class> 
+	</filter> 
+	<filter-mapping> 
+		<filter-name>traceFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping> 
+   <!-- mercury trace end-->
+
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>

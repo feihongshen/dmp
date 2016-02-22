@@ -452,6 +452,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
 
+        else if(obj=='20129'){ //外单推DO
+			$("#edit").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/show/');
+			$("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
+		}
+
        else if(obj=='20127'){
 			$("#edit").val('<%=request.getContextPath()%>/suning/show/');
 			$("#del").val('<%=request.getContextPath()%>/suning/del/');
@@ -461,16 +466,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/tpsAutomate/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
-		
 		else if(obj=='20228'){//唯品会_TPS_运单状态
 			$("#edit").val('<%=request.getContextPath()%>/tpsCarrierOrderStatus/show/');
 			$("#del").val('<%=request.getContextPath()%>/tpsCarrierOrderStatus/del/');
-		}
 
-		else if(obj=='20229'){ //外单推DO
-			$("#edit").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/show/');
-			$("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
-		}
 		}else if(obj=='20200'){
 			$("#edit").val('<%=request.getContextPath()%>/tonglian/show/');
 			$("#del").val('<%=request.getContextPath()%>/tonglian/del/');

@@ -38,7 +38,11 @@ public class ThirdPartyOrder2DOCfgController {
 		String[] customeridArray = StringUtils.isEmpty(customerids) ? new String[]{} : customerids.split(",|，");
 		List<Long> customeridList = new ArrayList<Long>();
 		for(String customerid : customeridArray){
-			customeridList.add(Long.valueOf(customerid));
+			try{
+				customeridList.add(Long.valueOf(customerid));
+			}catch(Exception e){
+				//DO nothing
+			}
 		}
 		List<Customer> customerList  = customerDAO.getAllCustomers();
 		model.addAttribute("thirdPartyOrder2DO", ThirdPartyOrder2DO);
@@ -63,6 +67,9 @@ public class ThirdPartyOrder2DOCfgController {
 		if(StringUtils.isBlank(request.getParameter("customerids"))){
 			return "{\"errorCode\":1,\"error\":\"外单客户必填\"}";
 		}		
+		if(StringUtils.isBlank(request.getParameter("trackMaxTryTime"))){
+			return "{\"errorCode\":1,\"error\":\"轨迹最大尝试次数必填\"}";
+		}
 		if(StringUtils.isBlank(request.getParameter("password")) || !"explink".equals(request.getParameter("password"))){
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

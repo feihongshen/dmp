@@ -1184,11 +1184,29 @@ public class CwbDAO {
 		}
 	}
 
+	/**
+	 * 原来使用了select 。。。 for update来锁行。但是cwb不是主键,所以锁表了。若此时有大量的关于订单的操作,尤其
+	 * 是关于状态的改变,因为任何当前的 select 。。。 for update锁表了,导致数据库性能急剧下降,严重的甚至不可使用
+	 * 尤其是大量扫描时,根据jstack查看记录,就是pda的扫描方法除了问题,问题原因如上分析所述。
+	 * 
+	 * 现在考虑去掉当前select 。。。 for update语句中的for update。原因有二:
+	 * 一.任何此方法的调用都将导致锁表,那么订单状态的改变都是并行的,将引发严重的性能问题导致不可用
+	 * 二。对于生产系统而言,一个订单将只处于某一个流程中,某一时间下只有一种状态。虽然其他系统(比如财务)也使用生产系统的表,但是
+	 * 是查看信息居多,不涉及状态的更改,所以没有锁行的必要。
+	 * 综上所述,我认为可以去掉for update语句,直接使用select查询即可。
+	 * @param cwb
+	 * @return
+	 */
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
+//			return this.jdbcTemplate
+//					.queryForObject(
+//							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
+//							new CwbMapper(), cwb);
+			
 			return this.jdbcTemplate
 					.queryForObject(
-							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
+							"SELECT * from express_ops_cwb_detail where cwb=? and state=1",
 							new CwbMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
@@ -7523,14 +7541,18 @@ public class CwbDAO {
 		}
 	}
 
-	public List<CwbOrder> getCwbOrderByDelivery(String cwbs) {
+	public List<CwbOrder> getCwbOrderByDelivery(String...params) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("select * from express_ops_cwb_detail where state=1");
+		String cwbs = params[0];
+		if(params.length>1 && "WEIPIPEI".equals(params[1]))
+			sql.append("select * from express_ops_cwb_detail where state=1 and flowordertype<>"+CwbFlowOrderTypeEnum.YiShenHe.getValue());
+		else
+			sql.append("select * from express_ops_cwb_detail where state=1 ");
+			
 		if (!"".equals(cwbs)) {
 			sql.append(" and cwb in(" + cwbs + ")");
 			String ordercwbs = "'" + cwbs.replace("'", "") + "'";
 			sql.append(" ORDER BY FIND_IN_SET(cwb," + ordercwbs + ")");
-
 		}
 		return this.jdbcTemplate.query(sql.toString(), new CwbMapper());
 	}

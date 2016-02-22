@@ -6,7 +6,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.util.Page"%>
-<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 List<ExceptionCwb> eclist = (List<ExceptionCwb>)request.getAttribute("eclist");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
@@ -40,7 +39,7 @@ if(!strArrList.isEmpty())
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
-<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> 
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>

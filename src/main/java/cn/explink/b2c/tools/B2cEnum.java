@@ -82,12 +82,15 @@ public enum B2cEnum {
 			20111, "九曳_站点匹配3", "jiuyeaddressmatch_3", 0), JiuYeAddressMatch4(20112, "九曳_站点匹配4", "jiuyeaddressmatch_4", 0), JiuYeAddressMatch5(20113, "九曳_站点匹配5", "jiuyeaddressmatch_5", 0), ZheMeng(
 			20117, "哲盟-安达信", "zhemeng", 0), FeiyuanAddress(20118, "ZJ飞远站点匹配", "feiyuanAddress", 0), HaoYiGou(20120, "好易购", "haoyigou", 0),
 	
-
-	GuangXinDianXin(20121, "广信电信", "guangxindianxin", 0), VipShop_cangku4(20122, "唯品会_仓库4", "vipshop_cangku4", 0), VipShop_cangku5(20123, "唯品会_仓库5", "vipshop_cangku5", 0), VipShop_cangku6(20124,
-			"唯品会_仓库6", "vipshop_cangku6", 0), VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7", 0), VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8", 0),
+	GuangXinDianXin(20121,"广信电信","guangxindianxin",0),
+	VipShop_cangku4(20122, "唯品会_仓库4", "vipshop_cangku4",0),
+	VipShop_cangku5(20123, "唯品会_仓库5", "vipshop_cangku5",0),
+	VipShop_cangku6(20124, "唯品会_仓库6", "vipshop_cangku6",0),
+	VipShop_cangku7(20125, "唯品会_仓库7", "vipshop_cangku7",0),
+	VipShop_cangku8(20126, "唯品会_仓库8", "vipshop_cangku8",0),
+	ThirdPartyOrder_2_DO(20129, "外单推DO", "thirdPartyOrder2DO", 0),
 	VipShop_TPSAutomate(20227, "TPS自动化", "vipshop_tps_automate",0),	
 	TPS_CarrierOrderStatus(20228, "唯品会_TPS_运单状态", "TPS_CarrierOrderStatus",0),
-	ThirdPartyOrder_2_DO(20229, "外单推DO", "thirdPartyOrder2DO", 0),
 	SuNing(20127, "苏宁易购", "suning", 0), YiGuoShengXian(20128, "易果生鲜", "yiguoshengxian", 0),
 	Yihaodian_bakup1(20130, "一号店_备用1", "yihaodian_bakup1", 0), 
 	Yihaodian_bakup2(20131, "一号店_备用2", "yihaodian_bakup2", 0), 
@@ -98,7 +101,8 @@ public enum B2cEnum {
 	Tonglian(20200,"自动核销-通联-公司信息", "tonglian", 0), 
 	Caifutong(20201, "自动核销-财付通-公司信息", "caifutong", 0),
 	Zhongliang_bak1(21001, "中粮(我买网)_备用1", "zhongliang_bak1", 0),
-	Zhongliang_bak2(21002, "中粮(我买网)_备用2", "zhongliang_bak2", 0); 
+	Zhongliang_bak2(21002, "中粮(我买网)_备用2", "zhongliang_bak2", 0)
+	; 
 
 
 	 
