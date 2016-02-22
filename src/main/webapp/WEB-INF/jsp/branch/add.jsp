@@ -12,7 +12,7 @@
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-	List<AccountArea> accountAreaList = (List<AccountArea>) request.getAttribute("accontareaList");
+//	List<AccountArea> accountAreaList = (List<AccountArea>) request.getAttribute("accontareaList");
 	List<Menu> menuPDAList = (List<Menu>) request.getAttribute("PDAmenu");
 	List<Branch> zhongzhuanList = (List<Branch>) request.getAttribute("zhongzhuanList");
 	List<Branch> tuihuoList = (List<Branch>) request.getAttribute("tuihuoList");
