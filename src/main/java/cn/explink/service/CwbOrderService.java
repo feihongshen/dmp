@@ -192,8 +192,8 @@ import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
 import cn.explink.enumutil.StockDetailEnum;
 import cn.explink.enumutil.StockDetailStocktypeEnum;
-import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
+import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.JacksonMapper;
@@ -472,7 +472,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	private MPSOptStateService mPSOptStateService;
-
+	
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		this.logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
 
@@ -3510,6 +3510,12 @@ public class CwbOrderService extends BaseOrderService {
 				}
 			}
 
+		}
+		
+		//退货再投审核
+		OrderBackRuku orderBackRuku = orderBackRukuRecordDao.getBackrukuRecord(cwb);
+		if (orderBackRuku != null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxutuihuozaitou);
 		}
 
 		if (!isauto) {

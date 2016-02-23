@@ -59,8 +59,14 @@ public class CustomerService {
 		customer.setIsqufendaxiaoxie(Long.parseLong(request.getParameter("isqufendaxiaoxie")));
 		customer.setPfruleid(Long.parseLong(request.getParameter("pfruleid")));
 		customer.setWavFilePath(this.saveFile(request, file));
-		customer.setMpsswitch(Integer.parseInt(request.getParameter("mpsswitch") == null ? "0" : request.getParameter("mpsswitch")));
-
+		
+		String isJiDan = request.getParameter("ifjidan");
+		int mpsswitch = Integer.parseInt(request.getParameter("mpsswitch") == null ? "0" : request.getParameter("mpsswitch"));
+		if (isJiDan == null || "0".equals(isJiDan)) { //是否集单：否
+			customer.setMpsswitch(0);
+		} else if ("1".equals(isJiDan)) {//是否集单：是
+			customer.setMpsswitch(mpsswitch);
+		}
 		return customer;
 	}
 

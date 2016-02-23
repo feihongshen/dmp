@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.dao.AccountAreaDAO;
 import cn.explink.dao.BranchDAO;
@@ -34,7 +35,10 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.domain.AccountArea;
 import cn.explink.domain.Branch;
+import cn.explink.domain.Menu;
+import cn.explink.domain.PaiFeiRule;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
@@ -83,6 +87,24 @@ public class BranchController {
 	private BankService bankService;
 	@Autowired
 	ExportService exportService;
+	
+    private List<Menu> PDAmenu ;
+	
+	private List<Branch> zhongzhuanList ; 
+	
+	private List<Branch> tuihuoList ;
+	
+	private List<Branch> caiwuList ;
+	
+	private List<PaiFeiRule> pfrulelist ;
+	
+	private SystemInstall bindmsksid ;
+	
+	private List<Stores> mskbranchlist ;
+	
+	private List<Branch> accountbranchList ;
+	
+	private List<AccountArea> accontareaList ;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -108,22 +130,7 @@ public class BranchController {
 
 	@RequestMapping("/add")
 	public String add(Model model) {
-		model.addAttribute("accontareaList", this.accountareaDAO.getAllAccountArea());
-		model.addAttribute("PDAmenu", this.menuDAO.getPDAMenus());
-		model.addAttribute("zhongzhuanList", this.branchDAO.getBranchBySiteType(BranchEnum.ZhongZhuan.getValue()));
-		model.addAttribute("tuihuoList", this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()));
-		model.addAttribute("caiwuList", this.branchDAO.getBranchBySiteType(BranchEnum.CaiWu.getValue()));
-
-		model.addAttribute("bindmsksid", this.systemInstallDAO.getSystemInstallByName("maisike_id_flag"));
-		model.addAttribute("mskbranchlist", this.storesDAO.getMaisiBranchList());
-		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()));
-		model.addAttribute("tlBankList", this.bankService.getTlBankList());
-		model.addAttribute("cftBankList", this.bankService.getCftBankList());
-		// 站点结算对象设置
-		String accountBranch = "";
-		accountBranch = String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue());
-		model.addAttribute("accountbranchList", this.branchDAO.getBanchByBranchidForStock(accountBranch));
-
+		this.initOrganizationControllData(model);
 		return "branch/add";
 	}
 
@@ -324,25 +331,56 @@ public class BranchController {
 
 	@RequestMapping("/edit/{id}")
 	public String edit(@PathVariable("id") long branchid, Model model) {
+		model = this.initOrganizationControllData(model); 
 		model.addAttribute("b", this.branchDAO.getBranchById(branchid));
-		model.addAttribute("accontareaList", this.accountareaDAO.getAllAccountArea());
-		model.addAttribute("PDAmenu", this.menuDAO.getPDAMenus());
-		model.addAttribute("zhongzhuanList", this.branchDAO.getBranchBySiteType(BranchEnum.ZhongZhuan.getValue()));
-		model.addAttribute("tuihuoList", this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()));
-		model.addAttribute("caiwuList", this.branchDAO.getBranchBySiteType(BranchEnum.CaiWu.getValue()));
-		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()));
-
-		model.addAttribute("bindmsksid", this.systemInstallDAO.getSystemInstallByName("maisike_id_flag"));
-		model.addAttribute("mskbranchlist", this.storesDAO.getMaisiBranchList());
-		model.addAttribute("tlBankList", this.bankService.getTlBankList());
-		model.addAttribute("cftBankList", this.bankService.getCftBankList());
-		// 站点结算对象设置
-		String accountBranch = "";
-		accountBranch = String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue());
-		model.addAttribute("accountbranchList", this.branchDAO.getBanchByBranchidForStock(accountBranch));
 		return "branch/edit";
 	}
 
+	/**
+	 * 初始化机构管理
+	 */
+	private Model initOrganizationControllData(Model model){
+//		if(this.accontareaList == null || this.accontareaList.size() == 0){
+//			this.accontareaList = this.accountareaDAO.getAllAccountArea() ;
+//		}
+		if(this.PDAmenu == null || this.PDAmenu.size() == 0){
+			this.PDAmenu = this.menuDAO.getPDAMenus() ;
+		}
+		if(this.zhongzhuanList == null || this.zhongzhuanList.size() == 0){
+			this.zhongzhuanList = this.branchDAO.getBranchBySiteType(BranchEnum.ZhongZhuan.getValue()) ;
+		}
+		if(this.tuihuoList == null || this.tuihuoList.size() == 0){
+			this.tuihuoList = this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()) ;
+		}
+		if(this.caiwuList == null || this.caiwuList.size() == 0){
+			this.caiwuList = this.branchDAO.getBranchBySiteType(BranchEnum.CaiWu.getValue()) ;
+		}
+		if(this.pfrulelist == null || this.pfrulelist.size() == 0){
+			this.pfrulelist = this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()) ;
+		}
+		if(this.bindmsksid == null){
+			this.bindmsksid = this.systemInstallDAO.getSystemInstallByName("maisike_id_flag") ;
+		}
+		if(this.mskbranchlist == null || this.mskbranchlist.size() == 0){
+			this.mskbranchlist = this.storesDAO.getMaisiBranchList() ;
+		}
+		if(this.accountbranchList == null || this.accountbranchList.size() == 0){
+			String accountBranch = String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue());
+			this.accountbranchList = this.branchDAO.getBanchByBranchidForStock(accountBranch); 
+		}
+		model.addAttribute("accontareaList", this.accontareaList);
+		model.addAttribute("PDAmenu", this.PDAmenu);
+		model.addAttribute("zhongzhuanList", this.zhongzhuanList);
+		model.addAttribute("tuihuoList", this.tuihuoList);
+		model.addAttribute("caiwuList", this.caiwuList);
+
+		model.addAttribute("bindmsksid", this.bindmsksid);
+		model.addAttribute("mskbranchlist", this.mskbranchlist);
+		model.addAttribute("pfrulelist", this.pfrulelist);
+		model.addAttribute("accountbranchList", this.accountbranchList);
+		return model ;
+	}
+	
 	@RequestMapping("/list/{page}")
 	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "branchname", required = false, defaultValue = "") String branchname, @RequestParam(value = "branchaddress", required = false, defaultValue = "") String branchaddress) {
 

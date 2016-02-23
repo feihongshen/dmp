@@ -58,7 +58,9 @@ public enum ExceptionCwbErrorTypeEnum {
 					167, "配置的逆向退货组不唯一"), NONE_NEXT_STATION_ERROR(168, "没有配置逆向的退货组"), TRANSORDER_RETURN(169, "{0}订单中的{1}运单已退货，请将此件货物给到退货组!"), TUIHUOZHONGZHUANRUKU_NONSUPPORT_MPS(170, "退货中转入库不支持一票多件订单!"), FENJIANZHONGZHUANCHUKU_NONSUPPORT_MPS(
 					171, "分拣中转出库不支持一票多件订单!"),
 	
-			BU_SHI_ZHE_GE_MU_DI_DI_zong(200, "不是这个目的地的货");
+			BU_SHI_ZHE_GE_MU_DI_DI_zong(200, "不是这个目的地的货"),
+			Weishenhebuxutuihuozaitou(201,"未审核的订单不允许退货再投！！");
+	
 
 	private int value;
 	private String text;

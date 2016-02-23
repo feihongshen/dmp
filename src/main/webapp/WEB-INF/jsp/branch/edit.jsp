@@ -15,7 +15,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	Branch branch = (Branch)request.getAttribute("b");
-	List<AccountArea> accountAreaList = (List<AccountArea>)request.getAttribute("accontareaList");
+//	List<AccountArea> accountAreaList = (List<AccountArea>)request.getAttribute("accontareaList");
 	List<Menu> menuPDAList = (List<Menu>)request.getAttribute("PDAmenu");
 	List<Branch> zhongzhuanList = (List<Branch>) request.getAttribute("zhongzhuanList");
 	List<Branch> tuihuoList = (List<Branch>) request.getAttribute("tuihuoList");
