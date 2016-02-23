@@ -98,7 +98,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 						<iframe id="update" name="update" src="customer/update?fromAction=customer_save_Form&wavFilePath=<%=customer.getWavFilePath()==null?"":customer.getWavFilePath()%>&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 					</li>  
 					<li><span>是否启用集单模式：</span>
-						<select id ="ifjidan" class="select1" onchange="changejd()">
+						<select id="ifjidan" name="ifjidan" class="select1" onchange="changejd()">
 							<option value="0" <%if(customer.getMpsswitch() == 0){ %>selected<%} %>>否</option>
 							<option value="1" <%if(customer.getMpsswitch() == 1 ||customer.getMpsswitch() == 2 ){ %>selected<%} %>>是</option>							
 						</select>*
