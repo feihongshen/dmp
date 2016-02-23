@@ -5185,35 +5185,41 @@ public class CwbOrderService extends BaseOrderService {
 		this.cwbDAO.updateCwbInfactFare(co.getCwb(), infactfare);
 
 		// 上门退成功反馈时录入快递单号
-		if ((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) && !transcwb.equals("")) {
-			String[] transcwbArr = transcwb.split(",");
-			List<String> transcwbList = new ArrayList<String>();
-			for (String transcwbTmp : transcwbArr) {
-				if (transcwbTmp.length() > 0) {
-					transcwbList.add(transcwbTmp);
-				}
-			}
-
-			if (transcwbList.size() > 0) {
-				this.transCwbDao.deleteTranscwb(cwb);
-				for (String transcwbTmp : transcwbList) {
-					List<TranscwbView> transcwbViewList = this.transCwbDao.getcwbBytranscwb(transcwbTmp);
-					if ((transcwbViewList != null) && (transcwbViewList.size() > 0)) {
-						throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FANKUI_KUAIDIDANHAO_YIGUANLIAN);
+		if ((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
+			if(!transcwb.equals("")){
+				String[] transcwbArr = transcwb.split(",");
+				List<String> transcwbList = new ArrayList<String>();
+				for (String transcwbTmp : transcwbArr) {
+					if (transcwbTmp.length() > 0) {
+						transcwbList.add(transcwbTmp);
 					}
-					this.transCwbDao.saveTranscwb(transcwbTmp, cwb);// it seem
-																	// it is
-																	// already
-																	// done at
-																	// OrderFlowNestedTransactionWrapper.saveTransCwb(),it
-																	// also
-																	// support
-																	// split ,
 				}
-				this.transCwbDao.saveTranscwb(cwb, cwb);
-				this.cwbDAO.saveTranscwbByCwb(transcwb, cwb);
-				this.cwbDAO.saveBackcarnum(transcwbList.size(), cwb);
-				this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
+
+				if (transcwbList.size() > 0) {
+					this.transCwbDao.deleteTranscwb(cwb);
+					for (String transcwbTmp : transcwbList) {
+						List<TranscwbView> transcwbViewList = this.transCwbDao.getcwbBytranscwb(transcwbTmp);
+						if ((transcwbViewList != null) && (transcwbViewList.size() > 0)) {
+							throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FANKUI_KUAIDIDANHAO_YIGUANLIAN);
+						}
+						this.transCwbDao.saveTranscwb(transcwbTmp, cwb);// it seem
+																		// it is
+																		// already
+																		// done at
+																		// OrderFlowNestedTransactionWrapper.saveTransCwb(),it
+																		// also
+																		// support
+																		// split ,
+					}
+					this.transCwbDao.saveTranscwb(cwb, cwb);
+					this.cwbDAO.saveTranscwbByCwb(transcwb, cwb);
+					this.cwbDAO.saveBackcarnum(transcwbList.size(), cwb);
+					this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
+				}
+			}else{//当录入或修改快递单号为空时
+				this.transCwbDao.deleteTranscwb(cwb);
+				this.transCwbDao.saveTranscwb(cwb,cwb);
+				this.cwbDAO.saveTranscwbByCwb("",cwb);
 			}
 		}
 
