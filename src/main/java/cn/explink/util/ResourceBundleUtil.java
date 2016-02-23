@@ -19,7 +19,7 @@ import cn.explink.service.UserService;
  */
 public class ResourceBundleUtil {
 	
-	private static Logger logger = LoggerFactory.getLogger(UserService.class);
+	private static Logger logger = LoggerFactory.getLogger(ResourceBundleUtil.class);
 	
 	private static ResourceBundle rbint = null;
 	//初始化
