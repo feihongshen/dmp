@@ -5749,7 +5749,10 @@ public class PDAController {
 			@RequestParam(value = "remarkcontent", required = false, defaultValue = "") String remarkcontent) {
 		String scancwb = cwb;
 		cwb = this.cwbOrderService.translateCwb(cwb);
-		CwbOrder cwbOrder = this.cwbOrderService.customrefuseback(this.getSessionUser(), cwb, scancwb, 0, remarkcontent);
+		if("".equals(remarkcontent)){
+			remarkcontent="已审核为供货商拒收返库";
+		}
+		CwbOrder cwbOrder = this.cwbOrderService.customrefusebackToStorehouse(this.getSessionUser(), cwb, scancwb, 0, remarkcontent);
 		JSONObject obj = new JSONObject();
 		String customername = this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername();
 		obj.put("customername", customername);
