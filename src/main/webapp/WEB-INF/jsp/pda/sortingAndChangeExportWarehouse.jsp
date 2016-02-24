@@ -543,7 +543,6 @@ function baleaddcwb(scancwb,baleno){
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
-				<%-- numbervedioplay("<%=request.getContextPath()%>",data.body.successCount); --%>
 				playWav(""+data.body.successCount);
 			}else{
 				if("${isOpenDialog}" != "open"){

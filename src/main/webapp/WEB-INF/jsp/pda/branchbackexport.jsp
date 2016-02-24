@@ -480,13 +480,13 @@ function baleaddcwb(){
 	}
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/baleaddcwb/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?branchid="+$("#branchid").val(),
+		url:"<%=request.getContextPath()%>/bale/baletuihuochuzhanaddcwb/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?branchid="+$("#branchid").val(),
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
-				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
+				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
 				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);
