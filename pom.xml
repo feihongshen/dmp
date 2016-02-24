@@ -4060,7 +4060,30 @@
 				<addressWebserviceIp>172.20.200.44:8081/addressb</addressWebserviceIp>
 			</properties>
 		</profile>
-		
+			<profile>
+			<id>XZPJ</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.62:3306/xzpj_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data1/uploadimg/</uploadimgPath>
+				<wavPath>/home/apps/data1/wav/</wavPath>
+				<filePath>/home/apps/data1/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>XZPJ</label>
+				<addresscustomerid>26</addresscustomerid>
+				<addressid>26</addressid>
+				<addresspassword>xzpj</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressb</addressWebserviceIp>
+			</properties>
+		</profile>
 		<profile>
 			<id>GSPJ</id>
 			<properties>
@@ -4350,6 +4373,30 @@
 				<addressid>43</addressid>
 				<addresspassword>hbpj</addresspassword>
 				<addressWebserviceIp>103.229.214.164/addressheb</addressWebserviceIp>
+			</properties>
+		</profile>
+		<profile>
+			<id>SXCL</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://172.20.200.93:3306/sxcl_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://localhost:61616</jms.brokerURL>
+				<uploadimgPath>/home/apps/data/uploading/</uploadimgPath>
+				<wavPath>/home/apps/data/wav/</wavPath>
+				<filePath>/home/apps/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>SXCL</label>
+				<addresscustomerid>47</addresscustomerid>
+				<addressid>47</addressid>
+				<addresspassword>sxcl</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressi</addressWebserviceIp>
 			</properties>
 		</profile>
 	</profiles>
