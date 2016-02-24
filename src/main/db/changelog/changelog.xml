@@ -8929,4 +8929,13 @@ CREATE TABLE `cs_complaint_accept` (
 	<changeSet id="wangwei-2016-02-05-merge-003" author="wangwei">
 		<sqlFile path="merge_all_db_at_last.sql" encoding="UTF-8" relativeToChangelogFile="true" />
 	</changeSet>
+	
+	<changeSet id="wanghao-2016-02-24-merge-004" author="wanghao">
+<!-- 	生产库 的mysql版本为5.5.35-log,测试库的mysql版本为5.5.29-log。-->
+<!-- 	insert ignore语法被5.5支持。 -->
+		<sql>
+			INSERT IGNORE INTO `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) VALUES (5, 62);
+			INSERT IGNORE INTO `express_set_cwb_state_control` (`fromstate`, `tostate`) VALUES (27, 62);
+		</sql>
+	</changeSet>
 </databaseChangeLog>
