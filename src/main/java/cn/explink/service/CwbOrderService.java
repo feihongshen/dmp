@@ -6204,14 +6204,15 @@ public class CwbOrderService extends BaseOrderService {
 		or.setCreatetime(createtime);
 		this.orderbackRecordDao.creOrderbackRecord(or);
 	}
-
+	
+	
 	/**
 	 * 供货商拒收返库
 	 *
 	 * @param co
 	 * @return
 	 */
-	public CwbOrder customrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment) {
+	public CwbOrder customrefusebackToStorehouse(User user, String cwb, String scancwb, long requestbatchno, String comment) {
 		this.logger.info("{} 将订单 {} 审核为供货商拒收返库", FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), cwb);
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.GongYingShangJuShouFanKu);
 		cwb = this.translateCwb(cwb);
@@ -6228,6 +6229,36 @@ public class CwbOrderService extends BaseOrderService {
 			this.handleCustomrefuseback(user, cwb, scancwb, requestbatchno, comment, co, FlowOrderTypeEnum.GongYingShangJuShouFanKu, isypdjusetranscwb, false);
 		} else {
 			throw new CwbException(cwb, FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+
+		return co;
+	}
+
+	/**
+	 * 供货商拒收退货
+	 *
+	 * @param co
+	 * @return
+	 */
+	public CwbOrder customrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment) {
+//		this.logger.info("{} 将订单 {} 审核为供货商拒收返库", FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), cwb);
+//		退供应商拒收退货
+		this.logger.info("{} 将订单 {} 审核为退供应商拒收退货", FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(), cwb);
+		
+		cwb = this.translateCwb(cwb);
+
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+
+		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
+		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
+			return this.handleCustomrefusebackYipiaoduojian(user, cwb, scancwb, requestbatchno, comment, co, FlowOrderTypeEnum.GongYingShangJuShouTuiHuo, isypdjusetranscwb);
+		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1)) {
+			this.handleCustomrefuseback(user, cwb, scancwb, requestbatchno, comment, co, FlowOrderTypeEnum.GongYingShangJuShouTuiHuo, isypdjusetranscwb, false);
+		} else {
+			throw new CwbException(cwb, FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 
 		return co;
@@ -6260,14 +6291,21 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private void handleCustomrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
-		OrderbackRecord obre = this.orderbackRecordDao.getOBRecord(cwb);
-		if (obre != null) {
-			if (obre.getShenhestate() == 0) {
-				throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_DAIQUEREN);
-			} else if (obre.getShenhestate() == 1) {
-				throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_SUCCESS);
-			}
+		OrderbackRecord obre=null;
+		if(flowOrderTypeEnum==FlowOrderTypeEnum.GongYingShangJuShouTuiHuo){
+			obre = this.orderbackRecordDao.getOBRecord(cwb);
 		}
+		if(flowOrderTypeEnum==FlowOrderTypeEnum.GongYingShangJuShouFanKu){
+			obre = this.orderbackRecordDao.getOBRecordForGongYingShangJuShouFanKu(cwb);
+		}
+			if (obre != null) {
+				if (obre.getShenhestate() == 0) {
+					throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_DAIQUEREN);
+				} else if (obre.getShenhestate() == 1) {
+					throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_SUCCESS);
+				}
+			}
+		
 
 		this.validateCwbState(co, flowOrderTypeEnum);
 		this.validateStateTransfer(co, flowOrderTypeEnum);
@@ -6275,8 +6313,8 @@ public class CwbOrderService extends BaseOrderService {
 		String oldcwbremark = co.getCwbremark().length() > 0 ? co.getCwbremark() + "\n" : "";
 		String newcwbremark = oldcwbremark + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "[" + user.getRealname() + "]" + comment;
 		try {
-			String sql = "update express_ops_cwb_detail set flowordertype=?,currentbranchid=?,startbranchid=?,nextbranchid=?,cwbremark=? where cwb=? and state=1";
-			this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), user.getBranchid(), 0, 0, newcwbremark, cwb);
+			String sql = "update express_ops_cwb_detail set flowordertype=?,currentbranchid=?,nextbranchid=?,cwbremark=? where cwb=? and state=1";
+			this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), user.getBranchid(), 0, newcwbremark, cwb);
 		} catch (Exception e) {
 			this.logger.error("error while saveing cwbremark,cwb:" + co.getCwb() + "cwbremark:" + newcwbremark, e);
 			throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);

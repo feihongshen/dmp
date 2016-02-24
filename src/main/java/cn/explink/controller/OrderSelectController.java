@@ -712,6 +712,7 @@ public class OrderSelectController {
 		} else {
 			List<OrderFlow> datalist = this.orderFlowDAO.getOrderFlowByCwb(cwb);
 			for (OrderFlow orderFlowAll : datalist) {
+//				System.out.println(orderFlowAll.getCredate()+"    "+orderFlowAll.getCwb()+"   "+orderFlowAll.getFlowordertype());
 				AorderFlowView a = new AorderFlowView();
 				a.setId(orderFlowAll.getFloworderid());// 用于排序同时操作的相同时间的显示顺序
 				a.setTime(orderFlowAll.getCredate().toString());

@@ -2465,7 +2465,7 @@ public class CwbOrderPDAController {
 		return PDAResponse;
 	}
 
-	// 供货商拒收返库
+	// 供货商拒收退货
 	private PDAResponse customrefuseback(String cwb, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
