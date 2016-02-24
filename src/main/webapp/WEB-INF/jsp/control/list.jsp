@@ -16,7 +16,8 @@ String endemaildate=request.getParameter("endemaildate")==null?DateTimeUtil.getN
 String beginemaildate=request.getParameter("beginemaildate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("beginemaildate");
 List<Exportmould> exportmouldlist =(List<Exportmould>) request.getAttribute("exportmouldlist");														
 Object cwbs =request.getAttribute("cwbs");		
-Object ids =request.getAttribute("ids");		
+Object ids =request.getAttribute("ids");	
+String username=request.getParameter("username")==null?"":request.getParameter("username");		
 String starttime=request.getAttribute("beginemaildate").toString();	
 String endtime=request.getAttribute("endemaildate").toString();	
 Long flowOrderTypeEnumid =(Long)request.getAttribute("flowOrderTypeEnumid");		
@@ -330,7 +331,7 @@ function actionType(src)
     <tr>
     	<td>
     		工号查询
-    		<input name="username" id="username" class="input_text1" />
+    		<input name="username" id="username" class="input_text1" value ="<%=username %>"/>
     	</td>
     </tr>
     <tr>
