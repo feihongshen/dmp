@@ -1528,7 +1528,7 @@ public class CwbOrderController {
 	}
 
 	/**
-	 * 审为供货商拒收返库
+	 * 审为供货商拒收退货
 	 *
 	 * @param model
 	 * @param request
@@ -1636,9 +1636,14 @@ public class CwbOrderController {
 			if (reason.equals("")) {
 				continue;
 			}
-			if (reason.length() > 0) {
-				this.cwbDao.updateFlowordertype(FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(), reason);
-				String auditname = this.getSessionUser().getRealname();//确认人
+			if (reason.length()>0) {
+				String scancwb = reason;
+//				cwbDao.updateFlowordertype(FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(),reason);
+//				cwborderService.customrefuseback(user, cwb, scancwb, requestbatchno, comment);
+//				requestbatchno参数在customrefuseback方法中没有任何操作,为保证兼容性不修改此方法签名。
+//				comment是记录内容,对应表express_ops_order_flow中的commont字段。
+				cwborderService.customrefuseback(getSessionUser(), reason, scancwb, 0, "已审核为供货商退货拒收");
+				String auditname = getSessionUser().getRealname();//确认人
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String audittime = sdf.format(new Date());
 				this.orderbackRecordDao.updateShenheState(2, reason, auditname, audittime);//退货拒收修改shenhestate为2
