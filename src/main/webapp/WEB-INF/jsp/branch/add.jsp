@@ -18,7 +18,6 @@
 	SystemInstall bindmsksid=(SystemInstall)request.getAttribute("bindmsksid");
 	List<Stores> mskbranchlist = (List<Stores>) request.getAttribute("mskbranchlist");
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
-	
 	List<Branch> accountbranchList = (List<Branch>) request.getAttribute("accountbranchList");//结算对象
 	List<JSONObject> tlBankList = (List<JSONObject>)request.getAttribute("tlBankList");
 	List<JSONObject> cftBankList = (List<JSONObject>)request.getAttribute("cftBankList");
