@@ -100,7 +100,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 						<iframe id="update" name="update" src="customer/update?fromAction=customer_cre_Form&wavFilePath=&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 					</li>
 					 <li><span>是否启用集单模式：</span>
-						<select id ="ifjidan" class="select1" disabled="disabled" onchange="changejd()">
+						<select id="ifjidan" name="ifjidan" class="select1" disabled="disabled" onchange="changejd()">
 							<option value="0">否</option>
 							<option value="1">是</option>							
 						</select>*
