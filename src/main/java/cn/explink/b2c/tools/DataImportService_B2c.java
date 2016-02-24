@@ -433,6 +433,10 @@ public class DataImportService_B2c {
 		if (excelColumnSet.getIsmpsflagindex() != 0) {
 			cwbOrder.setIsmpsflag(Integer.valueOf(row.get("ismpsflag") == null ? "0" : row.get("ismpsflag")));
 		}
+		//团购标识
+		if (excelColumnSet.getVipclubindex() != 0) {
+			cwbOrder.setVipclub(Integer.parseInt(row.get("vipclub")));
+		}
 		cwbOrder.setDefaultCargoName();
 
 		return cwbOrder;

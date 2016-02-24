@@ -881,7 +881,8 @@ public class TpsOrderVo {
             "orgName",
             "orgCode",
             "custOrderNo",
-            "tel"
+            "tel",
+            "vipClub"
         })
         public static class Order {
 
@@ -955,6 +956,8 @@ public class TpsOrderVo {
             protected String custOrderNo;
             @XmlElement(required = true)
             protected String tel;
+            @XmlElement(name = "vip_club", required = true)
+            protected String vipClub;
 
             /**
              * Gets the value of the id property.
@@ -1796,7 +1799,21 @@ public class TpsOrderVo {
                 this.tel = value;
             }
 
+            /**
+			 * @return the vipClub
+			 */
+			public String getVipClub() {
+				return vipClub;
+			}
+
+			/**
+			 * @param vipClub the vipClub to set
+			 */
+			public void setVipClub(String vipClub) {
+				this.vipClub = vipClub;
+			}
         }
+        
 
     }
 

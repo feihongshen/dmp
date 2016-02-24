@@ -494,14 +494,14 @@ public class CwbOrderService extends BaseOrderService {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate) "
+						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub) "
 						+ "values(?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ " ?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
-						+ "?,?,?,?,?,?)", new PreparedStatementSetter() {
+						+ "?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 
@@ -578,7 +578,7 @@ public class CwbOrderService extends BaseOrderService {
 						ps.setInt(64, cwbOrderDTO.getIsmpsflag());
 						ps.setInt(65, cwbOrderDTO.getMpsallarrivedflag());
 						ps.setInt(66, FlowOrderTypeEnum.DaoRuShuJu.getValue());
-
+						ps.setInt(67, cwbOrderDTO.getVipclub());
 					}
 
 				});

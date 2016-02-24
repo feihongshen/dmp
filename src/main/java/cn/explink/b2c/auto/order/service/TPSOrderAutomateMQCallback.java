@@ -79,7 +79,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
 		try {
 			msg = new String(e.getPayload(), "utf-8");
-			this.logger.info("TPS下发接口报文：" + msg);
+			this.logger.info("TPS自动化订单下发接口报文：" + msg);
 			if (isOpenFlag == 1) {
 	        	JsonConfig config=new JsonConfig(); 
 	        	Map<String, Class<?>> clazz = new HashMap<String,Class<?>>();
@@ -103,11 +103,22 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	    		}
 	        	
 	        	for(TPSOrder order : list){
+	        		//System.out.println(order.getCustOrderNo());
+	        		String[] cwbStr = null;
+	        		int cwbTransLen = 0;
+	        		if(!order.getBoxNo().isEmpty()){
+	        			cwbStr = order.getBoxNo().split(",");
+	        			cwbTransLen = cwbStr.length;
+	        		}
 	        		try{
 	        			if(order.getCustOrderNo().isEmpty()){
-	    					this.logger.info("订单号为空");
-	    					throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"订单号为空");
+	    					this.logger.info("接口数据异常，订单号为空");
+	    					throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"接口数据异常，订单号为空");
 	    				}
+	        			if(cwbTransLen!=0 && cwbTransLen!=order.getTotalPack()){
+	        				this.logger.info("订单发货数量与箱数不一致！");
+	    					throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"订单发货数量与箱数不一致！");
+	        			}
 	        			tPSOrderHandle.handleOrderData(order,vipshop,vipshop_key,msg);
 	        		}catch(Exception ex){
 	        			error=new AutoMQExceptionDto();
@@ -131,14 +142,14 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	        		}
 	        	}
 		    }else{
-		    	this.logger.info("未开启TPS自动化[" + vipshop_key + "]对接！");
+		    	this.logger.info("未开启TPS自动化订单下发接口[" + vipshop_key + "]对接！");
 		    }
         } catch (Throwable ex) {
-        	this.logger.error("消费下发订单时解析异常!");
+        	this.logger.error("消费TPS自动化订单下发数据时解析异常!");
         	if(msgid==0){
         		msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
         	}
-        	long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", "下发订单数据异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+        	long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", "TPS自动化订单下发数据异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
         	AutoMQExceptionDto mqe=new AutoMQExceptionDto();
 			mqe.setBusiness_id("");
 			mqe.setException_info(ex.getMessage());
@@ -147,10 +158,11 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 			if(errorList==null){
 				errorList=new ArrayList<AutoMQExceptionDto>();
         	}
+			ex.printStackTrace();
 			errorList.add(mqe);
         } finally {
         	if(errorList!=null){
-        		this.logger.error("TPS下发接口异常报文：" + msg);
+        		this.logger.error("TPS自动化订单下发接口异常报文：" + msg);
         		for(AutoMQExceptionDto err:errorList){
               	    String sendXml = StringXMLSend(vipshop,err,msg);
                    autoExceptionSender.send(sendXml); 

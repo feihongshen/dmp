@@ -86,6 +86,8 @@ public class ExcelColumnSet {
 
 	// /////唯品会会应收运费////////
 	int cwbordertypeidindex;// 订单类型
+	
+	int vipclubindex; //团购
 
 	public int getCwbordertypeidindex() {
 		return cwbordertypeidindex;
@@ -545,4 +547,11 @@ public class ExcelColumnSet {
 		this.paywayindex = paywayindex;
 	}
 
+	public int getVipclubindex() {
+		return vipclubindex;
+	}
+
+	public void setVipclubindex(int vipclubindex) {
+		this.vipclubindex = vipclubindex;
+	}
 }
