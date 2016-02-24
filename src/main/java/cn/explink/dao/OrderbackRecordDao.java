@@ -134,7 +134,7 @@ public class OrderbackRecordDao {
 			String sql = "select * from express_ops_orderback_record where cwb=? and shenhestate!=0 order by id desc limit 1";
 			return this.jdbcTemplate.queryForObject(sql, new OrderbackRecordMapper(), cwb);
 		}catch(Exception e){
-			e.printStackTrace();
+//			e.printStackTrace();
 			return null;
 		}
 	}
@@ -149,7 +149,7 @@ public class OrderbackRecordDao {
 			String sql = "select * from express_ops_orderback_record where cwb=? and shenhestate=0 order by id desc limit 1";
 			return this.jdbcTemplate.queryForObject(sql, new OrderbackRecordMapper(), cwb);
 		}catch(Exception e){
-			e.printStackTrace();
+//			e.printStackTrace();
 			return null;
 		}
 	}
