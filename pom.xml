@@ -903,7 +903,31 @@
 				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
 			</properties>
 		</profile>
-		
+		<profile>
+			<id>MPS</id>
+			<properties>
+				<tomcat.manager.url></tomcat.manager.url>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>50</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.0.217:3306/fjfy?zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>eap</expressurl.user>
+				<expressurl.password>explink</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://192.168.0.217:61616</jms.brokerURL>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logotxd>2</logotxd>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>eap_autoverify</label>
+				<addresscustomerid>13</addresscustomerid>
+				<addressid>13</addressid>
+				<addresspassword>shpj</addresspassword>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+				<fileTongLianPath>/home/appusr/data/paysource</fileTongLianPath>
+			</properties>
+		</profile>
 		<profile>
 			<id>EXPRESS_UPDATE_TEST</id>
 			<properties>
@@ -4276,6 +4300,7 @@
 				<addressid>41</addressid>
 				<addresspassword>hnadx</addresspassword>
 				<addressWebserviceIp>103.229.214.164/addressh</addressWebserviceIp>
+				<fileTongLianPath>/home/apps/data/paysource/</fileTongLianPath>
 			</properties>
 		</profile>
 		<profile>
@@ -4326,7 +4351,53 @@
 				<addressWebserviceIp>221.123.178.101/whfnbjyfxk</addressWebserviceIp>
 			</properties>
 		</profile>
+		<profile>
+			<id>package_test</id>
+			<properties>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.0.217:3306/fjfy?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>eap</expressurl.user>
+				<expressurl.password>explink</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase>false</expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>package_test</label>
+				<addresscustomerid>9</addresscustomerid>
+				<addressid>9</addressid>
+				<addresspassword>fjfy</addresspassword>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+			</properties>
+		</profile>
 		
+		<profile>
+			<id>tjpj_update</id>
+			<properties>
+				<drivers>com.mysql.jdbc.Driver</drivers>
+				<expressurl.maxconn>100</expressurl.maxconn>
+				<expressurl.url>jdbc:mysql://192.168.0.217:3306/dmp_tjpj_update?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>eap</expressurl.user>
+				<expressurl.password>explink</expressurl.password>
+				<expressurl.promptOnNonLocalDatabase>false</expressurl.promptOnNonLocalDatabase>
+				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
+				<uploadimgPath>/home/appusr/data/uploadimg/</uploadimgPath>
+				<wavPath>/home/appusr/data/wav/</wavPath>
+				<filePath>/home/appusr/data/moule/</filePath>
+				<logoswitch>1</logoswitch>
+				<word></word>
+				<logoimgurl>images/login_logo2.png</logoimgurl>
+				<label>dmp_tjpj_update</label>
+				<addresscustomerid>9</addresscustomerid>
+				<addressid>9</addressid>
+				<addresspassword>fjfy</addresspassword>
+				<addressWebserviceIp>192.168.0.217:10120/address</addressWebserviceIp>
+			</properties>
+		</profile>
 		<profile>
 			<id>TJPJ</id>
 			<properties>
