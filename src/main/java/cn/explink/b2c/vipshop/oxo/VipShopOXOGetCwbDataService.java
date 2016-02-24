@@ -277,7 +277,10 @@ public class VipShopOXOGetCwbDataService {
 		//orderMap.put("", order.getOrgCode());//提货站点编码
 		cwbOrder.setCustomerid(Long.valueOf(vipshop.getCustomerids())); //客户id
 		//cwbOrder.setStartbranchid(vipshop.getWarehouseid());
-				
+		
+		//团购标识
+		cwbOrder.setVipclub(order.getVipClub().equals("3")?1:0);
+		
 	}
 	
 	/**

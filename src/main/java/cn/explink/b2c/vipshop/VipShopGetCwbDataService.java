@@ -124,13 +124,12 @@ public class VipShopGetCwbDataService {
 		vipshop.setLefengCustomerid(lefengCustomerid);
 		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
 		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
-		String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
+		/*String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
 		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
 		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
-		vipshop.setDaysno(Integer.parseInt(daysno));
+		vipshop.setDaysno(Integer.parseInt(daysno));*/
 		
-		String openmpspackageflag=request.getParameter("openmpspackageflag");
-		vipshop.setOpenmpspackageflag(Integer.valueOf(openmpspackageflag));
+		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
 		
 		String oldLefengCustomerids = ""; //乐蜂customerid
@@ -464,7 +463,8 @@ public class VipShopGetCwbDataService {
 			String cargotype = choseCargotype(service_type);
 			created_dtm_loc = choseCreateDtmLoc(created_dtm_loc);
 			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
-			
+			//团购标志
+			String vip_club = VipShopGetCwbDataService.convertEmptyString("vip_club", datamap);
 			
 			if(vipshop.getIsOpenLefengflag()==1){//开启乐蜂网
 				if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
@@ -478,7 +478,7 @@ public class VipShopGetCwbDataService {
 					original_weight, paywayid, attemper_no, created_dtm_loc,
 					rec_create_time, order_delivery_batch, freight,
 					cwbordertype, warehouse_addr, go_get_return_time,
-					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch);
+					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club);
 			
 			
 			//集包相关代码处理
@@ -565,7 +565,7 @@ public class VipShopGetCwbDataService {
 			String order_delivery_batch, String freight, String cwbordertype,
 			String warehouse_addr, String go_get_return_time,
 			String is_gatherpack, String is_gathercomp, String total_pack,
-			String transcwb,int mpsswitch) {
+			String transcwb,int mpsswitch,String vip_club) {
 		String sendcarnum=total_pack.isEmpty() ? "1" : total_pack;
 		
 		dataMap.put("cwb", order_sn);
@@ -601,6 +601,8 @@ public class VipShopGetCwbDataService {
 		
 		dataMap.put("ismpsflag", choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 		dataMap.put("mpsallarrivedflag", choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
+		//团购标志
+		dataMap.put("vipclub",vip_club.equals("3")?"1":"0");
 		return dataMap;
 		
 	}

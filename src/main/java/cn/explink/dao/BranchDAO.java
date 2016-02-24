@@ -237,6 +237,12 @@ public class BranchDAO {
 						new BranchRowMapper(), branchcode);
 	}
 
+	public List<Branch> getBranchByTpsBranchcode(String tpsbranchcode) {
+		return this.jdbcTemplate
+				.query("SELECT * from express_set_branch where tpsbranchcode=? and tpsbranchcode <> '' and brancheffectflag='1' ",
+						new BranchRowMapper(), tpsbranchcode);
+	}
+	
 	public List<Branch> getAllBranches() {
 		return this.jdbcTemplate
 				.query("SELECT * FROM express_set_branch  ORDER BY sitetype ASC, CONVERT( branchname USING gbk ) COLLATE gbk_chinese_ci ASC",
