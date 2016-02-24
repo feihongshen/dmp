@@ -124,13 +124,12 @@ public class VipShopGetCwbDataService {
 		vipshop.setLefengCustomerid(lefengCustomerid);
 		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
 		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
-		String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
+		/*String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
 		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
 		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
-		vipshop.setDaysno(Integer.parseInt(daysno));
+		vipshop.setDaysno(Integer.parseInt(daysno));*/
 		
-		String openmpspackageflag=request.getParameter("openmpspackageflag");
-		vipshop.setOpenmpspackageflag(Integer.valueOf(openmpspackageflag));
+		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
 		
 		String oldLefengCustomerids = ""; //乐蜂customerid
