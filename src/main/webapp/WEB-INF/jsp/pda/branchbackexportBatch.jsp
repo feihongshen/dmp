@@ -73,8 +73,8 @@ function getTuiHuoOutSum(pname,branchid){
 		$("#successTable tr").hide();
 		$("#successTable tr[nextbranchid='"+branchid+"']").show();
 		
-		$("#errorTable tr").hide();
-		$("#errorTable tr[nextbranchid='"+branchid+"']").show();
+		/* $("#errorTable tr").hide();
+		$("#errorTable tr[nextbranchid='"+branchid+"']").show(); */
 	}else{
 		$("#weichukuTable tr").show();
 		$("#successTable tr").show();
@@ -98,8 +98,8 @@ function getTuiHuoYiOutSum(branchid){
 		$("#successTable tr").hide();
 		$("#successTable tr[nextbranchid='"+branchid+"']").show();
 		
-		$("#errorTable tr").hide();
-		$("#errorTable tr[nextbranchid='"+branchid+"']").show();
+		/* $("#errorTable tr").hide();
+		$("#errorTable tr[nextbranchid='"+branchid+"']").show(); */
 	}else{
 		$("#weichukuTable tr").show();
 		$("#successTable tr").show();
@@ -172,8 +172,8 @@ function  showbybranchid(branchid){
 		$("#successTable tr").hide();
 		$("#successTable tr[nextbranchid='"+branchid+"']").show();
 		
-		$("#errorTable tr").hide();
-		$("#errorTable tr[nextbranchid='"+branchid+"']").show();
+		/* $("#errorTable tr").hide();
+		$("#errorTable tr[nextbranchid='"+branchid+"']").show(); */
 	}
 }
 function tohome(){
