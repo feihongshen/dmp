@@ -97,7 +97,7 @@ public class AutoOrderStatusService {
 		if(deliveryBranchCode==null||deliveryBranchCode.length()<1){
 			return 0;
 		}
-		List<Branch> branchList=branchDAO.getBranchByBranchcode(deliveryBranchCode);
+		List<Branch> branchList=branchDAO.getBranchByTpsBranchcode(deliveryBranchCode);
 		if(branchList==null||branchList.size()<1){
 			return 0;
 		}
