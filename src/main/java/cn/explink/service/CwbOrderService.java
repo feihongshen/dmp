@@ -2114,9 +2114,13 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			}
 		} else {
+			//针对一票多件，如果所有的运单号退货出站已经全部完成，但订单主表发货件数与扫描件数不一致时(异常)，进行补全扫描件数，避免退货入库时报错
+			long realscannum = this.transcwborderFlowDAO.getTranscwbOrderFlowCount(co.getCwb(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), currentbranchid);
+			if(co.getSendcarnum()==realscannum && co.getSendcarnum()>co.getScannum()){
+				co.setScannum(realscannum);
+			}
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleBackIntoWarehous(user, cwb, scancwb, currentbranchid, requestbatchno, comment, co, flowOrderTypeEnum, isypdjusetranscwb, true, false, driverid);
-
 		}
 
 		// // added shenhongfei 退货站入库 2016-1-12
