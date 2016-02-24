@@ -677,9 +677,6 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
-				<excludes>
-					<exclude>${excludeJobFile}</exclude>					
-				</excludes>
 				
 			</resource>
 			<resource>

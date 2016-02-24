@@ -14,7 +14,7 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-	<!-- <bean id="scheduledTaskService" class="cn.explink.service.ScheduledTaskService">
+	<bean id="scheduledTaskService" class="cn.explink.service.ScheduledTaskService">
 		<property name="cachedWorkers">
 			<map>
 				<entry key="save.orderFlow" value-ref="orderFlowWorker" />
@@ -36,7 +36,7 @@
 				<entry key="synaddressuserdelete" value-ref="synAddressTaskWorker" />
 			</map>
 		</property>
-	</bean> -->
+	</bean>
 
 	<!-- ===================================自动生成定时器 开始========================================== -->
 	<bean id="excuteTimmer" class="cn.explink.b2c.tools.JobUtil">
@@ -792,10 +792,10 @@
 			<value>getHomegobj1_Task</value>
 		</property>
 	</bean>
-    <!--  <jaxws:endpoint id="buildOrder" implementor="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl" address="/buildOrder" />
-		<bean name="WebServiceServerByLechongImpl" class="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl">
-			
-		</bean> -->
+    <jaxws:endpoint id="buildOrder" implementor="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl" address="/buildOrder" />
+	<bean name="WebServiceServerByLechongImpl" class="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl">
+	
+	</bean>
 	<bean id="scheduledTaskMonitorTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean"
 		dependency-check="default">
 		<property name="targetBean" value="monitorService" />
