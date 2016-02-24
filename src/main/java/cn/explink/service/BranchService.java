@@ -107,7 +107,7 @@ public class BranchService {
 		branch.setContractrate(BigDecimal.valueOf(Float.parseFloat(request.getParameter("contractrate") == null ? "0" : request.getParameter("contractrate"))));
 		branch.setBranchcode(StringUtil.nullConvertToEmptyString(request.getParameter("branchcode")));
 		//为快递使用的tps站点编码
-		branch.setTpsbranchcode(StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode").trim()));
+		branch.setTpsbranchcode(StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode") == null ? null : request.getParameter("tpsbranchcode").trim()));
 		branch.setNoemailimportflag(StringUtil.nullConvertToEmptyString(request.getParameter("noemailimportflag")));
 		branch.setErrorcwbdeliverflag(StringUtil.nullConvertToEmptyString(request.getParameter("errorcwbdeliverflag")));
 		branch.setErrorcwbbranchflag(StringUtil.nullConvertToEmptyString(request.getParameter("errorcwbbranchflag")));

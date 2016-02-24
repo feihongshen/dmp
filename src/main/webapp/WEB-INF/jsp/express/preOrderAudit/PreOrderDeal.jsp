@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="cn.explink.domain.express.ExpressPreOrderVOForDeal"%>
+<%@page import="cn.explink.domain.VO.PreOrderVO"%>
 <%@page import="cn.explink.util.*"%>
 
 <%

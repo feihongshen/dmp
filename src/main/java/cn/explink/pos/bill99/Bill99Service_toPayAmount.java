@@ -114,6 +114,26 @@ public class Bill99Service_toPayAmount extends Bill99Service {
 					+ rootnote.getTransaction_Body().getTerminal_id() + ";凭证号:" + rootnote.getTransaction_Body().getTrace_no();
 			cwbOrderService.posPay(billRespNote.getOrder_no(), BigDecimal.valueOf(rootnote.getTransaction_Body().getOrder_payable_amt()), billRespNote.getCwbOrder().getReceivablefee(),
 					billRespNote.getSystem_pay_type(), billRespNote.getPodremark(), trackinfo, deliverid, billRespNote.getDeliverstate(), "single", 0);
+			
+			//leoliao 2016-02-03
+			try{
+				//获取派送员所属机构(站点)-leoliao 2016-02-03
+				long deliverybranchid = 0;
+				User deliverUser = getUser(deliverid);
+				if(deliverUser != null){
+					deliverybranchid = deliverUser.getBranchid();
+				}
+				
+				//更新反馈表deliverybranchid字段值为派送员所属机构id
+				if(deliverid > 0 && deliverybranchid > 0){
+					deliveryStateDAO.updateDeliverybranchid(billRespNote.getOrder_no(), deliverybranchid);
+				}
+			}catch(Exception ex){
+				logger.error("Bill99Service_toPayAmount deliverid={} Exception={}", deliverid, ex.getMessage());
+				ex.printStackTrace(System.out);
+			}
+			//leoliao 2016-02-03 end
+			
 			posPayDAO.save_PosTradeDetailRecord(billRespNote.getOrder_no(), billRespNote.getPodremark(), rootnote.getTransaction_Body().getOrder_payable_amt(), deliverid,
 					billRespNote.getSystem_pay_type(), billRespNote.getTrackinfo(), "", 0, "", 1, 1, "single", PosEnum.Bill99.getMethod(), 0, "");
 			trackinfo += ";系统参考编号：" + rootnote.getTransaction_Body().getIdTxn() + ",[派件支付]更新数据成功,当前订单号：" + billRespNote.getOrder_no() + ",小件员：" + billRespNote.getDelivery_man();

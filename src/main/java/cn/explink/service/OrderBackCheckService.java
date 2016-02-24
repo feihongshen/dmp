@@ -63,7 +63,7 @@ public class OrderBackCheckService {
 	public List<OrderBackCheck> getOrderBackCheckList2(List<OrderBackCheck> orderbackList, List<Customer> customerList, List<Branch> branchList) throws ParseException {
 		if (orderbackList != null && !orderbackList.isEmpty()) {
 			for (OrderBackCheck o : orderbackList) {
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String strcre = o.getCreatetime();
 				Date date = sdf.parse(strcre);
 				o.setCreatetime(sdf.format(date));

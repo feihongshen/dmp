@@ -119,6 +119,27 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 							: DeliveryStateEnum.ShangMenHuanChengGong.getValue());
 					CwbOrder corder = cwbOrderService.posPay(cwbOrder.getCwb(), BigDecimal.valueOf(receivablefee_add), cwbOrder.getReceivablefee(), payway, respNote.getPodremark(),
 							respNote.getTrackinfo(), respNote.getDeliverid(), respNote.getDeliverstate(), acq_type, deliverystate);
+					
+					//leoliao 2016-02-03
+					long deliverid = respNote.getDeliverid();
+					try{
+						//获取派送员所属机构(站点)-leoliao 2016-02-03
+						long deliverybranchid = 0;							
+						User deliverUser = getUser(deliverid);
+						if(deliverUser != null){
+							deliverybranchid = deliverUser.getBranchid();
+						}
+						
+						//更新反馈表deliverybranchid字段值为派送员所属机构id
+						if(deliverid > 0 && deliverybranchid > 0){
+							deliveryStateDAO.updateDeliverybranchid(cwbOrder.getCwb(), deliverybranchid);
+						}
+					}catch(Exception ex){
+						logger.error("ChinaUmsService_toPayAmount deliverid={} Exception={}", deliverid, ex.getMessage());
+						ex.printStackTrace(System.out);
+					}
+					//leoliao 2016-02-03 end
+					
 					respNote.setResp_code(ChinaUmsExptMessageEnum.Success.getResp_code());
 					respNote.setResp_msg(ChinaUmsExptMessageEnum.Success.getResp_msg());
 					try {

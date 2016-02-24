@@ -1245,6 +1245,7 @@ public class CwbOrderPDAController {
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("beginemaildate", beginemaildate);
 		model.addAttribute("endemaildate", endemaildate);
+		model.addAttribute("username", username);
 		model.addAttribute("ulist", this.userDAO.getAllUser());
 		return "/control/list";
 	}
@@ -2465,7 +2466,7 @@ public class CwbOrderPDAController {
 		return PDAResponse;
 	}
 
-	// 供货商拒收返库
+	// 供货商拒收退货
 	private PDAResponse customrefuseback(String cwb, long requestbatchno, StringBuffer body, String statuscode, String errorinfo, String errorinfovediurl, HttpServletRequest request) {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);

@@ -6,7 +6,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.util.Page"%>
-<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 List<ExceptionCwb> eclist = (List<ExceptionCwb>)request.getAttribute("eclist");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
@@ -17,7 +16,8 @@ String endemaildate=request.getParameter("endemaildate")==null?DateTimeUtil.getN
 String beginemaildate=request.getParameter("beginemaildate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("beginemaildate");
 List<Exportmould> exportmouldlist =(List<Exportmould>) request.getAttribute("exportmouldlist");														
 Object cwbs =request.getAttribute("cwbs");		
-Object ids =request.getAttribute("ids");		
+Object ids =request.getAttribute("ids");	
+String username=request.getParameter("username")==null?"":request.getParameter("username");		
 String starttime=request.getAttribute("beginemaildate").toString();	
 String endtime=request.getAttribute("endemaildate").toString();	
 Long flowOrderTypeEnumid =(Long)request.getAttribute("flowOrderTypeEnumid");		
@@ -40,7 +40,7 @@ if(!strArrList.isEmpty())
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
-<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> 
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -331,7 +331,7 @@ function actionType(src)
     <tr>
     	<td>
     		工号查询
-    		<input name="username" id="username" class="input_text1" />
+    		<input name="username" id="username" class="input_text1" value ="<%=username %>"/>
     	</td>
     </tr>
     <tr>
