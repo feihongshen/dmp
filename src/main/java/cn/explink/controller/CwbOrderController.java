@@ -1537,7 +1537,7 @@ public class CwbOrderController {
 	 */
 	@RequestMapping("/auditGongHuoShangJuTui")
 	public @ResponseBody String auditGongHuoShangJuTui(Model model, HttpServletRequest request) {
-		this.logger.info("--审为供货商拒收返库开始--");
+		this.logger.info("--审为审为供货商拒收退货开始--");
 		String cwbremarks = request.getParameter("cwbs");
 		if (cwbremarks == null) {
 			return 0 + "_s_" + 0;
