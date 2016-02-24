@@ -9,10 +9,8 @@
 <%@page import="cn.explink.enumutil.CftAccountTypeEnum"%>
 <%@page import="cn.explink.enumutil.PayCerTypeEnum"%>
 <%@page import="net.sf.json.JSONObject"%>
-<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-//	List<AccountArea> accountAreaList = (List<AccountArea>) request.getAttribute("accontareaList");
 	List<Menu> menuPDAList = (List<Menu>) request.getAttribute("PDAmenu");
 	List<Branch> zhongzhuanList = (List<Branch>) request.getAttribute("zhongzhuanList");
 	List<Branch> tuihuoList = (List<Branch>) request.getAttribute("tuihuoList");
@@ -70,13 +68,7 @@
 			    <li><span>区/县：</span><input type="text" name="brancharea" id="brancharea"  maxlength="50"/></li>
 			    <li><span>乡镇/街道：</span><input type="text" name="branchstreet" id="branchstreet"  maxlength="50"/></li>
 			    <li><span>地址：</span><input type="text" name="branchaddress" id="branchaddress" maxlength="50"/></li>
-			   <%--  <li><span>所属区域：</span><select name="accountarea" id="accountarea">
-				    <option value ="0">请选择</option>
-				    <%for(AccountArea accountarea:accountAreaList){ %>
-				     <option value ="<%=accountarea.getAreaid()%>"><%=accountarea.getAreaname() %></option>
-				    <%} %>
-				  </select></li> --%>
-				 <li><span>邮箱：</span><input type="text" name="branchemail" id="branchemail" maxlength="50"/></li>
+				<li><span>邮箱：</span><input type="text" name="branchemail" id="branchemail" maxlength="50"/></li>
 				 <!-- <li><span>预付款后缴款设置：</span><input type="hidden" name="" class ="zhandian" /></li> -->
 				 
 				 
