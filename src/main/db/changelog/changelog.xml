@@ -8930,9 +8930,10 @@ CREATE TABLE `cs_complaint_accept` (
 		<sqlFile path="merge_all_db_at_last.sql" encoding="UTF-8" relativeToChangelogFile="true" />
 	</changeSet>
 	
-	<changeSet id="wanghao-2016-02-24-merge-004" author="wanghao">
+	<changeSet id="wanghao-2016-02-24" author="wanghao">
 <!-- 	生产库 的mysql版本为5.5.35-log,测试库的mysql版本为5.5.29-log。-->
-<!-- 	insert ignore语法被5.5支持。 -->
+<!-- 	insert ignore语法被5.5支持。 因为这两个表都是双主键,所以用ignore比较好-->
+<!--    如果是单主键的表,建议使用insert replace语句保证数据库表中是这个更新的数据 -->
 		<sql>
 			INSERT IGNORE INTO `express_set_cwb_allstate_control` (`cwbstate`, `toflowtype`) VALUES (5, 62);
 			INSERT IGNORE INTO `express_set_cwb_state_control` (`fromstate`, `tostate`) VALUES (27, 62);
