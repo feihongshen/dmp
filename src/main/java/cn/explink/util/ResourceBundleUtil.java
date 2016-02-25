@@ -72,4 +72,13 @@ public class ResourceBundleUtil {
 	
 	// 上传通联证书路径
 	public static final String FileTongLianPath = ResourceBundleUtil.rbint.getString("fileTongLianPath");
+	
+	//sql_server的数据库配置信息
+	public static final String sqlServerDrivers = ResourceBundleUtil.rbint.getString("sqlserver_drivers");
+	public static final String sqlServerExpressurlMaxconn = ResourceBundleUtil.rbint.getString("sqlserver_expressurl.maxconn");
+	public static final String sqlServerExpressurlUrl = ResourceBundleUtil.rbint.getString("sqlserver_expressurl.url");
+	public static final String sqlServerExpressurlUser = ResourceBundleUtil.rbint.getString("sqlserver_expressurl.user");
+	public static final String sqlServerExpressurlPassword = ResourceBundleUtil.rbint.getString("sqlserver_expressurl.password");
+	public static final String sqlServerExpressurlBatchNum = ResourceBundleUtil.rbint.getString("sqlserver_expressurl.batchNum");
+		
 }

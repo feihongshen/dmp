@@ -4,10 +4,13 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cn.explink.util.ResourceBundleUtil;
 
 import java.net.InetAddress;
 import java.net.InetAddress;
@@ -140,41 +143,33 @@ public class ConnectPool {
 	 * @param props
 	 *            连接池属性
 	 */
-	private void createPools(Properties props) {
-		Enumeration propNames = props.propertyNames();
-		while (propNames.hasMoreElements()) {
-			String name = (String) propNames.nextElement();
-			if (name.endsWith(".url")) {
+	private void createPools() {
 
-				String poolName = name.substring(0, name.lastIndexOf("."));
+		String poolName = "expressurl";
 
-				String url = props.getProperty(poolName + ".url"); // db.properties配置文件
-
-				logger.info("连接池URL是：" + url);
-				if (url == null) {
-					// log("没有为连接池" + poolName + "指定URL");
-					logger.info("没有为连接池" + poolName + "指定URL");
-					continue;
-				}
-				String user = props.getProperty(poolName + ".user"); // db.properties配置文件
-				String password = props.getProperty(poolName + ".password"); // db.properties配置文件
-				String maxconn = props.getProperty(poolName + ".maxconn", "100"); // db.properties配置文件
-
-				int max;
-				try {
-					max = Integer.valueOf(maxconn).intValue();
-				} catch (NumberFormatException e) {
-					// log("错误的最大连接数限制: " + maxconn + " .连接池: " + poolName);
-					logger.info("错误的最大连接数限制: " + maxconn + " .连接池: " + poolName + ", 错误: " + e);
-					max = 0;
-				}
-				DBConnectionPool pool = new DBConnectionPool(poolName, url, user, password, max);
-				pools.put(poolName, pool);
-				// log("成功创建连接池" + poolName);
-				logger.info("成功创建连接池" + poolName + " URL:" + url);
-
-			}
+		String url = ResourceBundleUtil.sqlServerExpressurlUrl;
+		logger.info("连接池URL是：" + url);
+		if (url == null) {
+			// log("没有为连接池" + poolName + "指定URL");
+			logger.info("没有为连接池" + poolName + "指定URL");
 		}
+		
+		String maxconn = ResourceBundleUtil.sqlServerExpressurlMaxconn;
+		int max;
+		try {
+			max = Integer.valueOf(maxconn).intValue();
+		} catch (NumberFormatException e) {
+			// log("错误的最大连接数限制: " + maxconn + " .连接池: " + poolName);
+			logger.info("错误的最大连接数限制: " + maxconn + " .连接池: " + poolName + ", 错误: " + e);
+			max = 0;
+		}
+		
+		String user = ResourceBundleUtil.sqlServerExpressurlUser;
+		String password = ResourceBundleUtil.sqlServerExpressurlPassword;
+		DBConnectionPool pool = new DBConnectionPool(poolName, url, user, password, max);
+		pools.put(poolName, pool);
+		// log("成功创建连接池" + poolName);
+		logger.info("成功创建连接池" + poolName + " URL:" + url);
 	}
 
 	// 登录IP地址判断
@@ -323,67 +318,13 @@ public class ConnectPool {
 	 * return outputText; }
 	 */
 
-	// 配置连接属性文件
-	private void createPools() {
-		String poolName = "expressurl";
-		String url = "jdbc:jtds:sqlserver://localhost:1433/expressdata2";
-		String user = "sa";
-		String password = "";
-		String maxconn = "20";
-		int max;
-		try {
-			max = Integer.valueOf(maxconn).intValue();
-		} catch (NumberFormatException e) {
-			logger.info("错误的最大连接数限制: " + maxconn + " .连接池: " + poolName + ", 错误: " + e);
-			max = 0;
-		}
-		DBConnectionPool pool = new DBConnectionPool(poolName, url, user, password, max);
-		pools.put(poolName, pool);
-		logger.info("成功创建连接池" + poolName);
-	}
-
-	// 配置驱动程序
-	private void loadDrivers() {
-
-		String driverClasses = "net.sourceforge.jtds.jdbc.Driver";
-		String driverClassName = driverClasses;
-		try {
-			Driver driver = (Driver) Class.forName(driverClassName).newInstance();
-			DriverManager.registerDriver(driver);
-			drivers.addElement(driver);
-			logger.info(driverClassName);
-			logger.info("成功注册JDBC驱动程序" + driverClassName);
-		} catch (Exception e) {
-			logger.info("无法注册JDBC驱动程序: " + driverClassName + ", 错误: " + e);
-		}
-
-	}
-
 	/**
 	 * 读取属性完成初始化
 	 */
 	private void init() {
 		try {
-			// Properties p = new Properties();
-			// InputStream is = new FileInputStream(getClass().getResource("/" +
-			// "db.properties").getPath());
-			// System.out.println("configs file local at " +
-			// getClass().getResource("/" + "db.properties").getPath());
-			InputStream is = (getClass().getClassLoader().getResourceAsStream("/" + "dbsqlserver.properties"));
-			logger.info("configs file local at " + getClass().getClassLoader().getResourceAsStream("/" + "dbsqlserver.properties"));
-
-			Properties dbProps = new Properties();
-			try {
-				dbProps.load(is);
-			} catch (Exception e) {
-				System.err.println("不能读取属性文件. " + "请确保dbsqlserver.properties在CLASSPATH指定的路径中");
-				return;
-			}
-
-			loadDrivers(dbProps); // 使用db.properties
-			createPools(dbProps); // 使用db.properties
-			// loadDrivers();
-			// createPools();
+			loadDrivers(); 
+			createPools();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -392,8 +333,8 @@ public class ConnectPool {
 	/**
 	 * 171 * 装载和注册所有JDBC驱动程序 172 * 173 * @param props 属性 174
 	 */
-	private void loadDrivers(Properties props) {
-		String driverClasses = props.getProperty("drivers"); // db.properties配置文件
+	private void loadDrivers() {
+		String driverClasses = ResourceBundleUtil.sqlServerDrivers;
 
 		StringTokenizer st = new StringTokenizer(driverClasses);
 		while (st.hasMoreElements()) {

@@ -14,6 +14,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.explink.util.ResourceBundleUtil;
+
 /**
  * 数据库通用操作类 查询select方法,参数为sql和参数para[],返回list 更新update方法,参数为sql和参数para[],返回int
  * 数据库连接,sql操作,数据库连接释放全部在此类中完成
@@ -44,7 +46,6 @@ public class DBOperator {
 	private ConnectPool connpool = null;
 	private String urlname = "";
 	private String showflag = "1";
-	private static Configuration config;
 	private java.sql.CallableStatement callstm = null;
 	private int batchnum;
 
@@ -64,8 +65,7 @@ public class DBOperator {
 	private void initialize(String urlname) {
 		try {
 			connpool = ConnectPool.getInstance();
-			conn = connpool.getConnection(urlname); // urlname为db.properties文件中.url前的名称
-			this.config = Configuration.getInstance("dbsqlserver.properties");
+			conn = connpool.getConnection(urlname); 
 
 		} catch (Exception e) {
 			logger.error("初始化sqlserver", e.getMessage());
@@ -705,7 +705,7 @@ public class DBOperator {
 					}
 				}
 				prep.addBatch();
-				this.batchnum = Integer.parseInt(config.getValue("BATCHNUM"));
+				this.batchnum = Integer.parseInt(ResourceBundleUtil.sqlServerExpressurlBatchNum);
 				if (batchnum > 0) { // pst+batch
 					if (p % batchnum == 0) { // 可以设置不同的大小；如50，100，500，1000等等
 						long startTime = System.currentTimeMillis();
