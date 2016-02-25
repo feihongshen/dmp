@@ -872,10 +872,12 @@ public class JobUtil {
 
 		} catch (Exception e) {
 			this.logger.error("中兴云购ERP定时器异常", e);
+		} finally{
+			JobUtil.threadMap.put("zhongxingerp", 0);
 		}
 		long endtime = System.currentTimeMillis();
 		this.logger.info("执行了[获取中兴云购ERP订单]定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
-		JobUtil.threadMap.put("zhongxingerp", 0);
+		//JobUtil.threadMap.put("zhongxingerp", 0);
 	}
 
 	/**
@@ -971,8 +973,13 @@ public class JobUtil {
 			return;
 		}
 		JobUtil.threadMap.put("koukuan", 1);
-		this.accountDeductRecordService.updateJobKouKuan();
-		JobUtil.threadMap.put("koukuan", 0);
+		try{
+			this.accountDeductRecordService.updateJobKouKuan();
+		}catch(Exception e){
+			this.logger.error("执行扣款结算自动到货定时器异常", e);
+		}finally{
+			JobUtil.threadMap.put("koukuan", 0);
+		}
 		this.logger.info("扣款结算自动到货执行完毕！");
 	}
 
@@ -1468,7 +1475,7 @@ public class JobUtil {
 	 * 执行获取vipshop临时表插入主表log
 	 */
 	public void getVipShopCwbTempInsert_Task() {
-
+		
 		if (JobUtil.threadMap.get("vipshoptimmer") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop");
 			return;
