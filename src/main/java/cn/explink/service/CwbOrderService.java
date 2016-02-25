@@ -6302,6 +6302,10 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_DAO_HUO);
 			}
 		} else {
+			//针对一票多件 ，在"客户收退货确认"那里做了"拒收退货"操作后，订单主表的扫描件数被修改成1了，导致"退客户拒收返库"扫描操作时报异常
+			if(co.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue()){
+				co.setScannum(co.getSendcarnum());
+			}
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleCustomrefuseback(user, cwb, scancwb, requestbatchno, comment, co, flowOrderTypeEnum, isypdjusetranscwb, true);
 		}
