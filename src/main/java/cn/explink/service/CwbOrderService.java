@@ -1720,6 +1720,7 @@ public class CwbOrderService extends BaseOrderService {
 				if (isypdjusetranscwb == 1) {
 					if (!newMPSOrder) {
 						this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
+						this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, co.getNextbranchid());
 					}
 				}
 				if (newMPSOrder) {
