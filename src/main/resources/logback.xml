@@ -33,7 +33,7 @@
 
 	<!-- trace log --> 
 	<appender name="MercuryTraceFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
-		<file>/apps/logs/dmp/trace/logs/trace-log.out</file> 
+		<file>/apps/logs/dmp/${dmp.company}/trace/logs/trace-log.out</file> 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
 			<!-- daily rollover --> 
 			<fileNamePattern>/apps/logs/dmp/trace/logs/trace-log-%i.out</fileNamePattern> 
@@ -57,10 +57,10 @@
 
 	
 	<appender name="MercuryLogFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
-		<file>/apps/logs/dmp/trace/logs/log-log.out</file> 
+		<file>/apps/logs/dmp/${dmp.company}/trace/logs/log-log.out</file> 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
 			<!-- daily rollover --> 
-			<fileNamePattern>/apps/logs/dmp/trace/logs/log-log-%i.out</fileNamePattern> 
+			<fileNamePattern>/apps/logs/dmp/${dmp.company}/trace/logs/log-log-%i.out</fileNamePattern> 
 			<!-- keep 10G' worth of history --> 
 			<minIndex>1</minIndex> 
 			<maxIndex>10</maxIndex> 
@@ -80,10 +80,10 @@
 	</logger> 
 
 	<appender name="MercuryMetricFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
-		<file>/apps/logs/dmp/trace/logs/metric-log.out</file> 
+		<file>/apps/logs/dmp/${dmp.company}/trace/logs/metric-log.out</file> 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
 			<!-- daily rollover --> 
-			<fileNamePattern>/apps/logs/dmp/trace/logs/metric-log-%i.out</fileNamePattern> 
+			<fileNamePattern>/apps/logs/dmp/${dmp.company}/trace/logs/metric-log-%i.out</fileNamePattern> 
 			<!-- keep 10G' worth of history --> 
 			<minIndex>1</minIndex> 
 			<maxIndex>10</maxIndex> 
