@@ -5231,9 +5231,13 @@ public class CwbOrderService extends BaseOrderService {
 					this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
 				}
 			}else{//当录入或修改快递单号为空时
-				this.transCwbDao.deleteTranscwb(cwb);
-				this.transCwbDao.saveTranscwb(cwb,cwb);
-				this.cwbDAO.saveTranscwbByCwb("",cwb);
+				if(!"".equals(co.getTranscwb())){
+					this.transCwbDao.deleteTranscwb(cwb);
+					this.transCwbDao.saveTranscwb(cwb,cwb);
+					this.cwbDAO.saveTranscwbByCwb("",cwb);
+					this.cwbDAO.saveBackcarnum(1, cwb);
+					this.cwbDAO.saveSendcarnum(1, cwb);
+				}
 			}
 		}
 
@@ -6287,6 +6291,8 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
+			//针对一票多件多个运单号的订单，如果一个运单号同样的机构下同样的环节重复扫描的验证
+			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), user.getBranchid(), 0, 0, ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 		}
 		if ((co.getCurrentbranchid() == user.getBranchid()) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 			if (co.getScannum() < 1) {
