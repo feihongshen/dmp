@@ -8939,4 +8939,10 @@ CREATE TABLE `cs_complaint_accept` (
 			INSERT IGNORE INTO `express_set_cwb_state_control` (`fromstate`, `tostate`) VALUES (27, 62);
 		</sql>
 	</changeSet>
+	
+	<changeSet id="zhouhuan-2016-02-25" author="zhouhuan">
+		<sql>
+			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `vipclub` INT(2) DEFAULT '0' ;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
