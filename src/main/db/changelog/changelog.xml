@@ -8945,4 +8945,9 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `express_ops_cwb_detail` ADD COLUMN `vipclub` INT(2) DEFAULT '0' ;
 		</sql>
 	</changeSet>
+	<changeSet id="zhouhuan-2016-02-25-2" author="zhouhuan">
+		<sql>
+			ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD COLUMN `vipclub` INT(2) DEFAULT '0' ;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
