@@ -28,9 +28,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.domain.Bale;
-import cn.explink.domain.BaleView;
 import cn.explink.domain.Branch;
-import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BaleStateEnum;
@@ -218,7 +216,7 @@ public class BaleController {
 				} else {
 					deliverybranchname = this.branchDAO.getBranchByBranchid(deliverybranchid).getBranchname();
 				}
-				if (confirmflag == 0) {
+				if (confirmflag == 0 && flag != 4) {//退供货商出库不校验下一站
 					if (co != null) {
 						if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
 							if ((co != null) && (co.getNextbranchid() != branchid) && (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())) {
@@ -230,34 +228,6 @@ public class BaleController {
 							}
 						}
 					}
-					/*
-					 * if((co != null)&&(co.getFlowordertype() !=
-					 * FlowOrderTypeEnum.YiShenHe.getValue())){
-					 * if((co.getFlowordertype() !=
-					 * FlowOrderTypeEnum.DaoRuShuJu.getValue())&&(branchid !=
-					 * co.getDeliverybranchid())&&(co.getNextbranchid() !=
-					 * branchid)){ throw new CwbException(cwb,
-					 * FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),
-					 * ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,
-					 * deliverybranchname); } }else{ if ((co != null) &&
-					 * (co.getNextbranchid() != branchid) &&
-					 * (co.getFlowordertype() !=
-					 * FlowOrderTypeEnum.DaoRuShuJu.getValue())) { throw new
-					 * CwbException(cwb,
-					 * FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),
-					 * ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,
-					 * nextbranchname); } }
-					 *//*
-						 * else if ((co != null) && ((co.getFlowordertype() !=
-						 * FlowOrderTypeEnum
-						 * .DaoRuShuJu.getValue())||(co.getFlowordertype() !=
-						 * FlowOrderTypeEnum.TuiHuoChuZhan.getValue())) &&
-						 * (branchid != co.getDeliverybranchid())) { throw new
-						 * CwbException(cwb,
-						 * FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),
-						 * ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI,
-						 * deliverybranchname); }
-						 */
 				}
 			}
 
@@ -272,7 +242,6 @@ public class BaleController {
 				this.baleService.baleaddcwbToCustomerCheck(this.getSessionUser(), baleno, scancwb, this.getSessionUser().getBranchid(), branchid);
 			} else if(flag == 5){// 中转库出库
 				this.baleService.baleaddcwbZhongzhuanChuKuCheck(this.getSessionUser(), baleno.trim(), scancwb.trim(), confirmflag == 1, this.getSessionUser().getBranchid(), branchid);
-
 			}
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
