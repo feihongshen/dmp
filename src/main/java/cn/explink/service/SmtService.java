@@ -1,5 +1,7 @@
 package cn.explink.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
@@ -30,17 +32,37 @@ public class SmtService {
 
 	@Transactional
 	public JSONObject smtOrderOutArea(String[] cwbs, long curBranchId, long curUserId) {
-		JSONObject errorObj = this.validateOutArea(cwbs);
+		//Added by leoliao at 20160218 解决上报超区之后订单表下一站为null的问题
+		if(cwbs == null || cwbs.length <= 0){
+			JSONObject obj = new JSONObject();
+			obj.put("successed", false);
+			obj.put("msg", "订单号为空");
+			return obj;
+		}
+			
+		List<String> listCwb = new ArrayList<String>();
+		for(String cwb : cwbs){			
+			if(cwb == null || cwb.trim().equals("")){
+				continue;
+			}
+			
+			listCwb.add(cwb.trim());
+		}
+		
+		String[] arrCwb = listCwb.toArray(new String[listCwb.size()]);
+		//Added by leoliao at 20160218 end
+		
+		JSONObject errorObj = this.validateOutArea(arrCwb);
 		if (!errorObj.getBoolean("successed")) {
 			return errorObj;
 		}
 		// 领货的数据可以进行分站到货.
-		Map<String, Long> branchMap = this.getCwbDAO().getImprotDataBranchMap(cwbs);
+		Map<String, Long> branchMap = this.getCwbDAO().getImprotDataBranchMap(arrCwb);
 		// 更新订单表设定订单状态为超区.
-		this.getCwbDAO().updateOrderOutAreaStatus(cwbs, branchMap);
+		this.getCwbDAO().updateOrderOutAreaStatus(arrCwb, branchMap);
 		// 更新订单流程表加入超区流程.
 		// 存在多次超区可能需要修改超区流程的isnow = 1.
-		this.getOrderFlowDAO().batchOutArea(cwbs, curBranchId, curUserId, branchMap);
+		this.getOrderFlowDAO().batchOutArea(arrCwb, curBranchId, curUserId, branchMap);
 
 		return errorObj;
 	}
