@@ -33,7 +33,7 @@
 
 	<!-- trace log --> 
 	<appender name="MercuryTraceFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
-		<file>/apps/logs/dmp/${dmp.company}/trace/logs/trace-log.out</file> 
+		<file>/apps/logs/dmp/${company}/trace/logs/trace-log.out</file> 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
 			<!-- daily rollover --> 
 			<fileNamePattern>/apps/logs/dmp/trace/logs/trace-log-%i.out</fileNamePattern> 
@@ -57,10 +57,10 @@
 
 	
 	<appender name="MercuryLogFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
-		<file>/apps/logs/dmp/${dmp.company}/trace/logs/log-log.out</file> 
+		<file>/apps/logs/dmp/${company}/trace/logs/log-log.out</file> 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
 			<!-- daily rollover --> 
-			<fileNamePattern>/apps/logs/dmp/${dmp.company}/trace/logs/log-log-%i.out</fileNamePattern> 
+			<fileNamePattern>/apps/logs/dmp/${company}/trace/logs/log-log-%i.out</fileNamePattern> 
 			<!-- keep 10G' worth of history --> 
 			<minIndex>1</minIndex> 
 			<maxIndex>10</maxIndex> 
@@ -78,12 +78,79 @@
 		<level value="INFO" /> 
 		<appender-ref ref="MercuryLogFileAppender" /> 
 	</logger> 
-
-	<appender name="MercuryMetricFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
-		<file>/apps/logs/dmp/${dmp.company}/trace/logs/metric-log.out</file> 
+	
+	<!-- 接口日志（dmp 特有）开始 -->
+	<appender name="tpsLog" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+		<file>/apps/logs/dmp/${company}/trace/logs/log-log-tps.out</file> 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
 			<!-- daily rollover --> 
-			<fileNamePattern>/apps/logs/dmp/${dmp.company}/trace/logs/metric-log-%i.out</fileNamePattern> 
+			<fileNamePattern>/apps/logs/dmp/${company}/trace/logs/log-log-tps-%i.out</fileNamePattern> 
+			<!-- keep 10G' worth of history --> 
+			<minIndex>1</minIndex> 
+			<maxIndex>10</maxIndex> 
+		</rollingPolicy> 
+		<append>true</append> 
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"> 
+			<maxFileSize>1GB</maxFileSize> 
+		</triggeringPolicy> 
+		<encoder> 
+			<pattern>%msg%n</pattern> 
+		</encoder> 
+	</appender> 
+	<appender name="autoLog" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+		<file>/apps/logs/dmp/${company}/trace/logs/log-log-auto.out</file> 
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
+			<!-- daily rollover --> 
+			<fileNamePattern>/apps/logs/dmp/${company}/trace/logs/log-log-auto-%i.out</fileNamePattern> 
+			<!-- keep 10G' worth of history --> 
+			<minIndex>1</minIndex> 
+			<maxIndex>10</maxIndex> 
+		</rollingPolicy> 
+		<append>true</append> 
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"> 
+			<maxFileSize>1GB</maxFileSize> 
+		</triggeringPolicy> 
+		<encoder> 
+			<pattern>%msg%n</pattern> 
+		</encoder> 
+	</appender> 
+	<logger name="cn.explink.b2c.tps" level="INFO" additivity="false">
+		<appender-ref ref="tpsLog"/> 
+	</logger>
+	<logger name="cn.explink.b2c.auto" level="INFO" additivity="false">
+		<appender-ref ref="autoLog"/> 
+	</logger>
+	<!-- 接口日志（dmp 特有）开始 -->
+	
+    <!-- 核心类日志（dmp 特有）开始 -->
+	<appender name="logfileEditCwb" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+		<file>/apps/logs/dmp/${company}/trace/logs/log-log-cwb.out</file> 
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
+			<!-- daily rollover --> 
+			<fileNamePattern>/apps/logs/dmp/${company}/trace/logs/log-log-cwb-%i.out</fileNamePattern> 
+			<!-- keep 10G' worth of history --> 
+			<minIndex>1</minIndex> 
+			<maxIndex>10</maxIndex> 
+		</rollingPolicy> 
+		<append>true</append> 
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"> 
+			<maxFileSize>1GB</maxFileSize> 
+		</triggeringPolicy> 
+		<encoder> 
+			<pattern>%msg%n</pattern> 
+		</encoder> 
+	</appender> 
+	
+	<logger name="cn.explink.service.EditCwbService" level="DEBUG" additivity="false">
+		<appender-ref ref="logfileEditCwb"/> 
+	</logger>
+	<!-- 核心类日志（dmp 特有）结束 -->
+	
+	<appender name="MercuryMetricFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+		<file>/apps/logs/dmp/${company}/trace/logs/metric-log.out</file> 
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
+			<!-- daily rollover --> 
+			<fileNamePattern>/apps/logs/dmp/${company}/trace/logs/metric-log-%i.out</fileNamePattern> 
 			<!-- keep 10G' worth of history --> 
 			<minIndex>1</minIndex> 
 			<maxIndex>10</maxIndex> 
