@@ -36,7 +36,7 @@
 		<file>/apps/logs/dmp/${company}/trace/logs/trace-log.out</file> 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"> 
 			<!-- daily rollover --> 
-			<fileNamePattern>/apps/logs/dmp/trace/logs/trace-log-%i.out</fileNamePattern> 
+			<fileNamePattern>/apps/logs/dmp/${company}/trace/logs/trace-log-%i.out</fileNamePattern> 
 			<!-- keep 10 G' worth of history --> 
 			<minIndex>1</minIndex> 
 			<maxIndex>10</maxIndex> 
