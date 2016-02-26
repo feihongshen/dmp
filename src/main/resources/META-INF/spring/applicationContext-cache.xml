@@ -21,9 +21,9 @@
 		p:connectionFactory-ref="jedisConnectionFactory" />
 	<bean id="cachePrefix"
 		class="org.springframework.data.redis.cache.DefaultRedisCachePrefix">
-		<constructor-arg value="${redis.prefix}" />
+		<constructor-arg value=":${redis.prefix}:${company}:" />
 	</bean>
-
+	
 	<!-- spring自己的换管理器，这里定义了两个缓存位置名称 ，既注解中的value -->
 	<bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
 		<constructor-arg index="0" ref="redisTemplate"></constructor-arg>
