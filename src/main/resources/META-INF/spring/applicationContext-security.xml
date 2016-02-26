@@ -143,7 +143,9 @@
 		<intercept-url pattern="/ScaleApplet.jar" access="permitAll" />
 		<intercept-url pattern="/ScaleApplet.cert" access="permitAll" />
 		<intercept-url pattern="/ScaleApplet.store" access="permitAll" />
-
+				
+		<intercept-url pattern="/health_check.jsp" access="permitAll" />
+				
 		<intercept-url pattern="/**" access="isAuthenticated()" />
 		<custom-filter before="FORM_LOGIN_FILTER" ref="loginFilter" />
 		<custom-filter position="FORM_LOGIN_FILTER" ref="PDALoginFilter" />
