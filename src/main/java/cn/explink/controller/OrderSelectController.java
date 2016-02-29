@@ -712,6 +712,7 @@ public class OrderSelectController {
 		} else {
 			List<OrderFlow> datalist = this.orderFlowDAO.getOrderFlowByCwb(cwb);
 			for (OrderFlow orderFlowAll : datalist) {
+//				System.out.println(orderFlowAll.getCredate()+"    "+orderFlowAll.getCwb()+"   "+orderFlowAll.getFlowordertype());
 				AorderFlowView a = new AorderFlowView();
 				a.setId(orderFlowAll.getFloworderid());// 用于排序同时操作的相同时间的显示顺序
 				a.setTime(orderFlowAll.getCredate().toString());
@@ -1384,6 +1385,15 @@ public class OrderSelectController {
 				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>异常匹配已处理；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
 						comment);
 			}
+			
+//			-----------------------新增了    供货商拒收退货     这个状态,在查询时补入这个状态。
+//			解决bug:历史遗留bug：客服退货出站审核为退供货商失败，查询订单是无日志记录和且状态还是维持退供货商出库的
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue()) {
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>退供应商拒收退货；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
+						comment);
+			}
+//			-----------------------新增       退供应商拒收退货    状态        结束	
+			
 			// ==========================add begin by
 			// wangzhiyu===========================================
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.YunDanLuRu.getValue()) {

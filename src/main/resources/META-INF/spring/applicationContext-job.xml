@@ -60,7 +60,7 @@
 				<ref bean="doTime16" />
 				<ref bean="doTime17" />
 				<ref bean="doTime_epaiAPI" />
-				<ref bean="doTime_sysInit" />
+				<!-- <ref bean="doTime_sysInit" />-->
 				<ref bean="doTime_zhongxingerp" />
 				<ref bean="doTime_mskbranchsyn" />
 				<ref bean="doTime_happigou23" />
@@ -415,7 +415,7 @@
 		</property>
 	</bean>
 
-
+<!-- leoliao 2016-02-26 暂停手动初始化任务，避免订单重复
 	<bean id="doTime_sysInit" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">
 		<property name="jobDetail">
@@ -435,6 +435,7 @@
 			<value>updateBatcnitialThreadMap</value>
 		</property>
 	</bean>
+-->
 
 	<bean id="doTime_zhongxingerp" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">

@@ -1198,7 +1198,6 @@ function checkwithdiferenttype(type){
 						<td width="100" align="center"  valign="middle"><%=view.getDutypersonname() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwbstatename() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getCwbPrice() %></td>
-						<td width="100" align="center" valign="middle"><%=(view.getPunishInsideprice()==null||(view.getGoodpriceremark().length()>0&&view.getQitapriceremark().length()>0))?"":view.getPunishInsideprice() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getShowPunishInsideprice() %></td>
 						<td width="100" align="center" valign="middle"><%=view.getPunishbigsortname() ==null ? "" : view.getPunishbigsortname()%></td>
 						<td width="100" align="center" valign="middle"><%=view.getPunishsmallsortname() ==null ? "" : view.getPunishsmallsortname()%></td>

@@ -231,4 +231,10 @@ public class TranscwbOrderFlowDAO {
 		}
 		return result;
 	}
+	
+	public long getTranscwbOrderFlowCount(String cwb, long flowordertype,  long nextbranchid) {
+		String sql = "SELECT COUNT(1) FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND  floworderdetail LIKE '%\"nextbranchid\":" + nextbranchid
+				+ ",%' AND isnow=1 ";
+		return jdbcTemplate.queryForLong(sql, cwb, flowordertype);
+	}
 }

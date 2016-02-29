@@ -205,13 +205,15 @@ public class KfzdOrderService extends BaseOrderService{
 	
 	private void translateYpdjLessTranscwb(List<JSONObject> lessList){
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
-		
 		for (JSONObject obj : lessList) {
 			String transcwb = "";
+			String explink = "explink";
 			if (obj.getString("transcwb").indexOf("explink") > -1) {
-
+				transcwb = obj.getString("transcwb").substring(explink.length() + 1, obj.getString("transcwb").length());
 			} else if (obj.getString("transcwb").indexOf("havetranscwb") > -1) {
 				transcwb = obj.getString("transcwb").split("_")[1];
+			} else {
+				transcwb = obj.getString("transcwb");
 			}
 			obj.put("transcwb", transcwb);
 			obj.put("customername", this.dataStatisticsService.getQueryCustomerName(customerList, obj.getLong("customerid")));

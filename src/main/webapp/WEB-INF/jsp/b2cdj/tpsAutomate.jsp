@@ -15,7 +15,6 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 
 <script type="text/javascript">
 
-
 </script>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -24,12 +23,19 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg" style="width: 500px;">
 		<h1><div id="close_box" onclick="closeBox()"></div>TPS自动化对接设置</h1>
-		<form id="vipshop_save_Form" name="vipshop_save_Form" action="<%=request.getContextPath()%>/vipshop/saveVipShop/${joint_num}" method="post">
+	    <form id="vipshop_save_Form" name="vipshop_save_Form"  onSubmit="if(check_liebo()){submitSaveForm(this);}return false;" action="<%=request.getContextPath()%>/vipshop/saveVipShop/${joint_num}" method="post">
 	
 		<input type ="hidden" id="forward_hours" name ="forward_hours" value="0"  maxlength="2">
 <div id="box_form">
 				<ul>
 					<%if(vipshop != null){ %>
+					    <li style="display: none;"><span>干线回单重发天数：</span>
+							<input type ="text" id="daysno" name ="daysno" value="<%=vipshop.getDaysno() %>"  maxlength="300">
+						</li>
+						<li style="display: none;"><span>限制货态重发次数：</span>
+							<input type ="text" id="selb2cnum" name ="selb2cnum" value="<%=vipshop.getSelb2cnum() %>"  maxlength="300">
+						</li>
+						
 						<li style="display: none;"><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no" value="<%=vipshop.getShipper_no() %>"  maxlength="300">
 						</li>
@@ -48,6 +54,11 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li style="display: none;"><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL" value="<%=vipshop.getSendCwb_URL() %>"  maxlength="300">
 						</li>
+						
+						<li style="display: none;"><span>集包运单推送URL：</span>
+							<input type ="text" id="transflowUrl" name ="transflowUrl" value="<%=vipshop.getTransflowUrl()%>"  maxlength="300">
+						</li>
+						
 						<li style="display: none;"><span>当前SEQ：</span>
 							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')"  value="0"  maxlength="300">
 						</li>
@@ -86,6 +97,14 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==0){%>checked<%}%>  >关闭
 							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==1){%>checked<%}%>  >开启（订单出仓时间作为标识,开启必须关闭托运模式）
 						</li>
+						
+						</li>
+						
+						<li style="display: none;"><span>是否开启集包：</span>
+							<input type ="radio" id="openmpspackageflag1" name ="openmpspackageflag" value="0" <%if(vipshop.getOpenmpspackageflag()==0){%>checked<%}%>  >关闭
+							<input type ="radio" id="openmpspackageflag2" name ="openmpspackageflag" value="1" <%if(vipshop.getOpenmpspackageflag()==1){%>checked<%}%>  >开启
+						</li>
+						
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
 								<option value="0">请选择库房</option>
@@ -99,6 +118,13 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	 						<input type ="password" id="password" name ="password"  maxlength="30"    size="20"> 
 						</li>
 					<%}else{ %>
+						<li style="display: none;"><span>干线回单重发天数：</span>
+							<input type ="text" id="daysno" name ="daysno"  maxlength="300">
+						</li>
+						<li style="display: none;"><span>限制货态重发次数：</span>
+							<input type ="text" id="selb2cnum" name ="selb2cnum"   maxlength="300">
+						</li>	
+					
 						<li style="display: none;"><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no"  maxlength="300">
 						</li>
@@ -117,6 +143,11 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li style="display: none;"><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL"  maxlength="300"/>
 						</li>
+						
+						<li style="display: none;"><span>集包运单推送URL：</span>
+							<input type ="text" id="transflowUrl" name ="transflowUrl" value=""  maxlength="300">
+						</li>
+						
 						<li style="display: none;"><span>当前SEQ：</span>
 							<input type ="text" id="vipshop_seq" name ="vipshop_seq" onblur="validate('vipshop_seq')" value="0"  maxlength="300">
 						</li>
@@ -155,6 +186,11 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>生成批次标识：</span>
 							<input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0" checked >关闭
 							<input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1"  >开启（订单生成时间作为标识）
+						</li>
+						
+						<li style="display: none;"><span>是否开启集包：</span>
+							<input type ="radio" id="openmpspackageflag1" name ="openmpspackageflag" value="0" checked >关闭
+							<input type ="radio" id="openmpspackageflag2" name ="openmpspackageflag" value="1"  >开启
 						</li>
 						
 						<li><span>订单导入库房：</span>

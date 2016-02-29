@@ -131,10 +131,25 @@ public class OrderbackRecordDao {
 	
 	public OrderbackRecord getOBRecord(String cwb){
 		try{
-			String sql = "select * from express_ops_orderback_record where cwb=? order by id desc limit 1";
+			String sql = "select * from express_ops_orderback_record where cwb=? and shenhestate!=0 order by id desc limit 1";
 			return this.jdbcTemplate.queryForObject(sql, new OrderbackRecordMapper(), cwb);
 		}catch(Exception e){
-			e.printStackTrace();
+//			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * 供货商拒收返库校验条件
+	 * @param cwb
+	 * @return
+	 */
+	public OrderbackRecord getOBRecordForGongYingShangJuShouFanKu(String cwb){
+		try{
+			String sql = "select * from express_ops_orderback_record where cwb=? and shenhestate=0 order by id desc limit 1";
+			return this.jdbcTemplate.queryForObject(sql, new OrderbackRecordMapper(), cwb);
+		}catch(Exception e){
+//			e.printStackTrace();
 			return null;
 		}
 	}

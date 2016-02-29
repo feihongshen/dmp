@@ -298,6 +298,8 @@ public class TPSGetOrderDataService {
 		//orderMap.put("", order.getOrgCode());//提货站点编码
 		cwbOrder.setCustomerid(Long.valueOf(vipshop.getCustomerids())); //客户id
 		//cwbOrder.setStartbranchid(vipshop.getWarehouseid());
+		//团购标识
+		cwbOrder.setVipclub(order.getVipClub().equals("3")?1:0);
 				
 	}
 	
@@ -554,7 +556,7 @@ public class TPSGetOrderDataService {
 			String order_sn = order.getOrderSn();
 			cust_order_no = order.getCustOrderNo();
 			String transport_day = order.getTransportDay();
-			String add_time = this.toDateForm(order.getAddTime());// 记录生成生成时间
+			String add_time = this.toDateForm(order.getAddTime());// 出仓时间
 			Integer total_pack = order.getTotalPack(); // 新增箱数
 			String cargotype = order.getTransportType();
 			/**
@@ -638,6 +640,8 @@ public class TPSGetOrderDataService {
 			orderDTO.setRemark3(orderDTO.getRemark3()==null?"":orderDTO.getRemark3());
 			orderDTO.setRemark4(orderDTO.getRemark4()==null?"":orderDTO.getRemark4());
 			orderDTO.setIsaudit(orderDTO.getIsaudit());
+			//团购标识
+			orderDTO.setVipclub(order.getVipClub().equals("3")?1:0);
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new

@@ -162,29 +162,27 @@ CHANGE COLUMN `remark4` `remark4` varchar(1000) COLLATE utf8_bin DEFAULT NULL;
 
 ALTER TABLE `express_ops_delivery_state` CHANGE COLUMN `sign_man_phone` `sign_man_phone` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '代签收人手机';
 
-ALTER TABLE `express_ops_penalizeout_detail` CHANGE COLUMN `penalizeOutcontent` `penalizeOutcontent` varchar(500) DEFAULT '' COMMENT '赔付说明';
-
-ALTER TABLE `express_ops_penalizeout_detail` CHANGE COLUMN `cancelcontent` `cancelcontent` varchar(500) DEFAULT '' COMMENT '撤销说明';
+ALTER TABLE `express_ops_penalizeout_detail` 
+CHANGE COLUMN `penalizeOutcontent` `penalizeOutcontent` varchar(500) DEFAULT '' COMMENT '赔付说明', 
+CHANGE COLUMN `cancelcontent` `cancelcontent` varchar(500) DEFAULT '' COMMENT '撤销说明';
 
 ALTER TABLE `express_set_penalizetype` CHANGE COLUMN `text` `text` varchar(500) DEFAULT '' COMMENT '赔付说明';
 
-ALTER TABLE `express_set_smsconfigmodel` CHANGE COLUMN `branchids` `branchids` varchar(5000) DEFAULT '';
-
-ALTER TABLE `express_set_smsconfigmodel` CHANGE COLUMN `customerids` `customerids` varchar(5000) DEFAULT '';
+ALTER TABLE `express_set_smsconfigmodel` 
+CHANGE COLUMN `branchids` `branchids` varchar(5000) DEFAULT '', 
+CHANGE COLUMN `customerids` `customerids` varchar(5000) DEFAULT '';
 
 ALTER TABLE `fn_order_recharge` CHANGE COLUMN `record_bill_id` `record_bill_id` decimal(20,0) DEFAULT '0' COMMENT '调整单id';
 
 update `jg_person` set `AGE` = 0 where `AGE` = null;
-ALTER TABLE `jg_person` CHANGE COLUMN `AGE` `AGE` int(11) NOT NULL;
-
 update `jg_person` set `CREATEDT` = '0000-00-00 00:00:00' where CREATEDT = null;
-ALTER TABLE `jg_person` CHANGE COLUMN `CREATEDT` `CREATEDT` datetime NOT NULL;
-
 update `jg_person` set `NAME` = '' where `NAME` = null;
-ALTER TABLE `jg_person` CHANGE COLUMN `NAME` `NAME` varchar(255) NOT NULL;
-
 update `jg_person` set `SALARY` = 0 where `SALARY` = null;
-ALTER TABLE `jg_person` CHANGE COLUMN `SALARY` `SALARY` decimal(19,2) NOT NULL;
+ALTER TABLE `jg_person` 
+CHANGE COLUMN `AGE` `AGE` int(11) NOT NULL, 
+CHANGE COLUMN `CREATEDT` `CREATEDT` datetime NOT NULL, 
+CHANGE COLUMN `NAME` `NAME` varchar(255) NOT NULL, 
+CHANGE COLUMN `SALARY` `SALARY` decimal(19,2) NOT NULL;
 
 ALTER TABLE `jeecg_demo` CHANGE COLUMN `SEX` `SEX` varchar(255) DEFAULT NULL;
 

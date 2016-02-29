@@ -204,7 +204,7 @@ public class TPSOrder {
     private String boxNo;
 
     // 团购标识
-    private Integer vipClub;
+    private String vipClub;
 
     // 服务类型
     private Integer serviceType;
@@ -239,11 +239,11 @@ public class TPSOrder {
         this.boxNo = boxNo;
     }
 
-    public Integer getVipClub() {
+    public String getVipClub() {
         return this.vipClub;
     }
 
-    public void setVipClub(Integer vipClub) {
+    public void setVipClub(String vipClub) {
         this.vipClub = vipClub;
     }
 

@@ -1028,7 +1028,7 @@ function chuku(){
 						<p>
 							<span id="cwbPackageNoSpan">单/包号：</span> <input type="text" class="saomiao_inputtxt2"
 								value="" id="scancwb" name="scancwb"
-								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){exportWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#branchid").val(),$("#driverid").val(),$("#truckid").val(),$("#requestbatchno").val(),$("#baleno").val(),$("#ck_switch").val(),$("#confirmflag").attr("checked")=="checked"?1:0);}' />
+								onKeyDown='if(event.keyCode==13&&$(this).val().length>0){exportWarehouse("<%=request.getContextPath()%>",$(this).val(),$("#branchid").combobox("getValue"),$("#driverid").val(),$("#truckid").val(),$("#requestbatchno").val(),$("#baleno").val(),$("#ck_switch").val(),$("#confirmflag").attr("checked")=="checked"?1:0);}' />
 						</p>
 						<p id="baleBtn">
 							<span>&nbsp;</span>

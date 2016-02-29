@@ -306,13 +306,14 @@ function baleaddcwbCheck(){
 		alert("订单号不能为空！");
 		return;
 	}
-	var confirmflag=$("#confirmflag").attr("checked")=="checked"?1:0;
+	//var confirmflag=$("#confirmflag").attr("checked")=="checked"?1:0;
+	var confirmflag=1; //confirmflag 是否强制出库标识，退客户出库没有强制出库选项，只是为了 退客户不校验下一站。
 	
 	$.ajax({
    		type: "POST",
    		url:"<%=request.getContextPath()%>/bale/baleaddcwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=4",
    		dataType : "json",
-   		data:{"customerid":$("#customerid").val(),"typeflag":"tuigonghuoshangchuku"}, //"customerid="+$("#customerid").val()
+   		data:{"customerid":$("#customerid").val()}, 
    		success : function(data) {
    			$("#msg").html("");
    			if(data.body.errorcode=="111111"){
@@ -341,13 +342,13 @@ function baleaddcwb(){
 	}
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/baleaddcwb/"+$("#scancwb").val()+"/"+$("#baleno").val(),
+		url:"<%=request.getContextPath()%>/bale/baletuigonghuoshangchukuaddcwb/"+$("#scancwb").val()+"/"+$("#baleno").val(),
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
-				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"件");
+				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
 				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);

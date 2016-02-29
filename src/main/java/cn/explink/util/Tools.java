@@ -603,7 +603,7 @@ public class Tools {
 		deserializationConfig.setDateFormat(dateFormat);
 		Tools.outMapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		Tools.outMapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
-
+		outMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 		try {
 			if (isCollection) {
 				// 集合时调用
