@@ -24,7 +24,7 @@ public class ResourceBundleUtil {
 	private static ResourceBundle rbint = null;
 	//初始化
 	 static {   
-        String proFilePath = "/home/apps/javaconf/"+ System.getProperty("company") + "/dmp-webapp.properties";
+        String proFilePath = "/apps/conf/javaconf/"+ System.getProperty("company") + "/dmp-webapp.properties";
 	    //开发使用
 	    if(StringUtil.length(System.getProperty("development")) > 0){
 	    	proFilePath = "dmp-webapp";//开发直接读取classpath下文件
