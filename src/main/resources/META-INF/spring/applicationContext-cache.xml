@@ -23,7 +23,7 @@
 		class="org.springframework.data.redis.cache.DefaultRedisCachePrefix">
 		<constructor-arg value=":${redis.prefix}:${company}:" />
 	</bean>
-	
+
 	<!-- spring自己的换管理器，这里定义了两个缓存位置名称 ，既注解中的value -->
 	<bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
 		<constructor-arg index="0" ref="redisTemplate"></constructor-arg>
@@ -50,6 +50,9 @@
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="scheduledTaskEnv" />
 				</bean>
+				<bean class="java.lang.String">
+					<constructor-arg type="java.lang.String" value="serviceUtil" />
+				</bean>
 			</set>
 		</constructor-arg>
 		<property name="usePrefix" value="true" />
@@ -57,6 +60,7 @@
 		<property name="expires">
 			<map>
 				<entry key="scheduledTaskEnv" value="25000" />
+				<entry key="serviceUtil" value="600" />
 			</map>
 		</property>
 	</bean>
