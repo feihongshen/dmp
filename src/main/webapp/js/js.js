@@ -662,6 +662,8 @@ function init_branch() {
 	$("#cftBankCode").combobox();
 	$("#cftCertId").parent().hide();
 	$("#cftCertType").parent().hide();
+	//站点缴款方式
+	$('#payinType').parent().hide();
 }
 function gonggongObj_branch() {
 	$("#branchname").parent().show();
@@ -730,6 +732,8 @@ function zhandianObj() {
 	$("#bankCode").parent().show();
 	$("#ownerName").parent().show();
 	$("#bankAccountType").parent().show();
+	//站点缴款方式
+	$('#payinType').parent().show();
 }
 function yunyingObj() {
 	gonggongObj_branch();

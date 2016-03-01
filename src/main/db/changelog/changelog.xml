@@ -8950,4 +8950,26 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD COLUMN `vipclub` INT(2) DEFAULT '0' ;
 		</sql>
 	</changeSet>
+	<changeset id="zhouguoting-2016-02-29-01" author="zhouguoting">
+		<sql>
+			ALTER TABLE `fn_org_recharges`   
+			  ADD COLUMN `picker` VARCHAR(30) DEFAULT ''  NOT NULL  COMMENT '小件员登录名',
+			  ADD COLUMN `bill_no` VARCHAR(30) DEFAULT ''  NOT NULL  COMMENT '站点账单编号',
+			  ADD COLUMN `bill_detail_id` BIGINT(20) DEFAULT 0  NOT NULL  COMMENT '站点账单明细id',
+			  ADD COLUMN `bill_type` VARCHAR(4) DEFAULT ''  NOT NULL  COMMENT '站点账单类型。0.正常账单，1.调整账单',
+			  ADD COLUMN `payin_type` TINYINT(4) DEFAULT 0  NOT NULL  COMMENT '缴款方式。1.站点缴款，2小件员缴款', 
+			  ADD COLUMN `recharge_no` VARCHAR(30) DEFAULT ''  NOT NULL  COMMENT '缴款单号。年月日+5位流水号+P', 
+			  ADD  INDEX `index_recharge_no` (`recharge_no`),
+			  ADD  INDEX `index_picker` (`picker`),
+			  ADD  INDEX `index_bill_no` (`bill_no`),
+			  ADD  INDEX `index_import_time` (`import_time`),
+			  ADD  INDEX `index_bill_detail_id` (`bill_detail_id`);
+		</sql>
+	</changeset>
+	<changeSet id="zhouguoting-2016-02-29-02" author="zhouguoting">
+		<sql>
+			ALTER TABLE express_set_branch
+			  ADD COLUMN payin_type TINYINT(4) DEFAULT 1  NOT NULL  COMMENT '缴款方式。1.站点缴款，2小件员缴款';
+		</sql>
+	</changeSet>
 </databaseChangeLog>
