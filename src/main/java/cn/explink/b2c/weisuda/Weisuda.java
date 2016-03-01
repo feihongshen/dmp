@@ -22,6 +22,7 @@ public class Weisuda {
 	private int openbatchflag; //0 默认 是单条推送   1是批量推送
 	private int maxBoundCount; //绑定关系每次最大推送数量
 	private String customers;
+	private int changeBranchcode;//是否修改机构编码  0 关闭   1开启
 	private int isSend;//是否发送订单（唯速达）  0 关闭   1开启
 	
 	
@@ -234,6 +235,14 @@ public class Weisuda {
 
 	public void setCount(String count) {
 		this.count = count;
+	}
+
+	public int getChangeBranchcode() {
+		return changeBranchcode;
+	}
+
+	public void setChangeBranchcode(int changeBranchcode) {
+		this.changeBranchcode = changeBranchcode;
 	}
 
 }

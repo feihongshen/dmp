@@ -209,7 +209,8 @@ public class BranchService {
 			branchToJson.put("branchcity", branch.getBranchcity());
 			branchToJson.put("branchprovince", branch.getBranchprovince());
 			branchToJson.put("brancharea", branch.getBrancharea());
-
+			branchToJson.put("tpsbranchcode", branch.getTpsbranchcode());
+			
 			this.savezhandian.sendBodyAndHeader(null, "branch", branchToJson.toString());
 		} catch (Exception e) {
 		}

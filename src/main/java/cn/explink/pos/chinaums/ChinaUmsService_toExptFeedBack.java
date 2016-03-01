@@ -62,7 +62,7 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 			    chinaUmsRespNote.setEx_code(rootnote.getTransaction_Body().getErrorcode());
 				chinaUmsRespNote.setEx_desc(rootnote.getTransaction_Body().getMemo());
 				chinaUmsRespNote.setDelivery_man(rootnote.getTransaction_Header().getEmployno());
-				chinaUmsRespNote=ExcuteCwbExptFeedBackHandler(chinaUmsRespNote,deliverystate,rootnote);
+				chinaUmsRespNote=ExcuteCwbExptFeedBackHandler(chinaUmsRespNote,deliverystate,rootnote,chinaUms);
 			}
 			
 		}catch(Exception e){
@@ -81,15 +81,15 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 	}
 
 
-	private ChinaUmsRespNote ExcuteCwbExptFeedBackHandler(ChinaUmsRespNote chinaUmsRespNote,long delivery_state,Transaction rootnote) {
+	private ChinaUmsRespNote ExcuteCwbExptFeedBackHandler(ChinaUmsRespNote chinaUmsRespNote,long delivery_state,Transaction rootnote,ChinaUms chinaums) {
 			long deliverystate=delivery_state;
 			long backreasonid=0;
 			long leavedreasonid=0;
 			long firstlevelreasonid=0;
 			
 			
-			if(rootnote.getTransaction_Body().getBadtype()!=null&&!rootnote.getTransaction_Body().getBadtype().isEmpty()){
-				
+			 if (((rootnote.getTransaction_Body().getBadtype() != null) && (!rootnote.getTransaction_Body().getBadtype().isEmpty())) || (chinaums.getVersion() == 1))
+			 {
 				ExptCodeJoint exptCodeJoint=exptcodeJointDAO.getExpMatchListByPosCode(chinaUmsRespNote.getEx_code(),PosEnum.ChinaUms.getKey());
 				if(deliverystate==DeliveryStateEnum.FenZhanZhiLiu.getValue()){
 					
@@ -203,6 +203,10 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 					return DeliveryStateEnum.JuShou.getValue();
 				}
 			}
+		}
+		
+		if (chinaUms.getVersion() == 1) {
+		      return DeliveryStateEnum.FenZhanZhiLiu.getValue();
 		}
 		
 		if(badtype==null||badtype.isEmpty()){
