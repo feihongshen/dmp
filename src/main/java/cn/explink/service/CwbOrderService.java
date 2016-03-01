@@ -494,14 +494,14 @@ public class CwbOrderService extends BaseOrderService {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate) "
+						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub) "
 						+ "values(?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ " ?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
-						+ "?,?,?,?,?,?)", new PreparedStatementSetter() {
+						+ "?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 
@@ -578,7 +578,7 @@ public class CwbOrderService extends BaseOrderService {
 						ps.setInt(64, cwbOrderDTO.getIsmpsflag());
 						ps.setInt(65, cwbOrderDTO.getMpsallarrivedflag());
 						ps.setInt(66, FlowOrderTypeEnum.DaoRuShuJu.getValue());
-
+						ps.setInt(67, cwbOrderDTO.getVipclub());
 					}
 
 				});
@@ -856,11 +856,11 @@ public class CwbOrderService extends BaseOrderService {
 
 		cwb = this.translateCwb(cwb);
 
-		return this.intoWarehousHandle(user, cwb, scancwb, user.getBranchid(), customerid, driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku);
+		return this.intoWarehousHandle(user, cwb, scancwb, user.getBranchid(), customerid, driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku, true);
 	}
 
 	@Transactional
-	public CwbOrder intoWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long customerid, long driverid, long requestbatchno, String comment, boolean isauto, String baleno, Long credate, boolean anbaochuku) {
+	public CwbOrder intoWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long customerid, long driverid, long requestbatchno, String comment, boolean isauto, String baleno, Long credate, boolean anbaochuku, boolean isAutoSupplyLink) {
 		FlowOrderTypeEnum flowOrderTypeEnum = FlowOrderTypeEnum.RuKu;
 
 		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
@@ -918,12 +918,12 @@ public class CwbOrderService extends BaseOrderService {
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1) || (co.getIsmpsflag() == IsmpsflagEnum.yes.getValue())) && !anbaochuku) {
-			return this.handleIntowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, credate);
+			return this.handleIntowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, credate, isAutoSupplyLink);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1) || anbaochuku) {
 			if ((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			} else {
-				this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, false, credate, anbaochuku, false);
+				this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, false, credate, anbaochuku, false, isAutoSupplyLink);
 			}
 		} else {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -961,7 +961,7 @@ public class CwbOrderService extends BaseOrderService {
 		return false;
 	}
 
-	private CwbOrder handleIntowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, Long credate) {
+	private CwbOrder handleIntowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, Long credate, boolean isAutoSupplyLink) {
 
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
@@ -973,7 +973,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) || (newMPSOrder && (co.getScannum() > 0))) {
 			if (co.getScannum() < 1) {
-				this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, false);
+				this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
 			}
 			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
 				this.cwbDAO.updateScannum(co.getCwb(), co.getScannum() + 1);
@@ -987,14 +987,14 @@ public class CwbOrderService extends BaseOrderService {
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 				}
 				if (newMPSOrder) {
-					this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, true);
+					this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
 				}
 			} else {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
-			this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, false);
+			this.handleIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
 		}
 
 		return this.cwbDAO.getCwbByCwb(cwb);
@@ -1030,6 +1030,13 @@ public class CwbOrderService extends BaseOrderService {
 				return;
 			}
 		}
+		// 线上问题：退供应商拒收退货确认审核 问题修复
+		if (FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue() == flowordertype) {
+			if (cwb.equals(co.getCwb())) {
+				return;
+			}
+		}
+		
 		// 2013-8-5腾讯达需求，领货不再限制只能扫描运单号，产品确定需求不是做成开关，而是所有客户统一如此处理
 		if ((flowordertype != FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()) && (flowordertype != FlowOrderTypeEnum.FenZhanLingHuo.getValue())) {
 			throw new CwbException(cwb, flowordertype, ExceptionCwbErrorTypeEnum.Qing_SAO_MIAO_YUN_DAN_HAO);
@@ -1044,7 +1051,7 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private void handleIntowarehouse(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
-			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku, boolean newMPSOrder) {
+			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku, boolean newMPSOrder, boolean isAutoSupplyLink) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
@@ -1091,7 +1098,7 @@ public class CwbOrderService extends BaseOrderService {
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 			if (!newMPSOrder) {
-				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
 			}
 		}
 
@@ -1213,11 +1220,11 @@ public class CwbOrderService extends BaseOrderService {
 		if ((nextbranchid > 0) && (checktype == 1)) {
 			branchid = nextbranchid;
 		}
-		return this.changeintoWarehousHandle(user, cwb, scancwb, branchid, customerid, driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku);
+		return this.changeintoWarehousHandle(user, cwb, scancwb, branchid, customerid, driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku, true);
 	}
 
 	@Transactional
-	public CwbOrder changeintoWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long customerid, long driverid, long requestbatchno, String comment, boolean isauto, String baleno, Long credate, boolean anbaochuku) {
+	public CwbOrder changeintoWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long customerid, long driverid, long requestbatchno, String comment, boolean isauto, String baleno, Long credate, boolean anbaochuku, boolean isAutoSupplyLink) {
 		FlowOrderTypeEnum flowOrderTypeEnum = FlowOrderTypeEnum.ZhongZhuanZhanRuKu;
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, flowOrderTypeEnum);
 		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
@@ -1249,12 +1256,12 @@ public class CwbOrderService extends BaseOrderService {
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
 		if ((((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1) || (co.getIsmpsflag() == IsmpsflagEnum.yes.getValue())) && !anbaochuku)) {
-			return this.handleChangeIntowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, credate, driverid);
+			return this.handleChangeIntowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, credate, driverid, isAutoSupplyLink);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1) || anbaochuku) {
 			if ((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			} else {
-				this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, false, credate, anbaochuku, driverid);
+				this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, false, credate, anbaochuku, driverid, isAutoSupplyLink);
 			}
 		} else {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -1262,7 +1269,7 @@ public class CwbOrderService extends BaseOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	private CwbOrder handleChangeIntowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, Long credate, long driverid) {
+	private CwbOrder handleChangeIntowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, Long credate, long driverid, boolean isAutoSupplyLink) {
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), currentbranchid, 0, 0, ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
@@ -1276,7 +1283,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if ((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 			if (co.getScannum() < 1) {
-				this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, driverid);
+				this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, driverid, isAutoSupplyLink);
 			}
 			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
 				this.cwbDAO.updateScannum(co.getCwb(), co.getScannum() + 1);
@@ -1293,7 +1300,7 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
-			this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, driverid);
+			this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, driverid, isAutoSupplyLink);
 		}
 		// 中转站入库一票多件操作===LX
 		// =======开始=======
@@ -1322,7 +1329,7 @@ public class CwbOrderService extends BaseOrderService {
 		// 一票多件中主单的属性根据最后操作的这个运单变化 -----刘武强16.01.23
 	}
 
-	private void handleChangeIntowarehouse(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku, long driverid) {
+	private void handleChangeIntowarehouse(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku, long driverid, boolean isAutoSupplyLink) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 
 		this.validateStateTransfer(co, flowOrderTypeEnum);
@@ -1368,7 +1375,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
-			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
 		}
 
 		this.baleDaoHuo(co);
@@ -1489,48 +1496,51 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param isypdjusetranscwb
 	 */
 	@Transactional
-	public void intoAndOutwarehouseYpdjCre(User user, CwbOrder co, String scancwb, long flowordertype, long isypdjusetranscwb, long nextbranchid) {
-		// 2013.8.21
-		// 临时处理,避免某订单做了入库,但是有缺货,去做出库时,入库里还显示缺货,暂决定删除之前的数据,避免仍然上一操作还有该单缺货的问题
-		// commentted by songkaojun 2016-01-28 新一票多件模式支持显示
-		// this.ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(co.getCwb());
+	public void intoAndOutwarehouseYpdjCre(User user, CwbOrder co, String scancwb, long flowordertype, long isypdjusetranscwb, long nextbranchid, boolean isAutoSupplyLink) {
+		if (isAutoSupplyLink) {//2016.02.16 一票多件自动补录不写一票多件缺件记录
+			// 2013.8.21
+			// 临时处理,避免某订单做了入库,但是有缺货,去做出库时,入库里还显示缺货,暂决定删除之前的数据,避免仍然上一操作还有该单缺货的问题
+			
+			// commentted by songkaojun 2016-01-28 新一票多件模式支持显示
+			this.ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(co.getCwb());
 
-		for (int i = 0; i < (co.getSendcarnum() - 1); i++) {
-			// 若运单号第一位是逗号则剔除
-			String oldtranscwb = "";
-			if (!"".equals(co.getTranscwb()) && (co.getTranscwb().length() > 0)) {// 一票多件没有判断非空情况，扫描报错
+			for (int i = 0; i < (co.getSendcarnum() - 1); i++) {
+				// 若运单号第一位是逗号则剔除
+				String oldtranscwb = "";
+				if (!"".equals(co.getTranscwb()) && (co.getTranscwb().length() > 0)) {// 一票多件没有判断非空情况，扫描报错
 
-				oldtranscwb = co.getTranscwb().substring(0, 1).equals(",") ? co.getTranscwb().substring(1, co.getTranscwb().length()) : co.getTranscwb();
-			}
-
-			String transcwb = "";
-			if ((isypdjusetranscwb == 1) && ((oldtranscwb.split(",").length > 1) || (oldtranscwb.split(":").length > 1)) && (oldtranscwb.indexOf(scancwb) > -1)) {
-				if (oldtranscwb.split(",").length > 1) {
-					String newtranscwb = oldtranscwb.replace(scancwb + ",", "");
-					transcwb = newtranscwb.split(",")[i];
-				} else {
-					String newtranscwb = oldtranscwb.replace(scancwb + ":", "");
-					transcwb = newtranscwb.split(":")[i];
+					oldtranscwb = co.getTranscwb().substring(0, 1).equals(",") ? co.getTranscwb().substring(1, co.getTranscwb().length()) : co.getTranscwb();
 				}
-			} else {
-				if (oldtranscwb.length() > 0) {
-					transcwb = "havetranscwb_" + oldtranscwb + "_" + i;
-				} else {
-					transcwb = "explink_" + co.getCwb() + "_" + i;
-				}
-			}
-			if ("".equals(transcwb.trim())) {
-				continue;
-			}
-			YpdjHandleRecord ypdjHandleRecord = new YpdjHandleRecord();
-			ypdjHandleRecord.setCustomerid(co.getCustomerid());
-			ypdjHandleRecord.setCwb(co.getCwb());
-			ypdjHandleRecord.setFlowordertype(flowordertype);
-			ypdjHandleRecord.setTranscwb(transcwb);
-			ypdjHandleRecord.setBranchid(user.getBranchid());
-			ypdjHandleRecord.setNextbranchid(nextbranchid);
 
-			this.ypdjHandleRecordDAO.creYpdjHandleRecord(ypdjHandleRecord);
+				String transcwb = "";
+				if ((isypdjusetranscwb == 1) && ((oldtranscwb.split(",").length > 1) || (oldtranscwb.split(":").length > 1)) && (oldtranscwb.indexOf(scancwb) > -1)) {
+					if (oldtranscwb.split(",").length > 1) {
+						String newtranscwb = oldtranscwb.replace(scancwb + ",", "");
+						transcwb = newtranscwb.split(",")[i];
+					} else {
+						String newtranscwb = oldtranscwb.replace(scancwb + ":", "");
+						transcwb = newtranscwb.split(":")[i];
+					}
+				} else {
+					if (oldtranscwb.length() > 0) {
+						transcwb = "havetranscwb_" + oldtranscwb + "_" + i;
+					} else {
+						transcwb = "explink_" + co.getCwb() + "_" + i;
+					}
+				}
+				if ("".equals(transcwb.trim())) {
+					continue;
+				}
+				YpdjHandleRecord ypdjHandleRecord = new YpdjHandleRecord();
+				ypdjHandleRecord.setCustomerid(co.getCustomerid());
+				ypdjHandleRecord.setCwb(co.getCwb());
+				ypdjHandleRecord.setFlowordertype(flowordertype);
+				ypdjHandleRecord.setTranscwb(transcwb);
+				ypdjHandleRecord.setBranchid(user.getBranchid());
+				ypdjHandleRecord.setNextbranchid(nextbranchid);
+
+				this.ypdjHandleRecordDAO.creYpdjHandleRecord(ypdjHandleRecord);
+			}
 		}
 	}
 
@@ -1577,11 +1587,11 @@ public class CwbOrderService extends BaseOrderService {
 		// 运单获取订单
 		cwb = this.translateCwb(cwb);
 
-		return this.substationGoodsHandle(user, cwb, scancwb, user.getBranchid(), driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku);
+		return this.substationGoodsHandle(user, cwb, scancwb, user.getBranchid(), driverid, requestbatchno, comment, false, baleno, System.currentTimeMillis(), anbaochuku, true);
 	}
 
 	@Transactional
-	public CwbOrder substationGoodsHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long requestbatchno, String comment, boolean isauto, String baleno, Long credate, boolean anbaochuku) {
+	public CwbOrder substationGoodsHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long requestbatchno, String comment, boolean isauto, String baleno, Long credate, boolean anbaochuku, boolean isAutoSupplyLink) {
 
 		//
 		if (this.jdbcTemplate.queryForInt("select count(1) from express_sys_on_off where type='SYSTEM_ON_OFF' and on_off='on' ") == 0) {
@@ -1631,13 +1641,13 @@ public class CwbOrderService extends BaseOrderService {
 			this.checkBaleOfOrder(cwb, scancwb, isypdjusetranscwb, flowOrderTypeEnum);
 		}
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1) || (co.getIsmpsflag() == IsmpsflagEnum.yes.getValue()))) {
-			return this.handleSubstationGoodsYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, credate);
+			return this.handleSubstationGoodsYipiaoduojian(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, credate, isAutoSupplyLink);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1) || anbaochuku) {
 			if ((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			} else {
 				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, false, credate, anbaochuku,
-						false);
+						false, isAutoSupplyLink);
 			}
 		} else {
 			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -1688,7 +1698,7 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private CwbOrder handleSubstationGoodsYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
-			FlowOrderTypeEnum flowOrderTypeEnum, Branch userbranch, long isypdjusetranscwb, Long credate) {
+			FlowOrderTypeEnum flowOrderTypeEnum, Branch userbranch, long isypdjusetranscwb, Long credate, boolean isAutoSupplyLink) {
 
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
@@ -1701,7 +1711,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) || (newMPSOrder && (co.getScannum() > 0))) {
 			if (co.getScannum() < 1) {
-				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false);
+				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
 			}
 			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
 				this.cwbDAO.updateScannum(co.getCwb(), co.getScannum() + 1);
@@ -1710,17 +1720,18 @@ public class CwbOrderService extends BaseOrderService {
 				if (isypdjusetranscwb == 1) {
 					if (!newMPSOrder) {
 						this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
+						this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 					}
 				}
 				if (newMPSOrder) {
-					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true);
+					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
 				}
 			} else {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
-			this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false);
+			this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
 		}
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
@@ -1779,7 +1790,7 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private void handleSubstationGoods(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
-			FlowOrderTypeEnum flowOrderTypeEnum, Branch userbranch, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku, boolean newMPSOrder) {
+			FlowOrderTypeEnum flowOrderTypeEnum, Branch userbranch, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku, boolean newMPSOrder, boolean isAutoSupplyLink) {
 
 		this.validateCwbState(co, flowOrderTypeEnum);
 
@@ -1870,7 +1881,7 @@ public class CwbOrderService extends BaseOrderService {
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 			if (!newMPSOrder) {
-				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
 			}
 		}
 
@@ -2111,9 +2122,13 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			}
 		} else {
+			//针对一票多件，如果所有的运单号退货出站已经全部完成，但订单主表发货件数与扫描件数不一致时(异常)，进行补全扫描件数，避免退货入库时报错
+			long realscannum = this.transcwborderFlowDAO.getTranscwbOrderFlowCount(co.getCwb(), FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), currentbranchid);
+			if(co.getSendcarnum()==realscannum && co.getSendcarnum()>co.getScannum()){
+				co.setScannum(realscannum);
+			}
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleBackIntoWarehous(user, cwb, scancwb, currentbranchid, requestbatchno, comment, co, flowOrderTypeEnum, isypdjusetranscwb, true, false, driverid);
-
 		}
 
 		// // added shenhongfei 退货站入库 2016-1-12
@@ -2699,11 +2714,11 @@ public class CwbOrderService extends BaseOrderService {
 		cwb = this.translateCwb(cwb);
 		return this
 				.changeOutWarehousHandle(user, cwb, scancwb, user.getBranchid(), driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid, iszhongzhuanout, System
-						.currentTimeMillis(), anbaochuku);
+						.currentTimeMillis(), anbaochuku, true);
 	}
 
 	@Transactional
-	public CwbOrder changeOutWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku, boolean checkUserBranchZhongZhuang) {
+	public CwbOrder changeOutWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku, boolean checkUserBranchZhongZhuang, boolean isAutoSupplyLink) {
 		// 如果被拦截，则给出提示
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu);
 
@@ -2758,7 +2773,7 @@ public class CwbOrderService extends BaseOrderService {
 		// =====加入按包出库标识 zs=====
 		if ((((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1) || (co.getIsmpsflag() == IsmpsflagEnum.yes.getValue())) && !anbaochuku)) {
 			return this
-					.handleChangeOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.ZhongZhuanZhanChuKu, isypdjusetranscwb, iszhongzhuanout, aflag, credate, userbranch);
+					.handleChangeOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.ZhongZhuanZhanChuKu, isypdjusetranscwb, iszhongzhuanout, aflag, credate, userbranch, isAutoSupplyLink);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1) || anbaochuku) {
 			// 出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑
 			if ((co.getStartbranchid() == currentbranchid) && ((co.getNextbranchid() == branchid) || (branchid == -1) || (branchid == 0) || (co.getNextbranchid() == currentbranchid)) && (co
@@ -2767,7 +2782,7 @@ public class CwbOrderService extends BaseOrderService {
 			} else if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()) && !forceOut) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			} else {
-				this.handleChangeOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.ZhongZhuanZhanChuKu, isypdjusetranscwb, false, iszhongzhuanout, aflag, credate, anbaochuku, userbranch);
+				this.handleChangeOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.ZhongZhuanZhanChuKu, isypdjusetranscwb, false, iszhongzhuanout, aflag, credate, anbaochuku, userbranch, isAutoSupplyLink);
 			}
 		} else {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -2779,7 +2794,7 @@ public class CwbOrderService extends BaseOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	private CwbOrder handleChangeOutowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean iszhongzhuanout, boolean aflag, Long credate, Branch userbranch) {
+	private CwbOrder handleChangeOutowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean iszhongzhuanout, boolean aflag, Long credate, Branch userbranch, boolean isAutoSupplyLink) {
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), 0, currentbranchid, branchid, ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
@@ -2787,7 +2802,7 @@ public class CwbOrderService extends BaseOrderService {
 		// 出库时statbranchid是当前站，操作是出库，下一站是选择的下一站，非强制(选择了强制，并且下一站和选择的下一站不一样时)
 		if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue()) && !(forceOut && (co.getNextbranchid() != branchid) && (branchid > 0))) {
 			if (co.getScannum() < 1) {
-				this.handleChangeOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true, iszhongzhuanout, aflag, credate, false, userbranch);
+				this.handleChangeOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true, iszhongzhuanout, aflag, credate, false, userbranch, isAutoSupplyLink);
 			}
 			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
 				long realscannum = co.getScannum() + 1;
@@ -2817,7 +2832,7 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, forceOut);
-			this.handleChangeOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true, iszhongzhuanout, aflag, credate, false, userbranch);
+			this.handleChangeOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true, iszhongzhuanout, aflag, credate, false, userbranch, isAutoSupplyLink);
 		}
 		// 一票多件主单的部分属性（状态、操作状态、下一站）根据最后操作的运单变化
 		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, 0L, 0, co.getNextbranchid());// 更新订单一票多件状态和运单状态
@@ -2830,7 +2845,7 @@ public class CwbOrderService extends BaseOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	private void handleChangeOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, boolean iszhongzhuanout, boolean aflag, Long credate, boolean anbaochuku, Branch userbranch) {
+	private void handleChangeOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, boolean iszhongzhuanout, boolean aflag, Long credate, boolean anbaochuku, Branch userbranch, boolean isAutoSupplyLink) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 		// 对oxo和oxo_jit的订单不用中转审核 by jinghui.pan on 20150806
 		if (this.isOxoAndJitType(co) == false) {
@@ -2922,7 +2937,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
-			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid);
+			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid, isAutoSupplyLink);
 		}
 
 		// ============结算逻辑出库扫描=======================
@@ -3144,11 +3159,11 @@ public class CwbOrderService extends BaseOrderService {
 		cwb = this.translateCwb(cwb);
 
 		return this.outWarehousHandle(user, cwb, scancwb, user.getBranchid(), driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid, iszhongzhuanout, System
-				.currentTimeMillis(), anbaochuku);
+				.currentTimeMillis(), anbaochuku, true);
 	}
 
 	@Transactional
-	public CwbOrder outWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku) {
+	public CwbOrder outWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku, boolean isAutoSupplyLink) {
 		// added by songkaojun 2016-01-18 更新订单上一机构，当前机构，下一机构信息
 		this.cwbOrderBranchInfoModificationService.modifyBranchInfo(scancwb);
 
@@ -3229,7 +3244,7 @@ public class CwbOrderService extends BaseOrderService {
 		// =====加入按包出库标识 zs=====
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1) || (co.getIsmpsflag() == IsmpsflagEnum.yes.getValue()))) {
 			return this
-					.handleOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.ChuKuSaoMiao, isypdjusetranscwb, iszhongzhuanout, aflag, credate, driverid, truckid, anbaochuku);
+					.handleOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.ChuKuSaoMiao, isypdjusetranscwb, iszhongzhuanout, aflag, credate, driverid, truckid, anbaochuku, isAutoSupplyLink);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1) || anbaochuku) {
 			// 出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑
 			if ((co.getStartbranchid() == currentbranchid) && ((co.getNextbranchid() == branchid) || (branchid == -1) || (branchid == 0) || (co.getNextbranchid() == currentbranchid)) && (co
@@ -3239,7 +3254,7 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			} else {
 				this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.ChuKuSaoMiao,
-						isypdjusetranscwb, false, iszhongzhuanout, aflag, credate, anbaochuku, driverid, truckid, false);
+						isypdjusetranscwb, false, iszhongzhuanout, aflag, credate, anbaochuku, driverid, truckid, false, isAutoSupplyLink);
 			}
 		} else {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -3339,7 +3354,7 @@ public class CwbOrderService extends BaseOrderService {
 	// //包号结束
 	// }
 
-	private CwbOrder handleOutowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean iszhongzhuanout, boolean aflag, Long credate, long driverid, long truckid, boolean anbaochuku) {
+	private CwbOrder handleOutowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean iszhongzhuanout, boolean aflag, Long credate, long driverid, long truckid, boolean anbaochuku, boolean isAutoSupplyLink) {
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), 0, currentbranchid, branchid, ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
@@ -3352,7 +3367,7 @@ public class CwbOrderService extends BaseOrderService {
 				|| (newMPSOrder && (co.getScannum() > 0))) {
 			if (co.getScannum() < 1) {
 				this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb,
-						true, iszhongzhuanout, aflag, credate, false, driverid, truckid, false);
+						true, iszhongzhuanout, aflag, credate, false, driverid, truckid, false, isAutoSupplyLink);
 			}
 			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum()) || anbaochuku) {
 				long realscannum = co.getScannum() + 1;
@@ -3382,7 +3397,7 @@ public class CwbOrderService extends BaseOrderService {
 				}
 				if (newMPSOrder) {
 					this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb,
-							true, iszhongzhuanout, aflag, credate, false, driverid, truckid, true);
+							true, iszhongzhuanout, aflag, credate, false, driverid, truckid, true, isAutoSupplyLink);
 				}
 			} else {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
@@ -3390,7 +3405,7 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, forceOut);
 			this.handleOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true,
-					iszhongzhuanout, aflag, credate, false, driverid, truckid, false);
+					iszhongzhuanout, aflag, credate, false, driverid, truckid, false, isAutoSupplyLink);
 		}
 		// //包号处理开始
 		// disposePackageCode(packagecode, scancwb, user, co);
@@ -3451,7 +3466,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	private void handleOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode,
 			boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, boolean iszhongzhuanout, boolean aflag, Long credate,
-			boolean anbaochuku, long driverid, long truckid, boolean newMPSOrder) {
+			boolean anbaochuku, long driverid, long truckid, boolean newMPSOrder, boolean isAutoSupplyLink) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 		if ((co.getFlowordertype() != FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getStartbranchid() != currentbranchid)) {
 			this.validateStateTransfer(co, FlowOrderTypeEnum.ChuKuSaoMiao);
@@ -3587,7 +3602,7 @@ public class CwbOrderService extends BaseOrderService {
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 			if (!newMPSOrder) {
-				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid);
+				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid, isAutoSupplyLink);
 			}
 		}
 		// ============结算逻辑出库扫描=======================
@@ -3843,11 +3858,11 @@ public class CwbOrderService extends BaseOrderService {
 
 		cwb = this.translateCwb(cwb);
 
-		return this.kdkoutWarehousHandle(user, cwb, scancwb, user.getBranchid(), driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid);
+		return this.kdkoutWarehousHandle(user, cwb, scancwb, user.getBranchid(), driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid, true);
 	}
 
 	@Transactional
-	public CwbOrder kdkoutWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid) {
+	public CwbOrder kdkoutWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, boolean isAutoSupplyLink) {
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
@@ -3897,13 +3912,13 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) && (co.getIsmpsflag() == IsmpsflagEnum.yes.getValue())) {
 			return this
-					.handleKDKOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao, isypdjusetranscwb);
+					.handleKDKOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao, isypdjusetranscwb, isAutoSupplyLink);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1)) {
 			// 库对库出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑
 			if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()) && ((co.getNextbranchid() == branchid) || (branchid == -1) || (branchid == 0)) && !forceOut) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			} else {
-				this.handleKDKOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao, isypdjusetranscwb, false);
+				this.handleKDKOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao, isypdjusetranscwb, false, isAutoSupplyLink);
 			}
 		} else {
 			throw new CwbException(cwb, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -3912,7 +3927,7 @@ public class CwbOrderService extends BaseOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	private CwbOrder handleKDKOutowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb) {
+	private CwbOrder handleKDKOutowarehouseYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isAutoSupplyLink) {
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), 0, currentbranchid, branchid, ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
@@ -3920,7 +3935,7 @@ public class CwbOrderService extends BaseOrderService {
 		// 出库时statbranchid是当前站，操作是出库，下一站是选择的下一站，非强制(选择了强制，并且下一站和选择的下一站不一样时)
 		if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue()) && !(forceOut && (co.getNextbranchid() != branchid) && (branchid > 0))) {
 			if (co.getScannum() < 1) {
-				this.handleKDKOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true);
+				this.handleKDKOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true, isAutoSupplyLink);
 			}
 			if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
 				long realscannum = co.getScannum() + 1;
@@ -3939,14 +3954,14 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, forceOut);
-			this.handleKDKOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true);
+			this.handleKDKOutowarehouse(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, flowOrderTypeEnum, isypdjusetranscwb, true, isAutoSupplyLink);
 		}
 		// 刘武强 16.01.27
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao, 0L, 0L, co.getNextbranchid());// 更新订单一票多件状态和运单状态
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	private void handleKDKOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
+	private void handleKDKOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, boolean isAutoSupplyLink) {
 		this.validateCwbState(co, flowOrderTypeEnum);
 
 		if ((co.getFlowordertype() != FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()) || (co.getStartbranchid() != currentbranchid)) {
@@ -4003,7 +4018,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
-			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid);
+			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid, isAutoSupplyLink);
 		}
 
 	}
@@ -5217,9 +5232,13 @@ public class CwbOrderService extends BaseOrderService {
 					this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
 				}
 			}else{//当录入或修改快递单号为空时
-				this.transCwbDao.deleteTranscwb(cwb);
-				this.transCwbDao.saveTranscwb(cwb,cwb);
-				this.cwbDAO.saveTranscwbByCwb("",cwb);
+				if(!"".equals(co.getTranscwb())){
+					this.transCwbDao.deleteTranscwb(cwb);
+					this.transCwbDao.saveTranscwb(cwb,cwb);
+					this.cwbDAO.saveTranscwbByCwb("",cwb);
+					this.cwbDAO.saveBackcarnum(1, cwb);
+					this.cwbDAO.saveSendcarnum(1, cwb);
+				}
 			}
 		}
 
@@ -5266,8 +5285,13 @@ public class CwbOrderService extends BaseOrderService {
 
 		String sql2 = "update express_ops_cwb_detail set flowordertype=?,deliverystate=?,newpaywayid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql2, FlowOrderTypeEnum.YiFanKui.getValue(), deliveryState.getDeliverystate(), newpaywayid, co.getCwb());
-		this.createFloworder(user, sessionbranchid, co, FlowOrderTypeEnum.YiFanKui, (reason.getReasoncontent() == null ? "" : reason.getReasoncontent()) + " " + deliverstateremark,
-				System.currentTimeMillis(), scancwb, false);
+		if((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue())&& zhiliuremark.length() > 0){
+			this.createFloworder(user, sessionbranchid, co, FlowOrderTypeEnum.YiFanKui, (reason.getReasoncontent() == null ? "" : reason.getReasoncontent()) + " " + zhiliuremark, System
+					.currentTimeMillis(), scancwb, false);
+		}else{
+			this.createFloworder(user, sessionbranchid, co, FlowOrderTypeEnum.YiFanKui, (reason.getReasoncontent() == null ? "" : reason.getReasoncontent()) + " " + deliverstateremark, System
+					.currentTimeMillis(), scancwb, false);
+		}
 
 		// 反馈时更新订单的反馈的操作时间
 		this.operationTimeDAO
@@ -6204,14 +6228,15 @@ public class CwbOrderService extends BaseOrderService {
 		or.setCreatetime(createtime);
 		this.orderbackRecordDao.creOrderbackRecord(or);
 	}
-
+	
+	
 	/**
 	 * 供货商拒收返库
 	 *
 	 * @param co
 	 * @return
 	 */
-	public CwbOrder customrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment) {
+	public CwbOrder customrefusebackToStorehouse(User user, String cwb, String scancwb, long requestbatchno, String comment) {
 		this.logger.info("{} 将订单 {} 审核为供货商拒收返库", FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), cwb);
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.GongYingShangJuShouFanKu);
 		cwb = this.translateCwb(cwb);
@@ -6233,10 +6258,42 @@ public class CwbOrderService extends BaseOrderService {
 		return co;
 	}
 
+	/**
+	 * 供货商拒收退货
+	 *
+	 * @param co
+	 * @return
+	 */
+	public CwbOrder customrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment) {
+//		this.logger.info("{} 将订单 {} 审核为供货商拒收返库", FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), cwb);
+//		退供应商拒收退货
+		this.logger.info("{} 将订单 {} 审核为退供应商拒收退货", FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(), cwb);
+		
+		cwb = this.translateCwb(cwb);
+
+		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+
+		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
+		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
+			return this.handleCustomrefusebackYipiaoduojian(user, cwb, scancwb, requestbatchno, comment, co, FlowOrderTypeEnum.GongYingShangJuShouTuiHuo, isypdjusetranscwb);
+		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1)) {
+			this.handleCustomrefuseback(user, cwb, scancwb, requestbatchno, comment, co, FlowOrderTypeEnum.GongYingShangJuShouTuiHuo, isypdjusetranscwb, false);
+		} else {
+			throw new CwbException(cwb, FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+
+		return co;
+	}
+
 	private CwbOrder handleCustomrefusebackYipiaoduojian(User user, String cwb, String scancwb, long requestbatchno, String comment, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb) {
 
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
+			//针对一票多件多个运单号的订单，如果一个运单号同样的机构下同样的环节重复扫描的验证
+			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), user.getBranchid(), 0, 0, ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 		}
 		if ((co.getCurrentbranchid() == user.getBranchid()) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 			if (co.getScannum() < 1) {
@@ -6252,6 +6309,10 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_DAO_HUO);
 			}
 		} else {
+			//针对一票多件 ，在"客户收退货确认"那里做了"拒收退货"操作后，订单主表的扫描件数被修改成1了，导致"退客户拒收返库"扫描操作时报异常
+			if(co.getFlowordertype()==FlowOrderTypeEnum.GongYingShangJuShouTuiHuo.getValue()){
+				co.setScannum(co.getSendcarnum());
+			}
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleCustomrefuseback(user, cwb, scancwb, requestbatchno, comment, co, flowOrderTypeEnum, isypdjusetranscwb, true);
 		}
@@ -6260,14 +6321,21 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private void handleCustomrefuseback(User user, String cwb, String scancwb, long requestbatchno, String comment, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj) {
-		OrderbackRecord obre = this.orderbackRecordDao.getOBRecord(cwb);
-		if (obre != null) {
-			if (obre.getShenhestate() == 0) {
-				throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_DAIQUEREN);
-			} else if (obre.getShenhestate() == 1) {
-				throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_SUCCESS);
-			}
+		OrderbackRecord obre=null;
+		if(flowOrderTypeEnum==FlowOrderTypeEnum.GongYingShangJuShouTuiHuo){
+			obre = this.orderbackRecordDao.getOBRecord(cwb);
 		}
+		if(flowOrderTypeEnum==FlowOrderTypeEnum.GongYingShangJuShouFanKu){
+			obre = this.orderbackRecordDao.getOBRecordForGongYingShangJuShouFanKu(cwb);
+		}
+			if (obre != null) {
+				if (obre.getShenhestate() == 0) {
+					throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_DAIQUEREN);
+				} else if (obre.getShenhestate() == 1) {
+					throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.TUIKEHU_SUCCESS);
+				}
+			}
+		
 
 		this.validateCwbState(co, flowOrderTypeEnum);
 		this.validateStateTransfer(co, flowOrderTypeEnum);
@@ -6275,8 +6343,8 @@ public class CwbOrderService extends BaseOrderService {
 		String oldcwbremark = co.getCwbremark().length() > 0 ? co.getCwbremark() + "\n" : "";
 		String newcwbremark = oldcwbremark + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "[" + user.getRealname() + "]" + comment;
 		try {
-			String sql = "update express_ops_cwb_detail set flowordertype=?,currentbranchid=?,startbranchid=?,nextbranchid=?,cwbremark=? where cwb=? and state=1";
-			this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), user.getBranchid(), 0, 0, newcwbremark, cwb);
+			String sql = "update express_ops_cwb_detail set flowordertype=?,currentbranchid=?,nextbranchid=?,cwbremark=? where cwb=? and state=1";
+			this.jdbcTemplate.update(sql, flowOrderTypeEnum.getValue(), user.getBranchid(), 0, newcwbremark, cwb);
 		} catch (Exception e) {
 			this.logger.error("error while saveing cwbremark,cwb:" + co.getCwb() + "cwbremark:" + newcwbremark, e);
 			throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
@@ -8502,7 +8570,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 
 		return this.changeOutWarehousHandle(user, cwb, scancwb, currentbranchid, driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, false, reasonid, iszhongzhuanout, System
-				.currentTimeMillis(), anbaochuku, false);
+				.currentTimeMillis(), anbaochuku, false, true);
 
 	}
 
@@ -8593,9 +8661,9 @@ public class CwbOrderService extends BaseOrderService {
 	 * @author jinghui.pan@pjbest.com
 	 */
 	@Transactional
-	public CwbOrder changeOutWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku) {
+	public CwbOrder changeOutWarehousHandle(User user, String cwb, String scancwb, long currentbranchid, long driverid, long truckid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, boolean iszhongzhuanout, Long credate, boolean anbaochuku, boolean isAutoSupplyLink) {
 		return this
-				.changeOutWarehousHandle(user, cwb, scancwb, currentbranchid, driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, iszhongzhuanout, credate, anbaochuku, true);
+				.changeOutWarehousHandle(user, cwb, scancwb, currentbranchid, driverid, truckid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, iszhongzhuanout, credate, anbaochuku, true, isAutoSupplyLink);
 	}
 
 	/**

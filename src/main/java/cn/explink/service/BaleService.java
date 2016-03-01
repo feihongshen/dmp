@@ -1371,6 +1371,8 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
 			// 待审核
 			long count = this.orderBackCheckDAO.getOrderbackCheck(cwb, 1);
 			if (count != 0) {
@@ -1401,15 +1403,14 @@ public class BaleService {
 						.getBranchname());
 			}
 
-			if ((co.getStartbranchid() == currentbranchid) && (co.getNextbranchid() == branchid) && (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue())) {
-				throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
-			}
+			//if ((co.getStartbranchid() == currentbranchid) && (co.getNextbranchid() == branchid) && (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue())) {
+			//	throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
+			//}
 			// ==================验证订单状态End=======================
 
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
-			this.validateCwbBaleCheck(user, baleno, cwb, co, branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), currentbranchid, FlowOrderTypeEnum.TuiHuoChuZhan);
-
+			this.validateCwbBaleCheck(user, baleno, scancwb, co, branchid, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), currentbranchid, FlowOrderTypeEnum.TuiHuoChuZhan);
 		}
 	}
 
@@ -1425,6 +1426,9 @@ public class BaleService {
 			this.logger.info("===中转出站封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
 
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
+			
 			// 首先验证订单号是否在中转出站审核表中被审核通过
 			long count1 = this.applyZhongZhuanDAO.getCwbApplyZhongZhuanYiChuLiByCwbCounts(cwb, 0);
 			if (count1 != 0) {
@@ -1485,11 +1489,11 @@ public class BaleService {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.ZHONG_ZHUAN_HUO);
 			}
 
-			// 出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑
+			// 出库扫描时, 如果上一站是当前操作人所在的机构，那么出库需要验证是否重复扫描的逻辑     一票多件不在这里校验
 			if ((co.getStartbranchid() == currentbranchid) && ((co.getNextbranchid() == branchid) || (branchid == -1) || (branchid == 0) || (co.getNextbranchid() == currentbranchid)) && (co
-					.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {// 重复
+					.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())  && 1 == (int)co.getSendcarnum()) {// 重复
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
-			} else if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) && !forceOut) {
+			} else if ((co.getStartbranchid() == currentbranchid) && (co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) && 1 == (int)co.getSendcarnum() && !forceOut) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
 			}
 			// ==================验证订单状态End=======================
@@ -1502,26 +1506,30 @@ public class BaleService {
 
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
-			if ((co.getPackagecode() != null) && !"".equals(co.getPackagecode())) {
-				Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
-				Branch nextbranch = this.branchDAO.getBranchByBranchid(coBale.getNextbranchid());
-				if ((coBale != null) && (nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
-					if (baleno.equals(co.getPackagecode())) {
-						// 重复封包
-						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao);
-					}
-					if ((coBale.getBranchid() == user.getBranchid()) && (coBale.getBalestate() == BaleStateEnum.WeiFengBao.getValue())) {
-						// 订单{0}已经在{1}包号中，确认重新封包吗?
-						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Bale_ChongXinFengBao, cwb, co.getPackagecode());
-					} else {
-						String errorstate = "";
-						for (BaleStateEnum ft : BaleStateEnum.values()) {
-							if (coBale.getBalestate() == ft.getValue()) {
-								errorstate = ft.getText();
-							}
+			if (this.baleCwbDAO.getBaleAndCwbCount(baleno, scancwb) == 0) {
+				
+			} else {
+				if ((co.getPackagecode() != null) && !"".equals(co.getPackagecode())) {
+					Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
+					Branch nextbranch = this.branchDAO.getBranchByBranchid(coBale.getNextbranchid());
+					if ((coBale != null) && (nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
+						if (baleno.equals(co.getPackagecode())) {
+							// 重复封包
+							throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao);
 						}
-						// 操作失败，此订单已经在{0}包号{1}!
-						throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Bale_Error1, cwb, co.getPackagecode(), errorstate);
+						if ((coBale.getBranchid() == user.getBranchid()) && (coBale.getBalestate() == BaleStateEnum.WeiFengBao.getValue())) {
+							// 订单{0}已经在{1}包号中，确认重新封包吗?
+							throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Bale_ChongXinFengBao, cwb, co.getPackagecode());
+						} else {
+							String errorstate = "";
+							for (BaleStateEnum ft : BaleStateEnum.values()) {
+								if (coBale.getBalestate() == ft.getValue()) {
+									errorstate = ft.getText();
+								}
+							}
+							// 操作失败，此订单已经在{0}包号{1}!
+							throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.Bale_Error1, cwb, co.getPackagecode(), errorstate);
+						}
 					}
 				}
 			}
@@ -1542,7 +1550,8 @@ public class BaleService {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
 			this.logger.info("===封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
-
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
 			/*
 			 * long count = this.orderBackCheckDAO.getOrderbackCheckss(cwb);
 			 * if(count!=0){ throw new CwbException(cwb,
@@ -1569,13 +1578,13 @@ public class BaleService {
 
 			// ==================验证订单的包号=======================
 			this.logger.info("开始验证订单的包号" + co.getPackagecode());
-			this.validateCwbBaleCheck(user, baleno, cwb, co, branchid, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), currentbranchid, FlowOrderTypeEnum.TuiGongYingShangChuKu);
+			this.validateCwbBaleCheck(user, baleno, scancwb, co, branchid, FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), currentbranchid, FlowOrderTypeEnum.TuiGongYingShangChuKu);
 
 		}
 	}
 
 	/**
-	 * 库房出库、退货出站根据包号扫描订单
+	 * 库房出库根据包号扫描订单
 	 *
 	 * @param baleno
 	 * @param cwb
@@ -1601,7 +1610,45 @@ public class BaleService {
 			CwbOrder cwbOrder = this.cwbOrderService.outWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, iszhongzhuanout, false);
 		}
 	}
+	
+	/**
+	 * 退货出站根据包号扫描订单
+	 *
+	 * @param baleno
+	 * @param cwb
+	 */
+	@Transactional
+	public void baletuihuochuzhanaddcwb(User user, String baleno, String cwb, long branchid) {
+		if (!StringUtils.isEmpty(baleno) && !StringUtils.isEmpty(cwb)) {
+			// 如果订单存在原来的包号 包号表的订单数-1
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
 
+			this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
+
+			this.cwbOrderService.outUntreadWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, false);
+		}
+	}
+
+	/**
+	 * 退供货商出库根据包号扫描订单
+	 *
+	 * @param baleno
+	 * @param cwb
+	 */
+	@Transactional
+	public void baletuigonghuoshangchukuaddcwb(User user, String baleno, String cwb, long branchid) {
+		if (!StringUtils.isEmpty(baleno) && !StringUtils.isEmpty(cwb)) {
+			// 如果订单存在原来的包号 包号表的订单数-1
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
+
+			this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
+
+			this.cwbOrderService.backtocustom(user, cwb, scancwb, 0, baleno, true);
+		}
+	}
+	
 	/**
 	 * 分拣中转出库根据包号扫描订单
 	 *

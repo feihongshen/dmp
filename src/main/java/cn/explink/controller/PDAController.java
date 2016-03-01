@@ -3,6 +3,7 @@ package cn.explink.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -20,9 +21,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -47,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.controller.ExplinkResponse;
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BaleCwbDao;
 import cn.explink.dao.BaleDao;
@@ -155,6 +154,8 @@ import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @RequestMapping("/PDA")
 @Controller
@@ -5192,6 +5193,8 @@ public class PDAController {
 	public @ResponseBody ExplinkResponse cwbdeliverpod(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwbs") String cwbs,
 			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid, @RequestParam(value = "podresultid", required = true, defaultValue = "0") long podresultid,
 			@RequestParam(value = "paywayid", required = false, defaultValue = "0") long paywayid, @RequestParam(value = "backreasonid", required = false, defaultValue = "0") long backreasonid,
+			@RequestParam(defaultValue = "0", required = false, value = "firstlevelreasonid") long firstlevelreasonid,
+			@RequestParam(defaultValue = "", required = false, value = "deliverstateremark") String deliverstateremark,
 			@RequestParam(value = "leavedreasonid", required = false, defaultValue = "0") long leavedreasonid) throws UnsupportedEncodingException {
 		String statuscode = CwbOrderPDAEnum.OK.getCode();
 		StringBuilder errorMsg = new StringBuilder();
@@ -5204,12 +5207,13 @@ public class PDAController {
 				parameters.put("deliverid", deliverid);
 				parameters.put("podresultid", podresultid);
 				parameters.put("backreasonid", backreasonid);
+				parameters.put("firstlevelreasonid", firstlevelreasonid);
 				parameters.put("leavedreasonid", leavedreasonid);
 				parameters.put("paywayid", paywayid);
 				parameters.put("podremarkid", 0l);
 				parameters.put("posremark", "");
 				parameters.put("checkremark", "");
-				parameters.put("deliverstateremark", "");
+				parameters.put("deliverstateremark", URLDecoder.decode(deliverstateremark, "utf-8"));
 				parameters.put("owgid", 0);
 				parameters.put("sessionbranchid", this.getSessionUser().getBranchid());
 				parameters.put("sessionuserid", this.getSessionUser().getUserid());
@@ -5809,7 +5813,7 @@ public class PDAController {
 			@RequestParam(value = "remarkcontent", required = false, defaultValue = "") String remarkcontent) {
 		String scancwb = cwb;
 		cwb = this.cwbOrderService.translateCwb(cwb);
-		CwbOrder cwbOrder = this.cwbOrderService.customrefuseback(this.getSessionUser(), cwb, scancwb, 0, remarkcontent);
+		CwbOrder cwbOrder = this.cwbOrderService.customrefusebackToStorehouse(this.getSessionUser(), cwb, scancwb, 0, remarkcontent);
 		JSONObject obj = new JSONObject();
 		String customername = this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername();
 		obj.put("customername", customername);

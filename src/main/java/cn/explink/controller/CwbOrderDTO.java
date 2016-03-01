@@ -83,6 +83,7 @@ public class CwbOrderDTO {
 	long getDataFlag; //是否已同步到主表	
 	int mpsallarrivedflag; // '最后一箱标识:1表示最后一箱；0默认';
 	int ismpsflag; // 是否一票多件：0默认；1是一票多件'; 
+	int vipclub;
 	
 	public int getIsmpsflag() {
 		return ismpsflag;
@@ -839,5 +840,13 @@ public class CwbOrderDTO {
 
 	public void setTimelimited(String timelimited) {
 		this.timelimited = timelimited;
+	}
+	
+	public int getVipclub() {
+		return vipclub;
+	}
+
+	public void setVipclub(int vipclub) {
+		this.vipclub = vipclub;
 	}
 }
