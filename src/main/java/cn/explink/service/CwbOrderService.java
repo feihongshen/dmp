@@ -584,6 +584,20 @@ public class CwbOrderService extends BaseOrderService {
 				});
 
 		if (cwbOrderDTO.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
+			//Added by leoliao at 2016-03-01
+			String allTranscwb = cwbOrderDTO.getTranscwb()==null?"":cwbOrderDTO.getTranscwb();
+			String strSplit = this.getSplitstring(allTranscwb);
+			String[] arrTranscwb = allTranscwb.split(strSplit);
+			for(String transcwb : arrTranscwb){
+				String selectCwb = transCwbDao.getCwbByTransCwb(transcwb);
+				if(selectCwb != null && !selectCwb.equals("")){
+					continue;
+				}
+				
+				transCwbDao.saveTranscwb(transcwb, cwbOrderDTO.getCwb());
+			}
+			//Added end
+			
 			this.dataImportService.insertTransCwbDetail(cwbOrderDTO, ed.getEmaildatetime());
 		}
 
