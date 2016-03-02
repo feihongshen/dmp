@@ -324,7 +324,7 @@ public class TransCwbDetailDAO {
 	 * @param emaildate
 	 */
 	public void updateEmaildate(List<String> listTranscwb, String emaildate) {
-		if(listTranscwb == null || listTranscwb.isEmpty()){
+		if(listTranscwb == null || listTranscwb.isEmpty() || emaildate == null || emaildate.trim().equals("")){
 			return;
 		}
 		
