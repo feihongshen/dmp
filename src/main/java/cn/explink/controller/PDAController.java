@@ -6139,16 +6139,29 @@ public class PDAController {
 		List<String> cwbList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(branchid, nextbranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		List<CwbOrder> yisaomiaocwOrders = new ArrayList<CwbOrder>();
 		if ((null != cwbList) && (cwbList.size() > 0)) {
-			String cwbs = "";
-			for (String cwb : cwbList) {
-				cwbs += "'" + cwb + "',";
+			StringBuffer cwbs = null;
+			final int batchSize = 1000;
+			List<String> sublist = new ArrayList<String>();
+			
+			long begin = System.currentTimeMillis();
+			this.logger.info("getOutSum循环开始");
+			for(int i=0; i<(cwbList.size()+batchSize-1)/batchSize; i++){ // 自己分批，解决CPU过高
+				cwbs = new StringBuffer();
+				int upperBound = (i+1)*batchSize;
+				if(upperBound > cwbList.size()) upperBound = cwbList.size();
+				sublist = cwbList.subList(i*batchSize, upperBound);
+				for (String cwb : sublist) {
+					cwbs.append( "'" + cwb + "',");
+				}
+				if (cwbs.length()>0) {
+//					cwbs = cwbs.substring(0, cwbs.lastIndexOf(","));
+					cwbs.deleteCharAt(cwbs.length()-1);
+				}
+				if (cwbs.length() > 0) {
+					yisaomiaocwOrders.addAll( this.cwbDAO.getCwbByCwbsByPage(cwbs.toString(), 0, Page.EXCEL_PAGE_NUMBER));
+				}
 			}
-			if (cwbs.contains(",")) {
-				cwbs = cwbs.substring(0, cwbs.lastIndexOf(","));
-			}
-			if (cwbs.length() > 0) {
-				yisaomiaocwOrders = this.cwbDAO.getCwbByCwbsByPage(cwbs, 0, Page.EXCEL_PAGE_NUMBER);
-			}
+			this.logger.info("getOutSum循环结束，耗时 in ms："+(System.currentTimeMillis()-begin));
 			obj.put("yisaomiaocwOrders", yisaomiaocwOrders);
 			obj.put("customerList", this.customerDAO.getAllCustomers());
 		}

@@ -165,8 +165,9 @@ public class WeisudaService {
 		String customers = StringUtil.nullConvertToEmptyString(request.getParameter("customers"));
 		String openbatchflag = request.getParameter("openbatchflag");
 		String maxBoundCount = request.getParameter("maxBoundCount");
+		String changeBranchcode = request.getParameter("changeBranchcode");
 		String isSend = request.getParameter("isSend");
-
+		
 		weisuda.setCode(code);
 		weisuda.setV(v);
 		weisuda.setSecret(secret);
@@ -188,6 +189,7 @@ public class WeisudaService {
 		weisuda.setOpenbatchflag(Integer.valueOf(openbatchflag));
 		weisuda.setMaxBoundCount(Integer.valueOf(maxBoundCount));
 		weisuda.setCustomers(customers);
+		weisuda.setChangeBranchcode(Integer.valueOf(changeBranchcode));
 		weisuda.setIsSend(Integer.valueOf(isSend));
 		JSONObject jsonObj = JSONObject.fromObject(weisuda);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
