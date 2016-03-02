@@ -276,7 +276,7 @@ public class VipShopGetCwbDataService {
 
 	}
 	
-	private void extractedDataImportByEmaildate(int vipshop_key,
+	public void extractedDataImportByEmaildate(int vipshop_key,
 			VipShop vipshop, Map<String, String> dataMap) {
 		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
 		onelist.add(dataMap);
@@ -294,7 +294,7 @@ public class VipShopGetCwbDataService {
 		}
 	}
 	
-	private void extractedDataImport(int vipshop_key, VipShop vipshop,
+	public void extractedDataImport(int vipshop_key, VipShop vipshop,
 			List<Map<String, String>> orderlist, Map<String, String> dataMap) {
 		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
 		onelist.add(dataMap);
@@ -491,14 +491,14 @@ public class VipShopGetCwbDataService {
 			if(dataMap==null){
 				return getSeq(seq_arrs, seq);
 			}
-			
-			
-			
+						
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
-			}
-
-			
+				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
+				if ("cancel".equalsIgnoreCase(cmd_type)) {
+					return seq_arrs;
+				}
+			}			
 			
 			if (cwbOrderDTO!= null) {
 				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
@@ -512,20 +512,15 @@ public class VipShopGetCwbDataService {
 				}
 			}
 
-			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);
-
-			
-			
+			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);			
 			
 			if (dataMap.get("cwb").isEmpty()) { // 若订单号为空，则继续。
 				seq_arrs = getSeq(seq_arrs, seq);
 				return seq_arrs;
 			}
-			seq_arrs = getSeq(seq_arrs, seq);
+			seq_arrs = getSeq(seq_arrs, seq);			
 			
-			
-			paraList.add(dataMap);
-			
+			paraList.add(dataMap);		
 
 		} catch (Exception e) {
 			this.logger.error("唯品会订单下载处理单条信息异常,cwb=" + order_sn, e);
@@ -938,6 +933,7 @@ public class VipShopGetCwbDataService {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			this.logger.error("获取商品列表异常,单号=" + order_sn, e);
 		}
 	}
