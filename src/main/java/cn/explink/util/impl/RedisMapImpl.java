@@ -30,7 +30,7 @@ public class RedisMapImpl<T1, T2> implements RedisMap<T1, T2> {
 
 	private String cacheName = null;
 
-	public Map<T1, T2> threadMap = new HashMap<T1, T2>();
+	private Map<T1, T2> threadMap = new HashMap<T1, T2>();
 
 	private CacheManager cacheManager = null;
 

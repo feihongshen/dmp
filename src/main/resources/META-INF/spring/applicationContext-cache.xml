@@ -48,7 +48,7 @@
 					<constructor-arg type="java.lang.String" value="userCache" />
 				</bean>
 				<bean class="java.lang.String">
-					<constructor-arg type="java.lang.String" value="scheduledTaskEnv" />
+					<constructor-arg type="java.lang.String" value="ScheduledTaskEnv" />
 				</bean>
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="ServiceUtil" />
@@ -62,7 +62,7 @@
 		<property name="cachePrefix" ref="cachePrefix" />
 		<property name="expires">
 			<map>
-				<entry key="scheduledTaskEnv" value="25000" />
+				<entry key="ScheduledTaskEnv" value="25000" />
 				<entry key="ServiceUtil" value="600" />
 				<entry key="RufengdaController" value="600" />
 			</map>

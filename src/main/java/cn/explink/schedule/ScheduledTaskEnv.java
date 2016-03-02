@@ -1,17 +1,10 @@
 package cn.explink.schedule;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
-import cn.explink.core.utils.SpringContextUtils;
+
+import cn.explink.util.RedisMap;
+import cn.explink.util.impl.RedisMapImpl;
 
 /**
  * 任务调度运行环境，引入CacheManager改造成分布式缓存，后续待完善。
@@ -20,94 +13,11 @@ public class ScheduledTaskEnv {
 
 	private static ScheduledTaskEnv instance = new ScheduledTaskEnv();
 
-	@Autowired
-	private CacheManager cacheManager = null;
-
-	private static final String cacheName = "scheduledTaskEnv";
-
-	private static String macAddress = null;
-
-	private static boolean show_msg = true;
-
-	private void print_exception(Exception e) {
-		if (show_msg) {
-			try {
-				e.printStackTrace();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			show_msg = false;
-		}
-	}
-
-	private InetAddress get_current_ip() {
-		try {
-			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface
-					.getNetworkInterfaces();
-			while (networkInterfaces.hasMoreElements()) {
-				NetworkInterface ni = (NetworkInterface) networkInterfaces
-						.nextElement();
-				Enumeration<InetAddress> nias = ni.getInetAddresses();
-				while (nias.hasMoreElements()) {
-					InetAddress ia = (InetAddress) nias.nextElement();
-					if (!ia.isLinkLocalAddress() && !ia.isLoopbackAddress()
-							&& ia instanceof Inet4Address) {
-						return ia;
-					}
-				}
-			}
-		} catch (SocketException e) {
-			print_exception(e);
-		}
-		return null;
-	}
-
-	private String lookup_mac() {
-		try {
-			InetAddress ip = get_current_ip();
-			System.out.println("[ScheduledTaskEnv] Current IP address : "
-					+ ip.getHostAddress());
-			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-			byte[] mac = network.getHardwareAddress();
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < mac.length; i++) {
-				sb.append(String.format("%02X%s", mac[i],
-						(i < mac.length - 1) ? "-" : ""));
-			}
-			System.out.println("[ScheduledTaskEnv] Current MAC address : "
-					+ sb.toString());
-			if (sb.length() > 0) {
-				return sb.toString();
-			}
-		} catch (SocketException e) {
-			print_exception(e);
-		} catch (Exception e) {
-			print_exception(e);
-		}
-		return null;
-	}
-
-	private synchronized Cache getCache() {
-		if (macAddress == null && (macAddress = lookup_mac()) == null) {
-			return null;
-		}
-		if (cacheManager != null) {
-			return cacheManager.getCache(cacheName);
-		}
-		ApplicationContext ac = SpringContextUtils.getContext();
-		if (ac != null) {
-			cacheManager = ac.getBean("cacheManager", CacheManager.class);
-		}
-		if (cacheManager != null) {
-			return cacheManager.getCache(cacheName);
-		}
-		return null;
-	}
-
 	/**
 	 * 已经提交到线程池的任务id
 	 */
-	private Set<Long> taskIds = new HashSet<Long>();
+	// private Set<Long> taskIds = new HashSet<Long>();
+	private RedisMap<Long, Long> taskIds = new RedisMapImpl<Long, Long>("ScheduledTaskEnv");
 
 	private ScheduledTaskEnv() {
 	}
@@ -117,43 +27,19 @@ public class ScheduledTaskEnv {
 	}
 
 	public void addTask(Long taskId) {
-		Cache cache = getCache();
-		if (cache != null) {
-			cache.put(taskId, macAddress);
-		}
-		taskIds.add(taskId);
+		taskIds.put(taskId, taskId);
 	}
 
 	public void removeTask(Long taskId) {
-		Cache cache = getCache();
-		if (cache != null) {
-			cache.evict(taskId);
-		}
 		taskIds.remove(taskId);
 	}
 
 	public boolean hasTask(Long taskId) {
-		Cache cache = getCache();
-		if (cache != null) {
-			if (cache.get(taskId) != null) {
-				String value = (String) cache.get(taskId).get();
-				if (value != null) {
-					if (value.compareTo(macAddress) != 0) {
-						System.out.println("[ScheduledTaskEnv] taskId : "
-								+ taskId + ", running in : " + value
-								+ ", my id : " + macAddress);
-						return true;
-					} else {
-						System.out.println("[ScheduledTaskEnv] taskId : "
-								+ taskId + ", running in : " + value);
-					}
-				}
-			} else {
-				System.out.println("[ScheduledTaskEnv] taskId : " + taskId
-						+ ", new task.");
-			}
+		Long id = taskIds.get(taskId);
+		if (id != null) {
+			return true;
 		}
-		return taskIds.contains(taskId);
+		return false;
 	}
 
 }
