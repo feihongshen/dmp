@@ -53,6 +53,9 @@
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="serviceUtil" />
 				</bean>
+				<bean class="java.lang.String">
+					<constructor-arg type="java.lang.String" value="RufengdaController" />
+				</bean>
 			</set>
 		</constructor-arg>
 		<property name="usePrefix" value="true" />
@@ -61,6 +64,7 @@
 			<map>
 				<entry key="scheduledTaskEnv" value="25000" />
 				<entry key="serviceUtil" value="600" />
+				<entry key="RufengdaController" value="600" />
 			</map>
 		</property>
 	</bean>

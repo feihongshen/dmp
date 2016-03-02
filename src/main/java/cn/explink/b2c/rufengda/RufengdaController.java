@@ -16,6 +16,8 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.util.RedisMap;
+import cn.explink.util.impl.RedisMapImpl;
 
 @Controller
 @RequestMapping("/rufengda")
@@ -28,12 +30,12 @@ public class RufengdaController {
 	RufengdaService rufengdaService;
 	@Autowired
 	BranchDAO branchDAO;
-	public static Map<String, Integer> threadMap;
+	public static RedisMap<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
-		threadMap = new HashMap<String, Integer>();
+		threadMap = new RedisMapImpl<String, Integer>("RufengdaController");
 		threadMap.put("rufengda_hander", 0);
 	}
-
+	
 	@RequestMapping("/show/{id}")
 	public String jointShow(@PathVariable("id") int key, Model model) {
 		model.addAttribute("rufengdaObject", rufengdaService.getRufengda(key));

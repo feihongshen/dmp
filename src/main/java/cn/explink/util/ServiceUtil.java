@@ -67,14 +67,14 @@ public class ServiceUtil {
 	private static String lookup_mac() {
 		try {
 			InetAddress ip = get_current_ip();
-			System.out.println("[ScheduledTaskEnv] Current IP address : " + ip.getHostAddress());
+			System.out.println("[ServiceUtil] Current IP address : " + ip.getHostAddress());
 			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
 			byte[] mac = network.getHardwareAddress();
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < mac.length; i++) {
 				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
 			}
-			System.out.println("[ScheduledTaskEnv] Current MAC address : " + sb.toString());
+			System.out.println("[ServiceUtil] Current MAC address : " + sb.toString());
 			if (sb.length() > 0) {
 				return sb.toString();
 			}
