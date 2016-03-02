@@ -51,7 +51,7 @@
 					<constructor-arg type="java.lang.String" value="scheduledTaskEnv" />
 				</bean>
 				<bean class="java.lang.String">
-					<constructor-arg type="java.lang.String" value="serviceUtil" />
+					<constructor-arg type="java.lang.String" value="ServiceUtil" />
 				</bean>
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="RufengdaController" />
@@ -63,7 +63,7 @@
 		<property name="expires">
 			<map>
 				<entry key="scheduledTaskEnv" value="25000" />
-				<entry key="serviceUtil" value="600" />
+				<entry key="ServiceUtil" value="600" />
 				<entry key="RufengdaController" value="600" />
 			</map>
 		</property>
