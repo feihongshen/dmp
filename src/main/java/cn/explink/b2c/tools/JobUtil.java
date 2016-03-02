@@ -97,6 +97,8 @@ import cn.explink.service.LogToDayService;
 import cn.explink.service.PunishInsideService;
 import cn.explink.service.fnc.OrderLifeCycleReportService;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.RedisMap;
+import cn.explink.util.impl.RedisMapImpl;
 
 @Component
 public class JobUtil {
@@ -279,9 +281,10 @@ public class JobUtil {
 	@Autowired
 	FlowExpService flowExpService;
 	
-	public static Map<String, Integer> threadMap;
+	// public static Map<String, Integer> threadMap;
+	public static RedisMap<String, Integer> threadMap;	
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
-		JobUtil.threadMap = new HashMap<String, Integer>();
+		JobUtil.threadMap = new RedisMapImpl<String, Integer>("JobUtil");
 		JobUtil.threadMap.put("tmall", 0);
 		JobUtil.threadMap.put("fanke", 0);
 		JobUtil.threadMap.put("yihaodian", 0);

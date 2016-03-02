@@ -56,6 +56,12 @@
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="RufengdaController" />
 				</bean>
+				<bean class="java.lang.String">
+					<constructor-arg type="java.lang.String" value="JobUtil" />
+				</bean>
+				<bean class="java.lang.String">
+					<constructor-arg type="java.lang.String" value="JobUtilController" />
+				</bean>
 			</set>
 		</constructor-arg>
 		<property name="usePrefix" value="true" />
@@ -63,8 +69,11 @@
 		<property name="expires">
 			<map>
 				<entry key="ScheduledTaskEnv" value="25000" />
-				<entry key="ServiceUtil" value="600" />
-				<entry key="RufengdaController" value="600" />
+				<entry key="ServiceUtil" value="7200" />
+				<entry key="RufengdaController" value="7200" />
+				<entry key="JobUtil" value="7200" />
+				<entry key="JobUtilController" value="7200" />
+				
 			</map>
 		</property>
 	</bean>

@@ -62,6 +62,8 @@ import cn.explink.service.LogToDayByWarehouseService;
 import cn.explink.service.LogToDayService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.JSONReslutUtil;
+import cn.explink.util.RedisMap;
+import cn.explink.util.impl.RedisMapImpl;
 
 @Controller
 @RequestMapping("/jobHand")
@@ -151,9 +153,10 @@ public class JobUtilController {
 	@Autowired
 	FlowExpService flowExpService;
 	
-	public static Map<String, Integer> threadMap;
+	// public static Map<String, Integer> threadMap;
+	public static RedisMap<String, Integer> threadMap;	
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
-		threadMap = new HashMap<String, Integer>();
+		threadMap = new RedisMapImpl<String, Integer>("JobUtilController");
 		threadMap.put("tmall", 0);
 		threadMap.put("fanke", 0);
 		threadMap.put("yihaodian", 0);
