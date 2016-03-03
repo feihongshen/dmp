@@ -62,6 +62,12 @@
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="JobUtilController" />
 				</bean>
+				<bean class="java.lang.String">
+					<constructor-arg type="java.lang.String" value="YihaodianController" />
+				</bean>
+				<bean class="java.lang.String">
+					<constructor-arg type="java.lang.String" value="YonghuiController" />
+				</bean>
 			</set>
 		</constructor-arg>
 		<property name="usePrefix" value="true" />
@@ -73,7 +79,8 @@
 				<entry key="RufengdaController" value="7200" />
 				<entry key="JobUtil" value="7200" />
 				<entry key="JobUtilController" value="7200" />
-				
+				<entry key="YihaodianController" value="7200" />
+				<entry key="YonghuiController" value="7200" />
 			</map>
 		</property>
 	</bean>
