@@ -13,4 +13,5 @@
 		status = "OK";
 	}
 	out.print(status);
+	session.invalidate();
 %>
