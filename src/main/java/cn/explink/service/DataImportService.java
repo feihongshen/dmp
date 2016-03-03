@@ -901,8 +901,16 @@ public class DataImportService {
 			transcwbdetail.setEmaildate(emaildate);
 			
 			transCwbDetailDAO.addTransCwbDetail(transcwbdetail);
-		}
-		
-		
+		}		
+	}
+	
+	/**
+	 * 更新发货时间
+	 * @author leo01.liao
+	 * @param listTranscwb
+	 * @param emaildate
+	 */
+	public void updateEmaildate(List<String> listTranscwb, String emaildate) {
+		transCwbDetailDAO.updateEmaildate(listTranscwb, emaildate);
 	}
 }

@@ -586,6 +586,24 @@ public class CwbOrderService extends BaseOrderService {
 		if (cwbOrderDTO.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
 			this.dataImportService.insertTransCwbDetail(cwbOrderDTO, ed.getEmaildatetime());
 		}
+		
+		//Added by leoliao at 2016-03-01
+		String allTranscwb = cwbOrderDTO.getTranscwb()==null?"":cwbOrderDTO.getTranscwb();
+		String strSplit = this.getSplitstring(allTranscwb);
+		String[] arrTranscwb = allTranscwb.split(strSplit);
+		for(String transcwb : arrTranscwb){
+			if(transcwb == null || transcwb.trim().equals("")){
+				continue;
+			}
+			
+			String selectCwb = transCwbDao.getCwbByTransCwb(transcwb);
+			if(selectCwb != null && !selectCwb.equals("")){
+				continue;
+			}
+			
+			transCwbDao.saveTranscwb(transcwb, cwbOrderDTO.getCwb());
+		}
+		//Added end
 
 		this.createFloworder(user, user.getBranchid(), cwbOrderDTO.getCwb(), FlowOrderTypeEnum.DaoRuShuJu, "", System.currentTimeMillis(), cwbOrderDTO.getCwb());
 		this.logger.info("结算区域accountareaid:{}", cwbOrderDTO.getAccountareaid());
