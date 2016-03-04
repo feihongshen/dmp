@@ -739,11 +739,13 @@ public class OrderSelectController {
 				result = pjDeliveryOrderService.getDeliveryOrderTracking(cwb);
 			} catch (OspException e) {
 				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}", e.getMessage());
+				model.addAttribute("aorderFlowViews", fororder);
 				e.printStackTrace();
 				return jspPage;
 			}
 			if ((result == null) || (result.size() == 0)) {
 				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}");
+				model.addAttribute("aorderFlowViews", fororder);
 				return jspPage;
 			}
 			for (PjDeliveryTrackInfo temp : result) {
