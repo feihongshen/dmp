@@ -2468,8 +2468,8 @@
 				<label>PXWL</label>
 				<addresscustomerid>2</addresscustomerid>
 				<addressid>2</addressid>
-				<addresspassword>123</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addresspassword>gzpx</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressguiz</addressWebserviceIp>
 				<expressCarrierCode>30083</expressCarrierCode>
 			</properties>
 		</profile>
