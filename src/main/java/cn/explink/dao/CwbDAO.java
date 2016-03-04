@@ -9516,4 +9516,18 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, flowOrderType, cwb);
 	}
 
+	/**
+	 * 更新发货时间
+	 * @author leo01.liao
+	 * @param cwb
+	 * @param emaildate
+	 * @return
+	 */
+	public int updateEmaildate(String cwb, String emaildate) {
+		if(cwb == null || cwb.trim().equals("") || emaildate == null || emaildate.trim().equals("")){
+			return 0;
+		}
+		String sql = "update express_ops_cwb_detail set emaildate ='" + emaildate + "' where cwb = ?";
+		return this.jdbcTemplate.update(sql, cwb);
+	}
 }
