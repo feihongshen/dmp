@@ -4,6 +4,7 @@ public class ResponseItem {
 	private String itemno;// 序号
 	private String netid;// 配送点id
 	private String netpoint;// 配送点
+	private String tpsnetpoint;//机构编码
 	private String remark;// 备注
 
 	public String getItemno() {
@@ -36,6 +37,14 @@ public class ResponseItem {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public String getTpsnetpoint() {
+		return tpsnetpoint;
+	}
+
+	public void setTpsnetpoint(String tpsnetpoint) {
+		this.tpsnetpoint = tpsnetpoint;
 	}
 
 }

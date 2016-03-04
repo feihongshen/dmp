@@ -147,6 +147,7 @@ public class AddressInterfaceService {
 			res.setItemno(json.getString("itemno"));
 			res.setNetid(json.getString("netid"));
 			res.setNetpoint(json.getString("netpoint"));
+			res.setTpsnetpoint(json.getString("tpsnetpoint"));
 			res.setRemark(json.getString("remark"));
 			reItems.add(res);
 		}
@@ -164,7 +165,9 @@ public class AddressInterfaceService {
 		String xmlbegin = "<response><head>" + "<msg><![CDATA[" + expMsg + "]]></msg>" + "</head>" + "<items>";
 		for (ResponseItem responseItem : responseItems) {
 			xmlbegin += "<item>" + "<itemno>" + responseItem.getItemno() + "</itemno>" + "<netid>" + responseItem.getNetid() + "</netid>" + "<netpoint><![CDATA[" + responseItem.getNetpoint()
-					+ "]]></netpoint>" + "<remark><![CDATA[" + responseItem.getRemark() + "]]></remark>" + "</item>";
+					+ "]]></netpoint>" 
+					+ "<tpsnetpoint><![CDATA[" + responseItem.getTpsnetpoint()+ "]]></tpsnetpoint>"
+					+ "<remark><![CDATA[" + responseItem.getRemark() + "]]></remark>" + "</item>";
 		}
 		String xmlEnd = "</items>" + "</response>";
 		this.logger.info("唯品会请求地址库 返回xml:{}", xmlbegin + xmlEnd);
