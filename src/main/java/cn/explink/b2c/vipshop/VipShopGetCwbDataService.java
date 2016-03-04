@@ -1,6 +1,7 @@
 package cn.explink.b2c.vipshop;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -275,7 +276,7 @@ public class VipShopGetCwbDataService {
 
 	}
 	
-	private void extractedDataImportByEmaildate(int vipshop_key,
+	public void extractedDataImportByEmaildate(int vipshop_key,
 			VipShop vipshop, Map<String, String> dataMap) {
 		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
 		onelist.add(dataMap);
@@ -293,7 +294,7 @@ public class VipShopGetCwbDataService {
 		}
 	}
 	
-	private void extractedDataImport(int vipshop_key, VipShop vipshop,
+	public void extractedDataImport(int vipshop_key, VipShop vipshop,
 			List<Map<String, String>> orderlist, Map<String, String> dataMap) {
 		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
 		onelist.add(dataMap);
@@ -490,14 +491,14 @@ public class VipShopGetCwbDataService {
 			if(dataMap==null){
 				return getSeq(seq_arrs, seq);
 			}
-			
-			
-			
+						
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
 				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
-			}
-
-			
+				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
+				if ("cancel".equalsIgnoreCase(cmd_type)) {
+					return seq_arrs;
+				}
+			}			
 			
 			if (cwbOrderDTO!= null) {
 				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
@@ -511,20 +512,15 @@ public class VipShopGetCwbDataService {
 				}
 			}
 
-			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);
-
-			
-			
+			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);			
 			
 			if (dataMap.get("cwb").isEmpty()) { // 若订单号为空，则继续。
 				seq_arrs = getSeq(seq_arrs, seq);
 				return seq_arrs;
 			}
-			seq_arrs = getSeq(seq_arrs, seq);
+			seq_arrs = getSeq(seq_arrs, seq);			
 			
-			
-			paraList.add(dataMap);
-			
+			paraList.add(dataMap);		
 
 		} catch (Exception e) {
 			this.logger.error("唯品会订单下载处理单条信息异常,cwb=" + order_sn, e);
@@ -689,10 +685,12 @@ public class VipShopGetCwbDataService {
 		if(!"1".equals(is_gatherpack)){ //是否集包模式
 			return null;
 		}
+		/**Commented by leoliao at 2016-03-01
 		//拦截 开启集单模式，总件数只有一件的数据 is_gatherpack=1，is_gathercomp=1，total_pack=1  --->这就是个单包裹(罗冬确认)
 		if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&"1".equals(total_pack)){
 			return null;
 		}
+		*/
 		
 		filterMpsPackageOrderDto(paraList, paraMap);
 		
@@ -700,8 +698,60 @@ public class VipShopGetCwbDataService {
 		if(cwbOrderDTO==null){
 			return null;
 		}
+		
+		/**更新发货时间 leoliao at 2016-03-01
+		 * 产品层面要改成的是这样的：
+		 * 如果TMS推过来的数据有最后一件标志了就把发货时间写入订单表里面&运单表，
+		 * 如果TMS推过来的数据没有最后一件标志那就把发货时间写到运单表里面
+		 */
+		String emaildate = ""; //paraMap.get("remark2"); //发货时间
+		if(paraMap != null){
+			emaildate = paraMap.get("remark2");
+		}else{
+			for(Map<String, String> mapPara : paraList){
+				if(!order_sn.equals(mapPara.get("cwb"))){
+					continue;
+				}
+				
+				emaildate = mapPara.get("remark2");
+				break;
+			}
+		}
+		
+		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp)){
+			//把发货时间写入订单表
+			cwbDAO.updateEmaildate(order_sn, emaildate);
+			
+			//把发货时间写入运单表
+			String[] arrTranscwb = pack_nos.split(",");
+			if(arrTranscwb != null && arrTranscwb.length > 0){
+				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
+			}
+		}else if("1".equals(is_gatherpack) && "0".equals(is_gathercomp)){
+			//把发货时间写入运单表
+			String[] arrTranscwb = pack_nos.split(",");
+			if(arrTranscwb != null && arrTranscwb.length > 0){
+				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
+			}
+		}
+		//更新发货时间结束
+		
 		//一票多件，并且到齐了，排重returen
 		if(cwbOrderDTO!=null&&cwbOrderDTO.getMpsallarrivedflag()==MPSAllArrivedFlagEnum.YES.getValue()){
+			return null;
+		}
+		
+		/**Comment by leoliao at 2016-03-01
+		     兼容以下情况，故不做拦截而是改为一票一件：
+	            先产生is_gatherpack=1,is_gathercomp=0,total_pack=1的订单数据。
+	           后面又产生一条is_gatherpack=1,is_gathercomp=1,total_pack=1的订单数据
+	   **/
+		if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&"1".equals(total_pack)){
+			dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), MPSAllArrivedFlagEnum.NO.getValue(), MpsTypeEnum.PuTong.getValue());
+			if(cwbOrderDTO.getGetDataFlag() != 0){
+				cwbDAO.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), MPSAllArrivedFlagEnum.NO.getValue(),MpsTypeEnum.PuTong.getValue());
+			}
+			//是否需要删除express_ops_transcwb、express_ops_transcwb_detail表的数据?
 			return null;
 		}
 		
@@ -763,10 +813,10 @@ public class VipShopGetCwbDataService {
 			}
 			//后者==前者，移除不是最后一箱的
 			if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
-					
 				if(Integer.valueOf(currentMap.get("mpsallarrivedflag"))==VipGathercompEnum.Default.getValue()
 						&&Integer.valueOf(oldMap.get("mpsallarrivedflag"))==VipGathercompEnum.Default.getValue()){
 					paraList.remove(oldMap);
+					return; //Added by leoliao at 2016-03-01
 				}
 				if(Integer.valueOf(currentMap.get("mpsallarrivedflag"))==VipGathercompEnum.Last.getValue()){
 					paraList.remove(oldMap);
@@ -883,6 +933,7 @@ public class VipShopGetCwbDataService {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			this.logger.error("获取商品列表异常,单号=" + order_sn, e);
 		}
 	}
