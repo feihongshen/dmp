@@ -710,6 +710,7 @@
 		dependency-check="default">
 		<property name="targetBean" value="scheduledTaskService" />
 		<property name="targetMethod" value="processTasks" />
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="scheduledTaskMonitorTimer" class="org.springframework.scheduling.quartz.CronTriggerBean"
