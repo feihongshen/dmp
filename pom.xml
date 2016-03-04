@@ -3148,7 +3148,7 @@
 				<addresscustomerid>5</addresscustomerid>
 				<addressid>5</addressid>
 				<addresspassword>cqhy</addresspassword>
-				<addressWebserviceIp>103.229.214.164/addresscqhy</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.33:8081/addresscqhy</addressWebserviceIp>
 			</properties>
 		</profile>
 
