@@ -8950,4 +8950,11 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD COLUMN `vipclub` INT(2) DEFAULT '0' ;
 		</sql>
 	</changeSet>
+	<changeSet id="wanghao-2016-03-05" author="wanghao">
+<!-- 	有则更新,无则插入 -->
+		<sql>
+			REPLACE INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES 
+('3041', 1, 'DMP定时任务管理', '3041', 'quartz?index&', '30');
+		</sql>
+	</changeSet>
 </databaseChangeLog>
