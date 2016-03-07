@@ -2356,10 +2356,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>XJPX</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addresscustomerid>32</addresscustomerid>
+				<addressid>32</addressid>
+				<addresspassword>xjpx</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressxj</addressWebserviceIp>
 			</properties>
 		</profile>
 
@@ -2468,8 +2468,8 @@
 				<label>PXWL</label>
 				<addresscustomerid>2</addresscustomerid>
 				<addressid>2</addressid>
-				<addresspassword>123</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addresspassword>gzpx</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressguiz</addressWebserviceIp>
 				<expressCarrierCode>30083</expressCarrierCode>
 			</properties>
 		</profile>
@@ -3148,7 +3148,7 @@
 				<addresscustomerid>5</addresscustomerid>
 				<addressid>5</addressid>
 				<addresspassword>cqhy</addresspassword>
-				<addressWebserviceIp>103.229.214.164/addresscqhy</addressWebserviceIp>
+				<addressWebserviceIp>172.20.200.33:8081/addresscqhy</addressWebserviceIp>
 			</properties>
 		</profile>
 
@@ -3940,9 +3940,9 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://172.20.200.105:3306/scpj_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
-				<expressurl.user>root</expressurl.user>
-				<expressurl.password>explinkvipshop</expressurl.password>
+				<expressurl.url>jdbc:mysql://172.20.200.65:3306/scpj_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>apps</expressurl.user>
+				<expressurl.password>apps@pjbest*</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
 				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
@@ -3952,10 +3952,10 @@
 				<word></word>
 				<logoimgurl>images/logo_scpj.png</logoimgurl>
 				<label>SCPJ</label>
-				<addresscustomerid>4</addresscustomerid>
-				<addressid>4</addressid>
-				<addresspassword>hbpj</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addresscustomerid>31</addresscustomerid>
+				<addressid>31</addressid>
+				<addresspassword>scpj</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addresssc</addressWebserviceIp>
 				<expressCarrierCode>30107</expressCarrierCode>
 			</properties>
 		</profile>

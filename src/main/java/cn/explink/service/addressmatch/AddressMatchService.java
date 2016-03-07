@@ -514,14 +514,16 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					b = this.branchDAO.getBranchById(addressList.getJSONObject(0).getLong("station"));
 					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						json.put("itemno", itemno);
-						json.put("netid", b.getTpsbranchcode());
-						json.put("netpoint", (printflag == 0 ? b.getBranchname() : b.getTpsbranchcode()));
+						json.put("netid", b.getBranchid());
+						json.put("netpoint", (printflag == 0 ? b.getBranchname() : b.getBranchcode()));
+						json.put("tpsnetpoint", b.getTpsbranchcode());
 						json.put("remark", "已匹配到站点");
 						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, b.getBranchname());
 					} else {
 						json.put("itemno", itemno);
 						json.put("netid", "");
 						json.put("netpoint", "");
+						json.put("tpsnetpoint", "");
 						json.put("remark", "未匹配到站点");
 						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, "返回的站点不属于系统中站点类型");
 					}
@@ -529,6 +531,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					json.put("itemno", itemno);
 					json.put("netid", "");
 					json.put("netpoint", "");
+					json.put("tpsnetpoint", "");
 					json.put("remark", "未匹配到站点");
 					this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 				}
@@ -536,6 +539,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				json.put("itemno", itemno);
 				json.put("netid", "");
 				json.put("netpoint", "");
+				json.put("tpsnetpoint", "");
 				json.put("remark", "未匹配到站点");
 				this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 			}
@@ -545,6 +549,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			json.put("itemno", itemno);
 			json.put("netid", "");
 			json.put("netpoint", "");
+			json.put("tpsnetpoint", "");
 			json.put("remark", "未匹配到站点");
 			this.logger.error("唯品会未匹配到站点,接口异常", e);
 		}
