@@ -8954,10 +8954,10 @@ CREATE TABLE `cs_complaint_accept` (
 <!-- 	有则更新,无则插入 -->
 		<sql>
 			REPLACE INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES 
-('3041', 1, 'DMP定时任务管理', '3041', 'quartz?index&', '30');
+('3041', 1, 'DMP定时任务管理', '3041', 'quartz?index&amp;', '30');
 
 			REPLACE INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES 
-('3040', 1, 'EAP定时任务管理', '3040', '${eapUrl}quartz.do?index&', '30');
+('3040', 1, 'EAP定时任务管理', '3040', '${eapUrl}quartz.do?index&amp;', '30');
 		</sql>
 	</changeSet>
 </databaseChangeLog>
