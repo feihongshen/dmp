@@ -1,11 +1,11 @@
-<%@page import="cn.explink.util.Page"%>
+<%@page import="cn.explink.util.TuiGongHuoShangPage"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.enumutil.*"%>
 <%@page import="cn.explink.controller.*"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
-Page page_obj = (Page)request.getAttribute("page_obj");
+TuiGongHuoShangPage page_obj = (TuiGongHuoShangPage)request.getAttribute("page_obj");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
 List<CwbOrderView> cwbList = (List<CwbOrderView>)request.getAttribute("cwbList");
 List<Exportmould> exportmouldlist = (List<Exportmould>)request.getAttribute("exportmouldlist");
@@ -248,8 +248,8 @@ function resetData(){
 		<div class="kfsh_tabbtn">
 		</div>
 		<div class="tabbox">
-				<div style="position:relative; z-index:0 " >
-					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
+				<div style="position:relative;" >
+					<div style="width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
 								
@@ -365,6 +365,7 @@ function resetData(){
 				
 				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
 				<div class="iframe_bottom">
+<!-- 					<div> -->
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 						<tr>
 							<td height="38" align="center" valign="middle" bgcolor="#eef6ff">

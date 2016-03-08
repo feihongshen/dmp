@@ -115,6 +115,7 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
+import cn.explink.util.TuiGongHuoShangPage;
 
 @RequestMapping("/cwborder")
 @Controller
@@ -1187,7 +1188,7 @@ public class CwbOrderController {
 	@RequestMapping("/toTuiGongHuoShangSuccess/{page}")
 	public String toTuiGongHuoShangSuccess(Model model, HttpServletRequest request, @PathVariable(value = "page") long page, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid, @RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid, @RequestParam(value = "shenhestate", defaultValue = "-1", required = false) long shenhestate, @RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "enddate", defaultValue = "", required = false) String enddate, @RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow) {
 
-		Page pag = new Page();
+		TuiGongHuoShangPage pag = new TuiGongHuoShangPage();
 		//List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Customer> customerList = this.customerDao.getAllCustomers();
 		//model.addAttribute("branchList", branchList);
@@ -1209,7 +1210,8 @@ public class CwbOrderController {
 			if (!(cwb.equals("") && begindate.equals(""))) {
 				orList = this.orderbackRecordDao.getCwbOrdersByCwbspage(page, cwbss, cwbtypeid, customerid, shenhestate, begindate, enddate);
 				long count = this.orderbackRecordDao.getCwbOrdersByCwbsCount(cwbss, cwbtypeid, customerid, shenhestate, begindate, enddate);
-				pag = new Page(count, page, Page.ONE_PAGE_NUMBER);
+//				pag = new Page(count, page, Page.ONE_PAGE_NUMBER);//原来pagesize为10
+				pag = new TuiGongHuoShangPage(count, page, TuiGongHuoShangPage.ONE_PAGE_NUMBER);//新需求修改为100
 
 				StringBuffer sb = new StringBuffer();
 				if (orList.size() > 0) {
