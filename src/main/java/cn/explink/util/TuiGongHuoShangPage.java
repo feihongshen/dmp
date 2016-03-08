@@ -15,12 +15,21 @@ public class TuiGongHuoShangPage {
 	private long next;
 	private long maxpage;
 	private long total;
+	private long currentPageRows;//当前页面数据行数
 
 	/**
 	 * @return 上一页页码
 	 */
 	public long getPrevious() {
 		return previous;
+	}
+
+	public long getCurrentPageRows() {
+		return currentPageRows;
+	}
+
+	public void setCurrentPageRows(long currentPageRows) {
+		this.currentPageRows = currentPageRows;
 	}
 
 	/**

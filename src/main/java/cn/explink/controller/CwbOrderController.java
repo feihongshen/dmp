@@ -1229,6 +1229,7 @@ public class CwbOrderController {
 				covList = this.cwborderService.getTuigongSuccessCwbOrderView(coList, orList, customerList);//获取分页查询的view
 			}
 		}
+		pag.setCurrentPageRows(covList.size());
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", pag);
 		model.addAttribute("customerList", customerList);

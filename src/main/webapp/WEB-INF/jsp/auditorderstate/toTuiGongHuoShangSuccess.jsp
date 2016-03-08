@@ -17,14 +17,14 @@ String cwbs = request.getParameter("cwb")==null?"":request.getParameter("cwb");
 <HEAD>
 <TITLE></TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
+<%-- <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" /> --%>
+<%-- <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" /> --%>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
-<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
+<%-- <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" /> --%>
 
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
@@ -248,8 +248,8 @@ function resetData(){
 		<div class="kfsh_tabbtn">
 		</div>
 		<div class="tabbox">
-				<div style="position:relative;" >
-					<div style="width:100%" class="kf_listtop">
+				<div>
+					<div style="width:100%;" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
 								
@@ -363,9 +363,10 @@ function resetData(){
 					</div>
 				</div>
 				
-				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>
-				<div class="iframe_bottom">
-<!-- 					<div> -->
+				<%if(page_obj!=null&&page_obj.getMaxpage()>=1){ %>
+<!-- 				style="position:absolute;" -->
+<!-- 				<div class="iframe_bottom" style="position:absolute;width:100%;"> -->
+					<div>
 					<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 						<tr>
 							<td height="38" align="center" valign="middle" bgcolor="#eef6ff">
@@ -373,13 +374,13 @@ function resetData(){
 								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getPrevious()<1?1:page_obj.getPrevious() %>');$('#searchForm').submit();">上一页</a>　
 								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getNext()<1?1:page_obj.getNext() %>');$('#searchForm').submit();" >下一页</a>　
 								<a href="javascript:$('#searchForm').attr('action','<%=page_obj.getMaxpage()<1?1:page_obj.getMaxpage() %>');$('#searchForm').submit();" >最后一页</a>
-								　共<%=page_obj.getMaxpage() %>页　共<%=page_obj.getTotal() %>条记录 　当前第<select
+								　共<%=page_obj.getMaxpage() %>页 　共<%=page_obj.getTotal() %>条记录 　当前第<select
 										id="selectPg"
 										onchange="$('#searchForm').attr('action',$(this).val());$('#searchForm').submit()">
 										<%for(int i = 1 ; i <=page_obj.getMaxpage() ; i ++ ) {%>
 										<option value="<%=i %>"><%=i %></option>
 										<% } %>
-									</select>页
+									</select>页, 有<%=page_obj.getCurrentPageRows() %>行记录
 							</td>
 						</tr>
 					</table>
