@@ -140,7 +140,7 @@ public class TransCwbDetailDAO {
 		List<TransCwbDetail> transCwbDetailList = new ArrayList<TransCwbDetail>();
 		//Added by leoliao at 2016-03-01
 		if(transCwbList == null || transCwbList.isEmpty()){
-			return transCwbDetailList;
+			return transCwbDetailList; 
 		}
 		//Added end
 		
