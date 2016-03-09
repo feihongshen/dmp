@@ -286,7 +286,7 @@ public class VipShopGetCwbDataService {
 			
 			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
 			if(emaildate == null || emaildate.trim().equals("")){
-				emaildate = DateTimeUtil.getNowDate() + "00:00:00";				
+				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";				
 				dataMap.put("remark4", emaildate);
 			}
 			//Added end
@@ -317,7 +317,7 @@ public class VipShopGetCwbDataService {
 				
 				//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
 				if(emaildate == null || emaildate.trim().equals("")){
-					emaildate = DateTimeUtil.getNowDate() + "00:00:00";
+					emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
 					dataMap.put("remark2", emaildate);
 				}
 				//Added end
