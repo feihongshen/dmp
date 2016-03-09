@@ -24,7 +24,8 @@ public class EpaiApi {
 	private int isPassiveReception;//1主动下载，  2，被动接收
 	private int ispostflag; // 传输方式 0 数据流 1 POST参数
 
-	
+	private int open_ordertrackflag;
+	private String ordertrack_url;
 	
 	public int getIsPassiveReception() {
 		return isPassiveReception;
@@ -136,6 +137,22 @@ public class EpaiApi {
 
 	public void setWarehouseid(long warehouseid) {
 		this.warehouseid = warehouseid;
+	}
+
+	public int getOpen_ordertrackflag() {
+		return open_ordertrackflag;
+	}
+
+	public void setOpen_ordertrackflag(int open_ordertrackflag) {
+		this.open_ordertrackflag = open_ordertrackflag;
+	}
+
+	public String getOrdertrack_url() {
+		return ordertrack_url;
+	}
+
+	public void setOrdertrack_url(String ordertrack_url) {
+		this.ordertrack_url = ordertrack_url;
 	}
 
 }

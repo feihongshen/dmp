@@ -115,10 +115,13 @@ public class WarehouseToCommenDAO {
 		return jdbcTemplate.query(sql, new WarehouseToCommenGroupByRowMapper());
 	}
 
-	public List<WarehouseToCommen> getCommenCwbListByCommencodes(String commencodes, long startbranchid, int outbranchflag) {
+	public List<WarehouseToCommen> getCommenCwbListByCommencodes(String commencodes, long startbranchid, int outbranchflag,int maxCount) {
 		String sql = "select * from  commen_cwb_order  " + " where commencode in(" + commencodes + ") and stateTime='' and outbranchflag=" + outbranchflag;
 		if (startbranchid > 0) {
 			sql += " and startbranchid=" + startbranchid;
+		}
+		if(maxCount>0){
+			sql+=" limit 0,"+maxCount;
 		}
 		return jdbcTemplate.query(sql, new WarehouseToCommenRowMapper());
 	}
