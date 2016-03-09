@@ -2356,10 +2356,10 @@
 				<word></word>
 				<logoimgurl>images/login_logo2.png</logoimgurl>
 				<label>XJPX</label>
-				<addresscustomerid>1</addresscustomerid>
-				<addressid>1</addressid>
-				<addresspassword>gxpx</addresspassword>
-				<addressWebserviceIp>183.61.89.252/address</addressWebserviceIp>
+				<addresscustomerid>32</addresscustomerid>
+				<addressid>32</addressid>
+				<addresspassword>xjpx</addresspassword>
+				<addressWebserviceIp>103.229.214.164/addressxj</addressWebserviceIp>
 			</properties>
 		</profile>
 
