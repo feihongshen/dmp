@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.OrderbackRecord;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
+import cn.explink.util.TuiGongHuoShangPage;
 
 @Component
 public class OrderbackRecordDao {
@@ -94,7 +95,7 @@ public class OrderbackRecordDao {
 		}
 		sql += w;
 		if (page!=-9) {
-			 sql+=" limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
+			 sql+=" limit " + (page - 1) * TuiGongHuoShangPage.ONE_PAGE_NUMBER + " ," + TuiGongHuoShangPage.ONE_PAGE_NUMBER;
 
 		}
 		return jdbcTemplate.query(sql, new OrderbackRecordMapper());
