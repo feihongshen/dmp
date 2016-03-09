@@ -8960,4 +8960,10 @@ CREATE TABLE `cs_complaint_accept` (
 ('3040', 1, 'EAP定时任务管理', '3040', '${eapUrl}quartz.do?index&amp;', '30');
 		</sql>
 	</changeSet>
+	
+	<changeSet id="wangwei-2016-03-09" author="wangwei">
+		<sql>
+			ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `open_ordertrackflag` INT DEFAULT 0 NULL, ADD COLUMN `ordertrack_url` VARCHAR(100) NULL;
+		</sql>
+	</changeSet>
 </databaseChangeLog>
