@@ -151,7 +151,7 @@ public class WhareHouseToCommonController {
 				}
 				commencodes = commencodes.length() > 0 ? commencodes.substring(0, commencodes.length() - 1) : "";
 			}
-			ok = whareHouseToCommonService.auditCommen(commencodes, startbranchid, outbranchflag);
+			ok = whareHouseToCommonService.auditCommen(commencodes, startbranchid, outbranchflag, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 			ok = "系统内部错误，请检查一下omsPathUrl";
@@ -180,7 +180,7 @@ public class WhareHouseToCommonController {
 				}
 				commencodes = commencodes.length() > 0 ? commencodes.substring(0, commencodes.length() - 1) : "";
 			}
-			ok = whareHouseToCommonService.auditCommen(commencodes, startbranchid, outbranchflag);
+			ok = whareHouseToCommonService.auditCommen(commencodes, startbranchid, outbranchflag, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 			ok = "系统内部错误，请检查一下omsPathUrl";

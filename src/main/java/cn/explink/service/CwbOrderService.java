@@ -4536,6 +4536,14 @@ public class CwbOrderService extends BaseOrderService {
 					}
 					if (newMPSOrder) {
 						this.handleReceiveGoods(user, cwb, transCwb, currentbranchid, deliveryUser, isauto, cwborder, flowOrderTypeEnum, isypdjusetranscwb, true, true);
+						
+						//Added by leoliao at 2016-03-09 解决领货后数据没到一体机的问题
+						try{
+							this.createFloworder(user, currentbranchid, cwborder, FlowOrderTypeEnum.FenZhanLingHuo, "", System.currentTimeMillis(), transCwb, newMPSOrder);
+						}catch(Exception ex){
+							this.logger.error("一票多件发送给OMS系统出错：error send to jms, cwb=" + cwborder.getCwb(), ex);
+						}
+						//Added end
 					}
 				}
 			} else {
