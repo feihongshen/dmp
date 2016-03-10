@@ -283,6 +283,14 @@ public class VipShopGetCwbDataService {
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
 			String emaildate = dataMap.get("remark4").toString();
+			
+			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+			if(emaildate == null || emaildate.trim().equals("")){
+				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";				
+				dataMap.put("remark4", emaildate);
+			}
+			//Added end
+			
 			long warehouseid = vipshop.getWarehouseid();
 			this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
 
@@ -306,6 +314,14 @@ public class VipShopGetCwbDataService {
 				this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
 			}else{
 				String emaildate = dataMap.get("remark2").toString();
+				
+				//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+				if(emaildate == null || emaildate.trim().equals("")){
+					emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
+					dataMap.put("remark2", emaildate);
+				}
+				//Added end
+				
 				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
 			}
 			this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
