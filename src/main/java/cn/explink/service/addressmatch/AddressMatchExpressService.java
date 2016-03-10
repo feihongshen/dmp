@@ -226,7 +226,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 				if (set.size() == 1) {
 
 					Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
-					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
+					if (null != b && (b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						return b;
 					}
 				}
@@ -268,8 +268,8 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 			OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(cwb);
 			if (mappingresult != null) {
 				deliveryStationList = mappingresult.getDeliveryStationList();
-				if (deliveryStationList.size() == 0) {
-					this.logger.info("预订单自动匹配站点功能，未匹配到站点！");
+				if (null == deliveryStationList || deliveryStationList.size() == 0) {
+					this.logger.error("预订单[" + cwb + "]自动匹配站点功能，未匹配到站点！");
 					return null;
 				}
 				for (DeliveryStationVo desvo : deliveryStationList) {
