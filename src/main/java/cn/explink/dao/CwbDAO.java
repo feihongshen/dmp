@@ -1199,15 +1199,15 @@ public class CwbDAO {
 	 */
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
-//			return this.jdbcTemplate
-//					.queryForObject(
-//							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
-//							new CwbMapper(), cwb);
-			
 			return this.jdbcTemplate
 					.queryForObject(
-							"SELECT * from express_ops_cwb_detail where cwb=? and state=1",
+							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
 							new CwbMapper(), cwb);
+//			暂时恢复悲观锁，观察中 //TODO
+//			return this.jdbcTemplate
+//					.queryForObject(
+//							"SELECT * from express_ops_cwb_detail where cwb=? and state=1",
+//							new CwbMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -9529,5 +9529,10 @@ public class CwbDAO {
 		}
 		String sql = "update express_ops_cwb_detail set emaildate ='" + emaildate + "' where cwb = ?";
 		return this.jdbcTemplate.update(sql, cwb);
+	}
+	
+	public List<CwbOrder> getCwbOrderListByStatusAndCustomerId(long flowordertype,long customerid,long maxCount) {/*state=1*/
+		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  WHERE state=1 AND customerid=? AND flowordertype=? "
+				+ " and deliverybranchid>0 ORDER BY opscwbid LIMIT 0,?  ", new CwbMapper(),customerid,flowordertype,maxCount);
 	}
 }

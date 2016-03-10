@@ -54,6 +54,8 @@ public class EpaiApiService {
 		pc.setIsopenflag(Integer.valueOf(request.getParameter("isopenflag")));
 		pc.setIsfeedbackflag(Integer.valueOf(request.getParameter("isfeedbackflag")));
 		pc.setIspostflag(Integer.valueOf(request.getParameter("ispostflag")));
+		pc.setOpen_ordertrackflag(Integer.valueOf(request.getParameter("open_ordertrackflag")));
+		pc.setOrdertrack_url(request.getParameter("ordertrack_url"));
 
 		return pc;
 	}
