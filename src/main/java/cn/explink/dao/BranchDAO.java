@@ -230,7 +230,13 @@ public class BranchDAO {
 				.query("SELECT * from express_set_branch where branchcode=? and branchcode <> '' ",
 						new BranchRowMapper(), branchcode);
 	}
-
+	
+	public List<Branch> getBranchByTpsBranchcodeCheck(String tpsbranchcode) {
+		return this.jdbcTemplate
+				.query("SELECT * from express_set_branch where tpsbranchcode=? and tpsbranchcode <> '' ",
+						new BranchRowMapper(), tpsbranchcode);
+	}
+	
 	public List<Branch> getBranchByBranchcode(String branchcode) {
 		return this.jdbcTemplate
 				.query("SELECT * from express_set_branch where branchcode=? and branchcode <> '' and brancheffectflag='1' ",
