@@ -4,8 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -15,6 +18,8 @@ public class EpaiApiDAO {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final class EpaiApier implements RowMapper<EpaiApi> {
 		@Override
@@ -106,6 +111,9 @@ public class EpaiApiDAO {
 		try {
 			String sql = "select * from b2c_set_epaiapi where b2cid=" + b2cid;
 			expt = jdbcTemplate.queryForObject(sql, new EpaiApier());
+		} catch (EmptyResultDataAccessException e) {
+			logger.warn(e.getMessage());
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -118,6 +126,9 @@ public class EpaiApiDAO {
 		try {
 			String sql = "select * from b2c_set_epaiapi where usercode='"+userCode+"'";
 			expt = jdbcTemplate.queryForObject(sql, new EpaiApier());
+		} catch (EmptyResultDataAccessException e) {
+			logger.warn(e.getMessage());
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -144,6 +155,9 @@ public class EpaiApiDAO {
 		try {
 			String sql = "select * from b2c_set_epaiapi where customerid=? limit 1";
 			expt = jdbcTemplate.queryForObject(sql, new EpaiApier(),customerid);
+		} catch (EmptyResultDataAccessException e) {
+			logger.warn(e.getMessage());
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
