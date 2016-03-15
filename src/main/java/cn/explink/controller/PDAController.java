@@ -577,6 +577,8 @@ public class PDAController {
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 
+		//历史未到货用 2016-3-12
+		String flowordertypesHis = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() + "," + FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue() + ","
 				+ FlowOrderTypeEnum.DingDanLanJie.getValue()
                 // add by 王志宇 在今日未到货中添加揽件出站判断条件
@@ -599,7 +601,7 @@ public class PDAController {
 		// 今日未到货list
 		List<CwbDetailView> jinriweidaohuoViewlist = this.getcwbDetail(jinriweidaohuolist, customerList, showCustomerjSONArray, branchList, 1);
 		// 历史未到货list
-		List<String> lishiweidaohuocwbslist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
+		List<String> lishiweidaohuocwbslist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypesHis, DateTimeUtil.getCurrentDayZeroTime());
 		String lishiweidaocwbs = "";
 		List<CwbOrder> historyweidaohuolist = new ArrayList<CwbOrder>();
 		if (lishiweidaohuocwbslist.size() > 0) {

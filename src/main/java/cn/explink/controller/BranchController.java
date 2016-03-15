@@ -138,12 +138,16 @@ public class BranchController {
 	public @ResponseBody String createFile(@RequestParam(value = "Filedata", required = false) MultipartFile file, @RequestParam(value = "functionids", required = false) List<String> functionids, Model model, HttpServletRequest request) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		} else if ((tpscodeList != null) && (tpscodeList.size() > 0)) {
+			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, file, functionids);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
@@ -151,7 +155,7 @@ public class BranchController {
 			}
 			long branchid = this.branchDAO.creBranch(bh);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh);
+				this.branchService.addzhandianToAddress(branchid, bh,null);
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -181,12 +185,16 @@ public class BranchController {
 	public @ResponseBody String create(Model model, HttpServletRequest request, @RequestParam(value = "functionids", required = false) List<String> functionids) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		} else if ((tpscodeList != null) && (tpscodeList.size() > 0)) {
+			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, null, functionids);
 
@@ -195,7 +203,7 @@ public class BranchController {
 			}
 			long branchid = this.branchDAO.creBranch(bh);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh);
+				this.branchService.addzhandianToAddress(branchid, bh,null);
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -236,22 +244,27 @@ public class BranchController {
 
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		String oldbranchname = this.branchDAO.getBranchById(branchid).getBranchname();
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null) && (codeList.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		}else if ((tpscodeList != null) && (tpscodeList.size() > 0) && (tpscodeList.get(0).getBranchid() != branchid)) {
+			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, file, wavh, functionids);
 			branch.setBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
+			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
 			this.branchDAO.saveBranch(branch);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch);
+				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -283,26 +296,31 @@ public class BranchController {
 	public @ResponseBody String save(@PathVariable("id") long branchid, @RequestParam(value = "functionids", required = false) List<String> functionids, @RequestParam(value = "wavh", required = false) String wavh, Model model, HttpServletRequest request) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		String oldbranchname = this.branchDAO.getBranchById(branchid).getBranchname();
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null) && (codeList.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		}else if ((tpscodeList != null) && (tpscodeList.size() > 0) && (tpscodeList.get(0).getBranchid() != branchid)) {
+			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, null, wavh, functionids);
 			branch.setBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
-			if (!branchname.equals(this.branchDAO.getBranchByBranchid(branchid).getBranchname())) {
+			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
+			if (!branchname.equals(oldBranch.getBranchname())) {
 				this.cwbDAO.saveCwbOrderByExcelbranch(branchname, branchid);
 			}
 
 			this.branchDAO.saveBranchNoFile(branch);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch);
+				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -452,7 +470,7 @@ public class BranchController {
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this.getSessionUser().getUsername(), branchid);
 		if (branch.getBrancheffectflag().equals("1")) {
-			this.branchService.addzhandianToAddress(branchid, branch);
+			this.branchService.addzhandianToAddress(branchid, branch,null);
 		} else {
 			this.branchService.delBranch(branchid);
 		}

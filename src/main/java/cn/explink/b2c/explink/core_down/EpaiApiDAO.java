@@ -53,7 +53,7 @@ public class EpaiApiDAO {
 
 			list = jdbcTemplate.query(sql, new EpaiApier());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		return list;
 
@@ -91,7 +91,7 @@ public class EpaiApiDAO {
 			jdbcTemplate.update(sql, pc.getUserCode(), pc.getCustomerid(), pc.getGetOrder_url(), pc.getCallBack_url(), pc.getFeedback_url(), pc.getPrivate_key(), pc.getWarehouseid(),
 					pc.getPageSize(), pc.getIsopenflag(), pc.getIspostflag(),pc.getIsPassiveReception(),pc.getOpen_ordertrackflag(),pc.getOrdertrack_url());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 
 	}
@@ -101,7 +101,7 @@ public class EpaiApiDAO {
 			String sql = "delete from b2c_set_epaiapi where b2cid=" + b2cid;
 			jdbcTemplate.update(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 
 	}
@@ -115,7 +115,7 @@ public class EpaiApiDAO {
 			logger.warn(e.getMessage());
 			return null;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		return expt;
 
@@ -130,7 +130,7 @@ public class EpaiApiDAO {
 			logger.warn(e.getMessage());
 			return null;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		return expt;
 	}
@@ -144,7 +144,7 @@ public class EpaiApiDAO {
 					pc.getPageSize(), pc.getIsopenflag(), pc.getIsfeedbackflag(), pc.getIspostflag(),pc.getIsPassiveReception(),
 					pc.getOpen_ordertrackflag(),pc.getOrdertrack_url(),b2cid);
 		} catch (DataAccessException e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 
 	}
@@ -159,7 +159,7 @@ public class EpaiApiDAO {
 			logger.warn(e.getMessage());
 			return null;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info(e.getMessage());
 		}
 		return expt;
 

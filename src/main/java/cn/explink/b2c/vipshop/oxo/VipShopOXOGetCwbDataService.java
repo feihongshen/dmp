@@ -278,8 +278,13 @@ public class VipShopOXOGetCwbDataService {
 		cwbOrder.setCustomerid(Long.valueOf(vipshop.getCustomerids())); //客户id
 		//cwbOrder.setStartbranchid(vipshop.getWarehouseid());
 		
-		//团购标识
-		cwbOrder.setVipclub(order.getVipClub().equals("3")?1:0);
+		if(order.getVipClub()==null){
+			//团购标识
+			cwbOrder.setVipclub(0);
+		}else{
+			//团购标识
+			cwbOrder.setVipclub(order.getVipClub().equals("3")?1:0);
+		}
 		
 	}
 	

@@ -955,6 +955,7 @@ function submitBranchLoad() {
 	$('#swfupload-control').swfupload('addPostParam', 'sitetype', $("#sitetype", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchname', $("#branchname", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchcode', $("#branchcode", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'tpsbranchcode', $("#tpsbranchcode", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'caiwuid', $("#caiwuid", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchcontactman', $("#branchcontactman", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchphone', $("#branchphone", parent.document).val());

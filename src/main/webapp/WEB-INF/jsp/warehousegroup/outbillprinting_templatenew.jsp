@@ -204,7 +204,7 @@ function nowprint(){
 				<o:p></o:p>
 			</span> </span></td>
 			<c:if test="${!(baleno eq null)}">
-			<td align="right"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;font-size: 9.5000pt;">包号:</span</td>
+			<td align="right"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;font-size: 9.5000pt;">包号:</span></td>
 			<td align="left"><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;font-size: 9.5000pt;" id="baleno">${baleno}</span></td>
 		</c:if>
 		<%} %>

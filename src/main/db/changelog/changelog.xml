@@ -8963,7 +8963,8 @@ CREATE TABLE `cs_complaint_accept` (
 	
 	<changeSet id="wangwei-2016-03-09" author="wangwei">
 		<sql>
-			ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `open_ordertrackflag` INT DEFAULT 0 NULL, ADD COLUMN `ordertrack_url` VARCHAR(100) NULL;
+			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'open_ordertrackflag', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `open_ordertrackflag` INT DEFAULT 0 NULL;');
+			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'ordertrack_url', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `ordertrack_url` VARCHAR(100) NULL;');
 		</sql>
 	</changeSet>
 </databaseChangeLog>
