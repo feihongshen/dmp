@@ -725,7 +725,11 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 
 				doReq.setCneeProv(embracedOrderVO.getConsignee_provinceName());
 				doReq.setCneeCity(embracedOrderVO.getConsignee_cityName());
-				doReq.setCneeAddr(embracedOrderVO.getConsignee_adress());
+				
+				String address = StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_provinceName()) + StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_cityName()) + StringUtil
+						.nullConvertToEmptyString(embracedOrderVO.getConsignee_countyName()) + StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_townName()) + StringUtil
+						.nullConvertToEmptyString(embracedOrderVO.getConsignee_adress());
+				doReq.setCneeAddr(address);
 				if (StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone())) {
 					doReq.setCneeMobile(embracedOrderVO.getConsignee_cellphone());
 				}
