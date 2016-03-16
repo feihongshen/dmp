@@ -147,25 +147,24 @@ public class VipshopInsertCwbDetailTimmer {
 	}
 
 	private void ImportSignOrder(String customerid, long warehouseId, CwbOrderDTO cwbOrder, VipShop vipshop) {
-
 		CwbOrder order = cwbDAO.getCwbByCwb(cwbOrder.getCwb());
 		if (order != null) { // 要合单子
 			//Added by leoliao at 2016-0316 同步临时表的信息（做一个信息补偿）
-			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCwb());
+			CwbOrderDTO cwbOrderNew = dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCwb());
 			
 			//临时表已集齐但业务表未集齐的一票多件订单需要做信息补偿
 			if(order.getIsmpsflag() == MpsTypeEnum.YiPiaoDuoJian.getValue() && order.getMpsallarrivedflag() != MPSAllArrivedFlagEnum.YES.getValue()
-			   && cwbOrderDTO != null && cwbOrderDTO.getMpsallarrivedflag() == MPSAllArrivedFlagEnum.YES.getValue() ){
+			   && cwbOrderNew != null && cwbOrderNew.getMpsallarrivedflag() == MPSAllArrivedFlagEnum.YES.getValue() ){
 				
 				String strCwb       = order.getCwb();
-				String strTranscwbs = cwbOrderDTO.getTranscwb();
-				int    totalPack    = cwbOrderDTO.getSendcargonum();
+				String strTranscwbs = cwbOrderNew.getTranscwb();
+				int    totalPack    = cwbOrderNew.getSendcargonum();
 				
 				//一票多件订单需要做信息补偿
 				cwbDAO.updateTmsPackageCondition(strCwb, strTranscwbs, totalPack, MPSAllArrivedFlagEnum.YES.getValue(), MpsTypeEnum.YiPiaoDuoJian.getValue());
 
 				//添加订单与运单关联记录
-				String allTranscwb = cwbOrderDTO.getTranscwb()==null?"":cwbOrderDTO.getTranscwb();
+				String allTranscwb = cwbOrderNew.getTranscwb()==null?"":cwbOrderNew.getTranscwb();
 				String strSplit    = cwbOrderService.getSplitstring(allTranscwb);
 				String[] arrTranscwb = allTranscwb.split(strSplit);
 				for(String transcwb : arrTranscwb){
@@ -180,7 +179,7 @@ public class VipshopInsertCwbDetailTimmer {
 				}
 				
 				//添加运单信息(该方法已经做了防重处理)
-				this.dataImportService.insertTransCwbDetail(cwbOrderDTO, order.getEmaildate());
+				this.dataImportService.insertTransCwbDetail(cwbOrderNew, order.getEmaildate());
 			}
 			//Added end
 			
@@ -192,9 +191,24 @@ public class VipshopInsertCwbDetailTimmer {
 			long warehouseid = warehouse_id != 0 ? warehouse_id : dataImportService_B2c.getTempWarehouseIdForB2c(); // 获取虚拟库房
 																													// Id,所有的B2C对接都会导入默认的虚拟库房里面，方便能够统计到。
 			user.setBranchid(warehouseid);
+			
+			//Added by leoliao at 2016-03-16 集包模式的一票多件，需要重新从临时表取数据
+			if(cwbOrder.getIsmpsflag() == MpsTypeEnum.YiPiaoDuoJian.getValue()){
+				logger.info("------Old CwbOrderDTO:sendcarnum={},transcwb={}, mpsallarrivedflag={}------", 
+						    cwbOrder.getSendcargonum(), cwbOrder.getTranscwb(), cwbOrder.getMpsallarrivedflag());
+				
+				CwbOrderDTO cwbOrderNew = dataImportDAO_B2c.getCwbByCwbB2ctemp(cwbOrder.getCwb());
+				if(cwbOrderNew != null){
+					cwbOrder = cwbOrderNew;
+					
+					logger.info("------New CwbOrderDTO:sendcarnum={},transcwb={}, mpsallarrivedflag={}------", 
+							cwbOrderNew.getSendcargonum(), cwbOrderNew.getTranscwb(), cwbOrderNew.getMpsallarrivedflag());
+				}
+			}
+			//Added end
+			
 			EmailDate ed = null;
 			if (vipshop.getIsTuoYunDanFlag() == 0) {
-				
 				if(vipshop.getIsCreateTimeToEmaildateFlag()==1){
 					ed = dataImportService.getEmailDate_B2CByEmaildate(Integer.valueOf(customerid), 0, warehouseid, cwbOrder.getEmaildate());
 				}else{
@@ -207,8 +221,6 @@ public class VipshopInsertCwbDetailTimmer {
 
 			emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
 			cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), warehouseid, user, ed);
-			
-			
 			
 			logger.info("[唯品会]定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
 
