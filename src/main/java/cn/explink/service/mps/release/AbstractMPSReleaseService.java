@@ -47,9 +47,11 @@ public abstract class AbstractMPSReleaseService extends AbstractMPSService {
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue());
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.FenZhanLingHuo.getValue());
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.YiShenHe.getValue());
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue());
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue());
 		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.TuiHuoChuZhan.getValue());
+		AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE.add(FlowOrderTypeEnum.DingDanLanJie.getValue());
 	}
 
 	protected CwbOrder getMPSCwbOrderByTransCwbConsideringMPSSwitchType(String transCwb, String logPrefix) {
