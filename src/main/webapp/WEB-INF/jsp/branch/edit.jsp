@@ -305,8 +305,8 @@
 			 <li><span>邮件：</span><input type="text" name="branchmatter" id="branchmatter" value ="<%=branch.getBranchmatter()%>" maxlength="50" /></li>
 			<!--  <li><span>导出信息设置：</span><input type="hidden" name="" class ="kefu" /></li>
 	         <li><span>查询统计内容设置：</span><input type="hidden" name="" class ="yunying" /></li> -->
-			<li><span><input name="payMethodType" id="tl" type="radio" value="0" checked="<%StringUtil.isEmpty(branch.getCftAccountNo())?"checked":"unchecked" %>"  onclick="payMthodchange(this)"/>通联</span>
-				<span><input name="payMethodType" id="cft" type="radio" value="1" checked="<%StringUtil.isEmpty(branch.getCftAccountNo())?"unchecked":"checked" %>" onclick="payMthodchange(this)"/>财付通</span></li>
+			<li><span><input name="payMethodType" id="tl" type="radio" value="0" checked="checked"  onclick="payMthodchange(this)"/>通联</span>
+				<span><input name="payMethodType" id="cft" type="radio" value="1" onclick="payMthodchange(this)"/>财付通</span></li>
 			<li><span>银行卡账号：</span><input type="text" name="bankCardNo" id="bankCardNo" maxlength="50" onblur="isbranchnum(this)"  value ="<%=branch.getBankCardNo() == null ? "":branch.getBankCardNo()%>"/>*</li>
 			       
 			<li><span>银行代码：</span><select id="bankCode" name="bankCode" class="select1" >
