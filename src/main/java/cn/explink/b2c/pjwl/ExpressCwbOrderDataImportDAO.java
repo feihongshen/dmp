@@ -22,6 +22,7 @@ import org.springframework.stereotype.Repository;
 
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.EmailFinishFlagEnum;
@@ -280,9 +281,9 @@ public class ExpressCwbOrderDataImportDAO {
 		sql.append(" paywayid,length,width,height,");
 		sql.append(" cwbordertypeid,orderflowid,flowordertype,");
 		sql.append(" cargovolume,cwbstate,instationname,state,");
-		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch");
+		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
 		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag) ");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -369,6 +370,7 @@ public class ExpressCwbOrderDataImportDAO {
 				ps.setLong(++i, 0);//下一站目的机构id
 				ps.setLong(++i, ((null != branch)?branch.getBranchid():0L));//配送站点ID
 				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
+				ps.setInt(++i, ((null != branch)?CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue():CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));//是否匹配状态位
 
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
