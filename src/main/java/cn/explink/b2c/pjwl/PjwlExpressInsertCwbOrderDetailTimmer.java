@@ -84,9 +84,9 @@ public class PjwlExpressInsertCwbOrderDetailTimmer {
 			logger.warn("查询临时表-检测到有重复数据,已过滤!订单号：{}", cwbOrder.getCwb());
 		} else {
 			//同步匹配站点
-			Long deliverBranchId = this.matchDeliveryBranch(transOrder.getTransportNo(),transOrder.getCneeAddr());
+			Branch branch = this.matchDeliveryBranch(transOrder.getTransportNo(),transOrder.getCneeAddr());
 			//插入主表
-			expressCwbOrderDataImportDAO.insertCwbOrder(transOrder,deliverBranchId);
+			expressCwbOrderDataImportDAO.insertCwbOrder(transOrder,branch);
 			logger.info("定时器临时表插入detail表成功!cwb={}", transOrder.getTransportNo());
 		}
 		//更新记录
@@ -98,16 +98,15 @@ public class PjwlExpressInsertCwbOrderDetailTimmer {
 	 * @param cneeAddr 收件人地址
 	 * @return
 	 */
-	private Long matchDeliveryBranch(String cwb,String cneeAddr) {
-		Long branchId = 0L;
+	private Branch matchDeliveryBranch(String cwb,String cneeAddr) {
+		Branch branch = null;
 		ExtralInfo4Address info = new ExtralInfo4Address(cwb,1L,cneeAddr);
 		//匹配站点
-		Branch branch = addressMatchExpressService.matchAddress4SinfferTransData(info);
+		branch = addressMatchExpressService.matchAddress4SinfferTransData(info);
 		if (null!=branch) {
-			branchId = branch.getBranchid();
 			executeTpsFeedBackInterface(branch,cwb);
 		}
-		return branchId;
+		return branch;
 	}
 
 	/**
