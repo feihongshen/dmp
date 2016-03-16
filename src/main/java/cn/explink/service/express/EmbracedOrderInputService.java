@@ -85,6 +85,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 	@Autowired
 	CwbOrderService cwbOrderService;
 
+	@SuppressWarnings("serial")
 	Map<String, Integer> checkmMap = new HashMap<String, Integer>() {
 		{
 			this.put("OrderNo", 1);
@@ -416,9 +417,28 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				.nullConvertToEmptyString(embracedOrderVO.getGoods_height()) + "CM");// 俊哥说这个的弄成-1，刘武强-11.06
 		if (this.checkEmbracedVO(embracedOrderVO, this.checkmMap)) {
 			params.put("isadditionflag", 1);
-			params.put("consigneeaddress", StringUtil.nullConvertToEmptyString((String) (params.get("cwbprovince"))) + StringUtil.nullConvertToEmptyString((String) (params.get("cwbcity"))) + StringUtil
-					.nullConvertToEmptyString((String) (params.get("cwbcounty"))) + StringUtil.nullConvertToEmptyString((String) params.get("recstreet")) + StringUtil
-					.nullConvertToEmptyString(embracedOrderVO.getConsignee_adress()));
+			//如果详细地址里面已经含省+市+区，则不再加入省市区
+			String cneeProv = StringUtil.nullConvertToEmptyString((String) (params.get("cwbprovince")));
+			String cneeCity = StringUtil.nullConvertToEmptyString((String) (params.get("cwbcity")));
+			String cneeRegion =StringUtil.nullConvertToEmptyString((String) (params.get("cwbcounty")));
+			String cneeTown = StringUtil.nullConvertToEmptyString((String) params.get("recstreet"));
+			String consigneeaddress = StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_adress());
+			if(null != consigneeaddress){
+				if(null != cneeTown && consigneeaddress.indexOf(cneeTown) < 0){//从地址小的开始处理
+					consigneeaddress = cneeTown + consigneeaddress;
+				}
+				if(null != cneeRegion && consigneeaddress.indexOf(cneeRegion) < 0){
+					consigneeaddress = cneeRegion + consigneeaddress;
+				}
+				if(null != cneeCity && consigneeaddress.indexOf(cneeCity) < 0){
+					consigneeaddress = cneeCity + consigneeaddress;
+				}
+				if(null != cneeProv && consigneeaddress.indexOf(cneeProv) < 0){
+					consigneeaddress = cneeProv + consigneeaddress;
+				}
+			}
+			
+			params.put("consigneeaddress", consigneeaddress);
 			params.put("senderaddress", embracedOrderVO.getConsignee_adress() == null ? "" : StringUtil.nullConvertToEmptyString((String) (params.get("senderprovince"))) + StringUtil
 					.nullConvertToEmptyString((String) (params.get("sendercity"))) + StringUtil.nullConvertToEmptyString((String) (params.get("sendercounty"))) + StringUtil
 					.nullConvertToEmptyString((String) params.get("senderstreet")) + StringUtil.nullConvertToEmptyString(embracedOrderVO.getSender_adress()));
@@ -726,9 +746,27 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				doReq.setCneeProv(embracedOrderVO.getConsignee_provinceName());
 				doReq.setCneeCity(embracedOrderVO.getConsignee_cityName());
 				
-				String address = StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_provinceName()) + StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_cityName()) + StringUtil
-						.nullConvertToEmptyString(embracedOrderVO.getConsignee_countyName()) + StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_townName()) + StringUtil
-						.nullConvertToEmptyString(embracedOrderVO.getConsignee_adress());
+				//如果详细地址里面已经含省+市+区，则不再加入省市区
+				String consigneeProvinceName = embracedOrderVO.getConsignee_provinceName();
+				String consigneeCityName = embracedOrderVO.getConsignee_cityName();
+				String consigneeCountyName = embracedOrderVO.getConsignee_countyName();
+				String consigneeTownName = embracedOrderVO.getConsignee_townName();
+				String address = embracedOrderVO.getConsignee_adress();
+				if(null != address){
+					if(null != consigneeTownName && address.indexOf(consigneeTownName) < 0){//从地址小的开始处理
+						address = consigneeTownName + address;
+					}
+					if(null != consigneeCountyName && address.indexOf(consigneeCountyName) < 0){
+						address = consigneeCountyName + address;
+					}
+					if(null != consigneeCityName && address.indexOf(consigneeCityName) < 0){
+						address = consigneeCityName + address;
+					}
+					if(null != consigneeProvinceName && address.indexOf(consigneeProvinceName) < 0){
+						address = consigneeProvinceName + address;
+					}
+				}
+	
 				doReq.setCneeAddr(address);
 				if (StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone())) {
 					doReq.setCneeMobile(embracedOrderVO.getConsignee_cellphone());
