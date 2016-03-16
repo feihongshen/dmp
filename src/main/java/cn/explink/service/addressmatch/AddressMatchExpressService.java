@@ -41,6 +41,7 @@ import cn.explink.domain.addressvo.DeliveryStationVo;
 import cn.explink.domain.addressvo.OrderAddressMappingResult;
 import cn.explink.domain.addressvo.OrderVo;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.express.AddressMatchEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
@@ -197,6 +198,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 				Map<String, Object> params = new HashMap<String, Object>();
 				params.put("deliverybranchid", branch.getBranchid());
 				params.put("excelbranch", branch.getBranchname());
+				params.put("addresscodeedittype", CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue());
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("cwb", info.getCwb());
 				this.generalDAO.update(params, "express_ops_cwb_detail", map);
