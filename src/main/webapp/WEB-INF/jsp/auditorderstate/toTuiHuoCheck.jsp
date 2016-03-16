@@ -215,7 +215,8 @@ function restData(){
 		</div>
 		<div class="tabbox">
 			<div style="position:relative; z-index:0 " >
-				<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
+				<!-- <div style="position:absolute;  z-index:99; width:100%" class="kf_listtop"> -->
+				<div style="position:absolute;  z-index:99; width:100%" >
 					<div class="kfsh_search">
 						<form action="1" method="POST" id="searchForm">
 							<table>
@@ -332,6 +333,7 @@ function restData(){
 							<%} }%>
 							</tbody>
 					</table>
+					<div style="height:40px;"></div>
 					</div>
 				</div>	
 				<%if(page_obj!=null&&page_obj.getMaxpage()>1){ %>

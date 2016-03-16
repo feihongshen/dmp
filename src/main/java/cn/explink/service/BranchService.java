@@ -194,7 +194,7 @@ public class BranchService {
 	@Produce(uri = "jms:topic:savezhandian")
 	ProducerTemplate savezhandian;
 
-	public void addzhandianToAddress(long branchid, Branch branch) {
+	public void addzhandianToAddress(long branchid, Branch branch,String oldtpsbranchcode) {
 		try {
 			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
 			JSONObject branchToJson = new JSONObject();
@@ -210,6 +210,7 @@ public class BranchService {
 			branchToJson.put("branchprovince", branch.getBranchprovince());
 			branchToJson.put("brancharea", branch.getBrancharea());
 			branchToJson.put("tpsbranchcode", branch.getTpsbranchcode());
+			branchToJson.put("oldtpsbranchcode", oldtpsbranchcode==null?"":oldtpsbranchcode);
 			
 			this.savezhandian.sendBodyAndHeader(null, "branch", branchToJson.toString());
 		} catch (Exception e) {
