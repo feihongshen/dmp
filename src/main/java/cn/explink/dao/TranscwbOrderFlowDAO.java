@@ -159,8 +159,17 @@ public class TranscwbOrderFlowDAO {
 
 	public long getTranscwbOrderFlowByScanCwbCount(String scancwb, String cwb, long flowordertype, long branchid, long nextbranchid) {
 		if (this.isMPSOrder(cwb) == IsmpsflagEnum.no.getValue()) {
+			//Modified by leoliao at 2016-03-15 解决重新打开入库/出库界面时，下一站为空导致订单(或全部运单)扫描完后sendcarnum与scannum不一致的问题
+			String sql = "SELECT COUNT(1) FROM express_ops_transcwb_orderflow WHERE scancwb<>? AND cwb=? AND flowordertype=? " + 
+						 "AND branchid=? AND isnow=1 ";
+			if(nextbranchid > 0){
+				sql += " AND floworderdetail LIKE '%\"nextbranchid\":" + nextbranchid + ",%' ";
+			}
+			
+			/**Commoented by leoliao at 2016-03-15
 			String sql = "SELECT COUNT(1) FROM express_ops_transcwb_orderflow WHERE scancwb<>? AND cwb=? AND flowordertype=? " + "AND branchid=? and floworderdetail LIKE '%\"nextbranchid\":"
 					+ nextbranchid + ",%' AND isnow=1 ";
+			*/
 			return this.jdbcTemplate.queryForLong(sql, scancwb, cwb, flowordertype, branchid);
 		} else {
 			return this.getScanNumByTranscwbOrderFlow(scancwb, cwb, flowordertype, branchid);
