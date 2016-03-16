@@ -41,6 +41,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.type.TypeFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+	
 public class Tools {
 	public final static int DB_OPERATION_MAX = 10000;
 	static ObjectMapper outMapper = new ObjectMapper();
@@ -53,6 +56,8 @@ public class Tools {
 	private static Pattern pIndex = Pattern.compile("\\[(.*?)\\]");
 	static int currNoTimes = 0;
 
+	private static Logger logger = LoggerFactory.getLogger(Tools.class);
+	
 	// 获取默认14位数字+前缀字符
 	public static String getRandomSeq(String prefix) {
 		return Tools.getRandomSeq(prefix, 1).get(0);
@@ -1138,14 +1143,21 @@ public class Tools {
 		Field[] fields = orgionClazz.getDeclaredFields();
 		for (Field field : fields) {
 			String getMethodName = "get" + field.getName().substring(0, 1).toUpperCase() + "" + field.getName().substring(1);
-			Method getMethod = orgionClazz.getDeclaredMethod(getMethodName, null);
-			getMethod.setAccessible(true);
-			Object value = getMethod.invoke(origon, null);
-			if (value != null) {
-				map.put(field.getName(), String.valueOf(value));
-			} else {
-				map.put(field.getName(), "");
+			Method getMethod = null;
+			try{
+				getMethod = orgionClazz.getDeclaredMethod(getMethodName, null);
+			}catch(NoSuchMethodException e){
+				logger.error("属性：" + field.getName() + "的get方法不存在");
 			}
+			if(null != getMethod){
+				getMethod.setAccessible(true);
+				Object value = getMethod.invoke(origon, null);
+				if (value != null) {
+					map.put(field.getName(), String.valueOf(value));
+				} else {
+					map.put(field.getName(), "");
+				}
+			 }
 		}
 
 		Field[] destFields = destClazz.getDeclaredFields();
