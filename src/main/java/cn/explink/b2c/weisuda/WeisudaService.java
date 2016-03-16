@@ -257,14 +257,14 @@ public class WeisudaService {
 			return;
 		}
 		/**
-		 * 如果品骏达反馈回来的结果不是分站滞留，而且反馈结果是以下几种的（配送成功，拒收，上门退成功，上门拒退），不给予处理
+		 * 如果品骏达反馈回来的结果是以下几种的（配送成功，拒收，上门退成功，上门拒退），不给予处理
 		 * added by zhouguoting 2016/3/16 解决反馈状态重复问题
 		 */
-		if((int)podresultid != DeliveryStateEnum.FenZhanZhiLiu.getValue() && (deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || 
+		if(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || 
 				deliverystate.getDeliverystate() == DeliveryStateEnum.JuShou.getValue() || 
 				deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue() ||
-				deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue())){
-			this.logger.info("系统中已存在反馈结果，不允外部系统对接重复的反馈信息，对接结果={},对接报文={}" , DeliveryStateEnum.getByValue((int)podresultid).getText(), datajson);
+				deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue()){
+			this.logger.info("订单已是最终状态，不接收外部系统任何反馈信息，对接结果={},对接报文={}" , DeliveryStateEnum.getByValue((int)podresultid).getText(), datajson);
 			return;
 		}
 		String remark5 = "";
