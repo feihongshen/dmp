@@ -18,17 +18,15 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
-import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
-import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.enumutil.CwbStateEnum;
-import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.MPSAllArrivedFlagEnum;
+import cn.explink.enumutil.MpsTypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
-import cn.explink.util.DateTimeUtil;
+import cn.explink.support.transcwb.TransCwbDao;
 
 @Service
 public class VipshopInsertCwbDetailTimmer {
@@ -54,6 +52,8 @@ public class VipshopInsertCwbDetailTimmer {
 	@Autowired
 	DataImportService dataImportService;
 	
+	@Autowired
+	TransCwbDao transCwbDao;
 	
 
 	/**
@@ -150,6 +150,40 @@ public class VipshopInsertCwbDetailTimmer {
 
 		CwbOrder order = cwbDAO.getCwbByCwb(cwbOrder.getCwb());
 		if (order != null) { // 要合单子
+			//Added by leoliao at 2016-0316 同步临时表的信息（做一个信息补偿）
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCwb());
+			
+			//临时表已集齐但业务表未集齐的一票多件订单需要做信息补偿
+			if(order.getIsmpsflag() == MpsTypeEnum.YiPiaoDuoJian.getValue() && order.getMpsallarrivedflag() != MPSAllArrivedFlagEnum.YES.getValue()
+			   && cwbOrderDTO != null && cwbOrderDTO.getMpsallarrivedflag() == MPSAllArrivedFlagEnum.YES.getValue() ){
+				
+				String strCwb       = order.getCwb();
+				String strTranscwbs = cwbOrderDTO.getTranscwb();
+				int    totalPack    = cwbOrderDTO.getSendcargonum();
+				
+				//一票多件订单需要做信息补偿
+				cwbDAO.updateTmsPackageCondition(strCwb, strTranscwbs, totalPack, MPSAllArrivedFlagEnum.YES.getValue(), MpsTypeEnum.YiPiaoDuoJian.getValue());
+
+				//添加订单与运单关联记录
+				String allTranscwb = cwbOrderDTO.getTranscwb()==null?"":cwbOrderDTO.getTranscwb();
+				String strSplit    = cwbOrderService.getSplitstring(allTranscwb);
+				String[] arrTranscwb = allTranscwb.split(strSplit);
+				for(String transcwb : arrTranscwb){
+					if(transcwb == null || transcwb.trim().equals("")){
+						continue;
+					}
+					
+					String selectCwb = transCwbDao.getCwbByTransCwb(transcwb);
+					if(selectCwb == null || selectCwb.trim().equals("")){
+						transCwbDao.saveTranscwb(transcwb, strCwb);
+					}
+				}
+				
+				//添加运单信息(该方法已经做了防重处理)
+				this.dataImportService.insertTransCwbDetail(cwbOrderDTO, order.getEmaildate());
+			}
+			//Added end
+			
 			logger.warn("[唯品会]查询临时表-检测到有重复数据,已过滤!订单号：{},运单号:{}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
 		} else {
 			User user = new User();
