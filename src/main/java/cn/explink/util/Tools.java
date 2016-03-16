@@ -43,6 +43,9 @@ import org.codehaus.jackson.map.type.TypeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+	
 public class Tools {
 	public final static int DB_OPERATION_MAX = 10000;
 	static ObjectMapper outMapper = new ObjectMapper();
