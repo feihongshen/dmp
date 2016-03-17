@@ -905,7 +905,7 @@ function submitAddBranch(form) {
 		return;
 	}
 
-	$("#update")[0].contentWindow.submitBranchLoad();
+	$("#update")[0].contentWindow.submitBranchLoad(form);
 }
 
 function submitAddCustomer(form) {
@@ -941,7 +941,7 @@ function submitEditBranch(form, key) {
 		submitSaveForm(form);
 		return;
 	}
-	$("#update")[0].contentWindow.submitBranchLoad();
+	$("#update")[0].contentWindow.submitBranchLoad(form);
 }
 
 function initBranch(functionids) {
@@ -949,7 +949,7 @@ function initBranch(functionids) {
 }
 
 // 创建和修改时 如果上传声音文件 泽通过 swfupload插件上传
-function submitBranchLoad() {
+function submitBranchLoad(form) {
 	$("#sub", parent.document).attr("disabled", "disabled");
 	$("#sub", parent.document).val("保存中...");
 	$('#swfupload-control').swfupload('addPostParam', 'sitetype', $("#sitetype", parent.document).val());
@@ -980,6 +980,33 @@ function submitBranchLoad() {
 	$('#swfupload-control').swfupload('addPostParam', 'zhongzhuanid', $("#zhongzhuanid", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'tuihuoid', $("#tuihuoid", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'caiwuid', $("#caiwuid", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'remandtype', $("#remandtype", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'wavh', $("#wavh", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'payMethodType', $("#input[name='payMethodType']", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'branchmatter', $("#branchmatter", parent.document).val());
+	
+	//自动核销字段的获取--通联
+	$('#swfupload-control').swfupload('addPostParam', 'bankCardNo', $("#bankCardNo", parent.document).val());
+//	$('#swfupload-control').swfupload('addPostParam', 'bankCode', $("#bankCode", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'bankCode', getValueByNameFromForm(form, "bankCode"));
+	$('#swfupload-control').swfupload('addPostParam', 'ownerName', $("#ownerName", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'bankAccountType', $("#bankAccountType", parent.document).val());
+	
+	//自动核销字段的获取--财付通
+	$('#swfupload-control').swfupload('addPostParam', 'cftAccountNo', $("#cftAccountNo", parent.document).val());
+//	$('#swfupload-control').swfupload('addPostParam', 'cftBankCode', $("#cftBankCode", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cftBankCode', getValueByNameFromForm(form, "cftBankCode"));
+	$('#swfupload-control').swfupload('addPostParam', 'cftAccountName', $("#cftAccountName", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cftAccountProp', $("#cftAccountProp", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cftCertId', $("#cftCertId", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cftCertType', $("#cftCertType", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'branchid', $("#branchid", parent.document).val());
+	
 	var checkedValues = new Array();
 	$('input[name="functionids"]:checked', parent.document).each(function() {
 		checkedValues.push($(this).val());
@@ -999,6 +1026,19 @@ function submitBranchLoad() {
 	$('#swfupload-control').swfupload('addPostParam', 'credit', $("#credit", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'backtime', $("#backtime", parent.document).val());
 	$('#swfupload-control').swfupload('startUpload');
+}
+
+function getValueByNameFromForm(form, name){
+	if(!!form) {
+		var serializedDataArray = $(form).serializeArray();
+		for(var i = 0; i<serializedDataArray.length; i++){
+			var param = serializedDataArray[i];
+			if(name == param["name"]) {
+				return param["value"];
+			}
+		}
+	}
+	return "";
 }
 
 function submitCustomerLoad() {

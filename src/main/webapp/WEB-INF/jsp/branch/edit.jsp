@@ -358,7 +358,7 @@
 			  <li><span>开户证件类型：</span><select id ="cftCertType" name ="cftCertType" >
 			    <%
 			    	for(PayCerTypeEnum temp: PayCerTypeEnum.getAllStatus()){
-			    		if(temp.getValue()== branch.getCftAccountProp()){
+			    		if(temp.getValue()== branch.getCftCertType()){
 							%>
 							<option value ="<%=temp.getValue()%>"  selected ="selected"><%=temp.getText()%></option>
 					<%}else{ %>
