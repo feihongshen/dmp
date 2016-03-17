@@ -128,7 +128,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	        			if(msgid==0){
 	        				msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
 	        			}
-	        	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), "下发订单数据转业务异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+	        	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), "下发订单数据转业务异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0,"");
 	        	        error.setBusiness_id(order.getCustOrderNo());
 	        	        error.setException_info(ex.getMessage());
 	        	        error.setMessage(msg);
@@ -152,7 +152,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
         	if(msgid==0){
         		msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
         	}
-        	long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", "TPS自动化订单下发数据异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+        	long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", "TPS自动化订单下发数据异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0,"");
         	AutoMQExceptionDto mqe=new AutoMQExceptionDto();
 			mqe.setBusiness_id("");
 			mqe.setException_info(ex.getMessage());

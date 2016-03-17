@@ -78,7 +78,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	        	
 	        	try{
 		        	long msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.fenjianzhuangtai.getValue());
-		        	detailId=this.autoExceptionService.createAutoExceptionDetail("","",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+		        	detailId=this.autoExceptionService.createAutoExceptionDetail("","",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0,"");
 	        	} catch (Exception ee) {
 	        		logger.error("createAutoException error",ee);
 	        	}
@@ -119,7 +119,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 		        	long refid=err.getRefid();//
 		        	try{
 			        	long msgid=this.autoExceptionService.createAutoExceptionMsg(errorMsg, AutoInterfaceEnum.fankui_fanjian.getValue());
-			        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"","DMP反馈异常到TPS时出错."+et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid);
+			        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"","DMP反馈异常到TPS时出错."+et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid,"");
 					} catch (Exception ee) {
 		        		logger.error("createAutoException error",ee);
 		        	}
@@ -175,7 +175,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 					if(msgid==0){
 						msgid=this.autoExceptionService.createAutoExceptionMsg(msg, AutoInterfaceEnum.fenjianzhuangtai.getValue());
 					}
-					detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),"",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
+					detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),"",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,"");
 				} catch (Exception ee) {
 	        		logger.error("createAutoException error",ee);
 	        	}

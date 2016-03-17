@@ -1,5 +1,8 @@
 package cn.explink.b2c.auto.order.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,8 +29,17 @@ public class AutoExceptionService {
 	}
 	
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
-	public long createAutoExceptionDetail(String cwb, String transportno, String errinfo, int status,long msgid,long refid) {
-		return this.exceptionCwbDAO.createAutoExceptionDetail(cwb, transportno, errinfo, status,msgid,refid);
+	public long createAutoExceptionDetail(String cwb, String transportno, String errinfo, int status,long msgid,long refid,String operatetype) {
+		return this.exceptionCwbDAO.createAutoExceptionDetail(cwb, transportno, errinfo, status,msgid,refid,operatetype);
+	}
+	
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	public long updateAutoExceptionDetail(long id,int status,String errorInfo,long msgid,String msg) {
+		 return this.exceptionCwbDAO.updateAutoExceptionDetail(id, status, errorInfo,msgid,msg);
+	}
+	
+	public List<Map<String,Object>> queryAutoExceptionDetail(String cwb,String transportno,String operateType){
+		return this.exceptionCwbDAO.queryAutoExceptionDetail(cwb, transportno, operateType);
 	}
 	
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
@@ -38,8 +50,8 @@ public class AutoExceptionService {
 	@Transactional
 	public long createAutoDispatchTimeoutException(AutoOrderStatusTmpVo vo,String errinfo){
 		long msgid=this.exceptionCwbDAO.createAutoExceptionMsg(vo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
-		long detailid=this.exceptionCwbDAO.createAutoExceptionDetail(vo.getCwb(), "", errinfo, AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
-		autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getCwb(),vo.getOperatetype());
+		long detailid=this.exceptionCwbDAO.createAutoExceptionDetail(vo.getCwb(), "", errinfo, AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperatetype());
+		autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getCwb(),vo.getOperatetype(),vo.getTransportno());
 		return detailid;
 	}
 }
