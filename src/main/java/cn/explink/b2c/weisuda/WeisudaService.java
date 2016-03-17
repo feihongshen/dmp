@@ -257,7 +257,7 @@ public class WeisudaService {
 			return;
 		}
 		/**
-		 * 如果品骏达反馈回来的结果是以下几种的（配送成功，拒收，上门退成功，上门拒退），不给予处理
+		 * 如果系统订单当前的反馈结果是以下几种的（配送成功，拒收，上门退成功，上门拒退），不再处理品骏达反馈回来的信息。
 		 * added by zhouguoting 2016/3/16 解决反馈状态重复问题
 		 */
 		if(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || 
