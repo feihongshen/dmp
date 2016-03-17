@@ -41,7 +41,7 @@ public class JiontDAO {
 			String sql = "select * from express_set_joint where joint_num=?";
 			jointEntity = jdbcTemplate.queryForObject(sql, new PosMapper(), key);
 		} catch (Exception e) {
-			// e.printStackTrace();
+			 e.printStackTrace();
 		}
 		return jointEntity;
 
