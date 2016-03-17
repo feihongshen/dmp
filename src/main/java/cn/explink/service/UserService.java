@@ -113,7 +113,7 @@ public class UserService {
 		user.setShowmobileflag(request.getParameter("consigneemobile") == null ? 0 : 1);
 		user.setUseremail(StringUtil.nullConvertToEmptyString(request.getParameter("useremail")));
 		user.setUserwavfile(StringUtil.nullConvertToEmptyString(request.getParameter("userwavfile")));
-		user.setPfruleid(Long.parseLong(request.getParameter("pfruleid")));
+		user.setPfruleid(request.getParameter("pfruleid")==null?0:Long.parseLong(request.getParameter("pfruleid")));
 		user.setRoleid(roleid);
 		if ((request.getParameter("isImposedOutWarehouse") != null) && (request.getParameter("isImposedOutWarehouse").length() > 0)) {
 			user.setIsImposedOutWarehouse(Integer.parseInt(StringUtil.nullConvertToEmptyString(request.getParameter("isImposedOutWarehouse"))));
