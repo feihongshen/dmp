@@ -3,7 +3,9 @@ package cn.explink.b2c.auto.order.service;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +44,9 @@ public class AutoOrderStatusService {
 	@Autowired
 	private CwbRouteService cwbRouteService;
 	
-	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,operatetype,msg,createtime,status) values(?,?,?,CURRENT_TIMESTAMP,?)";
+	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,transportno,operatetype,msg,createtime,status) values(?,?,?,?,?)";
 	//private final static String ORDER_STATUS_TMP_UPDATE_SQL="update express_auto_order_status_tmp set status=? where cwb=? and operatetype=? and status=1";
-	private final static String ORDER_STATUS_TMP_DELETE_SQL="delete from express_auto_order_status_tmp where cwb=? and operatetype=?";
+	private final static String ORDER_STATUS_TMP_DELETE_SQL="delete from express_auto_order_status_tmp where cwb=? and transportno=? and operatetype=?";
 
 	private final static String ORDER_STATUS_TMP_QUERY_SQL="SELECT t.* FROM (SELECT * FROM express_auto_order_status_tmp order by createtime LIMIT ?,?) t"
 			+" WHERE EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb)";
@@ -54,17 +56,49 @@ public class AutoOrderStatusService {
 	
 	private final static String ORDER_STATUS_TMP_QUERY_COUNT_SQL="SELECT COUNT(createtime) FROM express_auto_order_status_tmp";
 	
+	private static final String DATE_FORMAT="yyyy-MM-dd HH:mm:ss";
+	
 	@Transactional
-	public void updateAutoOrder(String cwb,BigDecimal cargovolume,BigDecimal cargoweight,String packagecode,long deliverybranchid){
+	public void updateAutoOrder(String cwb,String boxno,BigDecimal cargovolume,BigDecimal cargoweight,String packagecode,long deliverybranchid,boolean isJidan){
+		if(isJidan){
+			//this.getTransCwbDetailDAO() ？
+			String updateWVSql="update express_ops_transcwb_detail set cargovolume=?,carrealweight=? where cwb=? and transcwb=?";
+			
+			//String queryWVSql="select id from express_ops_transcwb_detail where cwb=? and transcwb=?";//state?
+			//String insertWVSql="insert express_ops_transcwb_detail () values()";
+			/*List<Map<String, Object>> list=jdbcTemplate.queryForList(queryWVSql,cwb,boxno);
+			if(list!=null&&list.size()>0){
+				String id=list.get(0).get("id").toString();
+				jdbcTemplate.update(updateWVSql,cargovolume,cargoweight,id);
+			}else{
+				//insert
+			}*/
+			int cnt=jdbcTemplate.update(updateWVSql,cargovolume,cargoweight,cwb,boxno);
+			if(cnt==0){
+				//logger.error("do not find the transcwb detail. cwb={},transcwb={}",cwb,boxno);
+				throw new TranscwbNoFoundException("DMP do not find the transfer order detail data. cwb="+cwb+",boxno="+boxno);
+			}
+			/*else{
+				String sumSql="select cwb,sum(cargovolume) as totalvolume,sum(carrealweight) as totalweight from express_ops_transcwb_detail where cwb=?";
+				Map<String,Object> wvMap=jdbcTemplate.queryForMap(sumSql,cwb);
+				totalCargovolume=(BigDecimal) wvMap.get("totalvolume");
+				totalCargoweight=(BigDecimal) wvMap.get("carrealweight");
+			}*/
+			
+			//重复出入库异常与什么有关？（扫箱号标志，集单标志？）
+			//validateCwbChongFu()
+		}
+		
+		
 		Map<String,Object> paramMap=new HashMap<String,Object>();
 		String sql="";
 		if(cargovolume!=null&&cargovolume.floatValue()>0){
-			sql=sql+"cargovolume=:cargovolume,";
+			sql=sql+"cargovolume=cargovolume+:cargovolume,";//when init value is null???
 			paramMap.put("cargovolume", cargovolume);
 		}
 		
 		if(cargoweight!=null&&cargoweight.floatValue()>0){
-			sql=sql+"carrealweight=:carrealweight,";
+			sql=sql+"carrealweight=carrealweight+:carrealweight,";
 			paramMap.put("carrealweight", cargoweight);
 		}
 		
@@ -138,7 +172,14 @@ public class AutoOrderStatusService {
 			json=jsonarray.toString();
 		}
 
-		this.jdbcTemplate.update(ORDER_STATUS_TMP_SAVE_SQL, vo.getOrder_sn(),vo.getOperate_type(),json,AutoCommonStatusEnum.create.getValue());
+		SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT);
+		Date operateTime=null;
+		try {
+			 operateTime=sdf.parse(vo.getOperate_time());
+		} catch (Exception e) {
+			throw new RuntimeException("parse date error. operate_time="+vo.getOperate_time());
+		}
+		this.jdbcTemplate.update(ORDER_STATUS_TMP_SAVE_SQL, vo.getOrder_sn(),vo.getBox_no(),vo.getOperate_type(),json,operateTime,AutoCommonStatusEnum.create.getValue());
 		
 		
 	}
@@ -149,9 +190,9 @@ public class AutoOrderStatusService {
 	}
 	
 	@Transactional
-	public void completedOrderStatusMsg(int status,String cwb,String operatetype){
+	public void completedOrderStatusMsg(int status,String cwb,String operatetype,String transportno){
 		//this.jdbcTemplate.update(ORDER_STATUS_TMP_UPDATE_SQL, status,cwb,operatetype);
-		this.jdbcTemplate.update(ORDER_STATUS_TMP_DELETE_SQL,cwb,operatetype);
+		this.jdbcTemplate.update(ORDER_STATUS_TMP_DELETE_SQL,cwb,transportno,operatetype);
 	}
 	
 	@Transactional
@@ -199,6 +240,7 @@ public class AutoOrderStatusService {
 		public AutoOrderStatusTmpVo mapRow(ResultSet rs, int rowNum) throws SQLException {
 			AutoOrderStatusTmpVo vo=new AutoOrderStatusTmpVo();
 			vo.setCwb(rs.getString("cwb"));
+			vo.setTransportno(rs.getString("transportno"));
 			vo.setOperatetype(rs.getString("operatetype"));
 			vo.setMsg(rs.getString("msg"));
 			return vo;

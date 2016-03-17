@@ -2,6 +2,7 @@ package cn.explink.b2c.auto.order.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -23,6 +24,8 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AutoInterfaceEnum;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
+import cn.explink.exception.CwbException;
 import cn.explink.enumutil.AutoCommonStatusEnum;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
 import cn.explink.util.DateTimeUtil;
@@ -96,7 +99,7 @@ public class AutoDispatchStatusService {
 	        	String errinfo="DMP分拣状态数据临时表转业务时出错."+ex.getMessage();
 	        	try{
 		        	long msgid=this.autoExceptionService.createAutoExceptionMsg("",AutoInterfaceEnum.fenjianzhuangtai.getValue());
-		        	this.autoExceptionService.createAutoExceptionDetail("","", errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+		        	this.autoExceptionService.createAutoExceptionDetail("","", errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0,"");
 	        	} catch (Exception ee) {
 	        		logger.error("createAutoException error",ee);
 	        	}
@@ -132,7 +135,7 @@ public class AutoDispatchStatusService {
 		        	long refid=err.getRefid();//
 		        	try{
 			        	long msgid=this.autoExceptionService.createAutoExceptionMsg(errorMsg, AutoInterfaceEnum.fankui_fanjian.getValue());
-			        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"",errinfo+et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid);
+			        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"",errinfo+et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid,"");
 					} catch (Exception ee) {
 		        		logger.error("createAutoException error",ee);
 		        	}
@@ -165,7 +168,7 @@ public class AutoDispatchStatusService {
 		if(msgVoList!=null){
 			cnt=msgVoList.size();
 		}
-		logger.info("auto dispatch normal msg num:"+cnt);
+		logger.info("auto dispatch retrieve msg with cwb size:"+cnt);
 		
 		List<AutoMQExceptionDto> errorList=null;
 		if(msgVoList==null||msgVoList.size()<1){
@@ -182,33 +185,61 @@ public class AutoDispatchStatusService {
 				}else{
 					throw new RuntimeException("分拣状态报文中未明的操作类型:"+vo.getOperate_type());
 				}
-				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.success.getValue(),vo.getOrder_sn(),vo.getOperate_type());
+				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.success.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getTransport_no());
 			} catch (Exception e) {
 				logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn(),e);
-				
+				e.printStackTrace();
 				String errinfo="DMP分拣状态数据转业务时出错."+e.getMessage();
 				long detailId=0;
 				try{
 					
-					long msgid=this.autoExceptionService.createAutoExceptionMsg(msgVo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
-					detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),"",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
-					
-					autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getOrder_sn(),vo.getOperate_type());
+					if(e instanceof TranscwbNoFoundException){
+						 List<Map<String,Object>> detailList=this.autoExceptionService.queryAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),vo.getOperate_type());
+						if(detailList!=null&&detailList.size()>0){
+							Map<String,Object> detailMap= detailList.get(0);
+							long msgid=detailMap.get("msgid")==null?0:((Long)detailMap.get("msgid")).longValue();
+							detailId=detailMap.get("id")==null?0:((Long)detailMap.get("id")).longValue();
+							this.autoExceptionService.updateAutoExceptionDetail(detailId, AutoExceptionStatusEnum.xinjian.getValue(), errinfo,msgid,msgVo.getMsg());
+						}else{
+							long msgid=this.autoExceptionService.createAutoExceptionMsg(msgVo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
+							detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperate_type());
+						}
+					}else{
+						long msgid=this.autoExceptionService.createAutoExceptionMsg(msgVo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
+						detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperate_type());
+						
+						autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getTransport_no());
+					}
 				} catch (Exception ee) {
 	        		logger.error("createAutoException error",ee);
 	        	}
 				
-				if(errorList==null){
-					errorList=new ArrayList<AutoMQExceptionDto>();
+				boolean feedbackTps=true;
+				if(e instanceof CwbException){
+					CwbException cwbe=(CwbException) e;
+					if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
+						feedbackTps=false;
+					}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()) {
+						feedbackTps=false;
+					}
 				}
-				AutoMQExceptionDto mqe=new AutoMQExceptionDto();
-				mqe.setBusiness_id(vo.getOrder_sn());
-				mqe.setException_info(errinfo);
-				mqe.setMessage(msgVo.getMsg());
-				mqe.setRefid(detailId);
-				errorList.add(mqe);
+				
+				if(feedbackTps){
+					if(errorList==null){
+						errorList=new ArrayList<AutoMQExceptionDto>();
+					}
+					AutoMQExceptionDto mqe=new AutoMQExceptionDto();
+					mqe.setBusiness_id(vo.getOrder_sn());
+					mqe.setException_info(errinfo);
+					mqe.setMessage(msgVo.getMsg());
+					mqe.setRefid(detailId);
+					errorList.add(mqe);
+				}
 			}
 		}
+		
+		logger.info("auto dispatch msg processed successfully size:"+(cnt-(errorList==null?0:errorList.size())));
+		
 		return errorList;
 	}
 	
@@ -260,12 +291,12 @@ public class AutoDispatchStatusService {
 			    dataList.add(msgVo);
 			} catch (Exception e) {
 	    		logger.error("retrieveOrderStatusMsg json error,cwb="+row.getCwb()+",operatetype="+row.getOperatetype(),e);
-	    		String errinfo="DMP分拣状态数据转业务时出错."+e.getMessage();
+	    		String errinfo="DMP分拣状态json数据转vo时出错."+e.getMessage();
    		
 				long msgid=this.autoExceptionService.createAutoExceptionMsg(row.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
-				this.autoExceptionService.createAutoExceptionDetail(row.getCwb(),"",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
+				this.autoExceptionService.createAutoExceptionDetail(row.getCwb(),row.getTransportno(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,row.getOperatetype());
 				
-				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(), row.getCwb(), row.getOperatetype());
+				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(), row.getCwb(), row.getOperatetype(),row.getTransportno());
 	    	}
 		}
 		return dataList;

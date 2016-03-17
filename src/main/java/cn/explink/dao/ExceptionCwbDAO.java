@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.jtds.jdbc.DateTime;
 
@@ -113,8 +114,8 @@ public class ExceptionCwbDAO {
 		return keyHolder.getKey().longValue();
 	}
 
-	public long createAutoExceptionDetail(final String cwb, final String transportno, final String errinfo, final int status,final long msgid,final long refid) {
-		final String sql = "insert into express_auto_exception_detail (cwb,transportno,errinfo,status,msgid,refid,createtime) " + "values(?,?,?,?,?,?,CURRENT_TIMESTAMP)";
+	public long createAutoExceptionDetail(final String cwb, final String transportno, final String errinfo, final int status,final long msgid,final long refid,final String operatetype) {
+		final String sql = "insert into express_auto_exception_detail (cwb,transportno,errinfo,status,msgid,refid,createtime,operatetype) " + "values(?,?,?,?,?,?,CURRENT_TIMESTAMP,?)";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -130,12 +131,31 @@ public class ExceptionCwbDAO {
 				ps.setInt(4, status);
 				ps.setLong(5, msgid);
 				ps.setLong(6, refid);
-		
+				ps.setString(7, operatetype);
+				
 				return ps;
 			}
 			
 		}, keyHolder);
 		return keyHolder.getKey().longValue();
+	}
+	
+	public long updateAutoExceptionDetail(long id,int status,String errorInfo,long msgid,String msg){
+		String sql = "update express_auto_exception_detail set status=?,errinfo=?,createtime=CURRENT_TIMESTAMP where id=?";
+		jdbcTemplate.update(sql, status,errorInfo,id);
+		
+		String sql2 = "update express_auto_exception set msg=?,createtime=CURRENT_TIMESTAMP where id=?";
+		return jdbcTemplate.update(sql2, msg,msgid);
+	}
+	
+	public long updateAutoExceptionMsg(long id,String msg){
+		String sql = "update express_auto_exception_detail set msg=?,createtime=CURRENT_TIMESTAMP where id=?";
+		return jdbcTemplate.update(sql, msg,id);
+	}
+	
+	public List<Map<String,Object>> queryAutoExceptionDetail(String cwb,String transportno,String operateType){
+		String sql = "select id,msgid from express_auto_exception_detail  where cwb=? and transportno=? and operatetype=?";
+		return jdbcTemplate.queryForList(sql, cwb,transportno,operateType);
 	}
 	
 	public void updateExceptionStatus(String cwb,String transportno,int status){

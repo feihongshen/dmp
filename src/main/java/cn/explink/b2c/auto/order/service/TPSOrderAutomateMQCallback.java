@@ -28,6 +28,8 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.vipshop.VipShop;
+import cn.explink.dao.CustomerDAO;
+import cn.explink.domain.Customer;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
 import cn.explink.enumutil.AutoInterfaceEnum;
@@ -43,8 +45,6 @@ import com.vip.platform.middleware.vms.VMSEventArgs;
  * <p>
  * 类详细描述
  * </p>
- * @author vince.zhou
- * @since 1.0
  */
 public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	
@@ -63,6 +63,8 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	AutoExceptionSender autoExceptionSender;
 	@Autowired
 	TPSOrderHandle tPSOrderHandle;
+	@Autowired
+	CustomerDAO customerDAO;
 	
     protected Logger logger = LoggerFactory.getLogger(TPSOrderAutomateMQCallback.class);
 	
@@ -102,6 +104,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	    			return;
 	    		}
 	        	
+	        	Customer customer=customerDAO.getCustomerById(Long.valueOf(vipshop.getCustomerids()));
 	        	for(TPSOrder order : list){
 	        		//System.out.println(order.getCustOrderNo());
 	        		String[] cwbStr = null;
@@ -119,13 +122,13 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	        				this.logger.info("订单发货数量与箱数不一致！");
 	    					throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"订单发货数量与箱数不一致！");
 	        			}
-	        			tPSOrderHandle.handleOrderData(order,vipshop,vipshop_key,msg);
+	        			tPSOrderHandle.handleOrderData(order,vipshop,vipshop_key,msg,customer.getMpsswitch());
 	        		}catch(Exception ex){
 	        			error=new AutoMQExceptionDto();
 	        			if(msgid==0){
 	        				msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
 	        			}
-	        	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), "下发订单数据转业务异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+	        	        long detailId=this.autoExceptionService.createAutoExceptionDetail(order.getCustOrderNo(),order.getBoxNo(), "下发订单数据转业务异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0,"");
 	        	        error.setBusiness_id(order.getCustOrderNo());
 	        	        error.setException_info(ex.getMessage());
 	        	        error.setMessage(msg);
@@ -149,7 +152,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
         	if(msgid==0){
         		msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.dingdanxiafa.getValue());
         	}
-        	long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", "TPS自动化订单下发数据异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+        	long detailId=this.autoExceptionService.createAutoExceptionDetail("报文异常","", "TPS自动化订单下发数据异常",AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0,"");
         	AutoMQExceptionDto mqe=new AutoMQExceptionDto();
 			mqe.setBusiness_id("");
 			mqe.setException_info(ex.getMessage());

@@ -12,11 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CustomerDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.dao.CwbDAO;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
@@ -36,6 +39,8 @@ public class AutoInWarehouseService {
 	private CwbDAO cwbDAO;
 	@Autowired
 	private AutoOrderStatusService autoOrderStatusService;
+	@Autowired
+	private CustomerDAO customerDAO;
 
 	@Transactional
 	public void autoInWarehouse(AutoPickStatusVo data,User user){
@@ -49,7 +54,7 @@ public class AutoInWarehouseService {
 			 String comment="";
 			 long emaildate=0;
 			 String youhuowudanflag="-1";//value has -1,0,1  ?????????
-			 
+			 String boxno=null;
 			
 			//try{
 				cwb=data.getOrder_sn();
@@ -75,27 +80,49 @@ public class AutoInWarehouseService {
 					throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"不是入库库房类型");
 				}
 
-				BigDecimal cargorealweight=data.getOriginal_weight()==null||data.getOriginal_weight().length()<1?null:new BigDecimal(data.getOriginal_weight());
-				BigDecimal cargovolume=data.getOriginal_volume()==null||data.getOriginal_volume().length()<1?null:new BigDecimal(data.getOriginal_volume());
+				//BigDecimal cargorealweight=data.getOriginal_weight()==null||data.getOriginal_weight().length()<1?null:new BigDecimal(data.getOriginal_weight());
+				//BigDecimal cargovolume=data.getOriginal_volume()==null||data.getOriginal_volume().length()<1?null:new BigDecimal(data.getOriginal_volume());
 				String baleno=data.getPackage_no()==null||data.getPackage_no().length()<1?null:data.getPackage_no();
 				String deliveryBranchCode=data.getDestination_org()==null||data.getDestination_org().length()<1?"":data.getDestination_org();
 				deliveryBranchCode=deliveryBranchCode.trim();
+				boxno=data.getBox_no();
+				if(boxno!=null){
+					boxno=boxno.trim();
+				}
 				
+				/*
 				long deliveryBranchId=autoOrderStatusService.getDeliveryBranchId(deliveryBranchCode);
 				if(deliveryBranchCode.length()>0&&deliveryBranchId==0){
 					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"没找到此目的地站");
 				}
 				
-				this.autoOrderStatusService.updateAutoOrder(cwb,cargovolume,cargorealweight,baleno,deliveryBranchId);
+				//when in, no need update deliveryBranchId to caculat next branch????
+				this.autoOrderStatusService.updateAutoOrder(cwb,null,null,null,baleno,deliveryBranchId,false);
+				*/
 				
-				String transcwb=cwbOrder.getTranscwb()==null?null:cwbOrder.getTranscwb().trim();
-				if(transcwb!=null&&transcwb.length()>0){
-					String [] transcwbArr=transcwb.split(",");
-					for(String boxno:transcwbArr){
-						String scancwb=boxno.trim();
-						this.cwborderService.intoWarehous(user, cwb,scancwb, customerid, driverid, requestbatchno, comment, "", false);
-					}
+				long isypdjusetranscwb =0;
+				Customer customer=customerDAO.getCustomerById(cwbOrder.getCustomerid());
+				if(customer.getCustomerid()>0){
+					isypdjusetranscwb=customer.getIsypdjusetranscwb();
+				}
+				
+				//先测非集单，再测集单
+		
+				//validateIsSubCwb 验证箱号是否正确? //catch the ExceptionCwbErrorTypeEnum.Qing_SAO_MIAO_YUN_DAN_HAO ?
+				//集单也用这个方法去出库？？？
+				//不区分扫箱号标志？？？
+				if(boxno!=null&&boxno.length()>0&&isypdjusetranscwb==1){
+					//一票多件有箱号且要扫箱号;
+					//一票一件有箱号且要扫箱号;
+					this.cwborderService.intoWarehous(user, cwb,boxno, customerid, driverid, requestbatchno, comment, "", false);
 				}else{
+					//测试用例：
+					//一票多件没箱号且不扫箱号;
+					//一票多件没箱号且要扫箱号;
+					//一票一件没箱号且不扫箱号;
+					//一票一件没箱号且要扫箱号;
+					//一票多件有箱号且不要扫箱号;
+					//一票一件有箱号且不要扫箱号;
 					//throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"入库时没找到箱号");
 					String scancwb=cwb;
 					this.cwborderService.intoWarehous(user, cwb,scancwb, customerid, driverid, requestbatchno, comment, "", false);
