@@ -220,7 +220,13 @@ public class TPSOrder {
 
     // 要求送货时间
     private String transportDay;
-
+    
+    //是否集包
+    private Integer isGatherpack;
+    
+    //最后一箱
+    private Integer isGathercomp;
+    
     List<TPSOrderDetails> details;
 
     public List<TPSOrderDetails> getDetails() {
@@ -734,6 +740,22 @@ public class TPSOrder {
 	 */
 	public void setGoGetReturnTime(String goGetReturnTime) {
 		this.goGetReturnTime = goGetReturnTime;
+	}
+
+	public Integer getIsGatherpack() {
+		return isGatherpack;
+	}
+
+	public void setIsGatherpack(Integer isGatherpack) {
+		this.isGatherpack = isGatherpack;
+	}
+
+	public Integer getIsGathercomp() {
+		return isGathercomp;
+	}
+
+	public void setIsGathercomp(Integer isGathercomp) {
+		this.isGathercomp = isGathercomp;
 	}
 
 }
