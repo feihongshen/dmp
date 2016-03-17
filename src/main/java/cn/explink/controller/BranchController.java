@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -105,6 +107,10 @@ public class BranchController {
 	private List<Branch> accountbranchList ;
 	
 	private List<AccountArea> accontareaList ;
+	
+	private List<JSONObject> tlBankList ;
+	
+	private List<JSONObject> cftBankList ;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -318,7 +324,7 @@ public class BranchController {
 				this.cwbDAO.saveCwbOrderByExcelbranch(branchname, branchid);
 			}
 
-			this.branchDAO.saveBranchNoFile(branch);
+			this.branchDAO.saveBranch(branch);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
 				// TODO 增加同步代码
@@ -386,6 +392,13 @@ public class BranchController {
 			String accountBranch = String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue());
 			this.accountbranchList = this.branchDAO.getBanchByBranchidForStock(accountBranch); 
 		}
+		if(this.tlBankList == null || this.tlBankList.size() == 0){
+			this.tlBankList = this.bankService.getTlBankList() ;
+		}
+		if(this.cftBankList == null || this.cftBankList.size() == 0){
+			this.cftBankList = this.bankService.getCftBankList() ;
+		}
+		
 		model.addAttribute("accontareaList", this.accontareaList);
 		model.addAttribute("PDAmenu", this.PDAmenu);
 		model.addAttribute("zhongzhuanList", this.zhongzhuanList);
@@ -396,6 +409,8 @@ public class BranchController {
 		model.addAttribute("mskbranchlist", this.mskbranchlist);
 		model.addAttribute("pfrulelist", this.pfrulelist);
 		model.addAttribute("accountbranchList", this.accountbranchList);
+		model.addAttribute("tlBankList", this.tlBankList);
+		model.addAttribute("cftBankList", this.cftBankList);
 		return model ;
 	}
 	
