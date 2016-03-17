@@ -952,6 +952,8 @@ function initBranch(functionids) {
 function submitBranchLoad(form) {
 	$("#sub", parent.document).attr("disabled", "disabled");
 	$("#sub", parent.document).val("保存中...");
+	var attrMap = getAttrMapByForm(form);
+	
 	$('#swfupload-control').swfupload('addPostParam', 'sitetype', $("#sitetype", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchname', $("#branchname", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchcode', $("#branchcode", parent.document).val());
@@ -992,14 +994,14 @@ function submitBranchLoad(form) {
 	//自动核销字段的获取--通联
 	$('#swfupload-control').swfupload('addPostParam', 'bankCardNo', $("#bankCardNo", parent.document).val());
 //	$('#swfupload-control').swfupload('addPostParam', 'bankCode', $("#bankCode", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'bankCode', getValueByNameFromForm(form, "bankCode"));
+	$('#swfupload-control').swfupload('addPostParam', 'bankCode', getValueByNameFromAttrMap("bankCode", attrMap));
 	$('#swfupload-control').swfupload('addPostParam', 'ownerName', $("#ownerName", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'bankAccountType', $("#bankAccountType", parent.document).val());
 	
 	//自动核销字段的获取--财付通
 	$('#swfupload-control').swfupload('addPostParam', 'cftAccountNo', $("#cftAccountNo", parent.document).val());
 //	$('#swfupload-control').swfupload('addPostParam', 'cftBankCode', $("#cftBankCode", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'cftBankCode', getValueByNameFromForm(form, "cftBankCode"));
+	$('#swfupload-control').swfupload('addPostParam', 'cftBankCode', getValueByNameFromAttrMap("cftBankCode", attrMap));
 	$('#swfupload-control').swfupload('addPostParam', 'cftAccountName', $("#cftAccountName", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'cftAccountProp', $("#cftAccountProp", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'cftCertId', $("#cftCertId", parent.document).val());
@@ -1028,17 +1030,27 @@ function submitBranchLoad(form) {
 	$('#swfupload-control').swfupload('startUpload');
 }
 
-function getValueByNameFromForm(form, name){
+function getAttrMapByForm(form){
+	var attrMap = new Array();
 	if(!!form) {
-		var serializedDataArray = $(form).serializeArray();
-		for(var i = 0; i<serializedDataArray.length; i++){
-			var param = serializedDataArray[i];
-			if(name == param["name"]) {
-				return param["value"];
-			}
+		var serializedParams = $(form).serializeArray();
+		for(var i=0; i<serializedParams.length; i++){
+			var param = serializedParams[i];
+			attrMap[param["name"]] = param["value"];
 		}
 	}
-	return "";
+	return attrMap;
+}
+
+function getValueByNameFromAttrMap(name, attrMap){
+	var value = "";
+	if(attrMap != null && attrMap instanceof Array) {
+		value = attrMap[name]; 
+	}  
+	if (value == null || value == ""){
+		value = $("#"+name, parent.document).val();
+	}
+	return value;
 }
 
 function submitCustomerLoad() {
