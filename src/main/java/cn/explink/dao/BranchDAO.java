@@ -354,7 +354,7 @@ public class BranchDAO {
 						+ "branchmobile=?,branchfax=?,branchemail=?,contractflag=?,contractrate=?,cwbtobranchid=?,branchcode=?,"
 						+ "payfeeupdateflag=?,backtodeliverflag=?,branchpaytoheadflag=?,branchfinishdayflag=?,creditamount=?,"
 						+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
-						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
+						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchwavfile=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
 						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,bindmsksid=?,"
 						+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?,"
 						+ "bank_card_no=?,bank_code=?,owner_name=?,bank_account_type=?,cft_account_no=?,cft_bank_code=?,cft_account_name=?,cft_account_prop=?,cft_cert_id=?,cft_cert_type=?,tpsbranchcode=? "
@@ -388,7 +388,7 @@ public class BranchDAO {
 						ps.setString(23, branch.getExportwavtype());
 						ps.setBigDecimal(24, branch.getBranchinsurefee());
 						ps.setString(25, branch.getBranchprovince());
-						ps.setString(26, branch.getBranchcity());
+						ps.setString(26, branch.getBranchwavfile());				
 						ps.setString(27, branch.getNoemaildeliverflag());
 						ps.setInt(28, branch.getSendstartbranchid());
 						ps.setInt(29, branch.getSitetype());
