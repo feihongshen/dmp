@@ -5663,7 +5663,7 @@ public class PDAController {
 	@RequestMapping("/cwbbacktocustomer/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbacktocustomer(HttpServletRequest request, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {// 为包号修改
-		String scancwb = cwb;
+		String scancwb = cwb.trim();
 
 		long successCount = request.getSession().getAttribute(baleno + "-TuigonghuoshangsuccessCount") == null ? 0 : Long.parseLong(request.getSession()
 				.getAttribute(baleno + "-TuigonghuoshangsuccessCount").toString());
@@ -5715,6 +5715,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
