@@ -8967,14 +8967,10 @@ CREATE TABLE `cs_complaint_accept` (
 			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'ordertrack_url', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `ordertrack_url` VARCHAR(100) NULL;');
 		</sql>
 	</changeSet>
-
-	<changeSet id="jianronggao-2016-03-17" author="jianronggao">
+	
+	<changeSet id="wangwei-2016-03-15" author="wangwei">
 		<sql>
-			call proc_add_column_if_not_exists('express_auto_exception_detail', 'operatetype', 'ALTER TABLE `express_auto_exception_detail` ADD COLUMN `operatetype` varchar(20) DEFAULT '' NULL after `transportno`;');
-			call proc_add_column_if_not_exists('express_auto_order_status_tmp', 'transportno', 'ALTER TABLE `express_auto_order_status_tmp` ADD COLUMN `transportno` varchar(100) DEFAULT '' NULL after `cwb`;');
-			call proc_add_column_if_not_exists('express_ops_transcwb_detail', 'cargovolume', 'ALTER TABLE `express_ops_transcwb_detail` ADD COLUMN `cargovolume` decimal(19,4) default '0.0000' NULL after `nextbranchid`;');
-			call proc_add_column_if_not_exists('express_ops_transcwb_detail', 'carrealweight', 'ALTER TABLE `express_ops_transcwb_detail` ADD COLUMN `carrealweight` decimal(18,3) default '0.000' NULL after `nextbranchid`;');
-			call proc_create_index_if_not_exists('express_auto_order_status_tmp', 'auto_order_status_transno_idx', '', 'CREATE INDEX auto_order_status_transno_idx on express_auto_order_status_tmp(transportno);');
+			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'validateAddmatchflag', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `validateAddmatchflag` INT DEFAULT 0 NULL;');
 		</sql>
 	</changeSet>
 </databaseChangeLog>
