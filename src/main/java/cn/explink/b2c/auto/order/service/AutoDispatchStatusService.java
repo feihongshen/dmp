@@ -192,8 +192,16 @@ public class AutoDispatchStatusService {
 				String errinfo="DMP分拣状态数据转业务时出错."+e.getMessage();
 				long detailId=0;
 				try{
+					boolean allowDirectOut=true;
+					if(e instanceof CwbException){
+						CwbException cwbe=(CwbException) e;
+						if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR.getValue()
+								&&OPERATE_TYPE_OUT.equals(vo.getOperate_type())) {
+							allowDirectOut=false;
+						}
+					}
 					
-					if(e instanceof TranscwbNoFoundException){
+					if(e instanceof TranscwbNoFoundException||!allowDirectOut){
 						 List<Map<String,Object>> detailList=this.autoExceptionService.queryAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),vo.getOperate_type());
 						if(detailList!=null&&detailList.size()>0){
 							Map<String,Object> detailMap= detailList.get(0);
