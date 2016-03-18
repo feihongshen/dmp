@@ -1738,8 +1738,8 @@ public class CwbOrderService extends BaseOrderService {
 				if (isypdjusetranscwb == 1) {
 					if (!newMPSOrder) {
 						this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
-						this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 					}
+					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 				}
 				if (newMPSOrder) {
 					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
@@ -3542,7 +3542,6 @@ public class CwbOrderService extends BaseOrderService {
 
 				}
 			}
-
 		}
 		
 		//退货再投审核
@@ -3593,9 +3592,7 @@ public class CwbOrderService extends BaseOrderService {
 		String sql = "update express_ops_cwb_detail set flowordertype=?,currentbranchid=?,startbranchid=?,nextbranchid=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), 0, currentbranchid, branchid, cwb);
 
-		// added by songkaojun 2016-01-11
-		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, 0L, branchid);// 更新订单一票多件状态和运单状态
-
+		
 		if (forceOut && iszhongzhuanout) {
 			Branch nextbranch = this.branchDAO.getBranchByBranchid(branchid);
 			if (nextbranch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
@@ -3623,6 +3620,9 @@ public class CwbOrderService extends BaseOrderService {
 				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, branchid, isAutoSupplyLink);
 			}
 		}
+		// added by songkaojun 2016-01-11
+		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, currentbranchid, 0L, branchid);// 更新订单一票多件状态和运单状态
+		
 		// ============结算逻辑出库扫描=======================
 		Branch userbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
 		Branch nextbranch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());

@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>超期异常数据迁移</title>
+<title>重新匹配站点</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"/>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"/>
@@ -30,14 +30,17 @@
 <div class="jg_10"></div>
 <div class="right_box">
 	<div class="inputselect_box">
-	<form action="<%=request.getContextPath()%>/changeLog/option" method="post" id="searchForm">
+	<form action="<%=request.getContextPath()%>/dataimport/resendAddressmatch" method="post" id="searchForm">
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:40px">
 	<tr>
 		<td align="left">
-			<input type="submit" id="find" onclick="" value="迁移数据" class="input_button2" />
-		</td>
-		<td align="left">
-			<%=request.getAttribute("msg") %> 
+		    <textarea rows="10" cols="20" name="cwbs"></textarea>
+		    <input type="hidden" name="isshow" id="isshow" value="1"/>
+		    <input type="hidden" name="emaildate" id="emaildate" value="-1"/>
+		    <input type="hidden" name="addressCodeEditType" id="addressCodeEditType" value="0"/>
+		    <input type="hidden" name="branchid" id="branchid" value="0"/>
+		    <input type="hidden" name="onePageNumber" id="onePageNumber" value="10000"/>
+			<input type="submit" id="find" onclick="" value="重新匹配" class="input_button2" />
 		</td>
 	</tr>
 </table>

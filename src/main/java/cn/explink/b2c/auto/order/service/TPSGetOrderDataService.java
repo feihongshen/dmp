@@ -2,6 +2,7 @@ package cn.explink.b2c.auto.order.service;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.vipshop.ReaderXMLHandler;
 import cn.explink.b2c.vipshop.SOAPHandler;
+import cn.explink.b2c.vipshop.VipGathercompEnum;
 import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.controller.CwbOrderDTO;
@@ -44,10 +46,15 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOXOStateEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.IsmpsflagEnum;
+import cn.explink.enumutil.MPSAllArrivedFlagEnum;
+import cn.explink.enumutil.MpsTypeEnum;
+import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
+import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -87,7 +94,9 @@ public class TPSGetOrderDataService {
 	JiontDAO jiontDAO;
 	@Autowired
 	JointService jointService;
-
+	@Autowired
+	TransCwbDao transCwbDao;
+	
 	private Logger logger = LoggerFactory.getLogger(TPSGetOrderDataService.class);
     
 	 public VipShop getVipShop(int key) {
@@ -546,7 +555,7 @@ public class TPSGetOrderDataService {
 	}
 	
 	//更新订单临时表，订单表，并获取接口传过来的相应订单信息
-	public CwbOrderDTO parseXmlDetailInfo(VipShop vipshop, TPSOrder order) {
+	public CwbOrderDTO parseXmlDetailInfo(VipShop vipshop, TPSOrder order,int mpsswitch) {
 		/*String b2cFlag = B2cEnum.VipShop_TPSAutomate.getMethod();
 		ExcelColumnSet excelColumnSet = cwbColumnSet.getEexcelColumnSetByB2cJoint(b2cFlag);*/
 		CwbOrderDTO orderDTO = new CwbOrderDTO();
@@ -559,6 +568,7 @@ public class TPSGetOrderDataService {
 			String add_time = this.toDateForm(order.getAddTime());// 出仓时间
 			Integer total_pack = order.getTotalPack(); // 新增箱数
 			String cargotype = order.getTransportType();
+			String sendcarnum = order.getTotalPack().toString();
 			/**
 			 * 新增参数
 			 */
@@ -580,6 +590,9 @@ public class TPSGetOrderDataService {
 			int business_type = order.getBusinessType();
 			String cwbordertype = (business_type==60) ? String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()) : String.valueOf(CwbOrderTypeIdEnum.Peisong.getValue());
            
+			String is_gatherpack = order.getIsGatherpack().toString(); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
+			String is_gathercomp = order.getIsGathercomp().toString(); //最后一箱:1最后一箱 ，0默认 
+			
 			String warehouse_addr = order.getWarehouseAddr(); // 仓库地址
 			String pack_nos = order.getBoxNo();// 箱号
 			String lastFetchTime = this.toDateForm(order.getLastFetchTime());//建议最晚揽件时间
@@ -608,11 +621,18 @@ public class TPSGetOrderDataService {
 			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
 			String customer_name = order.getCustomerName();
 			String customerid=vipshop.getCustomerids();  //默认选择唯品会customerid
+			
+			if(vipshop.getIsOpenLefengflag()==1){//开启乐蜂网
+				if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
+					return null;
+				}
+			}
+			
 			if((customer_name!=null&&customer_name.contains("乐蜂")))
 			{
 				customerid=vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids():vipshop.getLefengCustomerid();
 			}
-
+			
 			orderDTO.setCwb(cust_order_no);
 			orderDTO.setTranscwb(transcwb);
 			orderDTO.setConsigneename(order.getBuyerName().isEmpty()?"":order.getBuyerName());
@@ -643,6 +663,12 @@ public class TPSGetOrderDataService {
 			//团购标识
 			orderDTO.setVipclub(order.getVipClub().equals("3")?1:0);
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
+			orderDTO.setIsmpsflag(choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
+			orderDTO.setMpsallarrivedflag(choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
+			
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(cust_order_no);
+			//集包相关代码处理
+			mpsallPackage(vipshop, cust_order_no, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch,orderDTO);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
@@ -686,16 +712,13 @@ public class TPSGetOrderDataService {
 					// 插入商品列表,try防止异常
 					this.insertOrderGoods(order, cust_order_no);
 				}
-
 			}
 			
 			if ("".equals(cust_order_no)) { // 若订单号为空，则继续。
 				this.logger.info("获取订单信息为空");
 				return null;
 			}
-
 			this.logger.info("TPS自动化订单cwb={}", cust_order_no);
-		
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.logger.error("TPS自动化订单下载处理转订单对象异常,cwb=" + cust_order_no, e);
@@ -918,4 +941,154 @@ public class TPSGetOrderDataService {
 
 		return cwbOrder;
 	}
+	
+	//集单逻辑
+	private void  mpsallPackage(VipShop vipshop, String cust_order_no,
+			String is_gatherpack, String is_gathercomp, String pack_nos,
+			int total_pack, CwbOrderDTO cwbOrderDTO,int mpsswitch,
+			CwbOrderDTO currentOrderDTO) {
+		if(mpsswitch==MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()){
+			return;
+		}
+		if(!"1".equals(is_gatherpack)){ //是否集包模式
+			return;
+		}
+		/**Commented by leoliao at 2016-03-01
+		//拦截 开启集单模式，总件数只有一件的数据 is_gatherpack=1，is_gathercomp=1，total_pack=1  --->这就是个单包裹(罗冬确认)
+		if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&"1".equals(total_pack)){
+			return null;
+		}
+		*/
+		//订单不存在，则不需要处理
+		if(cwbOrderDTO==null){
+			return;
+		}
+		
+		/**更新发货时间 leoliao at 2016-03-01
+		 * 产品层面要改成的是这样的：
+		 * 如果TMS推过来的数据有最后一件标志了就把发货时间写入订单表里面&运单表，
+		 * 如果TMS推过来的数据没有最后一件标志那就把发货时间写到运单表里面
+		 */
+		String emaildate = currentOrderDTO.getRemark2(); //paraMap.get("remark2"); //发货时间
+
+		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp)){
+			//把发货时间写入订单表
+			cwbDAO.updateEmaildate(cust_order_no, emaildate);
+			
+			//把发货时间写入运单表
+			String[] arrTranscwb = pack_nos.split(",");
+			if(arrTranscwb != null && arrTranscwb.length > 0){
+				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
+			}
+		}else if("1".equals(is_gatherpack) && "0".equals(is_gathercomp)){
+			//把发货时间写入运单表
+			String[] arrTranscwb = pack_nos.split(",");
+			if(arrTranscwb != null && arrTranscwb.length > 0){
+				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
+			}
+		}
+		//更新发货时间结束
+		
+		//一票多件，并且到齐了，排重returen
+		if(cwbOrderDTO!=null&&cwbOrderDTO.getMpsallarrivedflag()==MPSAllArrivedFlagEnum.YES.getValue()){
+			return;
+		}
+		
+		/**Comment by leoliao at 2016-03-01
+		     兼容以下情况，故不做拦截而是改为一票一件：
+	            先产生is_gatherpack=1,is_gathercomp=0,total_pack=1的订单数据。
+	           后面又产生一条is_gatherpack=1,is_gathercomp=1,total_pack=1的订单数据
+	   **/
+		if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&"1".equals(total_pack)){
+			dataImportDAO_B2c.updateTmsPackageCondition(cust_order_no, pack_nos, Integer.valueOf(total_pack), MPSAllArrivedFlagEnum.NO.getValue(), MpsTypeEnum.PuTong.getValue());
+			if(cwbOrderDTO.getGetDataFlag() != 0){
+				cwbDAO.updateTmsPackageCondition(cust_order_no, pack_nos, Integer.valueOf(total_pack), MPSAllArrivedFlagEnum.NO.getValue(),MpsTypeEnum.PuTong.getValue());
+			}
+			return;
+		}
+		
+		int mpsallarrivedflag=0;
+		if(Integer.valueOf(is_gathercomp)==VipGathercompEnum.Last.getValue()){ //到齐
+			mpsallarrivedflag=MPSAllArrivedFlagEnum.YES.getValue();
+		}
+		
+		String oldTranscwb = cwbOrderDTO.getTranscwb();
+		String currentTranscwb = currentOrderDTO.getTranscwb();
+		//后者大于前者，移除前者
+		if(oldTranscwb.split(",").length<currentTranscwb.split(",").length){
+			this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
+					total_pack,mpsallarrivedflag);
+		}
+		//后者==前者，移除不是最后一箱的
+		if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
+			if((Integer.valueOf(currentOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Default.getValue()
+					&&Integer.valueOf(cwbOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Default.getValue())
+					||Integer.valueOf(currentOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Last.getValue()){
+				this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
+						total_pack,mpsallarrivedflag);
+			}
+		}
+		//后者小于前者，移除后者
+		if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
+			return;
+		}
+	}
+	
+	//更行临时表或者订单表集单相关信息
+	private void changeInfoOfOrder(CwbOrderDTO cwbOrderDTO,String cust_order_no,String pack_nos,
+			int total_pack,int mpsallarrivedflag){
+		if(cwbOrderDTO.getGetDataFlag()==0){
+			dataImportDAO_B2c.updateTmsPackageCondition(cust_order_no, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
+			//dataImportService.insertTransCwbDetail(cwbOrderDTO);
+			
+		}else{
+			
+			CwbOrder co =cwbDAO.getCwbByCwb(cust_order_no);
+			if(co==null){
+				return;
+			}
+			dataImportDAO_B2c.updateTmsPackageCondition(cust_order_no, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
+			cwbDAO.updateTmsPackageCondition(cust_order_no, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
+			for(String pack_no:pack_nos.split(",")){
+				String selectCwb=transCwbDao.getCwbByTransCwb(pack_no);
+				if(selectCwb==null){
+					transCwbDao.saveTranscwb(pack_no, cust_order_no);
+					cwbOrderDTO.setTranscwb(pack_no);
+					dataImportService.insertTransCwbDetail(cwbOrderDTO,co.getEmaildate());
+				}
+			}
+		}
+	}
+	
+	private int choseIsmpsflag(String is_gatherpack,String is_gathercomp,String sendcarnum,int mpsswitch) {
+		int ismpsflag=IsmpsflagEnum.no.getValue(); //'是否一票多件(集包模式)：0默认；1是一票多件'; 
+		
+		//开启集单，并且运单为多个，则默认为一票多件
+		if(mpsswitch!=MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()){
+			
+			//拦截 开启集单模式，总件数只有一件的数据 is_gatherpack=1，is_gathercomp=1，total_pack=1  --->这就是个单包裹(罗冬确认)
+			if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&"1".equals(sendcarnum)){
+				return IsmpsflagEnum.no.getValue();
+			}
+			if("1".equals(is_gatherpack)&&Long.valueOf(sendcarnum)>1){
+				return IsmpsflagEnum.yes.getValue();
+			}
+			if("1".equals(is_gatherpack)&&"0".equals(is_gathercomp)){
+				return IsmpsflagEnum.yes.getValue();
+			}
+			
+		}
+		return ismpsflag;
+	}
+	
+private Integer choseMspallarrivedflag(String is_gathercomp,String is_gatherpack,String sendcarnum,int mpsswitch) {
+		
+	if(mpsswitch!=MpsswitchTypeEnum.WeiKaiQiJiDan.getValue()){
+		//集包并且是最后一箱并且箱号大于1
+		if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&Long.valueOf(sendcarnum)>1){ 
+			return VipGathercompEnum.Last.getValue();
+		}
+	}
+	return VipGathercompEnum.Default.getValue();
+}
 }

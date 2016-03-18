@@ -4047,7 +4047,7 @@
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://10.199.244.183:61616</jms.brokerURL>
 				<uploadimgPath>/home/deploy/apps/data/uploadimg/</uploadimgPath>
-				<wavPath>/home/deploy/apps/data/wav/</wavPath>
+				<wavPath>/apps/svr/dmp-tomcat-7.0.67/webapps/dmp/wav/</wavPath>
 				<filePath>/home/deploy/apps/data/moule/</filePath>
 				<logoswitch>1</logoswitch>
 				<word></word>

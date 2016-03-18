@@ -8967,4 +8967,10 @@ CREATE TABLE `cs_complaint_accept` (
 			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'ordertrack_url', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `ordertrack_url` VARCHAR(100) NULL;');
 		</sql>
 	</changeSet>
+	
+	<changeSet id="wangwei-2016-03-15" author="wangwei">
+		<sql>
+			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'validateAddmatchflag', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `validateAddmatchflag` INT DEFAULT 0 NULL;');
+		</sql>
+	</changeSet>
 </databaseChangeLog>
