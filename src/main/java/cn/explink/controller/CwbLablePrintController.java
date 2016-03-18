@@ -211,6 +211,7 @@ public class CwbLablePrintController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
+					cwbStr = cwbStr.trim();
 					cwbstr = cwbstr.append(quot).append(cwbStr).append(quotAndComma);
 				}
 				clist = this.cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
