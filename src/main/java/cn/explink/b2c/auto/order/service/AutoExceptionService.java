@@ -31,7 +31,7 @@ public class AutoExceptionService {
 	//兼容没传operattype的情况
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public long createAutoExceptionDetail(String cwb, String transportno, String errinfo, int status,long msgid,long refid) {
-		return this.exceptionCwbDAO.createAutoExceptionDetail(cwb, transportno, errinfo, status,msgid,refid,"");
+		return this.exceptionCwbDAO.createAutoExceptionDetail(cwb, transportno, errinfo, status,msgid,refid);
 	}
 	
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
