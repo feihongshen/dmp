@@ -780,7 +780,7 @@ public class DeliveryController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
-
+				cwb = cwb.trim();
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
@@ -928,7 +928,7 @@ public class DeliveryController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
-
+				cwb = cwb.trim();
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
@@ -1068,7 +1068,7 @@ public class DeliveryController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
-
+				cwb = cwb.trim();
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);

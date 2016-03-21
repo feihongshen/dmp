@@ -4,11 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
-import net.sourceforge.jtds.jdbc.DateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -19,11 +17,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.ExceptionCwb;
 import cn.explink.domain.User;
-import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 
@@ -114,6 +110,31 @@ public class ExceptionCwbDAO {
 		return keyHolder.getKey().longValue();
 	}
 
+	public long createAutoExceptionDetail(final String cwb, final String transportno, final String errinfo, final int status,final long msgid,final long refid) {
+		final String sql = "insert into express_auto_exception_detail (cwb,transportno,errinfo,status,msgid,refid,createtime) " + "values(?,?,?,?,?,?,CURRENT_TIMESTAMP)";
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection)
+					throws SQLException {
+			
+				PreparedStatement ps = connection.prepareStatement(sql, new String[] { "id" });
+				ps.setString(1, cwb);
+				ps.setString(2, transportno);
+				ps.setString(3, errinfo);
+				ps.setInt(4, status);
+				ps.setLong(5, msgid);
+				ps.setLong(6, refid);
+				
+				return ps;
+			}
+			
+		}, keyHolder);
+		return keyHolder.getKey().longValue();
+	}
+	
 	public long createAutoExceptionDetail(final String cwb, final String transportno, final String errinfo, final int status,final long msgid,final long refid,final String operatetype) {
 		final String sql = "insert into express_auto_exception_detail (cwb,transportno,errinfo,status,msgid,refid,createtime,operatetype) " + "values(?,?,?,?,?,?,CURRENT_TIMESTAMP,?)";
 		

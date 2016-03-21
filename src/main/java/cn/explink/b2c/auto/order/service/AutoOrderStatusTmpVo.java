@@ -2,7 +2,7 @@ package cn.explink.b2c.auto.order.service;
 
 public class AutoOrderStatusTmpVo {
 	private String cwb;
-	private String transportno;//箱号
+	private String boxno;//箱号
 	private String operatetype;
 	private String msg;
 	
@@ -24,12 +24,12 @@ public class AutoOrderStatusTmpVo {
 	public void setMsg(String msg) {
 		this.msg = msg;
 	}
-	public String getTransportno() {
-		return transportno;
+	public String getBoxno() {
+		return boxno;
 	}
-	public void setTransportno(String transportno) {
-		this.transportno = transportno;
+	public void setBoxno(String boxno) {
+		this.boxno = boxno;
 	}
-	
+
 	
 }

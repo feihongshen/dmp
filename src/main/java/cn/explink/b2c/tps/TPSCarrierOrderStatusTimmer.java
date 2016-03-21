@@ -109,7 +109,7 @@ public class TPSCarrierOrderStatusTimmer {
 				cwb=cwb==null?"":cwb;
 				transcwb=transcwb==null?"":transcwb;
 				long msgid= this.autoExceptionService.createAutoExceptionMsg(JSON.toJSON(response).toString(), AutoInterfaceEnum.insertTransportNo.getValue());
-				this.autoExceptionService.createAutoExceptionDetail(cwb, transcwb, "无订单号或者不存在运单号", AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0,"");
+				this.autoExceptionService.createAutoExceptionDetail(cwb, transcwb, "无订单号或者不存在运单号", AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0);
 				logger.error("tps返回运单状态数据中无订单号或者不存在运单号,返回数据："+JSON.toJSON(response).toString());
 			}else{
 				try {
@@ -118,7 +118,7 @@ public class TPSCarrierOrderStatusTimmer {
 				} catch (Exception e) {
 					//保存录入运单号时出现异常的运单状态数据
 					long msgid= this.autoExceptionService.createAutoExceptionMsg(JSON.toJSON(response).toString(), AutoInterfaceEnum.insertTransportNo.getValue());
-					this.autoExceptionService.createAutoExceptionDetail(cwb, transcwb,e.getMessage(), AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0,"");
+					this.autoExceptionService.createAutoExceptionDetail(cwb, transcwb,e.getMessage(), AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0);
 					logger.error("录入运单号异常:"+e.getMessage()+" 返回运单状态数据:"+JSON.toJSON(response).toString());
 				}
 			}

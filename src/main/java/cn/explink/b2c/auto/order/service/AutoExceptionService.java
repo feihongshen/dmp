@@ -28,6 +28,12 @@ public class AutoExceptionService {
 		return msgid;
 	}
 	
+	//兼容没传operattype的情况
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	public long createAutoExceptionDetail(String cwb, String transportno, String errinfo, int status,long msgid,long refid) {
+		return this.exceptionCwbDAO.createAutoExceptionDetail(cwb, transportno, errinfo, status,msgid,refid);
+	}
+	
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public long createAutoExceptionDetail(String cwb, String transportno, String errinfo, int status,long msgid,long refid,String operatetype) {
 		return this.exceptionCwbDAO.createAutoExceptionDetail(cwb, transportno, errinfo, status,msgid,refid,operatetype);
@@ -51,7 +57,7 @@ public class AutoExceptionService {
 	public long createAutoDispatchTimeoutException(AutoOrderStatusTmpVo vo,String errinfo){
 		long msgid=this.exceptionCwbDAO.createAutoExceptionMsg(vo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
 		long detailid=this.exceptionCwbDAO.createAutoExceptionDetail(vo.getCwb(), "", errinfo, AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperatetype());
-		autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getCwb(),vo.getOperatetype(),vo.getTransportno());
+		autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getCwb(),vo.getOperatetype(),vo.getBoxno());
 		return detailid;
 	}
 }

@@ -44,49 +44,28 @@ public class AutoOrderStatusService {
 	@Autowired
 	private CwbRouteService cwbRouteService;
 	
-	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,transportno,operatetype,msg,createtime,status) values(?,?,?,?,?)";
+	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,transportno,operatetype,msg,createtime,status) values(?,?,?,?,?,?)";
 	//private final static String ORDER_STATUS_TMP_UPDATE_SQL="update express_auto_order_status_tmp set status=? where cwb=? and operatetype=? and status=1";
 	private final static String ORDER_STATUS_TMP_DELETE_SQL="delete from express_auto_order_status_tmp where cwb=? and transportno=? and operatetype=?";
 
-	private final static String ORDER_STATUS_TMP_QUERY_SQL="SELECT t.* FROM (SELECT * FROM express_auto_order_status_tmp order by createtime LIMIT ?,?) t"
-			+" WHERE EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb)";
+	private final static String ORDER_STATUS_TMP_QUERY_SQL="SELECT * FROM express_auto_order_status_tmp order by createtime LIMIT ?,?";
 	private final static String ORDER_STATUS_TMP_TIMEOUT_QUERY_SQL=
-			"SELECT t.* FROM (SELECT * FROM express_auto_order_status_tmp WHERE createtime<DATE_SUB(NOW(),INTERVAL 12 HOUR) LIMIT 0,?) t" 
+			"SELECT t.* FROM (SELECT * FROM express_auto_order_status_tmp WHERE createtime<DATE_SUB(NOW(),INTERVAL ? HOUR) LIMIT 0,?) t" 
 			+" WHERE NOT EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb)";
 	
 	private final static String ORDER_STATUS_TMP_QUERY_COUNT_SQL="SELECT COUNT(createtime) FROM express_auto_order_status_tmp";
 	
+	private final static String TRANS_CWB_DETAIL_UPDATE_SQL="update express_ops_transcwb_detail set cargovolume=?,carrealweight=? where cwb=? and transcwb=?";;
 	private static final String DATE_FORMAT="yyyy-MM-dd HH:mm:ss";
 	
 	@Transactional
 	public void updateAutoOrder(String cwb,String boxno,BigDecimal cargovolume,BigDecimal cargoweight,String packagecode,long deliverybranchid,boolean isJidan){
 		if(isJidan){
-			//this.getTransCwbDetailDAO() ？
-			String updateWVSql="update express_ops_transcwb_detail set cargovolume=?,carrealweight=? where cwb=? and transcwb=?";
-			
-			//String queryWVSql="select id from express_ops_transcwb_detail where cwb=? and transcwb=?";//state?
-			//String insertWVSql="insert express_ops_transcwb_detail () values()";
-			/*List<Map<String, Object>> list=jdbcTemplate.queryForList(queryWVSql,cwb,boxno);
-			if(list!=null&&list.size()>0){
-				String id=list.get(0).get("id").toString();
-				jdbcTemplate.update(updateWVSql,cargovolume,cargoweight,id);
-			}else{
-				//insert
-			}*/
-			int cnt=jdbcTemplate.update(updateWVSql,cargovolume,cargoweight,cwb,boxno);
+			int cnt=jdbcTemplate.update(TRANS_CWB_DETAIL_UPDATE_SQL,cargovolume,cargoweight,cwb,boxno);
 			if(cnt==0){
-				//logger.error("do not find the transcwb detail. cwb={},transcwb={}",cwb,boxno);
-				throw new TranscwbNoFoundException("DMP do not find the transfer order detail data. cwb="+cwb+",boxno="+boxno);
+				//此处应该不会发生，因为前面已经验证只有等全部入库才能做出库
+				throw new AutoWaitException("集单模式下出库更新重量体积时有运单还没入库,箱号="+boxno);
 			}
-			/*else{
-				String sumSql="select cwb,sum(cargovolume) as totalvolume,sum(carrealweight) as totalweight from express_ops_transcwb_detail where cwb=?";
-				Map<String,Object> wvMap=jdbcTemplate.queryForMap(sumSql,cwb);
-				totalCargovolume=(BigDecimal) wvMap.get("totalvolume");
-				totalCargoweight=(BigDecimal) wvMap.get("carrealweight");
-			}*/
-			
-			//重复出入库异常与什么有关？（扫箱号标志，集单标志？）
-			//validateCwbChongFu()
 		}
 		
 		
@@ -123,7 +102,6 @@ public class AutoOrderStatusService {
 		
 		this.namedParameterJdbcTemplate.update(sql, paramMap); 
 		
-	    //this.logger.debug("自动化出库时更新体积重量等订单信息", cwb);
 	}
 	
 	@Transactional
@@ -196,41 +174,15 @@ public class AutoOrderStatusService {
 	}
 	
 	@Transactional
-	public List<AutoOrderStatusTmpVo> retrieveOrderStatusMsg(int size){
-		List<AutoOrderStatusTmpVo> resultList=new ArrayList<AutoOrderStatusTmpVo>();
-		List<AutoOrderStatusTmpVo> rowList=null;
-		int offset=0;
-		int len=size;
-		int total=0;
-		boolean again=true;
-		boolean isCount=true;
-		do{
-			rowList=jdbcTemplate.query(ORDER_STATUS_TMP_QUERY_SQL, new AutoOrderStatusTmpVoMapper(), offset,len);
-			if(isCount&&(rowList==null||rowList.size()<size)){
-				total=jdbcTemplate.queryForInt(ORDER_STATUS_TMP_QUERY_COUNT_SQL);
-				isCount=false;
-			}
-			
-			if(rowList!=null&&rowList.size()>0){
-				resultList.addAll(rowList);
-			}
-			
-			//翻页
-			offset=offset+len;
-			len=size-resultList.size();
-			
-			if(resultList.size()>=size||total<=size||offset>=total||len<1){
-				again=false;
-			}
-			
-		}while(again);
+	public List<AutoOrderStatusTmpVo> retrieveOrderStatusMsg(int offset,int size){
+		List<AutoOrderStatusTmpVo> resultList=jdbcTemplate.query(ORDER_STATUS_TMP_QUERY_SQL, new AutoOrderStatusTmpVoMapper(), offset,size);
 		
 		return resultList;
 	}
 	
 	@Transactional
-	public List<AutoOrderStatusTmpVo> retrieveTimeoutOrderStatusMsg(int size){
-		List<AutoOrderStatusTmpVo> rowList=jdbcTemplate.query(ORDER_STATUS_TMP_TIMEOUT_QUERY_SQL, new AutoOrderStatusTmpVoMapper(), size);
+	public List<AutoOrderStatusTmpVo> retrieveTimeoutOrderStatusMsg(int timeoutHour,int size){
+		List<AutoOrderStatusTmpVo> rowList=jdbcTemplate.query(ORDER_STATUS_TMP_TIMEOUT_QUERY_SQL, new AutoOrderStatusTmpVoMapper(),timeoutHour, size);
 
 		return rowList;
 	}
@@ -240,7 +192,7 @@ public class AutoOrderStatusService {
 		public AutoOrderStatusTmpVo mapRow(ResultSet rs, int rowNum) throws SQLException {
 			AutoOrderStatusTmpVo vo=new AutoOrderStatusTmpVo();
 			vo.setCwb(rs.getString("cwb"));
-			vo.setTransportno(rs.getString("transportno"));
+			vo.setBoxno(rs.getString("transportno"));
 			vo.setOperatetype(rs.getString("operatetype"));
 			vo.setMsg(rs.getString("msg"));
 			return vo;

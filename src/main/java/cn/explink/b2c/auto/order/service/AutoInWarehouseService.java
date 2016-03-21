@@ -72,7 +72,7 @@ public class AutoInWarehouseService {
 				
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if(cwbOrder==null){
-					throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"不存在此订单");
+					throw new AutoWaitException("模拟入库时没找到此订单");
 				}
 				
 				Branch userbranch = this.branchDAO.getBranchById(user.getBranchid());

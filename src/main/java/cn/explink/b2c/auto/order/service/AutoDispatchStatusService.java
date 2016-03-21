@@ -1,6 +1,7 @@
 package cn.explink.b2c.auto.order.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,12 +61,23 @@ public class AutoDispatchStatusService {
 
 	public void process() {
 	       this.logger.info("auto dispatch job process start...");
-
+	       int todoLen=3000;//每次查询条数????
+	       int maxtry=10;//最多查询次数
+	       int waitNum=0;//处理不成功的条数
+	       boolean dbhavedata=true;//表末尾
+	       int isOpenFlag =0;
+	       int offset=0;
+	       
+	       do{
+	    	maxtry=maxtry-1;
 	        List<AutoMQExceptionDto> errorList=null;
 
-	        int isOpenFlag =0; 
 	        try {
 	        	isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+	        	if(isOpenFlag!=1){
+	        		this.logger.info("自动化分拣状态处理未开启.");
+	        		return;
+	        	}
 	           
 	        	if(isOpenFlag==1){
 	        		/*
@@ -79,11 +91,17 @@ public class AutoDispatchStatusService {
 		    			user=this.getSessionUser();
 		    		}
 		    		this.logger.info("auto dispatch task start...");
-		            
+		    		
+		    		offset=offset+waitNum;
 		            //加载临时表数据
-		            List<AutoPickStatusMsgVo> voList= this.retrieveOrderStatusMsg(3000);//????
+		            List<AutoPickStatusMsgVo> voList= this.retrieveOrderStatusMsg(offset,todoLen);
+		            if(voList==null||voList.size()==0||voList.size()<todoLen){
+		            	dbhavedata=false;
+		            }
 		            //处理数据
-		            List<AutoMQExceptionDto> dataErrorList=handleData(voList,user);
+		            Map<String,Object> resultMap=handleData(voList,user);
+		            List<AutoMQExceptionDto> dataErrorList=(List<AutoMQExceptionDto>) resultMap.get("errorList");
+		            waitNum=Integer.parseInt(resultMap.get("waitNum").toString());
 		            //反馈错误
 		            if(dataErrorList!=null){
 		            	if(errorList==null){
@@ -113,11 +131,13 @@ public class AutoDispatchStatusService {
 		        }
 	            
 	        }
-	        
-	        if(isOpenFlag==1){
+
+	       }while(waitNum>0&&dbhavedata&&maxtry>0);
+	       
+	       if(isOpenFlag==1){
 	        	//处理那些超过1小时没订单的分拣状态记录
 	        	handleTimeoutData();
-	        }
+	      }
 		
 	}
 	
@@ -163,7 +183,9 @@ public class AutoDispatchStatusService {
 	}
 
 	
-	private List<AutoMQExceptionDto> handleData(List<AutoPickStatusMsgVo> msgVoList,User user){
+	private Map<String,Object> handleData(List<AutoPickStatusMsgVo> msgVoList,User user){
+		Map<String,Object> resultMap=new HashMap<String,Object>();
+		int waitNum=0;
 		long cnt=0;
 		if(msgVoList!=null){
 			cnt=msgVoList.size();
@@ -172,7 +194,9 @@ public class AutoDispatchStatusService {
 		
 		List<AutoMQExceptionDto> errorList=null;
 		if(msgVoList==null||msgVoList.size()<1){
-			return errorList;
+			resultMap.put("errorList", errorList);
+			resultMap.put("undeleteNum", waitNum);
+			return resultMap;
 		}
 
 		for(AutoPickStatusMsgVo msgVo:msgVoList){
@@ -185,20 +209,20 @@ public class AutoDispatchStatusService {
 				}else{
 					throw new RuntimeException("分拣状态报文中未明的操作类型:"+vo.getOperate_type());
 				}
-				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.success.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getTransport_no());
+				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.success.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getBox_no());
 			} catch (Exception e) {
 				logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn(),e);
 				e.printStackTrace();
 				String errinfo="DMP分拣状态数据转业务时出错."+e.getMessage();
 				long detailId=0;
 				try{
-					
-					if(e instanceof TranscwbNoFoundException){
-						 List<Map<String,Object>> detailList=this.autoExceptionService.queryAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),vo.getOperate_type());
+					if(e instanceof AutoWaitException){
+						waitNum=waitNum+1;
+						List<Map<String,Object>> detailList=this.autoExceptionService.queryAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),vo.getOperate_type());
 						if(detailList!=null&&detailList.size()>0){
 							Map<String,Object> detailMap= detailList.get(0);
-							long msgid=detailMap.get("msgid")==null?0:((Long)detailMap.get("msgid")).longValue();
-							detailId=detailMap.get("id")==null?0:((Long)detailMap.get("id")).longValue();
+							long msgid=detailMap.get("msgid")==null?0:Long.parseLong(detailMap.get("msgid").toString());
+							detailId=detailMap.get("id")==null?0:Long.parseLong(detailMap.get("id").toString());
 							this.autoExceptionService.updateAutoExceptionDetail(detailId, AutoExceptionStatusEnum.xinjian.getValue(), errinfo,msgid,msgVo.getMsg());
 						}else{
 							long msgid=this.autoExceptionService.createAutoExceptionMsg(msgVo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
@@ -208,10 +232,10 @@ public class AutoDispatchStatusService {
 						long msgid=this.autoExceptionService.createAutoExceptionMsg(msgVo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
 						detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperate_type());
 						
-						autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getTransport_no());
+						autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getBox_no());
 					}
 				} catch (Exception ee) {
-	        		logger.error("createAutoException error",ee);
+	        		logger.error("保存自动化异常时出错.",ee);
 	        	}
 				
 				boolean feedbackTps=true;
@@ -238,13 +262,16 @@ public class AutoDispatchStatusService {
 			}
 		}
 		
+		resultMap.put("errorList", errorList);
+		resultMap.put("waitNum", waitNum);
 		logger.info("auto dispatch msg processed successfully size:"+(cnt-(errorList==null?0:errorList.size())));
 		
-		return errorList;
+		return resultMap;
 	}
 	
 	private void handleTimeoutData(){
-		List<AutoOrderStatusTmpVo> timeOutVoList= autoOrderStatusService.retrieveTimeoutOrderStatusMsg(3000);//?????
+		int timeoutHour=24*7;//视乎集单等多久？？？
+		List<AutoOrderStatusTmpVo> timeOutVoList= autoOrderStatusService.retrieveTimeoutOrderStatusMsg(timeoutHour,3000);//?????
 		long cnt=0;
 		if(timeOutVoList!=null){
 			cnt=timeOutVoList.size();
@@ -255,7 +282,7 @@ public class AutoDispatchStatusService {
 			return;
 		}
 		List<AutoMQExceptionDto> errorList=new ArrayList<AutoMQExceptionDto>();
-		String errinfo="DMP处理分拣状态数据时一直没等到此订单数据.";
+		String errinfo="DMP处理自动化分拣状态时等待订单相关数据超时.";
 		try{
 			for(AutoOrderStatusTmpVo vo:timeOutVoList){
 				long detailid=autoExceptionService.createAutoDispatchTimeoutException(vo,errinfo);
@@ -275,8 +302,8 @@ public class AutoDispatchStatusService {
 		sendErrorResponse(errorList);
 	}
 	
-	private List<AutoPickStatusMsgVo> retrieveOrderStatusMsg(int size){
-		 List<AutoOrderStatusTmpVo> rowList= autoOrderStatusService.retrieveOrderStatusMsg(size);
+	private List<AutoPickStatusMsgVo> retrieveOrderStatusMsg(int offset,int size){
+		 List<AutoOrderStatusTmpVo> rowList= autoOrderStatusService.retrieveOrderStatusMsg(offset,size);
 		 if(rowList==null){
 			 return null;
 		 }
@@ -294,9 +321,9 @@ public class AutoDispatchStatusService {
 	    		String errinfo="DMP分拣状态json数据转vo时出错."+e.getMessage();
    		
 				long msgid=this.autoExceptionService.createAutoExceptionMsg(row.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
-				this.autoExceptionService.createAutoExceptionDetail(row.getCwb(),row.getTransportno(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,row.getOperatetype());
+				this.autoExceptionService.createAutoExceptionDetail(row.getCwb(),row.getBoxno(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,row.getOperatetype());
 				
-				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(), row.getCwb(), row.getOperatetype(),row.getTransportno());
+				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(), row.getCwb(), row.getOperatetype(),row.getBoxno());
 	    	}
 		}
 		return dataList;
