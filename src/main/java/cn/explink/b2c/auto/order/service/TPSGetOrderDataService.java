@@ -572,8 +572,8 @@ public class TPSGetOrderDataService {
 			/**
 			 * 新增参数
 			 */
-			BigDecimal original_weight = order.getOriginalWeight()/*(BigDecimal) (String.valueOf(order.getOriginalWeight()).equals("") ? "0" : order.getOriginalWeight())*/; // 重量
-			BigDecimal original_volume = order.getOriginalVolume()/*(BigDecimal) (String.valueOf(order.getOriginalVolume()).equals("") ? "0" : order.getOriginalVolume())*/; // 体积
+			BigDecimal original_weight = new BigDecimal("0");/*(BigDecimal) (String.valueOf(order.getOriginalWeight()).equals("") ? "0" : order.getOriginalWeight())*/; // 重量
+			BigDecimal original_volume = new BigDecimal("0");/*(BigDecimal) (String.valueOf(order.getOriginalVolume()).equals("") ? "0" : order.getOriginalVolume())*/; // 体积
 			int ext_pay_type = (null==order.getPayment()||"".equals(order.getPayment().toString())) ? 0 : order.getPayment(); // 扩展支付方式
 			int paywayid = (ext_pay_type==1) ? PaytypeEnum.Pos.getValue() : PaytypeEnum.Xianjin.getValue();
 			String created_dtm_loc = this.toDateForm(order.getCreateTime());//记录生成时间
@@ -953,36 +953,29 @@ public class TPSGetOrderDataService {
 		if(!"1".equals(is_gatherpack)){ //是否集包模式
 			return;
 		}
-		/**Commented by leoliao at 2016-03-01
-		//拦截 开启集单模式，总件数只有一件的数据 is_gatherpack=1，is_gathercomp=1，total_pack=1  --->这就是个单包裹(罗冬确认)
-		if("1".equals(is_gatherpack)&&"1".equals(is_gathercomp)&&"1".equals(total_pack)){
-			return null;
-		}
-		*/
 		//订单不存在，则不需要处理
 		if(cwbOrderDTO==null){
 			return;
 		}
 		
-		/**更新发货时间 leoliao at 2016-03-01
+		/**更新发货时间
 		 * 产品层面要改成的是这样的：
 		 * 如果TMS推过来的数据有最后一件标志了就把发货时间写入订单表里面&运单表，
 		 * 如果TMS推过来的数据没有最后一件标志那就把发货时间写到运单表里面
 		 */
 		String emaildate = currentOrderDTO.getRemark2(); //paraMap.get("remark2"); //发货时间
-
-		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp)){
+		String[] arrTranscwb = pack_nos.split(",");
+		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp) && (arrTranscwb.length==total_pack)){
 			//把发货时间写入订单表
 			cwbDAO.updateEmaildate(cust_order_no, emaildate);
 			
 			//把发货时间写入运单表
-			String[] arrTranscwb = pack_nos.split(",");
+			
 			if(arrTranscwb != null && arrTranscwb.length > 0){
 				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
 			}
-		}else if("1".equals(is_gatherpack) && "0".equals(is_gathercomp)){
+		}else if("1".equals(is_gatherpack) && ("0".equals(is_gathercomp) || ("1".equals(is_gathercomp) && arrTranscwb.length!=total_pack))){
 			//把发货时间写入运单表
-			String[] arrTranscwb = pack_nos.split(",");
 			if(arrTranscwb != null && arrTranscwb.length > 0){
 				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
 			}
@@ -994,7 +987,7 @@ public class TPSGetOrderDataService {
 			return;
 		}
 		
-		/**Comment by leoliao at 2016-03-01
+		/**
 		     兼容以下情况，故不做拦截而是改为一票一件：
 	            先产生is_gatherpack=1,is_gathercomp=0,total_pack=1的订单数据。
 	           后面又产生一条is_gatherpack=1,is_gathercomp=1,total_pack=1的订单数据
@@ -1007,14 +1000,18 @@ public class TPSGetOrderDataService {
 			return;
 		}
 		
+		/*
+		 * 由于tps下发dmp数据顺序可能错乱，在is_gathercomp标志为1（获取已集齐）之前，total_pack值都为0，
+		 * 在is_gathercomp标志为1及之后，total_pack值都为订单总箱数
+		 */
 		int mpsallarrivedflag=0;
-		if(Integer.valueOf(is_gathercomp)==VipGathercompEnum.Last.getValue()){ //到齐
+		if(Integer.valueOf(is_gathercomp)==VipGathercompEnum.Last.getValue() && arrTranscwb.length==total_pack){ //到齐
 			mpsallarrivedflag=MPSAllArrivedFlagEnum.YES.getValue();
 		}
 		
 		String oldTranscwb = cwbOrderDTO.getTranscwb();
 		String currentTranscwb = currentOrderDTO.getTranscwb();
-		//后者大于前者，移除前者
+		//后者大于前者，覆盖前者
 		if(oldTranscwb.split(",").length<currentTranscwb.split(",").length){
 			this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
 					total_pack,mpsallarrivedflag);
@@ -1028,7 +1025,7 @@ public class TPSGetOrderDataService {
 						total_pack,mpsallarrivedflag);
 			}
 		}
-		//后者小于前者，移除后者
+		//后者小于前者，不做修改
 		if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
 			return;
 		}
