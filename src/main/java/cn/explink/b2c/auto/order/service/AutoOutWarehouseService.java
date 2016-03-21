@@ -1,6 +1,13 @@
 package cn.explink.b2c.auto.order.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.TransCwbDetailDAO;
+import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.User;
+import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
+import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
 
@@ -35,6 +47,12 @@ public class AutoOutWarehouseService {
 	private CwbDAO cwbDAO;
 	@Autowired
 	private CustomerDAO customerDAO;
+	@Autowired
+	private TranscwbOrderFlowDAO transcwbOrderFlowDAO;
+	@Autowired
+	private TransCwbDetailDAO transCwbDetailDAO;
+	
+	private Set<Long> flowBeforeInWarehouse=null;//入库前的流程环节
 	
 	@Transactional
 	public void autOutWarehouse(AutoPickStatusVo data,User user){
@@ -96,8 +114,10 @@ public class AutoOutWarehouseService {
 				
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if(cwbOrder==null){
-					throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"不存在此订单");
+					throw new AutoWaitException("模拟出库时没找到此订单");
 				}
+				
+				validateIntoWarehouse(cwbOrder,cwb);
 				
 				long deliveryBranchId=autoOrderStatusService.getDeliveryBranchId(deliveryBranchCode);
 				if(deliveryBranchCode.length()>0&&deliveryBranchId==0){
@@ -164,8 +184,78 @@ public class AutoOutWarehouseService {
 			}*/
 
 		}
-
 	
+	//等齐所有运单已经入库才可调用出库
+	private void validateIntoWarehouse(CwbOrder cwbOrder,String cwb){
+		if(flowBeforeInWarehouse==null){
+			flowBeforeInWarehouse=new HashSet<Long>();
+			flowBeforeInWarehouse.add((long) FlowOrderTypeEnum.DaoRuShuJu.getValue());
+		}
+		
+		long totalNum=cwbOrder.getSendcarnum();//total  num ????
+		if(cwbOrder.getIsmpsflag()==IsmpsflagEnum.no.getValue()){
+			//非集单
+			if(totalNum<2){
+				if(flowBeforeInWarehouse.contains(cwbOrder.getFlowordertype())){
+					throw new AutoWaitException("非集单模式下出库时订单号("+cwb+")还没模拟入库");
+				}
+			}else{
+				List<String> transcwbList= getTranscwbList(cwbOrder.getTranscwb());
+				if(transcwbList!=null){
+					for(String transcwb:transcwbList){
+						TranscwbOrderFlow tcof = this.transcwbOrderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
+						if(tcof==null||flowBeforeInWarehouse.contains((long)tcof.getFlowordertype())){
+							throw new AutoWaitException("非集单模式下出库时有箱号("+transcwb+")还没模拟入库");
+						}
+					}
+				}
+			}
+		}else if(cwbOrder.getIsmpsflag()==IsmpsflagEnum.yes.getValue()){
+			//集单
+			if(cwbOrder.getMpsallarrivedflag()==MPSAllArrivedFlagEnum.NO.getValue()){
+				throw new AutoWaitException("集单模式下模拟出库时所有箱还没到齐,订单号="+cwb);
+			}else{
+				List<String> transcwbList= getTranscwbList(cwbOrder.getTranscwb());
+				if(transcwbList!=null){
+					for(String transcwb:transcwbList){
+						TransCwbDetail transCwbDetail = transCwbDetailDAO.findTransCwbDetailByTransCwb(transcwb);
+						if(transCwbDetail==null||flowBeforeInWarehouse.contains((long)transCwbDetail.getTranscwboptstate())){
+							throw new AutoWaitException("集单模式下出库时有箱号("+transcwb+")还没模拟入库)");
+						}
+					}
+				}
+			}
+			
+		}
+	}
+
+	private List<String> getTranscwbList(String transcwbs){
+		if(transcwbs==null||transcwbs.length()<1){
+			return null;
+		}
+		
+		List<String> transcwbList=null;
+		String transcwbArr []=null;
+		if(transcwbs.indexOf(",")>-1){
+			transcwbArr=transcwbs.split(",");
+		}else{
+			transcwbArr=transcwbs.split(":");
+		}
+		
+		if(transcwbArr!=null&&transcwbArr.length>1){
+			for(String transcwbStr:transcwbArr){
+				String transcwb=transcwbStr==null?null:transcwbStr.trim();
+				if(transcwb!=null&&transcwb.length()>0){
+					if(transcwbList==null){
+						transcwbList=new ArrayList<String>();
+					}
+					transcwbList.add(transcwb);
+				}
+			}
+		}
+		
+		return transcwbList;
+	}
 
 
 }

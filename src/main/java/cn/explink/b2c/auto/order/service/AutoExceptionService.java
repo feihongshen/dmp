@@ -57,7 +57,7 @@ public class AutoExceptionService {
 	public long createAutoDispatchTimeoutException(AutoOrderStatusTmpVo vo,String errinfo){
 		long msgid=this.exceptionCwbDAO.createAutoExceptionMsg(vo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
 		long detailid=this.exceptionCwbDAO.createAutoExceptionDetail(vo.getCwb(), "", errinfo, AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperatetype());
-		autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getCwb(),vo.getOperatetype(),vo.getTransportno());
+		autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getCwb(),vo.getOperatetype(),vo.getBoxno());
 		return detailid;
 	}
 }
