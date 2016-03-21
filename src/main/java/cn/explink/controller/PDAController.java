@@ -766,6 +766,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -1975,6 +1976,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -2495,6 +2497,7 @@ public class PDAController {
 		StringBuffer strs = new StringBuffer("");
 		if (!cwbs.equals("")) {
 			for (String str : cwbs.split("\r\n")) {
+				str = str.trim();
 				strs.append("'").append(str).append("',");
 			}
 		}
@@ -2559,6 +2562,7 @@ public class PDAController {
 					if (cwb.trim().length() == 0) {
 						continue;
 					}
+					cwb = cwb.trim();
 					OrderFlow of = this.orderFlowDAO.getOrderFlowByParam(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), cwb);
 					if (of != null) {
 						count++;
@@ -2784,6 +2788,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
@@ -3315,6 +3320,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			if (useEaimDate && !allEmaildate.contains(cwb)) {
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 				JSONObject obj = new JSONObject();
@@ -3535,6 +3541,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -3878,6 +3885,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			batchCount.setAllcwbnum(batchCount.getAllcwbnum() + 1);
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -4469,6 +4477,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -4686,6 +4695,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			alloutnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -4882,6 +4892,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -5407,6 +5418,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -5663,7 +5675,7 @@ public class PDAController {
 	@RequestMapping("/cwbbacktocustomer/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbacktocustomer(HttpServletRequest request, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {// 为包号修改
-		String scancwb = cwb;
+		String scancwb = cwb.trim();
 
 		long successCount = request.getSession().getAttribute(baleno + "-TuigonghuoshangsuccessCount") == null ? 0 : Long.parseLong(request.getSession()
 				.getAttribute(baleno + "-TuigonghuoshangsuccessCount").toString());
@@ -5715,6 +5727,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -6928,6 +6941,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			batchCount.setAllcwbnum(batchCount.getAllcwbnum() + 1);
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -7015,6 +7029,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -7177,6 +7192,7 @@ public class PDAController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
+					cwbStr = cwbStr.trim();
 					cwbstr = cwbstr.append(quot).append(cwbStr).append(quotAndComma);
 				}
 				clist = this.cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
@@ -9525,6 +9541,7 @@ public class PDAController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
+				cwb = cwb.trim();
 				allcwbnum++;
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
@@ -10318,6 +10335,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;

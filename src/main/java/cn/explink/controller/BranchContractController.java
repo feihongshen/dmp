@@ -504,7 +504,7 @@ public class BranchContractController {
 				this.cwbDAO.saveCwbOrderByExcelbranch(branchname, branchid);
 			}
 
-			this.branchDAO.saveBranchNoFile(branch);
+			this.branchDAO.saveBranch(branch);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
 				// TODO 增加同步代码
