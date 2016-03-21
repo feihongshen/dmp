@@ -301,6 +301,7 @@ public class OrderBackCheckController {
 			if (cwbStr.trim().length() == 0) {
 				continue;
 			}
+			cwbStr = cwbStr.trim();
 			cwbs.append("'").append(cwbStr).append("',");
 		}
 		if(cwbs.length()>0){
@@ -398,6 +399,7 @@ public class OrderBackCheckController {
 				if ("".equals(cwbStr.trim())) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				OrderBackCheck o = this.orderBackCheckDAO.getOrderBackCheckByCwbAndBranch(cwbStr, branchids);
 				if (o != null) {
 					list.add(o);

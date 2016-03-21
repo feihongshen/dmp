@@ -601,7 +601,7 @@ public class PDAController {
 		// 今日未到货list
 		List<CwbDetailView> jinriweidaohuoViewlist = this.getcwbDetail(jinriweidaohuolist, customerList, showCustomerjSONArray, branchList, 1);
 		// 历史未到货list
-		List<String> lishiweidaohuocwbslist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypesHis, DateTimeUtil.getCurrentDayZeroTime());
+		List<String> lishiweidaohuocwbslist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
 		String lishiweidaocwbs = "";
 		List<CwbOrder> historyweidaohuolist = new ArrayList<CwbOrder>();
 		if (lishiweidaohuocwbslist.size() > 0) {
@@ -6663,7 +6663,7 @@ public class PDAController {
 		}
 
 		// add by 王志宇-------未到货统计二级站出站给一级站
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()+","
                 + FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue() + ","
 				+ FlowOrderTypeEnum.DingDanLanJie.getValue();
 		
@@ -9218,7 +9218,7 @@ public class PDAController {
 					this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 				}
 
-				String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() + "," + FlowOrderTypeEnum.LanJianChuZhan.getValue()
+				String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() + "," + FlowOrderTypeEnum.LanJianChuZhan.getValue()+","
                         + FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue() + ","
 						+ FlowOrderTypeEnum.DingDanLanJie.getValue();
 				if (showintowarehousedata.equals("yes")) {
