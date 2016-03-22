@@ -192,7 +192,7 @@ function cancelIntercept(transcwb){
 							<%for(CwbOrderView cwb :cwbList){ %>
 								<tr height="30" cwbFlowordertype="<%=cwb.getFlowordertype() %>"  cwbstate="<%
 									if(cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
-										||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
+										||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue() && cwb.getDeliverystate() != DeliveryStateEnum.FenZhanZhiLiu.getValue())
 										||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
 										||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() && cwb.getDeliverystate()!=DeliveryStateEnum.DaiZhongZhuan.getValue() 
 										  && cwb.getDeliverystate()!=DeliveryStateEnum.JuShou.getValue() && cwb.getDeliverystate()!=DeliveryStateEnum.BuFenTuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
@@ -243,7 +243,7 @@ function cancelIntercept(transcwb){
 									
 									<td width="150" align="center" valign="middle">
 									<%if(cwb.getFlowordertype()==FlowOrderTypeEnum.FenZhanLingHuo.getValue()
-											||cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue()
+											||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiFanKui.getValue() && cwb.getDeliverystate() != DeliveryStateEnum.FenZhanZhiLiu.getValue())
 											||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.no.getValue())
 											||(cwb.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() && cwb.getDeliverystate()!=DeliveryStateEnum.DaiZhongZhuan.getValue() 
 										  		&& cwb.getDeliverystate()!=DeliveryStateEnum.JuShou.getValue() && cwb.getDeliverystate()!=DeliveryStateEnum.BuFenTuiHuo.getValue() && cwb.getIsmpsflag() == IsmpsflagEnum.yes.getValue())
@@ -260,7 +260,7 @@ function cancelIntercept(transcwb){
 												【丢失】
 											<%} %>
 											<%=cwb.getBackreason() %>
-									<input type="hidden" name="interceptReason_<%=cwb.getCwb() %>" value="<%=cwb.getScancwb() %>_intercept_0_intercept_0_intercept_<%=cwb.getCwb() %>"/>
+										<input type="hidden" name="interceptReason_<%=cwb.getCwb() %>" value="<%=cwb.getScancwb() %>_intercept_0_intercept_0_intercept_<%=cwb.getCwb() %>"/>
 									<%}else{ %>
 										<select name="interceptReason_<%=cwb.getCwb() %>" style="width:140;">
 										<option value="">请选择拦截原因</option>
