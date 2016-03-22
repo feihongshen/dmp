@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -268,6 +271,8 @@ public class VipShopGetCwbDataService {
 		}
 
 		List<Map<String, String>> orderlist = this.parseXmlDetailInfo(parseMap, vipshop);
+		// 订单处理结果 
+		Map<String, Boolean> resultMap = parseResultMap(parseMap);
 		if ((orderlist == null) || (orderlist.size() == 0)) {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-没有获取到订单或者订单信息重复！,当前SEQ={}", vipshop.getVipshop_seq());
@@ -276,22 +281,22 @@ public class VipShopGetCwbDataService {
 
 		if (vipshop.getIsTuoYunDanFlag() == 0) {
 			for (Map<String, String> dataMap : orderlist) {
-				extractedDataImport(vipshop_key, vipshop, orderlist, dataMap);
+				extractedDataImport(vipshop_key, vipshop, orderlist, dataMap, resultMap);
 			}			
 		} else {
 			for (Map<String, String> dataMap : orderlist) {
-				extractedDataImportByEmaildate(vipshop_key, vipshop, dataMap);
+				extractedDataImportByEmaildate(vipshop_key, vipshop, dataMap, resultMap);
 			}
 		}
 		
-		if(feedbackOrderResult){
-			
+		if(feedbackOrderResult && resultMap.size() >= 1){
+			feedbackOrderResult(vipshop, resultMap);
 		}
 		return 1;
 	}
 	
 	public void extractedDataImportByEmaildate(int vipshop_key,
-			VipShop vipshop, Map<String, String> dataMap) {
+			VipShop vipshop, Map<String, String> dataMap, Map<String, Boolean> resultMap) {
 		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
 		onelist.add(dataMap);
 		long customerid = Long.valueOf(dataMap.get("customerid"));
@@ -311,12 +316,13 @@ public class VipShopGetCwbDataService {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息导入成功cwb={}-更新了最大的SEQ!{}", dataMap.get("cwb").toString(), vipshop.getVipshop_seq());
 		} catch (Exception e) {
+			markResultMap(dataMap, resultMap, false);
 			this.logger.error("vipshop调用数据导入接口异常!cwb=" + dataMap.get("cwb").toString(), e);
 		}
 	}
 	
 	public void extractedDataImport(int vipshop_key, VipShop vipshop,
-			List<Map<String, String>> orderlist, Map<String, String> dataMap) {
+			List<Map<String, String>> orderlist, Map<String, String> dataMap, Map<String, Boolean> resultMap) {
 		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
 		onelist.add(dataMap);
 		long customerid = Long.valueOf(dataMap.get("customerid"));
@@ -342,6 +348,7 @@ public class VipShopGetCwbDataService {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-更新了最大的SEQ!{}", vipshop.getVipshop_seq());
 		} catch (Exception e) {
+			markResultMap(dataMap, resultMap, false);
 			this.logger.error("vipshop调用数据导入接口异常!,订单List信息:" + orderlist + "message:", e);			
 		}
 	}
@@ -1049,9 +1056,9 @@ public class VipShopGetCwbDataService {
 	 * 把处理好的订单结果反馈给取订单方
 	 * @param vipshop
 	 */
-	private void feedbackOrderResult(VipShop vipshop){
+	private void feedbackOrderResult(VipShop vipshop, Map<String, Boolean> result){
 		String request_time = DateTimeUtil.getNowTime();
-		String requestXML = this.StringXMLFeedback(vipshop, request_time);
+		String requestXML = this.StringXMLFeedback(vipshop, request_time, result);
 		String MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no();
 		String sign = VipShopMD5Util.MD5(MD5Str);
 		String endpointUrl = vipshop.getGetCwb_URL();
@@ -1067,11 +1074,11 @@ public class VipShopGetCwbDataService {
 	}
 	
 	/**
-	 * 
+	 * 反馈订单结果报文
 	 * @param vipshop
 	 * @return
 	 */
-	private String StringXMLFeedback(VipShop vipshop, String request_time){
+	private String StringXMLFeedback(VipShop vipshop, String request_time, Map<String, Boolean> result){
 		StringBuilder sub = new StringBuilder();
 		sub.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		sub.append("<request>");
@@ -1081,11 +1088,66 @@ public class VipShopGetCwbDataService {
 		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
 		sub.append("</head>");
 		sub.append("<orders>");
-		
+		Set<Entry<String, Boolean>> set = result.entrySet();
+		for(Entry<String, Boolean> entry : set){
+			sub.append("<order>");
+			sub.append("<id>");
+			sub.append(entry.getKey());
+			sub.append("</id>");			
+			if(entry.getValue()){
+				sub.append("<biz_response_code>");
+				sub.append("B00");
+				sub.append("</biz_response_code>");
+				sub.append("<biz_response_msg>");
+				sub.append("SUCCESS");
+				sub.append("</biz_response_msg>");
+			} else {
+				sub.append("<biz_response_code>");
+				sub.append("S99");
+				sub.append("</biz_response_code>");
+				sub.append("<biz_response_msg>");
+				sub.append("FAIL");
+				sub.append("</biz_response_msg>");
+			}
+			sub.append("</order>");
+		}
 		sub.append("</orders>");
 		sub.append("</request>");
 		return sub.toString();
 		
+	}
+	
+	/**
+	 * 把处理结果标识成默认成功
+	 * @param paseXmlMap
+	 * @return
+	 */
+	private Map<String, Boolean> parseResultMap(Map paseXmlMap) {
+		Map<String, Boolean> result = new HashMap<String, Boolean>();
+		List<Map<String, Object>> orderlist = (List<Map<String, Object>>) paseXmlMap.get("orderlist");
+		if (CollectionUtils.isEmpty(orderlist)) {
+			return result;
+		}
+		String seq = null;
+		for (Map<String, Object> datamap : orderlist) {
+			seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
+			// 不添加为空的seq
+			if("".equals(seq)){
+				continue;
+			}
+			result.put(seq, true);
+		}
+		return result;
+	}
+	
+	/**
+	 * 标志结果
+	 */
+	private void markResultMap(Map<String, String> dataMap, Map<String, Boolean> resultMap, boolean result) {
+		String seq = VipShopGetCwbDataService.convertEmptyString("seq", dataMap);
+		if(!"".equals(seq)){
+			resultMap.put(seq, result);
+		}
 	}
 
 }
