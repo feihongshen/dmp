@@ -2110,7 +2110,7 @@ public class CwbOrderService extends BaseOrderService {
 			obr.setConsigneename(co.getConsigneename());// 收件人名字
 			obr.setConsigneeaddress(co.getConsigneeaddress());// 收件人地址
 			obr.setCreatetime(this.getNowtime());// 当前时间
-			obr.setCwbstate((int) co.getCwbstate());
+			obr.setCwbstate(2);
 			this.orderBackRukuRecordDao.creOrderbackRuku(obr);// 导入到退货站入库记录表
 		}
 	}
