@@ -587,7 +587,7 @@ public class PunishInsideController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
-					cwbs1 = cwbs1.append(quot).append(cwbStr).append(quotAndComma);
+					cwbs1 = cwbs1.append(quot).append(cwbStr.trim()).append(quotAndComma);
 				}
 			}
 			String cwbs = new String();

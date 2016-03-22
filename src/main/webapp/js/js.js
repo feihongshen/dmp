@@ -4610,7 +4610,7 @@ function check_userbranch() {
 	if ($("#usermobile").val().length == 0) {
 		alert("员工手机不能为空");
 		return false;
-	}else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
+	}else if (isNumber($("#usermobile").val()) == false) {
 		 alert("手机号码格式有误!"); 
 		 return false; 
 	}

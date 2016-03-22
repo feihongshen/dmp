@@ -205,7 +205,7 @@ public class CwbColumnImpl implements CwbColumnSet {
 			return this.cwbColumnSetHomegobj.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.SFexpressXHM.getMethod())) {
 			return this.cwbColumnSetSfxhm.getEexcelColumnSetByB2c(b2cFlag);
-		} else if (b2cFlag.equals(B2cEnum.Zhongliang.getMethod())) {
+		} else if (b2cFlag.contains("zhongliang")) {
 			return this.cwbColumnSetZhongliang.getEexcelColumnSetByB2c(b2cFlag);
 		} else if (b2cFlag.equals(B2cEnum.Wenxuan.getMethod())) {
 			return this.cwbColumnSetWenxuan.getEexcelColumnSetByB2c(b2cFlag);
