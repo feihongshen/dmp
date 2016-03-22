@@ -18,6 +18,12 @@ public class VipShopConfig {
 	public static String version = "1.0";
 
 	public static String nameSpace = "http://common.tmsinterface.tms.com";
-	public static String requestMethodName = "fetchOrderInfoNew";
+	public static String requestMethodName = "carrierService";
+	/** 正常订单请求逻辑编号*/
+	public static String CODE_S101 = "S101";
+	/** 改造订单请求逻辑编号*/
+	public static String CODE_S131 = "S131";
+	/** 订单请求回抛编号 */
+	public static String CODE_S141 = "S141";
 
 }

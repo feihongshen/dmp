@@ -17,8 +17,12 @@ public class SOAPHandler {
 	@Autowired
 	ReaderXMLHandler readXML;
 	private Logger logger = LoggerFactory.getLogger(SOAPHandler.class);
-
+	
 	public String HTTPInvokeWs(String endpointUrl, String nameSpace, String methodName, String requestXML, String sign) throws Exception {
+		return HTTPInvokeWs(endpointUrl, nameSpace, methodName, requestXML, sign, null);
+	}
+	
+	public String HTTPInvokeWs(String endpointUrl, String nameSpace, String methodName, String requestXML, String sign, String serviceCode) throws Exception {
 		StringBuffer result = null;
 		OutputStream out = null;
 		BufferedReader in = null;
@@ -27,6 +31,9 @@ public class SOAPHandler {
 			StringBuffer paramXml = new StringBuffer();
 			paramXml.append("<content>" + readXML.parse(requestXML) + "</content>");
 			paramXml.append("<sign>" + sign.toLowerCase() + "</sign>");
+			if(serviceCode != null){
+				paramXml.append("<serviceCode>" + serviceCode + "</serviceCode>");
+			}
 
 			String soap = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><" + methodName + " xmlns=\"" + nameSpace + "\">" + paramXml + "</" + methodName
 					+ "></soapenv:Body></soapenv:Envelope>";

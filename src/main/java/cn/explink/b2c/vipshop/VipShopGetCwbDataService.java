@@ -27,10 +27,12 @@ import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderGoodsDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.OrderGoods;
+import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
@@ -77,6 +79,8 @@ public class VipShopGetCwbDataService {
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
 	@Autowired
 	DataImportService dataImportService;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 
 	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -222,9 +226,16 @@ public class VipShopGetCwbDataService {
 			this.logger.info("未开启vipshop[" + vipshop_key + "]订单下载接口");
 			return -1;
 		}
+		
+		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
+		// 是否开启反馈订单结果接口
+		boolean feedbackOrderResult = false;
+		if(systemInstall != null && "1".equals(systemInstall.getValue())){
+			feedbackOrderResult = true;
+		}
 
 		// 构建请求，解析返回信息
-		Map<String, Object> parseMap = this.requestHttpAndCallBackAnaly(vipshop);
+		Map<String, Object> parseMap = this.requestHttpAndCallBackAnaly(vipshop, feedbackOrderResult);
 
 		if ((parseMap == null) || (parseMap.size() == 0)) {
 			this.logger.error("系统返回xml字符串为空或解析xml失败！");
@@ -271,7 +282,10 @@ public class VipShopGetCwbDataService {
 				extractedDataImportByEmaildate(vipshop_key, vipshop, dataMap);
 			}
 		}
-
+		
+		if(feedbackOrderResult){
+			
+		}
 		return 1;
 
 	}
@@ -340,10 +354,17 @@ public class VipShopGetCwbDataService {
 	 * @param vipshop
 	 * @return
 	 */
-	private Map<String, Object> requestHttpAndCallBackAnaly(VipShop vipshop) {
+	private Map<String, Object> requestHttpAndCallBackAnaly(VipShop vipshop, boolean feedbackOrderResult) {
+		
 		String request_time = DateTimeUtil.getNowTime();
-		String requestXML = this.StringXMLRequest(vipshop, request_time);
-		String MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no() + vipshop.getVipshop_seq() + vipshop.getGetMaxCount();
+		String requestXML = this.StringXMLRequest(vipshop, request_time, feedbackOrderResult);
+		String MD5Str = null;
+		if(feedbackOrderResult){
+			MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no() + vipshop.getGetMaxCount();
+		}else{
+			MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no() + vipshop.getVipshop_seq() + vipshop.getGetMaxCount();
+			
+		}
 		String sign = VipShopMD5Util.MD5(MD5Str);
 		String endpointUrl = vipshop.getGetCwb_URL();
 		String response_XML = null;
@@ -351,7 +372,11 @@ public class VipShopGetCwbDataService {
 		this.logger.info("获取vipshop订单XML={}", requestXML);
 
 		try {
-			response_XML = this.soapHandler.HTTPInvokeWs(endpointUrl, VipShopConfig.nameSpace, VipShopConfig.requestMethodName, requestXML, sign);
+			if(feedbackOrderResult){
+				response_XML = this.soapHandler.HTTPInvokeWs(endpointUrl, VipShopConfig.nameSpace, VipShopConfig.requestMethodName, requestXML, sign, VipShopConfig.CODE_S131);
+			} else {
+				response_XML = this.soapHandler.HTTPInvokeWs(endpointUrl, VipShopConfig.nameSpace, VipShopConfig.requestMethodName, requestXML, sign, VipShopConfig.CODE_S101);
+			}
 		} catch (Exception e) {
 			this.logger.error("处理唯品会订单请求异常！返回信息：" + response_XML + ",异常原因：" + e.getMessage(), e);
 			return null;
@@ -371,7 +396,7 @@ public class VipShopGetCwbDataService {
 		return parseMap;
 	}
 
-	private String StringXMLRequest(VipShop vipshop, String request_time) {
+	private String StringXMLRequest(VipShop vipshop, String request_time, boolean feedbackOrderResult) {
 
 		String business_type = "";
 		if (vipshop.getIsShangmentuiFlag() == 1) { // 只上门退
@@ -388,7 +413,9 @@ public class VipShopGetCwbDataService {
 		sub.append("<version>" + VipShopConfig.version + "</version>");
 		sub.append("<request_time>" + request_time + "</request_time>");
 		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
-		sub.append("<seq>" + vipshop.getVipshop_seq() + "</seq>");
+		if(!feedbackOrderResult){
+			sub.append("<seq>" + vipshop.getVipshop_seq() + "</seq>");
+		}
 		sub.append("<count>" + vipshop.getGetMaxCount() + "</count>");
 		sub.append(business_type);
 		sub.append("</head>");
@@ -1006,6 +1033,49 @@ public class VipShopGetCwbDataService {
 		for(Map<String,String> mapR:list){
 			System.out.println("cwb="+mapR.get("cwb")+",transcwb="+mapR.get("transcwb"));
 		}
+		
+	}
+	
+	/**
+	 * 把处理好的订单结果反馈给取订单方
+	 * @param vipshop
+	 */
+	private void feedbackOrderResult(VipShop vipshop){
+		String request_time = DateTimeUtil.getNowTime();
+		String requestXML = this.StringXMLFeedback(vipshop, request_time);
+		String MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no();
+		String sign = VipShopMD5Util.MD5(MD5Str);
+		String endpointUrl = vipshop.getGetCwb_URL();
+		String response_XML = null;
+
+		this.logger.info("反馈vipshop订单XML={}", requestXML);
+
+		try {
+			response_XML = this.soapHandler.HTTPInvokeWs(endpointUrl, VipShopConfig.nameSpace, VipShopConfig.requestMethodName, requestXML, sign, VipShopConfig.CODE_S141);
+		} catch (Exception e) {
+			this.logger.error("反馈唯品会订单请求异常！返回信息：" + response_XML + ",异常原因：" + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param vipshop
+	 * @return
+	 */
+	private String StringXMLFeedback(VipShop vipshop, String request_time){
+		StringBuilder sub = new StringBuilder();
+		sub.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		sub.append("<request>");
+		sub.append("<head>");
+		sub.append("<version>" + VipShopConfig.version + "</version>");
+		sub.append("<request_time>" + request_time + "</request_time>");
+		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
+		sub.append("</head>");
+		sub.append("<orders>");
+		
+		sub.append("</orders>");
+		sub.append("</request>");
+		return sub.toString();
 		
 	}
 
