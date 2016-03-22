@@ -671,4 +671,64 @@ public class DataImportDAO_B2c {
 	public void updateTmsPackageCondition(String cwb, String  transcwb,int sendcarnum,int mpsallarrivedflag,int ismpsflag) {
 		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=? where cwb=? and state = 1  ", transcwb,sendcarnum,mpsallarrivedflag,ismpsflag,cwb);
 	}
+	
+	/**
+	 * 获取临时表中未转业务的记录id
+	 * @author leo01.liao
+	 * @param customerids
+	 * @param cwbordertypeids
+	 * @param maxCount
+	 * @return
+	 */
+	public List<Long> getCwbOrderTempOpscwbidByKeysExtends(String customerids, String cwbordertypeids, int maxCount) {
+		if(maxCount <= 0){
+			maxCount = 2000;
+		}
+		
+		String sql = "select opscwbid from express_ops_cwb_detail_b2ctemp where state=1 and customerid in (" + customerids + ") " +
+					 " and getDataFlag=0 and cwbordertypeid in (" + cwbordertypeids + ") order by credate limit 0, " + maxCount;
+		return this.jdbcTemplate.queryForList(sql, Long.class);
+	}
+	
+	/**
+	 * 使用行级锁以防止并发修改
+	 * @author leo01.liao
+	 * @param opscwbid
+	 * @return
+	 */
+	public CwbOrderDTO getCwbByCwbB2ctempOpscwbidLock(long opscwbid) {
+		try {
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where opscwbid=? for update", new CwbDTO4TempMapper(), opscwbid);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 使用id来进行更新以便行级锁生效
+	 * @author leo01.liao
+	 * @param opscwbid
+	 * @param transcwb
+	 * @param sendcarnum
+	 * @param mpsallarrivedflag
+	 * @param ismpsflag
+	 */
+	public void updateTmsPackageCondition(long opscwbid, String  transcwb, int sendcarnum, int mpsallarrivedflag, int ismpsflag) {
+		String sql = "update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=? where opscwbid=? ";
+		this.jdbcTemplate.update(sql, transcwb, sendcarnum, mpsallarrivedflag, ismpsflag, opscwbid);
+	}
+	
+	/**
+	 * 修改临时表为[插入detail表]成功 getDataFlag != 0表示已经插入到detail中
+	 * @author leo01.liao
+	 * @param getDataFlag
+	 * @param opscwbid
+	 */
+	public void update_CwbDetailTempByCwb(long getDataFlag, long opscwbid) {
+		try {
+			this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set getDataFlag=" + getDataFlag + " where opscwbid=" + opscwbid);
+		} catch (DataAccessException e) {
+			this.logger.error("修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
+		}
+	}
 }
