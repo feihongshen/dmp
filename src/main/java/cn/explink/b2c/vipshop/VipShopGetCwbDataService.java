@@ -94,6 +94,7 @@ public class VipShopGetCwbDataService {
 		return vipshop;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		VipShop vipshop = new VipShop();
 		vipshop.setDaysno((request.getParameter("daysno")==null||("".equals(request.getParameter("daysno"))))?5:(Integer.valueOf(request.getParameter("daysno"))));

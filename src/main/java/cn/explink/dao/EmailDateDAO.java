@@ -302,7 +302,6 @@ public class EmailDateDAO {
 	/**
 	 * 获取匹配管理中批次时间
 	 * @param customerid
-	 * @param state
 	 * @return
 	 */
 	public Collection<? extends EmailDate> queryEmailDateByCustomerid(long customerid){
@@ -334,7 +333,6 @@ public class EmailDateDAO {
 	/**
 	 * 取接口表里每日第一个订单的创建时间
 	 * @param customerid
-	 * @param state
 	 * @return
 	 */
 	public List<EmailDate> queryEmailDateInShipClose(long customerid) {

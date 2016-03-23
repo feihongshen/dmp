@@ -8301,7 +8301,7 @@ public class CwbOrderService extends BaseOrderService {
 	public String getCwbs(String cwbs) {
 		StringBuffer sb = new StringBuffer();
 		for (String str : cwbs.split("\r\n")) {
-			sb.append("'").append(str).append("',");
+			sb.append("'").append(str.trim()).append("',");
 		}
 		return sb.substring(0, sb.length() - 1);
 	}
@@ -8619,6 +8619,7 @@ public class CwbOrderService extends BaseOrderService {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			if (useEaimDate && !allEmaildate.contains(cwb)) {
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 				JSONObject obj = new JSONObject();
@@ -8665,6 +8666,7 @@ public class CwbOrderService extends BaseOrderService {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			batchCount.setAllcwbnum(batchCount.getAllcwbnum() + 1);
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
