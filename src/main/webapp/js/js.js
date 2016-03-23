@@ -4631,8 +4631,12 @@ function check_userbranch() {
 		$("#usermobile").select() ;
 		return false ;
 	}
+	if($("#usermobile").val().length != 11 && !confirm("手机号码非11位，将无法使用品骏达！确认使用当前手机号码？")){
+		return false ;
+	}
 	if ($("#idcardno").val().length == 0) {
 		alert("身份证号不能为空!");
+		$("#idcardno").focus() ;
 		return false;
 	}
 	var creandsave = $("#creandsave").val();
