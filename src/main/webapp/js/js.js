@@ -4614,6 +4614,9 @@ function check_userbranch() {
 		 alert("手机号码格式有误!"); 
 		 return false; 
 	}
+	if($("#usermobile").val().length != 11 && !confirm("手机号码非11位，将无法使用品骏达！确认使用当前手机号码？")){
+		return false ;
+	}
 	if ($("#idcardno").val().length == 0) {
 		alert("身份证号不能为空!");
 		return false;
@@ -4660,6 +4663,7 @@ function check_userbranch() {
 		alert("请输入正确格式的金额(正数)!");
 		return false;
 	}
+	
 	
 	/*
 	 * if ($("#usermobile").val().length != 11 ||
