@@ -4631,10 +4631,7 @@ function check_userbranch() {
 		$("#usermobile").select() ;
 		return false ;
 	}
-	if ($("#idcardno").val().length == 0) {
-		alert("身份证号不能为空!");
-		return false;
-	}
+	
 	var creandsave = $("#creandsave").val();
 	var checkuserformid;
 	if(creandsave==0){
