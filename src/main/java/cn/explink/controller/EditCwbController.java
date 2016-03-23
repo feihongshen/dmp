@@ -156,6 +156,7 @@ public class EditCwbController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			if (cwb.length() > 0) {
 				cwbsSqlBuffer = cwbsSqlBuffer.append(s).append(cwb).append(s1);
 			}
@@ -803,6 +804,7 @@ public class EditCwbController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwbStr);
 				if (co != null) {
 					cwborderlist.add(co);

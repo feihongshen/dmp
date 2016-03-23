@@ -147,6 +147,7 @@ public class CwbApplyController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDAO.getCwbByCwb(lastcwb);
@@ -191,6 +192,7 @@ public class CwbApplyController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDAO.getCwbByCwb(lastcwb);
@@ -613,6 +615,7 @@ public class CwbApplyController {
 			if (cwbStr.trim().length() == 0) {
 				continue;
 			}
+			cwbStr = cwbStr.trim();
 			cwbs.append("'").append(cwbStr).append("',");
 		}
 		if(cwbs.length()>0){

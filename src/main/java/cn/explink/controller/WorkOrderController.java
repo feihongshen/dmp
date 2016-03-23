@@ -615,6 +615,7 @@ public class WorkOrderController {
 			String cwb1 = cos.translateCwb(cv.getOrderNo());
 			String cwb[]=cwb1.trim().split("\r\n");			
 			for(String str:cwb){
+				str = str.trim();
 				sb=sb.append("'"+str+"',");
 			}
 			ncwbs=sb.substring(0, sb.length()-1);	
@@ -624,6 +625,7 @@ public class WorkOrderController {
 		if(!StringUtils.isEmpty(cv.getAcceptNo())){		
 		String workorder[]=cv.getAcceptNo().trim().split("\r\n");		
 		for(String str1:workorder){
+			str1 = str1.trim();
 			sb1=sb1.append("'"+str1+"',");
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
@@ -883,6 +885,7 @@ public class WorkOrderController {
 			String cwb1 = cos.translateCwb(cwbs);
 			String cwb[]=cwb1.trim().split("\r\n");			
 			for(String str:cwb){
+				str = str.trim();
 				sb=sb.append("'"+str+"',");
 			}
 			ncwbs=sb.substring(0, sb.length()-1);	
@@ -892,6 +895,7 @@ public class WorkOrderController {
 		if(!StringUtils.isEmpty(acceptNo)){		
 		String workorder[]=acceptNo.trim().split("\r\n");		
 		for(String str1:workorder){
+			str1 = str1.trim();
 			sb1=sb1.append("'"+str1+"',");
 		}
 		workorders=sb1.substring(0, sb1.length()-1);

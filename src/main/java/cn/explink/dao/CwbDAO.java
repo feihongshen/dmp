@@ -1919,6 +1919,7 @@ public class CwbDAO {
 	private String getChangeGoodsTypeSqInParam(String[] cwbArray) {
 		StringBuilder sqlInParam = new StringBuilder();
 		for (String cwb : cwbArray) {
+			cwb = cwb.trim();
 			sqlInParam.append("'");
 			sqlInParam.append(cwb);
 			sqlInParam.append("',");

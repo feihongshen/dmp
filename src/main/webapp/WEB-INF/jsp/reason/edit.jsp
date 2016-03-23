@@ -42,17 +42,17 @@ String firstreason= request.getAttribute("firstreason")==null?null:(String)reque
 		          	  
 		          	   <%if(reason.getReasontype()==15){ %> 
 			           <li><span id="interceptType" style="margin-left: 50px;width:180px;" align="left">
-				           <%if( reason.getInterceptType() == 3){ %> 
+				           <%if( reason.getInterceptType() == InterceptTypeEnum.tuihuo.getValue()){ %> 
 				          		<input type="radio" id="intercept_3" name="intercept_type"  checked="checked" value='<%=InterceptTypeEnum.tuihuo.getValue() %>'><%=InterceptTypeEnum.tuihuo.getText() %>
 				           <%}else{ %>
 				           		<input type="radio" id="intercept_3" name="intercept_type"  value='<%=InterceptTypeEnum.tuihuo.getValue() %>'><%=InterceptTypeEnum.tuihuo.getText() %>
 				           <%} %>
-				          <%if( reason.getInterceptType() == 1){ %> 
+				          <%if( reason.getInterceptType() == InterceptTypeEnum.diushi.getValue()){ %> 
 				          		<input type="radio" id="intercept_1" name="intercept_type"  checked="checked" value='<%=InterceptTypeEnum.diushi.getValue() %>'><%=InterceptTypeEnum.diushi.getText() %>
 				           <%}else{ %>
 				           		<input type="radio" id="intercept_1" name="intercept_type" value='<%=InterceptTypeEnum.diushi.getValue() %>'><%=InterceptTypeEnum.diushi.getText() %>
 				           <%} %>
-				            <%if(reason.getInterceptType() == 2){ %> 
+				            <%if(reason.getInterceptType() == InterceptTypeEnum.posun.getValue()){ %> 
 				          		<input type="radio" id="intercept_2" name="intercept_type" checked="checked"  value='<%=InterceptTypeEnum.posun.getValue() %>'><%=InterceptTypeEnum.posun.getText() %>
 				           <%}else{ %>
 				           		<input type="radio" id="intercept_2" name="intercept_type"  value='<%=InterceptTypeEnum.posun.getValue() %>'><%=InterceptTypeEnum.posun.getText() %>

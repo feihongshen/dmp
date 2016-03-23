@@ -51,6 +51,7 @@
 			<div id="close_box" onclick="closeBox()"></div>
 			修改机构
 		</h1>
+		<!-- 此form内修改字段时，需要同时修改webapp/js/js.js文件的submitBranchLoad()方法 -->
 		<form id="branch_save_Form" name="branch_save_Form" enctype="multipart/form-data"
 			 onSubmit="if(check_branch(<%=BranchEnum.ZhanDian.getValue()%>,
 			 <%=BranchEnum.YunYing.getValue()%>,<%=BranchEnum.KeFu.getValue()%>,
@@ -358,7 +359,7 @@
 			  <li><span>开户证件类型：</span><select id ="cftCertType" name ="cftCertType" >
 			    <%
 			    	for(PayCerTypeEnum temp: PayCerTypeEnum.getAllStatus()){
-			    		if(temp.getValue()== branch.getCftAccountProp()){
+			    		if(temp.getValue()== branch.getCftCertType()){
 							%>
 							<option value ="<%=temp.getValue()%>"  selected ="selected"><%=temp.getText()%></option>
 					<%}else{ %>
@@ -367,7 +368,7 @@
 
 			  </select>*</li>
          </ul>
-	         <input type="hidden" name="branchid" value ="<%=branch.getBranchid() %>"  />
+	         <input type="hidden" id="branchid" name="branchid" value ="<%=branch.getBranchid() %>"  />
 	         
 		</div>
 		<div align="center">

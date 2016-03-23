@@ -905,7 +905,7 @@ function submitAddBranch(form) {
 		return;
 	}
 
-	$("#update")[0].contentWindow.submitBranchLoad();
+	$("#update")[0].contentWindow.submitBranchLoad(form);
 }
 
 function submitAddCustomer(form) {
@@ -941,7 +941,7 @@ function submitEditBranch(form, key) {
 		submitSaveForm(form);
 		return;
 	}
-	$("#update")[0].contentWindow.submitBranchLoad();
+	$("#update")[0].contentWindow.submitBranchLoad(form);
 }
 
 function initBranch(functionids) {
@@ -949,56 +949,102 @@ function initBranch(functionids) {
 }
 
 // 创建和修改时 如果上传声音文件 泽通过 swfupload插件上传
-function submitBranchLoad() {
+function submitBranchLoad(form) {
 	$("#sub", parent.document).attr("disabled", "disabled");
 	$("#sub", parent.document).val("保存中...");
+	var attrMap = getAttrMapByForm(form);
+	
 	$('#swfupload-control').swfupload('addPostParam', 'sitetype', $("#sitetype", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchname', $("#branchname", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchcode', $("#branchcode", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'tpsbranchcode', $("#tpsbranchcode", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'caiwuid', $("#caiwuid", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'branchBail', $("#branchBail", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchcontactman', $("#branchcontactman", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchphone', $("#branchphone", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'branchaddress', $("#branchaddress", parent.document).val());
-	// $('#swfupload-control').swfupload('addPostParam','accountarea',$("#accountarea").val());
 	$('#swfupload-control').swfupload('addPostParam', 'branchmobile', $("#branchmobile", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'branchemail', $("#branchemail", parent.document).val());
-	// $('#swfupload-control').swfupload('addPostParam','branchemail',$("#branchemail").val());
-	/*
-	 * <li><span>预付款后缴款设置：</span><input type="hidden" name="" class
-	 * ="zhandian" /></li> <li><span>账户设置：</span><input type="hidden"
-	 * name="" class ="zhandian" /></li> <li><span>额度设置：</span><input
-	 * type="hidden" name="" class ="zhandian" /></li> <li><span>货物流向设置：</span><input
-	 * type="hidden" name="" class ="zhandian" /></li>
-	 */
 	$('#swfupload-control').swfupload('addPostParam', 'branchprovince', $("#branchprovince", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'remandtype', $("#remandtype", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'branchmatter', $("#branchmatter", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'branchcity', $("#branchcity", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'brancharea', $("#brancharea", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'branchstreet', $("#branchstreet", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'branchaddress', $("#branchaddress", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'branchemail', $("#branchemail", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'accounttype', $("#accounttype", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'accountbranch', $("#accountbranch", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'accountexcessfee', $("#accountexcessfee", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'accountexcesstype', $("#accountexcesstype", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'credit', $("#credit", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'prescription24', $("#prescription24", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'prescription48', $("#prescription48", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'backtime', $("#backtime", parent.document).val());
+	
 	$('#swfupload-control').swfupload('addPostParam', 'contractflag', $("#contractflag", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'pfruleid', $("#pfruleid", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'bindmsksid', $("#bindmsksid", parent.document).val());
+	
 	$('#swfupload-control').swfupload('addPostParam', 'bankcard', $("#bankcard", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'zhongzhuanid', $("#zhongzhuanid", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'tuihuoid', $("#tuihuoid", parent.document).val());
 	$('#swfupload-control').swfupload('addPostParam', 'caiwuid', $("#caiwuid", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'remandtype', $("#remandtype", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'wavh', $("#wavh", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'payMethodType', $("#input[name='payMethodType']", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'branchmatter', $("#branchmatter", parent.document).val());
+	
+	//自动核销字段的获取--通联
+	$('#swfupload-control').swfupload('addPostParam', 'bankCardNo', $("#bankCardNo", parent.document).val());
+//	$('#swfupload-control').swfupload('addPostParam', 'bankCode', $("#bankCode", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'bankCode', getValueByNameFromAttrMap("bankCode", attrMap));
+	$('#swfupload-control').swfupload('addPostParam', 'ownerName', $("#ownerName", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'bankAccountType', $("#bankAccountType", parent.document).val());
+	
+	//自动核销字段的获取--财付通
+	$('#swfupload-control').swfupload('addPostParam', 'cftAccountNo', $("#cftAccountNo", parent.document).val());
+//	$('#swfupload-control').swfupload('addPostParam', 'cftBankCode', $("#cftBankCode", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cftBankCode', getValueByNameFromAttrMap("cftBankCode", attrMap));
+	$('#swfupload-control').swfupload('addPostParam', 'cftAccountName', $("#cftAccountName", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cftAccountProp', $("#cftAccountProp", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cftCertId', $("#cftCertId", parent.document).val());
+	$('#swfupload-control').swfupload('addPostParam', 'cftCertType', $("#cftCertType", parent.document).val());
+	
+	$('#swfupload-control').swfupload('addPostParam', 'branchid', $("#branchid", parent.document).val());
+	
 	var checkedValues = new Array();
 	$('input[name="functionids"]:checked', parent.document).each(function() {
 		checkedValues.push($(this).val());
 	});
 	$('#swfupload-control').swfupload('addPostParam', 'functionids', checkedValues);
-	// $('#swfupload-control').swfupload('addPostParam','branchmatter',$("#branchmatter").val());
-	/*
-	 * <li><span>导出信息设置：</span><input type="hidden" name="" class ="kefu" /></li>
-	 * <li><span>查询统计内容设置：</span><input type="hidden" name="" class
-	 * ="yunying" /></li>
-	 */
-
-	$('#swfupload-control').swfupload('addPostParam', 'accounttype', $("#accounttype", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'accountbranch', $("#accountbranch", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'accountexcesstype', $("#accountexcesstype", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'accountexcessfee', $("#accountexcessfee", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'credit', $("#credit", parent.document).val());
-	$('#swfupload-control').swfupload('addPostParam', 'backtime', $("#backtime", parent.document).val());
+	
 	$('#swfupload-control').swfupload('startUpload');
+}
+
+function getAttrMapByForm(form){
+	var attrMap = new Array();
+	if(!!form) {
+		var serializedParams = $(form).serializeArray();
+		for(var i=0; i<serializedParams.length; i++){
+			var param = serializedParams[i];
+			attrMap[param["name"]] = param["value"];
+		}
+	}
+	return attrMap;
+}
+
+function getValueByNameFromAttrMap(name, attrMap){
+	var value = "";
+	if(attrMap != null && attrMap instanceof Array) {
+		value = attrMap[name]; 
+	}  
+	if (value == null || value == ""){
+		value = $("#"+name, parent.document).val();
+	}
+	return value;
 }
 
 function submitCustomerLoad() {
@@ -4564,7 +4610,7 @@ function check_userbranch() {
 	if ($("#usermobile").val().length == 0) {
 		alert("员工手机不能为空");
 		return false;
-	}else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
+	}else if (isNumber($("#usermobile").val()) == false) {
 		 alert("手机号码格式有误!"); 
 		 return false; 
 	}

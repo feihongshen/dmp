@@ -2,6 +2,7 @@ package cn.explink.b2c.vipshop;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,6 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.OrderGoods;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
@@ -212,6 +212,9 @@ public class VipShopGetCwbDataService {
 	 */
 	@Transactional
 	public long getOrdersByVipShop(int vipshop_key) {
+		
+		Date dt1 = new Date();
+		
 		VipShop vipshop = this.getVipShop(vipshop_key);
 		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
 		if (isOpenFlag == 0) {
@@ -261,11 +264,9 @@ public class VipShopGetCwbDataService {
 		}
 
 		if (vipshop.getIsTuoYunDanFlag() == 0) {
-			
 			for (Map<String, String> dataMap : orderlist) {
 				extractedDataImport(vipshop_key, vipshop, orderlist, dataMap);
-			}
-			
+			}			
 		} else {
 			for (Map<String, String> dataMap : orderlist) {
 				extractedDataImportByEmaildate(vipshop_key, vipshop, dataMap);
@@ -273,7 +274,6 @@ public class VipShopGetCwbDataService {
 		}
 
 		return 1;
-
 	}
 	
 	public void extractedDataImportByEmaildate(int vipshop_key,
@@ -298,7 +298,6 @@ public class VipShopGetCwbDataService {
 			this.logger.info("请求Vipshop订单信息导入成功cwb={}-更新了最大的SEQ!{}", dataMap.get("cwb").toString(), vipshop.getVipshop_seq());
 		} catch (Exception e) {
 			this.logger.error("vipshop调用数据导入接口异常!cwb=" + dataMap.get("cwb").toString(), e);
-
 		}
 	}
 	
@@ -329,8 +328,7 @@ public class VipShopGetCwbDataService {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-更新了最大的SEQ!{}", vipshop.getVipshop_seq());
 		} catch (Exception e) {
-			this.logger.error("vipshop调用数据导入接口异常!,订单List信息:" + orderlist + "message:", e);
-			
+			this.logger.error("vipshop调用数据导入接口异常!,订单List信息:" + orderlist + "message:", e);			
 		}
 	}
 
@@ -417,14 +415,12 @@ public class VipShopGetCwbDataService {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Map<String, String>> parseXmlDetailInfo(Map paseXmlMap, VipShop vipshop) {
-		
 		List<Map<String, Object>> orderlist = (List<Map<String, Object>>) paseXmlMap.get("orderlist");
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();
 		Customer customer=customerDAO.getCustomerById(Long.valueOf(vipshop.getCustomerids()));
 		String seq_arrs = "";
 		if ((orderlist != null) && (orderlist.size() > 0)) {
 			for (Map<String, Object> datamap : orderlist) {
-				
 				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap,customer.getMpsswitch());
 			}
 		}
@@ -435,10 +431,7 @@ public class VipShopGetCwbDataService {
 		return paraList;
 	}
 
-	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch) {
-		
-		
-		
+	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch) {	
 		String order_sn = null;
 		try {
 			Map<String, String> dataMap = new HashMap<String, String>();
@@ -753,7 +746,7 @@ public class VipShopGetCwbDataService {
 		//更新发货时间结束
 		
 		//一票多件，并且到齐了，排重returen
-		if(cwbOrderDTO!=null&&cwbOrderDTO.getMpsallarrivedflag()==MPSAllArrivedFlagEnum.YES.getValue()){
+		if(cwbOrderDTO !=null && cwbOrderDTO.getMpsallarrivedflag() == MPSAllArrivedFlagEnum.YES.getValue()){
 			return null;
 		}
 		
@@ -773,15 +766,27 @@ public class VipShopGetCwbDataService {
 		
 		int mpsallarrivedflag=0;
 		if(Integer.valueOf(is_gathercomp)==VipGathercompEnum.Last.getValue()){ //到齐
-			mpsallarrivedflag=MPSAllArrivedFlagEnum.YES.getValue();
+			mpsallarrivedflag = MPSAllArrivedFlagEnum.YES.getValue();
 		}
+		
+		//Added by leoliao at 2016-03-21 使用锁的方式解决集包一票多件同时修改临时表订单的问题
+		long b2cTempOpscwbid = cwbOrderDTO.getOpscwbid();
+		CwbOrderDTO cwbOrderDTONew = dataImportDAO_B2c.getCwbByCwbB2ctempOpscwbidLock(b2cTempOpscwbid);
+		dataImportDAO_B2c.updateTmsPackageCondition(b2cTempOpscwbid, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag, IsmpsflagEnum.yes.getValue());
+		
+		if(cwbOrderDTONew.getGetDataFlag() != 0){
+			//更新临时表的getDataFlag为0以重新转业务--是否需要判断数据有更新再修改标识？
+			dataImportDAO_B2c.update_CwbDetailTempByCwb(0, b2cTempOpscwbid);
+		}
+		//Added end
+		
+		/**Commented by leoliao at 2016-03-21 这部分的逻辑已改为在临时表转正式表定时器里	
 		//需要集包 ？风险，线程不安全?
 		if(cwbOrderDTO.getGetDataFlag()==0){
 			dataImportDAO_B2c.updateTmsPackageCondition(order_sn, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
 			//dataImportService.insertTransCwbDetail(cwbOrderDTO);
 			
-		}else{
-			
+		}else{			
 			CwbOrder co =cwbDAO.getCwbByCwb(order_sn);
 			if(co==null){
 				return null;
@@ -797,6 +802,7 @@ public class VipShopGetCwbDataService {
 				}
 			}
 		}
+		**/
 		
 		return "SUCCESS";
 	}
@@ -851,11 +857,13 @@ public class VipShopGetCwbDataService {
 			this.dataImportDAO_B2c.updateBycwb(dataMap);
 			this.cwbDAO.updateBycwb(dataMap);
 			
+			//Added by leoliao at 2016-03-21 去掉重复
+			filterRepeatCwbs(paraList, order_sn);
+			
 			return getSeq(seq_arrs, seq);
 		}
 		// 订单取消
-		if ("cancel".equalsIgnoreCase(cmd_type)) {
-			
+		if ("cancel".equalsIgnoreCase(cmd_type)) {			
 			if(vipshop.getCancelOrIntercept()==0){ //取消
 				this.dataImportDAO_B2c.dataLoseB2ctempByCwb(order_sn);
 				this.cwbDAO.dataLoseByCwb(order_sn);
@@ -870,6 +878,7 @@ public class VipShopGetCwbDataService {
 		
 			return getSeq(seq_arrs, seq);
 		}
+		
 		return seq_arrs;
 	}
 

@@ -15,6 +15,8 @@ package cn.explink.b2c.auto.order.service;
 	    private String cust_code;//客户编码
 
 	    private String transport_no;//运单号
+	    
+	    private String box_no;//箱号
 
 	    private String operate_type;//操作类型
 
@@ -119,4 +121,12 @@ package cn.explink.b2c.auto.order.service;
 	    public void setPackage_no(String package_no) {
 	        this.package_no = package_no;
 	    }
+
+		public String getBox_no() {
+			return box_no;
+		}
+
+		public void setBox_no(String box_no) {
+			this.box_no = box_no;
+		}
 }
