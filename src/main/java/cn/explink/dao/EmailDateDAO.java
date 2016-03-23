@@ -338,7 +338,7 @@ public class EmailDateDAO {
 	 * @return
 	 */
 	public List<EmailDate> queryEmailDateInShipClose(long customerid) {
-		StringBuffer sql = new StringBuffer("select distinct(substring(da.create_time , 1,10)) as create_time") ;
+		StringBuffer sql = new StringBuffer("select distinct(date_format(da.create_time , '%Y-%m-%d')) as create_time") ;
 		sql.append(" from express_ops_emaildate da where da.customerid = ").append(customerid).append(" order by da.create_time desc ") ;
 		List<Map<String, Object>> dateTimelist = this.jdbcTemplate.queryForList(sql.toString()) ;
 		List<EmailDate> emailList = new ArrayList<EmailDate>();
@@ -359,7 +359,6 @@ public class EmailDateDAO {
 			}
 			emailList.add(list.get(0)) ;
 		}
-		
 		return emailList ;
 	}
 	
