@@ -578,7 +578,7 @@ public class PDAController {
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 
 		//历史未到货用 2016-3-12
-		String flowordertypesHis = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
+		//String flowordertypesHis = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() + "," + FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue() + ","
 				+ FlowOrderTypeEnum.DingDanLanJie.getValue()
                 // add by 王志宇 在今日未到货中添加揽件出站判断条件
@@ -9252,8 +9252,9 @@ public class PDAController {
 				}
 				if (type.equals("5")) {// 历史未到货
 					// 历史未到货订单数
-					List<String> historyweidaohuocwblist = this.cwbDAO.getHistoryDaoHuoByBranchidForListNoPage(this.getSessionUser().getBranchid(), flowordertypes, jinriweidaohuocwbs);
-
+					//List<String> historyweidaohuocwblist = this.cwbDAO.getHistoryDaoHuoByBranchidForListNoPage(this.getSessionUser().getBranchid(), flowordertypes, jinriweidaohuocwbs);
+					List<String> historyweidaohuocwblist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
+					
 					StringBuffer str = new StringBuffer();
 					String cwbs = "";
 					if ((historyweidaohuocwblist != null) && (historyweidaohuocwblist.size() > 0)) {
