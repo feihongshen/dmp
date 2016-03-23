@@ -305,12 +305,12 @@ public class EmailDateDAO {
 	 * @param state
 	 * @return
 	 */
-	public Collection<? extends EmailDate> queryEmailDateByCustomerid(long customerid, String state){
+	public Collection<? extends EmailDate> queryEmailDateByCustomerid(long customerid){
 		StringBuffer sql = new StringBuffer("select jo.* from express_set_joint jo ") ;
 		sql.append(" where jo.joint_property like '%\"customerids\":\"").append(customerid).append("\"%'") ;
 		sql.append(" order by jo.id desc ") ;
 		List<Map<String, Object>> joinList = this.jdbcTemplate.queryForList(sql.toString()) ;
-		Collection<? extends EmailDate> emailList = this.getEmailDateByCustomerid(customerid, state);
+		Collection<? extends EmailDate> emailList = this.queryEmailDateByCustomeridFromOps(customerid);
 		if(joinList == null || joinList.size() == 0){
 			return emailList ;
 		}
@@ -326,11 +326,10 @@ public class EmailDateDAO {
 		}
 		if(Integer.valueOf(shipFlagObj.toString()) == 0){
 			// 托运模式关闭就取每天的第一条记录的的创建时间为发货批次 
-			emailList = this.queryEmailDateInShipClose(customerid, state) ;
+			emailList = this.queryEmailDateInShipClose(customerid) ;
 		}
 		return emailList ;
 	}
-	
 	
 	/**
 	 * 取接口表里每日第一个订单的创建时间
@@ -338,9 +337,9 @@ public class EmailDateDAO {
 	 * @param state
 	 * @return
 	 */
-	public List<EmailDate> queryEmailDateInShipClose(long customerid, String state) {
+	public List<EmailDate> queryEmailDateInShipClose(long customerid) {
 		StringBuffer sql = new StringBuffer("select distinct(substring(da.create_time , 1,10)) as create_time") ;
-		sql.append(" from express_ops_emaildate da where da.customerid = ").append(customerid).append(" order by da.emaildatetime desc ") ;
+		sql.append(" from express_ops_emaildate da where da.customerid = ").append(customerid).append(" order by da.create_time desc ") ;
 		List<Map<String, Object>> dateTimelist = this.jdbcTemplate.queryForList(sql.toString()) ;
 		List<EmailDate> emailList = new ArrayList<EmailDate>();
 		if(dateTimelist == null || dateTimelist.size() == 0){
@@ -364,7 +363,7 @@ public class EmailDateDAO {
 		return emailList ;
 	}
 	
-	public Collection<? extends EmailDate> getEmailDateByCustomerid(long customerid, String state) {
+	public Collection<? extends EmailDate> queryEmailDateByCustomeridFromOps(long customerid) {
 		String sql = "select * from express_ops_emaildate where customerid =? and state in (0,1) ORDER BY emaildatetime DESC ";
 		return jdbcTemplate.query(sql, new EmailDateRowMapper(), customerid);
 	}
