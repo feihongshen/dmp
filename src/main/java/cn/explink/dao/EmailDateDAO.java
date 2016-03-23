@@ -310,7 +310,7 @@ public class EmailDateDAO {
 		sql.append(" where jo.joint_property like '%\"customerids\":\"").append(customerid).append("\"%'") ;
 		sql.append(" order by jo.id desc ") ;
 		List<Map<String, Object>> joinList = this.jdbcTemplate.queryForList(sql.toString()) ;
-		Collection<? extends EmailDate> emailList = new ArrayList<EmailDate>();
+		Collection<? extends EmailDate> emailList = this.getEmailDateByCustomerid(customerid, state);
 		if(joinList == null || joinList.size() == 0){
 			return emailList ;
 		}
@@ -324,10 +324,7 @@ public class EmailDateDAO {
 		if(shipFlagObj == null){
 			return emailList ;	
 		}
-		if(Integer.valueOf(shipFlagObj.toString()) == 1){
-		    // 托运模式开启就是取发车时间为发货批次 	
-			emailList = this.getEmailDateByCustomerid(customerid, state) ;
-		}else{
+		if(Integer.valueOf(shipFlagObj.toString()) == 0){
 			// 托运模式关闭就取每天的第一条记录的的创建时间为发货批次 
 			emailList = this.queryEmailDateInShipClose(customerid, state) ;
 		}
