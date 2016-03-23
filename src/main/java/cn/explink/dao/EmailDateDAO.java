@@ -359,7 +359,6 @@ public class EmailDateDAO {
 			}
 			emailList.add(list.get(0)) ;
 		}
-		
 		return emailList ;
 	}
 	
