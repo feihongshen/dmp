@@ -701,7 +701,7 @@ public class TPSGetOrderDataService {
 
 			}
 			
-			if ((this.cwbDAO.getCwbByCwb(cust_order_no) != null)) {
+			if ((this.cwbDAO.getCwbByCwb(cust_order_no) != null) && !is_gatherpack.equals("0")) {
 				this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cust_order_no);
 				return null;
 			}
@@ -965,7 +965,7 @@ public class TPSGetOrderDataService {
 		 */
 		String emaildate = currentOrderDTO.getRemark2(); //paraMap.get("remark2"); //发货时间
 		String[] arrTranscwb = pack_nos.split(",");
-		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp) && (arrTranscwb.length==total_pack)){
+		if("1".equals(is_gatherpack) && (arrTranscwb.length==total_pack)){
 			//把发货时间写入订单表
 			cwbDAO.updateEmaildate(cust_order_no, emaildate);
 			
@@ -974,7 +974,7 @@ public class TPSGetOrderDataService {
 			if(arrTranscwb != null && arrTranscwb.length > 0){
 				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
 			}
-		}else if("1".equals(is_gatherpack) && ("0".equals(is_gathercomp) || ("1".equals(is_gathercomp) && arrTranscwb.length!=total_pack))){
+		}else if("1".equals(is_gatherpack) && arrTranscwb.length!=total_pack){
 			//把发货时间写入运单表
 			if(arrTranscwb != null && arrTranscwb.length > 0){
 				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
@@ -1005,7 +1005,7 @@ public class TPSGetOrderDataService {
 		 * 在is_gathercomp标志为1及之后，total_pack值都为订单总箱数
 		 */
 		int mpsallarrivedflag=0;
-		if(Integer.valueOf(is_gathercomp)==VipGathercompEnum.Last.getValue() && arrTranscwb.length==total_pack){ //到齐
+		if(arrTranscwb.length==total_pack){ //到齐
 			mpsallarrivedflag=MPSAllArrivedFlagEnum.YES.getValue();
 		}
 		
