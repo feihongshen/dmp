@@ -182,6 +182,13 @@ $(function(){
 	 getBackBranchOutSum('<%=request.getContextPath()%>','<%=bList.size()==0?0:bList.get(0).getBranchid()%>');
 	 $("#scancwb").focus();
 });
+
+
+function getBackBranchOutSumAndList(pname,branchid) {
+	getBackBranchOutSum(pname, branchid);
+	getweichuzhan();
+	getyichuzhan();
+}
 //得到当前出库的站点的库存量
 function getBackBranchOutSum(pname,branchid){
 	$.ajax({
@@ -350,7 +357,7 @@ function getweichuzhan(){
 			<div class="saomiao_selet2">
 			
 				下一站：
-				<select id="branchid" name="branchid" onchange="getBackBranchOutSum('<%=request.getContextPath()%>',$(this).val());">
+				<select id="branchid" name="branchid" onchange="getBackBranchOutSumAndList('<%=request.getContextPath()%>',$(this).val());">
 					<%for(Branch b : bList){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 					<%} %>
