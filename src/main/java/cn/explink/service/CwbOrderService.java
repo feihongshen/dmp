@@ -5344,6 +5344,19 @@ public class CwbOrderService extends BaseOrderService {
 			}
 			this.executeTpsTransInterface(co, deliveryUser, feedbakOperateType, deliverstateremark, sign_man, freight.doubleValue());
 		}
+		
+		//Added by leoliao at 2016-03-22 归班审核后清除集包一票多件对应的处理记录
+		try{
+			if(co.getIsmpsflag() == IsmpsflagEnum.yes.getValue()){
+				List<String> listYpdjCwb = new ArrayList<String>();
+				listYpdjCwb.add(cwb);
+				this.ypdjHandleRecordDAO.delYpdjHandleRecordByCwbs(listYpdjCwb);
+			}
+		}catch(Exception ex){
+			this.logger.error("归班反馈后清除集包一票多件对应的处理记录出错!", ex);
+		}
+		//Added end
+		
 		this.logger
 				.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash + "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
 		return map;
