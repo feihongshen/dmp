@@ -270,10 +270,11 @@ public class VipShopGetCwbDataService {
 			return -1;
 		}
 
-		List<Map<String, String>> orderlist = this.parseXmlDetailInfo(parseMap, vipshop);
 		// 订单处理结果 
 		Map<String, Boolean> resultMap = parseResultMap(parseMap);
-		if ((orderlist == null) || (orderlist.size() == 0)) {
+		List<Map<String, String>> orderlist = this.parseXmlDetailInfo(parseMap, vipshop, resultMap);
+		// 带反馈接口如果返回有数据如果全部是重复数据，也要去反馈。
+		if (CollectionUtils.isEmpty(orderlist) && resultMap.size() == 0) {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-没有获取到订单或者订单信息重复！,当前SEQ={}", vipshop.getVipshop_seq());
 			return -1;
@@ -448,14 +449,14 @@ public class VipShopGetCwbDataService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map<String, String>> parseXmlDetailInfo(Map paseXmlMap, VipShop vipshop) {
+	public List<Map<String, String>> parseXmlDetailInfo(Map paseXmlMap, VipShop vipshop, Map<String, Boolean> resultMap) {
 		List<Map<String, Object>> orderlist = (List<Map<String, Object>>) paseXmlMap.get("orderlist");
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();
 		Customer customer=customerDAO.getCustomerById(Long.valueOf(vipshop.getCustomerids()));
 		String seq_arrs = "";
 		if ((orderlist != null) && (orderlist.size() > 0)) {
 			for (Map<String, Object> datamap : orderlist) {
-				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap,customer.getMpsswitch());
+				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap,customer.getMpsswitch(), resultMap);
 			}
 		}
 		long maxSEQ = this.getMaxSEQ(seq_arrs.split(","));
@@ -465,7 +466,7 @@ public class VipShopGetCwbDataService {
 		return paraList;
 	}
 
-	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch) {	
+	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch, Map<String, Boolean> resultMap) {	
 		String order_sn = null;
 		try {
 			Map<String, String> dataMap = new HashMap<String, String>();
@@ -536,6 +537,11 @@ public class VipShopGetCwbDataService {
 			}
 						
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+				// 如果是order_sn对应订单不存在，标识不处理取消
+				if(cwbOrderDTO == null && "cancel".equalsIgnoreCase(cmd_type) && !"".equals(seq)){
+					resultMap.put(seq, false);
+				}
+				
 				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
