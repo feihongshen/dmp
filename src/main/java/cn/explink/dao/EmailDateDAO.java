@@ -3,14 +3,9 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.cxf.common.util.StringUtils;
-import org.mortbay.util.ajax.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,10 +15,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.vipshop.mercury.util.DateUtil;
-
 import cn.explink.domain.EmailDate;
-import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
 @Component
@@ -298,69 +290,8 @@ public class EmailDateDAO {
 		String sql = "SELECT * FROM express_ops_emaildate WHERE  emaildatetime>=? and  customerid=?  ORDER BY emaildateid DESC ";
 		return jdbcTemplate.query(sql, new EmailDateRowMapper(), startTime, Customerid);
 	}
-	
-	/**
-	 * 获取匹配管理中批次时间
-	 * @param customerid
-	 * @return
-	 */
-	public Collection<? extends EmailDate> queryEmailDateByCustomerid(long customerid){
-		StringBuffer sql = new StringBuffer("select jo.* from express_set_joint jo ") ;
-		sql.append(" where jo.joint_property like '%\"customerids\":\"").append(customerid).append("\"%'") ;
-		sql.append(" order by jo.id desc ") ;
-		List<Map<String, Object>> joinList = this.jdbcTemplate.queryForList(sql.toString()) ;
-		Collection<? extends EmailDate> emailList = this.queryEmailDateByCustomeridFromOps(customerid);
-		if(joinList == null || joinList.size() == 0){
-			return emailList ;
-		}
-		Map<String, Object> joinMap =  joinList.get(0) ;
-		Object jointProperty = joinMap.get("joint_property") ;
-		if(jointProperty == null || StringUtils.isEmpty(jointProperty.toString())){
-			return emailList ;
-		}
-		HashMap<String, String> propertyMap = (HashMap<String, String>)JSON.parse(jointProperty.toString()) ;
-		Object shipFlagObj = propertyMap.get("isTuoYunDanFlag") ;
-		if(shipFlagObj == null){
-			return emailList ;	
-		}
-		if(Integer.valueOf(shipFlagObj.toString()) == 0){
-			// 托运模式关闭就取每天的第一条记录的的创建时间为发货批次 
-			emailList = this.queryEmailDateInShipClose(customerid) ;
-		}
-		return emailList ;
-	}
-	
-	/**
-	 * 取接口表里每日第一个订单的创建时间
-	 * @param customerid
-	 * @return
-	 */
-	public List<EmailDate> queryEmailDateInShipClose(long customerid) {
-		StringBuffer sql = new StringBuffer("select distinct(date_format(da.create_time , '%Y-%m-%d')) as create_time") ;
-		sql.append(" from express_ops_emaildate da where da.customerid = ").append(customerid).append(" order by da.create_time desc ") ;
-		List<Map<String, Object>> dateTimelist = this.jdbcTemplate.queryForList(sql.toString()) ;
-		List<EmailDate> emailList = new ArrayList<EmailDate>();
-		if(dateTimelist == null || dateTimelist.size() == 0){
-			return emailList ;
-		}
-		for (Map<String, Object> map : dateTimelist) {
-			Object obj = map.get("create_time") ;
-			if(obj == null){
-				continue ;
-			}
-			String dateTime = obj.toString() ;
-			sql.delete(0, sql.length()) ;
-			sql.append("select * from express_ops_emaildate where customerid =? and state in (0,1) and create_time >= ?  ORDER BY create_time ");
-			List<EmailDate> list = jdbcTemplate.query(sql.toString(), new EmailDateRowMapper(), customerid , dateTime );
-			if(list == null || list.size() == 0){
-				continue ;
-			}
-			emailList.add(list.get(0)) ;
-		}
-		return emailList ;
-	}
-	
-	public Collection<? extends EmailDate> queryEmailDateByCustomeridFromOps(long customerid) {
+
+	public Collection<? extends EmailDate> getEmailDateByCustomerid(long customerid, String state) {
 		String sql = "select * from express_ops_emaildate where customerid =? and state in (0,1) ORDER BY emaildatetime DESC ";
 		return jdbcTemplate.query(sql, new EmailDateRowMapper(), customerid);
 	}
