@@ -84,6 +84,7 @@ public class CwbOrderDTO {
 	int mpsallarrivedflag; // '最后一箱标识:1表示最后一箱；0默认';
 	int ismpsflag; // 是否一票多件：0默认；1是一票多件'; 
 	int vipclub;
+	private String credate ; // 创建时间
 	
 	public int getIsmpsflag() {
 		return ismpsflag;
@@ -849,4 +850,13 @@ public class CwbOrderDTO {
 	public void setVipclub(int vipclub) {
 		this.vipclub = vipclub;
 	}
+
+	public String getCredate() {
+		return credate;
+	}
+
+	public void setCredate(String credate) {
+		this.credate = credate;
+	}
+	
 }
