@@ -6611,7 +6611,8 @@ public class CwbOrderService extends BaseOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
 		}
 		if ((co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue())
-				|| (co.getFlowordertype() == FlowOrderTypeEnum.YiFanKui.getValue() && co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())) {
+				|| (co.getFlowordertype() == FlowOrderTypeEnum.YiFanKui.getValue() && co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())
+				|| (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue())) {
 			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 		} else if (!((co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu
 				.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()))) {
