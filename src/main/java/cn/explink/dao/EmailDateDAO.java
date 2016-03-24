@@ -336,8 +336,8 @@ public class EmailDateDAO {
 	 * @return
 	 */
 	public List<EmailDate> queryEmailDateInShipClose(long customerid) {
-		StringBuffer sql = new StringBuffer("select distinct(date_format(da.create_time , '%Y-%m-%d')) as create_time") ;
-		sql.append(" from express_ops_emaildate da where da.customerid = ").append(customerid).append(" order by da.create_time desc ") ;
+		StringBuffer sql = new StringBuffer("select distinct date_format(temp.credate , '%Y-%m-%d') as create_time ") ;
+		sql.append(" from express_ops_cwb_detail_b2ctemp temp where temp.customerid = ").append(customerid).append(" order by temp.credate desc ") ;
 		List<Map<String, Object>> dateTimelist = this.jdbcTemplate.queryForList(sql.toString()) ;
 		List<EmailDate> emailList = new ArrayList<EmailDate>();
 		if(dateTimelist == null || dateTimelist.size() == 0){
@@ -350,7 +350,13 @@ public class EmailDateDAO {
 			}
 			String dateTime = obj.toString() ;
 			sql.delete(0, sql.length()) ;
-			sql.append("select * from express_ops_emaildate where customerid =? and state in (0,1) and create_time >= ?  ORDER BY create_time ");
+			sql.append(" select temp.emaildateid as emaildateid ,").append(" temp.credate as emaildatetime ,") ;
+			sql.append(" da.userid as userid ,da.areaid as areaid ,da.warehouseid as warehouseid ,") ;
+			sql.append(" da.customerid as customerid , da.branchid as branchid , da.state as state ,") ;
+			sql.append(" da.cwbcount as cwbcount  from express_ops_cwb_detail_b2ctemp temp inner join express_ops_emaildate da") ;
+			sql.append("  on temp.emaildateid = da.emaildateid and temp.customerid = da.customerid ") ;
+			sql.append(" where temp.customerid = ?").append(" and da.state in(0,1) ") ;
+			sql.append(" and temp.credate >= ?").append(" ORDER BY temp.credate ") ;
 			List<EmailDate> list = jdbcTemplate.query(sql.toString(), new EmailDateRowMapper(), customerid , dateTime );
 			if(list == null || list.size() == 0){
 				continue ;
