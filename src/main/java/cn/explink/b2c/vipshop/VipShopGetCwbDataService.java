@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -28,9 +31,11 @@ import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderGoodsDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.OrderGoods;
+import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
@@ -77,6 +82,8 @@ public class VipShopGetCwbDataService {
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
 	@Autowired
 	DataImportService dataImportService;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 
 	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -94,6 +101,7 @@ public class VipShopGetCwbDataService {
 		return vipshop;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		VipShop vipshop = new VipShop();
 		vipshop.setDaysno((request.getParameter("daysno")==null||("".equals(request.getParameter("daysno"))))?5:(Integer.valueOf(request.getParameter("daysno"))));
@@ -225,9 +233,16 @@ public class VipShopGetCwbDataService {
 			this.logger.info("未开启vipshop[" + vipshop_key + "]订单下载接口");
 			return -1;
 		}
+		
+		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
+		// 是否开启反馈订单结果接口
+		boolean feedbackOrderResult = false;
+		if(systemInstall != null && "1".equals(systemInstall.getValue())){
+			feedbackOrderResult = true;
+		}
 
 		// 构建请求，解析返回信息
-		Map<String, Object> parseMap = this.requestHttpAndCallBackAnaly(vipshop);
+		Map<String, Object> parseMap = this.requestHttpAndCallBackAnaly(vipshop, feedbackOrderResult);
 
 		if ((parseMap == null) || (parseMap.size() == 0)) {
 			this.logger.error("系统返回xml字符串为空或解析xml失败！");
@@ -256,8 +271,11 @@ public class VipShopGetCwbDataService {
 			return -1;
 		}
 
-		List<Map<String, String>> orderlist = this.parseXmlDetailInfo(parseMap, vipshop);
-		if ((orderlist == null) || (orderlist.size() == 0)) {
+		// 订单处理结果 
+		Map<String, Boolean> resultMap = parseResultMap(parseMap);
+		List<Map<String, String>> orderlist = this.parseXmlDetailInfo(parseMap, vipshop, resultMap);
+		// 带反馈接口如果返回有数据如果全部是重复数据，也要去反馈。
+		if (CollectionUtils.isEmpty(orderlist) && resultMap.size() == 0) {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-没有获取到订单或者订单信息重复！,当前SEQ={}", vipshop.getVipshop_seq());
 			return -1;
@@ -265,19 +283,22 @@ public class VipShopGetCwbDataService {
 
 		if (vipshop.getIsTuoYunDanFlag() == 0) {
 			for (Map<String, String> dataMap : orderlist) {
-				extractedDataImport(vipshop_key, vipshop, orderlist, dataMap);
+				extractedDataImport(vipshop_key, vipshop, orderlist, dataMap, resultMap);
 			}			
 		} else {
 			for (Map<String, String> dataMap : orderlist) {
-				extractedDataImportByEmaildate(vipshop_key, vipshop, dataMap);
+				extractedDataImportByEmaildate(vipshop_key, vipshop, dataMap, resultMap);
 			}
 		}
-
+		
+		if(feedbackOrderResult && resultMap.size() >= 1){
+			feedbackOrderResult(vipshop, resultMap);
+		}
 		return 1;
 	}
 	
 	public void extractedDataImportByEmaildate(int vipshop_key,
-			VipShop vipshop, Map<String, String> dataMap) {
+			VipShop vipshop, Map<String, String> dataMap, Map<String, Boolean> resultMap) {
 		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
 		onelist.add(dataMap);
 		long customerid = Long.valueOf(dataMap.get("customerid"));
@@ -297,12 +318,13 @@ public class VipShopGetCwbDataService {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息导入成功cwb={}-更新了最大的SEQ!{}", dataMap.get("cwb").toString(), vipshop.getVipshop_seq());
 		} catch (Exception e) {
+			markResultMap(dataMap, resultMap, false);
 			this.logger.error("vipshop调用数据导入接口异常!cwb=" + dataMap.get("cwb").toString(), e);
 		}
 	}
 	
 	public void extractedDataImport(int vipshop_key, VipShop vipshop,
-			List<Map<String, String>> orderlist, Map<String, String> dataMap) {
+			List<Map<String, String>> orderlist, Map<String, String> dataMap, Map<String, Boolean> resultMap) {
 		List<Map<String, String>> onelist = new ArrayList<Map<String, String>>();
 		onelist.add(dataMap);
 		long customerid = Long.valueOf(dataMap.get("customerid"));
@@ -328,6 +350,7 @@ public class VipShopGetCwbDataService {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-更新了最大的SEQ!{}", vipshop.getVipshop_seq());
 		} catch (Exception e) {
+			markResultMap(dataMap, resultMap, false);
 			this.logger.error("vipshop调用数据导入接口异常!,订单List信息:" + orderlist + "message:", e);			
 		}
 	}
@@ -338,10 +361,17 @@ public class VipShopGetCwbDataService {
 	 * @param vipshop
 	 * @return
 	 */
-	private Map<String, Object> requestHttpAndCallBackAnaly(VipShop vipshop) {
+	private Map<String, Object> requestHttpAndCallBackAnaly(VipShop vipshop, boolean feedbackOrderResult) {
+		
 		String request_time = DateTimeUtil.getNowTime();
-		String requestXML = this.StringXMLRequest(vipshop, request_time);
-		String MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no() + vipshop.getVipshop_seq() + vipshop.getGetMaxCount();
+		String requestXML = this.StringXMLRequest(vipshop, request_time, feedbackOrderResult);
+		String MD5Str = null;
+		if(feedbackOrderResult){
+			MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no() + vipshop.getGetMaxCount();
+		}else{
+			MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no() + vipshop.getVipshop_seq() + vipshop.getGetMaxCount();
+			
+		}
 		String sign = VipShopMD5Util.MD5(MD5Str);
 		String endpointUrl = vipshop.getGetCwb_URL();
 		String response_XML = null;
@@ -349,7 +379,11 @@ public class VipShopGetCwbDataService {
 		this.logger.info("获取vipshop订单XML={}", requestXML);
 
 		try {
-			response_XML = this.soapHandler.HTTPInvokeWs(endpointUrl, VipShopConfig.nameSpace, VipShopConfig.requestMethodName, requestXML, sign);
+			if(feedbackOrderResult){
+				response_XML = this.soapHandler.HTTPInvokeWs(endpointUrl, VipShopConfig.nameSpace, VipShopConfig.requestMethodName, requestXML, sign, VipShopConfig.CODE_S131);
+			} else {
+				response_XML = this.soapHandler.HTTPInvokeWs(endpointUrl, VipShopConfig.nameSpace, VipShopConfig.requestMethodName, requestXML, sign, VipShopConfig.CODE_S101);
+			}
 		} catch (Exception e) {
 			this.logger.error("处理唯品会订单请求异常！返回信息：" + response_XML + ",异常原因：" + e.getMessage(), e);
 			return null;
@@ -369,7 +403,7 @@ public class VipShopGetCwbDataService {
 		return parseMap;
 	}
 
-	private String StringXMLRequest(VipShop vipshop, String request_time) {
+	private String StringXMLRequest(VipShop vipshop, String request_time, boolean feedbackOrderResult) {
 
 		String business_type = "";
 		if (vipshop.getIsShangmentuiFlag() == 1) { // 只上门退
@@ -386,7 +420,9 @@ public class VipShopGetCwbDataService {
 		sub.append("<version>" + VipShopConfig.version + "</version>");
 		sub.append("<request_time>" + request_time + "</request_time>");
 		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
-		sub.append("<seq>" + vipshop.getVipshop_seq() + "</seq>");
+		if(!feedbackOrderResult){
+			sub.append("<seq>" + vipshop.getVipshop_seq() + "</seq>");
+		}
 		sub.append("<count>" + vipshop.getGetMaxCount() + "</count>");
 		sub.append(business_type);
 		sub.append("</head>");
@@ -414,14 +450,14 @@ public class VipShopGetCwbDataService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map<String, String>> parseXmlDetailInfo(Map paseXmlMap, VipShop vipshop) {
+	public List<Map<String, String>> parseXmlDetailInfo(Map paseXmlMap, VipShop vipshop, Map<String, Boolean> resultMap) {
 		List<Map<String, Object>> orderlist = (List<Map<String, Object>>) paseXmlMap.get("orderlist");
 		List<Map<String, String>> paraList = new ArrayList<Map<String, String>>();
 		Customer customer=customerDAO.getCustomerById(Long.valueOf(vipshop.getCustomerids()));
 		String seq_arrs = "";
 		if ((orderlist != null) && (orderlist.size() > 0)) {
 			for (Map<String, Object> datamap : orderlist) {
-				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap,customer.getMpsswitch());
+				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap,customer.getMpsswitch(), resultMap);
 			}
 		}
 		long maxSEQ = this.getMaxSEQ(seq_arrs.split(","));
@@ -431,7 +467,7 @@ public class VipShopGetCwbDataService {
 		return paraList;
 	}
 
-	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch) {	
+	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch, Map<String, Boolean> resultMap) {	
 		String order_sn = null;
 		try {
 			Map<String, String> dataMap = new HashMap<String, String>();
@@ -502,6 +538,11 @@ public class VipShopGetCwbDataService {
 			}
 						
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+				// 如果是order_sn对应订单不存在，标识不处理取消
+				if(cwbOrderDTO == null && "cancel".equalsIgnoreCase(cmd_type) && !"".equals(seq)){
+					resultMap.put(seq, false);
+				}
+				
 				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
@@ -1016,6 +1057,104 @@ public class VipShopGetCwbDataService {
 			System.out.println("cwb="+mapR.get("cwb")+",transcwb="+mapR.get("transcwb"));
 		}
 		
+	}
+	
+	/**
+	 * 把处理好的订单结果反馈给取订单方
+	 * @param vipshop
+	 */
+	private void feedbackOrderResult(VipShop vipshop, Map<String, Boolean> result){
+		String request_time = DateTimeUtil.getNowTime();
+		String requestXML = this.StringXMLFeedback(vipshop, request_time, result);
+		String MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no();
+		String sign = VipShopMD5Util.MD5(MD5Str);
+		String endpointUrl = vipshop.getGetCwb_URL();
+		String response_XML = null;
+
+		this.logger.info("反馈vipshop订单XML={}", requestXML);
+
+		try {
+			response_XML = this.soapHandler.HTTPInvokeWs(endpointUrl, VipShopConfig.nameSpace, VipShopConfig.requestMethodName, requestXML, sign, VipShopConfig.CODE_S141);
+		} catch (Exception e) {
+			this.logger.error("反馈唯品会订单请求异常！返回信息：" + response_XML + ",异常原因：" + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * 反馈订单结果报文
+	 * @param vipshop
+	 * @return
+	 */
+	private String StringXMLFeedback(VipShop vipshop, String request_time, Map<String, Boolean> result){
+		StringBuilder sub = new StringBuilder();
+		sub.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		sub.append("<request>");
+		sub.append("<head>");
+		sub.append("<version>" + VipShopConfig.version + "</version>");
+		sub.append("<request_time>" + request_time + "</request_time>");
+		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
+		sub.append("</head>");
+		sub.append("<orders>");
+		Set<Entry<String, Boolean>> set = result.entrySet();
+		for(Entry<String, Boolean> entry : set){
+			sub.append("<order>");
+			sub.append("<id>");
+			sub.append(entry.getKey());
+			sub.append("</id>");			
+			if(entry.getValue()){
+				sub.append("<biz_response_code>");
+				sub.append("B00");
+				sub.append("</biz_response_code>");
+				sub.append("<biz_response_msg>");
+				sub.append("SUCCESS");
+				sub.append("</biz_response_msg>");
+			} else {
+				sub.append("<biz_response_code>");
+				sub.append("S99");
+				sub.append("</biz_response_code>");
+				sub.append("<biz_response_msg>");
+				sub.append("FAIL");
+				sub.append("</biz_response_msg>");
+			}
+			sub.append("</order>");
+		}
+		sub.append("</orders>");
+		sub.append("</request>");
+		return sub.toString();
+		
+	}
+	
+	/**
+	 * 把处理结果标识成默认成功
+	 * @param paseXmlMap
+	 * @return
+	 */
+	private Map<String, Boolean> parseResultMap(Map paseXmlMap) {
+		Map<String, Boolean> result = new HashMap<String, Boolean>();
+		List<Map<String, Object>> orderlist = (List<Map<String, Object>>) paseXmlMap.get("orderlist");
+		if (CollectionUtils.isEmpty(orderlist)) {
+			return result;
+		}
+		String seq = null;
+		for (Map<String, Object> datamap : orderlist) {
+			seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
+			// 不添加为空的seq
+			if("".equals(seq)){
+				continue;
+			}
+			result.put(seq, true);
+		}
+		return result;
+	}
+	
+	/**
+	 * 标志结果
+	 */
+	private void markResultMap(Map<String, String> dataMap, Map<String, Boolean> resultMap, boolean result) {
+		String seq = VipShopGetCwbDataService.convertEmptyString("seq", dataMap);
+		if(!"".equals(seq)){
+			resultMap.put(seq, result);
+		}
 	}
 
 }

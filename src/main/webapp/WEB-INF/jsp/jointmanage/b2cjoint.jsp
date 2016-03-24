@@ -504,6 +504,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/pinhaohuo/del/');
 		}
 		
+		else if(obj=='22001'){//京东_订单跟踪接口
+			$("#edit").val('<%=request.getContextPath()%>/jdCwbTrack/show/');
+			$("#del").val('<%=request.getContextPath()%>/jdCwbTrack/del/');
+		}
+		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

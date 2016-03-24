@@ -65,7 +65,7 @@ public class EmailDateController {
 			long branchid = getSessionUser().getBranchid();
 			eList.addAll(emailDateDAO.getEmailDateByCustomeridAndWarehouseId(Long.parseLong(customerids), branchid));
 		} else {
-			eList.addAll(emailDateDAO.getEmailDateByCustomerid(Long.parseLong(customerids), state));
+			eList.addAll(emailDateDAO.queryEmailDateByCustomerid(Long.parseLong(customerids)));
 		}
 		emailDateService.makeEmFullName(eList);
 		return eList;

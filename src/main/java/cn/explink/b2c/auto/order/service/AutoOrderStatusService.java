@@ -44,6 +44,9 @@ public class AutoOrderStatusService {
 	@Autowired
 	private CwbRouteService cwbRouteService;
 	
+	@Autowired
+	private AutoExceptionService autoExceptionService;
+	
 	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,transportno,operatetype,msg,createtime,status) values(?,?,?,?,?,?)";
 	//private final static String ORDER_STATUS_TMP_UPDATE_SQL="update express_auto_order_status_tmp set status=? where cwb=? and operatetype=? and status=1";
 	private final static String ORDER_STATUS_TMP_DELETE_SQL="delete from express_auto_order_status_tmp where cwb=? and transportno=? and operatetype=?";
@@ -171,6 +174,15 @@ public class AutoOrderStatusService {
 	public void completedOrderStatusMsg(int status,String cwb,String operatetype,String transportno){
 		//this.jdbcTemplate.update(ORDER_STATUS_TMP_UPDATE_SQL, status,cwb,operatetype);
 		this.jdbcTemplate.update(ORDER_STATUS_TMP_DELETE_SQL,cwb,transportno,operatetype);
+		if(status==AutoCommonStatusEnum.success.getValue()){
+			List<Map<String,Object>> detailList=this.autoExceptionService.queryAutoExceptionDetail(cwb,transportno,operatetype);
+			if(detailList!=null&&detailList.size()>0){
+				Map<String,Object> detailMap= detailList.get(0);
+				long msgid=detailMap.get("msgid")==null?0:Long.parseLong(detailMap.get("msgid").toString());
+				long detailId=detailMap.get("id")==null?0:Long.parseLong(detailMap.get("id").toString());
+				this.autoExceptionService.deleteAutoExceptionDetail(detailId, msgid);
+			}
+		}
 	}
 	
 	@Transactional
