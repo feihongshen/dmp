@@ -105,7 +105,6 @@ public class DataImportDAO_B2c {
 			cwbOrder.setStartbranchid(rs.getLong("startbranchid"));
 			cwbOrder.setCustomerwarehouseid(rs.getLong("customerwarehouseid"));
 			cwbOrder.setEmaildate(StringUtil.nullConvertToEmptyString(rs.getString("emaildate")));
-			cwbOrder.setCredate(StringUtil.nullConvertToEmptyString(rs.getString("credate")));
 			cwbOrder.setEmaildateid(rs.getLong("emaildateid"));
 			cwbOrder.setServiceareaid(rs.getLong("serviceareaid"));
 			cwbOrder.setCustomerid(rs.getLong("customerid"));
