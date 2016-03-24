@@ -1034,26 +1034,13 @@ public class TPSGetOrderDataService {
 	//更行临时表或者订单表集单相关信息
 	private void changeInfoOfOrder(CwbOrderDTO cwbOrderDTO,String cust_order_no,String pack_nos,
 			int total_pack,int mpsallarrivedflag){
-		if(cwbOrderDTO.getGetDataFlag()==0){
-			dataImportDAO_B2c.updateTmsPackageCondition(cust_order_no, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
-			//dataImportService.insertTransCwbDetail(cwbOrderDTO);
-			
-		}else{
-			
-			CwbOrder co =cwbDAO.getCwbByCwb(cust_order_no);
-			if(co==null){
-				return;
-			}
-			dataImportDAO_B2c.updateTmsPackageCondition(cust_order_no, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
-			cwbDAO.updateTmsPackageCondition(cust_order_no, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag,MpsTypeEnum.YiPiaoDuoJian.getValue());
-			for(String pack_no:pack_nos.split(",")){
-				String selectCwb=transCwbDao.getCwbByTransCwb(pack_no);
-				if(selectCwb==null){
-					transCwbDao.saveTranscwb(pack_no, cust_order_no);
-					cwbOrderDTO.setTranscwb(pack_no);
-					dataImportService.insertTransCwbDetail(cwbOrderDTO,co.getEmaildate());
-				}
-			}
+		long b2cTempOpscwbid = cwbOrderDTO.getOpscwbid();
+		CwbOrderDTO cwbOrderDTONew = dataImportDAO_B2c.getCwbByCwbB2ctempOpscwbidLock(b2cTempOpscwbid);
+		dataImportDAO_B2c.updateTmsPackageCondition(b2cTempOpscwbid, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag, IsmpsflagEnum.yes.getValue());
+		
+		if(cwbOrderDTONew.getGetDataFlag() != 0){
+			//更新临时表的getDataFlag为0以重新转业务--是否需要判断数据有更新再修改标识？
+			dataImportDAO_B2c.update_CwbDetailTempByCwb(0, b2cTempOpscwbid);
 		}
 	}
 	
