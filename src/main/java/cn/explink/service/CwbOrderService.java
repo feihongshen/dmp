@@ -5596,7 +5596,12 @@ public class CwbOrderService extends BaseOrderService {
 						// 更改下一站为退货站
 						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getBranchid());
 					}
-					this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					
+					//Commented by leoliao at 2016-03-24
+					//this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					
+					//Added by leoliao at 2016-03-24 退货需要审核则订单状态要保留为配送(已向蓝生确认)
+					this.updateCwbState(cwb, CwbStateEnum.PeiShong);
 
 				} else {
 					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
