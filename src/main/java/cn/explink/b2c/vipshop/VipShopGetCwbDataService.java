@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -456,8 +457,9 @@ public class VipShopGetCwbDataService {
 		Customer customer=customerDAO.getCustomerById(Long.valueOf(vipshop.getCustomerids()));
 		String seq_arrs = "";
 		if ((orderlist != null) && (orderlist.size() > 0)) {
+			Set<String> lantuiNeWSet = new HashSet<String>();
 			for (Map<String, Object> datamap : orderlist) {
-				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap,customer.getMpsswitch(), resultMap);
+				seq_arrs = this.saveMapDataAndGetMaxSEQ(vipshop, paraList, seq_arrs, datamap,customer.getMpsswitch(), resultMap, lantuiNeWSet);
 			}
 		}
 		long maxSEQ = this.getMaxSEQ(seq_arrs.split(","));
@@ -467,7 +469,7 @@ public class VipShopGetCwbDataService {
 		return paraList;
 	}
 
-	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch, Map<String, Boolean> resultMap) {	
+	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch, Map<String, Boolean> resultMap, Set<String> lantuiNeWSet) {	
 		String order_sn = null;
 		try {
 			Map<String, String> dataMap = new HashMap<String, String>();
@@ -538,8 +540,12 @@ public class VipShopGetCwbDataService {
 			}
 						
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+				if("new".equalsIgnoreCase(cmd_type)){
+					lantuiNeWSet.add(order_sn);
+				}
 				// 如果是order_sn对应订单不存在，标识不处理取消
-				if(cwbOrderDTO == null && "cancel".equalsIgnoreCase(cmd_type) && !"".equals(seq)){
+				// 因为取消跟修改会去重，所以当包括新增的时候，不需要处理取消。
+				if(!lantuiNeWSet.contains(order_sn) && cwbOrderDTO == null && "cancel".equalsIgnoreCase(cmd_type) && !"".equals(seq)){
 					resultMap.put(seq, false);
 				}
 				
