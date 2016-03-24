@@ -169,6 +169,14 @@ public class ExceptionCwbDAO {
 		return jdbcTemplate.update(sql2, msg,msgid);
 	}
 	
+	public long deleteAutoExceptionDetail(long detailid,long msgid){
+		String sql = "delete from express_auto_exception_detail where id=?";
+		jdbcTemplate.update(sql, detailid);
+		
+		String sql2 = "delete from express_auto_exception where id=?";
+		return jdbcTemplate.update(sql2,msgid);
+	}
+	
 	public long updateAutoExceptionMsg(long id,String msg){
 		String sql = "update express_auto_exception_detail set msg=?,createtime=CURRENT_TIMESTAMP where id=?";
 		return jdbcTemplate.update(sql, msg,id);
