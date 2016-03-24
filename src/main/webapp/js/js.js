@@ -4583,55 +4583,41 @@ function check_describeAndDutyInfo() {
 function check_userbranch() {
 	if ($("#realname").val().length == 0) {
 		alert("员工姓名不能为空");
-		$("#realname").focus() ;
 		return false;
 	}
 	if ($("#username").val().length == 0) {
 		alert("员工登录名不能为空");
-		$("#username").focus() ;
 		return false;
 	}
 	if (!isLetterAndNumber($("#username").val())) {
 		alert("员工登录名格式不正确");
-		$("#username").select() ;
 		return false;
 	}
 	
 	if ($("#username").val().length > 9) {
 		if(!confirm("登录名长度超过9位，将无法使用通联pos刷卡！确认使用当前登录名吗？")){
-			$("#username").select() ;
 			return false;
 		}
 	}
 	if ($("#password").val().length == 0) {
 		alert("员工登录密码不能为空");
-		$("#password").focus() ;
 		return false;
 	}
 	if ($("#password1").val() != $("#password").val()) {
 		alert("员工登录密码两次输入不一致");
-		$("#password1").select() ;
-		return false;
-	}
-	if ($("#idcardno").val().length == 0) {
-		alert("身份证号不能为空!");
-		$("#idcardno").focus() ;
 		return false;
 	}
 	if ($("#usermobile").val().length == 0) {
 		alert("员工手机不能为空");
-		$("#usermobile").focus() ;
 		return false;
-	}else if (isNumber($("#usermobile").val()) == false) {
+	}else if ($("#usermobile").val().length != 11 || isMobileNumber($("#usermobile").val()) == false) {
 		 alert("手机号码格式有误!"); 
-		 $("#usermobile").select() ;
 		 return false; 
 	}
-	if($("#usermobile").val().length != 11 && !confirm("手机号码非11位，将无法使用品骏达！确认使用当前手机号码？")){
-		$("#usermobile").select() ;
-		return false ;
+	if ($("#idcardno").val().length == 0) {
+		alert("身份证号不能为空!");
+		return false;
 	}
-	
 	var creandsave = $("#creandsave").val();
 	var checkuserformid;
 	if(creandsave==0){
@@ -4674,7 +4660,6 @@ function check_userbranch() {
 		alert("请输入正确格式的金额(正数)!");
 		return false;
 	}
-	
 	
 	/*
 	 * if ($("#usermobile").val().length != 11 ||
