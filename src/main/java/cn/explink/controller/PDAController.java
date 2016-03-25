@@ -289,10 +289,6 @@ public class PDAController {
 
 	private ObjectMapper om = new ObjectMapper();
 
-	private boolean playGPSound = true;
-
-	private boolean playYPDJSound = true;
-
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
@@ -791,7 +787,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -1157,8 +1153,7 @@ public class PDAController {
 		try {
 			isZhong = isZhongZhuan == null ? 1 : Integer.parseInt(isZhongZhuan.getValue());
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		for (Branch b : bList) {// 去掉退货站
 			if (isZhong == 1) {
@@ -2009,7 +2004,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -2814,7 +2809,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -3057,7 +3052,7 @@ public class PDAController {
 							a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 							obj.put("showRemark", a);
 						} catch (Exception e) {
-							e.printStackTrace();
+							this.logger.error("", e);
 							obj.put("showRemark", "Erro");
 						}
 					}
@@ -3372,7 +3367,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -3458,7 +3453,7 @@ public class PDAController {
 						a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 						obj.put("showRemark", a);
 					} catch (Exception e) {
-						e.printStackTrace();
+						this.logger.error("", e);
 						obj.put("showRemark", "Erro");
 					}
 				}
@@ -3573,7 +3568,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -3838,7 +3833,7 @@ public class PDAController {
 						a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 						obj.put("showRemark", a);
 					} catch (Exception e) {
-						e.printStackTrace();
+						this.logger.error("", e);
 						obj.put("showRemark", "Erro");
 					}
 				}
@@ -3910,7 +3905,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -4125,7 +4120,7 @@ public class PDAController {
 						a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 						obj.put("showRemark", a);
 					} catch (Exception e) {
-						e.printStackTrace();
+						this.logger.error("", e);
 						obj.put("showRemark", "Erro");
 					}
 				}
@@ -4322,7 +4317,7 @@ public class PDAController {
 						explinkResponse.setErrorinfo(ce.getMessage());
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.info("中转出站，cwb：{},deliverybranchid:{}", cwbOrder.getCwb(), deliverybranchid);
 				}
 			}
@@ -4508,7 +4503,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -4720,7 +4715,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -4923,7 +4918,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -5131,7 +5126,7 @@ public class PDAController {
 					a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 					obj.put("showRemark", a);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					obj.put("showRemark", "Erro");
 				}
 			}
@@ -5449,7 +5444,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -5582,7 +5577,7 @@ public class PDAController {
 		try {
 			print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		obj.put("print", print);
 		Branch branch = this.branchDAO.getBranchByBranchname(cwbOrder.getExcelbranch());
@@ -5613,7 +5608,7 @@ public class PDAController {
 		try {
 			print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		obj.put("print", print);
 		Branch branch = this.branchDAO.getBranchByBranchname(cwbOrder.getExcelbranch());
@@ -5645,7 +5640,7 @@ public class PDAController {
 		try {
 			print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		obj.put("print", print);
 		Branch branch = this.branchDAO.getBranchByBranchname(cwbOrder.getExcelbranch());
@@ -5758,7 +5753,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -6972,7 +6967,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -7060,7 +7055,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -7533,7 +7528,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -7973,7 +7968,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8190,7 +8185,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8426,7 +8421,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8649,7 +8644,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8867,7 +8862,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -9181,7 +9176,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -9412,7 +9407,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -9444,7 +9439,7 @@ public class PDAController {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		return remark;
 	}
@@ -10038,7 +10033,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -10206,7 +10201,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -10383,7 +10378,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -10604,7 +10599,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -10715,7 +10710,7 @@ public class PDAController {
 					a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 					obj.put("showRemark", a);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					obj.put("showRemark", "Erro");
 				}
 			}
