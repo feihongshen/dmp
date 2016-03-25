@@ -228,6 +228,7 @@ public class ApplyEditDeliverystateController {
 		StringBuffer sb = new StringBuffer("");
 		if (!cwbs.equals("")) {
 			for (String str : cwbs.split("\r\n")) {
+				str = str.trim();
 				sb.append("'").append(str).append("',");
 			}
 		}
@@ -453,6 +454,7 @@ public class ApplyEditDeliverystateController {
 		StringBuffer strs = new StringBuffer("");
 		if (!cwbs.equals("")) {
 			for (String str : cwbs.split("\r\n")) {
+				str = str.trim();
 				strs.append("'").append(str).append("',");
 			}
 		}
@@ -790,6 +792,7 @@ public class ApplyEditDeliverystateController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				// 判断是否符合申请条件：1.未反馈给电商 2.未交款
 				CwbOrder corder = this.cwbDAO.getCwborder(cwbStr);
 				if (corder == null) {

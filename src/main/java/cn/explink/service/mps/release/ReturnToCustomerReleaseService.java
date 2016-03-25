@@ -3,11 +3,16 @@
  */
 package cn.explink.service.mps.release;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.exception.CwbException;
 
 /**
@@ -27,6 +32,25 @@ public final class ReturnToCustomerReleaseService extends AbstractMPSReleaseServ
 		}
 		CwbException exception = new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(), ExceptionCwbErrorTypeEnum.OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED);
 		this.validateMPS(transCwb, cwbOrder, exception, AbstractMPSReleaseService.BEFORE_RETURN_TO_CUSTOMER_STATE);
+	}
+	
+	@Override
+	protected void validateMPS(String transCwb, CwbOrder cwbOrder, CwbException exception, Set<Integer> beforeStateSet) {
+		int mpsallarrivedflag = cwbOrder.getMpsallarrivedflag();
+		if (MPSAllArrivedFlagEnum.NO.getValue() == mpsallarrivedflag) {
+			TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
+			if(transCwbDetail!=null&&transCwbDetail.getTranscwboptstate()==FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()){
+				return;
+			}
+			throw exception;
+		} else {
+			List<TransCwbDetail> siblingTransCwbDetailList = this.getSiblingTransCwbDetailList(transCwb, cwbOrder.getCwb());
+			for (TransCwbDetail siblingTransCwbDetail : siblingTransCwbDetailList) {
+				if (beforeStateSet.contains(siblingTransCwbDetail.getTranscwboptstate())) {
+					throw exception;
+				}
+			}
+		}
 	}
 
 }

@@ -351,6 +351,10 @@ public class OrderFlowDAO {
 	public List<OrderFlow> getOrderFlowByCwb(String cwb) {
 		return this.jdbcTemplate.query("select * from express_ops_order_flow where cwb= ?  order by  credate ASC,flowordertype asc", new OrderFlowRowMapper(), cwb);
 	}
+	
+	/*public List<OrderFlow> getOrderFlowByCwbAndCustomerid(String cwb,int customerid) {
+		return this.jdbcTemplate.query("select * from express_ops_order_flow where cwb= ?  order by  credate ASC,flowordertype asc", new OrderFlowRowMapper(), cwb);
+	}*/
 
 	public List<OrderFlow> getOrderFlowByWhere(long page, long branchid, long userid, long flowordertype, String beginemaildate, String endemaildate, long onePageNumber) {
 		String sql = "select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow ";
@@ -1353,5 +1357,15 @@ public class OrderFlowDAO {
 		sqlBuilder.append(" order by floworderid desc limit ?");
 		
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new OrderFlowRowMapper(), begindate,enddate, pageSize  );
+	}
+	
+	/**
+	 * 查询指定客户的订单轨迹
+	 */
+	public List<OrderFlow> getOrderFlowByCwbAndCustomerid(String cwb,long customerid) {
+		String sql="select * from express_ops_order_flow of WHERE of.cwb=? "
+				+" AND EXISTS(select 1 from express_ops_cwb_detail cd where of.cwb=cd.cwb and cd.customerid=? )"
+				+" order by  of.credate ASC,of.flowordertype asc";
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapper(), cwb , customerid);
 	}
 }

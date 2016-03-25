@@ -298,4 +298,28 @@ public class YpdjHandleRecordDAO {
 
 		return this.jdbcTemplate.queryForLong(sql, cwb, branchid, flowordertype);
 	}
+	
+	/**
+	 * 删除一票多件订单的处理记录
+	 * @author leo01.liao
+	 * @param listCwb 订单号列表
+	 */
+	public void delYpdjHandleRecordByCwbs(List<String> listCwb) {
+		if(listCwb == null || listCwb.isEmpty()){
+			return;
+		}
+		
+		String strIn = "";
+		for(String cwb : listCwb){
+			strIn += "'" + cwb + "',";
+		}
+		
+		if(strIn.length() > 0){
+			strIn = strIn.substring(0, strIn.length()-1);
+		}
+		
+		String sql = "delete from ops_ypdjhandlerecord where cwb in (" + strIn + ")";
+		
+		this.jdbcTemplate.update(sql);
+	}
 }
