@@ -74,7 +74,6 @@ public class JdCwbTrackController {
 		try {
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
-			String customerId = request.getParameter("customerId");
 			String billcode = request.getParameter("billcode");
 			String sign = request.getParameter("sign");// 签名
 			String requestTime = request.getParameter("requestTime");// 请求时间
@@ -82,14 +81,6 @@ public class JdCwbTrackController {
 			int isOpenFlag = jointService.getStateForJoint(B2cEnum.JingDong_cwbTrack.getKey());
 			if (isOpenFlag == 0) {
 				return "未开启[京东_订单跟踪]查询接口";
-			}
-			
-			this.logger.info("请求参数:billcode={},customerId={},sign={}}",
-					new Object[] { billcode, customerId, sign });
-			
-			if (customerId==null||"".equals(customerId)) {
-				this.logger.info("[京东_订单跟踪]接口-客户ID不能为空");
-				return "请求客户ID为空";
 			}
 			
 			if (requestTime==null||"".equals(requestTime)) {
@@ -109,15 +100,11 @@ public class JdCwbTrackController {
 			}
 			
 			JdCwbTrackConfig config = jdCwbTrackService.getJdCwbTrackConfig(B2cEnum.JingDong_cwbTrack.getKey());
-			if (!customerId.equals(config.getCustomerId()+"")) {
-				this.logger.info("[京东_订单跟踪]接口-客户ID不能为空");
-				return "请求客户ID错误";
-			}
 			String salt="6a6502cebf8e049bae17928355b757dd41a6f76f";
 			// 校验加密是否符合约定
-			String MD5Sign = MD5Util.md5(customerId + config.getPrivateKey() + requestTime + salt);
+			String MD5Sign = MD5Util.md5(config.getPrivateKey() + requestTime + salt);
 			if (!sign.equalsIgnoreCase(MD5Sign)) {
-				this.logger.info(customerId+"MD5验证失败sign={},MD5Sign={}",sign,MD5Sign);
+				this.logger.info("MD5验证失败sign={},MD5Sign={}",sign,MD5Sign);
 				return "签名错误";
 			}
 			
@@ -137,12 +124,10 @@ public class JdCwbTrackController {
 	 */
 	@RequestMapping("/sign")
 	public @ResponseBody String getSign(HttpServletRequest request, HttpServletResponse response) {
-		String customerId = request.getParameter("customerId");
 		String privateKey = request.getParameter("privateKey");
-		//String requestTime = request.getParameter("requestTime");// 请求时间
 		long requestTime=System.currentTimeMillis();
 		String salt="6a6502cebf8e049bae17928355b757dd41a6f76f";
-		String MD5Sign = MD5Util.md5(customerId + privateKey + requestTime+ salt);
+		String MD5Sign = MD5Util.md5( privateKey + requestTime+ salt);
 		return "当前时间："+requestTime+" 签名: "+MD5Sign;
 	}
 	
