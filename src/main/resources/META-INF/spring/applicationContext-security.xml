@@ -72,6 +72,7 @@
 		<intercept-url pattern="/rufengda/**" access="permitAll" />
 		<intercept-url pattern="/yixun/**" access="permitAll" />
 		<intercept-url pattern="/jingdong/**" access="permitAll" />
+		<intercept-url pattern="/jdCwbTrack/track**" access="permitAll" />
 		<intercept-url pattern="/gome/**" access="permitAll" />
 		<intercept-url pattern="/dangdangdatasyn/**" access="permitAll" />
 		<intercept-url pattern="/dangdangdatasyntest/**" access="permitAll" />
