@@ -54,6 +54,9 @@ public class AutoInWarehouseService {
 			 String boxno=data.getBox_no();
 			 if(boxno!=null){
 				boxno=boxno.trim();
+				if(boxno.length()<1){
+					boxno=null;
+				}
 			 }
 			
 			//try{
@@ -110,7 +113,7 @@ public class AutoInWarehouseService {
 				//validateIsSubCwb 验证箱号是否正确? //catch the ExceptionCwbErrorTypeEnum.Qing_SAO_MIAO_YUN_DAN_HAO ?
 				//集单也用这个方法去出库？？？
 				//不区分扫箱号标志？？？
-				if(boxno!=null&&boxno.length()>0&&isypdjusetranscwb==1){
+				if(boxno!=null&&isypdjusetranscwb==1){
 					//一票多件有箱号且要扫箱号;
 					//一票一件有箱号且要扫箱号;
 					this.cwborderService.intoWarehous(user, cwb,boxno, customerid, driverid, requestbatchno, comment, "", false);
@@ -131,11 +134,14 @@ public class AutoInWarehouseService {
 
 	//看运单数据是否已经到达
 	private void validateTranscwb(CwbOrder cwbOrder,String boxno){
+		//外单没箱号
+		if(boxno==null){
+			return;
+		}
 		long totalNum=cwbOrder.getSendcarnum();//total  num ????
-		//不考虑外单没箱号？？？
-		boolean waidan=false;//??????
+		
 		if(totalNum>1){
-			if((cwbOrder.getTranscwb()==null&&!waidan)||(
+			if((cwbOrder.getTranscwb()==null)||(
 					cwbOrder.getTranscwb()!=null&&cwbOrder.getTranscwb().indexOf(boxno)<0)){
 				throw new AutoWaitException("模拟入库时没找到相关运单号数据,cwb="+cwbOrder.getCwb());
 			}

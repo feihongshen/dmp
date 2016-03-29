@@ -29,6 +29,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.b2c.tools.B2cEnum;
+import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.dao.BaleCwbDao;
 import cn.explink.dao.BaleDao;
@@ -152,6 +154,8 @@ public class BaleService {
 	OrderBackCheckDAO orderBackCheckDAO;
 	@Autowired
 	CwbStateControlDAO cwbStateControlDAO;
+	@Autowired
+	JointService jointService;
 	@Autowired
 	TpsInterfaceExecutor tpsInterfaceExecutor;
 
@@ -1244,7 +1248,17 @@ public class BaleService {
 
 			if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
 					.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()))) && (co.getCurrentbranchid() != currentbranchid)) {
-				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+				boolean ignore=false;
+				if(co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
+					int isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+					if(isOpenFlag==1){
+						ignore=true;
+					}
+				}
+				
+				if(!ignore){
+					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+				}
 			}
 
 			Branch userbranch = this.branchDAO.getBranchById(currentbranchid);

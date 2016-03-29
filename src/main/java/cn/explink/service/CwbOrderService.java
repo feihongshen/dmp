@@ -3460,8 +3460,11 @@ public class CwbOrderService extends BaseOrderService {
 			if ("0".equals(switchInstall.getValue())) {
 				// 针对一票多件多个订单号的订单扫描其中运单号,未匹配站点,出库给不同下一站的时候会更改扫描次数,并且重复扫描同一运单号,再扫其他单号的时候会直接报重复出库的问题
 				if (!forceOut && (co.getSendcarnum() > co.getScannum()) && (co.getFlowordertype() != flowOrderTypeEnum.getValue()) && (alength == co.getSendcarnum())) {
-					throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
-							flowOrderTypeEnum.getText());
+					boolean allarrive=automateCheck(co,flowOrderTypeEnum);
+					if(!allarrive){
+						throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
+								flowOrderTypeEnum.getText());
+					}
 				}
 			} else if ("1".equals(switchInstall.getValue())) {
 				// 一票多件时在领货前的操作是不阻挡的，但在领货的时候会拦截一票多件前一环节件数不对而阻拦
@@ -3470,16 +3473,84 @@ public class CwbOrderService extends BaseOrderService {
 								&& ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue())
 										|| (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu
 										.getValue())) && (co.getFlowordertype() != flowOrderTypeEnum.getValue()) && (alength == co.getSendcarnum()))) {
-					throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
-							flowOrderTypeEnum.getText());
+					boolean allarrive=automateCheck(co,flowOrderTypeEnum);
+					if(!allarrive){
+						throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
+								flowOrderTypeEnum.getText());
+					}
 				}
 				// 一票多件时在领货前的操作是不阻挡的，但在领货的时候会拦截一票多件前一环节件数不对而阻拦
 				else if (!forceOut && ((co.getSendcarnum() > co.getScannum()) && (flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()))) {
-					throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
-							flowOrderTypeEnum.getText());
+					boolean allarrive=automateCheck(co,flowOrderTypeEnum);
+					if(!allarrive){
+						throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(),
+								flowOrderTypeEnum.getText());
+					}
 				}
 			}
 		}
+	}
+	
+	private boolean automateCheck(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum){
+		boolean allarrive=false;
+		try {
+			int isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+			if(isOpenFlag==1){
+				if(flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.RuKu.getValue()){
+					allarrive=true;
+				}else if(flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()){
+					allarrive=true;
+				}else if(flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
+			    	allarrive=checkAllArriveSite(co);
+				}
+			}
+		} catch (Exception e) {
+			this.logger.info("automateCheck error.",e);
+		}
+		return allarrive; 
+	}
+	
+	private boolean checkAllArriveSite(CwbOrder co){
+		boolean arrive=true;
+		List<String> transcwbList= getTranscwbList(co.getTranscwb());
+		if(transcwbList!=null){
+			for(String transcwb:transcwbList){
+				TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, co.getCwb());
+				if(tcof==null||tcof.getFlowordertype()!=FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
+					arrive=false;
+					break;
+				}
+			}
+		}
+		return arrive;
+	}
+	
+	private List<String> getTranscwbList(String transcwbs){
+		if(transcwbs==null||transcwbs.length()<1){
+			return null;
+		}
+		
+		List<String> transcwbList=null;
+		String transcwbArr []=null;
+		if(transcwbs.indexOf(",")>-1){
+			transcwbArr=transcwbs.split(",");
+		}else{
+			transcwbArr=transcwbs.split(":");
+		}
+		
+		if(transcwbArr!=null&&transcwbArr.length>1){
+			for(String transcwbStr:transcwbArr){
+				String transcwb=transcwbStr==null?null:transcwbStr.trim();
+				if(transcwb!=null&&transcwb.length()>0){
+					if(transcwbList==null){
+						transcwbList=new ArrayList<String>();
+					}
+					transcwbList.add(transcwb);
+				}
+			}
+		}
+		
+		return transcwbList;
 	}
 
 	private void handleOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode,
