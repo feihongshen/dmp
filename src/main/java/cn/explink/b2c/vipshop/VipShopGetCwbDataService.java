@@ -304,15 +304,15 @@ public class VipShopGetCwbDataService {
 		onelist.add(dataMap);
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
-			String emaildate = dataMap.get("remark4").toString();
-			
-			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+			// modify by bruce shangguan 20160329  托运单开启取,emaildate取rec_create_time　
+			String emaildate = dataMap.get("rec_create_time").toString();			
+			   //Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
 			if(emaildate == null || emaildate.trim().equals("")){
 				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";				
-				dataMap.put("remark4", emaildate);
+				dataMap.put("rec_create_time", emaildate);
 			}
-			//Added end
-			
+			   //Added end
+			// modify end 
 			long warehouseid = vipshop.getWarehouseid();
 			this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
 
@@ -336,7 +336,7 @@ public class VipShopGetCwbDataService {
 				this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
 			}else{
 				String emaildate = dataMap.get("remark2").toString();
-				
+                
 				//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
 				if(emaildate == null || emaildate.trim().equals("")){
 					emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
@@ -643,7 +643,7 @@ public class VipShopGetCwbDataService {
 		dataMap.put("paywayid", String.valueOf(paywayid)); // 支付方式
 		dataMap.put("remark3", "托运单号:" + attemper_no); // 托运单号
 		dataMap.put("remark4", created_dtm_loc); // 批次时间
-
+        dataMap.put("rec_create_time" , rec_create_time); // 订单创建时间
 		dataMap.put("cargotype", cargotype); // 服务类别
 		dataMap.put("remark5", customer_name+"/"+warehouse_addr); // 仓库地址
 
