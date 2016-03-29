@@ -12,6 +12,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.InvalidResultSetAccessException;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
@@ -79,6 +81,8 @@ import cn.explink.enumutil.express.ExpressSettleWayEnum;
 @Service
 public class ExportService {
 
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	AdvancedQueryService advancedQueryService;
 	@Autowired
@@ -599,7 +603,7 @@ public class ExportService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -651,7 +655,7 @@ public class ExportService {
 				a = views.get(k).getBusinessfee();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -691,7 +695,7 @@ public class ExportService {
 				a = views.get(k).getDescribe();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -719,7 +723,7 @@ public class ExportService {
 				a = views.get(k).getDescribe();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -757,7 +761,7 @@ public class ExportService {
 				a = views.get(k).getPunishcwbstate();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -786,7 +790,7 @@ public class ExportService {
 				a = ccilist.get(k).getContactNum();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -849,7 +853,7 @@ public class ExportService {
 			} 
 	
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -888,7 +892,7 @@ public class ExportService {
 			} 
 	
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -925,7 +929,7 @@ public class ExportService {
 				a = lc.get(k).getCuijianNum();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -1425,16 +1429,9 @@ public class ExportService {
 				a = mapRow.get(cloumname);
 				a = this.setAbyUser(a, cloumname);
 			}
-			// System.out.println("列名:" + cloumname + "   值为：" +
-			// mapRow.get(cloumname));
 		} catch (Exception e) {
-			// System.out.println("出错列名：" + cloumname);
-			// if ("paymethod".equals(cloumname)) {
-			// e.printStackTrace();
-			// }
-			// e.printStackTrace();
+			this.logger.error("",e);
 		}
-		// System.out.println("pp:"+System.currentTimeMillis());
 		return a;
 
 	}
@@ -1812,20 +1809,15 @@ public class ExportService {
 
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 
@@ -1849,20 +1841,15 @@ public class ExportService {
 				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -1885,20 +1872,15 @@ public class ExportService {
 				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -1983,20 +1965,15 @@ public class ExportService {
 				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -2094,20 +2071,15 @@ public class ExportService {
 				a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 
@@ -2337,11 +2309,9 @@ public class ExportService {
 
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 
@@ -2379,7 +2349,7 @@ public class ExportService {
 				a = userViews.get(k).getEmployeestatusName();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -2462,20 +2432,15 @@ public class ExportService {
 				a = cwbDiuShiList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(cwbDiuShiList.get(k));
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 
@@ -2543,7 +2508,7 @@ public class ExportService {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 
@@ -2553,7 +2518,7 @@ public class ExportService {
 		try {
 			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -2688,7 +2653,7 @@ public class ExportService {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -2720,7 +2685,7 @@ public class ExportService {
 		try {
 			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -2758,7 +2723,7 @@ public class ExportService {
 		try {
 			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -2794,7 +2759,7 @@ public class ExportService {
 		try {
 			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -2957,7 +2922,7 @@ public class ExportService {
 		try {
 			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -3008,7 +2973,7 @@ public class ExportService {
 		try {
 			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -3095,20 +3060,15 @@ public class ExportService {
 				a = accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k));
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 
@@ -3137,20 +3097,15 @@ public class ExportService {
 				a = detailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(detailList.get(k));
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 
@@ -3323,20 +3278,15 @@ public class ExportService {
 				a = accountCwbFareDetailList.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(accountCwbFareDetailList.get(k));
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 
@@ -3361,7 +3311,7 @@ public class ExportService {
 		try {
 			a = list.get(k).getClass().getMethod("get" + cloumnName3[i]).invoke(list.get(k));
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}
@@ -3679,7 +3629,7 @@ public class ExportService {
 				 */
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("",e);
 		}
 		return a;
 	}

@@ -31,7 +31,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -1048,7 +1047,7 @@ public class CwbOrderController {
 					}
 					this.logger.info("{} 成功", reason);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.error("{} 失败", reason);
 				}
 			} else {
@@ -1110,7 +1109,7 @@ public class CwbOrderController {
 				successCount++;
 				failureCount--;
 			} catch (Exception e) {
-				e.printStackTrace();
+				this.logger.error("", e);
 				errMsg = "订单号：" + map.get("cwb") + ",失败原因：" + e.getMessage() + "\n";
 			}
 		}
@@ -1123,7 +1122,7 @@ public class CwbOrderController {
 				successCount++;
 				failureCount--;
 			} catch (Exception e) {
-				e.printStackTrace();
+				this.logger.error("", e);
 				errMsg = "订单号：" + cwbTemp.getCwb() + ",失败原因：" + e.getMessage() + "\n";
 			}
 		}
@@ -1530,7 +1529,7 @@ public class CwbOrderController {
 					}
 					this.logger.info("{} 成功", reason);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.error("{} 失败", reason);
 				}
 			} else {
@@ -1576,7 +1575,7 @@ public class CwbOrderController {
 					}
 					this.logger.info("{} 成功", reason);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.error("{} 失败", reason);
 				}
 			} else {
@@ -1705,7 +1704,7 @@ public class CwbOrderController {
 					}
 					this.logger.info("{} 成功", reason);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.error("{} 失败", reason);
 				}
 			} else {
@@ -2074,7 +2073,7 @@ public class CwbOrderController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 

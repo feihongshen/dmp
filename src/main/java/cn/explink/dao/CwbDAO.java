@@ -7934,8 +7934,7 @@ public class CwbDAO {
 			this.jdbcTemplate.batchUpdate(sql,
 					this.getOutAreaParaList(cwbs, branchMap));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8195,8 +8194,7 @@ public class CwbDAO {
 		try {
 			list = this.jdbcTemplate.query(sql.toString(), new CwbMapper());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		return list;
 	}
@@ -8479,7 +8477,7 @@ public class CwbDAO {
 					+ cwbs + ") and state=1";
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 	}
@@ -8514,7 +8512,7 @@ public class CwbDAO {
 			String sql = "select * from  express_ops_cwb_detail  where cwb=? and state=1";
 			return this.jdbcTemplate.queryForObject(sql, new CwbMapper(), cwb);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 	}
@@ -8709,7 +8707,7 @@ public class CwbDAO {
 			}
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 	}
@@ -9271,7 +9269,7 @@ public class CwbDAO {
 					+ cwbIdsStr + ") and state=1";
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 	}

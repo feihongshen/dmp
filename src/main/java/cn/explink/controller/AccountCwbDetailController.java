@@ -14,6 +14,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -55,6 +57,9 @@ import cn.explink.util.Page;
 @Controller
 @RequestMapping("/accountcwbdetail")
 public class AccountCwbDetailController {
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	UserDAO userDAO;
 
@@ -170,8 +175,7 @@ public class AccountCwbDetailController {
 			}
 			return "{\"errorCode\":0,\"error\":\"交款成功\"}";
 		} catch (Exception e) {
-			e.printStackTrace();
-			// logger.info("先付修改异常:"+e);
+			logger.error("",e);
 			return "{\"errorCode\":1,\"error\":\"交款失败\"}";
 		}
 	}
@@ -191,7 +195,7 @@ public class AccountCwbDetailController {
 			accountCwbDetailService.outwarehouseDelete(summaryid, getSessionUser());
 			return "{\"errorCode\":0,\"error\":\"撤销成功\"}";
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 			return "{\"errorCode\":1,\"error\":\"撤销失败\"}";
 		}
 	}
@@ -394,9 +398,8 @@ public class AccountCwbDetailController {
 	 */
 	@RequestMapping("/createdelivery/{branchid}")
 	public @ResponseBody String createDelivery(Model model, @PathVariable("branchid") long branchid, HttpServletRequest request) {
-		long summaryid = 0;
 		try {
-			summaryid = accountCwbDetailService.createDelivery(request, getSessionUser(), branchid);
+			accountCwbDetailService.createDelivery(request, getSessionUser(), branchid);
 			return "{\"errorCode\":0,\"error\":\"交款成功\"}";
 		} catch (CwbException e) {
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
@@ -423,7 +426,7 @@ public class AccountCwbDetailController {
 			}
 			return "{\"errorCode\":0,\"error\":\"交款成功\"}";
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 			// logger.info("库房先付审核异常:"+e);
 			return "{\"errorCode\":1,\"error\":\"交款失败\"}";
 		}
@@ -579,7 +582,7 @@ public class AccountCwbDetailController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 	}
 
@@ -655,7 +658,7 @@ public class AccountCwbDetailController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 	}
 
@@ -723,7 +726,7 @@ public class AccountCwbDetailController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 	}
 
@@ -789,7 +792,7 @@ public class AccountCwbDetailController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 	}
 }
