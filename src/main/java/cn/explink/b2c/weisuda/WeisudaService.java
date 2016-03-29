@@ -166,7 +166,10 @@ public class WeisudaService {
 		String openbatchflag = request.getParameter("openbatchflag");
 		String maxBoundCount = request.getParameter("maxBoundCount");
 		String changeBranchcode = request.getParameter("changeBranchcode");
-		String isSend = request.getParameter("isSend");
+		String isSend = StringUtil.nullConvertToEmptyString(request.getParameter("isSend"));
+		if(isSend==null||isSend.length()<1){
+			isSend="0";
+		}
 		
 		weisuda.setCode(code);
 		weisuda.setV(v);
