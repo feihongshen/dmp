@@ -57,6 +57,8 @@ public class JiuYeAddMatchService {
 	public void edit(HttpServletRequest request,int joint_num){
 		String maxCount=request.getParameter("maxCount").isEmpty()?"0":request.getParameter("maxCount");
 		JiuYeAddressMatch jiuye=new JiuYeAddressMatch();
+		
+		jiuye.setReceiver_url(request.getParameter("receiver_url"));
 		jiuye.setCustomerid(request.getParameter("customerid"));
 		jiuye.setPrivate_key(request.getParameter("private_key"));
 		jiuye.setDmsCode(request.getParameter("dmsCode"));
