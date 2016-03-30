@@ -264,7 +264,6 @@ public class HomegouService_getOrder extends HomegouService {
 			}
 		} catch (Exception e) {
 			logger.error("家有购物移动文件发生未知异常", e);
-			e.printStackTrace();
 		}
 
 	}

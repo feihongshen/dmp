@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -31,6 +33,8 @@ import cn.explink.util.MD5.PaySign;
 @RequestMapping("/payup")
 public class PayUpController {
 
+	private static Logger logger = LoggerFactory.getLogger(PayUpController.class);
+	
 	@Autowired
 	UserDAO userDAO;
 
@@ -83,7 +87,7 @@ public class PayUpController {
 				model.addAttribute("gcaids", gcaids.toString().substring(1));
 				model.addAttribute("gcaidsMAC", PaySign.Md5(gcaids.toString().substring(1)));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 		model.addAttribute("user_branch", branchDAO.getBranchByBranchid(getSessionUser().getBranchid()));
@@ -115,7 +119,7 @@ public class PayUpController {
 				model.addAttribute("gcaids", delids.toString().substring(1));
 				model.addAttribute("gcaidsMAC", PaySign.Md5(delids.toString().substring(1)));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 		model.addAttribute("user_branch", branchDAO.getBranchByBranchid(getSessionUser().getBranchid()));
@@ -147,7 +151,7 @@ public class PayUpController {
 			payUpService.subPayUpService(getSessionUser(), model, payup, gcaids, hk_amount, fa_amount, gcaidsMAC);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return "payup/error";
 	}
@@ -171,7 +175,7 @@ public class PayUpController {
 			payUpService.subPayUpByNotAuditService(getSessionUser(), model, payup, gcaids, hk_amount, fa_amount, gcaidsMAC);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return "payup/error";
 	}

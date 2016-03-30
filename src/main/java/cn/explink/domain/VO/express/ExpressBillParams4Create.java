@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.explink.domain.User;
 import cn.explink.util.Tools;
 
@@ -14,6 +17,8 @@ import cn.explink.util.Tools;
  *
  */
 public class ExpressBillParams4Create {
+	
+	private static Logger logger = LoggerFactory.getLogger(ExpressBillParams4Create.class);
 	/**
 	 * 账单编号
 	 */
@@ -229,7 +234,7 @@ public class ExpressBillParams4Create {
 			try {
 				return sdf.parse(timeStr+" 00:00:00").getTime();
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 		return 0L;

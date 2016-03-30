@@ -383,8 +383,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					newServiceArea.setServiceareaid(serviceAreaid);
 					serviceAreaMap.put(serviceAreaName, serviceArea);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("", e);
 				}
 				serviceArea = serviceAreaMap.get(serviceAreaName);
 			}
@@ -684,7 +683,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					cwbOrders.clear();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 				String cwb = "";
 				if (excelColumnSet.getCwbindex() != 0) {
 					cwb = this.getXRowCellData(row, excelColumnSet.getCwbindex());
@@ -875,7 +874,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				EmbracedImportOrderVO cwbImportOrder = this.getEmbracedOrderAccordingtoConf(this.EmbracedColumnIndexMap, row);
 				cwbImportOrders.add(cwbImportOrder);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 				// 失败订单数+1 前台显示
 				// resultCollector.setFailSavcNum(resultCollector.getFailSavcNum()
 				// + 1);
@@ -1792,7 +1791,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 
 				punisList.add(punish);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 
 				// 失败订单数+1 前台显示
 
@@ -1935,7 +1934,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					failCounts++;
 				}
 			} catch (Exception e) {
-				// e.printStackTrace();
+				// logger.error("", e);
 				failCounts++;
 				ExcelExtractor.logger.info("对外扣罚导入异常：cwb={},message={}", this.getXRowCellData(row, 1), e.toString());
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(this.getXRowCellData(row, 1), systemTime, "未知异常");
@@ -2236,7 +2235,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					failCounts++;
 				}
 			} catch (Exception e) {
-				// e.printStackTrace();
+				// logger.error("", e);
 				failCounts++;
 				ExcelExtractor.logger.info("对内扣罚导入异常：cwb={},message={}", this.getXRowCellData(row, 1), e.toString());
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(this.getXRowCellData(row, 1), systemTime, "未知异常");
@@ -2504,7 +2503,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					failCounts++;
 				}
 			} catch (Exception e) {
-				// e.printStackTrace();
+				// logger.error("", e);
 				failCounts++;
 				ExcelExtractor.logger.info("问题件导入异常：cwb={},message={}", this.getXRowCellData(row, 1), e.toString());
 				this.penalizeOutImportErrorRecordDAO.crePenalizeOutImportErrorRecord(this.getXRowCellData(row, 1), systemTime, "未知异常");

@@ -38,7 +38,7 @@ import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class HuanqiugouService {
-	private Logger logger =LoggerFactory.getLogger(HuanqiugouService.class);
+	private static Logger logger = LoggerFactory.getLogger(HuanqiugouService.class);
 	
 	@Autowired
 	JiontDAO jiontDAO;
@@ -253,7 +253,7 @@ public class HuanqiugouService {
 		list.add(order);
 		shell.setOrderlist(list);
 		
-		System.out.println(ObjectUnMarchal.POJOtoXml(shell));
+		logger.info(ObjectUnMarchal.POJOtoXml(shell));
 		
 	}
 

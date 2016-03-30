@@ -202,9 +202,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
             forRecover = new String(e.getPayload(), MSG_ENCODE);
             this.logger.error("the Payload msg is:"+forRecover);
         } catch (Throwable e1) {
-            this.logger.error("消费分拨状态信息，onFailure：" , e1);
-            e1.printStackTrace();;
-
+            logger.error("消费分拨状态信息，onFailure:" , e1);
         } finally {
             // 确认消费
             ISubscriber subscriber = (ISubscriber) sender;

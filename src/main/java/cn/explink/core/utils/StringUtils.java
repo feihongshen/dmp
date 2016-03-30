@@ -188,6 +188,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }  
     
     public static void main(String[] args) {
-		System.out.println(half2Full("你好，再见123abc"));
+		logger.info(half2Full("你好，再见123abc"));
 	}
 }

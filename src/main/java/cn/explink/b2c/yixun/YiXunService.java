@@ -51,7 +51,8 @@ public class YiXunService {
 	CustomerDAO customerDAO;
 	@Autowired
 	CustomerService customerService;
-	private Logger logger = LoggerFactory.getLogger(YiXunService.class);
+	
+	private static Logger logger = LoggerFactory.getLogger(YiXunService.class);
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -380,9 +381,9 @@ public class YiXunService {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(getXML());
+		logger.info(getXML());
 		Map<String, Object> xmlMap = parserXmlToJSONObjectByArray(getXML());
-		System.out.println(xmlMap);
+		logger.info(String.valueOf(xmlMap));
 	}
 
 	private static String getXML() {

@@ -51,8 +51,7 @@ public class AccountFeeDetailService {
 			return detailList;
 
 		} catch (Exception e) {
-			logger.info("分页查找款项明细列表异常：" + e);
-			e.printStackTrace();
+			logger.error("分页查找款项明细列表异常：", e);
 			return null;
 		}
 	}
@@ -68,8 +67,7 @@ public class AccountFeeDetailService {
 		try {
 			return accountFeeDetailDAO.getAccountFeeDetailCount(feetypeid, branchname, detailname);
 		} catch (Exception e) {
-			logger.info("款项明细列表合计条数异常：" + e);
-			e.printStackTrace();
+			logger.error("款项明细列表合计条数异常：", e);
 			return 0;
 		}
 	}
@@ -85,8 +83,7 @@ public class AccountFeeDetailService {
 			accountFeeDetailDAO.createAccountFeeDetail(o);
 			return true;
 		} catch (Exception e) {
-			logger.info("款项明细保存异常：" + e);
-			e.printStackTrace();
+			logger.error("款项明细保存异常：", e);
 			return false;
 		}
 	}
@@ -109,8 +106,7 @@ public class AccountFeeDetailService {
 			 */
 			return accountFeeDetail;
 		} catch (Exception e) {
-			logger.info("款项明细按款项明细ID查找异常：" + e);
-			e.printStackTrace();
+			logger.error("款项明细按款项明细ID查找异常：", e);
 			return null;
 		}
 	}
@@ -128,8 +124,7 @@ public class AccountFeeDetailService {
 			accountFeeDetailDAO.saveAccountFeeDetail(o);
 			return true;
 		} catch (Exception e) {
-			logger.info("款项明细修改异常：" + e);
-			e.printStackTrace();
+			logger.error("款项明细修改异常：", e);
 			return false;
 		}
 	}

@@ -28,7 +28,7 @@ import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class SmileService {
-	private Logger logger = LoggerFactory.getLogger(SmileService.class);
+	private static Logger logger = LoggerFactory.getLogger(SmileService.class);
 
 	@Autowired
 	JiontDAO jiontDAO;
@@ -125,7 +125,7 @@ public class SmileService {
 	public static void main(String[] args) {
 
 		String strs = "<RequestOrder><WaybillNo>YT9067930</WaybillNo><ClientCode>YT9067930</ClientCode><Holiday>1</Holiday><ReplCost>449.00</ReplCost><StmtForm>1</StmtForm><TrustClientCode>100058</TrustClientCode><TrustPerson>君联速递</TrustPerson><TrustUnit>广州君联速递有限公司</TrustUnit><TrustZipCode>510000</TrustZipCode><TrustCity>广东省广州市</TrustCity><TrustAddress>广东省广州市白云区新科村新科工业区弘森国际物流中心A115号</TrustAddress><TrustMobile></TrustMobile><TrustTel>020-36539611</TrustTel><GetPerson>王有亮</GetPerson><GetUnit>0</GetUnit><GetZipCode>0</GetZipCode><GetCity>山西省忻州市</GetCity><GetAddress>山西省忻州市忻府区长征西街包天下（电话联系）</GetAddress><GetTel>18735071725</GetTel><GetMobile>0</GetMobile><InsForm>62</InsForm><InsureValue>449.00</InsureValue><GoodsValue>449.00</GoodsValue><WorkType>0</WorkType><OrderType></OrderType><GoodsInfo><Good><GoodsName>电子产品</GoodsName><GoodsValue>449.00</GoodsValue><GoodsBarCode></GoodsBarCode><ListType>0</ListType><ISInvoice>0</ISInvoice></Good></GoodsInfo><GoodsNum>1</GoodsNum><GoodsHav>0.48</GoodsHav></RequestOrder>2011";
-		System.out.println(MD5Util.md5(strs));
+		logger.info(MD5Util.md5(strs));
 	}
 
 	/**

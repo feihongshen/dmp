@@ -12,7 +12,6 @@ import javax.xml.bind.JAXBException;
 import net.sf.json.JSONObject;
 
 import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -32,13 +31,6 @@ import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.RestHttpServiceHanlder;
-import cn.explink.b2c.yihaodian.addressmatch.YihaodianAddEmum;
-import cn.explink.b2c.yihaodian.addressmatch.YihaodianAddMatchException;
-import cn.explink.b2c.yihaodian.addressmatch.dto.DepotParseDetail;
-import cn.explink.b2c.yihaodian.addressmatch.dto.DepotParseResult;
-import cn.explink.b2c.yihaodian.addressmatch.dto.DepotParseResultDetail;
-import cn.explink.b2c.yihaodian.addressmatch.dto.DepotParseResultList;
-import cn.explink.b2c.yihaodian.addressmatch.dto.YhdAddmatchUnmarchal;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
@@ -73,7 +65,7 @@ public class HttxAddressMatchService {
 	@Autowired
 	HuitongtxService huitongtxService;
 
-	private Logger logger = LoggerFactory.getLogger(HttxAddressMatchService.class);
+	private static Logger logger = LoggerFactory.getLogger(HttxAddressMatchService.class);
 
 	// public static void main(String[] args) throws JsonParseException,
 	// JsonMappingException, IOException {
@@ -256,14 +248,11 @@ public class HttxAddressMatchService {
 		try {
 			strs = JacksonMapper.getInstance().writeValueAsString(resp);
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		// logger.info(strs);
