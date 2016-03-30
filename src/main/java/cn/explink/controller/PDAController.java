@@ -26,6 +26,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -5595,8 +5597,9 @@ public class PDAController {
 	}
 
 	@RequestMapping("/cwbscancwbbranchnew1")
-	public @ResponseBody ExplinkResponse cwbbranchfinishchangeexportnew1(HttpServletRequest request) {
-		String cwb = request.getParameter("cwb");
+	public @ResponseBody String cwbbranchfinishchangeexportnew1(HttpServletRequest request, @RequestParam(value = "cwb", required=true) String cwb) 
+			throws JsonGenerationException, JsonMappingException, IOException {
+//		String cwb = request.getParameter("cwb");
 		cwb = this.cwbOrderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 
@@ -5605,11 +5608,8 @@ public class PDAController {
 		PrintStyle print = new PrintStyle();
 
 		String str = this.systemInstallDAO.getSystemInstall("cqhy_print").getValue();
-		try {
-			print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
-		} catch (Exception e) {
-			this.logger.error("", e);
-		}
+
+		print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
 		obj.put("print", print);
 		Branch branch = this.branchDAO.getBranchByBranchname(cwbOrder.getExcelbranch());
 		if (branch != null) {
@@ -5622,7 +5622,8 @@ public class PDAController {
 		} else {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
 		}
-		return explinkResponse;
+		String result = JacksonMapper.getInstance().writeValueAsString(explinkResponse); 
+		return result;
 	}
 
 	@RequestMapping("/cwbscancwbbranchruku/{cwb}")
