@@ -13,6 +13,8 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,11 +30,12 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
-import cn.explink.util.Tools;
 
 @Repository
 public class OrderFlowDAO {
 
+	private static Logger logger = LoggerFactory.getLogger(OrderFlowDAO.class);
+	
 	private final class OrderFlowRowMapper implements RowMapper<OrderFlow> {
 		@Override
 		public OrderFlow mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -411,7 +414,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 		});
@@ -551,7 +554,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -651,7 +654,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -712,7 +715,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -776,7 +779,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -1026,7 +1029,7 @@ public class OrderFlowDAO {
 					cwbList.add(rs.getString("cwb"));
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 

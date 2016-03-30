@@ -321,7 +321,6 @@ public class ApplyEditDeliverystateController {
 					}
 				} catch (Exception e) {
 					this.logger.error("订单号:" + cwb + "--产生异常原因:", e);
-					e.printStackTrace();
 					errorcount++;
 				}
 			}
@@ -363,7 +362,7 @@ public class ApplyEditDeliverystateController {
 				return "{\"errorCode\":0,\"error\":\"审核为不通过\"}";
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"审核为不通过失败\"}";
 		}
 		return "";
@@ -372,7 +371,6 @@ public class ApplyEditDeliverystateController {
 	/**
 	 * 支付信息修改审核
 	 */
-	@SuppressWarnings("unused")
 	@RequestMapping("/paywayInfoModifyCheck/{page}")
 	public String paywayInfoModifyCheck(Model model, HttpServletRequest request, @PathVariable(value = "page") long page,
 			@RequestParam(value = "cwb", defaultValue = "", required = false) String cwbs, @RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid,
@@ -516,7 +514,7 @@ public class ApplyEditDeliverystateController {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return "{\"code\":1,\"msg\":\"审核不通过出现异常!\"}";
 		}
 		if (sb.length() > 0) {
@@ -618,7 +616,7 @@ public class ApplyEditDeliverystateController {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				this.logger.error("", e);
 				return "{\"code\":1,\"msg\":\"支付信息修改异常!\"}";
 			}
 		}
@@ -755,7 +753,7 @@ public class ApplyEditDeliverystateController {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return "{\"code\":1,\"msg\":\"支付信息修改确认出现异常!\"}";
 		}
 		if (sb.length() > 0) {

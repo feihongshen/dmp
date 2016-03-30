@@ -101,7 +101,6 @@ public class B2cJointMonitorService {
 			this.saveDmpB2cDataMonitor(of);
 		} catch (Exception e1) {
 			this.logger.error("dmp monitor save b2c happend exception", e1);
-			e1.printStackTrace();
 		}
 	}
 
@@ -251,7 +250,6 @@ public class B2cJointMonitorService {
 				this.b2cdataDAO.updateB2cDataMonitor(bdata.getCwb(), bdata.getFlowordertype(), bdata.getSend_b2c_flag(), bdata.getExpt_reason());
 			} catch (Exception e) {
 				this.logger.error("DMP接收OMS发送B2cData数据异常", e);
-				e.printStackTrace();
 			}
 
 		}

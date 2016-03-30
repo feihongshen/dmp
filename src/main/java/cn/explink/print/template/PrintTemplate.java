@@ -4,10 +4,15 @@ import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.explink.enumutil.PrintTemplateOpertatetypeEnum;
 
 public class PrintTemplate {
+	
+	private static Logger logger = LoggerFactory.getLogger(PrintTemplate.class);
+	
 	long id;
 	String name;
 	String customname;
@@ -44,7 +49,7 @@ public class PrintTemplate {
 			this.columns = objectMapper.readValue(detail, new TypeReference<List<PrintColumn>>() {
 			});
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		this.detail = detail;
 	}

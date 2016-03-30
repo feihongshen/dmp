@@ -1,10 +1,5 @@
 package cn.explink.b2c.smiled;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
@@ -14,15 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
-import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
-import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class SmiledService {

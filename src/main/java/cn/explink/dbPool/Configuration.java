@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 读取配置文件类
  * 
@@ -11,6 +14,9 @@ import java.util.Properties;
  *
  */
 public class Configuration {
+	
+	private static Logger logger = LoggerFactory.getLogger(Configuration.class);
+	
 	private Properties prop;
 
 	public Configuration(String path) {
@@ -20,13 +26,13 @@ public class Configuration {
 			is = getClass().getClassLoader().getResourceAsStream(path);
 			prop.load(is);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} finally {
 			try {
 				if (is != null)
 					is.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 	}

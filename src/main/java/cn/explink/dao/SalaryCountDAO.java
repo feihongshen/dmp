@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +29,8 @@ public class SalaryCountDAO {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
+	private static Logger logger = LoggerFactory.getLogger(SalaryCountDAO.class);
+	
 	private final class SalaryCountRowMapper implements RowMapper<SalaryCount> {
 
 		/*
@@ -136,7 +140,7 @@ public class SalaryCountDAO {
 			String sql="select * from express_ops_salaryCount_detail where batchid= "+batchid;
 			return this.jdbcTemplate.queryForObject(sql, new SalaryCountRowMapper());
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -182,7 +186,7 @@ public class SalaryCountDAO {
 			String sql = "update express_ops_salaryCount_detail set batchstate=?, userid=?,operationTime=?,usercount=?  where batchid=?";
 			return this.jdbcTemplate.update(sql, BatchSateEnum.Yihexiao.getValue(),userid,operationTime,usercount,batchid);
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return 0;
 		}
 	}
@@ -195,7 +199,7 @@ public class SalaryCountDAO {
 			String sql = "select * from express_ops_salaryCount_detail where userid=? in limit 1";
 			return this.jdbcTemplate.queryForObject(sql, new SalaryCountRowMapper(),userlong);
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -205,7 +209,7 @@ public class SalaryCountDAO {
 			String sql="select count(1) from express_ops_salaryCount_detail where batchid=? and batchstate=? ";
 			 return this.jdbcTemplate.queryForInt(sql,batchid,batchstate);
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return 0;
 		}
 	}
@@ -215,25 +219,17 @@ public class SalaryCountDAO {
 			String sql="select count(1) from express_ops_salaryCount_detail where batchid=? and batchstate=?";
 			return this.jdbcTemplate.queryForLong(sql,id,BatchSateEnum.Weihexiao.getValue());
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return 0;
 		}
 	}
-	/*public long getSalarycountByuidandbid(long userid, String batchid) {
-		try{
-			String sql = "select count(1) from express_ops_salaryCount_detail where userid=? and batchid=?";
-			return this.jdbcTemplate.queryForLong(sql,userid,batchid);
-		}catch(Exception e){
-			e.printStackTrace();
-			return 0;
-		}
-	}*/
+
 	public SalaryCount getSalaryCountByid(String batchid) {
 		try{
 			String sql = "select * from express_ops_salaryCount_detail where batchid=?";
 			return this.jdbcTemplate.queryForObject(sql,new SalaryCountRowMapper(),batchid);
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}

@@ -4,19 +4,13 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
-import java.net.InetAddress;
 import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.StringTokenizer;
-import java.io.*;
 
 /**
  * 管理类DBConnectionManager支持对一个或多个由属性文件定义的数据库连接
@@ -385,7 +379,7 @@ public class ConnectPool {
 			// loadDrivers();
 			// createPools();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -566,7 +560,7 @@ public class ConnectPool {
 				try {
 					wait(timeout);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 				if ((new Date().getTime() - startTime) >= timeout) {
 					// wait()返回的原因是超时

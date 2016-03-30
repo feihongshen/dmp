@@ -1,13 +1,7 @@
 package cn.explink.b2c.liantong;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONObject;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +31,7 @@ import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class LiantongService {
-	private Logger logger = LoggerFactory.getLogger(LiantongService.class);
+	private static Logger logger = LoggerFactory.getLogger(LiantongService.class);
 
 	@Autowired
 	JiontDAO jiontDAO;
@@ -256,7 +247,7 @@ public class LiantongService {
 		try {
 			returnStrs = JacksonMapper.getInstance().writeValueAsString(unicomResponse);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return returnStrs;
 	}

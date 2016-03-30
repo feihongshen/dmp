@@ -27,7 +27,9 @@ import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class AlipayappService {
-	private Logger logger = LoggerFactory.getLogger(AlipayappService.class);
+	
+	private static Logger logger = LoggerFactory.getLogger(AlipayappService.class);
+	
 	@Autowired
 	JiontDAO jiontDAO;
 	@Autowired
@@ -171,7 +173,7 @@ public class AlipayappService {
 		if (alipayapp.getSign_type().equals("MD5")) {
 			String local_signstr = createLinkString + alipayapp.getPrivate_key();
 			String local_sign = MD5Util.md5(local_signstr);
-			System.out.println(local_sign);
+			logger.info(local_sign);
 			if (!local_sign.equalsIgnoreCase(sign)) {
 				logger.info("MD5签名校验失败，localsign=" + local_sign + ",sign=" + sign + ",createLinkString=" + createLinkString);
 				return false;
@@ -186,7 +188,7 @@ public class AlipayappService {
 	public static void main(String[] args) {
 		String str = "amount=0.50&amt_can_modify=N&deliver_mobile=&goods_name=&is_success=T&payable=Yd3be1706ac415441a265c3e67edecfe9";
 
-		System.out.println(MD5Util.md5(str));
+		logger.info(MD5Util.md5(str));
 	}
 
 	private Map<String, String> buildParmsMap(AlipayParam param) {

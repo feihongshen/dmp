@@ -249,7 +249,6 @@ public class ChinamobileService {
 			}
 		} catch (Exception e) {
 			logger.error("移动对接移动对接文件发生未知异常", e);
-			e.printStackTrace();
 		}
 
 	}

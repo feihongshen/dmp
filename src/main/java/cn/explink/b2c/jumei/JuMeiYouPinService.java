@@ -35,7 +35,7 @@ import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class JuMeiYouPinService {
-	private Logger logger = LoggerFactory.getLogger(JuMeiYouPinService.class);
+	private static Logger logger = LoggerFactory.getLogger(JuMeiYouPinService.class);
 	@Autowired
 	JiontDAO jiontDAO;
 	@Autowired
@@ -438,7 +438,7 @@ public class JuMeiYouPinService {
 		for (String a : aa.split(",")) {
 			j++;
 			for (int i = 1; i <= 10; i++) {
-				System.out.println(j == 1 ? i : (j - 1) * 10 + i);
+				logger.info(String.valueOf(j == 1 ? i : (j - 1) * 10 + i));
 			}
 		}
 

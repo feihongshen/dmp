@@ -79,7 +79,8 @@ public class HappyGoService {
 	JointService jointService;
 	@Autowired
 	B2cAutoDownloadMonitorDAO b2cAutoDownloadMonitorDAO;
-	private Logger logger = LoggerFactory.getLogger(HappyGoService.class);
+	
+	private static Logger logger = LoggerFactory.getLogger(HappyGoService.class);
 
 	/**
 	 * 出库批次导入
@@ -125,7 +126,7 @@ public class HappyGoService {
 
 	public static void main(String[] args) {
 		String customerids = "134";
-		System.out.println(customerids.indexOf(",") > 0);
+		logger.error("", String.valueOf(customerids.indexOf(",") > 0));
 	}
 
 	public void judgmentLanded(HappyGo happy) {
@@ -175,7 +176,6 @@ public class HappyGoService {
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("快乐购异常", e);
 		}
 
@@ -226,7 +226,6 @@ public class HappyGoService {
 						}
 					} catch (Exception e) {
 						logger.error("快乐购插入新表异常", e);
-						e.printStackTrace();
 					}
 				}
 
@@ -336,7 +335,6 @@ public class HappyGoService {
 				return 0;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("快乐购下载出库明细订单信息异常," + e);
 			return 0;
 		}
@@ -438,8 +436,7 @@ public class HappyGoService {
 				return 0;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("快乐购回收下载出库明细订单信息异常," + e.getMessage());
+			logger.error("快乐购回收下载出库明细订单信息异常", e);
 			return 0;
 		}
 	}
@@ -518,7 +515,6 @@ public class HappyGoService {
 							continue;
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
 						logger.error("异常", e);
 					}
 					map.put("cwbordertypeid", String.valueOf(CwbOrderTypeIdEnum.Shangmenhuan.getValue()));
@@ -779,15 +775,14 @@ public class HappyGoService {
 			int code = hcon.getResponseCode();
 			if (code == 200) {
 				value = text;
-				// System.out.println(value);
 			} else {
-				System.out.println("错误代码" + code);
+				logger.info("错误代码" + code);
 			}
 		} catch (Exception e) {
 			try {
 				throw new Exception("dealRequest,调用远程接口失败，接口不可达或中途出现异常，详细错误信息：" + e.getMessage(), e);
 			} catch (Exception e1) {
-				e1.printStackTrace();
+				logger.error("", e1);
 			}
 		} finally {
 			try {
@@ -807,7 +802,7 @@ public class HappyGoService {
 				try {
 					throw new Exception("dealRequest,调用远程接口失败，资源释放异常，详细错误信息：" + e.getMessage(), e);
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					logger.error("", e1);
 				}
 			}
 		}
@@ -837,7 +832,6 @@ public class HappyGoService {
 						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
 					logger.error("快乐购插入新表异常", e);
 				}
 			}
@@ -884,14 +878,12 @@ public class HappyGoService {
 						dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
 					} catch (Exception e) {
 						logger.error("[快乐购]定时器临时表插入执行异常!", e);
-						e.printStackTrace();
 					}
 				}
 
 			}
 		} catch (Exception e) {
 			logger.error("[快乐购]定时器临时表插入或修改方法执行异常!", e);
-			e.printStackTrace();
 		}
 	}
 
@@ -930,14 +922,12 @@ public class HappyGoService {
 						}
 						dataImportDAO_B2c.updateHappyGoByCwb(cwbOrder.getOpscwbid());
 					} catch (Exception e) {
-						logger.error("定时器异常" + e);
-						e.printStackTrace();
+						logger.error("定时器异常", e);
 					}
 				}
 			}
 		} catch (Exception e) {
 			logger.error("[快乐购]定时器临时表插入或修改方法执行异常!", e);
-			e.printStackTrace();
 		}
 	}
 
@@ -973,8 +963,7 @@ public class HappyGoService {
 					happyGoUsedDao.getupdateStateBybatchname(PICI);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("快乐购回收下载出库明细订单信息异常," + e.getMessage());
+				logger.error("快乐购回收下载出库明细订单信息异常", e);
 				return "7回收异常";
 			}
 		} else {
@@ -1010,7 +999,6 @@ public class HappyGoService {
 					happyGoUsedDao.getupdateStateBybatchname(PICI);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
 				logger.error("快乐购下载出库明细订单信息异常," + e);
 				return "2出库异常";
 			}
@@ -1049,14 +1037,12 @@ public class HappyGoService {
 
 						}
 					} catch (Exception e) {
-						logger.error("定时器异常" + e);
-						e.printStackTrace();
+						logger.error("定时器异常", e);
 					}
 				}
 			}
 		} catch (Exception e) {
 			logger.error("[快乐购]定时器临时表插入或修改方法执行异常!", e);
-			e.printStackTrace();
 		}
 
 	}
