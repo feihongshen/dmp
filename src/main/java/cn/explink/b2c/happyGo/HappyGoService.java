@@ -12,7 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
@@ -21,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.explink.b2c.jumei.AnalyzXMLJuMeiHandler;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -41,6 +45,7 @@ import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.util.DateTimeUtil;
@@ -79,7 +84,8 @@ public class HappyGoService {
 	JointService jointService;
 	@Autowired
 	B2cAutoDownloadMonitorDAO b2cAutoDownloadMonitorDAO;
-	
+	@Autowired
+	CustomerService customerService;
 	private static Logger logger = LoggerFactory.getLogger(HappyGoService.class);
 
 	/**
@@ -658,6 +664,7 @@ public class HappyGoService {
 		jiontDAO.UpdateState(joint_num, state);
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		HappyGo happy = new HappyGo();
 		String key = StringUtil.nullConvertToEmptyString(request.getParameter("key"));
@@ -700,6 +707,7 @@ public class HappyGoService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(happy.getCustomerid(), oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	private String requestXMl(int pagesize, HappyGo happy) {

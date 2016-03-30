@@ -43,9 +43,12 @@ public class JuMeiYouPinController {
 	public @ResponseBody String jumeiyoupinSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-
-			jumeiyoupinService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				jumeiyoupinService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

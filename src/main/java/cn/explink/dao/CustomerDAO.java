@@ -4,11 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,13 +25,17 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.aspect.SystemInstallOperation;
+import cn.explink.b2c.tools.B2cEnum;
+import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.domain.Customer;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
 @Component
 public class CustomerDAO {
-
+	@Autowired
+	JiontDAO jiontDAO;
+	
 	private final class CustomerRowMapper implements RowMapper<Customer> {
 		@Override
 		public Customer mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -259,6 +265,21 @@ public class CustomerDAO {
 		}
 
 	}
+	
+	/**
+	 * 根据客户id查找已经绑定b2cEnum的记录
+	 * @param customerids
+	 * @return
+	 */
+	public List<Customer> getCustomerBoundB2cEnumByIds(String customerids) {
+		if (customerids.length() > 0) {
+			List<Customer> customer = this.jdbcTemplate.query("select * from express_set_customer_info where b2cEnum<>'0' and customerid in(" + customerids + ")", new CustomerRowMapper());
+			return customer;
+		} else {
+			return null;
+		}
+
+	}
 
 	public List<Customer> getCustomerByIdsAndId(String customerids, long customerid) {
 		if (customerids.length() > 0) {
@@ -283,7 +304,7 @@ public class CustomerDAO {
 	@SystemInstallOperation
 	@CacheEvict(value = "customerCache", allEntries = true)
 	public void updateB2cEnumByJoint_num(String customerids, String oldCustomerids, int joint_num) {
-		if (!"".equals(oldCustomerids)) {
+		/*if (!"".equals(oldCustomerids)) {
 			String[] oldCustormeridstr = oldCustomerids.split(",");
 			String oldCustormeridstrs = "";
 			for (int i = 0; i < oldCustormeridstr.length; i++) {
@@ -304,7 +325,68 @@ public class CustomerDAO {
 				// 更新前台传递过来的参数
 				this.jdbcTemplate.update("update express_set_customer_info set b2cEnum=? where customerid in(" + custormeridstrs.substring(0, custormeridstrs.length() - 1) + ")", joint_num);
 			}
+		}*/
+		
+		String[] custormeridstr = null;//修改之后的客户id
+		String[] oldCustomeridStr = null;//修改之前的客户id
+		List<Long> customeridArray = new ArrayList<Long>();
+		List<Long> oldCustomeridArray = new ArrayList<Long>();
+		if(StringUtils.isNotBlank(customerids)){
+			custormeridstr = customerids.split(",|，");
+			for(String custStr : custormeridstr){
+				try{
+					customeridArray.add(Long.valueOf(custStr));
+				}catch(Exception e){
+					
+				}
+			}
 		}
+		
+		if(StringUtils.isNotBlank(oldCustomerids)){
+			oldCustomeridStr = oldCustomerids.split(",|，");
+			for(String oldCustStr : oldCustomeridStr){
+				try{
+					oldCustomeridArray.add(Long.valueOf(oldCustStr));
+				}catch(Exception e){
+					
+				}
+			}
+		}
+		/**
+		 * 如果新设置的客户id 设置过其他的对接，不允许设置当前的对接
+		 */
+		if(!customeridArray.isEmpty()){
+			List<Customer> oldCustList = this.getCustomerBoundB2cEnumByIds(StringUtil.getStringsByLongList(customeridArray));
+			if(oldCustList != null){
+				for(Customer cust : oldCustList){
+					if(!cust.getB2cEnum().equals(joint_num + "") && this.jiontDAO.getJointEntity(Integer.valueOf(cust.getB2cEnum())) != null){
+						throw new RuntimeException("客户" + cust.getCustomerid() + "已在【" + B2cEnum.getEnumByKey(Integer.valueOf(cust.getB2cEnum()).intValue()).getText() + "】设置对接");
+					}
+					
+				}
+			}
+		}
+		/**
+		 * 对修改前的客户id，需要解绑b2cEnum
+		 */
+		if(!oldCustomeridArray.isEmpty()){
+			List<Customer> oldCustList = this.getCustomerBoundB2cEnumByIds(StringUtil.getStringsByLongList(oldCustomeridArray));
+			if(oldCustList != null){
+				for(Customer cust : oldCustList){
+					if(cust.getB2cEnum().equals(joint_num + "")){
+						this.jdbcTemplate.update("update express_set_customer_info set b2cEnum=0 where customerid =?", cust.getCustomerid());
+					}
+					
+				}
+			}
+		}
+		/**
+		 * 绑定当前设置的客户的b2cEnum
+		 */
+		if(!customeridArray.isEmpty()){
+			this.jdbcTemplate.update("update express_set_customer_info set b2cEnum=? where customerid in(" + StringUtil.getStringsByLongList(customeridArray) + ")", joint_num);
+		}
+		
 	}
 
 	// 获取全部供货商 不管是否已经停用

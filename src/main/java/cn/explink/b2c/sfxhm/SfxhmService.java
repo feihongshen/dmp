@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -21,6 +22,7 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.service.CustomerService;
 
 /**
  * 中兴云购，ERP系统接口service
@@ -44,6 +46,8 @@ public class SfxhmService {
 	CustomerDAO customerDAO;
 	@Autowired
 	JointService jointService;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -59,6 +63,7 @@ public class SfxhmService {
 		return efast;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Sfxhm sm = new Sfxhm();
 		String customerid = request.getParameter("customerid");
@@ -91,6 +96,7 @@ public class SfxhmService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

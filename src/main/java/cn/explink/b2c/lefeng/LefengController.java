@@ -1,8 +1,5 @@
 package cn.explink.b2c.lefeng;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,8 +41,12 @@ public class LefengController {
 	@RequestMapping("/saveLefeng/{id}")
 	public @ResponseBody String smileSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-			lefengService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				lefengService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

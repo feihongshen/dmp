@@ -22,6 +22,7 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.JMath;
 
@@ -37,6 +38,8 @@ public class ChinamobileService {
 	JointService jointService;
 	@Autowired
 	CwbDAO cwbDAO;
+	@Autowired
+	CustomerService customerService;
 
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -54,6 +57,7 @@ public class ChinamobileService {
 		return dangdang;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Chinamobile cm = new Chinamobile();
 		String customerid = request.getParameter("customerid");
@@ -103,6 +107,7 @@ public class ChinamobileService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 
 	}
 

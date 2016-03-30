@@ -10,16 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 import org.jdom.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.dpfoss.waybill.QueryWayBillResponse;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -31,6 +29,7 @@ import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.SystemInstall;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -52,6 +51,8 @@ public class TmallService {
 	DataImportService_B2c dataImportService_B2c;
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
+	@Autowired
+	CustomerService customerService;
 
 	private Logger logger = LoggerFactory.getLogger(TmallService.class);
 
@@ -69,6 +70,7 @@ public class TmallService {
 		return tmall;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Tmall tmall = new Tmall();
 		tmall.setPartner(request.getParameter("partner"));
@@ -112,7 +114,7 @@ public class TmallService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
-
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

@@ -151,5 +151,15 @@ public enum B2cEnum {
 	public void setText(String text) {
 		this.text = text;
 	}
+	
+	public static B2cEnum getEnumByKey(int key){
+		B2cEnum[] enums = B2cEnum.values();
+		for(B2cEnum entity : enums){
+			if(entity.getKey() == key){
+				return entity;
+			}
+		}
+		return null;
+	}
 
 }

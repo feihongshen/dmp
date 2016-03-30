@@ -1,11 +1,7 @@
 package cn.explink.b2c.yonghui;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +26,6 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.pos.tools.JacksonMapper;
-import cn.explink.util.DeCodeURLUtil;
 import cn.explink.util.Dom4jParseUtil;
 
 @Controller
@@ -68,9 +63,13 @@ public class YongHuiController {
 	public @ResponseBody
 	String smileSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 		if ((request.getParameter("password") != null) && "explink".equals(request.getParameter("password"))) {
-			this.yonghuiServices.edit(request, key);
-			this.logger.info("修改-永辉-信息");
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				this.yonghuiServices.edit(request, key);
+				this.logger.info("修改-永辉-信息");
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

@@ -43,6 +43,7 @@ import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.enumutil.MpsTypeEnum;
 import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.support.transcwb.TransCwbDao;
@@ -85,6 +86,8 @@ public class VipShopGetCwbDataService {
 	DataImportService dataImportService;
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
+	@Autowired
+	CustomerService customerService;
 
 	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -166,6 +169,7 @@ public class VipShopGetCwbDataService {
 		// 保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
 		this.customerDAO.updateB2cEnumByJoint_num(lefengCustomerid, oldLefengCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void updateMaxSEQ(int joint_num, VipShop vipshop) {

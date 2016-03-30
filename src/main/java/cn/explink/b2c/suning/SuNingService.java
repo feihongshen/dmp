@@ -16,9 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.suning.requestdto.Body;
-import cn.explink.b2c.suning.requestdto.Order;
 import cn.explink.b2c.suning.requestdto.RequestBody;
 import cn.explink.b2c.suning.requestdto.RequestData;
 import cn.explink.b2c.suning.responsedto.ResponseBody;
@@ -32,12 +32,11 @@ import cn.explink.b2c.tools.JointEntity;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
-import cn.explink.domain.CwbOrder;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
-import cn.explink.util.DateDayUtil;
 import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
 @Service
@@ -54,6 +53,9 @@ public class SuNingService {
 	CwbDAO cwbDAO;
 	@Autowired
 	CwbOrderService cwbOrderService;
+	@Autowired
+	CustomerService customerService;
+
 	
 	private Logger logger =LoggerFactory.getLogger(this.getClass());
 	public void update(int joint_num,int state){
@@ -64,6 +66,7 @@ public class SuNingService {
 	 * @param request
 	 * @param joint_num
 	 */
+	@Transactional
 	public void edit(HttpServletRequest request,int joint_num){
 		SuNing sn=new SuNing();
 		String customerid=request.getParameter("customerid");
@@ -91,6 +94,7 @@ public class SuNingService {
 		}
 		//保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 	/**
 	 *获取创建电商的信息 
