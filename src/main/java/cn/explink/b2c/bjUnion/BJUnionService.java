@@ -48,7 +48,7 @@ public class BJUnionService {
 	@Autowired
 	CustomerService customerService;
 	
-	private Logger logger = LoggerFactory.getLogger(BJUnionService.class);
+	private static Logger logger = LoggerFactory.getLogger(BJUnionService.class);
 	
 	public void update(int joint_num,int state){
 		jiontDAO.UpdateState(joint_num, state);
@@ -107,7 +107,7 @@ public class BJUnionService {
 		try{
 			checksignStr = checkSign(context,bu);
 		}catch(Exception e){
-			this.logger.error("北京银联接口异常:{}",e);
+			logger.error("北京银联接口异常:{}",e);
 		}
 		//校验签名
 		return checksignStr;
@@ -143,11 +143,11 @@ public class BJUnionService {
 				try{
 				 	return getTRUEObject(context,subtractStr,bu);
 				}catch(Exception e){
-					this.logger.error("解析xml报文异常:{}",e);
+					logger.error("解析xml报文异常:{}",e);
 					str = e.getMessage();
 				}
 			}catch(Exception e){
-				this.logger.error("校验加密信息异常,原因:{}",e);
+				logger.error("校验加密信息异常,原因:{}",e);
 				str = e.getMessage();
 			}
 		}
@@ -155,7 +155,7 @@ public class BJUnionService {
 	}
 	public static void main(String[] args) {
 		String str="afafgag1124242<mac>666666</mac>4g1121g12";
-		System.out.println(str.substring(str.indexOf("<mac>")+5,str.indexOf("</mac>")));
+		logger.info(str.substring(str.indexOf("<mac>")+5,str.indexOf("</mac>")));
 		
 	}
 	//获取请求过来的加密字符串并进行处理（32位）
@@ -218,14 +218,14 @@ public class BJUnionService {
 	private boolean isSign(String mac,String subtractStr,BJUnion bu,String context){
 		boolean isSign = true;
 		if("".equals(mac)){
-			this.logger.info("加密验证失败,请求参数为:{}",context);
+			logger.info("加密验证失败,请求参数为:{}",context);
 			isSign = false;
 		}
 		//本地加密字符串
 		String sign = MD5Util.md5(subtractStr+bu.getPrivate_key()).toUpperCase();
 		//对比加密信息是否通过
 		if(!mac.equals(sign)){
-			this.logger.info("加密验证失败,参数为:{},本地待加密信息:{},本地加密结果:{},实际加密结果:{}",new Object[]{context,subtractStr+bu.getPrivate_key(),sign,mac});
+			logger.info("加密验证失败,参数为:{},本地待加密信息:{},本地加密结果:{},实际加密结果:{}",new Object[]{context,subtractStr+bu.getPrivate_key(),sign,mac});
 			isSign = false;
 		}
 		return isSign;

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import cn.explink.b2c.dangdang.DangDang;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.UserDAO;
@@ -108,9 +107,9 @@ public class UnionPayTestService {
 			httpClient.executeMethod(postMethod); // 执行数据传输的方法。
 			return postMethod.getResponseBodyAsString(); // 返回一个响应结果
 		} catch (HttpException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} finally {
 			postMethod.releaseConnection();
 		}

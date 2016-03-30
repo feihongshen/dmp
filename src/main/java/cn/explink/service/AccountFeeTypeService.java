@@ -29,8 +29,7 @@ public class AccountFeeTypeService {
 			List<AccountFeeType> list = accountFeeTypeDAO.getAccountFeeTypeList(page, feetype);
 			return list;
 		} catch (Exception e) {
-			logger.info("分页查找款项列表异常：" + e);
-			e.printStackTrace();
+			logger.error("分页查找款项列表异常", e);
 			return null;
 		}
 	}
@@ -45,8 +44,7 @@ public class AccountFeeTypeService {
 		try {
 			return accountFeeTypeDAO.getAccountFeeTypeCount(feetype);
 		} catch (Exception e) {
-			logger.info("款项列表合计条数异常：" + e);
-			e.printStackTrace();
+			logger.error("款项列表合计条数异常", e);
 			return 0;
 		}
 	}
@@ -61,8 +59,7 @@ public class AccountFeeTypeService {
 		try {
 			return accountFeeTypeDAO.getAccountFeeTypeByName(feetypename);
 		} catch (Exception e) {
-			logger.info("款项列表按款项名称查找异常：" + e);
-			e.printStackTrace();
+			logger.error("款项列表按款项名称查找异常", e);
 			return null;
 		}
 	}
@@ -78,8 +75,7 @@ public class AccountFeeTypeService {
 			accountFeeTypeDAO.createAccountFeeType(accountFeeType);
 			return true;
 		} catch (Exception e) {
-			logger.info("款项保存异常：" + e);
-			e.printStackTrace();
+			logger.error("款项保存异常", e);
 			return false;
 		}
 	}
@@ -94,8 +90,7 @@ public class AccountFeeTypeService {
 		try {
 			return accountFeeTypeDAO.getAccountFeeTypeById(feetypeid);
 		} catch (Exception e) {
-			logger.info("款项列表按款项ID查找异常：" + e);
-			e.printStackTrace();
+			logger.error("款项列表按款项ID查找异常", e);
 			return null;
 		}
 	}
@@ -113,8 +108,7 @@ public class AccountFeeTypeService {
 			accountFeeTypeDAO.saveAccountFeeType(feetypeid, feetype, feetypename);
 			return true;
 		} catch (Exception e) {
-			logger.info("款项修改异常：" + e);
-			e.printStackTrace();
+			logger.error("款项修改异常", e);
 			return false;
 		}
 	}
@@ -130,8 +124,7 @@ public class AccountFeeTypeService {
 			accountFeeTypeDAO.getDelAccountFeeType(feetypeid);
 			return true;
 		} catch (Exception e) {
-			logger.info("款项启用停用异常：" + e);
-			e.printStackTrace();
+			logger.error("款项启用停用异常", e);
 			return false;
 		}
 	}

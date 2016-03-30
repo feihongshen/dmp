@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,6 +21,9 @@ import cn.explink.util.Page;
 public class MonitorDAO {
 	@Autowired
 	CwbDAO cwbDAO;
+	
+	private static Logger logger = LoggerFactory.getLogger(MonitorDAO.class);
+	
 	private final class MonitorlogDTOMapper implements RowMapper<MonitorLogDTO> {
 		
 		@Override
@@ -83,7 +88,7 @@ public class MonitorDAO {
 		String noteffectCwbsString=this.getEffectCwbsAdd(branchids, customerids, wheresql);
 		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+"  GROUP BY customerid");
 		//receivablefee paybackfee代收货款应收金额和上门退应退金额的总和
-		System.out.println("-- 生命周期监控:\n"+sql);
+		logger.info("-- 生命周期监控:\n"+sql);
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
 	}
@@ -112,7 +117,7 @@ public class MonitorDAO {
 		String cwbsString=this.getExpectZhandianZaiZhanZiJinCwb(branchids,customerids,wheresql);
 		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" AND cwb NOT IN("+cwbsString+") GROUP BY customerid");
 		//receivablefee paybackfee代收货款应收金额和上门退应退金额的总和
-		System.out.println("-- 生命周期监控:\n"+sql);
+		logger.info("-- 生命周期监控:\n"+sql);
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
 	}
@@ -120,7 +125,7 @@ public class MonitorDAO {
 		String suffer="'";
 		StringBuffer buffer=new StringBuffer();
 		StringBuffer sql = new StringBuffer("SELECT cwb FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" AND deliverystate=1 AND newpaywayid='2' GROUP BY customerid");
-		System.out.println("-- 生命周期监控--->>:\n"+sql);
+		logger.info("-- 生命周期监控--->>:\n"+sql);
 		List<String> stringlist=jdbcTemplate.query(sql.toString(),new StringTypeMapper());
 		for (String string : stringlist) {
 			buffer.append(suffer).append(string).append(suffer).append(",");
@@ -134,7 +139,7 @@ public class MonitorDAO {
 	public List<MonitorLogSim> getMonitorLogByExpBranchid(String branchids,String customerids,String wheresql) {
 		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" and branchid not in("+branchids+")  GROUP BY customerid");
 		
-		System.out.println("-- 生命周期监控:\n"+sql);
+		logger.info("-- 生命周期监控:\n"+sql);
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
 	}
@@ -239,7 +244,7 @@ public class MonitorDAO {
 
 		StringBuffer sql = new StringBuffer("SELECT * FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+"");
 
-		System.out.println("-- 生命周期监控:\n"+sql);
+		logger.info("-- 生命周期监控:\n"+sql);
 		
 		return sql.toString();
 	}

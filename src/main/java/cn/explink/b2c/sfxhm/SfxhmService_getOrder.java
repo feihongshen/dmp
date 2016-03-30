@@ -36,16 +36,15 @@ public class SfxhmService_getOrder extends SfxhmService {
 		try {
 			list = db.selectDataList(sql, null);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		if (list == null) {
 			return;
 		}
 		for (int i = 0; i < list.size(); i++) {
 			Map map = (Map) list.get(i);
-			System.out.println(map.get("username"));
-			System.out.println(map.get("realname"));
+			logger.info(String.valueOf(map.get("username")));
+			logger.info(String.valueOf(map.get("realname")));
 
 		}
 

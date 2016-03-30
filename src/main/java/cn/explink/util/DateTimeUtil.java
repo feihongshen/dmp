@@ -545,7 +545,7 @@ public class DateTimeUtil {
 	public static String getIndexStartDayZeroTime() {
 		String currentdate = getNowDate();
 		String last20date = getNeedDate(currentdate, -90);
-		System.out.println("====时间索引起始时间:====" + last20date + " 00:00:00");
+		logger.info("====时间索引起始时间:====" + last20date + " 00:00:00");
 		return last20date + " 00:00:00";
 	}
 
@@ -618,7 +618,7 @@ public class DateTimeUtil {
 					Date date = new Date(modifiedTime);
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM");
 					String dd = sdf.format(date);
-					System.out.println("File name:" + Ifile.getName() + " \tFile size: " + (double) ((double) fis.available() / 1024 / 1024) + "M" + " \tFile create Time: " + dd);
+					logger.info("File name:" + Ifile.getName() + " \tFile size: " + (double) ((double) fis.available() / 1024 / 1024) + "M" + " \tFile create Time: " + dd);
 
 				}
 			}
@@ -654,7 +654,7 @@ public class DateTimeUtil {
 			logger.error("",e);
 		}
 
-		System.out.println("创建时间    " + strTime);
+		logger.info("创建时间    " + strTime);
 		return strTime;
 		// 输出：创建时间 2009-08-17 10:21
 	}
@@ -669,7 +669,7 @@ public class DateTimeUtil {
 		long time = f.lastModified();
 		cal.setTimeInMillis(time);
 		// 此处toLocalString()方法是不推荐的，但是仍可输出
-		System.out.println("修改时间[1] " + cal.getTime().toLocaleString());
+		logger.info("修改时间[1] " + cal.getTime().toLocaleString());
 		// 输出：修改时间[1] 2009-8-17 10:32:38
 	}
 
@@ -682,7 +682,7 @@ public class DateTimeUtil {
 		long time = f.lastModified();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		cal.setTimeInMillis(time);
-		System.out.println("修改时间[2] " + formatter.format(cal.getTime()));
+		logger.info("修改时间[2] " + formatter.format(cal.getTime()));
 		// 输出：修改时间[2] 2009-08-17 10:32:38
 	}
 

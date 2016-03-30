@@ -178,7 +178,7 @@ public class LechongService {
 			xmlstr = ResponseUnMarchal.POJOtoXml(res);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return xmlstr;

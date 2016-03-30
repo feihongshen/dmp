@@ -28,7 +28,7 @@ import cn.explink.util.MD5.MD5Util;
  */
 @Service
 public class AlipayCodAppService_search extends AlipayCodAppService {
-	private Logger logger = LoggerFactory.getLogger(AlipayCodAppService_search.class);
+	private static Logger logger = LoggerFactory.getLogger(AlipayCodAppService_search.class);
 
 	@Autowired
 	ExplinkService explinkService;
@@ -115,10 +115,10 @@ public class AlipayCodAppService_search extends AlipayCodAppService {
 						.trim());
 
 		String createLinkStringResp = AlipayCore.createLinkString(respMap);
-		System.out.println(createLinkStringResp);
+		logger.info(createLinkStringResp);
 		String sign = MD5Util.md5(createLinkStringResp + "dz1ivka0uz6794ogtmr373yvl980vgki");
 		// a1d78789e9ea1759263c54b3909fad44
-		System.out.println(sign);
+		logger.info(sign);
 	}
 
 	public String getOrderFlowFilter(long flowordertype) {

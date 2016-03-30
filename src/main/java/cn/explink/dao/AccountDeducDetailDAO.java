@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -21,6 +23,8 @@ import cn.explink.util.Page;
 public class AccountDeducDetailDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	private static Logger logger = LoggerFactory.getLogger(AccountDeducDetailDAO.class);
 
 	private final class AccountDeducDetailRowMapper implements RowMapper<AccountDeducDetail> {
 		@Override
@@ -147,7 +151,7 @@ public class AccountDeducDetailDAO {
 			List<AccountDeducDetail> list = jdbcTemplate.query(sql, new AccountDeducDetailRowMapper(), recordid);
 			return list;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -157,7 +161,7 @@ public class AccountDeducDetailDAO {
 			String sql = "SELECT count(1) FROM ops_account_deduct_detail where recordid =? ";
 			return jdbcTemplate.queryForLong(sql, recordid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return 0;
 		}
 	}
@@ -168,7 +172,7 @@ public class AccountDeducDetailDAO {
 			List<AccountDeducDetail> list = jdbcTemplate.query(sql, new AccountDeducDetailRowMapper(), recordid);
 			return list;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -200,7 +204,7 @@ public class AccountDeducDetailDAO {
 			String sql = "select * from ops_account_deduct_detail where cwb=? and flowordertype in (" + flowordertype + ") ";
 			return jdbcTemplate.query(sql, new AccountDeducDetailRowMapper(), cwb);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -214,7 +218,7 @@ public class AccountDeducDetailDAO {
 			String sql = "select * from ops_account_deduct_detail where cwb=? ";
 			return jdbcTemplate.query(sql, new AccountDeducDetailRowMapper(), cwb);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}

@@ -5,6 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -14,6 +16,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
  * 
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
+	
+	private static Logger logger =LoggerFactory.getLogger(StringUtils.class);
 	
 	public static String lowerFirst(String str){
 		if(StringUtils.isBlank(str)) {
@@ -69,7 +73,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 			}
 			return sb.toString();
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return "";
 	}

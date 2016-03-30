@@ -280,7 +280,7 @@ public class CwbOrderPDAController {
 			os.flush();
 			os.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -876,7 +876,7 @@ public class CwbOrderPDAController {
 					// cwbOrder==null?0:cwbOrder.getCustomerid(), 0, 0,
 					// 0, "");
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 			if (successCount > 0) {// 成功
@@ -2668,7 +2668,7 @@ public class CwbOrderPDAController {
 			excelUtil.excel(response, cloumnName3, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -2896,7 +2896,7 @@ public class CwbOrderPDAController {
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 			}
-			System.out.println(pDAResponse.getPrintinfo());
+			logger.info(pDAResponse.getPrintinfo());
 			return pDAResponse;
 
 		} catch (CwbException e) {

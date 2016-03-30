@@ -619,7 +619,7 @@ public class Tools {
 				responseObject = Tools.outMapper.readValue(json, clazz);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return responseObject;
 	}
@@ -634,7 +634,7 @@ public class Tools {
 
 			return Tools.mapper.writeValueAsString(obj);
 		} catch (Exception e) {
-			System.out.println("==>> Object to JSON occer error: " + e);
+			logger.error("==>> Object to JSON occer error: ", e);
 		}
 		return "{}";
 	}
@@ -836,7 +836,7 @@ public class Tools {
 			addr = InetAddress.getLocalHost();
 			ip = addr.getHostAddress().toString();// 获得本机IP
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ip;
 	}
