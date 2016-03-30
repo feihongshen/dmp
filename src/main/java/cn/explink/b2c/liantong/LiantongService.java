@@ -1,13 +1,7 @@
 package cn.explink.b2c.liantong;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,13 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONObject;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.liantong.json.Goods;
 import cn.explink.b2c.liantong.json.UnicomRequest;
@@ -35,6 +27,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
 
@@ -50,6 +43,8 @@ public class LiantongService {
 	CwbDAO cwbDAO;
 	@Autowired
 	DataImportService_B2c dataImportInterface;
+	@Autowired
+	CustomerService customerService;
 
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -67,6 +62,7 @@ public class LiantongService {
 		return dangdang;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Liantong lt = new Liantong();
 		String customerid = request.getParameter("customerid");
@@ -106,7 +102,7 @@ public class LiantongService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
-
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

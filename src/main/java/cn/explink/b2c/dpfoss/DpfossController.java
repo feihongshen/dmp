@@ -52,8 +52,12 @@ public class DpfossController {
 	@RequestMapping("/save/{id}")
 	public @ResponseBody String smileSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-			dpfossService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				dpfossService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

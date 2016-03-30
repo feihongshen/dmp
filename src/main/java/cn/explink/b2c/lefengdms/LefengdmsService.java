@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkService;
 import cn.explink.b2c.tools.JiontDAO;
@@ -17,6 +18,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 
 @Service
 public class LefengdmsService {
@@ -32,6 +34,8 @@ public class LefengdmsService {
 	ExplinkService explinkService;
 	@Autowired
 	UserDAO userDAO;
+	@Autowired
+	CustomerService customerService;
 
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -49,6 +53,7 @@ public class LefengdmsService {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Lefengdms lefeng = new Lefengdms();
 		String customerids = request.getParameter("customerids");
@@ -80,6 +85,7 @@ public class LefengdmsService {
 		}
 		// 保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

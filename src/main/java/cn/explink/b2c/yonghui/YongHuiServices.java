@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -29,6 +30,7 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
@@ -54,6 +56,8 @@ public class YongHuiServices {
 	UserDAO userDAO;
 	@Autowired
 	CwbOrderService cwbOrderService;
+	@Autowired
+	CustomerService customerService;
 
 	public YongHui getYonghui(int key) {
 		if (this.getObjectMethod(key) == null) {
@@ -69,6 +73,7 @@ public class YongHuiServices {
 		return obj == null ? null : obj.getJoint_property();
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		YongHui yh = new YongHui();
 		String customerid = request.getParameter("customerid");
@@ -101,6 +106,7 @@ public class YongHuiServices {
 		}
 		// 保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

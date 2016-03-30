@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -32,6 +33,7 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.domain.CwbOrder;
+import cn.explink.service.CustomerService;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -47,6 +49,8 @@ public class YiXunService {
 	CwbDAO cwbDAO;
 	@Autowired
 	CustomerDAO customerDAO;
+	@Autowired
+	CustomerService customerService;
 	private Logger logger = LoggerFactory.getLogger(YiXunService.class);
 
 	public String getObjectMethod(int key) {
@@ -63,6 +67,7 @@ public class YiXunService {
 		return yixun;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		YiXun yixun = new YiXun();
 
@@ -94,6 +99,7 @@ public class YiXunService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

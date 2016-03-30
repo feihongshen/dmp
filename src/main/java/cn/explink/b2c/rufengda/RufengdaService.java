@@ -25,7 +25,6 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
-import cn.explink.b2c.yihaodian.Yihaodian;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
@@ -35,6 +34,7 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.util.DateTimeUtil;
@@ -74,6 +74,8 @@ public class RufengdaService {
 	EmailDateDAO emaildateDAO;
 	@Autowired
 	B2cAutoDownloadMonitorDAO b2cAutoDownloadMonitorDAO;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -89,6 +91,7 @@ public class RufengdaService {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Rufengda rfd = new Rufengda();
 		String customerid = request.getParameter("customerid");
@@ -126,6 +129,7 @@ public class RufengdaService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerid, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.huanqiugou.reqDto.Order;
 import cn.explink.b2c.huanqiugou.reqDto.ReqDto;
@@ -29,10 +30,9 @@ import cn.explink.b2c.tools.ObjectUnMarchal;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
-import cn.explink.domain.CustomWareHouse;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
-import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.MD5.Base64Utils;
 import cn.explink.util.MD5.MD5Util;
 
@@ -50,6 +50,8 @@ public class HuanqiugouService {
 	DataImportDAO_B2c dataImportDAO_B2c;
 	@Autowired
 	CustomWareHouseDAO customWareHouseDAO;
+	@Autowired
+	CustomerService customerService;
 	
 	public String getObjectMethod(int key){
 		JointEntity obj=jiontDAO.getJointEntity(key);
@@ -63,6 +65,7 @@ public class HuanqiugouService {
 	    Huanqiugou smile = (Huanqiugou)JSONObject.toBean(jsonObj,Huanqiugou.class);
 		return smile;
 	}
+	@Transactional
 	public void edit(HttpServletRequest request,int joint_num){
 		Huanqiugou dms=new Huanqiugou();
 		String customerids = request.getParameter("customerids");
@@ -96,6 +99,7 @@ public class HuanqiugouService {
 		}
 		//保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 	public void update(int joint_num,int state){
 			jiontDAO.UpdateState(joint_num, state);

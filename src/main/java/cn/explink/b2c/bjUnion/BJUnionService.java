@@ -4,12 +4,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.explink.b2c.bjUnion.login.LoginReq;
 import cn.explink.b2c.bjUnion.query.BodydataQuery;
 import cn.explink.b2c.bjUnion.query.QueryReq;
@@ -23,6 +28,7 @@ import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.pos.tools.PosEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.util.MD5.MD5Util;
 
 @Service
@@ -39,12 +45,15 @@ public class BJUnionService {
 	JointService jointService;
 	@Autowired
 	BJUnionInterface bjUnionInterface;
+	@Autowired
+	CustomerService customerService;
 	
 	private Logger logger = LoggerFactory.getLogger(BJUnionService.class);
 	
 	public void update(int joint_num,int state){
 		jiontDAO.UpdateState(joint_num, state);
     }
+	@Transactional
 	public void edit(HttpServletRequest request,int joint_num){
 		BJUnion dms=new BJUnion();
 		dms.setRequestUrl(request.getParameter("requestUrl"));//北京银联(浙江)请求路径
@@ -68,6 +77,7 @@ public class BJUnionService {
 		}
 		//保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 	
 	//获取北京银联基础设置信息
