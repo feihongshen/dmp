@@ -815,13 +815,8 @@ public class VipShopGetCwbDataService {
 		
 		//Added by leoliao at 2016-03-21 使用锁的方式解决集包一票多件同时修改临时表订单的问题
 		long b2cTempOpscwbid = cwbOrderDTO.getOpscwbid();
-		CwbOrderDTO cwbOrderDTONew = dataImportDAO_B2c.getCwbByCwbB2ctempOpscwbidLock(b2cTempOpscwbid);
 		dataImportDAO_B2c.updateTmsPackageCondition(b2cTempOpscwbid, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag, IsmpsflagEnum.yes.getValue());
-		
-		if(cwbOrderDTONew.getGetDataFlag() != 0){
-			//更新临时表的getDataFlag为0以重新转业务--是否需要判断数据有更新再修改标识？
-			dataImportDAO_B2c.update_CwbDetailTempByCwb(0, b2cTempOpscwbid);
-		}
+		dataImportDAO_B2c.update_CwbDetailTempByCwb(0, b2cTempOpscwbid); //更新临时表的getDataFlag为0以重新转业务	
 		//Added end
 		
 		/**Commented by leoliao at 2016-03-21 这部分的逻辑已改为在临时表转正式表定时器里	

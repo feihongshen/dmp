@@ -698,7 +698,9 @@ public class DataImportDAO_B2c {
 	 */
 	public CwbOrderDTO getCwbByCwbB2ctempOpscwbidLock(long opscwbid) {
 		try {
-			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where opscwbid=? for update", new CwbDTO4TempMapper(), opscwbid);
+			//取消锁定，改为使用乐观锁方式。leoliao at 2016-03-29
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where opscwbid=? ", new CwbDTO4TempMapper(), opscwbid);
+			//return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where opscwbid=? for update", new CwbDTO4TempMapper(), opscwbid);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -728,7 +730,33 @@ public class DataImportDAO_B2c {
 		try {
 			this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set getDataFlag=" + getDataFlag + " where opscwbid=" + opscwbid);
 		} catch (DataAccessException e) {
-			this.logger.error("修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
+			this.logger.error("[update_CwbDetailTempByCwb(long getDataFlag, long opscwbid)]修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
 		}
+	}
+	
+	/**
+	 * 修改临时表为[插入detail表]成功 getDataFlag != 0表示已经插入到detail中
+	 * @author leo01.liao
+	 * @param cwbOrderDto
+	 */
+	public void update_CwbDetailTempByCwb(CwbOrderDTO cwbOrderDto) {
+		if(cwbOrderDto == null){
+			return;
+		}
+		
+		long opscwbid       = cwbOrderDto.getOpscwbid();
+		int  sendCarnum     = cwbOrderDto.getSendcargonum(); //发货数量
+		int  mpsAllArrivedFlag = cwbOrderDto.getMpsallarrivedflag(); //是否集齐标识
+		
+		try {
+			String sqlUpdate = "update express_ops_cwb_detail_b2ctemp set getDataFlag=" + opscwbid + 
+							   " where opscwbid=" + opscwbid + " and mpsallarrivedflag=" + mpsAllArrivedFlag + " and sendcarnum=" + sendCarnum;
+			
+			this.jdbcTemplate.update(sqlUpdate);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			this.logger.error("[update_CwbDetailTempByCwb(CwbOrderDTO cwbOrderDTO)]修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
+		}
+
 	}
 }

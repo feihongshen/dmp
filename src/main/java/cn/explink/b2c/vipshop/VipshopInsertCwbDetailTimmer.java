@@ -1,7 +1,6 @@
 package cn.explink.b2c.vipshop;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -405,7 +404,7 @@ public class VipshopInsertCwbDetailTimmer {
 		}
 		
 		//更新已转业务标识
-		dataImportDAO_B2c.update_CwbDetailTempByCwb(b2cTempOpscwbid);
+		dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrderDto);
 	}
 	
 	/**
