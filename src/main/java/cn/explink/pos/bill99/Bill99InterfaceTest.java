@@ -9,6 +9,8 @@ import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/bill99inter_test")
 public class Bill99InterfaceTest {
+	
+	private static Logger logger = LoggerFactory.getLogger(Bill99InterfaceTest.class);
+	
 	private String RequestXML(String content) throws Exception {
 		// content = URLEncoder.encode(content, "utf-8");
 		URL url = new URL("http://localhost:8080/dmp/bill99/");
@@ -50,8 +55,7 @@ public class Bill99InterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 
@@ -64,8 +68,7 @@ public class Bill99InterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 
@@ -81,8 +84,7 @@ public class Bill99InterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 
@@ -96,8 +98,7 @@ public class Bill99InterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -110,8 +111,7 @@ public class Bill99InterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -124,8 +124,7 @@ public class Bill99InterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}

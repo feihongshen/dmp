@@ -8,12 +8,17 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Administrator
  * 
  */
 public class WebServiceTest {
 
+	private static Logger logger = LoggerFactory.getLogger(WebServiceTest.class);
+	
 	/**
 	 * @param args
 	 * @throws UnsupportedEncodingException
@@ -30,88 +35,73 @@ public class WebServiceTest {
 		String strMsg = new String(strArgs[3].getBytes("UTF-8"));// web�����ֻ����UTF��8��ʽ�ı���
 		// mongateCsSendSmsEx
 		try {
-			System.out.println("Test mongateCsSendSmsEx ...");
-			System.out.println("back value is :" + wmgwLocator.getwmgwSoap().mongateCsSendSmsEx(strArgs[0], strArgs[1], strArgs[2], strMsg, Integer.valueOf(strArgs[4]).intValue()));
-			System.out.println("send mongateCsSendSmsEx end !");
-			System.out.println();
+			logger.info("Test mongateCsSendSmsEx ...");
+			logger.info("back value is :" + wmgwLocator.getwmgwSoap().mongateCsSendSmsEx(strArgs[0], strArgs[1], strArgs[2], strMsg, Integer.valueOf(strArgs[4]).intValue()));
+			logger.info("send mongateCsSendSmsEx end !");
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		// mongateCsSendSmsExNew
 		try {
-			System.out.println("Test mongateCsSendSmsExNew ...");
-			System.out.println("back value is :" + wmgwLocator.getwmgwSoap().mongateCsSpSendSmsNew(strArgs[0], strArgs[1], strArgs[2], strMsg, Integer.valueOf(strArgs[4]).intValue(), strArgs[5]));
-			System.out.println("send mongateCsSendSmsExNew end !");
-			System.out.println();
+			logger.info("Test mongateCsSendSmsExNew ...");
+			logger.info("back value is :" + wmgwLocator.getwmgwSoap().mongateCsSpSendSmsNew(strArgs[0], strArgs[1], strArgs[2], strMsg, Integer.valueOf(strArgs[4]).intValue(), strArgs[5]));
+			logger.info("send mongateCsSendSmsExNew end !");
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		// mongateCsGetStatusReportExEx
 		try {
-			System.out.println("Test mongateCsGetStatusReportExEx ...");
+			logger.info("Test mongateCsGetStatusReportExEx ...");
 			String[] strRet = wmgwLocator.getwmgwSoap().mongateCsGetStatusReportExEx(strArgs[0], strArgs[1]);
-			System.out.println("back value is :");
+			logger.info("back value is :");
 			if (strRet != null) {
 				for (int i = 0; i < strRet.length; ++i) {
-					System.out.println(strRet[i]);
+					logger.info(strRet[i]);
 				}
 			} else {
-				System.out.println("null");
+				logger.info("null");
 			}
-			System.out.println("send mongateCsGetStatusReportExEx end !");
-			System.out.println();
+			logger.info("send mongateCsGetStatusReportExEx end !");
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		// mongateQueryBalance
 		try {
-			System.out.println("Test mongateQueryBalance ...");
-			System.out.println("back value is :" + wmgwLocator.getwmgwSoap().mongateQueryBalance(strArgs[0], strArgs[1]));
-			System.out.println("send mongateQueryBalance end !");
-			System.out.println();
+			logger.info("Test mongateQueryBalance ...");
+			logger.info("back value is :" + wmgwLocator.getwmgwSoap().mongateQueryBalance(strArgs[0], strArgs[1]));
+			logger.info("send mongateQueryBalance end !");
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		// mongateCsGetSmsExEx
 		try {
-			System.out.println("Test mongateCsGetSmsExEx ...");
+			logger.info("Test mongateCsGetSmsExEx ...");
 			String[] strRet = wmgwLocator.getwmgwSoap().mongateCsGetSmsExEx(strArgs[0], strArgs[1]);
-			System.out.println("back value is :");
+			logger.info("back value is :");
 			if (strRet != null) {
 				for (int i = 0; i < strRet.length; ++i) {
-					System.out.println(strRet[i]);
+					logger.info(strRet[i]);
 				}
 			} else {
-				System.out.println("null");
+				logger.info("null");
 			}
-			System.out.println("send mongateCsGetSmsExEx end !");
-			System.out.println();
+			logger.info("send mongateCsGetSmsExEx end !");
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 }

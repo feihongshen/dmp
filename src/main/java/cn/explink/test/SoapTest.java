@@ -6,11 +6,16 @@ import java.io.InputStream;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SoapTest {
+	
+	private static Logger logger = LoggerFactory.getLogger(SoapTest.class);
+	
 	/**
 	 * @param args
 	 * @throws IOException
@@ -33,7 +38,7 @@ public class SoapTest {
 				+ "</soap12:Body>"
 				+ "</soap12:Envelope>";
 
-		System.out.println(soapRequestData);
+		logger.info(soapRequestData);
 
 		PostMethod postMethod = new PostMethod(
 				"http://www.mk-lips.com/HDToLIPS.asmx?op=CheckUser");
@@ -52,20 +57,20 @@ public class SoapTest {
 		httpClient.setState(state);*/
 		int statusCode = httpClient.executeMethod(postMethod);
 		if (statusCode == 200) {
-			System.out.println("调用成功！");
+			logger.info("调用成功！");
 			String soapResponseData = postMethod.getResponseBodyAsString();
 			//String responseBodyString = postMethod.getResponseBodyAsString();
 			Cookie[] cookies = httpClient.getState().getCookies();
 			for (int i = 0; i < cookies.length; i++) {
-				System.out.println("cookiename==" + cookies[i].getName());
-				System.out.println("cookieValue==" + cookies[i].getValue());
-				System.out.println("Domain==" + cookies[i].getDomain());
-				System.out.println("Path==" + cookies[i].getPath());
-				System.out.println("Version==" + cookies[i].getVersion());
+				logger.info("cookiename==" + cookies[i].getName());
+				logger.info("cookieValue==" + cookies[i].getValue());
+				logger.info("Domain==" + cookies[i].getDomain());
+				logger.info("Path==" + cookies[i].getPath());
+				logger.info("Version==" + cookies[i].getVersion());
 			}
-			System.out.println(soapResponseData);
+			logger.info(soapResponseData);
 		} else {
-			System.out.println("调用失败！错误码：" + statusCode);
+			logger.info("调用失败！错误码：" + statusCode);
 		}
 
 	}
