@@ -5307,6 +5307,9 @@ public class CwbOrderService extends BaseOrderService {
 					for (String transcwbTmp : transcwbList) {
 						List<TranscwbView> transcwbViewList = this.transCwbDao.getcwbBytranscwb(transcwbTmp);
 						if ((transcwbViewList != null) && (transcwbViewList.size() > 0)) {
+							if(transcwbTmp.equals(co.getTranscwb())) {//亚马逊及类似的情况，运单号是对方的主键，因此可能再次出现在退货时
+								continue;
+							}
 							throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FANKUI_KUAIDIDANHAO_YIGUANLIAN);
 						}
 						this.transCwbDao.saveTranscwb(transcwbTmp, cwb);// it seem
