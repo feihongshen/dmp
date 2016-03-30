@@ -1617,7 +1617,12 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		// added by songkaojun 2016-01-18 更新订单上一机构，当前机构，下一机构信息
 		this.cwbOrderBranchInfoModificationService.modifyBranchInfo(scancwb);
-		this.resetScannumForSubStationGoods(user, cwb, scancwb);
+		
+		// 根据当前站点查询list
+		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
+		
+		//集包一票多件重设扫描件数
+		this.resetScannumForSubStationGoods(user, userbranch, cwb, scancwb);
 
 		// 查询有没有该订单
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
@@ -1629,9 +1634,7 @@ public class CwbOrderService extends BaseOrderService {
 		 * !baleno.equals(co.getPackagecode())) { throw new
 		 * CwbException(cwb,FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(),
 		 * ExceptionCwbErrorTypeEnum.BAO_HAO_BU_CUN_ZAI); }
-		 */
-		// 根据当前站点查询list
-		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
+		 */		
 
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
@@ -1704,13 +1707,27 @@ public class CwbOrderService extends BaseOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	private void resetScannumForSubStationGoods(User user, String cwb, String scancwb) {
+	private void resetScannumForSubStationGoods(User user, Branch userbranch, String cwb, String scancwb) {
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-		long nextbranchid = 0L;
+		
+		int  flowOrderType = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue();
+		long nextbranchid  = 0L;
 		if (cwbOrder != null) {
 			nextbranchid = cwbOrder.getNextbranchid();
-		}
-		this.mpsCommonService.resetScannumByTranscwb(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), user.getBranchid(), nextbranchid);
+			
+			//Added by leoliao at 2016-03-30 到货扫描在到错货的情况计算扫描次数需要把flowordertype改为8(到错货)
+			if ((nextbranchid != 0) && (nextbranchid != userbranch.getBranchid()) && (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
+				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
+				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
+				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
+				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
+				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
+				flowOrderType = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+			}
+			//Added end
+		}		
+		
+		this.mpsCommonService.resetScannumByTranscwb(scancwb, flowOrderType, user.getBranchid(), nextbranchid);
 	}
 
 	private CwbOrder handleSubstationGoodsYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
@@ -1737,7 +1754,24 @@ public class CwbOrderService extends BaseOrderService {
 					if (!newMPSOrder) {
 						this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 					}
-					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+					
+					//Commented by leoliao at 2016-03-30
+					//this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+					
+					//Added by leoliao at 2016-03-30 到货扫描在到错货的情况需要把flowordertype改为8(到错货)，然后删除缺件表记录。
+					long flowOrderTypeTemp = flowOrderTypeEnum.getValue();
+					if ((co.getNextbranchid() != 0) && (co.getNextbranchid() != currentbranchid) 
+						&& (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
+						&& (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
+						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
+						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
+						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) 
+						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
+						flowOrderTypeTemp = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+					}
+					
+					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeTemp, isypdjusetranscwb, 0);
+					//Added end
 				}
 				if (newMPSOrder) {
 					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
