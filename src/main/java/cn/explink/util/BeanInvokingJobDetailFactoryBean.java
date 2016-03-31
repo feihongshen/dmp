@@ -10,6 +10,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.StatefulJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.FactoryBean;
@@ -133,7 +135,7 @@ public class BeanInvokingJobDetailFactoryBean implements FactoryBean, BeanNameAw
 	 */
 	protected static ApplicationContext applicationContext;
 
-	private Log logger = LogFactory.getLog(getClass());
+	private static Logger logger = LoggerFactory.getLogger(BeanInvokingJobDetailFactoryBean.class);
 
 	/**
 	 * The JobDetail produced by the <code>afterPropertiesSet</code> method of
@@ -571,10 +573,10 @@ public class BeanInvokingJobDetailFactoryBean implements FactoryBean, BeanNameAw
 				logger.debug("Invoking Bean: " + targetBean + "; Method: " + targetMethod + "; arguments: " + arguments + ";");
 				beanMethod.invoke();
 			} catch (JobExecutionException e) {
-				e.printStackTrace();
+				logger.error("", e);
 				throw e;
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 				throw new JobExecutionException(e);
 			} finally {
 				logger.debug("end");

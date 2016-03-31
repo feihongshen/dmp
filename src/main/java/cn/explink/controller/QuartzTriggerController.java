@@ -521,8 +521,8 @@ class DataGridReturn {
 
 				return mapper.writeValueAsString(obj);
 			} catch (Exception e) {
-				System.out.println("==>> Object to JSON occer error: " + e);
-				logger.info("obj2json:Object to JSON occer error");
+				logger.error("==>> Object to JSON occer error: ", e);
+				logger.error("obj2json:Object to JSON occer error");
 			}
 			return "{}";
 		}

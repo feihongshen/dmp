@@ -39,8 +39,13 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.type.TypeFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommonTools {
+	
+	private static Logger logger = LoggerFactory.getLogger(CommonTools.class);
+	
 	static ObjectMapper outMapper = new ObjectMapper();
 	static ObjectMapper mapper = new ObjectMapper();
 	public static String SPLIT_PATTERN = ",|;|，|；|(\\n)";
@@ -606,7 +611,7 @@ public class CommonTools {
 				responseObject = outMapper.readValue(json, clazz);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return responseObject;
 	}
@@ -621,7 +626,7 @@ public class CommonTools {
 
 			return mapper.writeValueAsString(obj);
 		} catch (Exception e) {
-			System.out.println("==>> Object to JSON occer error: " + e);
+			logger.error("==>> Object to JSON occer error: ", e);
 		}
 		return "{}";
 	}
@@ -824,7 +829,7 @@ public class CommonTools {
 			addr = InetAddress.getLocalHost();
 			ip = addr.getHostAddress().toString();// 获得本机IP　　
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ip;
 	}
@@ -918,7 +923,7 @@ public class CommonTools {
 				try {
 					descriptor.getWriteMethod().invoke(obj, args);
 				} catch (Exception t) {
-					t.printStackTrace();
+					logger.error("", t);
 				}
 			}
 		}

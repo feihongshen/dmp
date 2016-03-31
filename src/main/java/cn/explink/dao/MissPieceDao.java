@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +19,9 @@ import cn.explink.util.Page;
 
 @Component
 public class MissPieceDao {
+	
+	private static Logger logger = LoggerFactory.getLogger(MissPieceDao.class);
+	
 	private final class MissPieceMapper implements RowMapper<MissPiece> {
 		@Override
 		public MissPiece mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -56,8 +61,7 @@ public class MissPieceDao {
 		if (begindate!="") {
 			sql+=" and createtime>='"+begindate+"'";
 		}
-		System.out.println(enddate=="");
-		System.out.println(enddate);
+		logger.info(enddate);
 		if (enddate!="") {
 			sql+=" and createtime<='"+enddate+"'";
 		}
@@ -68,7 +72,7 @@ public class MissPieceDao {
 			List<MissPiece> missPieces=this.jdbcTemplate.query(sql, new MissPieceMapper());
 			return missPieces;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 		
@@ -122,20 +126,10 @@ public class MissPieceDao {
 				}
 			});
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
-/*	//修改丢失件的状态1为有效，0为无效
-	public long updateState(String cwbs){
-		String sql="update express_ops_lose_back set state=0 where cwb IN('"+cwbs+"')";
-		try {
-			int k=this.jdbcTemplate.update(sql);
-			return k;
-		} catch (Exception e) {
-			return 0;
-		}
-	}*/
+
 	//修改丢失件的状态1为有效，0为无效
 	public long updateStateAdd(String cwbs){
 		String sql="delete  from  express_ops_lose_back  where id=?";

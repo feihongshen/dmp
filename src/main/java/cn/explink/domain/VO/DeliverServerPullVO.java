@@ -3,9 +3,8 @@ package cn.explink.domain.VO;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
-
-import cn.explink.util.StringUtil;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 派件服务APP派件结果VO
  * 
@@ -14,6 +13,7 @@ import cn.explink.util.StringUtil;
  */
 public class DeliverServerPullVO {
 
+	private static Logger logger = LoggerFactory.getLogger(DeliverServerPullVO.class);
 		
 	private String sign = "";
 	private String code = "";
@@ -157,7 +157,7 @@ public class DeliverServerPullVO {
 				fieldValue = null == DeliverServerPullVO.class.getDeclaredMethod(getMethos).invoke(this)?"":DeliverServerPullVO.class.getDeclaredMethod(getMethos).invoke(this).toString();
 				fieldNameNull = null == DeliverServerPullVO.class.getDeclaredMethod(getMethos).invoke(this)?"null":DeliverServerPullVO.class.getDeclaredMethod(getMethos).invoke(this).toString();
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			sb.append(fieldName).append("=").append(fieldValue).append("&");
 			sbConvertToNull.append(fieldName).append("=").append(fieldNameNull).append("&");

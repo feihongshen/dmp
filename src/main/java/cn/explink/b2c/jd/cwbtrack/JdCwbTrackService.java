@@ -315,7 +315,7 @@ public class JdCwbTrackService {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 		return null;

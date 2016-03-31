@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.WebServiceHandler;
-import cn.explink.util.MD5.DES3Utils;
 
 /**
  * 配送,上门换类型订单
@@ -123,7 +121,6 @@ public class HaoXiangGouService_PeiSong extends HaoXiangGouService {
 		try {
 			return JacksonMapper.getInstance().readValue(json, List.class);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("rtn_data转化为List<Map<String, Object>>发生异常", e);
 			return null;
 		}

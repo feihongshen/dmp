@@ -117,12 +117,8 @@ public class ConnectPool {
 			Driver driver = (Driver) allDrivers.nextElement();
 			try {
 				DriverManager.deregisterDriver(driver);
-
-				// log("撤销JDBC驱动程序 " + driver.getClass().getName() + "的注册");
 				logger.info("撤销JDBC驱动程序 " + driver.getClass().getName() + "的注册");
 			} catch (SQLException e) {
-				// log(e, "无法撤销下列JDBC驱动程序的注册: " + driver.getClass().getName());
-
 				logger.info("无法撤销下列JDBC驱动程序的注册: " + driver.getClass().getName() + ", 错误: " + e);
 			}
 		}
@@ -146,7 +142,6 @@ public class ConnectPool {
 
 				logger.info("连接池URL是：" + url);
 				if (url == null) {
-					// log("没有为连接池" + poolName + "指定URL");
 					logger.info("没有为连接池" + poolName + "指定URL");
 					continue;
 				}
@@ -164,7 +159,6 @@ public class ConnectPool {
 				}
 				DBConnectionPool pool = new DBConnectionPool(poolName, url, user, password, max);
 				pools.put(poolName, pool);
-				// log("成功创建连接池" + poolName);
 				logger.info("成功创建连接池" + poolName + " URL:" + url);
 
 			}
@@ -201,7 +195,7 @@ public class ConnectPool {
 
 				}
 		} catch (java.io.IOException e) {
-			System.err.println("IOException " + e.getMessage());
+			logger.error("IOException ", e);
 		}
 		// 获取服务器MAC地址 龙腾新地址 0019B92AA246 00-1D-60-1E-E5-A2
 		if (MACAddr.equals("00-15-17-44-08-D0") || MACAddr.equals("00-E0-4C-61-E2-DE")) {
@@ -215,107 +209,6 @@ public class ConnectPool {
 		}
 		return flag;
 	}
-
-	/*
-	 * //获取windwos或者linux下mac地址 private final static String getMacAddress()
-	 * throws IOException { String os = System.getProperty("os.name");
-	 * 
-	 * try { if (os.startsWith("Windows")) { return
-	 * windowsParseMacAddress(windowsRunIpConfigCommand()); } else if
-	 * (os.startsWith("Linux")) { return
-	 * linuxParseMacAddress(linuxRunIfConfigCommand()); } else { throw new
-	 * IOException("unknown operating system: " + os); } } catch (ParseException
-	 * ex) { ex.printStackTrace(); throw new IOException(ex.getMessage()); } }
-	 * 
-	 * private final static String windowsRunIpConfigCommand() throws
-	 * IOException { Process p = Runtime.getRuntime().exec("ipconfig /all");
-	 * InputStream stdoutStream = new BufferedInputStream(p.getInputStream());
-	 * 
-	 * StringBuffer buffer = new StringBuffer(); for (; ; ) { int c =
-	 * stdoutStream.read(); if (c == -1)break; buffer.append((char) c); } String
-	 * outputText = buffer.toString();
-	 * 
-	 * stdoutStream.close();
-	 * 
-	 * return outputText; }
-	 * 
-	 * private final static String windowsParseMacAddress(String
-	 * ipConfigResponse) throws ParseException { String localHost = null; try {
-	 * localHost = InetAddress.getLocalHost().getHostAddress(); } catch
-	 * (java.net.UnknownHostException ex) { ex.printStackTrace(); throw new
-	 * ParseException(ex.getMessage(), 0); }
-	 * 
-	 * StringTokenizer tokenizer = new StringTokenizer(ipConfigResponse, "\n");
-	 * String lastMacAddress = null;
-	 * 
-	 * while (tokenizer.hasMoreTokens()) { String line =
-	 * tokenizer.nextToken().trim();
-	 * 
-	 * // see if line contains IP address if (line.endsWith(localHost) &&
-	 * lastMacAddress != null) { return lastMacAddress; }
-	 * 
-	 * // see if line contains MAC address int macAddressPosition =
-	 * line.indexOf(":"); if (macAddressPosition <= 0)continue;
-	 * 
-	 * String macAddressCandidate = line.substring(macAddressPosition +
-	 * 1).trim(); if (windowsIsMacAddress(macAddressCandidate)) { lastMacAddress
-	 * = macAddressCandidate; continue; } }
-	 * 
-	 * ParseException ex = new ParseException("cannot read MAC address from [" +
-	 * ipConfigResponse + "]", 0); ex.printStackTrace(); throw ex; }
-	 * 
-	 * 
-	 * private final static boolean windowsIsMacAddress(String
-	 * macAddressCandidate) { // TODO: use a smart regular expression if
-	 * (macAddressCandidate.length() != 17)return false;
-	 * 
-	 * return true; }
-	 * 
-	 * private final static String linuxParseMacAddress(String ipConfigResponse)
-	 * throws ParseException { String localHost = null; try { localHost =
-	 * InetAddress.getLocalHost().getHostAddress(); } catch
-	 * (java.net.UnknownHostException ex) { ex.printStackTrace(); throw new
-	 * ParseException(ex.getMessage(), 0); }
-	 * 
-	 * StringTokenizer tokenizer = new StringTokenizer(ipConfigResponse, "\n");
-	 * String lastMacAddress = null;
-	 * 
-	 * while (tokenizer.hasMoreTokens()) { String line =
-	 * tokenizer.nextToken().trim(); boolean containsLocalHost =
-	 * line.indexOf(localHost) >= 0;
-	 * 
-	 * // see if line contains IP address if (containsLocalHost &&
-	 * lastMacAddress != null) { return lastMacAddress; }
-	 * 
-	 * // see if line contains MAC address int macAddressPosition =
-	 * line.indexOf("HWaddr"); if (macAddressPosition <= 0)continue;
-	 * 
-	 * String macAddressCandidate = line.substring(macAddressPosition +
-	 * 6).trim(); if (linuxIsMacAddress(macAddressCandidate)) { lastMacAddress =
-	 * macAddressCandidate; continue; } }
-	 * 
-	 * ParseException ex = new ParseException ("cannot read MAC address for " +
-	 * localHost + " from [" + ipConfigResponse + "]", 0); ex.printStackTrace();
-	 * throw ex; }
-	 * 
-	 * 
-	 * private final static boolean linuxIsMacAddress(String
-	 * macAddressCandidate) { // TODO: use a smart regular expression if
-	 * (macAddressCandidate.length() != 17)return false; return true; }
-	 * 
-	 * 
-	 * private final static String linuxRunIfConfigCommand() throws IOException
-	 * { Process p = Runtime.getRuntime().exec("ifconfig"); InputStream
-	 * stdoutStream = new BufferedInputStream(p.getInputStream());
-	 * 
-	 * StringBuffer buffer = new StringBuffer(); for (; ; ) { int c =
-	 * stdoutStream.read(); if (c == -1)break; buffer.append((char) c); } String
-	 * outputText = buffer.toString();
-	 * 
-	 * stdoutStream.close();
-	 * 
-	 * return outputText; }
-	 */
 
 	// 配置连接属性文件
 	private void createPools() {
@@ -358,11 +251,6 @@ public class ConnectPool {
 	 */
 	private void init() {
 		try {
-			// Properties p = new Properties();
-			// InputStream is = new FileInputStream(getClass().getResource("/" +
-			// "db.properties").getPath());
-			// System.out.println("configs file local at " +
-			// getClass().getResource("/" + "db.properties").getPath());
 			InputStream is = (getClass().getClassLoader().getResourceAsStream("/" + "dbsqlserver.properties"));
 			logger.info("configs file local at " + getClass().getClassLoader().getResourceAsStream("/" + "dbsqlserver.properties"));
 
@@ -370,7 +258,7 @@ public class ConnectPool {
 			try {
 				dbProps.load(is);
 			} catch (Exception e) {
-				System.err.println("不能读取属性文件. " + "请确保dbsqlserver.properties在CLASSPATH指定的路径中");
+				logger.error("不能读取属性文件. " + "请确保dbsqlserver.properties在CLASSPATH指定的路径中", e);
 				return;
 			}
 
@@ -397,37 +285,18 @@ public class ConnectPool {
 				DriverManager.registerDriver(driver);
 				drivers.addElement(driver);
 				logger.info(driverClassName);
-				// log("成功注册JDBC驱动程序" + driverClassName);
 				logger.info("成功注册JDBC驱动程序" + driverClassName);
 			} catch (Exception e) {
-				// log("无法注册JDBC驱动程序: " + driverClassName + ", 错误: " + e);
-
 				logger.info("无法注册JDBC驱动程序: " + driverClassName + ", 错误: " + e);
 			}
 		}
 	}
 
 	/**
-	 * 将文本信息写入日志文件
-	 */
-	/*
-	 * private void log(String msg) { log.println(new Date() + ": " + msg); }
-	 */
-
-	/**
-	 * 将文本信息与异常写入日志文件
-	 */
-	/*
-	 * private void log(Throwable e, String msg) { log.println(new Date() + ": "
-	 * + msg); e.printStackTrace(log); }
-	 */
-
-	/**
 	 * 此内部类定义了一个连接池.它能够根据要求创建新连接,直到预定的最 大连接数为止.在返回连接给客户程序之前,它能够验证连接的有效性.
 	 */
 
 	class DBConnectionPool {
-		// private int checkedOut;
 		private Vector freeConnections = new Vector();
 		private int maxConn;
 		private String name;
@@ -493,14 +362,11 @@ public class ConnectPool {
 				freeConnections.removeElementAt(0);
 				try {
 					if (con.isClosed()) {
-						// log("从连接池" + name + "删除一个无效连接");
 						logger.info("从连接池" + name + "删除一个无效连接");
 						// 递归调用自己,尝试再次获取可用连接
 						con = getConnection();
 					}
 				} catch (SQLException e) {
-
-					// log("从连接池" + name + "删除一个无效连接时错误");
 					logger.info("从连接池" + name + "删除一个无效连接出错" + ", 错误: " + e);
 					// 递归调用自己,尝试再次获取可用连接
 					con = getConnection();
@@ -533,13 +399,10 @@ public class ConnectPool {
 				logger.info(" [b 连接池可用连接数 ] : " + "[ " + freeConnections.size() + " ] URL:" + URL);
 				try {
 					if (con.isClosed()) {
-						// log("从连接池" + name + "删除一个无效连接");
 						logger.info("从连接池" + name + "删除一个无效连接 URL:" + URL);
 						returnConnection();
 					}
 				} catch (SQLException e) {
-
-					// log("从连接池" + name + "删除一个无效连接时错误");
 					logger.info("从连接池" + name + "删除一个无效连接出错" + ", 错误: " + e);
 					returnConnection();
 				}
@@ -579,11 +442,8 @@ public class ConnectPool {
 				Connection con = (Connection) allConnections.nextElement();
 				try {
 					con.close();
-					// log("关闭连接池" + name + "中的一个连接");
 					logger.info("关闭连接池" + name + "中的一个连接");
 				} catch (SQLException e) {
-					// log(e, "无法关闭连接池" + name + "中的连接");
-
 					logger.info("无法关闭连接池" + name + "中的连接" + ", 错误: " + e);
 				}
 			}
@@ -599,11 +459,8 @@ public class ConnectPool {
 				try {
 					con.close();
 					logger.info("关闭连接池" + name + "中的一个连接");
-					// log("关闭连接池" + name + "中的一个连接");
 				} catch (SQLException e) {
-
 					logger.info("无法关闭连接池" + name + "中的一个连接" + ", 错误: " + e);
-					// log(e, "无法关闭连接池" + name + "中的连接");
 				}
 			} else {
 				logger.info("releaseOne() bug.......................................................");
@@ -622,11 +479,8 @@ public class ConnectPool {
 				} else {
 					con = DriverManager.getConnection(URL, user, password);
 				}
-				// log("连接池" + name + "创建一个新的连接");
 				logger.info("连接池" + name + "创建一个新的连接 URL:" + URL);
 			} catch (SQLException e) {
-				// log(e, "无法创建下列URL的连接: " + URL);
-
 				logger.info("无法创建下列URL的连接: " + URL + ", 错误: " + e);
 				return null;
 			}

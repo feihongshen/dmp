@@ -846,7 +846,7 @@ public class Tools {
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("供应商", "唯品会");
 		param.put("小件员电话", "15601971499");
-		System.out.print(Tools.format(template, param));
+		logger.info(Tools.format(template, param));
 	}
 
 	public static String join(List<String> list, String sep) {

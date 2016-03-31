@@ -12,8 +12,13 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EmailUtil {
 
+	private static Logger logger = LoggerFactory.getLogger(EmailUtil.class);
+	
 	private static final String SMTP_HOST_NAME = "smtp.exmail.qq.com";
 	private static final String SMTP_PORT = "25";
 	// TODO 配置发件邮箱
@@ -61,7 +66,7 @@ public class EmailUtil {
 		try {
 			addressFrom.setPersonal("易普联科");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		msg.setFrom(addressFrom);
 
