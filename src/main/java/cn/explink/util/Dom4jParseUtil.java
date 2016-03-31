@@ -12,9 +12,13 @@ import net.sf.json.JSONObject;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Dom4jParseUtil {
-	@SuppressWarnings("unused")
+
+	private static Logger logger = LoggerFactory.getLogger(Dom4jParseUtil.class);
+	
 	public static JSONObject parserXmlToJSONObject(String fileName) {
 		JSONObject jsonObject = new JSONObject();
 		// File inputXml = new File(fileName);
@@ -37,7 +41,7 @@ public class Dom4jParseUtil {
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			jsonObject = JSONObject.fromObject("{}");
 		}
 
@@ -76,7 +80,7 @@ public class Dom4jParseUtil {
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			jsonObject = JSONObject.fromObject("{}");
 
 		}
@@ -100,8 +104,7 @@ public class Dom4jParseUtil {
 			}
 			return sbuilder.toString();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}

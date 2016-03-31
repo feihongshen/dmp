@@ -34,6 +34,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.explink.util.poi.excel.ExcelExportOfTemplateUtil;
 import cn.explink.util.poi.excel.ExcelPublicUtil;
@@ -54,6 +56,9 @@ import cn.explink.util.poi.excel.entity.TemplateExportParams;
  *
  */
 public final class ExcelExportUtil {
+	
+	private static Logger logger = LoggerFactory.getLogger(ExcelExportUtil.class);
+	
 	/**
 	 * 一个excel 创建多个sheet
 	 *
@@ -153,7 +158,7 @@ public final class ExcelExportUtil {
 				index += ExcelExportUtil.createCells(patriarch, index, t, excelParams, sheet, workbook, styles);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -385,7 +390,7 @@ public final class ExcelExportUtil {
 				byte[] value = byteArrayOut.toByteArray();
 				patriarch.createPicture(anchor, row.getSheet().getWorkbook().addPicture(value, ExcelExportUtil.getImageType(value)));
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		} else {
 			byte[] value = (byte[]) (entity.getGetMethods() != null ? ExcelExportUtil.getFieldBySomeMethod(entity.getGetMethods(), obj) : entity.getGetMethod().invoke(obj, new Object[] {}));

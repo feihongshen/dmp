@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -20,6 +22,9 @@ import cn.explink.util.Page;
 
 @Component
 public class AccountDeductRecordDAO {
+	
+	private static Logger logger = LoggerFactory.getLogger(AccountDeductRecordDAO.class);
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -137,7 +142,7 @@ public class AccountDeductRecordDAO {
 			List<AccountDeductRecord> list = jdbcTemplate.query(sql, new AccountDeductRecordRowMapper(), branchid);
 			return list;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -148,7 +153,7 @@ public class AccountDeductRecordDAO {
 			sql = this.getAccountDeductRecordWhere(sql, starttime, endtime, recordtype);
 			return jdbcTemplate.queryForLong(sql, branchid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return 0;
 		}
 	}
@@ -190,7 +195,7 @@ public class AccountDeductRecordDAO {
 			List<AccountDeductRecord> list = jdbcTemplate.query(sb.toString(), new AccountDeductRecordHuiZong());
 			return list;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return new ArrayList<AccountDeductRecord>();
 		}
 	}
@@ -208,7 +213,7 @@ public class AccountDeductRecordDAO {
 			List<AccountDeductRecord> list = jdbcTemplate.query(sb.toString(), new HuiZong());
 			return list;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return new ArrayList<AccountDeductRecord>();
 		}
 	}

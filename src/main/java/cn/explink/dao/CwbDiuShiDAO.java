@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +22,9 @@ import cn.explink.util.StringUtil;
 
 @Component
 public class CwbDiuShiDAO {
+	
+	private static Logger logger = LoggerFactory.getLogger(CwbDiuShiDAO.class);
+	
 	private final class CwbDiuShiMapper implements RowMapper<CwbDiuShi> {
 		@Override
 		public CwbDiuShi mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -164,7 +169,7 @@ public class CwbDiuShiDAO {
 	public List<CwbDiuShi> getCwbDiuShiListNOPage(String begindate, String enddate, String customerids, String branchids, long ishandle) {
 		String sql = "SELECT * FROM op_cwb_diushi FORCE INDEX(Diushi_Shenhetime_Idx) where shenhetime >='" + begindate + "' and shenhetime <='" + enddate + "'";
 		sql = setWhereSql(sql, customerids, branchids, ishandle);
-		System.out.println(sql);
+		logger.info(sql);
 		return jdbcTemplate.query(sql, new CwbDiuShiMapper());
 	}
 
@@ -172,7 +177,7 @@ public class CwbDiuShiDAO {
 		String sql = "SELECT * FROM op_cwb_diushi FORCE INDEX(Diushi_Shenhetime_Idx) where shenhetime >='" + begindate + "' and shenhetime <='" + enddate + "'";
 		sql = setWhereSql(sql, customerids, branchids, ishandle);
 		sql += "  limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		System.out.println(sql);
+		logger.info(sql);
 		return jdbcTemplate.query(sql, new CwbDiuShiMapper());
 	}
 
@@ -237,7 +242,7 @@ public class CwbDiuShiDAO {
 			sql += " and startbranchid = " + kufangid;
 		}
 		sql += "  limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		System.out.println(sql);
+		logger.info(sql);
 		return jdbcTemplate.query(sql, new CwbDiuShiMapper());
 	}
 

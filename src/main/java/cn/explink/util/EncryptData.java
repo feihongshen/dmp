@@ -39,7 +39,7 @@ public class EncryptData {
 			try {
 				Cipher c = Cipher.getInstance("DESede");
 			} catch (Exception e) {
-				System.err.println("Installling SunJCE provider.");
+				logger.error("Installling SunJCE provider.");
 				Provider sunjce = new com.sun.crypto.provider.SunJCE();
 				Security.addProvider(sunjce);
 			}

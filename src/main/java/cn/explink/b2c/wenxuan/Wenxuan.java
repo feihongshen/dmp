@@ -1,7 +1,12 @@
 package cn.explink.b2c.wenxuan;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Wenxuan {
 
+	private static Logger logger = LoggerFactory.getLogger(Wenxuan.class);
+	
 	private String apikey;
 	private String apiSecret; // 密钥
 	private int maxCount;
@@ -106,7 +111,7 @@ public class Wenxuan {
 
 	public static void main(String[] args) {
 		String url = "http://api.winxuan.com/v1/logistics";
-		System.out.println(url.substring(url.indexOf(".com") + 4));
+		logger.info(url.substring(url.indexOf(".com") + 4));
 	}
 
 }
