@@ -225,13 +225,6 @@ public class CwbKuaiDiDAO {
 
 	// 4.2快递使用
 	public long getExpressOrderListCount(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
-//		String sql = "SELECT count(1) from express_ops_cwb_detail as cd " + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb";
-//		if (timeType == 1) {
-//			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' ";
-//		} else if (timeType == 2) {
-//			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' ";
-//		}
-//		sql = this.getExpressOrderByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		String sql =  this.getQueryExpressSql(timeType, begindate, enddate, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		List<CwbKuaiDi> list = this.jdbcTemplate.query(sql, new ExpressMapper());
 		return list.size();
