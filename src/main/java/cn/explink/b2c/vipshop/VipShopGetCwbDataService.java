@@ -317,7 +317,6 @@ public class VipShopGetCwbDataService {
 			   //Added end
 			long warehouseid = vipshop.getWarehouseid();
 			this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
-
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息导入成功cwb={}-更新了最大的SEQ!{}", dataMap.get("cwb").toString(), vipshop.getVipshop_seq());
 		} catch (Exception e) {
