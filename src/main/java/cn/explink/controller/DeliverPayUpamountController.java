@@ -527,7 +527,7 @@ public class DeliverPayUpamountController {
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

@@ -17,6 +17,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -74,6 +76,9 @@ import cn.explink.util.StreamingStatementCreator;
 @Controller
 @RequestMapping("/backsummary")
 public class BackSummaryController {
+	
+	private static Logger logger = LoggerFactory.getLogger(BackSummaryController.class);
+	
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
@@ -227,7 +232,7 @@ public class BackSummaryController {
 				};
 				excelUtil.excel(response, cloumnName, sheetName, fileName);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 	}
@@ -389,7 +394,7 @@ public class BackSummaryController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

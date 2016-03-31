@@ -56,14 +56,11 @@ public class GoodsStatusNumController {
 			try {
 				userlistJson=JacksonMapper.getInstance().writeValueAsString(userlist);
 			} catch (JsonGenerationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("", e);
 			} catch (JsonMappingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("", e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		
 		return callback+"("+userlistJson+")";
@@ -87,14 +84,11 @@ public class GoodsStatusNumController {
 		try {
 				CwbOrderlistJson=JacksonMapper.getInstance().writeValueAsString(CwbOrderlist1);
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		
 		return callback+"("+CwbOrderlistJson+")";

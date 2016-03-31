@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -84,6 +86,8 @@ public class DeliveryPercentController {
 
 	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	private static Logger logger = LoggerFactory.getLogger(DeliveryPercentController.class);
+	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
@@ -395,7 +399,7 @@ public class DeliveryPercentController {
 						dpallMap.put(rs.getLong("customerid"), dpallMap.get(rs.getLong("customerid")) + 1l);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 					return;
 				}
 			}
@@ -663,7 +667,7 @@ public class DeliveryPercentController {
 
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 					return;
 				}
 			}
@@ -715,7 +719,7 @@ public class DeliveryPercentController {
 						dpallMap.put(rs.getLong("deliverybranchid"), dpallMap.get(rs.getLong("deliverybranchid")) + 1l);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 					return;
 				}
 			}

@@ -190,7 +190,7 @@ public class QuartzTriggerController{
 		} catch (SchedulerException e) {
 			ajaxJson.setStatus(false);
 			ajaxJson.setMsg("系統异常");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ajaxJson;
 	}
@@ -216,7 +216,7 @@ public class QuartzTriggerController{
 		} catch (SchedulerException e) {
 			ajaxJson.setStatus(false);
 			ajaxJson.setMsg("系統异常");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ajaxJson;
 	}
@@ -252,7 +252,7 @@ public class QuartzTriggerController{
 			ajaxJson.setStatus(false);
 			ajaxJson.setMsg("系統异常");
 			Log.info("executeTriggerNow:定时器执行异常");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ajaxJson;
 	}
@@ -308,7 +308,7 @@ public class QuartzTriggerController{
 			ajaxJson.setStatus(false);
 			ajaxJson.setMsg("系統异常");
 			logger.error("modifyCronExpression  error");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ajaxJson;
 	}

@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -44,6 +46,9 @@ import cn.explink.util.Page;
 @Controller
 @RequestMapping("/salaryFixed")
 public class SalaryFixedController {
+	
+	private static Logger logger = LoggerFactory.getLogger(SalaryFixedController.class);
+	
 	@Autowired
 	Excel2007Extractor excel2007Extractor;
 	@Autowired
@@ -143,7 +148,7 @@ public class SalaryFixedController {
 		Class class1 = SalaryFixed.class;
 		Field[] fields=class1.getDeclaredFields();
 		for (int i = 1; i < fields.length; i++) {
-			System.out.println("salary.set"+fields[i].getName().substring(0,1).toUpperCase()+fields[i].getName().substring(1)+"(new BigDecimal(this.getXRowCellData(row, "+(i-1)+")));");
+			logger.info("salary.set"+fields[i].getName().substring(0,1).toUpperCase()+fields[i].getName().substring(1)+"(new BigDecimal(this.getXRowCellData(row, "+(i-1)+")));");
 		}
 	}
 }

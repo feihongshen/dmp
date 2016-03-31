@@ -113,7 +113,6 @@ public class YongHuiController {
 			}
 			
 		} catch (Exception e1) {
-			e1.printStackTrace();
 			this.logger.error("-永辉-订单下载异常", e1);
 			return "{\"errCode\":\"05\",\"errMsg\":\"系统异常\"}";
 		}

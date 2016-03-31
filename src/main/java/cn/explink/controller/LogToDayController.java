@@ -18,6 +18,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -93,6 +95,8 @@ public class LogToDayController {
 	@Autowired
 	ExportService exportService;
 
+	private static Logger logger = LoggerFactory.getLogger(LogToDayController.class);
+	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
@@ -1609,14 +1613,13 @@ public class LogToDayController {
 		exportService.SetBranchLogFields(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		String sheetName = "站点日志" + dateFirStr.substring(0, 10); // sheet的名称
 		String fileName = sheetName + ".xlsx"; // 文件名
 		try {
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
-					style.setAlignment(style.ALIGN_JUSTIFY);
+					style.setAlignment(CellStyle.ALIGN_JUSTIFY);
 					for (int k = 0; k < todayLogs.size(); k++) {
 						Row row = sheet.createRow(k + 1);
 						row.setHeightInPoints((float) 15);
@@ -1633,7 +1636,7 @@ public class LogToDayController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

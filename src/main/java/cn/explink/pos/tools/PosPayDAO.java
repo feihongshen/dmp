@@ -54,8 +54,7 @@ public class PosPayDAO {
 						pd.getAcq_type() != null && !"".equals(pd.getAcq_type()) ? pd.getAcq_type() : "single", pd.getCustomerid(), pd.getIsonlineFlag(), pd.getEmaildate(), pd.getTerminal_no());
 			}
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		if (updateFlag > 0) {
 			flag = true;
@@ -129,14 +128,11 @@ public class PosPayDAO {
 				pd.setEmaildate(order.getEmaildate());
 				pd.setCustomerid(order.getCustomerid());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				logger.error("POS支付记录异常! 获取订单供货商有误,订单:" + OrderNo + "", e);
-				e.printStackTrace();
 			}
 			return this.record_TradeForPosDetail(pd, typeid);
 		} catch (Exception e) {
-			logger.error("POS支付记录异常!" + e);
-			e.printStackTrace();
+			logger.error("POS支付记录异常!", e);
 			return false;
 		}
 	}

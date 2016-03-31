@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +56,8 @@ import cn.explink.util.DateTimeUtil;
 @Controller
 @RequestMapping("/CustomerBillContract")
 public class CustomerBillContractController {
+	
+	private static Logger logger = LoggerFactory.getLogger(CustomerBillContractController.class);
 	
 	@Autowired
 	private PaiFeiRuleDAO pfra;
@@ -1070,11 +1074,8 @@ public class CustomerBillContractController {
 				}
 				
 			} catch (ParseException e) {   
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("", e);
 			}
-			
-			
 		}
 	}	
 		if(sb.length()>0){
