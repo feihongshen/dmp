@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 派件服务APP推送接口VO
@@ -13,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class DeliverServerPushVO {
 
+	private static Logger logger = LoggerFactory.getLogger(DeliverServerPushVO.class);
+	
 	private String sign = "";
 	private String code = "";
 	private String outer_trade_no = "";
@@ -300,7 +304,7 @@ public class DeliverServerPushVO {
 			try {
 				fieldValue = null == DeliverServerPushVO.class.getDeclaredMethod(getMethos).invoke(this)?"":DeliverServerPushVO.class.getDeclaredMethod(getMethos).invoke(this).toString();
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 				throw new RuntimeException("拼装待签名字符串异常:" + this.mail_num + e.getMessage());
 			}
 			sb.append(fieldName).append("=").append(fieldValue).append("&");

@@ -741,9 +741,6 @@ public class WarehouseGroupController {
 				warehouseGroupPrintDto.setTuihuozhanrukutime(this.tuihuoRecordDAO.getTuihuoRecordByCwb(cwbList.get(i).getCwb()).get(0).getTuihuozhanrukutime());
 				warehouseGroupPrintDto.setTranscwb(cwbList.get(i).getTranscwb());
 				warehouseGroupPrintDto.setPaywayid(PaytypeEnum.getByValue(Integer.parseInt(cwbList.get(i).getPaywayid()+"")).getText());
-				/*System.out.println(cwbList.get(i).getBackreasonid());
-				System.out.println(cwbList.get(i).getBackreason());
-				System.out.println(reasonDAO.getReasonByReasonid(cwbList.get(i).getBackreasonid()).getReasoncontent());*/
 				if(cwbList.get(i).getBackreasonid()==0){
 					warehouseGroupPrintDto.setReasoncontent("无");
 				}else{
@@ -1087,7 +1084,7 @@ public class WarehouseGroupController {
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

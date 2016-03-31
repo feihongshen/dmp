@@ -5,7 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DateDayUtil {
+	
+	private static Logger logger = LoggerFactory.getLogger(DateDayUtil.class);
+	
 	private static long getQuot(String endTime, String strateTime) {
 		long quot = 0;
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
@@ -15,7 +21,7 @@ public class DateDayUtil {
 			quot = date1.getTime() - date2.getTime();
 			quot = quot / 1000 / 60 / 60 / 24;
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return quot;
 	}
@@ -29,7 +35,7 @@ public class DateDayUtil {
 			quot = date1.getTime() - date2.getTime();
 			quot = quot / 1000 / 60 / 60;
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return quot;
 	}

@@ -297,7 +297,7 @@ public class BatchSelectCwbController {
 						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
 
 						public void processRow(ResultSet rs) throws SQLException {
-							System.out.println("行数据：" + rs);
+							logger.info("行数据：" + rs);
 							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
 							this.recordbatch.add(mapRow);
 							this.count++;
@@ -386,7 +386,7 @@ public class BatchSelectCwbController {
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

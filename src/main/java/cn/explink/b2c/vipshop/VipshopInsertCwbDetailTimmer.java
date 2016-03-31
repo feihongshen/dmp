@@ -421,11 +421,12 @@ public class VipshopInsertCwbDetailTimmer {
 		
 		EmailDate ed = null;
 		if (vipshop.getIsTuoYunDanFlag() == 0) {
-			if(vipshop.getIsCreateTimeToEmaildateFlag()==1){
-				ed = dataImportService.getEmailDate_B2CByEmaildate(Integer.valueOf(customerid), 0, warehouseId, cwbOrderDto.getEmaildate());
-			}else{
-				ed = dataImportService.getOrCreateEmailDate(cwbOrderDto.getCustomerid(), 0, warehouseId);
-			}
+			ed = dataImportService.getOrCreateEmailDate(cwbOrderDto.getCustomerid(), 0, warehouseId);
+//			if(vipshop.getIsCreateTimeToEmaildateFlag()==1){
+//				ed = dataImportService.getEmailDate_B2CByEmaildate(Integer.valueOf(customerid), 0, warehouseId, cwbOrderDto.getEmaildate());
+//			}else{
+//				ed = dataImportService.getOrCreateEmailDate(cwbOrderDto.getCustomerid(), 0, warehouseId);
+//			}
 		} else {
 			ed = dataImportService.getEmailDate_B2CByEmaildate(cwbOrderDto.getCustomerid(), cwbOrderDto.getCustomerwarehouseid(), warehouseId, cwbOrderDto.getEmaildate());
 		}

@@ -616,7 +616,7 @@ public class CwbLablePrintController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -700,7 +700,7 @@ public class CwbLablePrintController {
 						try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							logger.error("", e);
 						}
 						slist.add(new Date().getTime() + "");
 					}

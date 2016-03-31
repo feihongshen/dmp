@@ -37,8 +37,7 @@ public class RestTemplateHanlder {
 			result = restTemplate.postForObject(URL, conditionDto, OrderExportResultDto.class);
 			logger.info("Invoke exportOrder method Success!response OrderExportResultDto={}", JSONObject.fromObject(result));
 		} catch (Exception e) {
-			logger.error("error info while excute exportOrder's restTemplate.PostForObject method!" + e);
-			e.printStackTrace();
+			logger.error("error info while excute exportOrder's restTemplate.PostForObject method!", e);
 		}
 		return result;
 	}
@@ -57,8 +56,7 @@ public class RestTemplateHanlder {
 			result = restTemplate.postForObject(URL, conditionDto, ReturnDto.class);
 			logger.info("Invoke exportCallBack method Success!response OrderExportResultDto={}", JSONObject.fromObject(result));
 		} catch (Exception e) {
-			logger.error("error info while excute exportCallBack's restTemplate.PostForObject method!" + e);
-			e.printStackTrace();
+			logger.error("error info while excute exportCallBack's restTemplate.PostForObject method!", e);
 		}
 		return result;
 	}

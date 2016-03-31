@@ -13,6 +13,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -42,6 +44,9 @@ import cn.explink.util.ExcelUtils;
 @Controller
 @RequestMapping("/accountcwbfaresubmit")
 public class AccountCwbFareSubmitController {
+	
+	private static Logger logger = LoggerFactory.getLogger(AccountCwbFareSubmitController.class);
+	
 	@Autowired
 	UserDAO userDAO;
 
@@ -157,7 +162,7 @@ public class AccountCwbFareSubmitController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 }

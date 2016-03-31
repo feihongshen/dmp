@@ -48,7 +48,8 @@ public class EfastService {
 	JointService jointService;
 	@Autowired
 	CustomerService customerService;
-	private Logger logger = LoggerFactory.getLogger(EfastService.class);
+	
+	private static Logger logger = LoggerFactory.getLogger(EfastService.class);
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -129,7 +130,7 @@ public class EfastService {
 		params.put("page_size", "20"); // 查询的字段
 		String response = RestHttpServiceHanlder.sendHttptoServer(params, "http://61.161.205.105/efast/efast_api/webservice/web/index.php");
 		// response=URLDecoder.decode(response,"GBK");
-		System.out.println(response);
+		logger.info(response);
 
 	}
 

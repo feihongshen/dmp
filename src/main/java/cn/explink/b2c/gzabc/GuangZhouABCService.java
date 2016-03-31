@@ -44,7 +44,7 @@ import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class GuangZhouABCService {
-	private Logger logger = LoggerFactory.getLogger(GuangZhouABCService.class);
+	private static Logger logger = LoggerFactory.getLogger(GuangZhouABCService.class);
 
 	@Autowired
 	JiontDAO jiontDAO;
@@ -341,7 +341,7 @@ public class GuangZhouABCService {
 
 		List<Map<String, Object>> xmllist = Analyz_XmlDocByGuangZhougABC(xmlstr);
 
-		System.out.println(xmllist);
+		logger.info(String.valueOf(xmllist));
 	}
 
 	private String responseXml(String cwb, String logisticProviderID, boolean flag, String remark) {

@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +17,8 @@ import cn.explink.util.Page;
 @Component
 public class PoscodeMappDAO {
 
+	private static Logger logger = LoggerFactory.getLogger(PoscodeMappDAO.class);
+	
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
@@ -45,7 +49,7 @@ public class PoscodeMappDAO {
 			sql += " order by posenum  limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 			list = jdbcTemplate.query(sql, new PoscodeMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -97,7 +101,7 @@ public class PoscodeMappDAO {
 			String sql = "delete from poscode_customer_mapping where poscodeid=" + poscodeid;
 			jdbcTemplate.update(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -108,7 +112,7 @@ public class PoscodeMappDAO {
 			String sql = "select * from poscode_customer_mapping where poscodeid=" + poscodeid;
 			expt = jdbcTemplate.queryForObject(sql, new PoscodeMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return expt;
 
@@ -131,7 +135,7 @@ public class PoscodeMappDAO {
 			String sql = "update poscode_customer_mapping set remark='" + pc.getRemark() + "',customercode='" + pc.getCustomercode() + "' " + " where poscodeid=" + poscodeid;
 			jdbcTemplate.update(sql);
 		} catch (DataAccessException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

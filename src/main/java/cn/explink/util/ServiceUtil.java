@@ -6,10 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ServiceUtil {
 
+	private static Logger logger = LoggerFactory.getLogger(ServiceUtil.class);
+	
 	private static ResourceBundle dmp = ResourceBundle.getBundle("filepath");
 	public static final String omsSysUrl = dmp.getString("omsUrl");
 	public static final String financeSysUrl = dmp.getString("financeUrl");
@@ -27,7 +31,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}
@@ -39,7 +43,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}
@@ -51,7 +55,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}

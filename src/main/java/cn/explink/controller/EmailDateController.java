@@ -3,6 +3,8 @@ package cn.explink.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -37,6 +39,8 @@ public class EmailDateController {
 	EmailDateService emailDateService;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	private static Logger logger = LoggerFactory.getLogger(EmailDateController.class);
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -89,7 +93,7 @@ public class EmailDateController {
 	
 	@RequestMapping("/view/{cwb}")
 	public String view(@PathVariable("cwb") String cwb, Model model) {
-		System.out.println(cwb);
+		logger.info(cwb);
 		return "orderflow/view";
 	}
 }

@@ -120,7 +120,6 @@ public class HaoXiangGouService_TuiHuo extends HaoXiangGouService {
 		try {
 			return JacksonMapper.getInstance().readValue(json, List.class);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("rtn_data转化为List<Map<String, Object>>发生异常", e);
 			return null;
 		}

@@ -168,8 +168,7 @@ public class YongHuiServices {
 				return back;
 
 			} catch (Exception e) {
-				this.logger.error("[-永辉-超市]调用数据导入接口异常!,订单List信息:" + cwbOrderList + "exptMessage=:" + e);
-				e.printStackTrace();
+				this.logger.error("[-永辉-超市]调用数据导入接口异常!,订单List信息:" + cwbOrderList + "exptMessage=:", e);
 				back.setErrCode(YongHuiExpEmum.XiTongYiChang.getErrCode());
 				back.setErrMsg(YongHuiExpEmum.XiTongYiChang.getErrMsg());
 				return back;

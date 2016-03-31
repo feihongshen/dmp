@@ -75,6 +75,75 @@ public class DataImportService_B2c {
 	 * @return
 	 */
 	@Transactional
+	public List<CwbOrderDTO> Analizy_DataDealByB2c_TuoYun(long customerid, String b2cFlag, List<Map<String, String>> xmlList, long warehouse_id, // 对接设置中传过来的ID
+			boolean SaveTempTableFlag) throws Exception {
+		long warehouseid = warehouse_id == 0 ? getTempWarehouseIdForB2c() : warehouse_id; // 获取虚拟库房
+		EmailDate ed = dataImportService.getOrCreateEmailDate(customerid, 0, warehouseid);
+		return this.Analizy_DataDeal(customerid, b2cFlag, xmlList, warehouseid, SaveTempTableFlag, ed) ;
+	}
+	
+	/**
+	 * 提供数据导入接口-对接用到
+	 * 
+	 * @param customerid
+	 * @param branchid
+	 * @param ed
+	 * @param b2cFlag
+	 * @param xmlList
+	 * @return
+	 */
+	@Transactional
+	public List<CwbOrderDTO> Analizy_DataDeal(long customerid, String b2cFlag, List<Map<String, String>> xmlList, long warehouseid, boolean SaveTempTableFlag  , EmailDate ed) throws Exception {
+		ExcelColumnSet excelColumnSet = cwbColumnSet.getEexcelColumnSetByB2cJoint(b2cFlag);
+		List<CwbOrderDTO> cwbOrders = getCwbOrders(customerid, excelColumnSet, warehouseid, xmlList);
+		User user = new User();
+		user.setUserid(1);
+		user.setBranchid(warehouseid);
+		if (!SaveTempTableFlag) { // 调用正常导入的方法
+			importData(cwbOrders, customerid, user, warehouseid, ed);
+		} else { // 导入临时表，然后定时器处理
+			for (CwbOrderDTO cwbOrder : cwbOrders) {
+				try {
+					String remark1 = (cwbOrder.getRemark1()==null?"":cwbOrder.getRemark1().trim());
+					if(remark1.length() > 100){
+						remark1 = remark1.substring(0, 100);
+					}
+					cwbOrder.setRemark1(remark1);
+					
+					if (!b2cFlag.equals(B2cEnum.YiXun.getMethod()) && !b2cFlag.equals(B2cEnum.Yihaodian.getMethod()) && !b2cFlag.equals(B2cEnum.Tmall.getMethod())
+							&& !b2cFlag.equals(B2cEnum.YangGuang.getMethod()) && !b2cFlag.equals(B2cEnum.GuangZhouABC.getMethod()) && !b2cFlag.equals(B2cEnum.HangZhouABC.getMethod())
+							&& !b2cFlag.equals(B2cEnum.Rufengda.getMethod()) && !b2cFlag.equals(B2cEnum.HaoXiangGou.getMethod())) {
+
+						List<CwbOrderValidator> vailidators = importValidationManager.getVailidators(excelColumnSet);
+						for (CwbOrderValidator cwbOrderValidator : vailidators) {
+							cwbOrderValidator.validate(cwbOrder);
+						}
+					}
+
+					dataImportDAO_B2c.insertCwbOrder_toTempTable(cwbOrder, customerid, warehouseid, user, ed);
+				} catch (Exception e) {
+					logger.error(b2cFlag + "数据插入临时表发生未知异常cwb=" + cwbOrder.getCwb(), e);
+					// Mail.LoadingAndSendMessage(b2cFlag+"数据临时表插入主表发生未知异常cwb="+cwbOrder.getCwb()+",请及时查看并修复.");
+					 e.printStackTrace();
+					return null;
+				}
+			}
+
+		}
+		return cwbOrders;
+	}
+	
+	/**
+	 * 提供数据导入接口-对接用到
+	 * 
+	 * @param customerid
+	 * @param branchid
+	 * @param ed
+	 * @param b2cFlag
+	 * @param xmlList
+	 * @return
+	 */
+	@Transactional
 	public List<CwbOrderDTO> Analizy_DataDealByB2c(long customerid, String b2cFlag, List<Map<String, String>> xmlList, long warehouse_id, // 对接设置中传过来的ID
 			boolean SaveTempTableFlag) throws Exception {
 

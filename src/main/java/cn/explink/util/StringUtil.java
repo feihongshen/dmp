@@ -14,8 +14,13 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StringUtil {
+	
+	private static Logger logger = LoggerFactory.getLogger(StringUtil.class);
+	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static String nullConvertToEmptyString(String string) {
@@ -50,7 +55,7 @@ public class StringUtil {
 			try {
 				date = sdf.parse(dateStr);
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 		return date;
@@ -172,8 +177,7 @@ public class StringUtil {
 						charLength = str.substring(i, i + 1).getBytes(charset).length;
 					}
 				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("", e);
 				}
 				tempIndex1 = tempIndex2;
 				tempIndex2 += charLength;
@@ -293,8 +297,7 @@ public class StringUtil {
 
 			return new String(resultbytes, encoding);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -317,14 +320,11 @@ public class StringUtil {
 	}
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		/*
-		 * String str = "张鹏凯"; System.out.println(str.getBytes("GBK").length);
-		 */
 
 		String str1 = "1,2,3,4,5,6";
 		String str2 = "5,6,7,8";
 
-		System.out.println(StringUtil.removalDuplicateString(str1, str2));
+		logger.info(StringUtil.removalDuplicateString(str1, str2));
 	}
 
 	public static String getStringsByLongList(List<Long> strArr) {

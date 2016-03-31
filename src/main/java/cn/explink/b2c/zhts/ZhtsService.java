@@ -1,16 +1,12 @@
 package cn.explink.b2c.zhts;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
 
 import net.sf.json.JSONObject;
 
@@ -30,7 +26,6 @@ import cn.explink.dao.OrderTrackDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.orderflow.OrderNote;
 import cn.explink.domain.orderflow.OrderTrack;
-import cn.explink.pos.alipay.xml.Transaction;
 import cn.explink.util.MD5.MD5Util;
 
 @Service
@@ -173,7 +168,7 @@ public class ZhtsService {
 		
 		
 		
-		System.out.println(ObjectUnMarchal.POJOtoXml(tao));
+		logger.info(ObjectUnMarchal.POJOtoXml(tao));
 		String content="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><OrderTrack>"
 		  +"<order>"
 		  +"<order_no>35501201</order_no>"  
@@ -186,7 +181,7 @@ public class ZhtsService {
 		
 		OrderTrack orderTrack = (OrderTrack) ObjectUnMarchal.XmltoPOJO(content, new OrderTrack());
 		
-		System.out.println(orderTrack.getOrder().getOrderNo()+"=="+orderTrack.getOrder().getOperationTime());
+		logger.info(orderTrack.getOrder().getOrderNo()+"=="+orderTrack.getOrder().getOperationTime());
 		
 	}
 	

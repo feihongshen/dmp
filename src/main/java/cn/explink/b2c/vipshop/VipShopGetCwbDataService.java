@@ -308,18 +308,15 @@ public class VipShopGetCwbDataService {
 		onelist.add(dataMap);
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
-			// modify by bruce shangguan 20160329  托运单开启取,emaildate取rec_create_time　
-			String emaildate = dataMap.get("rec_create_time").toString();			
+			String emaildate = dataMap.get("remark4").toString();			
 			   //Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
 			if(emaildate == null || emaildate.trim().equals("")){
 				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";				
-				dataMap.put("rec_create_time", emaildate);
+				dataMap.put("remark4", emaildate);
 			}
 			   //Added end
-			// modify end 
 			long warehouseid = vipshop.getWarehouseid();
 			this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
-
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息导入成功cwb={}-更新了最大的SEQ!{}", dataMap.get("cwb").toString(), vipshop.getVipshop_seq());
 		} catch (Exception e) {
@@ -335,18 +332,19 @@ public class VipShopGetCwbDataService {
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
 			long warehouseid = vipshop.getWarehouseid();
-			if(vipshop.getIsCreateTimeToEmaildateFlag()==0){
-				this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
-			}else{
-				String emaildate = dataMap.get("remark2").toString();
-				//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
-				if(emaildate == null || emaildate.trim().equals("")){
-					emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
-					dataMap.put("remark2", emaildate);
-				}
-				//Added end
-				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
-			}
+//			if(vipshop.getIsCreateTimeToEmaildateFlag()==0){
+//				this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
+//			}else{
+//				String emaildate = dataMap.get("remark2").toString();
+//				//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+//				if(emaildate == null || emaildate.trim().equals("")){
+//					emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
+//					dataMap.put("remark2", emaildate);
+//				}
+//				//Added end
+//				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
+//			}
+			this.dataImportService_B2c.Analizy_DataDealByB2c_TuoYun(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true) ;
 			this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
 			
 			this.updateMaxSEQ(vipshop_key, vipshop);

@@ -784,8 +784,7 @@ public class PunishInsideController {
 			punishInsideService.reviseAndReply(punishInsideReviseAndReply);
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"修改异常,原因为:"+e.getMessage()+"\"}";
 		}
 		
