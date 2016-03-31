@@ -1,11 +1,13 @@
 package cn.explink.b2c.jd.cwbtrack;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +22,14 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -144,7 +149,7 @@ public class JdCwbTrackService {
 				sub.append("<detail>");
 				sub.append("<time>" + DateTimeUtil.formatDate(orderFlow.getCredate()) + "</time>");
 				sub.append("<scantype>" +scantype+ "</scantype>");
-				sub.append("<memo>" + explinkService.getDetail(orderFlow) + "</memo>");
+				sub.append("<memo>" + getDetail(orderFlow) + "</memo>");
 				sub.append("</detail>");
 			}
 			sub.append("</track>");
@@ -199,6 +204,132 @@ public class JdCwbTrackService {
 		JdCwbTrackConfig smile = (JdCwbTrackConfig) JSONObject.toBean(jsonObj, JdCwbTrackConfig.class);
 		return smile;
 	}
+	
+	
+	/**
+	 * 获取订单的跟踪详情
+	 */
+	ObjectMapper objectMapper = new ObjectMapper();
+	public String getDetail(OrderFlow orderFlowAll) {
+		try {
+			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = objectMapper.readValue(orderFlowAll.getFloworderdetail(), CwbOrderWithDeliveryState.class);
+			CwbOrder cwbOrder = cwbOrderWithDeliveryState.getCwbOrder();
+
+			String nextbranchname = this.getNextBranchName(cwbOrder);
+
+			User user = userDAO.getUserByUserid(orderFlowAll.getUserid());
+			String phone = user.getUsermobile();
+			String comment = orderFlowAll.getComment();
+			String currentbranchname = branchDAO.getBranchByBranchid(orderFlowAll.getBranchid()).getBranchname();
+
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
+				return MessageFormat.format("从[{0}]导入数据", currentbranchname);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) {
+				return MessageFormat.format("从[{0}]入库;联系电话：[{1}]", currentbranchname, phone);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) {
+				return MessageFormat.format("从[{0}]到错货入库;联系电话：[{1}];备注:[{2}]", currentbranchname, phone, comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()) {
+				return MessageFormat.format("从[{0}]到错货处理;联系电话：[{1}];备注:[{2}]", currentbranchname, phone, comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+				return MessageFormat.format("从[{0}]出库,下一站[{1}]联系电话[{2}]", currentbranchname, nextbranchname, phone);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.CheXiaoFanKui.getValue()) {
+				return MessageFormat.format("货物由[{0}]撤销反馈;联系电话：[{1}]", currentbranchname, phone);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()) {
+				return MessageFormat.format("从[{0}]>库对库出库；下一站[{1}]，联系电话[{2}]", currentbranchname, nextbranchname, phone);
+			}
+
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
+				return MessageFormat.format("从[{0}]到货;联系电话：[{1}]", currentbranchname, phone);
+			}
+			//中转站入库-->到件
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
+				return MessageFormat.format("从[{0}]中转站入库;联系电话：[{1}]", currentbranchname, phone);
+			}
+			//中转站出库-->发件
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()) {
+				return MessageFormat.format("从[{0}中转站出库,下一站[{1}]联系电话[{2}]", currentbranchname, nextbranchname, phone);
+			}
+			
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+				User users = userDAO.getUserByUserid(cwbOrderWithDeliveryState.getDeliveryState().getDeliveryid());
+				String deliverphone = users.getUsermobile();
+				return MessageFormat.format("货物由[{0}]的派件员[{1}]正在派件..小件员电话:[{2}]", currentbranchname, users.getRealname(), deliverphone);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.YiFanKui.getValue()) {
+				User users = userDAO.getUserByUserid(cwbOrderWithDeliveryState.getDeliveryState().getDeliveryid());
+				String deliverphone = users.getUsermobile();
+				return MessageFormat.format("货物已由[{0}]的派件员[{1}]反馈为[{2}];小件员电话[{3}],备注:[{4}]", currentbranchname, users.getRealname(),
+						DeliveryStateEnum.getByValue((int) cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate()).getText(), deliverphone, comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) {
+				return MessageFormat.format("货物已从[{0}]进行退货出库;联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
+				return MessageFormat.format("货物已到退货站[{0}];联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) {
+				return MessageFormat.format("货物已由[{0}]退供货商出库;联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()) {
+				return MessageFormat.format("货物已由[{0}]退供货商成功;联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+			}
+			//已审核
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
+				long deliverystate = cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate();
+
+				if (deliverystate == DeliveryStateEnum.PeiSongChengGong.getValue() || deliverystate == DeliveryStateEnum.ShangMenHuanChengGong.getValue()
+						|| deliverystate == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) {
+					String signman = cwbOrderWithDeliveryState.getDeliveryState().getSign_man();
+					if (signman == null || signman.isEmpty()) {
+						signman = cwbOrder.getConsigneename();
+					}
+
+					return MessageFormat.format("订单审核为已签收,签收人是：{0}", signman);
+				} else if (deliverystate == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
+					return MessageFormat.format("订单审核为站点滞留,原因:{0}", cwbOrder.getLeavedreason());
+				} else if (deliverystate == DeliveryStateEnum.JuShou.getValue() || deliverystate == DeliveryStateEnum.BuFenTuiHuo.getValue()
+						|| deliverystate == DeliveryStateEnum.ShangMenJuTui.getValue()) {
+					return MessageFormat.format("订单审核为拒收,原因:{0}", cwbOrder.getBackreason());
+				} else if (deliverystate == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
+					return MessageFormat.format("订单{0}审核为丢失,原因:{1}", cwbOrder.getCwb(), cwbOrder.getLosereason());
+				} else {
+					return MessageFormat.format("订单{0}已审核", cwbOrder.getCwb());
+				}
+
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()) {
+				return MessageFormat.format("货物配送站点变更为[{0}];操作人：[{1}];联系电话：[{2}]", branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid()).getBranchname(),
+						userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()) {
+				return MessageFormat.format("货物已由[{0}]退供货商拒收返库入库;联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.BeiZhu.getValue()) {
+				return MessageFormat.format("货物被[{0}]添加了备注;联系电话：[{1}];备注：[{2}]", userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone, comment);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
+	
+	private String getNextBranchName(CwbOrder cwborder) {
+		Branch nextBranch = branchDAO.getBranchByBranchid(cwborder.getNextbranchid());
+		if (nextBranch == null) {
+			return "";
+		}
+		return nextBranch.getBranchname();
+	}
+	
+	
 	
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
