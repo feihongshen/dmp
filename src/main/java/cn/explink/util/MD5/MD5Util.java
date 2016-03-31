@@ -3,6 +3,8 @@ package cn.explink.util.MD5;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -142,5 +144,22 @@ public class MD5Util {
 		}
 		return buf.toString();
 	}
+	
+	/**
+	 * 随机生成40位盐值salt
+	 */
+	public static String generateSalt() {
+        Random ranGen = new SecureRandom();
+        byte[] aesKey = new byte[20];
+        ranGen.nextBytes(aesKey);
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < aesKey.length; i++) {
+            String hex = Integer.toHexString(0xff & aesKey[i]);
+            if (hex.length() == 1)
+                hexString.append('0');
+            hexString.append(hex);
+        }
+		return hexString.toString();
+    }
 
 }
