@@ -701,9 +701,24 @@ public class TPSGetOrderDataService {
 
 			}
 			
-			if ((this.cwbDAO.getCwbByCwb(cust_order_no) != null) && !is_gatherpack.equals("0")) {
-				this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cust_order_no);
-				return null;
+			if (cwbOrderDTO != null ) {
+				if(is_gatherpack.equals("0")){
+					this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cust_order_no);
+					return null;
+				//集单模式校验重复
+				}else if(is_gatherpack.equals("1")){
+					String oldTranscwb = cwbOrderDTO.getTranscwb();
+					String currentTranscwb = transcwb;
+					if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
+						if(orderDTO.getMpsallarrivedflag()==VipGathercompEnum.Last.getValue()){
+							return null;
+						}
+					}
+					if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
+						return null;
+					}
+				}
+				
 			}
 
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
