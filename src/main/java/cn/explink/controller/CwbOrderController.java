@@ -349,9 +349,9 @@ public class CwbOrderController {
 		Date date = new Date();
 		String printtime = df.format(date);
 		for (CwbOrder c : clist) {
-			this.cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
-			this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);
-
+			/*this.cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
+			this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);*/
+			cwborderService.updatePrinttimeState(c,printtime);
 		}
 		List<Customer> customerlist = this.customerDao.getAllCustomers();
 
@@ -373,8 +373,9 @@ public class CwbOrderController {
 		Date date = new Date();
 		String printtime = df.format(date);
 		for (CwbOrder c : clist) {
-			this.cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
-			this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);
+			cwborderService.updatePrinttimeState(c,printtime);
+			/*this.cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
+			this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);*/
 		}
 		List<Customer> customerlist = this.customerDao.getAllCustomers();
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
