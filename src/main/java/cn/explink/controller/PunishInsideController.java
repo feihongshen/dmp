@@ -791,5 +791,25 @@ public class PunishInsideController {
 		
 	}
 	
+	@RequestMapping("/getBranchs")
+	@ResponseBody 
+	public List<Branch> getBranchs(){
+		List<Branch> branchs = this.branchDAO.getAllEffectBranches();
+		return branchs;
+	}
+	
+	@RequestMapping("/getPenalizebigList")
+	@ResponseBody 
+	public List<PenalizeType> getPenalizebigList(){
+		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
+		return penalizebigList;
+	}
+	
+	@RequestMapping("/getPenalizesmallList")
+	@ResponseBody 
+	public List<PenalizeType> getPenalizesmallList(){
+		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
+		return penalizesmallList;
+	} 
 }
 

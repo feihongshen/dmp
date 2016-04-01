@@ -19,7 +19,7 @@
 					</select>
 					<td>
 					</tr>
-					<tr id="isshow">
+					<tr id="isshow" <c:if test="${penalizeType.type==1}"> style="display: none;"</c:if> >
 					<td align="right">赔付大类：</td>
 					<td>
 					<select name="parent" id="parent">
