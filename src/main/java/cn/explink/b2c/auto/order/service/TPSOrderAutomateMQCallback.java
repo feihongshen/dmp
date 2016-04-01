@@ -118,7 +118,7 @@ public class TPSOrderAutomateMQCallback implements IVMSCallback {
 	    					this.logger.info("接口数据异常，订单号为空");
 	    					throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"接口数据异常，订单号为空");
 	    				}
-	        			if(cwbTransLen!=0 && cwbTransLen!=order.getTotalPack()){
+	        			if(cwbTransLen!=0 && cwbTransLen!=order.getTotalPack()&&order.getIsGatherpack()!=1){
 	        				this.logger.info("订单发货数量与箱数不一致！");
 	    					throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"订单发货数量与箱数不一致！");
 	        			}

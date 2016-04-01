@@ -44,6 +44,11 @@ public class AutoExceptionService {
 		 return this.exceptionCwbDAO.updateAutoExceptionDetail(id, status, errorInfo,msgid,msg);
 	}
 	
+	@Transactional
+	public long deleteAutoExceptionDetail(long detailid,long msgid) {
+		 return this.exceptionCwbDAO.deleteAutoExceptionDetail(detailid,msgid);
+	}
+	
 	public List<Map<String,Object>> queryAutoExceptionDetail(String cwb,String transportno,String operateType){
 		return this.exceptionCwbDAO.queryAutoExceptionDetail(cwb, transportno, operateType);
 	}

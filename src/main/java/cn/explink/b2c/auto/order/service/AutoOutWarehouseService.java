@@ -30,7 +30,6 @@ import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
 
-
 @Service
 public class AutoOutWarehouseService {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -187,15 +186,24 @@ public class AutoOutWarehouseService {
 	
 	//等齐所有运单已经入库才可调用出库
 	private void validateIntoWarehouse(CwbOrder cwbOrder,String cwb){
+		//same as AbstractMPSReleaseService.BEFORE_INTOWAREHOUSE_STATE
 		if(flowBeforeInWarehouse==null){
 			flowBeforeInWarehouse=new HashSet<Long>();
 			flowBeforeInWarehouse.add((long) FlowOrderTypeEnum.DaoRuShuJu.getValue());
+			flowBeforeInWarehouse.add((long) FlowOrderTypeEnum.TiHuo.getValue());
+			flowBeforeInWarehouse.add((long) FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue());
 		}
 		
+		boolean iswaidan=false;//tPOSendDoInfService.isThirdPartyCustomer(cwbOrder.getCustomerid());//???
+		String tcwb=cwbOrder.getTranscwb();
+		if(tcwb!=null&&tcwb.trim().length()<1){
+			tcwb=null;
+		}
+
 		long totalNum=cwbOrder.getSendcarnum();//total  num ????
 		if(cwbOrder.getIsmpsflag()==IsmpsflagEnum.no.getValue()){
 			//非集单
-			if(totalNum<2){
+			if(totalNum<2||(iswaidan&&tcwb==null)){
 				if(flowBeforeInWarehouse.contains(cwbOrder.getFlowordertype())){
 					throw new AutoWaitException("非集单模式下出库时订单号("+cwb+")还没模拟入库");
 				}
@@ -220,7 +228,7 @@ public class AutoOutWarehouseService {
 					for(String transcwb:transcwbList){
 						TransCwbDetail transCwbDetail = transCwbDetailDAO.findTransCwbDetailByTransCwb(transcwb);
 						if(transCwbDetail==null||flowBeforeInWarehouse.contains((long)transCwbDetail.getTranscwboptstate())){
-							throw new AutoWaitException("集单模式下出库时有箱号("+transcwb+")还没模拟入库)");
+							throw new AutoWaitException("集单模式下模拟出库时有其它箱号("+transcwb+")还没模拟入库)");
 						}
 					}
 				}

@@ -580,6 +580,7 @@ public class CwbOrderController {
 					if (cwbstr[i].trim().length() == 0) {
 						continue;
 					}
+					cwbstr[i] = cwbstr[i].trim();
 					if (!cwbStrList.contains(cwbstr[i])) {
 						cwbStrList.add(cwbstr[i]);
 					}
@@ -769,6 +770,7 @@ public class CwbOrderController {
 				if (cwb[i].trim().length() == 0) {
 					continue;
 				}
+				cwb[i] = cwb[i].trim();
 				cwbsBuffer.append("'").append(cwb[i]).append("'");
 				if (i < (cwb.length - 1)) {
 					cwbsBuffer.append(",");
@@ -856,6 +858,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				allScanList.add(cwbStr);
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
@@ -923,6 +926,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -993,6 +997,7 @@ public class CwbOrderController {
 			if (cwbStr.trim().length() == 0) {
 				continue;
 			}
+			cwbStr = cwbStr.trim();
 			String lastcwb = this.cwborderService.translateCwb(cwbStr);
 			cwbs = cwbs.append("'").append(lastcwb).append("',");
 			CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -1154,6 +1159,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -1200,6 +1206,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				cwbs = cwbs.append("'").append(cwbStr).append("',");
 			}
 			cwbss = cwbs.substring(0, cwbs.length() - 1);
@@ -1300,6 +1307,7 @@ public class CwbOrderController {
 		if (cwb.length() > 0) {
 			List<Customer> cList = this.customerDao.getAllCustomers();
 			for (String cwbStr : cwb.split("\r\n")) {
+				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDao.getCwbByCwb(cwbStr);
 				if (co != null) {
 					Customer customer = this.getCustomer(co.getCustomerid(), cList);
@@ -1345,6 +1353,7 @@ public class CwbOrderController {
 		if (cwb.length() > 0) {
 			List<Customer> cList = this.customerDao.getAllCustomers();
 			for (String cwbStr : cwb.split("\r\n")) {
+				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDao.getCwbByCwb(cwbStr);
 				if (co != null) {
 					Customer customer = this.getCustomer(co.getCustomerid(), cList);
@@ -1390,6 +1399,7 @@ public class CwbOrderController {
 		if (cwb.length() > 0) {
 			List<Customer> cList = this.customerDao.getAllCustomers();
 			for (String cwbStr : cwb.split("\r\n")) {
+				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDao.getCwbByCwb(cwbStr);
 				if (co != null) {
 					Customer customer = this.getCustomer(co.getCustomerid(), cList);
@@ -1460,6 +1470,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -1723,6 +1734,7 @@ public class CwbOrderController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			JSONObject obj = new JSONObject();
 			obj.put("cwb", cwb);
 			try {// 成功订单
@@ -1841,6 +1853,7 @@ public class CwbOrderController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				} else {
+					cwb = cwb.trim();
 					str.append("'" + cwb + "',");
 				}
 			}
@@ -2369,6 +2382,7 @@ public class CwbOrderController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			if (cwb.length() > 0) {
 				cwbsSqlBuffer = cwbsSqlBuffer.append(s).append(cwb).append(s1);
 			}
@@ -2446,6 +2460,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -2558,6 +2573,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				cwbs = cwbs.append("'").append(cwbStr).append("',");
 			}
 			cwbss = cwbs.substring(0, cwbs.length() - 1);

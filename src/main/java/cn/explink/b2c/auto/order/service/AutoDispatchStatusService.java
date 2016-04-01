@@ -61,7 +61,7 @@ public class AutoDispatchStatusService {
 
 	public void process() {
 	       this.logger.info("auto dispatch job process start...");
-	       int todoLen=3000;//每次查询条数????
+	       int todoLen=3000;//每次查询条数
 	       int maxtry=10;//最多查询次数
 	       int waitNum=0;//处理不成功的条数
 	       boolean dbhavedata=true;//表末尾
@@ -195,7 +195,7 @@ public class AutoDispatchStatusService {
 		List<AutoMQExceptionDto> errorList=null;
 		if(msgVoList==null||msgVoList.size()<1){
 			resultMap.put("errorList", errorList);
-			resultMap.put("undeleteNum", waitNum);
+			resultMap.put("waitNum", waitNum);
 			return resultMap;
 		}
 
