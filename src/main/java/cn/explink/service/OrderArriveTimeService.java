@@ -38,7 +38,6 @@ import cn.explink.domain.OrderArriveTime;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.StreamingStatementCreator;
 
@@ -207,10 +206,10 @@ public class OrderArriveTimeService {
 										cell.setCellValue(a == null ? "" : a.toString());
 										// }
 									} catch (Exception e) {
-										e.printStackTrace();
+										logger.error("", e);
 									}
 								} catch (IllegalArgumentException e) {
-									e.printStackTrace();
+									logger.error("", e);
 								}
 							}
 							count++;
@@ -220,7 +219,7 @@ public class OrderArriveTimeService {
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

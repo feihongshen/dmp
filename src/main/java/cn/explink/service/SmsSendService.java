@@ -956,7 +956,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			// System.out.println("get end:"+System.currentTimeMillis());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

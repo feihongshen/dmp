@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class XiazaiService {
 	final Map<Long, Map<Long, String>> map = new HashMap<Long, Map<Long, String>>();
 	Map<Long, Long> map1 = new HashMap<Long, Long>();
 
+	private static Logger logger = LoggerFactory.getLogger(XiazaiService.class);
+	
 	@PostConstruct
 	public void init() throws Exception {
 		map1.put(1l, 0l);
@@ -38,13 +42,13 @@ public class XiazaiService {
 
 	public void test() {
 		if (map1.get(1l) == 1) {
-			System.out.println("不可执行");
+			logger.info("不可执行");
 			return;
 		} else {
 			map1.put(1l, 1l);
 		}
 		for (int i = 0; i < 10000000; i++) {
-			System.out.println("=====" + i);
+			logger.info("=====" + i);
 		}
 		map1.put(1l, 0l);
 

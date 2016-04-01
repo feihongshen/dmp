@@ -197,7 +197,7 @@ public class OrderPartGoodsReturnService {
 			this.cwbOrderService.deliverStatePod(this.getSessionUser(), cwb, cwb, parameters);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":0,\"error\":\"订单部分退失败\"}";
 		}
 		return "{\"errorCode\":0,\"error\":\"订单部分退成功\"}";

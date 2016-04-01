@@ -30,7 +30,7 @@ public class ImportCwbErrorService {
 			String message = errorJson.getString("message");
 			CwbErrorDAO.creCwbError(cwb, errorJson.toString(), emaildateid, emaildate, message);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			logger.error("error while doing import excel error order cwb:{}", errorJson.getJSONObject("cwbOrderDTO").getString("cwb"));
 			logger.error(errorOrder);
 		}
@@ -45,7 +45,7 @@ public class ImportCwbErrorService {
 			String message = errorJson.getString("message");
 			CwbErrorDAO.creCwbError(cwb, errorJson.toString(), emaildateid, emaildate, message);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			logger.error("error while doing import excel error order cwb:{}", errorJson.getJSONObject("cwbOrderDTO").getString("cwb"));
 			logger.error(errorJson.toString());
 		}
