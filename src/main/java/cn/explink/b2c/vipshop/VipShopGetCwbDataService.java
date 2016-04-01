@@ -89,7 +89,7 @@ public class VipShopGetCwbDataService {
 	@Autowired
 	CustomerService customerService;
 
-	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
+	private static Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = this.jiontDAO.getJointEntity(key);
@@ -1000,7 +1000,6 @@ public class VipShopGetCwbDataService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			this.logger.error("获取商品列表异常,单号=" + order_sn, e);
 		}
 	}
@@ -1029,7 +1028,7 @@ public class VipShopGetCwbDataService {
 	public static void main(String[] args) {
 		String[] seq_arrs={"110000011787834","110000011787835","110000011787838","110000011787840"};
 		
-		System.out.println(getMaxSEQ(seq_arrs));
+		logger.info(String.valueOf(getMaxSEQ(seq_arrs)));
 		
 		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
 		Map<String,String> map1=new HashMap<String, String>();
@@ -1055,7 +1054,7 @@ public class VipShopGetCwbDataService {
 		}
 		
 		for(Map<String,String> mapR:list){
-			System.out.println("cwb="+mapR.get("cwb")+",transcwb="+mapR.get("transcwb"));
+			logger.info("cwb="+mapR.get("cwb")+",transcwb="+mapR.get("transcwb"));
 		}
 		
 	}

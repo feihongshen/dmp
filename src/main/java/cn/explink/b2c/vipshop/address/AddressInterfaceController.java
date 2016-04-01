@@ -23,7 +23,7 @@ public class AddressInterfaceController {
 	@Autowired
 	JointService jointService;
 
-	private Logger logger = LoggerFactory.getLogger(AddressInterfaceController.class);
+	private static Logger logger = LoggerFactory.getLogger(AddressInterfaceController.class);
 
 	@RequestMapping("/")
 	public @ResponseBody
@@ -34,15 +34,15 @@ public class AddressInterfaceController {
 			response.setContentType("text/xml;charset=UTF-8");
 			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.VipShopAddress.getKey());
 			if (isOpenFlag == 0) {
-				this.logger.info("未开启唯品会请求地址库对接！");
+				logger.info("未开启唯品会请求地址库对接！");
 				return this.addressInterfaceService.returnExp("未开启唯品会请求地址库");
 			}
 			String xml = request.getParameter("data");
-			this.logger.info("唯品会匹配站点: 地址：请求xml------{}", xml);
+			logger.info("唯品会匹配站点: 地址：请求xml------{}", xml);
 			VipShopAddress vip = this.addressInterfaceService.getVipShopAdrress(B2cEnum.VipShopAddress.getKey());
 			return this.addressInterfaceService.getAddress(xml, vip);
 		} catch (Exception e) {
-			this.logger.error("唯品会请求地址库 遇见不可预知的错误！" + e);
+			logger.error("唯品会请求地址库 遇见不可预知的错误！" + e);
 			return this.addressInterfaceService.returnExp("系统内部错误");
 		}
 
@@ -97,15 +97,15 @@ public class AddressInterfaceController {
 			response.setContentType("text/xml;charset=UTF-8");
 			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.VipShopAddress.getKey());
 			if (isOpenFlag == 0) {
-				this.logger.info("未开启唯品会请求地址库对接！");
+				logger.info("未开启唯品会请求地址库对接！");
 				return this.addressInterfaceService.returnExp("未开启唯品会请求地址库");
 			}
 
-			this.logger.info("唯品会匹配站点: 地址：请求xml------{}", xml);
+			logger.info("唯品会匹配站点: 地址：请求xml------{}", xml);
 			VipShopAddress vip = this.addressInterfaceService.getVipShopAdrress(B2cEnum.VipShopAddress.getKey());
 			return this.addressInterfaceService.getAddress(xml, vip);
 		} catch (Exception e) {
-			this.logger.error("唯品会请求地址库 遇见不可预知的错误！" + e);
+			logger.error("唯品会请求地址库 遇见不可预知的错误！" + e);
 			return this.addressInterfaceService.returnExp("系统内部错误");
 		}
 	}
@@ -115,7 +115,7 @@ public class AddressInterfaceController {
 				+ "<itemno>1</itemno>" + "<province><![CDATA[广东省]]></province>" + "<city><![CDATA[广州市]]></city>" + "<area><![CDATA[天河区]]></area>" + "<address><![CDATA[广东省广州市天河区天河东路118号]]></address>"
 				+ "</item>" + "<item>" + "<itemno>2</itemno>" + "<province><![CDATA[广东省]]></province>" + "<city><![CDATA[广州市]]></city>" + "<area><![CDATA[天河区]]></area>"
 				+ "<address><![CDATA[广东省广州市天河区天河东路119号]]></address>" + "</item>" + "</items>" + "</request>";
-		System.out.println("xml:" + xml);
+		logger.info("xml:" + xml);
 	}
 
 }

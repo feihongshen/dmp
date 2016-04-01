@@ -167,7 +167,7 @@ public class DongFangCJService_search {
 			sub.append("</ocj>");
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return null;
