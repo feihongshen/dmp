@@ -211,12 +211,37 @@ public class AutoDispatchStatusService {
 				}
 				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.success.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getBox_no());
 			} catch (Exception e) {
-				logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn(),e);
-				e.printStackTrace();
+				logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type(),e);
+				//e.printStackTrace();
 				String errinfo="DMP分拣状态数据转业务时出错."+e.getMessage();
 				long detailId=0;
+				boolean feedbackTps=true;
+				boolean needDbLog=true;
+				
 				try{
-					if(e instanceof AutoWaitException){
+					boolean isWait=false;
+					if(e instanceof CwbException){
+						CwbException cwbe=(CwbException) e;
+						if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
+							feedbackTps=false;
+							needDbLog=false;
+						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()) {
+							feedbackTps=false;
+							needDbLog=false;
+						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED.getValue()) {
+							//此处集单模式下出库时发生;因为按包出库原因，自动化要求必须不能是库房集单，所以不会有此异常
+							isWait=true;
+						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR.getValue()) {
+							//此处入库时已有一件出库了时发生;虽然出库时也会发生，但设置为强制出库以及按包出库，自动化下忽略validateYipiaoduojianState方法里的等待，所以不会有此异常
+							feedbackTps=false;
+							needDbLog=false;
+						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR.getValue()) {
+							//此处出库时发生
+							isWait=true;
+						}
+					}
+					
+					if(isWait||e instanceof AutoWaitException){
 						waitNum=waitNum+1;
 						List<Map<String,Object>> detailList=this.autoExceptionService.queryAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),vo.getOperate_type());
 						if(detailList!=null&&detailList.size()>0){
@@ -229,24 +254,20 @@ public class AutoDispatchStatusService {
 							detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperate_type());
 						}
 					}else{
-						long msgid=this.autoExceptionService.createAutoExceptionMsg(msgVo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
-						detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperate_type());
-						
-						autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getBox_no());
+						if(needDbLog){
+							long msgid=this.autoExceptionService.createAutoExceptionMsg(msgVo.getMsg(), AutoInterfaceEnum.fenjianzhuangtai.getValue());
+							detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,vo.getOperate_type());
+							
+							autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.fail.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getBox_no());
+						}else{
+							autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.success.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getBox_no());
+						}
 					}
 				} catch (Exception ee) {
 	        		logger.error("保存自动化异常时出错.",ee);
 	        	}
 				
-				boolean feedbackTps=true;
-				if(e instanceof CwbException){
-					CwbException cwbe=(CwbException) e;
-					if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
-						feedbackTps=false;
-					}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()) {
-						feedbackTps=false;
-					}
-				}
+				
 				
 				if(feedbackTps){
 					if(errorList==null){

@@ -8,11 +8,15 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.explink.util.ExcelUtils;
 
 public class ExcelUtilsHandler {
 
+	private static Logger logger = LoggerFactory.getLogger(ExcelUtilsHandler.class);
+	
 	public static <T>  void exportExcelHandler(HttpServletResponse response,final String cloumnZ[],final String cloumnName[],String sheetName,String fileName,final List<T> objList ){
 		
 		ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
@@ -35,8 +39,7 @@ public class ExcelUtilsHandler {
 		try {
 			excelUtil.excel(response, cloumnZ, sheetName, fileName);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 	
@@ -45,8 +48,7 @@ public class ExcelUtilsHandler {
 		try {
 			a = obj.getClass().getMethod("get" + cloumnName3[line]).invoke(obj);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return a==null?"":a;
 	}

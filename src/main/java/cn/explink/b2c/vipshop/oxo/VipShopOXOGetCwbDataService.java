@@ -43,6 +43,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOXOStateEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.util.DateTimeUtil;
@@ -72,6 +73,8 @@ public class VipShopOXOGetCwbDataService {
 	ProducerTemplate addressmatch;
 	@Autowired
 	CwbOrderService cwbOrderService;
+	@Autowired
+	CustomerService customerService;
 
 	private Logger logger = LoggerFactory.getLogger(VipShopOXOGetCwbDataService.class);
 
@@ -85,6 +88,7 @@ public class VipShopOXOGetCwbDataService {
 		return vipshop;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		VipShop vipshop = new VipShop();
 		vipshop.setShipper_no(request.getParameter("shipper_no"));
@@ -120,7 +124,8 @@ public class VipShopOXOGetCwbDataService {
 			this.jiontDAO.Update(jointEntity);
 		}
 		// 保存 枚举到供货商表中
-	this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void updateMaxSEQ(int joint_num, VipShop vipshop) {

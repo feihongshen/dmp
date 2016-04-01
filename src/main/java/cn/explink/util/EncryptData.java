@@ -10,15 +10,16 @@ import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
-
-//import sun.misc.BASE64Decoder;
-//import sun.misc.BASE64Encoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 提供加密算法，可以对输入的字符串进行加密、解密操作
  */
 public class EncryptData {
 
+	private static Logger logger = LoggerFactory.getLogger(EncryptData.class);
+	
 	private static byte[] encryptKey;
 
 	private static DESedeKeySpec spec;
@@ -38,7 +39,7 @@ public class EncryptData {
 			try {
 				Cipher c = Cipher.getInstance("DESede");
 			} catch (Exception e) {
-				System.err.println("Installling SunJCE provider.");
+				logger.error("Installling SunJCE provider.");
 				Provider sunjce = new com.sun.crypto.provider.SunJCE();
 				Security.addProvider(sunjce);
 			}
@@ -60,7 +61,7 @@ public class EncryptData {
 			// 为 CBC 模式创建一个用于初始化的 vector 对象
 			IvParameters = new IvParameterSpec(new byte[] { 12, 34, 56, 78, 90, 87, 65, 43 });
 		} catch (Exception exc) {
-			exc.printStackTrace();
+			logger.error("", exc);
 			// 记录加密或解密操作错误
 		}
 	}
@@ -99,8 +100,7 @@ public class EncryptData {
 			// encrypted_password = new String(encrypted_pwd);
 			// 2012.9.17 by xiaoqiang end
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			// 记录加密错误
+			logger.error("", ex);
 		}
 		return encrypted_password;
 	}
@@ -138,20 +138,16 @@ public class EncryptData {
 			// 得到结果
 			decrypted_password = new String(decrypted_pwd, "UTF-8");
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			// 记录解密错误
+			logger.error("", ex);
 		}
 		return decrypted_password;
 	}
 
 	public static void main(String args[]) {
 		String str = "201312120001";
-		System.out.println("原始串：" + str);
+		logger.info("原始串：" + str);
 		String e = EncryptData.encrypt(str);
-		System.out.println("密串：" + e);
-		System.out.println("解密后：" + EncryptData.decrypt(e));
-
-		// System.out.println("ddd:" + EncryptData.decrypt(""));
-
+		logger.info("密串：" + e);
+		logger.info("解密后：" + EncryptData.decrypt(e));
 	}
 }

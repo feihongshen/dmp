@@ -152,7 +152,7 @@ public class ComplaintController {
 						}
 					}
 				} catch (ParseException e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 
 			} else {
@@ -176,7 +176,7 @@ public class ComplaintController {
 						}
 					}
 				} catch (ParseException e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 		}
@@ -220,7 +220,7 @@ public class ComplaintController {
 			this.complaintDao.saveComplaint(complaint);
 			return "{\"errorCode\":0,\"error\":\"保存成功!" + sms + "\"}";
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"保存失败!" + sms + "\"}";
 		}
 	}
@@ -497,7 +497,7 @@ public class ComplaintController {
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

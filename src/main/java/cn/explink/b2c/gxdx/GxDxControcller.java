@@ -64,9 +64,13 @@ public class GxDxControcller {
 	@RequestMapping("/save/{id}")
 	public @ResponseBody String save(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-			// 保存(页面配置信息)
-			this.gxDxService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				// 保存(页面配置信息)
+				this.gxDxService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}
@@ -184,15 +188,14 @@ public class GxDxControcller {
 		GoodsState respd = (GoodsState)XmlToBean.toBean(xmlStrResponse);
 		String response = BeanToXml.toXml2(respd);
 		String str = this.xmlToBean.toBean(xmlStrRequest).toString();
-		System.out.println(respd);
-		System.out.println(response);*/
+		logger.info(respd);
+		logger.info(response);*/
 		GxDx gxdx = gxDxService.getGxDx(B2cEnum.GuangXinDianXin.getKey());
 		RequestDto red = (RequestDto)XmlToBean.toBeanRequest(StrResponse);
 		
 		
 		 this.gxDxService.orderDetailExportInterface(red,gxdx);
 		
-		System.out.println(red);
 		//保存(页面配置信息)
 	}
 	////执行插入主表

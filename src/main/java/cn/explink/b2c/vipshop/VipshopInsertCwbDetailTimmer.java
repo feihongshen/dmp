@@ -1,7 +1,6 @@
 package cn.explink.b2c.vipshop;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -405,7 +404,7 @@ public class VipshopInsertCwbDetailTimmer {
 		}
 		
 		//更新已转业务标识
-		dataImportDAO_B2c.update_CwbDetailTempByCwb(b2cTempOpscwbid);
+		dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrderDto);
 	}
 	
 	/**
@@ -422,11 +421,12 @@ public class VipshopInsertCwbDetailTimmer {
 		
 		EmailDate ed = null;
 		if (vipshop.getIsTuoYunDanFlag() == 0) {
-			if(vipshop.getIsCreateTimeToEmaildateFlag()==1){
-				ed = dataImportService.getEmailDate_B2CByEmaildate(Integer.valueOf(customerid), 0, warehouseId, cwbOrderDto.getEmaildate());
-			}else{
-				ed = dataImportService.getOrCreateEmailDate(cwbOrderDto.getCustomerid(), 0, warehouseId);
-			}
+			ed = dataImportService.getOrCreateEmailDate(cwbOrderDto.getCustomerid(), 0, warehouseId);
+//			if(vipshop.getIsCreateTimeToEmaildateFlag()==1){
+//				ed = dataImportService.getEmailDate_B2CByEmaildate(Integer.valueOf(customerid), 0, warehouseId, cwbOrderDto.getEmaildate());
+//			}else{
+//				ed = dataImportService.getOrCreateEmailDate(cwbOrderDto.getCustomerid(), 0, warehouseId);
+//			}
 		} else {
 			ed = dataImportService.getEmailDate_B2CByEmaildate(cwbOrderDto.getCustomerid(), cwbOrderDto.getCustomerwarehouseid(), warehouseId, cwbOrderDto.getEmaildate());
 		}

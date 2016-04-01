@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,12 +19,13 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OperationTime;
 import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 
 @Component
 public class OperationTimeDAO {
 
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	private final class OperationTimeRowMapper implements RowMapper<OperationTime> {
 		@Override
 		public OperationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -375,7 +378,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		String sql = "select cwb from express_ops_operation_time  where nextbranchid=" + branchid + " " + "and credate>=" + time + " and flowordertype in(" + flowordertypes + ") ";
 		sql += " limit " + ((page - 1) * Page.DETAIL_PAGE_NUMBER) + "," + Page.DETAIL_PAGE_NUMBER;
@@ -397,7 +400,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		// 下一站 ， 时间， 状态
 		String sql = "select cwb from express_ops_operation_time  where nextbranchid=" + branchid + " " + "and credate>=" + time + " and flowordertype in(" + flowordertypes + ")  ";
@@ -417,7 +420,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate >=" + time + " and flowordertype in(" + flowordertypes + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
@@ -438,7 +441,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate >=" + time + " and flowordertype in(" + flowordertypes + ") "
 				+ " and cwbordertypeid in(" + cwbordertypeids + ")";
@@ -473,7 +476,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		String sql = "select cwb from express_ops_operation_time where branchid=" + branchid + " " + "and credate >=" + time + " and deliverystate=" + deliverystate + " and flowordertype ="
 				+ flowordertype;
@@ -494,7 +497,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate <" + time + " and flowordertype in(" + flowordertypes + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
@@ -514,7 +517,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate <" + time + " and flowordertype in(" + flowordertypes + ") "
 				+ " and cwbordertypeid in(" + cwbordertypeids + ") ";
@@ -549,7 +552,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		String sql = "select cwb from express_ops_operation_time  where nextbranchid=" + branchid + " " + "and credate <" + time + " and flowordertype in(" + flowordertypes + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
@@ -581,7 +584,7 @@ public class OperationTimeDAO {
 		try {
 			time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDayZeroTime).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		String sql = "select cwb from express_ops_operation_time  where branchid=" + branchid + " " + "and credate <" + time + " and deliverystate=" + deliverystate + " and flowordertype ="
 				+ flowordertype;

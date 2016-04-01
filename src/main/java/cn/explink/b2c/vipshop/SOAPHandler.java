@@ -66,7 +66,7 @@ public class SOAPHandler {
 			}
 
 		} catch (Throwable e) {
-			e.printStackTrace();
+			logger.error("", e);
 			throw new Exception("WebService服务链路异常:" + e.getMessage(), e);
 		} finally {
 			if (out != null) {

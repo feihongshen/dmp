@@ -63,8 +63,7 @@ public class TransCwbService implements CwbTranslator {
 				}
 			});
 		} catch (Exception e) {
-			logger.error("camel context start fail", e.getMessage());
-			e.printStackTrace();
+			logger.error("camel context start fail", e);
 		}
 
 	}
@@ -123,7 +122,7 @@ public class TransCwbService implements CwbTranslator {
 					oneTransToMoreCwbDao.updateTranscwb(dmpcwbOrder.getTranscwb(), dmpcwbOrder.getCwb());
 					logger.error("[亚马逊]插入set_onetranscwb_to_morecwbs 表异常，主键重复。已更新transcwb");
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					logger.error("", e1);
 				}
 			}
 		}

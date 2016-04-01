@@ -129,13 +129,8 @@ public class PunishController {
 				PunishController.this.securityContextHolderStrategy.setContext(scontext);
 				count = PunishController.this.processFile(excelExtractor, inputStream);
 			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-
-			}
-			/*
-			 * } });
-			 */
+				logger.error("", e);
+			} 
 		} else {
 		}
 		model.addAttribute("showData", 1);
@@ -513,7 +508,7 @@ public class PunishController {
 
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("", e);
 					}
 					return a;
 				}
@@ -521,7 +516,7 @@ public class PunishController {
 			excelUtil.excel(response, cloumnName3, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -561,7 +556,7 @@ public class PunishController {
 		try {
 			num = System.currentTimeMillis() - sdf.parse(time).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return 30 >= (num / (24 * 60 * 60 * 1000));
 

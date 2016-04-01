@@ -19,8 +19,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class JMath {
+	
+	private static Logger logger = LoggerFactory.getLogger(JMath.class);
+	
 	public JMath() {
 	}
 
@@ -113,8 +119,7 @@ public class JMath {
 		try {
 			excelbranch = new String(excelbranch.getBytes("GBK"), "iso8859-1");
 		} catch (UnsupportedEncodingException e1) {
-
-			e1.printStackTrace();
+			logger.error("", e1);
 		}
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 		GregorianCalendar thisday = new GregorianCalendar(); // 现在的时间
@@ -131,9 +136,9 @@ public class JMath {
 			fOut.flush();
 			fOut.close();// 操作结束，关闭文件
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
-		System.out.println("文件生成...");
+		logger.info("文件生成...");
 	}
 
 	/**
@@ -203,13 +208,13 @@ public class JMath {
 				fs.close();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} finally {
 			try {
 				inStream.close();
 				fs.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 
 		}
@@ -231,7 +236,7 @@ public class JMath {
 				myDelFile.delete();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

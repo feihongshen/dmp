@@ -9,6 +9,8 @@ import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,8 @@ import cn.explink.util.pos.RSACoder;
 public class TlmposInterfaceTest {
 	@Autowired
 	TlmposService tlmposService;
+	
+	private static Logger logger = LoggerFactory.getLogger(TlmposInterfaceTest.class);
 
 	private String RequestXML(String content) throws Exception {
 
@@ -64,7 +68,7 @@ public class TlmposInterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -79,11 +83,9 @@ public class TlmposInterfaceTest {
 
 		String xmlstr = XML_payAmount(cwb, delivery_man, payamount, tlmpos);
 		try {
-			// System.out.println(RequestXML(xmlstr));
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -95,11 +97,9 @@ public class TlmposInterfaceTest {
 		Tlmpos tlmpos = tlmposService.gettlmposSettingMethod(PosEnum.TongLianPos.getKey()); // 获取配置信息
 		String xmlstr = XML_sign(cwb, delivery_man, tlmpos);
 		try {
-			// System.out.println(RequestXML(xmlstr));
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -114,8 +114,7 @@ public class TlmposInterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -131,8 +130,7 @@ public class TlmposInterfaceTest {
 
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -225,15 +223,14 @@ public class TlmposInterfaceTest {
 		String xmlsB = xmltrim.substring(0, xmltrim.indexOf("<MAC>"));
 		String xmlsE = xmltrim.substring(xmltrim.indexOf("</MAC>") + 6, xmltrim.indexOf("</Transaction>"));
 		String checkMACdata = xmlsB + xmlsE;
-		System.out.println("签名验证的内容:" + checkMACdata);
+		logger.info("签名验证的内容:" + checkMACdata);
 		// 验证签名
 		boolean checkMACflag = false;
 		try {
 			checkMACflag = RSACoder.verify(checkMACdata.getBytes(), public_key, MAC);
-			System.out.println(checkMACflag);
+			logger.info(String.valueOf(checkMACflag));
 		} catch (Exception e) {
-			System.out.println("alipay签名验证异常!业务编码MI10001");
-			e.printStackTrace();
+			logger.error("alipay签名验证异常!业务编码MI10001", e);
 		}
 
 		return checkMACflag;
@@ -242,7 +239,7 @@ public class TlmposInterfaceTest {
 	public static void main(String[] args) {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Transaction><Transaction_Header><transaction_id>MI0001</transaction_id><requester>alipay</requester><target>HWHQ</target><request_time>20130614173419</request_time><version>1.0</version><MAC>BX0weQBxYqFdO32cvZm58rPq3Sx51CwMAN/8Z0MAbtVeewJOifXsOS8Sd+Z1mGHuhLGPwthzTnWdbsNnHYV4loDx+/fmZxvpsqbTBXesWl9LqcDxQ5IG09kqp4+jMNYjTIv4dW8qM1IjP+JiZinBQr0XtaN9YE0f5P2qZgMWonk=</MAC></Transaction_Header><Transaction_Body><delivery_man>1217</delivery_man><password>E1ADC3949BA59ABBE56E057F2F883E</password></Transaction_Body></Transaction>";
 
-		System.out.println(ValidateMAC_publicMethod(xml));
+		logger.info(String.valueOf(ValidateMAC_publicMethod(xml)));
 
 	}
 

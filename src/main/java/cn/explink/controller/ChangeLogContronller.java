@@ -61,9 +61,10 @@ import cn.explink.util.baiduAPI.ReGeoCoderResult;
 @RequestMapping("/changeLog")
 public class ChangeLogContronller {
 
+	private static Logger logger = LoggerFactory.getLogger(ChangeLogContronller.class);
+	
 	@Autowired
 	UserService userService;
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
@@ -100,11 +101,11 @@ public class ChangeLogContronller {
 	@RequestMapping("/stop")
 	public String stop(Model model) {
 		GeoPoint position = GeoCoder.getInstance().getGeoCoder().GetLocationDetails("海南海口市龙华区南沙路61号海南电视台住宅区5栋302");
-		System.out.println(position.getLat());
-		System.out.println(position.getLng());
+		logger.info("纬度值 = " + position.getLat());
+		logger.info("经度值 = " + position.getLng());
 		ReGeoCoderResult reG = GeoCoder.getInstance().getGeoCoder().GetAddress(position.getLng(),position.getLat());
-		System.out.println(reG.getAddressComponent().getCity());
-		System.out.println(reG.getAddressComponent().getDistrict());
+		logger.info(reG.getAddressComponent().getCity());
+		logger.info(reG.getAddressComponent().getDistrict());
 		model.addAttribute("msg", "迁移数据,已停止");
 		return "/changeLog/tuotouChange";
 	}
@@ -124,7 +125,7 @@ public class ChangeLogContronller {
 	}
 	@RequestMapping("/changeFlow")
 	public String changeFlow(Model model) {
-		System.out.println("开始");
+		logger.info("开始");
 		  File f2 = new File("/home/apps/bakdata/detail.sql");
 		  //int b=0;
 		  try {
@@ -147,9 +148,9 @@ public class ChangeLogContronller {
 				
 			}
 		   writer.close();
-		   System.out.println("完成");
+		   logger.info("完成");
 		  } catch (Exception e) {
-		   e.printStackTrace();
+			  logger.error("",e);
 		  }
 		return "/changeLog/tuotouChange";
 	}
@@ -164,7 +165,7 @@ public class ChangeLogContronller {
 	public static void main(String[] args) {
 		int i = (int)5400/30;
 		String emaildate = DateTimeUtil.getNeedDate("2014-12-01 00:00:00",i) +" 00:00:00";
-		System.out.println(emaildate); 
+		logger.info("emaildate = " + emaildate);
 		
 	}
 	@RequestMapping("/changeFlowChange")
@@ -221,9 +222,8 @@ public class ChangeLogContronller {
 			    	
 			    
 			       } catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			    }
+			    	   logger.error("",e);
+			       }
 			}});
 		    logger.info("迁移数据,时间从：{}到{},emaildateid个数："+emaildateList.size()+",完成第"+(emaildateList.indexOf(e)+1)+"个,emaildateid:"+e.getEmaildateid(),startTime,endTime);
 		}
@@ -261,7 +261,7 @@ public class ChangeLogContronller {
 					return "/changeLog/tuotouChange";
 				}
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.error("",e1);
 			}
 			long emaildatemaxid = emailDateDAO.getEmailDateMaxid();
 
@@ -309,7 +309,7 @@ public class ChangeLogContronller {
 									logger.error("获取当前用户信息异常", e);
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error("",e);
 							}
 						}
 					});
@@ -343,8 +343,7 @@ public class ChangeLogContronller {
 					return "/changeLog/tuotouChange";
 				}
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				logger.error("",e1);
 			}
 			String[] cwbss = cwbs.trim().split("\r\n");
 			String cwbStr = "";
@@ -377,8 +376,7 @@ public class ChangeLogContronller {
 							logger.error("获取当前用户信息异常", e);
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error("",e);
 					}
 				}
 			});
@@ -441,8 +439,7 @@ public class ChangeLogContronller {
 						cwbOrderService.updateOrInsertWareHouseToBranch(rs.getLong("branchid"), rs.getString("cwb"), Long.parseLong(nextbranchid),
 								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("credate")));
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error("",e);
 					}
 				}
 			});
@@ -474,8 +471,7 @@ public class ChangeLogContronller {
 					return "/changeLog/floworderChange";
 				}
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				logger.error("",e1);
 			}
 			List<EmailDate> emaildateList = emailDateDAO.getEmailDateByEmaildate(startTime, endTime);
 			logger.info("开始迁移数据,emaildate时间从：{}到{}", startTime, endTime);
@@ -513,8 +509,7 @@ public class ChangeLogContronller {
 									logger.error("获取当前用户信息异常", e);
 								}
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								logger.error("",e);
 							}
 						}
 					});
@@ -550,8 +545,7 @@ public class ChangeLogContronller {
 					return "/changeLog/floworderChange";
 				}
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				logger.error("",e1);
 			}
 			String[] cwbss = cwbs.trim().split("\r\n");
 			String cwbStr = "";
@@ -584,8 +578,7 @@ public class ChangeLogContronller {
 							logger.error("获取当前用户信息异常", e);
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error("",e);
 					}
 				}
 			});
@@ -625,7 +618,7 @@ public class ChangeLogContronller {
 					return "/changeLog/accountNeedChange";
 				}
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.error("",e1);
 			}
 			List<EmailDate> emaildateList = emailDateDAO.getEmailDateByEmaildate(startTime, endTime);
 			logger.info("开始迁移财务数据,emaildate时间从：{}到{}", startTime, endTime);
@@ -663,7 +656,7 @@ public class ChangeLogContronller {
 									logger.error("获取当前用户信息异常", e);
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error("",e);
 							}
 						}
 					});
@@ -699,7 +692,7 @@ public class ChangeLogContronller {
 					return "/changeLog/accountNeedChange";
 				}
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.error("",e1);
 			}
 			String[] cwbss = cwbs.trim().split("\r\n");
 			String cwbStr = "";
@@ -731,7 +724,7 @@ public class ChangeLogContronller {
 							logger.error("获取当前用户信息异常", e);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("",e);
 					}
 				}
 			});
@@ -818,7 +811,7 @@ public class ChangeLogContronller {
 									logger.error("上门退订单迁移", e);
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error("",e);
 							}
 						}
 					});
@@ -881,7 +874,7 @@ public class ChangeLogContronller {
 							logger.error("上门退订单按订单迁移", e);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("",e);
 					}
 				}
 			});
@@ -916,7 +909,7 @@ public class ChangeLogContronller {
 					}
 
 					for (Map.Entry<Long, String> entry : cwbsAndGroupid.entrySet()) {
-						System.out.print(entry.getKey() + ":" + entry.getValue() + "\t");
+						logger.info(entry.getKey() + ":" + entry.getValue() + "\t");
 						outwarehousegroupDao.saveOutWarehouseGroupByid(entry.getValue().substring(1, entry.getValue().length()), entry.getKey());
 					}
 				}
@@ -965,7 +958,7 @@ public class ChangeLogContronller {
 						}
 						operationTimeDAO.updateOperationTimeBycwb(rs.getString("cwb"), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("credate")));
 					} catch (Exception e) {
-						e.printStackTrace();
+					    logger.error("",e);
 						return;
 					}
 				}
@@ -994,7 +987,7 @@ public class ChangeLogContronller {
 						}
 						operationTimeDAO.updateOperationTimeBycwb(rs.getString("cwb"), rs.getString("emaildate"), rs.getLong("customerid"));
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("",e);
 						return;
 					}
 				}

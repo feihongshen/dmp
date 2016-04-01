@@ -182,7 +182,7 @@ public class ChinaUmsService {
 				}
 				return DealWithchinaumsInterface(chinaUms, xmlstr, rootnote);
 			} catch (Exception e) {
-				e.printStackTrace();
+				this.logger.error("", e);
 				return "Convert XML to Transaction Bean Exception! reason=" + e;
 			}
 
@@ -250,7 +250,6 @@ public class ChinaUmsService {
 
 		} catch (Exception e) {
 			logger.error("处理chinaums请求发生异常，异常原因：", e);
-			e.printStackTrace();
 			return "处理chinaums请求发生异常" + e.getMessage();
 		}
 		return "暂无此接口" + transaction_id;
@@ -270,18 +269,16 @@ public class ChinaUmsService {
 		String key = chinaUms.getPrivate_key();
 		String str1 = MD5Util.md5(key);// 约定的私钥,加密后得到32位私钥
 		logger.info(transtype + "需要验证的内容:" + strb.toString() + str1);
-		System.out.println(transtype + "需要验证的内容:" + strb.toString() + str1);
 		String str2 = MD5Util.md5(strb.toString() + str1).toUpperCase();// 去掉mac节点剩下的所有的报文加上私钥进行ＭＤ５加密
 		logger.info(transtype + "签名验证的内容:" + str2);
 		logger.info(transtype + "签名验证mac:" + mac);
-		System.out.println(transtype + "签名验证的内容:" + str2);
 		// 验证签名
 		boolean checkMACflag = false;
 		try {
 			checkMACflag = str2.equals(mac);
 		} catch (Exception e) {
 			logger.error("chinaums签名验证异常!");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return checkMACflag;
 	}
@@ -299,7 +296,6 @@ public class ChinaUmsService {
 			MAC = MD5Util.md5(str.toString() + MD5Util.md5(chinaUms.getPrivate_key()));
 		} catch (Exception e) {
 			logger.error("移动POS(chinaums):返回签名加密异常!", e);
-			e.printStackTrace();
 		}
 		return MAC;
 	}

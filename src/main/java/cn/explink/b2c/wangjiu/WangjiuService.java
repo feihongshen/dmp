@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -27,6 +28,7 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.service.CustomerService;
 
 @Service
 public class WangjiuService {
@@ -42,6 +44,8 @@ public class WangjiuService {
 	DataImportDAO_B2c dataImportDAO_B2c;
 	@Autowired
 	CustomWareHouseDAO customWareHouseDAO;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -57,6 +61,7 @@ public class WangjiuService {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Wangjiu wangjiu = new Wangjiu();
 		String customerid = request.getParameter("customerid");
@@ -91,6 +96,7 @@ public class WangjiuService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

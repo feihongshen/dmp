@@ -138,24 +138,33 @@ public class BJUnionIml implements BJUnionInterface{
 		String orderno = map.get("order_no");
 		String cwbTransCwb = this.cwbOrderService.translateCwb(orderno);
 		CwbOrder co = this.cwbDao.getCwbByCwb(cwbTransCwb);
-		
+
 		if(co == null){
 			map.put("response_code", ResponseEnum.ChaXunYiChang.getResponse_code());
 			map.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_msg());
 		}else{
-			map.put("response_code", ResponseEnum.success.getResponse_code());
-			map.put("response_msg", ResponseEnum.success.getResponse_msg());
-			amt = co.getReceivablefee().toString();
-			consignee = co.getConsigneename();
-			consignee_contact  = co.getConsigneemobile();
-			consignee_address = co.getConsigneeaddress();
-			statusMap = getStatus(co);
-			Iterator it=statusMap.keySet().iterator();
-			while(it.hasNext()){
-				Object key=it.next();
-				status = key.toString();
-				desc = statusMap.get(status);
-			} 
+			long deliverid = co.getDeliverid();
+			User user = this.userDAO.getAllUserByid(deliverid);
+			//如果当前请求的小件员登录名与订单明细中指定的小件员登录名不一致不允许查件 added by zhouguoting 2016/3/24 
+			if(null == user.getUsername() || !map.get("employno").equals(user.getUsername())){
+				map.put("response_code", ResponseEnum.ChaXunYiChang.getResponse_code());
+				map.put("response_msg", ResponseEnum.ChaXunYiChang.getResponse_msg());
+			}
+			else{
+				map.put("response_code", ResponseEnum.success.getResponse_code());
+				map.put("response_msg", ResponseEnum.success.getResponse_msg());
+				amt = co.getReceivablefee().toString();
+				consignee = co.getConsigneename();
+				consignee_contact  = co.getConsigneemobile();
+				consignee_address = co.getConsigneeaddress();
+				statusMap = getStatus(co);
+				Iterator it=statusMap.keySet().iterator();
+				while(it.hasNext()){
+					Object key=it.next();
+					status = key.toString();
+					desc = statusMap.get(status);
+				} 
+			}
 		}
 		String responseXmlbeforemac = getheader(map);
 		String middle = 

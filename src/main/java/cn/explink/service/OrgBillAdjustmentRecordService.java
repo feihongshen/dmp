@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,8 @@ public class OrgBillAdjustmentRecordService {
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	private Logger logger = LoggerFactory.getLogger(OrgBillAdjustmentRecordService.class);
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -148,7 +152,7 @@ public class OrgBillAdjustmentRecordService {
 			try {
 				record.setSignTime(this.sdf.parse(deliveryState.getSign_time()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			record.setPayWayChangeFlag(0);
 			this.orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
@@ -210,7 +214,7 @@ public class OrgBillAdjustmentRecordService {
 			try {
 				record.setSignTime(this.sdf.parse(deliveryState.getSign_time()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			record.setPayWayChangeFlag(0);
 			// 调整金额为货款调整
@@ -249,7 +253,7 @@ public class OrgBillAdjustmentRecordService {
 			try {
 				record.setSignTime(this.sdf.parse(deliveryState.getSign_time()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			record.setPayWayChangeFlag(0);
 			record.setModifyFee(ec_dsd.getOriInfactfare());
@@ -302,7 +306,7 @@ public class OrgBillAdjustmentRecordService {
 			try {
 				record.setSignTime(this.sdf.parse(deliverystate.getSign_time()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			record.setPayWayChangeFlag(0);
 			// 调整金额为货款调整
@@ -341,7 +345,7 @@ public class OrgBillAdjustmentRecordService {
 			try {
 				record.setSignTime(this.sdf.parse(deliverystate.getSign_time()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			record.setPayWayChangeFlag(0);
 			// 调整金额为运费调整
@@ -483,7 +487,7 @@ public class OrgBillAdjustmentRecordService {
 		try {
 			record.setSignTime(this.sdf.parse(deliveryState.getSign_time()));
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		this.orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 	}

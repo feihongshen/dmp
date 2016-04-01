@@ -19,7 +19,7 @@ public class AddressInterController {
 	@Autowired
 	AddressInterService addressIngerService;
 
-	private Logger logger = LoggerFactory.getLogger(AddressInterController.class);
+	private static Logger logger = LoggerFactory.getLogger(AddressInterController.class);
 
 	@RequestMapping("/testaddressvip")
 	public String actiondetail() {
@@ -51,7 +51,7 @@ public class AddressInterController {
 			logger.info("唯品会匹配站点: 地址：请求xml------{}", xml);
 			return addressIngerService.getAddress(xml);
 		} catch (Exception e) {
-			logger.error("唯品会请求地址库 遇见不可预知的错误！" + e);
+			logger.error("唯品会请求地址库 遇见不可预知的错误！", e);
 			return null;
 		}
 	}
@@ -59,6 +59,6 @@ public class AddressInterController {
 	public static void main(String[] arg) {
 		String xml = "<request>" + "<head>" + "<usercode>VIPSHOP</usercode>" + "<batchno>2013072312341034</batchno>" + "</head>" + "<items>" + "<item>" + "<itemno>1</itemno>"
 				+ "<address><![CDATA[北京东城区和平里安贞苑]]></address>" + "</item>" + "<item>" + "<itemno>2</itemno>" + "<address><![CDATA[北京朝阳区小关惠新北里]]></address>" + "</item>" + "</items>" + "</request>";
-		System.out.println("xml:" + xml);
+		logger.info("xml:" + xml);
 	}
 }

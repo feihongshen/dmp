@@ -10,6 +10,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
  * SQL SERVER 分页类
  * <p>
@@ -32,6 +36,9 @@ import javax.servlet.http.HttpServletRequest;
  * @version 1.0
  */
 public class PageQueryForSqlserver {
+	
+	private static Logger logger = LoggerFactory.getLogger(PageQueryForSqlserver.class);
+	
 	int intPageSize = 20; // 一页显示的记录数
 	int intRowCount; // 记录总数
 	int intPageCount; // 总页数
@@ -63,7 +70,7 @@ public class PageQueryForSqlserver {
 				intRowCount = rs.getRow();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		intPageCount = (intRowCount + intPageSize - 1) / intPageSize; // 记算总页数
 		if (intPage > intPageCount)
@@ -90,7 +97,7 @@ public class PageQueryForSqlserver {
 			if (rs != null)
 				rs.close();
 		} catch (SQLException se) {
-			se.printStackTrace();
+			logger.error("", se);
 		}
 
 		return datalist;
@@ -142,7 +149,7 @@ public class PageQueryForSqlserver {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		intPageCount = (intRowCount + intPageSize - 1) / intPageSize; // 记算总页数
 		if (intPage > intPageCount)
@@ -170,7 +177,7 @@ public class PageQueryForSqlserver {
 			if (rs != null)
 				rs.close();
 		} catch (SQLException se) {
-			se.printStackTrace();
+			logger.error("", se);
 		}
 
 		return datalist;

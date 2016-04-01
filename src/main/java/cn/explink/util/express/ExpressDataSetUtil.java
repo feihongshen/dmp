@@ -3,6 +3,9 @@ package cn.explink.util.express;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.explink.domain.VO.express.ExpressImportFiled;
 import cn.explink.domain.express.ExpressFreightBillImportDetail;
 
@@ -16,6 +19,8 @@ public class ExpressDataSetUtil {
 
 	private static List<ExpressImportFiled> list = new ArrayList<ExpressImportFiled>();
 
+	private static Logger logger = LoggerFactory.getLogger(ExpressDataSetUtil.class);
+	
 	static {
 		ExpressImportFiled filed1 = new ExpressImportFiled("运单号", "orderNo", "java.lang.String", "", "");
 		ExpressImportFiled filed2 = new ExpressImportFiled("件数", "goodNum", "java.lang.Integer", "", "");
@@ -65,7 +70,7 @@ public class ExpressDataSetUtil {
 				hList.add(data_helper);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return hList;
 	}

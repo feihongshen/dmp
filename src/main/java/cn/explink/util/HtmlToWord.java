@@ -8,9 +8,13 @@ import java.io.IOException;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HtmlToWord {
 
+	private static Logger logger = LoggerFactory.getLogger(HtmlToWord.class);
+	
 	public static boolean writeWordFile(String content, String fileName) {
 		boolean w = false;
 		String path = "d:/exprotFile";
@@ -38,7 +42,7 @@ public class HtmlToWord {
 				ostream.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return w;
 	}

@@ -29,15 +29,13 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.PosEnum;
-import cn.explink.pos.unionpay.UnionPay;
-import cn.explink.pos.unionpay.UnionPayTradetypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
 @Service
 public class EtongService {
-	private Logger logger = LoggerFactory.getLogger(EtongService.class);
+	private static Logger logger = LoggerFactory.getLogger(EtongService.class);
 	@Autowired
 	JiontDAO jiontDAO;
 	@Autowired
@@ -196,14 +194,11 @@ public class EtongService {
 		try {
 			reponse = jacksonmapper.writeValueAsString(resp);
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return reponse;

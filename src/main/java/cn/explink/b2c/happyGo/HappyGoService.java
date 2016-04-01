@@ -12,7 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
@@ -21,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.explink.b2c.jumei.AnalyzXMLJuMeiHandler;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -41,6 +45,7 @@ import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.util.DateTimeUtil;
@@ -79,7 +84,9 @@ public class HappyGoService {
 	JointService jointService;
 	@Autowired
 	B2cAutoDownloadMonitorDAO b2cAutoDownloadMonitorDAO;
-	private Logger logger = LoggerFactory.getLogger(HappyGoService.class);
+	@Autowired
+	CustomerService customerService;
+	private static Logger logger = LoggerFactory.getLogger(HappyGoService.class);
 
 	/**
 	 * 出库批次导入
@@ -125,7 +132,7 @@ public class HappyGoService {
 
 	public static void main(String[] args) {
 		String customerids = "134";
-		System.out.println(customerids.indexOf(",") > 0);
+		logger.error("", String.valueOf(customerids.indexOf(",") > 0));
 	}
 
 	public void judgmentLanded(HappyGo happy) {
@@ -175,7 +182,6 @@ public class HappyGoService {
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("快乐购异常", e);
 		}
 
@@ -226,7 +232,6 @@ public class HappyGoService {
 						}
 					} catch (Exception e) {
 						logger.error("快乐购插入新表异常", e);
-						e.printStackTrace();
 					}
 				}
 
@@ -336,7 +341,6 @@ public class HappyGoService {
 				return 0;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("快乐购下载出库明细订单信息异常," + e);
 			return 0;
 		}
@@ -438,8 +442,7 @@ public class HappyGoService {
 				return 0;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("快乐购回收下载出库明细订单信息异常," + e.getMessage());
+			logger.error("快乐购回收下载出库明细订单信息异常", e);
 			return 0;
 		}
 	}
@@ -518,7 +521,6 @@ public class HappyGoService {
 							continue;
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
 						logger.error("异常", e);
 					}
 					map.put("cwbordertypeid", String.valueOf(CwbOrderTypeIdEnum.Shangmenhuan.getValue()));
@@ -662,6 +664,7 @@ public class HappyGoService {
 		jiontDAO.UpdateState(joint_num, state);
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		HappyGo happy = new HappyGo();
 		String key = StringUtil.nullConvertToEmptyString(request.getParameter("key"));
@@ -704,6 +707,7 @@ public class HappyGoService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(happy.getCustomerid(), oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	private String requestXMl(int pagesize, HappyGo happy) {
@@ -779,15 +783,14 @@ public class HappyGoService {
 			int code = hcon.getResponseCode();
 			if (code == 200) {
 				value = text;
-				// System.out.println(value);
 			} else {
-				System.out.println("错误代码" + code);
+				logger.info("错误代码" + code);
 			}
 		} catch (Exception e) {
 			try {
 				throw new Exception("dealRequest,调用远程接口失败，接口不可达或中途出现异常，详细错误信息：" + e.getMessage(), e);
 			} catch (Exception e1) {
-				e1.printStackTrace();
+				logger.error("", e1);
 			}
 		} finally {
 			try {
@@ -807,7 +810,7 @@ public class HappyGoService {
 				try {
 					throw new Exception("dealRequest,调用远程接口失败，资源释放异常，详细错误信息：" + e.getMessage(), e);
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					logger.error("", e1);
 				}
 			}
 		}
@@ -837,7 +840,6 @@ public class HappyGoService {
 						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
 					logger.error("快乐购插入新表异常", e);
 				}
 			}
@@ -884,14 +886,12 @@ public class HappyGoService {
 						dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
 					} catch (Exception e) {
 						logger.error("[快乐购]定时器临时表插入执行异常!", e);
-						e.printStackTrace();
 					}
 				}
 
 			}
 		} catch (Exception e) {
 			logger.error("[快乐购]定时器临时表插入或修改方法执行异常!", e);
-			e.printStackTrace();
 		}
 	}
 
@@ -930,14 +930,12 @@ public class HappyGoService {
 						}
 						dataImportDAO_B2c.updateHappyGoByCwb(cwbOrder.getOpscwbid());
 					} catch (Exception e) {
-						logger.error("定时器异常" + e);
-						e.printStackTrace();
+						logger.error("定时器异常", e);
 					}
 				}
 			}
 		} catch (Exception e) {
 			logger.error("[快乐购]定时器临时表插入或修改方法执行异常!", e);
-			e.printStackTrace();
 		}
 	}
 
@@ -973,8 +971,7 @@ public class HappyGoService {
 					happyGoUsedDao.getupdateStateBybatchname(PICI);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("快乐购回收下载出库明细订单信息异常," + e.getMessage());
+				logger.error("快乐购回收下载出库明细订单信息异常", e);
 				return "7回收异常";
 			}
 		} else {
@@ -1010,7 +1007,6 @@ public class HappyGoService {
 					happyGoUsedDao.getupdateStateBybatchname(PICI);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
 				logger.error("快乐购下载出库明细订单信息异常," + e);
 				return "2出库异常";
 			}
@@ -1049,14 +1045,12 @@ public class HappyGoService {
 
 						}
 					} catch (Exception e) {
-						logger.error("定时器异常" + e);
-						e.printStackTrace();
+						logger.error("定时器异常", e);
 					}
 				}
 			}
 		} catch (Exception e) {
 			logger.error("[快乐购]定时器临时表插入或修改方法执行异常!", e);
-			e.printStackTrace();
 		}
 
 	}

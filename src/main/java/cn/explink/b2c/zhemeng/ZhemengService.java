@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkService;
 import cn.explink.b2c.tools.B2cEnum;
@@ -34,6 +35,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.util.MD5.MD5Util;
@@ -66,6 +68,8 @@ public class ZhemengService {
 	ExplinkService explinkService;
 	@Autowired
 	CwbDAO cwbDAO;
+	@Autowired
+	CustomerService customerService;
 	
 	
 	public String getObjectMethod(int key) {
@@ -82,6 +86,7 @@ public class ZhemengService {
 		return jx;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Zhemeng zm = new Zhemeng();
 		zm.setPrivate_key(request.getParameter("private_key"));
@@ -112,6 +117,7 @@ public class ZhemengService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerid, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

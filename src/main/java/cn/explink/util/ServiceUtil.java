@@ -5,12 +5,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.util.impl.RedisMapImpl;
 
 public class ServiceUtil {
 
+	private static Logger logger = LoggerFactory.getLogger(ServiceUtil.class);
+	
 	public static final String jspPath = File.separator + "mould" + File.separator;
 	public static final String xlsPath = "xls\\";
 	public static final String wavPath = "/wav/";
@@ -26,7 +30,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}
@@ -38,7 +42,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}
@@ -50,7 +54,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}

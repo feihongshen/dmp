@@ -9,7 +9,13 @@ import java.util.jar.Manifest;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ManifestUtil {
+	
+	private static Logger logger = LoggerFactory.getLogger(ManifestUtil.class);
+	
 	public static String getSvnRevision(HttpServletRequest request) {
 
 		try {
@@ -20,9 +26,9 @@ public class ManifestUtil {
 			Attributes atts = mf.getMainAttributes();
 			return atts.getValue("SVN-Revision");
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return "";
 

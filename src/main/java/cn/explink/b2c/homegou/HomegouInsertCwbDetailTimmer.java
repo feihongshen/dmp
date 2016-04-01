@@ -96,8 +96,7 @@ public class HomegouInsertCwbDetailTimmer {
 				dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
 			}
 		} catch (Exception e) {
-			logger.error("0家有购物0定时器临时表插入或修改方法执行异常!异常原因:" + e);
-			e.printStackTrace();
+			logger.error("0家有购物0定时器临时表插入或修改方法执行异常!异常原因", e);
 		}
 	}
 

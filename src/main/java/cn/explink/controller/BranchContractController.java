@@ -302,14 +302,13 @@ public class BranchContractController {
 				// this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				// this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
-				this.logger
-						.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
+				this.logger.error("", e);
 			}
 
 			this.logger.info("operatorUser={},机构管理->createFile", this
@@ -364,14 +363,13 @@ public class BranchContractController {
 				// this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
-				this.logger
-						.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
+				this.logger.error("", e);
 			}
 			this.logger.info("operatorUser={},机构管理->create,站点名称：{}", this
 					.getSessionUser().getUsername(), branchname);
@@ -449,14 +447,13 @@ public class BranchContractController {
 				this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
-				this.logger
-						.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
+				this.logger.error("", e);
 			}
 
 			this.logger.info("operatorUser={},机构管理->saveFile", this
@@ -524,14 +521,13 @@ public class BranchContractController {
 				this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
-				this.logger
-						.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
+				this.logger.error("", e);
 			}
 			this.logger.info("operatorUser={},机构管理->save,站点名称：{}", this
 					.getSessionUser().getUsername(), branch.getBranchname());
@@ -740,8 +736,7 @@ public class BranchContractController {
 				toClient.close();
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 	

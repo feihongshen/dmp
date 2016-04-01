@@ -320,10 +320,10 @@ public class OrderDeliveryClientService {
 											cell.setCellValue(a == null ? "" : a.toString());
 											// }
 										} catch (Exception e) {
-											e.printStackTrace();
+											logger.error("", e);
 										}
 									} catch (IllegalArgumentException e) {
-										e.printStackTrace();
+										logger.error("", e);
 									}
 								}
 								count++;
@@ -334,7 +334,7 @@ public class OrderDeliveryClientService {
 				excelUtil.excel(response, cloumnName4, sheetName, fileName);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -413,10 +413,10 @@ public class OrderDeliveryClientService {
 										cell.setCellValue(a == null ? "" : a.toString());
 										// }
 									} catch (Exception e) {
-										e.printStackTrace();
+										logger.error("", e);
 									}
 								} catch (IllegalArgumentException e) {
-									e.printStackTrace();
+									logger.error("", e);
 								}
 							}
 							count++;
@@ -426,7 +426,7 @@ public class OrderDeliveryClientService {
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

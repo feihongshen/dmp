@@ -93,10 +93,10 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	ObjectMapper objectMapper = new ObjectMapper();
 	ObjectReader orderFlowReader = this.objectMapper.reader(OrderFlow.class);
 
-	private Logger logger = LoggerFactory.getLogger(SmsSendService.class);
+	private static Logger logger = LoggerFactory.getLogger(SmsSendService.class);
 
 	public void init() {
-		this.logger.info("init sms camel routes");
+		logger.info("init sms camel routes");
 		try {
 			final String smsConsumerCount = this.systemInstallService.getParameter("sms.consumerCount", "1");
 			this.camelContext.addRoutes(new RouteBuilder() {
@@ -106,7 +106,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 				}
 			});
 		} catch (Exception e) {
-			this.logger.error("camel context start fail", e);
+			logger.error("camel context start fail", e);
 		}
 
 	}
@@ -194,15 +194,15 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 						try {
 							int returnValue = SingletonClient.getClient(smsConf.getName(), smsConf.getPassword()).sendSMS(new String[] { mobileIds }, strMsg, "", 5);
 
-							this.logger.info("亿美sms send return value：{}", returnValue);
+							logger.info("亿美sms send return value：{}", returnValue);
 							// 获取短信剩余条数，剩余warningSwitch条时发送预警
 							String balance = SingletonClient.getClient().getBalance();
 							if (balance.equals("27") || balance.equals("303") || balance.equals("305") || balance.equals("999")) {
-								this.logger.info("亿美sms get Balance 异常码：{}", balance);
+								logger.info("亿美sms get Balance 异常码：{}", balance);
 								this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), "亿美返回异常吗：" + balance, ids);
 							} else {
 								Double strRet = Double.valueOf(balance) * 10;
-								this.logger.info("亿美sms get Balance：{}", strRet);
+								logger.info("亿美sms get Balance：{}", strRet);
 
 								if (smsConf.getMonitor() == 1) {// 判断是否打开监控开关
 																// flage == 1
@@ -213,7 +213,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 											String warningMobileIds = smsConf.getPhone(); // 预警手机号
 											String warningStrMsg = smsConf.getWarningcontent(); // 预警内容
 											returnValue = SingletonClient.getClient().sendSMS(warningMobileIds.split(","), warningStrMsg, "", 5);
-											this.logger.info("亿美sms预警 send return value：{}", returnValue);
+											logger.info("亿美sms预警 send return value：{}", returnValue);
 											SmsSendService.wmgwLocator.getwmgwSoap().mongateCsSendSmsEx(smsConf.getName(), smsConf.getPassword(), warningMobileIds, warningStrMsg,
 													warningMobileIds.split(",").length);
 										}
@@ -226,7 +226,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 								}
 							}
 						} catch (Exception e) {
-							this.logger.error("亿美sms send error");
+							logger.error("亿美sms send error");
 							// 更新短信发送记录状态
 							this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), e.getMessage() == null ? "发送过程出现异常" : e.getMessage().length() > 200 ? e.getMessage() : e
 									.getMessage().substring(e.getMessage().length() - 199), ids);
@@ -266,15 +266,15 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 				return "没有设置短信账户";
 			}
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			this.logger.error("接口调用发生异常  ids:{}", ids);
+			logger.error("接口调用发生异常 ", e);
+			logger.error("接口调用发生异常  ids:{}", ids);
 			// 更新短信发送记录状态
 			this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(),
 					e.getMessage() == null ? "接口调用发生异常" : e.getMessage().length() > 200 ? e.getMessage() : e.getMessage().substring(e.getMessage().length() - 199), ids);
 			return "接口调用发生异常";
 		} catch (ServiceException e) {
-			e.printStackTrace();
-			this.logger.error("接口调用发生异常  ids:{}", ids);
+			logger.error("接口调用发生异常 ", e);
+			logger.error("接口调用发生异常  ids:{}", ids);
 			// 更新短信发送记录状态
 			this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(),
 					e.getMessage() == null ? "接口调用发生异常" : e.getMessage().length() > 200 ? e.getMessage() : e.getMessage().substring(e.getMessage().length() - 199), ids);
@@ -325,15 +325,15 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 				return "短信账户余额不足！";
 			}
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			this.logger.error("接口调用发生异常  ids:{}", ids);
+			logger.error("接口调用发生异常 ", e);
+			logger.error("接口调用发生异常  ids:{}", ids);
 			// 更新短信发送记录状态
 			this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(),
 					e.getMessage() == null ? "接口调用发生异常" : e.getMessage().length() > 200 ? e.getMessage() : e.getMessage().substring(e.getMessage().length() - 199), ids);
 			return "接口调用发生异常";
 		} catch (ServiceException e) {
-			e.printStackTrace();
-			this.logger.error("接口调用发生异常  ids:{}", ids);
+			logger.error("接口调用发生异常 ", e);
+			logger.error("接口调用发生异常  ids:{}", ids);
 			// 更新短信发送记录状态
 			this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(),
 					e.getMessage() == null ? "接口调用发生异常" : e.getMessage().length() > 200 ? e.getMessage() : e.getMessage().substring(e.getMessage().length() - 199), ids);
@@ -390,16 +390,16 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 
 						try {
 							int returnValue = SingletonClient.getClient(smsConf.getName(), smsConf.getPassword()).sendSMS(new String[] { mobileIds }, strMsg, "", 5);// 当当的渠道一定要加签名
-							this.logger.info("亿美sms send return value：{}", returnValue);
+							logger.info("亿美sms send return value：{}", returnValue);
 							// 获取短信剩余条数，剩余warningSwitch条时发送预警
 
 							String balance = SingletonClient.getClient().getBalance();
 							if (balance.equals("27") || balance.equals("303") || balance.equals("305") || balance.equals("999")) {
-								this.logger.info("亿美sms get Balance 异常码：{}", balance);
+								logger.info("亿美sms get Balance 异常码：{}", balance);
 								this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), "亿美返回异常吗：" + balance, ids);
 							} else {
 								Double strRet = Double.valueOf(balance) * 10;
-								this.logger.info("亿美sms get Balance：{}", strRet);
+								logger.info("亿美sms get Balance：{}", strRet);
 								if (smsConf.getMonitor() == 1) {// 判断是否打开监控开关
 																// flage == 1
 									if ((strRet < smsConf.getWarningcount()) && (strRet > 0)) {// 判断是否符合预警条件
@@ -409,7 +409,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 											String warningMobileIds = smsConf.getPhone(); // 预警手机号
 											String warningStrMsg = smsConf.getWarningcontent(); // 预警内容
 											returnValue = SingletonClient.getClient().sendSMS(warningMobileIds.split(","), warningStrMsg, "", 5);
-											this.logger.info("亿美sms预警 send return value：{}", returnValue);
+											logger.info("亿美sms预警 send return value：{}", returnValue);
 										}
 									} else {// 当重新充值以后，将重置预警状态
 										SmsSendService.warning_yimei = true;
@@ -417,7 +417,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 								} else {
 									Integer counts = this.getResidualCount(smsConf.getName(), smsConf.getPassword());
 									if ((counts == null) || (counts < 1)) {
-										this.logger.error("亿美sms send error");
+										logger.error("亿美sms send error");
 										// 更新短信发送记录状态
 										this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), "发送过程出现异常:短信账户余额不足！", ids);
 									}
@@ -426,7 +426,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 								}
 							}
 						} catch (Exception e) {
-							this.logger.error("亿美sms send error");
+							logger.error("亿美sms send error");
 							// 更新短信发送记录状态
 							this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), e.getMessage() == null ? "发送过程出现异常" : e.getMessage().length() > 200 ? e.getMessage() : e
 									.getMessage().substring(e.getMessage().length() - 199), ids);
@@ -444,7 +444,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 								String warningStrMsg = smsConf.getWarningcontent(); // 预警内容
 								SmsSendService.wmgwLocator.getwmgwSoap().mongateCsSendSmsEx(smsConf.getName(), smsConf.getPassword(), warningMobileIds, warningStrMsg,
 										warningMobileIds.split(",").length);
-								this.logger.info("短信发送，余额超过预警！平台返回余额：{},当前设置余额：{}", strRet, smsConf.getWarningcount());
+								logger.info("短信发送，余额超过预警！平台返回余额：{},当前设置余额：{}", strRet, smsConf.getWarningcount());
 								SmsSendService.warning = false;
 							}
 						} else {// 当重新充值以后，将重置预警状态
@@ -460,18 +460,18 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 				this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), "数据表没有数据，没做账户配置", ids);
 				return 0;
 			}
-			this.logger.info("短信发送，成功！");
+			logger.info("短信发送，成功！");
 			// 更新短信发送记录状态
 			this.smsManageDao.updateSendSmsState(SmsSendManageEnum.SUCCESS.getValue(), "", ids);
 			return 1;
 		} catch (RemoteException e) {
-			this.logger.error("接口调用发生异常  ids:{}", ids);
+			logger.error("接口调用发生异常  ids:{}", ids);
 			// 更新短信发送记录状态
 			this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(),
 					e.getMessage() == null ? "接口调用发生异常" : e.getMessage().length() > 200 ? e.getMessage() : e.getMessage().substring(e.getMessage().length() - 199), ids);
 			return 0;
 		} catch (ServiceException e) {
-			this.logger.error("接口调用发生异常  ids:{}", ids);
+			logger.error("接口调用发生异常  ids:{}", ids);
 			// 更新短信发送记录状态
 			this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(),
 					e.getMessage() == null ? "接口调用发生异常" : e.getMessage().length() > 200 ? e.getMessage() : e.getMessage().substring(e.getMessage().length() - 199), ids);
@@ -496,11 +496,11 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			String cwb = co.getCwb();
 			String tailnumber = cwb.contains("-T") && (cwb.length() > 6) ? cwb.substring(0, cwb.indexOf("-T")) : null;
 			if (tailnumber == null) {
-				this.logger.info("单号{}不满足发短信条件，退出", cwb);
+				logger.info("单号{}不满足发短信条件，退出", cwb);
 				return null;
 			}
 			if (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				this.logger.info("单号{}不满足发短信条件,不是上门退退类型，退出", cwb);
+				logger.info("单号{}不满足发短信条件,不是上门退退类型，退出", cwb);
 				return null;
 			}
 
@@ -518,13 +518,9 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 		try {
 			return SmsSendService.wmgwLocator.getwmgwSoap().mongateQueryBalance(name, password);
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			this.logger.error("获取短信余额异常", e);
-			e.printStackTrace();
+			logger.error("获取短信余额异常", e);
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			this.logger.error("获取短信余额异常", e);
-			e.printStackTrace();
+			logger.error("获取短信余额异常", e);
 		}
 		return -500;
 	}
@@ -550,16 +546,16 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 
 			SmsConfig smsConfig = this.smsConfigDAO.getAllSmsConfig(channel);
 			if (smsConfig == null) {
-				this.logger.info("短信发送失败,没创建短信账号，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,没创建短信账号，订单号:{}", of.getCwb());
 				return 0;
 			}
 			if (smsConfig.getIsOpen() == 0) {
-				this.logger.info("短信发送失败,短信账号没开启，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,短信账号没开启，订单号:{}", of.getCwb());
 				return 0;
 			}
 			SmsConfigModel sms = this.smsconfigModelDAO.getSmsConfigByFlowtype(of.getFlowordertype());
 			if (sms == null) {
-				this.logger.info("短信发送失败,没设置 " + of.getFlowordertype() + "环节 规则，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,没设置 " + of.getFlowordertype() + "环节 规则，订单号:{}", of.getCwb());
 				return 0;
 			}
 
@@ -567,7 +563,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 				if ((sms.getCustomerids() == null ? "" : sms.getCustomerids()).indexOf(order.getCustomerid() + "") > -1) {
 					List<Customer> clist = this.customerDAO.getCustomerByIdsAndId(sms.getCustomerids(), order.getCustomerid());
 					if ((clist == null) || (clist.size() == 0)) {
-						this.logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
+						logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
 						return 0;
 					}
 					if (order.getReceivablefee().subtract(sms.getMoney()).longValue() >= 0) {
@@ -581,18 +577,18 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 							usermobile = uList.get(0).getUsermobile();
 						}
 						try {
-							this.logger.info("短信发送，订单号:{}", of.getCwb());
+							logger.info("短信发送，订单号:{}", of.getCwb());
 							return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee, order);
 						} catch (UnsupportedEncodingException e) {
-							this.logger.info("短信发送，失败,订单号:{}", of.getCwb());
+							logger.info("短信发送，失败,订单号:{}", of.getCwb());
 							return 0;
 						}
 					} else {
-						this.logger.info("短信发送失败,订单代收金额没有达到设置的规则，订单号:{}", of.getCwb());
+						logger.info("短信发送失败,订单代收金额没有达到设置的规则，订单号:{}", of.getCwb());
 						return 0;
 					}
 				} else {
-					this.logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
+					logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
 					return 0;
 				}
 			}
@@ -600,29 +596,29 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 		} else if (of.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {// 站点的操作
 			SmsConfig smsConfig = this.smsConfigDAO.getAllSmsConfig(channel);
 			if (smsConfig == null) {
-				this.logger.info("短信发送失败,没创建短信账号，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,没创建短信账号，订单号:{}", of.getCwb());
 				return 0;
 			}
 			if (smsConfig.getIsOpen() == 0) {
-				this.logger.info("短信发送失败,短信账号没开启，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,短信账号没开启，订单号:{}", of.getCwb());
 				return 0;
 			}
 			SmsConfigModel sms = this.smsconfigModelDAO.getSmsConfigByFlowtype(of.getFlowordertype());
 			if (sms == null) {
-				this.logger.info("短信发送失败,没设置 " + of.getFlowordertype() + "环节 规则，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,没设置 " + of.getFlowordertype() + "环节 规则，订单号:{}", of.getCwb());
 				return 0;
 			}
 			if ((smsConfig != null) && (sms != null)) {
 				if ((sms.getBranchids() == null ? "" : sms.getBranchids()).indexOf(of.getBranchid() + "") > -1) {
 					List<Branch> bList = this.branchDAO.getBranchByIdsAndId(sms.getBranchids(), of.getBranchid());
 					if ((bList == null) || (bList.size() == 0)) {
-						this.logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
+						logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
 						return 0;
 					}
 					if ((sms.getCustomerids() == null ? "" : sms.getCustomerids()).indexOf(order.getCustomerid() + "") > -1) {
 						List<Customer> clist = this.customerDAO.getCustomerByIdsAndId(sms.getCustomerids(), order.getCustomerid());
 						if ((clist == null) || (clist.size() == 0)) {
-							this.logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
+							logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
 							return 0;
 						}
 						if (order.getReceivablefee().subtract(sms.getMoney()).longValue() >= 0) {
@@ -636,22 +632,22 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 								usermobile = uList.get(0).getUsermobile();
 							}
 							try {
-								this.logger.info("短信发送，订单号:{}", of.getCwb());
+								logger.info("短信发送，订单号:{}", of.getCwb());
 								return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee, order);
 							} catch (UnsupportedEncodingException e) {
-								this.logger.info("短信发送失败，订单号:{}", of.getCwb());
+								logger.info("短信发送失败，订单号:{}", of.getCwb());
 								return 0;
 							}
 						} else {
-							this.logger.info("短信发送失败,订单代收金额没有达到设置的规则，订单号:{}", of.getCwb());
+							logger.info("短信发送失败,订单代收金额没有达到设置的规则，订单号:{}", of.getCwb());
 							return 0;
 						}
 					} else {
-						this.logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
+						logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
 						return 0;
 					}
 				} else {
-					this.logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
+					logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
 					return 0;
 				}
 			}
@@ -659,29 +655,29 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 
 			SmsConfig smsConfig = this.smsConfigDAO.getAllSmsConfig(channel);
 			if (smsConfig == null) {
-				this.logger.info("短信发送失败,没创建短信账号，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,没创建短信账号，订单号:{}", of.getCwb());
 				return 0;
 			}
 			if (smsConfig.getIsOpen() == 0) {
-				this.logger.info("短信发送失败,短信账号没开启，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,短信账号没开启，订单号:{}", of.getCwb());
 				return 0;
 			}
 			SmsConfigModel sms = this.smsconfigModelDAO.getSmsConfigByFlowtype(of.getFlowordertype());
 			if (sms == null) {
-				this.logger.info("短信发送失败,没设置 " + of.getFlowordertype() + "环节 规则，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,没设置 " + of.getFlowordertype() + "环节 规则，订单号:{}", of.getCwb());
 				return 0;
 			}
 			if ((smsConfig != null) && (sms != null)) {
 				if ((sms.getBranchids() == null ? "" : sms.getBranchids()).indexOf(of.getBranchid() + "") > -1) {
 					List<Branch> bList = this.branchDAO.getBranchByIdsAndId(sms.getBranchids(), of.getBranchid());
 					if ((bList == null) || (bList.size() == 0)) {
-						this.logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
+						logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
 						return 0;
 					}
 					if ((sms.getCustomerids() == null ? "" : sms.getCustomerids()).indexOf(order.getCustomerid() + "") > -1) {
 						List<Customer> clist = this.customerDAO.getCustomerByIdsAndId(sms.getCustomerids(), order.getCustomerid());
 						if ((clist == null) || (clist.size() == 0)) {
-							this.logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
+							logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
 							return 0;
 						}
 						if (order.getCaramount().subtract(sms.getMoney()).longValue() >= 0) {
@@ -695,12 +691,12 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 								usermobile = uList.get(0).getUsermobile();
 							}
 							try {
-								this.logger.info("短信发送，订单号:{}", of.getCwb());
+								logger.info("短信发送，订单号:{}", of.getCwb());
 								SystemInstall systemInstall = this.systemInstallDAO.getSystemInstall("isSendSmsAgain");
 								if ((systemInstall != null) && systemInstall.getValue().equals("no")) {
 									int num = this.smsManageDao.getNumByCwbAndDeliverid(order.getCwb(), order.getDeliverid());
 									if (num > 0) {
-										this.logger.info("短信发送失败,领货给小件员已经发过短信,订单号:{}", of.getCwb());
+										logger.info("短信发送失败,领货给小件员已经发过短信,订单号:{}", of.getCwb());
 										return 0;
 									} else {
 										int count = this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(),
@@ -715,19 +711,19 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 											order);
 								}
 							} catch (UnsupportedEncodingException e) {
-								this.logger.info("短信发送失败，订单号:{}", of.getCwb());
+								logger.info("短信发送失败，订单号:{}", of.getCwb());
 								return 0;
 							}
 						} else {
-							this.logger.info("短信发送失败,订单代收金额没有达到设置的规则，订单号:{}", of.getCwb());
+							logger.info("短信发送失败,订单代收金额没有达到设置的规则，订单号:{}", of.getCwb());
 							return 0;
 						}
 					} else {
-						this.logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
+						logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
 						return 0;
 					}
 				} else {
-					this.logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
+					logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
 					return 0;
 				}
 			}
@@ -735,11 +731,11 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 		} else if (of.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
 			SmsConfig smsConfig = this.smsConfigDAO.getAllSmsConfig(channel);
 			if (smsConfig == null) {
-				this.logger.info("短信发送失败,没创建短信账号，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,没创建短信账号，订单号:{}", of.getCwb());
 				return 0;
 			}
 			if (smsConfig.getIsOpen() == 0) {
-				this.logger.info("短信发送失败,短信账号没开启，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,短信账号没开启，订单号:{}", of.getCwb());
 				return 0;
 			}
 			// {"cwbOrder":{"opscwbid":22182,"startbranchid":235,"currentbranchid":0,"nextbranchid":0,"deliverybranchid":235,"backtocustomer_awb":"","cwbflowflag":"1","carrealweight":0.000,"cartype":"","carwarehouse":"234","carsize":"","backcaramount":0.00,"sendcarnum":1,"backcarnum":0,"caramount":38.40,"backcarname":"","sendcarname":"","deliverid":1074,"deliverystate":1,"emailfinishflag":0,"reacherrorflag":0,"orderflowid":0,"flowordertype":36,"cwbreachbranchid":0,"cwbreachdeliverbranchid":0,"podfeetoheadflag":"0","podfeetoheadtime":null,"podfeetoheadchecktime":null,"podfeetoheadcheckflag":"0","leavedreasonid":0,"deliversubscribeday":null,"customerwarehouseid":"0","emaildateid":264,"emaildate":"2013-07-09 13:31:55","serviceareaid":0,"customerid":135,"shipcwb":"","consigneeno":"","consigneename":"庞婷婷","consigneeaddress":"中国江苏南京市江宁区,南京市江宁区汤山街道高庄社区高庄村126号","consigneepostcode":"","consigneephone":"*02584141562","cwbremark":"","customercommand":"","transway":"","cwbprovince":"江苏","cwbcity":"南京市","cwbcounty":"江宁区","receivablefee":38.40,"paybackfee":0.00,"cwb":"6366006105","shipperid":0,"cwbordertypeid":1,"consigneemobile":"15050554768","transcwb":"","destination":"","cwbdelivertypeid":"0","exceldeliver":"","excelbranch":"南京站点","excelimportuserid":1070,"state":1,"printtime":"","commonid":0,"commoncwb":"","signtypeid":0,"podrealname":"","podtime":"","podsignremark":"","modelname":null,"scannum":1,"isaudit":0,"backreason":"","leavedreason":"","paywayid":1,"newpaywayid":"2","tuihuoid":234,"cwbstate":1,"remark1":"","remark2":"","remark3":"","remark4":"","remark5":"","backreasonid":0,"multi_shipcwb":null,"packagecode":"","backreturnreasonid":0,"backreturnreason":"","handleresult":0,"handleperson":0,"handlereason":"","addresscodeedittype":3},"deliveryState":{"id":1903,"cwb":"6366006105","deliveryid":1074,"receivedfee":38.40,"returnedfee":0.00,"businessfee":38.40,"deliverystate":1,"cash":0.00,"pos":38.40,"posremark":"","mobilepodtime":1373349407000,"checkfee":0.00,"checkremark":"","receivedfeeuser":1074,"createtime":"2013-07-09 13:38:19","otherfee":0.00,"podremarkid":0,"deliverstateremark":"","isout":0,"pos_feedback_flag":0,"userid":1074,"gcaid":148,"sign_typeid":1,"sign_man":"庞婷婷","sign_time":"2013-07-09 13:39:48","backreason":null,"leavedreason":null,"deliverybranchid":235,"deliverystateStr":null,"deliverytime":null,"auditingtime":null,"customerid":135,"payupid":0,"issendcustomer":0,"isautolinghuo":0}}
@@ -750,29 +746,27 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 				try {
 					deliverystateInt = Integer.parseInt(deliverystate) + 100;
 				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					this.logger.info("短信发送失败,int类型转换异常");
+					logger.error("短信发送失败,int类型转换异常", e);
 					deliverystateInt = 0;
-					e.printStackTrace();
 					return 0;
 				}
 			}
 			SmsConfigModel sms = this.smsconfigModelDAO.getSmsConfigByFlowtype(deliverystateInt);
 			if (sms == null) {
-				this.logger.info("短信发送失败,没设置 " + of.getFlowordertype() + "环节 规则，订单号:{}", of.getCwb());
+				logger.info("短信发送失败,没设置 " + of.getFlowordertype() + "环节 规则，订单号:{}", of.getCwb());
 				return 0;
 			}
 			if ((smsConfig != null) && (sms != null)) {
 				if ((sms.getBranchids() == null ? "" : sms.getBranchids()).indexOf(of.getBranchid() + "") > -1) {
 					List<Branch> bList = this.branchDAO.getBranchByIdsAndId(sms.getBranchids(), of.getBranchid());
 					if ((bList == null) || (bList.size() == 0)) {
-						this.logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
+						logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
 						return 0;
 					}
 					if ((sms.getCustomerids() == null ? "" : sms.getCustomerids()).indexOf(order.getCustomerid() + "") > -1) {
 						List<Customer> clist = this.customerDAO.getCustomerByIdsAndId(sms.getCustomerids(), order.getCustomerid());
 						if ((clist == null) || (clist.size() == 0)) {
-							this.logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
+							logger.info("短信发送失败,没设置该供应商规则，订单号:{}", of.getCwb());
 							return 0;
 						}
 						if (order.getReceivablefee().subtract(sms.getMoney()).longValue() >= 0) {
@@ -786,31 +780,31 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 								usermobile = uList.get(0).getUsermobile();
 							}
 							try {
-								this.logger.info("短信发送，订单号:{}", of.getCwb());
+								logger.info("短信发送，订单号:{}", of.getCwb());
 								return this.sendSmsByTemplate(order.getConsigneemobile(), 1, smsConfig, sms, c.getCompanyname(), realname, usermobile, order.getConsigneename(), receivablefee, order);
 							} catch (UnsupportedEncodingException e) {
-								this.logger.info("短信发送失败，订单号:{}", of.getCwb());
+								logger.info("短信发送失败，订单号:{}", of.getCwb());
 								return 0;
 							}
 						}
 					} else {
-						this.logger.info("短信发送失败,没设置该供货商规则，订单号:{}", of.getCwb());
+						logger.info("短信发送失败,没设置该供货商规则，订单号:{}", of.getCwb());
 						return 0;
 					}
 				} else {
-					this.logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
+					logger.info("短信发送失败,没设置该站点规则，订单号:{}", of.getCwb());
 					return 0;
 				}
-				this.logger.info("短信发送成功，订单号:{}", of.getCwb());
+				logger.info("短信发送成功，订单号:{}", of.getCwb());
 				return 1;
 			}
 		}
-		this.logger.info("短信发送失败,没设置模板规则，订单号:{}", of.getCwb());
+		logger.info("短信发送失败,没设置模板规则，订单号:{}", of.getCwb());
 		return 0;
 	}
 
 	public void sendFlow(@Header("orderFlow") String parm) throws Exception {
-		this.logger.debug("orderFlow oms 环节信息处理,{}", parm);
+		logger.debug("orderFlow oms 环节信息处理,{}", parm);
 		OrderFlow orderFlow = this.orderFlowReader.readValue(parm);
 		this.sendSms(orderFlow);
 	}
@@ -948,7 +942,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 										cell.setCellValue(a == null ? "" : a.toString());
 									}
 								} catch (Exception e) {
-									e.printStackTrace();
+									logger.error("", e);
 								}
 							}
 							this.count++;

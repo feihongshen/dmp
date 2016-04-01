@@ -2,7 +2,13 @@ package cn.explink.dbPool;
 
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DBtest {
+	
+	private static Logger logger = LoggerFactory.getLogger(DBtest.class);
+	
 	String urlname = "";
 
 	public DBtest(String urlname) {
@@ -24,8 +30,8 @@ public class DBtest {
 		List list = select(collist, null, null, null, "companyinfo");
 		for (int i = 0; i < list.size(); i++) {
 			Map map = (Map) list.get(i);
-			System.out.println(map.get("companyno"));
-			System.out.println(map.get("company").toString());
+			logger.info(String.valueOf(map.get("companyno")));
+			logger.info(map.get("company").toString());
 		}
 
 	}
@@ -68,7 +74,7 @@ public class DBtest {
 		if (ordersql != null)
 			sql += ordersql;
 		Database db = new Database(this.urlname);
-		// System.out.println("sql====="+sql);
+		// logger.info("sql====="+sql);
 		return db.selectDataList(sql, para);
 	}
 

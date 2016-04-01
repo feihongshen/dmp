@@ -26,13 +26,6 @@ import cn.explink.b2c.huitongtx.addressmatch.json_receiver.MatchRequest;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
-import cn.explink.b2c.yihaodian.addressmatch.YihaodianAddEmum;
-import cn.explink.b2c.yihaodian.addressmatch.YihaodianAddMatchException;
-import cn.explink.b2c.yihaodian.addressmatch.dto.DepotParseDetail;
-import cn.explink.b2c.yihaodian.addressmatch.dto.DepotParseResult;
-import cn.explink.b2c.yihaodian.addressmatch.dto.DepotParseResultDetail;
-import cn.explink.b2c.yihaodian.addressmatch.dto.DepotParseResultList;
-import cn.explink.b2c.yihaodian.addressmatch.dto.YhdAddmatchUnmarchal;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
@@ -62,7 +55,7 @@ public class HttxEditBranchService {
 	@Autowired
 	BranchDAO branchDAO;
 
-	private Logger logger = LoggerFactory.getLogger(HttxEditBranchService.class);
+	private static Logger logger = LoggerFactory.getLogger(HttxEditBranchService.class);
 
 	/**
 	 * 接收处理汇通天下站点匹配的方法
@@ -183,14 +176,11 @@ public class HttxEditBranchService {
 		try {
 			strs = JacksonMapper.getInstance().writeValueAsString(resp);
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		logger.info(strs);

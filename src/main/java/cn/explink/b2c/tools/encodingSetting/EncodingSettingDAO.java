@@ -4,12 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-
 
 import cn.explink.util.Page;
 
@@ -18,6 +19,8 @@ public class EncodingSettingDAO {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	private static Logger logger =LoggerFactory.getLogger(EncodingSettingDAO.class);
 
 	private final class EncodingSet implements RowMapper<EncodingSetting> {
 		@Override
@@ -45,7 +48,7 @@ public class EncodingSettingDAO {
 			sql += " order by customerid  limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 			list = jdbcTemplate.query(sql, new EncodingSet());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -99,7 +102,7 @@ public class EncodingSettingDAO {
 			String sql = "delete from encodingsetting_customer_mapping where poscodeid=" + poscodeid;
 			jdbcTemplate.update(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -110,7 +113,7 @@ public class EncodingSettingDAO {
 			String sql = "select * from encodingsetting_customer_mapping where poscodeid=" + poscodeid;
 			expt = jdbcTemplate.queryForObject(sql, new EncodingSet());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return expt;
 

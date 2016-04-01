@@ -134,7 +134,7 @@ public class BeanInvokingJobDetailFactoryBean implements FactoryBean, BeanNameAw
 	protected static ApplicationContext applicationContext;
 
 	private static Logger logger = LoggerFactory.getLogger(BeanInvokingJobDetailFactoryBean.class);
-	
+
 	/**
 	 * The JobDetail produced by the <code>afterPropertiesSet</code> method of
 	 * this Class will be assigned to the Group specified by this property.
@@ -570,10 +570,10 @@ public class BeanInvokingJobDetailFactoryBean implements FactoryBean, BeanNameAw
 				logger.debug("Invoking Bean: " + targetBean + "; Method: " + targetMethod + "; arguments: " + arguments + ";");
 				beanMethod.invoke();
 			} catch (JobExecutionException e) {
-				e.printStackTrace();
+				logger.error("", e);
 				throw e;
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 				throw new JobExecutionException(e);
 			} finally {
 				logger.debug("end");

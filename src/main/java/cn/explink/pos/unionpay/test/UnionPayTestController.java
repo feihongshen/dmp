@@ -47,8 +47,7 @@ public class UnionPayTestController {
 		try {
 			values = unionPayTestService.requestUnionPayInterface_test(command, username, password, cwb, payamount, sign_type, signname, pay_type, expt_code, model);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		model.addAttribute("values", values);

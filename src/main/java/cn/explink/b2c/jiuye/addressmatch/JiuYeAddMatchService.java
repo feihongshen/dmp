@@ -4,13 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
@@ -57,6 +55,8 @@ public class JiuYeAddMatchService {
 	public void edit(HttpServletRequest request,int joint_num){
 		String maxCount=request.getParameter("maxCount").isEmpty()?"0":request.getParameter("maxCount");
 		JiuYeAddressMatch jiuye=new JiuYeAddressMatch();
+		
+		jiuye.setReceiver_url(request.getParameter("receiver_url"));
 		jiuye.setCustomerid(request.getParameter("customerid"));
 		jiuye.setPrivate_key(request.getParameter("private_key"));
 		jiuye.setDmsCode(request.getParameter("dmsCode"));
@@ -88,7 +88,7 @@ public class JiuYeAddMatchService {
 			obj = jiontDAO.getJointEntity(key);
 			state=obj.getState();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return state;
 	}
@@ -170,8 +170,7 @@ public class JiuYeAddMatchService {
 		try {
 			response = JacksonMapper.getInstance().writeValueAsString(jiuyeResponse);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} 
 		return response;
 		

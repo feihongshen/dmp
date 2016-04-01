@@ -134,9 +134,9 @@ public class ExplinkController {
 //			pds.
 //			boolean bl = this.pjDeliveryOrderServiceHelper.feedbackTransport(ptf);
 			boolean bool = pjDeliveryOrderS.feedbackTransport(ptf);
-			System.out.println("=============================");
+			logger.info("=============================");
 		} catch (Exception e) {
-			//System.out.println(bool+"");
+			//logger.info(bool+"");
 			//logger.info("返回信息:{}",);
 			logger.info("异常！{}",e.getMessage());
 		}

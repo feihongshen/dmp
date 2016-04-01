@@ -9,13 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
-import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.haoxgou.DESUtil;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -27,6 +26,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.MD5.MD5Util;
 
 @Service
@@ -43,6 +43,8 @@ public class HxgdmsService {
 	DataImportDAO_B2c dataImportDAO_B2c;
 	@Autowired
 	CustomWareHouseDAO customWareHouseDAO;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -58,6 +60,7 @@ public class HxgdmsService {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Hxgdms dms = new Hxgdms();
 		String customerids = request.getParameter("customerids");
@@ -91,6 +94,7 @@ public class HxgdmsService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

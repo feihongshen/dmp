@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.maikaolin.xml.MaiKoLinUnmarchal;
 import cn.explink.b2c.maikaolin.xml.TMS;
@@ -35,6 +36,7 @@ import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.b2c.maikaolin.xml.Package;
 
@@ -54,6 +56,8 @@ public class MaikolinService {
 	B2cAutoDownloadMonitorDAO b2cAutoDownloadMonitorDAO;
 	@Autowired
 	MaikaolinInsertCwbDetailTimmer maikaolinInsertCwbDetailTimmer;
+	@Autowired
+	CustomerService customerService;
 	private Logger logger = LoggerFactory.getLogger(Maikolin.class);
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -310,6 +314,7 @@ public class MaikolinService {
 		return obj == null ? null : obj.getJoint_property();
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Maikolin maikolin = new Maikolin();
 		String customerid = request.getParameter("customerids");
@@ -342,7 +347,7 @@ public class MaikolinService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
-
+		this.customerService.initCustomerList();
 	}
 
 	/*

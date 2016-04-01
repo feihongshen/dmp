@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkService;
 import cn.explink.b2c.gztl.xmldto.GztlXmlElement;
@@ -40,6 +41,7 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 
 @Service
 public class GztlService {
@@ -61,6 +63,8 @@ public class GztlService {
 	DataImportService_B2c dataImportService_B2c;
 	@Autowired
 	CustomWareHouseDAO customWareHouseDAO;
+	@Autowired
+	CustomerService customerService;
 
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -77,7 +81,8 @@ public class GztlService {
 		Gztl smile = (Gztl) JSONObject.toBean(jsonObj, Gztl.class);
 		return smile;
 	}
-
+	
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Gztl gztl = new Gztl();
 		String customerids = request.getParameter("customerids");
@@ -111,6 +116,7 @@ public class GztlService {
 		}
 		// 保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

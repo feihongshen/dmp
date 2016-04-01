@@ -280,7 +280,7 @@ public class CwbApplyController {
 						this.logger.error("{} 申请退货失败,没有选择退货站", content);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 					this.logger.error("{} 申请退货失败,{}", content, e.getMessage());
 				}
 			} else {
@@ -344,7 +344,7 @@ public class CwbApplyController {
 						this.logger.error("{} 申请中转失败,没有选择中转站", content);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 					this.logger.error("{} 申请中转失败,{}", content, e.getMessage());
 				}
 			} else {
@@ -741,7 +741,7 @@ public class CwbApplyController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -801,7 +801,7 @@ public class CwbApplyController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

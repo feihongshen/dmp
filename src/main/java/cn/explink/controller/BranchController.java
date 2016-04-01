@@ -173,13 +173,13 @@ public class BranchController {
 				//this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				//this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 
 			this.logger.info("operatorUser={},机构管理->createFile", this.getSessionUser().getUsername());
@@ -221,13 +221,13 @@ public class BranchController {
 				//this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			this.logger.info("operatorUser={},机构管理->create,站点名称：{}", this.getSessionUser().getUsername(), branchname);
 			return "{\"errorCode\":0,\"error\":\"创建成功\"}";
@@ -284,13 +284,13 @@ public class BranchController {
 				this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 
 			this.logger.info("operatorUser={},机构管理->saveFile", this.getSessionUser().getUsername());
@@ -340,13 +340,13 @@ public class BranchController {
 				this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			this.logger.info("operatorUser={},机构管理->save,站点名称：{}", this.getSessionUser().getUsername(), branch.getBranchname());
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
@@ -537,7 +537,7 @@ public class BranchController {
 		
 		excelUtil.excel(response, cloumnName, sheetName, fileName);
 	} catch (Exception e) {
-		e.printStackTrace();
+		this.logger.error("", e);
 	}
 	
 	}

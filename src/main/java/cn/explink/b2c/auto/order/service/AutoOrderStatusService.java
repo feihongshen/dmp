@@ -55,14 +55,12 @@ public class AutoOrderStatusService {
 	private final static String ORDER_STATUS_TMP_TIMEOUT_QUERY_SQL=
 			"SELECT t.* FROM (SELECT * FROM express_auto_order_status_tmp WHERE createtime<DATE_SUB(NOW(),INTERVAL ? HOUR) LIMIT 0,?) t" 
 			+" WHERE NOT EXISTS(SELECT 1 FROM express_ops_cwb_detail c WHERE c.cwb=t.cwb)";
-	
-	private final static String ORDER_STATUS_TMP_QUERY_COUNT_SQL="SELECT COUNT(createtime) FROM express_auto_order_status_tmp";
-	
+		
 	private final static String TRANS_CWB_DETAIL_UPDATE_SQL="update express_ops_transcwb_detail set cargovolume=?,carrealweight=? where cwb=? and transcwb=?";;
 	private static final String DATE_FORMAT="yyyy-MM-dd HH:mm:ss";
 	
 	@Transactional
-	public void updateAutoOrder(String cwb,String boxno,BigDecimal cargovolume,BigDecimal cargoweight,String packagecode,long deliverybranchid,boolean isJidan){
+	public void updateAutoOrder(String cwb,String boxno,BigDecimal cargovolume,BigDecimal cargoweight,long deliverybranchid,boolean isJidan){
 		if(isJidan){
 			int cnt=jdbcTemplate.update(TRANS_CWB_DETAIL_UPDATE_SQL,cargovolume,cargoweight,cwb,boxno);
 			if(cnt==0){
@@ -84,10 +82,10 @@ public class AutoOrderStatusService {
 			paramMap.put("carrealweight", cargoweight);
 		}
 		
-		if(packagecode!=null&&packagecode.length()>0){ 
+		/*if(packagecode!=null&&packagecode.length()>0){ 
 			sql=sql+"packagecode=:packagecode,";
 			paramMap.put("packagecode", packagecode);
-		}
+		}*/
 		
 		if(deliverybranchid>0){
 			sql=sql+"deliverybranchid=:deliverybranchid,";

@@ -43,6 +43,7 @@ import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.enumutil.MpsTypeEnum;
 import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.support.transcwb.TransCwbDao;
@@ -85,6 +86,8 @@ public class VipShopGetCwbDataService {
 	DataImportService dataImportService;
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
+	@Autowired
+	CustomerService customerService;
 
 	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -166,6 +169,7 @@ public class VipShopGetCwbDataService {
 		// 保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
 		this.customerDAO.updateB2cEnumByJoint_num(lefengCustomerid, oldLefengCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void updateMaxSEQ(int joint_num, VipShop vipshop) {
@@ -304,18 +308,15 @@ public class VipShopGetCwbDataService {
 		onelist.add(dataMap);
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
-			String emaildate = dataMap.get("remark4").toString();
-			
-			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+			String emaildate = dataMap.get("remark4").toString();			
+			   //Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
 			if(emaildate == null || emaildate.trim().equals("")){
 				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";				
 				dataMap.put("remark4", emaildate);
 			}
-			//Added end
-			
+			   //Added end
 			long warehouseid = vipshop.getWarehouseid();
 			this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
-
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息导入成功cwb={}-更新了最大的SEQ!{}", dataMap.get("cwb").toString(), vipshop.getVipshop_seq());
 		} catch (Exception e) {
@@ -331,21 +332,19 @@ public class VipShopGetCwbDataService {
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
 			long warehouseid = vipshop.getWarehouseid();
-			
-			if(vipshop.getIsCreateTimeToEmaildateFlag()==0){
-				this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
-			}else{
-				String emaildate = dataMap.get("remark2").toString();
-				
-				//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
-				if(emaildate == null || emaildate.trim().equals("")){
-					emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
-					dataMap.put("remark2", emaildate);
-				}
-				//Added end
-				
-				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
-			}
+//			if(vipshop.getIsCreateTimeToEmaildateFlag()==0){
+//				this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
+//			}else{
+//				String emaildate = dataMap.get("remark2").toString();
+//				//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+//				if(emaildate == null || emaildate.trim().equals("")){
+//					emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
+//					dataMap.put("remark2", emaildate);
+//				}
+//				//Added end
+//				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
+//			}
+			this.dataImportService_B2c.Analizy_DataDealByB2c_TuoYun(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true) ;
 			this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
 			
 			this.updateMaxSEQ(vipshop_key, vipshop);
@@ -535,7 +534,7 @@ public class VipShopGetCwbDataService {
 				return getSeq(seq_arrs, seq);
 			}
 			
-			if(dataMap==null){
+			if(dataMap==null || dataMap.isEmpty()){
 				return getSeq(seq_arrs, seq);
 			}
 						
@@ -643,7 +642,7 @@ public class VipShopGetCwbDataService {
 		dataMap.put("paywayid", String.valueOf(paywayid)); // 支付方式
 		dataMap.put("remark3", "托运单号:" + attemper_no); // 托运单号
 		dataMap.put("remark4", created_dtm_loc); // 批次时间
-
+        dataMap.put("rec_create_time" , rec_create_time); // 订单创建时间
 		dataMap.put("cargotype", cargotype); // 服务类别
 		dataMap.put("remark5", customer_name+"/"+warehouse_addr); // 仓库地址
 
@@ -761,7 +760,7 @@ public class VipShopGetCwbDataService {
 		 * 如果TMS推过来的数据没有最后一件标志那就把发货时间写到运单表里面
 		 */
 		String emaildate = ""; //paraMap.get("remark2"); //发货时间
-		if(paraMap != null){
+		if(paraMap != null && paraMap.size() > 0){
 			emaildate = paraMap.get("remark2");
 		}else{
 			for(Map<String, String> mapPara : paraList){
@@ -818,13 +817,8 @@ public class VipShopGetCwbDataService {
 		
 		//Added by leoliao at 2016-03-21 使用锁的方式解决集包一票多件同时修改临时表订单的问题
 		long b2cTempOpscwbid = cwbOrderDTO.getOpscwbid();
-		CwbOrderDTO cwbOrderDTONew = dataImportDAO_B2c.getCwbByCwbB2ctempOpscwbidLock(b2cTempOpscwbid);
 		dataImportDAO_B2c.updateTmsPackageCondition(b2cTempOpscwbid, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag, IsmpsflagEnum.yes.getValue());
-		
-		if(cwbOrderDTONew.getGetDataFlag() != 0){
-			//更新临时表的getDataFlag为0以重新转业务--是否需要判断数据有更新再修改标识？
-			dataImportDAO_B2c.update_CwbDetailTempByCwb(0, b2cTempOpscwbid);
-		}
+		dataImportDAO_B2c.update_CwbDetailTempByCwb(0, b2cTempOpscwbid); //更新临时表的getDataFlag为0以重新转业务	
 		//Added end
 		
 		/**Commented by leoliao at 2016-03-21 这部分的逻辑已改为在临时表转正式表定时器里	
@@ -877,7 +871,8 @@ public class VipShopGetCwbDataService {
 			}
 			//后者小于前者，移除后者
 			if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
-				currentMap=null;
+				//currentMap=null;
+				currentMap.clear();
 				return;
 			}
 			//后者==前者，移除不是最后一箱的

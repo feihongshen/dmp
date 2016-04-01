@@ -30,7 +30,7 @@ import cn.explink.util.DateTimeUtil;
 @Service
 public class EfastService_getOrderList extends EfastService {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(EfastService_getOrderList.class);
 
 	/**
 	 * 获取订单列表
@@ -161,7 +161,7 @@ public class EfastService_getOrderList extends EfastService {
 		orderresult.setList(list);
 
 		String jsoncontent = JacksonMapper.getInstance().writeValueAsString(orderresult);
-		System.out.println(jsoncontent);
+		logger.info(jsoncontent);
 	}
 
 }

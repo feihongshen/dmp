@@ -9,8 +9,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -18,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.explink.b2c.saohuobang.xml.Items;
 import cn.explink.b2c.saohuobang.xml.RequestOrder;
 import cn.explink.b2c.saohuobang.xml.SaohuobangUnmarchal;
@@ -32,6 +37,7 @@ import cn.explink.b2c.tools.SaohuobangSign;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.support.transcwb.TransCwbDao;
 
 @Service
@@ -50,6 +56,8 @@ public class SaohuobangService {
 	DataImportDAO_B2c dataImportDAO_B2c;
 	@Autowired
 	SaohuobangDao saohuobangDao;
+	@Autowired
+	CustomerService customerService;
 	private Logger logger = LoggerFactory.getLogger(Saohuobang.class);
 
 	/*
@@ -286,6 +294,7 @@ public class SaohuobangService {
 		return xmlList;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Saohuobang saohuobang = new Saohuobang();
 		saohuobang.setCallBackCount(Long.parseLong(request.getParameter("callbackcount")));
@@ -316,6 +325,7 @@ public class SaohuobangService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(saohuobang.getCustomerId(), oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	// 拼接xml

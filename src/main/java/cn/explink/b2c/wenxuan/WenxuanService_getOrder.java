@@ -26,7 +26,7 @@ import cn.explink.util.MD5.MD5Util;
  */
 @Service
 public class WenxuanService_getOrder extends WenxuanService {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(WenxuanService_getOrder.class);
 
 	//
 	// paramMap.put("startTime",starttime);
@@ -301,6 +301,6 @@ public class WenxuanService_getOrder extends WenxuanService {
 	public static void main(String[] args) {
 
 		String starttime = DateTimeUtil.getDateBeforeHours(24, "yyyy-MM-dd");
-		System.out.println(starttime);
+		logger.info(starttime);
 	}
 }

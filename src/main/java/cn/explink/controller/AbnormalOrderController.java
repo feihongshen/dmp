@@ -975,7 +975,7 @@ public class AbnormalOrderController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);*/
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -1174,7 +1174,7 @@ public class AbnormalOrderController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -1633,8 +1633,7 @@ public class AbnormalOrderController {
 			toClient.flush();
 			toClient.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

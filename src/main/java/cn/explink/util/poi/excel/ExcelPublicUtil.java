@@ -24,6 +24,8 @@ import org.apache.poi.xssf.usermodel.XSSFShape;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openxmlformats.schemas.drawingml.x2006.spreadsheetDrawing.CTMarker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.explink.util.poi.excel.annotation.Excel;
 import cn.explink.util.poi.excel.annotation.ExcelCollection;
@@ -32,6 +34,8 @@ import cn.explink.util.poi.excel.annotation.ExcelIgnore;
 
 public class ExcelPublicUtil {
 
+	private static Logger logger = LoggerFactory.getLogger(ExcelPublicUtil.class);
+	
 	public static String GET = "get";
 	public static String SET = "set";
 
@@ -160,7 +164,7 @@ public class ExcelPublicUtil {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return obj;
 

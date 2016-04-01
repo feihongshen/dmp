@@ -64,7 +64,6 @@ public class GuangZhouABCTestController {
 		try {
 			str = getPostMethodResult(url, shippedcode, logicdata, checkdata);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("请求爱彼西返回未知异常", e);
 		}
 		logger.info("response ABC test service={}", str);

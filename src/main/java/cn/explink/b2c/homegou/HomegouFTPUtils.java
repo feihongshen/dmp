@@ -186,9 +186,7 @@ public class HomegouFTPUtils {
 				return files;
 			}
 		} catch (Exception e) {
-
-			System.out.println("列出服务器上文件和目录失败");
-			e.printStackTrace();
+			logger.error("列出服务器上文件和目录失败", e);
 		}
 		return files;
 	}
@@ -223,7 +221,7 @@ public class HomegouFTPUtils {
 					buffOut.close();
 				closeConnect();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 		return flag;
@@ -288,7 +286,6 @@ public class HomegouFTPUtils {
 		} catch (Exception e) {
 			flag = false;
 			logger.error("登录ftp服务器 " + ftp_host + " 失败,连接超时！", e);
-			e.printStackTrace();
 		}
 
 		return flag;
@@ -336,7 +333,6 @@ public class HomegouFTPUtils {
 			return true;
 		} catch (IOException e) {
 			logger.error("IO异常-删除指定文件,", e);
-			e.printStackTrace();
 		}
 		return false;
 	}
@@ -473,16 +469,13 @@ public class HomegouFTPUtils {
 				// int length;
 				while ((byteread = inStream.read(buffer)) != -1) {
 					bytesum += byteread; // 字节数 文件大小
-					// System.out.println(bytesum);
 					fs.write(buffer, 0, byteread);
 				}
 				inStream.close();
 				fs.close();
 			}
 		} catch (Exception e) {
-			System.out.println("复制单个文件操作出错");
-			e.printStackTrace();
-
+			logger.error("复制单个文件操作出错", e);
 		}
 
 	}
@@ -503,7 +496,6 @@ public class HomegouFTPUtils {
 
 		} catch (Exception e) {
 			logger.error("删除文件操作出错", e);
-			e.printStackTrace();
 		}
 
 	}
@@ -644,7 +636,7 @@ public class HomegouFTPUtils {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return falg;
 	}
@@ -679,7 +671,7 @@ public class HomegouFTPUtils {
 				flag = connectServer();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			flag = false;
 		}
 		return flag;
@@ -701,8 +693,7 @@ public class HomegouFTPUtils {
 			changeWorkingDirectory(remoteDir);
 			success = ftpClient.makeDirectory(dirPath);
 		} catch (IOException e) {
-			System.out.println("IO异常");
-			e.printStackTrace();
+			logger.error("IO异常", e);
 		}
 		return success;
 	}

@@ -14,6 +14,8 @@ import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdScheduler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -36,7 +38,7 @@ public class DmpJobController{
 	@Qualifier("schedulerFactory") 
 	private StdScheduler schedulerFactory;
 	
-//	private SchedulerFactoryBean schedulerFactorywh;
+	private static Logger logger = LoggerFactory.getLogger(DmpJobController.class);
 	
 	/**
 	 * 定时任务管理列表 页面跳转
@@ -163,7 +165,7 @@ public class DmpJobController{
 		} catch (SchedulerException e) {
 			ajaxJson.setStatus(false);
 			ajaxJson.setMsg("系統异常");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ajaxJson;
 	}
@@ -190,7 +192,7 @@ public class DmpJobController{
 		} catch (SchedulerException e) {
 			ajaxJson.setStatus(false);
 			ajaxJson.setMsg("系統异常");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ajaxJson;
 	}
@@ -227,7 +229,7 @@ public class DmpJobController{
 		} catch (SchedulerException e) {
 			ajaxJson.setStatus(false);
 			ajaxJson.setMsg("系統异常");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ajaxJson;
 	}
@@ -291,7 +293,7 @@ public class DmpJobController{
 		} catch (Exception e) {
 			ajaxJson.setStatus(false);
 			ajaxJson.setMsg("系統异常");
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ajaxJson;
 	}

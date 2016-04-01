@@ -14,6 +14,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
@@ -106,6 +108,8 @@ public class OrderBackCheckController {
 	CwbOrderService cwbOrderService;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	private static Logger logger = LoggerFactory.getLogger(OrderBackCheckController.class);
 	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -282,7 +286,7 @@ public class OrderBackCheckController {
 			try {
 				orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchLists);
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			long count = this.orderBackCheckDAO.getOrderBackChecksCount(cwbsStr,cwbtypeid,customerid,branchid,checkstate,checkresult,begindate,enddate);
 			pag = new Page(count,page,Page.ONE_PAGE_NUMBER);
@@ -432,7 +436,7 @@ public class OrderBackCheckController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -671,7 +675,7 @@ public class OrderBackCheckController {
 				try {
 					orderbackList = this.orderBackCheckService.getOrderBackCheckList2(obcList, customerList,branchLists);
 				} catch (ParseException e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 			String[] cloumnName1 = new String[9]; // 导出的列名

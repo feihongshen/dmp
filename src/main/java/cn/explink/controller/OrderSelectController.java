@@ -740,7 +740,7 @@ public class OrderSelectController {
 			} catch (OspException e) {
 				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}", e.getMessage());
 				model.addAttribute("aorderFlowViews", fororder);
-				e.printStackTrace();
+				this.logger.error("", e);
 				return jspPage;
 			}
 			if ((result == null) || (result.size() == 0)) {
@@ -917,7 +917,7 @@ public class OrderSelectController {
 		try {
 			resultList = sbOrgService.findSbOrgByCarrierAndSelfStation(carrierCode, operateOrgCode);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		/*
 		 * SbOrgModel a = new SbOrgModel(); a.setOrgName("测试站");
@@ -1164,7 +1164,7 @@ public class OrderSelectController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 		return null;
@@ -1413,7 +1413,7 @@ public class OrderSelectController {
 			// ============================add
 			// end=========================================================
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 		return null;
@@ -1538,7 +1538,7 @@ public class OrderSelectController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 		return null;
@@ -1640,7 +1640,7 @@ public class OrderSelectController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 		return null;
@@ -2877,7 +2877,7 @@ public class OrderSelectController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 
 	}

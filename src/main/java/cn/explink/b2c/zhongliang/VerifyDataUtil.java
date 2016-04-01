@@ -2,7 +2,13 @@ package cn.explink.b2c.zhongliang;
 
 import java.security.MessageDigest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class VerifyDataUtil {
+	
+	private static Logger logger = LoggerFactory.getLogger(VerifyDataUtil.class);
+	
 	/*
 	 * //验证数据 public static boolean VerifyData(String verifyData, String
 	 * clientid, String CLIENTFLAG, String CLIENTKEY, String CLIENTCONST, String
@@ -61,7 +67,7 @@ public class VerifyDataUtil {
 //		strMd5 = MD5Util.md5(new String(str.getBytes("UTF8")));
 		strMd5 = getMD5(str, "UTF8").toLowerCase().replace("-","");
 	} catch (Exception e) {
-		e.printStackTrace();
+		logger.error("", e);
 	}
 	
 	    return N1 + strMd5.substring(7, 7+21) + N2;

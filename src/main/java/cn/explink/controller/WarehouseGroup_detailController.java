@@ -168,7 +168,7 @@ public class WarehouseGroup_detailController {
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(WarehouseGroup_detailController.class);
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -2107,8 +2107,7 @@ public class WarehouseGroup_detailController {
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 		} catch (Exception e) {
-
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -2308,8 +2307,7 @@ public class WarehouseGroup_detailController {
 			try {
 				tjson = JSONArray.fromObject(printTemplate.getDetail()) ;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			if(tjson != null){
 				for (Object object : tjson) {
@@ -2387,7 +2385,7 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("page", page);
 			model.addAttribute("branchList", branchList);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return "warehousegroup/outbalelist_history";

@@ -10,6 +10,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -19,6 +21,8 @@ import cn.explink.domain.SystemInstall;
 
 public class Dmp40MenuTag extends TagSupport {
 
+	private static Logger logger = LoggerFactory.getLogger(TagSupport.class);
+	
 	private static final long serialVersionUID = 1L;
 	static PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("${", "}");
 	
@@ -32,7 +36,7 @@ public class Dmp40MenuTag extends TagSupport {
 			out.print(end().toString());
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return EVAL_PAGE;
 	}

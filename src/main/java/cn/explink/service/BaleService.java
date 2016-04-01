@@ -29,6 +29,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.b2c.tools.B2cEnum;
+import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.dao.BaleCwbDao;
 import cn.explink.dao.BaleDao;
@@ -153,6 +155,8 @@ public class BaleService {
 	@Autowired
 	CwbStateControlDAO cwbStateControlDAO;
 	@Autowired
+	JointService jointService;
+	@Autowired
 	TpsInterfaceExecutor tpsInterfaceExecutor;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -190,7 +194,6 @@ public class BaleService {
 							Row row = sheet.createRow(this.count + 1);
 							row.setHeightInPoints(15);
 
-							// System.out.println(ds.getCwb()+":"+System.currentTimeMillis());
 							for (int i = 0; i < cloumnName4.length; i++) {
 								Cell cell = row.createCell((short) i);
 								cell.setCellStyle(style);
@@ -219,11 +222,10 @@ public class BaleService {
 											cell.setCellValue(a == null ? "" : a.toString());
 										}
 									} catch (Exception e) {
-										e.printStackTrace();
+										logger.error("", e);
 									}
 								} catch (IllegalArgumentException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									logger.error("", e);
 								}
 							}
 							this.count++;
@@ -234,10 +236,9 @@ public class BaleService {
 				}
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
-			// System.out.println("get end:"+System.currentTimeMillis());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -444,7 +445,7 @@ public class BaleService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -1114,7 +1115,6 @@ public class BaleService {
 								.getIsypdjusetranscwb();
 
 						if (baleno.equals(co.getPackagecode()) && (isypdjusetranscwb == 1)) {
-							System.out.println("++++++++++++++++++++++++++++=:");
 							// 重复封包
 							throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Chong_Fu_Sao_Miao);
 						}
@@ -1244,7 +1244,17 @@ public class BaleService {
 
 			if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
 					.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()))) && (co.getCurrentbranchid() != currentbranchid)) {
-				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+				boolean ignore=false;
+				if(co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
+					int isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+					if(isOpenFlag==1){
+						ignore=true;
+					}
+				}
+				
+				if(!ignore){
+					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+				}
 			}
 
 			Branch userbranch = this.branchDAO.getBranchById(currentbranchid);

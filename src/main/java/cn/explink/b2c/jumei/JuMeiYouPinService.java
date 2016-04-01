@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkFlowEnum;
 import cn.explink.b2c.explink.ExplinkService;
@@ -29,13 +30,14 @@ import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class JuMeiYouPinService {
-	private Logger logger = LoggerFactory.getLogger(JuMeiYouPinService.class);
+	private static Logger logger = LoggerFactory.getLogger(JuMeiYouPinService.class);
 	@Autowired
 	JiontDAO jiontDAO;
 	@Autowired
@@ -56,6 +58,8 @@ public class JuMeiYouPinService {
 	DeliveryStateDAO deliverystateDao;
 	@Autowired
 	ExptCodeJointDAO exptCodeJointDAO;
+	@Autowired
+	CustomerService customerService;
 
 	private final String XMLNoteStart = "<orderresponse>";
 	private final String XMLNoteEnd = "</orderresponse>";
@@ -74,6 +78,7 @@ public class JuMeiYouPinService {
 		return jumeiyoupin;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		JuMeiYouPin jumeiyoupin = new JuMeiYouPin();
 		jumeiyoupin.setExpress_id(request.getParameter("express_id"));
@@ -104,6 +109,7 @@ public class JuMeiYouPinService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {
@@ -438,7 +444,7 @@ public class JuMeiYouPinService {
 		for (String a : aa.split(",")) {
 			j++;
 			for (int i = 1; i <= 10; i++) {
-				System.out.println(j == 1 ? i : (j - 1) * 10 + i);
+				logger.info(String.valueOf(j == 1 ? i : (j - 1) * 10 + i));
 			}
 		}
 

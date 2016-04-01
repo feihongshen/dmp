@@ -41,39 +41,15 @@ public class FindLocationController {
 			responseJson = JacksonMapper.getInstance().writeValueAsString(list);
 			logger.info("返回信息:{}",responseJson);
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return callback + "(" + responseJson + ");";
 		
 		}
-	/*@RequestMapping("/findKuFangaddress")
-	public String findKuFangAddress(){
-		
-		List<DeliveryStations> list=findLocationDao.findKuFangALLDeliveryStations();
-		String responseJson=null;
-		try {
-			responseJson = JacksonMapper.getInstance().writeValueAsString(list);
-			logger.info("返回信息:{}",responseJson);
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-		return responseJson;		
-	}*/
 	
 	}
 

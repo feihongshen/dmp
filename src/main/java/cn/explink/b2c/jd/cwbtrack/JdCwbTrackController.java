@@ -3,6 +3,7 @@ package cn.explink.b2c.jd.cwbtrack;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.cassandra.thrift.Cassandra.AsyncProcessor.system_add_column_family;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,34 +74,37 @@ public class JdCwbTrackController {
 		try {
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
-			String customerId = request.getParameter("customerId");
 			String billcode = request.getParameter("billcode");
 			String sign = request.getParameter("sign");// 签名
-			JdCwbTrackConfig config = jdCwbTrackService.getJdCwbTrackConfig(B2cEnum.JingDong_cwbTrack.getKey());
+			String requestTime = request.getParameter("requestTime");// 请求时间
+			
 			int isOpenFlag = jointService.getStateForJoint(B2cEnum.JingDong_cwbTrack.getKey());
-			
-			
 			if (isOpenFlag == 0) {
 				return "未开启[京东_订单跟踪]查询接口";
 			}
-			if (customerId==null||"".equals(customerId)) {
-				this.logger.info("[京东_订单跟踪]接口-客户ID不能为空");
-				return "请求客户ID为空";
+			
+			if (requestTime==null||"".equals(requestTime)) {
+				this.logger.info("[京东_订单跟踪]接口-请求时间不能为空");
+				return "请求时间为空";
 			}
+			
+			//设置签名过期检验
+			if(System.currentTimeMillis()-Long.parseLong(requestTime)>300*1000){
+				this.logger.info("请求过期,系统当前时间={},请求时间={}",new Object[] { System.currentTimeMillis(),Long.parseLong(requestTime) });
+				return "请求过期";
+			}
+			
 			if (sign==null||"".equals(sign)) {
 				this.logger.info("[京东_订单跟踪]接口-签名不能为空");
 				return "请求签名为空";
 			}
 			
-			if (!customerId.equals(config.getCustomerId()+"")) {
-				this.logger.info("[京东_订单跟踪]接口-客户ID不能为空");
-				return "请求客户ID错误";
-			}
-			
+			JdCwbTrackConfig config = jdCwbTrackService.getJdCwbTrackConfig(B2cEnum.JingDong_cwbTrack.getKey());
+			String salt="6a6502cebf8e049bae17928355b757dd41a6f76f";
 			// 校验加密是否符合约定
-			String MD5Sign = MD5Util.md5(customerId + config.getPrivateKey());
+			String MD5Sign = MD5Util.md5(config.getPrivateKey() + requestTime + salt);
 			if (!sign.equalsIgnoreCase(MD5Sign)) {
-				this.logger.info(customerId+"MD5验证失败sign={},MD5Sign={}",sign,MD5Sign);
+				this.logger.info("MD5验证失败sign={},MD5Sign={}",sign,MD5Sign);
 				return "签名错误";
 			}
 			
@@ -120,10 +124,11 @@ public class JdCwbTrackController {
 	 */
 	@RequestMapping("/sign")
 	public @ResponseBody String getSign(HttpServletRequest request, HttpServletResponse response) {
-		String customerId = request.getParameter("customerId");
 		String privateKey = request.getParameter("privateKey");
-		String MD5Sign = MD5Util.md5(customerId + privateKey);
-		return "签名: "+MD5Sign;
+		long requestTime=System.currentTimeMillis();
+		String salt="6a6502cebf8e049bae17928355b757dd41a6f76f";
+		String MD5Sign = MD5Util.md5( privateKey + requestTime+ salt);
+		return "当前时间："+requestTime+" 签名: "+MD5Sign;
 	}
 	
 }

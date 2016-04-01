@@ -4,11 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkService;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -20,7 +20,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
-import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 
 @Service
 public class HaoXiangGouService {
@@ -46,6 +46,8 @@ public class HaoXiangGouService {
 	DataImportService_B2c dataImportService_B2c;
 	@Autowired
 	JointService jointService;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -61,6 +63,7 @@ public class HaoXiangGouService {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		HaoXiangGou hxg = new HaoXiangGou();
 		String customerids = request.getParameter("customerids");
@@ -97,6 +100,7 @@ public class HaoXiangGouService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

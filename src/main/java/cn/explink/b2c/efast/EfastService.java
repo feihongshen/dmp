@@ -5,13 +5,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -21,6 +21,7 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.service.CustomerService;
 
 /**
  * 中兴云购，ERP系统接口service
@@ -45,7 +46,10 @@ public class EfastService {
 	CustomerDAO customerDAO;
 	@Autowired
 	JointService jointService;
-	private Logger logger = LoggerFactory.getLogger(EfastService.class);
+	@Autowired
+	CustomerService customerService;
+	
+	private static Logger logger = LoggerFactory.getLogger(EfastService.class);
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -61,6 +65,7 @@ public class EfastService {
 		return efast;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Efast efast = new Efast();
 		String customerid = request.getParameter("customerid");
@@ -95,6 +100,7 @@ public class EfastService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {
@@ -124,7 +130,7 @@ public class EfastService {
 		params.put("page_size", "20"); // 查询的字段
 		String response = RestHttpServiceHanlder.sendHttptoServer(params, "http://61.161.205.105/efast/efast_api/webservice/web/index.php");
 		// response=URLDecoder.decode(response,"GBK");
-		System.out.println(response);
+		logger.info(response);
 
 	}
 

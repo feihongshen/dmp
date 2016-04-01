@@ -54,7 +54,8 @@ public class GomeService_GetOrders extends GomeService {
 	TransCwbDao transCwbDao;
 	@Autowired
 	DataImportDAO_B2c dataImportDAO_B2c;
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private static Logger logger = LoggerFactory.getLogger(GomeService_GetOrders.class);
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
@@ -112,7 +113,6 @@ public class GomeService_GetOrders extends GomeService {
 
 		} catch (Exception e) {
 			logger.error("获取[国美]订单出现未知异常", e);
-			e.printStackTrace();
 		}
 
 		// 获取订单运单号
@@ -148,7 +148,6 @@ public class GomeService_GetOrders extends GomeService {
 			}
 		} catch (Exception e) {
 			logger.error("获取[国美]订单出现未知异常", e);
-			e.printStackTrace();
 		}
 		return calcCount;
 	}
@@ -180,7 +179,6 @@ public class GomeService_GetOrders extends GomeService {
 			}
 		} catch (Exception e) {
 			logger.error("获取[国美]订单出现未知异常", e);
-			e.printStackTrace();
 		}
 		// 获取订单
 		try {
@@ -204,7 +202,6 @@ public class GomeService_GetOrders extends GomeService {
 			}
 		} catch (Exception e) {
 			logger.error("获取[国美]订单出现未知异常", e);
-			e.printStackTrace();
 		}
 
 	}
@@ -286,8 +283,7 @@ public class GomeService_GetOrders extends GomeService {
 				return false;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return false;
 		}
 	}
@@ -344,9 +340,8 @@ public class GomeService_GetOrders extends GomeService {
 									try {
 										dataImportDAO_B2c.updateCarrealweightAndTranscwb(soCwb);
 									} catch (Exception e) {
-										// TODO Auto-generated catch block
 										logger.info("处理国美asn后的订单信息,初始化件数和运单号异常" + soCwb);
-										e.printStackTrace();
+										logger.error("", e);
 									}
 								}
 								float weight = Float.parseFloat(itemLine.getGrossWeight());
@@ -390,16 +385,13 @@ public class GomeService_GetOrders extends GomeService {
 				return true;
 			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return false;
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return false;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return false;
 		}
 	}
@@ -434,7 +426,6 @@ public class GomeService_GetOrders extends GomeService {
 		String productName = "";
 		// String orderAmount="1";
 		String sellPrice = order.getSellingPrice();
-		String carsize = "";
 		if (orderGoods != null && orderGoods.size() > 0) {
 			Map goodsMap = (Map) orderGoods.get(0);
 			productName = goodsMap.get("ProductName") != null ? goodsMap.get("ProductName").toString() : ""; // 商品名称
@@ -474,7 +465,6 @@ public class GomeService_GetOrders extends GomeService {
 						remark5 = "";
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					logger.error("国美对接，退货订单信息转换异常", e);
 				}
 			}
@@ -587,14 +577,12 @@ public class GomeService_GetOrders extends GomeService {
 		try {
 			reAddress = DES3Utils.decryptMode(address, key);
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
-		System.out.println(reAddress);
+		logger.info(reAddress);
 
 	}
 

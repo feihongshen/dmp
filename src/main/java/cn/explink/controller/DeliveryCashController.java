@@ -2,7 +2,6 @@ package cn.explink.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,6 @@ import cn.explink.dao.GotoClassOldDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
-import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.domain.DeliveryCash;
 import cn.explink.domain.User;
@@ -212,13 +210,13 @@ public class DeliveryCashController {
 
 	@ExceptionHandler(Exception.class)
 	public @ResponseBody String onException(Exception e) {
-		e.printStackTrace();
+		logger.error("", e);
 		return "{\"errorCode\":1,\"error\":\"系统错误:\"" + e.getMessage() + "}";
 	}
 
 	@ExceptionHandler(CwbException.class)
 	public @ResponseBody String onCwbException(CwbException e) {
-		e.printStackTrace();
+		logger.error("", e);
 		return "{\"errorCode\":1,\"cwb\":\"" + e.getCwb() + "\",\"error\":\"系统错误:\"" + e.getMessage() + "}";
 	}
 

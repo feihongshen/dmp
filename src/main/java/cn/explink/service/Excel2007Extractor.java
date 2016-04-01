@@ -30,8 +30,7 @@ public class Excel2007Extractor extends ExcelExtractor {
 			try {
 				xwb = new XSSFWorkbook(fis);
 			} catch (RuntimeException e) {
-				e.printStackTrace();
-				this.logger.error("文件异常，{}", e.getMessage());
+				this.logger.error("文件异常，{}", e);
 				throw new BadExcelException();
 			}
 			XSSFSheet sheet = xwb.getSheetAt(0);
@@ -53,8 +52,7 @@ public class Excel2007Extractor extends ExcelExtractor {
 			}
 			this.logger.info("解析excel结束：" + "合计" + (rowindex - 1) + "条");
 		} catch (Exception e) {
-			e.printStackTrace();
-
+			logger.error("", e);
 		}
 		return rows;
 	}
@@ -79,8 +77,7 @@ public class Excel2007Extractor extends ExcelExtractor {
 			try {
 				xwb = new XSSFWorkbook(fis);
 			} catch (RuntimeException e) {
-				e.printStackTrace();
-				this.logger.error("文件异常，{}", e.getMessage());
+				this.logger.error("文件异常，{}", e);
 				throw new BadExcelException();
 			}
 			XSSFSheet sheet = xwb.getSheetAt(0);
@@ -101,8 +98,7 @@ public class Excel2007Extractor extends ExcelExtractor {
 			}
 			this.logger.info("解析excel结束：" + "合计" + (rowindex - 1) + "条");
 		} catch (Exception e) {
-			e.printStackTrace();
-
+			logger.error("", e);
 		}
 		return rows;
 	}

@@ -9,12 +9,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,6 +50,8 @@ public class CustomerContractController {
 	@Autowired
 	private CustomerDAO customerDao;
 
+	private static Logger logger = LoggerFactory.getLogger(CustomerContractController.class);
+	
 	/**
 	 * 初始化查询合同表中的信息
 	 *
@@ -207,8 +210,7 @@ public class CustomerContractController {
 			toClient.flush();
 			toClient.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

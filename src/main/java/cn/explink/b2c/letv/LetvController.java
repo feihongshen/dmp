@@ -1,6 +1,5 @@
 package cn.explink.b2c.letv;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -47,9 +46,12 @@ public class LetvController {
 	public @ResponseBody String dangdangSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-
-			letvService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				letvService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

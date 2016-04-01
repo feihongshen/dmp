@@ -1,18 +1,15 @@
 package cn.explink.b2c.homegou;
 
-import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkService;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -24,15 +21,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.UserDAO;
-import cn.explink.domain.Branch;
-import cn.explink.domain.CwbOrder;
-import cn.explink.domain.DeliveryState;
-import cn.explink.domain.User;
-import cn.explink.domain.orderflow.OrderFlow;
-import cn.explink.enumutil.DeliveryStateEnum;
-import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.util.DateTimeUtil;
-import cn.explink.util.MD5.MD5Util;
+import cn.explink.service.CustomerService;
 
 @Service
 public class HomegouService {
@@ -56,6 +45,8 @@ public class HomegouService {
 	ExplinkService explinkService;
 	@Autowired
 	BranchDAO branchDAO;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -71,6 +62,7 @@ public class HomegouService {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Homegou cj = new Homegou();
 		String customerids = request.getParameter("customerids");
@@ -116,6 +108,7 @@ public class HomegouService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(completeCustomerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

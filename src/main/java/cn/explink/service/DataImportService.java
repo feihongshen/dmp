@@ -178,7 +178,7 @@ public class DataImportService {
 				this.logger.info("importing order success. cwb = {}", cwbOrderDTO.getCwb());
 			} catch (Exception e) {
 				this.logger.info("importing order failed. cwb = {}", cwbOrderDTO.getCwb());
-				e.printStackTrace();
+				logger.error("", e);
 				errorCollector.addError(cwbOrderDTO.getCwb(), e.getMessage());
 
 				// 失败订单数+1 前台显示
@@ -231,7 +231,7 @@ public class DataImportService {
 				map.put("userid", user.getUserid());
 				this.addressmatch.sendBodyAndHeaders(null, map);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 				this.logger.info(cwbOrder.getCwb() + "匹配站点失败");
 			}
 		}
@@ -502,7 +502,7 @@ public class DataImportService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -672,7 +672,7 @@ public class DataImportService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

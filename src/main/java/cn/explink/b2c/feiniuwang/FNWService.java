@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import net.sf.json.JSONObject;
 import cn.explink.b2c.feiniuwang.CwbResponse;
 import cn.explink.b2c.feiniuwang.FeiNiuRequest;
@@ -26,6 +30,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 
 @Service
 public class FNWService {
@@ -38,12 +43,15 @@ public class FNWService {
 	DataImportService_B2c dataImportService_B2c;
 	@Autowired
 	DataImportDAO_B2c dataImportDAO_B2c;
+	@Autowired
+	CustomerService customerService;
 	private Logger logger =LoggerFactory.getLogger(FNWService.class);
 	
 	public void update(int joint_num,int state){
 		jiontDAO.UpdateState(joint_num, state);
 	}
 	
+	@Transactional
 	public void edit(HttpServletRequest request,int joint_num){
 		FeiNiuWang dms=new FeiNiuWang();
 		String customerid=request.getParameter("customerid");
@@ -73,7 +81,8 @@ public class FNWService {
 			jiontDAO.Update(jointEntity);
 		}
 		//保存 枚举到供货商表中
-			customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public FeiNiuWang getFeiniuwang(int key) {
