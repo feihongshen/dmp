@@ -534,7 +534,7 @@ public class VipShopGetCwbDataService {
 				return getSeq(seq_arrs, seq);
 			}
 			
-			if(dataMap==null){
+			if(dataMap==null || dataMap.isEmpty()){
 				return getSeq(seq_arrs, seq);
 			}
 						
@@ -760,7 +760,7 @@ public class VipShopGetCwbDataService {
 		 * 如果TMS推过来的数据没有最后一件标志那就把发货时间写到运单表里面
 		 */
 		String emaildate = ""; //paraMap.get("remark2"); //发货时间
-		if(paraMap != null){
+		if(paraMap != null && paraMap.size() > 0){
 			emaildate = paraMap.get("remark2");
 		}else{
 			for(Map<String, String> mapPara : paraList){
@@ -871,7 +871,8 @@ public class VipShopGetCwbDataService {
 			}
 			//后者小于前者，移除后者
 			if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
-				currentMap=null;
+				//currentMap=null;
+				currentMap.clear();
 				return;
 			}
 			//后者==前者，移除不是最后一箱的
