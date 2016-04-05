@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.User;
-import cn.explink.pos.tools.JacksonMapper;
 
 @Service
 public class UserMonitorService {
@@ -43,8 +42,7 @@ public class UserMonitorService {
 				logger.info("监听一个用户send jms,userid:{}", userid);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -69,8 +67,7 @@ public class UserMonitorService {
 				logger.info("监听一个用户send jms,username:{}", username);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

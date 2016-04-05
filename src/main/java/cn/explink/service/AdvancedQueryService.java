@@ -17,6 +17,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -109,6 +111,8 @@ public class AdvancedQueryService {
 	ComplaintDAO complaintDAO;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	private static Logger logger = LoggerFactory.getLogger(AdvancedQueryService.class);
 
 	public void AdvanceQueryExportExcelMethod(HttpServletResponse response, HttpServletRequest request, long page, int type) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
@@ -349,7 +353,7 @@ public class AdvancedQueryService {
 			// System.out.println("get end:"+System.currentTimeMillis());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -795,7 +799,7 @@ public class AdvancedQueryService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

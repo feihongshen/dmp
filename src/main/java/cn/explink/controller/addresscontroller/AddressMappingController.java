@@ -2,7 +2,6 @@ package cn.explink.controller.addresscontroller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class AddressMappingController {
 	@Autowired
 	UserDAO userDao;
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(AddressMappingController.class);
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -59,7 +58,7 @@ public class AddressMappingController {
 			List<User> delivererList = qureyDeliverListByStationId();
 			model.addAttribute("delivererList", delivererList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return "/address/deliveryDelivererRule";
 	}
@@ -219,7 +218,7 @@ public class AddressMappingController {
 		try {
 			delivererList = userDao.getUserByRolesAndBranchid("2", branchid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return delivererList;

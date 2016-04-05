@@ -8,6 +8,8 @@ import java.util.Map;
 
 import net.sf.json.JSONArray;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
@@ -50,6 +52,8 @@ public class BaseOrderService {
 	
 	@Autowired
 	OperationTimeDAO operationTimeDAO;
+	
+	private static Logger logger = LoggerFactory.getLogger(BaseOrderService.class);
 	
 	/**
 	 * 从【区域权限设置】获取中转类型的站点id
@@ -153,7 +157,7 @@ public class BaseOrderService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return remark;
 	}

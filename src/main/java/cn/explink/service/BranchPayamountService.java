@@ -295,8 +295,7 @@ public class BranchPayamountService {
 		try {
 			excelbranch = new String(excelbranch.getBytes("GBK"), "iso8859-1");
 		} catch (UnsupportedEncodingException e1) {
-			logger.error("export Excel exception!");
-			e1.printStackTrace();
+			logger.error("export Excel exception!", e1);
 		}
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 		GregorianCalendar thisday = new GregorianCalendar(); // 现在的时间
@@ -313,9 +312,9 @@ public class BranchPayamountService {
 			fOut.flush();
 			fOut.close();// 操作结束，关闭文件
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
-		System.out.println("文件生成...");
+		logger.info("文件生成...");
 	}
 
 	/**

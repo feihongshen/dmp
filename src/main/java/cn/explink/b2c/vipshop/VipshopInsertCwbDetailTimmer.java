@@ -100,7 +100,6 @@ public class VipshopInsertCwbDetailTimmer {
 			}
 		} catch (Exception e) {
 			logger.error("0唯品会0定时器临时表插入或修改方法执行异常!异常原因:", e);
-			e.printStackTrace();
 		}
 	}
 

@@ -55,8 +55,7 @@ public class AccountCwbSummaryService {
 			}
 			return list;
 		} catch (Exception e) {
-			logger.info("分页查找结算列表异常：" + e);
-			e.printStackTrace();
+			logger.info("分页查找结算列表异常：", e);
 			return null;
 		}
 	}

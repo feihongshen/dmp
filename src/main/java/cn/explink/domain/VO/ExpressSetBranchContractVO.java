@@ -4,7 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ExpressSetBranchContractVO {
+	
+	private static Logger logger = LoggerFactory.getLogger(ExpressSetBranchContractVO.class);
+	
 	private int id;
 	private String contractNo;
 	private int contractState;
@@ -344,7 +350,7 @@ public class ExpressSetBranchContractVO {
 		try {
 			resultString = new String(pageCode.getBytes("iso-8859-1"));
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return resultString;
 	}

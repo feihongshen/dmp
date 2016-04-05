@@ -50,9 +50,7 @@ import cn.explink.util.ResourceBundleUtil;
 @DependsOn({ "systemInstallService" })
 public class AddressMatchOXOService implements SystemConfigChangeListner, ApplicationListener<ContextRefreshedEvent> {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-
+	private static Logger logger = LoggerFactory.getLogger(AddressMatchOXOService.class);
 
 	@Autowired
 	private CwbDAO cwbDAO;
@@ -164,7 +162,6 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 			}
 
 		} catch (Exception e) {
-			// e.printStackTrace();
 			this.logger.error("error while doing address match for "+cwb,e);
 		}
 	}
@@ -267,16 +264,16 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 			if (mappingresult != null) {
 				deliveryStationList = mappingresult.getDeliveryStationList();
 				if (deliveryStationList.size() == 0) {
-					System.out.println("return null");
+					logger.info("return null");
 				}
 				for (DeliveryStationVo desvo : deliveryStationList) {
-					System.out.println(desvo.getExternalId());
+					logger.info(String.valueOf(desvo.getExternalId()));
 				}
 			}
 		}
 		
-		System.out.println(deliveryStationList.get(0).getExternalId());
-		System.out.println(((DeliveryStationVo)deliveryStationList.get(0)).getExternalId().longValue()+"==");
+		logger.info(String.valueOf(deliveryStationList.get(0).getExternalId()));
+		logger.info(((DeliveryStationVo)deliveryStationList.get(0)).getExternalId().longValue()+"==");
 		
 	}
 

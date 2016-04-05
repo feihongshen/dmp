@@ -256,7 +256,6 @@ public class DongFangCJService_getOrder extends DongFangCJService {
 			}
 		} catch (Exception e) {
 			logger.error("东方CJ移动文件发生未知异常", e);
-			e.printStackTrace();
 		}
 
 	}

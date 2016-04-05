@@ -6209,7 +6209,7 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * public static void main(String[] args) { Date date = new Date();
 	 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	 * String str = sdf.format(date); System.out.println(str); }
+	 * String str = sdf.format(date); logger.info(str); }
 	 */
 
 	/**
@@ -7849,7 +7849,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @return
 	 */
 	public void creStock(User user) {
-		System.out.println(System.currentTimeMillis() + "--creStock111");
+		logger.info(System.currentTimeMillis() + "--creStock111");
 		long sitetype = this.branchDAO.getBranchByBranchid(user.getBranchid()).getSitetype();
 
 		this.stockDetailDAO.saveStockDetailStateByBranchid(System.currentTimeMillis() + "", user.getBranchid());
@@ -7872,7 +7872,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 
 		this.stockDetailDAO.saveStockDetailForResultId(id, user.getBranchid());
-		System.out.println(System.currentTimeMillis() + "--creStock333");
+		logger.info(System.currentTimeMillis() + "--creStock333");
 	}
 
 	/**
@@ -7882,7 +7882,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param user
 	 */
 	public void handleStockData(List<CwbOrder> list, User user) {
-		System.out.println(System.currentTimeMillis() + "--handleStockData1");
+		logger.info(System.currentTimeMillis() + "--handleStockData1");
 		if ((list != null) && (list.size() > 0)) {
 			for (CwbOrder c : list) {
 				Customer customer = this.customerDAO.getCustomerById(c.getCustomerid());
@@ -7906,7 +7906,7 @@ public class CwbOrderService extends BaseOrderService {
 				}
 			}
 		}
-		System.out.println(System.currentTimeMillis() + "--handleStockData2");
+		logger.info(System.currentTimeMillis() + "--handleStockData2");
 	}
 
 	/**

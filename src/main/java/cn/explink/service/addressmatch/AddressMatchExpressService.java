@@ -154,7 +154,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 	 * @throws JsonProcessingException
 	 */
 	public void matchAddress(@Header("autoMatchAddressInfo") String addressExtralInfo) throws JsonProcessingException, IOException {
-		System.out.println("走到了匹配方法");
+		logger.info("走到了匹配方法");
 		ExtralInfo4Address info = this.expressAddressInfoReader.readValue(addressExtralInfo);
 		this.logger.info("start address match for {}", /* map.get("cwb") */info.getCwb());
 		try {
