@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
+import cn.explink.consts.OperType;
 import cn.explink.dao.AccountAreaDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
@@ -47,6 +48,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.service.BankService;
+import cn.explink.service.BranchInfService;
 import cn.explink.service.BranchService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -89,6 +91,8 @@ public class BranchController {
 	private BankService bankService;
 	@Autowired
 	ExportService exportService;
+	@Autowired
+	BranchInfService branchInfService;
 	
     private List<Menu> PDAmenu ;
 	
@@ -215,6 +219,8 @@ public class BranchController {
 				if ((adressenabled != null) && adressenabled.equals("1")) {
 					this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 				}
+				// add by jian_xie
+				branchInfService.saveBranchInf(bh, OperType.NEW);
 			}
 
 			try {
@@ -334,6 +340,8 @@ public class BranchController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 					}
 				}
+				// 同步站点新接口 add by jian_xie
+				branchInfService.saveBranchInf(branch, OperType.EDIT);
 			}
 
 			try {
@@ -499,6 +507,15 @@ public class BranchController {
 				this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 			}
 		}
+		// 同步站点机构，使用新接口
+		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			if("1".equals(branch.getBrancheffectflag())){
+				branchInfService.saveBranchInf(branch, OperType.NEW);
+			}else{
+				branchInfService.saveBranchInf(branch, OperType.DELETE);
+			}
+		}
+		
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 	

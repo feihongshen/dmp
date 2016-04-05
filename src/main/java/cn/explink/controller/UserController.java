@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.weisuda.CourierService;
+import cn.explink.consts.OperType;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
@@ -41,6 +42,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.ScheduledTaskService;
 import cn.explink.service.SystemInstallService;
+import cn.explink.service.UserInfService;
 import cn.explink.service.UserMonitorService;
 import cn.explink.service.UserService;
 import cn.explink.util.ExcelUtils;
@@ -79,6 +81,8 @@ public class UserController {
 	CwbOrderService cs;
 	@Autowired
 	ExportService exportService;
+	@Autowired
+	UserInfService userInfService;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -157,9 +161,13 @@ public class UserController {
 				this.userService.addUser(user);
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
 					this.courierService.courierUpdate(user);
+					//  新接口 add by jian_xie
+					userInfService.saveUserInf(user, OperType.NEW);
 				}
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
+					//  新接口 add by jian_xie
+					userInfService.saveUserInf(user, OperType.DELETE);
 				}
 				this.logger.info("operatorUser={},用户管理->create", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
@@ -192,9 +200,13 @@ public class UserController {
 				this.userService.addUser(user);
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
 					this.courierService.courierUpdate(user);
+					//  新接口 add by jian_xie
+					userInfService.saveUserInf(user, OperType.NEW);
 				}
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
+					//  新接口 add by jian_xie
+					userInfService.saveUserInf(user, OperType.DELETE);
 				}
 				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
@@ -206,6 +218,7 @@ public class UserController {
 							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(list.get(0).getUserid()), true);
 						}
 					}
+										
 				}
 				this.userMonitorService.userMonitorByUsername(user.getUsername());
 				return "{\"errorCode\":0,\"error\":\"创建成功\",\"type\":\"add\"}";
@@ -254,9 +267,13 @@ public class UserController {
 				this.userService.editUser(user);
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
 					this.courierService.courierUpdate(user);
+					//  新接口 add by jian_xie
+					userInfService.saveUserInf(user, OperType.EDIT);
 				}
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
+					//  新接口 add by jian_xie
+					userInfService.saveUserInf(user, OperType.DELETE);
 				}
 				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
@@ -275,6 +292,7 @@ public class UserController {
 							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 						}
 					}
+					
 				}
 				this.userMonitorService.userMonitorById(userid);
 				return "{\"errorCode\":0,\"error\":\"保存成功\",\"type\":\"edit\"}";
@@ -298,9 +316,13 @@ public class UserController {
 				this.userService.editUser(user);
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
 					this.courierService.courierUpdate(user);
+					//  新接口 add by jian_xie
+					userInfService.saveUserInf(user, OperType.EDIT);
 				}
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
+					//  新接口 add by jian_xie
+					userInfService.saveUserInf(user, OperType.DELETE);
 				}
 				this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 				// TODO 增加同步代码

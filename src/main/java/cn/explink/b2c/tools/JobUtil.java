@@ -89,12 +89,14 @@ import cn.explink.enumutil.ExpressSysMonitorEnum;
 import cn.explink.service.AccountDeductRecordService;
 import cn.explink.service.AppearWindowService;
 import cn.explink.service.BackSummaryService;
+import cn.explink.service.BranchInfService;
 import cn.explink.service.FlowExpService;
 import cn.explink.service.FloworderLogService;
 import cn.explink.service.LogToDayByTuihuoService;
 import cn.explink.service.LogToDayByWarehouseService;
 import cn.explink.service.LogToDayService;
 import cn.explink.service.PunishInsideService;
+import cn.explink.service.UserInfService;
 import cn.explink.service.fnc.OrderLifeCycleReportService;
 import cn.explink.util.DateTimeUtil;
 
@@ -279,6 +281,12 @@ public class JobUtil {
 	@Autowired
 	FlowExpService flowExpService;
 	
+	@Autowired
+	BranchInfService branchInfService;
+	
+	@Autowired
+	UserInfService userInfService;
+	
 	public static Map<String, Integer> threadMap;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new HashMap<String, Integer>();
@@ -316,6 +324,8 @@ public class JobUtil {
 		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
 		JobUtil.threadMap.put("vipshop_OXO_orderTempInsert", 0);
 		JobUtil.threadMap.put("autoDispatchStatus", 0);
+		
+		JobUtil.threadMap.put("syncBranchInf", 0);
 	}
 
 	/**
@@ -353,6 +363,8 @@ public class JobUtil {
 		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
 		JobUtil.threadMap.put("vipshop_OXO_orderTempInsert", 0);
 		JobUtil.threadMap.put("autoDispatchStatus", 0);
+		JobUtil.threadMap.put("syncBranchInf", 0);
+		JobUtil.threadMap.put("syncUserInf", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1693,6 +1705,52 @@ public class JobUtil {
 		}
 
 		this.logger.info("执行了自动化分拣状态数据从临时表转业务表的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	/**
+	 * 同步站点机构
+	 */
+	public void syncBranchInf_Task() {
+		if (JobUtil.threadMap.get("syncBranchInf") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出syncBranchInf");
+			return;
+		}
+		JobUtil.threadMap.put("syncBranchInf", 1);
+		long startTime = 0;
+		long endTime = 0;
+		try {
+			startTime = System.currentTimeMillis();
+			branchInfService.processSync();
+			endTime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行了同步站点机构的定时器异常：", e);
+		} finally {
+			JobUtil.threadMap.put("syncBranchInf", 0);
+		}
+		this.logger.info("执行了同步站点机构的定时器,本次耗时:{}秒", ((endTime - startTime) / 1000));
+	}
+	
+	/**
+	 * 同步小件员
+	 */
+	public void syncUserInf_Task(){
+		if (JobUtil.threadMap.get("syncUserInf") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出syncUserInf");
+			return;
+		}
+		JobUtil.threadMap.put("syncUserInf", 1);
+		long startTime = 0;
+		long endTime = 0;
+		try {
+			startTime = System.currentTimeMillis();
+			userInfService.processSync();
+			endTime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行了同步小件员的定时器异常：", e);
+		} finally {
+			JobUtil.threadMap.put("syncUserInf", 0);
+		}
+		this.logger.info("执行了同步小件员的定时器,本次耗时:{}秒", ((endTime - startTime) / 1000));
 	}
 
 }
