@@ -173,6 +173,7 @@ public class BaleDao {
 		return this.jdbcTemplate.queryForLong(sql, begindate, enddate);
 	}
 
+	@Deprecated
 	public Bale getBaleByCwb(String cwb) {
 		try {
 			String sql = "select * from express_ops_bale where cwb=? ";
