@@ -45,6 +45,7 @@ public class UserInfDao {
 			userInf.setOperType(rs.getString("oper_type"));
 			userInf.setBranchid(rs.getLong("branchid"));
 			userInf.setOldusername(rs.getString("oldusername"));
+			userInf.setTimes(rs.getInt("times"));
 			return userInf;
 		}		
 	}	
@@ -58,7 +59,7 @@ public class UserInfDao {
 	public long saveUserInf(final UserInf userInf){
 		KeyHolder key = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator(){
-			String sql = " insert into express_set_user_inf (inf_id, userid,username, realname, usermobile, password,is_sync,oper_type,create_date,create_user,branchid,oldusername) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = " insert into express_set_user_inf (inf_id, userid,username, realname, usermobile, password,is_sync,oper_type,create_date,create_user,branchid,oldusername,times) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = null;
@@ -75,6 +76,7 @@ public class UserInfDao {
 				ps.setString(10, userInf.getCreateUser() == null ? "" : userInf.getCreateUser());
 				ps.setLong(11, userInf.getBranchid());
 				ps.setString(12, userInf.getOldusername() == null ? "" : userInf.getOldusername());
+				ps.setInt(13, userInf.getTimes());
 				return ps;
 			}
 		}, key);
@@ -90,6 +92,16 @@ public class UserInfDao {
 	public int updateUserInfForIssync(long infId){
 		String sql = " update express_set_user_inf set is_sync = 1 where inf_id=? ";
 		return jdbcTemplate.update(sql, infId);
+	}
+	
+	/**
+	 * 同步次数加1
+	 * @param infId
+	 * @return
+	 */
+	public int incrTimes(long infId){
+		String sql = " update express_set_user_inf set times = times + 1 where inf_id=?";
+		return jdbcTemplate.update(sql, infId); 
 	}
 	
 }

@@ -32,6 +32,8 @@ public class UserInf {
 	private long				branchid;				// 机构id
 	
 	private String				oldusername;			// 旧username
+	
+	private int					times;					// 同步次数
 
 	public long getInfId() {
 		return infId;
@@ -127,6 +129,14 @@ public class UserInf {
 
 	public void setOldusername(String oldusername) {
 		this.oldusername = oldusername;
+	}
+
+	public int getTimes() {
+		return times;
+	}
+
+	public void setTimes(int times) {
+		this.times = times;
 	}
 	
 }

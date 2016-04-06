@@ -326,6 +326,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("autoDispatchStatus", 0);
 		
 		JobUtil.threadMap.put("syncBranchInf", 0);
+		JobUtil.threadMap.put("syncUserInf", 0);
 	}
 
 	/**

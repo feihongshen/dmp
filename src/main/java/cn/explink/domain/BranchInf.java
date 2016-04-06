@@ -35,6 +35,8 @@ public class BranchInf {
 	private boolean					isSync;						// 是否同步
 	
 	private String					operType;					// 操作类型
+	
+	private int						times;						// 同步次数
 
 	public long getInfId() {
 		return infId;
@@ -138,6 +140,14 @@ public class BranchInf {
 
 	public void setOperType(String operType) {
 		this.operType = operType;
+	}
+
+	public int getTimes() {
+		return times;
+	}
+
+	public void setTimes(int times) {
+		this.times = times;
 	}
 	
 }

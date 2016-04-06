@@ -9,6 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +64,7 @@ public class UserInfService {
 		Weisuda weisuda = weisudaService.getWeisudaSettingMethod(PosEnum.Weisuda.getKey());
 		
 		List<UserInf> list = userInfDao.getUserInfByIsSync(false);
+		updateUserInfForTimes(list);
 		Map<Long, UserInf> map = onlyUserInfMap(list);
 		Set<Entry<Long, UserInf>> set = map.entrySet();
 		boolean result = false;
@@ -107,26 +114,34 @@ public class UserInfService {
 	 */
 	private boolean syncNewAndEditUserInf(UserInf userInf, Weisuda weisuda){
 		String data = getNewAndEditXML(userInf);
-		logger.info("唯速达_05站点更新接口发送报文,userMessage={}", data);
-		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.siteUpdate.getValue());
-		logger.info("唯速达_05站点更新返回response={}", response);
-		// 根据报文处理结果 TODO
-		return true;
+		logger.info("唯速达_小件员更新接口发送报文,userMessage={}", data);
+		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.courierUpdate.getValue());
+		logger.info("唯速达_小件员更新返回response={}", response);
+		// 根据返回报文处理 
+		String result = getResultId(response, "courier_id");
+		if(StringUtils.isEmpty(result)){
+			return false;
+		}
+		if(result.equals(userInf.getUserid() + "")){
+			return true;
+		}
+		return false;
 	}
 	
 	/**
 	 * 获得报文
 	 */
 	private String getNewAndEditXML(UserInf userInf){
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("<root>");
 		sb.append("<item>");
 		sb.append("<code>");
 		sb.append(userInf.getUsername());
 		sb.append("</code>");
-		sb.append("<old_code>");
-		sb.append(userInf.getOldusername());
-		sb.append("</old_code>");
+		sb.append("<courier_id>");
+		sb.append(userInf.getUserid());
+		sb.append("</courier_id>");
 		sb.append("<name>");
 		sb.append(userInf.getRealname());
 		sb.append("</name>");
@@ -150,11 +165,18 @@ public class UserInfService {
 	 */
 	private boolean syncDelUserInf(UserInf userInf, Weisuda weisuda){
 		String data = getDeleteXML(userInf);
-		logger.info("唯速达站点删除接口发送报文,userMessage={}", data);
-		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.siteDel.getValue());
-		logger.info("唯速达站点删除返回response={}", response);
-		// 根据返回报文处理 TODO
-		return true;
+		logger.info("唯速达小件员删除接口发送报文,userMessage={}", data);
+		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.carrierDel.getValue());
+		logger.info("唯速达小件员删除返回response={}", response);
+		// 根据返回报文处理 
+		String result = getResultId(response, "del_code");
+		if (StringUtils.isEmpty(result)) {
+			return false;
+		}
+		if (result.equals(userInf.getUsername())) {
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -164,9 +186,9 @@ public class UserInfService {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<root>");
 		sb.append("<item>");
-		sb.append("<user_id>");
-		sb.append(userInf.getUserid());
-		sb.append("</user_id>");
+		sb.append("<del_code>");
+		sb.append(userInf.getUsername());
+		sb.append("</del_code>");
 		sb.append("</item>");
 		sb.append("</root>");
 		return sb.toString();
@@ -251,7 +273,6 @@ public class UserInfService {
 		return prestr;
 	}
 	
-	
 	public void saveUserInf(User user, String operType){
 		UserInf userInf = new UserInf();
 		userInf.setUserid(user.getUserid());
@@ -266,5 +287,42 @@ public class UserInfService {
 		userInf.setBranchid(user.getBranchid());
 		userInf.setOldusername(user.getOldusername());
 		userInfDao.saveUserInf(userInf);
+	}
+	
+	/**
+	 * 把报文解析返回处理的id
+	 */
+	private String getResultId(String response, String nodeName){
+		if(StringUtils.isEmpty(response) || StringUtils.isEmpty(nodeName)){
+			return null;
+		}		 
+		try {
+			Document document = DocumentHelper.parseText(response);
+			//获取根节点  
+	        Element root = document.getRootElement();
+	        if(root != null){
+	        	List childran = root.elements();
+	        	if(CollectionUtils.isNotEmpty(childran)){
+	        		Element child = (Element) childran.get(0);
+	        		if(nodeName.equals(child.getName())){
+	        			return child.getTextTrim();
+	        		}
+	        	}
+	        }			
+		} catch (DocumentException e) {
+			logger.error("解析小件员返回报文出错", e);			
+			return null;
+		}
+		return null;
+	}
+	
+	/**
+	 * 更新同步次数
+	 * @param list
+	 */
+	private void updateUserInfForTimes(List<UserInf> list){
+		for(UserInf userInf : list){
+			userInfDao.incrTimes(userInf.getInfId());
+		}
 	}
 }

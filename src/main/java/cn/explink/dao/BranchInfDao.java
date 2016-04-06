@@ -46,6 +46,7 @@ public class BranchInfDao {
 			branchInf.setCreateUser(rs.getString("create_user"));
 			branchInf.setIsSync(rs.getBoolean("is_sync"));
 			branchInf.setOperType(rs.getString("oper_type"));
+			branchInf.setTimes(rs.getInt("times"));
 			return branchInf;
 		}		
 	}	
@@ -59,7 +60,7 @@ public class BranchInfDao {
 	public long saveBranchInf(final BranchInf branchInf){
 		KeyHolder key = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator(){
-			String sql = " insert into express_set_branch_inf (inf_id, branchid,branchname, tpsbranchcode, branchprovince, branchcity,brancharea,password,rec_branchid, create_date,create_user,is_sync,oper_type) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = " insert into express_set_branch_inf (inf_id, branchid,branchname, tpsbranchcode, branchprovince, branchcity,brancharea,password,rec_branchid, create_date,create_user,is_sync,oper_type, times) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = null;
@@ -68,15 +69,16 @@ public class BranchInfDao {
 				ps.setLong(2, branchInf.getBranchid());
 				ps.setString(3, branchInf.getBranchname() == null ? "" : branchInf.getBranchname());
 				ps.setString(4, branchInf.getTpsbranchcode() == null? "" : branchInf.getTpsbranchcode());
-				ps.setString(5, branchInf.getBranchprovince() == null ? "" : branchInf.getBranchprovince());
-				ps.setString(6, branchInf.getBranchcity() == null ? "" : branchInf.getBranchcity());
-				ps.setString(7, branchInf.getBrancharea() == null ? "" : branchInf.getBrancharea());
+				ps.setString(5, branchInf.getBranchprovince() == null || branchInf.getBranchprovince().isEmpty() ? "***" : branchInf.getBranchprovince());
+				ps.setString(6, branchInf.getBranchcity() == null || branchInf.getBranchcity().isEmpty() ? "***" : branchInf.getBranchcity());
+				ps.setString(7, branchInf.getBrancharea() == null || branchInf.getBrancharea().isEmpty() ? "***" : branchInf.getBrancharea());
 				ps.setString(8, branchInf.getPassword() == null ? "" : branchInf.getPassword());
 				ps.setLong(9, branchInf.getRecBranchid());
 				ps.setTimestamp(10, new Timestamp(branchInf.getCreateDate().getTime()));
 				ps.setString(11, branchInf.getCreateUser() == null ? "" : branchInf.getCreateUser());
 				ps.setBoolean(12, branchInf.getIsSync());
 				ps.setString(13, branchInf.getOperType());
+				ps.setInt(14, branchInf.getTimes());
 				return ps;
 			}
 		}, key);
@@ -91,6 +93,16 @@ public class BranchInfDao {
 	 */
 	public int updateBranchInfForIssync(long infId){
 		String sql = " update express_set_branch_inf set is_sync = 1 where inf_id=? ";
+		return jdbcTemplate.update(sql, infId);
+	}
+	
+	/**
+	 * 同步次数+1
+	 * @param infId
+	 * @return
+	 */
+	public int incrTimes(long infId){
+		String sql = " update express_set_branch_inf set times = times+1 where inf_id=?";
 		return jdbcTemplate.update(sql, infId);
 	}
 	

@@ -9,6 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +64,7 @@ public class BranchInfService {
 		Weisuda weisuda = weisudaService.getWeisudaSettingMethod(PosEnum.Weisuda.getKey());
 		
 		List<BranchInf> list = branchInfDao.getBranchInfByIsSync(false);
+		updateBranchInfForTimes(list);
 		Map<Long, BranchInf> map = onlyBranchInfMap(list);
 		Set<Entry<Long, BranchInf>> set = map.entrySet();
 		boolean result = false;
@@ -110,8 +117,15 @@ public class BranchInfService {
 		logger.info("唯速达_05站点更新接口发送报文,userMessage={}", data);
 		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.siteUpdate.getValue());
 		logger.info("唯速达_05站点更新返回response={}", response);
-		// 根据报文处理结果 TODO
-		return true;
+		// 根据报文处理结果 
+		String result = getResultId(response, "site_id");
+		if(StringUtils.isEmpty(result)){
+			return false;
+		}
+		if(result.equals(branchInf.getBranchid() + "")){
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -156,8 +170,15 @@ public class BranchInfService {
 		logger.info("唯速达站点删除接口发送报文,userMessage={}", data);
 		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.siteDel.getValue());
 		logger.info("唯速达站点删除返回response={}", response);
-		// 根据返回报文处理 TODO
-		return true;
+		// 根据返回报文处理 
+		String result = getResultId(response, "site_id");
+		if(StringUtils.isEmpty(result)){
+			return false;
+		}
+		if(result.equals(branchInf.getBranchid() + "")){
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -167,9 +188,9 @@ public class BranchInfService {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<root>");
 		sb.append("<item>");
-		sb.append("<site_id>");
+		sb.append("<del_site_id>");
 		sb.append(branchInf.getBranchid());
-		sb.append("</site_id>");
+		sb.append("</del_site_id>");
 		sb.append("<rec_site_id>");
 		sb.append(branchInf.getRecBranchid());
 		sb.append("</rec_site_id>");
@@ -274,4 +295,39 @@ public class BranchInfService {
 		branchInfDao.saveBranchInf(branchInf);
 	}
 	
+	/**
+	 * 把报文解析返回处理的id
+	 */
+	private String getResultId(String response, String nodeName){
+		if(StringUtils.isEmpty(response) || StringUtils.isEmpty(nodeName)){
+			return null;
+		}		 
+		try {
+			Document document = DocumentHelper.parseText(response);
+			//获取根节点  
+	        Element root = document.getRootElement();
+	        if(root != null){
+	        	List childran = root.elements();
+	        	if(CollectionUtils.isNotEmpty(childran)){
+	        		Element child = (Element) childran.get(0);
+	        		if(nodeName.equals(child.getName())){
+	        			return child.getTextTrim();
+	        		}
+	        	}
+	        }			
+		} catch (DocumentException e) {
+			logger.error("解析站点返回报文出错", e);			
+			return null;
+		}
+		return null;
+	}
+	
+	/**
+	 * 更新次数
+	 */
+	private void updateBranchInfForTimes(List<BranchInf> list){
+		for(BranchInf branchInf : list){
+			branchInfDao.incrTimes(branchInf.getInfId());
+		}
+	}
 }
