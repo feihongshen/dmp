@@ -63,42 +63,40 @@ public class DataImportService_B2c {
 	OrderFlowDAO orderFlowDAO;
 	@Autowired
 	CustomWareHouseDAO customWarehouseDAO;
-
-	/**
-	 * 提供数据导入接口-对接用到
-	 * 
-	 * @param customerid
-	 * @param branchid
-	 * @param ed
-	 * @param b2cFlag
-	 * @param xmlList
-	 * @return
-	 */
-	@Transactional
-	public List<CwbOrderDTO> Analizy_DataDealByB2c_TuoYun(long customerid, String b2cFlag, List<Map<String, String>> xmlList, long warehouse_id, // 对接设置中传过来的ID
-			boolean SaveTempTableFlag) throws Exception {
-		long warehouseid = warehouse_id == 0 ? getTempWarehouseIdForB2c() : warehouse_id; // 获取虚拟库房
-		EmailDate ed = dataImportService.getOrCreateEmailDate(customerid, 0, warehouseid);
-		return this.Analizy_DataDeal(customerid, b2cFlag, xmlList, warehouseid, SaveTempTableFlag, ed) ;
-	}
 	
 	/**
 	 * 提供数据导入接口-对接用到
-	 * 
+	 * 对接管理中的托运模式关闭的情况下：
+	 * 1.导入批次表(express_ops_emaildate)emaildatetime使用当天第一条进入DMP系统订单的创建时间
+	 * 2.临时表(express_ops_cwb_detail_b2ctemp)和正式表(express_ops_cwb_detail)的emaildate(发货时间)取TMS的出仓时间
+	 * @author leo01.liao
 	 * @param customerid
-	 * @param branchid
-	 * @param ed
 	 * @param b2cFlag
 	 * @param xmlList
+	 * @param warehouse_id
+	 * @param SaveTempTableFlag
+	 * @param emaildate
 	 * @return
+	 * @throws Exception
 	 */
 	@Transactional
-	public List<CwbOrderDTO> Analizy_DataDeal(long customerid, String b2cFlag, List<Map<String, String>> xmlList, long warehouseid, boolean SaveTempTableFlag  , EmailDate ed) throws Exception {
+	public List<CwbOrderDTO> Analizy_DataDealByB2cNonTuoYun(long customerid, String b2cFlag, List<Map<String, String>> xmlList, 
+															long warehouse_id, boolean SaveTempTableFlag, String emaildate) throws Exception {
+		//获取虚拟库房Id,所有的B2C对接如果未设置都会导入默认的虚拟库房里面，方便能够统计到。
+		long warehouseid = warehouse_id == 0 ? getTempWarehouseIdForB2c() : warehouse_id;
+		
+		//导入批次表(express_ops_emaildate)emaildatetime使用当天第一条进入DMP系统订单的创建时间
+		EmailDate ed = dataImportService.getOrCreateEmailDate(customerid, 0, warehouseid);
+		
 		ExcelColumnSet excelColumnSet = cwbColumnSet.getEexcelColumnSetByB2cJoint(b2cFlag);
 		List<CwbOrderDTO> cwbOrders = getCwbOrders(customerid, excelColumnSet, warehouseid, xmlList);
 		User user = new User();
 		user.setUserid(1);
 		user.setBranchid(warehouseid);
+		
+		//临时表(express_ops_cwb_detail_b2ctemp)和正式表(express_ops_cwb_detail)的emaildate(发货时间)取TMS的出仓时间
+		ed.setEmaildatetime(emaildate);
+		
 		if (!SaveTempTableFlag) { // 调用正常导入的方法
 			importData(cwbOrders, customerid, user, warehouseid, ed);
 		} else { // 导入临时表，然后定时器处理
