@@ -90,28 +90,6 @@ public class BranchController {
 	@Autowired
 	ExportService exportService;
 	
-    private List<Menu> PDAmenu ;
-	
-	private List<Branch> zhongzhuanList ; 
-	
-	private List<Branch> tuihuoList ;
-	
-	private List<Branch> caiwuList ;
-	
-	private List<PaiFeiRule> pfrulelist ;
-	
-	private SystemInstall bindmsksid ;
-	
-	private List<Stores> mskbranchlist ;
-	
-	private List<Branch> accountbranchList ;
-	
-	private List<AccountArea> accontareaList ;
-	
-	private List<JSONObject> tlBankList ;
-	
-	private List<JSONObject> cftBankList ;
-
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -364,53 +342,31 @@ public class BranchController {
 	 * 初始化机构管理
 	 */
 	private Model initOrganizationControllData(Model model){
-//		if(this.accontareaList == null || this.accontareaList.size() == 0){
-//			this.accontareaList = this.accountareaDAO.getAllAccountArea() ;
-//		}
-		if(this.PDAmenu == null || this.PDAmenu.size() == 0){
-			this.PDAmenu = this.menuDAO.getPDAMenus() ;
-		}
-		if(this.zhongzhuanList == null || this.zhongzhuanList.size() == 0){
-			this.zhongzhuanList = this.branchDAO.getBranchBySiteType(BranchEnum.ZhongZhuan.getValue()) ;
-		}
-		if(this.tuihuoList == null || this.tuihuoList.size() == 0){
-			this.tuihuoList = this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()) ;
-		}
-		if(this.caiwuList == null || this.caiwuList.size() == 0){
-			this.caiwuList = this.branchDAO.getBranchBySiteType(BranchEnum.CaiWu.getValue()) ;
-		}
-		if(this.pfrulelist == null || this.pfrulelist.size() == 0){
-			this.pfrulelist = this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()) ;
-		}
-		if(this.bindmsksid == null){
-			this.bindmsksid = this.systemInstallDAO.getSystemInstallByName("maisike_id_flag") ;
-		}
-		if(this.mskbranchlist == null || this.mskbranchlist.size() == 0){
-			this.mskbranchlist = this.storesDAO.getMaisiBranchList() ;
-		}
-		if(this.accountbranchList == null || this.accountbranchList.size() == 0){
-			String accountBranch = String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue());
-			this.accountbranchList = this.branchDAO.getBanchByBranchidForStock(accountBranch); 
-		}
-		if(this.tlBankList == null || this.tlBankList.size() == 0){
-			this.tlBankList = this.bankService.getTlBankList() ;
-		}
-		if(this.cftBankList == null || this.cftBankList.size() == 0){
-			this.cftBankList = this.bankService.getCftBankList() ;
-		}
+	
+//		List<AccountArea> accontareaList = this.accountareaDAO.getAllAccountArea() ;
+		List<Menu> PDAmenu = this.menuDAO.getPDAMenus() ;
+		List<Branch> zhongzhuanList = this.branchDAO.getBranchBySiteType(BranchEnum.ZhongZhuan.getValue()) ;
+		List<Branch> tuihuoList = this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()) ;
+		List<Branch> caiwuList = this.branchDAO.getBranchBySiteType(BranchEnum.CaiWu.getValue()) ;
+		List<PaiFeiRule> pfrulelist = this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()) ;
+		SystemInstall bindmsksid = this.systemInstallDAO.getSystemInstallByName("maisike_id_flag") ;
+		List<Stores> mskbranchlist = this.storesDAO.getMaisiBranchList() ;
+		List<Branch> accountbranchList = this.branchDAO.getBanchByBranchidForStock(String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue())); 
+		List<JSONObject> tlBankList = this.bankService.getTlBankList() ;
+		List<JSONObject> cftBankList = this.bankService.getCftBankList() ;
 		
-		model.addAttribute("accontareaList", this.accontareaList);
-		model.addAttribute("PDAmenu", this.PDAmenu);
-		model.addAttribute("zhongzhuanList", this.zhongzhuanList);
-		model.addAttribute("tuihuoList", this.tuihuoList);
-		model.addAttribute("caiwuList", this.caiwuList);
+//		model.addAttribute("accontareaList", accontareaList);
+		model.addAttribute("PDAmenu", PDAmenu);
+		model.addAttribute("zhongzhuanList", zhongzhuanList);
+		model.addAttribute("tuihuoList", tuihuoList);
+		model.addAttribute("caiwuList", caiwuList);
 
-		model.addAttribute("bindmsksid", this.bindmsksid);
-		model.addAttribute("mskbranchlist", this.mskbranchlist);
-		model.addAttribute("pfrulelist", this.pfrulelist);
-		model.addAttribute("accountbranchList", this.accountbranchList);
-		model.addAttribute("tlBankList", this.tlBankList);
-		model.addAttribute("cftBankList", this.cftBankList);
+		model.addAttribute("bindmsksid", bindmsksid);
+		model.addAttribute("mskbranchlist", mskbranchlist);
+		model.addAttribute("pfrulelist", pfrulelist);
+		model.addAttribute("accountbranchList", accountbranchList);
+		model.addAttribute("tlBankList", tlBankList);
+		model.addAttribute("cftBankList", cftBankList);
 		return model ;
 	}
 	
