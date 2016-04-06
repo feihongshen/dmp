@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.HttpClienCommon;
-import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.b2c.yihaodian.xmldto.ReturnDto;
 import cn.explink.b2c.yonghuics.json.OrderCallbackDto;
 import cn.explink.controller.CwbOrderDTO;
@@ -88,7 +87,6 @@ public class YonghuiService_callBack extends YonghuiService {
 
 		} catch (Exception e) {
 			logger.error("error info while request yihaodian export cwb Successfully CallBackReturn  interface!" + e, e);
-			e.printStackTrace();
 		}
 	}
 

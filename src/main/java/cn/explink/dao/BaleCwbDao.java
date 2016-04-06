@@ -12,9 +12,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-
 import cn.explink.core.utils.StringUtils;
 import cn.explink.domain.BaleCwb;
+import cn.explink.enumutil.BaleUseStateEnum;
 
 @Component
 public class BaleCwbDao {
@@ -32,6 +32,7 @@ public class BaleCwbDao {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
 
 	public long createBale(final BaleCwb bale) {
 		KeyHolder key = new GeneratedKeyHolder();
@@ -74,8 +75,8 @@ public class BaleCwbDao {
 	 * @return
 	 */
 	public long getBaleScanCount(String baleno) {
-		String sql = "select scannum from express_ops_bale where baleno=?";
-		return this.jdbcTemplate.queryForLong(sql, baleno);
+		String sql = "select scannum from express_ops_bale where baleno=? and state=?";
+		return this.jdbcTemplate.queryForLong(sql, baleno,BaleUseStateEnum.ZaiShiYong.getValue());
 	}
 	/**
 	 * 根据订单号获取对应包号
@@ -108,8 +109,9 @@ public class BaleCwbDao {
 		return this.jdbcTemplate.queryForList(sql+baleid, String.class);
 	}
 	public List<String> getCwbsByBaleNO(String baleno) {
-		String sql = "select cwb from express_ops_bale_cwb where baleno=?";
-		return this.jdbcTemplate.queryForList(sql, String.class,baleno);
+		String sql = "select cwb from express_ops_bale_cwb where baleid in (select id from express_ops_bale where baleno=? and state=?)";
+		return this.jdbcTemplate.queryForList(sql, String.class,baleno,BaleUseStateEnum.ZaiShiYong.getValue());
+		
 	}
 
 	public void deleteByBaleidAndCwb(long baleid, String cwb) {
@@ -126,4 +128,5 @@ public class BaleCwbDao {
 			return null;
 		}
 	}
+
 }

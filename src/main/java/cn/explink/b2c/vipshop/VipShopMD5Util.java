@@ -1,14 +1,17 @@
 package cn.explink.b2c.vipshop;
 
 import java.security.MessageDigest;
-
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VipShopMD5Util {
 
+	private static Logger logger = LoggerFactory.getLogger(VipShopMD5Util.class);
+	
 	/**
 	 * 对字符串进行签名
 	 */
@@ -23,8 +26,7 @@ public class VipShopMD5Util {
 			}
 			return hexValue.toString().toUpperCase();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return parameter;

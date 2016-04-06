@@ -31,7 +31,7 @@ public class ApplyDeliverstateService {
 			applyEditDeliverystateDAO.updateState(1, ids);
 			deliveryStateDAO.updateStateByIds(1, pushtime, ids);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 }

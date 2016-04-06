@@ -33,7 +33,7 @@ public class ExpressExcel2003Extractor extends Excel2003Extractor {
 			try {
 				xwb = new HSSFWorkbook(fis);
 			} catch (RuntimeException e) {
-				e.printStackTrace();
+		        logger.error("", e);
 				this.logger.error("文件异常，{}", e.getMessage());
 				throw new BadExcelException();
 			}
@@ -56,8 +56,7 @@ public class ExpressExcel2003Extractor extends Excel2003Extractor {
 			}
 			this.logger.info("解析excel结束：" + "合计" + (rowindex - 1) + "条");
 		} catch (Exception e) {
-			e.printStackTrace();
-
+			logger.error("", e);
 		}
 		return rows;
 	}

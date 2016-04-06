@@ -112,7 +112,6 @@ public class UnionPayService {
 			}
 		} catch (Exception e) {
 			logger.error("请求UnionPay解密异常", e);
-			e.printStackTrace();
 		}
 		return false;
 	}
@@ -168,7 +167,6 @@ public class UnionPayService {
 			return json;
 		} catch (Exception e) {
 			logger.error("字符串转化为Json格式发生异常,jsondata=" + jsondata, e);
-			e.printStackTrace();
 		}
 		return null;
 
@@ -182,8 +180,7 @@ public class UnionPayService {
 				deliverid = userlist.get(0).getUserid();
 			}
 		} catch (Exception e) {
-			logger.info("POS查询-没有查询到小件员[" + deliver_man + "]");
-			e.printStackTrace();
+			logger.error("POS查询-没有查询到小件员[" + deliver_man + "]", e);
 		}
 		return deliverid;
 	}

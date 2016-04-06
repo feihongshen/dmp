@@ -27,7 +27,7 @@ public class CourierService {
 			String jsonUser = JsonUtil.translateToJson(user);
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "update");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -41,7 +41,7 @@ public class CourierService {
 			String jsonUser = JsonUtil.translateToJson(user);
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "del");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -74,7 +74,7 @@ public class CourierService {
 	// }
 	// });
 	// } catch (Exception e) {
-	// e.printStackTrace();
+	// 	   logger.error("", e);
 	// }
 	// }
 

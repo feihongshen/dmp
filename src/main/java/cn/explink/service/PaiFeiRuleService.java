@@ -1493,7 +1493,7 @@ public class PaiFeiRuleService {
 		String json = "[{\"showflag\":\"1\",\"customerid\":\"1\",\"basicPFfee\":\"1111.00\",\"remark\":\"1111\"},{\"customerid\":\"2\",\"basicPFfee\":\"222\",\"remark\":\"222\"}]";
 		JSONArray array = JSONArray.fromObject(json);
 		List<PFbasic> pfbasicList = (List<PFbasic>) JSONArray.toCollection(array, PFbasic.class);
-		System.out.println(pfbasicList);
+		System.out.println(String.valueOf(pfbasicList));
 	}
 
 	@Transactional

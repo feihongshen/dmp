@@ -14,6 +14,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -39,6 +41,8 @@ import cn.explink.util.StreamingStatementCreator;
 @Service
 public class PosPayMoneyService {
 
+	private static Logger logger = LoggerFactory.getLogger(PosPayMoneyService.class);
+	
 	@Autowired
 	PosPayMoneyDAO posPayMoneyDAO;
 	@Autowired
@@ -166,11 +170,10 @@ public class PosPayMoneyService {
 											cell.setCellValue(a == null ? "" : a.toString());
 										}
 									} catch (Exception e) {
-										e.printStackTrace();
+										logger.error("", e);
 									}
 								} catch (IllegalArgumentException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									logger.error("", e);
 								}
 							}
 							count++;
@@ -184,7 +187,7 @@ public class PosPayMoneyService {
 			// System.out.println("get end:"+System.currentTimeMillis());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

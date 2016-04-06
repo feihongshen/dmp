@@ -56,7 +56,6 @@ public class MqConfigController {
 			consumerStarter.stop();
 			consumerStarter.start();
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("mq start error",e);
 			return "{\"errorCode\":1,\"error\":\"启动MQ失败，"+e.getMessage()+"\"}";
 		}
@@ -68,8 +67,6 @@ public class MqConfigController {
 		try {
 			consumerStarter.stop();
 		} catch (Exception e) {
-			//?????
-			e.printStackTrace();
 			logger.error("mq stop error",e);
 			return "{\"errorCode\":1,\"error\":\"停止MQ失败，"+e.getMessage()+"\"}";
 		}
@@ -81,7 +78,6 @@ public class MqConfigController {
 		try{
 		mqConfigService.saveOrUpdate(vo);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("mq config save error",e);
 			return "{\"errorCode\":1,\"error\":\"保存MQ配置失败，"+e.getMessage()+"\"}";
 		}
@@ -93,7 +89,6 @@ public class MqConfigController {
 		try{
 		mqConfigService.delete(vo);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("mq config save error",e);
 			return "{\"errorCode\":1,\"error\":\"删除MQ配置失败，"+e.getMessage()+"\"}";
 		}

@@ -173,6 +173,7 @@ import cn.explink.enumutil.AccountFlowOrderTypeEnum;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BaleStateEnum;
+import cn.explink.enumutil.BaleUseStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
@@ -1944,6 +1945,7 @@ public class CwbOrderService extends BaseOrderService {
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, -1L, currentbranchid, NextBranchid);
 
 		this.baleDaoHuo_fzdh(co);
+		this.disableBale(cwb, scancwb, isypdjusetranscwb,co);
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
@@ -2229,6 +2231,8 @@ public class CwbOrderService extends BaseOrderService {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
 
+		this.disableBale(cwb, scancwb, isypdjusetranscwb,co);
+		
 		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, System.currentTimeMillis(), scancwb, false);
 
 		this.createTuihuoZaiTouRecord(cwb, co); // 创建退货再投申请记录
@@ -6209,7 +6213,7 @@ public class CwbOrderService extends BaseOrderService {
 	/*
 	 * public static void main(String[] args) { Date date = new Date();
 	 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	 * String str = sdf.format(date); System.out.println(str); }
+	 * String str = sdf.format(date); logger.info(str); }
 	 */
 
 	/**
@@ -7849,7 +7853,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @return
 	 */
 	public void creStock(User user) {
-		System.out.println(System.currentTimeMillis() + "--creStock111");
+		logger.info(System.currentTimeMillis() + "--creStock111");
 		long sitetype = this.branchDAO.getBranchByBranchid(user.getBranchid()).getSitetype();
 
 		this.stockDetailDAO.saveStockDetailStateByBranchid(System.currentTimeMillis() + "", user.getBranchid());
@@ -7872,7 +7876,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 
 		this.stockDetailDAO.saveStockDetailForResultId(id, user.getBranchid());
-		System.out.println(System.currentTimeMillis() + "--creStock333");
+		logger.info(System.currentTimeMillis() + "--creStock333");
 	}
 
 	/**
@@ -7882,7 +7886,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param user
 	 */
 	public void handleStockData(List<CwbOrder> list, User user) {
-		System.out.println(System.currentTimeMillis() + "--handleStockData1");
+		logger.info(System.currentTimeMillis() + "--handleStockData1");
 		if ((list != null) && (list.size() > 0)) {
 			for (CwbOrder c : list) {
 				Customer customer = this.customerDAO.getCustomerById(c.getCustomerid());
@@ -7906,7 +7910,7 @@ public class CwbOrderService extends BaseOrderService {
 				}
 			}
 		}
-		System.out.println(System.currentTimeMillis() + "--handleStockData2");
+		logger.info(System.currentTimeMillis() + "--handleStockData2");
 	}
 
 	/**
@@ -9428,6 +9432,41 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(co.getCwb(), flowordertype, ExceptionCwbErrorTypeEnum.FENJIANZHONGZHUANCHUKU_NONSUPPORT_MPS);
 			} else {// 如果都不是，那么抛出非本站货这个异常
 				throw new CwbException(co.getCwb(), flowordertype, ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+			}
+		}
+	}
+	
+	//拆包以让包号可重用
+	public void disableBale(String cwb,String scancwb,long isypdjusetranscwb,CwbOrder co){
+		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
+			int autoFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+	    	if(autoFlag==1){
+				List<BaleCwb> baleList=null;
+				if (isypdjusetranscwb == 1) {
+					baleList = this.baleCwbDAO.getBaleCwbByCwb(scancwb);
+					if((baleList==null||baleList.size()<1)&&cwb!=null&&scancwb!=null&&cwb.equals(scancwb)){
+						List<String> transcwbList= getTranscwbList(co.getTranscwb());
+						if(transcwbList!=null){
+							for(String transcwb:transcwbList){
+								baleList = this.baleCwbDAO.getBaleCwbByCwb(transcwb);
+								if(baleList!=null&&baleList.size()>0){
+									break;
+								}
+							}
+						}
+					}
+				} else {
+					baleList = this.baleCwbDAO.getBaleCwbByCwb(cwb);
+					if((baleList==null||baleList.size()<1)&&cwb!=null&&scancwb!=null&&!cwb.equals(scancwb)){
+						baleList = this.baleCwbDAO.getBaleCwbByCwb(scancwb);
+					}	
+				}
+				
+				if(baleList!=null&&baleList.size()>0){
+					this.baleDAO.updateBaleUseState(baleList.get(0).getBaleid(),BaleUseStateEnum.KeChongYong.getValue());
+				}else{
+					this.logger.info("not found the bale when disableBale,cwb="+cwb+",scancwb="+scancwb);
+				}
 			}
 		}
 	}

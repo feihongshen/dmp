@@ -148,8 +148,7 @@ public class AppearWindowService {
 				}
 
 			} catch (Exception e) {
-				this.logger.info("消息列表出现异常" + e);
-				e.printStackTrace();
+				this.logger.info("消息列表出现异常", e);
 			}
 		}
 		if (sb.toString().length() > 0) {
@@ -182,8 +181,7 @@ public class AppearWindowService {
 			json = JacksonMapper.getInstance().writeValueAsString(winList);
 			return json;
 		} catch (Exception e) {
-			e.printStackTrace();
-			this.logger.info(" 查询消息出现异常" + e);
+			this.logger.info(" 查询消息出现异常", e);
 			return "";
 		}
 	}

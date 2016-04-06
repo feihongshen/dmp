@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
@@ -424,7 +425,12 @@ public class AdjustmentRecordService {
 		 */
 		long payableBillId = cwbOrder.getFncustomerpayablebillid();
 		if (payableBillId != 0) {
-			FnCustomerBill custBill = this.FnCustomerBillDetaildao.getFnCustomerBillById(payableBillId);
+			FnCustomerBill custBill = null;
+			try{
+				custBill = this.FnCustomerBillDetaildao.getFnCustomerBillById(payableBillId);
+			}catch(EmptyResultDataAccessException e){
+				//如果没找到，可以忽略，后面覆盖即可
+			}
 			if ((custBill != null) && (CustomerBillDateTypeEnum.audit.getValue().intValue() == (int) custBill.getDateType())) {
 				AdjustmentRecord aRecord = new AdjustmentRecord();
 				aRecord.setOrder_no(cwbOrder.getCwb());

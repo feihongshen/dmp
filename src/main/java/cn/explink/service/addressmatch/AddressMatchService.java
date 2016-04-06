@@ -291,8 +291,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 			}
 		} catch (Exception e) {
-			// e.printStackTrace();
-			this.logger.error("error while doing address match for "+cwb,e );
+			this.logger.error("error while doing address match for "+cwb, e);
 		}
 	}
 
@@ -478,7 +477,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			}
 		} catch (Exception e) {
 			this.logger.error("error while doing addressMAPAPI match for {}", cwb);
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -545,7 +544,6 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			}
 
 		} catch (Exception e) {
-			// e.printStackTrace();
 			json.put("itemno", itemno);
 			json.put("netid", "");
 			json.put("netpoint", "");
@@ -708,8 +706,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				this.jdbcTemplate.update("update express_ops_cwb_detail set multipbranchflag=-1 where opscwbid=? and state=1", cwbOrder.getOpscwbid());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			this.logger.error("error while doing address match for "+cwb,e);
+			this.logger.error("error while doing address match for "+cwb, e);
 		}
 	}
 

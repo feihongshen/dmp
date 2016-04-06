@@ -89,7 +89,7 @@ public class VipShopGetCwbDataService {
 	@Autowired
 	CustomerService customerService;
 
-	private Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
+	private static Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = this.jiontDAO.getJointEntity(key);
@@ -344,7 +344,17 @@ public class VipShopGetCwbDataService {
 //				//Added end
 //				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
 //			}
-			this.dataImportService_B2c.Analizy_DataDealByB2c_TuoYun(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true) ;
+			
+			String emaildate = dataMap.get("remark2").toString();
+			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+			if(emaildate == null || emaildate.trim().equals("")){
+				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
+				dataMap.put("remark2", emaildate);
+			}
+			//Added end
+			
+			this.dataImportService_B2c.Analizy_DataDealByB2cNonTuoYun(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate) ;
+						
 			this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
 			
 			this.updateMaxSEQ(vipshop_key, vipshop);
@@ -534,7 +544,7 @@ public class VipShopGetCwbDataService {
 				return getSeq(seq_arrs, seq);
 			}
 			
-			if(dataMap==null){
+			if(dataMap==null || dataMap.isEmpty()){
 				return getSeq(seq_arrs, seq);
 			}
 						
@@ -760,7 +770,7 @@ public class VipShopGetCwbDataService {
 		 * 如果TMS推过来的数据没有最后一件标志那就把发货时间写到运单表里面
 		 */
 		String emaildate = ""; //paraMap.get("remark2"); //发货时间
-		if(paraMap != null){
+		if(paraMap != null && paraMap.size() > 0){
 			emaildate = paraMap.get("remark2");
 		}else{
 			for(Map<String, String> mapPara : paraList){
@@ -871,7 +881,8 @@ public class VipShopGetCwbDataService {
 			}
 			//后者小于前者，移除后者
 			if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
-				currentMap=null;
+				//currentMap=null;
+				currentMap.clear();
 				return;
 			}
 			//后者==前者，移除不是最后一箱的
@@ -999,7 +1010,6 @@ public class VipShopGetCwbDataService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			this.logger.error("获取商品列表异常,单号=" + order_sn, e);
 		}
 	}
@@ -1028,7 +1038,7 @@ public class VipShopGetCwbDataService {
 	public static void main(String[] args) {
 		String[] seq_arrs={"110000011787834","110000011787835","110000011787838","110000011787840"};
 		
-		System.out.println(getMaxSEQ(seq_arrs));
+		logger.info(String.valueOf(getMaxSEQ(seq_arrs)));
 		
 		List<Map<String,String>> list=new ArrayList<Map<String,String>>();
 		Map<String,String> map1=new HashMap<String, String>();
@@ -1054,7 +1064,7 @@ public class VipShopGetCwbDataService {
 		}
 		
 		for(Map<String,String> mapR:list){
-			System.out.println("cwb="+mapR.get("cwb")+",transcwb="+mapR.get("transcwb"));
+			logger.info("cwb="+mapR.get("cwb")+",transcwb="+mapR.get("transcwb"));
 		}
 		
 	}

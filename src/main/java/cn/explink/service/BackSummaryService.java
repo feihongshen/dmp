@@ -4,21 +4,16 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.camel.CamelContext;
-import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import cn.explink.dao.BackDetailDAO;
 import cn.explink.dao.BackMiddleDAO;
@@ -27,7 +22,6 @@ import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.BackDetail;
 import cn.explink.domain.BackMiddle;
 import cn.explink.domain.BackSummary;
-import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.BackTypeEnum;
 
 /**
@@ -176,8 +170,7 @@ public class BackSummaryService implements SystemConfigChangeListner {
 				try {
 					backSummary.setCreatetime(sd.format(sd.parse(old.getCreatetime())));
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("", e);
 				}
 				if (old.getNumsinto() == 0) {
 					backSummary.setPercent("--");

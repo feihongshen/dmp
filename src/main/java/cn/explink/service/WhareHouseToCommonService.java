@@ -251,7 +251,7 @@ public class WhareHouseToCommonService {
 						}
 
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("", e);
 					}
 				}
 			});

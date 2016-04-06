@@ -80,8 +80,7 @@ public class AccountCwbDetailService {
 			List<AccountCwbDetail> listPos = accountCwbDetailDAO.getAccountCwbDetailByFlow(branchid, AccountFlowOrderTypeEnum.Pos.getValue(), 0, 0);
 			typeMap = this.getDetailByZZTH(listPos, typeMap, AccountFlowOrderTypeEnum.Pos.getValue());
 		} catch (Exception e) {
-			logger.info("结算中转货款、退货退款、pos退款处理计算异常：" + e);
-			e.printStackTrace();
+			logger.info("结算中转货款、退货退款、pos退款处理计算异常：", e);
 		}
 		return typeMap;
 	}
@@ -190,8 +189,7 @@ public class AccountCwbDetailService {
 			}
 			return typeMap;
 		} catch (Exception e) {
-			logger.info("结算加减款处理异常：" + e);
-			e.printStackTrace();
+			logger.info("结算加减款处理异常：", e);;
 			return null;
 		}
 	}

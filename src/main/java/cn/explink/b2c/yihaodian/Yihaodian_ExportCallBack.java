@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.yihaodian.xmldto.OrderExportCallbackDto;
 import cn.explink.b2c.yihaodian.xmldto.ReturnDto;
@@ -68,7 +67,6 @@ public class Yihaodian_ExportCallBack extends YihaodianService {
 
 		} catch (Exception e) {
 			this.logger.error("error info while request yihaodian export cwb Successfully CallBackReturn  interface!" + e, e);
-			e.printStackTrace();
 		}
 	}
 

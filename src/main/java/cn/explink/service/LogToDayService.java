@@ -8,18 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import net.sf.json.JSONObject;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
@@ -1496,7 +1492,7 @@ public class LogToDayService implements SystemConfigChangeListner {
 		// 获取昨日日期
 		String yesterday = DateDayUtil.getDateBefore("", -1);
 		if (branchid == 224) {
-			System.out.println(branchid);
+			logger.info(String.valueOf(branchid));
 		}
 		BranchTodayLog yesterdayLog = logTodayDAO.getBranchTodayLogByBranchidAndDate(branchid, new Date());
 		// 已到货（单）

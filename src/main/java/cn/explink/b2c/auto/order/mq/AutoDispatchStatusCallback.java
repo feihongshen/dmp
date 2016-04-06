@@ -145,13 +145,13 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 		
 		return msg;
 	}
-	private List<AutoPickStatusVo> parseJson(String json){ 
+	public List<AutoPickStatusVo> parseJson(String json){ 
 		 JSONArray jsonarray = JSONArray.fromObject(json);  
 	     List<AutoPickStatusVo> dataList = (List<AutoPickStatusVo>)JSONArray.toCollection(jsonarray,AutoPickStatusVo.class);  
 		return dataList;
 	}
 	
-	private List<AutoMQExceptionDto> persistData(List<AutoPickStatusVo> voList,String msg){
+	public List<AutoMQExceptionDto> persistData(List<AutoPickStatusVo> voList,String msg){
 		List<AutoMQExceptionDto> errorList=null;
 		if(voList==null||voList.size()<1){
 			return errorList;

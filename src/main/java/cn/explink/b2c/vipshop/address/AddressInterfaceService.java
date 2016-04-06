@@ -92,8 +92,7 @@ public class AddressInterfaceService {
 				try {
 					count = vip.getGetMaxCount();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("", e);
 				}
 				if ((requestXML.getItems().getItem() == null) || (requestXML.getItems().getItem().size() > count)) {
 					if (requestXML.getItems().getItem() == null) {

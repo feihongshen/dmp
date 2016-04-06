@@ -316,7 +316,7 @@ public class PayUpService {
 	JdbcTemplate jdbcTemplate;
 
 	public void payUpBack(@Header("payUpBack") String payUpBack) {
-		System.out.println(payUpBack);
+		logger.info(payUpBack);
 		JSONObject o = JSONObject.fromObject(payUpBack);
 		long id = o.get("payUpId") == null ? 0L : o.getLong("payUpId");
 		if (id > 0) {
