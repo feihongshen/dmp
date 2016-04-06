@@ -89,6 +89,8 @@ public class AutoDispatchStatusService {
 	        		
 		    		if(user==null){
 		    			user=this.getSessionUser();
+		    		}else{
+		    			user.setBranchid(getPickBranch());//缓存刷新时也刷新
 		    		}
 		    		this.logger.info("auto dispatch task start...");
 		    		
@@ -211,34 +213,48 @@ public class AutoDispatchStatusService {
 				}
 				autoOrderStatusService.completedOrderStatusMsg(AutoCommonStatusEnum.success.getValue(),vo.getOrder_sn(),vo.getOperate_type(),vo.getBox_no());
 			} catch (Exception e) {
-				logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type(),e);
-				//e.printStackTrace();
 				String errinfo="DMP分拣状态数据转业务时出错."+e.getMessage();
 				long detailId=0;
-				boolean feedbackTps=true;
-				boolean needDbLog=true;
+				boolean feedbackTps=true;//需要反馈tps
+				boolean needDbLog=true;//需要写到异常表
+				boolean isWait=false;//需要保留消息在临时表以等待订单数据
+				boolean fullLog=true;//是否打印完整异常堆栈
 				
 				try{
-					boolean isWait=false;
 					if(e instanceof CwbException){
 						CwbException cwbe=(CwbException) e;
 						if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 							feedbackTps=false;
 							needDbLog=false;
+							fullLog=false;
 						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()) {
 							feedbackTps=false;
 							needDbLog=false;
+							fullLog=false;
 						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED.getValue()) {
 							//此处集单模式下出库时发生;因为按包出库原因，自动化要求必须不能是库房集单，所以不会有此异常
-							isWait=true;
+							isWait=false;
+							feedbackTps=false;
+							needDbLog=false;
+							fullLog=false;
 						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR.getValue()) {
 							//此处入库时已有一件出库了时发生;虽然出库时也会发生，但设置为强制出库以及按包出库，自动化下忽略validateYipiaoduojianState方法里的等待，所以不会有此异常
 							feedbackTps=false;
 							needDbLog=false;
+							fullLog=false;
 						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR.getValue()) {
 							//此处出库时发生
-							isWait=true;
+							isWait=false;
+							feedbackTps=false;
+							needDbLog=false;
+							fullLog=false;
 						}
+					}
+					
+					if(fullLog){
+						logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type(),e);
+					}else{
+						logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type()+",error:"+e.getMessage());
 					}
 					
 					if(isWait||e instanceof AutoWaitException){
@@ -353,7 +369,7 @@ public class AutoDispatchStatusService {
 	private User getSessionUser() {
 		User user=new User();
 		user.setUserid(1);//admin
-		user.setBranchid(getPickBranch());//joint 199
+		user.setBranchid(getPickBranch());
 		user.setRealname("admin");//
 		user.setIsImposedOutWarehouse(1);//
 		return user;
