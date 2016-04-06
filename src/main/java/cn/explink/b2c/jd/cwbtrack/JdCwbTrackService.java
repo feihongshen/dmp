@@ -56,6 +56,7 @@ public class JdCwbTrackService {
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
 
+	ObjectMapper objectMapper = new ObjectMapper();
     /**
      * 编辑接口配置信息
      */
@@ -125,37 +126,42 @@ public class JdCwbTrackService {
 	 * 构建响应报文
 	 */
 	private String BuildTrackInfoXML(String billcode,JdCwbTrackConfig config) {
-		StringBuffer sub = new StringBuffer("<?xml version=\"1.0\" encoding=\"gb2312\"?>");
-		sub.append("<root>");
-		String scantype="";//扫描类型
-		for (String cwb : billcode.split(",")) {
-			String cwbTransCwb = cwbOrderService.translateCwb(cwb); // 可能是订单号也可能是运单号
-
-			//List<OrderFlow> orderlist = orderFlowDAO.getOrderFlowByCwb(cwbTransCwb);
-			List<OrderFlow> orderlist = orderFlowDAO.getOrderFlowByCwbAndCustomerid(cwbTransCwb,config.getCustomerId());
-			if (orderlist == null || orderlist.size() == 0) {
-				continue;
-			}
-			sub.append("<track>");
-			sub.append("<billcode>" + cwb + "</billcode>");
-			
-			for (OrderFlow orderFlow : orderlist) {
-				scantype=getScantype(orderFlow.getFlowordertype(),cwbTransCwb);
-				
-				if ("".equals(scantype)) {//跳过扫描类型为""的轨迹
+		try {
+			StringBuffer sub = new StringBuffer("<?xml version=\"1.0\" encoding=\"gb2312\"?>");
+			sub.append("<root>");
+			String scantype="";//扫描类型
+			for (String cwb : billcode.split(",")) {
+				String cwbTransCwb = cwbOrderService.translateCwb(cwb); // 可能是订单号也可能是运单号
+	
+				//List<OrderFlow> orderlist = orderFlowDAO.getOrderFlowByCwb(cwbTransCwb);
+				List<OrderFlow> orderlist = orderFlowDAO.getOrderFlowByCwbAndCustomerid(cwbTransCwb,config.getCustomerId());
+				if (orderlist == null || orderlist.size() == 0) {
 					continue;
 				}
-
-				sub.append("<detail>");
-				sub.append("<time>" + DateTimeUtil.formatDate(orderFlow.getCredate()) + "</time>");
-				sub.append("<scantype>" +scantype+ "</scantype>");
-				sub.append("<memo>" + getDetail(orderFlow) + "</memo>");
-				sub.append("</detail>");
+				sub.append("<track>");
+				sub.append("<billcode>" + cwb + "</billcode>");
+				
+				for (OrderFlow orderFlow : orderlist) {
+					scantype=getScantype(orderFlow,cwbTransCwb,orderlist);
+					
+					if ("".equals(scantype)) {//跳过扫描类型为""的轨迹
+						continue;
+					}
+					sub.append("<detail>");
+					sub.append("<time>" + DateTimeUtil.formatDate(orderFlow.getCredate()) + "</time>");
+					sub.append("<scantype>" +scantype+ "</scantype>");
+					sub.append("<memo>" + getDetail(orderFlow) + "</memo>");
+					sub.append("</detail>");
+				}
+				sub.append("</track>");
 			}
-			sub.append("</track>");
-		}
-		sub.append("</root>");
-		return sub.toString();
+			sub.append("</root>");
+			return sub.toString();
+		}catch (Exception e) {
+				String error = "构建响应报文发生未知异常:" + e.getMessage();
+				logger.error(error, e);
+				return "";
+			}
 	}
 	
 	
@@ -164,43 +170,61 @@ public class JdCwbTrackService {
 	 * @param flowordertype  
 	 * @param cwb 订单号
 	 */
-	private String getScantype(int flowordertype,String cwb){
-		String jdTrackFlowText="";
-		if(flowordertype==FlowOrderTypeEnum.ChuKuSaoMiao.getValue()
-				||flowordertype==FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()
-			||flowordertype==FlowOrderTypeEnum.TuiHuoChuZhan.getValue()){
-			//出库扫描(出库、退货再投、站点出站) 、中转站出库、退货站出库 对应 发件
-			jdTrackFlowText="发件";
-		}
-		else if(flowordertype==FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()
-				||flowordertype==FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()//到错货
-				||flowordertype==FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()
-				||flowordertype==FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()){
-			//分站到货 倒错货 退货站入库 中转站入库 对应 到件
-			jdTrackFlowText="到件";
-		}
-		else if(flowordertype==FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
-			//分站领货 对应 派件
-			jdTrackFlowText="派件";
-		}
-		else if(flowordertype==FlowOrderTypeEnum.YiFanKui.getValue()){//已反馈
-			long delivery_state = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb).getDeliverystate();
-			//分站滞留 待中转  对应 问题件扫描
-			if (delivery_state == DeliveryStateEnum.FenZhanZhiLiu.getValue()
-					||delivery_state ==DeliveryStateEnum.DaiZhongZhuan.getValue()) {
-				jdTrackFlowText="问题件扫描";
+	private String getScantype(OrderFlow orderFlow,String cwb,List<OrderFlow> orderlist){
+		try {
+			int flowordertype=orderFlow.getFlowordertype();
+			String jdTrackFlowText="";
+			if(flowordertype==FlowOrderTypeEnum.ChuKuSaoMiao.getValue()
+					||flowordertype==FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()
+				||flowordertype==FlowOrderTypeEnum.TuiHuoChuZhan.getValue()){
+				//出库扫描(出库、退货再投、站点出站) 、中转站出库、退货站出库 对应 发件
+				jdTrackFlowText="发件";
 			}
-			//反馈签收 对应 签收 
-			if(delivery_state ==DeliveryStateEnum.JuShou.getValue()){
+			else if(flowordertype==FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()
+					||flowordertype==FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()//到错货
+					||flowordertype==FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()
+					||flowordertype==FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()){
+				//分站到货 倒错货 退货站入库 中转站入库 对应 到件
+				jdTrackFlowText="到件";
+			}
+			else if(flowordertype==FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
+				//分站领货 对应 派件
+				jdTrackFlowText="派件";
+			}
+			else if(flowordertype==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()){
+				//退供货商成功 对应 拒收
 				jdTrackFlowText="拒收";
 			}
-			//反馈签收 对应 签收 
-			if(delivery_state ==DeliveryStateEnum.PeiSongChengGong.getValue()){
-				jdTrackFlowText="签收";
+			else if(flowordertype==FlowOrderTypeEnum.YiFanKui.getValue()){//已反馈
+				CwbOrderWithDeliveryState cwbOrderWithDeliveryState = objectMapper.readValue(orderFlow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
+				long delivery_state = cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate();
+				//long delivery_state = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb).getDeliverystate();
+				//分站滞留 待中转  对应 问题件扫描
+				if (delivery_state == DeliveryStateEnum.FenZhanZhiLiu.getValue()
+						||delivery_state ==DeliveryStateEnum.DaiZhongZhuan.getValue()) {
+					jdTrackFlowText="问题件扫描";
+				}
+				//反馈为拒收 对应 拒收待确认/拒收
+				if(delivery_state ==DeliveryStateEnum.JuShou.getValue()){
+					//orderlist 里是否含有退供货商成功
+					if(!isContainsGongHuoShangTuiHuoChenggong(orderlist)){
+						jdTrackFlowText="拒收待确认";
+					}else{
+						jdTrackFlowText="拒收";
+					}
+				}
+				//反馈签收 对应 签收 
+				if(delivery_state ==DeliveryStateEnum.PeiSongChengGong.getValue()){
+					jdTrackFlowText="签收";
+				}
+				
 			}
-			
+			return jdTrackFlowText;
 		}
-		return jdTrackFlowText;
+		catch (Exception e) {
+			logger.error("获取扫描类型出现未知错误", e);
+			return "";
+		}
 	}
 	
 
@@ -218,7 +242,6 @@ public class JdCwbTrackService {
 	/**
 	 * 获取订单的跟踪详情
 	 */
-	ObjectMapper objectMapper = new ObjectMapper();
 	public String getDetail(OrderFlow orderFlowAll) {
 		try {
 			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = objectMapper.readValue(orderFlowAll.getFloworderdetail(), CwbOrderWithDeliveryState.class);
@@ -227,7 +250,7 @@ public class JdCwbTrackService {
 			String nextbranchname = this.getNextBranchName(cwbOrder);
 
 			User user = userDAO.getUserByUserid(orderFlowAll.getUserid());
-			String phone = user.getUsermobile();
+			String phone = user.getUsermobile()==null?"":user.getUsermobile();
 			String comment = orderFlowAll.getComment();
 			String currentbranchname = branchDAO.getBranchByBranchid(orderFlowAll.getBranchid()).getBranchname();
 
@@ -238,19 +261,20 @@ public class JdCwbTrackService {
 				return MessageFormat.format("从[{0}]入库;联系电话：[{1}]", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) {
-				return MessageFormat.format("从[{0}]到错货入库;联系电话：[{1}];备注:[{2}]", currentbranchname, phone, comment);
+				return MessageFormat.format("从[{0}]到错货入库", currentbranchname);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()) {
 				return MessageFormat.format("从[{0}]到错货处理;联系电话：[{1}];备注:[{2}]", currentbranchname, phone, comment);
 			}
+			//出库扫描-->发件
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
-				return MessageFormat.format("从[{0}]出库,下一站[{1}]联系电话[{2}]", currentbranchname, nextbranchname, phone);
+				return MessageFormat.format("从[{0}]出库,下一站[{1}]", currentbranchname, nextbranchname);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.CheXiaoFanKui.getValue()) {
 				return MessageFormat.format("货物由[{0}]撤销反馈;联系电话：[{1}]", currentbranchname, phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()) {
-				return MessageFormat.format("从[{0}]>库对库出库；下一站[{1}]，联系电话[{2}]", currentbranchname, nextbranchname, phone);
+				return MessageFormat.format("从[{0}]>库对库出库；下一站[{1}]", currentbranchname, nextbranchname);
 			}
 
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
@@ -258,13 +282,13 @@ public class JdCwbTrackService {
 			}
 			//中转站入库-->到件
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
-				return MessageFormat.format("从[{0}]中转站入库;联系电话：[{1}]", currentbranchname, phone);
+				return MessageFormat.format("从[{0}]中转站入库", currentbranchname);
 			}
 			//中转站出库-->发件
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()) {
-				return MessageFormat.format("从[{0}中转站出库,下一站[{1}]联系电话[{2}]", currentbranchname, nextbranchname, phone);
+				return MessageFormat.format("从[{0}中转站出库,下一站[{1}]", currentbranchname, nextbranchname);
 			}
-			
+			//分站领货-->派件
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
 				User users = userDAO.getUserByUserid(cwbOrderWithDeliveryState.getDeliveryState().getDeliveryid());
 				String deliverphone = users.getUsermobile();
@@ -276,17 +300,21 @@ public class JdCwbTrackService {
 				return MessageFormat.format("货物已由[{0}]的派件员[{1}]反馈为[{2}];小件员电话[{3}],备注:[{4}]", currentbranchname, users.getRealname(),
 						DeliveryStateEnum.getByValue((int) cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate()).getText(), deliverphone, comment);
 			}
+			//退货出库-->发件
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) {
-				return MessageFormat.format("货物已从[{0}]进行退货出库;联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+				return MessageFormat.format("货物已从[{0}]进行退货出库", currentbranchname);
 			}
+			//退货站入库-->到件
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
-				return MessageFormat.format("货物已到退货站[{0}];联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+				return MessageFormat.format("货物已到退货站[{0}]", currentbranchname);
 			}
+			
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) {
-				return MessageFormat.format("货物已由[{0}]退供货商出库;联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+				return MessageFormat.format("货物已由[{0}]退供货商出库", currentbranchname);
 			}
+			//退供货商成功-->拒收
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()) {
-				return MessageFormat.format("货物已由[{0}]退供货商成功;联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+				return MessageFormat.format("货物已由[{0}]退供货商成功，拒收流程结束", currentbranchname);
 			}
 			//已审核
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
@@ -317,7 +345,7 @@ public class JdCwbTrackService {
 						userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue()) {
-				return MessageFormat.format("货物已由[{0}]退供货商拒收返库入库;联系电话：[{1}];备注：[{2}]", currentbranchname, phone, comment);
+				return MessageFormat.format("货物已由[{0}]退供货商拒收返库入库", currentbranchname);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.BeiZhu.getValue()) {
 				return MessageFormat.format("货物被[{0}]添加了备注;联系电话：[{1}];备注：[{2}]", userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(), phone, comment);
@@ -351,5 +379,17 @@ public class JdCwbTrackService {
 	public void update(int joint_num, int state) {
 		jiontDAO.UpdateState(joint_num, state);
 	}
+	
+	//判断集合是里时候有退供货商成功
+	private Boolean isContainsGongHuoShangTuiHuoChenggong(List<OrderFlow> orderlist) {
+		for (OrderFlow orderFlow : orderlist) {
+			if(orderFlow.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 
 }
