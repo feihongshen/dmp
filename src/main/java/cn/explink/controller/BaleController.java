@@ -285,7 +285,7 @@ public class BaleController {
 																				//#1502 出库扫描 出库后订单数增加，但是件数不增加（扫描数与发货数不一致）
 																				//以下都是轻操作应该无性能问题
 			this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+			Bale bale = this.baleDAO.getBaleOneByBalenoLock(baleno.trim());
 //			cwb=this.cwbOrderService.translateCwb(cwb);
 			
 //			this.cwbDAO.updateScannumAuto(cwb);
