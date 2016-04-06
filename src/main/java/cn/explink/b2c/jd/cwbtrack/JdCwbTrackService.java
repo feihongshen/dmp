@@ -125,7 +125,7 @@ public class JdCwbTrackService {
 	 * 构建响应报文
 	 */
 	private String BuildTrackInfoXML(String billcode,JdCwbTrackConfig config) {
-		StringBuffer sub = new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		StringBuffer sub = new StringBuffer("<?xml version=\"1.0\" encoding=\"gb2312\"?>");
 		sub.append("<root>");
 		String scantype="";//扫描类型
 		for (String cwb : billcode.split(",")) {
@@ -167,8 +167,9 @@ public class JdCwbTrackService {
 	private String getScantype(int flowordertype,String cwb){
 		String jdTrackFlowText="";
 		if(flowordertype==FlowOrderTypeEnum.ChuKuSaoMiao.getValue()
-				||flowordertype==FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()){
-			//出库扫描(出库、退货再投、站点出站) 中转站出库 对应 发件
+				||flowordertype==FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()
+			||flowordertype==FlowOrderTypeEnum.TuiHuoChuZhan.getValue()){
+			//出库扫描(出库、退货再投、站点出站) 、中转站出库、退货站出库 对应 发件
 			jdTrackFlowText="发件";
 		}
 		else if(flowordertype==FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()
@@ -184,12 +185,20 @@ public class JdCwbTrackService {
 		}
 		else if(flowordertype==FlowOrderTypeEnum.YiFanKui.getValue()){//已反馈
 			long delivery_state = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb).getDeliverystate();
-			//分站滞留 待中转 拒收 对应 问题件扫描
+			//分站滞留 待中转  对应 问题件扫描
 			if (delivery_state == DeliveryStateEnum.FenZhanZhiLiu.getValue()
-					||delivery_state ==DeliveryStateEnum.DaiZhongZhuan.getValue()
-					||delivery_state ==DeliveryStateEnum.JuShou.getValue()) {
+					||delivery_state ==DeliveryStateEnum.DaiZhongZhuan.getValue()) {
 				jdTrackFlowText="问题件扫描";
 			}
+			//反馈签收 对应 签收 
+			if(delivery_state ==DeliveryStateEnum.JuShou.getValue()){
+				jdTrackFlowText="拒收";
+			}
+			//反馈签收 对应 签收 
+			if(delivery_state ==DeliveryStateEnum.PeiSongChengGong.getValue()){
+				jdTrackFlowText="签收";
+			}
+			
 		}
 		return jdTrackFlowText;
 	}
