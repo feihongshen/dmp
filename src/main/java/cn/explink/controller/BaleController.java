@@ -13,6 +13,7 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -276,6 +277,7 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baleaddcwb/{cwb}/{baleno}")
+	@Transactional
 	public @ResponseBody ExplinkResponse baleaddcwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
 			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
@@ -285,14 +287,14 @@ public class BaleController {
 																				//#1502 出库扫描 出库后订单数增加，但是件数不增加（扫描数与发货数不一致）
 																				//以下都是轻操作应该无性能问题
 			this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			Bale bale = this.baleDAO.getBaleOneByBalenoLock(baleno.trim());
 //			cwb=this.cwbOrderService.translateCwb(cwb);
 			
 //			this.cwbDAO.updateScannumAuto(cwb);
 			
-			this.baleDAO.updateAddBaleScannum(baleno);
+			this.baleDAO.updateAddBaleScannum(baleno); //要点：做完所有的写操作最后再读出！
+			Bale bale = this.baleDAO.getBaleOneByBalenoLock(baleno.trim());
 			long successCount = bale.getCwbcount();
-			long scannum = bale.getScannum() + 1;
+			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
@@ -1035,16 +1037,21 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baleZhongZhuanChuKuAddCwb/{cwb}/{baleno}")
+	@Transactional
 	public @ResponseBody ExplinkResponse baleZhongZhuanChuKuAddCwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
 			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
+			Bale baleOld = this.baleDAO.getBaleOneByBalenoLock(baleno.trim());//加悲观锁解决：
+																			  //#1502 出库扫描 出库后订单数增加，但是件数不增加（扫描数与发货数不一致）
+																			  //以下都是轻操作应该无性能问题
 			this.baleService.baleZhongZhuanChuKuAddCwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+
 			this.baleDAO.updateAddBaleScannum(baleno);
+			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim()); //要点：做完所有的写操作最后再读出！
 			long successCount = bale.getCwbcount();
-			long scannum = bale.getScannum() + 1;
+			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");

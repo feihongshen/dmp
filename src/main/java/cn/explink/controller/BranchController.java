@@ -37,7 +37,6 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.SystemInstallDAO;
-import cn.explink.domain.AccountArea;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Menu;
 import cn.explink.domain.PaiFeiRule;
@@ -47,6 +46,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.service.BankService;
+import cn.explink.service.BranchInfService;
 import cn.explink.service.BranchService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -89,6 +89,8 @@ public class BranchController {
 	private BankService bankService;
 	@Autowired
 	ExportService exportService;
+	@Autowired
+	BranchInfService branchInfService;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -138,8 +140,12 @@ public class BranchController {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			long branchid = this.branchDAO.creBranch(bh);
+			bh = branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh,null);
+				if(!branchInfService.isCloseOldInterface()){					
+					this.branchService.addzhandianToAddress(branchid, bh,null);
+				}
+				branchInfService.saveBranchInf(bh);
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -186,13 +192,18 @@ public class BranchController {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			long branchid = this.branchDAO.creBranch(bh);
+			bh = this.branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh,null);
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, bh,null);
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
 					this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 				}
+				// add by jian_xie
+				branchInfService.saveBranchInf(bh);
 			}
 
 			try {
@@ -247,8 +258,11 @@ public class BranchController {
 			}
 			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
 			this.branchDAO.saveBranch(branch);
+			branch = branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -256,6 +270,7 @@ public class BranchController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 					}
 				}
+				branchInfService.saveBranchInf(branch);
 			}
 
 			try {
@@ -303,8 +318,11 @@ public class BranchController {
 			}
 
 			this.branchDAO.saveBranch(branch);
+			branch = this.branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -312,6 +330,8 @@ public class BranchController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 					}
 				}
+				// 同步站点新接口 add by jian_xie
+				branchInfService.saveBranchInf(branch);
 			}
 
 			try {
@@ -440,10 +460,12 @@ public class BranchController {
 		this.branchDAO.delBranch(branchid);
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this.getSessionUser().getUsername(), branchid);
-		if (branch.getBrancheffectflag().equals("1")) {
-			this.branchService.addzhandianToAddress(branchid, branch,null);
-		} else {
-			this.branchService.delBranch(branchid);
+		if (!branchInfService.isCloseOldInterface()) {
+			if (branch.getBrancheffectflag().equals("1")) {
+				this.branchService.addzhandianToAddress(branchid, branch, null);
+			} else {
+				this.branchService.delBranch(branchid);
+			}
 		}
 		// TODO 增加同步代码
 		String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
@@ -455,6 +477,11 @@ public class BranchController {
 				this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 			}
 		}
+		// 同步站点机构，使用新接口
+		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			branchInfService.saveBranchInf(branch);
+		}
+		
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 	

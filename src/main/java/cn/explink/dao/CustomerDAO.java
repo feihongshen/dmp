@@ -355,7 +355,7 @@ public class CustomerDAO {
 		/**
 		 * 如果新设置的客户id 设置过其他的对接，不允许设置当前的对接
 		 */
-		if(!customeridArray.isEmpty()){
+		/*if(!customeridArray.isEmpty()){
 			List<Customer> oldCustList = this.getCustomerBoundB2cEnumByIds(StringUtil.getStringsByLongList(customeridArray));
 			if(oldCustList != null){
 				for(Customer cust : oldCustList){
@@ -365,7 +365,7 @@ public class CustomerDAO {
 					
 				}
 			}
-		}
+		}*/
 		/**
 		 * 对修改前的客户id，需要解绑b2cEnum
 		 */

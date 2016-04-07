@@ -1,6 +1,7 @@
 package cn.explink.dao;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,10 +22,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.aspect.SystemInstallOperation;
@@ -266,45 +270,88 @@ public class UserDAO {
 	}
 
 	@SystemInstallOperation
-	public void creUser(final User user) {
-		this.jdbcTemplate
-				.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary," + "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment," + "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
-					@Override
-					public void setValues(PreparedStatement ps) throws SQLException {
-						ps.setString(1, user.getUsername());
-						ps.setString(2, user.getPassword());
-						ps.setString(3, user.getRealname());
-						ps.setString(4, user.getIdcardno());
-						ps.setInt(5, user.getEmployeestatus());
-						ps.setLong(6, user.getBranchid());
-						ps.setString(7, user.getUserphone());
-						ps.setString(8, user.getUsermobile());
-						ps.setString(9, user.getUseraddress());
-						ps.setString(10, user.getUserremark());
-						ps.setBigDecimal(11, user.getUsersalary());
-						ps.setLong(12, user.getUsercustomerid());
-						ps.setLong(13, user.getShowphoneflag());
-						ps.setString(14, user.getUseremail());
-						ps.setString(15, user.getUserwavfile());
-						ps.setLong(16, user.getRoleid());
-						ps.setInt(17, user.getIsImposedOutWarehouse());
-						ps.setLong(18, user.getShownameflag());
-						ps.setLong(19, user.getShowmobileflag());
-						ps.setLong(20, user.getPfruleid());
-						ps.setInt(21, user.getSex());
-						ps.setString(22, user.getStartworkdate());
-						ps.setString(23, user.getJobnum());
-						ps.setInt(24, user.getJiesuanstate());
-						ps.setBigDecimal(25, user.getMaxcutpayment());
-						ps.setBigDecimal(26, user.getFixedadvance());
-						ps.setBigDecimal(27, user.getBasicadvance());
-						ps.setLong(28, user.getFallbacknum());
-						ps.setBigDecimal(29, user.getLateradvance());
-						ps.setBigDecimal(30, user.getBasicfee());// 基本派费
-						ps.setBigDecimal(31, user.getAreafee());// 区域派费
-					}
-
-				});
+	public void creUser(final User user) {		
+		KeyHolder key = new GeneratedKeyHolder();
+		jdbcTemplate.update(new PreparedStatementCreator() {
+			String sql = "insert into express_set_user (username,password,realname,idcardno,employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee)  values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = null;
+				ps = con.prepareStatement(sql, new String[] { "userid"});
+				ps.setString(1, user.getUsername());
+				ps.setString(2, user.getPassword());
+				ps.setString(3, user.getRealname());
+				ps.setString(4, user.getIdcardno());
+				ps.setInt(5, user.getEmployeestatus());
+				ps.setLong(6, user.getBranchid());
+				ps.setString(7, user.getUserphone());
+				ps.setString(8, user.getUsermobile());
+				ps.setString(9, user.getUseraddress());
+				ps.setString(10, user.getUserremark());
+				ps.setBigDecimal(11, user.getUsersalary());
+				ps.setLong(12, user.getUsercustomerid());
+				ps.setLong(13, user.getShowphoneflag());
+				ps.setString(14, user.getUseremail());
+				ps.setString(15, user.getUserwavfile());
+				ps.setLong(16, user.getRoleid());
+				ps.setInt(17, user.getIsImposedOutWarehouse());
+				ps.setLong(18, user.getShownameflag());
+				ps.setLong(19, user.getShowmobileflag());
+				ps.setLong(20, user.getPfruleid());
+				ps.setInt(21, user.getSex());
+				ps.setString(22, user.getStartworkdate());
+				ps.setString(23, user.getJobnum());
+				ps.setInt(24, user.getJiesuanstate());
+				ps.setBigDecimal(25, user.getMaxcutpayment());
+				ps.setBigDecimal(26, user.getFixedadvance());
+				ps.setBigDecimal(27, user.getBasicadvance());
+				ps.setLong(28, user.getFallbacknum());
+				ps.setBigDecimal(29, user.getLateradvance());
+				ps.setBigDecimal(30, user.getBasicfee());// 基本派费
+				ps.setBigDecimal(31, user.getAreafee());// 区域派费
+				return ps;
+			}
+		}, key);		
+		user.setUserid(key.getKey().longValue());
+		
+//		this.jdbcTemplate
+//				.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary," + "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment," + "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+//					@Override
+//					public void setValues(PreparedStatement ps) throws SQLException {
+//						ps.setString(1, user.getUsername());
+//						ps.setString(2, user.getPassword());
+//						ps.setString(3, user.getRealname());
+//						ps.setString(4, user.getIdcardno());
+//						ps.setInt(5, user.getEmployeestatus());
+//						ps.setLong(6, user.getBranchid());
+//						ps.setString(7, user.getUserphone());
+//						ps.setString(8, user.getUsermobile());
+//						ps.setString(9, user.getUseraddress());
+//						ps.setString(10, user.getUserremark());
+//						ps.setBigDecimal(11, user.getUsersalary());
+//						ps.setLong(12, user.getUsercustomerid());
+//						ps.setLong(13, user.getShowphoneflag());
+//						ps.setString(14, user.getUseremail());
+//						ps.setString(15, user.getUserwavfile());
+//						ps.setLong(16, user.getRoleid());
+//						ps.setInt(17, user.getIsImposedOutWarehouse());
+//						ps.setLong(18, user.getShownameflag());
+//						ps.setLong(19, user.getShowmobileflag());
+//						ps.setLong(20, user.getPfruleid());
+//						ps.setInt(21, user.getSex());
+//						ps.setString(22, user.getStartworkdate());
+//						ps.setString(23, user.getJobnum());
+//						ps.setInt(24, user.getJiesuanstate());
+//						ps.setBigDecimal(25, user.getMaxcutpayment());
+//						ps.setBigDecimal(26, user.getFixedadvance());
+//						ps.setBigDecimal(27, user.getBasicadvance());
+//						ps.setLong(28, user.getFallbacknum());
+//						ps.setBigDecimal(29, user.getLateradvance());
+//						ps.setBigDecimal(30, user.getBasicfee());// 基本派费
+//						ps.setBigDecimal(31, user.getAreafee());// 区域派费
+//					}
+//
+//				});
 	}
 
 	@SystemInstallOperation

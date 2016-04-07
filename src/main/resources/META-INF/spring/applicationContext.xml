@@ -51,6 +51,11 @@ http://cxf.apache.org/schemas/jaxws.xsd
 		<property name="validationQuery" value="SELECT 1" />
 	</bean>
 
+
+	<bean id="customerDAO" class="cn.explink.dao.CustomerDAO" />
+	<bean id="jiontDAO" class="cn.explink.b2c.tools.JiontDAO" /> 
+
+
 	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" >
 		<property name="dataSource" ref="dataSource" />
