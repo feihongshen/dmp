@@ -109,6 +109,7 @@
 				<ref bean="doTime_tpsOXOOrderTempToMain"/>
 				<ref bean="doTime_autoDispatchStatusTempToMain"/>
                 <ref bean="doTime_feiniuwang"/>
+                <ref bean="mqExceptionHandler"/>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -1394,4 +1395,29 @@
          </property>
          <property name="concurrent" value="false" />
      </bean>
+     
+     <!-- MQ 异常处理 定时器   配置开始 --> 
+     <bean id="mqExceptionHandler" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="mqExceptionHandlerBean" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="mqExceptionHandlerBean" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>mqExceptionHandlerService</value>
+         </property>
+         <property name="targetMethod">
+             <value>execute</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
+     
+     <bean id="mqExceptionHandlerService" class="cn.explink.b2c.tools.MqExceptionHandlerUtil">
+	</bean>
+	
+	<!-- MQ 异常处理 定时器   配置结束--> 
 </beans>

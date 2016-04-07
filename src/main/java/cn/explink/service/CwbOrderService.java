@@ -84,6 +84,7 @@ import cn.explink.dao.FlowExpDao;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.GotoClassOldDAO;
 import cn.explink.dao.GroupDetailDao;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.NoPiPeiCwbDetailDAO;
 import cn.explink.dao.OperationTimeDAO;
 import cn.explink.dao.OrderArriveTimeDAO;
@@ -140,6 +141,7 @@ import cn.explink.domain.FinanceDeliverPayupDetail;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.GotoClassOld;
 import cn.explink.domain.GroupDetail;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.NoPiPeiCwbDetail;
 import cn.explink.domain.OperationTime;
 import cn.explink.domain.OrderArriveTime;
@@ -473,6 +475,9 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	private MPSOptStateService mPSOptStateService;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO; 
 	
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
@@ -2670,14 +2675,16 @@ public class CwbOrderService extends BaseOrderService {
 			this.createOrderFlowTask(of);
 		} else {
 			// JMS消息模式处理orderFlow
+			String header = "";
 			try {
-				this.orderFlowProducerTemplate.sendBodyAndHeader(null, "orderFlow", this.om.writeValueAsString(of));
+				header = this.om.writeValueAsString(of);
+			    this.orderFlowProducerTemplate.sendBodyAndHeader(null, "orderFlow", header);
 			} catch (Exception ee) {
 				if (of.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {// 导入数据的话，手工调用保存订单号和运单号的表
 					logger.info("调接口执行运单号保存 单号：{}", of.getCwb());
 					this.transCwbService.saveTransCwbByFloworderdetail(of.getFloworderdetail());
 				}
-				// TODO jms异常写入监控表
+				// jms异常写入监控表
 				String optime = DateTimeUtil.formatDateHour(new Date());
 				ExpressSysMonitor monitor = this.expressSysMonitorDAO.getMaxOpt("JMSDmpFlow");
 				// 系统上线第一次加载
@@ -2697,6 +2704,11 @@ public class CwbOrderService extends BaseOrderService {
 					}
 				}
 
+				//写MQ异常表
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("appendCreateFlowOrderJMS")
+						.buildExceptionInfo(ee.getMessage()).buildTopic(this.orderFlowProducerTemplate.getDefaultEndpoint().getEndpointUri())
+						.buildMessageHeaderName("orderFlow").buildMessageHeader(header).getMqException());
+				
 				logger.error("send flow message error", ee);
 			}
 		}
