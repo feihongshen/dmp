@@ -2678,7 +2678,7 @@ public class CwbOrderService extends BaseOrderService {
 			String header = "";
 			try {
 				header = this.om.writeValueAsString(of);
-			    this.orderFlowProducerTemplate.sendBodyAndHeader(null, "orderFlow", header);
+			    this.orderFlowProducerTemplate.sendBodyAndHeader(null, "", header);
 			} catch (Exception ee) {
 				if (of.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {// 导入数据的话，手工调用保存订单号和运单号的表
 					logger.info("调接口执行运单号保存 单号：{}", of.getCwb());

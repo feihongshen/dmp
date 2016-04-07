@@ -7,12 +7,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import cn.explink.dao.support.BasicJdbcTemplateDaoSupport;
 import cn.explink.domain.MqException;
+import cn.explink.domain.SystemInstall;
+import cn.explink.util.Page;
 
 /**
  * 
@@ -26,9 +29,6 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	public static final long nm = 1000 * 60;
 
 	private Logger logger = LoggerFactory.getLogger(MqExceptionDAO.class);
-	
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
 	
 	public MqExceptionDAO() {
 		super(MqException.class);
@@ -76,5 +76,68 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 			return resultList;
 		}
 		return resultList;
+	}
+	
+	/**
+	 * 根据条件查询 mq异常 列表 
+	 * @param page
+	 * @param exceptionCode
+	 * @param topic
+	 * @param handleFlag
+	 * @return
+	 */
+	public List<MqException> getMqExceptionByWhere(long page, String exceptionCode, String topic, String handleFlag) {
+		String sql = "SELECT * from mq_exception where 1=1";
+		if (null != exceptionCode && !"".equals(exceptionCode.trim())) {
+			sql += " and exception_code like '" + exceptionCode+ "%'";
+		}
+		if (null != topic && !"".equals(topic.trim())) {
+			sql += " and topic like '" + topic+ "%'";
+		}
+		if (null != handleFlag && !"".equals(handleFlag.trim())) {
+			sql += " and handle_flag = " + handleFlag;
+		}
+		
+		sql += " and is_deleted=0 limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+
+		List<MqException> cscList = getJdbcTemplate().query(sql, new MqExceptionRowMapper());
+		return cscList;
+	}
+	
+	/**
+	 * 根据条件查询 mq异常 列表 (查总记录数)
+	 * @param exceptionCode
+	 * @param topic
+	 * @param handleFlag
+	 * @return
+	 */
+	public long getSystemInstallCount(String exceptionCode, String topic, String handleFlag) {
+		String sql = "SELECT count(1) from mq_exception where 1=1";
+		if (null != exceptionCode && !"".equals(exceptionCode.trim())) {
+			sql += " and exception_code like '" + exceptionCode+ "%'";
+		}
+		if (null != topic && !"".equals(topic.trim())) {
+			sql += " and topic like '" + topic+ "%'";
+		}
+		if (null != handleFlag && !"".equals(handleFlag.trim())) {
+			sql += " and handle_flag = " + handleFlag;
+		}
+		sql += " and is_deleted=0";
+		return getJdbcTemplate().queryForLong(sql);
+	}
+	
+	/**
+	 * 根据ID加载 对应的MQ 异常记录
+	 * @param id
+	 * @return
+	 */
+	public MqException getMqExceptionById(long id) {
+		try {
+			String sql = "select * from mq_exception where id=? ";
+			return getJdbcTemplate().queryForObject(sql, new MqExceptionRowMapper(), id);
+		} catch (DataAccessException e) {
+			this.logger.error("根据ID加载MQ异常记录失败", e);
+			return null;
+		}
 	}
 }
