@@ -4839,14 +4839,12 @@ public class CwbOrderService extends BaseOrderService {
 		if (chechFlag) {
 			OrderBackCheck obc = this.orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
 			if (obc != null) {
-				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-				if (co.getCwbstate() != 1) {
-					if (obc.getCheckstate() == 1) {// 待审核
-						throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
-					}
-					if (obc.getCheckresult() == 1) {// 审核为确认退货
-						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
-					}
+				//需要审核的订单的状态为1配送
+				if (obc.getCheckstate() == 1) {// 待审核
+					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
+				}
+				if (obc.getCheckresult() == 1) {// 审核为确认退货
+					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
 				}
 			}
 		}
