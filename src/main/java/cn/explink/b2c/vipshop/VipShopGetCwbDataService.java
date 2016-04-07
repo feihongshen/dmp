@@ -344,7 +344,17 @@ public class VipShopGetCwbDataService {
 //				//Added end
 //				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
 //			}
-			this.dataImportService_B2c.Analizy_DataDealByB2c_TuoYun(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true) ;
+			
+			String emaildate = dataMap.get("remark2").toString();
+			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+			if(emaildate == null || emaildate.trim().equals("")){
+				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
+				dataMap.put("remark2", emaildate);
+			}
+			//Added end
+			
+			this.dataImportService_B2c.Analizy_DataDealByB2cNonTuoYun(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate) ;
+						
 			this.logger.info("请求Vipshop订单信息-插入数据库处理成功！");
 			
 			this.updateMaxSEQ(vipshop_key, vipshop);
