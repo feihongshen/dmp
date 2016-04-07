@@ -1255,7 +1255,19 @@ function checkUsername() {
 			// else alert("员工登录名可用");
 		}
 	});
+}
 
+/**
+ * 小件员跟站长限制登录用户名最多为9位，品骏达限制。
+ * @returns {Boolean}
+ */
+function verifyUsername(){
+	if($("#roleid").val() != 2 && $("#roleid").val() != 4){
+		return;
+	}
+	var username = username = $("#username").val();
+	username = username.substr(0, 9);
+	$("#username").val(username);
 }
 
 function check_user() {
@@ -1377,6 +1389,7 @@ function roleChange() {
 	if ($("#roleid").val() == '2' || $("#roleid").val() == '4') {
 		$("#tip").html("*");
 	}
+	verifyUsername();
 }
 function submitAddUser(form) {
 

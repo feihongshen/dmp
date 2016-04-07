@@ -70,11 +70,7 @@ public class UserInfService {
 		boolean result = false;
 		for(Entry<Long, UserInf> entry : set){
 			try{
-				if("delete".equalsIgnoreCase(entry.getValue().getOperType())){
-					result = syncDelUserInf(entry.getValue(), weisuda);
-				} else {
-					result = syncNewAndEditUserInf(entry.getValue(), weisuda);
-				}
+				result = syncRequestUserInf(entry.getValue(), weisuda);
 				// 更新已同步, 需要更新这一批数据
 				if(result){
 					updateUserInfForIssync(entry.getValue(), list);
@@ -112,8 +108,8 @@ public class UserInfService {
 	 * 执行新增、修改同步
 	 * @param weisuda 
 	 */
-	private boolean syncNewAndEditUserInf(UserInf userInf, Weisuda weisuda){
-		String data = getNewAndEditXML(userInf);
+	private boolean syncRequestUserInf(UserInf userInf, Weisuda weisuda){
+		String data = getRequestXML(userInf);
 		logger.info("唯速达_小件员更新接口发送报文,userMessage={}", data);
 		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.courierUpdate.getValue());
 		logger.info("唯速达_小件员更新返回response={}", response);
@@ -131,8 +127,7 @@ public class UserInfService {
 	/**
 	 * 获得报文
 	 */
-	private String getNewAndEditXML(UserInf userInf){
-		
+	private String getRequestXML(UserInf userInf){
 		StringBuilder sb = new StringBuilder();
 		sb.append("<root>");
 		sb.append("<item>");
@@ -154,41 +149,9 @@ public class UserInfService {
 		sb.append("<mobile>");
 		sb.append(userInf.getUsermobile());
 		sb.append("</mobile>");
-		sb.append("</item>");
-		sb.append("</root>");
-		return sb.toString();
-	}
-	
-	/**
-	 * 执行删除同步
-	 * @param weisuda 
-	 */
-	private boolean syncDelUserInf(UserInf userInf, Weisuda weisuda){
-		String data = getDeleteXML(userInf);
-		logger.info("唯速达小件员删除接口发送报文,userMessage={}", data);
-		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.carrierDel.getValue());
-		logger.info("唯速达小件员删除返回response={}", response);
-		// 根据返回报文处理 
-		String result = getResultId(response, "del_code");
-		if (StringUtils.isEmpty(result)) {
-			return false;
-		}
-		if (result.equals(userInf.getUsername())) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * 获得报文
-	 */
-	private String getDeleteXML(UserInf userInf){
-		StringBuilder sb = new StringBuilder();
-		sb.append("<root>");
-		sb.append("<item>");
-		sb.append("<del_code>");
-		sb.append(userInf.getUsername());
-		sb.append("</del_code>");
+		sb.append("<enable>");
+		sb.append(userInf.getStatus());
+		sb.append("</enable>");
 		sb.append("</item>");
 		sb.append("</root>");
 		return sb.toString();
@@ -273,7 +236,10 @@ public class UserInfService {
 		return prestr;
 	}
 	
-	public void saveUserInf(User user, String operType){
+	public void saveUserInf(User user){
+		if(user.getRoleid() != 2 && user.getRoleid() != 4){
+			return;
+		}
 		UserInf userInf = new UserInf();
 		userInf.setUserid(user.getUserid());
 		userInf.setUsername(user.getUsername());
@@ -281,7 +247,13 @@ public class UserInfService {
 		userInf.setUsermobile(user.getUsermobile());
 		userInf.setPassword(user.getPassword());
 		userInf.setIsSync(false);
-		userInf.setOperType(operType);
+		if(user.getEmployeestatus() == 3){
+			// 失效
+			userInf.setStatus((byte) 1);
+		}else{
+			// 有效
+			userInf.setStatus((byte) 0);
+		}		
 		userInf.setCreateDate(new Date());
 		userInf.setCreateUser("");
 		userInf.setBranchid(user.getBranchid());

@@ -70,11 +70,7 @@ public class BranchInfService {
 		boolean result = false;
 		for(Entry<Long, BranchInf> entry : set){
 			try{
-				if("delete".equalsIgnoreCase(entry.getValue().getOperType())){
-					result = syncDelBranchInf(entry.getValue(), weisuda);
-				} else {
-					result = syncNewAndEditBranchInf(entry.getValue(), weisuda);
-				}
+				result = syncRequestBranchInf(entry.getValue(), weisuda);
 				// 更新已同步, 需要更新这一批数据
 				if(result){
 					updateBranchInfForIssync(entry.getValue(), list);
@@ -112,8 +108,8 @@ public class BranchInfService {
 	 * 执行新增、修改同步
 	 * @param weisuda 
 	 */
-	private boolean syncNewAndEditBranchInf(BranchInf branchInf, Weisuda weisuda){
-		String data = getNewAndEditXML(branchInf);
+	private boolean syncRequestBranchInf(BranchInf branchInf, Weisuda weisuda){
+		String data = getRequestXML(branchInf);
 		logger.info("唯速达_05站点更新接口发送报文,userMessage={}", data);
 		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.siteUpdate.getValue());
 		logger.info("唯速达_05站点更新返回response={}", response);
@@ -131,7 +127,7 @@ public class BranchInfService {
 	/**
 	 * 获得报文
 	 */
-	private String getNewAndEditXML(BranchInf branchInf){
+	private String getRequestXML(BranchInf branchInf){
 		StringBuilder sb = new StringBuilder();
 		sb.append("<root>");
 		sb.append("<item>");
@@ -156,44 +152,9 @@ public class BranchInfService {
 		sb.append("<site_id>");
 		sb.append(branchInf.getBranchid());
 		sb.append("</site_id>");
-		sb.append("</item>");
-		sb.append("</root>");
-		return sb.toString();
-	}
-	
-	/**
-	 * 执行删除同步
-	 * @param weisuda 
-	 */
-	private boolean syncDelBranchInf(BranchInf branchInf, Weisuda weisuda){
-		String data = getDeleteXML(branchInf);
-		logger.info("唯速达站点删除接口发送报文,userMessage={}", data);
-		String response = check(weisuda, "data", data, WeisudsInterfaceEnum.siteDel.getValue());
-		logger.info("唯速达站点删除返回response={}", response);
-		// 根据返回报文处理 
-		String result = getResultId(response, "site_id");
-		if(StringUtils.isEmpty(result)){
-			return false;
-		}
-		if(result.equals(branchInf.getBranchid() + "")){
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * 获得报文
-	 */
-	private String getDeleteXML(BranchInf branchInf){
-		StringBuilder sb = new StringBuilder();
-		sb.append("<root>");
-		sb.append("<item>");
-		sb.append("<del_site_id>");
-		sb.append(branchInf.getBranchid());
-		sb.append("</del_site_id>");
-		sb.append("<rec_site_id>");
-		sb.append(branchInf.getRecBranchid());
-		sb.append("</rec_site_id>");
+		sb.append("<enable>");
+		sb.append(branchInf.getStatus());
+		sb.append("</enable>");
 		sb.append("</item>");
 		sb.append("</root>");
 		return sb.toString();
@@ -278,7 +239,7 @@ public class BranchInfService {
 		return prestr;
 	}
 	
-	public void saveBranchInf(Branch branch, String operType){
+	public void saveBranchInf(Branch branch){
 		BranchInf branchInf = new BranchInf();
 		branchInf.setBranchid(branch.getBranchid());
 		branchInf.setBranchname(branch.getBranchname());
@@ -291,7 +252,13 @@ public class BranchInfService {
 		branchInf.setCreateDate(new Date());
 		branchInf.setCreateUser("");
 		branchInf.setIsSync(false);
-		branchInf.setOperType(operType);
+		if("1".equals(branch.getBrancheffectflag())){
+			// 有效
+			branchInf.setStatus((byte) 0);
+		}else{
+			// 失效
+			branchInf.setStatus((byte) 1);
+		}		
 		branchInfDao.saveBranchInf(branchInf);
 	}
 	

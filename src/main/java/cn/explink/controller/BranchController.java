@@ -31,14 +31,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
-import cn.explink.consts.OperType;
 import cn.explink.dao.AccountAreaDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.SystemInstallDAO;
-import cn.explink.domain.AccountArea;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Menu;
 import cn.explink.domain.PaiFeiRule;
@@ -198,7 +196,7 @@ public class BranchController {
 					this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 				}
 				// add by jian_xie
-				branchInfService.saveBranchInf(bh, OperType.NEW);
+				branchInfService.saveBranchInf(bh);
 			}
 
 			try {
@@ -319,7 +317,7 @@ public class BranchController {
 					}
 				}
 				// 同步站点新接口 add by jian_xie
-				branchInfService.saveBranchInf(branch, OperType.EDIT);
+				branchInfService.saveBranchInf(branch);
 			}
 
 			try {
@@ -465,11 +463,7 @@ public class BranchController {
 		}
 		// 同步站点机构，使用新接口
 		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-			if("1".equals(branch.getBrancheffectflag())){
-				branchInfService.saveBranchInf(branch, OperType.NEW);
-			}else{
-				branchInfService.saveBranchInf(branch, OperType.DELETE);
-			}
+			branchInfService.saveBranchInf(branch);
 		}
 		
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";

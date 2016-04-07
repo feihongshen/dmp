@@ -23,7 +23,7 @@ public class UserInf {
 	
 	private boolean				isSync;					// 是否同步
 	
-	private String				operType;				// 操作类型
+	private byte				status;					// 状态 0、有效，1、失效。 为了兼容品骏达
 	
 	private Date				createDate;				// 创建时间
 	
@@ -91,12 +91,12 @@ public class UserInf {
 		this.isSync = isSync;
 	}
 
-	public String getOperType() {
-		return operType;
+	public byte getStatus() {
+		return status;
 	}
 
-	public void setOperType(String operType) {
-		this.operType = operType;
+	public void setStatus(byte status) {
+		this.status = status;
 	}
 
 	public Date getCreateDate() {

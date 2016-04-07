@@ -42,7 +42,7 @@ public class UserInfDao {
 			userInf.setCreateDate(rs.getDate("create_date"));
 			userInf.setCreateUser(rs.getString("create_user"));
 			userInf.setIsSync(rs.getBoolean("is_sync"));
-			userInf.setOperType(rs.getString("oper_type"));
+			userInf.setStatus(rs.getByte("status"));
 			userInf.setBranchid(rs.getLong("branchid"));
 			userInf.setOldusername(rs.getString("oldusername"));
 			userInf.setTimes(rs.getInt("times"));
@@ -59,7 +59,7 @@ public class UserInfDao {
 	public long saveUserInf(final UserInf userInf){
 		KeyHolder key = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator(){
-			String sql = " insert into express_set_user_inf (inf_id, userid,username, realname, usermobile, password,is_sync,oper_type,create_date,create_user,branchid,oldusername,times) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = " insert into express_set_user_inf (inf_id, userid,username, realname, usermobile, password,is_sync,status,create_date,create_user,branchid,oldusername,times) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = null;
@@ -71,7 +71,7 @@ public class UserInfDao {
 				ps.setString(5, userInf.getUsermobile() == null ? "" : userInf.getUsermobile());
 				ps.setString(6, userInf.getPassword() == null ? "" : userInf.getPassword());
 				ps.setBoolean(7, userInf.getIsSync());
-				ps.setString(8, userInf.getOperType());
+				ps.setByte(8, userInf.getStatus());
 				ps.setTimestamp(9, new Timestamp(userInf.getCreateDate().getTime()));
 				ps.setString(10, userInf.getCreateUser() == null ? "" : userInf.getCreateUser());
 				ps.setLong(11, userInf.getBranchid());

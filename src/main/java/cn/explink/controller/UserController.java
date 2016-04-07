@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.weisuda.CourierService;
-import cn.explink.consts.OperType;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
@@ -161,14 +160,12 @@ public class UserController {
 				this.userService.addUser(user);
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
 					this.courierService.courierUpdate(user);
-					//  新接口 add by jian_xie
-					userInfService.saveUserInf(user, OperType.NEW);
 				}
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
-					//  新接口 add by jian_xie
-					userInfService.saveUserInf(user, OperType.DELETE);
 				}
+				//  新接口 add by jian_xie
+				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->create", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -200,14 +197,12 @@ public class UserController {
 				this.userService.addUser(user);
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
 					this.courierService.courierUpdate(user);
-					//  新接口 add by jian_xie
-					userInfService.saveUserInf(user, OperType.NEW);
 				}
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
-					//  新接口 add by jian_xie
-					userInfService.saveUserInf(user, OperType.DELETE);
 				}
+				//  新接口 add by jian_xie
+				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -267,14 +262,12 @@ public class UserController {
 				this.userService.editUser(user);
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
 					this.courierService.courierUpdate(user);
-					//  新接口 add by jian_xie
-					userInfService.saveUserInf(user, OperType.EDIT);
 				}
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
-					//  新接口 add by jian_xie
-					userInfService.saveUserInf(user, OperType.DELETE);
 				}
+				//  新接口 add by jian_xie
+				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -316,14 +309,12 @@ public class UserController {
 				this.userService.editUser(user);
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
 					this.courierService.courierUpdate(user);
-					//  新接口 add by jian_xie
-					userInfService.saveUserInf(user, OperType.EDIT);
 				}
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
-					//  新接口 add by jian_xie
-					userInfService.saveUserInf(user, OperType.DELETE);
 				}
+				//  新接口 add by jian_xie
+				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {

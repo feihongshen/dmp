@@ -45,7 +45,7 @@ public class BranchInfDao {
 			branchInf.setCreateDate(rs.getDate("create_date"));
 			branchInf.setCreateUser(rs.getString("create_user"));
 			branchInf.setIsSync(rs.getBoolean("is_sync"));
-			branchInf.setOperType(rs.getString("oper_type"));
+			branchInf.setStatus(rs.getByte("status"));
 			branchInf.setTimes(rs.getInt("times"));
 			return branchInf;
 		}		
@@ -60,7 +60,7 @@ public class BranchInfDao {
 	public long saveBranchInf(final BranchInf branchInf){
 		KeyHolder key = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator(){
-			String sql = " insert into express_set_branch_inf (inf_id, branchid,branchname, tpsbranchcode, branchprovince, branchcity,brancharea,password,rec_branchid, create_date,create_user,is_sync,oper_type, times) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = " insert into express_set_branch_inf (inf_id, branchid,branchname, tpsbranchcode, branchprovince, branchcity,brancharea,password,rec_branchid, create_date,create_user,is_sync,status, times) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = null;
@@ -77,7 +77,7 @@ public class BranchInfDao {
 				ps.setTimestamp(10, new Timestamp(branchInf.getCreateDate().getTime()));
 				ps.setString(11, branchInf.getCreateUser() == null ? "" : branchInf.getCreateUser());
 				ps.setBoolean(12, branchInf.getIsSync());
-				ps.setString(13, branchInf.getOperType());
+				ps.setByte(13, branchInf.getStatus());
 				ps.setInt(14, branchInf.getTimes());
 				return ps;
 			}
