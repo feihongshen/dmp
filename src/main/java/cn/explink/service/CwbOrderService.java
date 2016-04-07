@@ -2707,7 +2707,7 @@ public class CwbOrderService extends BaseOrderService {
 				//写MQ异常表
 				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("appendCreateFlowOrderJMS")
 						.buildExceptionInfo(ee.getMessage()).buildTopic(this.orderFlowProducerTemplate.getDefaultEndpoint().getEndpointUri())
-						.buildMessageHeaderName("orderFlow").buildMessageHeader(header).getMqException());
+						.buildMessageHeader("orderFlow", header).getMqException());
 				
 				logger.error("send flow message error", ee);
 			}

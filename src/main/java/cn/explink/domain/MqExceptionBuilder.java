@@ -1,6 +1,10 @@
 package cn.explink.domain;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
 
 /**
  * MQ异常model builder类
@@ -29,7 +33,6 @@ public final class MqExceptionBuilder{
     	MqException po = new MqException();
     	po.setExceptionCode("");
     	po.setMessageBody("");
-    	po.setMessageHeaderName("");
     	po.setMessageHeader("");
     	po.setRemarks("");
     	po.setCreatedByUser("");
@@ -63,16 +66,19 @@ public final class MqExceptionBuilder{
         return this;
     }
     
-    public MqExceptionBuilder buildMessageHeaderName(String messageHeaderName) {
-        this.mqException.setMessageHeaderName(messageHeaderName);
+    public MqExceptionBuilder buildMessageHeader(Map<String,String> headerMap) {
+        this.mqException.setMessageHeader(JSON.toJSONString(headerMap));
+        
         return this;
     }
     
-    public MqExceptionBuilder buildMessageHeader(String messageHeader) {
-        this.mqException.setMessageHeader(messageHeader);
+    public MqExceptionBuilder buildMessageHeader(String headerName, String headerValue) {
+    	Map<String,String> map = new HashMap<String,String>();
+    	map.put(headerName, headerValue);
+        buildMessageHeader(map);
         return this;
     }
-	
+    
     public MqExceptionBuilder buildHandleCount(int handleCount) {
         this.mqException.setHandleCount(handleCount);
         return this;

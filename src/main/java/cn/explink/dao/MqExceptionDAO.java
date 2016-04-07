@@ -43,9 +43,9 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 			mqException.setExceptionInfo(rs.getString("EXCEPTION_INFO"));
 			mqException.setTopic(rs.getString("TOPIC"));
 			mqException.setMessageBody(rs.getString("MESSAGE_BODY"));
-			mqException.setMessageHeaderName(rs.getString("MESSAGE_HEADER_NAME"));
 			mqException.setMessageHeader(rs.getString("MESSAGE_HEADER"));
 			mqException.setHandleCount(rs.getInt("HANDLE_COUNT"));
+			mqException.setHandleFlag(rs.getBoolean("HANDLE_FLAG"));
 			mqException.setRemarks(rs.getString("REMARKS"));
 			mqException.setHandleTime(rs.getDate("HANDLE_TIME"));
 			mqException.setCreatedByUser(rs.getString("CREATED_BY_USER"));
@@ -61,10 +61,15 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 		}
 	}
 
-	public List<MqException> listMqException() {
+	/**
+	 * 查询需要重推的MQ异常 列表
+	 * @param executeCount
+	 * @return
+	 */
+	public List<MqException> listMqException(int executeCount) {
 		List<MqException> resultList = null;
 		try {
-			String sql = "select * from mq_exception where handle_count > -1 and handle_count < 5 and is_deleted=0 limit 0,1000";
+			String sql = "select * from mq_exception where handle_flag=0 and handle_count<5 and is_deleted=0 limit 0," + executeCount;
 			resultList = getJdbcTemplate().query(sql, new MqExceptionRowMapper());
 		}catch (Exception e) {
 			this.logger.error("查询MQ异常列表", e);

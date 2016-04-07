@@ -39,15 +39,15 @@ public class MqException implements Serializable {
 	
 	@Column(name = "MESSAGE_BODY")
 	private String messageBody;
-	
-	@Column(name = "MESSAGE_HEADER_NAME")
-	private String messageHeaderName;
-	
+
 	@Column(name = "MESSAGE_HEADER")
 	private String messageHeader;
 	
 	@Column(name = "HANDLE_COUNT")
 	private int handleCount = 0;
+	
+	@Column(name = "HANDLE_FLAG")
+	private boolean handleFlag = false;
 	
 	@Column(name = "REMARKS")
 	private String remarks;
@@ -126,12 +126,16 @@ public class MqException implements Serializable {
 		this.messageBody = messageBody;
 	}
 
-	public String getMessageHeaderName() {
-		return messageHeaderName;
+	public boolean isHandleFlag() {
+		return handleFlag;
 	}
 
-	public void setMessageHeaderName(String messageHeaderName) {
-		this.messageHeaderName = messageHeaderName;
+	public void setHandleFlag(boolean handleFlag) {
+		this.handleFlag = handleFlag;
+	}
+	
+	public void setIsHandleFlag(boolean handleFlag) {
+		this.handleFlag = handleFlag;
 	}
 
 	public String getMessageHeader() {
