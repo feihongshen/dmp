@@ -819,6 +819,10 @@ function checkZhanDian() {
 		alert("站点编号不能为空");
 		return false;
 	}
+	if ($("#tpsbranchcode").val().length == 0) {
+		alert("机构编码不能为空");
+		return false;
+	}
 	/*
 	 * if($("#accounttype").val()==0){ alert("请选择结算类型"); return false; }
 	 * if($("#accountbranch").val()==0){ alert("请选择结算对象"); return false; }

@@ -243,7 +243,7 @@ public class BranchInfService {
 		BranchInf branchInf = new BranchInf();
 		branchInf.setBranchid(branch.getBranchid());
 		branchInf.setBranchname(branch.getBranchname());
-		branchInf.setTpsbranchcode(branchInf.getTpsbranchcode());
+		branchInf.setTpsbranchcode(branch.getTpsbranchcode());
 		branchInf.setBranchprovince(branch.getBranchprovince());
 		branchInf.setBranchcity(branch.getBranchcity());
 		branchInf.setBrancharea(branch.getBrancharea());

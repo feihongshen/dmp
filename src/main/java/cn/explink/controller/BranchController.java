@@ -188,6 +188,7 @@ public class BranchController {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			long branchid = this.branchDAO.creBranch(bh);
+			bh = this.branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				this.branchService.addzhandianToAddress(branchid, bh,null);
 				// TODO 增加同步代码
@@ -307,6 +308,7 @@ public class BranchController {
 			}
 
 			this.branchDAO.saveBranch(branch);
+			branch = this.branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
 				// TODO 增加同步代码
