@@ -6,15 +6,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import cn.explink.dao.support.BasicJdbcTemplateDaoSupport;
 import cn.explink.domain.MqException;
-import cn.explink.domain.SystemInstall;
 import cn.explink.util.Page;
 
 /**
@@ -48,6 +45,8 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 			mqException.setHandleFlag(rs.getBoolean("HANDLE_FLAG"));
 			mqException.setRemarks(rs.getString("REMARKS"));
 			mqException.setHandleTime(rs.getDate("HANDLE_TIME"));
+			mqException.setMessageSource(rs.getString("MESSAGE_SOURCE"));
+			mqException.setAutoResend(rs.getBoolean("IS_AUTO_RESEND"));
 			mqException.setCreatedByUser(rs.getString("CREATED_BY_USER"));
 			mqException.setCreatedOffice(rs.getString("CREATED_OFFICE"));
 			mqException.setCreatedDtmLoc(rs.getDate("CREATED_DTM_LOC"));
@@ -69,7 +68,7 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	public List<MqException> listMqException(int executeCount) {
 		List<MqException> resultList = null;
 		try {
-			String sql = "select * from mq_exception where handle_flag=0 and handle_count<5 and is_deleted=0 limit 0," + executeCount;
+			String sql = "select * from mq_exception where handle_flag=0 and is_auto_resend=1 and handle_count<5 and is_deleted=0 limit 0," + executeCount;
 			resultList = getJdbcTemplate().query(sql, new MqExceptionRowMapper());
 		}catch (Exception e) {
 			this.logger.error("查询MQ异常列表", e);
@@ -86,7 +85,7 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	 * @param handleFlag
 	 * @return
 	 */
-	public List<MqException> getMqExceptionByWhere(long page, String exceptionCode, String topic, String handleFlag) {
+	public List<MqException> getMqExceptionByWhere(long page, String exceptionCode, String topic, String handleFlag, String messageSource, String isAutoResend) {
 		String sql = "SELECT * from mq_exception where 1=1";
 		if (null != exceptionCode && !"".equals(exceptionCode.trim())) {
 			sql += " and exception_code like '" + exceptionCode+ "%'";
@@ -96,6 +95,12 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 		}
 		if (null != handleFlag && !"".equals(handleFlag.trim())) {
 			sql += " and handle_flag = " + handleFlag;
+		}
+		if (null != messageSource && !"".equals(messageSource.trim())) {
+			sql += " and message_source = '" + messageSource + "'";
+		}
+		if (null != isAutoResend && !"".equals(isAutoResend.trim())) {
+			sql += " and is_auto_resend = " + isAutoResend;
 		}
 		
 		sql += " and is_deleted=0 limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
@@ -111,7 +116,7 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	 * @param handleFlag
 	 * @return
 	 */
-	public long getSystemInstallCount(String exceptionCode, String topic, String handleFlag) {
+	public long getSystemInstallCount(String exceptionCode, String topic, String handleFlag, String messageSource, String isAutoResend) {
 		String sql = "SELECT count(1) from mq_exception where 1=1";
 		if (null != exceptionCode && !"".equals(exceptionCode.trim())) {
 			sql += " and exception_code like '" + exceptionCode+ "%'";
@@ -121,6 +126,12 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 		}
 		if (null != handleFlag && !"".equals(handleFlag.trim())) {
 			sql += " and handle_flag = " + handleFlag;
+		}
+		if (null != messageSource && !"".equals(messageSource.trim())) {
+			sql += " and message_source = '" + messageSource + "'";
+		}
+		if (null != isAutoResend && !"".equals(isAutoResend.trim())) {
+			sql += " and is_auto_resend = " + isAutoResend;
 		}
 		sql += " and is_deleted=0";
 		return getJdbcTemplate().queryForLong(sql);

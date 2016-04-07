@@ -1,4 +1,5 @@
 <%@page import="cn.explink.domain.MqException"%>
+<%@page import="cn.explink.domain.MqExceptionBuilder.MessageSourceEnum"%>
 <%@page import="cn.explink.enumutil.*,cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
@@ -8,6 +9,8 @@
 	String exceptionCode = (String)request.getAttribute("exceptionCode");
 	String topic = (String)request.getAttribute("topic");
 	String handleFlag = (String)request.getAttribute("handleFlag");
+	String messageSource = (String)request.getAttribute("messageSource");
+	String isAutoResend = (String)request.getAttribute("isAutoResend");
 	
 %>
 
@@ -37,8 +40,23 @@ function editSuccess(data){
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		编码：<input type="text" id="exceptionCode" name="exceptionCode" class="input_text1"/>&nbsp;&nbsp;
 		主题：<input type="text" id="topic" name="topic" class="input_text1"/>&nbsp;&nbsp;
-		处理结果：<input type="radio" id="handleFlagSuccess" name="handleFlag" value="1"/>成功
-		      <input type="radio" id="handleFlagFault" name="handleFlag" value="0"/>失败 &nbsp;&nbsp;
+		处理结果：<select id="handleFlag" name="handleFlag" class="input_text1" style="width:80px;">
+		        <option value="">所有</option>
+				<option value="1">成功</option>
+				<option value="0">失败</option>
+			  </select>&nbsp;&nbsp;
+			  
+	             消息来源：<select id="messageSource" name="messageSource" class="input_text1" style="width:80px;">
+		        <option value="">所有</option>
+				<option value="sender">发送端</option>
+				<option value="receiver">接收端</option>
+			  </select>&nbsp;&nbsp;
+	            自动发送：<select id="isAutoResend" name="isAutoResend" class="input_text1" style="width:80px;">
+		        <option value="">所有</option>
+				<option value="1">是</option>
+				<option value="0">否</option>
+			  </select>&nbsp;&nbsp;&nbsp;&nbsp;
+
 		<input type="submit" onclick="$('#searchForm').attr('action',1);return true;" id="find" value="查询" class="input_button2" />
 	</form>
 	</div>
@@ -49,22 +67,30 @@ function editSuccess(data){
 	<tr class="font_1">
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">编码</td>
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">主题</td>
-			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">处理次数</td>
-			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">处理结果</td>
-			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">修改人</td>
-			<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">修改备注</td>
+			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">处理次数</td>
+			<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">结果</td>
+			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">消息来源</td>
+			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">自动重发</td>
+			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">修改人</td>
+			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">修改备注</td>
 			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
 		 <% for(MqException si : siList){ %>
 		<tr>
 			<td width="15%" align="center" valign="middle" ><%=si.getExceptionCode() %></td>
 			<td width="15%" align="center" valign="middle" ><%=si.getTopic() %></td>
-			<td width="10%" align="center" valign="middle" ><%=si.getHandleCount() %></td>
-			<td width="10%" align="center" valign="middle" ><%=
+			<td width="7%" align="center" valign="middle" ><%=si.getHandleCount() %></td>
+			<td width="6%" align="center" valign="middle" ><%=
 			       (si.isHandleFlag() ? "成功" : "失败") 
 			%></td>
-			<td width="15%" align="center" valign="middle" ><%=si.getUpdatedByUser() %></td>
-			<td width="25%" align="center" valign="middle" ><%=si.getRemarks() %></td>
+			<td width="7%" align="center" valign="middle" ><%=
+					MessageSourceEnum.getMessageSourceEnum(si.getMessageSource()).getName()
+			%></td>
+			<td width="10%" align="center" valign="middle" ><%=
+			       (si.isAutoResend() ? "是" : "否") 
+			%></td>
+			<td width="10%" align="center" valign="middle" ><%=si.getUpdatedByUser() %></td>
+			<td width="20%" align="center" valign="middle" ><%=si.getRemarks() %></td>
 			<td width="10%" align="center" valign="middle" >
 			[<a href="<%=request.getContextPath()%>/mqexception/edit/<%=si.getId() %>">修改</a>]
 			</td>
@@ -103,14 +129,9 @@ $(document).ready(function(){
 	$("#selectPg").val('<%=selectPg %>');
 	$("#exceptionCode").val('<%=exceptionCode %>');
 	$("#topic").val('<%=topic %>');
-	var handleFlag = '<%=handleFlag %>';
-	if(handleFlag == "1"){
-		$("#handleFlagFault").removeAttr("checked");
-		$("#handleFlagSuccess").attr("checked","checked");
-	}else{
-		$("#handleFlagSuccess").removeAttr("checked");
-		$("#handleFlagFault").attr("checked","checked");
-	}
+	$("#messageSource").val('<%=messageSource %>');
+	$("#handleFlag").val('<%=handleFlag %>');
+	$("#isAutoResend").val('<%=isAutoResend %>');
 });
 </script>
 </body>

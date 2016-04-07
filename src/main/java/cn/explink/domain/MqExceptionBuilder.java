@@ -14,6 +14,52 @@ import com.alibaba.fastjson.JSON;
 public final class MqExceptionBuilder{
 
 	private MqException mqException;
+	
+	public enum MessageSourceEnum {
+
+	    sender("sender", "发送端"), receiver("receiver", "接收端");
+
+	    String index;
+
+	    String name;
+
+	    MessageSourceEnum(String index, String name) {
+	        this.index = index;
+	        this.name = name;
+	    }
+
+	    public String getIndex() {
+	        return this.index;
+	    }
+
+	    public String getName() {
+	        return this.name;
+	    }
+
+	    public static String getIndexByName(String name) {
+	        String index = null;
+	        MessageSourceEnum[] values = MessageSourceEnum.values();
+	        for (MessageSourceEnum value : values) {
+	            if (value.getName().equals(name)) {
+	                index = value.getIndex();
+	            }
+	        }
+	        return index;
+	    }
+
+	    private static Map<String, MessageSourceEnum> MESSAGE_SOURCE_MAP = null;
+
+	    static {
+	    	MessageSourceEnum.MESSAGE_SOURCE_MAP = new HashMap<String, MessageSourceEnum>();
+	        for (MessageSourceEnum messageSourceEnum : MessageSourceEnum.values()) {
+	        	MessageSourceEnum.MESSAGE_SOURCE_MAP.put(messageSourceEnum.getIndex(), messageSourceEnum);
+	        }
+	    }
+
+	    public static MessageSourceEnum getMessageSourceEnum(String index) {
+	        return MessageSourceEnum.MESSAGE_SOURCE_MAP.get(index);
+	    }
+	} 
 
     public MqException getMqException() {
         return this.mqException;
@@ -35,6 +81,9 @@ public final class MqExceptionBuilder{
     	po.setMessageBody("");
     	po.setMessageHeader("");
     	po.setRemarks("");
+    	po.setMessageSource("");
+    	po.setIsAutoResend(true);//默认自动重发
+    	po.setMessageSource(MessageSourceEnum.sender.getIndex());
     	po.setCreatedByUser("");
     	po.setCreatedOffice("");
     	po.setCreatedDtmLoc(new Date());
@@ -141,6 +190,16 @@ public final class MqExceptionBuilder{
     
     public MqExceptionBuilder buildRouteingKey(String routeingKey) {
         this.mqException.setRouteingKey(routeingKey);
+        return this;
+    }
+    
+    public MqExceptionBuilder buildMessageSource(String messageSource) {
+        this.mqException.setMessageSource(messageSource);
+        return this;
+    }
+    
+    public MqExceptionBuilder buildIsAutoResend(boolean isAutoResend) {
+        this.mqException.setIsAutoResend(isAutoResend);
         return this;
     }
 }

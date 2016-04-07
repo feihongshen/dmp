@@ -110,7 +110,7 @@ function del(id){
 	<div class="jg_10"></div>
 	<div class="clear"></div>
 
-<script type="text/javascript">alert(<%=request.getParameter("value") %>);
+<script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
 $("#name").val(<%=request.getParameter("name") %>);
 $("#value").val(<%=request.getParameter("value") %>);

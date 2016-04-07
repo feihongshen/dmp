@@ -55,6 +55,12 @@ public class MqException implements Serializable {
 	@Column(name = "HANDLE_TIME")
 	private Date handleTime;
 	
+	@Column(name = "MESSAGE_SOURCE")
+	private String messageSource;
+	
+	@Column(name = "IS_AUTO_RESEND")
+	private boolean isAutoResend = true;//默认自动重发
+	
 	@Column(name = "CREATED_BY_USER")
 	private String createdByUser;
 	@Column(name = "CREATED_OFFICE")
@@ -265,6 +271,25 @@ public class MqException implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
+	public String getMessageSource() {
+		return messageSource;
+	}
+
+	public void setMessageSource(String messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public boolean isAutoResend() {
+		return isAutoResend;
+	}
+
+	public void setAutoResend(boolean isAutoResend) {
+		this.isAutoResend = isAutoResend;
+	}
 	
+	public void setIsAutoResend(boolean isAutoResend) {
+		this.isAutoResend = isAutoResend;
+	}
 
 }
