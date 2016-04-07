@@ -636,7 +636,12 @@ public class TPSGetOrderDataService {
 			orderDTO.setCwb(cust_order_no);
 			orderDTO.setTranscwb(transcwb);
 			orderDTO.setConsigneename(order.getBuyerName().isEmpty()?"":order.getBuyerName());
-			orderDTO.setSendcargonum(total_pack.toString().isEmpty() ? 1 : total_pack);
+			if(is_gatherpack.trim().equals("1") && total_pack!=null && total_pack==0){
+				int transcwbLength = transcwb.split(",").length;
+				orderDTO.setSendcargonum(transcwbLength);
+			}else{
+				orderDTO.setSendcargonum(total_pack.toString().isEmpty() ? 1 : total_pack);
+			}
 			orderDTO.setConsigneephone(order.getTel());
 			orderDTO.setConsigneemobile(order.getMobile());
 			orderDTO.setConsigneepostcode(order.getPostCode());
