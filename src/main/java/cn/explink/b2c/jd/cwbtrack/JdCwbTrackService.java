@@ -207,11 +207,7 @@ public class JdCwbTrackService {
 				//反馈为拒收 对应 拒收待确认/拒收
 				if(delivery_state ==DeliveryStateEnum.JuShou.getValue()){
 					//orderlist 里是否含有退供货商成功
-					if(!isContainsGongHuoShangTuiHuoChenggong(orderlist)){
 						jdTrackFlowText="拒收待确认";
-					}else{
-						jdTrackFlowText="拒收";
-					}
 				}
 				//反馈签收 对应 签收 
 				if(delivery_state ==DeliveryStateEnum.PeiSongChengGong.getValue()){
@@ -380,16 +376,4 @@ public class JdCwbTrackService {
 		jiontDAO.UpdateState(joint_num, state);
 	}
 	
-	//判断集合是里时候有退供货商成功
-	private Boolean isContainsGongHuoShangTuiHuoChenggong(List<OrderFlow> orderlist) {
-		for (OrderFlow orderFlow : orderlist) {
-			if(orderFlow.getFlowordertype()==FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue()){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	
-
 }
