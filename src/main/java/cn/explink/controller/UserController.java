@@ -158,11 +158,13 @@ public class UserController {
 			} else {
 				User user = this.userService.loadFormForUser(request, roleid, branchid, null);
 				this.userService.addUser(user);
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-					this.courierService.courierUpdate(user);
-				}
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-					this.courierService.carrierDel(user);
+				if (!userInfService.isCloseOldInterface()) {
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+						this.courierService.courierUpdate(user);
+					}
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+						this.courierService.carrierDel(user);
+					}
 				}
 				//  新接口 add by jian_xie
 				userInfService.saveUserInf(user);
@@ -195,11 +197,13 @@ public class UserController {
 			} else {
 				User user = this.userService.loadFormForUser(request, roleid, branchid, file);
 				this.userService.addUser(user);
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-					this.courierService.courierUpdate(user);
-				}
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-					this.courierService.carrierDel(user);
+				if(!userInfService.isCloseOldInterface()){
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+						this.courierService.courierUpdate(user);
+					}
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+						this.courierService.carrierDel(user);
+					}
 				}
 				//  新接口 add by jian_xie
 				userInfService.saveUserInf(user);
@@ -260,11 +264,13 @@ public class UserController {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
 				this.userService.editUser(user);
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-					this.courierService.courierUpdate(user);
-				}
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-					this.courierService.carrierDel(user);
+				if(!userInfService.isCloseOldInterface()){
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+						this.courierService.courierUpdate(user);
+					}
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+						this.courierService.carrierDel(user);
+					}
 				}
 				//  新接口 add by jian_xie
 				userInfService.saveUserInf(user);
@@ -307,11 +313,13 @@ public class UserController {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
 				this.userService.editUser(user);
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-					this.courierService.courierUpdate(user);
-				}
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-					this.courierService.carrierDel(user);
+				if(!userInfService.isCloseOldInterface()){
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+						this.courierService.courierUpdate(user);
+					}
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+						this.courierService.carrierDel(user);
+					}
 				}
 				//  新接口 add by jian_xie
 				userInfService.saveUserInf(user);

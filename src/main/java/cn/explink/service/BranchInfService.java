@@ -29,6 +29,7 @@ import cn.explink.b2c.weisuda.WeisudsInterfaceEnum;
 import cn.explink.dao.BranchInfDao;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchInf;
+import cn.explink.domain.SystemInstall;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.util.MD5.MD5Util;
 
@@ -50,6 +51,9 @@ public class BranchInfService {
 	
 	@Autowired
 	JointService jointService;
+	
+	@Autowired
+	SystemInstallService systemInstallService;
 	
 	/**
 	 * 执行同步机构站点
@@ -296,5 +300,16 @@ public class BranchInfService {
 		for(BranchInf branchInf : list){
 			branchInfDao.incrTimes(branchInf.getInfId());
 		}
+	}
+	
+	/**
+	 * 关闭旧接口
+	 */
+	public boolean isCloseOldInterface(){
+		String value = systemInstallService.getParameter("closeUserAndBranchOldInterface");
+		if(StringUtils.isNotEmpty(value) || "1".equals(value)){
+			return true;
+		}	
+		return false;
 	}
 }

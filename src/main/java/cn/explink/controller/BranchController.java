@@ -140,8 +140,12 @@ public class BranchController {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			long branchid = this.branchDAO.creBranch(bh);
+			bh = branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh,null);
+				if(!branchInfService.isCloseOldInterface()){					
+					this.branchService.addzhandianToAddress(branchid, bh,null);
+				}
+				branchInfService.saveBranchInf(bh);
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -190,7 +194,9 @@ public class BranchController {
 			long branchid = this.branchDAO.creBranch(bh);
 			bh = this.branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh,null);
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, bh,null);
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -252,8 +258,11 @@ public class BranchController {
 			}
 			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
 			this.branchDAO.saveBranch(branch);
+			branch = branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -261,6 +270,7 @@ public class BranchController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 					}
 				}
+				branchInfService.saveBranchInf(branch);
 			}
 
 			try {
@@ -310,7 +320,9 @@ public class BranchController {
 			this.branchDAO.saveBranch(branch);
 			branch = this.branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -448,10 +460,12 @@ public class BranchController {
 		this.branchDAO.delBranch(branchid);
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this.getSessionUser().getUsername(), branchid);
-		if (branch.getBrancheffectflag().equals("1")) {
-			this.branchService.addzhandianToAddress(branchid, branch,null);
-		} else {
-			this.branchService.delBranch(branchid);
+		if (!branchInfService.isCloseOldInterface()) {
+			if (branch.getBrancheffectflag().equals("1")) {
+				this.branchService.addzhandianToAddress(branchid, branch, null);
+			} else {
+				this.branchService.delBranch(branchid);
+			}
 		}
 		// TODO 增加同步代码
 		String adressenabled = this.systemInstallService.getParameter("newaddressenabled");

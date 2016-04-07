@@ -51,6 +51,9 @@ public class UserInfService {
 	@Autowired
 	JointService jointService;
 	
+	@Autowired
+	SystemInstallService systemInstallService;
+	
 	/**
 	 * 执行同步机构站点
 	 */
@@ -296,5 +299,16 @@ public class UserInfService {
 		for(UserInf userInf : list){
 			userInfDao.incrTimes(userInf.getInfId());
 		}
+	}
+	
+	/**
+	 * 关闭旧接口
+	 */
+	public boolean isCloseOldInterface(){
+		String value = systemInstallService.getParameter("closeUserAndBranchOldInterface");
+		if(StringUtils.isNotEmpty(value) || "1".equals(value)){
+			return true;
+		}	
+		return false;
 	}
 }
