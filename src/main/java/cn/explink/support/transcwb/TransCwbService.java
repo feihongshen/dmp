@@ -19,10 +19,13 @@ import org.springframework.util.StringUtils;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.CwbOrderService;
@@ -52,6 +55,12 @@ public class TransCwbService implements CwbTranslator {
 	OneTransToMoreCwbDao oneTransToMoreCwbDao;
 
 	private ObjectMapper om = new ObjectMapper();
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.transcwb.orderFlow";
+	private static final String MQ_HEADER_NAME_ORDER_FLOW = "orderFlow";
 
 	@PostConstruct
 	public void init() {
@@ -79,6 +88,20 @@ public class TransCwbService implements CwbTranslator {
 			saveTransCwb(orderFlow);
 		} catch (Exception e) {
 			logger.error("处理运单号出错", e);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "saveTransCwb";
+			String fromUri = MQ_FROM_URI_ORDER_FLOW;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_ORDER_FLOW;
+			String headerValue = parm;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

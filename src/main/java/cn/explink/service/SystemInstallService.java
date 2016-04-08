@@ -3,8 +3,6 @@ package cn.explink.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.Headers;
 import org.apache.camel.Produce;
@@ -13,15 +11,16 @@ import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 
 @Component
 @DependsOn({ "systemInstallDAO" })
@@ -40,6 +39,11 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 
 	@Produce(uri = "jms:topic:systeminstall")
 	ProducerTemplate systemInstallProducerTemplate;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_SYSTEM_INSTALL = "jms:topic:systeminstall";
 
 	public void init() {
 		logger.info("init addressmatch camel routes");
@@ -58,8 +62,23 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 	}
 
 	public void notifyChange(@Headers() Map<String, String> parameters) {
-		for (SystemConfigChangeListner systemConfigChangeListner : systemConfigChangeListners) {
-			systemConfigChangeListner.onChange(parameters);
+		try {
+			for (SystemConfigChangeListner systemConfigChangeListner : systemConfigChangeListners) {
+				systemConfigChangeListner.onChange(parameters);
+			}
+		} catch (Exception e) {
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "notifyChange";
+			String fromUri = MQ_FROM_URI_SYSTEM_INSTALL;
+			String body = null;
+			Map<String, String> headers = parameters;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headers).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

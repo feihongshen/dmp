@@ -28,12 +28,15 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.GeneralDAO;
 import cn.explink.dao.express.PreOrderDao;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.VO.express.ExtralInfo4Address;
 import cn.explink.domain.addressvo.AddressMappingResult;
 import cn.explink.domain.addressvo.ApplicationVo;
@@ -98,6 +101,12 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 
 	ObjectMapper objectMapper = new ObjectMapper();
 	ObjectReader expressAddressInfoReader = this.objectMapper.reader(ExtralInfo4Address.class);
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_AUTO_ADDRESS_INFO2 = "jms:queue:VirtualTopicConsumers.express2.autoAddressInfo2";
+	private static final String MQ_HEADER_NAME_AUTO_ADDRESS_INFO2 = "autoMatchAddressInfo";
 
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -206,6 +215,20 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 			}
 		} catch (Exception e) {
 			this.logger.error("error while doing address match for " + info.getCwb(), e);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "matchAddress";
+			String fromUri = MQ_FROM_URI_AUTO_ADDRESS_INFO2;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_AUTO_ADDRESS_INFO2;
+			String headerValue = addressExtralInfo;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

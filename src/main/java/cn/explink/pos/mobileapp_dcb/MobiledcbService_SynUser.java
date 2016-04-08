@@ -19,8 +19,11 @@ import org.springframework.stereotype.Service;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.RestHttpServiceHanlder;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.PosEnum;
 
@@ -34,6 +37,12 @@ public class MobiledcbService_SynUser {
 	JiontDAO jointDAO;
 	@Autowired
 	private CamelContext camelContext;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_USER_MONITOR = "jms:queue:VirtualTopicConsumers.oms1.userMonitor";
+	private static final String MQ_HEADER_NAME_USER_MONITOR = "userMonitor";
 
 	@PostConstruct
 	public void init() throws Exception {
@@ -61,6 +70,21 @@ public class MobiledcbService_SynUser {
 
 		} catch (Exception e) {
 			logger.error("监听配送员信息同步发生未知异常", e);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "userMonitor";
+			String fromUri = MQ_FROM_URI_USER_MONITOR;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_USER_MONITOR;
+			String headerValue = parm;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
