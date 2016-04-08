@@ -310,7 +310,7 @@ public class BranchInfService {
 	 */
 	public boolean isCloseOldInterface(){
 		String value = systemInstallService.getParameter("closeUserAndBranchOldInterface");
-		if(StringUtils.isNotEmpty(value) || "1".equals(value)){
+		if(StringUtils.isNotEmpty(value) && "1".equals(value)){
 			return true;
 		}	
 		return false;
