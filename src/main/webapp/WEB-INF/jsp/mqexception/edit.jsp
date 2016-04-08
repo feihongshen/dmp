@@ -16,11 +16,11 @@ String messageSourceName = MessageSourceEnum.getMessageSourceEnum(mqException.ge
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script>
 
-function buttonSave(form){alert("buttonSave");
-	if(!$("#messageBody").val() && !$("#messageHeader").val()){
+function buttonSave(form){
+	if(!$.trim($("#messageBody").val()) && !$.trim($("#messageHeader").val())){
 		alert("报文体和报文头不能同时为空");
 		return false;
-	} 
+	} //alert($.trim($("#messageHeader").val()));
 	if(!$("#handleCount").val()){
 		alert("处理次数不能为空");
 		return false;
@@ -33,19 +33,18 @@ function buttonSave(form){alert("buttonSave");
 		alert("处理次数只能是0-5间的整数");
 		return false;
 	}
-	if(!$("#remarks").val()){
+	if(!$.trim($("#remarks").val())){
 		alert("修改备注不能为空");
 		return false;
 	}
-	
 	$.ajax({
 		type: "POST",
 		url:$(form).attr("action"),
 		data:{
-			messageBody:$("#messageBody").val(),
-			messageHeader:$("#messageHeader").val(),
+			messageBody:$.trim($("#messageBody").val()),
+			messageHeader:$.trim($("#messageHeader").val()),
 			handleCount:parseInt($("#handleCount").val()),
-			remarks:$("#remarks").val(),
+			remarks:$.trim($("#remarks").val()),
 			isAutoreSend:$("#isAutoreSend").val()
 		},
 		dataType:"json",
@@ -67,30 +66,21 @@ function buttonSave(form){alert("buttonSave");
 					<li><span>主题：</span>${mqException.topic }</li>
 					<li><span>消息来源：</span><%=messageSourceName %></li>
 	           		<li><span>自动重发：</span>
-		           		 <select name="isAutoreSend" class="input_text1">
+		           		 <select id="isAutoreSend" name="isAutoreSend" class="input_text1">
 	 							<option value="1" <%if(mqException.isAutoResend()){%>selected<%} %>>是</option>
 	 							<option value="0" <%if(!mqException.isAutoResend()){%>selected<%} %>>否</option>
-	 						</select> *
+	 					 </select> *
 					</li>
-					<li><span>处理次数：</span><input type="text" id="handleCount" name="handleCount" class="input_text1" value="<%=mqException.getHandleCount() %>"/>*</li>
-	           		<li><span>报文体：</span></li>
-	           		<ul>
-		           		<textarea type="textarea" cols="1500" rows="10" id="messageBody" name="messageBody" class="input_text1" style="width:700px;">
-		           			<%=mqException.getMessageBody().trim() %>
-		           		</textarea>*
-		           	</ul>
-	           		<li><span>报文头：</span></li>
-	           		<ul>
-		           		<textarea type="textarea" cols="1500" rows="10" id="messageHeader" name="messageHeader" class="input_text1" style="width:700px;">
-		           			<%=mqException.getMessageHeader().trim() %>
-		           		</textarea>*
-		           	</ul>
-	           		<li><span>修改备注：</span></li>
-	           		<ul>
-		           		<textarea type="textarea" cols="1500" rows="10" id="remarks" name="remarks" class="input_text1" style="width:700px;">
-		           			<%=mqException.getRemarks().trim() %>
-		           		</textarea>*
-					</ul>
+					<li><span>处理次数：</span>&nbsp;<input type="text" id="handleCount" name="handleCount" class="input_text1" value="<%=mqException.getHandleCount() %>"/>*</li>
+	           		<li style="height: auto !important;"><span>报文体：</span>
+	           			<textarea cols="1500" rows="50" id="messageBody" name="messageBody" class="input_text1" style="width:700px; height:70px; float: none !important;"><%=mqException.getMessageBody().trim() %></textarea>&nbsp;*
+	           		</li>
+	           		<li style="height: auto !important;"><span>报文头：</span>
+	           			<textarea cols="1500" rows="50" id="messageHeader" name="messageHeader" class="input_text1" style="width:700px; height:70px; float: none !important;"><%=mqException.getMessageHeader().trim() %></textarea>&nbsp;*
+		            </li>
+	           		<li style="height: auto !important;"><span>修改备注：</span>
+	           			<textarea cols="1500" rows="50" id="remarks" name="remarks" class="input_text1" style="width:700px; height:70px; float: none !important;"><%=mqException.getRemarks().trim() %></textarea>&nbsp;*
+	           		</li>
 		         </ul>
 			</div>
 			<div align="center">

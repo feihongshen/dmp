@@ -69,24 +69,31 @@ public class MqExceptionController {
 
 	@RequestMapping("/edit/{id}")
 	public String edit(Model model, @PathVariable("id") long id) {
-		model.addAttribute("mqException", mqExceptionDAO.getMqExceptionById(id));
+		MqException mqException = mqExceptionDAO.getMqExceptionById(id);
+		mqException.setMessageBody(mqException.getMessageBody().trim());//去空格
+		mqException.setMessageHeader(mqException.getMessageHeader().trim());//去空格
+		mqException.setRemarks(mqException.getRemarks().trim());//去空格
+		model.addAttribute("mqException", mqException);
 		return "/mqexception/edit";
 	}
 
 	@RequestMapping("/save/{id}")
-	public @ResponseBody String save(Model model, @PathVariable("id") long id, @RequestParam("messageBody") String messageBody, @RequestParam("messageHeader") String messageHeader, 
-			@RequestParam("handleCount") int handleCount, @RequestParam("remarks") String remarks,
-			@RequestParam("isAutoResend") boolean isAutoResend)
+	public @ResponseBody String save(Model model, @PathVariable("id") long id, 
+			@RequestParam(value = "messageBody", required = false, defaultValue = "") String messageBody,
+			@RequestParam(value = "messageHeader", required = false, defaultValue = "") String messageHeader,
+			@RequestParam(value = "handleCount", required = false, defaultValue = "0") int handleCount,
+			@RequestParam(value = "remarks", required = false, defaultValue = "") String remarks,
+			@RequestParam(value = "isAutoResend", required = false, defaultValue = "0") int isAutoResend)
 			throws Exception {
 		MqException mqException = mqExceptionDAO.getMqExceptionById(id);
 		if (mqException == null) {
 			return "{\"errorCode\":1,\"error\":\"该MQ异常不存在\"}";
 		} else {
-			mqException.setMessageBody(messageBody);
-			mqException.setMessageHeader(messageHeader);
+			mqException.setMessageBody(messageBody.trim());
+			mqException.setMessageHeader(messageHeader.trim());
 			mqException.setHandleCount(handleCount);
-			mqException.setRemarks(remarks);
-			mqException.setIsAutoResend(isAutoResend);
+			mqException.setRemarks(remarks.trim());
+			mqException.setIsAutoResend(isAutoResend == 0 ? false : true);
 			mqException.setUpdatedByUser(getSessionUser().getUsername());//更新人
 			mqException.setUpdatedOffice(getSessionUser().getBranchid() + "");//更新机构
 			mqExceptionService.updateMqException(mqException);
