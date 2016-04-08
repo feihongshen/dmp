@@ -1025,6 +1025,8 @@ function submitBranchLoad(form) {
 	$('#swfupload-control').swfupload('addPostParam', 'cftCertType', $("#cftCertType", parent.document).val());
 	
 	$('#swfupload-control').swfupload('addPostParam', 'branchid', $("#branchid", parent.document).val());
+	//自动化分拣需要的出货口编号
+	$('#swfupload-control').swfupload('addPostParam', 'outputno', $("#outputno", parent.document).val());
 	
 	var checkedValues = new Array();
 	$('input[name="functionids"]:checked', parent.document).each(function() {
