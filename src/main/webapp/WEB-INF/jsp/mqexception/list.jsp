@@ -1,6 +1,6 @@
 <%@page import="cn.explink.domain.MqException"%>
 <%@page import="cn.explink.domain.MqExceptionBuilder.MessageSourceEnum"%>
-<%@page import="cn.explink.enumutil.*,cn.explink.util.Page"%>
+<%@page import="cn.explink.enumutil.*,cn.explink.util.Page,java.text.DateFormat,java.text.SimpleDateFormat"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<MqException> siList = (List<MqException>)request.getAttribute("siList");
@@ -12,6 +12,7 @@
 	String messageSource = (String)request.getAttribute("messageSource");
 	String isAutoResend = (String)request.getAttribute("isAutoResend");
 	
+	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
 
 
@@ -66,32 +67,36 @@ function editSuccess(data){
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr class="font_1">
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">编码</td>
-			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">主题</td>
-			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">处理次数</td>
-			<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">结果</td>
-			<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">消息来源</td>
-			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">自动重发</td>
-			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">修改人</td>
+			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">主题</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">处理次数</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">结果</td>
+			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">处理时间</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">消息来源</td>
+			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">异常时间</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">自动重发</td>
+			<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">修改人</td>
 			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">修改备注</td>
-			<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
+			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
 		 <% for(MqException si : siList){ %>
 		<tr>
 			<td width="15%" align="center" valign="middle" ><%=si.getExceptionCode() %></td>
-			<td width="15%" align="center" valign="middle" ><%=si.getTopic() %></td>
-			<td width="7%" align="center" valign="middle" ><%=si.getHandleCount() %></td>
-			<td width="6%" align="center" valign="middle" ><%=
+			<td width="12%" align="center" valign="middle" ><%=si.getTopic() %></td>
+			<td width="5%" align="center" valign="middle" ><%=si.getHandleCount() %></td>
+			<td width="5%" align="center" valign="middle" ><%=
 			       (si.isHandleFlag() ? "成功" : "失败") 
 			%></td>
-			<td width="7%" align="center" valign="middle" ><%=
+			<td width="12%" align="center" valign="middle" ><%=dateFormat.format(si.getHandleTime()) %></td>
+			<td width="5%" align="center" valign="middle" ><%=
 					MessageSourceEnum.getMessageSourceEnum(si.getMessageSource()).getName()
 			%></td>
-			<td width="10%" align="center" valign="middle" ><%=
+			<td width="12%" align="center" valign="middle" ><%=dateFormat.format(si.getCreatedDtmLoc()) %></td>
+			<td width="5%" align="center" valign="middle" ><%=
 			       (si.isAutoResend() ? "是" : "否") 
 			%></td>
-			<td width="10%" align="center" valign="middle" ><%=si.getUpdatedByUser() %></td>
+			<td width="6%" align="center" valign="middle" ><%=si.getUpdatedByUser() %></td>
 			<td width="20%" align="center" valign="middle" ><%=si.getRemarks() %></td>
-			<td width="10%" align="center" valign="middle" >
+			<td width="5%" align="center" valign="middle" >
 			[<a href="<%=request.getContextPath()%>/mqexception/edit/<%=si.getId() %>">修改</a>]
 			</td>
 		</tr>

@@ -44,12 +44,12 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 			mqException.setHandleCount(rs.getInt("HANDLE_COUNT"));
 			mqException.setHandleFlag(rs.getBoolean("HANDLE_FLAG"));
 			mqException.setRemarks(rs.getString("REMARKS"));
-			mqException.setHandleTime(rs.getDate("HANDLE_TIME"));
+			mqException.setHandleTime(rs.getTimestamp("HANDLE_TIME"));
 			mqException.setMessageSource(rs.getString("MESSAGE_SOURCE"));
 			mqException.setAutoResend(rs.getBoolean("IS_AUTO_RESEND"));
 			mqException.setCreatedByUser(rs.getString("CREATED_BY_USER"));
 			mqException.setCreatedOffice(rs.getString("CREATED_OFFICE"));
-			mqException.setCreatedDtmLoc(rs.getDate("CREATED_DTM_LOC"));
+			mqException.setCreatedDtmLoc(rs.getTimestamp("CREATED_DTM_LOC"));
 			mqException.setCreatedTimeZone(rs.getString("CREATED_TIME_ZONE"));
 			mqException.setUpdatedByUser(rs.getString("UPDATED_BY_USER"));
 			mqException.setUpdatedOffice(rs.getString("UPDATED_OFFICE"));
