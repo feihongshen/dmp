@@ -2,6 +2,7 @@ package cn.explink.service.addressmatch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -250,11 +251,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		return ordervo;
 	}
 
-//	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb) {
-	public void matchAddress(@Headers() Map<String, String> parameters) {
-		long userid = Long.parseLong(parameters.get("userid"));
-		String cwb = parameters.get("address");
-		
+	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb) {
 		this.logger.info("start address match for {}", cwb);
 		try {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -324,7 +321,10 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			String functionName = "matchAddress";
 			String fromUri = MQ_FROM_URI_ADDRESS_MATCH;
 			String body = null;
-			Map<String, String> headers = parameters;
+			Map<String, String> headers = new HashMap<String, String>();
+			headers.put("userid", String.valueOf(userid));
+			headers.put("cwb",cwb);
+			
 			String exceptionMessage = e.getMessage();
 			
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
