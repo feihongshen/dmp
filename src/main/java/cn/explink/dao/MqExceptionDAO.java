@@ -61,14 +61,15 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	}
 
 	/**
-	 * 查询需要重推的MQ异常 列表
+	 * 查询需要重推的MQ异常 列表  (重发次数升序排列)
 	 * @param executeCount
 	 * @return
 	 */
 	public List<MqException> listMqException(int executeCount) {
 		List<MqException> resultList = null;
 		try {
-			String sql = "select * from mq_exception where handle_flag=0 and is_auto_resend=1 and handle_count<5 and is_deleted=0 limit 0," + executeCount;
+			String sql = "select * from mq_exception where handle_flag=0 and is_auto_resend=1 and handle_count<5 and is_deleted=0"
+					+ " order by handle_count asc limit 0," + executeCount;
 			resultList = getJdbcTemplate().query(sql, new MqExceptionRowMapper());
 		}catch (Exception e) {
 			this.logger.error("查询MQ异常列表", e);
