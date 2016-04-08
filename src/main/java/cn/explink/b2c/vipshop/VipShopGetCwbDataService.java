@@ -332,18 +332,6 @@ public class VipShopGetCwbDataService {
 		long customerid = Long.valueOf(dataMap.get("customerid"));
 		try {
 			long warehouseid = vipshop.getWarehouseid();
-//			if(vipshop.getIsCreateTimeToEmaildateFlag()==0){
-//				this.dataImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true);
-//			}else{
-//				String emaildate = dataMap.get("remark2").toString();
-//				//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
-//				if(emaildate == null || emaildate.trim().equals("")){
-//					emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
-//					dataMap.put("remark2", emaildate);
-//				}
-//				//Added end
-//				this.dataImportService_B2c.Analizy_DataDealByB2cByEmaildate(customerid, B2cEnum.VipShop_beijing.getMethod(), onelist, warehouseid, true, emaildate, 0);
-//			}
 			
 			String emaildate = dataMap.get("remark2").toString();
 			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
@@ -882,20 +870,30 @@ public class VipShopGetCwbDataService {
 			//后者小于前者，移除后者
 			if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
 				//currentMap=null;
-				currentMap.clear();
+				currentMap.clear(); //Added by leoliao at 2016-03-01
 				return;
 			}
 			//后者==前者，移除不是最后一箱的
 			if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
-				if(Integer.valueOf(currentMap.get("mpsallarrivedflag"))==VipGathercompEnum.Default.getValue()
-						&&Integer.valueOf(oldMap.get("mpsallarrivedflag"))==VipGathercompEnum.Default.getValue()){
+				//在同一份报文中有相同的订单，如果两条都没有集齐则移除前一条。
+				if(Integer.valueOf(currentMap.get("mpsallarrivedflag"))==VipGathercompEnum.Default.getValue() &&
+				   Integer.valueOf(oldMap.get("mpsallarrivedflag"))==VipGathercompEnum.Default.getValue()){
 					paraList.remove(oldMap);
-					return; //Added by leoliao at 2016-03-01
+					return;
 				}
+				
+				//在同一份报文中有相同的订单，如果后一条已集齐则移除前一条。
 				if(Integer.valueOf(currentMap.get("mpsallarrivedflag"))==VipGathercompEnum.Last.getValue()){
 					paraList.remove(oldMap);
 					return;
 				}
+				
+				//Added by leoliao at 2016-04-08 在同一份报文中有相同的订单，前一条是集齐的，后一条未集齐的，需要把后一条未集齐的移除。
+				if(Integer.valueOf(oldMap.get("mpsallarrivedflag"))==VipGathercompEnum.Last.getValue()){
+					currentMap.clear();
+					return;
+				}
+				//Added end
 			}
 			
 		}

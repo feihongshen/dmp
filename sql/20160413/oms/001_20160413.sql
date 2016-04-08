@@ -1,0 +1,1 @@
+alter table express_b2cdata_weisuda add sendedcount int(4) default 0;
