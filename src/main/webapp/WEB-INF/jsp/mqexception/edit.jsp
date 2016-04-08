@@ -65,6 +65,7 @@ function buttonSave(form){
 					<li><span>编码：</span>${mqException.exceptionCode }</li>
 					<li><span>主题：</span>${mqException.topic }</li>
 					<li><span>消息来源：</span><%=messageSourceName %></li>
+					<li style="height: auto !important;"><span>异常原因：</span>${mqException.exceptionInfo }</li>
 	           		<li><span>自动重发：</span>
 		           		 <select id="isAutoreSend" name="isAutoreSend" class="input_text1">
 	 							<option value="1" <%if(mqException.isAutoResend()){%>selected<%} %>>是</option>
@@ -73,13 +74,13 @@ function buttonSave(form){
 					</li>
 					<li><span>处理次数：</span>&nbsp;<input type="text" id="handleCount" name="handleCount" class="input_text1" value="<%=mqException.getHandleCount() %>"/>*</li>
 	           		<li style="height: auto !important;"><span>报文体：</span>
-	           			<textarea cols="1500" rows="50" id="messageBody" name="messageBody" class="input_text1" style="width:700px; height:70px; float: none !important;"><%=mqException.getMessageBody().trim() %></textarea>&nbsp;*
+	           			<textarea cols="1500" rows="50" id="messageBody" name="messageBody" class="input_text1" style="width:700px; height:65px; float: none !important;"><%=mqException.getMessageBody().trim() %></textarea>&nbsp;*
 	           		</li>
 	           		<li style="height: auto !important;"><span>报文头：</span>
-	           			<textarea cols="1500" rows="50" id="messageHeader" name="messageHeader" class="input_text1" style="width:700px; height:70px; float: none !important;"><%=mqException.getMessageHeader().trim() %></textarea>&nbsp;*
+	           			<textarea cols="1500" rows="50" id="messageHeader" name="messageHeader" class="input_text1" style="width:700px; height:65px; float: none !important;"><%=mqException.getMessageHeader().trim() %></textarea>&nbsp;*
 		            </li>
 	           		<li style="height: auto !important;"><span>修改备注：</span>
-	           			<textarea cols="1500" rows="50" id="remarks" name="remarks" class="input_text1" style="width:700px; height:70px; float: none !important;"><%=mqException.getRemarks().trim() %></textarea>&nbsp;*
+	           			<textarea cols="1500" rows="50" id="remarks" name="remarks" class="input_text1" style="width:700px; height:65px; float: none !important;"><%=mqException.getRemarks().trim() %></textarea>&nbsp;*
 	           		</li>
 		         </ul>
 			</div>

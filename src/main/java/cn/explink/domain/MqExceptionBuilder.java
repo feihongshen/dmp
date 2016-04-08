@@ -80,6 +80,7 @@ public final class MqExceptionBuilder{
     	po.setExceptionCode("");
     	po.setMessageBody("");
     	po.setMessageHeader("");
+    	po.setMessageHeaderUUID("");
     	po.setRemarks("");
     	po.setMessageSource("");
     	po.setIsAutoResend(true);//默认自动重发
@@ -125,6 +126,11 @@ public final class MqExceptionBuilder{
     	Map<String,String> map = new HashMap<String,String>();
     	map.put(headerName, headerValue);
         buildMessageHeader(map);
+        return this;
+    }
+    
+    public MqExceptionBuilder buildMessageHeaderUUID(String messageHeaderUUID) {
+        this.mqException.setMessageHeaderUUID(messageHeaderUUID);
         return this;
     }
     

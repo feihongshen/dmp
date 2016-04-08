@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -85,15 +86,22 @@ public class MqExceptionHandlerUtil {
 				if(null != messageHeader && !"".equals(messageHeader)){
 					headers = JSON.parseObject(messageHeader, new TypeReference<Map<String, Object>>() {});
 				}
-				
-				
+				//处理消息的唯一标示UUID
+				String messageHeaderUUID = mqException.getMessageHeaderUUID();//消息的唯一标示UUID
+				if(null != messageHeaderUUID && !"".equals(messageHeaderUUID)){
+					headers.put("MessageHeaderUUID", messageHeaderUUID);
+				}else{
+					String newUUID = UUID.randomUUID().toString();
+					headers.put("MessageHeaderUUID", newUUID);//第一次重发，生成唯一标示UUID
+					mqException.setMessageHeaderUUID(newUUID);
+				}
+	
 				this.mqExceptionTemplate.sendBodyAndHeaders(messageBody, headers);
 				mqException.setUpdatedByUser("system");
 				mqException.setHandleTime(new Date());
 				mqException.setHandleFlag(true);//标记为成功
 			}
 		} catch (Exception e) {
-			
 			this.logger.error("mq重发异常，topic=" + mqException.getTopic(), e);
 		} finally {
 			this.mqExceptionDAO.update(mqException);

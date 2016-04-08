@@ -86,11 +86,11 @@ function editSuccess(data){
 			<td width="5%" align="center" valign="middle" ><%=
 			       (si.isHandleFlag() ? "成功" : "失败") 
 			%></td>
-			<td width="12%" align="center" valign="middle" ><%=dateFormat.format(si.getHandleTime()) %></td>
+			<td width="12%" align="center" valign="middle" ><%=(null != si.getHandleTime() ? dateFormat.format(si.getHandleTime()) : "") %></td>
 			<td width="5%" align="center" valign="middle" ><%=
 					MessageSourceEnum.getMessageSourceEnum(si.getMessageSource()).getName()
 			%></td>
-			<td width="12%" align="center" valign="middle" ><%=dateFormat.format(si.getCreatedDtmLoc()) %></td>
+			<td width="12%" align="center" valign="middle" ><%=(null != si.getCreatedDtmLoc() ? dateFormat.format(si.getCreatedDtmLoc()) : "") %></td>
 			<td width="5%" align="center" valign="middle" ><%=
 			       (si.isAutoResend() ? "是" : "否") 
 			%></td>

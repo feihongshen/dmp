@@ -43,6 +43,9 @@ public class MqException implements Serializable {
 	@Column(name = "MESSAGE_HEADER")
 	private String messageHeader;
 	
+	@Column(name = "MESSAGE_HEADER_UUID")
+	private String messageHeaderUUID;
+	
 	@Column(name = "HANDLE_COUNT")
 	private int handleCount = 0;
 	
@@ -292,4 +295,11 @@ public class MqException implements Serializable {
 		this.isAutoResend = isAutoResend;
 	}
 
+	public String getMessageHeaderUUID() {
+		return messageHeaderUUID;
+	}
+
+	public void setMessageHeaderUUID(String messageHeaderUUID) {
+		this.messageHeaderUUID = messageHeaderUUID;
+	}
 }

@@ -31,6 +31,27 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 		super(MqException.class);
 	}
 
+	/**
+	 * 重写save方法，如果uuid对应的记录存在，则说明是重发消息出错，则找到原来的消息，置为失败
+	 */
+	@Override
+	public void save(MqException entity) {
+		String uuid = entity.getMessageHeaderUUID();
+		if(null != uuid && !"".equals(uuid)){
+			MqException oldMqException = this.getMqExceptionByUUID(uuid);
+			if(null != oldMqException){
+				oldMqException.setHandleFlag(false);//失败
+				oldMqException.setHandleTime(null);
+				super.update(oldMqException);//更新
+				return;
+			}
+		}
+		
+		super.save(entity);
+	}
+
+
+
 	private final class MqExceptionRowMapper implements RowMapper<MqException> {
 		@Override
 		public MqException mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -41,6 +62,7 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 			mqException.setTopic(rs.getString("TOPIC"));
 			mqException.setMessageBody(rs.getString("MESSAGE_BODY"));
 			mqException.setMessageHeader(rs.getString("MESSAGE_HEADER"));
+			mqException.setMessageHeaderUUID(rs.getString("MESSAGE_HEADER_UUID"));
 			mqException.setHandleCount(rs.getInt("HANDLE_COUNT"));
 			mqException.setHandleFlag(rs.getBoolean("HANDLE_FLAG"));
 			mqException.setRemarks(rs.getString("REMARKS"));
@@ -69,7 +91,7 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 		List<MqException> resultList = null;
 		try {
 			String sql = "select * from mq_exception where handle_flag=0 and is_auto_resend=1 and handle_count<5 and is_deleted=0"
-					+ " order by handle_count asc limit 0," + executeCount;
+					+ " order by created_dtm_loc desc,handle_count asc limit 0," + executeCount;
 			resultList = getJdbcTemplate().query(sql, new MqExceptionRowMapper());
 		}catch (Exception e) {
 			this.logger.error("查询MQ异常列表", e);
@@ -104,7 +126,7 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 			sql += " and is_auto_resend = " + isAutoResend;
 		}
 		
-		sql += " and is_deleted=0 limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		sql += " and is_deleted=0 order by created_dtm_loc desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
 		List<MqException> cscList = getJdbcTemplate().query(sql, new MqExceptionRowMapper());
 		return cscList;
@@ -149,6 +171,21 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 			return getJdbcTemplate().queryForObject(sql, new MqExceptionRowMapper(), id);
 		} catch (DataAccessException e) {
 			this.logger.error("根据ID加载MQ异常记录失败", e);
+			return null;
+		}
+	}
+	
+	/**
+	 * 根据MESSAGE_HEADER_UUID加载 对应的MQ 异常记录
+	 * @param id
+	 * @return
+	 */
+	private MqException getMqExceptionByUUID(String messageHeaderUUID) {
+		try {
+			String sql = "select * from mq_exception where message_header_uuid=? ";
+			return getJdbcTemplate().queryForObject(sql, new MqExceptionRowMapper(), messageHeaderUUID);
+		} catch (DataAccessException e) {
+			this.logger.error("根据MESSAGE_HEADER_UUID加载MQ异常记录失败", e);
 			return null;
 		}
 	}
