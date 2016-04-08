@@ -10,7 +10,7 @@ import java.util.Set;
 import net.sf.json.JSONArray;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Header;
+import org.apache.camel.Headers;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonParseException;
@@ -26,10 +26,13 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.addressvo.AddressMappingResult;
 import cn.explink.domain.addressvo.ApplicationVo;
 import cn.explink.domain.addressvo.DeliveryStationVo;
@@ -84,6 +87,10 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 	private String address_url;
 	private String address_userid;
 	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_ADDRESS_MATCH_OXO = "jms:queue:VirtualTopicConsumers.oxo.addressmatchOXO";
 	
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -141,7 +148,13 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 	 * @param address 地址
 	 * @param notifytype 匹配地址类型  0 揽件地址   1派件地址
 	 */
-	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb,@Header("address") String address,@Header("notifytype") long notifytype) {
+//	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb,@Header("address") String address,@Header("notifytype") long notifytype) {
+	public void matchAddress(@Headers() Map<String, String> parameters) {
+		long userid = Long.parseLong(parameters.get("userid"));
+		String cwb = parameters.get("address");
+		String address = parameters.get("cwb");
+		long notifytype = Long.parseLong(parameters.get("notifytype"));
+		
 		this.logger.info("start address match for {}", cwb);
 		try {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -163,6 +176,20 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 
 		} catch (Exception e) {
 			this.logger.error("error while doing address match for "+cwb,e);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "matchAddress";
+			String fromUri = MQ_FROM_URI_ADDRESS_MATCH_OXO;
+			String body = null;
+			Map<String, String> headers = parameters;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headers).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

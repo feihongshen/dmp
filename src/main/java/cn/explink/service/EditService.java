@@ -17,11 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.ExcelImportEditDao;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.SystemInstallDAO;
-import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.ExcelImportEdit;
-import cn.explink.domain.SystemInstall;
+import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.support.transcwb.OneTransToMoreCwbDao;
@@ -53,6 +54,18 @@ public class EditService {
 	ExcelImportEditDao excelImportEditDao;
 
 	private ObjectMapper om = new ObjectMapper();
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.editshowinfo.orderFlow";
+	private static final String MQ_HEADER_NAME_ORDER_FLOW = "orderFlow";
+	
+	private static final String MQ_FROM_URI_CWBBATCH_DELETE = "jms:queue:VirtualTopicConsumers.editdeleteinfo.cwbbatchDelete";
+	private static final String MQ_HEADER_NAME_CWBBATCH_DELETE = "losecwbbatch";
+	
+	private static final String MQ_FROM_URI_LOSE_CWB = "jms:queue:VirtualTopicConsumers.editdeleteinfoTwo.loseCwb";
+	private static final String MQ_HEADER_NAME_LOSE_CWB = "loseCwbByEmaildateid";
 
 	@PostConstruct
 	public void init() {
@@ -83,6 +96,20 @@ public class EditService {
 
 		} catch (Exception e) {
 			this.logger.info("--edit订单失效功能：信息：{}", parm);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "deleteEditTwo";
+			String fromUri = MQ_FROM_URI_LOSE_CWB;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_LOSE_CWB;
+			String headerValue = parm;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
@@ -94,6 +121,20 @@ public class EditService {
 			}
 		} catch (Exception e) {
 			this.logger.info("--edit订单失效功能：，订单号：{}", cwb);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "deleteEdit";
+			String fromUri = MQ_FROM_URI_CWBBATCH_DELETE;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_CWBBATCH_DELETE;
+			String headerValue = cwb;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
@@ -104,6 +145,20 @@ public class EditService {
 		} catch (Exception e) {
 			// TODO handle exception
 			this.logger.error("saveEdit failed. parm = " + parm);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "saveEdit";
+			String fromUri = MQ_FROM_URI_ORDER_FLOW;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_ORDER_FLOW;
+			String headerValue = parm;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

@@ -39,6 +39,7 @@ import cn.emay.sdk.test.SingletonClient;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.SmsConfigDAO;
 import cn.explink.dao.SmsConfigModelDAO;
 import cn.explink.dao.SmsManageDao;
@@ -47,10 +48,12 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.SmsConfig;
 import cn.explink.domain.SmsConfigModel;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -94,6 +97,12 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	ObjectReader orderFlowReader = this.objectMapper.reader(OrderFlow.class);
 
 	private static Logger logger = LoggerFactory.getLogger(SmsSendService.class);
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.sms.orderFlow";
+	private static final String MQ_HEADER_NAME_ORDER_FLOW = "orderFlow";
 
 	public void init() {
 		logger.info("init sms camel routes");
@@ -805,8 +814,25 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 
 	public void sendFlow(@Header("orderFlow") String parm) throws Exception {
 		logger.debug("orderFlow oms 环节信息处理,{}", parm);
-		OrderFlow orderFlow = this.orderFlowReader.readValue(parm);
-		this.sendSms(orderFlow);
+		try{
+			OrderFlow orderFlow = this.orderFlowReader.readValue(parm);
+			this.sendSms(orderFlow);
+		} catch (Exception e) {
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "sendFlow";
+			String fromUri = MQ_FROM_URI_ORDER_FLOW;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_ORDER_FLOW;
+			String headerValue = parm;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
+		}
+		
 	}
 
 	@Override

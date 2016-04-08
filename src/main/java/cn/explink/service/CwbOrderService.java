@@ -163,6 +163,7 @@ import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.YpdjHandleRecord;
 import cn.explink.domain.ZhiFuApplyView;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.VO.DeliverServerParamVO;
 import cn.explink.domain.VO.DeliverServerPushVO;
 import cn.explink.domain.VO.GoodInfoVO;
@@ -478,6 +479,12 @@ public class CwbOrderService extends BaseOrderService {
 	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO; 
+	
+	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
+	private static final String MQ_HEADER_NAME_RECEIVE_GOODS_ORDER_FLOW = "orderFlow";
+	
+	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
+	private static final String MQ_HEADER_NAME_DELIVERY_APP_JMS_ORDER_FLOW = "orderFlow";
 	
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
@@ -7564,6 +7571,20 @@ public class CwbOrderService extends BaseOrderService {
 		} catch (Exception e) {
 			logger.info("对orderflow的监听  处理异常,orderFlow:{}", orderFlow);
             logger.error("", e);
+            
+	        // 把未完成MQ插入到数据库中, start
+			String functionName = "autoReceiveGoods";
+			String fromUri = MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_RECEIVE_GOODS_ORDER_FLOW;
+			String headerValue = orderFlow;
+			String exceptionMessage = e.getMessage();
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+	
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
@@ -8898,6 +8919,20 @@ public class CwbOrderService extends BaseOrderService {
 		} catch (Exception e) {
 			logger.info("棒棒糖派件服务JMS监听异常,orderFlow:{}", orderFlow);
 			logger.error("", e);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "deliverAppJms";
+			String fromUri = MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_DELIVERY_APP_JMS_ORDER_FLOW;
+			String headerValue = orderFlow;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

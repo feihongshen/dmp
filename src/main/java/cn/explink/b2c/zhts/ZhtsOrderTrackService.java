@@ -19,8 +19,11 @@ import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.b2c.weisuda.xml.ObjectUnMarchal;
 import cn.explink.b2c.zhts.xmldto.Order;
 import cn.explink.b2c.zhts.xmldto.OrderTrack;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderWithDeliveryState;
@@ -37,6 +40,12 @@ public class ZhtsOrderTrackService {
 	UserDAO userDAO;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.orderTrack.orderFlow";
+	private static final String MQ_HEADER_NAME_ORDER_FLOW = "orderFlow";
 	
 	/**
 	 * 全流程监听
@@ -83,9 +92,22 @@ public class ZhtsOrderTrackService {
 			String responseXml = RestHttpServiceHanlder.sendHttptoServer(paraMap, epaiApi.getOrdertrack_url());
 			
 			logger.info("中浩轨迹返回:{}",responseXml);
-			
 		}catch (Exception e){
 			this.logger.error("推送中浩途胜全流程异常,cwb="+cwb, e);
+			
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "orderTrack";
+			String fromUri = MQ_FROM_URI_ORDER_FLOW;
+			String body = null;
+			String headerName = MQ_HEADER_NAME_ORDER_FLOW;
+			String headerValue = orderFlow;
+			String exceptionMessage = e.getMessage();
+			
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
