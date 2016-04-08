@@ -59,6 +59,9 @@ public class BranchInfService {
 	 * 执行同步机构站点
 	 */
 	public void processSync(){
+		if(!isCloseOldInterface()){
+			return;
+		}
 		int isOpenFlag = jointService.getStateForJoint(PosEnum.Weisuda.getKey());
 		if (isOpenFlag == 0) {
 			logger.info("未开启唯速达[" + PosEnum.Weisuda.getKey() + "]接口！");
