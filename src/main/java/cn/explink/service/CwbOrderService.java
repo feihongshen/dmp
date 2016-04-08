@@ -7608,7 +7608,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param orderFlow
 	 */
 	@Consume(uri = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow?concurrentConsumers=5")
-	public void autoReceiveGoods(@Header("orderFlow") String orderFlow) {
+	public void autoReceiveGoods(@Header("orderFlow") String orderFlow, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		try {
 			logger.info("开始对orderflow的监听");
 			OrderFlow orderflow = this.om.readValue(orderFlow, OrderFlow.class);
@@ -7627,7 +7627,8 @@ public class CwbOrderService extends BaseOrderService {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 	
 			// 把未完成MQ插入到数据库中, end
 		}
@@ -8961,7 +8962,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param orderFlow
 	 */
 	@Consume(uri = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow?concurrentConsumers=5")
-	public void deliverAppJms(@Header("orderFlow") String orderFlow) {
+	public void deliverAppJms(@Header("orderFlow") String orderFlow, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		try {
 			// logger.info("棒棒糖派件服务JMS监听：START");
 			OrderFlow orderFlowObj = this.om.readValue(orderFlow, OrderFlow.class);
@@ -8983,7 +8984,7 @@ public class CwbOrderService extends BaseOrderService {
 			
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri).buildMessageHeaderUUID(messageHeaderUUID)
 					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}

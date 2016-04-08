@@ -130,6 +130,9 @@ public final class MqExceptionBuilder{
     }
     
     public MqExceptionBuilder buildMessageHeaderUUID(String messageHeaderUUID) {
+    	if(null == messageHeaderUUID){
+    		messageHeaderUUID = "";
+    	}
         this.mqException.setMessageHeaderUUID(messageHeaderUUID);
         return this;
     }
