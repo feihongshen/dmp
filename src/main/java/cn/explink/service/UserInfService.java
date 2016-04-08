@@ -58,6 +58,9 @@ public class UserInfService {
 	 * 执行同步机构站点
 	 */
 	public void processSync(){
+		if(!isCloseOldInterface()){
+			return;
+		}
 		int isOpenFlag = jointService.getStateForJoint(PosEnum.Weisuda.getKey());
 		if (isOpenFlag == 0) {
 			logger.info("未开启唯速达[" + PosEnum.Weisuda.getKey() + "]接口！");
@@ -306,7 +309,7 @@ public class UserInfService {
 	 */
 	public boolean isCloseOldInterface(){
 		String value = systemInstallService.getParameter("closeUserAndBranchOldInterface");
-		if(StringUtils.isNotEmpty(value) || "1".equals(value)){
+		if(StringUtils.isNotEmpty(value) && "1".equals(value)){
 			return true;
 		}	
 		return false;
