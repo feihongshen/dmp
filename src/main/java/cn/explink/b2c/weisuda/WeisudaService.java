@@ -454,7 +454,9 @@ public class WeisudaService {
 			}
 		}
 		this.cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
-		this.cwbDAO.updateCwbRemarkPaytype(orderFlowDto.getCwb(), remark5);
+		if(!"".equals(remark5)){
+			this.cwbDAO.updateCwbRemarkPaytype(orderFlowDto.getCwb(), remark5);
+		}
 	}
 
 	/*
