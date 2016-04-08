@@ -1,10 +1,11 @@
 <%@page import="cn.explink.domain.JsonContext"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
-<%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
+<%@page import="cn.explink.domain.User,cn.explink.domain.Entrance,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<Customer> cList = (List<Customer>)request.getAttribute("customerlist");
+List<Entrance> eList = (List<Entrance>)request.getAttribute("entrancelist");
 List<User> uList = (List<User>)request.getAttribute("userList");
 Switch ck_switch = (Switch) request.getAttribute("ck_switch");
 String RUKUPCandPDAaboutYJDPWAV = request.getAttribute("RUKUPCandPDAaboutYJDPWAV").toString();
@@ -466,6 +467,16 @@ function initEmailDateUI(ed){
 							<%
 								}
 							%>
+							        自动分拨机入口选择： <select id="entryselect" name="entryselect" style="height: 20px; width: 280px">
+						<option value="-1" selected>请选择</option>
+						<%
+							for (Entrance e : eList) {
+						%>
+						<option value="<%=e.getEntranceno()%>"><%=e.getEntranceno()+"("+e.getEntranceip()+")"%></option>
+						<%
+							}
+						%>
+					</select> 
 						</p>
 						<p style="display: none;">
 							<span>包号扫描：</span> <input type="text" class="saomiao_inputtxt" value="" id="bale" name="bale"
