@@ -497,15 +497,17 @@ function uploadFormInit(form, contextPath) {
 		if (dataObj.errorCode == 0) {
 			if (dataObj.type == "add") {
 //				$("#WORK_AREA", parent.document)[0].contentWindow.addSuccess(dataObj);
+				$("#box_contant", parent.document).hide(300);
+				$("#alert_box", parent.document).css("display", "");
 				$("#sub", parent.document).removeAttr("disabled");
 				$("#sub", parent.document).val("确认");
 			} else if (dataObj.type == "edit") {
 //				$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+				$("#box_contant", parent.document).hide(300);
+				$("#alert_box", parent.document).css("display", "");
 				$("#sub", parent.document).removeAttr("disabled");
 				$("#sub", parent.document).val("保存");
 			}
-			$("#box_contant", parent.document).hide(300);
-			$("#alert_box", parent.document).css("display", "");
 		}
 		// setTimeout(queryProgress, 10);
 	}).bind('uploadComplete', function(event, file) {
