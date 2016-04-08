@@ -101,7 +101,6 @@ public class DataImportService_B2c {
 			importData(cwbOrders, customerid, user, warehouseid, ed);
 		} else { // 导入临时表，然后定时器处理
 			for (CwbOrderDTO cwbOrder : cwbOrders) {
-				try {
 					String remark1 = (cwbOrder.getRemark1()==null?"":cwbOrder.getRemark1().trim());
 					if(remark1.length() > 100){
 						remark1 = remark1.substring(0, 100);
@@ -119,12 +118,6 @@ public class DataImportService_B2c {
 					}
 
 					dataImportDAO_B2c.insertCwbOrder_toTempTable(cwbOrder, customerid, warehouseid, user, ed);
-				} catch (Exception e) {
-					logger.error(b2cFlag + "数据插入临时表发生未知异常cwb=" + cwbOrder.getCwb(), e);
-					// Mail.LoadingAndSendMessage(b2cFlag+"数据临时表插入主表发生未知异常cwb="+cwbOrder.getCwb()+",请及时查看并修复.");
-					 e.printStackTrace();
-					return null;
-				}
 			}
 
 		}
@@ -222,13 +215,7 @@ public class DataImportService_B2c {
 						cwbOrderValidator.validate(cwbOrder);
 					}
 				}
-				try {
-					dataImportDAO_B2c.insertCwbOrder_toTempTable(cwbOrder, customerid, warehouseid, user, ed);
-				} catch (Exception e) {
-					logger.error(b2cFlag + "数据插入临时表发生未知异常cwb=" + cwbOrder.getCwb(), e);
-					// Mail.LoadingAndSendMessage(b2cFlag+"数据临时表插入主表发生未知异常cwb="+cwbOrder.getCwb()+",请及时查看并修复.");
-					// e.printStackTrace();
-				}
+				dataImportDAO_B2c.insertCwbOrder_toTempTable(cwbOrder, customerid, warehouseid, user, ed);
 			}
 		}
 
