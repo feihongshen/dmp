@@ -92,7 +92,7 @@ public class LogToDayByWareHouseController {
 		//update by neo01.huang, 2016-4-5
 		String startTime = "";
 		//获取系统参数
-		SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("siteDayLogTime");
+		SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("wareHouseDayLogTime");
 		//系统参数不为空
 		if (siteDayLogTime != null && StringUtils.hasLength(siteDayLogTime.getValue())) {
 			startTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " " + siteDayLogTime.getValue();
