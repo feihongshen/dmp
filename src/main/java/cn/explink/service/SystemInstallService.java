@@ -96,13 +96,29 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 
 	public void creSystemInstall(String chinesename, String name, String value) {
 		systemInstallDAO.creSystemInstall(chinesename, name, value);
-		systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
+		try{
+			systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
+		}catch(Exception e){
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("creSystemInstall")
+					.buildExceptionInfo(e.getMessage()).buildTopic(this.systemInstallProducerTemplate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader(name, value).getMqException());
+		}
 
 	}
 
 	public void saveSystemInstall(String chinesename, String name, String value, long id) {
 		systemInstallDAO.saveSystemInstall(chinesename, name, value, id);
-		systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
+		try{
+			systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
+		}catch(Exception e){
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveSystemInstall")
+					.buildExceptionInfo(e.getMessage()).buildTopic(this.systemInstallProducerTemplate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader(name, value).getMqException());
+		}
 	}
 
 	@Override

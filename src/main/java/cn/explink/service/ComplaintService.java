@@ -1,11 +1,10 @@
 package cn.explink.service;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -19,12 +18,14 @@ import cn.explink.controller.ComplaintView;
 import cn.explink.dao.ComplaintDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Complaint;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -49,6 +50,9 @@ public class ComplaintService {
 	private ObjectMapper om = new ObjectMapper();
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 
 	public List<Complaint> getListByCwbsAndWhere(String cwbs, long type, long auditType, String starteTime, String endTime, long page) {
 		List<Complaint> list = new ArrayList<Complaint>();
@@ -320,8 +324,15 @@ public class ComplaintService {
 		try {
 			complaintTemplate.sendBodyAndHeader(null, "complaint", om.writeValueAsString(complaint));
 		} catch (Exception ee) {
-
 			logger.error("send flow complaint error", ee);
+			//写MQ异常表
+			try {
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("send")
+						.buildExceptionInfo(ee.getMessage()).buildTopic(this.complaintTemplate.getDefaultEndpoint().getEndpointUri())
+						.buildMessageHeader("complaint", om.writeValueAsString(complaint)).getMqException());
+			} catch (IOException e) {
+				logger.error("转换错误", e);
+			}
 		}
 
 	}
