@@ -249,7 +249,7 @@ public class B2cJointMonitorService {
 	/**
 	 * 监听oms中的方法，修改send_b2c_flag=1，2
 	 */
-	public void updateDMPB2cDataMonitor(@Header("monitorb2cdata") String parm) {
+	public void updateDMPB2cDataMonitor(@Header("monitorb2cdata") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.debug("接收OMS-JMS:" + parm);
 		try {
 			JSONArray array = JSONArray.fromObject(parm);
@@ -271,7 +271,8 @@ public class B2cJointMonitorService {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}

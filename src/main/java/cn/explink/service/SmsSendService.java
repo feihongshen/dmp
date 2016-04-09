@@ -812,7 +812,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 		return 0;
 	}
 
-	public void sendFlow(@Header("orderFlow") String parm) throws Exception {
+	public void sendFlow(@Header("orderFlow") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) throws Exception {
 		logger.debug("orderFlow oms 环节信息处理,{}", parm);
 		try{
 			OrderFlow orderFlow = this.orderFlowReader.readValue(parm);
@@ -829,7 +829,8 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 		

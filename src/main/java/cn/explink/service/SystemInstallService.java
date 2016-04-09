@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.Header;
 import org.apache.camel.Headers;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -61,7 +62,7 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 
 	}
 
-	public void notifyChange(@Headers() Map<String, String> parameters) {
+	public void notifyChange(@Headers() Map<String, String> parameters, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		try {
 			for (SystemConfigChangeListner systemConfigChangeListner : systemConfigChangeListners) {
 				systemConfigChangeListner.onChange(parameters);
@@ -77,7 +78,8 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headers).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headers)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}

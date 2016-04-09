@@ -77,7 +77,7 @@ public class TransCwbService implements CwbTranslator {
 
 	}
 
-	public void saveTransCwb(@Header("orderFlow") String parm) {
+	public void saveTransCwb(@Header("orderFlow") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		logger.debug("orderFlow 运单号处理,{}", parm);
 		try {
 			OrderFlow orderFlow = om.readValue(parm, OrderFlow.class);
@@ -100,7 +100,8 @@ public class TransCwbService implements CwbTranslator {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}

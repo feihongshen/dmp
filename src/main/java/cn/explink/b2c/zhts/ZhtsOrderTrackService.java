@@ -53,7 +53,7 @@ public class ZhtsOrderTrackService {
 	 * @param orderFlow
 	 */
 	@Consume(uri = "jms:queue:VirtualTopicConsumers.orderTrack.orderFlow?concurrentConsumers=5")
-	public void orderTrack(@Header("orderFlow") String orderFlow){
+	public void orderTrack(@Header("orderFlow") String orderFlow, @Header("MessageHeaderUUID") String messageHeaderUUID){
 		String cwb="";
 		try{
 
@@ -106,7 +106,8 @@ public class ZhtsOrderTrackService {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}

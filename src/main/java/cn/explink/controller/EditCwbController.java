@@ -880,7 +880,7 @@ public class EditCwbController {
 			if ((co.getExcelbranch() == null) || (co.getExcelbranch().length() == 0) || (co.getDeliverybranchid() == 0)) {
 				this.logger.info("地址库-------");
 				if (!old.getConsigneeaddress().equals(co.getConsigneeaddress())) {
-					this.addressMatchService.matchAddress(this.getSessionUser().getUserid(), co.getCwb());
+					this.addressMatchService.doMatchAddress(this.getSessionUser().getUserid(), co.getCwb());
 				}
 			}
 			// 修改匹配站

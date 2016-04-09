@@ -29,7 +29,7 @@ public class ImportCwbErrorService {
 	private static final String MQ_HEADER_NAME_CWBORDERINSERT = "errorOrder";
 
 	@Consume(uri = "jms:queue:cwborderinsert")
-	public void saveError(@Header("errorOrder") String errorOrder) {
+	public void saveError(@Header("errorOrder") String errorOrder, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		JSONObject errorJson = JSONObject.fromObject(errorOrder);
 		try {
 			String cwb = errorJson.getJSONObject("cwbOrderDTO").getString("cwb");
@@ -54,7 +54,8 @@ public class ImportCwbErrorService {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}

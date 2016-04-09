@@ -189,7 +189,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	}
 
-	public void addZhanDian(@Header("branchid") String branchid) {
+	public void addZhanDian(@Header("branchid") String branchid, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.info("add zhandian branche id:{}", branchid);
 		try {
 			Branch b = this.branchDAO.getBranchByBranchid(Long.parseLong(branchid));
@@ -207,7 +207,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}
@@ -250,8 +251,31 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		ordervo.setCustomerId(Long.parseLong(ResourceBundleUtil.addresscustomerid));
 		return ordervo;
 	}
+	
+	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb, @Header("MessageHeaderUUID") String messageHeaderUUID) {
+		try {
+			doMatchAddress(userid, cwb);
+		} catch (Exception e) {
+			this.logger.error("error while doing address match for "+cwb, e);
+			// 把未完成MQ插入到数据库中, start
+			String functionName = "matchAddress";
+			String fromUri = MQ_FROM_URI_ADDRESS_MATCH;
+			String body = null;
+			Map<String, String> headers = new HashMap<String, String>();
+			headers.put("userid", String.valueOf(userid));
+			headers.put("cwb",cwb);
+			
+			String exceptionMessage = e.getMessage();
+			
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
+					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildMessageHeader(headers)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
+		}
+	}
 
-	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb) {
+	public void doMatchAddress(long userid, String cwb) throws Exception {
 		this.logger.info("start address match for {}", cwb);
 		try {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -317,20 +341,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			}
 		} catch (Exception e) {
 			this.logger.error("error while doing address match for "+cwb, e);
-			// 把未完成MQ插入到数据库中, start
-			String functionName = "matchAddress";
-			String fromUri = MQ_FROM_URI_ADDRESS_MATCH;
-			String body = null;
-			Map<String, String> headers = new HashMap<String, String>();
-			headers.put("userid", String.valueOf(userid));
-			headers.put("cwb",cwb);
-			
-			String exceptionMessage = e.getMessage();
-			
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headers).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
-			// 把未完成MQ插入到数据库中, end
+			throw e;
 		}
 	}
 

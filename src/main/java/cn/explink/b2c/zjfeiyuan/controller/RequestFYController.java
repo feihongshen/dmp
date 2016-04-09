@@ -148,7 +148,7 @@ public class RequestFYController {
 		User user =  this.getSessionUser();
 		String str = "";
 		try{
-			this.addressMatchService.matchAddress(user.getUserid(), "zff15001");
+			this.addressMatchService.doMatchAddress(user.getUserid(), "zff15001");
 		}catch(Exception e){
 			str = e.toString();
 			this.logger.error("异常原因:{}",e);

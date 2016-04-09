@@ -31,7 +31,7 @@ public class ApplyDeliverstateService {
 	private static final String MQ_HEADER_NAME_SEND_BTOC_TO_DMP = "delIds";
 
 	@Consume(uri = "jms:queue:sendBToCToDmp")
-	public void saveError(@Header("delIds") String errorOrder) {
+	public void saveError(@Header("delIds") String errorOrder, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		JSONObject delidsjson = JSONObject.fromObject(errorOrder);
 		try {
 			String ids = delidsjson.getString("ids");
@@ -53,7 +53,8 @@ public class ApplyDeliverstateService {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			
 			// 把未完成MQ插入到数据库中, end
 		}

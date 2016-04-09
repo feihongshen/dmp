@@ -367,10 +367,10 @@ public class DataImportController {
 	}
 
 	@RequestMapping("/addressmatch")
-	public void addressBatchMatch(@RequestParam("emaildateid") long emaildateid) {
+	public void addressBatchMatch(@RequestParam("emaildateid") long emaildateid) throws Exception {
 		List<CwbOrder> cwbOrders = this.cwbDAO.getCwbsByEmailDateId(emaildateid);
 		for (CwbOrder cwbOrder : cwbOrders) {
-			this.addressMatchService.matchAddress(this.getSessionUser().getUserid(), cwbOrder.getCwb());
+			this.addressMatchService.doMatchAddress(this.getSessionUser().getUserid(), cwbOrder.getCwb());
 		}
 	}
 

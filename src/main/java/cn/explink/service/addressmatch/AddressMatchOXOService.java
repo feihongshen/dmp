@@ -150,7 +150,7 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 	 * @param address 地址
 	 * @param notifytype 匹配地址类型  0 揽件地址   1派件地址
 	 */
-	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb,@Header("address") String address,@Header("notifytype") long notifytype) {
+	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb,@Header("address") String address,@Header("notifytype") long notifytype, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.info("start address match for {}", cwb);
 		try {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -187,7 +187,8 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headers).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headers)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			
 			// 把未完成MQ插入到数据库中, end
 		}

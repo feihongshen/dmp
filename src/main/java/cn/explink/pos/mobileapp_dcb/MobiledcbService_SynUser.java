@@ -54,7 +54,7 @@ public class MobiledcbService_SynUser {
 		});
 	}
 
-	public void userMonitor(@Header("userMonitor") String parm) { // 处理jms数据
+	public void userMonitor(@Header("userMonitor") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) { // 处理jms数据
 		try {
 
 			int isOpenFlag = jointDAO.getStateByJointKey(PosEnum.MobileApp_dcb.getKey());
@@ -82,7 +82,8 @@ public class MobiledcbService_SynUser {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			
 			// 把未完成MQ插入到数据库中, end
 		}

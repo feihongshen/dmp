@@ -86,7 +86,7 @@ public class EditService {
 
 	}
 
-	public void deleteEditTwo(@Header("loseCwbByEmaildateid") String parm) {
+	public void deleteEditTwo(@Header("loseCwbByEmaildateid") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.info("--edit订单失效功能，订单号：{}", parm);
 		try {
 			this.logger.info("RE:jms:queue:VirtualTopicConsumers.editService.editloseCwb ");
@@ -108,12 +108,13 @@ public class EditService {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
-	public void deleteEdit(@Header("losecwbbatch") String cwb) {
+	public void deleteEdit(@Header("losecwbbatch") String cwb, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.info("--edit订单失效功能，订单号：{}", cwb);
 		try {
 			if (cwb.trim().length() > 0) {
@@ -133,12 +134,13 @@ public class EditService {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
-	public void saveEdit(@Header("orderFlow") String parm) {
+	public void saveEdit(@Header("orderFlow") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		try {
 			OrderFlow orderFlow = this.om.readValue(parm, OrderFlow.class);
 			this.saveEdit(orderFlow);
@@ -157,7 +159,8 @@ public class EditService {
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}

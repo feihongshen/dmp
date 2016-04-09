@@ -162,7 +162,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 	 * @throws IOException
 	 * @throws JsonProcessingException
 	 */
-	public void matchAddress(@Header("autoMatchAddressInfo") String addressExtralInfo) throws JsonProcessingException, IOException {
+	public void matchAddress(@Header("autoMatchAddressInfo") String addressExtralInfo, @Header("MessageHeaderUUID") String messageHeaderUUID) throws JsonProcessingException, IOException {
 		logger.info("走到了匹配方法");
 		ExtralInfo4Address info = this.expressAddressInfoReader.readValue(addressExtralInfo);
 		this.logger.info("start address match for {}", /* map.get("cwb") */info.getCwb());
@@ -227,7 +227,8 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}

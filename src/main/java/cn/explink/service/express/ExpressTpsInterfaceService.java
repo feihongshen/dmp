@@ -95,7 +95,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 		this.init();
 	}
 
-	public Map<String, Object> exeTpsInterface(@Header("executeTpsInterfaceHeader") String param) throws Exception {
+	public Map<String, Object> exeTpsInterface(@Header("executeTpsInterfaceHeader") String param, @Header("MessageHeaderUUID") String messageHeaderUUID) throws Exception {
 		this.logger.debug("dmp execute tps interface  调用环节信息处理,{}", param);
 		try{
 			ExpressOperationInfo operationInfo = this.expressOperationInfoReader.readValue(param);
@@ -113,7 +113,8 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
 					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+					.buildMessageHeader(headerName, headerValue)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 		return null;
