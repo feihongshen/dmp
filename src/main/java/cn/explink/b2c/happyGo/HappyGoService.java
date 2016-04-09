@@ -39,9 +39,11 @@ import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
@@ -88,6 +90,9 @@ public class HappyGoService {
 	CustomerService customerService;
 	private static Logger logger = LoggerFactory.getLogger(HappyGoService.class);
 
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
 	/**
 	 * 出库批次导入
 	 * 
@@ -880,7 +885,15 @@ public class HappyGoService {
 								HashMap<String, Object> map = new HashMap<String, Object>();
 								map.put("cwb", cwbOrder.getCwb());
 								map.put("userid", "1");
-								addressmatch.sendBodyAndHeaders(null, map);
+								try{
+									addressmatch.sendBodyAndHeaders(null, map);
+								}catch(Exception e){
+									logger.error("", e);
+									//写MQ异常表
+									this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("timerHappy")
+											.buildExceptionInfo(e.getMessage()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+											.buildMessageHeaderObject(map).getMqException());
+								}
 							}
 						}
 						dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
@@ -925,7 +938,15 @@ public class HappyGoService {
 							HashMap<String, Object> map = new HashMap<String, Object>();
 							map.put("cwb", cwbOrder.getCwb());
 							map.put("userid", "1");
-							addressmatch.sendBodyAndHeaders(null, map);
+							try{
+								addressmatch.sendBodyAndHeaders(null, map);
+							}catch(Exception e){
+								logger.error("", e);
+								//写MQ异常表
+								this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("happyGoForDetail")
+										.buildExceptionInfo(e.getMessage()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+										.buildMessageHeaderObject(map).getMqException());
+							}
 
 						}
 						dataImportDAO_B2c.updateHappyGoByCwb(cwbOrder.getOpscwbid());
