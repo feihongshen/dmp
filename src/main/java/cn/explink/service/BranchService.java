@@ -9,13 +9,17 @@ import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StringUtil;
@@ -25,6 +29,11 @@ public class BranchService {
 
 	@Autowired
 	private BranchDAO branchDao;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
 		Branch bh = this.loadFormForBranch(request);
@@ -199,9 +208,10 @@ public class BranchService {
 	ProducerTemplate savezhandian;
 
 	public void addzhandianToAddress(long branchid, Branch branch,String oldtpsbranchcode) {
+		JSONObject branchToJson = new JSONObject();
 		try {
 			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
-			JSONObject branchToJson = new JSONObject();
+			
 			branchToJson.put("branchid", branchid);
 			branchToJson.put("branchname", branch.getBranchname());
 			branchToJson.put("branchphone", branch.getBranchphone());
@@ -218,6 +228,15 @@ public class BranchService {
 			
 			this.savezhandian.sendBodyAndHeader(null, "branch", branchToJson.toString());
 		} catch (Exception e) {
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addzhandianToAddress")
+					.buildExceptionInfo(e.getMessage()).buildTopic(this.addzhandian.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("branchid", branchid + "").getMqException());
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addzhandianToAddress")
+					.buildExceptionInfo(e.getMessage()).buildTopic(this.savezhandian.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("branch", branchToJson.toString()).getMqException());
 		}
 	}
 
@@ -228,6 +247,11 @@ public class BranchService {
 		try {
 			this.delzhandian.sendBodyAndHeader(null, "branchid", branchid);
 		} catch (Exception e) {
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("delBranch")
+					.buildExceptionInfo(e.getMessage()).buildTopic(this.delzhandian.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("branchid", branchid + "").getMqException());
 		}
 	}
 

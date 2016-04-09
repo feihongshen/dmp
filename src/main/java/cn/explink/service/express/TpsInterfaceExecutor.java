@@ -4,8 +4,13 @@ import java.util.Map;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import cn.explink.dao.MqExceptionDAO;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.VO.express.ExtralInfo4Address;
 import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.util.Tools;
@@ -19,8 +24,21 @@ public class TpsInterfaceExecutor {
 	@Produce(uri = "jms:topic:autoAddressInfo2")
 	ProducerTemplate addressMatchExpressService;
 
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	public Map<String, Object> executTpsInterface(ExpressOperationInfo paramObj) {
-		this.executeTpsInterfaceTemplate.sendBodyAndHeader(null, "executeTpsInterfaceHeader", Tools.obj2json(paramObj));
+		try{
+			this.executeTpsInterfaceTemplate.sendBodyAndHeader(null, "executeTpsInterfaceHeader", Tools.obj2json(paramObj));
+		}catch(Exception e){
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("executTpsInterface")
+					.buildExceptionInfo(e.getMessage()).buildTopic(this.executeTpsInterfaceTemplate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("executeTpsInterfaceHeader", Tools.obj2json(paramObj)).getMqException());
+		}
 		return null;
 	}
 
@@ -40,7 +58,15 @@ public class TpsInterfaceExecutor {
 	 */
 	public Boolean autoMatch(String preOrderNo, Long userId, String address, int addressMatcher) {
 		ExtralInfo4Address info = new ExtralInfo4Address(preOrderNo, userId, address, addressMatcher);
-		this.addressMatchExpressService.sendBodyAndHeader(null, "autoMatchAddressInfo", Tools.obj2json(info));
+		try{
+			this.addressMatchExpressService.sendBodyAndHeader(null, "autoMatchAddressInfo", Tools.obj2json(info));
+		}catch(Exception e){
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("autoMatch")
+					.buildExceptionInfo(e.getMessage()).buildTopic(this.addressMatchExpressService.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("autoMatchAddressInfo", Tools.obj2json(info)).getMqException());
+		}
 		return true;
 	}
 

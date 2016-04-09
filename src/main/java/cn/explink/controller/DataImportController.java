@@ -13,8 +13,6 @@ import java.util.concurrent.Executors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -140,9 +138,6 @@ public class DataImportController {
 
 	@Autowired
 	TransCwbDao transCwbDao;
-
-	@Produce(uri = "jms:topic:addressmatch")
-	ProducerTemplate addressmatch;
 
 	private static Logger logger = LoggerFactory.getLogger(DataImportController.class);
 
