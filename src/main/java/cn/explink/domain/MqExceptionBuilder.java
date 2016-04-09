@@ -116,6 +116,12 @@ public final class MqExceptionBuilder{
         return this;
     }
     
+    public MqExceptionBuilder buildMessageHeaderObject(Map<String,Object> headerMap) {
+        this.mqException.setMessageHeader(JSON.toJSONString(headerMap));
+        
+        return this;
+    }
+    
     public MqExceptionBuilder buildMessageHeader(Map<String,String> headerMap) {
         this.mqException.setMessageHeader(JSON.toJSONString(headerMap));
         
