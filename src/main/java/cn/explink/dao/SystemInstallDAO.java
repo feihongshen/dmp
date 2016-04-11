@@ -106,27 +106,30 @@ public class SystemInstallDAO {
 		this.jdbcTemplate.update(sql, chinesename, name, value);
 	}
 
-	public List<SystemInstall> getSystemInstallByWhere(long page, String chinesename, String value) {
+	public List<SystemInstall> getSystemInstallByWhere(long page, String chinesename, String name, String value) {
 		String sql = "SELECT * from express_set_system_install ";
-		sql = this.getSystemInstallByPageWhereSql(sql, chinesename, value);
+		sql = this.getSystemInstallByPageWhereSql(sql, chinesename, name, value);
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
 		List<SystemInstall> cscList = this.jdbcTemplate.query(sql, new SystemInstallMapper());
 		return cscList;
 	}
 
-	public long getSystemInstallCount(String chinesename, String value) {
+	public long getSystemInstallCount(String chinesename, String name, String value) {
 		String sql = "SELECT count(1) from express_set_system_install";
-		sql = this.getSystemInstallByPageWhereSql(sql, chinesename, value);
+		sql = this.getSystemInstallByPageWhereSql(sql, chinesename, name, value);
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 
-	private String getSystemInstallByPageWhereSql(String sql, String chinesename, String value) {
+	private String getSystemInstallByPageWhereSql(String sql, String chinesename,String name, String value) {
 		if ((chinesename.length() > 0) || (value.length() > 0)) {
 			StringBuffer w = new StringBuffer();
 			sql += " where ";
 			if (chinesename.length() > 0) {
-				w.append(" and `chinesename`='" + chinesename + "'");
+				w.append(" and `chinesename` like '%" + chinesename + "%'");
+			}
+			if (name.length() > 0) {
+				w.append(" and `name` like '%" + chinesename + "%'");
 			}
 			if (value.length() > 0) {
 				w.append(" and `value`='" + value + "'");

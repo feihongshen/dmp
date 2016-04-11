@@ -4,6 +4,9 @@
 <%
 	List<SystemInstall> siList = (List<SystemInstall>)request.getAttribute("siList");
 	Page page_obj = (Page)request.getAttribute("page_obj");
+	String chinesename = (String)request.getAttribute("chinesename");
+	String name = (String)request.getAttribute("name");
+	String value = (String)request.getAttribute("value");
 %>
 
 
@@ -56,6 +59,7 @@ function del(id){
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		名称：<input type="text" id="chinesename" name="chinesename" class="input_text1"/>
+		编码：<input type="text" id="name" name="name" class="input_text1"/>
 		值：<input type="text" id="value" name="value" class="input_text1"/>
 		<input type="submit" onclick="$('#searchForm').attr('action',1);return true;" id="find" value="查询" class="input_button2" />
 		<!-- <input type="button"  onclick="location.href='1'" value="返回" class="input_button2" /> -->
@@ -111,9 +115,13 @@ function del(id){
 	<div class="clear"></div>
 
 <script type="text/javascript">
-$("#selectPg").val(<%=request.getAttribute("page") %>);
-$("#name").val(<%=request.getParameter("name") %>);
-$("#value").val(<%=request.getParameter("value") %>);
+$(document).ready(function(){
+	$("#selectPg").val('<%=page %>');
+	$("#chinesename").val('<%=chinesename %>');
+	$("#name").val('<%=name %>');
+	$("#value").val('<%=value %>');
+});
+
 </script>
 <!-- 删除订单流程的ajax地址 -->
 <input type="hidden" id="del" value="<%=request.getContextPath()%>/systeminstall/del/" />
