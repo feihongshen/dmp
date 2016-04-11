@@ -658,7 +658,13 @@ public class TPSGetOrderDataService {
 			orderDTO.setCwb(cust_order_no);
 			orderDTO.setTranscwb(transcwb);
 			orderDTO.setConsigneename(order.getBuyerName().isEmpty()?"":order.getBuyerName());
-			orderDTO.setSendcargonum(total_pack.toString().isEmpty() ? 1 : total_pack);
+			if(is_gatherpack.trim().equals("1") && total_pack!=null && total_pack==0){
+				int transcwbLength = transcwb.split(",").length;
+				orderDTO.setSendcargonum(transcwbLength);
+			}else{
+				orderDTO.setSendcargonum(total_pack.toString().isEmpty() ? 1 : total_pack);
+			}
+			
 			orderDTO.setConsigneephone(order.getTel());
 			orderDTO.setConsigneemobile(order.getMobile());
 			orderDTO.setConsigneepostcode(order.getPostCode());
@@ -1072,13 +1078,8 @@ public class TPSGetOrderDataService {
 	private void changeInfoOfOrder(CwbOrderDTO cwbOrderDTO,String cust_order_no,String pack_nos,
 			int total_pack,int mpsallarrivedflag){
 		long b2cTempOpscwbid = cwbOrderDTO.getOpscwbid();
-		CwbOrderDTO cwbOrderDTONew = dataImportDAO_B2c.getCwbByCwbB2ctempOpscwbidLock(b2cTempOpscwbid);
 		dataImportDAO_B2c.updateTmsPackageCondition(b2cTempOpscwbid, pack_nos, Integer.valueOf(total_pack), mpsallarrivedflag, IsmpsflagEnum.yes.getValue());
-		
-		if(cwbOrderDTONew.getGetDataFlag() != 0){
-			//更新临时表的getDataFlag为0以重新转业务--是否需要判断数据有更新再修改标识？
-			dataImportDAO_B2c.update_CwbDetailTempByCwb(0, b2cTempOpscwbid);
-		}
+		dataImportDAO_B2c.update_CwbDetailTempByCwb(0, b2cTempOpscwbid);
 	}
 	
 	private int choseIsmpsflag(String is_gatherpack,String is_gathercomp,String sendcarnum,int mpsswitch) {

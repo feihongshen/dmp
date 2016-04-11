@@ -496,11 +496,15 @@ function uploadFormInit(form, contextPath) {
 		// $("#wavText").val("");
 		if (dataObj.errorCode == 0) {
 			if (dataObj.type == "add") {
-				$("#WORK_AREA", parent.document)[0].contentWindow.addSuccess(dataObj);
+//				$("#WORK_AREA", parent.document)[0].contentWindow.addSuccess(dataObj);
+				$("#box_contant", parent.document).hide(300);
+				$("#alert_box", parent.document).css("display", "");
 				$("#sub", parent.document).removeAttr("disabled");
 				$("#sub", parent.document).val("确认");
 			} else if (dataObj.type == "edit") {
-				$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+//				$("#WORK_AREA", parent.document)[0].contentWindow.editSuccess(dataObj);
+				$("#box_contant", parent.document).hide(300);
+				$("#alert_box", parent.document).css("display", "");
 				$("#sub", parent.document).removeAttr("disabled");
 				$("#sub", parent.document).val("保存");
 			}
@@ -817,6 +821,10 @@ function checkZhanDian() {
 	}
 	if ($("#branchcode").val().length == 0) {
 		alert("站点编号不能为空");
+		return false;
+	}
+	if ($("#tpsbranchcode").val().length == 0) {
+		alert("机构编码不能为空");
 		return false;
 	}
 	/*
@@ -1255,7 +1263,19 @@ function checkUsername() {
 			// else alert("员工登录名可用");
 		}
 	});
+}
 
+/**
+ * 小件员跟站长限制登录用户名最多为9位，品骏达限制。
+ * @returns {Boolean}
+ */
+function verifyUsername(){
+	if($("#roleid").val() != 2 && $("#roleid").val() != 4){
+		return;
+	}
+	var username = username = $("#username").val();
+	username = username.substr(0, 9);
+	$("#username").val(username);
 }
 
 function check_user() {
@@ -1377,6 +1397,7 @@ function roleChange() {
 	if ($("#roleid").val() == '2' || $("#roleid").val() == '4') {
 		$("#tip").html("*");
 	}
+	verifyUsername();
 }
 function submitAddUser(form) {
 

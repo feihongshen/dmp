@@ -109,6 +109,8 @@
 				<ref bean="doTime_tpsOXOOrderTempToMain"/>
 				<ref bean="doTime_autoDispatchStatusTempToMain"/>
                 <ref bean="doTime_feiniuwang"/>
+                <ref bean="doTime_syncBranchInf"/>
+                <ref bean="doTime_syncUserInf"/>
                 <ref bean="mqExceptionHandler"/>
 			</list>
 		</property>
@@ -1392,6 +1394,42 @@
          </property>
          <property name="targetMethod">
              <value>setFlowExp</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>     
+     
+     <bean id="doTime_syncBranchInf" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="syncBranchInf" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+      </bean>     
+     <bean id="syncBranchInf" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>syncBranchInf_Task</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
+     
+     <bean id="doTime_syncUserInf" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="syncUserInf" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+      </bean>     
+     <bean id="syncUserInf" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>syncUserInf_Task</value>
          </property>
          <property name="concurrent" value="false" />
      </bean>

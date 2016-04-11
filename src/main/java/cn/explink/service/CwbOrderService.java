@@ -176,7 +176,6 @@ import cn.explink.enumutil.AccountFlowOrderTypeEnum;
 import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BaleStateEnum;
-import cn.explink.enumutil.BaleUseStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
@@ -1982,7 +1981,6 @@ public class CwbOrderService extends BaseOrderService {
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, -1L, currentbranchid, NextBranchid);
 
 		this.baleDaoHuo_fzdh(co);
-		this.disableBale(cwb, scancwb, isypdjusetranscwb,co);
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
@@ -2267,8 +2265,6 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
-
-		this.disableBale(cwb, scancwb, isypdjusetranscwb,co);
 		
 		this.createFloworder(user, currentbranchid, co, flowOrderTypeEnum, comment, System.currentTimeMillis(), scancwb, false);
 
@@ -4903,14 +4899,12 @@ public class CwbOrderService extends BaseOrderService {
 		if (chechFlag) {
 			OrderBackCheck obc = this.orderBackCheckDAO.getOrderBackCheckByCwb(cwb);
 			if (obc != null) {
-				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-				if (co.getCwbstate() != 1) {
-					if (obc.getCheckstate() == 1) {// 待审核
-						throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
-					}
-					if (obc.getCheckresult() == 1) {// 审核为确认退货
-						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
-					}
+				//需要审核的订单的状态为1配送
+				if (obc.getCheckstate() == 1) {// 待审核
+					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
+				}
+				if (obc.getCheckresult() == 1) {// 审核为确认退货
+					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
 				}
 			}
 		}
@@ -9538,38 +9532,4 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 	
-	//拆包以让包号可重用
-	public void disableBale(String cwb,String scancwb,long isypdjusetranscwb,CwbOrder co){
-		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
-			int autoFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
-	    	if(autoFlag==1){
-				List<BaleCwb> baleList=null;
-				if (isypdjusetranscwb == 1) {
-					baleList = this.baleCwbDAO.getBaleCwbByCwb(scancwb);
-					if((baleList==null||baleList.size()<1)&&cwb!=null&&scancwb!=null&&cwb.equals(scancwb)){
-						List<String> transcwbList= getTranscwbList(co.getTranscwb());
-						if(transcwbList!=null){
-							for(String transcwb:transcwbList){
-								baleList = this.baleCwbDAO.getBaleCwbByCwb(transcwb);
-								if(baleList!=null&&baleList.size()>0){
-									break;
-								}
-							}
-						}
-					}
-				} else {
-					baleList = this.baleCwbDAO.getBaleCwbByCwb(cwb);
-					if((baleList==null||baleList.size()<1)&&cwb!=null&&scancwb!=null&&!cwb.equals(scancwb)){
-						baleList = this.baleCwbDAO.getBaleCwbByCwb(scancwb);
-					}	
-				}
-				
-				if(baleList!=null&&baleList.size()>0){
-					this.baleDAO.updateBaleUseState(baleList.get(0).getBaleid(),BaleUseStateEnum.KeChongYong.getValue());
-				}else{
-					this.logger.info("not found the bale when disableBale,cwb="+cwb+",scancwb="+scancwb);
-				}
-			}
-		}
-	}
 }
