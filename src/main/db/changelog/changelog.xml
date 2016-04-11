@@ -8963,13 +8963,39 @@ CREATE TABLE `cs_complaint_accept` (
 			  ADD  INDEX `index_picker` (`picker`),
 			  ADD  INDEX `index_bill_no` (`bill_no`),
 			  ADD  INDEX `index_import_time` (`import_time`),
-			  ADD  INDEX `index_bill_detail_id` (`bill_detail_id`);
+			  ADD  INDEX `index_bill_detail_id` (`bill_detail_id`),
+			  ADD  INDEX `index_payin_type` (`payin_type`);
 		</sql>
 	</changeset>
 	<changeSet id="zhouguoting-2016-02-29-02" author="zhouguoting">
 		<sql>
 			ALTER TABLE express_set_branch
 			  ADD COLUMN payin_type TINYINT(4) DEFAULT 1  NOT NULL  COMMENT '缴款方式。1.站点缴款，2小件员缴款';
+		</sql>
+	</changeSet>
+	<changeSet id="zhouguoting-2016-03-31-01" author="zhouguoting">
+		<sql>
+			ALTER TABLE `express_set_user`   
+  				ADD  INDEX `idx_username` (`username`);
+		</sql>
+	</changeSet>
+	<changeSet id="zhouguoting-2016-03-31-02" author="zhouguoting">
+		<sql>
+			ALTER TABLE `fn_order_recharge`   
+			  ADD COLUMN `pay_detail_id` BIGINT(20) DEFAULT 0  NULL  COMMENT '支付平台扣款记录id（fn_pay_detail)', 
+			  ADD  INDEX `idx_pay_detail_id` (`pay_detail_id`);
+		</sql>
+	</changeSet>
+	<changeSet id="zhouguoting-2016-04-01-01" author="zhouguoting">
+		<sql>
+			ALTER TABLE `fn_pay_detail`   
+				ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创建人';
+		</sql>
+	</changeSet>
+	<changeSet id="zhouguoting-2016-04-01-02" author="zhouguoting">
+		<sql>
+			ALTER TABLE `fn_pay_platform_interface`   
+				ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创建人';
 		</sql>
 	</changeSet>
 </databaseChangeLog>
