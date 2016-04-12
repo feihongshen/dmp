@@ -9440,4 +9440,40 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 	
+	/**
+	 * 更新正向订单的deliverystate
+	 * @param cwbordertypeid 订单类型
+	 * @param cwb 订单号
+	 * @param deliverystate 配送状态
+	 * @author neo01.huang
+	 */
+	public void updateForwardOrderDeliveryState(Integer cwbordertypeid, String cwb, int deliverystate) {
+		logger.info("updateForwardOrderDeliveryState->cwbordertypeid:{},cwb:{},deliverystate:{}",
+				cwbordertypeid, cwb, deliverystate);
+		if (cwbordertypeid == null) {
+			logger.info("updateForwardOrderDeliveryState->cwbordertypeid is null");
+			return;
+		}
+		
+		if (!(cwbordertypeid == CwbOrderTypeIdEnum.Peisong.getValue() ||
+				cwbordertypeid == CwbOrderTypeIdEnum.OXO.getValue() ||
+				cwbordertypeid == CwbOrderTypeIdEnum.OXO_JIT.getValue() ||
+				cwbordertypeid == CwbOrderTypeIdEnum.Express.getValue())
+				) {
+			logger.info("updateForwardOrderDeliveryState->cwb:{}不是正向订单");
+			return;
+		}
+		
+		if (cwb == null || cwb.length() == 0) {
+			logger.info("updateForwardOrderDeliveryState->cwb is null or empty");
+			return;
+		}
+		
+		//更新deliverystate的值
+		cwbDAO.updateDeliveryStateBycwb(cwb, deliverystate);
+		//更新deliverystate的值
+		deliveryStateDAO.updateDeliveryStateValue(cwb, deliverystate);
+		logger.info("updateForwardOrderDeliveryState->update ok!");
+	}
+	
 }
