@@ -7152,6 +7152,16 @@ public class CwbOrderService extends BaseOrderService {
 		this.updateNextBranchId(cwbOrder.getCwb());
 		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch, "", System.currentTimeMillis(), cwbOrder.getCwb(), false);
 
+		//Added by leoliao at 2016-04-11 订单匹配站点后需要更新运单的下一站
+		try{
+			CwbOrder cwbOrderTmp = this.cwbDAO.getCwbByCwb(cwbOrder.getCwb());
+			if(cwbOrderTmp != null && cwbOrderTmp.getIsmpsflag() == IsmpsflagEnum.yes.getValue()){
+				this.transCwbDetailDAO.updateNextbranch(cwbOrderTmp.getCwb().trim(), cwbOrderTmp.getNextbranchid());
+			}
+		}catch(Exception ex){
+			logger.error("[DataInmportcontroller.editBatchBranch]更新一票多件对应的运单下一站出错", ex);
+		}				
+		//Added end
 	}
 
 	/**
@@ -9530,6 +9540,42 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(co.getCwb(), flowordertype, ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
 			}
 		}
+	}
+	
+	/**
+	 * 更新正向订单的deliverystate
+	 * @param cwbordertypeid 订单类型
+	 * @param cwb 订单号
+	 * @param deliverystate 配送状态
+	 * @author neo01.huang
+	 */
+	public void updateForwardOrderDeliveryState(Integer cwbordertypeid, String cwb, int deliverystate) {
+		logger.info("updateForwardOrderDeliveryState->cwbordertypeid:{},cwb:{},deliverystate:{}",
+				cwbordertypeid, cwb, deliverystate);
+		if (cwbordertypeid == null) {
+			logger.info("updateForwardOrderDeliveryState->cwbordertypeid is null");
+			return;
+		}
+		
+		if (!(cwbordertypeid == CwbOrderTypeIdEnum.Peisong.getValue() ||
+				cwbordertypeid == CwbOrderTypeIdEnum.OXO.getValue() ||
+				cwbordertypeid == CwbOrderTypeIdEnum.OXO_JIT.getValue() ||
+				cwbordertypeid == CwbOrderTypeIdEnum.Express.getValue())
+				) {
+			logger.info("updateForwardOrderDeliveryState->cwb:{}不是正向订单");
+			return;
+		}
+		
+		if (cwb == null || cwb.length() == 0) {
+			logger.info("updateForwardOrderDeliveryState->cwb is null or empty");
+			return;
+		}
+		
+		//更新deliverystate的值
+		cwbDAO.updateDeliveryStateBycwb(cwb, deliverystate);
+		//更新deliverystate的值
+		deliveryStateDAO.updateDeliveryStateValue(cwb, deliverystate);
+		logger.info("updateForwardOrderDeliveryState->update ok!");
 	}
 	
 }
