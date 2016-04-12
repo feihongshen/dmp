@@ -1272,7 +1272,7 @@
 	 */
 	function getCwbOrderEmbraced(){
 		var orderNo = $.trim($("#orderNo_id").val());
-		if(!numberOnlyValidater($("#orderNo_id"),"运单号")){
+		if(!numberOrLetterValidater($("#orderNo_id"),"运单号")){
 			$("#orderNo_id").val("");
 			return ;
 		}

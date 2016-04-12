@@ -103,11 +103,12 @@ public class ReturnCwbsController {
 		List<Branch> bList = cwborderService.getNextPossibleBranches(getSessionUser());
 		List<Branch> removeList = new ArrayList<Branch>();
 		for (Branch b : bList) {// 去掉中转站
-			if (b.getSitetype() == BranchEnum.KuFang.getValue() || b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
+			if (b.getSitetype() == BranchEnum.KuFang.getValue() || b.getSitetype() == BranchEnum.ZhongZhuan.getValue() || b.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				removeList.add(b);
 			}
 		}
 
+		bList.removeAll(removeList);
 		// 显示每天截止到”当前时间”的数据。
 		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 
@@ -125,7 +126,7 @@ public class ReturnCwbsController {
 		model.addAttribute("yichuzhanlist", yichuzhanlist);
 		model.addAttribute("yichuzhannums", (yichuzhanlistsize != null && !yichuzhanlistsize.isEmpty()) ? yichuzhanlistsize.size() : 0);
 		model.addAttribute("customerlist", customerList);
-		model.addAttribute("branchlist", removeList);
+		model.addAttribute("branchlist", bList);
 		model.addAttribute("customerid", customerid);
 		model.addAttribute("customerList", customerDAO.getAllCustomersByExistRules());// 经销商
 		return "returnCwbs/returnCwbsbackexport";

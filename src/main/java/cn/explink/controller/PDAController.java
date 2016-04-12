@@ -4959,7 +4959,7 @@ public class PDAController {
 		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
 		List<Branch> removeList = new ArrayList<Branch>();
 		for (Branch b : bList) {// 去掉中转站
-			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue())) {
+			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 				removeList.add(b);
 			}
 		}
