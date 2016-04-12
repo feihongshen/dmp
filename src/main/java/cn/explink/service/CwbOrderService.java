@@ -7088,6 +7088,16 @@ public class CwbOrderService extends BaseOrderService {
 		this.updateNextBranchId(cwbOrder.getCwb());
 		this.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.UpdateDeliveryBranch, "", System.currentTimeMillis(), cwbOrder.getCwb(), false);
 
+		//Added by leoliao at 2016-04-11 订单匹配站点后需要更新运单的下一站
+		try{
+			CwbOrder cwbOrderTmp = this.cwbDAO.getCwbByCwb(cwbOrder.getCwb());
+			if(cwbOrderTmp != null && cwbOrderTmp.getIsmpsflag() == IsmpsflagEnum.yes.getValue()){
+				this.transCwbDetailDAO.updateNextbranch(cwbOrderTmp.getCwb().trim(), cwbOrderTmp.getNextbranchid());
+			}
+		}catch(Exception ex){
+			logger.error("[DataInmportcontroller.editBatchBranch]更新一票多件对应的运单下一站出错", ex);
+		}				
+		//Added end
 	}
 
 	/**
