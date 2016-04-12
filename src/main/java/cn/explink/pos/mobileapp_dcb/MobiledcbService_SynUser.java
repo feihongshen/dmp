@@ -42,14 +42,13 @@ public class MobiledcbService_SynUser {
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_USER_MONITOR = "jms:queue:VirtualTopicConsumers.oms1.userMonitor";
-	private static final String MQ_HEADER_NAME_USER_MONITOR = "userMonitor";
 
 	@PostConstruct
 	public void init() throws Exception {
 		camelContext.addRoutes(new RouteBuilder() {
 			@Override
 			public void configure() throws Exception {
-				from("jms:queue:VirtualTopicConsumers.oms1.userMonitor?concurrentConsumers=5").to("bean:mobiledcbService_SynUser?method=userMonitor").routeId("userMonitorRoute");
+				from(MQ_FROM_URI_USER_MONITOR + "?concurrentConsumers=5").to("bean:mobiledcbService_SynUser?method=userMonitor").routeId("userMonitorRoute");
 			}
 		});
 	}
@@ -72,16 +71,10 @@ public class MobiledcbService_SynUser {
 			logger.error("监听配送员信息同步发生未知异常", e);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "userMonitor";
-			String fromUri = MQ_FROM_URI_USER_MONITOR;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_USER_MONITOR;
-			String headerValue = parm;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("userMonitor")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_USER_MONITOR)
+					.buildMessageHeader("userMonitor", parm)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			
 			// 把未完成MQ插入到数据库中, end

@@ -106,7 +106,6 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_AUTO_ADDRESS_INFO2 = "jms:queue:VirtualTopicConsumers.express2.autoAddressInfo2";
-	private static final String MQ_HEADER_NAME_AUTO_ADDRESS_INFO2 = "autoMatchAddressInfo";
 
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -120,7 +119,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						this.from("jms:queue:VirtualTopicConsumers.express2.autoAddressInfo2?concurrentConsumers=10").to("bean:addressMatchExpressService?method=matchAddress")
+						this.from(MQ_FROM_URI_AUTO_ADDRESS_INFO2 + "?concurrentConsumers=10").to("bean:addressMatchExpressService?method=matchAddress")
 								.routeId("express-addressMatch2");
 					}
 				});
@@ -217,16 +216,10 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 			this.logger.error("error while doing address match for " + info.getCwb(), e);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "matchAddress";
-			String fromUri = MQ_FROM_URI_AUTO_ADDRESS_INFO2;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_AUTO_ADDRESS_INFO2;
-			String headerValue = addressExtralInfo;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("matchAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_AUTO_ADDRESS_INFO2)
+					.buildMessageHeader("autoMatchAddressInfo", addressExtralInfo)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}

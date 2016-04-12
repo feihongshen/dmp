@@ -43,14 +43,13 @@ public class ZhtsOrderTrackService {
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.orderTrack.orderFlow";
-	private static final String MQ_HEADER_NAME_ORDER_FLOW = "orderFlow";
 	
 	/**
 	 * 全流程监听
 	 * 
 	 * @param orderFlow
 	 */
-	@Consume(uri = "jms:queue:VirtualTopicConsumers.orderTrack.orderFlow?concurrentConsumers=5")
+	@Consume(uri = MQ_FROM_URI_ORDER_FLOW + "?concurrentConsumers=5")
 	public void orderTrack(@Header("orderFlow") String orderFlow, @Header("MessageHeaderUUID") String messageHeaderUUID){
 		String cwb="";
 		try{
@@ -94,16 +93,10 @@ public class ZhtsOrderTrackService {
 			this.logger.error("推送中浩途胜全流程异常,cwb="+cwb, e);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "orderTrack";
-			String fromUri = MQ_FROM_URI_ORDER_FLOW;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_ORDER_FLOW;
-			String headerValue = orderFlow;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("orderTrack")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ORDER_FLOW)
+					.buildMessageHeader("orderFlow", orderFlow)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
