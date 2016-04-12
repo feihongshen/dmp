@@ -86,8 +86,13 @@ public class LogToDayByWareHouseController {
 
 	@RequestMapping("/nowlog")
 	public String nowlog(Model model, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) {
-		
+	
 		List<Branch> kufangList = branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
+		
+		if (branchid == 0) {
+			//获取第一个库房id
+			branchid = (kufangList != null && kufangList.size() > 0) ? kufangList.get(0).getBranchid() : 0;
+		}
 		
 		//update by neo01.huang, 2016-4-5
 		String startTime = "";
@@ -100,7 +105,7 @@ public class LogToDayByWareHouseController {
 		} else { //系统参数为空
 			long randomBranchid = 0;
 			if (branchid == 0) {
-				//获取随机一个库房id
+				//获取第一个库房id
 				randomBranchid = (kufangList != null && kufangList.size() > 0) ? kufangList.get(0).getBranchid() : 0;
 			}
 			//获取最新一条统计log
