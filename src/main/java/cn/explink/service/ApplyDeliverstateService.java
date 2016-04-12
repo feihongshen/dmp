@@ -28,9 +28,8 @@ public class ApplyDeliverstateService {
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_SEND_BTOC_TO_DMP = "jms:queue:sendBToCToDmp";
-	private static final String MQ_HEADER_NAME_SEND_BTOC_TO_DMP = "delIds";
 
-	@Consume(uri = "jms:queue:sendBToCToDmp")
+	@Consume(uri = MQ_FROM_URI_SEND_BTOC_TO_DMP)
 	public void saveError(@Header("delIds") String errorOrder, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		JSONObject delidsjson = JSONObject.fromObject(errorOrder);
 		try {
@@ -43,16 +42,10 @@ public class ApplyDeliverstateService {
 			logger.error("", e);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "saveError";
-			String fromUri = MQ_FROM_URI_SEND_BTOC_TO_DMP;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_SEND_BTOC_TO_DMP;
-			String headerValue = errorOrder;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveError")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_SEND_BTOC_TO_DMP)
+					.buildMessageHeader("delIds", errorOrder)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			
 			// 把未完成MQ插入到数据库中, end

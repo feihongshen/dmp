@@ -53,7 +53,7 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 			camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					from("jms:topic:systeminstall").to("bean:systemInstallService?method=notifyChange").routeId("配置改动");
+					from(MQ_FROM_URI_SYSTEM_INSTALL).to("bean:systemInstallService?method=notifyChange").routeId("配置改动");
 				}
 			});
 		} catch (Exception e) {
@@ -69,14 +69,10 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 			}
 		} catch (Exception e) {
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "notifyChange";
-			String fromUri = MQ_FROM_URI_SYSTEM_INSTALL;
-			String body = null;
 			Map<String, String> headers = parameters;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("notifyChange")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_SYSTEM_INSTALL)
 					.buildMessageHeader(headers)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end

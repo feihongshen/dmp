@@ -75,7 +75,6 @@ public class B2cJointMonitorService {
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR = "jms:queue:VirtualTopicConsumers.dmpmointor1.b2cDataSendResultMonitor";
-	private static final String MQ_HEADER_NAME_B2C_DATA_SEND_RESULT_MONITOR = "monitorb2cdata";
 
 	@PostConstruct
 	public void init() {
@@ -84,7 +83,7 @@ public class B2cJointMonitorService {
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.dmpmointor1.b2cDataSendResultMonitor?concurrentConsumers=5").to("bean:b2cJointMonitorService?method=updateDMPB2cDataMonitor")
+					this.from(MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR + "?concurrentConsumers=5").to("bean:b2cJointMonitorService?method=updateDMPB2cDataMonitor")
 							.routeId("updateDMPB2cData");
 				}
 
@@ -261,15 +260,10 @@ public class B2cJointMonitorService {
 		} catch (Exception e) {
 			this.logger.error("DMP接收OMS发送B2cData数据异常", e);
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "updateDMPB2cDataMonitor";
-			String fromUri = MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR;
-			String headerName = MQ_HEADER_NAME_B2C_DATA_SEND_RESULT_MONITOR;
-			String headerValue = parm;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("updateDMPB2cDataMonitor")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR)
+					.buildMessageHeader("monitorb2cdata", parm)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}

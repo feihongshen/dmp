@@ -12,7 +12,6 @@ import net.sf.json.JSONArray;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Header;
-import org.apache.camel.Headers;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonParseException;
@@ -95,23 +94,23 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 	private static final String MQ_FROM_URI_ADDRESS_MATCH_OXO = "jms:queue:VirtualTopicConsumers.oxo.addressmatchOXO";
 	
 	public void init() {
-		this.logger.info("init addressmatch camel routes");
+		logger.info("init addressmatch camel routes");
 		try {
 			this.address_url = this.systemInstallService.getParameter("addressmatch.url");
 			this.address_userid = this.systemInstallService.getParameter("addressmatch.userid");
 			
 			String addressmatchenabled = this.systemInstallService.getParameter("addressmatch.enabled");
 			if (addressmatchenabled.equals("1")) { //地址库启用
-				this.logger.info("enable addressmatch camel routes");
+				logger.info("enable addressmatch camel routes");
 				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						this.from("jms:queue:VirtualTopicConsumers.oxo.addressmatchOXO?concurrentConsumers=10").to("bean:addressMatchOXOService?method=matchAddress").routeId("OXO-addressMatch");
+						this.from(MQ_FROM_URI_ADDRESS_MATCH_OXO + "?concurrentConsumers=10").to("bean:addressMatchOXOService?method=matchAddress").routeId("OXO-addressMatch");
 					}
 				});
 			} 
 		} catch (Exception e) {
-			this.logger.error("camel context start fail", e);
+			logger.error("camel context start fail", e);
 		}
 
 	}
@@ -151,7 +150,7 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 	 * @param notifytype 匹配地址类型  0 揽件地址   1派件地址
 	 */
 	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb,@Header("address") String address,@Header("notifytype") long notifytype, @Header("MessageHeaderUUID") String messageHeaderUUID) {
-		this.logger.info("start address match for {}", cwb);
+		logger.info("start address match for {}", cwb);
 		try {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 			if(!(cwbOrder.getCwbordertypeid()==4||cwbOrder.getCwbordertypeid()==5)){
@@ -171,12 +170,9 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 			}
 
 		} catch (Exception e) {
-			this.logger.error("error while doing address match for "+cwb,e);
+			logger.error("error while doing address match for "+cwb,e);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "matchAddress";
-			String fromUri = MQ_FROM_URI_ADDRESS_MATCH_OXO;
-			String body = null;
 			Map<String, String> headers = new HashMap<String, String>();
 			headers.put("userid", String.valueOf(userid));
 			headers.put("address",address);
@@ -184,8 +180,8 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 			headers.put("notifytype", String.valueOf(notifytype));
 			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("matchAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADDRESS_MATCH_OXO)
 					.buildMessageHeader(headers)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			
@@ -217,7 +213,7 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 				}
 				
 			} catch (Exception e) {
-				this.logger.error("error while doing address match for "+cwb,e);
+				logger.error("error while doing address match for "+cwb,e);
 			}
 			return null;
 
@@ -238,7 +234,7 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 						return b;
 					}
 				} catch (CwbException ce) {
-					this.logger.error("update branche for cwb send jms {},error:{}", cwb, ce.getMessage());
+					logger.error("update branche for cwb send jms {},error:{}", cwb, ce.getMessage());
 				}
 			}
 			return null;

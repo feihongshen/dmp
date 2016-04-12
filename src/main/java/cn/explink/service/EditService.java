@@ -59,13 +59,10 @@ public class EditService {
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.editshowinfo.orderFlow";
-	private static final String MQ_HEADER_NAME_ORDER_FLOW = "orderFlow";
 	
 	private static final String MQ_FROM_URI_CWBBATCH_DELETE = "jms:queue:VirtualTopicConsumers.editdeleteinfo.cwbbatchDelete";
-	private static final String MQ_HEADER_NAME_CWBBATCH_DELETE = "losecwbbatch";
 	
 	private static final String MQ_FROM_URI_LOSE_CWB = "jms:queue:VirtualTopicConsumers.editdeleteinfoTwo.loseCwb";
-	private static final String MQ_HEADER_NAME_LOSE_CWB = "loseCwbByEmaildateid";
 
 	@PostConstruct
 	public void init() {
@@ -73,9 +70,9 @@ public class EditService {
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.editshowinfo.orderFlow?concurrentConsumers=5").to("bean:editService?method=saveEdit").routeId("editSave");
-					this.from("jms:queue:VirtualTopicConsumers.editdeleteinfo.cwbbatchDelete?concurrentConsumers=5").to("bean:editService?method=deleteEdit").routeId("editDelete");
-					this.from("jms:queue:VirtualTopicConsumers.editdeleteinfoTwo.loseCwb?concurrentConsumers=5").to("bean:editService?method=deleteEditTwo").routeId("editDeleteTwo");
+					this.from(MQ_FROM_URI_ORDER_FLOW + "?concurrentConsumers=5").to("bean:editService?method=saveEdit").routeId("editSave");
+					this.from(MQ_FROM_URI_CWBBATCH_DELETE + "?concurrentConsumers=5").to("bean:editService?method=deleteEdit").routeId("editDelete");
+					this.from(MQ_FROM_URI_LOSE_CWB + "?concurrentConsumers=5").to("bean:editService?method=deleteEditTwo").routeId("editDeleteTwo");
 
 				}
 			});
@@ -98,16 +95,10 @@ public class EditService {
 			this.logger.info("--edit订单失效功能：信息：{}", parm);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "deleteEditTwo";
-			String fromUri = MQ_FROM_URI_LOSE_CWB;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_LOSE_CWB;
-			String headerValue = parm;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("deleteEditTwo")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_LOSE_CWB)
+					.buildMessageHeader("loseCwbByEmaildateid", parm)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
@@ -123,16 +114,10 @@ public class EditService {
 			this.logger.info("--edit订单失效功能：，订单号：{}", cwb);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "deleteEdit";
-			String fromUri = MQ_FROM_URI_CWBBATCH_DELETE;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_CWBBATCH_DELETE;
-			String headerValue = cwb;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("deleteEdit")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_CWBBATCH_DELETE)
+					.buildMessageHeader("losecwbbatch", cwb)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
@@ -147,16 +132,10 @@ public class EditService {
 			this.logger.error("saveEdit failed. parm = " + parm);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "saveEdit";
-			String fromUri = MQ_FROM_URI_ORDER_FLOW;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_ORDER_FLOW;
-			String headerValue = parm;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveEdit")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ORDER_FLOW)
+					.buildMessageHeader("orderFlow", parm)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}

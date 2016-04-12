@@ -478,10 +478,8 @@ public class CwbOrderService extends BaseOrderService {
 	private MqExceptionDAO mqExceptionDAO; 
 	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
-	private static final String MQ_HEADER_NAME_RECEIVE_GOODS_ORDER_FLOW = "orderFlow";
 	
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
-	private static final String MQ_HEADER_NAME_DELIVERY_APP_JMS_ORDER_FLOW = "orderFlow";
 	
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
 		logger.info("导入一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
@@ -7611,7 +7609,7 @@ public class CwbOrderService extends BaseOrderService {
 	 *
 	 * @param orderFlow
 	 */
-	@Consume(uri = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow?concurrentConsumers=5")
+	@Consume(uri = MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW + "?concurrentConsumers=5")
 	public void autoReceiveGoods(@Header("orderFlow") String orderFlow, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		try {
 			logger.info("开始对orderflow的监听");
@@ -7622,15 +7620,10 @@ public class CwbOrderService extends BaseOrderService {
             logger.error("", e);
             
 	        // 把未完成MQ插入到数据库中, start
-			String functionName = "autoReceiveGoods";
-			String fromUri = MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_RECEIVE_GOODS_ORDER_FLOW;
-			String headerValue = orderFlow;
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("autoReceiveGoods")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW)
+					.buildMessageHeader("orderFlow", orderFlow)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 	
 			// 把未完成MQ插入到数据库中, end
@@ -8964,7 +8957,7 @@ public class CwbOrderService extends BaseOrderService {
 	 *
 	 * @param orderFlow
 	 */
-	@Consume(uri = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow?concurrentConsumers=5")
+	@Consume(uri = MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW + "?concurrentConsumers=5")
 	public void deliverAppJms(@Header("orderFlow") String orderFlow, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		try {
 			// logger.info("棒棒糖派件服务JMS监听：START");
@@ -8977,17 +8970,11 @@ public class CwbOrderService extends BaseOrderService {
 			logger.info("棒棒糖派件服务JMS监听异常,orderFlow:{}", orderFlow);
 			logger.error("", e);
 			
-			// 把未完成MQ插入到数据库中, start
-			String functionName = "deliverAppJms";
-			String fromUri = MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_DELIVERY_APP_JMS_ORDER_FLOW;
-			String headerValue = orderFlow;
-			
+			// 把未完成MQ插入到数据库中, start		
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri).buildMessageHeaderUUID(messageHeaderUUID)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("deliverAppJms")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW).buildMessageHeaderUUID(messageHeaderUUID)
+					.buildMessageHeader("orderFlow", orderFlow)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
@@ -9076,7 +9063,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	/**
 	 *
-	 * 接收结果处理 TODO 单独表格存储，用于监控
+	 * 接收结果处理 单独表格存储，用于监控
 	 *
 	 * @param result
 	 * @return

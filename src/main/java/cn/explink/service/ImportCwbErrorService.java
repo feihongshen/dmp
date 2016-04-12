@@ -26,9 +26,8 @@ public class ImportCwbErrorService {
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_CWBORDERINSERT = "jms:queue:cwborderinsert";
-	private static final String MQ_HEADER_NAME_CWBORDERINSERT = "errorOrder";
 
-	@Consume(uri = "jms:queue:cwborderinsert")
+	@Consume(uri = MQ_FROM_URI_CWBORDERINSERT)
 	public void saveError(@Header("errorOrder") String errorOrder, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		JSONObject errorJson = JSONObject.fromObject(errorOrder);
 		try {
@@ -44,16 +43,10 @@ public class ImportCwbErrorService {
 			logger.error(errorOrder);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "saveError";
-			String fromUri = MQ_FROM_URI_CWBORDERINSERT;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_CWBORDERINSERT;
-			String headerValue = errorOrder;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveError")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_CWBORDERINSERT)
+					.buildMessageHeader("errorOrder", errorOrder)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}

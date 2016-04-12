@@ -127,7 +127,6 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	private static final String MQ_FROM_URI_ADDRESS_MATCH = "jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch";
 	
 	private static final String MQ_FROM_URI_ADD_ZHANDIAN = "jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian";
-	private static final String MQ_HEADER_NAME_ADD_ZHANDIAN = "branchid";
 
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -148,7 +147,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						this.from(MQ_FROM_URI_ADDRESS_MATCH + "?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=matchAddress").routeId("地址匹配");
 						/*
 						 * this.from(
@@ -158,7 +157,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						 * to("bean:addressMatchService?method=matchAddressMap")
 						 * .routeId("地址百度匹配");
 						 */
-						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						this.from(MQ_FROM_URI_ADD_ZHANDIAN + "?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=addZhanDian").routeId("创建地址库中的站点");
 					}
 				});
@@ -198,15 +197,9 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			this.logger.error("error add zhandian branche id:{}", branchid);
 			
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "addZhanDian";
-			String fromUri = MQ_FROM_URI_ADD_ZHANDIAN;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_ADD_ZHANDIAN;
-			String headerValue = branchid;
-			
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addZhanDian")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADD_ZHANDIAN)
+					.buildMessageHeader("branchid", branchid)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
@@ -257,15 +250,12 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		} catch (Exception e) {
 			this.logger.error("error while doing address match for "+cwb, e);
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "matchAddress";
-			String fromUri = MQ_FROM_URI_ADDRESS_MATCH;
-			String body = null;
 			Map<String, String> headers = new HashMap<String, String>();
 			headers.put("userid", String.valueOf(userid));
 			headers.put("cwb",cwb);
 			
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("matchAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADDRESS_MATCH)
 					.buildMessageHeader(headers)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end

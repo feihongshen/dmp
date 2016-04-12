@@ -102,7 +102,6 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.sms.orderFlow";
-	private static final String MQ_HEADER_NAME_ORDER_FLOW = "orderFlow";
 
 	public void init() {
 		logger.info("init sms camel routes");
@@ -111,7 +110,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.sms.orderFlow?concurrentConsumers=" + 15).to("bean:smsSendService?method=sendFlow").routeId("短信发送");
+					this.from(MQ_FROM_URI_ORDER_FLOW + "?concurrentConsumers=" + 15).to("bean:smsSendService?method=sendFlow").routeId("短信发送");
 				}
 			});
 		} catch (Exception e) {
@@ -819,16 +818,10 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			this.sendSms(orderFlow);
 		} catch (Exception e) {
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "sendFlow";
-			String fromUri = MQ_FROM_URI_ORDER_FLOW;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_ORDER_FLOW;
-			String headerValue = parm;
-
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("sendFlow")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ORDER_FLOW)
+					.buildMessageHeader("orderFlow", parm)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}

@@ -72,7 +72,6 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	private MqExceptionDAO mqExceptionDAO;
 	
 	private static final String MQ_FROM_URI_EXECUTE_TPS_INTERFACE = "jms:queue:VirtualTopicConsumers.tps.executeTpsInterface";
-	private static final String MQ_HEADER_NAME_EXECUTE_TPS_INTERFACE = "executeTpsInterfaceHeader";
 
 	public void init() {
 		this.logger.info("init tps interface camel routes");
@@ -80,7 +79,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.tps.executeTpsInterface?concurrentConsumers=15").to("bean:expressTpsInterfaceService?method=exeTpsInterface")
+					this.from(MQ_FROM_URI_EXECUTE_TPS_INTERFACE + "?concurrentConsumers=15").to("bean:expressTpsInterfaceService?method=exeTpsInterface")
 							.routeId("TPS-IntefaceMatch");
 				}
 			});
@@ -103,16 +102,10 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 			return resultMap;
 		} catch (Exception e) {
 			// 把未完成MQ插入到数据库中, start
-			String functionName = "exeTpsInterface";
-			String fromUri = MQ_FROM_URI_EXECUTE_TPS_INTERFACE;
-			String body = null;
-			String headerName = MQ_HEADER_NAME_EXECUTE_TPS_INTERFACE;
-			String headerValue = param;
-			
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
-					.buildMessageHeader(headerName, headerValue)
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("exeTpsInterface")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_EXECUTE_TPS_INTERFACE)
+					.buildMessageHeader("executeTpsInterfaceHeader", param)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
