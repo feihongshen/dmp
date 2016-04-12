@@ -110,7 +110,7 @@ public class UserMonitorService {
 			logger.error("send userMonitor message error", ee);
 			//写MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("send")
-					.buildExceptionInfo(ee.getMessage()).buildTopic(this.userMonitorProducerTemplate.getDefaultEndpoint().getEndpointUri())
+					.buildExceptionInfo(ee.toString()).buildTopic(this.userMonitorProducerTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("userMonitor", parms).getMqException());
 		
 		}

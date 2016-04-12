@@ -48,11 +48,10 @@ public class ApplyDeliverstateService {
 			String body = null;
 			String headerName = MQ_HEADER_NAME_SEND_BTOC_TO_DMP;
 			String headerValue = errorOrder;
-			String exceptionMessage = e.getMessage();
 			
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
 					.buildMessageHeader(headerName, headerValue)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			

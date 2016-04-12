@@ -49,11 +49,10 @@ public class ImportCwbErrorService {
 			String body = null;
 			String headerName = MQ_HEADER_NAME_CWBORDERINSERT;
 			String headerValue = errorOrder;
-			String exceptionMessage = e.getMessage();
 			
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
 					.buildMessageHeader(headerName, headerValue)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end

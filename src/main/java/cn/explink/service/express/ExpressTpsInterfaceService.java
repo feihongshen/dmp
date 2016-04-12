@@ -108,11 +108,10 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 			String body = null;
 			String headerName = MQ_HEADER_NAME_EXECUTE_TPS_INTERFACE;
 			String headerValue = param;
-			String exceptionMessage = e.getMessage();
 			
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
 					.buildMessageHeader(headerName, headerValue)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end

@@ -200,7 +200,7 @@ public class DataImportService {
 					logger.error("", ee);
 					//写MQ异常表
 					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("importData")
-							.buildExceptionInfo(e.getMessage()).buildTopic(this.importCwbErrorProducer.getDefaultEndpoint().getEndpointUri())
+							.buildExceptionInfo(e.toString()).buildTopic(this.importCwbErrorProducer.getDefaultEndpoint().getEndpointUri())
 							.buildMessageHeader("errorOrder", errorOrder.toString()).getMqException());
 				}
 			}
@@ -226,7 +226,7 @@ public class DataImportService {
 				logger.error("", e);
 				//写MQ异常表
 				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("importSingleData")
-						.buildExceptionInfo(e.getMessage()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+						.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeaderObject(map).getMqException());
 			}
 		}
@@ -251,7 +251,7 @@ public class DataImportService {
 				this.logger.error(cwbOrder.getCwb() + "匹配站点失败");
 				//写MQ异常表
 				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("resendAddressmatch")
-						.buildExceptionInfo(e.getMessage()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+						.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeaderObject(map).getMqException());
 		
 			}
@@ -317,7 +317,7 @@ public class DataImportService {
 			logger.error("", e);
 			//写MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("batchedit")
-					.buildExceptionInfo(e.getMessage()).buildTopic(this.batchedit.getDefaultEndpoint().getEndpointUri())
+					.buildExceptionInfo(e.toString()).buildTopic(this.batchedit.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("emaildate", header).getMqException());
 	
 		}

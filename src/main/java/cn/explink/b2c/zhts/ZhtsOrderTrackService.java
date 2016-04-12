@@ -3,8 +3,6 @@ package cn.explink.b2c.zhts;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sourceforge.jtds.jdbc.DateTime;
-
 import org.apache.camel.Consume;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
@@ -101,11 +99,10 @@ public class ZhtsOrderTrackService {
 			String body = null;
 			String headerName = MQ_HEADER_NAME_ORDER_FLOW;
 			String headerValue = orderFlow;
-			String exceptionMessage = e.getMessage();
 			
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
 					.buildMessageHeader(headerName, headerValue)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end

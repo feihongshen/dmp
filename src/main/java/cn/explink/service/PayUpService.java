@@ -320,7 +320,7 @@ public class PayUpService {
 			logger.error("", e);
 			//写MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("sendPayUp")
-					.buildExceptionInfo(e.getMessage()).buildTopic(this.sendJMSPayUp.getDefaultEndpoint().getEndpointUri())
+					.buildExceptionInfo(e.toString()).buildTopic(this.sendJMSPayUp.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("PayUp", sendJson).getMqException());
 		}
 	}

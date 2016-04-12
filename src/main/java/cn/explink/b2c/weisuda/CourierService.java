@@ -38,7 +38,7 @@ public class CourierService {
 			//写MQ异常表
 			try {
 				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("courierUpdate")
-						.buildExceptionInfo(e.getMessage()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
+						.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageBody(JsonUtil.translateToJson(user)).buildMessageHeader("user", "update").getMqException());
 			} catch (IOException e1) {
 				logger.error("转换异常", e1);
@@ -57,7 +57,7 @@ public class CourierService {
 			
 			try {
 				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("carrierDel")
-						.buildExceptionInfo(e.getMessage()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
+						.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageBody(JsonUtil.translateToJson(user)).buildMessageHeader("user", "del").getMqException());
 			} catch (IOException e1) {
 				logger.error("转换异常", e1);
@@ -72,7 +72,7 @@ public class CourierService {
 		} catch (Exception e) {
 			this.logger.error("供货商通知异常JMS", e);
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("customerUpdate")
-					.buildExceptionInfo(e.getMessage()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
+					.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("customer", "update").getMqException());
 		}
 
@@ -84,7 +84,7 @@ public class CourierService {
 		} catch (Exception e) {
 			this.logger.error("(对接平台)供货商通知异常JMS", e);
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("platformCustomerUpdate")
-					.buildExceptionInfo(e.getMessage()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
+					.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("platformcustomer", "update").getMqException());
 
 		}

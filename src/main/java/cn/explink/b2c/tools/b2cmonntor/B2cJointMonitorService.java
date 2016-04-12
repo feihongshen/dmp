@@ -263,14 +263,12 @@ public class B2cJointMonitorService {
 			// 把未完成MQ插入到数据库中, start
 			String functionName = "updateDMPB2cDataMonitor";
 			String fromUri = MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR;
-			String body = null;
 			String headerName = MQ_HEADER_NAME_B2C_DATA_SEND_RESULT_MONITOR;
 			String headerValue = parm;
-			String exceptionMessage = e.getMessage();
 			
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
 					.buildMessageHeader(headerName, headerValue)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end

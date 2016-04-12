@@ -101,7 +101,7 @@ public class OrderArriveTimeService {
 				logger.error("send flow message error", ee);
 				//写MQ异常表
 				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("save")
-						.buildExceptionInfo(ee.getMessage()).buildTopic(this.daocheProducerTemplate.getDefaultEndpoint().getEndpointUri())
+						.buildExceptionInfo(ee.toString()).buildTopic(this.daocheProducerTemplate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeader("daocheCwbAndTime", json.toString()).getMqException());
 			}
 		}

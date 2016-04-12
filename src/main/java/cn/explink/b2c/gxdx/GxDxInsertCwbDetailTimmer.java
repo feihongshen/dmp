@@ -14,9 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.gxdx.xmldto.RequestDto;
-import cn.explink.b2c.jiuye.JiuYe;
-import cn.explink.b2c.jiuye.JiuYeInsertCwbDetailTimmer;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -149,7 +146,7 @@ public class GxDxInsertCwbDetailTimmer {
 					logger.error("", e);
 					//写MQ异常表
 					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("ImportSignOrder")
-							.buildExceptionInfo(e.getMessage()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+							.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 							.buildMessageHeaderObject(map).getMqException());
 				}
 			}

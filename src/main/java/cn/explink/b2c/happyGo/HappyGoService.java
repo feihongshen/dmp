@@ -891,7 +891,7 @@ public class HappyGoService {
 									logger.error("", e);
 									//写MQ异常表
 									this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("timerHappy")
-											.buildExceptionInfo(e.getMessage()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+											.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 											.buildMessageHeaderObject(map).getMqException());
 								}
 							}
@@ -944,7 +944,7 @@ public class HappyGoService {
 								logger.error("", e);
 								//写MQ异常表
 								this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("happyGoForDetail")
-										.buildExceptionInfo(e.getMessage()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+										.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 										.buildMessageHeaderObject(map).getMqException());
 							}
 

@@ -182,11 +182,10 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 			headers.put("address",address);
 			headers.put("cwb", cwb);
 			headers.put("notifytype", String.valueOf(notifytype));
-			String exceptionMessage = e.getMessage();
 			
 			//消费MQ异常表
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(functionName)
-					.buildExceptionInfo(exceptionMessage).buildTopic(fromUri)
+					.buildExceptionInfo(e.toString()).buildTopic(fromUri)
 					.buildMessageHeader(headers)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			

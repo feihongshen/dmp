@@ -328,7 +328,7 @@ public class ComplaintService {
 			//写MQ异常表
 			try {
 				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("send")
-						.buildExceptionInfo(ee.getMessage()).buildTopic(this.complaintTemplate.getDefaultEndpoint().getEndpointUri())
+						.buildExceptionInfo(ee.toString()).buildTopic(this.complaintTemplate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeader("complaint", om.writeValueAsString(complaint)).getMqException());
 			} catch (IOException e) {
 				logger.error("转换错误", e);
