@@ -1719,4 +1719,16 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set deliverybranchid=? where cwb='" + cwb + "' and state=1";
 		this.jdbcTemplate.update(sql, deliverybranchid);
 	}
+	
+	/**
+	 * 更新deliverystate的值
+	 * @param cwb 订单号
+	 * @param deliverystate 配送状态
+	 * @author neo01.huang
+	 */
+	public void updateDeliveryStateValue(String cwb, int deliverystate){
+		String sql = "update express_ops_delivery_state set deliverystate=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, deliverystate, cwb);
+	}
+	
 }
