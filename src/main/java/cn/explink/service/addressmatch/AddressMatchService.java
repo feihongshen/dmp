@@ -197,7 +197,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			this.logger.error("error add zhandian branche id:{}", branchid);
 			
 			// 把未完成MQ插入到数据库中, start
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "addZhanDian")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".addZhanDian")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADD_ZHANDIAN)
 					.buildMessageHeader("branchid", branchid)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
@@ -254,7 +254,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			headers.put("userid", String.valueOf(userid));
 			headers.put("cwb",cwb);
 			
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "matchAddress")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".matchAddress")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADDRESS_MATCH)
 					.buildMessageHeader(headers)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());

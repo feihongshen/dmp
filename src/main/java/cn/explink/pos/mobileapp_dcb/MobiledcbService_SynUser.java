@@ -72,7 +72,7 @@ public class MobiledcbService_SynUser {
 			
 			// 把未完成MQ插入到数据库中, start
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "userMonitor")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".userMonitor")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_USER_MONITOR)
 					.buildMessageHeader("userMonitor", parm)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());

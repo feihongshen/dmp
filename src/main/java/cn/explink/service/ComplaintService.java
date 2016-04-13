@@ -327,7 +327,7 @@ public class ComplaintService {
 			logger.error("send flow complaint error", ee);
 			//写MQ异常表
 			try {
-				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "send")
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".send")
 						.buildExceptionInfo(ee.toString()).buildTopic(this.complaintTemplate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeader("complaint", om.writeValueAsString(complaint)).getMqException());
 			} catch (IOException e) {

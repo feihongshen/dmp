@@ -37,7 +37,7 @@ public class CourierService {
 			logger.error("", e);
 			//写MQ异常表
 			try {
-				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "courierUpdate")
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".courierUpdate")
 						.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageBody(JsonUtil.translateToJson(user)).buildMessageHeader("user", "update").getMqException());
 			} catch (IOException e1) {
@@ -56,7 +56,7 @@ public class CourierService {
 			logger.error("", e);
 			
 			try {
-				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "carrierDel")
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".carrierDel")
 						.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageBody(JsonUtil.translateToJson(user)).buildMessageHeader("user", "del").getMqException());
 			} catch (IOException e1) {
@@ -71,7 +71,7 @@ public class CourierService {
 			this.courierUpdate.sendBodyAndHeader(null, "customer", "update");
 		} catch (Exception e) {
 			this.logger.error("供货商通知异常JMS", e);
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "customerUpdate")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".customerUpdate")
 					.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("customer", "update").getMqException());
 		}
@@ -83,7 +83,7 @@ public class CourierService {
 			this.courierUpdate.sendBodyAndHeader(null, "platformcustomer", "update");
 		} catch (Exception e) {
 			this.logger.error("(对接平台)供货商通知异常JMS", e);
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "platformCustomerUpdate")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".platformCustomerUpdate")
 					.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("platformcustomer", "update").getMqException());
 

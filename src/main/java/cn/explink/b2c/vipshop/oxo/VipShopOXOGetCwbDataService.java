@@ -432,7 +432,7 @@ public class VipShopOXOGetCwbDataService {
 								}catch(Exception e){
 									logger.error("", e);
 									//写MQ异常表
-									this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "extractedDataImport")
+									this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".extractedDataImport")
 											.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 											.buildMessageHeaderObject(map).getMqException());
 								}
@@ -449,7 +449,7 @@ public class VipShopOXOGetCwbDataService {
 								}catch(Exception e){
 									logger.error("", e);
 									//写MQ异常表
-									this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "extractedDataImport")
+									this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".extractedDataImport")
 											.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 											.buildMessageHeaderObject(map).getMqException());
 								}
