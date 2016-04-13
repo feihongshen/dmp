@@ -831,9 +831,12 @@
 <!-- 				<tomcat.manager.url>http://192.168.0.217:8041/manager</tomcat.manager.url> -->
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>50</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://localhost:3306/merge_gztl_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<!-- <expressurl.url>jdbc:mysql://localhost:3306/merge_gztl_dmp?zeroDateTimeBehavior=convertToNull&amp;amp;characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
  				<expressurl.user>root</expressurl.user>
-				<expressurl.password>root</expressurl.password>
+				<expressurl.password>root</expressurl.password> -->
+				<expressurl.url>jdbc:mysql://10.199.247.161:3306/sypj_dmp_test2?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.user>root</expressurl.user>
+				<expressurl.password>dmpdmp1555</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
 				<jms.brokerURL>tcp://127.0.0.1:61616</jms.brokerURL>
 				<uploadimgPath>D:\file\uploadimg\</uploadimgPath>
@@ -4016,7 +4019,7 @@
 				<tomcat.manager.url></tomcat.manager.url>
 				<drivers>com.mysql.jdbc.Driver</drivers>
 				<expressurl.maxconn>100</expressurl.maxconn>
-				<expressurl.url>jdbc:mysql://10.199.247.161:3306/sypj_dmp_test2?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
+				<expressurl.url>jdbc:mysql://10.199.247.161:3306/merge_gztl_dmp?characterEncoding=utf8&amp;amp;autoReconnect=true&amp;amp;failOverReadOnly=false&amp;amp;useCursorFetch=true&amp;amp;defaultFetchSize=1000</expressurl.url>
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>dmpdmp1555</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
