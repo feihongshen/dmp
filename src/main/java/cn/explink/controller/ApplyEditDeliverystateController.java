@@ -296,6 +296,9 @@ public class ApplyEditDeliverystateController {
 					if (aeds != null) {
 						// 重置审核的最终方法
 						EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), this.getSessionUser().getUserid());
+						// add by bruce shangguan 20160413 重置反馈订单，添加应付甲方调整记录
+						this.orderPayChangeService.resetOrder(cwb,ec_dsd, edittime);
+						// end 20160413
 						this.applyEditDeliverystateDAO.updateShenheStatePass(cwb, edituserid, edittime);// 更改审核状态
 
 						// 重置反馈状态调整单逻辑(若原先配送结果为上门退、换、送成功则处理调整单逻辑)
