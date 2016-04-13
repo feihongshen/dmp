@@ -35,7 +35,7 @@ public class TpsInterfaceExecutor {
 		}catch(Exception e){
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("executTpsInterface")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "executTpsInterface")
 					.buildExceptionInfo(e.toString()).buildTopic(this.executeTpsInterfaceTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("executeTpsInterfaceHeader", Tools.obj2json(paramObj)).getMqException());
 		}
@@ -63,7 +63,7 @@ public class TpsInterfaceExecutor {
 		}catch(Exception e){
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("autoMatch")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "autoMatch")
 					.buildExceptionInfo(e.toString()).buildTopic(this.addressMatchExpressService.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("autoMatchAddressInfo", Tools.obj2json(info)).getMqException());
 		}

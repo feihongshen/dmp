@@ -199,7 +199,7 @@ public class DataImportService {
 				} catch (Exception ee) {
 					logger.error("", ee);
 					//写MQ异常表
-					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("importData")
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "importData")
 							.buildExceptionInfo(e.toString()).buildTopic(this.importCwbErrorProducer.getDefaultEndpoint().getEndpointUri())
 							.buildMessageHeader("errorOrder", errorOrder.toString()).getMqException());
 				}
@@ -225,7 +225,7 @@ public class DataImportService {
 			}catch(Exception e){
 				logger.error("", e);
 				//写MQ异常表
-				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("importSingleData")
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "importSingleData")
 						.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeaderObject(map).getMqException());
 			}
@@ -250,7 +250,7 @@ public class DataImportService {
 				logger.error("", e);
 				this.logger.error(cwbOrder.getCwb() + "匹配站点失败");
 				//写MQ异常表
-				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("resendAddressmatch")
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "resendAddressmatch")
 						.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeaderObject(map).getMqException());
 		
@@ -316,7 +316,7 @@ public class DataImportService {
 		} catch (Exception e) {
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("batchedit")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "batchedit")
 					.buildExceptionInfo(e.toString()).buildTopic(this.batchedit.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("emaildate", header).getMqException());
 	

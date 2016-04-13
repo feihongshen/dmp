@@ -44,7 +44,7 @@ public class ImportCwbErrorService {
 			
 			// 把未完成MQ插入到数据库中, start
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveError")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "saveError")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_CWBORDERINSERT)
 					.buildMessageHeader("errorOrder", errorOrder)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());

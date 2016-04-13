@@ -261,7 +261,7 @@ public class B2cJointMonitorService {
 			this.logger.error("DMP接收OMS发送B2cData数据异常", e);
 			// 把未完成MQ插入到数据库中, start
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("updateDMPB2cDataMonitor")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "updateDMPB2cDataMonitor")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR)
 					.buildMessageHeader("monitorb2cdata", parm)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());

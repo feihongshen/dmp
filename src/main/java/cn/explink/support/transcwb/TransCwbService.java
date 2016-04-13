@@ -90,7 +90,7 @@ public class TransCwbService implements CwbTranslator {
 			
 			// 把未完成MQ插入到数据库中, start
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveTransCwb")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "saveTransCwb")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ORDER_FLOW)
 					.buildMessageHeader("orderFlow", parm)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());

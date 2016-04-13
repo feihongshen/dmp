@@ -99,7 +99,7 @@ public class DongFangCJInsertCwbDetailTimmer {
 						}catch(Exception e){
 							logger.error("", e);
 							//写MQ异常表
-							this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("selectTempAndInsertToCwbDetail")
+							this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "selectTempAndInsertToCwbDetail")
 									.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 									.buildMessageHeaderObject(map).getMqException());
 						}

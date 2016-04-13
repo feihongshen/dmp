@@ -238,7 +238,7 @@ public class VipshopInsertCwbDetailTimmer {
 				}catch(Exception e){
 					logger.error("", e);
 					//写MQ异常表
-					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("ImportSignOrder")
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "ImportSignOrder")
 							.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 							.buildMessageHeaderObject(map).getMqException());
 				}
@@ -456,7 +456,7 @@ public class VipshopInsertCwbDetailTimmer {
 			}catch(Exception e){
 				logger.error("", e);
 				//写MQ异常表
-				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("processIntoTable")
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "processIntoTable")
 						.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeaderObject(map).getMqException());
 			}

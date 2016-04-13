@@ -413,10 +413,10 @@ public class BranchContractService {
 		} catch (Exception e) {
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addzhandianToAddress")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "addzhandianToAddress")
 					.buildExceptionInfo(e.toString()).buildTopic(this.addzhandian.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("branchid", branchid + "").getMqException());
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addzhandianToAddress")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass() + "addzhandianToAddress")
 					.buildExceptionInfo(e.toString()).buildTopic(this.savezhandian.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("branch", branchToJson.toString()).getMqException());
 		}
