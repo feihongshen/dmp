@@ -19,8 +19,10 @@ import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.service.CwbOrderService;
@@ -51,6 +53,9 @@ public class VipShopOXOInsertCwbDetailTimmer {
 	@Produce(uri = "jms:topic:addressmatchOXO")
 	ProducerTemplate addressmatch;
 
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
 	/**
 	 * OXO定时器，查询临时表，插入数据到detail表中。
 	 */
@@ -126,7 +131,15 @@ public class VipShopOXOInsertCwbDetailTimmer {
 				map.put("userid", "1");
 				map.put("address", pickAddress);
 				map.put("notifytype", 0);
-				addressmatch.sendBodyAndHeaders(null, map);//解析提货站点
+				try{
+					addressmatch.sendBodyAndHeaders(null, map);//解析提货站点
+				}catch(Exception e){
+					logger.error("", e);
+					//写MQ异常表
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("ImportSignOrder")
+							.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+							.buildMessageHeaderObject(map).getMqException());
+				}
 			}
 			
 			if(StringUtils.isNotBlank(cwbOrder.getConsigneeaddress())){
@@ -135,7 +148,15 @@ public class VipShopOXOInsertCwbDetailTimmer {
 				map.put("userid", "1");
 				map.put("address", cwbOrder.getConsigneeaddress());
 				map.put("notifytype", 1);
-				addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+				try{
+					addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+				}catch(Exception e){
+					logger.error("", e);
+					//写MQ异常表
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("ImportSignOrder")
+							.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+							.buildMessageHeaderObject(map).getMqException());
+				}
 			}
 
 		}

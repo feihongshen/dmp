@@ -300,7 +300,8 @@ public class ExpressOrderDao {
 			sql.append(Tools.assembleInByList(flowOrderTypeList));
 		}
 		// 未合包
-		sql.append(" and detail.cwb not in(select bale_cwb.cwb from express_ops_bale_cwb bale_cwb inner join express_ops_bale bale on bale_cwb.baleid=bale.id where bale.balestate<>7)");
+		//sql.append(" and detail.cwb not in(select bale_cwb.cwb from express_ops_bale_cwb bale_cwb inner join express_ops_bale bale on bale_cwb.baleid=bale.id where bale.balestate<>7)");
+		sql.append(" and not exists (select 1 from express_ops_bale_cwb bale_cwb, express_ops_bale bale where bale_cwb.baleid=bale.id and detail.cwb = bale_cwb.cwb and bale.balestate<>7)");
 
 		if ((excludeWaybillNoList != null) && !excludeWaybillNoList.isEmpty()) {
 			sql.append(" and detail.cwb not ");

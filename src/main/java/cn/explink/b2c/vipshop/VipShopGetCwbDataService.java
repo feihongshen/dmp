@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -537,16 +538,17 @@ public class VipShopGetCwbDataService {
 			}
 						
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+				boolean isExist = cwbDAO.isExistByCwb(order_sn);
 				if("new".equalsIgnoreCase(cmd_type)){
 					lantuiNeWSet.add(order_sn);
 				}
 				// 如果是order_sn对应订单不存在，标识不处理取消
 				// 因为取消跟修改会去重，所以当包括新增的时候，不需要处理取消。
-				if(!lantuiNeWSet.contains(order_sn) && cwbOrderDTO == null && "cancel".equalsIgnoreCase(cmd_type) && !"".equals(seq)){
+				if(!lantuiNeWSet.contains(order_sn) && !isExist && ("cancel".equalsIgnoreCase(cmd_type) || "edit".equalsIgnoreCase(cmd_type)) && !"".equals(seq)){
 					resultMap.put(seq, false);
+				} else {	
+					seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				}
-				
-				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
 					return seq_arrs;
@@ -576,6 +578,10 @@ public class VipShopGetCwbDataService {
 			paraList.add(dataMap);		
 
 		} catch (Exception e) {
+			String seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
+			if(StringUtils.isNotEmpty(seq)){
+				resultMap.put(seq, false);
+			}
 			this.logger.error("唯品会订单下载处理单条信息异常,cwb=" + order_sn, e);
 		}
 		return seq_arrs;

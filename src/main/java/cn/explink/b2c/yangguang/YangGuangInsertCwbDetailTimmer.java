@@ -17,8 +17,10 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
@@ -46,6 +48,9 @@ public class YangGuangInsertCwbDetailTimmer {
 	@Autowired
 	DataImportService dataImportService;
 
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
 	/**
 	 * 根据不同的配置来执行
 	 * 
@@ -108,7 +113,15 @@ public class YangGuangInsertCwbDetailTimmer {
 						HashMap<String, Object> map = new HashMap<String, Object>();
 						map.put("cwb", cwbOrder.getCwb());
 						map.put("userid", "1");
-						addressmatch.sendBodyAndHeaders(null, map);
+						try{
+							addressmatch.sendBodyAndHeaders(null, map);
+						}catch(Exception e){
+							logger.error("", e);
+							//写MQ异常表
+							this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("selectTempAndInsertToCwbDetail")
+									.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+									.buildMessageHeaderObject(map).getMqException());
+						}
 					}
 				}
 				dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());

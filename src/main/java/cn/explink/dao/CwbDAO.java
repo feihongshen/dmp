@@ -1183,6 +1183,18 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 是否存在这个订单在正式表
+	 */
+	public boolean isExistByCwb(String cwb) {
+		String sql = " select count(1) from express_ops_cwb_detail where cwb = ?";
+		int count = jdbcTemplate.queryForObject(sql, new Object[] { cwb }, Integer.class);
+		if (count >= 1) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * 原来使用了select 。。。 for update来锁行。但是cwb不是主键,所以锁表了。若此时有大量的关于订单的操作,尤其

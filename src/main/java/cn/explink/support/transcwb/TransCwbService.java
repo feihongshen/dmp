@@ -19,10 +19,13 @@ import org.springframework.util.StringUtils;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.CwbOrderService;
@@ -52,6 +55,11 @@ public class TransCwbService implements CwbTranslator {
 	OneTransToMoreCwbDao oneTransToMoreCwbDao;
 
 	private ObjectMapper om = new ObjectMapper();
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.transcwb.orderFlow";
 
 	@PostConstruct
 	public void init() {
@@ -59,7 +67,7 @@ public class TransCwbService implements CwbTranslator {
 			camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					from("jms:queue:VirtualTopicConsumers.transcwb.orderFlow?concurrentConsumers=5").to("bean:transCwbService?method=saveTransCwb").routeId("运单号保存");
+					from(MQ_FROM_URI_ORDER_FLOW + "?concurrentConsumers=5").to("bean:transCwbService?method=saveTransCwb").routeId("运单号保存");
 				}
 			});
 		} catch (Exception e) {
@@ -68,7 +76,7 @@ public class TransCwbService implements CwbTranslator {
 
 	}
 
-	public void saveTransCwb(@Header("orderFlow") String parm) {
+	public void saveTransCwb(@Header("orderFlow") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		logger.debug("orderFlow 运单号处理,{}", parm);
 		try {
 			OrderFlow orderFlow = om.readValue(parm, OrderFlow.class);
@@ -79,6 +87,14 @@ public class TransCwbService implements CwbTranslator {
 			saveTransCwb(orderFlow);
 		} catch (Exception e) {
 			logger.error("处理运单号出错", e);
+			
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveTransCwb")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ORDER_FLOW)
+					.buildMessageHeader("orderFlow", parm)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

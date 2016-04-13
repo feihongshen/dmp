@@ -17,11 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.ExcelImportEditDao;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.SystemInstallDAO;
-import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.ExcelImportEdit;
-import cn.explink.domain.SystemInstall;
+import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.support.transcwb.OneTransToMoreCwbDao;
@@ -53,6 +54,15 @@ public class EditService {
 	ExcelImportEditDao excelImportEditDao;
 
 	private ObjectMapper om = new ObjectMapper();
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.editshowinfo.orderFlow";
+	
+	private static final String MQ_FROM_URI_CWBBATCH_DELETE = "jms:queue:VirtualTopicConsumers.editdeleteinfo.cwbbatchDelete";
+	
+	private static final String MQ_FROM_URI_LOSE_CWB = "jms:queue:VirtualTopicConsumers.editdeleteinfoTwo.loseCwb";
 
 	@PostConstruct
 	public void init() {
@@ -60,9 +70,9 @@ public class EditService {
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.editshowinfo.orderFlow?concurrentConsumers=5").to("bean:editService?method=saveEdit").routeId("editSave");
-					this.from("jms:queue:VirtualTopicConsumers.editdeleteinfo.cwbbatchDelete?concurrentConsumers=5").to("bean:editService?method=deleteEdit").routeId("editDelete");
-					this.from("jms:queue:VirtualTopicConsumers.editdeleteinfoTwo.loseCwb?concurrentConsumers=5").to("bean:editService?method=deleteEditTwo").routeId("editDeleteTwo");
+					this.from(MQ_FROM_URI_ORDER_FLOW + "?concurrentConsumers=5").to("bean:editService?method=saveEdit").routeId("editSave");
+					this.from(MQ_FROM_URI_CWBBATCH_DELETE + "?concurrentConsumers=5").to("bean:editService?method=deleteEdit").routeId("editDelete");
+					this.from(MQ_FROM_URI_LOSE_CWB + "?concurrentConsumers=5").to("bean:editService?method=deleteEditTwo").routeId("editDeleteTwo");
 
 				}
 			});
@@ -73,7 +83,7 @@ public class EditService {
 
 	}
 
-	public void deleteEditTwo(@Header("loseCwbByEmaildateid") String parm) {
+	public void deleteEditTwo(@Header("loseCwbByEmaildateid") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.info("--edit订单失效功能，订单号：{}", parm);
 		try {
 			this.logger.info("RE:jms:queue:VirtualTopicConsumers.editService.editloseCwb ");
@@ -83,10 +93,18 @@ public class EditService {
 
 		} catch (Exception e) {
 			this.logger.info("--edit订单失效功能：信息：{}", parm);
+			
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("deleteEditTwo")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_LOSE_CWB)
+					.buildMessageHeader("loseCwbByEmaildateid", parm)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
-	public void deleteEdit(@Header("losecwbbatch") String cwb) {
+	public void deleteEdit(@Header("losecwbbatch") String cwb, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.info("--edit订单失效功能，订单号：{}", cwb);
 		try {
 			if (cwb.trim().length() > 0) {
@@ -94,16 +112,32 @@ public class EditService {
 			}
 		} catch (Exception e) {
 			this.logger.info("--edit订单失效功能：，订单号：{}", cwb);
+			
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("deleteEdit")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_CWBBATCH_DELETE)
+					.buildMessageHeader("losecwbbatch", cwb)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
-	public void saveEdit(@Header("orderFlow") String parm) {
+	public void saveEdit(@Header("orderFlow") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		try {
 			OrderFlow orderFlow = this.om.readValue(parm, OrderFlow.class);
 			this.saveEdit(orderFlow);
 		} catch (Exception e) {
 			// TODO handle exception
 			this.logger.error("saveEdit failed. parm = " + parm);
+			
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveEdit")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ORDER_FLOW)
+					.buildMessageHeader("orderFlow", parm)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

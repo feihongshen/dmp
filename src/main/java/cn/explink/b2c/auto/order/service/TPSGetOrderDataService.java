@@ -36,11 +36,13 @@ import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.ExcelColumnSet;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOXOStateEnum;
@@ -96,6 +98,9 @@ public class TPSGetOrderDataService {
 	JointService jointService;
 	@Autowired
 	TransCwbDao transCwbDao;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 	
 	private Logger logger = LoggerFactory.getLogger(TPSGetOrderDataService.class);
     
@@ -441,7 +446,16 @@ public class TPSGetOrderDataService {
 							map.put("userid", "1");
 							map.put("address", orderMap.get("remark4").replaceAll("&", ""));
 							map.put("notifytype", 0);
-							addressmatch.sendBodyAndHeaders(null, map);
+							try{
+								addressmatch.sendBodyAndHeaders(null, map);
+							}catch(Exception e){
+								logger.error("", e);
+								//写MQ异常表
+								this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("extractedOXODataImport")
+										.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+										.buildMessageHeaderObject(map).getMqException());
+							}
+							
 						}
 						if(StringUtils.isNotBlank(orderMap.get("consigneeaddress")) && !orderMap.get("consigneeaddress").equals(cwbOrder_biz.getConsigneeaddress())){
 							//重新解析派件站点
@@ -450,7 +464,15 @@ public class TPSGetOrderDataService {
 							map.put("userid", "1");
 							map.put("address", orderMap.get("consigneeaddress"));
 							map.put("notifytype", 1);
-							addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+							try{
+								addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+							}catch(Exception e){
+								logger.error("", e);
+								//写MQ异常表
+								this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("extractedOXODataImport")
+										.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+										.buildMessageHeaderObject(map).getMqException());
+							}
 						}
 		
 					}

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +37,7 @@ import cn.explink.util.DateTimeUtil;
 @Service
 public class DataImportService_B2c {
 	private Logger logger = LoggerFactory.getLogger(DataImportService_B2c.class);
-	@Produce(uri = "jms:topic:addressmatch")
-	ProducerTemplate addressmatch;
+
 	@Autowired
 	ImportValidationManager importValidationManager;
 	@Autowired

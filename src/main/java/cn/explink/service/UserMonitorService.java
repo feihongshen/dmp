@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 
 @Service
@@ -23,6 +25,9 @@ public class UserMonitorService {
 
 	@Autowired
 	private UserDAO userDAO;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 
 	/**
 	 * 监控 员工设置的变化 根据userid
@@ -102,8 +107,12 @@ public class UserMonitorService {
 		try {
 			userMonitorProducerTemplate.sendBodyAndHeader(null, "userMonitor", parms);
 		} catch (Exception ee) {
-
 			logger.error("send userMonitor message error", ee);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("send")
+					.buildExceptionInfo(ee.toString()).buildTopic(this.userMonitorProducerTemplate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("userMonitor", parms).getMqException());
+		
 		}
 	}
 
