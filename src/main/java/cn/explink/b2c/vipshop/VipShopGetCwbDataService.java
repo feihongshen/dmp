@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -545,6 +546,12 @@ public class VipShopGetCwbDataService {
 				if(!lantuiNeWSet.contains(order_sn) && cwbOrderDTO == null && "cancel".equalsIgnoreCase(cmd_type) && !"".equals(seq)){
 					resultMap.put(seq, false);
 				}
+				// 如果是order_sn 对应正式订单，不存在 标识不处理修改与取消
+				if("edit".equalsIgnoreCase(cmd_type) || "cancel".equalsIgnoreCase(cmd_type)) {
+					if(!cwbDAO.isExistByCwb(order_sn)){
+						resultMap.put(seq, false);
+					}
+				}
 				
 				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
@@ -576,6 +583,10 @@ public class VipShopGetCwbDataService {
 			paraList.add(dataMap);		
 
 		} catch (Exception e) {
+			String seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
+			if(StringUtils.isNotEmpty(seq)){
+				resultMap.put(seq, false);
+			}
 			this.logger.error("唯品会订单下载处理单条信息异常,cwb=" + order_sn, e);
 		}
 		return seq_arrs;
