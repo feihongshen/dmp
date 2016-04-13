@@ -44,7 +44,7 @@ public class PosPayDAO {
 				sql = "update express_ops_pos_paydetail set acq_type='split',acq_type_flag=1,payRemark=CONCAT(IF(payRemark IS NULL,'',payRemark),'" + pd.getPayRemark() + "')"
 						+ " where isSuccessFlag=? and  cwb=? ";
 				updateFlag = jdbcTemplate.update(sql, pd.getIsSuccessFlag(), pd.getCwb());
-			} else if (typeid == 4) {
+			} else if (typeid == 4) { //签收
 				sql = "delete from express_ops_pos_paydetail  where cwb=? ";
 				jdbcTemplate.update(sql, pd.getCwb());
 				sql = "insert into express_ops_pos_paydetail (pos_code,cwb,tradeTime,tradeDeliverId,tradeTypeId," + "payTypeId,payAmount, payDetail,payRemark,signName,"
