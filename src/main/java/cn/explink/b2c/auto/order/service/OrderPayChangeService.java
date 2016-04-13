@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ZhiFuApplyDao;
 import cn.explink.dao.interfac.IBranceReportAdjustDao;
@@ -18,6 +19,8 @@ import cn.explink.dao.interfac.ICustomerAccountDao;
 import cn.explink.domain.BranceReportAdjustPO;
 import cn.explink.domain.CustomerAccountPO;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
+import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.SettleTimeTypeEnum;
@@ -34,6 +37,9 @@ public class OrderPayChangeService {
 	@Autowired
 	@Qualifier("customerAccountDao")
 	private ICustomerAccountDao customerAccountDao;
+	
+	@Autowired
+	private DeliveryStateDAO deliveryStateDAO;
 	
 	@Autowired
 	private CwbDAO orderDao ;
@@ -140,6 +146,44 @@ public class OrderPayChangeService {
 				   if(!StringUtils.isEmpty(warehouseDate) && !StringUtils.isEmpty(disableOrderCreateDate)
 							  && DateTimeUtil.dateDiff("day", DateTimeUtil.StringToDate(warehouseDate), DateTimeUtil.StringToDate(disableOrderCreateDate)) != 0)
 					   this.addBranceReportAdjust(order, adjustAmount);
+	    	}
+	    }
+	}
+	
+	/**
+	 * 重置反馈订单，添加应付甲方调整记录
+	 * @param orderNumber
+	 * @param edittime
+	 */
+	public void resetOrder(String orderNumber ,EdtiCwb_DeliveryStateDetail orderDeliveryDetail , String edittime ){
+		CwbOrder order =  this.orderDao.getCwbByCwb(orderNumber) ;
+		if(order == null){
+			return ;
+		}
+		CustomerAccountPO customerAccountPO = this.customerAccountDao.findCustomer(String.valueOf(order.getCustomerid())) ;
+		if(customerAccountPO == null){
+			return ;
+		}
+		// 返款结算类型客户
+	    if(SettleTypeEnum.repayment.getValue().equals(customerAccountPO.getSettleType())){
+	    	DeliveryState deliveryStatePO = orderDeliveryDetail.getDs();
+			if(deliveryStatePO == null){
+				deliveryStatePO = this.deliveryStateDAO.getDeliveryByCwbLock(orderNumber) ;
+			}
+			if(deliveryStatePO == null){
+				return ;
+			}
+	    	String auditingTime = deliveryStatePO.getAuditingtime() ;
+	    	if(!StringUtils.isEmpty(edittime) && !StringUtils.isEmpty(auditingTime)
+					  && DateTimeUtil.dateDiff("day", DateTimeUtil.StringToDate(edittime), DateTimeUtil.StringToDate(auditingTime)) != 0){
+	    		BigDecimal adjustAmount = BigDecimal.ZERO ;
+	    		if(order.getReceivablefee() != null){
+					adjustAmount = adjustAmount.subtract(order.getReceivablefee()) ;
+				}
+				if(adjustAmount == null || adjustAmount.compareTo(BigDecimal.ZERO) == 0){
+					return ;
+				}
+	    		this.addBranceReportAdjust(order, adjustAmount);
 	    	}
 	    }
 	}
