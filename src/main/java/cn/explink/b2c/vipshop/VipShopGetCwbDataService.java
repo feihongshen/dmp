@@ -538,22 +538,17 @@ public class VipShopGetCwbDataService {
 			}
 						
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+				boolean isExist = cwbDAO.isExistByCwb(order_sn);
 				if("new".equalsIgnoreCase(cmd_type)){
 					lantuiNeWSet.add(order_sn);
 				}
 				// 如果是order_sn对应订单不存在，标识不处理取消
 				// 因为取消跟修改会去重，所以当包括新增的时候，不需要处理取消。
-				if(!lantuiNeWSet.contains(order_sn) && cwbOrderDTO == null && "cancel".equalsIgnoreCase(cmd_type) && !"".equals(seq)){
+				if(!lantuiNeWSet.contains(order_sn) && !isExist && ("cancel".equalsIgnoreCase(cmd_type) || "edit".equalsIgnoreCase(cmd_type)) && !"".equals(seq)){
 					resultMap.put(seq, false);
+				} else {	
+					seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				}
-				// 如果是order_sn 对应正式订单，不存在 标识不处理修改与取消
-				if("edit".equalsIgnoreCase(cmd_type) || "cancel".equalsIgnoreCase(cmd_type)) {
-					if(!cwbDAO.isExistByCwb(order_sn)){
-						resultMap.put(seq, false);
-					}
-				}
-				
-				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
 					return seq_arrs;
