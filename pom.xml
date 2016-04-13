@@ -4020,7 +4020,7 @@
 				<expressurl.user>root</expressurl.user>
 				<expressurl.password>dmpdmp1555</expressurl.password>
 				<expressurl.promptOnNonLocalDatabase></expressurl.promptOnNonLocalDatabase>
-				<jms.brokerURL>tcp://10.199.247.161:61616</jms.brokerURL>
+				<jms.brokerURL>failover:(tcp://10.199.197.155:61616,tcp://10.199.197.156:61616)?randomize=false</jms.brokerURL>
 				<uploadimgPath>/home/apps/data/uploadimg/</uploadimgPath>
 				<wavPath>/home/apps/data/wav/</wavPath>
 				<filePath>/home/apps/data/moule/</filePath>
