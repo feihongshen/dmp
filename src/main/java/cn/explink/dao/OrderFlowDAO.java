@@ -225,6 +225,24 @@ public class OrderFlowDAO {
 		return map;
 	}
 
+	/**
+	 * 获取某种操作类型的最新流程记录
+	 * @param cwb
+	 * @param flowOrderType
+	 * @return
+	 */
+	public OrderFlow findOrderFlow(String cwb , int flowOrderType){
+		StringBuffer sql = new StringBuffer("select * from express_ops_order_flow flow where flow.cwb = '") ;
+		sql.append(cwb).append("'") ;
+		sql.append(" and flow.flowordertype = ").append(flowOrderType) ;
+		sql.append(" order by flow.credate desc ") ;
+		List<OrderFlow> orderFlowList = this.jdbcTemplate.query(sql.toString(),  new OrderFlowRowMapper());
+		if(orderFlowList == null || orderFlowList.size() == 0){
+			return null ;
+		}
+		return orderFlowList.get(0) ;
+	}
+	
 	public List<OrderFlow> getOrderFlowByFlowordertypeAndCwb(long flowordertype, String cwb, long branchid) {
 		String sql = "select * from express_ops_order_flow where flowordertype=? and cwb=? and branchid=?";
 		return this.jdbcTemplate.query(sql, new OrderFlowRealRowMapper(), flowordertype, cwb, branchid);
