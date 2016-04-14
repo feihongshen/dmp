@@ -123,6 +123,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
+	@Autowired
+	private AddressMatchLogService addressMatchLogService;
 	
 	private static final String MQ_FROM_URI_ADDRESS_MATCH = "jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch";
 	
@@ -591,7 +593,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		return json;
 	}
 
-	private JSONArray invokeNewAddressMatchService(String itemno, String Address) {
+	public JSONArray invokeNewAddressMatchService(String itemno, String Address) {
 		// TODO 启用新地址库 调用webservice
 		List<OrderVo> orderVoList = new ArrayList<OrderVo>();
 		try {
@@ -601,10 +603,15 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			String address = Address;
 			orderVoList.add(this.getOrderVoByDuiJie(orderId, address));
 			AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
+			
+			//生产地址匹配日志，add by neo01.huang，2016-4-14
+			addressMatchLogService.produceAddressMatchLog(itemno, address, orderId, addressreturn);
+			
 			int successFlag = addressreturn.getResultCode().getCode();
 			if (successFlag != 0) {
 				return null;
 			}
+			
 
 			OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(orderId);
 			if (mappingresult != null) {
