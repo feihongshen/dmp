@@ -34,6 +34,7 @@ CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
 List<AbnormalWriteBackView> backViewList = (List<AbnormalWriteBackView>)request.getAttribute("abnormalWriteBackViewList");
 List<ComplaintsView> comViewList = (List<ComplaintsView>)request.getAttribute("comViewList");
 List<TranscwbView> transcwbList = request.getAttribute("transcwbList")==null?null:(List<TranscwbView>)request.getAttribute("transcwbList");
+String isGathercomp = (String)request.getAttribute("isGathercomp");
 
 %>
 <HEAD>
@@ -194,7 +195,7 @@ function goForm(cwb){
 									</tr>
 
 									<tr>
-										<td bgcolor="#EBFFD7"><b>发货件数：</b><%=view.getSendcarnum()%></td>
+										<td bgcolor="#EBFFD7"><b>发货件数：</b><%=view.getSendcarnum()%><%if("1".equals(isGathercomp)) {%>  （已集齐）<%}else if("0".equals(isGathercomp)){ %><span style="color: red">（未集齐）</span><%}%></td>
 										<td bgcolor="#EBFFD7"><b>配送站点：</b><%=deliverybranch.getBranchname()==null?"":deliverybranch.getBranchname()%></td>
 									</tr>
 

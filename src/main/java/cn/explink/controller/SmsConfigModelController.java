@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -55,6 +57,8 @@ public class SmsConfigModelController {
 	SmsSendService smsSendService;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	private static Logger logger = LoggerFactory.getLogger(SmsConfigModelController.class);
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -178,7 +182,7 @@ public class SmsConfigModelController {
 			}
 		} catch (Exception e) {
 			model.addAttribute("ifUpdate", 0);
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"更新失败\"}";
 		}
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -194,7 +198,7 @@ public class SmsConfigModelController {
 			}
 		} catch (Exception e) {
 			model.addAttribute("ifUpdate", 0);
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"更新失败\"}";
 		}
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -222,7 +226,7 @@ public class SmsConfigModelController {
 			}
 		} catch (Exception e) {
 			model.addAttribute("ifUpdate", 0);
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"更新失败\"}";
 		}
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -250,7 +254,7 @@ public class SmsConfigModelController {
 			}
 		} catch (Exception e) {
 			model.addAttribute("ifUpdate", 0);
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"更新失败\"}";
 		}
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -431,8 +435,7 @@ public class SmsConfigModelController {
 			}
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"保存失败\"}";
 		}
 

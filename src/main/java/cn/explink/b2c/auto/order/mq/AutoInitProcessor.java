@@ -1,6 +1,7 @@
 package cn.explink.b2c.auto.order.mq;
 
-import javax.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * author : yuxin.he
@@ -8,7 +9,7 @@ import javax.annotation.Resource;
  * */
 public class AutoInitProcessor {
 
-
+	private static Logger logger = LoggerFactory.getLogger(AutoInitProcessor.class);
 
 	cn.explink.b2c.auto.order.mq. ConsumerStarter consumerStarter;
 	
@@ -25,8 +26,7 @@ public class AutoInitProcessor {
 		try {
 			consumerStarter.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		
 	}
@@ -36,8 +36,7 @@ public class AutoInitProcessor {
 		try {
 			consumerStarter.destroy();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 	

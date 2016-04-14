@@ -17,6 +17,8 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.util.RedisMap;
+import cn.explink.util.impl.RedisMapImpl;
 
 @Controller
 @RequestMapping("/yihaodian")
@@ -32,9 +34,9 @@ public class YihaodianController {
 	@Autowired
 	YihaodianInsertCwbDetailTimmer timmer;
 
-	public static Map<String, Integer> threadMap;
-	static { // 静态初始化 以下变量,用于判断线程是否在执行
-		threadMap = new HashMap<String, Integer>();
+	public static RedisMap<String, Integer> threadMap;
+	static { // 静态初始化 以下变量,用于判断线程是否在执行		
+		threadMap = new RedisMapImpl<String, Integer>("YihaodianController");
 		threadMap.put("yihaodian_hander", 0);
 	}
 
@@ -49,8 +51,12 @@ public class YihaodianController {
 	@RequestMapping("/saveYihaodian/{id}")
 	public @ResponseBody String YihaodianSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-			yihaodianService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				yihaodianService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

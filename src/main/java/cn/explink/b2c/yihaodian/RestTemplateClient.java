@@ -32,7 +32,6 @@ public class RestTemplateClient {
 			logger.info("Invoke exportOrder method Success!response OrderExportResultDto={}", JSONObject.fromObject(result));
 		} catch (Exception e) {
 			logger.error("error info while excute exportOrder's restTemplate.PostForObject method!", e);
-			e.printStackTrace();
 		}
 		return result;
 	}
@@ -52,7 +51,6 @@ public class RestTemplateClient {
 			logger.info("Invoke exportCallBack method Success!response OrderExportResultDto={}", JSONObject.fromObject(result));
 		} catch (Exception e) {
 			logger.error("error info while excute exportCallBack's restTemplate.PostForObject method!", e);
-			e.printStackTrace();
 		}
 		return result;
 	}
@@ -72,7 +70,6 @@ public class RestTemplateClient {
 			logger.info("Invoke DeliveryResult method Success!response OrderDeliveryResultDto={}", JSONObject.fromObject(result));
 		} catch (Exception e) {
 			logger.error("error info while excute exportCallBack's restTemplate.PostForObject method!", e);
-			e.printStackTrace();
 		}
 		return result;
 	}

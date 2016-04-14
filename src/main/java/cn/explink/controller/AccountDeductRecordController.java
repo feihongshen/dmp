@@ -11,6 +11,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -66,6 +68,8 @@ public class AccountDeductRecordController {
 	AccountDeductRecordDAO accountDeductRecordDAO;
 	@Autowired
 	ExportService exportService;
+	
+	private static Logger logger = LoggerFactory.getLogger(AccountDeductRecordController.class);
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -419,7 +423,7 @@ public class AccountDeductRecordController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -506,7 +510,7 @@ public class AccountDeductRecordController {
 				};
 				excelUtil.excel(response, cloumnName, sheetName, fileName);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 	}
@@ -560,7 +564,7 @@ public class AccountDeductRecordController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -612,7 +616,7 @@ public class AccountDeductRecordController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -658,7 +662,7 @@ public class AccountDeductRecordController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 }

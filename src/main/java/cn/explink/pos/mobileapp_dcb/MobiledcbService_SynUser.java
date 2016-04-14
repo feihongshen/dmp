@@ -19,8 +19,11 @@ import org.springframework.stereotype.Service;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.RestHttpServiceHanlder;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.PosEnum;
 
@@ -34,18 +37,23 @@ public class MobiledcbService_SynUser {
 	JiontDAO jointDAO;
 	@Autowired
 	private CamelContext camelContext;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_USER_MONITOR = "jms:queue:VirtualTopicConsumers.oms1.userMonitor";
 
 	@PostConstruct
 	public void init() throws Exception {
 		camelContext.addRoutes(new RouteBuilder() {
 			@Override
 			public void configure() throws Exception {
-				from("jms:queue:VirtualTopicConsumers.oms1.userMonitor?concurrentConsumers=5").to("bean:mobiledcbService_SynUser?method=userMonitor").routeId("userMonitorRoute");
+				from(MQ_FROM_URI_USER_MONITOR + "?concurrentConsumers=5").to("bean:mobiledcbService_SynUser?method=userMonitor").routeId("userMonitorRoute");
 			}
 		});
 	}
 
-	public void userMonitor(@Header("userMonitor") String parm) { // 处理jms数据
+	public void userMonitor(@Header("userMonitor") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) { // 处理jms数据
 		try {
 
 			int isOpenFlag = jointDAO.getStateByJointKey(PosEnum.MobileApp_dcb.getKey());
@@ -61,6 +69,15 @@ public class MobiledcbService_SynUser {
 
 		} catch (Exception e) {
 			logger.error("监听配送员信息同步发生未知异常", e);
+			
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("userMonitor")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_USER_MONITOR)
+					.buildMessageHeader("userMonitor", parm)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

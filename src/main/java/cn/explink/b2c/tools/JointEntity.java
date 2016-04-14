@@ -1,7 +1,9 @@
 package cn.explink.b2c.tools;
 
-public class JointEntity {
-
+public class JointEntity implements java.io.Serializable {
+	
+	private static final long serialVersionUID = -1047673002751622733L;
+	
 	private int joint_num;
 	private String joint_property;
 	private int state;

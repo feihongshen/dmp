@@ -964,8 +964,7 @@ public class OMSInterfaceController {
 		try {
 			 return JSONObject.fromObject(commonExptDao.getExceptReason(extpt_code, customerid)).toString();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}

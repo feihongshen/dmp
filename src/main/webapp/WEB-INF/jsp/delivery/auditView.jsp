@@ -173,10 +173,10 @@ $(function(){
 	}
 	$("input[id$='_box']").click(function(){
 		if($(this).attr("checked")){
-			$("#"+$(this).val()+"_list").show();
+			$("#"+$(this).val().trim()+"_list").show();
 		}
  		else{
-			$("#"+$(this).val()+"_list").hide();
+			$("#"+$(this).val().trim()+"_list").hide();
 		} 
 	}
 	);
@@ -186,20 +186,20 @@ $(function(){
 			//清空历史背景色
 			$("td[style$='font-weight:bold']").attr("style","");
 			
-			if($("tr[id='"+$(this).val()+"']").length==0){
-				alert("订单号“"+$(this).val()+"”已归班审核过或者不是这个小件员的货！");
+			if($("tr[id='"+$(this).val().trim()+"']").length==0){
+				alert("订单号“"+$(this).val().trim()+"”已归班审核过或者不是这个小件员的货！");
 			}else if($(this).attr("id")=="fankui_C"){
-				if($("tr[id$='_list'] tr[id='"+$(this).val()+"']").length==0){
-					alert("订单号“"+$(this).val()+"”不在已反馈订单列表里！");
+				if($("tr[id$='_list'] tr[id='"+$(this).val().trim()+"']").length==0){
+					alert("订单号“"+$(this).val().trim()+"”不在已反馈订单列表里！");
 				}else{
-					addClassToIsC($(this).val());
+					addClassToIsC($(this).val().trim());
 				}
 			}else if($(this).attr("id")=="weifankui_C"){
-				if($("tr[id='weifankui'] tr[id='"+$(this).val()+"']").length==0){
-					alert("订单号“"+$(this).val()+"”不在未反馈订单列表里！");
+				if($("tr[id='weifankui'] tr[id='"+$(this).val().trim()+"']").length==0){
+					alert("订单号“"+$(this).val().trim()+"”不在未反馈订单列表里！");
 				}else{
-					$("tr[id='"+$(this).val()+"'] td").attr("style","color:#FFF; background:#09C; font-weight:bold");
-					edit_button($(this).val());
+					$("tr[id='"+$(this).val().trim()+"'] td").attr("style","color:#FFF; background:#09C; font-weight:bold");
+					edit_button($(this).val().trim());
 				}
 			}
 			$(this).val("");

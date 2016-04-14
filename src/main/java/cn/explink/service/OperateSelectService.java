@@ -3,7 +3,6 @@ package cn.explink.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -11,6 +10,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import cn.explink.controller.OperateSelectView;
@@ -24,6 +25,8 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 @Service
 public class OperateSelectService {
 
+	private static Logger logger = LoggerFactory.getLogger(OperateSelectService.class);
+	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -50,7 +53,7 @@ public class OperateSelectService {
 
 					operateSelectViewList.add(operateSelectView);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 		}

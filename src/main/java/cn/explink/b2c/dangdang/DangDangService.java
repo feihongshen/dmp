@@ -6,10 +6,12 @@ import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.service.CustomerService;
 
 @Service
 public class DangDangService {
@@ -17,6 +19,8 @@ public class DangDangService {
 	JiontDAO jiontDAO;
 	@Autowired
 	CustomerDAO customerDAO;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -32,6 +36,7 @@ public class DangDangService {
 		return dangdang;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		DangDang dangdang = new DangDang();
 		dangdang.setExpress_id(request.getParameter("express_id"));
@@ -65,7 +70,7 @@ public class DangDangService {
 
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
-
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

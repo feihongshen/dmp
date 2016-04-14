@@ -240,9 +240,7 @@ public class VipShopOXOJITFeedbackService {
 		try {
 			obj = XmlUtil.toObject(OXOJITFeedbackResponseVo.class, orderXML);
 		} catch (Exception e1) {
-			e1.printStackTrace();
 			this.logger.error("转换VipShop_OXO提货任务反馈接口响应报文为OXOJITFeedbackResponseVo实体类异常。响应报文内容为："+orderXML ,e1);
-
 		}
 		
 		return obj;
@@ -288,7 +286,7 @@ public class VipShopOXOJITFeedbackService {
 			}
 
 		} catch (Throwable e) {
-			e.printStackTrace();
+            logger.error("", e);
 			throw new Exception("WebService服务链路异常:" + e.getMessage(), e);
 		} finally {
 			if (out != null) {

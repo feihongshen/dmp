@@ -79,6 +79,15 @@ EpaiApi epai=(EpaiApi)request.getAttribute("epaiapi");
 	 						<input type ="radio" id="ispostflag2" name ="ispostflag"  <%if(epai.getIspostflag()==1){%>checked<%}%> value="1"> POST参数
 					</li>
 					
+					<li><span>流程轨迹回传：</span>
+	 						<input type ="radio" id="open_ordertrackflag1" name ="open_ordertrackflag" <%if(epai.getOpen_ordertrackflag()==0){%>checked<%}%> value="0"> 关闭
+	 						<input type ="radio" id="open_ordertrackflag2" name ="open_ordertrackflag" <%if(epai.getOpen_ordertrackflag()==1){%>checked<%}%>  value="1"> 开启
+					</li>
+					<li><span>轨迹回传URL：</span>
+ 						<input type ="text" id="ordertrack_url" name ="ordertrack_url" value ="<%=epai.getOrdertrack_url() %>"  size="45" > 
+					</li>
+					
+					
 					<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" > 
 					</li>

@@ -8,12 +8,18 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 
 @XmlRootElement
 public class CwbOrderView implements Cloneable {
+	
+	private static Logger logger = LoggerFactory.getLogger(CwbOrderView.class);
+	
 	long opscwbid; // 主键id
 	long startbranchid; // 当前所在机构id
 	long nextbranchid; // 下一站目的机构id
@@ -1332,7 +1338,7 @@ public class CwbOrderView implements Cloneable {
 				quot = new Date().getTime() - date2.getTime();
 				quot = quot / 1000 / 60 / 60 / 24;
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 		return quot;
@@ -2215,7 +2221,7 @@ public class CwbOrderView implements Cloneable {
 	public static void main(String[] args) {
 		String consigneeaddress = "中国北京北京市丰台区西罗园一区22-6-503100077";
 		String infos = consigneeaddress.replaceAll("#", "").replaceAll("[*]", "").replaceAll(" ", "").replaceAll("\\p{Pc}|\\p{Ps}|\\p{Pe}|\\p{Pi}|\\p{Pf}|\\p{Po}", "");
-		System.out.println(infos);
+		logger.info(infos);
 
 	}
 

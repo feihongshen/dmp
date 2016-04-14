@@ -33,7 +33,6 @@ import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CwbTempDAO;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.CwbOrder;
-import cn.explink.support.transcwb.OneTransToMoreCwbDao;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 
@@ -85,7 +84,7 @@ public class AmazonService_GetOrders extends AmazonService {
 					if (count > 0) {// 文件已获取
 						continue;
 					} else {
-						System.out.println(files[i].getName().toString());
+						logger.info(files[i].getName().toString());
 						try {
 							amazonDAO.saveFile(files[i].getName().toString(), 0, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 						} catch (Exception e1) {
@@ -146,14 +145,11 @@ public class AmazonService_GetOrders extends AmazonService {
 
 			return calcCount;
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return 0;
 
@@ -181,14 +177,11 @@ public class AmazonService_GetOrders extends AmazonService {
 			logger.info("[亚马逊]订单数据插入表成功");
 			amazonDAO.saveFile(filename, 1, new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(new Date()));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -214,14 +207,11 @@ public class AmazonService_GetOrders extends AmazonService {
 			logger.info("处理[亚马逊]的订单信息=" + extractss.toString());
 			logger.info("[亚马逊]订单数据插入表成功");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -318,8 +308,7 @@ public class AmazonService_GetOrders extends AmazonService {
 							+ shipmentDetail.getShipmentPackageInfo().getShipmentPackageDimensions().getHeightValue();
 					packageShipOption = shipmentDetail.getShipmentPackageInfo().getPackageShipmentMethod().getPackageShipOption();
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					logger.error("", e1);
 				}
 				String backcargoname = "";
 				int backcarnum = 0;
@@ -350,8 +339,7 @@ public class AmazonService_GetOrders extends AmazonService {
 				try {
 					remark5 = JSONObject.fromObject(manifestHeader.getShipFromAddress()).toString();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("", e);
 				}
 				CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
@@ -414,8 +402,7 @@ public class AmazonService_GetOrders extends AmazonService {
 				}
 				paraList.add(dataMap);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 		return paraList;

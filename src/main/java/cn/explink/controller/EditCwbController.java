@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -59,11 +57,8 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.EditCwbTypeEnum;
-import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
-import cn.explink.pos.alipay.xml.exception;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
@@ -109,8 +104,7 @@ public class EditCwbController {
 	DataImportService dataImportService;
 	@Autowired
 	EditCwbService editCwbService;
-	@Produce(uri = "jms:topic:addressmatch")
-	ProducerTemplate addressmatch;
+
 	@Autowired
 	EditCwbDAO editCwbDAO;
 	@Autowired
@@ -156,6 +150,7 @@ public class EditCwbController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			if (cwb.length() > 0) {
 				cwbsSqlBuffer = cwbsSqlBuffer.append(s).append(cwb).append(s1);
 			}
@@ -328,7 +323,7 @@ public class EditCwbController {
 					errorList.add(cwb + "_" + ee.getMessage());
 				} catch (Exception e) {
 					errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
-					e.printStackTrace();
+					this.logger.error("", e);
 				}
 			}
 			model.addAttribute("ecList", ecList);
@@ -351,7 +346,7 @@ public class EditCwbController {
 				errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_" + ee.getMessage());
 			} catch (Exception e) {
 				errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 		}
 		model.addAttribute("ecList", ecList);
@@ -404,7 +399,7 @@ public class EditCwbController {
 					errorList.add(cwb + "_" + ee.getMessage());
 				} catch (Exception e) {
 					errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_系统内部报错！");
-					e.printStackTrace();
+					this.logger.error("", e);
 				}
 			}
 			model.addAttribute("ecList", ecList);
@@ -508,7 +503,7 @@ public class EditCwbController {
 					}
 				}
 				for (ZhiFuApplyView za : list) {
-					long lon = this.zhiFuApplyDao.creZhiFuApplyView(za);
+					this.zhiFuApplyDao.creZhiFuApplyView(za);
 				}
 			}
 		}
@@ -596,7 +591,7 @@ public class EditCwbController {
 					}
 				}
 				for (ZhiFuApplyView za : list) {
-					long lon = this.zhiFuApplyDao.creZhiFuApplyView(za);
+					this.zhiFuApplyDao.creZhiFuApplyView(za);
 				}
 			}
 		}
@@ -661,7 +656,7 @@ public class EditCwbController {
 					}
 				}
 				for (ZhiFuApplyView za : list) {
-					long lon = this.zhiFuApplyDao.creZhiFuApplyView(za);
+					this.zhiFuApplyDao.creZhiFuApplyView(za);
 				}
 			}
 		}
@@ -721,7 +716,7 @@ public class EditCwbController {
 					}
 				}
 				for (ZhiFuApplyView za : list) {
-					long lon = this.zhiFuApplyDao.creZhiFuApplyView(za);
+					this.zhiFuApplyDao.creZhiFuApplyView(za);
 				}
 			}
 		}
@@ -803,6 +798,7 @@ public class EditCwbController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwbStr);
 				if (co != null) {
 					cwborderlist.add(co);
@@ -881,7 +877,7 @@ public class EditCwbController {
 			if ((co.getExcelbranch() == null) || (co.getExcelbranch().length() == 0) || (co.getDeliverybranchid() == 0)) {
 				this.logger.info("地址库-------");
 				if (!old.getConsigneeaddress().equals(co.getConsigneeaddress())) {
-					this.addressMatchService.matchAddress(this.getSessionUser().getUserid(), co.getCwb());
+					this.addressMatchService.doMatchAddress(this.getSessionUser().getUserid(), co.getCwb());
 				}
 			}
 			// 修改匹配站
@@ -962,7 +958,6 @@ public class EditCwbController {
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} catch (Exception e) {
 			this.logger.error("调用地址库异常", e);
-			e.printStackTrace();
 			return "{\"errorCode\":1,\"error\":\"失败：调用地址库异常\"}";
 		}
 	}
@@ -1027,7 +1022,7 @@ public class EditCwbController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 

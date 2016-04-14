@@ -16,12 +16,10 @@ import org.springframework.stereotype.Service;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.HttpClienCommon;
-import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.b2c.yonghuics.json.OrderDownloadReq;
 import cn.explink.b2c.yonghuics.json.OrderDownloadRet;
 import cn.explink.b2c.yonghuics.json.OrderDto;
 import cn.explink.b2c.yonghuics.json.OrderListDto;
-import cn.explink.controller.CwbOrderDTO;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.MD5.MD5Util;
@@ -63,13 +61,13 @@ public class YonghuiService_download extends YonghuiService {
 
 			} catch (Exception e) {
 				logger.error("[永辉超市]调用数据导入接口异常!,订单List信息:" + cwbOrderList + "exptMessage=:" + e);
-				e.printStackTrace();
+				logger.error("", e);
 				return;
 			}
 
 		} catch (Exception e) {
 			logger.error("error info by request yonghuics download cwb detail interface!,loopcount=" + loopcount, e);
-			e.printStackTrace();
+			logger.error("", e);
 			return;
 		}
 	}

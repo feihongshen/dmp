@@ -4,22 +4,25 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
+
+import cn.explink.util.impl.RedisMapImpl;
 
 public class ServiceUtil {
 
-	private static ResourceBundle dmp = ResourceBundle.getBundle("filepath");
-	public static final String omsSysUrl = dmp.getString("omsUrl");
-	public static final String financeSysUrl = dmp.getString("financeUrl");
+	private static Logger logger = LoggerFactory.getLogger(ServiceUtil.class);
+	
 	public static final String jspPath = File.separator + "mould" + File.separator;
 	public static final String xlsPath = "xls\\";
 	public static final String wavPath = "/wav/";
 	public static final String imgPath = "/uploadimg/";
 	public static final String waverrorPath = "/images/waverror/";
-	public static Map<Long, Long> nowImport = new HashMap<Long, Long>();
-
+	// public static Map<Long, Long> nowImport = new HashMap<Long, Long>();
+	public static RedisMap<Long, Long> nowImport = new RedisMapImpl<Long, Long>("ServiceUtil");
+	
 	public static String uploadWavFile(MultipartFile file, String filePath, String name) {
 		try {
 			checkfilePath(filePath);
@@ -27,7 +30,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}
@@ -39,7 +42,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}
@@ -51,7 +54,7 @@ public class ServiceUtil {
 			file.transferTo(upfile);
 			return name;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "";
 		}
 	}

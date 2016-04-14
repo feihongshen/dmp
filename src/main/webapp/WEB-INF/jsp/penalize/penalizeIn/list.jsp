@@ -1026,7 +1026,81 @@ function checkwithdiferenttype(type){
 	$("#alert_box").show();
 	centerBox();
 	
+	reloadselect(type);
 }
+
+function reloadselect(type) {
+	if(type==1){
+		reloadPunishbigsort("punishbigsort2");
+		reloadPunishsmallsort("punishsmallsort2");
+		reloaddutybranchid("dutybranchid2");
+	} else if(type==2){
+		reloadPunishbigsort("punishbigsort3");
+		reloadPunishsmallsort("punishsmallsort3");
+		reloaddutybranchid("dutybranchid3");
+	}	
+}
+
+function reloadPunishbigsort(punishbigsortid) {
+	$("#"+punishbigsortid).empty();
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/inpunish/getPenalizebigList",
+		dataType:"json",
+		success:function(data){
+			if(data.length>0){
+				var optstr="<option value='0'>请选择扣罚大类</option>";
+				for(var i=0;i<data.length;i++)
+				{
+					optstr+="<option value='"+data[i].id+"'>"+data[i].text+"</option>";
+				}
+				
+				$("#"+punishbigsortid).append(optstr);
+			}
+		}
+	});
+}
+
+function reloadPunishsmallsort(punishsmallsortid) {
+	$("#"+punishsmallsortid).empty();
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/inpunish/getPenalizesmallList",
+		dataType:"json",
+		success:function(data){
+			if(data.length>0){
+				var optstr="<option value='0'>请选择扣罚小类</option>";
+				for(var i=0;i<data.length;i++)
+				{
+					optstr+="<option value='"+data[i].id+"' id='"+data[i].parent+"'>"+data[i].text+"</option>";
+				}
+				
+				$("#"+punishsmallsortid).append(optstr);
+			}
+		}
+	});
+}
+
+function reloaddutybranchid(dutybranchid) {
+	$("#"+dutybranchid).empty();
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/inpunish/getBranchs",
+		dataType:"json",
+		success:function(data){
+			if(data.length>0){
+				var optstr="<option value='0'>请选择责任机构</option>";
+				for(var i=0;i<data.length;i++)
+				{
+					optstr+="<option value='"+data[i].branchid+"'>"+data[i].branchname+"</option>";
+				}
+				
+				$("#"+dutybranchid).append(optstr);
+			}
+		}
+	});
+}
+	
 
 </script>
 </head>

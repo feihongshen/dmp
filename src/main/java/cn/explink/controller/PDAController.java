@@ -26,6 +26,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -288,10 +290,6 @@ public class PDAController {
 	private MPSCommonService mpsCommonService;
 
 	private ObjectMapper om = new ObjectMapper();
-
-	private boolean playGPSound = true;
-
-	private boolean playYPDJSound = true;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -577,6 +575,8 @@ public class PDAController {
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 
+		//历史未到货用 2016-3-12
+		//String flowordertypesHis = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
 		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() + "," + FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue() + ","
 				+ FlowOrderTypeEnum.DingDanLanJie.getValue()
                 // add by 王志宇 在今日未到货中添加揽件出站判断条件
@@ -764,6 +764,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -788,7 +789,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -1154,8 +1155,7 @@ public class PDAController {
 		try {
 			isZhong = isZhongZhuan == null ? 1 : Integer.parseInt(isZhongZhuan.getValue());
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		for (Branch b : bList) {// 去掉退货站
 			if (isZhong == 1) {
@@ -1973,6 +1973,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -2005,7 +2006,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -2493,6 +2494,7 @@ public class PDAController {
 		StringBuffer strs = new StringBuffer("");
 		if (!cwbs.equals("")) {
 			for (String str : cwbs.split("\r\n")) {
+				str = str.trim();
 				strs.append("'").append(str).append("',");
 			}
 		}
@@ -2557,6 +2559,7 @@ public class PDAController {
 					if (cwb.trim().length() == 0) {
 						continue;
 					}
+					cwb = cwb.trim();
 					OrderFlow of = this.orderFlowDAO.getOrderFlowByParam(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), cwb);
 					if (of != null) {
 						count++;
@@ -2782,6 +2785,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
@@ -2807,7 +2811,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -3050,7 +3054,7 @@ public class PDAController {
 							a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 							obj.put("showRemark", a);
 						} catch (Exception e) {
-							e.printStackTrace();
+							this.logger.error("", e);
 							obj.put("showRemark", "Erro");
 						}
 					}
@@ -3313,6 +3317,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			if (useEaimDate && !allEmaildate.contains(cwb)) {
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 				JSONObject obj = new JSONObject();
@@ -3364,7 +3369,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -3450,7 +3455,7 @@ public class PDAController {
 						a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 						obj.put("showRemark", a);
 					} catch (Exception e) {
-						e.printStackTrace();
+						this.logger.error("", e);
 						obj.put("showRemark", "Erro");
 					}
 				}
@@ -3533,6 +3538,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -3564,7 +3570,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -3829,7 +3835,7 @@ public class PDAController {
 						a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 						obj.put("showRemark", a);
 					} catch (Exception e) {
-						e.printStackTrace();
+						this.logger.error("", e);
 						obj.put("showRemark", "Erro");
 					}
 				}
@@ -3876,6 +3882,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			batchCount.setAllcwbnum(batchCount.getAllcwbnum() + 1);
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -3900,7 +3907,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -4115,7 +4122,7 @@ public class PDAController {
 						a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 						obj.put("showRemark", a);
 					} catch (Exception e) {
-						e.printStackTrace();
+						this.logger.error("", e);
 						obj.put("showRemark", "Erro");
 					}
 				}
@@ -4312,7 +4319,7 @@ public class PDAController {
 						explinkResponse.setErrorinfo(ce.getMessage());
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.info("中转出站，cwb：{},deliverybranchid:{}", cwbOrder.getCwb(), deliverybranchid);
 				}
 			}
@@ -4467,6 +4474,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -4497,7 +4505,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -4684,6 +4692,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			alloutnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -4708,7 +4717,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -4880,6 +4889,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -4910,7 +4920,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -4949,7 +4959,7 @@ public class PDAController {
 		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
 		List<Branch> removeList = new ArrayList<Branch>();
 		for (Branch b : bList) {// 去掉中转站
-			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue())) {
+			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 				removeList.add(b);
 			}
 		}
@@ -5118,7 +5128,7 @@ public class PDAController {
 					a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 					obj.put("showRemark", a);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					obj.put("showRemark", "Erro");
 				}
 			}
@@ -5405,6 +5415,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -5435,7 +5446,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -5568,7 +5579,7 @@ public class PDAController {
 		try {
 			print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		obj.put("print", print);
 		Branch branch = this.branchDAO.getBranchByBranchname(cwbOrder.getExcelbranch());
@@ -5586,8 +5597,9 @@ public class PDAController {
 	}
 
 	@RequestMapping("/cwbscancwbbranchnew1")
-	public @ResponseBody ExplinkResponse cwbbranchfinishchangeexportnew1(HttpServletRequest request) {
-		String cwb = request.getParameter("cwb");
+	public @ResponseBody String cwbbranchfinishchangeexportnew1(HttpServletRequest request, @RequestParam(value = "cwb", required=true) String cwb) 
+			throws JsonGenerationException, JsonMappingException, IOException {
+//		String cwb = request.getParameter("cwb");
 		cwb = this.cwbOrderService.translateCwb(cwb);
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 
@@ -5596,11 +5608,8 @@ public class PDAController {
 		PrintStyle print = new PrintStyle();
 
 		String str = this.systemInstallDAO.getSystemInstall("cqhy_print").getValue();
-		try {
-			print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
+		print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
 		obj.put("print", print);
 		Branch branch = this.branchDAO.getBranchByBranchname(cwbOrder.getExcelbranch());
 		if (branch != null) {
@@ -5613,7 +5622,8 @@ public class PDAController {
 		} else {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
 		}
-		return explinkResponse;
+		String result = JacksonMapper.getInstance().writeValueAsString(explinkResponse); 
+		return result;
 	}
 
 	@RequestMapping("/cwbscancwbbranchruku/{cwb}")
@@ -5631,7 +5641,7 @@ public class PDAController {
 		try {
 			print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		obj.put("print", print);
 		Branch branch = this.branchDAO.getBranchByBranchname(cwbOrder.getExcelbranch());
@@ -5661,7 +5671,7 @@ public class PDAController {
 	@RequestMapping("/cwbbacktocustomer/{cwb}")
 	public @ResponseBody ExplinkResponse cwbbacktocustomer(HttpServletRequest request, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "customerid", required = false, defaultValue = "-1") long customerid) {// 为包号修改
-		String scancwb = cwb;
+		String scancwb = cwb.trim();
 
 		long successCount = request.getSession().getAttribute(baleno + "-TuigonghuoshangsuccessCount") == null ? 0 : Long.parseLong(request.getSession()
 				.getAttribute(baleno + "-TuigonghuoshangsuccessCount").toString());
@@ -5713,6 +5723,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -5743,7 +5754,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -6139,16 +6150,29 @@ public class PDAController {
 		List<String> cwbList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(branchid, nextbranchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		List<CwbOrder> yisaomiaocwOrders = new ArrayList<CwbOrder>();
 		if ((null != cwbList) && (cwbList.size() > 0)) {
-			String cwbs = "";
-			for (String cwb : cwbList) {
-				cwbs += "'" + cwb + "',";
+			StringBuffer cwbs = null;
+			final int batchSize = 1000;
+			List<String> sublist = new ArrayList<String>();
+			
+			long begin = System.currentTimeMillis();
+			this.logger.info("getOutSum循环开始");
+			for(int i=0; i<(cwbList.size()+batchSize-1)/batchSize; i++){ // 自己分批，解决CPU过高
+				cwbs = new StringBuffer();
+				int upperBound = (i+1)*batchSize;
+				if(upperBound > cwbList.size()) upperBound = cwbList.size();
+				sublist = cwbList.subList(i*batchSize, upperBound);
+				for (String cwb : sublist) {
+					cwbs.append( "'" + cwb + "',");
+				}
+				if (cwbs.length()>0) {
+//					cwbs = cwbs.substring(0, cwbs.lastIndexOf(","));
+					cwbs.deleteCharAt(cwbs.length()-1);
+				}
+				if (cwbs.length() > 0) {
+					yisaomiaocwOrders.addAll( this.cwbDAO.getCwbByCwbsByPage(cwbs.toString(), 0, Page.EXCEL_PAGE_NUMBER));
+				}
 			}
-			if (cwbs.contains(",")) {
-				cwbs = cwbs.substring(0, cwbs.lastIndexOf(","));
-			}
-			if (cwbs.length() > 0) {
-				yisaomiaocwOrders = this.cwbDAO.getCwbByCwbsByPage(cwbs, 0, Page.EXCEL_PAGE_NUMBER);
-			}
+			this.logger.info("getOutSum循环结束，耗时 in ms："+(System.currentTimeMillis()-begin));
 			obj.put("yisaomiaocwOrders", yisaomiaocwOrders);
 			obj.put("customerList", this.customerDAO.getAllCustomers());
 		}
@@ -6635,7 +6659,7 @@ public class PDAController {
 		}
 
 		// add by 王志宇-------未到货统计二级站出站给一级站
-		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()
+		String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()+","
                 + FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue() + ","
 				+ FlowOrderTypeEnum.DingDanLanJie.getValue();
 		
@@ -6913,6 +6937,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			batchCount.setAllcwbnum(batchCount.getAllcwbnum() + 1);
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -6943,7 +6968,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -7000,6 +7025,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -7030,7 +7056,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -7162,6 +7188,7 @@ public class PDAController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
+					cwbStr = cwbStr.trim();
 					cwbstr = cwbstr.append(quot).append(cwbStr).append(quotAndComma);
 				}
 				clist = this.cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
@@ -7502,7 +7529,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -7942,7 +7969,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8159,7 +8186,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8395,7 +8422,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8618,7 +8645,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8836,7 +8863,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -9150,7 +9177,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -9187,7 +9214,7 @@ public class PDAController {
 					this.logger.error("分站到货时，”分站到货未到货数据是否显示库房入库的数据“系统配置获取失败");
 				}
 
-				String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() + "," + FlowOrderTypeEnum.LanJianChuZhan.getValue()
+				String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue() + "," + FlowOrderTypeEnum.LanJianChuZhan.getValue()+","
                         + FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue() + ","
 						+ FlowOrderTypeEnum.DingDanLanJie.getValue();
 				if (showintowarehousedata.equals("yes")) {
@@ -9221,8 +9248,9 @@ public class PDAController {
 				}
 				if (type.equals("5")) {// 历史未到货
 					// 历史未到货订单数
-					List<String> historyweidaohuocwblist = this.cwbDAO.getHistoryDaoHuoByBranchidForListNoPage(this.getSessionUser().getBranchid(), flowordertypes, jinriweidaohuocwbs);
-
+					//List<String> historyweidaohuocwblist = this.cwbDAO.getHistoryDaoHuoByBranchidForListNoPage(this.getSessionUser().getBranchid(), flowordertypes, jinriweidaohuocwbs);
+					List<String> historyweidaohuocwblist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
+					
 					StringBuffer str = new StringBuffer();
 					String cwbs = "";
 					if ((historyweidaohuocwblist != null) && (historyweidaohuocwblist.size() > 0)) {
@@ -9380,7 +9408,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -9412,7 +9440,7 @@ public class PDAController {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		return remark;
 	}
@@ -9510,6 +9538,7 @@ public class PDAController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
+				cwb = cwb.trim();
 				allcwbnum++;
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
@@ -10005,7 +10034,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -10173,7 +10202,7 @@ public class PDAController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -10303,6 +10332,7 @@ public class PDAController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			allcwbnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;
@@ -10349,7 +10379,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -10570,7 +10600,7 @@ public class PDAController {
 								try {
 									a = cwbOrder.getClass().getMethod("get" + list.get(0).getRemark()).invoke(cwbOrder);
 								} catch (Exception e) {
-									e.printStackTrace();
+									this.logger.error("", e);
 									a = "Erro";
 								}
 							}
@@ -10681,7 +10711,7 @@ public class PDAController {
 					a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
 					obj.put("showRemark", a);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					obj.put("showRemark", "Erro");
 				}
 			}

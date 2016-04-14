@@ -1,10 +1,7 @@
 package cn.explink.b2c.dpfoss;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +24,6 @@ public class JsonUtil {
 			return mapper.writeValueAsString(obj);
 		} catch (Exception e) {
 			logger.error("Json格式转化发生未知异常", e);
-			e.printStackTrace();
 		}
 		return null;
 	}

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkService;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -30,6 +31,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -54,6 +56,8 @@ public class DongFangCJService_search {
 	ExplinkService explinkService;
 	@Autowired
 	BranchDAO branchDAO;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -69,6 +73,7 @@ public class DongFangCJService_search {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		DongFangCJ cj = new DongFangCJ();
 		String customerids = request.getParameter("customerids");
@@ -111,6 +116,8 @@ public class DongFangCJService_search {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
+
 	}
 
 	public void update(int joint_num, int state) {
@@ -160,7 +167,7 @@ public class DongFangCJService_search {
 			sub.append("</ocj>");
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return null;

@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.converters.BigDecimalConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 封装的BeanUtil
@@ -18,6 +20,8 @@ import org.apache.commons.beanutils.converters.BigDecimalConverter;
  */
 public class BeanUtilsSelfDef {
 
+	private static Logger logger = LoggerFactory.getLogger(BeanUtilsSelfDef.class);
+	
 	public static void copyPropertiesIgnoreException(Object dest, Object src) {
 		try {
 		    ConvertUtils.register(new BigDecimalConverter(BigDecimal.ZERO), java.math.BigDecimal.class);    
@@ -45,7 +49,7 @@ public class BeanUtilsSelfDef {
                 }
             }
         } catch (Exception e){
-            System.out.println("transBean2Map Error " + e);
+            logger.error("transBean2Map Error ", e);
         }
         return map;
     }

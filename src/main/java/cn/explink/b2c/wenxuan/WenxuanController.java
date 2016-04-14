@@ -64,9 +64,12 @@ public class WenxuanController {
 	public @ResponseBody String save(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-
-			wenxuanService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				wenxuanService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

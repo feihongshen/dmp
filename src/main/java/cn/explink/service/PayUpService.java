@@ -23,12 +23,14 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.OperationTimeDAO;
 import cn.explink.dao.PayUpDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassAuditing;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.PayUp;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbStateEnum;
@@ -72,6 +74,9 @@ public class PayUpService {
 	@Produce(uri = "jms:topic:PayUp")
 	ProducerTemplate sendJMSPayUp;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void subPayUpService(User user, Model model, PayUp payup, String gcaids, BigDecimal hk_amount, BigDecimal fa_amount, String gcaidsMAC) throws Exception {
@@ -309,14 +314,22 @@ public class PayUpService {
 	// =====系统自动归班 end=====
 
 	public void sendPayUp(String sendJson) {
-		this.sendJMSPayUp.sendBodyAndHeader(null, "PayUp", sendJson);
+		try{
+			this.sendJMSPayUp.sendBodyAndHeader(null, "PayUp", sendJson);
+		}catch(Exception e){
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("sendPayUp")
+					.buildExceptionInfo(e.toString()).buildTopic(this.sendJMSPayUp.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("PayUp", sendJson).getMqException());
+		}
 	}
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
 	public void payUpBack(@Header("payUpBack") String payUpBack) {
-		System.out.println(payUpBack);
+		logger.info(payUpBack);
 		JSONObject o = JSONObject.fromObject(payUpBack);
 		long id = o.get("payUpId") == null ? 0L : o.getLong("payUpId");
 		if (id > 0) {

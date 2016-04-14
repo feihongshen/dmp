@@ -6,12 +6,18 @@ package cn.explink.domain.customerCoutract;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 客户合同管理实体
  *
  * @author wangqiang
  */
 public class CustomerContractManagementVO {
+	
+	private static Logger logger = LoggerFactory.getLogger(CustomerContractManagementVO.class);
+	
 	private Long id;
 	// 编号
 	private String number;
@@ -201,7 +207,7 @@ public class CustomerContractManagementVO {
 		try {
 			resultString = new String(marketingprincipal.getBytes("iso-8859-1"));
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		this.marketingprincipal = resultString;
 	}
@@ -344,7 +350,7 @@ public class CustomerContractManagementVO {
 		try {
 			resultString = new String(pageCode.getBytes("iso-8859-1"));
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return resultString;
 	}

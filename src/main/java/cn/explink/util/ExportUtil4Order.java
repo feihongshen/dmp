@@ -9,10 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.explink.util.poi.excel.entity.ExcelTitle;
 
 public class ExportUtil4Order {
+	
+	private static Logger logger = LoggerFactory.getLogger(ExportUtil4Order.class);
 	
 	public static void myExportXls(HttpServletRequest request, HttpServletResponse response, List<?> list,Class<?> clz,String fileName) {
 		response.setContentType("application/vnd.ms-excel");
@@ -37,13 +41,13 @@ public class ExportUtil4Order {
 			fOut = response.getOutputStream();
 			workbook.write(fOut);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} finally {
 			try {
 				fOut.flush();
 				fOut.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 	}

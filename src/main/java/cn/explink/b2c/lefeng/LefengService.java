@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkService;
 import cn.explink.b2c.tools.JiontDAO;
@@ -27,6 +28,7 @@ import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.MD5.MD5Util;
@@ -45,6 +47,8 @@ public class LefengService {
 	ExplinkService explinkService;
 	@Autowired
 	UserDAO userDAO;
+	@Autowired
+	CustomerService customerService;
 
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -62,6 +66,7 @@ public class LefengService {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		LefengT lefeng = new LefengT();
 		String customerids = request.getParameter("customerids");
@@ -96,6 +101,7 @@ public class LefengService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

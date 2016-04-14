@@ -149,7 +149,7 @@ public class WhareHouseToCommonService {
 		return branchname;
 	}
 
-	public String auditCommen(String commencodes, long startbranchid, int outbranchflag) {
+	public String auditCommen(String commencodes, long startbranchid, int outbranchflag,int maxCount) {
 		//SystemInstall omsPathUrl = systemInstallDAO.getSystemInstallByName("omsPathUrl");
 		SystemInstall omsUrl = systemInstallDAO.getSystemInstallByName("omsUrl");
 		String url1 = "";
@@ -173,7 +173,7 @@ public class WhareHouseToCommonService {
 
 		List<String> cwbList = new ArrayList<String>();
 		if (custids.length() > 0) {
-			List<WarehouseToCommen> commenList = warehouseToCommenDAO.getCommenCwbListByCommencodes(commencodes, startbranchid, outbranchflag);
+			List<WarehouseToCommen> commenList = warehouseToCommenDAO.getCommenCwbListByCommencodes(commencodes, startbranchid, outbranchflag,maxCount);
 			if (commenList != null && commenList.size() > 0) {
 				for (WarehouseToCommen warehouseToCommen : commenList) {
 					cwbStr += "'" + warehouseToCommen.getCwb() + "',";
@@ -251,7 +251,7 @@ public class WhareHouseToCommonService {
 						}
 
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("", e);
 					}
 				}
 			});
@@ -290,7 +290,7 @@ public class WhareHouseToCommonService {
 
 		List<String> cwbList = new ArrayList<String>();
 		if (custids.length() > 0) {
-			List<WarehouseToCommen> commenList = warehouseToCommenDAO.getCommenCwbListByCommencodes(commencodes, startbranchid, outbranchflag);
+			List<WarehouseToCommen> commenList = warehouseToCommenDAO.getCommenCwbListByCommencodes(commencodes, startbranchid, outbranchflag,0);
 			if (commenList != null && commenList.size() > 0) {
 				for (WarehouseToCommen warehouseToCommen : commenList) {
 					cwbStr += "'" + warehouseToCommen.getCwb() + "',";

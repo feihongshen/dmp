@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +17,8 @@ public class ExptCodeJointDAO {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	private static Logger logger = LoggerFactory.getLogger(ExptCodeJointDAO.class);
 
 	private final class ExptRowMapper implements RowMapper<ExptCodeJoint> {
 		@Override
@@ -58,7 +62,7 @@ public class ExptCodeJointDAO {
 
 			list = jdbcTemplate.query(sql, new ExptRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		if (list != null && list.size() > 0) {
 			exptCodeJoint = list.get(0);
@@ -87,7 +91,7 @@ public class ExptCodeJointDAO {
 
 			list = jdbcTemplate.query(sql, new ExptRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -101,7 +105,7 @@ public class ExptCodeJointDAO {
 					+ " WHERE 1=1 and   exptcodeid=" + exptcodeid;
 			list = jdbcTemplate.queryForObject(sql, new ExptRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -128,7 +132,7 @@ public class ExptCodeJointDAO {
 			String sql = "select count(1)  from express_set_exptcode_joint where reasonid=" + reasonid + " and  exptid=" + exptid;
 			counts = jdbcTemplate.queryForInt(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		if (counts > 0) {
 			flag = true;
@@ -144,7 +148,7 @@ public class ExptCodeJointDAO {
 			String sql = "select count(1)  from express_set_exptcode_joint where reasonid=" + reasonid + " and  exptid=" + exptid + " and exptcodeid<>" + exptcodeid;
 			counts = jdbcTemplate.queryForInt(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		if (counts > 0) {
 			flag = true;
@@ -158,7 +162,7 @@ public class ExptCodeJointDAO {
 			String sql = "insert into express_set_exptcode_joint(reasonid,exptid,exptcode_remark)" + " values(?,?,?) ";
 			jdbcTemplate.update(sql, expt.getReasonid(), expt.getExptid(), expt.getExptcode_remark());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -168,7 +172,7 @@ public class ExptCodeJointDAO {
 			String sql = "update express_set_exptcode_joint set reasonid=?,exptid=?,exptcode_remark=? " + " where exptcodeid=? ";
 			jdbcTemplate.update(sql, expt.getReasonid(), expt.getExptid(), expt.getExptcode_remark(), exptcodeid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -178,23 +182,10 @@ public class ExptCodeJointDAO {
 			String sql = "delete from express_set_exptcode_joint where exptcodeid=" + exptid;
 			jdbcTemplate.update(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
-
-	// public ExptReason getExptReasonEntityByKey(long exptid){
-	// ExptReason expt=null;
-	// try {
-	// String sql =
-	// "select * from express_set_b2c_exptreason where exptid="+exptid;
-	// expt= jdbcTemplate.queryForObject(sql, new ExptRowMapper());
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// return expt;
-	//
-	// }
 
 	public void SaveExptReason(ExptReason expt, long exptid) {
 		try {
@@ -202,7 +193,7 @@ public class ExptCodeJointDAO {
 					+ expt.getExpt_type() + ",expt_remark='" + expt.getExpt_remark() + "' " + " where exptid=" + exptid;
 			jdbcTemplate.update(sql);
 		} catch (DataAccessException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -227,7 +218,7 @@ public class ExptCodeJointDAO {
 					+ ") and b.expt_type=" + expt_type;
 			list = jdbcTemplate.query(sql, new ExptB2cRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		if (list != null && list.size() > 0) {
 			exptCodeJoint = list.get(0);
@@ -248,7 +239,7 @@ public class ExptCodeJointDAO {
 
 			list = jdbcTemplate.query(sql, new ExptRowMapper(), extpt_code, support_key);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list != null && list.size() > 0 ? list.get(0) : new ExptCodeJoint();
 
@@ -266,7 +257,7 @@ public class ExptCodeJointDAO {
 
 			list = jdbcTemplate.query(sql, new ExptRowMapper(), extpt_code, customerid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list != null && list.size() > 0 ? list.get(0) : null;
 

@@ -211,6 +211,7 @@ public class CwbLablePrintController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
+					cwbStr = cwbStr.trim();
 					cwbstr = cwbstr.append(quot).append(cwbStr).append(quotAndComma);
 				}
 				clist = this.cwbDAO.getCwbByCwbs(cwbstr.substring(0, cwbstr.length() - 1));
@@ -615,7 +616,7 @@ public class CwbLablePrintController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -699,7 +700,7 @@ public class CwbLablePrintController {
 						try {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							logger.error("", e);
 						}
 						slist.add(new Date().getTime() + "");
 					}

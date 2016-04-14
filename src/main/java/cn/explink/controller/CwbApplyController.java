@@ -147,6 +147,7 @@ public class CwbApplyController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDAO.getCwbByCwb(lastcwb);
@@ -191,6 +192,7 @@ public class CwbApplyController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDAO.getCwbByCwb(lastcwb);
@@ -278,7 +280,7 @@ public class CwbApplyController {
 						this.logger.error("{} 申请退货失败,没有选择退货站", content);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 					this.logger.error("{} 申请退货失败,{}", content, e.getMessage());
 				}
 			} else {
@@ -342,7 +344,7 @@ public class CwbApplyController {
 						this.logger.error("{} 申请中转失败,没有选择中转站", content);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 					this.logger.error("{} 申请中转失败,{}", content, e.getMessage());
 				}
 			} else {
@@ -613,6 +615,7 @@ public class CwbApplyController {
 			if (cwbStr.trim().length() == 0) {
 				continue;
 			}
+			cwbStr = cwbStr.trim();
 			cwbs.append("'").append(cwbStr).append("',");
 		}
 		if(cwbs.length()>0){
@@ -738,7 +741,7 @@ public class CwbApplyController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -798,7 +801,7 @@ public class CwbApplyController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 

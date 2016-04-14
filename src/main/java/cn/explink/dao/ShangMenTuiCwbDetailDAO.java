@@ -97,25 +97,28 @@ public class ShangMenTuiCwbDetailDAO {
 	public List<String> getShangMenTuiCwbDetailByCustomerid(String customerids, long printType, String begindate, String enddate, long deliverybranchid,String orders,String selectype) {
 		if (selectype.equals("1")) {
 			if (!orders.isEmpty()&&orders.length()>0){
-				String sql = "select cwb from shangmentuicwb_detail where cwb IN("+orders+")";
+				String sql = "select distinct sd.cwb from shangmentuicwb_detail sd left join express_ops_cwb_detail cd "
+						+ " on sd.cwb=cd.cwb where sd.cwb IN("+orders+")";
 				return jdbcTemplate.queryForList(sql, String.class);
 			}
 		}
-		String sql = "select cwb from shangmentuicwb_detail where ";
+		StringBuffer sql = new StringBuffer();
+	    sql.append("select distinct sd.cwb from shangmentuicwb_detail sd left join express_ops_cwb_detail cd "
+				+ " on sd.cwb=cd.cwb where cd.state=1 ");
 		if (printType == 0) {
-			sql += " printtime='' ";
+			sql.append(" and cd.printtime='' ");
 		} else {
-			sql += " printtime >= '" + begindate + "'  and printtime <= '" + enddate + "'";
+			sql.append(" and cd.printtime >= '" + begindate + "'  and cd.printtime <= '" + enddate + "'");
 		}
 		
 		if (customerids.length() > 0) {
-			sql += " and customerid in(" + customerids + ")";
+			sql.append(" and sd.customerid in(" + customerids + ")");
 		}
 		if (deliverybranchid > 0) {
-			sql += " and deliverybranchid=" + deliverybranchid;
+			sql.append(" and sd.deliverybranchid=" + deliverybranchid);
 		}
 		System.out.println(sql);
-		return jdbcTemplate.queryForList(sql, String.class);
+		return jdbcTemplate.queryForList(sql.toString(), String.class);
 	}
 
 	public void saveShangMenTuiCwbDetailForPrinttime(String cwb, String printtime) {

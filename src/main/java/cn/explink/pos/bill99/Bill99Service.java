@@ -168,7 +168,7 @@ public class Bill99Service {
 
 			return DealWithBill99Interface(returnCode, bill99, xmlstr, rootnote);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "Convert XML to Transaction Bean Exception! reason=" + e;
 
 		}
@@ -217,8 +217,7 @@ public class Bill99Service {
 			checkMACflag = cfcu.verify(xmlSub.getBytes("utf-8"), MAC);
 			logger.info(transaction_id + "MAC：" + MAC + ";签名验证的内容:" + xmlSub + ";验证结果：[" + (checkMACflag) + "]");
 		} catch (Exception e) {
-			logger.info("bill99签名验证异常!业务编码:" + transaction_id);
-			e.printStackTrace();
+			logger.error("bill99签名验证异常!业务编码:" + transaction_id, e);
 		}
 		return checkMACflag;
 	}
@@ -242,8 +241,7 @@ public class Bill99Service {
 				deliverid = userlist.get(0).getUserid();
 			}
 		} catch (Exception e) {
-			logger.info("POS查询-没有查询到小件员[" + deliver_man + "]");
-			e.printStackTrace();
+			logger.error("POS查询-没有查询到小件员[" + deliver_man + "]", e);
 		}
 		return deliverid;
 	}
@@ -274,8 +272,7 @@ public class Bill99Service {
 		try {
 			MAC = cfcu.sign(str.getBytes("utf-8"));
 		} catch (Exception e) {
-			logger.info("移动POS(bill99):运单支付生成MAC异常!");
-			e.printStackTrace();
+			logger.error("移动POS(bill99):运单支付生成MAC异常!", e);
 		}
 		return MAC;
 	}

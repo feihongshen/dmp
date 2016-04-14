@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Repository;
 
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.TransCwbStateEnum;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Tools;
 
 @Repository
@@ -136,6 +139,12 @@ public class TransCwbDetailDAO {
 	 */
 	public List<TransCwbDetail> getTransCwbDetailListByTransCwbList(List<String> transCwbList) {
 		List<TransCwbDetail> transCwbDetailList = new ArrayList<TransCwbDetail>();
+		//Added by leoliao at 2016-03-01
+		if(transCwbList == null || transCwbList.isEmpty()){
+			return transCwbDetailList; 
+		}
+		//Added end
+		
 		String sql = "select * from express_ops_transcwb_detail where transcwb " + Tools.assembleInByList(transCwbList);
 		try {
 			transCwbDetailList = this.jdbcTemplate.query(sql, new TransCwbRowMapper());
@@ -309,4 +318,41 @@ public class TransCwbDetailDAO {
 		return this.jdbcTemplate.query(sql, new TransCwbRowMapper(), transcwb);
 	}
 
+	/**
+	 * 更新发货时间
+	 * @author leo01.liao
+	 * @param listTranscwb
+	 * @param emaildate
+	 */
+	public void updateEmaildate(List<String> listTranscwb, String emaildate) {
+		if(listTranscwb == null || listTranscwb.isEmpty() || emaildate == null || emaildate.trim().equals("")){
+			return;
+		}
+		
+		String strIn = "";
+		for(String transcwb : listTranscwb){
+			if(transcwb == null || transcwb.trim().equals("")){
+				continue;
+			}
+			
+			strIn += "'" + transcwb.trim() + "',";
+		}
+		if(strIn.equals("")){
+			return;
+		}		
+		strIn = strIn.substring(0, strIn.length()-1);		
+		Date dtEmaildate = DateTimeUtil.parseDate(emaildate, DateTimeUtil.DEF_DATETIME_FORMAT);
+		
+		this.jdbcTemplate.update("update express_ops_transcwb_detail set emaildate=? where transcwb in(" + strIn + ") ", dtEmaildate);
+	}
+	
+	/**
+	 * 更新运单的下一站
+	 * @param cwb
+	 * @param nextbranchId
+	 */
+	public void updateNextbranch(String cwb, long nextbranchId) {
+		String sql = "update express_ops_transcwb_detail set nextbranchid=? where cwb=?";
+		this.jdbcTemplate.update(sql, nextbranchId, cwb);
+	}
 }

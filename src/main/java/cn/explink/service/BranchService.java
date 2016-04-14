@@ -9,13 +9,17 @@ import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.enumutil.OrgPayInTypeEnum;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
@@ -26,6 +30,11 @@ public class BranchService {
 
 	@Autowired
 	private BranchDAO branchDao;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
 		Branch bh = this.loadFormForBranch(request);
@@ -101,14 +110,14 @@ public class BranchService {
 		branch.setBacktodeliverflag(StringUtil.nullConvertToEmptyString(request.getParameter("backtodeliverflag")));
 		branch.setBranchpaytoheadflag(StringUtil.nullConvertToEmptyString(request.getParameter("branchpaytoheadflag")));
 		branch.setBranchfinishdayflag(StringUtil.nullConvertToEmptyString(request.getParameter("branchfinishdayflag")));
-		branch.setBranchinsurefee(BigDecimal.valueOf(Double.parseDouble(request.getParameter("branchinsurefee") == null ? "0" : request.getParameter("branchinsurefee"))));
+		branch.setBranchinsurefee(BigDecimal.valueOf(Double.parseDouble(isNullOrUndefined(request.getParameter("branchinsurefee")) ? "0" : request.getParameter("branchinsurefee"))));
 		branch.setBranchwavfile(StringUtil.nullConvertToEmptyString(request.getParameter("branchwavfile")));
-		branch.setCreditamount(BigDecimal.valueOf(Float.parseFloat(request.getParameter("creditamount") == null ? "0" : request.getParameter("creditamount"))));
+		branch.setCreditamount(BigDecimal.valueOf(Double.parseDouble(isNullOrUndefined(request.getParameter("creditamount")) ? "0" : request.getParameter("creditamount"))));
 		branch.setBrancheffectflag(StringUtil.nullConvertToEmptyString(request.getParameter("brancheffectflag")));
-		branch.setContractrate(BigDecimal.valueOf(Float.parseFloat(request.getParameter("contractrate") == null ? "0" : request.getParameter("contractrate"))));
+		branch.setContractrate(BigDecimal.valueOf(Double.parseDouble(isNullOrUndefined(request.getParameter("contractrate")) ? "0" : request.getParameter("contractrate"))));
 		branch.setBranchcode(StringUtil.nullConvertToEmptyString(request.getParameter("branchcode")));
 		//为快递使用的tps站点编码
-		branch.setTpsbranchcode(StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode") == null ? null : request.getParameter("tpsbranchcode").trim()));
+		branch.setTpsbranchcode(StringUtil.nullConvertToEmptyString(isNullOrUndefined(request.getParameter("tpsbranchcode")) ? null : request.getParameter("tpsbranchcode").trim()));
 		branch.setNoemailimportflag(StringUtil.nullConvertToEmptyString(request.getParameter("noemailimportflag")));
 		branch.setErrorcwbdeliverflag(StringUtil.nullConvertToEmptyString(request.getParameter("errorcwbdeliverflag")));
 		branch.setErrorcwbbranchflag(StringUtil.nullConvertToEmptyString(request.getParameter("errorcwbbranchflag")));
@@ -116,62 +125,62 @@ public class BranchService {
 		branch.setImportwavtype(StringUtil.nullConvertToEmptyString(request.getParameter("importwavtype")));
 		branch.setExportwavtype(StringUtil.nullConvertToEmptyString(request.getParameter("exportwavtype")));
 		branch.setNoemaildeliverflag(StringUtil.nullConvertToEmptyString(request.getParameter("noemaildeliverflag")));
-		branch.setSendstartbranchid(Integer.parseInt(request.getParameter("sendstartbranchid") == null ? "0" : request.getParameter("sendstartbranchid")));
+		branch.setSendstartbranchid(Integer.parseInt(isNullOrUndefined(request.getParameter("sendstartbranchid")) ? "0" : request.getParameter("sendstartbranchid")));
 		branch.setFunctionids(StringUtil.nullConvertToEmptyString(request.getParameter("functionids")));
-		branch.setSitetype(Integer.parseInt(request.getParameter("sitetype") == null ? "0" : request.getParameter("sitetype")));
-		branch.setCheckremandtype(Integer.parseInt(request.getParameter("remandtype") == null ? "0" : request.getParameter("remandtype")));
+		branch.setSitetype(Integer.parseInt(isNullOrUndefined(request.getParameter("sitetype")) ? "0" : request.getParameter("sitetype")));
+		branch.setCheckremandtype(Integer.parseInt(isNullOrUndefined(request.getParameter("remandtype")) ? "0" : request.getParameter("remandtype")));
 		branch.setBranchmatter(StringUtil.nullConvertToEmptyString(request.getParameter("branchmatter")));
 		// branch.setAccountareaid(Integer.parseInt((request.getParameter("accountarea")==null||"".equals(request.getParameter("accountarea")))?"0":request.getParameter("accountarea")));
-		branch.setBranchid(Integer.parseInt(request.getParameter("branchid") == null ? "0" : request.getParameter("branchid")));
+		branch.setBranchid(Integer.parseInt(isNullOrUndefined(request.getParameter("branchid")) ? "0" : request.getParameter("branchid")));
 
-		branch.setZhongzhuanid(Integer.parseInt(request.getParameter("zhongzhuanid") == null ? "0" : request.getParameter("zhongzhuanid")));
-		branch.setTuihuoid(Integer.parseInt(request.getParameter("tuihuoid") == null ? "0" : request.getParameter("tuihuoid")));
-		branch.setCaiwuid(Integer.parseInt(request.getParameter("caiwuid") == null ? "0" : request.getParameter("caiwuid")));
-		branch.setBindmsksid(Integer.parseInt(request.getParameter("bindmsksid") == null ? "0" : request.getParameter("bindmsksid")));
+		branch.setZhongzhuanid(Integer.parseInt(isNullOrUndefined(request.getParameter("zhongzhuanid")) ? "0" : request.getParameter("zhongzhuanid")));
+		branch.setTuihuoid(Integer.parseInt(isNullOrUndefined(request.getParameter("tuihuoid")) ? "0" : request.getParameter("tuihuoid")));
+		branch.setCaiwuid(Integer.parseInt(isNullOrUndefined(request.getParameter("caiwuid")) ? "0" : request.getParameter("caiwuid")));
+		branch.setBindmsksid(Integer.parseInt(isNullOrUndefined(request.getParameter("bindmsksid")) ? "0" : request.getParameter("bindmsksid")));
 		// 结算业务设置
-		branch.setAccounttype(Integer.parseInt(request.getParameter("accounttype") == null ? "0" : request.getParameter("accounttype")));
-		branch.setAccountexcesstype(Integer.parseInt(request.getParameter("accountexcesstype") == null ? "0" : request.getParameter("accountexcesstype")));
-		branch.setPfruleid(Long.parseLong(request.getParameter("pfruleid") == null ? "0" : request.getParameter("pfruleid")));
+		branch.setAccounttype(Integer.parseInt(isNullOrUndefined(request.getParameter("accounttype")) ? "0" : request.getParameter("accounttype")));
+		branch.setAccountexcesstype(Integer.parseInt(isNullOrUndefined(request.getParameter("accountexcesstype")) ? "0" : request.getParameter("accountexcesstype")));
+		branch.setPfruleid(Long.parseLong(isNullOrUndefined(request.getParameter("pfruleid")) ? "0" : request.getParameter("pfruleid")));
 		//自动核销字段的获取--通联
-		branch.setBankCardNo(request.getParameter("bankCardNo") == null ? "" : request.getParameter("bankCardNo"));
-		branch.setBankCode(request.getParameter("bankCode") == null ? "" : request.getParameter("bankCode"));
-		branch.setOwnerName(request.getParameter("ownerName") == null ? "" : request.getParameter("ownerName"));
-		branch.setBankAccountType(request.getParameter("bankAccountType") == null ? 1 : Integer.parseInt(request.getParameter("bankAccountType")));
+		branch.setBankCardNo(isNullOrUndefined(request.getParameter("bankCardNo")) ? "" : request.getParameter("bankCardNo"));
+		branch.setBankCode(isNullOrUndefined(request.getParameter("bankCode")) ? "" : request.getParameter("bankCode"));
+		branch.setOwnerName(isNullOrUndefined(request.getParameter("ownerName")) ? "" : request.getParameter("ownerName"));
+		branch.setBankAccountType(isNullOrUndefined(request.getParameter("bankAccountType")) ? 1 : Integer.parseInt(request.getParameter("bankAccountType")));
 		//自动核销字段的获取--财付通
-		branch.setCftAccountNo(request.getParameter("cftAccountNo") == null ? "" : request.getParameter("cftAccountNo"));
-		branch.setCftBankCode(request.getParameter("cftBankCode") == null ? "" : request.getParameter("cftBankCode"));
-		branch.setCftAccountName(request.getParameter("cftAccountName") == null ? "" : request.getParameter("cftAccountName"));
-		branch.setCftAccountProp(request.getParameter("cftAccountProp") == null ? 1 : Integer.parseInt(request.getParameter("cftAccountProp")));
-		branch.setCftCertId(request.getParameter("cftCertId") == null ? "" : request.getParameter("cftCertId"));
-		branch.setCftCertType(request.getParameter("cftCertType") == null ? 1 : Integer.parseInt(request.getParameter("cftCertType")));
+		branch.setCftAccountNo(isNullOrUndefined(request.getParameter("cftAccountNo")) ? "" : request.getParameter("cftAccountNo"));
+		branch.setCftBankCode(isNullOrUndefined(request.getParameter("cftBankCode")) ? "" : request.getParameter("cftBankCode"));
+		branch.setCftAccountName(isNullOrUndefined(request.getParameter("cftAccountName")) ? "" : request.getParameter("cftAccountName"));
+		branch.setCftAccountProp(isNullOrUndefined(request.getParameter("cftAccountProp")) ? 1 : Integer.parseInt(request.getParameter("cftAccountProp")));
+		branch.setCftCertId(isNullOrUndefined(request.getParameter("cftCertId")) ? "" : request.getParameter("cftCertId"));
+		branch.setCftCertType(isNullOrUndefined(request.getParameter("cftCertType")) ? 1 : Integer.parseInt(request.getParameter("cftCertType")));
 
-		if ((request.getParameter("accountexcessfee") == null) || request.getParameter("accountexcessfee").toString().equals("")) {
-			branch.setAccountexcessfee(BigDecimal.valueOf(Float.parseFloat("0")));
+		if ((isNullOrUndefined(request.getParameter("accountexcessfee"))) || request.getParameter("accountexcessfee").toString().equals("")) {
+			branch.setAccountexcessfee(BigDecimal.valueOf(Double.parseDouble("0")));
 		} else {
-			branch.setAccountexcessfee(BigDecimal.valueOf(Float.parseFloat(request.getParameter("accountexcessfee"))));
+			branch.setAccountexcessfee(BigDecimal.valueOf(Double.parseDouble(request.getParameter("accountexcessfee"))));
 		}
 
-		branch.setAccountbranch(Long.parseLong(request.getParameter("accountbranch") == null ? "0" : request.getParameter("accountbranch")));
+		branch.setAccountbranch(Long.parseLong(isNullOrUndefined(request.getParameter("accountbranch")) ? "0" : request.getParameter("accountbranch")));
 
-		if ((request.getParameter("credit") == null) || request.getParameter("credit").toString().equals("")) {
-			branch.setCredit(BigDecimal.valueOf(Float.parseFloat("0")));
+		if ((isNullOrUndefined(request.getParameter("credit"))) || request.getParameter("credit").toString().equals("")) {
+			branch.setCredit(BigDecimal.valueOf(Double.parseDouble("0")));
 		} else {
-			branch.setCredit(BigDecimal.valueOf(Float.parseFloat(request.getParameter("credit"))));
+			branch.setCredit(BigDecimal.valueOf(Double.parseDouble(request.getParameter("credit"))));
 		}
 
-		if ((request.getParameter("prescription24") == null) || request.getParameter("prescription24").toString().equals("")) {
+		if ((isNullOrUndefined(request.getParameter("prescription24"))) || request.getParameter("prescription24").toString().equals("")) {
 			branch.setPrescription24(Long.parseLong("0"));
 		} else {
 			branch.setPrescription24(Long.parseLong(request.getParameter("prescription24")));
 		}
 
-		if ((request.getParameter("prescription48") == null) || request.getParameter("prescription48").toString().equals("")) {
+		if ((isNullOrUndefined(request.getParameter("prescription48"))) || request.getParameter("prescription48").toString().equals("")) {
 			branch.setPrescription48(Long.parseLong("0"));
 		} else {
 			branch.setPrescription48(Long.parseLong(request.getParameter("prescription48")));
 		}
 
-		branch.setBacktime(Long.parseLong(request.getParameter("backtime") == null ? "0" : request.getParameter("backtime")));
+		branch.setBacktime(Long.parseLong(isNullOrUndefined(request.getParameter("backtime")) ? "0" : request.getParameter("backtime")));
 
 		//站点保证金
 		if (StringUtils.isEmpty(request.getParameter("branchBail"))) {
@@ -190,16 +199,21 @@ public class BranchService {
 		branch.setPayinType(Integer.parseInt(StringUtils.isEmpty(request.getParameter("payinType")) ? OrgPayInTypeEnum.StationPay.getValue()+"" : request.getParameter("payinType")));
 		return branch;
 	}
+	
+	private boolean isNullOrUndefined(String parameter) {
+		return parameter == null || parameter.equals("undefined");
+	}
 
 	@Produce(uri = "jms:topic:addzhandian")
 	ProducerTemplate addzhandian;
 	@Produce(uri = "jms:topic:savezhandian")
 	ProducerTemplate savezhandian;
 
-	public void addzhandianToAddress(long branchid, Branch branch) {
+	public void addzhandianToAddress(long branchid, Branch branch,String oldtpsbranchcode) {
+		JSONObject branchToJson = new JSONObject();
 		try {
 			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
-			JSONObject branchToJson = new JSONObject();
+			
 			branchToJson.put("branchid", branchid);
 			branchToJson.put("branchname", branch.getBranchname());
 			branchToJson.put("branchphone", branch.getBranchphone());
@@ -211,9 +225,20 @@ public class BranchService {
 			branchToJson.put("branchcity", branch.getBranchcity());
 			branchToJson.put("branchprovince", branch.getBranchprovince());
 			branchToJson.put("brancharea", branch.getBrancharea());
-
+			branchToJson.put("tpsbranchcode", branch.getTpsbranchcode());
+			branchToJson.put("oldtpsbranchcode", oldtpsbranchcode==null?"":oldtpsbranchcode);
+			
 			this.savezhandian.sendBodyAndHeader(null, "branch", branchToJson.toString());
 		} catch (Exception e) {
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addzhandianToAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(this.addzhandian.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("branchid", branchid + "").getMqException());
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addzhandianToAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(this.savezhandian.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("branch", branchToJson.toString()).getMqException());
 		}
 	}
 
@@ -224,6 +249,11 @@ public class BranchService {
 		try {
 			this.delzhandian.sendBodyAndHeader(null, "branchid", branchid);
 		} catch (Exception e) {
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("delBranch")
+					.buildExceptionInfo(e.toString()).buildTopic(this.delzhandian.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("branchid", branchid + "").getMqException());
 		}
 	}
 

@@ -20,8 +20,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -141,8 +139,6 @@ public class DeliveryController {
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
-	private ObjectMapper objectMapper = new ObjectMapper();
-	private ObjectReader dmpOrderFlowMapper = this.objectMapper.reader(CwbOrder.class);
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -273,8 +269,7 @@ public class DeliveryController {
 									cratetimeL = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(deliveryState.getCreatetime()).getTime();
 									nowTimeL = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(nowtime).getTime();
 								} catch (ParseException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									this.logger.error("", e);
 								}
 								// 已反馈
 								if (deliveryState.getDeliverystate() > 0) {
@@ -547,13 +542,13 @@ public class DeliveryController {
 						: cwbOrder.getCustomerid(), 0, 0, 0, "", cwb);
 			}
 
-			e.printStackTrace();
+			this.logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
 		} catch (ExplinkException e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"系统错误\"}";
 		}
 	}
@@ -780,7 +775,7 @@ public class DeliveryController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
-
+				cwb = cwb.trim();
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
@@ -928,7 +923,7 @@ public class DeliveryController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
-
+				cwb = cwb.trim();
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
@@ -1068,7 +1063,7 @@ public class DeliveryController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				}
-
+				cwb = cwb.trim();
 				JSONObject obj = new JSONObject();
 				String scancwb = cwb;
 				obj.put("cwb", cwb);
@@ -1623,13 +1618,13 @@ public class DeliveryController {
 
 	@ExceptionHandler(Exception.class)
 	public @ResponseBody String onException(Exception e) {
-		e.printStackTrace();
+		this.logger.error("", e);
 		return "{\"errorCode\":1,\"error\":\"系统错误:\"" + e.getMessage() + "}";
 	}
 
 	@ExceptionHandler(CwbException.class)
 	public @ResponseBody String onCwbException(CwbException e) {
-		e.printStackTrace();
+		this.logger.error("", e);
 		return "{\"errorCode\":1,\"cwb\":\"" + e.getCwb() + "\",\"error\":\"系统错误:\"" + e.getMessage() + "}";
 	}
 
@@ -1733,7 +1728,7 @@ public class DeliveryController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 
 	}
@@ -1776,7 +1771,7 @@ public class DeliveryController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -1851,7 +1846,7 @@ public class DeliveryController {
 			try {
 				return JacksonMapper.getInstance().writeValueAsString(tworeasonlist);
 			} catch (Exception e) {
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			return "[]";
 		} else {

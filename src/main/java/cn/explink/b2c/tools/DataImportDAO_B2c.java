@@ -644,7 +644,7 @@ public class DataImportDAO_B2c {
 	}
 
 	public List<CwbOrderDTO> getCwbOrderTempByKeysExtends(String customerids, String cwbordertypeids) {
-		String sql = "select * from express_ops_cwb_detail_b2ctemp where customerid in (" + customerids + ") and getDataFlag=0 and cwbordertypeid in (" + cwbordertypeids
+		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1 and customerid in (" + customerids + ") and getDataFlag=0 and cwbordertypeid in (" + cwbordertypeids
 				+ ") order by credate limit 0,2000 ";
 		List<CwbOrderDTO> cwborderList = this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 		return cwborderList;
@@ -670,5 +670,93 @@ public class DataImportDAO_B2c {
 	
 	public void updateTmsPackageCondition(String cwb, String  transcwb,int sendcarnum,int mpsallarrivedflag,int ismpsflag) {
 		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=? where cwb=? and state = 1  ", transcwb,sendcarnum,mpsallarrivedflag,ismpsflag,cwb);
+	}
+	
+	/**
+	 * 获取临时表中未转业务的记录id
+	 * @author leo01.liao
+	 * @param customerids
+	 * @param cwbordertypeids
+	 * @param maxCount
+	 * @return
+	 */
+	public List<Long> getCwbOrderTempOpscwbidByKeysExtends(String customerids, String cwbordertypeids, int maxCount) {
+		if(maxCount <= 0){
+			maxCount = 2000;
+		}
+		
+		String sql = "select opscwbid from express_ops_cwb_detail_b2ctemp where state=1 and customerid in (" + customerids + ") " +
+					 " and getDataFlag=0 and cwbordertypeid in (" + cwbordertypeids + ") order by credate limit 0, " + maxCount;
+		return this.jdbcTemplate.queryForList(sql, Long.class);
+	}
+	
+	/**
+	 * 使用行级锁以防止并发修改
+	 * @author leo01.liao
+	 * @param opscwbid
+	 * @return
+	 */
+	public CwbOrderDTO getCwbByCwbB2ctempOpscwbidLock(long opscwbid) {
+		try {
+			//取消锁定，改为使用乐观锁方式。leoliao at 2016-03-29
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where opscwbid=? ", new CwbDTO4TempMapper(), opscwbid);
+			//return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where opscwbid=? for update", new CwbDTO4TempMapper(), opscwbid);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 使用id来进行更新以便行级锁生效
+	 * @author leo01.liao
+	 * @param opscwbid
+	 * @param transcwb
+	 * @param sendcarnum
+	 * @param mpsallarrivedflag
+	 * @param ismpsflag
+	 */
+	public void updateTmsPackageCondition(long opscwbid, String  transcwb, int sendcarnum, int mpsallarrivedflag, int ismpsflag) {
+		String sql = "update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=? where opscwbid=? ";
+		this.jdbcTemplate.update(sql, transcwb, sendcarnum, mpsallarrivedflag, ismpsflag, opscwbid);
+	}
+	
+	/**
+	 * 修改临时表为[插入detail表]成功 getDataFlag != 0表示已经插入到detail中
+	 * @author leo01.liao
+	 * @param getDataFlag
+	 * @param opscwbid
+	 */
+	public void update_CwbDetailTempByCwb(long getDataFlag, long opscwbid) {
+		try {
+			this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set getDataFlag=" + getDataFlag + " where opscwbid=" + opscwbid);
+		} catch (DataAccessException e) {
+			this.logger.error("[update_CwbDetailTempByCwb(long getDataFlag, long opscwbid)]修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
+		}
+	}
+	
+	/**
+	 * 修改临时表为[插入detail表]成功 getDataFlag != 0表示已经插入到detail中
+	 * @author leo01.liao
+	 * @param cwbOrderDto
+	 */
+	public void update_CwbDetailTempByCwb(CwbOrderDTO cwbOrderDto) {
+		if(cwbOrderDto == null){
+			return;
+		}
+		
+		long opscwbid       = cwbOrderDto.getOpscwbid();
+		int  sendCarnum     = cwbOrderDto.getSendcargonum(); //发货数量
+		int  mpsAllArrivedFlag = cwbOrderDto.getMpsallarrivedflag(); //是否集齐标识
+		
+		try {
+			String sqlUpdate = "update express_ops_cwb_detail_b2ctemp set getDataFlag=" + opscwbid + 
+							   " where opscwbid=" + opscwbid + " and mpsallarrivedflag=" + mpsAllArrivedFlag + " and sendcarnum=" + sendCarnum;
+			
+			this.jdbcTemplate.update(sqlUpdate);
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			this.logger.error("[update_CwbDetailTempByCwb(CwbOrderDTO cwbOrderDTO)]修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
+		}
+
 	}
 }

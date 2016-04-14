@@ -15,6 +15,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,8 @@ public class PenalizeOutService {
 	@Autowired
 	PenalizeOutDAO penalizeOutDAO;
 
+	private static Logger logger = LoggerFactory.getLogger(PenalizeOutService.class);
+	
 	public void setExcelstyle(String[] cloumnName1, String[] cloumnName2) {
 		cloumnName1[0] = "赔付单号";
 		cloumnName2[0] = "PenalizeOutNO";
@@ -194,7 +198,7 @@ public class PenalizeOutService {
 
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("", e);
 					}
 					return a;
 				}
@@ -202,7 +206,7 @@ public class PenalizeOutService {
 			excelUtil.excel(response, cloumnName3, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 }

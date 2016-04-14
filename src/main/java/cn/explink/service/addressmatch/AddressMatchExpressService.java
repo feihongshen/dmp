@@ -28,12 +28,15 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.GeneralDAO;
 import cn.explink.dao.express.PreOrderDao;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.VO.express.ExtralInfo4Address;
 import cn.explink.domain.addressvo.AddressMappingResult;
 import cn.explink.domain.addressvo.ApplicationVo;
@@ -41,6 +44,7 @@ import cn.explink.domain.addressvo.DeliveryStationVo;
 import cn.explink.domain.addressvo.OrderAddressMappingResult;
 import cn.explink.domain.addressvo.OrderVo;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.express.AddressMatchEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
@@ -97,6 +101,11 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 
 	ObjectMapper objectMapper = new ObjectMapper();
 	ObjectReader expressAddressInfoReader = this.objectMapper.reader(ExtralInfo4Address.class);
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_AUTO_ADDRESS_INFO2 = "jms:queue:VirtualTopicConsumers.express2.autoAddressInfo2";
 
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -110,7 +119,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						this.from("jms:queue:VirtualTopicConsumers.express2.autoAddressInfo2?concurrentConsumers=10").to("bean:addressMatchExpressService?method=matchAddress")
+						this.from(MQ_FROM_URI_AUTO_ADDRESS_INFO2 + "?concurrentConsumers=10").to("bean:addressMatchExpressService?method=matchAddress")
 								.routeId("express-addressMatch2");
 					}
 				});
@@ -152,8 +161,8 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 	 * @throws IOException
 	 * @throws JsonProcessingException
 	 */
-	public void matchAddress(@Header("autoMatchAddressInfo") String addressExtralInfo) throws JsonProcessingException, IOException {
-		System.out.println("走到了匹配方法");
+	public void matchAddress(@Header("autoMatchAddressInfo") String addressExtralInfo, @Header("MessageHeaderUUID") String messageHeaderUUID) throws JsonProcessingException, IOException {
+		logger.info("走到了匹配方法");
 		ExtralInfo4Address info = this.expressAddressInfoReader.readValue(addressExtralInfo);
 		this.logger.info("start address match for {}", /* map.get("cwb") */info.getCwb());
 		try {
@@ -197,6 +206,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 				Map<String, Object> params = new HashMap<String, Object>();
 				params.put("deliverybranchid", branch.getBranchid());
 				params.put("excelbranch", branch.getBranchname());
+				params.put("addresscodeedittype", CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue());
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("cwb", info.getCwb());
 				this.generalDAO.update(params, "express_ops_cwb_detail", map);
@@ -204,6 +214,14 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 			}
 		} catch (Exception e) {
 			this.logger.error("error while doing address match for " + info.getCwb(), e);
+			
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("matchAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_AUTO_ADDRESS_INFO2)
+					.buildMessageHeader("autoMatchAddressInfo", addressExtralInfo)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
@@ -226,7 +244,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 				if (set.size() == 1) {
 
 					Branch b = this.branchDAO.getEffectBranchById(deliveryStationList.get(0).getExternalId());
-					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
+					if (null != b && (b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						return b;
 					}
 				}
@@ -268,8 +286,8 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 			OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(cwb);
 			if (mappingresult != null) {
 				deliveryStationList = mappingresult.getDeliveryStationList();
-				if (deliveryStationList.size() == 0) {
-					this.logger.info("预订单自动匹配站点功能，未匹配到站点！");
+				if (null == deliveryStationList || deliveryStationList.size() == 0) {
+					this.logger.error("预订单[" + cwb + "]自动匹配站点功能，未匹配到站点！");
 					return null;
 				}
 				for (DeliveryStationVo desvo : deliveryStationList) {

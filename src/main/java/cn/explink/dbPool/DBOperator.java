@@ -14,6 +14,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.explink.util.ResourceBundleUtil;
+
 /**
  * 数据库通用操作类 查询select方法,参数为sql和参数para[],返回list 更新update方法,参数为sql和参数para[],返回int
  * 数据库连接,sql操作,数据库连接释放全部在此类中完成
@@ -44,7 +46,6 @@ public class DBOperator {
 	private ConnectPool connpool = null;
 	private String urlname = "";
 	private String showflag = "1";
-	private static Configuration config;
 	private java.sql.CallableStatement callstm = null;
 	private int batchnum;
 
@@ -64,8 +65,7 @@ public class DBOperator {
 	private void initialize(String urlname) {
 		try {
 			connpool = ConnectPool.getInstance();
-			conn = connpool.getConnection(urlname); // urlname为db.properties文件中.url前的名称
-			this.config = Configuration.getInstance("dbsqlserver.properties");
+			conn = connpool.getConnection(urlname); 
 
 		} catch (Exception e) {
 			logger.error("初始化sqlserver", e.getMessage());
@@ -96,11 +96,9 @@ public class DBOperator {
 				list.add(map);
 			}
 		} catch (NumberFormatException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		}
 		freeConn(); // 数据库操作完毕,释放数据库连接资源
 		return list;
@@ -234,8 +232,8 @@ public class DBOperator {
 							try {
 								reStr = String.valueOf(number);
 							} catch (Exception ev) {
-								logger.info("----FLOAT ERROR");
-								ev.printStackTrace();
+								logger.error("----FLOAT ERROR");
+								logger.error("", ev);
 							}
 							paramap.put(params[i + 3].toString(), reStr);
 							return_para_list.add(paramap);
@@ -244,8 +242,8 @@ public class DBOperator {
 							try {
 								reStr = String.valueOf(number);
 							} catch (Exception ev) {
-								logger.info("----DOUBLE ERROR");
-								ev.printStackTrace();
+								logger.error("----DOUBLE ERROR");
+								logger.error("", ev);
 							}
 							paramap.put(params[i + 3].toString(), reStr);
 							return_para_list.add(paramap);
@@ -254,8 +252,8 @@ public class DBOperator {
 							try {
 								reStr = String.valueOf(number);
 							} catch (Exception ev) {
-								logger.info("----INT ERROR");
-								ev.printStackTrace();
+								logger.error("----INT ERROR");
+								logger.error("", ev);
 							}
 							paramap.put(params[i + 3].toString(), reStr);
 							return_para_list.add(paramap);
@@ -301,15 +299,15 @@ public class DBOperator {
 			 * 取结果集..
 			 */
 		} catch (NumberFormatException ex) {
-			ex.printStackTrace();
+			logger.error("", ex);
 		} catch (SQLException ex) {
 
 			try { // 更新出错，回滚，抛出异常
 				conn.rollback();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
+				logger.error("", e1);
 			}
-			ex.printStackTrace();
+			logger.error("", ex);
 
 		} finally {
 			freeConn(); // 数据库操作完毕,释放数据库连接资源
@@ -359,11 +357,9 @@ public class DBOperator {
 			}
 
 		} catch (NumberFormatException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		}
 		freeConn(); // 数据库操作完毕,释放数据库连接资源
 		return list;
@@ -437,11 +433,9 @@ public class DBOperator {
 				list.add(map);
 			}
 		} catch (NumberFormatException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		} finally {
 			freeConn(); // 数据库操作完毕,释放数据库连接资源
 		}
@@ -494,11 +488,9 @@ public class DBOperator {
 			rs = prep.executeQuery();
 
 		} catch (NumberFormatException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		}
 		// freeConn();//数据库操作完毕,释放数据库连接资源
 		return rs;
@@ -576,11 +568,9 @@ public class DBOperator {
 			}
 
 		} catch (NumberFormatException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		} catch (SQLException ex) {
-			ex.printStackTrace();
-			System.err.println(ex.getMessage());
+			logger.error("", ex);
 		} finally {
 			freeConn(); // 数据库操作完毕,释放数据库连接资源
 		}
@@ -633,17 +623,15 @@ public class DBOperator {
 			}
 			num = prep.executeUpdate();
 		} catch (NumberFormatException ex) {
-			ex.printStackTrace();
+			logger.error("", ex);
 		} catch (SQLException ex) {
 
 			try { // 更新出错，回滚，抛出异常
 				conn.rollback();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
-				// throw new logisException(e1.getMessage());
+				logger.error("", e1);
 			}
-			ex.printStackTrace();
-			// throw new logisException(ex.getMessage());
+			logger.error("", ex);
 		} finally {
 			freeConn(); // 数据库操作完毕,释放数据库连接资源
 		}
@@ -705,7 +693,7 @@ public class DBOperator {
 					}
 				}
 				prep.addBatch();
-				this.batchnum = Integer.parseInt(config.getValue("BATCHNUM"));
+				this.batchnum = Integer.parseInt(ResourceBundleUtil.sqlServerExpressurlBatchNum);
 				if (batchnum > 0) { // pst+batch
 					if (p % batchnum == 0) { // 可以设置不同的大小；如50，100，500，1000等等
 						long startTime = System.currentTimeMillis();
@@ -728,17 +716,15 @@ public class DBOperator {
 			logger.info((batchnum > 0 ? "全部" + paramslist.size() + " pst+batch+batchnum 耗时 " : "全部" + paramslist.size() + " pst+batch 耗时 ") + (endTime - beginTime) / 1000 + "秒");
 
 		} catch (NumberFormatException ex) {
-			ex.printStackTrace();
+			logger.error("", ex);
 		} catch (SQLException ex) {
 
 			try { // 更新出错，回滚，抛出异常
 				conn.rollback();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
-				// throw new logisException(e1.getMessage());
+				logger.error("", e1);
 			}
-			ex.printStackTrace();
-			// throw new logisException(ex.getMessage());
+			logger.error("", ex);
 		} finally {
 			freeConn(); // 数据库操作完毕,释放数据库连接资源
 		}
@@ -798,7 +784,7 @@ public class DBOperator {
 			try {
 				rs.close();
 			} catch (SQLException se) {
-				se.printStackTrace();
+				logger.error("", se);
 			}
 
 		}
@@ -806,7 +792,7 @@ public class DBOperator {
 			try {
 				prep.close();
 			} catch (SQLException se) {
-				se.printStackTrace();
+				logger.error("", se);
 			}
 
 		}
@@ -815,7 +801,7 @@ public class DBOperator {
 				connpool.freeConnection(this.urlname, conn);
 				logger.info(" [coonpool 释放一个连接 ] ");
 			} catch (Exception se) {
-				se.printStackTrace();
+				logger.error("", se);
 			}
 
 		}
@@ -873,7 +859,7 @@ public class DBOperator {
 			callstm.setInt(4, branchid);
 			callstm.execute();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("", e);
 			conn.rollback();
 		} finally {
 			freeConn();

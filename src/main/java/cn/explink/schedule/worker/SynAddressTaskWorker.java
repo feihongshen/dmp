@@ -28,7 +28,6 @@ public class SynAddressTaskWorker extends ScheduledWorker {
 			}
 			return true;
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			logger.error("syn address failed du to " + e.getMessage(), e);
 			return false;
 		}

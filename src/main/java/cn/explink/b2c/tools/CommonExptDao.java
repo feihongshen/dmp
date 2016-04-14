@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +19,8 @@ public class CommonExptDao {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
+	private static Logger logger = LoggerFactory.getLogger(CommonExptDao.class);
+	
 	private final class CommonReasonRowMapper implements RowMapper<CommonReason> {
 		@Override
 		public CommonReason mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -49,7 +53,7 @@ public class CommonExptDao {
 			sql += " order by id  limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 			list = jdbcTemplate.query(sql, new CommonReasonRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -63,7 +67,7 @@ public class CommonExptDao {
 			sql += " order by id  limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 			list = jdbcTemplate.query(sql, new CommonReasonRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -79,7 +83,7 @@ public class CommonExptDao {
 			sql += " order by id  limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 			list = jdbcTemplate.query(sql, new CommonReasonRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -138,7 +142,7 @@ public class CommonExptDao {
 			String sql = "delete from express_set_common_exptreason where id=" + exptid;
 			jdbcTemplate.update(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -149,7 +153,7 @@ public class CommonExptDao {
 			String sql = "select * from express_set_common_exptreason where id=" + exptid;
 			expt = jdbcTemplate.queryForObject(sql, new CommonReasonRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return expt;
 	}
@@ -160,7 +164,7 @@ public class CommonExptDao {
 					+ ",expt_code='" + expt.getExpt_code() + "' where id=" + id;
 			jdbcTemplate.update(sql);
 		} catch (DataAccessException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -176,7 +180,7 @@ public class CommonExptDao {
 
 			list = jdbcTemplate.query(sql, new CommonReasonRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -215,7 +219,7 @@ public class CommonExptDao {
 
 			list = jdbcTemplate.query(sql, new CommonJointRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -226,7 +230,7 @@ public class CommonExptDao {
 			String sql = "delete from express_set_exptcode_joint where exptcodeid=" + exptid;
 			jdbcTemplate.update(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -238,7 +242,7 @@ public class CommonExptDao {
 					+ " AND exptcodeid=" + exptcodeid;
 			list = jdbcTemplate.queryForObject(sql, new CommonJointRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 
@@ -249,7 +253,7 @@ public class CommonExptDao {
 			String sql = "update express_set_exptcode_joint set reasonid=?,exptid=?,exptcode_remark=? " + " where exptcodeid=? ";
 			jdbcTemplate.update(sql, expt.getReasonid(), expt.getExptid(), expt.getExptcode_remark(), exptcodeid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -262,7 +266,7 @@ public class CommonExptDao {
 					+ reasonid + " and  j.exptid=" + exptid;
 			counts = jdbcTemplate.queryForInt(sql);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		if (counts > 0) {
 			flag = true;
@@ -276,7 +280,7 @@ public class CommonExptDao {
 			String sql = "insert into express_set_exptcode_joint(reasonid,exptid)" + " values(?,?) ";
 			jdbcTemplate.update(sql, expt.getReasonid(), expt.getExptid());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -288,7 +292,7 @@ public class CommonExptDao {
 					+ " AND expt_code=" + exptcodeid + " AND customercode='" + codename + "' LIMIT 1";
 			list = jdbcTemplate.queryForObject(sql, new CommonJointRowMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return list;
 

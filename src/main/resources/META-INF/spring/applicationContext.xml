@@ -51,6 +51,7 @@ http://cxf.apache.org/schemas/jaxws.xsd
 		<property name="validationQuery" value="SELECT 1" />
 	</bean>
 
+
 	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" >
 		<property name="dataSource" ref="dataSource" />
@@ -68,7 +69,9 @@ http://cxf.apache.org/schemas/jaxws.xsd
 	</bean>
 
 	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
-
+		
+	<bean id="healthCheck" class="cn.explink.util.impl.HealthCheckImpl" />
+		
 	<!-- ==================== 加载cxf配置文件 =================================== -->
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />

@@ -34,14 +34,14 @@ public class JiontDAO {
 		}
 	}
 
-	@Cacheable(value = "jointCache", key = "#key")
+	@Cacheable(value = "jointCache", key = "#key", condition = "#result ne null")
 	public JointEntity getJointEntity(int key) {
 		JointEntity jointEntity = null;
 		try {
 			String sql = "select * from express_set_joint where joint_num=?";
 			jointEntity = jdbcTemplate.queryForObject(sql, new PosMapper(), key);
 		} catch (Exception e) {
-			// e.printStackTrace();
+			 e.printStackTrace();
 		}
 		return jointEntity;
 

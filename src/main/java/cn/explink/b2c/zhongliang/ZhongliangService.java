@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -33,6 +34,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 
 @Service
@@ -56,6 +58,8 @@ public class ZhongliangService {
 	UserDAO userDAO;
 	@Autowired
 	CwbOrderService cwbOrderService;
+	@Autowired
+	CustomerService customerService;
 
 	public Zhongliang getZhongliang(int key) {
 		if (this.getObjectMethod(key) == null) {
@@ -71,6 +75,7 @@ public class ZhongliangService {
 		return obj == null ? null : obj.getJoint_property();
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Zhongliang zl = new Zhongliang();
 		String customerid = request.getParameter("customerid");
@@ -108,6 +113,7 @@ public class ZhongliangService {
 		}
 		// 保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {
@@ -124,57 +130,50 @@ public class ZhongliangService {
 
 			if (isOpenFlag == 0) {
 				this.logger.info("未开" + b2c.getText() + "对接！");
-				return;
+				continue;
 			}
 
-			excutorDealWithZhongLiang(b2c);
-			
-			
-		}
-	}
-
-	private void excutorDealWithZhongLiang(B2cEnum b2c) {
-		String str;
-		Zhongliang zl = this.getZhongliang(b2c.getKey());
-		String RequestType = "down";
-		Map<String, String> map = this.checkData(zl, RequestType);
-		str = RestHttpServiceHanlder.sendHttptoServer(map, zl.getWaitOrder_url());
-		this.logger.info("" + b2c.getText() + "接收订单接口_订单返回明细_str==={}", str);
-		try {
-			Response_WaitOrder response = (Response_WaitOrder) ObjectUnMarchal.XmltoPOJO(str, new Response_WaitOrder());
-			List<Response_Order> orders = response.getResponse_body().getOrder();
-			if (str.contains("Error") || (orders == null)) {
-				this.logger.info("没有获取到" + b2c.getText() + "的订单明细：" + str);
-				return;
-			}
-			List<Map<String, String>> orderlist = this.parseCwbArrByOrderDto(orders);
-			if (orderlist != null) {
-				long warehouseid = zl.getWarehouseid(); // 订单导入的库房Id
-
-				this.dataImportInterface.Analizy_DataDealByB2c(Long.parseLong(zl.getCustomerid()), b2c.getMethod(), orderlist, warehouseid, true);
-				String data = "<Request service= \"WaitOrder\" lang=\"zh-CN\">" + "<Head> client</Head>" + "<Body>";
-				for (Response_Order order : orders) {
-					CwbOrderDTO cwbOrder = this.dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getSendOrderID());
-					// String MailNO="";
-					if (cwbOrder != null) {
-						// MailNO=cwbOrder.getTranscwb();
-						this.logger.info("" + b2c.getText() + "接收订单接口_导入订单临时表_成功,cwb={}", order.getSendOrderID());
-					} else {
-						this.logger.info("" + b2c.getText() + "接收订单接口_导入订单临时表_失败,cwb={}", order.getSendOrderID());
-					}
-					String DealStatus = cwbOrder == null ? "0" : "1";
-					data += "<Order>" + "<SendOrderID>" + order.getSendOrderID() + "</SendOrderID>" + "<MailNO>" + order.getSendOrderID() + "</MailNO>" + "<DealStatus>" + DealStatus
-							+ "</DealStatus>" + "<Reason></Reason >" + " </Order>";
+			Zhongliang zl = this.getZhongliang(b2c.getKey());
+			String RequestType = "down";
+			Map<String, String> map = this.checkData(zl, RequestType);
+			str = RestHttpServiceHanlder.sendHttptoServer(map, zl.getWaitOrder_url());
+			this.logger.info("" + b2c.getText() + "接收订单接口_订单返回明细_str==={}", str);
+			try {
+				Response_WaitOrder response = (Response_WaitOrder) ObjectUnMarchal.XmltoPOJO(str, new Response_WaitOrder());
+				List<Response_Order> orders = response.getResponse_body().getOrder();
+				if (str.contains("Error") || (orders == null)) {
+					this.logger.info("没有获取到" + b2c.getText() + "的订单明细：" + str);
+					continue;
 				}
-				data += "</Body>" + "</Request> ";
-				Map<String, String> map_up = this.checkData(zl, "up");
-				this.logger.info("" + b2c.getText() + "接收订单接口_发送={}", data);
-				map_up.put("XML", data);
-				String back = RestHttpServiceHanlder.sendHttptoServer(map_up, zl.getWaitOrder_url());
-				this.logger.info("" + b2c.getText() + "接收订单接口_返回 ={}", back);
+				List<Map<String, String>> orderlist = this.parseCwbArrByOrderDto(orders);
+				if (orderlist != null) {
+					long warehouseid = zl.getWarehouseid(); // 订单导入的库房Id
+
+					this.dataImportInterface.Analizy_DataDealByB2c(Long.parseLong(zl.getCustomerid()), b2c.getMethod(), orderlist, warehouseid, true);
+					String data = "<Request service= \"WaitOrder\" lang=\"zh-CN\">" + "<Head> client</Head>" + "<Body>";
+					for (Response_Order order : orders) {
+						CwbOrderDTO cwbOrder = this.dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getSendOrderID());
+						// String MailNO="";
+						if (cwbOrder != null) {
+							// MailNO=cwbOrder.getTranscwb();
+							this.logger.info("" + b2c.getText() + "接收订单接口_导入订单临时表_成功,cwb={}", order.getSendOrderID());
+						} else {
+							this.logger.info("" + b2c.getText() + "接收订单接口_导入订单临时表_失败,cwb={}", order.getSendOrderID());
+						}
+						String DealStatus = cwbOrder == null ? "0" : "1";
+						data += "<Order>" + "<SendOrderID>" + order.getSendOrderID() + "</SendOrderID>" + "<MailNO>" + order.getSendOrderID() + "</MailNO>" + "<DealStatus>" + DealStatus
+								+ "</DealStatus>" + "<Reason></Reason >" + " </Order>";
+					}
+					data += "</Body>" + "</Request> ";
+					Map<String, String> map_up = this.checkData(zl, "up");
+					this.logger.info("" + b2c.getText() + "接收订单接口_发送={}", data);
+					map_up.put("XML", data);
+					String back = RestHttpServiceHanlder.sendHttptoServer(map_up, zl.getWaitOrder_url());
+					this.logger.info("" + b2c.getText() + "接收订单接口_返回 ={}", back);
+				}
+			} catch (Exception e) {
+				this.logger.error("" + b2c.getText() + "接收订单接口_插入临时表对接异常", e);
 			}
-		} catch (Exception e) {
-			this.logger.error("" + b2c.getText() + "接收订单接口_插入临时表对接异常", e);
 		}
 	}
 
@@ -262,31 +261,41 @@ public class ZhongliangService {
 			Map<String, String> cwbMap = new HashMap<String, String>();
 			cwbMap.put("cwb", order.getSendOrderID()); // 物流订单号码
 			cwbMap.put("transcwb", transcwb.toString()); // 运单号
-			cwbMap.put("consigneename", order.getLinkman());// 收件人姓名
+			cwbMap.put("consigneename", convertEmptyString(order.getLinkman()));// 收件人姓名
 			cwbMap.put("paywayid", paywayid);// 支付方式
-			cwbMap.put("consigneephone", order.getTelno());
-			cwbMap.put("consigneemobile", order.getHandsetno());
-			cwbMap.put("consigneepostcode", order.getPostalcode());
-			cwbMap.put("cargorealweight", order.getPackweight()); // 订单重量(KG)
-			cwbMap.put("cwbprovince", order.getProvincename());// 省
-			cwbMap.put("cwbcity", order.getCityname());// 市
-			cwbMap.put("consigneeaddress", address);
-			cwbMap.put("caramount", order.getOrdervalue());// 订单金额
-			cwbMap.put("cargotype", order.getValuableflag());// 货物金额
-			cwbMap.put("receivablefee", order.getGetvalue()); // 代收货款应收金额
-			cwbMap.put("paybackfee", order.getReturntaxvalue()); // 上门退货应退金额
+			cwbMap.put("consigneephone", convertEmptyString(order.getTelno()));
+			cwbMap.put("consigneemobile", convertEmptyString(order.getHandsetno()));
+			cwbMap.put("consigneepostcode", convertEmptyString(order.getPostalcode()));
+			cwbMap.put("cargorealweight", convertEmptyString(order.getPackweight())); // 订单重量(KG)
+			cwbMap.put("cwbprovince", convertEmptyString(order.getProvincename()));// 省
+			cwbMap.put("cwbcity", convertEmptyString(order.getCityname()));// 市
+			cwbMap.put("consigneeaddress", convertEmptyString(address));
+			cwbMap.put("caramount", convertEmptyDouble(order.getOrdervalue()));// 订单金额
+			cwbMap.put("cargotype", convertEmptyDouble(order.getValuableflag()));// 货物金额
+			cwbMap.put("receivablefee", convertEmptyDouble(order.getGetvalue())); // 代收货款应收金额
+			cwbMap.put("paybackfee", convertEmptyDouble(order.getReturntaxvalue())); // 上门退货应退金额
 			cwbMap.put("cwbordertypeid", String.valueOf(cwbordertypeid));
 			cwbMap.put("cargosize", size); // 尺寸
-			cwbMap.put("sendcarname", sendcarname); // 发货货物名称
+			cwbMap.put("sendcarname", convertEmptyString(sendcarname)); // 发货货物名称
 			cwbMap.put("sendcarnum", order.getBoxes()); // 发货箱数
 			cwbMap.put("remark1", remark1); // 备注信息
-			cwbMap.put("remark2", order.getPurchaseNO());
-			cwbMap.put("consigneeno", order.getPurchaseNO());
-			cwbMap.put("customercommand", order.getSendtime()); // 客户要求
+			cwbMap.put("remark2", convertEmptyString(order.getPurchaseNO()));
+			cwbMap.put("consigneeno", convertEmptyString(order.getPurchaseNO()));
+			cwbMap.put("customercommand", convertEmptyString(order.getSendtime())); // 客户要求
 			cwbList.add(cwbMap);
 
 		}
 		return cwbList;
+	}
+	
+	private static String convertEmptyString(String str) {
+		String returnStr = str == null ? "" : str;
+		return returnStr;
+	}
+	
+	private static String convertEmptyDouble(String str) {
+		String returnStr = str == null ? "0" : str;
+		return returnStr;
 	}
 
 	public String CancelOrders() {
@@ -343,5 +352,33 @@ public class ZhongliangService {
 			}
 		}
 		return b2cEnums;
+	}
+	
+	/**
+	 * 本地验证测试用
+	 */
+	public void waitOrderTest(String str) {
+
+		B2cEnum b2c=B2cEnum.Zhongliang;
+		
+			this.logger.info("" + b2c.getText() + "接收订单接口_订单返回明细_str==={}", str);
+			try {
+				Response_WaitOrder response = (Response_WaitOrder) ObjectUnMarchal.XmltoPOJO(str, new Response_WaitOrder());
+				List<Response_Order> orders = response.getResponse_body().getOrder();
+				if (str.contains("Error") || (orders == null)) {
+					this.logger.info("没有获取到" + b2c.getText() + "的订单明细：" + str);
+					return;
+				}
+				List<Map<String, String>> orderlist = this.parseCwbArrByOrderDto(orders);
+				if (orderlist != null) {
+					long warehouseid = 1;
+
+					this.dataImportInterface.Analizy_DataDealByB2c(124, b2c.getMethod(), orderlist, warehouseid, true);
+				
+				}
+			} catch (Exception e) {
+				this.logger.error("" + b2c.getText() + "接收订单接口_插入临时表对接异常", e);
+			}
+		
 	}
 }

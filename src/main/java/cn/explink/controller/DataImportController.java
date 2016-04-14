@@ -13,8 +13,6 @@ import java.util.concurrent.Executors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -141,10 +139,7 @@ public class DataImportController {
 	@Autowired
 	TransCwbDao transCwbDao;
 
-	@Produce(uri = "jms:topic:addressmatch")
-	ProducerTemplate addressmatch;
-
-	private Logger logger = LoggerFactory.getLogger(DataImportController.class);
+	private static Logger logger = LoggerFactory.getLogger(DataImportController.class);
 
 	@Autowired
 	ExcelImportEditDao excelImportEditDao;
@@ -251,10 +246,10 @@ public class DataImportController {
 			model.addAttribute("ReturnMessage", "操作成功");
 			try {
 				this.dataImportService.datalose(emaildateid);
-				this.logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid :成功");
+				logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid :成功");
 			} catch (Exception e) {
-				e.printStackTrace();
-				this.logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid : " + emaildateid);
+				logger.error("", e);
+				logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid : " + emaildateid);
 			}
 		} else if ("yes".equals(isEdit) && ServiceUtil.isNowImport(emaildateid)) {
 			model.addAttribute("ReturnMessage", "对应的批次仍然正在导入，请稍后再试。");
@@ -288,8 +283,8 @@ public class DataImportController {
 		final ResultCollector errorCollector = this.resultCollectorManager.createNewResultCollector();
 		response.getWriter().write(errorCollector.getId());
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		this.logger.info("excelimport : errorCollectorid : " + errorCollector.getId());
-		this.logger.info("excelimport : ParamEmaildate : " + ParamEmaildate);
+		logger.info("excelimport : errorCollectorid : " + errorCollector.getId());
+		logger.info("excelimport : ParamEmaildate : " + ParamEmaildate);
 		final String emaildate = df.format(ParamEmaildate == null ? new Date() : df.parse(ParamEmaildate));
 		response.getWriter().write("," + emaildate);
 		response.getWriter().flush();
@@ -309,7 +304,7 @@ public class DataImportController {
 						DataImportController.this.processFile(excelExtractor, customerid, branchid, warehouseid, areaid, emaildateid, isReImport, userDetail, errorCollector, emaildate, inputStream);
 					} catch (Exception e) {
 						errorCollector.addError("处理出错", e.getMessage());
-						e.printStackTrace();
+						logger.error("", e);
 					} finally {
 						errorCollector.setFinished(true);
 
@@ -349,8 +344,8 @@ public class DataImportController {
 				try {
 					this.dataImportService.datalose(emaildateid);
 				} catch (Exception e) {
-					e.printStackTrace();
-					this.logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid : " + emaildateid);
+					logger.error("", e);
+					logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid : " + emaildateid);
 				}
 			}
 		}
@@ -367,10 +362,10 @@ public class DataImportController {
 	}
 
 	@RequestMapping("/addressmatch")
-	public void addressBatchMatch(@RequestParam("emaildateid") long emaildateid) {
+	public void addressBatchMatch(@RequestParam("emaildateid") long emaildateid) throws Exception {
 		List<CwbOrder> cwbOrders = this.cwbDAO.getCwbsByEmailDateId(emaildateid);
 		for (CwbOrder cwbOrder : cwbOrders) {
-			this.addressMatchService.matchAddress(this.getSessionUser().getUserid(), cwbOrder.getCwb());
+			this.addressMatchService.doMatchAddress(this.getSessionUser().getUserid(), cwbOrder.getCwb());
 		}
 	}
 
@@ -718,7 +713,7 @@ public class DataImportController {
 					msg="操作成功，其中订单号为:"+notfoundCwb.toString().substring(0,notfoundCwb.length()-1)+"的订单不存在";
 				}
 			} catch (Exception e) {
-				// e.printStackTrace();
+				// logger.error("", e);
 				msg = "生成失败" + e.getMessage();
 			}
 		}

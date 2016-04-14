@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cn.explink.b2c.jingdong.JingDong;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
@@ -48,8 +47,12 @@ public class DongFangCJController {
 	@RequestMapping("/save/{id}")
 	public @ResponseBody String smileSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-			dongFangCJService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				dongFangCJService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

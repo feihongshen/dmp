@@ -24,6 +24,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -66,7 +68,6 @@ import cn.explink.domain.Common;
 import cn.explink.domain.Complaint;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
-import cn.explink.domain.CwbDetailView;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GroupDetail;
@@ -166,6 +167,8 @@ public class WarehouseGroup_detailController {
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	private static Logger logger = LoggerFactory.getLogger(WarehouseGroup_detailController.class);
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -411,6 +414,8 @@ public class WarehouseGroup_detailController {
 					.getValue()));
 		}
 
+		
+		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
 		model.addAttribute("isback", isback);
 		model.addAttribute("iscustomer", iscustomer);
 		model.addAttribute("islinghuo", islinghuo);
@@ -418,7 +423,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("template", this.printTemplateDAO.getPrintTemplate(printtemplateid));
 		model.addAttribute("localbranchname", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getBranchname());
 		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
-		model.addAttribute("branchlist", this.branchDAO.getAllEffectBranches());
+		model.addAttribute("branchlist", branchList);
 		model.addAttribute("userlist", this.userDAO.getAllUser());
 		// model.addAttribute("nextbranchid", Long.parseLong(nextbranchid));
 		model.addAttribute("deliverid", deliverid);
@@ -440,11 +445,18 @@ public class WarehouseGroup_detailController {
 		if( !StringUtils.isEmpty(baleno) ){
 			for (CwbOrder cwb : cwbListForBaleView) {
 				mapForCustomer.put(cwb.getCustomerid(), cwb);
-				if (!map.containsKey(cwb.getNextbranchid())) {
-					List<CwbOrder> orders = new ArrayList<CwbOrder>();
-					map.put(cwb.getNextbranchid(), orders);
+				for (Branch b : branchList) {
+					if (cwb.getNextbranchid() == b.getBranchid()) {
+						if (!map.containsKey(cwb.getNextbranchid())) {
+							List<CwbOrder> orders = new ArrayList<CwbOrder>();
+							map.put(cwb.getNextbranchid(), orders);
+							logger.info("出库打印站点名称： " + b.getBranchname() + " 站点id： " + b.getBranchid());
+						}
+						map.get(cwb.getNextbranchid()).add(cwb);
+						
+						break;
+					}
 				}
-				map.get(cwb.getNextbranchid()).add(cwb);
 			}
 			for (CwbOrder cwb : cwbList) {
 				mapForCustomer.put(cwb.getCustomerid(), cwb);
@@ -457,11 +469,17 @@ public class WarehouseGroup_detailController {
 		}else{
 			for (CwbOrder cwb : cwbList) {
 				mapForCustomer.put(cwb.getCustomerid(), cwb);
-				if (!map.containsKey(cwb.getNextbranchid())) {
-					List<CwbOrder> orders = new ArrayList<CwbOrder>();
-					map.put(cwb.getNextbranchid(), orders);
+				for (Branch b : branchList) {
+					if (cwb.getNextbranchid() == b.getBranchid()) { 
+						if (!map.containsKey(cwb.getNextbranchid())) {
+							List<CwbOrder> orders = new ArrayList<CwbOrder>();
+							map.put(cwb.getNextbranchid(), orders);
+							logger.info("出库打印站点名称： " + b.getBranchname() + " 站点id： " + b.getBranchid());
+						}
+						map.get(cwb.getNextbranchid()).add(cwb);
+						break;
+					} 
 				}
-				map.get(cwb.getNextbranchid()).add(cwb);
 			}
 		}
 		
@@ -2089,8 +2107,7 @@ public class WarehouseGroup_detailController {
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 		} catch (Exception e) {
-
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -2290,8 +2307,7 @@ public class WarehouseGroup_detailController {
 			try {
 				tjson = JSONArray.fromObject(printTemplate.getDetail()) ;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			if(tjson != null){
 				for (Object object : tjson) {
@@ -2369,7 +2385,7 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("page", page);
 			model.addAttribute("branchList", branchList);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return "warehousegroup/outbalelist_history";

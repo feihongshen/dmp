@@ -3,6 +3,8 @@ package cn.explink.core.dao.impl;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
@@ -12,6 +14,8 @@ import cn.explink.core.dao.JdbcDao;
 
 @Repository 
 public class CommonDaoImpl implements CommonDao {
+	
+	private static Logger logger =LoggerFactory.getLogger(CommonDaoImpl.class);
 	
 	@Autowired
 	protected JdbcDao jdbcDao;
@@ -52,10 +56,9 @@ public class CommonDaoImpl implements CommonDao {
 		try {
 			resultList = jdbcDao.queryList(tClazz.newInstance());
 		} catch (InstantiationException e) {
-			//TODO 异常处理
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return resultList;
 	}

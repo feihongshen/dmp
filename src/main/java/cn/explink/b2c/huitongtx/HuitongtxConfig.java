@@ -1,7 +1,5 @@
 package cn.explink.b2c.huitongtx;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,14 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.xml.sax.InputSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.explink.pos.tools.JacksonMapper;
 
@@ -30,6 +23,8 @@ import cn.explink.pos.tools.JacksonMapper;
 
 public class HuitongtxConfig {
 
+	private static Logger logger = LoggerFactory.getLogger(HuitongtxConfig.class);
+	
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 	// ↓↓↓↓↓↓↓↓↓↓请在这里配置您的基本信息↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 	// 字符编码格式 目前支持 UTF-8 或gbk
@@ -45,8 +40,7 @@ public class HuitongtxConfig {
 			}
 			return base64(MD5(content, input_charset), input_charset);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return keyValue;
 	}

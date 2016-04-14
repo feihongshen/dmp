@@ -169,9 +169,7 @@ public class VipShopOXOGetPickStateService {
 		try {
 			obj = XmlUtil.toObject(TpsOxoPickStateVo.class, orderXML);
 		} catch (Exception e1) {
-			e1.printStackTrace();
 			this.logger.error("转换唯品会OXO订单状态下发接口响应报文为TpsOxoPickStateVo实体类异常。响应报文内容为："+orderXML ,e1);
-
 		}
 		
 		return obj;
@@ -230,7 +228,7 @@ public class VipShopOXOGetPickStateService {
 			}
 
 		} catch (Throwable e) {
-			e.printStackTrace();
+			logger.error("", e);
 			throw new Exception("WebService服务链路异常:" + e.getMessage(), e);
 		} finally {
 			if (out != null) {

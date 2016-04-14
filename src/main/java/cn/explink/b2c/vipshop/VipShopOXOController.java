@@ -74,10 +74,12 @@ public class VipShopOXOController {
 		if(StringUtils.isBlank(request.getParameter("password")) || !"explink".equals(request.getParameter("password"))){
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}
-		
-		this.vipShopOXOGetCwbDataService.edit(request, key);
-
-		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+		try{
+			this.vipShopOXOGetCwbDataService.edit(request, key);
+			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+		}catch(Exception e){
+			return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+		}
 
 		
 

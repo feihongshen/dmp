@@ -9,6 +9,8 @@ import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,6 +20,9 @@ import cn.explink.util.pos.RSACoder;
 @Controller
 @RequestMapping("/alipayinter_test")
 public class AlipayInterfaceTest {
+	
+	private static Logger logger = LoggerFactory.getLogger(AlipayInterfaceTest.class);
+	
 	private String RequestXML(String content) throws Exception {
 		// content = URLEncoder.encode(content, "utf-8");
 		URL url = new URL("http://123.178.27.74/dmp5196/alipay/");
@@ -50,10 +55,9 @@ public class AlipayInterfaceTest {
 		String delivery_man = request.getParameter("delivery_man");
 		String xmlstr = XML_Search(cwb, delivery_man);
 		try {
-			// System.out.println(RequestXML(xmlstr));
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -66,11 +70,9 @@ public class AlipayInterfaceTest {
 
 		String xmlstr = XML_payAmount(cwb, delivery_man, payamount);
 		try {
-			// System.out.println(RequestXML(xmlstr));
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -81,11 +83,9 @@ public class AlipayInterfaceTest {
 		String delivery_man = request.getParameter("delivery_man");
 		String xmlstr = XML_payAmount_split(cwb, delivery_man);
 		try {
-			// System.out.println(RequestXML(xmlstr));
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -96,11 +96,9 @@ public class AlipayInterfaceTest {
 		String delivery_man = request.getParameter("delivery_man");
 		String xmlstr = XML_sign(cwb, delivery_man);
 		try {
-			// System.out.println(RequestXML(xmlstr));
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -111,11 +109,9 @@ public class AlipayInterfaceTest {
 		String delivery_man = request.getParameter("delivery_man");
 		String xmlstr = XML_exptFeedBack(cwb, delivery_man);
 		try {
-			System.out.println(RequestXML(xmlstr));
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -126,11 +122,10 @@ public class AlipayInterfaceTest {
 		String delivery_man = request.getParameter("delivery_man");
 		String xmlstr = XML_backOut(cwb, delivery_man);
 		try {
-			System.out.println(RequestXML(xmlstr));
+			logger.info(RequestXML(xmlstr));
 			return RequestXML(xmlstr);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -259,15 +254,15 @@ public class AlipayInterfaceTest {
 		String xmlsB = xmltrim.substring(0, xmltrim.indexOf("<MAC>"));
 		String xmlsE = xmltrim.substring(xmltrim.indexOf("</MAC>") + 6, xmltrim.indexOf("</Transaction>"));
 		String checkMACdata = xmlsB + xmlsE;
-		System.out.println("签名验证的内容:" + checkMACdata);
+		logger.info("签名验证的内容:" + checkMACdata);
 		// 验证签名
 		boolean checkMACflag = false;
 		try {
 			checkMACflag = RSACoder.verify(checkMACdata.getBytes(), public_key, MAC);
-			System.out.println(checkMACflag);
+			logger.info(String.valueOf(checkMACflag));
 		} catch (Exception e) {
-			System.out.println("alipay签名验证异常!业务编码MI10001");
-			e.printStackTrace();
+			logger.info("alipay签名验证异常!业务编码MI10001");
+			logger.error("", e);
 		}
 
 		return checkMACflag;
@@ -276,8 +271,7 @@ public class AlipayInterfaceTest {
 	public static void main(String[] args) {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Transaction><Transaction_Header><transaction_id>MI0001</transaction_id><requester>alipay</requester><target>HWHQ</target><request_time>20130614173419</request_time><version>1.0</version><MAC>BX0weQBxYqFdO32cvZm58rPq3Sx51CwMAN/8Z0MAbtVeewJOifXsOS8Sd+Z1mGHuhLGPwthzTnWdbsNnHYV4loDx+/fmZxvpsqbTBXesWl9LqcDxQ5IG09kqp4+jMNYjTIv4dW8qM1IjP+JiZinBQr0XtaN9YE0f5P2qZgMWonk=</MAC></Transaction_Header><Transaction_Body><delivery_man>1217</delivery_man><password>E1ADC3949BA59ABBE56E057F2F883E</password></Transaction_Body></Transaction>";
 
-		System.out.println(ValidateMAC_publicMethod(xml));
-
+		logger.info(String.valueOf(ValidateMAC_publicMethod(xml)));
 	}
 
 }

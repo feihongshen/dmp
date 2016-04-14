@@ -63,7 +63,6 @@ import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.entity.CsPushSms;
 import cn.explink.enumutil.ComplaintResultEnum;
 import cn.explink.enumutil.ComplaintStateEnum;
-import cn.explink.enumutil.ComplaintTypeEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -159,7 +158,7 @@ public class WorkOrderController {
 	@ResponseBody
 	public String editCallerArchival(CsConsigneeInfo ccf){
 		workorderdao.editAllCsConsigneeInfo(ccf);
-		System.out.println(ccf.getCallerremark()+"123");
+		logger.info(ccf.getCallerremark()+"123");
 		return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 	}
 	
@@ -615,6 +614,7 @@ public class WorkOrderController {
 			String cwb1 = cos.translateCwb(cv.getOrderNo());
 			String cwb[]=cwb1.trim().split("\r\n");			
 			for(String str:cwb){
+				str = str.trim();
 				sb=sb.append("'"+str+"',");
 			}
 			ncwbs=sb.substring(0, sb.length()-1);	
@@ -624,6 +624,7 @@ public class WorkOrderController {
 		if(!StringUtils.isEmpty(cv.getAcceptNo())){		
 		String workorder[]=cv.getAcceptNo().trim().split("\r\n");		
 		for(String str1:workorder){
+			str1 = str1.trim();
 			sb1=sb1.append("'"+str1+"',");
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
@@ -827,7 +828,7 @@ public class WorkOrderController {
 		
 		excelUtil.excel(response, cloumnName, sheetName, fileName);
 	} catch (Exception e) {
-		e.printStackTrace();
+		logger.error("", e);
 	}
 		
 		
@@ -883,6 +884,7 @@ public class WorkOrderController {
 			String cwb1 = cos.translateCwb(cwbs);
 			String cwb[]=cwb1.trim().split("\r\n");			
 			for(String str:cwb){
+				str = str.trim();
 				sb=sb.append("'"+str+"',");
 			}
 			ncwbs=sb.substring(0, sb.length()-1);	
@@ -892,6 +894,7 @@ public class WorkOrderController {
 		if(!StringUtils.isEmpty(acceptNo)){		
 		String workorder[]=acceptNo.trim().split("\r\n");		
 		for(String str1:workorder){
+			str1 = str1.trim();
 			sb1=sb1.append("'"+str1+"',");
 		}
 		workorders=sb1.substring(0, sb1.length()-1);
@@ -957,7 +960,7 @@ public class WorkOrderController {
 		
 		excelUtil.excel(response, cloumnName, sheetName, fileName);
 	} catch (Exception e) {
-		e.printStackTrace();
+		logger.error("", e);
 	}
 		
 	}	
@@ -1111,8 +1114,7 @@ public class WorkOrderController {
 			toClient.flush();
 			toClient.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} 
 
 	}

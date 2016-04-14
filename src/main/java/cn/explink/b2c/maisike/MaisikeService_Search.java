@@ -10,7 +10,6 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.URLEditor;
 import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.JiontDAO;
@@ -19,7 +18,6 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.pos.tools.JacksonMapper;
-import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class MaisikeService_Search {
@@ -27,7 +25,8 @@ public class MaisikeService_Search {
 	JiontDAO jiontDAO;
 	@Autowired
 	CwbDAO cwbDao;
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private static Logger logger = LoggerFactory.getLogger(MaisikeService_Search.class);
 
 	public String Search_maisike_info(Maisike mInfo, String cwb, String sign, String time) throws UnsupportedEncodingException {
 
@@ -61,7 +60,7 @@ public class MaisikeService_Search {
 			s = JacksonMapper.getInstance().writeValueAsString(order);
 			return s;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return "异常" + e.getMessage();
 		}
 
@@ -74,7 +73,7 @@ public class MaisikeService_Search {
 		dto.setAccountareaid(3432);
 		dto.setCargoamount("56");
 		JSON s = JSONObject.fromObject(dto);
-		System.out.println(s);
+		logger.info(s.toString());
 
 	}
 

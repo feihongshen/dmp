@@ -10,13 +10,13 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.explink.ExplinkService;
 import cn.explink.b2c.tools.JiontDAO;
@@ -26,6 +26,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 
 @Service
 public class YangGuangService {
@@ -44,6 +45,8 @@ public class YangGuangService {
 
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
+	@Autowired
+	CustomerService customerService;
 
 	protected ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -107,6 +110,7 @@ public class YangGuangService {
 		return difflist;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) throws JsonGenerationException, JsonMappingException, IOException {
 		YangGuang yangguang = new YangGuang();
 		yangguang.setHost(request.getParameter("host"));
@@ -145,6 +149,7 @@ public class YangGuangService {
 			jointEntity.setJoint_property(jsonObj.toString());
 			jiontDAO.Update(jointEntity);
 		}
+		this.customerService.initCustomerList();	
 
 	}
 

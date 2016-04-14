@@ -2,6 +2,7 @@ package cn.explink.service.addressmatch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Header;
+import org.apache.camel.Headers;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +31,15 @@ import cn.explink.b2c.zjfeiyuan.responsedto.ResponseData;
 import cn.explink.b2c.zjfeiyuan.service.RequestFYService;
 import cn.explink.consts.ConstPool;
 import cn.explink.dao.AddressCustomerStationDao;
-
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.addressvo.AddressCustomerStationVO;
 import cn.explink.domain.addressvo.AddressMappingResult;
 import cn.explink.domain.addressvo.AddressMappingResultEnum;
@@ -116,6 +120,13 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	@Autowired
 	private AddressCustomerStationDao addressCustomerStationDao;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_ADDRESS_MATCH = "jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch";
+	
+	private static final String MQ_FROM_URI_ADD_ZHANDIAN = "jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian";
 
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -136,7 +147,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						this.from(MQ_FROM_URI_ADDRESS_MATCH + "?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=matchAddress").routeId("地址匹配");
 						/*
 						 * this.from(
@@ -146,7 +157,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						 * to("bean:addressMatchService?method=matchAddressMap")
 						 * .routeId("地址百度匹配");
 						 */
-						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						this.from(MQ_FROM_URI_ADD_ZHANDIAN + "?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=addZhanDian").routeId("创建地址库中的站点");
 					}
 				});
@@ -177,13 +188,20 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	}
 
-	public void addZhanDian(@Header("branchid") String branchid) {
+	public void addZhanDian(@Header("branchid") String branchid, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.info("add zhandian branche id:{}", branchid);
 		try {
 			Branch b = this.branchDAO.getBranchByBranchid(Long.parseLong(branchid));
 			JSONReslutUtil.getResultMessage(this.addZhanDian_url, "userid=" + this.address_userid + "&stationId=" + b.getBranchid() + "&name=" + b.getBranchname(), "POST");
 		} catch (Exception e) {
 			this.logger.error("error add zhandian branche id:{}", branchid);
+			
+			// 把未完成MQ插入到数据库中, start
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addZhanDian")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADD_ZHANDIAN)
+					.buildMessageHeader("branchid", branchid)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
@@ -225,8 +243,26 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		ordervo.setCustomerId(Long.parseLong(ResourceBundleUtil.addresscustomerid));
 		return ordervo;
 	}
+	
+	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb, @Header("MessageHeaderUUID") String messageHeaderUUID) {
+		try {
+			doMatchAddress(userid, cwb);
+		} catch (Exception e) {
+			this.logger.error("error while doing address match for "+cwb, e);
+			// 把未完成MQ插入到数据库中, start
+			Map<String, String> headers = new HashMap<String, String>();
+			headers.put("userid", String.valueOf(userid));
+			headers.put("cwb",cwb);
+			
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("matchAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADDRESS_MATCH)
+					.buildMessageHeader(headers)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
+		}
+	}
 
-	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb) {
+	public void doMatchAddress(long userid, String cwb) throws Exception {
 		this.logger.info("start address match for {}", cwb);
 		try {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -291,8 +327,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 			}
 		} catch (Exception e) {
-			// e.printStackTrace();
-			this.logger.error("error while doing address match for "+cwb,e );
+			this.logger.error("error while doing address match for "+cwb, e);
+			throw e;
 		}
 	}
 
@@ -478,7 +514,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			}
 		} catch (Exception e) {
 			this.logger.error("error while doing addressMAPAPI match for {}", cwb);
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -514,14 +550,16 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					b = this.branchDAO.getBranchById(addressList.getJSONObject(0).getLong("station"));
 					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						json.put("itemno", itemno);
-						json.put("netid", b.getTpsbranchcode());
-						json.put("netpoint", (printflag == 0 ? b.getBranchname() : b.getTpsbranchcode()));
+						json.put("netid", b.getBranchid());
+						json.put("netpoint", (printflag == 0 ? b.getBranchname() : b.getBranchcode()));
+						json.put("tpsnetpoint", b.getTpsbranchcode());
 						json.put("remark", "已匹配到站点");
 						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, b.getBranchname());
 					} else {
 						json.put("itemno", itemno);
 						json.put("netid", "");
 						json.put("netpoint", "");
+						json.put("tpsnetpoint", "");
 						json.put("remark", "未匹配到站点");
 						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, "返回的站点不属于系统中站点类型");
 					}
@@ -529,6 +567,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					json.put("itemno", itemno);
 					json.put("netid", "");
 					json.put("netpoint", "");
+					json.put("tpsnetpoint", "");
 					json.put("remark", "未匹配到站点");
 					this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 				}
@@ -536,15 +575,16 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				json.put("itemno", itemno);
 				json.put("netid", "");
 				json.put("netpoint", "");
+				json.put("tpsnetpoint", "");
 				json.put("remark", "未匹配到站点");
 				this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 			}
 
 		} catch (Exception e) {
-			// e.printStackTrace();
 			json.put("itemno", itemno);
 			json.put("netid", "");
 			json.put("netpoint", "");
+			json.put("tpsnetpoint", "");
 			json.put("remark", "未匹配到站点");
 			this.logger.error("唯品会未匹配到站点,接口异常", e);
 		}
@@ -703,8 +743,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				this.jdbcTemplate.update("update express_ops_cwb_detail set multipbranchflag=-1 where opscwbid=? and state=1", cwbOrder.getOpscwbid());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			this.logger.error("error while doing address match for "+cwb,e);
+			this.logger.error("error while doing address match for "+cwb, e);
 		}
 	}
 

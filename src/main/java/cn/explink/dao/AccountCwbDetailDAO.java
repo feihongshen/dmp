@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,6 +23,9 @@ import cn.explink.util.Page;
 
 @Component
 public class AccountCwbDetailDAO {
+	
+	private static Logger logger = LoggerFactory.getLogger(AccountCwbDetailDAO.class);
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -200,7 +205,7 @@ public class AccountCwbDetailDAO {
 					+ ") and checkoutstate=0 and debetstate=0 and accountbranch=0 ORDER BY createtime DESC LIMIT 3000";
 			return jdbcTemplate.query(sql, new AccountCwbDetailRowMapper(), branchid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -211,7 +216,7 @@ public class AccountCwbDetailDAO {
 					+ ") and a.checkoutstate=0 and a.debetstate>0 AND b.deliverystate in(1,2,3) and b.state=1 ";
 			return jdbcTemplate.query(sql, new DeliverytimeRowMapper(), branchid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -221,7 +226,7 @@ public class AccountCwbDetailDAO {
 			String sql = "select * from ops_account_cwb_detail where branchid=? and flowordertype in (" + flowordertype + ") and checkoutstate=0 and debetstate>0";
 			return jdbcTemplate.query(sql, new AccountCwbDetailRowMapper(), branchid);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -400,7 +405,7 @@ public class AccountCwbDetailDAO {
 
 	public List<AccountCwbDetail> getAccountCwbDetailLock(String accountcwbid) {
 		String sql = "SELECT * from ops_account_cwb_detail where accountcwbid in (" + accountcwbid + ") for update";
-		System.out.println(sql);
+		logger.info(sql);
 		return jdbcTemplate.query(sql, new AccountCwbDetailRowMapper());
 	}
 
@@ -417,7 +422,7 @@ public class AccountCwbDetailDAO {
 			String sql = "select * from ops_account_cwb_detail where cwb=? and flowordertype in (" + flowordertype + ") ";
 			return jdbcTemplate.query(sql, new AccountCwbDetailRowMapper(), cwb);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}

@@ -18,6 +18,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -116,6 +118,8 @@ public class DataStatisticsService {
 	ComplaintDAO complaintDAO;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	private static Logger logger = LoggerFactory.getLogger(DataStatisticsService.class);
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -383,7 +387,7 @@ public class DataStatisticsService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -665,7 +669,7 @@ public class DataStatisticsService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -891,7 +895,7 @@ public class DataStatisticsService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -1129,7 +1133,7 @@ public class DataStatisticsService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -1326,7 +1330,7 @@ public class DataStatisticsService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -1530,7 +1534,7 @@ public class DataStatisticsService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -2366,7 +2370,7 @@ public class DataStatisticsService {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -2401,7 +2405,7 @@ public class DataStatisticsService {
 		try {
 			date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		c.setTime(date);
 		int day = c.get(Calendar.DATE);

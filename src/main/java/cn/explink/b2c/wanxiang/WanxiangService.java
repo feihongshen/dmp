@@ -1,23 +1,22 @@
 package cn.explink.b2c.wanxiang;
 
-import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 
 
 @Service
@@ -28,7 +27,8 @@ public class WanxiangService {
 	JiontDAO jiontDAO;
 	@Autowired
 	CustomerDAO customerDAO;
-	
+	@Autowired
+	CustomerService customerService;
 	
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance(); 
 	
@@ -44,6 +44,7 @@ public class WanxiangService {
 	    Wanxiang dangdang = (Wanxiang)JSONObject.toBean(jsonObj,Wanxiang.class);
 		return dangdang;
 	}
+	@Transactional
 	public void edit(HttpServletRequest request,int joint_num){
 		Wanxiang lt=new Wanxiang();
 		String customerid=request.getParameter("customerid");
@@ -79,7 +80,7 @@ public class WanxiangService {
 		}
 		//保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
-		
+		this.customerService.initCustomerList();
 		
 	}
 	public void update(int joint_num,int state){

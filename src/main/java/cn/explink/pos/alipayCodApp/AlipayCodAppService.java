@@ -25,7 +25,7 @@ import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class AlipayCodAppService {
-	private Logger logger = LoggerFactory.getLogger(AlipayCodAppService.class);
+	private static Logger logger = LoggerFactory.getLogger(AlipayCodAppService.class);
 	@Autowired
 	JiontDAO jiontDAO;
 	@Autowired
@@ -183,7 +183,7 @@ public class AlipayCodAppService {
 	public static void main(String[] args) {
 		String str = "charset=UTF-8&logistics_bill_no=14011986729422&logistics_code=GZWPH&partner=2088011963129657&service=alipay.logistics.bill.pay.notify&timestamp=2014-01-22 13:45:56";
 		String private_key = "dz1ivka0uz6794ogtmr373yvl980vgki";
-		System.out.println(MD5Util.md5(str + private_key));
+		logger.info(MD5Util.md5(str + private_key));
 	}
 
 	private Map<String, String> buildParmsMap(String service, String partner, String _input_charset, String sign_type, String sign, String timestamp, String logistics_bill_no, String logistics_code,

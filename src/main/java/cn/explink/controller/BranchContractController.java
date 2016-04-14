@@ -266,13 +266,17 @@ public class BranchContractController {
 				.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request
 				.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO
 				.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO
 				.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
+			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		} else if ((tpscodeList != null) && (tpscodeList.size() > 0)) {
 			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, file,
@@ -282,7 +286,7 @@ public class BranchContractController {
 			}
 			long branchid = this.branchDAO.creBranch(bh);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh);
+				this.branchService.addzhandianToAddress(branchid, bh,null);
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService
 						.getParameter("newaddressenabled");
@@ -298,14 +302,13 @@ public class BranchContractController {
 				// this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				// this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
-				this.logger
-						.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
+				this.logger.error("", e);
 			}
 
 			this.logger.info("operatorUser={},机构管理->createFile", this
@@ -323,13 +326,17 @@ public class BranchContractController {
 				.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request
 				.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO
 				.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO
 				.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
+			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		} else if ((tpscodeList != null) && (tpscodeList.size() > 0)) {
 			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, null,
@@ -340,7 +347,7 @@ public class BranchContractController {
 			}
 			long branchid = this.branchDAO.creBranch(bh);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh);
+				this.branchService.addzhandianToAddress(branchid, bh,null);
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService
 						.getParameter("newaddressenabled");
@@ -356,14 +363,13 @@ public class BranchContractController {
 				// this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
-				this.logger
-						.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
+				this.logger.error("", e);
 			}
 			this.logger.info("operatorUser={},机构管理->create,站点名称：{}", this
 					.getSessionUser().getUsername(), branchname);
@@ -397,16 +403,21 @@ public class BranchContractController {
 				.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request
 				.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO
 				.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO
 				.getBranchByBranchcodeCheck(branchcode);
 		String oldbranchname = this.branchDAO.getBranchById(branchid)
 				.getBranchname();
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)
 				&& (codeList.get(0).getBranchid() != branchid)) {
+			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		} else if ((tpscodeList.size() > 0) && (tpscodeList != null)
+				&& (tpscodeList.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, file,
@@ -415,9 +426,10 @@ public class BranchContractController {
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
+			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
 			this.branchDAO.saveBranch(branch);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch);
+				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService
 						.getParameter("newaddressenabled");
@@ -435,14 +447,13 @@ public class BranchContractController {
 				this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
-				this.logger
-						.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
+				this.logger.error("", e);
 			}
 
 			this.logger.info("operatorUser={},机构管理->saveFile", this
@@ -461,21 +472,27 @@ public class BranchContractController {
 				.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request
 				.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO
 				.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO
 				.getBranchByBranchcodeCheck(branchcode);
 		String oldbranchname = this.branchDAO.getBranchById(branchid)
 				.getBranchname();
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)
 				&& (codeList.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
+		} else if ((tpscodeList.size() > 0) && (tpscodeList != null)
+				&& (tpscodeList.get(0).getBranchid() != branchid)) {
+			return "{\"errorCode\":1,\"error\":\"机构编号已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, null,
 					wavh, functionids);
 			branch.setBranchid(branchid);
+			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
@@ -484,9 +501,9 @@ public class BranchContractController {
 				this.cwbDAO.saveCwbOrderByExcelbranch(branchname, branchid);
 			}
 
-			this.branchDAO.saveBranchNoFile(branch);
+			this.branchDAO.saveBranch(branch);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch);
+				this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService
 						.getParameter("newaddressenabled");
@@ -504,14 +521,13 @@ public class BranchContractController {
 				this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
-				this.logger
-						.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
+				this.logger.error("", e);
 			}
 			this.logger.info("operatorUser={},机构管理->save,站点名称：{}", this
 					.getSessionUser().getUsername(), branch.getBranchname());
@@ -630,7 +646,7 @@ public class BranchContractController {
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this
 				.getSessionUser().getUsername(), branchid);
 		if (branch.getBrancheffectflag().equals("1")) {
-			this.branchService.addzhandianToAddress(branchid, branch);
+			this.branchService.addzhandianToAddress(branchid, branch,null);
 		} else {
 			this.branchService.delBranch(branchid);
 		}
@@ -720,8 +736,7 @@ public class BranchContractController {
 				toClient.close();
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 	

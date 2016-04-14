@@ -1,12 +1,17 @@
 package cn.explink.b2c.jiuxian;
 
 import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.service.CustomerService;
 
 @Service
 public class JiuxianService {
@@ -14,7 +19,10 @@ public class JiuxianService {
 	JiontDAO jiontDAO;
 	@Autowired
 	CustomerDAO customerDAO;
+	@Autowired
+	CustomerService customerService;
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		JiuxianWang jiuxian = new JiuxianWang();
 		String customerid = request.getParameter("customerids");
@@ -42,6 +50,7 @@ public class JiuxianService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

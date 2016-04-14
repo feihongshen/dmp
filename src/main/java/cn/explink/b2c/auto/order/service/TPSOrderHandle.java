@@ -24,7 +24,7 @@ public class TPSOrderHandle {
 	 //处理业务逻辑
 	@Transactional
 	public void handleOrderData(
-    		TPSOrder order,VipShop vipshop,int vipshop_key,String msg){
+    		TPSOrder order,VipShop vipshop,int vipshop_key,String msg,int mpsswitch){
     	//flagOrder = order.getCustOrderNo();
     	try{
     		if(order.getBusinessType()==20 || order.getBusinessType()==40){
@@ -37,7 +37,7 @@ public class TPSOrderHandle {
     					throw new CwbException(order.getCustOrderNo(),FlowOrderTypeEnum.DaoRuShuJu.getValue(),"没有出仓时间");
     				}
     				//返回的报文订单信息解析
-    				CwbOrderDTO cwbOrder = tPSGetOrderDataService.parseXmlDetailInfo(vipshop,order);
+    				CwbOrderDTO cwbOrder = tPSGetOrderDataService.parseXmlDetailInfo(vipshop,order,mpsswitch);
     				if (cwbOrder != null) {
     					//是否开启托运单模式，生成多个批次 0 不开启
         				if (vipshop.getIsTuoYunDanFlag() == 0) {

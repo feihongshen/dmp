@@ -85,9 +85,12 @@ public class HappyGoController {
 
 		String password = request.getParameter("password");
 		if (password != null && "explink".equals(password)) {
-			happyGoService.edit(request, joint_num);
-
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				happyGoService.edit(request, joint_num);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":0,\"error\":\"密码错误！\"}";
 		}

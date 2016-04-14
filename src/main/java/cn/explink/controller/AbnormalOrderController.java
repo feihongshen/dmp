@@ -240,6 +240,7 @@ public class AbnormalOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
 			}
 			cwbList.addAll(this.cwbDAO.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1)));
@@ -466,6 +467,7 @@ public class AbnormalOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				cwbs1 = cwbs1.append(quot).append(cwbStr.trim()).append(quotAndComma);
 			}
 		}
@@ -890,6 +892,7 @@ public class AbnormalOrderController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
+					cwbStr = cwbStr.trim();
 					cwbs1 = cwbs1.append(quot).append(cwbStr).append(quotAndComma);
 				}
 			}
@@ -972,7 +975,7 @@ public class AbnormalOrderController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);*/
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -1171,7 +1174,7 @@ public class AbnormalOrderController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -1405,6 +1408,7 @@ public class AbnormalOrderController {
 
 		if (cwbStrings.length > 0) {
 			for (String cwb : cwbStrings) {
+				cwb = cwb.trim();
 				try {
 					StringBuffer questionNo = new StringBuffer();
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -1471,6 +1475,7 @@ public class AbnormalOrderController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
+					cwbStr = cwbStr.trim();
 					cwbs1 = cwbs1.append("'").append(cwbStr).append(quotAndComma);
 				}
 			}
@@ -1524,6 +1529,7 @@ public class AbnormalOrderController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
+					cwbStr = cwbStr.trim();
 					cwbs1 = cwbs1.append(quot).append(cwbStr).append(quotAndComma);
 				}
 			}
@@ -1627,8 +1633,7 @@ public class AbnormalOrderController {
 			toClient.flush();
 			toClient.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -1726,6 +1731,7 @@ public class AbnormalOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
 			}
 			cwbList.addAll(this.cwbDAO.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1)));

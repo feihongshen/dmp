@@ -236,7 +236,7 @@ public class EditCwbService {
 			JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=1&cwb=" + co.getCwb() + "&nextbranchid=" + nextbranchid + "&flowordertype="
 					+ FlowOrderTypeEnum.FenZhanLingHuo.getValue() + "&currentbranchid=0&deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue(), "POST");
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			logger.error("", e1);
 			this.logger.info("云订单重置审核状态异常:" + co.getCwb());
 		}
 
@@ -576,7 +576,7 @@ public class EditCwbService {
 		try {
 			JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=2&cwb=" + co.getCwb() + "&receivablefee=" + receivablefee + "&paybackfee=" + paybackfee, "POST");
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			logger.error("", e1);
 			this.logger.info("云订单修改订单金额异常:" + co.getCwb());
 		}
 
@@ -1084,7 +1084,7 @@ public class EditCwbService {
 		try {
 			JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=3&cwb=" + co.getCwb() + "&newpaywayid=" + newpaywayid, "POST");
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			logger.error("", e1);
 			this.logger.info("修改云订单支付方式异常:" + co.getCwb());
 		}
 
@@ -1516,7 +1516,7 @@ public class EditCwbService {
 				JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=4&cwb=" + co.getCwb() + "&cwbordertypeid=" + newcwbordertypeid + "&deliverystate="
 						+ nowDeliveryState.getValue(), "POST");
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.error("", e1);
 				this.logger.info("修改云订单类型异常:" + co.getCwb());
 			}
 
@@ -1707,7 +1707,7 @@ public class EditCwbService {
 			url1 = "http://127.0.0.1:8080/oms/";
 		}
 		final String url = url1;
-		System.out.println(url);
+		logger.info(url);
 		return url;
 	}
 

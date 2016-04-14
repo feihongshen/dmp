@@ -739,11 +739,13 @@ public class OrderSelectController {
 				result = pjDeliveryOrderService.getDeliveryOrderTracking(cwb);
 			} catch (OspException e) {
 				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}", e.getMessage());
-				e.printStackTrace();
+				model.addAttribute("aorderFlowViews", fororder);
+				this.logger.error("", e);
 				return jspPage;
 			}
 			if ((result == null) || (result.size() == 0)) {
 				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}");
+				model.addAttribute("aorderFlowViews", fororder);
 				return jspPage;
 			}
 			for (PjDeliveryTrackInfo temp : result) {
@@ -915,7 +917,7 @@ public class OrderSelectController {
 		try {
 			resultList = sbOrgService.findSbOrgByCarrierAndSelfStation(carrierCode, operateOrgCode);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		/*
 		 * SbOrgModel a = new SbOrgModel(); a.setOrgName("测试站");
@@ -1059,6 +1061,13 @@ public class OrderSelectController {
 		GotoClassAuditing gotoClassAuditingGuiBan = this.gotoClassAuditingDAO.getGotoClassAuditingByGcaid(view.getGcaid());
 		User deliveryname = this.userDAO.getUserByUserid(view.getDeliverid());
 		Branch currentbranch = this.branchDAO.getBranchByBranchid(view.getCurrentbranchid());
+		
+		if(order.getIsmpsflag()==1 && order.getMpsallarrivedflag()!=1){
+			model.addAttribute("isGathercomp", "0");
+		}else{
+			model.addAttribute("isGathercomp", "1");
+		}
+		
 		model.addAttribute("deliveryname", deliveryname);
 		model.addAttribute("customer", customer);
 		model.addAttribute("invarhousebranch", invarhousebranch == null ? new Branch() : invarhousebranch);
@@ -1162,7 +1171,7 @@ public class OrderSelectController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 		return null;
@@ -1401,17 +1410,17 @@ public class OrderSelectController {
 						comment);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.LanJianRuZhan.getValue()) {
-				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件入站；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件入站；联系电话：<font color =\"red\">[{1}]</font>; 备注：<font color =\"red\">[{2}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),phone,
 						comment);
 			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.LanJianChuZhan.getValue()) {
-				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件出站；备注：<font color =\"red\">[{1}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件出站；联系电话：<font color =\"red\">[{1}]</font>; 备注：<font color =\"red\">[{2}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),phone,
 						comment);
 			}
 			// ============================add
 			// end=========================================================
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 		return null;
@@ -1536,7 +1545,7 @@ public class OrderSelectController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 		return null;
@@ -1638,7 +1647,7 @@ public class OrderSelectController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 		return null;
@@ -2875,7 +2884,7 @@ public class OrderSelectController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 
 	}

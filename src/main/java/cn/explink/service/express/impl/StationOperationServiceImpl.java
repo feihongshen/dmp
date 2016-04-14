@@ -75,7 +75,7 @@ import com.vip.osp.core.exception.OspException;
 @Service
 public class StationOperationServiceImpl implements StationOperationService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(StationOperationServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(StationOperationServiceImpl.class);
 
 	@Autowired
 	private ExpressOrderDao expressOrderDao;
@@ -185,7 +185,7 @@ public class StationOperationServiceImpl implements StationOperationService {
 			// added by jiangyu 批量更新订单的包号信息
 			this.CwbDAO.updatePackagecode(bale.getBaleno(), bale.getNextbranchid(), waybillNoList);
 		} catch (Exception e) {
-			StationOperationServiceImpl.LOGGER.error(e.getMessage());
+			logger.error(e.getMessage());
 			return false;
 		}
 		return true;
@@ -329,7 +329,7 @@ public class StationOperationServiceImpl implements StationOperationService {
 			nextIndex += 2;
 			StationOperationServiceImpl.writeBody(workbook, entity, dataSet, sheet, styles, patriarch, excelParams, nextIndex++);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 	}
 
@@ -372,13 +372,13 @@ public class StationOperationServiceImpl implements StationOperationService {
 			workbook.write(fOut);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} finally {
 			try {
 				fOut.flush();
 				fOut.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 	}
@@ -483,7 +483,7 @@ public class StationOperationServiceImpl implements StationOperationService {
 		} catch (OspException e) {
 			res.setStatus(false);
 			res.setMsg("校验包号唯一性接口异常,请联系管理员");
-			StationOperationServiceImpl.LOGGER.info("校验包号唯一性接口异常,异常原因{" + e.getMessage() + "}");
+			logger.error("校验包号唯一性接口异常,异常原因{" + e.getMessage() + "}");
 		}
 		res.setAttributes(map);
 		return res;

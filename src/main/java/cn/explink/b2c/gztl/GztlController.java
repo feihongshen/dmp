@@ -33,7 +33,7 @@ public class GztlController {
 	@Autowired
 	GuangZhouTongLuInsertCwbDetailTimmer guangZhouTongLuInsertCwbDetailTimmer;
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(GztlController.class);
 
 	@RequestMapping("/show/{id}")
 	public String jointShow(@PathVariable("id") int key, Model model) {
@@ -46,8 +46,12 @@ public class GztlController {
 	@RequestMapping("/saveGuangzhoutonglu/{id}")
 	public @ResponseBody String smileSave(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 		if ((request.getParameter("password") != null) && "explink".equals(request.getParameter("password"))) {
-			this.gztlService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				this.gztlService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}
@@ -77,18 +81,18 @@ public class GztlController {
 			xml = request.getParameter("XML");
 			String MD5 = request.getParameter("MD5");
 
-			this.logger.info("广州通路请求参数xml={},MD5={}", xml, MD5);
+			logger.info("广州通路请求参数xml={},MD5={}", xml, MD5);
 
 			String localSignString = MD5Util.md5(xml + gztl.getPrivate_key());
-			System.out.println(localSignString);
+			logger.info(localSignString);
 			if (!MD5.equalsIgnoreCase(localSignString)) {
-				this.logger.info("签名验证失败,xml={},MD5={}", xml, MD5);
+				logger.info("签名验证失败,xml={},MD5={}", xml, MD5);
 				return this.errorReturnData("F", "签名验证失败");
 			}
 
 			return this.gztlService.orderDetailExportInterface(xml, gztl);
 		} catch (Exception e) {
-			this.logger.error("0广州通路处理业务逻辑异常！" + xml, e);
+			logger.error("0广州通路处理业务逻辑异常！" + xml, e);
 			return this.errorReturnData("F", "处理业务逻辑异常");
 		}
 	}
@@ -96,7 +100,7 @@ public class GztlController {
 	@RequestMapping("/gztl_timmer")
 	public @ResponseBody void ExcuteTimmerMethod_tmall(HttpServletRequest request, HttpServletResponse response) {
 		this.guangZhouTongLuInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.Guangzhoutonglu.getKey());
-		this.logger.info("执行了广州通路查询临时表的定时器!");
+		logger.info("执行了广州通路查询临时表的定时器!");
 	}
 
 	public String errorReturnData(String flag, String remark) {
@@ -129,6 +133,6 @@ public class GztlController {
 	public static void main(String[] args) {
 		GztlController gztlController = new GztlController();
 		String kkString = gztlController.testhh();
-		System.out.println(kkString);
+		logger.info(kkString);
 	}
 }

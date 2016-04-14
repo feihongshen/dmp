@@ -133,12 +133,8 @@ public class RequestFYController {
 		ResponseData respd = (ResponseData)XmlToBean.toBean(xmlStrResponse);
 		String response = BeanToXml.toXml2(respd);
 		/*String str = this.xmlToBean.toBean(xmlStrRequest).toString();*/
-		System.out.println(respd);
 		RequestData rd = (RequestData)XmlToBean.toBean2(xmlStrRequest);
 		String request = BeanToXml.toXml(rd);
-		System.out.println(rd);
-		System.out.println(request);
-		System.out.println(response);
 		//保存(页面配置信息)
 		//return "{\"errorCode\":0,\"error\":\"浙江飞远地址库匹配成功\"}";
 	}
@@ -152,10 +148,9 @@ public class RequestFYController {
 		User user =  this.getSessionUser();
 		String str = "";
 		try{
-			this.addressMatchService.matchAddress(user.getUserid(), "zff15001");
+			this.addressMatchService.doMatchAddress(user.getUserid(), "zff15001");
 		}catch(Exception e){
 			str = e.toString();
-			e.printStackTrace();
 			this.logger.error("异常原因:{}",e);
 			
 		}

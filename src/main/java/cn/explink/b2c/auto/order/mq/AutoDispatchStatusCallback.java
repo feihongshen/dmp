@@ -78,7 +78,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	        	
 	        	try{
 		        	long msgid=this.autoExceptionService.createAutoExceptionMsg(msg,AutoInterfaceEnum.fenjianzhuangtai.getValue());
-		        	detailId=this.autoExceptionService.createAutoExceptionDetail("","",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0);
+		        	detailId=this.autoExceptionService.createAutoExceptionDetail("","",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid, 0,"");
 	        	} catch (Exception ee) {
 	        		logger.error("createAutoException error",ee);
 	        	}
@@ -119,7 +119,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 		        	long refid=err.getRefid();//
 		        	try{
 			        	long msgid=this.autoExceptionService.createAutoExceptionMsg(errorMsg, AutoInterfaceEnum.fankui_fanjian.getValue());
-			        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"","DMP反馈异常到TPS时出错."+et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid);
+			        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"","DMP反馈异常到TPS时出错."+et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid,"");
 					} catch (Exception ee) {
 		        		logger.error("createAutoException error",ee);
 		        	}
@@ -145,13 +145,13 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 		
 		return msg;
 	}
-	private List<AutoPickStatusVo> parseJson(String json){ 
+	public List<AutoPickStatusVo> parseJson(String json){ 
 		 JSONArray jsonarray = JSONArray.fromObject(json);  
 	     List<AutoPickStatusVo> dataList = (List<AutoPickStatusVo>)JSONArray.toCollection(jsonarray,AutoPickStatusVo.class);  
 		return dataList;
 	}
 	
-	private List<AutoMQExceptionDto> persistData(List<AutoPickStatusVo> voList,String msg){
+	public List<AutoMQExceptionDto> persistData(List<AutoPickStatusVo> voList,String msg){
 		List<AutoMQExceptionDto> errorList=null;
 		if(voList==null||voList.size()<1){
 			return errorList;
@@ -175,7 +175,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 					if(msgid==0){
 						msgid=this.autoExceptionService.createAutoExceptionMsg(msg, AutoInterfaceEnum.fenjianzhuangtai.getValue());
 					}
-					detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),"",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0);
+					detailId=this.autoExceptionService.createAutoExceptionDetail(vo.getOrder_sn(),"",errinfo,AutoExceptionStatusEnum.xinjian.getValue(),msgid,0,"");
 				} catch (Exception ee) {
 	        		logger.error("createAutoException error",ee);
 	        	}
@@ -202,9 +202,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
             forRecover = new String(e.getPayload(), MSG_ENCODE);
             this.logger.error("the Payload msg is:"+forRecover);
         } catch (Throwable e1) {
-            this.logger.error("消费分拨状态信息，onFailure：" , e1);
-            e1.printStackTrace();;
-
+            logger.error("消费分拨状态信息，onFailure:" , e1);
         } finally {
             // 确认消费
             ISubscriber subscriber = (ISubscriber) sender;

@@ -351,8 +351,7 @@ public class AccountDeductRecordService {
 			 * return list;
 			 */
 		} catch (Exception e) {
-			logger.info("分页查找扣款结算列表异常：" + e);
-			e.printStackTrace();
+			logger.error("分页查找扣款结算列表异常：", e);
 			return null;
 		}
 	}

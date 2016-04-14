@@ -1,9 +1,5 @@
 package cn.explink.b2c.sfxhm;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,7 +17,6 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.enumutil.BranchEnum;
-import cn.explink.util.Dom4jParseUtil;
 
 /**
  * 家有购物北京ERP接口
@@ -69,9 +64,12 @@ public class SfxhmController {
 	public @ResponseBody String save(Model model, @PathVariable("id") int key, HttpServletRequest request) {
 
 		if (request.getParameter("password") != null && "explink".equals(request.getParameter("password"))) {
-
-			sfxhmService.edit(request, key);
-			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			try{
+				sfxhmService.edit(request, key);
+				return "{\"errorCode\":0,\"error\":\"修改成功\"}";
+			}catch(Exception e){
+				return "{\"errorCode\":1,\"error\":\""+ e.getMessage() +"\"}";
+			}
 		} else {
 			return "{\"errorCode\":1,\"error\":\"密码不正确\"}";
 		}

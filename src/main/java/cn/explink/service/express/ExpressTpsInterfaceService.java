@@ -18,8 +18,11 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.express.ExpressTpsInterfaceExcepRecordDAO;
 import cn.explink.dao.express.GeneralDAO;
+import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.domain.express.ExpressTpsInterfaceExcepRecord;
 import cn.explink.enumutil.YesOrNoStateEnum;
@@ -64,6 +67,11 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 
 	ObjectMapper objectMapper = new ObjectMapper();
 	ObjectReader expressOperationInfoReader = this.objectMapper.reader(ExpressOperationInfo.class);
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_EXECUTE_TPS_INTERFACE = "jms:queue:VirtualTopicConsumers.tps.executeTpsInterface";
 
 	public void init() {
 		this.logger.info("init tps interface camel routes");
@@ -71,7 +79,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.tps.executeTpsInterface?concurrentConsumers=15").to("bean:expressTpsInterfaceService?method=exeTpsInterface")
+					this.from(MQ_FROM_URI_EXECUTE_TPS_INTERFACE + "?concurrentConsumers=15").to("bean:expressTpsInterfaceService?method=exeTpsInterface")
 							.routeId("TPS-IntefaceMatch");
 				}
 			});
@@ -86,11 +94,23 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 		this.init();
 	}
 
-	public Map<String, Object> exeTpsInterface(@Header("executeTpsInterfaceHeader") String param) throws Exception {
+	public Map<String, Object> exeTpsInterface(@Header("executeTpsInterfaceHeader") String param, @Header("MessageHeaderUUID") String messageHeaderUUID) throws Exception {
 		this.logger.debug("dmp execute tps interface  调用环节信息处理,{}", param);
-		ExpressOperationInfo operationInfo = this.expressOperationInfoReader.readValue(param);
-		Map<String, Object> resultMap = this.tpsInterfaceHandlePorcess(operationInfo);
-		return resultMap;
+		try{
+			ExpressOperationInfo operationInfo = this.expressOperationInfoReader.readValue(param);
+			Map<String, Object> resultMap = this.tpsInterfaceHandlePorcess(operationInfo);
+			return resultMap;
+		} catch (Exception e) {
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("exeTpsInterface")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_EXECUTE_TPS_INTERFACE)
+					.buildMessageHeader("executeTpsInterfaceHeader", param)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
+		}
+		return null;
+		
 	}
 
 	/**

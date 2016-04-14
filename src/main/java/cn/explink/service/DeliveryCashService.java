@@ -2,7 +2,6 @@ package cn.explink.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.sql.ResultSet;
@@ -23,6 +22,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -45,6 +46,8 @@ public class DeliveryCashService {
 	CustomerDAO customerDAO;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	private static Logger logger = LoggerFactory.getLogger(DeliveryCashService.class);
 
 	/**
 	 * 获取对应站点的小件员审核后的记录统计
@@ -610,9 +613,9 @@ public class DeliveryCashService {
 			try {
 				out.close();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.error("", e1);
 			}
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

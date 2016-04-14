@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -22,11 +23,12 @@ import cn.explink.b2c.tools.JointEntity;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class SmileService {
-	private Logger logger = LoggerFactory.getLogger(SmileService.class);
+	private static Logger logger = LoggerFactory.getLogger(SmileService.class);
 
 	@Autowired
 	JiontDAO jiontDAO;
@@ -36,6 +38,8 @@ public class SmileService {
 	DataImportService_B2c dataImportInterface;
 	@Autowired
 	DataImportDAO_B2c dataImportDAO_B2c;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -51,6 +55,7 @@ public class SmileService {
 		return smile;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Smile smile = new Smile();
 		String customerids = request.getParameter("customerids");
@@ -84,6 +89,7 @@ public class SmileService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {
@@ -119,7 +125,7 @@ public class SmileService {
 	public static void main(String[] args) {
 
 		String strs = "<RequestOrder><WaybillNo>YT9067930</WaybillNo><ClientCode>YT9067930</ClientCode><Holiday>1</Holiday><ReplCost>449.00</ReplCost><StmtForm>1</StmtForm><TrustClientCode>100058</TrustClientCode><TrustPerson>君联速递</TrustPerson><TrustUnit>广州君联速递有限公司</TrustUnit><TrustZipCode>510000</TrustZipCode><TrustCity>广东省广州市</TrustCity><TrustAddress>广东省广州市白云区新科村新科工业区弘森国际物流中心A115号</TrustAddress><TrustMobile></TrustMobile><TrustTel>020-36539611</TrustTel><GetPerson>王有亮</GetPerson><GetUnit>0</GetUnit><GetZipCode>0</GetZipCode><GetCity>山西省忻州市</GetCity><GetAddress>山西省忻州市忻府区长征西街包天下（电话联系）</GetAddress><GetTel>18735071725</GetTel><GetMobile>0</GetMobile><InsForm>62</InsForm><InsureValue>449.00</InsureValue><GoodsValue>449.00</GoodsValue><WorkType>0</WorkType><OrderType></OrderType><GoodsInfo><Good><GoodsName>电子产品</GoodsName><GoodsValue>449.00</GoodsValue><GoodsBarCode></GoodsBarCode><ListType>0</ListType><ISInvoice>0</ISInvoice></Good></GoodsInfo><GoodsNum>1</GoodsNum><GoodsHav>0.48</GoodsHav></RequestOrder>2011";
-		System.out.println(MD5Util.md5(strs));
+		logger.info(MD5Util.md5(strs));
 	}
 
 	/**

@@ -9,6 +9,8 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +29,9 @@ import cn.explink.util.StringUtil;
 
 @Component
 public class PayUpDAO {
+	
+	private static Logger logger = LoggerFactory.getLogger(PayUpDAO.class);
+	
 	private final class PayUpRowMapper implements RowMapper<PayUp> {
 		@Override
 		public PayUp mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -67,7 +72,7 @@ public class PayUpDAO {
 				msgContent.close();
 			} catch (Exception e) {
 				payup.setIds(new String(rs.getString("ids")));
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			try {
 				ByteArrayInputStream msgContent = (ByteArrayInputStream) rs.getBlob("auditids").getBinaryStream();
@@ -77,7 +82,7 @@ public class PayUpDAO {
 				msgContent.close();
 			} catch (Exception e) {
 				payup.setAuditids(rs.getString("auditids"));
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			try {
 				ByteArrayInputStream msgContent = (ByteArrayInputStream) rs.getBlob("remark").getBinaryStream();
@@ -87,7 +92,7 @@ public class PayUpDAO {
 				msgContent.close();
 			} catch (Exception e) {
 				payup.setRemark(rs.getString("remark"));
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			try {
 				ByteArrayInputStream msgContent = (ByteArrayInputStream) rs.getBlob("types").getBinaryStream();
@@ -97,7 +102,7 @@ public class PayUpDAO {
 				msgContent.close();
 			} catch (Exception e) {
 				payup.setTypes(rs.getString("types"));
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			try {
 				ByteArrayInputStream msgContent = (ByteArrayInputStream) rs.getBlob("ways").getBinaryStream();
@@ -107,7 +112,7 @@ public class PayUpDAO {
 				msgContent.close();
 			} catch (Exception e) {
 				payup.setWays(rs.getString("ways"));
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			try {
 				ByteArrayInputStream msgContent = (ByteArrayInputStream) rs.getBlob("upuserrealname").getBinaryStream();
@@ -117,7 +122,7 @@ public class PayUpDAO {
 				msgContent.close();
 			} catch (Exception e) {
 				payup.setUpuserrealname(rs.getString("upuserrealname"));
-				e.printStackTrace();
+				logger.error("", e);
 			}
 			payup.setCredatetime(rs.getString("credatetime"));
 			payup.setAmount(rs.getBigDecimal("amount"));

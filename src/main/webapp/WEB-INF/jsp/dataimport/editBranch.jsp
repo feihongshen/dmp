@@ -315,7 +315,7 @@ function bdbranchmatch(){
 									<%-- <td width="10%" align="center"><%=co.getConsigneename()%></td>
 									<td width="10%" align="center"><%=co.getConsigneemobile()%></td>
 									<td width="8%" align="center"><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText()%></td> --%>
-									<td width="8%" align="center"><%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%></td>
+									<td width="8%" align="center"><%=((CwbFlowOrderTypeEnum.getText(co.getFlowordertype()) == null) ? "" : CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText())%></td>
 									<%-- <td width="5%" align="center"><%=co.getConsigneepostcode()%></td> --%>
 									<td width="29%" align="left" id="add<%=co.getCwb()%>"><%=co.getConsigneeaddress()%></td>
 									<td width="10%" align="center"><input type="text" id="ladd<%=co.getCwb()%>"

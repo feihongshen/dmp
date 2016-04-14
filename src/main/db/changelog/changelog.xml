@@ -8950,52 +8950,36 @@ CREATE TABLE `cs_complaint_accept` (
 			ALTER TABLE `express_ops_cwb_detail_b2ctemp` ADD COLUMN `vipclub` INT(2) DEFAULT '0' ;
 		</sql>
 	</changeSet>
-	<changeset id="zhouguoting-2016-02-29-01" author="zhouguoting">
+	<changeSet id="wanghao-2016-03-05" author="wanghao">
+<!-- 	有则更新,无则插入 -->
 		<sql>
-			ALTER TABLE `fn_org_recharges`   
-			  ADD COLUMN `picker` VARCHAR(30) DEFAULT ''  NOT NULL  COMMENT '小件员登录名',
-			  ADD COLUMN `bill_no` VARCHAR(30) DEFAULT ''  NOT NULL  COMMENT '站点账单编号',
-			  ADD COLUMN `bill_detail_id` BIGINT(20) DEFAULT 0  NOT NULL  COMMENT '站点账单明细id',
-			  ADD COLUMN `bill_type` VARCHAR(4) DEFAULT ''  NOT NULL  COMMENT '站点账单类型。0.正常账单，1.调整账单',
-			  ADD COLUMN `payin_type` TINYINT(4) DEFAULT 0  NOT NULL  COMMENT '缴款方式。1.站点缴款，2小件员缴款', 
-			  ADD COLUMN `recharge_no` VARCHAR(30) DEFAULT ''  NOT NULL  COMMENT '缴款单号。年月日+5位流水号+P', 
-			  ADD  INDEX `index_recharge_no` (`recharge_no`),
-			  ADD  INDEX `index_picker` (`picker`),
-			  ADD  INDEX `index_bill_no` (`bill_no`),
-			  ADD  INDEX `index_import_time` (`import_time`),
-			  ADD  INDEX `index_bill_detail_id` (`bill_detail_id`),
-			  ADD  INDEX `index_payin_type` (`payin_type`);
-		</sql>
-	</changeset>
-	<changeSet id="zhouguoting-2016-02-29-02" author="zhouguoting">
-		<sql>
-			ALTER TABLE express_set_branch
-			  ADD COLUMN payin_type TINYINT(4) DEFAULT 1  NOT NULL  COMMENT '缴款方式。1.站点缴款，2小件员缴款';
+			REPLACE INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES 
+('3041', 1, 'DMP定时任务管理', '3041', 'quartz?index&amp;', '30');
+
+			REPLACE INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES 
+('3040', 1, 'EAP定时任务管理', '3040', '${eapUrl}quartz.do?index&amp;', '30');
 		</sql>
 	</changeSet>
-	<changeSet id="zhouguoting-2016-03-31-01" author="zhouguoting">
+	
+	<changeSet id="wangwei-2016-03-09" author="wangwei">
 		<sql>
-			ALTER TABLE `express_set_user`   
-  				ADD  INDEX `idx_username` (`username`);
+			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'open_ordertrackflag', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `open_ordertrackflag` INT DEFAULT 0 NULL;');
+			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'ordertrack_url', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `ordertrack_url` VARCHAR(100) NULL;');
 		</sql>
 	</changeSet>
-	<changeSet id="zhouguoting-2016-03-31-02" author="zhouguoting">
+	
+	<changeSet id="wangwei-2016-03-15" author="wangwei">
 		<sql>
-			ALTER TABLE `fn_order_recharge`   
-			  ADD COLUMN `pay_detail_id` BIGINT(20) DEFAULT 0  NULL  COMMENT '支付平台扣款记录id（fn_pay_detail)', 
-			  ADD  INDEX `idx_pay_detail_id` (`pay_detail_id`);
+			call proc_add_column_if_not_exists('b2c_set_epaiapi', 'validateAddmatchflag', 'ALTER TABLE `b2c_set_epaiapi` ADD COLUMN `validateAddmatchflag` INT DEFAULT 0 NULL;');
 		</sql>
 	</changeSet>
-	<changeSet id="zhouguoting-2016-04-01-01" author="zhouguoting">
+	
+	<changeSet id="jianronggao-2016-03-17" author="jianronggao">
 		<sql>
-			ALTER TABLE `fn_pay_detail`   
-				ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创建人';
-		</sql>
-	</changeSet>
-	<changeSet id="zhouguoting-2016-04-01-02" author="zhouguoting">
-		<sql>
-			ALTER TABLE `fn_pay_platform_interface`   
-				ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创建人';
+			call proc_add_column_if_not_exists('express_auto_exception_detail', 'operatetype', 'ALTER TABLE `express_auto_exception_detail` ADD COLUMN `operatetype` varchar(20) DEFAULT '''' NULL after `transportno`;');
+			call proc_add_column_if_not_exists('express_auto_order_status_tmp', 'transportno', 'ALTER TABLE `express_auto_order_status_tmp` ADD COLUMN `transportno` varchar(100) DEFAULT '''' NULL after `cwb`;');
+			call proc_add_column_if_not_exists('express_ops_transcwb_detail', 'cargovolume', 'ALTER TABLE `express_ops_transcwb_detail` ADD COLUMN `cargovolume` decimal(19,4) default ''0.0000'' NULL after `nextbranchid`;');
+			call proc_add_column_if_not_exists('express_ops_transcwb_detail', 'carrealweight', 'ALTER TABLE `express_ops_transcwb_detail` ADD COLUMN `carrealweight` decimal(18,3) default ''0.000'' NULL after `nextbranchid`;');
 		</sql>
 	</changeSet>
 </databaseChangeLog>

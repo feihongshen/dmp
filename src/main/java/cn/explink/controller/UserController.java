@@ -41,6 +41,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.ScheduledTaskService;
 import cn.explink.service.SystemInstallService;
+import cn.explink.service.UserInfService;
 import cn.explink.service.UserMonitorService;
 import cn.explink.service.UserService;
 import cn.explink.util.ExcelUtils;
@@ -79,6 +80,8 @@ public class UserController {
 	CwbOrderService cs;
 	@Autowired
 	ExportService exportService;
+	@Autowired
+	UserInfService userInfService;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -155,12 +158,16 @@ public class UserController {
 			} else {
 				User user = this.userService.loadFormForUser(request, roleid, branchid, null);
 				this.userService.addUser(user);
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-					this.courierService.courierUpdate(user);
+				if (!userInfService.isCloseOldInterface()) {
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+						this.courierService.courierUpdate(user);
+					}
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+						this.courierService.carrierDel(user);
+					}
 				}
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-					this.courierService.carrierDel(user);
-				}
+				//  新接口 add by jian_xie
+				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->create", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -190,12 +197,16 @@ public class UserController {
 			} else {
 				User user = this.userService.loadFormForUser(request, roleid, branchid, file);
 				this.userService.addUser(user);
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-					this.courierService.courierUpdate(user);
+				if(!userInfService.isCloseOldInterface()){
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+						this.courierService.courierUpdate(user);
+					}
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+						this.courierService.carrierDel(user);
+					}
 				}
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-					this.courierService.carrierDel(user);
-				}
+				//  新接口 add by jian_xie
+				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -206,6 +217,7 @@ public class UserController {
 							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(list.get(0).getUserid()), true);
 						}
 					}
+										
 				}
 				this.userMonitorService.userMonitorByUsername(user.getUsername());
 				return "{\"errorCode\":0,\"error\":\"创建成功\",\"type\":\"add\"}";
@@ -252,12 +264,16 @@ public class UserController {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
 				this.userService.editUser(user);
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-					this.courierService.courierUpdate(user);
+				if(!userInfService.isCloseOldInterface()){
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+						this.courierService.courierUpdate(user);
+					}
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+						this.courierService.carrierDel(user);
+					}
 				}
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-					this.courierService.carrierDel(user);
-				}
+				//  新接口 add by jian_xie
+				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -275,6 +291,7 @@ public class UserController {
 							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 						}
 					}
+					
 				}
 				this.userMonitorService.userMonitorById(userid);
 				return "{\"errorCode\":0,\"error\":\"保存成功\",\"type\":\"edit\"}";
@@ -296,12 +313,16 @@ public class UserController {
 				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
 			} else {
 				this.userService.editUser(user);
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-					this.courierService.courierUpdate(user);
+				if(!userInfService.isCloseOldInterface()){
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+						this.courierService.courierUpdate(user);
+					}
+					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+						this.courierService.carrierDel(user);
+					}
 				}
-				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-					this.courierService.carrierDel(user);
-				}
+				//  新接口 add by jian_xie
+				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -505,7 +526,7 @@ public class UserController {
 		
 		excelUtil.excel(response, cloumnName, sheetName, fileName);
 	} catch (Exception e) {
-		e.printStackTrace();
+		logger.error("", e);
 	}
 	
 		

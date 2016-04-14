@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -35,7 +37,6 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.SystemInstallDAO;
-import cn.explink.domain.AccountArea;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Menu;
 import cn.explink.domain.PaiFeiRule;
@@ -45,6 +46,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.schedule.Constants;
 import cn.explink.service.BankService;
+import cn.explink.service.BranchInfService;
 import cn.explink.service.BranchService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -87,25 +89,9 @@ public class BranchController {
 	private BankService bankService;
 	@Autowired
 	ExportService exportService;
+	@Autowired
+	BranchInfService branchInfService;
 	
-    private List<Menu> PDAmenu ;
-	
-	private List<Branch> zhongzhuanList ; 
-	
-	private List<Branch> tuihuoList ;
-	
-	private List<Branch> caiwuList ;
-	
-	private List<PaiFeiRule> pfrulelist ;
-	
-	private SystemInstall bindmsksid ;
-	
-	private List<Stores> mskbranchlist ;
-	
-	private List<Branch> accountbranchList ;
-	
-	private List<AccountArea> accontareaList ;
-
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -138,20 +124,28 @@ public class BranchController {
 	public @ResponseBody String createFile(@RequestParam(value = "Filedata", required = false) MultipartFile file, @RequestParam(value = "functionids", required = false) List<String> functionids, Model model, HttpServletRequest request) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		} else if ((tpscodeList != null) && (tpscodeList.size() > 0)) {
+			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, file, functionids);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			long branchid = this.branchDAO.creBranch(bh);
+			bh = branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh);
+				if(!branchInfService.isCloseOldInterface()){					
+					this.branchService.addzhandianToAddress(branchid, bh,null);
+				}
+				branchInfService.saveBranchInf(bh);
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -163,13 +157,13 @@ public class BranchController {
 				//this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				//this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 
 			this.logger.info("operatorUser={},机构管理->createFile", this.getSessionUser().getUsername());
@@ -181,12 +175,16 @@ public class BranchController {
 	public @ResponseBody String create(Model model, HttpServletRequest request, @RequestParam(value = "functionids", required = false) List<String> functionids) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		} else if ((tpscodeList != null) && (tpscodeList.size() > 0)) {
+			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, null, functionids);
 
@@ -194,26 +192,31 @@ public class BranchController {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			long branchid = this.branchDAO.creBranch(bh);
+			bh = this.branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, bh);
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, bh,null);
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
 					this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 				}
+				// add by jian_xie
+				branchInfService.saveBranchInf(bh);
 			}
 
 			try {
 				//this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			this.logger.info("operatorUser={},机构管理->create,站点名称：{}", this.getSessionUser().getUsername(), branchname);
 			return "{\"errorCode\":0,\"error\":\"创建成功\"}";
@@ -236,22 +239,30 @@ public class BranchController {
 
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		String oldbranchname = this.branchDAO.getBranchById(branchid).getBranchname();
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null) && (codeList.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		}else if ((tpscodeList != null) && (tpscodeList.size() > 0) && (tpscodeList.get(0).getBranchid() != branchid)) {
+			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, file, wavh, functionids);
 			branch.setBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
+			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
 			this.branchDAO.saveBranch(branch);
+			branch = branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch);
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -259,19 +270,20 @@ public class BranchController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 					}
 				}
+				branchInfService.saveBranchInf(branch);
 			}
 
 			try {
 				this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 
 			this.logger.info("operatorUser={},机构管理->saveFile", this.getSessionUser().getUsername());
@@ -283,26 +295,34 @@ public class BranchController {
 	public @ResponseBody String save(@PathVariable("id") long branchid, @RequestParam(value = "functionids", required = false) List<String> functionids, @RequestParam(value = "wavh", required = false) String wavh, Model model, HttpServletRequest request) {
 		String branchname = StringUtil.nullConvertToEmptyString(request.getParameter("branchname"));
 		String branchcode = StringUtil.nullConvertToEmptyString(request.getParameter("branchcode"));
+		String tpsbranchcode = StringUtil.nullConvertToEmptyString(request.getParameter("tpsbranchcode")==null?null:request.getParameter("tpsbranchcode").trim());
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
+		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
 		String oldbranchname = this.branchDAO.getBranchById(branchid).getBranchname();
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null) && (codeList.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
+		}else if ((tpscodeList != null) && (tpscodeList.size() > 0) && (tpscodeList.get(0).getBranchid() != branchid)) {
+			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, null, wavh, functionids);
 			branch.setBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
-			if (!branchname.equals(this.branchDAO.getBranchByBranchid(branchid).getBranchname())) {
+			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
+			if (!branchname.equals(oldBranch.getBranchname())) {
 				this.cwbDAO.saveCwbOrderByExcelbranch(branchname, branchid);
 			}
 
-			this.branchDAO.saveBranchNoFile(branch);
+			this.branchDAO.saveBranch(branch);
+			branch = this.branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				this.branchService.addzhandianToAddress(branchid, branch);
+				if(!branchInfService.isCloseOldInterface()){
+					this.branchService.addzhandianToAddress(branchid, branch,oldBranch.getTpsbranchcode());
+				}
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -310,19 +330,21 @@ public class BranchController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 					}
 				}
+				// 同步站点新接口 add by jian_xie
+				branchInfService.saveBranchInf(branch);
 			}
 
 			try {
 				this.resendOmsPutBranchMap();
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求oms中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			try {
 				this.resendAccountPutBranchMap(request);
 			} catch (Exception e) {
 				this.logger.info("当机构信息变更时，重新请求account中的获取站点列表的方法pushBranchMap");
-				e.printStackTrace();
+				this.logger.error("", e);
 			}
 			this.logger.info("operatorUser={},机构管理->save,站点名称：{}", this.getSessionUser().getUsername(), branch.getBranchname());
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
@@ -340,44 +362,31 @@ public class BranchController {
 	 * 初始化机构管理
 	 */
 	private Model initOrganizationControllData(Model model){
-//		if(this.accontareaList == null || this.accontareaList.size() == 0){
-//			this.accontareaList = this.accountareaDAO.getAllAccountArea() ;
-//		}
-		if(this.PDAmenu == null || this.PDAmenu.size() == 0){
-			this.PDAmenu = this.menuDAO.getPDAMenus() ;
-		}
-		if(this.zhongzhuanList == null || this.zhongzhuanList.size() == 0){
-			this.zhongzhuanList = this.branchDAO.getBranchBySiteType(BranchEnum.ZhongZhuan.getValue()) ;
-		}
-		if(this.tuihuoList == null || this.tuihuoList.size() == 0){
-			this.tuihuoList = this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()) ;
-		}
-		if(this.caiwuList == null || this.caiwuList.size() == 0){
-			this.caiwuList = this.branchDAO.getBranchBySiteType(BranchEnum.CaiWu.getValue()) ;
-		}
-		if(this.pfrulelist == null || this.pfrulelist.size() == 0){
-			this.pfrulelist = this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()) ;
-		}
-		if(this.bindmsksid == null){
-			this.bindmsksid = this.systemInstallDAO.getSystemInstallByName("maisike_id_flag") ;
-		}
-		if(this.mskbranchlist == null || this.mskbranchlist.size() == 0){
-			this.mskbranchlist = this.storesDAO.getMaisiBranchList() ;
-		}
-		if(this.accountbranchList == null || this.accountbranchList.size() == 0){
-			String accountBranch = String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue());
-			this.accountbranchList = this.branchDAO.getBanchByBranchidForStock(accountBranch); 
-		}
-		model.addAttribute("accontareaList", this.accontareaList);
-		model.addAttribute("PDAmenu", this.PDAmenu);
-		model.addAttribute("zhongzhuanList", this.zhongzhuanList);
-		model.addAttribute("tuihuoList", this.tuihuoList);
-		model.addAttribute("caiwuList", this.caiwuList);
+	
+//		List<AccountArea> accontareaList = this.accountareaDAO.getAllAccountArea() ;
+		List<Menu> PDAmenu = this.menuDAO.getPDAMenus() ;
+		List<Branch> zhongzhuanList = this.branchDAO.getBranchBySiteType(BranchEnum.ZhongZhuan.getValue()) ;
+		List<Branch> tuihuoList = this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue()) ;
+		List<Branch> caiwuList = this.branchDAO.getBranchBySiteType(BranchEnum.CaiWu.getValue()) ;
+		List<PaiFeiRule> pfrulelist = this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Franchisee.getValue()) ;
+		SystemInstall bindmsksid = this.systemInstallDAO.getSystemInstallByName("maisike_id_flag") ;
+		List<Stores> mskbranchlist = this.storesDAO.getMaisiBranchList() ;
+		List<Branch> accountbranchList = this.branchDAO.getBanchByBranchidForStock(String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue())); 
+		List<JSONObject> tlBankList = this.bankService.getTlBankList() ;
+		List<JSONObject> cftBankList = this.bankService.getCftBankList() ;
+		
+//		model.addAttribute("accontareaList", accontareaList);
+		model.addAttribute("PDAmenu", PDAmenu);
+		model.addAttribute("zhongzhuanList", zhongzhuanList);
+		model.addAttribute("tuihuoList", tuihuoList);
+		model.addAttribute("caiwuList", caiwuList);
 
-		model.addAttribute("bindmsksid", this.bindmsksid);
-		model.addAttribute("mskbranchlist", this.mskbranchlist);
-		model.addAttribute("pfrulelist", this.pfrulelist);
-		model.addAttribute("accountbranchList", this.accountbranchList);
+		model.addAttribute("bindmsksid", bindmsksid);
+		model.addAttribute("mskbranchlist", mskbranchlist);
+		model.addAttribute("pfrulelist", pfrulelist);
+		model.addAttribute("accountbranchList", accountbranchList);
+		model.addAttribute("tlBankList", tlBankList);
+		model.addAttribute("cftBankList", cftBankList);
 		return model ;
 	}
 	
@@ -451,10 +460,12 @@ public class BranchController {
 		this.branchDAO.delBranch(branchid);
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this.getSessionUser().getUsername(), branchid);
-		if (branch.getBrancheffectflag().equals("1")) {
-			this.branchService.addzhandianToAddress(branchid, branch);
-		} else {
-			this.branchService.delBranch(branchid);
+		if (!branchInfService.isCloseOldInterface()) {
+			if (branch.getBrancheffectflag().equals("1")) {
+				this.branchService.addzhandianToAddress(branchid, branch, null);
+			} else {
+				this.branchService.delBranch(branchid);
+			}
 		}
 		// TODO 增加同步代码
 		String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
@@ -466,6 +477,11 @@ public class BranchController {
 				this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 			}
 		}
+		// 同步站点机构，使用新接口
+		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			branchInfService.saveBranchInf(branch);
+		}
+		
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 	
@@ -504,7 +520,7 @@ public class BranchController {
 		
 		excelUtil.excel(response, cloumnName, sheetName, fileName);
 	} catch (Exception e) {
-		e.printStackTrace();
+		this.logger.error("", e);
 	}
 	
 	}

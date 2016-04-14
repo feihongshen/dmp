@@ -168,7 +168,7 @@ public class OperateSelectController {
 				wb.write(out);
 				out.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 		logger.info("操作下载，当前操作人{}", getSessionUser().getRealname());

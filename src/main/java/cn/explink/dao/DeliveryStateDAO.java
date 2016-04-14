@@ -1644,7 +1644,7 @@ public class DeliveryStateDAO {
 			String sql = "select customerid,count(1) as pscount  from express_ops_delivery_state where deliveryid=? and auditingtime>='"+starttime+" 00:00:00' and auditingtime<='"+endtime+" 23:59:59' and deliverystate in(1,2,3) and state=1  group by customerid";
 			return this.jdbcTemplate.query(sql,new OrderCwbByCustomerIdMapper(),userid);
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -1654,7 +1654,7 @@ public class DeliveryStateDAO {
 			String sql = "select customerid,count(1) as pscount from express_ops_delivery_state where deliveryid=? and createtime>='"+starttime+" 00:00:00' and createtime<='"+endtime+" 23:59:59' and state=1 group by customerid";
 			return this.jdbcTemplate.query(sql,new OrderCwbByCustomerIdMapper(),userid);
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -1671,7 +1671,7 @@ public class DeliveryStateDAO {
 			String sql = "select * from express_ops_delivery_state where deliveryid=? and createtime>='"+starttime+" 00:00:00' and createtime<='"+endtime+" 23:59:59' and state=1";
 			return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper(),userid);
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);
 			return null;
 		}
 	}
@@ -1719,4 +1719,16 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set deliverybranchid=? where cwb='" + cwb + "' and state=1";
 		this.jdbcTemplate.update(sql, deliverybranchid);
 	}
+	
+	/**
+	 * 更新deliverystate的值
+	 * @param cwb 订单号
+	 * @param deliverystate 配送状态
+	 * @author neo01.huang
+	 */
+	public void updateDeliveryStateValue(String cwb, int deliverystate){
+		String sql = "update express_ops_delivery_state set deliverystate=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, deliverystate, cwb);
+	}
+	
 }

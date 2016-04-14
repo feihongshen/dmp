@@ -31,7 +31,7 @@ import cn.explink.util.MD5.MD5Util;
 
 @Service
 public class DeliveryService {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(DeliveryService.class);
 	@Autowired
 	CwbOrderService cwbOrderService;
 	@Autowired
@@ -49,7 +49,7 @@ public class DeliveryService {
 			String localSign = MD5Util.md5(delivery.getRequestTime() + tongl.getPrivate_key());
 
 			if (!localSign.equalsIgnoreCase(delivery.getSign())) {
-				this.logger.info("签名验证失败！cwb={}", delivery.getOrder_no());
+				logger.info("签名验证失败！cwb={}", delivery.getOrder_no());
 				return this.responseXML(DeliveryEnum.SignError.getResult_code(), DeliveryEnum.SignError.getResult_msg());
 			}
 
@@ -80,7 +80,7 @@ public class DeliveryService {
 			return this.responseXML(DeliveryEnum.Success.getResult_code(), DeliveryEnum.Success.getResult_msg());
 
 		} catch (Exception e) {
-			this.logger.error("POS机领货未知异常", e);
+			logger.error("POS机领货未知异常", e);
 			return this.responseXML(DeliveryEnum.SystemError.getResult_code(), e.getMessage());
 		}
 
@@ -101,7 +101,7 @@ public class DeliveryService {
 	public static void main(String[] args) throws UnsupportedEncodingException, JAXBException {
 		String xmldata = "<request><sign>24F4375FF2F985C0EA45AF959D03A0A5<requestTime>2015-01-06 15:57:52</requestTime><delivery_man>111111    </delivery_man><delivery_dept_no>45110</delivery_dept_no><order_no>811898</order_no></request>";
 		Delivery sss = DeliveryService.getDelivery(xmldata);
-		System.out.println(sss.getOrder_no());
+		logger.info(sss.getOrder_no());
 	}
 
 	// public String getXML(Delivery delivery) throws JAXBException,

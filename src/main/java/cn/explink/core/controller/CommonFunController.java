@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,8 @@ import cn.explink.service.UserService;
 @RequestMapping("/commonFun")
 public class CommonFunController {
 
+	private static Logger logger = LoggerFactory.getLogger(CommonFunController.class);
+	
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -64,8 +68,7 @@ public class CommonFunController {
 	        	}
 	        }
 		} catch (Exception e) {
-			// TODO: 枚举 类不存在,枚举方法不存在
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return resultList;
 	}

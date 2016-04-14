@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -41,6 +43,8 @@ import cn.explink.util.Page;
 @Controller
 public class WhareHouseToCommonController {
 
+	private Logger logger = LoggerFactory.getLogger(WhareHouseToCommonController.class);
+	
 	@Autowired
 	CommonDAO commonDAO;
 	@Autowired
@@ -151,9 +155,9 @@ public class WhareHouseToCommonController {
 				}
 				commencodes = commencodes.length() > 0 ? commencodes.substring(0, commencodes.length() - 1) : "";
 			}
-			ok = whareHouseToCommonService.auditCommen(commencodes, startbranchid, outbranchflag);
+			ok = whareHouseToCommonService.auditCommen(commencodes, startbranchid, outbranchflag, 0);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			ok = "系统内部错误，请检查一下omsPathUrl";
 		}
 
@@ -180,9 +184,9 @@ public class WhareHouseToCommonController {
 				}
 				commencodes = commencodes.length() > 0 ? commencodes.substring(0, commencodes.length() - 1) : "";
 			}
-			ok = whareHouseToCommonService.auditCommen(commencodes, startbranchid, outbranchflag);
+			ok = whareHouseToCommonService.auditCommen(commencodes, startbranchid, outbranchflag, 0);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			ok = "系统内部错误，请检查一下omsPathUrl";
 		}
 

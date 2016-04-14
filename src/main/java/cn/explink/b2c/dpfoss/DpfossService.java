@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.dpfoss.waybill.QueryWayBillRequest;
 import cn.explink.b2c.dpfoss.waybill.QueryWayBillResponse;
@@ -39,6 +40,7 @@ import cn.explink.dao.OrderFlowDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.MD5.MD5Util;
 
 @Service
@@ -70,6 +72,8 @@ public class DpfossService {
 	DataImportService_B2c dataImportService_B2c;
 	@Autowired
 	JointService jointService;
+	@Autowired
+	CustomerService customerService;
 
 	public String getObjectMethod(int key) {
 		JointEntity obj = jiontDAO.getJointEntity(key);
@@ -118,6 +122,7 @@ public class DpfossService {
 		return state;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Dpfoss dp = new Dpfoss();
 		String customerids = request.getParameter("customerids");
@@ -163,6 +168,7 @@ public class DpfossService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {

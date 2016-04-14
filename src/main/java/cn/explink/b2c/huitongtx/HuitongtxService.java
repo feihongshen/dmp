@@ -19,13 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.huitongtx.addressmatch.HttxEditBranch;
 import cn.explink.b2c.huitongtx.addressmatch.HttxEditBranchDAO;
-import cn.explink.b2c.huitongtx.addressmatch.MatchTypeEnum;
-import cn.explink.b2c.huitongtx.addressmatch.json.MatchData;
-import cn.explink.b2c.huitongtx.addressmatch.json.MatchResponse;
-import cn.explink.b2c.huitongtx.addressmatch.json_send.MatchResultData;
 import cn.explink.b2c.huitongtx.response.datadetail;
 import cn.explink.b2c.huitongtx.response.response;
 import cn.explink.b2c.tools.B2cEnum;
@@ -33,12 +29,11 @@ import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
-import cn.explink.b2c.tools.RestHttpServiceHanlder;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
-import cn.explink.domain.Branch;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.MD5.MD5Util;
 
@@ -63,6 +58,8 @@ public class HuitongtxService {
 	HttxEditBranchDAO httxEditBranchDAO;
 	@Autowired
 	BranchDAO branchDAO;
+	@Autowired
+	CustomerService customerService;
 
 	public static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -82,6 +79,7 @@ public class HuitongtxService {
 		return httx;
 	}
 
+	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		Huitongtx httx = new Huitongtx();
 		httx.setApp_key(request.getParameter("app_key"));
@@ -123,7 +121,7 @@ public class HuitongtxService {
 		}
 		// 保存 枚举到供货商表中
 		customerDAO.updateB2cEnumByJoint_num(customerids, oldCustomerids, joint_num);
-
+		this.customerService.initCustomerList();
 	}
 
 	public void update(int joint_num, int state) {
@@ -240,14 +238,11 @@ public class HuitongtxService {
 		try {
 			strs = jacksonmapper.writeValueAsString(resp);
 		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		logger.info(strs);

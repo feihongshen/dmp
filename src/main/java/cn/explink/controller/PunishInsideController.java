@@ -587,7 +587,7 @@ public class PunishInsideController {
 					if (cwbStr.trim().length() == 0) {
 						continue;
 					}
-					cwbs1 = cwbs1.append(quot).append(cwbStr).append(quotAndComma);
+					cwbs1 = cwbs1.append(quot).append(cwbStr.trim()).append(quotAndComma);
 				}
 			}
 			String cwbs = new String();
@@ -784,12 +784,31 @@ public class PunishInsideController {
 			punishInsideService.reviseAndReply(punishInsideReviseAndReply);
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 			return "{\"errorCode\":1,\"error\":\"修改异常,原因为:"+e.getMessage()+"\"}";
 		}
 		
 	}
 	
+	@RequestMapping("/getBranchs")
+	@ResponseBody 
+	public List<Branch> getBranchs(){
+		List<Branch> branchs = this.branchDAO.getAllEffectBranches();
+		return branchs;
+	}
+	
+	@RequestMapping("/getPenalizebigList")
+	@ResponseBody 
+	public List<PenalizeType> getPenalizebigList(){
+		List<PenalizeType> penalizebigList = this.penalizeTypeDAO.getPenalizeTypeByType(1);
+		return penalizebigList;
+	}
+	
+	@RequestMapping("/getPenalizesmallList")
+	@ResponseBody 
+	public List<PenalizeType> getPenalizesmallList(){
+		List<PenalizeType> penalizesmallList = this.penalizeTypeDAO.getPenalizeTypeByType(2);
+		return penalizesmallList;
+	} 
 }
 

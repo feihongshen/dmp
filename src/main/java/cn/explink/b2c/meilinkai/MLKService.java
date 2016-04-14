@@ -5,8 +5,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
+
 import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.interceptor.InterceptorProvider;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
@@ -18,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -25,6 +30,7 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.service.CustomerService;
 import cn.explink.util.StringUtil;
 
 import com.sun.xml.ws.api.message.Message;
@@ -39,6 +45,8 @@ public class MLKService {
 	DataImportService_B2c dataImportService_B2c;
 	@Autowired
 	DataImportDAO_B2c dataImportDAO_B2c;
+	@Autowired
+	CustomerService customerService;
 	
 	private static Logger logger = LoggerFactory.getLogger(MLKService.class);
     private static Map<String,Client> clientMap = new HashMap<String, Client>();
@@ -56,6 +64,7 @@ public class MLKService {
 	 * @param request
 	 * @param joint_num
 	 */
+	@Transactional
 	public void edit(HttpServletRequest request,int joint_num){
 		MeiLinKai meilinkai = new MeiLinKai();
 		meilinkai.setUsrename(StringUtil.nullConvertToEmptyString(request.getParameter("usrename")));
@@ -88,6 +97,7 @@ public class MLKService {
 		}
 		//保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
     
     /**

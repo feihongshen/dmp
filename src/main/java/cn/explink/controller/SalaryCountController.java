@@ -16,6 +16,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -75,6 +77,8 @@ public class SalaryCountController {
 	@Autowired
 	SalaryGatherService salaryGatherService;
 	
+	private static Logger logger = LoggerFactory.getLogger(SalaryCountController.class);
+	
 	/**
 	 * 控制查询条件时使用(线程变量)
 	 */
@@ -85,7 +89,6 @@ public class SalaryCountController {
 		return userDetail.getUser();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@RequestMapping("/list/{page}")
 	public String list(@PathVariable("page") long page,
 			@RequestParam(value = "batchid", required = false, defaultValue = "") String batchid,
@@ -221,7 +224,7 @@ public class SalaryCountController {
 			salary.setSalaryGathers(salaryGathers);
 			return JsonUtil.translateToJson(salary);
 		} catch (Exception e) {
-			e.printStackTrace();	
+			logger.error("", e);	
 			return null;
 		} 
 	}
@@ -273,7 +276,7 @@ public class SalaryCountController {
 			long counts = this.salaryGatherService.getHexiaoCounts(ids,use,dateStr,batchid);
 			return "{\"errorCode\":0,\"error\":"+counts+"}";
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("", e);	
 			return "{\"errorCode\":1,\"error\":\"核销系统异常！\"}";
 		}
 	}
@@ -369,8 +372,7 @@ public class SalaryCountController {
 				return "{\"errorCode\":0,\"error\":\"移除失败\"}";
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);	
 			return "{\"errorCode\":1,\"error\":\"系统内部异常，请排查！！\"}";
 		}
 		

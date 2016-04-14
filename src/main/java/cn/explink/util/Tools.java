@@ -40,7 +40,12 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.type.TypeFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+	
 public class Tools {
 	public final static int DB_OPERATION_MAX = 10000;
 	static ObjectMapper outMapper = new ObjectMapper();
@@ -53,6 +58,8 @@ public class Tools {
 	private static Pattern pIndex = Pattern.compile("\\[(.*?)\\]");
 	static int currNoTimes = 0;
 
+	private static Logger logger = LoggerFactory.getLogger(Tools.class);
+	
 	// 获取默认14位数字+前缀字符
 	public static String getRandomSeq(String prefix) {
 		return Tools.getRandomSeq(prefix, 1).get(0);
@@ -614,7 +621,7 @@ public class Tools {
 				responseObject = Tools.outMapper.readValue(json, clazz);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return responseObject;
 	}
@@ -629,7 +636,7 @@ public class Tools {
 
 			return Tools.mapper.writeValueAsString(obj);
 		} catch (Exception e) {
-			System.out.println("==>> Object to JSON occer error: " + e);
+			logger.error("==>> Object to JSON occer error: ", e);
 		}
 		return "{}";
 	}
@@ -831,7 +838,7 @@ public class Tools {
 			addr = InetAddress.getLocalHost();
 			ip = addr.getHostAddress().toString();// 获得本机IP
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return ip;
 	}
@@ -841,7 +848,7 @@ public class Tools {
 		Map<String, String> param = new HashMap<String, String>();
 		param.put("供应商", "唯品会");
 		param.put("小件员电话", "15601971499");
-		System.out.print(Tools.format(template, param));
+		logger.info(Tools.format(template, param));
 	}
 
 	public static String join(List<String> list, String sep) {
@@ -1138,13 +1145,20 @@ public class Tools {
 		Field[] fields = orgionClazz.getDeclaredFields();
 		for (Field field : fields) {
 			String getMethodName = "get" + field.getName().substring(0, 1).toUpperCase() + "" + field.getName().substring(1);
-			Method getMethod = orgionClazz.getDeclaredMethod(getMethodName, null);
-			getMethod.setAccessible(true);
-			Object value = getMethod.invoke(origon, null);
-			if (value != null) {
-				map.put(field.getName(), String.valueOf(value));
-			} else {
-				map.put(field.getName(), "");
+			Method getMethod = null;
+			try{
+				getMethod = orgionClazz.getDeclaredMethod(getMethodName, null);
+			}catch(NoSuchMethodException e){
+				logger.error("属性：" + field.getName() + "的get方法不存在");
+			}
+			if(null != getMethod){
+				getMethod.setAccessible(true);
+				Object value = getMethod.invoke(origon, null);
+				if (value != null) {
+					map.put(field.getName(), String.valueOf(value));
+				} else {
+					map.put(field.getName(), "");
+				}
 			}
 		}
 

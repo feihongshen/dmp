@@ -13,6 +13,8 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,11 +30,12 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
-import cn.explink.util.Tools;
 
 @Repository
 public class OrderFlowDAO {
 
+	private static Logger logger = LoggerFactory.getLogger(OrderFlowDAO.class);
+	
 	private final class OrderFlowRowMapper implements RowMapper<OrderFlow> {
 		@Override
 		public OrderFlow mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -369,6 +372,10 @@ public class OrderFlowDAO {
 	public List<OrderFlow> getOrderFlowByCwb(String cwb) {
 		return this.jdbcTemplate.query("select * from express_ops_order_flow where cwb= ?  order by  credate ASC,flowordertype asc", new OrderFlowRowMapper(), cwb);
 	}
+	
+	/*public List<OrderFlow> getOrderFlowByCwbAndCustomerid(String cwb,int customerid) {
+		return this.jdbcTemplate.query("select * from express_ops_order_flow where cwb= ?  order by  credate ASC,flowordertype asc", new OrderFlowRowMapper(), cwb);
+	}*/
 
 	public List<OrderFlow> getOrderFlowByWhere(long page, long branchid, long userid, long flowordertype, String beginemaildate, String endemaildate, long onePageNumber) {
 		String sql = "select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow ";
@@ -425,7 +432,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 		});
@@ -565,7 +572,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -665,7 +672,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -726,7 +733,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -790,7 +797,7 @@ public class OrderFlowDAO {
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -1040,7 +1047,7 @@ public class OrderFlowDAO {
 					cwbList.add(rs.getString("cwb"));
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("", e);
 				}
 			}
 
@@ -1371,5 +1378,15 @@ public class OrderFlowDAO {
 		sqlBuilder.append(" order by floworderid desc limit ?");
 		
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new OrderFlowRowMapper(), begindate,enddate, pageSize  );
+	}
+	
+	/**
+	 * 查询指定客户的订单轨迹
+	 */
+	public List<OrderFlow> getOrderFlowByCwbAndCustomerid(String cwb,long customerid) {
+		String sql="select * from express_ops_order_flow of WHERE of.cwb=? "
+				+" AND EXISTS(select 1 from express_ops_cwb_detail cd where of.cwb=cd.cwb and cd.customerid=? )"
+				+" order by  of.credate ASC,of.flowordertype asc";
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapper(), cwb , customerid);
 	}
 }

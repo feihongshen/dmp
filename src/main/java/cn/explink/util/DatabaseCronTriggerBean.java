@@ -10,10 +10,14 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.CronTriggerBean;
 
 public class DatabaseCronTriggerBean extends CronTriggerBean implements Serializable {
 
+	private static Logger logger = LoggerFactory.getLogger(DatabaseCronTriggerBean.class);
+	
 	private static final long serialVersionUID = 4980168080456291527L;
 
 	private static SchedulerFactory sf = new StdSchedulerFactory();
@@ -38,7 +42,7 @@ public class DatabaseCronTriggerBean extends CronTriggerBean implements Serializ
 	public void afterPropertiesSet() throws ParseException {
 		try {
 
-			System.out.println("自定义");
+			logger.info("自定义");
 
 			super.afterPropertiesSet();
 
@@ -49,16 +53,15 @@ public class DatabaseCronTriggerBean extends CronTriggerBean implements Serializ
 			// this.setCronExpression("0/50 * * * * ? *");
 			this.setCronExpression("0 45 11 ? * *");
 
-			System.out.println(this.getCronExpression());
+			logger.info(this.getCronExpression());
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		if (this.getCronExpression() == null) {
 			this.setCronExpression("");
 		}
-		System.out.println(this.getCronExpression());
+		logger.info(this.getCronExpression());
 	}
 
 }

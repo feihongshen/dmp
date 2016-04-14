@@ -76,14 +76,11 @@ public class WeisudaController {
 		try {
 			this.weisudaService.dealwith_fankui(datajson);
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";

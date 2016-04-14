@@ -22,6 +22,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -122,6 +124,8 @@ public class ExportwarhousesummaryController {
 	TuihuoRecordDAO tuihuoRecordDAO;
 	@Autowired
 	ComplaintDAO complaintDAO;
+	
+	private static Logger logger = LoggerFactory.getLogger(ExportwarhousesummaryController.class);
 
 	@RequestMapping("/list")
 	public String getList(Model model, HttpServletRequest request) {
@@ -303,7 +307,6 @@ public class ExportwarhousesummaryController {
 		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
 		try {
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
-				@SuppressWarnings("static-access")
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
 
@@ -373,8 +376,7 @@ public class ExportwarhousesummaryController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -572,7 +574,7 @@ public class ExportwarhousesummaryController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}
@@ -648,7 +650,7 @@ public class ExportwarhousesummaryController {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return remark;
 	}

@@ -29,16 +29,17 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.OrderArriveTimeDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.OrderArriveTime;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
-import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.StreamingStatementCreator;
 
@@ -61,6 +62,9 @@ public class OrderArriveTimeService {
 	JdbcTemplate jdbcTemplate;
 	@Produce(uri = "jms:topic:daochetime")
 	ProducerTemplate daocheProducerTemplate;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 
 	public List<OrderArriveTime> getOrderArriveTimeList(List<OrderArriveTime> oatList, List<Customer> customerList, List<Branch> branchList, List<CustomWareHouse> customerWareHouseList) {
 		List<OrderArriveTime> list = new ArrayList<OrderArriveTime>();
@@ -88,15 +92,17 @@ public class OrderArriveTimeService {
 		for (OrderArriveTime list : oatList) {
 			// 更新到车时间
 			orderArriveTimeDAO.updateOrderArriveTimeById(arrivetime, list.getId());
-
+			JSONObject json = new JSONObject();
 			try {
-				JSONObject json = new JSONObject();
 				json.put("cwb", list.getCwb());
 				json.put("time", arrivetime);
 				daocheProducerTemplate.sendBodyAndHeader(null, "daocheCwbAndTime", json.toString());
 			} catch (Exception ee) {
-
 				logger.error("send flow message error", ee);
+				//写MQ异常表
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("save")
+						.buildExceptionInfo(ee.toString()).buildTopic(this.daocheProducerTemplate.getDefaultEndpoint().getEndpointUri())
+						.buildMessageHeader("daocheCwbAndTime", json.toString()).getMqException());
 			}
 		}
 	}
@@ -207,10 +213,10 @@ public class OrderArriveTimeService {
 										cell.setCellValue(a == null ? "" : a.toString());
 										// }
 									} catch (Exception e) {
-										e.printStackTrace();
+										logger.error("", e);
 									}
 								} catch (IllegalArgumentException e) {
-									e.printStackTrace();
+									logger.error("", e);
 								}
 							}
 							count++;
@@ -220,7 +226,7 @@ public class OrderArriveTimeService {
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 	}

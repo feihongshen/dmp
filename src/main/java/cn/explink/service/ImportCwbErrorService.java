@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.explink.dao.CwbErrorDAO;
+import cn.explink.dao.MqExceptionDAO;
+import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 
 @Service
 public class ImportCwbErrorService {
@@ -18,9 +21,14 @@ public class ImportCwbErrorService {
 
 	@Autowired
 	CwbErrorDAO CwbErrorDAO;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_CWBORDERINSERT = "jms:queue:cwborderinsert";
 
-	@Consume(uri = "jms:queue:cwborderinsert")
-	public void saveError(@Header("errorOrder") String errorOrder) {
+	@Consume(uri = MQ_FROM_URI_CWBORDERINSERT)
+	public void saveError(@Header("errorOrder") String errorOrder, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		JSONObject errorJson = JSONObject.fromObject(errorOrder);
 		try {
 			String cwb = errorJson.getJSONObject("cwbOrderDTO").getString("cwb");
@@ -30,9 +38,17 @@ public class ImportCwbErrorService {
 			String message = errorJson.getString("message");
 			CwbErrorDAO.creCwbError(cwb, errorJson.toString(), emaildateid, emaildate, message);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			logger.error("error while doing import excel error order cwb:{}", errorJson.getJSONObject("cwbOrderDTO").getString("cwb"));
 			logger.error(errorOrder);
+			
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveError")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_CWBORDERINSERT)
+					.buildMessageHeader("errorOrder", errorOrder)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
@@ -45,7 +61,7 @@ public class ImportCwbErrorService {
 			String message = errorJson.getString("message");
 			CwbErrorDAO.creCwbError(cwb, errorJson.toString(), emaildateid, emaildate, message);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			logger.error("error while doing import excel error order cwb:{}", errorJson.getJSONObject("cwbOrderDTO").getString("cwb"));
 			logger.error(errorJson.toString());
 		}

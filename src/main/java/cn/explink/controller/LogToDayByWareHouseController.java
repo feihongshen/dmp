@@ -86,22 +86,39 @@ public class LogToDayByWareHouseController {
 
 	@RequestMapping("/nowlog")
 	public String nowlog(Model model, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) {
+	
 		List<Branch> kufangList = branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
+		
 		if (branchid == 0) {
+			//获取第一个库房id
 			branchid = (kufangList != null && kufangList.size() > 0) ? kufangList.get(0).getBranchid() : 0;
 		}
+		
+		//update by neo01.huang, 2016-4-5
 		String startTime = "";
-		WarehouseTodaylog warehouseTodaylog = logTodayByWarehouseDAO.getLastBranchTodayLogByWarehouseid(branchid);
-		if (warehouseTodaylog != null) {
-			startTime = warehouseTodaylog.getCteatetime();
-		} else {
-			SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("wareHouseDayLogTime");
-			if (siteDayLogTime == null || !StringUtils.hasLength(siteDayLogTime.getValue())) {
+		//获取系统参数
+		SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("wareHouseDayLogTime");
+		//系统参数不为空
+		if (siteDayLogTime != null && StringUtils.hasLength(siteDayLogTime.getValue())) {
+			startTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " " + siteDayLogTime.getValue();
+			
+		} else { //系统参数为空
+			long randomBranchid = 0;
+			if (branchid == 0) {
+				//获取第一个库房id
+				randomBranchid = (kufangList != null && kufangList.size() > 0) ? kufangList.get(0).getBranchid() : 0;
+			}
+			//获取最新一条统计log
+			WarehouseTodaylog warehouseTodaylog = logTodayByWarehouseDAO.getLastBranchTodayLogByWarehouseid(randomBranchid);
+			if (warehouseTodaylog != null) {
+				startTime = warehouseTodaylog.getCteatetime();
+				
+			} else { //找不到最新一条统计log
 				startTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
-			} else {
-				startTime = new SimpleDateFormat("yyyy-MM-dd").format(DateDayUtil.getTimeByDay(-1)) + " " + siteDayLogTime.getValue();
+				
 			}
 		}
+		
 		String endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		// 未入库
 		model.addAttribute(

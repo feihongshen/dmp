@@ -17,6 +17,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Utility to date time
  * 
@@ -24,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
  * @author Super Zhao
  */
 public class DateTimeUtil {
+	
+	private static Logger logger = LoggerFactory.getLogger(DateTimeUtil.class);
 	
 	public static final String DEF_DATE_FORMAT = "yyyy-MM-dd";
 	public static final String DEF_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -441,7 +446,7 @@ public class DateTimeUtil {
 			date = sdf.parse(param);
 			return new Date(date.getTime());
 		} catch (ParseException ex) {
-			ex.printStackTrace();
+			logger.error("",ex);
 			return null;
 		}
 	}
@@ -616,7 +621,7 @@ public class DateTimeUtil {
 	public static String getIndexStartDayZeroTime() {
 		String currentdate = getNowDate();
 		String last20date = getNeedDate(currentdate, -90);
-		System.out.println("====时间索引起始时间:====" + last20date + " 00:00:00");
+		logger.info("====时间索引起始时间:====" + last20date + " 00:00:00");
 		return last20date + " 00:00:00";
 	}
 
@@ -689,14 +694,14 @@ public class DateTimeUtil {
 					Date date = new Date(modifiedTime);
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM");
 					String dd = sdf.format(date);
-					System.out.println("File name:" + Ifile.getName() + " \tFile size: " + (double) ((double) fis.available() / 1024 / 1024) + "M" + " \tFile create Time: " + dd);
+					logger.info("File name:" + Ifile.getName() + " \tFile size: " + (double) ((double) fis.available() / 1024 / 1024) + "M" + " \tFile create Time: " + dd);
 
 				}
 			}
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 
 		return null;
@@ -722,10 +727,10 @@ public class DateTimeUtil {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("",e);
 		}
 
-		System.out.println("创建时间    " + strTime);
+		logger.info("创建时间    " + strTime);
 		return strTime;
 		// 输出：创建时间 2009-08-17 10:21
 	}
@@ -740,7 +745,7 @@ public class DateTimeUtil {
 		long time = f.lastModified();
 		cal.setTimeInMillis(time);
 		// 此处toLocalString()方法是不推荐的，但是仍可输出
-		System.out.println("修改时间[1] " + cal.getTime().toLocaleString());
+		logger.info("修改时间[1] " + cal.getTime().toLocaleString());
 		// 输出：修改时间[1] 2009-8-17 10:32:38
 	}
 
@@ -753,7 +758,7 @@ public class DateTimeUtil {
 		long time = f.lastModified();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		cal.setTimeInMillis(time);
-		System.out.println("修改时间[2] " + formatter.format(cal.getTime()));
+		logger.info("修改时间[2] " + formatter.format(cal.getTime()));
 		// 输出：修改时间[2] 2009-08-17 10:32:38
 	}
 
@@ -767,8 +772,7 @@ public class DateTimeUtil {
 		try {
 			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("",e);
 			return getNowTime();
 		}
 	}
@@ -783,8 +787,7 @@ public class DateTimeUtil {
 		try {
 			return new SimpleDateFormat("yyyy-MM-dd").format(date);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("",e);
 			return getNowTime();
 		}
 	}
@@ -799,8 +802,7 @@ public class DateTimeUtil {
 		try {
 			return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("",e);
 			return getNowTime();
 		}
 	}
@@ -815,8 +817,7 @@ public class DateTimeUtil {
 		try {
 			return new SimpleDateFormat("yyyy-MM-dd HH").format(date);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("",e);
 			return getNowTime();
 		}
 	}
@@ -845,8 +846,7 @@ public class DateTimeUtil {
 			SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			return dateFormat.parse(date).getTime();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("",e);
 			return -1;
 		}
 		
@@ -865,7 +865,7 @@ public class DateTimeUtil {
 			SimpleDateFormat sdf = new SimpleDateFormat(format);
 			parsed = sdf.parse(date);
 		} catch (ParseException ex) {
-			ex.printStackTrace();
+			logger.error("",ex);
 		}
 		
 		return parsed;
@@ -881,7 +881,7 @@ public class DateTimeUtil {
 		try {
 			return new SimpleDateFormat(format).format(date);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 			return "";
 		}
 	}
@@ -890,7 +890,7 @@ public class DateTimeUtil {
 		try {
 			return formatDate(parseDate(date, formatOld), formatNew);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("",e);
 			return "";
 		}
 	}

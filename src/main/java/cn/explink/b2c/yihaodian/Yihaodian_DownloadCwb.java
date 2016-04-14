@@ -62,12 +62,11 @@ public class Yihaodian_DownloadCwb extends YihaodianService {
 				return 1;
 			} catch (Exception e) {
 				this.logger.error("[一号店]调用数据导入接口异常!,订单List信息:" + cwbOrderList + "exptMessage=:" + e);
-				e.printStackTrace();
+				logger.error("", e);
 				return 0;
 			}
 		} catch (Exception e) {
 			this.logger.error("error info by request yihaodian download cwb detail interface!,loopcount=" + loopcount, e);
-			e.printStackTrace();
 			return 0;
 		}
 	}

@@ -14,7 +14,7 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-	<!-- <bean id="scheduledTaskService" class="cn.explink.service.ScheduledTaskService">
+	<bean id="scheduledTaskService" class="cn.explink.service.ScheduledTaskService">
 		<property name="cachedWorkers">
 			<map>
 				<entry key="save.orderFlow" value-ref="orderFlowWorker" />
@@ -36,7 +36,7 @@
 				<entry key="synaddressuserdelete" value-ref="synAddressTaskWorker" />
 			</map>
 		</property>
-	</bean> -->
+	</bean>
 
 	<!-- ===================================自动生成定时器 开始========================================== -->
 	<bean id="excuteTimmer" class="cn.explink.b2c.tools.JobUtil">
@@ -109,6 +109,9 @@
 				<ref bean="doTime_tpsOXOOrderTempToMain"/>
 				<ref bean="doTime_autoDispatchStatusTempToMain"/>
                 <ref bean="doTime_feiniuwang"/>
+                <ref bean="doTime_syncBranchInf"/>
+                <ref bean="doTime_syncUserInf"/>
+                <ref bean="mqExceptionHandler"/>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -146,6 +149,7 @@
 		<property name="targetMethod">
 			<value>getVipShopCwbTempInsert_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime1" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -165,6 +169,7 @@
 		<property name="targetMethod">
 			<value>getVipShopCwbDetail_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime2" name="xiaobao" class="cn.explink.util.DatabaseInitCronTriggerBean"
@@ -185,6 +190,7 @@
 		<property name="targetMethod">
 			<value>getTmallCwbDetailByTemp_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime3" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -204,6 +210,7 @@
 		<property name="targetMethod">
 			<value>getYihaodianCwbDetail_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 
@@ -224,6 +231,7 @@
 		<property name="targetMethod">
 			<value>getYiXunCwbDetailByTemp_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime5" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -243,6 +251,7 @@
 		<property name="targetMethod">
 			<value>RufengdaInterfaceGetDataInvoke_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime6" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -262,6 +271,7 @@
 		<property name="targetMethod">
 			<value>RufengdaInterfaceSynUserInvoke_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime7" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -281,6 +291,7 @@
 		<property name="targetMethod">
 			<value>getGome_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="doTime8" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
 		<property name="jobDetail">
@@ -299,6 +310,7 @@
 		<property name="targetMethod">
 			<value>getYangGuang_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="doTime9" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
 		<property name="jobDetail">
@@ -317,6 +329,7 @@
 		<property name="targetMethod">
 			<value>getHaoXiangGou_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime10" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -336,6 +349,7 @@
 		<property name="targetMethod">
 			<value>getAmazon_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime15" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -355,6 +369,7 @@
 		<property name="targetMethod">
 			<value>S_huobang_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime16" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -374,6 +389,7 @@
 		<property name="targetMethod">
 			<value>maikolin_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime17" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -393,6 +409,7 @@
 		<property name="targetMethod">
 			<value>HappyGo_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime_epaiAPI" class="cn.explink.util.DatabaseInitCronTriggerBean"
@@ -413,6 +430,7 @@
 		<property name="targetMethod">
 			<value>getEpaiAPI_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 <!-- leoliao 2016-02-26 暂停手动初始化任务，避免订单重复
@@ -434,6 +452,7 @@
 		<property name="targetMethod">
 			<value>updateBatcnitialThreadMap</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 -->
 
@@ -455,6 +474,7 @@
 		<property name="targetMethod">
 			<value>getZhongXingYunGou_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="doTime_mskbranchsyn" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">
@@ -474,6 +494,7 @@
 		<property name="targetMethod">
 			<value>getMskBranchSyn_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime_happigou23" class="cn.explink.util.DatabaseInitCronTriggerBean"
@@ -494,6 +515,7 @@
 		<property name="targetMethod">
 			<value>gethappygogo</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="doTime_smile" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
 		<property name="jobDetail">
@@ -512,6 +534,7 @@
 		<property name="targetMethod">
 			<value>getSmile_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 
@@ -533,6 +556,7 @@
 		<property name="targetMethod">
 			<value>getLiantongTask</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<!-- <bean id="doTime_xiaoxi" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default"> 
@@ -560,6 +584,7 @@
 		<property name="targetMethod">
 			<value>getKouKuanInfo_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime_dangdang" class="cn.explink.util.DatabaseInitCronTriggerBean"
@@ -580,6 +605,7 @@
 		<property name="targetMethod">
 			<value>getDangDang_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 
@@ -603,6 +629,7 @@
 		<property name="targetMethod">
 			<value>getChinamobile_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 
@@ -624,6 +651,7 @@
 		<property name="targetMethod">
 			<value>getYonghuics_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 
@@ -645,6 +673,7 @@
 		<property name="targetMethod">
 			<value>getDiffB2cTimmer_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 
@@ -667,6 +696,7 @@
 		<property name="targetMethod">
 			<value>getHxgdms_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="schedulerTimer" class="org.springframework.scheduling.quartz.CronTriggerBean"
@@ -683,6 +713,7 @@
 		dependency-check="default">
 		<property name="targetBean" value="scheduledTaskService" />
 		<property name="targetMethod" value="processTasks" />
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="scheduledTaskMonitorTimer" class="org.springframework.scheduling.quartz.CronTriggerBean"
@@ -714,6 +745,7 @@
 		<property name="targetMethod">
 			<value>getWangjiu_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="doTime_lechong" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">
@@ -733,6 +765,7 @@
 		<property name="targetMethod">
 			<value>getLeChong_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="doTime_zhongliang" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">
@@ -752,6 +785,7 @@
 		<property name="targetMethod">
 			<value>getZhongliang_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime_homegobj" class="cn.explink.util.DatabaseInitCronTriggerBean"
@@ -772,6 +806,7 @@
 		<property name="targetMethod">
 			<value>getHomegobj_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<bean id="doTime_homegobj1" class="cn.explink.util.DatabaseInitCronTriggerBean"
@@ -792,11 +827,12 @@
 		<property name="targetMethod">
 			<value>getHomegobj1_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
-    <!--  <jaxws:endpoint id="buildOrder" implementor="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl" address="/buildOrder" />
-		<bean name="WebServiceServerByLechongImpl" class="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl">
-			
-		</bean> -->
+    <jaxws:endpoint id="buildOrder" implementor="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl" address="/buildOrder" />
+	<bean name="WebServiceServerByLechongImpl" class="cn.explink.b2c.lechong.ws.WebServiceServerByLechongImpl">
+	
+	</bean>
 	<bean id="scheduledTaskMonitorTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean"
 		dependency-check="default">
 		<property name="targetBean" value="monitorService" />
@@ -818,6 +854,7 @@
 		<property name="targetMethod">
 			<value>getSfxhm_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 
@@ -840,6 +877,7 @@
 		<property name="targetMethod">
 			<value>getWenxuan_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="doTime_deleteFlow" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">
@@ -859,6 +897,7 @@
 		<property name="targetMethod">
 			<value>deleteflowlog_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 
 	<!-- 唯品会OXO模式销售订单抓取定时器 开始 -->
@@ -880,6 +919,7 @@
 		<property name="targetMethod">
 			<value>getVipShopOXOTask</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<!-- 唯品会OXO模式销售订单抓取定时器 结束 -->
 
@@ -902,6 +942,7 @@
 		<property name="targetMethod">
 			<value>getVipShopOXOPickStateTask</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<!-- 抓取唯品会OXO订单揽件状态定时器 结束 -->
 	<!-- 快递模式预订单数据抓取定时器 开始 -->
@@ -923,6 +964,7 @@
 		<property name="targetMethod">
 			<value>getPjwlExpressPreOrderTask</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<!-- 快递模式预订单数据抓取定时器 结束 -->
 
@@ -946,6 +988,7 @@
 		<property name="targetMethod">
 			<value>getPjwlExpressTransNoTask</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<!-- 快递模式运单数据抓取定时器 结束 -->
 	<!-- 请求唯品会OXO提货任务反馈接口定时器 开始 -->
@@ -967,6 +1010,7 @@
 		<property name="targetMethod">
 			<value>sendVipShopOXOJITFeedbackTask</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<!-- 请求唯品会OXO提货任务反馈接口定时器 结束 -->
 	<!-- 对内扣罚自动审核开始 -->
@@ -988,6 +1032,7 @@
 		<property name="targetMethod">
 			<value>sendPunishInsideAutoShenheTask</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<!-- 对内扣罚自动审核 结束 -->
 	<!--广州通路临时表到主表 -->
@@ -1007,6 +1052,7 @@
 		<property name="targetMethod">
 			<value>getGztlCwbDetail_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<!--结束 -->
 
@@ -1026,6 +1072,7 @@
 		<property name="targetMethod">
 			<value>getJiuYe_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<bean id="doTime_guangxindianxin" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">
@@ -1045,6 +1092,7 @@
 		<property name="targetMethod">
 			<value>getGuangXinDianXin</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	 <!-- 飞牛网定时任务临时表主表 --> 
      <bean id="doTime_feiniuwang" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -1063,6 +1111,7 @@
          <property name="targetMethod">
              <value>getFeiNiuWang_Task</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      
       <!-- 环球购物 -->
@@ -1082,6 +1131,7 @@
          <property name="targetMethod">
              <value>getHuanQiuGouWu_Task</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      
      <bean id="doTime_yonghui" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -1100,6 +1150,7 @@
          <property name="targetMethod">
              <value>getYongHui_Task</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>  
      
      <bean id="doTime_suning" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
@@ -1117,6 +1168,7 @@
          <property name="targetMethod">
              <value>getSuNing_Task</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      
 	<!-- 订单生命周期报表生成任务 开始 -->
@@ -1138,6 +1190,7 @@
 		<property name="targetMethod">
 			<value>generateOrderLifeCycleReport</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	<!-- 订单生命周期报表生成任务 结束 -->
 	
@@ -1158,6 +1211,7 @@
 		<property name="targetMethod">
 			<value>getPinhaohuo_Task</value>
 		</property>
+		<property name="concurrent" value="false" />
 	</bean>
 	
 	  <!-- 从TPS获取物流状态任务  开始 -->
@@ -1177,6 +1231,7 @@
          <property name="targetMethod">
              <value>getCarrierOrderStatus_Task</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      <!-- 从TPS获取物流状态任务  结束 -->
 	
@@ -1207,6 +1262,7 @@
          <property name="targetMethod">
              <value>getOXOCwbTempInsert_Task</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      <!-- TPS自动化订单临时表数据转转主表任务  结束-->
      
@@ -1227,6 +1283,7 @@
          <property name="targetMethod">
              <value>getAutoDispatchStatus_Task</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      <!-- TPS自动化分拣状态临时表数据转转主表任务  结束-->
 
@@ -1246,6 +1303,7 @@
          <property name="targetMethod">
              <value>createBackTimeLog</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      <!-- 退货中心出入库跟踪表日志 end-->
      
@@ -1265,6 +1323,7 @@
          <property name="targetMethod">
              <value>dailyDayLogByTuihuoGenerate</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      <!-- 退货日志 end-->
      
@@ -1284,6 +1343,7 @@
          <property name="targetMethod">
              <value>dailyDayLogByWareHouseGenerate</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      <!-- 库房日志 end-->
 
@@ -1303,6 +1363,7 @@
          <property name="targetMethod">
              <value>dailyDayLogGenerate</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
      <!-- 站点日志 end-->
 
@@ -1324,6 +1385,7 @@
          <property name="targetMethod">
              <value>getZheMeng_Task</value>
          </property>
+         <property name="concurrent" value="false" />
      </bean>
 	     
      <bean id="doTime_sendFlowTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
@@ -1333,5 +1395,67 @@
          <property name="targetMethod">
              <value>setFlowExp</value>
          </property>
+         <property name="concurrent" value="false" />
+     </bean>     
+     
+     <bean id="doTime_syncBranchInf" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="syncBranchInf" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+      </bean>     
+     <bean id="syncBranchInf" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>syncBranchInf_Task</value>
+         </property>
+         <property name="concurrent" value="false" />
      </bean>
+     
+     <bean id="doTime_syncUserInf" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="syncUserInf" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+      </bean>     
+     <bean id="syncUserInf" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>syncUserInf_Task</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
+     
+     <!-- MQ 异常处理 定时器   配置开始 --> 
+     <bean id="mqExceptionHandler" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="mqExceptionHandlerBean" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="mqExceptionHandlerBean" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>mqExceptionHandlerService</value>
+         </property>
+         <property name="targetMethod">
+             <value>execute</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
+     
+     <bean id="mqExceptionHandlerService" class="cn.explink.b2c.tools.MqExceptionHandlerUtil">
+	</bean>
+	
+	<!-- MQ 异常处理 定时器   配置结束--> 
 </beans>

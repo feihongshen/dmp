@@ -1183,6 +1183,18 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 是否存在这个订单在正式表
+	 */
+	public boolean isExistByCwb(String cwb) {
+		String sql = " select count(1) from express_ops_cwb_detail where cwb = ?";
+		int count = jdbcTemplate.queryForObject(sql, new Object[] { cwb }, Integer.class);
+		if (count >= 1) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * 原来使用了select 。。。 for update来锁行。但是cwb不是主键,所以锁表了。若此时有大量的关于订单的操作,尤其
@@ -1199,15 +1211,15 @@ public class CwbDAO {
 	 */
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
-//			return this.jdbcTemplate
-//					.queryForObject(
-//							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
-//							new CwbMapper(), cwb);
-			
 			return this.jdbcTemplate
 					.queryForObject(
-							"SELECT * from express_ops_cwb_detail where cwb=? and state=1",
+							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
 							new CwbMapper(), cwb);
+//			暂时恢复悲观锁，观察中 //TODO
+//			return this.jdbcTemplate
+//					.queryForObject(
+//							"SELECT * from express_ops_cwb_detail where cwb=? and state=1",
+//							new CwbMapper(), cwb);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -1919,6 +1931,7 @@ public class CwbDAO {
 	private String getChangeGoodsTypeSqInParam(String[] cwbArray) {
 		StringBuilder sqlInParam = new StringBuilder();
 		for (String cwb : cwbArray) {
+			cwb = cwb.trim();
 			sqlInParam.append("'");
 			sqlInParam.append(cwb);
 			sqlInParam.append("',");
@@ -7933,8 +7946,7 @@ public class CwbDAO {
 			this.jdbcTemplate.batchUpdate(sql,
 					this.getOutAreaParaList(cwbs, branchMap));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -8194,8 +8206,7 @@ public class CwbDAO {
 		try {
 			list = this.jdbcTemplate.query(sql.toString(), new CwbMapper());
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 		return list;
 	}
@@ -8478,7 +8489,7 @@ public class CwbDAO {
 					+ cwbs + ") and state=1";
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 	}
@@ -8513,7 +8524,7 @@ public class CwbDAO {
 			String sql = "select * from  express_ops_cwb_detail  where cwb=? and state=1";
 			return this.jdbcTemplate.queryForObject(sql, new CwbMapper(), cwb);
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 	}
@@ -8702,9 +8713,13 @@ public class CwbDAO {
 		try {
 			String sql = "select * from express_ops_cwb_detail where cwb in("
 					+ cwbsStr + ") and state=1";
+
+			if(cwbsStr!=null && cwbsStr.startsWith("(") && cwbsStr.endsWith(")")) { //如果已有括号会报错
+				sql = "select * from express_ops_cwb_detail where cwb in " + cwbsStr + " and state=1";
+			}
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 	}
@@ -9266,7 +9281,7 @@ public class CwbDAO {
 					+ cwbIdsStr + ") and state=1";
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 			return null;
 		}
 	}
@@ -9516,4 +9531,23 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, flowOrderType, cwb);
 	}
 
+	/**
+	 * 更新发货时间
+	 * @author leo01.liao
+	 * @param cwb
+	 * @param emaildate
+	 * @return
+	 */
+	public int updateEmaildate(String cwb, String emaildate) {
+		if(cwb == null || cwb.trim().equals("") || emaildate == null || emaildate.trim().equals("")){
+			return 0;
+		}
+		String sql = "update express_ops_cwb_detail set emaildate ='" + emaildate + "' where cwb = ?";
+		return this.jdbcTemplate.update(sql, cwb);
+	}
+	
+	public List<CwbOrder> getCwbOrderListByStatusAndCustomerId(long flowordertype,long customerid,long maxCount) {/*state=1*/
+		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  WHERE state=1 AND customerid=? AND flowordertype=? "
+				+ " and deliverybranchid>0 ORDER BY opscwbid LIMIT 0,?  ", new CwbMapper(),customerid,flowordertype,maxCount);
+	}
 }

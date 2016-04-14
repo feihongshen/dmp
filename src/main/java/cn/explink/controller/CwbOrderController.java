@@ -32,7 +32,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -117,6 +116,7 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
+import cn.explink.util.TuiGongHuoShangPage;
 
 @RequestMapping("/cwborder")
 @Controller
@@ -356,9 +356,9 @@ public class CwbOrderController {
 		Date date = new Date();
 		String printtime = df.format(date);
 		for (CwbOrder c : clist) {
-			this.cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
-			this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);
-
+			/*this.cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
+			this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);*/
+			cwborderService.updatePrinttimeState(c,printtime);
 		}
 		List<Customer> customerlist = this.customerDao.getAllCustomers();
 
@@ -380,8 +380,9 @@ public class CwbOrderController {
 		Date date = new Date();
 		String printtime = df.format(date);
 		for (CwbOrder c : clist) {
-			this.cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
-			this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);
+			cwborderService.updatePrinttimeState(c,printtime);
+			/*this.cwbDao.saveCwbForPrinttime(c.getCwb(), printtime);
+			this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(c.getCwb(), printtime);*/
 		}
 		List<Customer> customerlist = this.customerDao.getAllCustomers();
 		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
@@ -586,6 +587,7 @@ public class CwbOrderController {
 					if (cwbstr[i].trim().length() == 0) {
 						continue;
 					}
+					cwbstr[i] = cwbstr[i].trim();
 					if (!cwbStrList.contains(cwbstr[i])) {
 						cwbStrList.add(cwbstr[i]);
 					}
@@ -775,6 +777,7 @@ public class CwbOrderController {
 				if (cwb[i].trim().length() == 0) {
 					continue;
 				}
+				cwb[i] = cwb[i].trim();
 				cwbsBuffer.append("'").append(cwb[i]).append("'");
 				if (i < (cwb.length - 1)) {
 					cwbsBuffer.append(",");
@@ -862,6 +865,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				allScanList.add(cwbStr);
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
@@ -929,6 +933,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -999,6 +1004,7 @@ public class CwbOrderController {
 			if (cwbStr.trim().length() == 0) {
 				continue;
 			}
+			cwbStr = cwbStr.trim();
 			String lastcwb = this.cwborderService.translateCwb(cwbStr);
 			cwbs = cwbs.append("'").append(lastcwb).append("',");
 			CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -1049,7 +1055,7 @@ public class CwbOrderController {
 					}
 					this.logger.info("{} 成功", reason);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.error("{} 失败", reason);
 				}
 			} else {
@@ -1111,7 +1117,7 @@ public class CwbOrderController {
 				successCount++;
 				failureCount--;
 			} catch (Exception e) {
-				e.printStackTrace();
+				this.logger.error("", e);
 				errMsg = "订单号：" + map.get("cwb") + ",失败原因：" + e.getMessage() + "\n";
 			}
 		}
@@ -1124,7 +1130,7 @@ public class CwbOrderController {
 				successCount++;
 				failureCount--;
 			} catch (Exception e) {
-				e.printStackTrace();
+				this.logger.error("", e);
 				errMsg = "订单号：" + cwbTemp.getCwb() + ",失败原因：" + e.getMessage() + "\n";
 			}
 		}
@@ -1160,6 +1166,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -1194,7 +1201,7 @@ public class CwbOrderController {
 	@RequestMapping("/toTuiGongHuoShangSuccess/{page}")
 	public String toTuiGongHuoShangSuccess(Model model, HttpServletRequest request, @PathVariable(value = "page") long page, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb, @RequestParam(value = "cwbtypeid", defaultValue = "0", required = false) int cwbtypeid, @RequestParam(value = "customerid", defaultValue = "0", required = false) long customerid, @RequestParam(value = "shenhestate", defaultValue = "-1", required = false) long shenhestate, @RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "enddate", defaultValue = "", required = false) String enddate, @RequestParam(value = "isnow", defaultValue = "0", required = false) int isnow) {
 
-		Page pag = new Page();
+		TuiGongHuoShangPage pag = new TuiGongHuoShangPage();
 		//List<Branch> branchList = this.branchDAO.getQueryBranchByBranchidAndUserid(this.getSessionUser().getUserid(), BranchEnum.ZhanDian.getValue());
 		List<Customer> customerList = this.customerDao.getAllCustomers();
 		//model.addAttribute("branchList", branchList);
@@ -1206,6 +1213,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				cwbs = cwbs.append("'").append(cwbStr).append("',");
 			}
 			cwbss = cwbs.substring(0, cwbs.length() - 1);
@@ -1216,7 +1224,8 @@ public class CwbOrderController {
 			if (!(cwb.equals("") && begindate.equals(""))) {
 				orList = this.orderbackRecordDao.getCwbOrdersByCwbspage(page, cwbss, cwbtypeid, customerid, shenhestate, begindate, enddate);
 				long count = this.orderbackRecordDao.getCwbOrdersByCwbsCount(cwbss, cwbtypeid, customerid, shenhestate, begindate, enddate);
-				pag = new Page(count, page, Page.ONE_PAGE_NUMBER);
+//				pag = new Page(count, page, Page.ONE_PAGE_NUMBER);//原来pagesize为10
+				pag = new TuiGongHuoShangPage(count, page, TuiGongHuoShangPage.ONE_PAGE_NUMBER);//新需求修改为100
 
 				StringBuffer sb = new StringBuffer();
 				if (orList.size() > 0) {
@@ -1234,6 +1243,7 @@ public class CwbOrderController {
 				covList = this.cwborderService.getTuigongSuccessCwbOrderView(coList, orList, customerList);//获取分页查询的view
 			}
 		}
+		pag.setCurrentPageRows(covList.size());
 		model.addAttribute("page", page);
 		model.addAttribute("page_obj", pag);
 		model.addAttribute("customerList", customerList);
@@ -1304,6 +1314,7 @@ public class CwbOrderController {
 		if (cwb.length() > 0) {
 			List<Customer> cList = this.customerDao.getAllCustomers();
 			for (String cwbStr : cwb.split("\r\n")) {
+				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDao.getCwbByCwb(cwbStr);
 				if (co != null) {
 					Customer customer = this.getCustomer(co.getCustomerid(), cList);
@@ -1349,6 +1360,7 @@ public class CwbOrderController {
 		if (cwb.length() > 0) {
 			List<Customer> cList = this.customerDao.getAllCustomers();
 			for (String cwbStr : cwb.split("\r\n")) {
+				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDao.getCwbByCwb(cwbStr);
 				if (co != null) {
 					Customer customer = this.getCustomer(co.getCustomerid(), cList);
@@ -1394,6 +1406,7 @@ public class CwbOrderController {
 		if (cwb.length() > 0) {
 			List<Customer> cList = this.customerDao.getAllCustomers();
 			for (String cwbStr : cwb.split("\r\n")) {
+				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDao.getCwbByCwb(cwbStr);
 				if (co != null) {
 					Customer customer = this.getCustomer(co.getCustomerid(), cList);
@@ -1464,6 +1477,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -1523,7 +1537,7 @@ public class CwbOrderController {
 					}
 					this.logger.info("{} 成功", reason);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.error("{} 失败", reason);
 				}
 			} else {
@@ -1569,7 +1583,7 @@ public class CwbOrderController {
 					}
 					this.logger.info("{} 成功", reason);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.error("{} 失败", reason);
 				}
 			} else {
@@ -1698,7 +1712,7 @@ public class CwbOrderController {
 					}
 					this.logger.info("{} 成功", reason);
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.logger.error("", e);
 					this.logger.error("{} 失败", reason);
 				}
 			} else {
@@ -1727,6 +1741,7 @@ public class CwbOrderController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			JSONObject obj = new JSONObject();
 			obj.put("cwb", cwb);
 			try {// 成功订单
@@ -1849,6 +1864,7 @@ public class CwbOrderController {
 				if (cwb.trim().length() == 0) {
 					continue;
 				} else {
+					cwb = cwb.trim();
 					str.append("'" + cwb + "',");
 				}
 			}
@@ -2069,7 +2085,7 @@ public class CwbOrderController {
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			this.logger.error("", e);
 		}
 	}
 
@@ -2377,6 +2393,7 @@ public class CwbOrderController {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
+			cwb = cwb.trim();
 			if (cwb.length() > 0) {
 				cwbsSqlBuffer = cwbsSqlBuffer.append(s).append(cwb).append(s1);
 			}
@@ -2454,6 +2471,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				String lastcwb = this.cwborderService.translateCwb(cwbStr);
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
@@ -2566,6 +2584,7 @@ public class CwbOrderController {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
+				cwbStr = cwbStr.trim();
 				cwbs = cwbs.append("'").append(cwbStr).append("',");
 			}
 			cwbss = cwbs.substring(0, cwbs.length() - 1);

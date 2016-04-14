@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.explink.b2c.jiuye.jsondto.JiuYe_request;
 import cn.explink.b2c.jiuye.jsondto.JiuYe_response;
 import cn.explink.b2c.jiuye.jsondto.SubCode;
@@ -22,6 +27,7 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.CustomerService;
 import cn.explink.util.B2cUtil;
 import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
@@ -38,12 +44,14 @@ public class JiuYeService {
 	CustomerDAO customerDAO;
 	@Autowired
 	B2cUtil b2cUtil;
-	
+	@Autowired
+	CustomerService customerService;
 	
 	private Logger logger =LoggerFactory.getLogger(JiuYe.class);
 	public void update(int joint_num,int state){
 		this.jiontDAO.UpdateState(joint_num, state);
 	}
+	@Transactional
 	public void edit(HttpServletRequest request,int joint_num){
 		JiuYe dms=new JiuYe();
 		String customerid=request.getParameter("customerid");
@@ -77,6 +85,7 @@ public class JiuYeService {
 		}
 		//保存 枚举到供货商表中
 		this.customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
+		this.customerService.initCustomerList();
 	}
 	
 	/**

@@ -165,8 +165,12 @@ public class WeisudaService {
 		String customers = StringUtil.nullConvertToEmptyString(request.getParameter("customers"));
 		String openbatchflag = request.getParameter("openbatchflag");
 		String maxBoundCount = request.getParameter("maxBoundCount");
-		String isSend = request.getParameter("isSend");
-
+		String changeBranchcode = request.getParameter("changeBranchcode");
+		String isSend = StringUtil.nullConvertToEmptyString(request.getParameter("isSend"));
+		if(isSend==null||isSend.length()<1){
+			isSend="0";
+		}
+		
 		weisuda.setCode(code);
 		weisuda.setV(v);
 		weisuda.setSecret(secret);
@@ -188,6 +192,7 @@ public class WeisudaService {
 		weisuda.setOpenbatchflag(Integer.valueOf(openbatchflag));
 		weisuda.setMaxBoundCount(Integer.valueOf(maxBoundCount));
 		weisuda.setCustomers(customers);
+		weisuda.setChangeBranchcode(Integer.valueOf(changeBranchcode));
 		weisuda.setIsSend(Integer.valueOf(isSend));
 		JSONObject jsonObj = JSONObject.fromObject(weisuda);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
@@ -229,20 +234,24 @@ public class WeisudaService {
 
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(orderFlowDto.getCwb());
 
-		BigDecimal pos = BigDecimal.ZERO;
-		BigDecimal check = BigDecimal.ZERO;
-		BigDecimal cash = BigDecimal.ZERO;
-		BigDecimal other = BigDecimal.ZERO;
-		BigDecimal paybackedfee = BigDecimal.ZERO;
-		BigDecimal codpos = BigDecimal.ZERO;
+		BigDecimal pos = BigDecimal.ZERO; //POS
+		BigDecimal check = BigDecimal.ZERO; //支票
+		BigDecimal cash = BigDecimal.ZERO; //现金
+		BigDecimal other = BigDecimal.ZERO; //其他
+		BigDecimal paybackedfee = BigDecimal.ZERO; //上门退货应退金额
+		BigDecimal codpos = BigDecimal.ZERO; //COD扫码支付
 
+		//获取配送状态
 		long podresultid = Long.valueOf(orderFlowDto.getDeliverystate());
 		// podresultid = this.getPodresultid(podresultid, cwbOrder);
-
+		
+		//获取配送状态对象
 		DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(orderFlowDto.getCwb());
 
+		//配送状态描述
 		String deliverstateremark = "系统对接" + "(" + orderFlowDto.getPayremark() + ")";
 
+		//订单{}不满足支付条件，deliverystate表为空
 		if (deliverystate == null) {
 			this.logger.info("订单{}不满足支付条件，deliverystate表为空", deliverystate);
 			return;
@@ -254,13 +263,29 @@ public class WeisudaService {
 			this.cwbOrderService.deliverStatePodCancel(orderFlowDto.getCwb(), deliverystate.getDeliverybranchid(), deliverystate.getDeliveryid(), "运单撤销", 0);
 			return;
 		}
+		/**
+		 * 如果系统订单当前的反馈结果是以下几种的（配送成功，拒收，上门退成功，上门拒退），不再处理品骏达反馈回来的信息。
+		 * added by zhouguoting 2016/3/16 解决反馈状态重复问题
+		 */
+		if(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() || 
+				deliverystate.getDeliverystate() == DeliveryStateEnum.JuShou.getValue() || 
+				deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue() ||
+				deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenJuTui.getValue()){
+			this.logger.info("订单已是最终状态，不接收外部系统任何反馈信息，对接结果={},对接报文={}" , DeliveryStateEnum.getByValue((int)podresultid).getText(), datajson);
+			return;
+		}
+		
 		String remark5 = "";
+		
+		//配送状态：上门退成功 or 订单类型：上门退 ==>应退款
 		if ((podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) || (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue())) { // 应退款
 			pos = BigDecimal.ZERO;
 			cash = BigDecimal.ZERO;
 			check = BigDecimal.ZERO;
 			other = BigDecimal.ZERO;
 			codpos = BigDecimal.ZERO;
+			
+			//配送状态：上门换成功 or 配送状态：上门退成功 ==>设置应退款
 			if ((podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 				paybackedfee = deliverystate.getBusinessfee();
 				remark5 = cwbOrder.getRemark5();
@@ -275,36 +300,56 @@ public class WeisudaService {
 
 			}
 
+		//配送状态：配送成功 or 配送状态：上门换成功 ==>应收款
 		} else if ((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue())) { // 应收款
 			SystemInstall isToCash = this.systemInstallDAO.getSystemInstallByName("isToCash");
+			
+			//转换到现金
 			if ((isToCash != null) && isToCash.getValue().equals("yes")) {
 				cash = deliverystate.getBusinessfee();
-			} else {
+				
+			} else { 
 
+				// deliverstateremark+="-pos签收";
 				if (orderFlowDto.getPaytype() == PaytypeEnum.Pos.getValue()) {
 					pos = deliverystate.getBusinessfee();
-					// deliverstateremark+="-pos签收";
+				
+				// deliverstateremark+="-现金签收";
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Xianjin.getValue()) {
 					cash = deliverystate.getBusinessfee();
-					// deliverstateremark+="-现金签收";
+				
+				// deliverstateremark+="-支票签收";
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Zhipiao.getValue()) {
 					check = deliverystate.getBusinessfee();
-					// deliverstateremark+="-支票签收";
+				
+				// deliverstateremark+="-其他方式签收";
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.Qita.getValue()) {
 					other = deliverystate.getBusinessfee();
-					// deliverstateremark+="-其他方式签收";
+				
+				// deliverstateremark+="-支票签收";
 				} else if (orderFlowDto.getPaytype() == PaytypeEnum.CodPos.getValue()) {
 					codpos = deliverystate.getBusinessfee();
-					// deliverstateremark+="-支票签收";
+					
 				} else {
+					
+					//原支付方式 
+					//现金
 					if (cwbOrder.getPaywayid() == PaytypeEnum.Xianjin.getValue()) {
 						cash = deliverystate.getBusinessfee();
+					
+					//pos
 					} else if (cwbOrder.getPaywayid() == PaytypeEnum.Pos.getValue()) {
 						pos = deliverystate.getBusinessfee();
+					
+					//支票
 					} else if (cwbOrder.getPaywayid() == PaytypeEnum.Zhipiao.getValue()) {
 						check = deliverystate.getBusinessfee();
+					
+					//其他
 					} else if (cwbOrder.getPaywayid() == PaytypeEnum.Qita.getValue()) {
 						other = deliverystate.getBusinessfee();
+					
+					//COD扫码支付
 					} else if (cwbOrder.getPaywayid() == PaytypeEnum.CodPos.getValue()) {
 						codpos = deliverystate.getBusinessfee();
 					}
@@ -312,10 +357,11 @@ public class WeisudaService {
 			}
 		}
 
-		long backedreasonid = 0;
-		long leavedreasonid = 0;
-		long firstlevelreasonid = 0;
+		long backedreasonid = 0; //退货原因id
+		long leavedreasonid = 0; //滞留原因id
+		long firstlevelreasonid = 0; //一级原因id
 
+		//配送状态：拒收 or 配送状态：上门据退 or 配送状态：部分退货 ==>设置退货原因
 		if ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
 			deliverstateremark += "-" + orderFlowDto.getExptmsg();
 			if ((orderFlowDto.getExptmsg() != null) && !orderFlowDto.getExptmsg().isEmpty()) {
@@ -327,6 +373,8 @@ public class WeisudaService {
 
 			}
 		}
+		
+		//配送状态：分站滞留 ==>设置滞留原因、一级原因
 		if (podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) {
 
 			deliverstateremark += "-" + orderFlowDto.getStrandedrReason();
@@ -343,17 +391,21 @@ public class WeisudaService {
 			}
 		}
 
+		//小件员userid
 		long deliverid = deliverystate.getDeliveryid();
-		long infactDeliverid = 0;
+		long infactDeliverid = 0; //实际小件员userid
 		try {
+			//通过姓名获取user
 			User user = this.userDAO.getUserByUsernameToUpper(orderFlowDto.getDeliveryname().toUpperCase());
 			if (user == null) {
 				user = this.userDAO.getUserByUsername(orderFlowDto.getDeliveryname());
 			}
 			infactDeliverid = user.getUserid();
+			//如果实际小件员userid 与 小件员userid不一致，更新配送状态为实际小件员userid
 			if ((infactDeliverid != deliverid) && (infactDeliverid != 0)) {
 				deliverid = infactDeliverid;
 				this.deliveryStateDAO.updateDeliveryidByCwb(deliverid, user.getBranchid(), deliverystate.getCwb());
+				//领货时变更了领货小件员要同时更改deliverycash表中的关于小件员的信息
 				this.deliveryCashDAO.saveDeliveryCashByDeliverystateid(deliverid, user.getBranchid(), orderFlowDto.getRequestTime(), deliverystate.getId());
 				deliverystate.setDeliverybranchid(user.getBranchid());
 				deliverystate.setDeliveryid(deliverid);
@@ -394,6 +446,7 @@ public class WeisudaService {
 		String newcwbremark = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + orderFlowDto.getCwbremark();
 		newcwbremark = this.subCwbRemark(oldcwbremark + newcwbremark);
 		try {
+			//修改客户备注信息
 			this.cwbDAO.updateCwbRemark(orderFlowDto.getCwb(), newcwbremark);
 			cwbOrder.setCwbremark(newcwbremark);
 
@@ -403,23 +456,36 @@ public class WeisudaService {
 		}
 		parameters.put("nosysyemflag", "1");//
 
+		//通过小件员userid获取user
 		User user = this.userDAO.getAllUserByid(deliverid);
 
+		//订单类型：配送
 		if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
-			String Sign_Remark;
-			int Sign_Self_Flag;
+			String Sign_Remark; //签收remark
+			int Sign_Self_Flag; //签收flag
+			
+			//orderFlow的收件人 与 订单中的收件人一致 ==>本人签收
 			if (orderFlowDto.getConsignee().trim().equals(cwbOrder.getConsigneename().trim())) {
 				Sign_Self_Flag = SignTypeEnum.BenRenQianShou.getValue();
 				Sign_Remark = SignTypeEnum.BenRenQianShou.getSign_text();
-			} else {
+				
+			} else {//orderFlow的收件人 与 订单中的收件人不一致 ==>他人签收
 				Sign_Self_Flag = SignTypeEnum.TaRenDaiQianShou.getValue();
 				Sign_Remark = SignTypeEnum.TaRenDaiQianShou.getSign_text();
 			}
+			
+			//支付方式：pos
 			if (orderFlowDto.getPaytype() == PaytypeEnum.Pos.getValue()) {
+				
+				//保存pos交易记录
 				boolean flag = this.posPayDAO.save_PosTradeDetailRecord(cwbOrder.getCwb(), posremark, Double.valueOf(cwbOrder.getReceivablefee() + ""), deliverid, orderFlowDto.getPaytype(), "",
 						orderFlowDto.getConsignee(), Sign_Self_Flag, Sign_Remark, 4, 1, "", PosEnum.Weisuda.getMethod(), 0, "");
 				this.logger.info("唯速达签收交易-记录posPayDetail表" + flag + "! 订单号:{}", cwbOrder.getCwb());
+				//更新正向订单的deliverystate, added by neo01.huang
+				cwborderService.updateForwardOrderDeliveryState(cwbOrder.getCwbordertypeid(), cwbOrder.getCwb(), DeliveryStateEnum.PeiSongChengGong.getValue());
 			}
+		
+		//订单类型：上门退 ==>更新自动化分拣项目商品信息表
 		} else if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
 			List<OrderGoods> orderGoods = this.orderGoodsDAO.getOrderGoodsList(orderFlowDto.getCwb());
 			Goods goods = JacksonMapper.getInstance().readValue(orderFlowDto.getReamrk1(), Goods.class);
@@ -437,8 +503,12 @@ public class WeisudaService {
 				this.orderPartGoodsReturnService.updateOrderGoods(orderGoods);
 			}
 		}
+		//单票结果反馈
 		this.cwborderService.deliverStatePod(user, orderFlowDto.getCwb(), orderFlowDto.getCwb(), parameters);
-		this.cwbDAO.updateCwbRemarkPaytype(orderFlowDto.getCwb(), remark5);
+		if(!"".equals(remark5)){
+			//更新订单remark5
+			this.cwbDAO.updateCwbRemarkPaytype(orderFlowDto.getCwb(), remark5);
+		}
 	}
 
 	/*

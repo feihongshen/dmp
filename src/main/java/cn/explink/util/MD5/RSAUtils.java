@@ -15,15 +15,19 @@ import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
 
+
 import org.apache.commons.codec.binary.Base64;
 
-//import sun.misc.BASE64Decoder;
-//import sun.misc.BASE64Encoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.explink.b2c.rufengda.Rufengda;
 
 
 public class RSAUtils {
 
+	private static Logger logger = LoggerFactory.getLogger(RSAUtils.class);
+	
 	/**
 	 * modulePuk 公钥module节点 exponentPublic 公钥Exponent节点
 	 * 
@@ -61,9 +65,9 @@ public class RSAUtils {
 			KeyFactory fact = KeyFactory.getInstance("RSA");
 			pubKey = fact.generatePublic(rsaPubKey);
 		} catch (InvalidKeySpecException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return pubKey;
 	}
@@ -86,9 +90,9 @@ public class RSAUtils {
 			KeyFactory fact = KeyFactory.getInstance("RSA");
 			priKey = fact.generatePrivate(rsaPriKey);
 		} catch (InvalidKeySpecException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return priKey;
 	}
@@ -119,11 +123,11 @@ public class RSAUtils {
 //			return base64en.encode(sign.sign());
 			return new String(Base64.encodeBase64(sign.sign()));
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (InvalidKeyException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (SignatureException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 		return null;
 	}
@@ -160,11 +164,11 @@ public class RSAUtils {
 				ret = true;
 			}
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (InvalidKeyException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		} catch (SignatureException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		return ret == false ? true : ret;

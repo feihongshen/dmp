@@ -18,11 +18,13 @@ import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.DeleteCwbDAO;
 import cn.explink.dao.DeleteCwbRecordDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.OrderArriveTimeDAO;
 import cn.explink.domain.AccountCwbFare;
 import cn.explink.domain.AccountCwbFareDetail;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeleteCwbRecord;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 
 @Service
@@ -44,6 +46,9 @@ public class DeleteCwbService {
 
 	@Produce(uri = "jms:topic:losecwb")
 	ProducerTemplate losecwbProducerTemplate;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 
 	/**
 	 * 数据删除功能
@@ -177,6 +182,11 @@ public class DeleteCwbService {
 			losecwbProducerTemplate.sendBodyAndHeader(null, "cwbAndUserid", cwb + "," + userid);
 		} catch (Exception ee) {
 			logger.info("数据删除功能，cwb：{},error:{}", cwb, ee);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("loseCwbSendJMS")
+					.buildExceptionInfo(ee.toString()).buildTopic(this.losecwbProducerTemplate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("cwbAndUserid", cwb + "," + userid).getMqException());
+	
 		}
 	}
 }

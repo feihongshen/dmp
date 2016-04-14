@@ -79,13 +79,17 @@
 					<li><span>最大批量阀值：</span>
  						<input type ="text" id="maxBoundCount" name ="maxBoundCount" value ="<%=weisuda.getMaxBoundCount()%>" maxlength="1000"  > 
 					</li>
-					<li><span>是否开启外单推送：</span>
+				<%-- 	<li><span>是否开启外单推送：</span>
 							<input type ="radio" id="isSend" name ="isSend" value="1" <%if(weisuda.getIsSend()==1){%>checked<%}%>  >开启
 							<input type ="radio" id="isSend" name ="isSend" value="0" <%if(weisuda.getIsSend()==0){%>checked<%}%>  >关闭
 					</li>
 					<li>
 						<span>推送外单客户：</span>
 						<input type ="text" id="customers" name ="customers" value ="<%=StringUtil.nullConvertToEmptyString(weisuda.getCustomers())%>" maxlength="1000"  > 
+					</li> --%>
+					<li><span>是否转换机构编码：</span>
+							<input type ="radio" id="changeBranchcode" name ="changeBranchcode" value="1" <%if(weisuda.getChangeBranchcode()==1){%>checked<%}%>  >开启
+							<input type ="radio" id="changeBranchcode" name ="changeBranchcode" value="0" <%if(weisuda.getChangeBranchcode()==0){%>checked<%}%>  >关闭
 					</li>
 					<li><span>密码：</span>
  						<input type ="password" id="password" name ="password" value ="" maxlength="30"  > 
