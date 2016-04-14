@@ -386,6 +386,19 @@ public class DataImportDAO_B2c {
 			return null;
 		}
 	}
+	
+	/**
+	 * 返回临时表数据
+	 * @param cwb
+	 * @return
+	 */
+	public CwbOrderDTO getCwbB2ctempByCwb(String cwb) {
+		try {
+			return this.jdbcTemplate.queryForObject("SELECT * from express_ops_cwb_detail_b2ctemp where cwb=? limit 0,1", new CwbDTO4TempMapper(), cwb);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 
 	public CwbOrderDTO getTranscwbtemp(String cwb) {
 		try {
