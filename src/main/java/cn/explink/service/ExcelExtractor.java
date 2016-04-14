@@ -3289,7 +3289,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 	 * @throws
 	 */
 	public static boolean isNumOrLetter(String telNum) {
-		String regex = "/^[A-Za-z0-9]+$/";
+		String regex = "^[0-9A-Za-z]*$";
 		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(telNum);
 		return m.matches();
