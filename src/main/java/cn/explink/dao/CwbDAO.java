@@ -1188,7 +1188,7 @@ public class CwbDAO {
 	 * 是否存在这个订单在正式表
 	 */
 	public boolean isExistByCwb(String cwb) {
-		String sql = " select count(1) express_ops_cwb_detail where cwb = ?";
+		String sql = " select count(1) from express_ops_cwb_detail where cwb = ?";
 		int count = jdbcTemplate.queryForObject(sql, new Object[] { cwb }, Integer.class);
 		if (count >= 1) {
 			return true;
