@@ -195,7 +195,7 @@ function goForm(cwb){
 									</tr>
 
 									<tr>
-										<td bgcolor="#EBFFD7"><b>发货件数：</b><%=view.getSendcarnum()%><%if("1".equals(isGathercomp)) {%>  （已集齐）<%}else if("0".equals(isGathercomp)){ %><span style="color: red">（未集齐）</span><%}%></td>
+										<td bgcolor="#EBFFD7"><b>发货件数：</b><%=view.getSendcarnum()%><%if("1".equals(isGathercomp)) {%>  （发货完成）<%}else if("0".equals(isGathercomp)){ %><span style="color: red">（发货未完成）</span><%}%></td>
 										<td bgcolor="#EBFFD7"><b>配送站点：</b><%=deliverybranch.getBranchname()==null?"":deliverybranch.getBranchname()%></td>
 									</tr>
 

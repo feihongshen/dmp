@@ -4901,8 +4901,11 @@ public class CwbOrderService extends BaseOrderService {
 				if (obc.getCheckstate() == 1) {// 待审核
 					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
 				}
-				if (obc.getCheckresult() == 1) {// 审核为确认退货
-					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+				if (co.getCwbstate() != 1) {
+					if (obc.getCheckresult() == 1) {// 审核为确认退货
+						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+					}
 				}
 			}
 		}
@@ -8676,7 +8679,6 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	public void fankuiAddTranscwbFlow(String cwb, CwbOrder co, User user, FlowOrderTypeEnum flowOrderTypeEnum, long deliverystate) {
-
 		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 			CwbOrder cwborder = this.cwbDAO.getCwbByCwb(cwb);
 			for (String transcwb : cwborder.getTranscwb().split(",")) {
@@ -8684,11 +8686,16 @@ public class CwbOrderService extends BaseOrderService {
 
 				if (cwborder.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
 					this.mpsOptStateService.updateMPSInfo(transcwb, flowOrderTypeEnum, 0L, co.getCurrentbranchid(), co.getNextbranchid());
-					if ((deliverystate == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (deliverystate == DeliveryStateEnum.JuShou.getValue())) {
-						this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transcwb, TransCwbStateEnum.TUIHUO.getValue());
+					//拒收审核依据是否需要客服审核来改变订单，运单的状态，需要审核不修改订单，运单状态，不审核修改订单，运单状态为退货。
+					if ((flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.YiShenHe.getValue()) && (deliverystate == DeliveryStateEnum.BuFenTuiHuo.getValue() || deliverystate == DeliveryStateEnum.JuShou.getValue())) {
+						Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
+						boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
+						if (!chechFlag) {
+							//Added by vic.liang at 2016-04-13 退货需要审核则运单状态要保留为配送
+							this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transcwb, TransCwbStateEnum.TUIHUO.getValue());
+						} 
 					}
 				}
-
 			}
 		}
 	}
