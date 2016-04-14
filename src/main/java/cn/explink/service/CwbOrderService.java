@@ -8676,7 +8676,6 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	public void fankuiAddTranscwbFlow(String cwb, CwbOrder co, User user, FlowOrderTypeEnum flowOrderTypeEnum, long deliverystate) {
-
 		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 			CwbOrder cwborder = this.cwbDAO.getCwbByCwb(cwb);
 			for (String transcwb : cwborder.getTranscwb().split(",")) {
@@ -8685,10 +8684,14 @@ public class CwbOrderService extends BaseOrderService {
 				if (cwborder.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
 					this.mpsOptStateService.updateMPSInfo(transcwb, flowOrderTypeEnum, 0L, co.getCurrentbranchid(), co.getNextbranchid());
 					if ((deliverystate == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (deliverystate == DeliveryStateEnum.JuShou.getValue())) {
-						this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transcwb, TransCwbStateEnum.TUIHUO.getValue());
+						Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
+						boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
+						if (!chechFlag) {
+							//Added by vic.liang at 2016-04-13 退货需要审核则运单状态要保留为配送
+							this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transcwb, TransCwbStateEnum.TUIHUO.getValue());
+						} 
 					}
 				}
-
 			}
 		}
 	}
