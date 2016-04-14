@@ -43,7 +43,7 @@ public class ApplyDeliverstateService {
 			
 			// 把未完成MQ插入到数据库中, start
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveError")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".saveError")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_SEND_BTOC_TO_DMP)
 					.buildMessageHeader("delIds", errorOrder)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());

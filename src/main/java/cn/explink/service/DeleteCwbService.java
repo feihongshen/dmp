@@ -183,7 +183,7 @@ public class DeleteCwbService {
 		} catch (Exception ee) {
 			logger.info("数据删除功能，cwb：{},error:{}", cwb, ee);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("loseCwbSendJMS")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".loseCwbSendJMS")
 					.buildExceptionInfo(ee.toString()).buildTopic(this.losecwbProducerTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("cwbAndUserid", cwb + "," + userid).getMqException());
 	

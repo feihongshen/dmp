@@ -100,7 +100,7 @@ public class OrderArriveTimeService {
 			} catch (Exception ee) {
 				logger.error("send flow message error", ee);
 				//写MQ异常表
-				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("save")
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".save")
 						.buildExceptionInfo(ee.toString()).buildTopic(this.daocheProducerTemplate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeader("daocheCwbAndTime", json.toString()).getMqException());
 			}

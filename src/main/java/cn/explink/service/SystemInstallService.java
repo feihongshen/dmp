@@ -71,7 +71,7 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 			// 把未完成MQ插入到数据库中, start
 			Map<String, String> headers = parameters;
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("notifyChange")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".notifyChange")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_SYSTEM_INSTALL)
 					.buildMessageHeader(headers)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
@@ -98,7 +98,7 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 		}catch(Exception e){
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("creSystemInstall")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".creSystemInstall")
 					.buildExceptionInfo(e.toString()).buildTopic(this.systemInstallProducerTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader(name, value).getMqException());
 		}
@@ -112,7 +112,7 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 		}catch(Exception e){
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("saveSystemInstall")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".saveSystemInstall")
 					.buildExceptionInfo(e.toString()).buildTopic(this.systemInstallProducerTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader(name, value).getMqException());
 		}

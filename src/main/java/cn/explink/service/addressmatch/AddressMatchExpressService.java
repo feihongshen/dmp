@@ -217,7 +217,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 			
 			// 把未完成MQ插入到数据库中, start
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("matchAddress")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".matchAddress")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_AUTO_ADDRESS_INFO2)
 					.buildMessageHeader("autoMatchAddressInfo", addressExtralInfo)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());

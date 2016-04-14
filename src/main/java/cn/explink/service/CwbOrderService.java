@@ -739,7 +739,7 @@ public class CwbOrderService extends BaseOrderService {
 		}catch(Exception e){
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("sendChangeGoodsTypeMessage")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".sendChangeGoodsTypeMessage")
 					.buildExceptionInfo(e.toString()).buildTopic(this.changeGoodsTypeTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("changeGoodsType", object.toString()).getMqException());
 		}
@@ -805,7 +805,7 @@ public class CwbOrderService extends BaseOrderService {
 		}catch(Exception e){
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("sendBranchFinanceAuditJMS")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".sendBranchFinanceAuditJMS")
 					.buildExceptionInfo(e.toString()).buildTopic(this.updateBranchFinanceAuditStatusTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("updateBranchFinanceAuditStatus", param.toString()).getMqException());
 		}
@@ -825,7 +825,7 @@ public class CwbOrderService extends BaseOrderService {
 		}catch(Exception e){
 			logger.error("", e);
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("sendFinanceAuditJMS")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".sendFinanceAuditJMS")
 					.buildExceptionInfo(e.toString()).buildTopic(this.updateFinanceAuditStatusTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("updateFinanceAuditStatus", param.toString()).getMqException());
 		}
@@ -2730,7 +2730,7 @@ public class CwbOrderService extends BaseOrderService {
 
 				//写MQ异常表
 				try {
-					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("appendCreateFlowOrderJMS")
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".appendCreateFlowOrderJMS")
 							.buildExceptionInfo(ee.toString()).buildTopic(this.orderFlowProducerTemplate.getDefaultEndpoint().getEndpointUri())
 							.buildMessageHeader("orderFlow", this.om.writeValueAsString(of)).getMqException());
 				} catch (IOException e) {
@@ -2757,7 +2757,7 @@ public class CwbOrderService extends BaseOrderService {
 				
 				//写MQ异常表
 				try {
-					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("appendCreateFlowOrderJMS")
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".appendCreateFlowOrderJMS")
 							.buildExceptionInfo(ee.toString()).buildTopic(this.orderFlowProducerTemplate.getDefaultEndpoint().getEndpointUri())
 							.buildMessageHeader("orderFlow", this.om.writeValueAsString(of)).getMqException());
 				} catch (IOException e) {
@@ -2800,7 +2800,7 @@ public class CwbOrderService extends BaseOrderService {
 			
 			//写MQ异常表
 			try {
-				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("sendTranscwbOrderFlow")
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".sendTranscwbOrderFlow")
 						.buildExceptionInfo(ee.toString()).buildTopic(this.transCwbOrderFlowProducerTemplate.getDefaultEndpoint().getEndpointUri())
 						.buildMessageHeader("transCwbOrderFlow", JacksonMapper.getInstance().writeValueAsString(tof)).getMqException());
 			} catch (IOException e) {
@@ -4901,8 +4901,11 @@ public class CwbOrderService extends BaseOrderService {
 				if (obc.getCheckstate() == 1) {// 待审核
 					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenheweiquerentuihuosuccess);
 				}
-				if (obc.getCheckresult() == 1) {// 审核为确认退货
-					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+				if (co.getCwbstate() != 1) {
+					if (obc.getCheckresult() == 1) {// 审核为确认退货
+						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.Tuihuoquerensuccess);
+					}
 				}
 			}
 		}
@@ -7621,7 +7624,7 @@ public class CwbOrderService extends BaseOrderService {
             
 	        // 把未完成MQ插入到数据库中, start
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("autoReceiveGoods")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".autoReceiveGoods")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW)
 					.buildMessageHeader("orderFlow", orderFlow)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
@@ -8126,11 +8129,11 @@ public class CwbOrderService extends BaseOrderService {
 		} catch (Exception e) {
 			logger.error("ERRO-订单失效准备发送jms-异常");
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("deletecwb")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".deletecwb")
 					.buildExceptionInfo(e.toString()).buildTopic(this.losecwbbatchProducerTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("cwbbatchDelete", cwb).getMqException());
 			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("deletecwb")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".deletecwb")
 					.buildExceptionInfo(e.toString()).buildTopic(this.dataLoseByCwb.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("cwb", cwb).getMqException());
 		}
@@ -8683,7 +8686,8 @@ public class CwbOrderService extends BaseOrderService {
 
 				if (cwborder.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
 					this.mpsOptStateService.updateMPSInfo(transcwb, flowOrderTypeEnum, 0L, co.getCurrentbranchid(), co.getNextbranchid());
-					if ((deliverystate == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (deliverystate == DeliveryStateEnum.JuShou.getValue())) {
+					//拒收审核依据是否需要客服审核来改变订单，运单的状态，需要审核不修改订单，运单状态，不审核修改订单，运单状态为退货。
+					if ((flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.YiShenHe.getValue()) && (deliverystate == DeliveryStateEnum.BuFenTuiHuo.getValue() || deliverystate == DeliveryStateEnum.JuShou.getValue())) {
 						Customer customer = this.customerDao.getCustomerById(this.cwbDAO.getCwbByCwb(cwb).getCustomerid());
 						boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
 						if (!chechFlag) {
@@ -8975,7 +8979,7 @@ public class CwbOrderService extends BaseOrderService {
 			
 			// 把未完成MQ插入到数据库中, start		
 			//消费MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("deliverAppJms")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".deliverAppJms")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW).buildMessageHeaderUUID(messageHeaderUUID)
 					.buildMessageHeader("orderFlow", orderFlow)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());

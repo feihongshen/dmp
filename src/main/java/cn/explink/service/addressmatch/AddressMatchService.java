@@ -123,6 +123,8 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
+	@Autowired
+	private AddressMatchLogService addressMatchLogService;
 	
 	private static final String MQ_FROM_URI_ADDRESS_MATCH = "jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch";
 	
@@ -197,7 +199,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			this.logger.error("error add zhandian branche id:{}", branchid);
 			
 			// 把未完成MQ插入到数据库中, start
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("addZhanDian")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".addZhanDian")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADD_ZHANDIAN)
 					.buildMessageHeader("branchid", branchid)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
@@ -254,7 +256,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			headers.put("userid", String.valueOf(userid));
 			headers.put("cwb",cwb);
 			
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode("matchAddress")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".matchAddress")
 					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADDRESS_MATCH)
 					.buildMessageHeader(headers)
 					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
@@ -591,7 +593,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		return json;
 	}
 
-	private JSONArray invokeNewAddressMatchService(String itemno, String Address) {
+	public JSONArray invokeNewAddressMatchService(String itemno, String Address) {
 		// TODO 启用新地址库 调用webservice
 		List<OrderVo> orderVoList = new ArrayList<OrderVo>();
 		try {
@@ -601,10 +603,15 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			String address = Address;
 			orderVoList.add(this.getOrderVoByDuiJie(orderId, address));
 			AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
+			
+			//生产地址匹配日志，add by neo01.huang，2016-4-14
+			addressMatchLogService.produceAddressMatchLog(itemno, address, orderId, addressreturn);
+			
 			int successFlag = addressreturn.getResultCode().getCode();
 			if (successFlag != 0) {
 				return null;
 			}
+			
 
 			OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(orderId);
 			if (mappingresult != null) {
