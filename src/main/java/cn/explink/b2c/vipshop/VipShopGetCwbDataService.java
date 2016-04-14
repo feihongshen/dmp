@@ -504,7 +504,7 @@ public class VipShopGetCwbDataService {
 			String is_gathercomp = VipShopGetCwbDataService.convertEmptyString("is_gathercomp", datamap); //最后一箱:1最后一箱 ，0默认 
 			String pack_nos = VipShopGetCwbDataService.convertEmptyString("pack_nos", datamap); // 箱号会随着集单次数追加
 			String total_pack = VipShopGetCwbDataService.convertEmptyString("total_pack", datamap); // 新增箱数
-			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(order_sn);
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(order_sn);
 			
 			String cargotype = choseCargotype(service_type);
 			created_dtm_loc = choseCreateDtmLoc(created_dtm_loc);
