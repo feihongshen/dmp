@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderBackCheckDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
@@ -26,7 +27,7 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.exception.ExplinkException;
+import cn.explink.enumutil.TransCwbStateEnum;
 
 @Service
 public class OrderBackCheckService {
@@ -43,6 +44,8 @@ public class OrderBackCheckService {
 	CwbDAO cwbDAO;
 	@Autowired
 	List<CwbTranslator> cwbTranslators;
+	@Autowired
+	private TransCwbDetailDAO transCwbDetailDAO;
 
 	public List<OrderBackCheck> getOrderBackCheckList(List<OrderBackCheck> orderbackList, List<Customer> customerList, List<User> userList) {
 		List<OrderBackCheck> list = new ArrayList<OrderBackCheck>();
@@ -135,6 +138,12 @@ public class OrderBackCheckService {
 					cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.TuiHuo);*/
 					this.cwbDAO.updateNextBranchidAndCwbstate(order.getCwb(),tuihuoNextBranch.getBranchid(),CwbStateEnum.TuiHuo);
 	
+					//更新运单状态
+					CwbOrder cwborder = this.cwbDAO.getCwbByCwb(order.getCwb());
+					for (String transcwb : cwborder.getTranscwb().split(",")) {
+						this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transcwb, TransCwbStateEnum.TUIHUO.getValue());
+					}
+					
 					// 更新checkstate=1 并且更新确认状态为确认退货
 					orderBackCheckDAO.updateOrderBackCheck1(1,order.getId(),user.getRealname(), dateStr);
 					logger.info("用户:{},对订单:{},退货审核为确认退货状态", new Object[] { user.getRealname(), order.getCwb() });
@@ -179,7 +188,13 @@ public class OrderBackCheckService {
 				if(order!=null&&order.getCheckstate()==2){
 					return "已审核的订单无法再次反馈!订单号:"+order.getCwb();
 				}
+				//更新订单状态
 				cwbDAO.updateCwbState(order.getCwb(), CwbStateEnum.PeiShong);
+				//更新运单状态
+				CwbOrder cwborder = this.cwbDAO.getCwbByCwb(order.getCwb());
+				for (String transcwb : cwborder.getTranscwb().split(",")) {
+					this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transcwb, TransCwbStateEnum.PEISONG.getValue());
+				}
 				cwbDAO.updateNextbranch(cwbOrder);//修改下一站为当前站
 				orderBackCheckDAO.updateOrderBackCheck2(2,cwbOrder.getCwb(),user.getRealname(),dateStr);//修改为站点滞留状态
 			}
