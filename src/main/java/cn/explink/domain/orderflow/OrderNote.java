@@ -1,7 +1,5 @@
 package cn.explink.domain.orderflow;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -13,6 +11,20 @@ public class OrderNote {
 	private String operationTime;//操作时间
 	private String operatorName;//操作人
 	private String operationTrack;//订单操作轨迹
+	private String userCode;//用户标识
+	private String status; //状态码
+	public String getUserCode() {
+		return userCode;
+	}
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	/**
 	 * @return the orderNo
 	 */
