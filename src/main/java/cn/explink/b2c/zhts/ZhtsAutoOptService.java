@@ -1,6 +1,7 @@
 package cn.explink.b2c.zhts;
 
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -221,10 +222,16 @@ class SubExcuteWorkTask implements Runnable{
 				excutorOutWareHouse();
 			}
 			
-			barrier.await();
+			
 		} catch (Exception e) {
 			logger.error("执行自动调用入库出库方法异常",e);
-		} 
+		} finally{
+			try {
+				barrier.await();
+			} catch (InterruptedException e) {
+			} catch (BrokenBarrierException e) {
+			}
+		}
 		
 	}
 
