@@ -35,7 +35,7 @@ public class AddressMatchLogDAO {
 			logger.info("insertBatch->logList is null or empty");
 			return;
 		}
-		StringBuffer sql = new StringBuffer("INSERT INTO `merge_gztl_dmp`.`express_ops_address_match_log` ( `itemno`, `address`, `match_status`, `match_msg`, `create_time`) VALUES ");
+		StringBuffer sql = new StringBuffer("INSERT INTO `express_ops_address_match_log` ( `itemno`, `address`, `match_status`, `match_msg`, `create_time`) VALUES ");
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		
 		for (int i = 0, len = logList.size(); i < len; i++) {
