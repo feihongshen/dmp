@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.httpclient.StatusLine;
+
 @XmlRootElement(name = "order")
 public class Order {
 
@@ -13,6 +15,13 @@ public class Order {
 	private String operationTime;//操作时间
 	private String operatorName;//操作人
 	private String operationTrack;//订单操作轨迹
+	private String status;
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	/**
 	 * @return the orderNo
 	 */

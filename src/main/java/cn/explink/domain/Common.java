@@ -11,6 +11,15 @@ public class Common {
 	private long userid;
 	private String private_key; //
 	private long isopenflag; //
+	private String sensitiveWord ;//敏感词 支持多个敏感词替换 格式：A|B|C|D
+	
+	public String getSensitiveWord() {
+		return sensitiveWord;
+	}
+
+	public void setSensitiveWord(String sensitiveWord) {
+		this.sensitiveWord = sensitiveWord;
+	}
 
 	private String feedback_url;// 上游回传下游URL
 	private long isasynchronous; // 是否异步回传 0关闭，1开启
