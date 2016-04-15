@@ -1,0 +1,1 @@
+alter table `express_ops_cwb_detail` drop index `detail_cwbordertypeid_idx`;
