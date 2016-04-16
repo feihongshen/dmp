@@ -482,7 +482,7 @@ public class WeisudaService {
 						orderFlowDto.getConsignee(), Sign_Self_Flag, Sign_Remark, 4, 1, "", PosEnum.Weisuda.getMethod(), 0, "");
 				this.logger.info("唯速达签收交易-记录posPayDetail表" + flag + "! 订单号:{}", cwbOrder.getCwb());
 				//更新正向订单的deliverystate, added by neo01.huang
-				cwborderService.updateForwardOrderDeliveryState(cwbOrder.getCwbordertypeid(), cwbOrder.getCwb(), DeliveryStateEnum.PeiSongChengGong.getValue());
+				//cwborderService.updateForwardOrderDeliveryState(cwbOrder.getCwbordertypeid(), cwbOrder.getCwb(), DeliveryStateEnum.PeiSongChengGong.getValue());
 			}
 		
 		//订单类型：上门退 ==>更新自动化分拣项目商品信息表
