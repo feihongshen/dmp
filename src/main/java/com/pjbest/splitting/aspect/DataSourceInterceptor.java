@@ -45,10 +45,19 @@ public class DataSourceInterceptor implements Ordered {
 					dataSource = pjp.getTarget().getClass().getAnnotation(DataSource.class);
 				}
 			} catch (Exception e) {
-				logger.error("DataSourceInterceptor.proceed exception : " + e.toString());
+				logger.error("DataSourceInterceptor.proceed exception 1 : " + e.toString());
 			}
 			DatabaseContextHolder.pushDatabaseType(dataSource == null || dataSource.value() == null ? DatabaseType.MASTER : dataSource.value());
 			flag = true;
+			try {
+				String info = "DataSourceInterceptor - class : " + pjp.getTarget().getClass().getName();
+				info += ", method : " + pjp.getSignature().getName();
+				info += ", DatabaseType : " + DatabaseContextHolder.peekDatabaseType();
+				logger.info(info);
+				System.out.println(info);
+			} catch (Exception e) {
+				logger.error("DataSourceInterceptor.proceed exception 2 : " + e.toString());
+			}
 			Object result = pjp.proceed();
 			return result;
 		} finally {
