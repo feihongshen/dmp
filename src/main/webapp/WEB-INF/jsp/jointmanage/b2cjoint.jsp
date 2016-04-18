@@ -73,7 +73,7 @@ function delSuccess(data){
 
 					</tr>
 					<%
-						for(B2cEnum em:B2cEnum.values()){ 
+						for(B2cEnum em:B2cEnum.valuesSortedByText()){ 
 																		String text=em.getText();
 																		int key=em.getKey();
 																		for(JointPower power:powerlist){

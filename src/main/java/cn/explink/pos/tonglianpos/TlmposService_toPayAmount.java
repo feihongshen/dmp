@@ -105,7 +105,7 @@ public class TlmposService_toPayAmount extends TlmposService {
 				respNote.setResp_msg(TlmposExptMsgEnum.Success.getResp_msg());
 				
 				//更新正向订单的deliverystate, added by neo01.huang
-				cwbOrderService.updateForwardOrderDeliveryState(cwbOrder.getCwbordertypeid(), cwbOrder.getCwb(), DeliveryStateEnum.PeiSongChengGong.getValue());
+				//cwbOrderService.updateForwardOrderDeliveryState(cwbOrder.getCwbordertypeid(), cwbOrder.getCwb(), DeliveryStateEnum.PeiSongChengGong.getValue());
 				
 				return respNote;
 			}
