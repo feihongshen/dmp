@@ -5508,6 +5508,9 @@ public class CwbOrderService extends BaseOrderService {
 			} else {// 除了上面这些之外，都是不应该出现的状态
 				feedbakOperateType = FeedbackOperateTypeEnum.ExceptionScan.getValue();
 			}
+			if(!StringUtil.isEmpty(paywayid+"")){
+				co.setPaywayid(paywayid);
+			}
 			this.executeTpsTransInterface(co, deliveryUser, feedbakOperateType, deliverstateremark, sign_man, freight.doubleValue());
 		}
 		
