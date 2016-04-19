@@ -184,6 +184,9 @@ public class QuartzTriggerController{
 			for(String triggerName : triggerNames){
 				if(!Tools.isEmpty(triggerName)){
 					String groupName=getTriggerGroupName(triggerName);
+					
+					this.logger.info("QuartzTriggerController手动启动定时任务triggerName={},groupName={}", triggerName, groupName);
+					
 					stdScheduler.resumeTrigger(triggerName, groupName);
 				}
 			}
@@ -210,6 +213,9 @@ public class QuartzTriggerController{
 			for(String triggerName : triggerNames){
 				if(!Tools.isEmpty(triggerName)){
 					String groupName=getTriggerGroupName(triggerName);
+					
+					this.logger.info("QuartzTriggerController手动暂停定时任务triggerName={},groupName={}", triggerName, groupName);
+					
 					stdScheduler.pauseTrigger(triggerName, groupName);
 				}
 			}
@@ -246,6 +252,9 @@ public class QuartzTriggerController{
 			if (null != trigger) {// 存在才修改
 				String taskJobName=trigger.getJobName();
 				String taskGroupName=trigger.getJobGroup();
+				
+				this.logger.info("QuartzTriggerController手动立刻执行定时任务taskJobName={},taskGroupName={}", taskJobName, taskGroupName);
+				
 				stdScheduler.triggerJob(taskJobName, taskGroupName);
 			}
 		} catch (SchedulerException e) {
