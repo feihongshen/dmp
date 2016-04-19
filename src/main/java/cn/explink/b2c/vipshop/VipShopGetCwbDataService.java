@@ -490,7 +490,7 @@ public class VipShopGetCwbDataService {
 			String original_weight = "".equals(VipShopGetCwbDataService.convertEmptyString("original_weight", datamap)) ? "0" : VipShopGetCwbDataService.convertEmptyString("original_weight", datamap); // 重量
 			String ext_pay_type = "".equals(VipShopGetCwbDataService.convertEmptyString("ext_pay_type", datamap)) ? "0" : VipShopGetCwbDataService.convertEmptyString("ext_pay_type", datamap); // 支付方式
 			int paywayid = ext_pay_type.equals("1") ? PaytypeEnum.Pos.getValue() : PaytypeEnum.Xianjin.getValue();
-			String attemper_no = VipShopGetCwbDataService.convertEmptyString("attemper_no", datamap); // 托运单号，根据此字段生成批次.
+			String attemper_no = VipShopGetCwbDataService.convertEmptyString("transport_no", datamap); // 托运单号，根据此字段生成批次.
 			String created_dtm_loc = VipShopGetCwbDataService.convertEmptyString("created_dtm_loc", datamap); // 批次时间，绑定托运单号
 			String rec_create_time = VipShopGetCwbDataService.convertEmptyString("rec_create_time", datamap); // 生成时间
 			String order_delivery_batch = choseOrderDeliveryBatch(datamap);
