@@ -12,6 +12,7 @@ create table `fn_brance_report`(
    `pay_amount` decimal(18,4) NOT NULL DEFAULT '0' COMMENT '当期付款',
    `pay_order_adjust_amount` decimal(18,4) NOT NULL DEFAULT '0' COMMENT '付款单当期调整金额',
    `final_amount` decimal(18,4) NOT NULL DEFAULT '0' COMMENT '期末余额' ,
+   `is_archive` int DEFAULT 0 COMMENT '是否归档 0-未归档 1-已归档' ,
    `create_time` timestamp COMMENT '时间' ,
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

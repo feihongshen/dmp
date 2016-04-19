@@ -29,3 +29,4 @@ INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionor
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803003', '2', '缴款导入管理', '803003', '${eapUrl}orgPayManager.do?index&', '8030');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803004', '2', '预付款管理', '803004', '${eapUrl}orgAdvancePay.do?index&', '8030');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803005', '2', '缴款账户余额查询', '803005', '${eapUrl}orgAccountBalance.do?index&', '8030');
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803060', '2', '签收小件员余额报表', '803060', '${eapUrl}reportForm.do?couriersSignFeeFormIndex&', '8030');
