@@ -111,7 +111,7 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	public List<MqException> getMqExceptionByWhere(long page, String exceptionCode, String topic, String handleFlag, String messageSource, String isAutoResend) {
 		String sql = "SELECT * from mq_exception where 1=1";
 		if (null != exceptionCode && !"".equals(exceptionCode.trim())) {
-			sql += " and exception_code like '" + exceptionCode+ "%'";
+			sql += " and exception_code = '" + exceptionCode+ "'";
 		}
 		if (null != topic && !"".equals(topic.trim())) {
 			sql += " and topic like '" + topic+ "%'";
@@ -142,7 +142,7 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	public long getSystemInstallCount(String exceptionCode, String topic, String handleFlag, String messageSource, String isAutoResend) {
 		String sql = "SELECT count(1) from mq_exception where 1=1";
 		if (null != exceptionCode && !"".equals(exceptionCode.trim())) {
-			sql += " and exception_code like '" + exceptionCode+ "%'";
+			sql += " and exception_code = '" + exceptionCode+ "'";
 		}
 		if (null != topic && !"".equals(topic.trim())) {
 			sql += " and topic like '" + topic+ "%'";
@@ -186,6 +186,21 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 			return getJdbcTemplate().queryForObject(sql, new MqExceptionRowMapper(), messageHeaderUUID);
 		} catch (DataAccessException e) {
 			this.logger.error("根据MESSAGE_HEADER_UUID加载MQ异常记录失败", e);
+			return null;
+		}
+	}
+	
+	/**
+	 * 加载所有的异常编码
+	 * @param id
+	 * @return
+	 */
+	public List<String> loadExceptionCode() {
+		try {
+			String sql = "select EXCEPTION_CODE from mq_exception group by EXCEPTION_CODE";
+			return getJdbcTemplate().queryForList(sql, String.class);
+		} catch (DataAccessException e) {
+			this.logger.error("加载所有的异常编码", e);
 			return null;
 		}
 	}
