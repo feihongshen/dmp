@@ -1,5 +1,9 @@
 package cn.explink.b2c.tools;
 
+import java.text.Collator;
+import java.util.Arrays;
+import java.util.Comparator;
+
 public enum B2cEnum {
 
 	/**
@@ -161,5 +165,16 @@ public enum B2cEnum {
 		}
 		return null;
 	}
-
+	
+	public static B2cEnum[] valuesSortedByText(){
+		B2cEnum[] enums = B2cEnum.values();
+        Arrays.sort(enums, new Comparator<B2cEnum>(){
+			@Override
+			public int compare(B2cEnum o1, B2cEnum o2) {
+				Collator instance = Collator.getInstance(java.util.Locale.CHINA);
+				return instance.compare(o1.getText(), o2.getText());
+			}
+		});
+		return enums;
+	}
 }

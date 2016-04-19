@@ -225,7 +225,9 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 	 */
 	private ChinaUmsRespNote ExcuteCwbSignHandler(CwbOrder cwbOrder, DeliveryState deliverstate, ChinaUmsRespNote respNote, Transaction rootnote,int version) {
 		try {
-
+			//修改快递跨省反馈支付方式为-1的bug
+			int payway = Integer.parseInt(rootnote.getTransaction_Body().getPayway());
+			
 			BigDecimal totalAmount = deliverstate.getPos().add(deliverstate.getCash()).add(deliverstate.getCheckfee()).add(deliverstate.getOtherfee());
 			BigDecimal pos = deliverstate.getPos();
 			BigDecimal cash = deliverstate.getCash();
@@ -271,6 +273,7 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 			parameters.put("sign_man", getSignpeopleProxy(cwbOrder, rootnote,version));
 			parameters.put("sign_time", DateTimeUtil.getNowTime());
 			parameters.put("nosysyemflag", "1");//
+			parameters.put("paywayid", payway);
 			// cwbOrderService.deliverStatePod(getUser(deliverid),alipayRespNote.getOrder_no(),parameters);
 			cwbOrderService.deliverStatePod(getUser(respNote.getDeliverid()), respNote.getOrder_no(), respNote.getOrder_no(), parameters);
 
