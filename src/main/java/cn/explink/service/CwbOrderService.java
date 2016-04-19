@@ -5508,9 +5508,7 @@ public class CwbOrderService extends BaseOrderService {
 			} else {// 除了上面这些之外，都是不应该出现的状态
 				feedbakOperateType = FeedbackOperateTypeEnum.ExceptionScan.getValue();
 			}
-			if(!StringUtil.isEmpty(paywayid+"")){
-				co.setPaywayid(paywayid);
-			}
+			co.setNewpaywayid(newpaywayid+"");
 			this.executeTpsTransInterface(co, deliveryUser, feedbakOperateType, deliverstateremark, sign_man, freight.doubleValue());
 		}
 		
@@ -5612,8 +5610,8 @@ public class CwbOrderService extends BaseOrderService {
 		transNoFeedBack.setSignMan(signMan);
 		if (feedbakOperateType == FeedbackOperateTypeEnum.SignInScan.getValue()) {
 			transNoFeedBack.setActualFee(freight);
-			transNoFeedBack.setActualPayType(order.getPaywayid() + "");
-			// TODO 还差一个实付方式没有搞上~等小凯子确定后在搞
+			transNoFeedBack.setActualPayType(order.getNewpaywayid() + "");
+			//logger.info("==========="+order.getNewpaywayid()+"==============");
 		}
 
 		/*
