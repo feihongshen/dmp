@@ -9570,4 +9570,14 @@ public class CwbDAO {
 		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  WHERE state=1 AND customerid=? AND flowordertype=? "
 				+ " and deliverybranchid>0 ORDER BY opscwbid LIMIT 0,?  ", new CwbMapper(),customerid,flowordertype,maxCount);
 	}
+	
+	public String getTpsTransportNoByCwb(String cwb) {
+		try {
+			return this.jdbcTemplate
+					.queryForObject(
+							"SELECT tpstranscwb from express_ops_cwb_detail where cwb=? and state=1 limit 0,1",String.class,cwb);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 }

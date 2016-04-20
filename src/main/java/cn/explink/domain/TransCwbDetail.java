@@ -1,6 +1,7 @@
 package cn.explink.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import net.sourceforge.jtds.jdbc.DateTime;
 
@@ -21,6 +22,8 @@ public class TransCwbDetail implements Serializable {
 	private String emaildate; // 发货时间
 	private int commonphraseid; // 常用语id
 	private String commonphrase; // 常用语
+	private BigDecimal volume;//体积
+	private BigDecimal weight;//重量
 	
 	public String getEmaildate() {
 		return this.emaildate;
@@ -128,6 +131,22 @@ public class TransCwbDetail implements Serializable {
 
 	public void setModifiedtime(String modifiedtime) {
 		this.modifiedtime = modifiedtime;
+	}
+
+	public BigDecimal getVolume() {
+		return volume;
+	}
+
+	public void setVolume(BigDecimal volume) {
+		this.volume = volume;
+	}
+
+	public BigDecimal getWeight() {
+		return weight;
+	}
+
+	public void setWeight(BigDecimal weight) {
+		this.weight = weight;
 	}
 
 }
