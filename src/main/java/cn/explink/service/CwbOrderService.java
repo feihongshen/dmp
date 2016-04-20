@@ -502,14 +502,14 @@ public class CwbOrderService extends BaseOrderService {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub) "
+						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpsTranscwb) "
 						+ "values(?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ " ?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
-						+ "?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+						+ "?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 
@@ -587,6 +587,7 @@ public class CwbOrderService extends BaseOrderService {
 						ps.setInt(65, cwbOrderDTO.getMpsallarrivedflag());
 						ps.setInt(66, FlowOrderTypeEnum.DaoRuShuJu.getValue());
 						ps.setInt(67, cwbOrderDTO.getVipclub());
+						ps.setString(68, cwbOrderDTO.getTpsTranscwb());
 					}
 
 				});
@@ -5508,9 +5509,7 @@ public class CwbOrderService extends BaseOrderService {
 			} else {// 除了上面这些之外，都是不应该出现的状态
 				feedbakOperateType = FeedbackOperateTypeEnum.ExceptionScan.getValue();
 			}
-			if(!StringUtil.isEmpty(paywayid+"")){
-				co.setPaywayid(paywayid);
-			}
+			co.setNewpaywayid(newpaywayid+"");
 			this.executeTpsTransInterface(co, deliveryUser, feedbakOperateType, deliverstateremark, sign_man, freight.doubleValue());
 		}
 		
@@ -5612,8 +5611,8 @@ public class CwbOrderService extends BaseOrderService {
 		transNoFeedBack.setSignMan(signMan);
 		if (feedbakOperateType == FeedbackOperateTypeEnum.SignInScan.getValue()) {
 			transNoFeedBack.setActualFee(freight);
-			transNoFeedBack.setActualPayType(order.getPaywayid() + "");
-			// TODO 还差一个实付方式没有搞上~等小凯子确定后在搞
+			transNoFeedBack.setActualPayType(order.getNewpaywayid() + "");
+			//logger.info("==========="+order.getNewpaywayid()+"==============");
 		}
 
 		/*
