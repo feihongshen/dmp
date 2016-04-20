@@ -502,7 +502,7 @@ public class CwbOrderService extends BaseOrderService {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpsTranscwb) "
+						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpstranscwb) "
 						+ "values(?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
