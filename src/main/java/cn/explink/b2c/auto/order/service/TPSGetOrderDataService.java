@@ -314,7 +314,8 @@ public class TPSGetOrderDataService {
 		//cwbOrder.setStartbranchid(vipshop.getWarehouseid());
 		//团购标识
 		cwbOrder.setVipclub(order.getVipClub().equals("3")?1:0);
-				
+		//tps运单号	
+		cwbOrder.setTpsTranscwb(order.getOrderSn());
 	}
 	
 	/**
@@ -594,8 +595,6 @@ public class TPSGetOrderDataService {
 			/**
 			 * 新增参数
 			 */
-			BigDecimal original_weight = new BigDecimal("0");/*(BigDecimal) (String.valueOf(order.getOriginalWeight()).equals("") ? "0" : order.getOriginalWeight())*/; // 重量
-			BigDecimal original_volume = new BigDecimal("0");/*(BigDecimal) (String.valueOf(order.getOriginalVolume()).equals("") ? "0" : order.getOriginalVolume())*/; // 体积
 			int ext_pay_type = (null==order.getPayment()||"".equals(order.getPayment().toString())) ? 0 : order.getPayment(); // 扩展支付方式
 			int paywayid = (ext_pay_type==1) ? PaytypeEnum.Pos.getValue() : PaytypeEnum.Xianjin.getValue();
 			String created_dtm_loc = this.toDateForm(order.getCreateTime());//记录生成时间
@@ -611,7 +610,15 @@ public class TPSGetOrderDataService {
 			//20：OXO-JIT,30：配送,40：OXO直送,60：上门退
 			int business_type = order.getBusinessType();
 			String cwbordertype = (business_type==60) ? String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()) : String.valueOf(CwbOrderTypeIdEnum.Peisong.getValue());
-           
+			BigDecimal original_weight = null;
+			BigDecimal original_volume = null;
+			if(business_type==30){
+				original_weight = new BigDecimal("0");/**/; // 重量
+				original_volume = new BigDecimal("0");/**/; // 体积
+			}else{
+				original_weight = (BigDecimal) (String.valueOf(order.getOriginalWeight()).equals("") ? "0" : order.getOriginalWeight());
+				original_volume = (BigDecimal) (String.valueOf(order.getOriginalVolume()).equals("") ? "0" : order.getOriginalVolume());
+			}
 			String is_gatherpack = order.getIsGatherpack().toString(); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
 			String is_gathercomp = order.getIsGathercomp().toString(); //最后一箱:1最后一箱 ，0默认 
 			
