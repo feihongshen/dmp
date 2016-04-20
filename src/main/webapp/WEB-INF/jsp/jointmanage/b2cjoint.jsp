@@ -509,6 +509,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/jdCwbTrack/del/');
 		}
 		
+		else if(obj=='20229'){
+			$("#edit").val('<%=request.getContextPath()%>/tpsCwbFlow/show/');
+			$("#del").val('<%=request.getContextPath()%>/tpsCwbFlow/del/');
+		}
+		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

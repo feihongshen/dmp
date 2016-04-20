@@ -246,4 +246,13 @@ public class TranscwbOrderFlowDAO {
 				+ ",%' AND isnow=1 ";
 		return jdbcTemplate.queryForLong(sql, cwb, flowordertype);
 	}
+	
+	public TranscwbOrderFlow getTranscwbOrderFlowByCwbAndFlowordertype(String scancwb, String cwb,long flowordertype) {
+		try {
+			String sql = "select * from express_ops_transcwb_orderflow where scancwb=? and cwb=? and flowordertype=? limit 1";
+			return this.jdbcTemplate.queryForObject(sql, new TranscwbOrderFlowRowMapper(), scancwb, cwb,flowordertype);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

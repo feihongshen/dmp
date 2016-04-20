@@ -1600,7 +1600,8 @@ public class BaleService {
 	 * @param cwb
 	 */
 	@Transactional
-	public void baleaddcwb(User user, String baleno, String cwb, long branchid) {
+	public CwbOrder baleaddcwb(User user, String baleno, String cwb, long branchid) {
+		CwbOrder cwbOrder =null;
 		if (!StringUtils.isEmpty(baleno) && !StringUtils.isEmpty(cwb)) {
 			// 如果订单存在原来的包号 包号表的订单数-1
 			String scancwb = cwb;
@@ -1617,8 +1618,9 @@ public class BaleService {
 			if (BranchEnum.ZhongZhuan.getValue() == currentBranch.getSitetype()) {
 				iszhongzhuanout = true;
 			}
-			CwbOrder cwbOrder = this.cwbOrderService.outWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, iszhongzhuanout, false);
+			cwbOrder = this.cwbOrderService.outWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, iszhongzhuanout, false);
 		}
+		return cwbOrder;
 	}
 	
 	/**

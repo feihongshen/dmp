@@ -63,6 +63,7 @@ import cn.explink.b2c.telecomsc.TelecomInsertCwbDetailTimmer;
 import cn.explink.b2c.tmall.TmallInsertCwbDetailTimmer;
 import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
 import cn.explink.b2c.tps.TPSCarrierOrderStatusTimmer;
+import cn.explink.b2c.tps.TpsCwbFlowPushService;
 import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.b2c.vipshop.VipShopService;
 import cn.explink.b2c.vipshop.VipshopInsertCwbDetailTimmer;
@@ -282,6 +283,8 @@ public class JobUtil {
 	PinhaohuoInsertCwbDetailTimmer pinhaohuoInsertCwbDetailTimmer;
 	@Autowired
 	FlowExpService flowExpService;
+	@Autowired
+	TpsCwbFlowPushService tpsCwbFlowPushService;
 	
 	// public static Map<String, Integer> threadMap;
 	public static RedisMap<String, Integer> threadMap;	
@@ -330,6 +333,8 @@ public class JobUtil {
 		
 		JobUtil.threadMap.put("syncBranchInf", 0);
 		JobUtil.threadMap.put("syncUserInf", 0);
+		
+		JobUtil.threadMap.put("tpsCwbFlow", 0);
 	}
 
 	/**
@@ -369,6 +374,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("autoDispatchStatus", 0);
 		JobUtil.threadMap.put("syncBranchInf", 0);
 		JobUtil.threadMap.put("syncUserInf", 0);
+		JobUtil.threadMap.put("tpsCwbFlow", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1755,6 +1761,29 @@ public class JobUtil {
 			JobUtil.threadMap.put("syncUserInf", 0);
 		}
 		this.logger.info("执行了同步小件员的定时器,本次耗时:{}秒", ((endTime - startTime) / 1000));
+	}
+	
+	/**
+	 * 订单重量体积反馈给TPS
+	 */
+	public void tpsCwbFlow_Task(){
+		if (JobUtil.threadMap.get("tpsCwbFlow") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出订单重量体积反馈TPS的任务");
+			return;
+		}
+		JobUtil.threadMap.put("tpsCwbFlow", 1);
+		long startTime = 0;
+		long endTime = 0;
+		try {
+			startTime = System.currentTimeMillis();
+			tpsCwbFlowPushService.process();
+			endTime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行了订单重量体积反馈TPS的定时器异常：", e);
+		} finally {
+			JobUtil.threadMap.put("tpsCwbFlow", 0);
+		}
+		this.logger.info("执行了订单重量体积反馈TPS的定时器,本次耗时:{}秒", ((endTime - startTime) / 1000));
 	}
 
 }

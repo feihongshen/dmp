@@ -3620,7 +3620,7 @@ public class CwbOrderService extends BaseOrderService {
 		return arrive;
 	}
 	
-	private List<String> getTranscwbList(String transcwbs){
+	public List<String> getTranscwbList(String transcwbs){
 		if(transcwbs==null||transcwbs.length()<1){
 			return null;
 		}
