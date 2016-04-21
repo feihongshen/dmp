@@ -7620,8 +7620,11 @@ public class CwbOrderService extends BaseOrderService {
 			logger.info("开始对orderflow的监听");
 			OrderFlow orderflow = this.om.readValue(orderFlow, OrderFlow.class);
 			this.autoReceiveGoods(orderflow);
+		} catch (CwbException cwbe) {
+			logger.error("对orderflow的监听  处理异常,orderFlow:{}", orderFlow);
+            logger.error("对orderflow的监听  处理异常, 异常类型 :CwbException ", cwbe);
 		} catch (Exception e) {
-			logger.info("对orderflow的监听  处理异常,orderFlow:{}", orderFlow);
+			logger.error("对orderflow的监听  处理异常,orderFlow:{}", orderFlow);
             logger.error("", e);
             
 	        // 把未完成MQ插入到数据库中, start
