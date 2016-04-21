@@ -84,6 +84,7 @@ public class CwbOrderDTO {
 	int mpsallarrivedflag; // '最后一箱标识:1表示最后一箱；0默认';
 	int ismpsflag; // 是否一票多件：0默认；1是一票多件'; 
 	int vipclub;
+	String tpsTranscwb;//tps运单号
 	
 	public int getIsmpsflag() {
 		return ismpsflag;
@@ -848,5 +849,13 @@ public class CwbOrderDTO {
 
 	public void setVipclub(int vipclub) {
 		this.vipclub = vipclub;
+	}
+
+	public String getTpsTranscwb() {
+		return tpsTranscwb;
+	}
+
+	public void setTpsTranscwb(String tpsTranscwb) {
+		this.tpsTranscwb = tpsTranscwb;
 	}
 }

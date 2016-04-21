@@ -2,6 +2,7 @@ package cn.explink.exception;
 
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 
+@SuppressWarnings("serial")
 public class CwbException extends ExplinkException {
 	private String cwb;
 	private long flowordertye;

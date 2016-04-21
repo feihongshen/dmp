@@ -31,6 +31,30 @@ function editSuccess(data){
 	$("#searchForm").submit();
 }
 
+function loadExceptionCode(){
+	var exceptionCode = '<%=exceptionCode %>';
+	$.ajax({
+		type : "POST",
+		url : '<%=request.getContextPath()%>'+ '/mqexception/loadExceptionCode',
+		dataType : "json",
+		data:{},
+		success : function(datas) {
+			if($("#exceptionCode")){
+				 $.each(datas, function(i, item) {
+	                var option = $("<option></option>")
+	                    .val(item)
+	                    .text(item);
+	                option.appendTo($("#exceptionCode"));
+	                option.attr("width",150);
+	                if(exceptionCode == item){
+	                	option.attr("selected",true);//选中
+	                }
+	            });
+			}
+		}
+	});
+}
+
 </script>
 </head>
 
@@ -39,20 +63,22 @@ function editSuccess(data){
 <div class="right_box">
 	<div class="inputselect_box">
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
-		编码：<input type="text" id="exceptionCode" name="exceptionCode" class="input_text1"/>&nbsp;&nbsp;
+		编码：<select id="exceptionCode" name="exceptionCode" class="input_text1" style="height:21px;width:180px;word-wrap:normal;">
+		    <option value=""></option>
+		 </select> &nbsp;&nbsp;&nbsp;
 		主题：<input type="text" id="topic" name="topic" class="input_text1"/>&nbsp;&nbsp;
-		处理结果：<select id="handleFlag" name="handleFlag" class="input_text1" style="width:80px;">
+		处理结果：<select id="handleFlag" name="handleFlag" class="input_text1" style="width:80px;height:21px;">
 		        <option value="">所有</option>
 				<option value="1">成功</option>
 				<option value="0">失败</option>
 			  </select>&nbsp;&nbsp;
 			  
-	             消息来源：<select id="messageSource" name="messageSource" class="input_text1" style="width:80px;">
+	             消息来源：<select id="messageSource" name="messageSource" class="input_text1" style="width:80px;height:21px;">
 		        <option value="">所有</option>
 				<option value="sender">发送端</option>
 				<option value="receiver">接收端</option>
 			  </select>&nbsp;&nbsp;
-	            自动发送：<select id="isAutoResend" name="isAutoResend" class="input_text1" style="width:80px;">
+	            自动发送：<select id="isAutoResend" name="isAutoResend" class="input_text1" style="width:80px;height:21px;">
 		        <option value="">所有</option>
 				<option value="1">是</option>
 				<option value="0">否</option>
@@ -137,6 +163,7 @@ $(document).ready(function(){
 	$("#messageSource").val('<%=messageSource %>');
 	$("#handleFlag").val('<%=handleFlag %>');
 	$("#isAutoResend").val('<%=isAutoResend %>');
+	loadExceptionCode();
 });
 </script>
 </body>

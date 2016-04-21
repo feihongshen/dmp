@@ -1,0 +1,1 @@
+ALTER TABLE express_ops_cwb_detail_b2ctemp ADD UNIQUE b2ctemp_cwb_unique(cwb);

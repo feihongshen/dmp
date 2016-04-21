@@ -151,7 +151,7 @@ public class RedisMapImpl<T1, T2> implements RedisMap<T1, T2> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private T2 getValue(String value) {
+	public T2 getValue(String value) {
 		try {
 			if (value != null) {
 				int pos = value.indexOf('_');

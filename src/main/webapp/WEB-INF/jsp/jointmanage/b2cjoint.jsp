@@ -73,7 +73,7 @@ function delSuccess(data){
 
 					</tr>
 					<%
-						for(B2cEnum em:B2cEnum.values()){ 
+						for(B2cEnum em:B2cEnum.valuesSortedByText()){ 
 																		String text=em.getText();
 																		int key=em.getKey();
 																		for(JointPower power:powerlist){
@@ -507,6 +507,11 @@ function delSuccess(data){
 		else if(obj=='22001'){//京东_订单跟踪接口
 			$("#edit").val('<%=request.getContextPath()%>/jdCwbTrack/show/');
 			$("#del").val('<%=request.getContextPath()%>/jdCwbTrack/del/');
+		}
+		
+		else if(obj=='20229'){
+			$("#edit").val('<%=request.getContextPath()%>/tpsCwbFlow/show/');
+			$("#del").val('<%=request.getContextPath()%>/tpsCwbFlow/del/');
 		}
 		
 		else{

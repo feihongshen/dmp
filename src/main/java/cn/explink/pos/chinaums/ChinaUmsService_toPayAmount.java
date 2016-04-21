@@ -225,7 +225,7 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 	 */
 	private ChinaUmsRespNote ExcuteCwbSignHandler(CwbOrder cwbOrder, DeliveryState deliverstate, ChinaUmsRespNote respNote, Transaction rootnote,int version) {
 		try {
-
+			
 			BigDecimal totalAmount = deliverstate.getPos().add(deliverstate.getCash()).add(deliverstate.getCheckfee()).add(deliverstate.getOtherfee());
 			BigDecimal pos = deliverstate.getPos();
 			BigDecimal cash = deliverstate.getCash();

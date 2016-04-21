@@ -1,5 +1,9 @@
 package cn.explink.b2c.tools;
 
+import java.text.Collator;
+import java.util.Arrays;
+import java.util.Comparator;
+
 public enum B2cEnum {
 
 	/**
@@ -91,6 +95,7 @@ public enum B2cEnum {
 	ThirdPartyOrder_2_DO(20129, "外单推DO", "thirdPartyOrder2DO", 0),
 	VipShop_TPSAutomate(20227, "TPS自动化", "vipshop_tps_automate",0),	
 	TPS_CarrierOrderStatus(20228, "唯品会_TPS_运单状态", "TPS_CarrierOrderStatus",0),
+	TPS_Cwb_Flow(20229, "唯品会_TPS_反馈体积重量", "TPS_Cwb_Flow",0),
 	SuNing(20127, "苏宁易购", "suning", 0), YiGuoShengXian(20128, "易果生鲜", "yiguoshengxian", 0),
 	Yihaodian_bakup1(20130, "一号店_备用1", "yihaodian_bakup1", 0), 
 	Yihaodian_bakup2(20131, "一号店_备用2", "yihaodian_bakup2", 0), 
@@ -161,5 +166,16 @@ public enum B2cEnum {
 		}
 		return null;
 	}
-
+	
+	public static B2cEnum[] valuesSortedByText(){
+		B2cEnum[] enums = B2cEnum.values();
+        Arrays.sort(enums, new Comparator<B2cEnum>(){
+			@Override
+			public int compare(B2cEnum o1, B2cEnum o2) {
+				Collator instance = Collator.getInstance(java.util.Locale.CHINA);
+				return instance.compare(o1.getText(), o2.getText());
+			}
+		});
+		return enums;
+	}
 }

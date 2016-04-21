@@ -10,8 +10,6 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.explink.service.UserService;
-
 /**
  *
  * 读取文件路径配置文件
@@ -80,5 +78,8 @@ public class ResourceBundleUtil {
 	public static final String sqlServerExpressurlUser = ResourceBundleUtil.rbint.getString("sqlserver_expressurl.user");
 	public static final String sqlServerExpressurlPassword = ResourceBundleUtil.rbint.getString("sqlserver_expressurl.password");
 	public static final String sqlServerExpressurlBatchNum = ResourceBundleUtil.rbint.getString("sqlserver_expressurl.batchNum");
+		
+	// redis 前缀
+	public static final String RedisPrefix = ResourceBundleUtil.rbint.getString("redis.prefix");
 		
 }
