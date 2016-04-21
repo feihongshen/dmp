@@ -53,7 +53,7 @@ public class ExceptionCwbDAO {
 
 	public List<ExceptionCwb> getAllECByPage(long page, String cwb, long scantype, String errortype, String branchid, String userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
 		try {
-			String sql = "select * from express_ops_exception_cwb where createtime >? and createtime <?";
+			String sql = "select * from express_ops_exception_cwb force index(detail_cwb_idx,exception_cwb_createtime_idx) where createtime >? and createtime <?";
 			sql = this.getECByWhereSqlNew(sql, cwb, scantype, errortype, branchid, userid, ishanlder, scope);
 			sql += " order by createtime desc limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 			return jdbcTemplate.query(sql, new ExceptionCwbMapper(), beginemaildate, endemaildate);
@@ -64,7 +64,7 @@ public class ExceptionCwbDAO {
 
 	public List<ExceptionCwb> getAllECByExcel(long page, String cwb, long scantype, String errortype, String branchid, long userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
 		try {
-			String sql = "select * from express_ops_exception_cwb where createtime >? and createtime <?";
+			String sql = "select * from express_ops_exception_cwb force index(detail_cwb_idx,exception_cwb_createtime_idx) where createtime >? and createtime <?";
 			sql = this.getECByWhereSql(sql, cwb, scantype, errortype, branchid, userid, ishanlder, scope);
 			sql += " order by createtime desc limit " + (page - 1) * Page.EXCEL_PAGE_NUMBER + " ," + Page.EXCEL_PAGE_NUMBER;
 			return jdbcTemplate.query(sql, new ExceptionCwbMapper(), beginemaildate, endemaildate);
@@ -216,10 +216,10 @@ public class ExceptionCwbDAO {
 			}
 		}
 		if (scope == 1) {
-			sql += " and errortype='' or errortype=null ";
+			sql += " and (errortype='' or errortype=null) ";
 		}
 		if (scope == 2) {
-			sql += " and errortype!='' or errortype!=null ";
+			sql += " and (errortype!='' or errortype!=null) ";
 		}
 		return sql;
 	}
@@ -280,10 +280,10 @@ public class ExceptionCwbDAO {
 			}
 		}
 		if (scope == 1) {
-			sql += " and errortype='' or errortype=null ";
+			sql += " and (errortype='' or errortype=null) ";
 		}
 		if (scope == 2) {
-			sql += " and errortype!='' or errortype!=null ";
+			sql += " and (errortype!='' or errortype!=null) ";
 		}
 		return sql;
 	}
