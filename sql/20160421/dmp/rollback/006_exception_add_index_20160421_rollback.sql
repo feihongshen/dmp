@@ -1,0 +1,1 @@
+ALTER TABLE `express_ops_exception_cwb` DROP INDEX `exception_cwb_createtime_idx`;
