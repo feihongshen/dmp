@@ -45,7 +45,7 @@ function buttonSave(form){
 			messageHeader:$.trim($("#messageHeader").val()),
 			handleCount:parseInt($("#handleCount").val()),
 			remarks:$.trim($("#remarks").val()),
-			isAutoreSend:$("#isAutoreSend").val()
+			isAutoResend:$("#isAutoResend").val()
 		},
 		dataType:"json",
 		success : function(data) {
@@ -67,7 +67,7 @@ function buttonSave(form){
 					<li><span>消息来源：</span><%=messageSourceName %></li>
 					<li style="height: auto !important;"><span>异常原因：</span>${mqException.exceptionInfo }</li>
 	           		<li><span>自动重发：</span>
-		           		 <select id="isAutoreSend" name="isAutoreSend" class="input_text1">
+		           		 <select id="isAutoResend" name="isAutoResend" class="input_text1">
 	 							<option value="1" <%if(mqException.isAutoResend()){%>selected<%} %>>是</option>
 	 							<option value="0" <%if(!mqException.isAutoResend()){%>selected<%} %>>否</option>
 	 					 </select> *
