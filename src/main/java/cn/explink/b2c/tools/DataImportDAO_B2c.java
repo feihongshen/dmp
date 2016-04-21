@@ -161,6 +161,7 @@ public class DataImportDAO_B2c {
 			cwbOrder.setIsmpsflag(rs.getInt("ismpsflag"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
 			cwbOrder.setVipclub(rs.getInt("vipclub"));
+			cwbOrder.setTpsTranscwb(rs.getString("tpsTranscwb"));
 			return cwbOrder;
 		}
 	}
@@ -181,8 +182,8 @@ public class DataImportDAO_B2c {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,nextbranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "paywayid,newpaywayid,multi_shipcwb,cargovolume,consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare,ismpsflag,mpsallarrivedflag,vipclub) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,? )", new PreparedStatementSetter() {
+						+ "paywayid,newpaywayid,multi_shipcwb,cargovolume,consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare,ismpsflag,mpsallarrivedflag,vipclub,tpstranscwb) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,? )", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, cwbOrderDTO.getCwb());
@@ -247,6 +248,7 @@ public class DataImportDAO_B2c {
 						ps.setInt(60, cwbOrderDTO.getIsmpsflag());
 						ps.setInt(61, cwbOrderDTO.getMpsallarrivedflag());
 						ps.setInt(62, cwbOrderDTO.getVipclub());
+						ps.setString(63, cwbOrderDTO.getTpsTranscwb());
 					}
 				});
 	}

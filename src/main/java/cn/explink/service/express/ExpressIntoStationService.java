@@ -175,6 +175,7 @@ public class ExpressIntoStationService {
 			String ids = params.getIds();
 			String idsBefore = "";
 			String idsAfter = "";
+			String idsOther = "";
 			//收件员
 			//Long deliverId = params.getDeliveryId();
 			//交件时间
@@ -187,8 +188,9 @@ public class ExpressIntoStationService {
 					idsBefore += ","+orderBefore.getOpscwbid();
 				}else if(orderBefore.getFlowordertype()==FlowOrderTypeEnum.LanJianRuZhan.getValue()){
 					idsAfter += ","+orderBefore.getOpscwbid();
+				}else{
+					idsOther += ","+orderBefore.getOpscwbid();
 				}
-				
 			}
 			Integer countTotal = 0;
 			if(!"".equals(idsBefore)){
@@ -209,6 +211,11 @@ public class ExpressIntoStationService {
 			if(!"".equals(idsAfter)){
 				idsAfter = idsAfter.substring(1,idsAfter.length());
 				Integer count = this.expressIntoStationDAO.executeIntoStationOpe(idsAfter, currentBranchId, nextBranchId, pickExpressTime, intoStationName);
+				countTotal += count;
+			}
+			if(!"".equals(idsOther)){
+				idsOther = idsOther.substring(1,idsOther.length());
+				Integer count = this.expressIntoStationDAO.executeIntoStationForOth(idsOther);
 				countTotal += count;
 			}
 			result.setRecordCount(countTotal);

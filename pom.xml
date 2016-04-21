@@ -67,7 +67,7 @@
 		<dependency>
 		     <groupId>com.pjbest</groupId> 
 			 <artifactId>pjdeliveryorder-service-api</artifactId> 
-			 <version>1.14.0_16</version>
+			 <version>1.15.6_13</version>
 			 <exclusions>
   				<exclusion>
   					<groupId>org.springframework</groupId>

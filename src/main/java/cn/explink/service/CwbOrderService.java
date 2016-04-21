@@ -502,14 +502,14 @@ public class CwbOrderService extends BaseOrderService {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub) "
+						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpstranscwb) "
 						+ "values(?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ " ?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
-						+ "?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+						+ "?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 
@@ -587,6 +587,7 @@ public class CwbOrderService extends BaseOrderService {
 						ps.setInt(65, cwbOrderDTO.getMpsallarrivedflag());
 						ps.setInt(66, FlowOrderTypeEnum.DaoRuShuJu.getValue());
 						ps.setInt(67, cwbOrderDTO.getVipclub());
+						ps.setString(68, cwbOrderDTO.getTpsTranscwb());
 					}
 
 				});
@@ -2730,7 +2731,7 @@ public class CwbOrderService extends BaseOrderService {
 
 				//写MQ异常表
 				try {
-					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".appendCreateFlowOrderJMS")
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".send")
 							.buildExceptionInfo(ee.toString()).buildTopic(this.orderFlowProducerTemplate.getDefaultEndpoint().getEndpointUri())
 							.buildMessageHeader("orderFlow", this.om.writeValueAsString(of)).getMqException());
 				} catch (IOException e) {
@@ -3619,7 +3620,7 @@ public class CwbOrderService extends BaseOrderService {
 		return arrive;
 	}
 	
-	private List<String> getTranscwbList(String transcwbs){
+	public List<String> getTranscwbList(String transcwbs){
 		if(transcwbs==null||transcwbs.length()<1){
 			return null;
 		}

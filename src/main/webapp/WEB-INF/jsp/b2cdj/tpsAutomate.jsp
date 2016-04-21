@@ -36,26 +36,26 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="selb2cnum" name ="selb2cnum" value="<%=vipshop.getSelb2cnum() %>"  maxlength="300">
 						</li>
 						
-						<li style="display: none;"><span>承运商编码：</span>
+						<li><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no" value="<%=vipshop.getShipper_no() %>"  maxlength="300">
 						</li>
 						<li style="display: none;"><span>加密秘钥：</span>
 							<input type ="text" id="private_key" name ="private_key" value="<%=vipshop.getPrivate_key() %>"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>每次获取订单数量：</span>
+						<li><span>每次获取订单数量：</span>
 							<input type ="text" id="getMaxCount" name ="getMaxCount" onblur="validate('getMaxCount')"  value="1"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>每次推送订单数量：</span>
+						<li><span>每次推送订单数量：</span>
 							<input type ="text" id="sendMaxCount" name ="sendMaxCount" onblur="validate('sendMaxCount')"  value="1"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>获取订单的URL：</span>
+						<li><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL" value="<%=vipshop.getGetCwb_URL() %>"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>反馈URL：</span>
+						<li><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL" value="<%=vipshop.getSendCwb_URL() %>"  maxlength="300">
 						</li>
 						
-						<li style="display: none;"><span>集包运单推送URL：</span>
+						<li><span>集包运单推送URL：</span>
 							<input type ="text" id="transflowUrl" name ="transflowUrl" value="<%=vipshop.getTransflowUrl()%>"  maxlength="300">
 						</li>
 						
@@ -76,7 +76,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isTuoYunDanFlag1" name ="isTuoYunDanFlag" value="1" disabled="disabled" >开启
 							<input type ="radio" id="isTuoYunDanFlag2" name ="isTuoYunDanFlag" value="0"  checked="checked" >关闭
 						</li>
-						<li><span>业务标识：</span>
+						<li style="display: none;"><span>业务标识：</span>
 							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0" disabled="disabled" <%if(vipshop.getIsShangmentuiFlag()==0){%>checked<%}%>  >配送
 							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1" disabled="disabled" <%if(vipshop.getIsShangmentuiFlag()==1){%>checked<%}%>  >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"   <%if(vipshop.getIsShangmentuiFlag()==2){%>checked<%}%>  >全部
@@ -125,26 +125,26 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="selb2cnum" name ="selb2cnum"   maxlength="300">
 						</li>	
 					
-						<li style="display: none;"><span>承运商编码：</span>
+						<li><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no"  maxlength="300">
 						</li>
 						<li style="display: none;"><span>加密秘钥：</span>
 							<input type ="text" id="private_key" name ="private_key"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>每次获取订单数量：</span>
+						<li><span>每次获取订单数量：</span>
 							<input type ="text" id="getMaxCount" name ="getMaxCount" value="1"  maxlength="300" onblur="javascript:validate('getMaxCount')">
 						</li>
-						<li style="display: none;"><span>每次推送订单数量：</span>
+						<li><span>每次推送订单数量：</span>
 							<input type ="text" id="sendMaxCount" name ="sendMaxCount" value="1"  maxlength="300" onblur="validate('sendMaxCount')">
 						</li>
-						<li style="display: none;"><span>获取订单的URL：</span>
+						<li><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL"   maxlength="300">
 						</li>
-						<li style="display: none;"><span>反馈URL：</span>
+						<li><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL"  maxlength="300"/>
 						</li>
 						
-						<li style="display: none;"><span>集包运单推送URL：</span>
+						<li><span>集包运单推送URL：</span>
 							<input type ="text" id="transflowUrl" name ="transflowUrl" value=""  maxlength="300">
 						</li>
 						
@@ -166,7 +166,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="isTuoYunDanFlag2" name ="isTuoYunDanFlag" value="0" checked>关闭
 						</li>
 						
-					    <li><span>业务标识：</span>
+					    <li style="display: none;"><span>业务标识：</span>
 							<input type ="radio" id="isShangmentuiFlag1" name ="isShangmentuiFlag" value="0" disabled="disabled"  >配送
 							<input type ="radio" id="isShangmentuiFlag2" name ="isShangmentuiFlag" value="1"  disabled="disabled"  >上门退
 							<input type ="radio" id="isShangmentuiFlag3" name ="isShangmentuiFlag" value="2"  checked >全部
