@@ -218,8 +218,9 @@ h1, h2, h3, h4, h5, h6 {
 										<div style="padding-left: 50px;">
 											<input name="validateCode" type="text"
 												class="login_forminput" id="validateCode" maxlength="4"
-												style="width: 120px; height: 25px" />&nbsp;&nbsp;<img
-												src="<%=request.getContextPath()%>/image?a=<%=System.currentTimeMillis()%>">
+												style="width: 120px; height: 25px" />&nbsp;&nbsp;
+												<img id="randomImage" src="<%=request.getContextPath()%>/image?a=javascript:Math.random()">
+												<a href="javascript:changeImg();" style="color: #e4393c; font-size: 12px; text-decoration: none;">换一张</a>
 										</div>
 										<div style="padding-left: 50px;">
 											<input type="submit" value=" "
@@ -269,5 +270,15 @@ h1, h2, h3, h4, h5, h6 {
 	<%
 		}
 	%>
+	
+	<script type="text/javascript">
+	$(function(){
+		changeImg();
+	});
+	
+	function changeImg(){
+		$("#randomImage").attr("src","<%=request.getContextPath()%>/image?a="+Math.random());
+	}
+  </script>
 </body>
 </html>
