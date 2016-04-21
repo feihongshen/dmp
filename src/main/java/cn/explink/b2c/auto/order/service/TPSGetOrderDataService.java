@@ -616,8 +616,8 @@ public class TPSGetOrderDataService {
 				original_weight = new BigDecimal("0");/**/; // 重量
 				original_volume = new BigDecimal("0");/**/; // 体积
 			}else{
-				original_weight = (BigDecimal) (String.valueOf(order.getOriginalWeight()).equals("") ? "0" : order.getOriginalWeight());
-				original_volume = (BigDecimal) (String.valueOf(order.getOriginalVolume()).equals("") ? "0" : order.getOriginalVolume());
+				original_weight = (String.valueOf(order.getOriginalWeight()).equals("") ? new BigDecimal("0") : order.getOriginalWeight());
+				original_volume = (String.valueOf(order.getOriginalVolume()).equals("") ? new BigDecimal("0") : order.getOriginalVolume());
 			}
 			String is_gatherpack = order.getIsGatherpack().toString(); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
 			String is_gathercomp = order.getIsGathercomp().toString(); //最后一箱:1最后一箱 ，0默认 
