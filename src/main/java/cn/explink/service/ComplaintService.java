@@ -322,7 +322,9 @@ public class ComplaintService {
 
 	public void send(Complaint complaint) {
 		try {
-			complaintTemplate.sendBodyAndHeader(null, "complaint", om.writeValueAsString(complaint));
+			String header =  om.writeValueAsString(complaint);
+			this.logger.info("消息发送端：complaintTemplate, complaint={}", header);
+			complaintTemplate.sendBodyAndHeader(null, "complaint", header);
 		} catch (Exception ee) {
 			logger.error("send flow complaint error", ee);
 			//写MQ异常表

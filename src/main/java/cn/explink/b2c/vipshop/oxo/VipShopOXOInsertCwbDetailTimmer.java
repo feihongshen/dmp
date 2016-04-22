@@ -132,6 +132,7 @@ public class VipShopOXOInsertCwbDetailTimmer {
 				map.put("address", pickAddress);
 				map.put("notifytype", 0);
 				try{
+					this.logger.info("消息发送端：addressmatch, header={}", map.toString());
 					addressmatch.sendBodyAndHeaders(null, map);//解析提货站点
 				}catch(Exception e){
 					logger.error("", e);
