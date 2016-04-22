@@ -67,6 +67,7 @@
 	// TODO added by wangwei, 用于DEBUG验证码，以后会撤销修改, start
 	System.out.println("---------- generate ValidateCode, start ----------");
 	System.out.println("(new Date()).toString() = " + (new Date()).toString());
+	System.out.println("session.getId() = " + session.getId());
 	System.out.println("sRand = " + sRand);
 	System.out.println("session.getAttribute(\"validateCode\") = " + session.getAttribute("validateCode"));
 	System.out.println("---------- generate ValidateCode, end ----------");
