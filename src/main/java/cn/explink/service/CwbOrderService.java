@@ -803,6 +803,7 @@ public class CwbOrderService extends BaseOrderService {
 		param.put("deliverpayupapproved", deliverpayupapproved);
 
 		try{
+			logger.info("消息发送端：updateBranchFinanceAuditStatusTemplate, updateBranchFinanceAuditStatus={}", param.toString());
 			this.updateBranchFinanceAuditStatusTemplate.sendBodyAndHeader("", "updateBranchFinanceAuditStatus", param.toString());
 		}catch(Exception e){
 			logger.error("", e);
