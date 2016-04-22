@@ -210,6 +210,7 @@ public class BranchService {
 	public void addzhandianToAddress(long branchid, Branch branch,String oldtpsbranchcode) {
 		JSONObject branchToJson = new JSONObject();
 		try {
+			this.logger.info("消息发送端：addzhandian, branchid={}", branchid);
 			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
 			
 			branchToJson.put("branchid", branchid);
@@ -226,6 +227,7 @@ public class BranchService {
 			branchToJson.put("tpsbranchcode", branch.getTpsbranchcode());
 			branchToJson.put("oldtpsbranchcode", oldtpsbranchcode==null?"":oldtpsbranchcode);
 			
+			this.logger.info("消息发送端：savezhandian, branch={}", branchToJson.toString());
 			this.savezhandian.sendBodyAndHeader(null, "branch", branchToJson.toString());
 		} catch (Exception e) {
 			logger.error("", e);
@@ -245,6 +247,7 @@ public class BranchService {
 
 	public void delBranch(long branchid) {
 		try {
+			this.logger.info("消息发送端：delzhandian, branchid={}", branchid);
 			this.delzhandian.sendBodyAndHeader(null, "branchid", branchid);
 		} catch (Exception e) {
 			logger.error("", e);

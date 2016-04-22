@@ -315,6 +315,7 @@ public class PayUpService {
 
 	public void sendPayUp(String sendJson) {
 		try{
+			logger.info("消息发送端：sendJMSPayUp, PayUp={}", sendJson);
 			this.sendJMSPayUp.sendBodyAndHeader(null, "PayUp", sendJson);
 		}catch(Exception e){
 			logger.error("", e);
