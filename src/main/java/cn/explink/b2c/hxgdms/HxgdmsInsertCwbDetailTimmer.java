@@ -124,6 +124,7 @@ public class HxgdmsInsertCwbDetailTimmer {
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", "1");
 				try{
+					this.logger.info("消息发送端：addressmatch, header={}", map.toString());
 					addressmatch.sendBodyAndHeaders(null, map);
 				}catch(Exception e){
 					logger.error("", e);

@@ -179,6 +179,7 @@ public class DeleteCwbService {
 	 */
 	public void loseCwbSendJMS(String cwb, long userid) {
 		try {
+			logger.info("消息发送端：losecwbProducerTemplate, cwbAndUserid={}", cwb + "," + userid);
 			losecwbProducerTemplate.sendBodyAndHeader(null, "cwbAndUserid", cwb + "," + userid);
 		} catch (Exception ee) {
 			logger.info("数据删除功能，cwb：{},error:{}", cwb, ee);

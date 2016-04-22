@@ -32,6 +32,7 @@ public class CourierService {
 		try {
 			this.logger.info("=========修改派送员唯速达" + user.getRealname() + "=================");
 			String jsonUser = JsonUtil.translateToJson(user);
+			this.logger.info("消息发送端：courierUpdate, body={},header={user:update}", jsonUser);
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "update");
 		} catch (Exception e) {
 			logger.error("", e);

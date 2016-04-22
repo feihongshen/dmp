@@ -448,6 +448,7 @@ public class TPSGetOrderDataService {
 							map.put("address", orderMap.get("remark4").replaceAll("&", ""));
 							map.put("notifytype", 0);
 							try{
+								this.logger.info("消息发送端：addressmatch, header={}", map.toString());
 								addressmatch.sendBodyAndHeaders(null, map);
 							}catch(Exception e){
 								logger.error("", e);

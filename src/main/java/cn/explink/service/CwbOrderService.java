@@ -736,6 +736,7 @@ public class CwbOrderService extends BaseOrderService {
 		object.put("cwbs", cwbs);
 		object.put("goodsType", Integer.valueOf(goodsType));
 		try{
+			logger.info("消息发送端：changeGoodsTypeTemplate, changeGoodsType={}", object.toString());
 			this.changeGoodsTypeTemplate.sendBodyAndHeader(null, "changeGoodsType", object.toString());
 		}catch(Exception e){
 			logger.error("", e);
@@ -802,6 +803,7 @@ public class CwbOrderService extends BaseOrderService {
 		param.put("deliverpayupapproved", deliverpayupapproved);
 
 		try{
+			logger.info("消息发送端：updateBranchFinanceAuditStatusTemplate, updateBranchFinanceAuditStatus={}", param.toString());
 			this.updateBranchFinanceAuditStatusTemplate.sendBodyAndHeader("", "updateBranchFinanceAuditStatus", param.toString());
 		}catch(Exception e){
 			logger.error("", e);
@@ -822,6 +824,7 @@ public class CwbOrderService extends BaseOrderService {
 		param.put("deliverpayupapproved", deliverpayupapproved);
 
 		try{
+			logger.info("消息发送端：updateFinanceAuditStatusTemplate, updateFinanceAuditStatus={}", param.toString());
 			this.updateFinanceAuditStatusTemplate.sendBodyAndHeader("", "updateFinanceAuditStatus", param.toString());
 		}catch(Exception e){
 			logger.error("", e);
@@ -2703,7 +2706,9 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			// JMS消息模式处理orderFlow
 			try {
-			    this.orderFlowProducerTemplate.sendBodyAndHeader(null, "orderFlow", this.om.writeValueAsString(of));
+				String header = this.om.writeValueAsString(of);
+				logger.info("消息发送端：orderFlowProducerTemplate, orderFlow={}", header);
+			    this.orderFlowProducerTemplate.sendBodyAndHeader(null, "orderFlow", header);
 			} catch (Exception ee) {
 				if (of.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {// 导入数据的话，手工调用保存订单号和运单号的表
 					logger.info("调接口执行运单号保存 单号：{}", of.getCwb());
@@ -2745,7 +2750,9 @@ public class CwbOrderService extends BaseOrderService {
 
 	public int resend(OrderFlow of) {
 			try {
-				this.orderFlowProducerTemplate.sendBodyAndHeader(null, "orderFlow", this.om.writeValueAsString(of));
+				String header = this.om.writeValueAsString(of);
+				logger.info("消息发送端：orderFlowProducerTemplate, orderFlow={}", header);
+				this.orderFlowProducerTemplate.sendBodyAndHeader(null, "orderFlow", header);
 			     return 1;
 			} catch (Exception ee) {
 				if (of.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {// 导入数据的话，手工调用保存订单号和运单号的表
@@ -2795,7 +2802,9 @@ public class CwbOrderService extends BaseOrderService {
 	 */
 	public void sendTranscwbOrderFlow(TranscwbOrderFlow tof) {
 		try {
-			this.transCwbOrderFlowProducerTemplate.sendBodyAndHeader(null, "transCwbOrderFlow", JacksonMapper.getInstance().writeValueAsString(tof));
+			String header = JacksonMapper.getInstance().writeValueAsString(tof);
+			logger.info("消息发送端：transCwbOrderFlowProducerTemplate, transCwbOrderFlow={}", header);
+			this.transCwbOrderFlowProducerTemplate.sendBodyAndHeader(null, "transCwbOrderFlow", header);
 		} catch (Exception ee) {
 			logger.error("send transCwbOrderFlow message error,scancwb=" + tof.getScancwb(), ee);
 			
@@ -8128,7 +8137,9 @@ public class CwbOrderService extends BaseOrderService {
 
 	public void deletecwb(String cwb) {
 		try {
+			logger.info("消息发送端：losecwbbatchProducerTemplate, cwbbatchDelete={}", cwb);
 			this.losecwbbatchProducerTemplate.sendBodyAndHeader(null, "cwbbatchDelete", cwb);
+			logger.info("消息发送端：dataLoseByCwb, cwb={}", cwb);
 			this.dataLoseByCwb.sendBodyAndHeader(null, "cwb", cwb);
 			logger.info("订单失效准备发送jms--");
 		} catch (Exception e) {
