@@ -105,14 +105,14 @@ public class TpsCwbFlowPushService {
 				if(reqList!=null&&reqList.size()>0){
 					if(reqList.size()<2){
 						DoTrackFeedbackRequest req=reqList.get(0);
-						send(req,60000);
+						send(req,6000);
 						vo.setErrinfo("");
 						vo.setState(1);//0等待处理，1成功处理，2错误
 						this.tpsCwbFlowService.update(vo);
 					}else{
 						List<String> transcwbList=new ArrayList<String>();
 						for(DoTrackFeedbackRequest req:reqList){
-							send(req,60000);
+							send(req,6000);
 							transcwbList.add(req.getBoxInfo().getBoxNo());
 						}
 						this.tpsCwbFlowService.complete(vo,transcwbList,1);
@@ -189,8 +189,7 @@ public class TpsCwbFlowPushService {
 				for(String trancwb:transcwbList){
 					DoTrackFeedbackRequest req=new DoTrackFeedbackRequest();
 					req.setTransportNo(transportNo);
-					req.setCustOrderNo(vo.getCwb());
-					req.setOperateType(3);//出库对应tps的出站扫描3
+					req.setOperateType(1);//入库对应tps的入站扫描1
 					req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 					req.setOperater(operateUser==null?null:operateUser.getRealname());
 					req.setOperateTime(createDate);
@@ -226,8 +225,7 @@ public class TpsCwbFlowPushService {
 			
 			DoTrackFeedbackRequest req=new DoTrackFeedbackRequest();
 			req.setTransportNo(transportNo);
-			req.setCustOrderNo(vo.getCwb());
-			req.setOperateType(3);//出库对应tps的出站扫描3
+			req.setOperateType(1);//入库对应tps的入站扫描1
 			req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 			req.setOperater(operateUser==null?null:operateUser.getRealname());
 			req.setOperateTime(flow.getCredate());
