@@ -106,6 +106,7 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		// TODO added by wangwei, 用于DEBUG验证码，以后会撤销修改, start
 		System.out.println("---------- check ValidateCode, start ----------");
 		System.out.println("(new Date()).toString() = " + (new Date()).toString());
+		System.out.println("request.getSession().getId() = " + request.getSession().getId());
 		System.out.println("request.getSession().getAttribute(\"validateCode\") = " + request.getSession().getAttribute("validateCode"));
 		System.out.println("request.getParameter(\"validateCode\") = " + request.getParameter("validateCode"));
 		System.out.println("---------- check ValidateCode, end ----------");
