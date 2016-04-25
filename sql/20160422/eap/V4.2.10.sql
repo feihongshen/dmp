@@ -29,4 +29,21 @@ INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionor
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803003', '2', '缴款导入管理', '803003', '${eapUrl}orgPayManager.do?index&', '8030');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803004', '2', '预付款管理', '803004', '${eapUrl}orgAdvancePay.do?index&', '8030');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803005', '2', '缴款账户余额查询', '803005', '${eapUrl}orgAccountBalance.do?index&', '8030');
-INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803060', '2', '签收小件员余额报表', '803060', '${eapUrl}reportForm.do?couriersSignFeeFormIndex&', '8030');
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803070', '2', '签收小件员余额报表', '803070', '${eapUrl}reportForm.do?couriersSignFeeFormIndex&', '8030');
+
+CREATE TABLE `fn_rpt_station_sign_person` (
+	`id` BIGINT(10) NOT NULL AUTO_INCREMENT,
+	`branchid` INT(11) NULL DEFAULT '-1' COMMENT '机构编号',
+	`deliveryid` INT(11) NOT NULL COMMENT '小件员',
+	`amount` DECIMAL(20,2) NULL DEFAULT '0.00' COMMENT '金额',
+	`typeid` INT(11) NULL DEFAULT '-1' COMMENT '报表类型',
+	`state` INT(11) NULL DEFAULT '1' COMMENT '记录状态',
+	`reportdate` INT(11) NOT NULL COMMENT '报表日期',
+	`createtime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建更新时间',
+	PRIMARY KEY (`id`),
+	INDEX `order_lc_branchid_idx` (`branchid`),
+	INDEX `order_lc_deliveryid_idx` (`deliveryid`),
+	INDEX `order_lc_reportdate_idx` (`reportdate`)
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB;
