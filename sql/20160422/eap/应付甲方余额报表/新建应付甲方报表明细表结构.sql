@@ -17,6 +17,6 @@ create table `fn_brance_report_detail`(
    `adjust_amount` decimal(18,4) NOT NULL DEFAULT '0' COMMENT '调整金额',
    `order_from_type` int COMMENT '订单来源：0-应付当期，1-应收当期 ，2-POS抵扣当期，3-当期丢失，4-当期退货' ,
    `create_time` timestamp COMMENT '创建时间' ,
-   `is_archive` int DEFAULT 0 COMMENT '是否归档 0-未归档 1-已归档' ,
+   `is_archive` int DEFAULT 0 COMMENT '是否归档 0-未归档 1-已归档' ,  
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
