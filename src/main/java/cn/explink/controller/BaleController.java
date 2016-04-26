@@ -296,7 +296,7 @@ public class BaleController {
 			
 			this.baleDAO.updateAddBaleScannum(baleno); //要点：做完所有的写操作最后再读出！
 			Bale bale = this.baleDAO.getBaleOneByBalenoLock(baleno.trim());
-			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao);
+			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
