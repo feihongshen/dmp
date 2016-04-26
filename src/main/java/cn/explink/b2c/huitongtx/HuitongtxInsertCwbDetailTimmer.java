@@ -19,7 +19,6 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.MqExceptionDAO;
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
@@ -142,6 +141,7 @@ public class HuitongtxInsertCwbDetailTimmer {
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", "1");
 				try{
+					this.logger.info("消息发送端：addressmatch, header={}", map.toString());
 					addressmatch.sendBodyAndHeaders(null, map);
 				}catch(Exception e){
 					logger.error("", e);

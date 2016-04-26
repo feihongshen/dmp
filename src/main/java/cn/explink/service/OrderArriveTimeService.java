@@ -96,6 +96,7 @@ public class OrderArriveTimeService {
 			try {
 				json.put("cwb", list.getCwb());
 				json.put("time", arrivetime);
+				logger.info("消息发送端：daocheProducerTemplate, daocheCwbAndTime={}", json.toString());
 				daocheProducerTemplate.sendBodyAndHeader(null, "daocheCwbAndTime", json.toString());
 			} catch (Exception ee) {
 				logger.error("send flow message error", ee);

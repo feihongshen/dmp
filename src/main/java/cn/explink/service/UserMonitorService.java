@@ -105,6 +105,7 @@ public class UserMonitorService {
 	public void send(String parms) {
 
 		try {
+			logger.info("消息发送端：userMonitorProducerTemplate, userMonitor={}", parms);
 			userMonitorProducerTemplate.sendBodyAndHeader(null, "userMonitor", parms);
 		} catch (Exception ee) {
 			logger.error("send userMonitor message error", ee);

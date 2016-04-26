@@ -107,38 +107,6 @@ public class VipshopInsertCwbDetailTimmer {
 		}
 	}
 
-	private String dealWithOders(VipShop vipshop, String lefengCustomerid) {
-		
-		String cwbordertypeids=CwbOrderTypeIdEnum.Peisong.getValue()+","+CwbOrderTypeIdEnum.Shangmentui.getValue()+","+CwbOrderTypeIdEnum.Shangmenhuan.getValue();
-		
-		List<CwbOrderDTO> cwbOrderList=dataImportDAO_B2c.getCwbOrderTempByKeysExtends((vipshop.getCustomerids()+","+lefengCustomerid),cwbordertypeids);
-
-		if (cwbOrderList == null) {
-			return null;
-		}
-		if (cwbOrderList.size() == 0) {
-			return null;
-		}
-
-		int k = 1;
-		int batch = 50;
-		while (true) {
-
-			int fromIndex = (k - 1) * batch;
-			if (fromIndex >= cwbOrderList.size()) {
-				break;
-			}
-			int toIdx = k * batch;
-			if (k * batch > cwbOrderList.size()) {
-				toIdx = cwbOrderList.size();
-			}
-			List<CwbOrderDTO> subList = cwbOrderList.subList(fromIndex, toIdx);
-			ImportSubList(vipshop.getCustomerids(), vipshop.getWarehouseid(), subList, vipshop);
-			k++;
-		}
-		return "OK";
-	}
-
 	@Transactional
 	public void ImportSubList(String customerid, long tmallWarehouseId, List<CwbOrderDTO> cwbOrderList, VipShop vipshop) {
 
@@ -234,6 +202,7 @@ public class VipshopInsertCwbDetailTimmer {
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", "1");
 				try{
+					this.logger.info("消息发送端：addressmatch, header={}", map.toString());
 					addressmatch.sendBodyAndHeaders(null, map);
 				}catch(Exception e){
 					logger.error("", e);

@@ -394,6 +394,7 @@ public class BranchContractService {
 	public void addzhandianToAddress(long branchid, Branch branch) {
 		JSONObject branchToJson = new JSONObject();
 		try {
+			this.logger.info("消息发送端：addzhandian, branchid={}", branchid);
 			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
 			
 			branchToJson.put("branchid", branchid);
@@ -408,6 +409,7 @@ public class BranchContractService {
 			branchToJson.put("branchprovince", branch.getBranchprovince());
 			branchToJson.put("brancharea", branch.getBrancharea());
 
+			this.logger.info("消息发送端：savezhandian, branch={}", branchToJson.toString());
 			this.savezhandian.sendBodyAndHeader(null, "branch",
 					branchToJson.toString());
 		} catch (Exception e) {

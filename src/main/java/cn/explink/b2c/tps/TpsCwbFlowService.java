@@ -13,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.dao.BranchDAO;
 import cn.explink.dao.TpsCwbFlowDao;
+import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.TpsCwbFlowVo;
-
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import net.sf.json.JSONObject;
 
@@ -28,9 +30,11 @@ public class TpsCwbFlowService {
 	private TpsCwbFlowDao tpsCwbFlowDao;
 	@Autowired
 	private JointService jointService;
+	@Autowired
+	private BranchDAO branchDAO;
 	
 	@Transactional
-	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype) {
+	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype,long currentbranchid) {
 		if (flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
 			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.TPS_Cwb_Flow.getKey());//
 			if(isOpenFlag!=1){
@@ -47,6 +51,12 @@ public class TpsCwbFlowService {
 			if(co==null||scancwb==null){
 				return;
 			}
+			
+			Branch currentbranch = this.branchDAO.getBranchById(currentbranchid);
+			if(currentbranch==null||currentbranch.getSitetype()!=BranchEnum.KuFang.getValue()){
+				return;
+			}
+
 			Set<Long> customerids= getVipshopId(cfg.getCustomerids());
 			if(customerids!=null&&customerids.contains(co.getCustomerid())){
 				TpsCwbFlowVo vo = new TpsCwbFlowVo();
