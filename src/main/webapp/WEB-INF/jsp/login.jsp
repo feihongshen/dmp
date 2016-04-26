@@ -272,9 +272,9 @@ h1, h2, h3, h4, h5, h6 {
 	%>
 	
 	<script type="text/javascript">
-	$(function(){
-		changeImg();
-	});
+// 	$(function(){
+// 		changeImg();
+// 	});
 	
 	function changeImg(){
 		$("#randomImage").attr("src","<%=request.getContextPath()%>/image?a="+Math.random());
