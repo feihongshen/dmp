@@ -403,35 +403,6 @@ function  showbybranchid(branchid){
 	}
 }
 
-///播放声音文件开始//////
-//调用方法  playWav('12345')
-function playWav(str){
-	var strSplit=str.split("");
-	for(var i=0;i<strSplit.length;i++) {
-		  (function(i){
-		    setTimeout(function(){
-		    	url="<%=wavPath%>"+strSplit[i]+".wav";
-		    	var src="<EMBED id='wav' name='wav' src='"+url+"' LOOP=false AUTOSTART=true MASTERSOUND HIDDEN=true WIDTH=0 HEIGHT=0></EMBED>"+
-		    	"<div id='FlashMusicBox' class='FlashMusicBox' style='position:absolute; overflow:hidden; left:-10000px; top:-10000px; width:10px; height:10px; border:solid 1px #F00;'>"+
-		    	  "<object class='FlashMusic' classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,19,0' width='990' height='222'>"+
-		    		"<param id='movie' name='movie' value='"+url+"'/><param name='quality' value='high' /><param name='wmode' value='transparent' />  <param name='LOOP' value='0' />"+ 
-		    		"<embed class='FlashMusic' src='"+url+"' quality='high' pluginspage='http://www.macromedia.com/go/getflashplayer' type='application/x-shockwave-flash' width='990' height='222' wmode='transparent' loop='-1' ></embed>"+
-		    	"</object></div>"; 
-		    	$("#emb").html(src);
-		    	
-		    	/* document.getElementById('wav').play(); */
-		    	playWavcommit("bofang()",200);
-		  },400*i);
-		 })(i);
-	}
-	}
-	
-	function playWavcommit(){
-		document.getElementById('wav').play();
-	}
-	///播放声音文件结束//////
-	
-	
 //=============出库根据包号扫描订单检查===============
 function baleaddcwbCheck(){
 	if($("#branchid").val()==0){
@@ -487,7 +458,15 @@ function baleaddcwb(){
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
-				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+				var c=data.body.successCount+'';
+				var strSplit=c.split("");
+				for(var i=0;i<strSplit.length;i++) {
+					  (function(i){
+					    setTimeout(function(){
+					    	numbervedioplay("<%=request.getContextPath()%>",strSplit[i]);
+					  },400*i);
+					 })(i);
+				}
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);
 				errorvedioplay("<%=request.getContextPath()%>",data);
