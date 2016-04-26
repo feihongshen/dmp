@@ -215,7 +215,7 @@ public class ExpressIntoStationService {
 			}
 			if(!"".equals(idsOther)){
 				idsOther = idsOther.substring(1,idsOther.length());
-				Integer count = this.expressIntoStationDAO.executeIntoStationForOth(idsOther);
+				Integer count = this.expressIntoStationDAO.executeIntoStationForOth(idsOther,currentBranchId,pickExpressTime,intoStationName);
 				countTotal += count;
 			}
 			result.setRecordCount(countTotal);
