@@ -301,8 +301,9 @@ public class ExpressOrderDao {
 		}
 		// 未合包
 		//sql.append(" and detail.cwb not in(select bale_cwb.cwb from express_ops_bale_cwb bale_cwb inner join express_ops_bale bale on bale_cwb.baleid=bale.id where bale.balestate<>7)");
-		sql.append(" and not exists (select 1 from express_ops_bale_cwb bale_cwb, express_ops_bale bale where bale_cwb.baleid=bale.id and detail.cwb = bale_cwb.cwb and bale.balestate<>7)");
-
+		//sql.append(" and not exists (select 1 from express_ops_bale_cwb bale_cwb, express_ops_bale bale where bale_cwb.baleid=bale.id and detail.cwb = bale_cwb.cwb and bale.balestate<>7)");
+		sql.append(" and not exists (select 1 from express_ops_bale_cwb bale_cwb, express_ops_bale bale where bale_cwb.baleid=bale.id and bale.branchid=" + currentBranchid + " and bale.balestate<>7 and bale_cwb.cwb=detail.cwb)");
+		
 		if ((excludeWaybillNoList != null) && !excludeWaybillNoList.isEmpty()) {
 			sql.append(" and detail.cwb not ");
 			sql.append(Tools.assembleInByList(excludeWaybillNoList));
