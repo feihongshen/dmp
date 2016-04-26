@@ -674,9 +674,8 @@ function gonggongObj_branch() {
 	$("#insert").parent().show();
 
 }
-function payMthodchange(obj){
-	if(obj.id == "tl"){//通联显示，	财付通隐藏
-		
+function payMthodchange(objId){
+	if(objId == "tl"){//通联显示，	财付通隐藏
 		$("#bankCardNo").parent().show();
 		$("#bankCode").parent().show();
 		$("#ownerName").parent().show();
@@ -688,7 +687,7 @@ function payMthodchange(obj){
 		$("#cftAccountProp").parent().hide();
 		$("#cftCertId").parent().hide();
 		$("#cftCertType").parent().hide();
-	}else{//财付通显示，通联隐藏
+	}else if(objId == "cft"){//财付通显示，通联隐藏
 		$("#cftAccountNo").parent().show();
 		$("#cftBankCode").parent().show();
 		$("#cftAccountName").parent().show();
