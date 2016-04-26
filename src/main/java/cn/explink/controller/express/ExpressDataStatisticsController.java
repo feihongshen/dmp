@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.controller.CwbOrderView;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
@@ -434,6 +437,7 @@ public class ExpressDataStatisticsController {
 	}
 
 	@RequestMapping("/exportExcle4express")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request) {
 		String[] cloumnName1 = new String[17]; // 导出的列名
 		String[] cloumnName2 = new String[17]; // 导出的英文列名
