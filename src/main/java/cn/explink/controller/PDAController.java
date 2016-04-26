@@ -4096,7 +4096,7 @@ public class PDAController {
 			cwb = this.cwbOrderService.translateCwb(cwb);
 			CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid,
 					requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
-			this.tpsCwbFlowService.save(cwbOrder, scancwb, FlowOrderTypeEnum.ChuKuSaoMiao);
+			this.tpsCwbFlowService.save(cwbOrder, scancwb, FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
 			obj.put("packageCode", baleno);
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 			obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
@@ -6949,7 +6949,7 @@ public class PDAController {
 			obj.put("cwb", cwb);
 			try {// 成功订单
 				CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, 0, confirmflag == 1, "", "", 0, false, false);
-				this.tpsCwbFlowService.save(cwbOrder, scancwb, FlowOrderTypeEnum.ChuKuSaoMiao);
+				this.tpsCwbFlowService.save(cwbOrder, scancwb, FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				for (Customer c : cList) {
