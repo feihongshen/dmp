@@ -14,6 +14,7 @@ import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CwbDAO;
 import cn.explink.dao.TpsCwbFlowDao;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
@@ -32,6 +33,9 @@ public class TpsCwbFlowService {
 	private JointService jointService;
 	@Autowired
 	private BranchDAO branchDAO;
+	
+	@Autowired
+	private CwbDAO cwbDAO;
 	
 	@Transactional
 	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype,long currentbranchid) {
@@ -56,16 +60,22 @@ public class TpsCwbFlowService {
 			if(currentbranch==null||currentbranch.getSitetype()!=BranchEnum.KuFang.getValue()){
 				return;
 			}
+			
+			String transportNo=cwbDAO.getTpsTransportNoByCwb(co.getCwb());
+			if(transportNo==null||transportNo.length()<1){
+				return;
+			}
 
-			Set<Long> customerids= getVipshopId(cfg.getCustomerids());
-			if(customerids!=null&&customerids.contains(co.getCustomerid())){
+			//暂时不考虑外单;外单tps运单号目前放在oms数据库
+			//Set<Long> customerids= getVipshopId(cfg.getCustomerids());
+			//if(customerids!=null&&customerids.contains(co.getCustomerid())){
 				TpsCwbFlowVo vo = new TpsCwbFlowVo();
 				vo.setCwb(co.getCwb());
 				vo.setFlowordertype(flowordertype.getValue());
 				vo.setScancwb(scancwb);
 				vo.setState(0);
 				this.tpsCwbFlowDao.save(vo);
-			}
+			//}
 		}  	
 	}
 
