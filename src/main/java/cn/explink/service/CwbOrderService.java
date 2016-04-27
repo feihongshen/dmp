@@ -3653,7 +3653,7 @@ public class CwbOrderService extends BaseOrderService {
 			transcwbArr=transcwbs.split(":");
 		}
 		
-		if(transcwbArr!=null&&transcwbArr.length>1){
+		if(transcwbArr!=null&&transcwbArr.length>0){
 			for(String transcwbStr:transcwbArr){
 				String transcwb=transcwbStr==null?null:transcwbStr.trim();
 				if(transcwb!=null&&transcwb.length()>0){
