@@ -85,8 +85,13 @@ function editInit(){
 			window.parent.initBranch(initBranchList[i]);
 		}
 	}
-	 	//点击触发切换效果
-		parent.window.$("input[name='payMethodType']:checked").click();
+	 
+		var sitetype = parent.window.$("#sitetype").val();
+		if ('<%=BranchEnum.ZhanDian.getValue()%>' == sitetype) { //机构类型为站点
+				//点击触发切换效果
+				parent.window.$("input[name='payMethodType']:checked").click();
+		}
+	 	
 }
 function editSuccess(data){
 	window.parent.closeBox();

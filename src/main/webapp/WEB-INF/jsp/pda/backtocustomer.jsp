@@ -349,7 +349,15 @@ function baleaddcwb(){
 			$("#scancwb").val("");
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
-				numbervedioplay("<%=request.getContextPath()%>",data.body.successCount);
+				var c=data.body.successCount+'';
+				var strSplit=c.split("");
+				for(var i=0;i<strSplit.length;i++) {
+					  (function(i){
+					    setTimeout(function(){
+					    	numbervedioplay("<%=request.getContextPath()%>",strSplit[i]);
+					  },400*i);
+					 })(i);
+				}
 			}else{
 				$("#msg").html("（异常扫描）"+data.body.errorinfo);
 				errorvedioplay("<%=request.getContextPath()%>",data);
