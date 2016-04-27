@@ -8231,6 +8231,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getMonitorLogByBranchid(String branchids,
 			String customerids, String wheresql, long page) {
 		StringBuffer sql = new StringBuffer(
@@ -8253,6 +8254,7 @@ public class CwbDAO {
 		return list;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByBranchid(String branchids, String customerids,
 			String wheresql) {
 		String notcwbString = this.getEffectiveCwbString(branchids,
@@ -8268,6 +8270,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(
 			String branchids, String customerids, String wheresql) {
 		StringBuffer sql = new StringBuffer(
@@ -8281,6 +8284,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public String getEffectiveCwbString(String branchids, String customerids,
 			String wheresql) {
 		String suffer = "'";
@@ -8303,6 +8307,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getMonitorLogByType(String wheresql, String branchid,
 			long page, String branchids) {
 
@@ -8352,6 +8357,7 @@ public class CwbDAO {
 		return sql.toString();
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByType(String wheresql, String branchid,
 			String branchids) {
 

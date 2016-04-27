@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.b2c.explink.core_down.EpaiApi;
 import cn.explink.b2c.explink.core_down.EpaiApiDAO;
 import cn.explink.dao.CustomerDAO;
@@ -64,6 +67,7 @@ public class B2cAutoDownloadMonitorController {
 	}
 
 	@RequestMapping("/export")
+	@DataSource(DatabaseType.REPLICA)
 	public void ExportB2cDataExptInfo(
 			@RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") String customerid,

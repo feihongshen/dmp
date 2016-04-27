@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,6 +21,9 @@ import cn.explink.domain.ExceptionCwb;
 import cn.explink.domain.User;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
+
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
 
 @Component
 public class ExceptionCwbDAO {
@@ -51,6 +53,7 @@ public class ExceptionCwbDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<ExceptionCwb> getAllECByPage(long page, String cwb, long scantype, String errortype, String branchid, String userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
 		try {
 			String sql = "select * from express_ops_exception_cwb force index(detail_cwb_idx,exception_cwb_createtime_idx) where createtime >? and createtime <?";
@@ -62,6 +65,7 @@ public class ExceptionCwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<ExceptionCwb> getAllECByExcel(long page, String cwb, long scantype, String errortype, String branchid, long userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
 		try {
 			String sql = "select * from express_ops_exception_cwb force index(detail_cwb_idx,exception_cwb_createtime_idx) where createtime >? and createtime <?";
@@ -73,6 +77,7 @@ public class ExceptionCwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getAllECCount(String cwb, long scantype, String errortype, String branchid, String userid, long ishanlder, String beginemaildate, String endemaildate, long scope) {
 		String sql = "select count(1)  from express_ops_exception_cwb where createtime >? and createtime <?";
 		sql = this.getECByWhereSqlNew1(sql, cwb, scantype, errortype, branchid, userid, ishanlder, scope);
