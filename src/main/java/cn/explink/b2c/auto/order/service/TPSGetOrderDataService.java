@@ -698,6 +698,8 @@ public class TPSGetOrderDataService {
 			orderDTO.setIsaudit(orderDTO.getIsaudit());
 			//团购标识
 			orderDTO.setVipclub(order.getVipClub().equals("3")?1:0);
+			//tps运单号	
+			orderDTO.setTpsTranscwb(order_sn);
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
 			orderDTO.setIsmpsflag(choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 			orderDTO.setMpsallarrivedflag(choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
