@@ -30,8 +30,8 @@ public class JdCwbTrackController {
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	private static volatile int currentConnCount=0;
-	private static int limiMaxConnCount=10000;//最大请求并发数
+	//private static volatile int currentConnCount=0;
+	//private static int limiMaxConnCount=10000;//最大请求并发数
 	
 	/**
 	 * 显示接口配置界面
@@ -67,10 +67,10 @@ public class JdCwbTrackController {
 	 */
 	@RequestMapping("/track")
 	public @ResponseBody String getCwbTrack(HttpServletRequest request, HttpServletResponse response) {
-		currentConnCount++;
+		/*currentConnCount++;
 		if(currentConnCount>limiMaxConnCount){
 			return "系统繁忙，请稍后再试";
-		}
+		}*/
 		try {
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
@@ -109,11 +109,11 @@ public class JdCwbTrackController {
 			}
 			
 			String responseXML=jdCwbTrackService.requestCwbSearchInterface(billcode, config);
-			currentConnCount--;
+			//currentConnCount--;
 			return responseXML;
 		} catch (Exception e) {
 			logger.error("[京东_订单跟踪]处理业务逻辑异常！", e);
-			currentConnCount--;
+			//currentConnCount--;
 			return "[京东_订单跟踪]处理业务逻辑异常！";
 		}
 		

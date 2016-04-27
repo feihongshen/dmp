@@ -1755,18 +1755,22 @@ public class CwbOrderService extends BaseOrderService {
 			nextbranchid = cwbOrder.getNextbranchid();
 			
 			//Added by leoliao at 2016-03-30 到货扫描在到错货的情况计算扫描次数需要把flowordertype改为8(到错货)
-			if ((nextbranchid != 0) && (nextbranchid != userbranch.getBranchid()) && (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
-				flowOrderType = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-			}
+//			if ((nextbranchid != 0) && (nextbranchid != userbranch.getBranchid()) && (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
+//				flowOrderType = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+//			}
 			//Added end
 		}		
 		
-		this.mpsCommonService.resetScannumByTranscwb(scancwb, flowOrderType, user.getBranchid(), nextbranchid);
+//		this.mpsCommonService.resetScannumByTranscwb(scancwb, flowOrderType, user.getBranchid(), nextbranchid);
+		
+		//update neo01.huang,2016-4-21
+		//重设扫描次数（分站到货扫描）
+		this.mpsCommonService.resetScannumByTranscwbForArrive(scancwb, flowOrderType, user.getBranchid());
 	}
 
 	private CwbOrder handleSubstationGoodsYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
@@ -1798,19 +1802,26 @@ public class CwbOrderService extends BaseOrderService {
 					//this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 					
 					//Added by leoliao at 2016-03-30 到货扫描在到错货的情况需要把flowordertype改为8(到错货)，然后删除缺件表记录。
-					long flowOrderTypeTemp = flowOrderTypeEnum.getValue();
-					if ((co.getNextbranchid() != 0) && (co.getNextbranchid() != currentbranchid) 
-						&& (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) 
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
-						flowOrderTypeTemp = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-					}
-					
-					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeTemp, isypdjusetranscwb, 0);
+//					long flowOrderTypeTemp = flowOrderTypeEnum.getValue();
+//					if ((co.getNextbranchid() != 0) && (co.getNextbranchid() != currentbranchid) 
+//						&& (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) 
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
+//						flowOrderTypeTemp = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+//					}
+//					
+//					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeTemp, isypdjusetranscwb, 0);
 					//Added end
+					
+					//update by neo01.huang，2016-4-21
+					//清除缺件记录
+					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+					//同时，也要把当前站点的到错货的缺件记录，也一并删除
+					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), isypdjusetranscwb, 0);
+					
 				}
 				if (newMPSOrder) {
 					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
