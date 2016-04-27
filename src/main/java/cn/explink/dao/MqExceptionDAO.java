@@ -108,7 +108,8 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	 * @param handleFlag
 	 * @return
 	 */
-	public List<MqException> getMqExceptionByWhere(long page, String exceptionCode, String topic, String handleFlag, String messageSource, String isAutoResend) {
+	public List<MqException> getMqExceptionByWhere(long page, String exceptionCode, String topic, String handleFlag, String messageSource, 
+			String isAutoResend, String createdDtmLocStart, String createdDtmLocEnd) {
 		String sql = "SELECT * from mq_exception where 1=1";
 		if (null != exceptionCode && !"".equals(exceptionCode.trim())) {
 			sql += " and exception_code = '" + exceptionCode+ "'";
@@ -125,7 +126,13 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 		if (null != isAutoResend && !"".equals(isAutoResend.trim())) {
 			sql += " and is_auto_resend = " + isAutoResend;
 		}
-		
+		if (null != createdDtmLocStart && !"".equals(createdDtmLocStart.trim())) {
+			sql += " and created_dtm_loc > '" + createdDtmLocStart + "'";
+		}
+		if (null != createdDtmLocEnd && !"".equals(createdDtmLocEnd.trim())) {
+			sql += " and created_dtm_loc < '" + createdDtmLocEnd + "'";
+		}
+
 		sql += " and is_deleted=0 order by created_dtm_loc desc limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
 
 		List<MqException> cscList = getJdbcTemplate().query(sql, new MqExceptionRowMapper());
@@ -139,7 +146,8 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 	 * @param handleFlag
 	 * @return
 	 */
-	public long getSystemInstallCount(String exceptionCode, String topic, String handleFlag, String messageSource, String isAutoResend) {
+	public long getSystemInstallCount(String exceptionCode, String topic, String handleFlag, String messageSource, 
+			String isAutoResend, String createdDtmLocStart, String createdDtmLocEnd) {
 		String sql = "SELECT count(1) from mq_exception where 1=1";
 		if (null != exceptionCode && !"".equals(exceptionCode.trim())) {
 			sql += " and exception_code = '" + exceptionCode+ "'";
@@ -155,6 +163,12 @@ public class MqExceptionDAO extends BasicJdbcTemplateDaoSupport<MqException, Lon
 		}
 		if (null != isAutoResend && !"".equals(isAutoResend.trim())) {
 			sql += " and is_auto_resend = " + isAutoResend;
+		}
+		if (null != createdDtmLocStart && !"".equals(createdDtmLocStart.trim())) {
+			sql += " and created_dtm_loc > '" + createdDtmLocStart + "'";
+		}
+		if (null != createdDtmLocEnd && !"".equals(createdDtmLocEnd.trim())) {
+			sql += " and created_dtm_loc < '" + createdDtmLocEnd + "'";
 		}
 		sql += " and is_deleted=0";
 		return getJdbcTemplate().queryForLong(sql);

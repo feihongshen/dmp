@@ -11,6 +11,8 @@
 	String handleFlag = (String)request.getAttribute("handleFlag");
 	String messageSource = (String)request.getAttribute("messageSource");
 	String isAutoResend = (String)request.getAttribute("isAutoResend");
+	String createdDtmLocStart = (String)request.getAttribute("createdDtmLocStart");
+	String createdDtmLocEnd = (String)request.getAttribute("createdDtmLocEnd");
 	
 	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
@@ -24,6 +26,14 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
+<script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/My97DatePicker/WdatePicker.js"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 
@@ -55,13 +65,29 @@ function loadExceptionCode(){
 	});
 }
 
+//提交函数
+function submitFun(){
+	var createdDtmLocStart = $("#createdDtmLocStart").val();
+	if(createdDtmLocStart && createdDtmLocStart.length != 19){
+		alert("日期格式有问题,不是{yyyy-MM-dd HH:mm:ss}，请检查！");
+		return false;
+	}
+	var createdDtmLocEnd = $("#createdDtmLocEnd").val();
+	if(createdDtmLocEnd && createdDtmLocEnd.length != 19){
+		alert("日期格式有问题,不是{yyyy-MM-dd HH:mm:ss}，请检查！");
+		return false;
+	}
+	$('#searchForm').attr('action',1);
+	return true;
+}
+
 </script>
 </head>
 
 <body style="background:#f5f5f5">
 
 <div class="right_box">
-	<div class="inputselect_box">
+	<div class="inputselect_box" style="position:static;">
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		编码：<select id="exceptionCode" name="exceptionCode" class="input_text1" style="height:21px;width:180px;word-wrap:normal;">
 		    <option value=""></option>
@@ -82,16 +108,21 @@ function loadExceptionCode(){
 		        <option value="">所有</option>
 				<option value="1">是</option>
 				<option value="0">否</option>
-			  </select>&nbsp;&nbsp;&nbsp;&nbsp;
+			  </select>&nbsp;&nbsp;
+	    <br/>
+		时间：<input type="text" id="createdDtmLocStart" name="createdDtmLocStart" class="input_text1"/>	  &nbsp;&nbsp;
+		至：<input type="text" id="createdDtmLocEnd" name="createdDtmLocEnd" class="input_text1"/>	  &nbsp;&nbsp;&nbsp;&nbsp;
 
-		<input type="submit" onclick="$('#searchForm').attr('action',1);return true;" id="find" value="查询" class="input_button2" />
+		<input type="submit" onclick="return submitFun();" id="find" value="查询" class="input_button2" />
+		<input type="button" id="updateHandleCount" value="重置次数" class="input_button2" />
 	</form>
 	</div>
 	<div class="right_title">
-	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
+	<div class="jg_10"></div></div>
 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr class="font_1">
+	        <td width="5%" align="center" valign="middle" ><input type="checkbox"  id="btn1" value="-1"/></td>
 			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">编码</td>
 			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">主题</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">处理次数</td>
@@ -101,11 +132,12 @@ function loadExceptionCode(){
 			<td width="12%" align="center" valign="middle" bgcolor="#eef6ff">异常时间</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">自动重发</td>
 			<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">修改人</td>
-			<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">修改备注</td>
+			<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">修改备注</td>
 			<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 		</tr>
 		 <% for(MqException si : siList){ %>
 		<tr>
+		    <td width="5%" align="center" valign="middle" > <input type="checkbox" name="checkboxup" value="<%=si.getId() %>"> </td>
 			<td width="15%" align="center" valign="middle" ><%=si.getExceptionCode() %></td>
 			<td width="12%" align="center" valign="middle" ><%=si.getTopic() %></td>
 			<td width="5%" align="center" valign="middle" ><%=si.getHandleCount() %></td>
@@ -121,7 +153,7 @@ function loadExceptionCode(){
 			       (si.isAutoResend() ? "是" : "否") 
 			%></td>
 			<td width="6%" align="center" valign="middle" ><%=si.getUpdatedByUser() %></td>
-			<td width="20%" align="center" valign="middle" ><%=si.getRemarks() %></td>
+			<td width="15%" align="center" valign="middle" ><%=si.getRemarks() %></td>
 			<td width="5%" align="center" valign="middle" >
 			[<a href="<%=request.getContextPath()%>/mqexception/edit/<%=si.getId() %>">修改</a>]
 			</td>
@@ -163,7 +195,74 @@ $(document).ready(function(){
 	$("#messageSource").val('<%=messageSource %>');
 	$("#handleFlag").val('<%=handleFlag %>');
 	$("#isAutoResend").val('<%=isAutoResend %>');
+	$("#createdDtmLocStart").val('<%=createdDtmLocStart %>');
+	$("#createdDtmLocEnd").val('<%=createdDtmLocEnd %>');
 	loadExceptionCode();
+	
+	//日期控件
+	$("#createdDtmLocStart").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    readOnly: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	$("#createdDtmLocEnd").datetimepicker({
+	    changeMonth: true,
+	    changeYear: true,
+	    readOnly: true,
+	    hourGrid: 4,
+		minuteGrid: 10,
+	    timeFormat: 'hh:mm:ss',
+	    dateFormat: 'yy-mm-dd'
+	});
+	
+	//全选功能
+	$("#btn1").click(function(){  
+		if($("#btn1").attr("checked")){
+			$("[name='checkboxup']").attr("checked",'true');//全选  
+		}else{
+		   $("[name='checkboxup']").removeAttr("checked");//取消全选  
+		}	
+	
+	});
+	
+	//重置次数
+	$("#updateHandleCount").click(function(){
+		
+		var ids = ","; 
+		$("input[name='checkboxup']:checked").each(function(){  
+			var id = $(this).val();
+			ids = ids + id + ","
+		}); 
+		
+		if(ids == ","){
+			alert("无选中项！");
+			return false;
+		}else{
+			ids = ids.substring(1, ids.length);//去掉前面的,
+			ids = ids.substring(0, ids.length -1);//去掉前面的,
+		}
+		$.ajax({
+			type: "POST",
+			url:'<%=request.getContextPath()%>' + '/mqexception/updateHandleCount',
+			data:{
+				ids:ids
+			},
+			dataType:"json",
+			async: false, //设为false就是同步请求
+			success : function(data) {
+			},
+			error:function(data){
+				if(data.readyState == 4){
+					alert(data.responseText);
+					$("#searchForm").submit();//重新查询
+				}
+			}
+		});
+	});
 });
 </script>
 </body>
