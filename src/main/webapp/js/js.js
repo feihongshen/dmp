@@ -674,9 +674,8 @@ function gonggongObj_branch() {
 	$("#insert").parent().show();
 
 }
-function payMthodchange(obj){
-	if(obj.id == "tl"){//通联显示，	财付通隐藏
-		
+function payMthodchange(objId){
+	if(objId == "tl"){//通联显示，	财付通隐藏
 		$("#bankCardNo").parent().show();
 		$("#bankCode").parent().show();
 		$("#ownerName").parent().show();
@@ -688,7 +687,7 @@ function payMthodchange(obj){
 		$("#cftAccountProp").parent().hide();
 		$("#cftCertId").parent().hide();
 		$("#cftCertType").parent().hide();
-	}else{//财付通显示，通联隐藏
+	}else if(objId == "cft"){//财付通显示，通联隐藏
 		$("#cftAccountNo").parent().show();
 		$("#cftBankCode").parent().show();
 		$("#cftAccountName").parent().show();
@@ -1310,9 +1309,8 @@ function check_user() {
 	
 	if ($("#roleid").val() == 2 || $("#roleid").val() == 4){
 		if ($("#username").val().length > 9) {
-			if(!confirm("登录名长度超过9位，将无法使用通联pos刷卡！确认使用当前登录名吗？")){
-				return false;
-			}
+			alert("小件员/站长登录名长度不能超过9位！");
+			return false;
 		}
 	}
 	if ($("#tip").html().length > 0) {
@@ -4603,9 +4601,8 @@ function check_userbranch() {
 	}
 	
 	if ($("#username").val().length > 9) {
-		if(!confirm("登录名长度超过9位，将无法使用通联pos刷卡！确认使用当前登录名吗？")){
-			return false;
-		}
+		alert("登录名长度不能超过9位！");
+		return false;
 	}
 	if ($("#password").val().length == 0) {
 		alert("员工登录密码不能为空");

@@ -85,6 +85,8 @@ function editInit(){
 			window.parent.initBranch(initBranchList[i]);
 		}
 	}
+	 	//点击触发切换效果
+		parent.window.$("input[name='payMethodType']:checked").click();
 }
 function editSuccess(data){
 	window.parent.closeBox();

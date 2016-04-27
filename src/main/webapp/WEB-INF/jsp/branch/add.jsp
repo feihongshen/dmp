@@ -211,8 +211,8 @@
 				 <!-- <li><span>导出信息设置：</span><input type="hidden" name="" class ="kefu" /></li> 
 		         <li><span>查询统计内容设置：</span><input type="hidden" name="" class ="yunying" /></li>-->
 	         	<!-- 自动核销用到的站点账户信息 -->
-	         	 <li><span><input name="payMethodType" id="tl" type="radio" value="0" checked="checked"  onclick="payMthodchange(this)"/>通联</span>
-	         	 	<span><input name="payMethodType" id="cft" type="radio" value="1" onclick="payMthodchange(this)"/>财付通</span></li>
+	         	 <li><span><input name="payMethodType" id="tl" type="radio" value="0" checked="checked"  onclick="payMthodchange(this.id)"/>通联</span>
+	         	 	<span><input name="payMethodType" id="cft" type="radio" value="1" onclick="payMthodchange(this.id)"/>财付通</span></li>
 	         	 <li><span>银行卡账号：</span><input type="text" name="bankCardNo" id="bankCardNo" maxlength="50" onblur="isbranchnum(this)"/>*</li>
 		         <li><span>银行代码：</span><select id="bankCode" name="bankCode" class="select1" >
 					<%
