@@ -447,7 +447,7 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/gxdxAddress/del/');
 		}
 		
-		else if(obj=='20122'||obj=='20123'||obj=='20124'||obj=='20125'||obj=='20126'){
+		else if(obj=='20122'||obj=='20123'||obj=='20124'||obj=='20125'||obj=='20126'||obj.substr(0,2)=='29'){
 			$("#edit").val('<%=request.getContextPath()%>/vipshop/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
