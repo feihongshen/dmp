@@ -155,8 +155,11 @@ public class TpsCwbFlowPushService {
 					transcwbList.add(vo.getCwb());
 				}else{
 					transcwbList=cwbOrderService.getTranscwbList(co.getTranscwb());
+					if(transcwbList==null||transcwbList.size()<1){
+						throw new RuntimeException("没找到此订单号的相关运单号.");
+					}
 				}
-				OrderFlow orderFlow=orderFlowDAO.getOrderFlowByCwbAndFlowtype(vo.getCwb(), ""+vo.getFlowordertype());
+				OrderFlow orderFlow=orderFlowDAO.queryFlow(vo.getCwb(), FlowOrderTypeEnum.getByValue((int)vo.getFlowordertype()));
 				if(orderFlow==null){
 					throw new RuntimeException("没找到此订单号的操作明细1.");
 				}
@@ -171,7 +174,7 @@ public class TpsCwbFlowPushService {
 					branchid=transcwbOrderFlow.getBranchid();
 					createDate=transcwbOrderFlow.getCredate();
 				}else{
-					OrderFlow orderFlow=orderFlowDAO.getOrderFlowByCwbAndFlowtype(vo.getCwb(), ""+vo.getFlowordertype());
+					OrderFlow orderFlow=orderFlowDAO.queryFlow(vo.getCwb(),  FlowOrderTypeEnum.getByValue((int)vo.getFlowordertype()));
 					if(orderFlow==null){
 						throw new RuntimeException("没找到此订单号的操作明细2.");
 					}
