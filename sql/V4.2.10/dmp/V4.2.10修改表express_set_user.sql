@@ -1,0 +1,1 @@
+ALTER TABLE `express_set_user` ADD  INDEX `idx_username` (`username`);
