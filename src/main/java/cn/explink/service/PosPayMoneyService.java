@@ -32,6 +32,9 @@ import cn.explink.pos.tools.PosEnum;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.StreamingStatementCreator;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 /**
  * POS款项查询
  * 
@@ -59,6 +62,7 @@ public class PosPayMoneyService {
 	/**
 	 * 导出查询POS款项查询记录
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public void PosPayRecord_selectSaveAsExcel(List<User> userList, HttpServletRequest request, HttpServletResponse response) {
 
 		String[] cloumnName1 = {};

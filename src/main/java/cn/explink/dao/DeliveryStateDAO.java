@@ -1191,6 +1191,7 @@ public class DeliveryStateDAO {
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<JSONObject> getDeliveryByDayGroupByDeliverybranchid(String day, String secondDay) {
 		try {
 			String sql = "SELECT deliverybranchid,SUM(cash+otherfee+checkfee-returnedfee) AS amount,SUM(pos) AS pos FROM `express_ops_delivery_state` WHERE deliverytime>? AND deliverytime<=? AND auditingtime=''  AND state=1  GROUP BY deliverybranchid";
