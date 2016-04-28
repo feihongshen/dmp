@@ -190,6 +190,16 @@ public class ZhiFuApplyDao {
 		String sql = "select * from express_ops_zhifu_apply where applyid in(" + applyids + ")";
 		return this.jdbcTemplate.query(sql, new ZhiFuApplyMapper(), applyids);
 	}
+	
+	public ZhiFuApplyView findZFAByApplyId(String applyId){
+		StringBuffer sql = new StringBuffer("select * from express_ops_zhifu_apply where applyid = ") ;
+		sql.append(applyId) ;
+		List<ZhiFuApplyView> list = this.jdbcTemplate.query(sql.toString() , new ZhiFuApplyMapper()) ;
+		if(list == null || list.size() == 0){
+			return null ;
+		}
+		return list.get(0) ;
+	}
 
 	//审核通过
 	public void updateStatePassByCwb(int applyid, String auditname, String audittime) {

@@ -215,7 +215,7 @@ function resetData(){
 										</td>
 										<td>
 											申请人:
-											<select name ="applypeople" id ="applypeople">
+											<select name ="userid" id ="userid">
 												<option  value ="0">全部</option>
 													<%if(uslist.size()>0){
 														for(User u:uslist){ %>
@@ -349,7 +349,7 @@ function resetData(){
 <script type="text/javascript">
 	$("#selectPg").val(<%=request.getAttribute("page")%>);
 	$("#cwbtypeid").val(<%=request.getParameter("cwbtypeid")==null?0:Integer.parseInt(request.getParameter("cwbtypeid"))%>);
-	$("#applypeople").val(<%=request.getParameter("applypeople")==null?0:Long.parseLong(request.getParameter("applypeople"))%>);
+	$("#userid").val(<%=request.getParameter("userid")==null?0:Long.parseLong(request.getParameter("userid"))%>);
 	$("#applytype").val(<%=request.getParameter("applytype")==null?0:Long.parseLong(request.getParameter("applytype"))%>);
 	$("#confirmstate").val(<%=request.getParameter("confirmstate")==null?0:Long.parseLong(request.getParameter("confirmstate"))%>);
 	$("#confirmresult").val(<%=request.getParameter("confirmresult")==null?0:Long.parseLong(request.getParameter("confirmresult"))%>);

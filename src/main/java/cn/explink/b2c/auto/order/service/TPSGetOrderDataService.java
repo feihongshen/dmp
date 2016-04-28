@@ -745,7 +745,8 @@ public class TPSGetOrderDataService {
 					return null;
 				//集单模式校验重复
 				}else if(is_gatherpack.equals("1")){
-					String oldTranscwb = cwbOrderDTO.getTranscwb();
+					return null;
+					/*String oldTranscwb = cwbOrderDTO.getTranscwb();
 					String currentTranscwb = transcwb;
 					if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
 						if(orderDTO.getMpsallarrivedflag()==VipGathercompEnum.Last.getValue()){
@@ -754,7 +755,7 @@ public class TPSGetOrderDataService {
 					}
 					if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
 						return null;
-					}
+					}*/
 				}
 				
 			}
@@ -1067,7 +1068,7 @@ public class TPSGetOrderDataService {
 		//后者大于前者，覆盖前者
 		if(oldTranscwb.split(",").length<currentTranscwb.split(",").length){
 			this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
-					total_pack,mpsallarrivedflag);
+					currentOrderDTO.getSendcargonum(),mpsallarrivedflag);
 		}
 		//后者==前者，移除不是最后一箱的
 		if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
@@ -1075,7 +1076,7 @@ public class TPSGetOrderDataService {
 					&&Integer.valueOf(cwbOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Default.getValue())
 					||Integer.valueOf(currentOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Last.getValue()){
 				this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
-						total_pack,mpsallarrivedflag);
+						currentOrderDTO.getSendcargonum(),mpsallarrivedflag);
 			}
 		}
 		//后者小于前者，不做修改

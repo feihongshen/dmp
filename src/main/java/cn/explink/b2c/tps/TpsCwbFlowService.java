@@ -63,6 +63,7 @@ public class TpsCwbFlowService {
 			
 			String transportNo=cwbDAO.getTpsTransportNoByCwb(co.getCwb());
 			if(transportNo==null||transportNo.length()<1){
+				this.logger.info("tps运单号为空时不保存,cwb="+co.getCwb());
 				return;
 			}
 

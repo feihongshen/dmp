@@ -129,6 +129,10 @@ public class Branch implements java.io.Serializable {
 	 * 证件号
 	 */
 	private String cftCertId;
+	/*
+	 * 站点缴款方式
+	 */
+	private int payinType;
 	
 	/**
 	 * @return the pfruleid
@@ -759,5 +763,15 @@ public class Branch implements java.io.Serializable {
 	public void setCftCertId(String cftCertId) {
 		this.cftCertId = cftCertId;
 	}
+
+	public int getPayinType() {
+		return payinType;
+	}
+
+	public void setPayinType(int payinType) {
+		this.payinType = payinType;
+	}
+
+	
 	
 }
