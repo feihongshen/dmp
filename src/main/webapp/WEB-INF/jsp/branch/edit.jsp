@@ -11,6 +11,7 @@
 <%@page import="cn.explink.enumutil.CftAccountTypeEnum"%>
 <%@page import="cn.explink.enumutil.PayCerTypeEnum"%>
 <%@page import="net.sf.json.JSONObject"%>
+<%@page import="cn.explink.enumutil.OrgPayInTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	Branch branch = (Branch)request.getAttribute("b");
@@ -286,6 +287,17 @@
 	             	}
 	             %>
 	           </select>*</li>
+	         <li><span>缴款方式：</span><select id ="payinType" name ="payinType" >
+			    <%
+			    	for(OrgPayInTypeEnum temp: OrgPayInTypeEnum.values()){
+			    		if(temp.getValue()== branch.getPayinType()){
+							%>
+							<option value ="<%=temp.getValue()%>"  selected ="selected"><%=temp.getText()%></option>
+					<%}else{ %>
+							<option value ="<%=temp.getValue()%>"><%=temp.getText()%></option>
+					<%}} %>
+
+			  </select>*</li>
 			 
 			 <li><span>分拣线提示方式：</span><select id ="remandtype" name ="remandtype" >
 	             <option value ="0">==请选择==</option> 

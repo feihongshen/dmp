@@ -20,6 +20,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.enumutil.OrgPayInTypeEnum;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StringUtil;
@@ -214,7 +215,8 @@ public class BranchService {
 				}
 			}
 		}
-
+		//站点缴款方式
+		branch.setPayinType(Integer.parseInt(StringUtils.isEmpty(request.getParameter("payinType")) ? OrgPayInTypeEnum.StationPay.getValue()+"" : request.getParameter("payinType")));
 		return branch;
 	}
 	
