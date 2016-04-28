@@ -84,6 +84,7 @@ create table `fn_cust_pay_report_cfg`(
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
  
 -- 应付甲方余额报表菜单
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('8092', '1', '应付甲方余额报表', '8092', '', '80');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('802060', '2', '客户结算信息管理', '802060', '${eapUrl}customerInformManager.do?isIframe&index&', '8020');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('802061', '2', '实付客户记录管理', '802061', '${eapUrl}customerPayedRecordManager.do?isIframe&index&', '8020');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('802062', '2', '应付甲方余额报表', '802062', '${eapUrl}branceReportManager.do?isIframe&index&', '8020');
