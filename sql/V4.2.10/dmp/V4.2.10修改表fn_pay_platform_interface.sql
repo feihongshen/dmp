@@ -1,1 +1,0 @@
-ALTER TABLE `fn_pay_platform_interface` ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创建人';
