@@ -745,7 +745,8 @@ public class TPSGetOrderDataService {
 					return null;
 				//集单模式校验重复
 				}else if(is_gatherpack.equals("1")){
-					String oldTranscwb = cwbOrderDTO.getTranscwb();
+					return null;
+					/*String oldTranscwb = cwbOrderDTO.getTranscwb();
 					String currentTranscwb = transcwb;
 					if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
 						if(orderDTO.getMpsallarrivedflag()==VipGathercompEnum.Last.getValue()){
@@ -754,7 +755,7 @@ public class TPSGetOrderDataService {
 					}
 					if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
 						return null;
-					}
+					}*/
 				}
 				
 			}
