@@ -565,6 +565,7 @@ public class ApplyEditDeliverystateController {
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("zhifulist", covList);
+		model.addAttribute("userid", userid);
 		return "applyeditdeliverystate/paywayInfoModifyConfirm";
 	}
 
