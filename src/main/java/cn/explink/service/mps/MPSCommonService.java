@@ -88,9 +88,9 @@ public final class MPSCommonService extends AbstractMPSService {
 		 * 正常到货扫描和到错货的扫描次数都要算上
 		 */
 		// 一票多件使用运单号时，扫描次数需要计算
-		long realscannum = this.transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(transCwbDetail.getTranscwb(), transCwbDetail.getCwb(), flowordertype, branchid);
+		long realscannum = this.transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(transCwbDetail.getTranscwb(), transCwbDetail.getCwb(), flowordertype, branchid, 1);
 		//到错货扫描次数
-		long realscannumForErrorArrive = this.transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(transCwbDetail.getTranscwb(), transCwbDetail.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
+		long realscannumForErrorArrive = this.transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(transCwbDetail.getTranscwb(), transCwbDetail.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid, 1);
 		
 		LOGGER.info("resetScannumByTranscwbForArride->transCwb:{}, branchid:{}, realscannum:{}, realscannumForErrorArrive:{}", 
 				transCwb, branchid, realscannum, realscannumForErrorArrive);
