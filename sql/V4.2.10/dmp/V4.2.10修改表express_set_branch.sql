@@ -1,1 +1,0 @@
-ALTER TABLE express_set_branch ADD COLUMN payin_type TINYINT(4) DEFAULT 1  NOT NULL  COMMENT '缴款方式。1.站点缴款，2小件员缴款';
