@@ -36,17 +36,17 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="selb2cnum" name ="selb2cnum" value="<%=vipshop.getSelb2cnum() %>"  maxlength="300">
 						</li>
 						
-						<li style="display: none;"><span>承运商编码：</span>
+						<li><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no" value="<%=vipshop.getShipper_no() %>"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>加密秘钥：</span>
+						<li><span>加密秘钥：</span>
 							<input type ="text" id="private_key" name ="private_key" value="<%=vipshop.getPrivate_key() %>"  maxlength="300">
 						</li>
 						<li style="display: none;"><span>每次获取订单数量：</span>
 							<input type ="text" id="getMaxCount" name ="getMaxCount" onblur="validate('getMaxCount')"  value="1"  maxlength="300">
 						</li>
 						<li><span>每次推送订单数量：</span>
-							<input type ="text" id="sendMaxCount" name ="sendMaxCount" onblur="validate('sendMaxCount')"  value="1"  maxlength="300">
+							<input type ="text" id="sendMaxCount" name ="sendMaxCount" onblur="validate('sendMaxCount')" value="<%=vipshop.getSendMaxCount() %>"  maxlength="300">
 						</li>
 						<li style="display: none;"><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL" value="<%=vipshop.getGetCwb_URL() %>"  maxlength="300">
