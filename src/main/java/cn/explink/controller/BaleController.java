@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.b2c.tps.TpsCwbFlowService;
 import cn.explink.dao.BaleCwbDao;
 import cn.explink.dao.BaleDao;
 import cn.explink.dao.BranchDAO;
@@ -73,6 +74,8 @@ public class BaleController {
 	BaleService baleService;
 	@Autowired
 	KfzdOrderService kfzdOrderService;
+	@Autowired
+	TpsCwbFlowService tpsCwbFlowService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -286,13 +289,14 @@ public class BaleController {
 			Bale baleOld = this.baleDAO.getBaleOneByBalenoLock(baleno.trim()); 	//加悲观锁解决：
 																				//#1502 出库扫描 出库后订单数增加，但是件数不增加（扫描数与发货数不一致）
 																				//以下都是轻操作应该无性能问题
-			this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
+			CwbOrder cwbOrder=this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
 //			cwb=this.cwbOrderService.translateCwb(cwb);
 			
 //			this.cwbDAO.updateScannumAuto(cwb);
 			
 			this.baleDAO.updateAddBaleScannum(baleno); //要点：做完所有的写操作最后再读出！
 			Bale bale = this.baleDAO.getBaleOneByBalenoLock(baleno.trim());
+			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);

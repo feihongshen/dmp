@@ -10,7 +10,7 @@ CaiFuTong caifutong = (CaiFuTong)request.getAttribute("caiFuTong");
 	<div id="box_top_bg"></div>
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
-		<h1><div id="close_box" onclick="closeBox()"></div>通联对接设置</h1>
+		<h1><div id="close_box" onclick="closeBox()"></div>财付通对接设置</h1>
 		<form id="smile_save_Form">
 		<div id="box_form">
 			<ul>

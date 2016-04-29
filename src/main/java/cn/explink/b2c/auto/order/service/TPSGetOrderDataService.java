@@ -314,7 +314,8 @@ public class TPSGetOrderDataService {
 		//cwbOrder.setStartbranchid(vipshop.getWarehouseid());
 		//团购标识
 		cwbOrder.setVipclub(order.getVipClub().equals("3")?1:0);
-				
+		//tps运单号	
+		cwbOrder.setTpsTranscwb(order.getOrderSn());
 	}
 	
 	/**
@@ -447,6 +448,7 @@ public class TPSGetOrderDataService {
 							map.put("address", orderMap.get("remark4").replaceAll("&", ""));
 							map.put("notifytype", 0);
 							try{
+								this.logger.info("消息发送端：addressmatch, header={}", map.toString());
 								addressmatch.sendBodyAndHeaders(null, map);
 							}catch(Exception e){
 								logger.error("", e);
@@ -594,8 +596,6 @@ public class TPSGetOrderDataService {
 			/**
 			 * 新增参数
 			 */
-			BigDecimal original_weight = new BigDecimal("0");/*(BigDecimal) (String.valueOf(order.getOriginalWeight()).equals("") ? "0" : order.getOriginalWeight())*/; // 重量
-			BigDecimal original_volume = new BigDecimal("0");/*(BigDecimal) (String.valueOf(order.getOriginalVolume()).equals("") ? "0" : order.getOriginalVolume())*/; // 体积
 			int ext_pay_type = (null==order.getPayment()||"".equals(order.getPayment().toString())) ? 0 : order.getPayment(); // 扩展支付方式
 			int paywayid = (ext_pay_type==1) ? PaytypeEnum.Pos.getValue() : PaytypeEnum.Xianjin.getValue();
 			String created_dtm_loc = this.toDateForm(order.getCreateTime());//记录生成时间
@@ -611,7 +611,15 @@ public class TPSGetOrderDataService {
 			//20：OXO-JIT,30：配送,40：OXO直送,60：上门退
 			int business_type = order.getBusinessType();
 			String cwbordertype = (business_type==60) ? String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()) : String.valueOf(CwbOrderTypeIdEnum.Peisong.getValue());
-           
+			BigDecimal original_weight = null;
+			BigDecimal original_volume = null;
+			if(business_type==30){
+				original_weight = new BigDecimal("0");/**/; // 重量
+				original_volume = new BigDecimal("0");/**/; // 体积
+			}else{
+				original_weight = (String.valueOf(order.getOriginalWeight()).equals("") ? new BigDecimal("0") : order.getOriginalWeight());
+				original_volume = (String.valueOf(order.getOriginalVolume()).equals("") ? new BigDecimal("0") : order.getOriginalVolume());
+			}
 			String is_gatherpack = order.getIsGatherpack().toString(); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
 			String is_gathercomp = order.getIsGathercomp().toString(); //最后一箱:1最后一箱 ，0默认 
 			
@@ -690,6 +698,8 @@ public class TPSGetOrderDataService {
 			orderDTO.setIsaudit(orderDTO.getIsaudit());
 			//团购标识
 			orderDTO.setVipclub(order.getVipClub().equals("3")?1:0);
+			//tps运单号	
+			orderDTO.setTpsTranscwb(order_sn);
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
 			orderDTO.setIsmpsflag(choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 			orderDTO.setMpsallarrivedflag(choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
@@ -735,7 +745,8 @@ public class TPSGetOrderDataService {
 					return null;
 				//集单模式校验重复
 				}else if(is_gatherpack.equals("1")){
-					String oldTranscwb = cwbOrderDTO.getTranscwb();
+					return null;
+					/*String oldTranscwb = cwbOrderDTO.getTranscwb();
 					String currentTranscwb = transcwb;
 					if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
 						if(orderDTO.getMpsallarrivedflag()==VipGathercompEnum.Last.getValue()){
@@ -744,7 +755,7 @@ public class TPSGetOrderDataService {
 					}
 					if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
 						return null;
-					}
+					}*/
 				}
 				
 			}
@@ -1057,7 +1068,7 @@ public class TPSGetOrderDataService {
 		//后者大于前者，覆盖前者
 		if(oldTranscwb.split(",").length<currentTranscwb.split(",").length){
 			this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
-					total_pack,mpsallarrivedflag);
+					currentOrderDTO.getSendcargonum(),mpsallarrivedflag);
 		}
 		//后者==前者，移除不是最后一箱的
 		if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
@@ -1065,7 +1076,7 @@ public class TPSGetOrderDataService {
 					&&Integer.valueOf(cwbOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Default.getValue())
 					||Integer.valueOf(currentOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Last.getValue()){
 				this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
-						total_pack,mpsallarrivedflag);
+						currentOrderDTO.getSendcargonum(),mpsallarrivedflag);
 			}
 		}
 		//后者小于前者，不做修改

@@ -1,0 +1,1 @@
+select count(1) cnt from INFORMATION_SCHEMA.STATISTICS where TABLE_SCHEMA = schema() and TABLE_NAME = 'express_ops_exception_cwb' and INDEX_NAME = 'exception_cwb_createtime_idx' and COLUMN_NAME = 'createtime';	-- 结果为1

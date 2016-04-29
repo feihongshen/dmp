@@ -195,6 +195,7 @@ public class DataImportService {
 				errorOrder.put("message", e.getMessage());
 
 				try {
+					logger.info("消息发送端：importCwbErrorProducer, errorOrder={}", errorOrder.toString());
 					this.importCwbErrorProducer.sendBodyAndHeader(null, "errorOrder", errorOrder.toString());
 				} catch (Exception ee) {
 					logger.error("", ee);
@@ -221,6 +222,7 @@ public class DataImportService {
 			map.put("cwb", cwbOrderDTO.getCwb());
 			map.put("userid", user.getUserid());
 			try{
+				logger.info("消息发送端：addressmatch, header={}", map.toString());
 				addressmatch.sendBodyAndHeaders(null, map);
 			}catch(Exception e){
 				logger.error("", e);
@@ -245,6 +247,7 @@ public class DataImportService {
 			try {
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", user.getUserid());
+				logger.info("消息发送端：addressmatch, header={}", map.toString());
 				this.addressmatch.sendBodyAndHeaders(null, map);
 			} catch (Exception e) {
 				logger.error("", e);
@@ -289,7 +292,9 @@ public class DataImportService {
 
 	public void datalose(long emaildateid) {
 		try {
-			this.loseCwb.sendBodyAndHeader(null, "loseCwbByEmaildateid", "{\"emaildateid\":" + emaildateid + "}");
+			String header = "{\"emaildateid\":" + emaildateid + "}";
+			logger.info("消息发送端：loseCwb, loseCwbByEmaildateid={}", header);
+			this.loseCwb.sendBodyAndHeader(null, "loseCwbByEmaildateid", header);
 		} catch (Exception e) {
 		}
 	}
@@ -311,8 +316,8 @@ public class DataImportService {
 	public void batchedit(long customerwarehouseid, long serviceareaid, String editemaildate, long emaildateid) {
 		String header = "{\"emaildateid\":" + emaildateid + ",\"editemaildate\":\"" + editemaildate + "\",\"warehouseid\":" + customerwarehouseid + ",\"areaid\":" + serviceareaid + "}";
 		try {
-			this.batchedit
-					.sendBodyAndHeader(null, "emaildate", header);
+			logger.info("消息发送端：batchedit, emaildate={}", header);
+			this.batchedit.sendBodyAndHeader(null, "emaildate", header);
 		} catch (Exception e) {
 			logger.error("", e);
 			//写MQ异常表

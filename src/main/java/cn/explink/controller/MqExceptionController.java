@@ -1,5 +1,7 @@
 package cn.explink.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -41,7 +43,7 @@ public class MqExceptionController {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
+	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
@@ -53,17 +55,21 @@ public class MqExceptionController {
 			@RequestParam(value = "topic", required = false, defaultValue = "") String topic,
 			@RequestParam(value = "handleFlag", required = false, defaultValue = "") String handleFlag,
 			@RequestParam(value = "messageSource", required = false, defaultValue = "") String messageSource,
-			@RequestParam(value = "isAutoResend", required = false, defaultValue = "") String isAutoResend) throws Exception {
+			@RequestParam(value = "isAutoResend", required = false, defaultValue = "") String isAutoResend,
+			@RequestParam(value = "createdDtmLocStart", required = false, defaultValue = "") String createdDtmLocStart,
+			@RequestParam(value = "createdDtmLocEnd", required = false, defaultValue = "") String createdDtmLocEnd) throws Exception {
 		exceptionCode = exceptionCode.replace("'", "");
 		topic = topic.replace("'", "");
-		model.addAttribute("siList", mqExceptionDAO.getMqExceptionByWhere(page, exceptionCode, topic, handleFlag, messageSource, isAutoResend));
-		model.addAttribute("page_obj", new Page(mqExceptionDAO.getSystemInstallCount(exceptionCode, topic, handleFlag, messageSource, isAutoResend), page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("siList", mqExceptionDAO.getMqExceptionByWhere(page, exceptionCode, topic, handleFlag, messageSource, isAutoResend, createdDtmLocStart, createdDtmLocEnd));
+		model.addAttribute("page_obj", new Page(mqExceptionDAO.getSystemInstallCount(exceptionCode, topic, handleFlag, messageSource, isAutoResend, createdDtmLocStart, createdDtmLocEnd), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
 		model.addAttribute("exceptionCode", exceptionCode);
 		model.addAttribute("topic", topic);
 		model.addAttribute("handleFlag", handleFlag);
 		model.addAttribute("messageSource", messageSource);
 		model.addAttribute("isAutoResend", isAutoResend);
+		model.addAttribute("createdDtmLocStart", createdDtmLocStart);
+		model.addAttribute("createdDtmLocEnd", createdDtmLocEnd);
 		return "/mqexception/list";
 	}
 
@@ -100,5 +106,30 @@ public class MqExceptionController {
 			logger.info("operatorUser={},mq异常记录修改 设置->save", getSessionUser().getUsername());
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 		}
+	}
+	
+	@RequestMapping("/loadExceptionCode")
+	public @ResponseBody List<String> loadExceptionCode() {
+		List<String> exceptionCodeList = mqExceptionDAO.loadExceptionCode();
+		return exceptionCodeList;
+	}
+	
+	@RequestMapping("/updateHandleCount")
+	public @ResponseBody String updateHandleCount(Model model,
+			@RequestParam(value = "ids", required = false, defaultValue = "") String ids)
+			throws Exception {
+		String [] idArray = ids.split(",");
+		for(String id : idArray){
+			MqException mqException = mqExceptionDAO.getMqExceptionById(Long.valueOf(id));
+			if(null != mqException){
+				if(!mqException.isHandleFlag()){//成功的不处理
+					mqException.setHandleCount(0);
+					mqExceptionDAO.update(mqException);
+				}
+			}
+			
+		}
+		logger.info("operatorUser={},ids={},mq异常记录(重发次数)修改 设置->updateHandleCount", getSessionUser().getUsername(), ids);
+		return "修改成功";
 	}
 }

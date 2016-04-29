@@ -31,6 +31,8 @@ public class TpsInterfaceExecutor {
 	
 	public Map<String, Object> executTpsInterface(ExpressOperationInfo paramObj) {
 		try{
+			String header = Tools.obj2json(paramObj);
+			this.logger.info("消息发送端：executeTpsInterfaceTemplate, executeTpsInterfaceHeader={}", header);
 			this.executeTpsInterfaceTemplate.sendBodyAndHeader(null, "executeTpsInterfaceHeader", Tools.obj2json(paramObj));
 		}catch(Exception e){
 			logger.error("", e);
@@ -59,7 +61,9 @@ public class TpsInterfaceExecutor {
 	public Boolean autoMatch(String preOrderNo, Long userId, String address, int addressMatcher) {
 		ExtralInfo4Address info = new ExtralInfo4Address(preOrderNo, userId, address, addressMatcher);
 		try{
-			this.addressMatchExpressService.sendBodyAndHeader(null, "autoMatchAddressInfo", Tools.obj2json(info));
+			String header = Tools.obj2json(info);
+			this.logger.info("消息发送端：addressMatchExpressService, autoMatchAddressInfo={}", header);
+			this.addressMatchExpressService.sendBodyAndHeader(null, "autoMatchAddressInfo", header);
 		}catch(Exception e){
 			logger.error("", e);
 			//写MQ异常表

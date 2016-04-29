@@ -158,6 +158,9 @@ public class DmpJobController{
 			for(String jobName : jobNames){
 				if(!Tools.isEmpty(jobName)){
 					String groupName=getTriggerGroupName(jobName);
+					
+					logger.info("DMPJobController手动立刻执行定时任务jobName={},groupName={}", jobName, groupName);
+					
 					schedulerFactory.resumeTrigger(jobName, groupName);
 //					schedulerFactory.resumeTrigger(TriggerKey.triggerKey(jobName));
 				}
@@ -185,6 +188,9 @@ public class DmpJobController{
 			for(String jobName : jobNames){
 				if(!Tools.isEmpty(jobName)){
 					String groupName=getTriggerGroupName(jobName);
+					
+					logger.info("DMPJobController手动暂停执行定时任务jobName={},groupName={}", jobName, groupName);
+					
 					schedulerFactory.pauseTrigger(jobName, groupName);
 //					schedulerFactory.pauseTrigger(TriggerKey.triggerKey(jobName));
 				}
@@ -223,6 +229,9 @@ public class DmpJobController{
 			if (null != trigger) {// 存在才修改
 				String taskJobName=trigger.getJobName();
 				String taskGroupName=trigger.getJobGroup();
+				
+				logger.info("DMPJobController手动立刻执行定时任务taskJobName={},taskGroupName={}", taskJobName, taskGroupName);
+				
 				schedulerFactory.triggerJob(taskJobName, taskGroupName);
 //				schedulerFactory.triggerJob(trigger.getJobKey());
 			}

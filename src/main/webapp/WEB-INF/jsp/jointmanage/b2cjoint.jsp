@@ -447,7 +447,7 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/gxdxAddress/del/');
 		}
 		
-		else if(obj=='20122'||obj=='20123'||obj=='20124'||obj=='20125'||obj=='20126'){
+		else if(obj=='20122'||obj=='20123'||obj=='20124'||obj=='20125'||obj=='20126'||obj.substr(0,2)=='29'){
 			$("#edit").val('<%=request.getContextPath()%>/vipshop/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
@@ -507,6 +507,11 @@ function delSuccess(data){
 		else if(obj=='22001'){//京东_订单跟踪接口
 			$("#edit").val('<%=request.getContextPath()%>/jdCwbTrack/show/');
 			$("#del").val('<%=request.getContextPath()%>/jdCwbTrack/del/');
+		}
+		
+		else if(obj=='20229'){
+			$("#edit").val('<%=request.getContextPath()%>/tpsCwbFlow/show/');
+			$("#del").val('<%=request.getContextPath()%>/tpsCwbFlow/del/');
 		}
 		
 		else{

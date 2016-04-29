@@ -3783,7 +3783,7 @@ public class CwbDAO {
 			currentBranchids="''";
 		}
 		String flowordertypes = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-		String sql = "select 1 from express_ops_order_flow as flow FORCE INDEX(FlowCwbIdx,FlowCredateIdx)  where detail.cwb = flow.cwb and flow.flowordertype in(" + flowordertypes + ") " + " and flow.credate >= '" + begindate + "'  and flow.credate <= '"
+		String sql = "select 1 from express_ops_order_flow as flow FORCE INDEX(FlowCwbIdx,FlowCredateIdx,FlowBranchidIdx)  where detail.cwb = flow.cwb and flow.flowordertype in(" + flowordertypes + ") " + " and flow.credate >= '" + begindate + "'  and flow.credate <= '"
 				+ enddate + "' and flow.branchid in(" + currentBranchids + ")";
 
 		if (isnowdata > 0) {
@@ -9569,5 +9569,15 @@ public class CwbDAO {
 	public List<CwbOrder> getCwbOrderListByStatusAndCustomerId(long flowordertype,long customerid,long maxCount) {/*state=1*/
 		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  WHERE state=1 AND customerid=? AND flowordertype=? "
 				+ " and deliverybranchid>0 ORDER BY opscwbid LIMIT 0,?  ", new CwbMapper(),customerid,flowordertype,maxCount);
+	}
+	
+	public String getTpsTransportNoByCwb(String cwb) {
+		try {
+			return this.jdbcTemplate
+					.queryForObject(
+							"SELECT tpstranscwb from express_ops_cwb_detail where cwb=? and state=1 limit 0,1",String.class,cwb);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 }

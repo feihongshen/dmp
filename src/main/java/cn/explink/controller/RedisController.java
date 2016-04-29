@@ -126,18 +126,23 @@ public class RedisController {
 						if(null != valueObj){
 							RedisModel valueModel = new RedisModel();
 							valueModel.setKey(simpleKey);
-							if(Pattern.compile(PatternMac).matcher(valueObj.get().toString()).find()){  
-								valueModel.setValue(redisMapImpl.getValue(valueObj.get().toString()).toString());
-							}else{
-								String valueStr = "";
-								try{
-									valueStr = JSON.toJSONString(valueObj.get());
-								}catch(Exception e){
-									this.logger.error("redis查看 JSON.toJSONString 转换错误", e);
-									valueStr = valueObj.get().toString();
+							if(null != valueObj.get()){
+								if(Pattern.compile(PatternMac).matcher(valueObj.get().toString()).find()){  
+									valueModel.setValue(redisMapImpl.getValue(valueObj.get().toString()).toString());
+								}else{
+									String valueStr = "";
+									try{
+										valueStr = JSON.toJSONString(valueObj.get());
+									}catch(Exception e){
+										this.logger.error("redis查看 JSON.toJSONString 转换错误", e);
+										valueStr = valueObj.get().toString();
+									}
+									valueModel.setValue(valueStr);
 								}
-								valueModel.setValue(valueStr);
+							}else{
+								valueModel.setValue("");
 							}
+							
 							siList.add(valueModel);
 						}
 					}

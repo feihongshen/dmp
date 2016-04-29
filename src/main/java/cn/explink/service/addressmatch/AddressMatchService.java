@@ -168,7 +168,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						this.from(MQ_FROM_URI_ADDRESS_MATCH + "?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=empty").routeId("地址匹配");
 						/*
 						 * this.from(

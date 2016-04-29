@@ -16,6 +16,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.auto.order.service.OrderPayChangeService;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
@@ -70,7 +72,9 @@ import cn.explink.util.Page;
 @Controller
 @RequestMapping("/applyeditdeliverystate")
 public class ApplyEditDeliverystateController {
-
+	@Autowired
+	@Qualifier("orderPayChangeService")
+	private OrderPayChangeService orderPayChangeService ;
 	@Autowired
 	UserDAO userDAO;
 	@Autowired
@@ -293,6 +297,9 @@ public class ApplyEditDeliverystateController {
 					if (aeds != null) {
 						// 重置审核的最终方法
 						EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), this.getSessionUser().getUserid());
+						// add by bruce shangguan 20160413 重置反馈订单，添加应付甲方调整记录
+						this.orderPayChangeService.resetOrder(cwb,ec_dsd, edittime);
+						// end 20160413
 						this.applyEditDeliverystateDAO.updateShenheStatePass(cwb, edituserid, edittime);// 更改审核状态
 
 						// 重置反馈状态调整单逻辑(若原先配送结果为上门退、换、送成功则处理调整单逻辑)
@@ -558,6 +565,7 @@ public class ApplyEditDeliverystateController {
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("zhifulist", covList);
+		model.addAttribute("userid", userid);
 		return "applyeditdeliverystate/paywayInfoModifyConfirm";
 	}
 
@@ -591,6 +599,9 @@ public class ApplyEditDeliverystateController {
 							cwbStr.append(zfav.getCwb());// 添加订单有待确认并且有待审核的订单单号(确认通过时。。。)
 						}
 						this.todoConfirmFeeResult(fwtr, ecList, errorList, model); // 修改金额时的最终结算部分操作
+						// add by bruce shangguan 20160413 修改订单金额 ，添加应付甲方调整记录
+						this.orderPayChangeService.updateStateConfirmPass(applyid, cofirmname, confirmtime);
+						// end 20160413
 						this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
 						cwbpricerevisenum += 1;
 						// return "{\"errorCode\":0,\"msg\":\"true1\"}";

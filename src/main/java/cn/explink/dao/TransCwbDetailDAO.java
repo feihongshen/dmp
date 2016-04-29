@@ -46,6 +46,8 @@ public class TransCwbDetailDAO {
 			tcd.setEmaildate(rs.getString("emaildate"));
 			tcd.setCommonphraseid(rs.getInt("commonphraseid"));
 			tcd.setCommonphrase(rs.getString("commonphrase"));
+			tcd.setVolume(rs.getBigDecimal("cargovolume"));
+			tcd.setWeight(rs.getBigDecimal("carrealweight"));
 			return tcd;
 		}
 	}

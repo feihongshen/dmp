@@ -94,6 +94,7 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 	public void creSystemInstall(String chinesename, String name, String value) {
 		systemInstallDAO.creSystemInstall(chinesename, name, value);
 		try{
+			logger.info("消息发送端：systemInstallProducerTemplate, {}={}", name, value);
 			systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
 		}catch(Exception e){
 			logger.error("", e);
@@ -108,6 +109,7 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 	public void saveSystemInstall(String chinesename, String name, String value, long id) {
 		systemInstallDAO.saveSystemInstall(chinesename, name, value, id);
 		try{
+			logger.info("消息发送端：systemInstallProducerTemplate, {}={}", name, value);
 			systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
 		}catch(Exception e){
 			logger.error("", e);

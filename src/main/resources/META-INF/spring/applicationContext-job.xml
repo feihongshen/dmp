@@ -112,6 +112,7 @@
                 <ref bean="doTime_syncBranchInf"/>
                 <ref bean="doTime_syncUserInf"/>
                 <ref bean="mqExceptionHandler"/>
+                <ref bean="doTime_tpsCwbFlow"/>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -1458,4 +1459,23 @@
 	</bean>
 	
 	<!-- MQ 异常处理 定时器   配置结束--> 
+	
+	<bean id="doTime_tpsCwbFlow" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="tpsCwbFlow" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */10 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="tpsCwbFlow" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>tpsCwbFlow_Task</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
 </beans>
