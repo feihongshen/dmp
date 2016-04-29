@@ -21,11 +21,7 @@ INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionor
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803003', '2', '缴款导入管理', '803003', '${eapUrl}orgPayManager.do?index&', '8030');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803004', '2', '预付款管理', '803004', '${eapUrl}orgAdvancePay.do?index&', '8030');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803005', '2', '缴款账户余额查询', '803005', '${eapUrl}orgAccountBalance.do?index&', '8030');
-<<<<<<< HEAD:sql/V4.2.10/dmp/002.站内返款结算模块_20160429.sql
-INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803080', '2', '签收小件员余额报表', '803080', '${eapUrl}reportForm.do?couriersSignFeeFormIndex&', '8030');
-=======
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('803090', '2', '签收小件员余额报表', '803090', '${eapUrl}reportForm.do?couriersSignFeeFormIndex&', '8030');
->>>>>>> origin/develop:sql/V4.2.10/dmp/002.站内返款结算模块_20160429.sql
 
 -- 修改表express_set_branch
 ALTER TABLE express_set_branch ADD COLUMN payin_type TINYINT(4) DEFAULT 1  NOT NULL  COMMENT '缴款方式。1.站点缴款，2小件员缴款';
@@ -61,7 +57,4 @@ ALTER TABLE `fn_pay_detail` ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创�
 
 -- 修改表fn_pay_platform_interface
 ALTER TABLE `fn_pay_platform_interface` ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创建人';
-
-
-
 
