@@ -3783,7 +3783,7 @@ public class CwbDAO {
 			currentBranchids="''";
 		}
 		String flowordertypes = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-		String sql = "select 1 from express_ops_order_flow as flow FORCE INDEX(FlowCwbIdx,FlowCredateIdx,FlowBranchidIdx)  where detail.cwb = flow.cwb and flow.flowordertype in(" + flowordertypes + ") " + " and flow.credate >= '" + begindate + "'  and flow.credate <= '"
+		String sql = "select 1 from express_ops_order_flow as flow FORCE INDEX(FlowCwbIdx,FlowCredateIdx)  where detail.cwb = flow.cwb and flow.flowordertype in(" + flowordertypes + ") " + " and flow.credate >= '" + begindate + "'  and flow.credate <= '"
 				+ enddate + "' and flow.branchid in(" + currentBranchids + ")";
 
 		if (isnowdata > 0) {
