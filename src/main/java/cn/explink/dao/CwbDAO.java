@@ -3746,50 +3746,65 @@ public class CwbDAO {
 	// 分站到货统计统计订单数
 	public long getcwborderDaoHuoCount(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
-			String flowordertypes,
-			String begindate, String enddate, String currentBranchids, long isnowdata) {
-		String existsOrderFlowSql = getExistsOrderFlowSql(begindate, enddate, currentBranchids, isnowdata);
-		String sql = "select count(1) from express_ops_cwb_detail as detail where exists ("
-				+ existsOrderFlowSql + ") and detail.state=1 ";
+			String flowordertypes) {
+		String sql = "select count(1) from express_ops_cwb_detail where cwb in ("
+				+ orderflowcwbs + ") and state=1 ";
+		String sqlExpress = "";
 
 		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0)
 				|| (flowordertypes.length() > 0)) {
 
 			StringBuffer w = new StringBuffer();
 			if (!customerids.equals("0")) {
-				w.append(" and detail.customerid in(" + customerids + ")");
+				w.append(" and customerid in(" + customerids + ")");
 			}
 
 			if (kufangids.length() > 0) {
-				w.append(" and detail.carwarehouse in(" + kufangids + ")");
+				w.append(" and carwarehouse in(" + kufangids + ")");
 			}
 			if (cwbordertypeids.length() > 0) {
-				w.append(" and detail.cwbordertypeid in(" + cwbordertypeids + ")");
+				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
 			}
 			if (flowordertypes.length() > 0) {
-				w.append(" and detail.flowordertype in(" + flowordertypes + ")");
+				w.append(" and flowordertype in(" + flowordertypes + ")");
 			}
 			sql += w.toString();
+			
+			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
+					|| ((cwbordertypeids != null) && cwbordertypeids
+							.contains(CwbOrderTypeIdEnum.Express.getValue()
+									+ ""))) {
+				StringBuffer expressOr = new StringBuffer();
+				expressOr
+						.append("select count(1) from express_ops_cwb_detail where cwb in ("
+								+ orderflowcwbs + ") and state=1 ");
+				if (!customerids.equals("0")) {
+					expressOr.append(" and customerid in(" + customerids + ")");
+				}
+				if ((cwbordertypeids.length() > 0)) {
+					expressOr.append(" and cwbordertypeid="
+							+ CwbOrderTypeIdEnum.Express.getValue());
+				}
+				if (flowordertypes.length() > 0) {
+					expressOr.append(" and flowordertype in(" + flowordertypes
+							+ ")");
+				}
+				if (expressOr.length() > 0) {
+					sqlExpress = expressOr.toString();
+				}
+			}
 		}
 		try {
-			return this.jdbcTemplate.queryForInt(sql);
+			int result = this.jdbcTemplate.queryForInt(sql);
+			if (sqlExpress.length() > 0) {
+				int resultExpress = this.jdbcTemplate.queryForInt(sqlExpress);
+				result += resultExpress;
+			}
+			return result;
 		} catch (DataAccessException e) {
 			return 0;
 		}
-	}
-	
-	private String getExistsOrderFlowSql(String begindate, String enddate, String currentBranchids, long isnowdata) {
-		if(currentBranchids.equals("")){
-			currentBranchids="''";
-		}
-		String flowordertypes = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-		String sql = "select 1 from express_ops_order_flow as flow FORCE INDEX(FlowCwbIdx,FlowCredateIdx,FlowBranchidIdx)  where detail.cwb = flow.cwb and flow.flowordertype in(" + flowordertypes + ") " + " and flow.credate >= '" + begindate + "'  and flow.credate <= '"
-				+ enddate + "' and flow.branchid in(" + currentBranchids + ")";
-
-		if (isnowdata > 0) {
-			sql += " and flow.isnow =1 ";
-		}
-		return sql;
 	}
 
 	/**
@@ -4031,33 +4046,71 @@ public class CwbDAO {
 	// 分站到货统计查询总金额
 	public CwbOrder getcwborderDaoHuoSum(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
-			String flowordertypes, 
-			String begindate, String enddate, String currentBranchids, long isnowdata) {
-		String existsOrderFlowSql = getExistsOrderFlowSql(begindate, enddate, currentBranchids, isnowdata);
-		String sql = "select sum(detail.receivablefee) as receivablefee,sum(detail.paybackfee) as paybackfee from express_ops_cwb_detail as detail where exists ("
-				+ existsOrderFlowSql + ") and detail.state=1 ";
+			String flowordertypes) {
+		String sql = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where cwb in ("
+				+ orderflowcwbs + ") and state=1 ";
+		String sqlExpress = "";
 
 		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0)
 				|| (flowordertypes.length() > 0)) {
 
 			StringBuffer w = new StringBuffer();
 			if (!customerids.equals("0")) {
-				w.append(" and detail.customerid in(" + customerids + ")");
+				w.append(" and customerid in(" + customerids + ")");
 			}
 
 			if (kufangids.length() > 0) {
-				w.append(" and detail.carwarehouse in(" + kufangids + ")");
+				w.append(" and carwarehouse in(" + kufangids + ")");
 			}
 			if (cwbordertypeids.length() > 0) {
-				w.append(" and detail.cwbordertypeid in(" + cwbordertypeids + ")");
+				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
 			}
 			if (flowordertypes.length() > 0) {
-				w.append(" and detail.flowordertype in(" + flowordertypes + ")");
+				w.append(" and flowordertype in(" + flowordertypes + ")");
 			}
 			sql += w.toString();
+			
+			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
+					|| ((cwbordertypeids != null) && cwbordertypeids
+							.contains(CwbOrderTypeIdEnum.Express.getValue()
+									+ ""))) {
+				StringBuffer expressOr = new StringBuffer();
+				expressOr
+						.append("select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where cwb in ("
+								+ orderflowcwbs + ") and state=1 ");
+				if (!customerids.equals("0")) {
+					expressOr.append(" and customerid in(" + customerids + ")");
+				}
+				if ((cwbordertypeids.length() > 0)) {
+					expressOr.append(" and cwbordertypeid="
+							+ CwbOrderTypeIdEnum.Express.getValue());
+				}
+				if (flowordertypes.length() > 0) {
+					expressOr.append(" and flowordertype in(" + flowordertypes
+							+ ")");
+				}
+				if (expressOr.length() > 0) {
+					sqlExpress = expressOr.toString();
+				}
+			}
 		}
 		try {
-			return this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper());
+			CwbOrder result = this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper());
+			if (sqlExpress.length() > 0) {
+				CwbOrder resultExpress = this.jdbcTemplate.queryForObject(sqlExpress, new CwbMOneyMapper());
+				if (result != null){
+					BigDecimal receivablefee = (result.getReceivablefee() == null ? new BigDecimal("0") : result.getReceivablefee());
+					BigDecimal paybackfee = ( result.getPaybackfee() == null ? new BigDecimal("0") :  result.getPaybackfee());
+					if (resultExpress != null) {
+						BigDecimal receivablefeeExpress = (resultExpress.getReceivablefee() == null ? new BigDecimal("0") : resultExpress.getReceivablefee());
+						BigDecimal paybackfeeExpress = ( resultExpress.getPaybackfee() == null ? new BigDecimal("0") :  resultExpress.getPaybackfee());
+						result.setReceivablefee(receivablefee.add(receivablefeeExpress));
+						result.setPaybackfee(paybackfee.add(paybackfeeExpress));
+					}
+				}
+			}
+			return result;
 		} catch (DataAccessException e) {
 			return new CwbOrder();
 		}
@@ -4408,28 +4461,26 @@ public class CwbDAO {
 	// 分站到货统计查询订单list
 	public List<CwbOrder> getDaoHuocwbOrderByPage(long page,
 			String customerids, String cwbordertypeids, String orderflowcwbs,
-			String kufangids, String flowordertypes, 
-			String begindate, String enddate, String currentBranchids, long isnowdata) {
-		String existsOrderFlowSql = getExistsOrderFlowSql(begindate, enddate, currentBranchids, isnowdata);
-		String sql = "select * from express_ops_cwb_detail as detail where exists ("
-				+ existsOrderFlowSql + ") and detail.state=1 ";
+			String kufangids, String flowordertypes) {
+		String sql = "select * from express_ops_cwb_detail where cwb in ("
+				+ orderflowcwbs + ") and state=1 ";
 
 		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0)
 				|| (flowordertypes.length() > 0)) {
 
 			StringBuffer w = new StringBuffer();
 			if (!customerids.equals("0")) {
-				w.append(" and detail.customerid in(" + customerids + ")");
+				w.append(" and customerid in(" + customerids + ")");
 			}
 
 			if ((kufangids.length() > 0)) {
-				w.append(" and detail.carwarehouse in(" + kufangids + ")");
+				w.append(" and carwarehouse in(" + kufangids + ")");
 			}
 			if ((cwbordertypeids.length() > 0)) {
-				w.append(" and detail.cwbordertypeid in(" + cwbordertypeids + ")");
+				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
 			}
 			if (flowordertypes.length() > 0) {
-				w.append(" and detail.flowordertype in(" + flowordertypes + ")");
+				w.append(" and flowordertype in(" + flowordertypes + ")");
 			}
 			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
 			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
@@ -4438,17 +4489,17 @@ public class CwbDAO {
 									+ ""))) {
 				StringBuffer expressOr = new StringBuffer();
 				expressOr
-						.append("union select * from express_ops_cwb_detail as detail where exists ("
-								+ existsOrderFlowSql + ") and detail.state=1 ");
+						.append("union select * from express_ops_cwb_detail where cwb in ("
+								+ orderflowcwbs + ") and state=1 ");
 				if (!customerids.equals("0")) {
-					expressOr.append(" and detail.customerid in(" + customerids + ")");
+					expressOr.append(" and customerid in(" + customerids + ")");
 				}
 				if ((cwbordertypeids.length() > 0)) {
-					expressOr.append(" and detail.cwbordertypeid="
+					expressOr.append(" and cwbordertypeid="
 							+ CwbOrderTypeIdEnum.Express.getValue());
 				}
 				if (flowordertypes.length() > 0) {
-					expressOr.append(" and detail.flowordertype in(" + flowordertypes
+					expressOr.append(" and flowordertype in(" + flowordertypes
 							+ ")");
 				}
 				if (expressOr.length() > 0) {
