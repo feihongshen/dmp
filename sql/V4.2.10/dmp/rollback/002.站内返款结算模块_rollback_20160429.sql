@@ -4,7 +4,7 @@ delete from `dmp40_function` where `ID`='803002' and `functionname`= '缴款导�
 delete from `dmp40_function` where `ID`='803003' and `functionname`= '缴款导入管理';
 delete from `dmp40_function` where `ID`='803004' and `functionname`= '预付款管理';
 delete from `dmp40_function` where `ID`='803005' and `functionname`= '缴款账户余额查询';
-delete from `dmp40_function` where `ID`='803080' and `functionname`= '签收小件员余额报表';
+delete from `dmp40_function` where `ID`='803090' and `functionname`= '签收小件员余额报表';
 
 ALTER TABLE `express_set_branch` DROP COLUMN `payin_type`;
 
