@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
@@ -494,6 +497,7 @@ public class MonitorLogController {
 	}
 	
 	@RequestMapping("/exportExcel")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcel(Model model, HttpServletResponse response, @RequestParam(value = "customerid", required = false, defaultValue = "") String customerid,
 			 @RequestParam(value = "branchid", required = false, defaultValue = "-3") String branchid,
 			@RequestParam(value = "type", required = false, defaultValue = "") String type,

@@ -67,6 +67,9 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 /**
  * 退货中心出入库跟踪表
  * 
@@ -197,6 +200,7 @@ public class BackSummaryController {
 	 * @param exceltime
 	 */
 	@RequestMapping("/exportExcleList")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcleList(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "exceltime", required = false, defaultValue = "") String exceltime) {
 		if (!"".equals(exceltime)) {
 			String[] cloumnName1 = new String[6]; // 导出的列名
@@ -251,6 +255,7 @@ public class BackSummaryController {
 	 *            导出模板
 	 */
 	@RequestMapping("/exportExcle")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "summaryid", required = false, defaultValue = "0") long summaryid,
 			@RequestParam(value = "type", required = false, defaultValue = "0") int type, @RequestParam(value = "exportmould", required = false, defaultValue = "") String exportmould) {
 		String[] cloumnName1 = {}; // 导出的列名

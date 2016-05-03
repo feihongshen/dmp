@@ -28,6 +28,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
@@ -3726,6 +3729,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getcwborderCountHuiZong(String begindate, String enddate,
 			String customerids, String startbranchids, String nextbranchids,
 			String cwbordertypeids, String orderflowcwbs,
@@ -3744,6 +3748,7 @@ public class CwbDAO {
 	}
 
 	// 分站到货统计统计订单数
+	@DataSource(DatabaseType.REPLICA)
 	public long getcwborderDaoHuoCount(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
 			String flowordertypes) {
@@ -3972,6 +3977,7 @@ public class CwbDAO {
 		return sql;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getcwborderCountHuiZong(String customerids,
 			String cwbordertypeids, String orderflowcwbs, long flowordertype,
 			long paywayid, String[] operationOrderResultTypes,
@@ -4022,6 +4028,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getcwborderSumHuiZong(String begindate, String enddate,
 			String customerids, String startbranchids, String nextbranchids,
 			String cwbordertypeids, String orderflowcwbs,
@@ -4040,6 +4047,7 @@ public class CwbDAO {
 	}
 
 	// 分站到货统计查询总金额
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getcwborderDaoHuoSum(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
 			String flowordertypes) {
@@ -4098,6 +4106,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getcwborderSumHuiZong(String customerids,
 			String cwbordertypeids, String orderflowcwbs, long flowordertype,
 			long paywayid, String[] operationOrderResultTypes,
@@ -4423,6 +4432,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getcwbOrderByPageHuiZong(long page, String begindate,
 			String enddate, String orderName, String customerids,
 			String startbranchids, String nextbranchids,
@@ -4441,6 +4451,7 @@ public class CwbDAO {
 	}
 
 	// 分站到货统计查询订单list
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getDaoHuocwbOrderByPage(long page,
 			String customerids, String cwbordertypeids, String orderflowcwbs,
 			String kufangids, String flowordertypes) {
@@ -4496,6 +4507,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getcwbOrderByPageHuiZong(long page, String orderName,
 			String customerids, String cwbordertypeids, String orderflowcwbs,
 			long flowordertype, long paywayid,
@@ -5438,18 +5450,21 @@ public class CwbDAO {
 				+ branchid + " and detail.state=1 and record.flowordertype " + Tools.assembleInByList(flowordertypeList) + " and detail.cwb in(" + cwbs + ")";
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbOrderByCwbs(String cwbs) {
 		String sql = "select * from express_ops_cwb_detail where state=1 and cwb in("
 				+ cwbs + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getCwbOrderByCwbsCount(String cwbs) {
 		String sql = "select count(1) from express_ops_cwb_detail where state=1 and cwb in("
 				+ cwbs + ")";
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getSumByCwbs(String cwbs) {
 		String sql = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where state=1 and cwb in("
 				+ cwbs + ")";
@@ -6183,6 +6198,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, resendtime, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbDetailByParamAndCwbsPage(long page,
 			String customerids, String emaildatebegin, String emaildateend,
 			long cwbordertypeid, long nextbranchid) {
@@ -6242,6 +6258,7 @@ public class CwbDAO {
 		return sql;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getCwbDetailByParamAndCwbsCount(String customerids,
 			String emaildatebegin, String emaildateend, long cwbordertypeid,
 			long nextbranchid) {
@@ -7097,6 +7114,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, remark5, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getIntoCwbByCwbsPage(long page, String cwbs,
 			String customers, long cwbordertypeid, String emaildatebegin,
 			String emaildateend) {
@@ -7121,6 +7139,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getIntoCwbByCwbsCount(String cwbs, String customers,
 			long cwbordertypeid, String emaildatebegin, String emaildateend) {
 		String sql = "SELECT count(1) from express_ops_cwb_detail where cwb in("
@@ -7189,6 +7208,7 @@ public class CwbDAO {
 	 * @param i
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public long getcwbOrderByOutWarehouseCountNew(String begindate,
 			String enddate, String orderName, String customerids,
 			String kufangids, String nextbranchids, String cwbordertypeids,
@@ -7201,6 +7221,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql, begindate, enddate);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getcwbOrderByOutWarehouseSumNew(String begindate,
 			String enddate, String orderName, String customerids,
 			String kufangids, String nextbranchids, String cwbordertypeids,
@@ -7217,6 +7238,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getcwbOrderByOutWarehouseNew(long page,
 			String begindate, String enddate, String orderName,
 			String customerids, String kufangids, String nextbranchids,
@@ -8241,6 +8263,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getMonitorLogByBranchid(String branchids,
 			String customerids, String wheresql, long page) {
 		StringBuffer sql = new StringBuffer(
@@ -8263,6 +8286,7 @@ public class CwbDAO {
 		return list;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByBranchid(String branchids, String customerids,
 			String wheresql) {
 		String notcwbString = this.getEffectiveCwbString(branchids,
@@ -8278,6 +8302,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(
 			String branchids, String customerids, String wheresql) {
 		StringBuffer sql = new StringBuffer(
@@ -8291,6 +8316,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public String getEffectiveCwbString(String branchids, String customerids,
 			String wheresql) {
 		String suffer = "'";
@@ -8313,6 +8339,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getMonitorLogByType(String wheresql, String branchid,
 			long page, String branchids) {
 
@@ -8362,6 +8389,7 @@ public class CwbDAO {
 		return sql.toString();
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByType(String wheresql, String branchid,
 			String branchids) {
 
