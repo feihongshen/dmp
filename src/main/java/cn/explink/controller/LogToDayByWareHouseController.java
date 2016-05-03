@@ -1,6 +1,8 @@
 package cn.explink.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -45,6 +50,8 @@ import cn.explink.util.Page;
 @Controller
 public class LogToDayByWareHouseController {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 
@@ -100,7 +107,33 @@ public class LogToDayByWareHouseController {
 		SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("wareHouseDayLogTime");
 		//系统参数不为空
 		if (siteDayLogTime != null && StringUtils.hasLength(siteDayLogTime.getValue())) {
-			startTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " " + siteDayLogTime.getValue();
+			
+			/*
+			逻辑：
+			假设当前时间是2016-4-20 10:52:16
+			系统参数设置了： 23:00:00，则startTime就是2016-4-19 23:00:00
+			假设当前时间是2016-4-20 23:01:00
+			系统参数设置了： 23:00:00，则startTime就是2016-4-20 23:00:00
+			update by neo01.huang，2016-4-28
+			*/
+			Date now = new Date();
+			startTime = new SimpleDateFormat("yyyy-MM-dd").format(now) + " " + siteDayLogTime.getValue();
+			
+			Date startTimeDate = null;
+			try {
+				startTimeDate = DateUtils.parseDate(startTime, "yyyy-MM-dd HH:mm:ss");
+			} catch (ParseException e) {
+				logger.info("nowlog->startTime格式不正确，startTime:{}", startTime);
+			}
+			
+			if (startTimeDate != null) {
+				if (now.getTime() < startTimeDate.getTime()) { //如果当前时间还没到startTime，则startTime取昨天的时间
+					Calendar calendar = Calendar.getInstance();
+					calendar.add(Calendar.DAY_OF_MONTH, -1);
+					Date yesterday = calendar.getTime(); //昨天
+					startTime = new SimpleDateFormat("yyyy-MM-dd").format(yesterday) + " " + siteDayLogTime.getValue();
+				}
+			}
 			
 		} else { //系统参数为空
 			long randomBranchid = 0;
