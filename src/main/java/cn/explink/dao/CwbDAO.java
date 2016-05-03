@@ -4678,9 +4678,9 @@ public class CwbDAO {
 						branchid, deliverystate);
 	}
 
-	public List<CwbOrder> getCwbByPackageCode(String packageCode) {
-		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '"
-				+ packageCode + "' ";
+	public List<CwbOrder> getCwbByBaleid(long baleid) {
+		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleid ="
+				+ baleid;
 		List<String> baleCwbList = this.jdbcTemplate.queryForList(baleCwbSql,
 				String.class);
 		StringBuilder targetString = new StringBuilder();
@@ -7419,15 +7419,14 @@ public class CwbDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs, long branchid,
-			String baleno) {
+			long baleid) {
 		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
 				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
 				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
 				+ "FROM express_ops_groupdetail op LEFT JOIN express_ops_cwb_detail cd ON cd.cwb=op.cwb where op.cwb in("
 				+ cwbs
-				+ ") and op.baleno='"
-				+ baleno
-				+ "'"
+				+ ") and op.baleid="
+				+ baleid
 				+ "  and cd.state=1 ";
 		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
 	}

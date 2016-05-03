@@ -110,10 +110,10 @@ public class ExpressOutStationService {
 
 		// 通过扫描的号码查询订单表和包号表
 		CwbOrder order = this.cwbDAO.getCwbByCwb(scanNo);
-		List<Bale> bales = this.baleDAO.getBaleByBaleno(scanNo);
+		Bale bale = this.baleDAO.getBaleOnway(scanNo);
 		// 标识包号是否存在
 		Boolean baleIsExist = false;
-		if ((bales != null) && (bales.size() > 0)) {
+		if (bale!=null) {
 			baleIsExist = true;
 		}
 		// 查询的时候要加上订单类型为快递
@@ -125,7 +125,7 @@ public class ExpressOutStationService {
 			checkMap.put("order", order);
 		} else if ((order == null) && baleIsExist) {
 			checkMap.put("opeFlag", ExpressOutStationFlagEnum.BaleNo.getValue());
-			checkMap.put("bales", bales);
+			checkMap.put("bale", bale);
 		}
 		return checkMap;
 	}
@@ -246,33 +246,31 @@ public class ExpressOutStationService {
 		long currentBranchId = user.getBranchid();
 		long nextBranchId = params.getNextBranch();
 		// 1.获取包
-		List<Bale> bales = this.baleDAO.getBaleByBaleno(scanNo);
-		if ((bales != null) && (bales.size() > 0)) {
+		Bale bale = this.baleDAO.getBaleOnway(scanNo);
+		if (bale == null) {
 			// add by wangzhiyu 当包号不可用时进行错误提示
-			if (bales.get(0).getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
-				throw new CwbException(scanNo, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.BaleCannotUse);
-			}
+			throw new CwbException(scanNo, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.BaleCannotUse);
+		}else{
 			Long successCount = 0L;
 			Long failCount = 0L;
 			// 2.获取包实体
-			Bale bale = bales.get(0);
 			// 3.包的信息校验
 			this.baleOpeIntoStationValidation(params, currentBranchId, bale);
 			// 4.查询包号中的订单循环执行订单的操作出站
-			List<CwbOrder> cwbOrderList = this.cwbDAO.getListByPackagecodeExcel(bale.getBaleno());
+			List<CwbOrder> cwbOrderList = this.cwborderService.getListByBale(bale.getId(),0);
 			List<CwbOrder> errorList = new ArrayList<CwbOrder>();
 			List<CwbOrder> succList = new ArrayList<CwbOrder>();
 			String tempOrderNo = "";// 缓存订单号
 			// try {
 			successCount = this.expressOrderBatchIntoStation(user, params, currentBranchId, nextBranchId, successCount, bale, cwbOrderList, succList, tempOrderNo);
 			if (bale.getNextbranchid() != 0) {
-				baleDAO.updateBranchIdAndNextBranchId(scanNo, params.getNextBranch(), 0);
+				baleDAO.updateBranchIdAndNextBranchId(bale.getId(), params.getNextBranch(), 0);
 				Branch branch = this.branchDAO.getBranchByBranchid(bale.getNextbranchid());
 				resMap.put("nextBranchName", branch.getBranchname());
 			//add by 王志宇
 			}else{
 				//将下一站更新到包表中
-				baleDAO.updateBranchIdAndNextBranchId(scanNo, params.getNextBranch(), 0);
+				baleDAO.updateBranchIdAndNextBranchId(bale.getId(), params.getNextBranch(), 0);
 				resMap.put("nextBranchName", this.branchDAO.getBranchByBranchid(params.getNextBranch()).getBranchname());
 			}
 			if (bale.getBranchid() != 0) {
@@ -318,7 +316,7 @@ public class ExpressOutStationService {
 			// 更新包的状态以及定相关信息的修改
 			if (successCount > 0) {
 				// 更改包的状态
-				this.baleDAO.updateBalesateAndNextBranchId(bale.getBaleno(), BaleStateEnum.YiFengBaoChuKu.getValue(), nextBranchId, currentBranchId);
+				this.baleDAO.updateBalesateAndNextBranchId(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue(), nextBranchId, currentBranchId);
 			}
 
 		}
@@ -400,7 +398,10 @@ public class ExpressOutStationService {
 		// 订单号操作 ---订单是否在包中
 		if (!Tools.isEmpty(order.getPackagecode()) && !isBale) {// 包号是否为空
 			// 将包号置为不可用
-			this.baleDAO.updateBalesate(order.getPackagecode(), BaleStateEnum.BuKeYong.getValue());
+			Bale bale=this.baleDAO.getBaleOnway(order.getPackagecode());
+			if(bale!=null){
+				this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.BuKeYong.getValue());
+			}
 			// throw new CwbException(scanNo,
 			// FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
 			// ExceptionCwbErrorTypeEnum.Bale_Error1, scanNo,

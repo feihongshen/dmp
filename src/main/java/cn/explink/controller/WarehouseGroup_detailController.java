@@ -378,10 +378,13 @@ public class WarehouseGroup_detailController {
 		 * 广州通路需求，如果出库交接单打印，查询页面录入包号查询，变更查询逻辑（由关联表而不是主表取数）
 		 */
 		if( !StringUtils.isEmpty(baleno) ){
-			Map<String, List<CwbOrder>> cwbOrderListMap = this.handleQueryForBale(baleno,nextbranchid,flowordertype);
-			cwbList = cwbOrderListMap.get("cwbList");
-			cwbListForBaleView = cwbOrderListMap.get("cwbListForBaleView");
-			long baleCount = this.baleCwbDao.getBaleScanCount(baleno);
+			Bale bale=this.baleDAO.getBaleOnway(baleno);
+			if(bale!=null){
+				Map<String, List<CwbOrder>> cwbOrderListMap = this.handleQueryForBale(bale.getId(),nextbranchid,flowordertype);
+				cwbList = cwbOrderListMap.get("cwbList");
+				cwbListForBaleView = cwbOrderListMap.get("cwbListForBaleView");
+			}
+			long baleCount = bale==null?0:bale.getScannum();
 			model.addAttribute("baleCount", baleCount);
 			
 //			cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype);
@@ -554,7 +557,11 @@ public class WarehouseGroup_detailController {
 			int jianshu = 0;
 			BigDecimal carryweight = BigDecimal.ZERO;
 			if (!baleno.equals("")) {
-				List<CwbOrder> cwbOrders = this.cwbDao.getCwbByPackageCode(baleno);
+				Bale bale=this.baleDAO.getBaleOnway(baleno);
+				List<CwbOrder> cwbOrders = new ArrayList<CwbOrder>();
+				if(bale!=null){
+					cwbOrders=this.cwbDao.getCwbByBaleid(bale.getId());
+				}
 				for (int i = 0; i < cwbOrders.size(); i++) {
 					jianshu += cwbOrders.get(i).getSendcarnum();
 					carryweight = carryweight.add(cwbOrders.get(i).getCarrealweight());
@@ -586,7 +593,7 @@ public class WarehouseGroup_detailController {
 				 */
 
 				List<GroupDetail> groupDetails = new ArrayList<GroupDetail>();
-				groupDetails = this.groupDetailDao.getGroupDetailListByBale(baleno);
+				groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale==null?0:bale.getId());
 				GroupDetail groupDetail = new GroupDetail();
 				for (GroupDetail gDetail : groupDetails) {
 					groupDetail = gDetail;
@@ -621,7 +628,17 @@ public class WarehouseGroup_detailController {
 				for (int i = 0; i < cwbOrders.size(); i++) {
 					groupDetails = this.groupDetailDao.getGroupDetailListByCwb(cwbOrders.get(i).getCwb());
 					if (!cwbOrders.get(i).getPackagecode().equals("")) {
-						baleSet.add(cwbOrders.get(i).getPackagecode());
+						if(groupDetails!=null){
+							for(GroupDetail gd:groupDetails){
+								if(gd.getBaleid()>0){
+									Bale bale=this.baleDAO.getBaleById(gd.getBaleid());
+									if(bale!=null){
+										baleSet.add(bale.getBaleno());
+									}
+								}
+							}
+						}
+						//baleSet.add(cwbOrders.get(i).getPackagecode());
 					} else {
 						WarehouseGroupPrintDto printDto2 = new WarehouseGroupPrintDto();
 						printDto2.setBaleno(cwbOrders.get(i).getCwb() + "(订单)");
@@ -643,7 +660,11 @@ public class WarehouseGroup_detailController {
 					}
 				}
 				for (String string : baleSet) {
-					List<CwbOrder> cwbOrders2 = this.cwbDao.getCwbByPackageCode(string);
+					Bale bale=this.baleDAO.getBaleOnway(string);
+					List<CwbOrder> cwbOrders2 = new ArrayList<CwbOrder>();
+					if(bale!=null){
+						cwbOrders2=this.cwbDao.getCwbByBaleid(bale.getId());
+					}		
 					WarehouseGroupPrintDto printDto2 = new WarehouseGroupPrintDto();
 					for (int i = 0; i < cwbOrders2.size(); i++) {
 						jianshu += cwbOrders2.get(i).getSendcarnum();
@@ -713,11 +734,11 @@ public class WarehouseGroup_detailController {
 	 * @param cwbList 实际对应订单明细
 	 * @param cwbListForBaleView 用于打印页面运单维度订单明细（一票多件多条记录，订单号由运单号替换）
 	 */
-	private Map<String,List<CwbOrder>> handleQueryForBale(String baleno, String nextbranchid, long flowordertype) {
+	private Map<String,List<CwbOrder>> handleQueryForBale(long baleid, String nextbranchid, long flowordertype) {
 		
 		Map<String,List<CwbOrder>> resultMap = new HashMap<String, List<CwbOrder>>();
 		//所有包中关联订/运单号 Str list
-		List<String> orderNoStrs = this.baleCwbDao.getCwbsByBaleNO(baleno);
+		List<String> orderNoStrs = this.baleCwbDao.getCwbsByBale(""+baleid);
 		//所有真实订单号 Strs
 		StringBuilder cwbsSB = new StringBuilder();
 		String cwbs = "";
@@ -734,7 +755,7 @@ public class WarehouseGroup_detailController {
 //		List<CwbOrder> cwbList = this.cwbDao.getCwbListByAnyNo(orderNoStrs);
 //		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype,baleno);
 		//dmp 4.2.8 修复分拣出库打印的bug
-		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs,this.getSessionUser().getBranchid(),baleno);
+		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs,this.getSessionUser().getBranchid(),baleid);
 		
 		//显示用订单list
 		List<CwbOrder> cwbListForBaleView = new ArrayList<CwbOrder>();
@@ -767,11 +788,11 @@ public class WarehouseGroup_detailController {
 	 * @param flowordertype
 	 * @return
 	 */
-	private Map<String,List<CwbOrder>> handleQueryForBale(String baleno) {
+	private Map<String,List<CwbOrder>> handleQueryForBale(long baleid) {
 		
 		Map<String,List<CwbOrder>> resultMap = new HashMap<String, List<CwbOrder>>();
 		//所有包中关联订/运单号 Str list
-		List<String> orderNoStrs = this.baleCwbDao.getCwbsByBaleNO(baleno);
+		List<String> orderNoStrs = this.baleCwbDao.getCwbsByBale(""+baleid);
 		//真实订单list(根据打印相关表获取)
 		List<CwbOrder> cwbList = this.cwbDao.getCwbListByAnyNo(orderNoStrs);
 		//显示用订单list
@@ -899,6 +920,7 @@ public class WarehouseGroup_detailController {
 		String branchids = this.getStrings(branchid);
 		if (isshow > 0) {
 			List<GroupDetail> gdList = new ArrayList<GroupDetail>();
+			Bale bale=null;
 			if (baleno.equals("")) {
 				if ((driverid == -1) || (truckid == -1) || (truckid == 0)) {
 					if (truckid != -1) {
@@ -919,17 +941,20 @@ public class WarehouseGroup_detailController {
 				model.addAttribute("truckid", truckid);
 
 			} else {
+				bale=this.baleDAO.getBaleOnway(baleno);
 				if (truckid != -1) {
 					gdList = this.groupDetailDao.getCwbListByBalenoExportByTruckid(truckid);
 				} else if (driverid != -1) {
 					gdList = this.groupDetailDao.getCwbListByBalenoExportBydriverid(driverid);
 				} else {
-					gdList = this.groupDetailDao.getCwbListByBalenoExport(baleno);
+					if(bale!=null){
+						gdList = this.groupDetailDao.getCwbListByBaleIdExport(bale.getId());
+					}
 				}
 				// 包号不为空 查询groupDetail表将truckid查询出来
 
 				List<GroupDetail> groupDetails = new ArrayList<GroupDetail>();
-				groupDetails = this.groupDetailDao.getGroupDetailListByBale(baleno);
+				groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale==null?0:bale.getId());
 				if (groupDetails.size() > 0) {
 					model.addAttribute("truckid", groupDetails.get(0).getTruckid());
 				}
@@ -943,7 +968,9 @@ public class WarehouseGroup_detailController {
 			cwbs = cwbs.length() > 0 ? cwbs.substring(0, cwbs.length() - 1) : "";
 			if (!baleno.equals("")) {
 				//按包逻辑优化，查询关联表记录
-				orderlist = this.cwbDao.getCwbByPackageCode(baleno);
+				if(bale!=null){
+					orderlist = this.cwbDao.getCwbByBaleid(bale.getId());
+				}
 			} else if (cwbs.length() > 0) {
 				orderlist = this.cwbDao.getCwbOrderByCwbs(cwbs);
 			}
@@ -1250,16 +1277,18 @@ public class WarehouseGroup_detailController {
 		OutWarehouseGroup owg = this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid);
 		long truckid = owg.getTruckid();
 		String balenoowg=owg.getBaleno();
+		Bale bale=null;
 		if((null!=balenoowg)&&(balenoowg.length()>0)){
-		model.addAttribute("baleno", balenoowg);
-		model.addAttribute("baleCount", this.baleCwbDao.getBaleScanCount(balenoowg));
+			bale=this.baleDAO.getBaleById(owg.getBaleid());
+			model.addAttribute("baleno", balenoowg);
+			model.addAttribute("baleCount", bale==null?0:bale.getScannum());
 		}
 		String cwbs = "";
 
 		if (owg.getSign() == 1) {
 			if( !StringUtils.isEmpty(balenoowg)){
 				cwbs = owg.getCwbs();
-				Map<String, List<CwbOrder>> cwbListMap = this.handleQueryForBale(balenoowg);
+				Map<String, List<CwbOrder>> cwbListMap = this.handleQueryForBale(owg.getBaleid());
 				cwbList = cwbListMap.get("cwbList");
 				cwbListForBale = cwbListMap.get("cwbListForBaleView");
 			}else{
@@ -2233,17 +2262,17 @@ public class WarehouseGroup_detailController {
 	public String outbalelist_print(Model model, HttpServletRequest request, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint) {
 		List<Branch> branchList = this.branchDAO.getAllBranches();
 
-		String balenos = "";
+		String baleids = "";
 
 		for (int i = 0; i < isprint.length; i++) {
 			if (isprint[i].trim().length() == 0) {
 				continue;
 			}
-			balenos += "'" + isprint[i] + "',";
+			baleids +=  isprint[i] + ",";
 		}
-		balenos = balenos.length()>0?balenos.substring(0, balenos.length()-1):"'---'";
+		baleids = baleids.length()>0?baleids.substring(0, baleids.length()-1):"0";
 
-		List<Long> nextbranchids = this.groupDetailDao.getBranchIdsGroupBYbranchid(balenos);
+		List<Long> nextbranchids = this.groupDetailDao.getBranchIdsGroupBYbranchid(baleids);
 
 		Map<Long, List<Map<String,Object>>> branchmap = new HashMap<Long, List<Map<String,Object>>>();
 
@@ -2251,12 +2280,12 @@ public class WarehouseGroup_detailController {
 			// 循环包号
 			for (int i = 0; i < nextbranchids.size(); i++) {
 
-				List<String> banchidsbalenos = this.groupDetailDao.getBalesBybranchid(balenos, nextbranchids.get(i) );
+				List<Long> banchidsbaleids = this.groupDetailDao.getBalesBybranchid(baleids, nextbranchids.get(i) );
 				List<Map<String,Object>> bList = new ArrayList<Map<String,Object>>();
-				for(String bale : banchidsbalenos){
+				for(long baleid : banchidsbaleids){
 					Map<String,Object> map = new HashMap<String,Object>();
 					// 根据包号查找订单打印表数据
-					List<GroupDetail> groupDetailList = this.groupDetailDao.getGroupDetailListByBale(bale);
+					List<GroupDetail> groupDetailList = this.groupDetailDao.getGroupDetailListByBale(baleid);
 					if ((groupDetailList != null) && !groupDetailList.isEmpty()) {
 						// 获得包号、发货地、目的地
 						map.put("baleid", groupDetailList.get(0).getBaleid());
@@ -2269,7 +2298,8 @@ public class WarehouseGroup_detailController {
 						}
 						// 获取订单数量、代收总金额
 						List<Map<String, Object>> cwbList = this.cwbDao.getCwbByPrintCwbs(cwbs.substring(0, cwbs.lastIndexOf(",")));
-						Map<String, Object> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, bale);
+						
+						Map<String, Object> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, groupDetailList.get(0).getBaleno());
 						map.put("cwbListView", cwbListView);
 						map.put("drivername", groupDetailList.get(0).getDriverid()>0? this.userDAO.getAllUserByid(groupDetailList.get(0).getDriverid()).getRealname():"");
 						bList.add(map);
@@ -2294,7 +2324,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("username",  this.getSessionUser().getRealname());
 		model.addAttribute("templateName", sy.getValue() == null ? "" : sy.getValue());
 
-		model.addAttribute("balenos", balenos);
+		model.addAttribute("baleids", baleids);//todo jsp
 		model.addAttribute("branchmap", branchmap);
 		PrintTemplate printTemplate = this.printTemplateDAO.getPrintTemplateByType(4);
 		Map<String,String> tmap = new HashMap<String,String>();
@@ -2340,14 +2370,14 @@ public class WarehouseGroup_detailController {
 	 */
 	@RequestMapping("/outbalelist_update")
 	public @ResponseBody
-	String outbalelist_update(Model model, HttpServletRequest request, @RequestParam(value = "balenos", defaultValue = "", required = true) String balenos) {
-		String[] balenosStr =balenos.replaceAll("'", "").split(",");
+	String outbalelist_update(Model model, HttpServletRequest request, @RequestParam(value = "baleids", defaultValue = "", required = true) String baleids) {
+		String[] baleidsStr =baleids.split(",");
 		try {
-			for (int i = 0; i < balenosStr.length; i++) {
-				if (balenosStr[i].trim().length() == 0) {
+			for (int i = 0; i < baleidsStr.length; i++) {
+				if (baleidsStr[i].trim().length() == 0) {
 					continue;
 				}
-				this.groupDetailDao.updateGroupDetailListByBale(balenosStr[i]);
+				this.groupDetailDao.updateGroupDetailListByBale(Long.parseLong(baleidsStr[i]));
 			}
 			return "{\"errorCode\":0,\"error\":\"成功\"}";
 		} catch (CwbException e) {

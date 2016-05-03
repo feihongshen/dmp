@@ -166,8 +166,8 @@ $(function(){
 					<%for(PrintView pv:printList){ %>
 						 <tr>
 						 	<td width="10%" align="center" valign="middle">
-						 	<input id="isprint" name="isprint" type="checkbox" value="<%=pv.getPackagecode() %>" checked="checked"/></td>
-							<td width="25%" align="center" valign="middle"><%=pv.getPackagecode() %></td>
+						 	<input id="isprint" name="isprint" type="checkbox" value="<%=pv.getBaleid()%>" checked="checked"/></td>
+							<td width="25%" align="center" valign="middle"><%=pv.getPackagecode() %></td> 
 							<td width="25%" align="center" valign="middle"><%=pv.getCustomerwarehouseid()%></td>
 							<td width="25%" align="center" valign="middle"><%=pv.getNextbranchname()%></td>
 						    <td width="20%" align="center" valign="middle"><%=pv.getOutstoreroomtime().substring(0,19)%></td>

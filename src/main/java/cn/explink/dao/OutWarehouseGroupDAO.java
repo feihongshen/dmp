@@ -40,6 +40,7 @@ public class OutWarehouseGroupDAO {
 			owg.setCwbs(StringUtil.nullConvertToEmptyString(rs.getString("cwbs")));
 			owg.setSign(rs.getLong("sign"));
 			owg.setBaleno(rs.getString("baleno"));
+			owg.setBaleid(rs.getLong("baleid"));
 			return owg;
 		}
 
@@ -388,8 +389,8 @@ public class OutWarehouseGroupDAO {
 		String sql = "update express_ops_outwarehousegroup set cwbs=?,sign=1 where id=? and sign=0";
 		this.jdbcTemplate.update(sql, cwbs, id);
 	}
-	public int updateOutwarehousegroupBalenoByID(String baleno,long id){
-		String sql = "update express_ops_outwarehousegroup set baleno=? where id=?";
-		return this.jdbcTemplate.update(sql,baleno,id);
+	public int updateOutwarehousegroupBalenoByID(String baleno,long baleid,long id){
+		String sql = "update express_ops_outwarehousegroup set baleno=?,baleid=? where id=?";
+		return this.jdbcTemplate.update(sql,baleno,baleid,id);
 	}
 }
