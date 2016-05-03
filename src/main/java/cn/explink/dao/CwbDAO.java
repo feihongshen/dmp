@@ -3747,9 +3747,8 @@ public class CwbDAO {
 	public long getcwborderDaoHuoCount(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
 			String flowordertypes) {
-		String sql = "select count(1) from express_ops_cwb_detail where cwb in ("
+		String sql = "select opscwbid from express_ops_cwb_detail where cwb in ("
 				+ orderflowcwbs + ") and state=1 ";
-		String sqlExpress = "";
 
 		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0)
 				|| (flowordertypes.length() > 0)) {
@@ -3767,9 +3766,7 @@ public class CwbDAO {
 			}
 			if (flowordertypes.length() > 0) {
 				w.append(" and flowordertype in(" + flowordertypes + ")");
-			}
-			sql += w.toString();
-			
+			}			
 			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
 			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
 					|| ((cwbordertypeids != null) && cwbordertypeids
@@ -3777,7 +3774,7 @@ public class CwbDAO {
 									+ ""))) {
 				StringBuffer expressOr = new StringBuffer();
 				expressOr
-						.append("select count(1) from express_ops_cwb_detail where cwb in ("
+						.append("union select opscwbid from express_ops_cwb_detail where cwb in ("
 								+ orderflowcwbs + ") and state=1 ");
 				if (!customerids.equals("0")) {
 					expressOr.append(" and customerid in(" + customerids + ")");
@@ -3791,17 +3788,16 @@ public class CwbDAO {
 							+ ")");
 				}
 				if (expressOr.length() > 0) {
-					sqlExpress = expressOr.toString();
+					w.append(expressOr);
 				}
 			}
+			sql += w.toString();
 		}
+		
+		String sqlCount = "select count(1) from (" + sql + ") as countTemp";
+		
 		try {
-			int result = this.jdbcTemplate.queryForInt(sql);
-			if (sqlExpress.length() > 0) {
-				int resultExpress = this.jdbcTemplate.queryForInt(sqlExpress);
-				result += resultExpress;
-			}
-			return result;
+			return this.jdbcTemplate.queryForInt(sqlCount);
 		} catch (DataAccessException e) {
 			return 0;
 		}
@@ -4047,9 +4043,8 @@ public class CwbDAO {
 	public CwbOrder getcwborderDaoHuoSum(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
 			String flowordertypes) {
-		String sql = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where cwb in ("
+		String sql = "select opscwbid, receivablefee, paybackfee from express_ops_cwb_detail where cwb in ("
 				+ orderflowcwbs + ") and state=1 ";
-		String sqlExpress = "";
 
 		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0)
 				|| (flowordertypes.length() > 0)) {
@@ -4068,8 +4063,6 @@ public class CwbDAO {
 			if (flowordertypes.length() > 0) {
 				w.append(" and flowordertype in(" + flowordertypes + ")");
 			}
-			sql += w.toString();
-			
 			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
 			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
 					|| ((cwbordertypeids != null) && cwbordertypeids
@@ -4077,7 +4070,7 @@ public class CwbDAO {
 									+ ""))) {
 				StringBuffer expressOr = new StringBuffer();
 				expressOr
-						.append("select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where cwb in ("
+						.append("union select opscwbid, receivablefee, paybackfee from express_ops_cwb_detail where cwb in ("
 								+ orderflowcwbs + ") and state=1 ");
 				if (!customerids.equals("0")) {
 					expressOr.append(" and customerid in(" + customerids + ")");
@@ -4091,26 +4084,15 @@ public class CwbDAO {
 							+ ")");
 				}
 				if (expressOr.length() > 0) {
-					sqlExpress = expressOr.toString();
+					w.append(expressOr);
 				}
 			}
+			sql += w.toString();
 		}
+		
+		String sqlSum = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from (" + sql + ") as sumTemp";
 		try {
-			CwbOrder result = this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper());
-			if (sqlExpress.length() > 0) {
-				CwbOrder resultExpress = this.jdbcTemplate.queryForObject(sqlExpress, new CwbMOneyMapper());
-				if (result != null){
-					BigDecimal receivablefee = (result.getReceivablefee() == null ? new BigDecimal("0") : result.getReceivablefee());
-					BigDecimal paybackfee = ( result.getPaybackfee() == null ? new BigDecimal("0") :  result.getPaybackfee());
-					if (resultExpress != null) {
-						BigDecimal receivablefeeExpress = (resultExpress.getReceivablefee() == null ? new BigDecimal("0") : resultExpress.getReceivablefee());
-						BigDecimal paybackfeeExpress = ( resultExpress.getPaybackfee() == null ? new BigDecimal("0") :  resultExpress.getPaybackfee());
-						result.setReceivablefee(receivablefee.add(receivablefeeExpress));
-						result.setPaybackfee(paybackfee.add(paybackfeeExpress));
-					}
-				}
-			}
-			return result;
+			return this.jdbcTemplate.queryForObject(sqlSum, new CwbMOneyMapper());
 		} catch (DataAccessException e) {
 			return new CwbOrder();
 		}
@@ -4678,9 +4660,9 @@ public class CwbDAO {
 						branchid, deliverystate);
 	}
 
-	public List<CwbOrder> getCwbByPackageCode(String packageCode) {
-		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '"
-				+ packageCode + "' ";
+	public List<CwbOrder> getCwbByBaleid(long baleid) {
+		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleid ="
+				+ baleid;
 		List<String> baleCwbList = this.jdbcTemplate.queryForList(baleCwbSql,
 				String.class);
 		StringBuilder targetString = new StringBuilder();
@@ -7419,15 +7401,14 @@ public class CwbDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs, long branchid,
-			String baleno) {
+			long baleid) {
 		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
 				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
 				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
 				+ "FROM express_ops_groupdetail op LEFT JOIN express_ops_cwb_detail cd ON cd.cwb=op.cwb where op.cwb in("
 				+ cwbs
-				+ ") and op.baleno='"
-				+ baleno
-				+ "'"
+				+ ") and op.baleid="
+				+ baleid
 				+ "  and cd.state=1 ";
 		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
 	}

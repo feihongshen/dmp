@@ -76,6 +76,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BaleStateEnum;
+import cn.explink.enumutil.BaleUseStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -1067,8 +1068,14 @@ public class BaleService {
 			// 包号不能为0
 			throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.BAO_HAO_BU_CUN_ZAI);
 		}
+		
+		List<Bale> baleList=this.baleDAO.getBaleYifengbao(baleno);
+		if(baleList!=null&&baleList.size()>0){
+			throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Bale_Error, baleno, BaleStateEnum.YiFengBao.getText());
+		}
+		
 		// 根据包号查找
-		Bale bale = this.baleDAO.getBaleOneByBalenoLock(baleno);
+		Bale bale = this.baleDAO.getBaleWeifengbaoByLock(baleno);
 		if (bale != null) {
 			if (bale.getBranchid() != user.getBranchid()) {
 				// 非本站包
@@ -1103,7 +1110,7 @@ public class BaleService {
 		if (this.baleCwbDAO.getBaleAndCwbCount(baleno, cwb) == 0) {
 		} else {
 			if (!"".equals(co.getPackagecode()) && (co.getPackagecode() != null)) {
-				Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
+				Bale coBale = this.baleDAO.getBaleOnway(co.getPackagecode());
 				Branch userbranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 				if (coBale != null) {
 					Branch balebranch = this.branchDAO.getBranchByBranchid(coBale.getBranchid());
@@ -1520,7 +1527,7 @@ public class BaleService {
 				
 			} else {
 				if ((co.getPackagecode() != null) && !"".equals(co.getPackagecode())) {
-					Bale coBale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
+					Bale coBale = this.baleDAO.getBaleOnway(co.getPackagecode());
 					Branch nextbranch = this.branchDAO.getBranchByBranchid(coBale.getNextbranchid());
 					if ((coBale != null) && (nextbranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 						if (baleno.equals(co.getPackagecode())) {
@@ -1687,21 +1694,28 @@ public class BaleService {
 	private void _baleaddcwb(User user, String baleno, String cwb, String scancwb, long branchid) {
 		// 如果订单存在原来的包号 包号表的订单数-1
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
-		if ((co != null) && !StringUtils.isEmpty(co.getPackagecode())) {
-			Bale baleOld = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
-			this.baleDAO.updateSubBaleCount(co.getPackagecode());
-			// 删除包号订单关系表数据
-			if (baleOld.getBalestate() == BaleStateEnum.WeiFengBao.getValue()) {
-				this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
-			}
-
-			// 如果该订单之前封包过并且状态已完结，则需要删除之前的包的关系 ，已到货说明完结
-			if ((baleno != co.getPackagecode()) && (baleOld.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()) && (baleOld.getBranchid() != branchid)) {
-				this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
+		//此段代码根据没必要执行，因为新方案下每次都会新建一条包记录。之前都是利用同一条包记录。
+		/*
+		if(false){
+			if ((co != null) && !StringUtils.isEmpty(co.getPackagecode())) {
+				Bale baleOld = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
+				if(baleOld!=null){
+					this.baleDAO.updateSubBaleCount(co.getPackagecode());
+					// 删除包号订单关系表数据
+					if (baleOld.getBalestate() == BaleStateEnum.WeiFengBao.getValue()) {
+						this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
+					}
+		
+					// 如果该订单之前封包过并且状态已完结，则需要删除之前的包的关系 ，已到货说明完结
+					if ((baleno != co.getPackagecode()) && (baleOld.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()) && (baleOld.getBranchid() != branchid)) {
+						this.baleCwbDAO.deleteByBaleidAndCwb(baleOld.getId(), scancwb);
+					}
+				}
 			}
 		}
+		*/
 
-		Bale bale = this.baleDAO.getBaleOneByBaleno(baleno);
+		Bale bale = this.baleDAO.getBaleWeifengbao(baleno);
 		if (bale == null) {
 			this.logger.info("创建包号" + baleno);
 			Bale o = new Bale();
@@ -1714,7 +1728,7 @@ public class BaleService {
 			// 添加包号和订单的关系表
 			this.baleCwbDAO.createBale(baleid, baleno, scancwb);
 		} else {
-			this.baleDAO.updateAddBaleCount(baleno);// 更新订单数
+			this.baleDAO.updateAddBaleCount(bale.getId());// 更新订单数
 			// 添加包号和订单的关系表
 			this.baleCwbDAO.createBale(bale.getId(), baleno, scancwb);
 		}
@@ -1773,10 +1787,11 @@ public class BaleService {
 	 * @param baleno
 	 */
 	@Transactional
-	public void fengbao(User user, String baleno, long branchid) {
+	public Bale fengbao(User user, String baleno, long branchid) {
+		Bale bale = null;
 		if (!"".equals(baleno)) {
 			this.logger.info("====开始封包" + baleno + "====");
-			Bale bale = this.baleDAO.getBaleOneByBalenoLock(baleno);
+			bale = this.baleDAO.getBaleOnwayByLock(baleno);
 			if (bale == null) {
 				// 包号不存在
 				throw new CwbException("", FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BaoHaoBuZhengQue);
@@ -1812,8 +1827,9 @@ public class BaleService {
 			}
 			this.logger.info("用户:" + user.getRealname() + "，封包" + baleno);
 			// 封包
-			this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBao.getValue());
+			this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBao.getValue());
 		}
+		return bale;
 	}
 
 	// 按包出库页面的显示
@@ -1954,6 +1970,81 @@ public class BaleService {
 
 			this.cwbOrderService.changeoutWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, false, false);
 		}
+	}
+	
+	@Transactional
+	public Bale getBaleForHebaoDaohuo(HttpServletRequest request,String baleno,FlowOrderTypeEnum flowOrderTypeEnum){
+		//store the  bale id in session
+		Object [] baleidInfo= (Object []) request.getSession().getAttribute("BALEID_"+flowOrderTypeEnum.getValue());
+		Long baleid=null;
+		Bale bale = null;
+		baleno=baleno==null?"":baleno.trim();
+		if(baleidInfo!=null&&baleidInfo.length>1&&baleidInfo[0]!=null&&baleidInfo[1]!=null){
+			if(((String)baleidInfo[0]).equals(baleno)&&baleno.length()>0){
+				baleid=(Long) baleidInfo[1];
+			}
+		}
+		
+		if(baleid==null||baleid.longValue()<1){
+			bale = this.baleDAO.getBaleOnway(baleno);
+			if(bale!=null){
+				baleid=bale.getId();
+				request.getSession().setAttribute("BALEID_"+flowOrderTypeEnum.getValue(),new Object[]{baleno,baleid});
+			}
+		}else{
+			bale = this.baleDAO.getBaleById(baleid);
+		}
+		
+		return bale;
+	}
+	
+	@Transactional
+	public void disableBale(String scancwb){
+		if(scancwb==null||scancwb.length()<1){
+			return;
+		}
+		//类似于setExpressPackageUnable()
+		//有可能出库时合包，到站却不做合包到货
+		Bale bale=baleDAO.getBaleOnwayBycwb(scancwb);
+		if(bale==null){
+			String cwb=this.cwbOrderService.translateCwb(scancwb);
+			if(!scancwb.equals(cwb)){
+				bale=baleDAO.getBaleOnwayBycwb(cwb);
+			}
+		}
+		
+		if(bale!=null){
+			this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.BuKeYong.getValue());
+		}
+	}
+
+	//检查扫描号是否在包里
+	public boolean inBale(long baleid,String scancwb){
+		boolean result=false;
+		String cwb=this.cwbOrderService.translateCwb(scancwb);
+		if(cwb!=null&&cwb.length()>0){
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+			if(co!=null){
+				if(!cwb.equals(scancwb)){
+					//强制扫运单号时必然进入此处
+					cwb="'"+cwb+"','"+scancwb+"'";
+				}else{
+					cwb="'"+cwb+"'";
+					List<String> transcwbList=this.cwbOrderService.getTranscwbList(co.getTranscwb());
+					if(transcwbList!=null&&transcwbList.size()>0){
+						for(String transcwb:transcwbList){
+							cwb=cwb+",'"+transcwb+"'";
+						}
+					}
+				}
+				String hebaoCwb=this.baleCwbDAO.getScancwbByCwbs(baleid, cwb);
+				if(hebaoCwb!=null&&hebaoCwb.trim().length()>0){
+					result=true;
+				}
+			}
+			
+		}
+		return result;
 	}
 
 }
