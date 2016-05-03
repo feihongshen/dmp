@@ -20,6 +20,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.TpsCwbFlowVo;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import net.sf.json.JSONObject;
 
@@ -52,7 +53,7 @@ public class TpsCwbFlowService {
 				return;
 			}
 			
-			if(co==null||scancwb==null){
+			if(co==null||scancwb==null||CwbOrderTypeIdEnum.Peisong.getValue()!=co.getCwbordertypeid()){
 				return;
 			}
 			

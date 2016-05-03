@@ -90,8 +90,8 @@ public class BaleController {
 	@RequestMapping("/create")
 	public @ResponseBody String create(Model model, @RequestParam(value = "baleno", required = true) String baleno) {
 		String states = BaleStateEnum.SaoMiaoZhong.getValue() + "," + BaleStateEnum.WeiDaoZhan.getValue();
-		List<Bale> balelist = this.baleDAO.getBaleByBalenoAndBalestate(baleno, states);
-		if (balelist.size() > 0) {
+		Bale bale = this.baleDAO.getBaleOnway(baleno);
+		if (bale!=null) {
 			return "{\"errorCode\":1,\"error\":\"包已存在\"}";
 		} else {
 			this.baleDAO.create(baleno);
@@ -286,7 +286,7 @@ public class BaleController {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
-			Bale baleOld = this.baleDAO.getBaleOneByBalenoLock(baleno.trim()); 	//加悲观锁解决：
+			Bale baleOld = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim()); 	//加悲观锁解决：
 																				//#1502 出库扫描 出库后订单数增加，但是件数不增加（扫描数与发货数不一致）
 																				//以下都是轻操作应该无性能问题
 			CwbOrder cwbOrder=this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
@@ -294,8 +294,9 @@ public class BaleController {
 			
 //			this.cwbDAO.updateScannumAuto(cwb);
 			
-			this.baleDAO.updateAddBaleScannum(baleno); //要点：做完所有的写操作最后再读出！
-			Bale bale = this.baleDAO.getBaleOneByBalenoLock(baleno.trim());
+			Bale bale = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim());
+			this.baleDAO.updateAddBaleScannum(bale.getId()); //要点：做完所有的写操作最后再读出！
+			bale = this.baleDAO.getBaleById(bale.getId());
 			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
@@ -324,9 +325,9 @@ public class BaleController {
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
 			this.baleService.baletuihuochuzhanaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 			
-			this.baleDAO.updateAddBaleScannum(baleno);
+			this.baleDAO.updateAddBaleScannum(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum() + 1;
 			obj.put("successCount", successCount);
@@ -354,9 +355,9 @@ public class BaleController {
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
 			this.baleService.baletuigonghuoshangchukuaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
+			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 			
-			this.baleDAO.updateAddBaleScannum(baleno);
+			this.baleDAO.updateAddBaleScannum(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum() + 1;
 			obj.put("successCount", successCount);
@@ -397,8 +398,8 @@ public class BaleController {
 					this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
 				}
 
-				Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
-				this.baleDAO.updateAddBaleScannum(baleno);
+				Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
+				this.baleDAO.updateAddBaleScannum(bale.getId());
 				long successCount = bale.getCwbcount();
 				long scannum = bale.getScannum() + 1;
 				obj.put("successCount", successCount);
@@ -548,8 +549,9 @@ public class BaleController {
 		if (!"".equals(baleno.trim())) {
 			boolean flag = true;// 封包是否成功
 			// ======封包操作========
+			Bale bale=null;
 			try {
-				this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
+				bale=this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 				obj.put("errorcode", "000000");
 			} catch (CwbException e) {
 				flag = false;
@@ -639,10 +641,11 @@ public class BaleController {
 				/**
 				 * gztl 封包逻辑变更
 				 */
-				Bale bale=this.baleDAO.getBaleByBaleno(baleno,BaleStateEnum.YiFengBao.getValue());
-				obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
-				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
-				this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+				if(bale!=null){
+					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
+					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+					this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
+				}
 			}
 			// }
 		}
@@ -677,8 +680,9 @@ public class BaleController {
 		if (!"".equals(baleno.trim())) {
 			boolean flag = true;// 封包是否成功
 			// ======封包操作========
+			Bale bale=null;
 			try {
-				this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
+				bale=this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
 				flag = false;
 				obj.put("errorcode", "111111");
@@ -756,10 +760,11 @@ public class BaleController {
 			
 			//参考 baleChuKu的实现，只是更新包的状态
 			if( flag ){
-				Bale bale=this.baleDAO.getBaleByBaleno(baleno,BaleStateEnum.YiFengBao.getValue());
-				obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
-				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
-				this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+				if(bale!=null){
+					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
+					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+					this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
+				}
 			}
 		}
 		return explinkResponse;
@@ -778,17 +783,21 @@ public class BaleController {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
-			Bale isbale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
-			CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
+			Bale isbale = baleService.getBaleForHebaoDaohuo(request, baleno, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao);
+
+			//CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
 			if ("0".equals(baleno) || (isbale == null)) {
 				obj.put("errorinfo", "(合包到货异常)  无此" + baleno + "包号");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
-			} else if (isbale.getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
+			} else if (isbale.getBalestate() == BaleStateEnum.YiDaoHuo.getValue()) {
 				obj.put("errorinfo", "(合包到货异常)  " + isbale.getBaleno() + "已被拆包");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
-			} else if ((iscwb != null) && !baleno.equals(iscwb.getPackagecode())) {
+			} 
+			
+			boolean inbale=this.baleService.inBale(isbale.getId(), cwb);
+			if (!inbale) {
 				obj.put("errorinfo", "(合包到货异常)" + cwb + "单号不在此包号中");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
@@ -797,7 +806,7 @@ public class BaleController {
 					// 订单到货
 					CwbOrder cwbOrder = this.cwbOrderService.substationGoods(this.getSessionUser(), cwb, cwb, driverid, requestbatchno, comment, "", true);
 					// 更改包的状态
-					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
+					this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.BuKeYong.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
@@ -824,8 +833,9 @@ public class BaleController {
 		if (!"".equals(baleno.trim())) {
 			boolean flag = true;// 封包是否成功
 			// ======封包操作========
+			Bale bale=null;
 			try {
-				this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
+				bale=this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
 				flag = false;
 				obj.put("errorcode", "111111");
@@ -878,10 +888,11 @@ public class BaleController {
 			
 			//参考 baleChuKu的实现，只是更新包的状态
 			if( flag ){
-				Bale bale=this.baleDAO.getBaleByBaleno(baleno,BaleStateEnum.YiFengBao.getValue());
-				obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
-				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
-				this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+				if(bale!=null){
+					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
+					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+					this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
+				}
 			}
 		}
 		return explinkResponse;
@@ -900,13 +911,15 @@ public class BaleController {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
-			Bale isbale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
-			CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
+			Bale isbale = this.baleService.getBaleForHebaoDaohuo(request, baleno, FlowOrderTypeEnum.TuiHuoZhanRuKu);
+			//CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
 			if ("0".equals(baleno) || (isbale == null)) {
 				obj.put("errorinfo", "(合包到货异常)" + baleno + "包号不存在");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
-			} else if ((iscwb != null) && !baleno.equals(iscwb.getPackagecode())) {
+			} 
+			boolean inbale=this.baleService.inBale(isbale.getId(), cwb);
+			if (!inbale) {
 				obj.put("errorinfo", "(合包到货异常)" + cwb + "单号不在此包号中");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
@@ -915,7 +928,7 @@ public class BaleController {
 					// 订单到货
 					CwbOrder cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, cwb, driverid, 0, comment, true, 0, 0);
 					// 更改包的状态
-					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
+					this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
@@ -940,13 +953,15 @@ public class BaleController {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
-			Bale isbale = this.baleDAO.getBaleOneByBaleno(baleno.trim());
-			CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
+			Bale isbale = this.baleDAO.getBaleOnway(baleno.trim());
+			//CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
 			if ("0".equals(baleno) || (isbale == null)) {
 				obj.put("errorinfo", "(合包到货异常)" + baleno + "包号不存在");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
-			} else if ((iscwb != null) && !baleno.equals(iscwb.getPackagecode())) {
+			} 
+			boolean inbale=this.baleService.inBale(isbale.getId(), cwb);
+			if (!inbale) {
 				obj.put("errorinfo", "(合包到货异常)" + cwb + "单号不在此包号中");
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				return explinkResponse;
@@ -958,7 +973,7 @@ public class BaleController {
 					this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 0, 0);
 
 					// 更改包的状态
-					this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiDaoHuo.getValue());
+					this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
@@ -978,8 +993,9 @@ public class BaleController {
 		if (!"".equals(baleno.trim())) {
 			boolean flag = true;// 封包是否成功
 			// ======封包操作========
+			Bale bale=null;
 			try {
-				this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
+				bale=this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
 				flag = false;
 				obj.put("errorcode", "111111");
@@ -1025,10 +1041,11 @@ public class BaleController {
 			}*/
 			//参考 baleChuKu的实现，只是更新包的状态
 			if( flag ){
-				Bale bale=this.baleDAO.getBaleByBaleno(baleno,BaleStateEnum.YiFengBao.getValue());
-				obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
-				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
-				this.baleDAO.updateBalesate(baleno, BaleStateEnum.YiFengBaoChuKu.getValue());
+				if(bale!=null){
+					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
+					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+					this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
+				}
 			}
 		}
 		return explinkResponse;
@@ -1047,13 +1064,13 @@ public class BaleController {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
-			Bale baleOld = this.baleDAO.getBaleOneByBalenoLock(baleno.trim());//加悲观锁解决：
+			Bale baleOld = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim());//加悲观锁解决：
 																			  //#1502 出库扫描 出库后订单数增加，但是件数不增加（扫描数与发货数不一致）
 																			  //以下都是轻操作应该无性能问题
 			this.baleService.baleZhongZhuanChuKuAddCwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
 
-			this.baleDAO.updateAddBaleScannum(baleno);
-			Bale bale = this.baleDAO.getBaleOneByBaleno(baleno.trim()); //要点：做完所有的写操作最后再读出！
+			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim()); //要点：做完所有的写操作最后再读出！
+			this.baleDAO.updateAddBaleScannum(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
