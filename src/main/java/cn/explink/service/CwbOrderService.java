@@ -5762,7 +5762,6 @@ public class CwbOrderService extends BaseOrderService {
 							o = this.orderBackCheckService.loadFormForOrderBackCheck(co, co.getDeliverybranchid(), user.getUserid(), 1, DeliveryStateEnum.BuFenTuiHuo.getValue());
 						}
 						this.orderBackCheckDAO.createOrderBackCheck(o);
-						logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 					}
 
 					/*
@@ -5789,10 +5788,12 @@ public class CwbOrderService extends BaseOrderService {
 					//this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 					
 					//Added by leoliao at 2016-03-24 退货需要审核则订单状态要保留为配送(已向蓝生确认)
-					this.updateCwbState(cwb, CwbStateEnum.PeiShong);
+					//this.updateCwbState(cwb, CwbStateEnum.PeiShong);
+					this.cwbDAO.updateCwbState(cwb, CwbStateEnum.PeiShong);//modify by vic.liang 2016/05/03 审核后偶尔出现订单状态没有修改成功，this.updateCwbState -->this.cwbDAO.updateCwbState 尝试去掉updateCwbState的事务
+					logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 
 				} else {
-					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
+					/*for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
 						bList.add(this.branchDAO.getBranchByBranchid(i));
 					}
 
@@ -5800,7 +5801,7 @@ public class CwbOrderService extends BaseOrderService {
 						if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 							tuihuoNextBranch = b;
 						}
-					}
+					}*///重复代码
 					if (tuihuoNextBranch == null) {
 						tuihuoNextBranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getTuihuoid());
@@ -5808,7 +5809,9 @@ public class CwbOrderService extends BaseOrderService {
 						// 更改下一站为退货站
 						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getBranchid());
 					}
-					this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					
+					//this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					this.cwbDAO.updateCwbState(cwb, CwbStateEnum.TuiHuo);//modify by vic.liang 2016/05/03 审核后偶尔出现订单状态没有修改成功，this.updateCwbState -->this.cwbDAO.updateCwbState 尝试去掉updateCwbState的事务
 					logger.info("退货审核：订单{}，修改为退货状态", new Object[] { cwb });
 				}
 

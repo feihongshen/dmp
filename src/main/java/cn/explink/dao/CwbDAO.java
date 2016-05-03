@@ -2188,7 +2188,8 @@ public class CwbDAO {
 
 	public void updateCwbState(String cwb, CwbStateEnum cwbstate) {
 		String sql = "update express_ops_cwb_detail set cwbstate=? where cwb=? and state=1";
-		this.jdbcTemplate.update(sql, cwbstate.getValue(), cwb);
+		int count = this.jdbcTemplate.update(sql, cwbstate.getValue(), cwb);
+		logger.info("修改订单状态：订单{}，修改为{}状态，影响行数：{}", new Object[] { cwb , cwbstate.getText(), count});
 	}
 
 	/**
@@ -3747,7 +3748,7 @@ public class CwbDAO {
 	public long getcwborderDaoHuoCount(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
 			String flowordertypes) {
-		String sql = "select opscwbid from express_ops_cwb_detail where cwb in ("
+		String sql = "select count(1) from express_ops_cwb_detail where cwb in ("
 				+ orderflowcwbs + ") and state=1 ";
 
 		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0)
@@ -3759,45 +3760,21 @@ public class CwbDAO {
 			}
 
 			if (kufangids.length() > 0) {
-				w.append(" and carwarehouse in(" + kufangids + ")");
+				// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+				// w.append(" and carwarehouse in(" + kufangids + ")");
+				w.append(" and (cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue() +" or carwarehouse in( " + kufangids + "))");
 			}
 			if (cwbordertypeids.length() > 0) {
 				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
 			}
 			if (flowordertypes.length() > 0) {
 				w.append(" and flowordertype in(" + flowordertypes + ")");
-			}			
-			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
-			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
-					|| ((cwbordertypeids != null) && cwbordertypeids
-							.contains(CwbOrderTypeIdEnum.Express.getValue()
-									+ ""))) {
-				StringBuffer expressOr = new StringBuffer();
-				expressOr
-						.append("union select opscwbid from express_ops_cwb_detail where cwb in ("
-								+ orderflowcwbs + ") and state=1 ");
-				if (!customerids.equals("0")) {
-					expressOr.append(" and customerid in(" + customerids + ")");
-				}
-				if ((cwbordertypeids.length() > 0)) {
-					expressOr.append(" and cwbordertypeid="
-							+ CwbOrderTypeIdEnum.Express.getValue());
-				}
-				if (flowordertypes.length() > 0) {
-					expressOr.append(" and flowordertype in(" + flowordertypes
-							+ ")");
-				}
-				if (expressOr.length() > 0) {
-					w.append(expressOr);
-				}
 			}
 			sql += w.toString();
 		}
 		
-		String sqlCount = "select count(1) from (" + sql + ") as countTemp";
-		
 		try {
-			return this.jdbcTemplate.queryForInt(sqlCount);
+			return this.jdbcTemplate.queryForInt(sql);
 		} catch (DataAccessException e) {
 			return 0;
 		}
@@ -4043,7 +4020,7 @@ public class CwbDAO {
 	public CwbOrder getcwborderDaoHuoSum(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
 			String flowordertypes) {
-		String sql = "select opscwbid, receivablefee, paybackfee from express_ops_cwb_detail where cwb in ("
+		String sql = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where cwb in ("
 				+ orderflowcwbs + ") and state=1 ";
 
 		if ((cwbordertypeids.length() > 0) || (kufangids.length() > 0)
@@ -4055,7 +4032,9 @@ public class CwbDAO {
 			}
 
 			if (kufangids.length() > 0) {
-				w.append(" and carwarehouse in(" + kufangids + ")");
+				// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+				// w.append(" and carwarehouse in(" + kufangids + ")");
+				w.append(" and (cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue() +" or carwarehouse in( " + kufangids + "))");
 			}
 			if (cwbordertypeids.length() > 0) {
 				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
@@ -4063,36 +4042,11 @@ public class CwbDAO {
 			if (flowordertypes.length() > 0) {
 				w.append(" and flowordertype in(" + flowordertypes + ")");
 			}
-			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
-			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
-					|| ((cwbordertypeids != null) && cwbordertypeids
-							.contains(CwbOrderTypeIdEnum.Express.getValue()
-									+ ""))) {
-				StringBuffer expressOr = new StringBuffer();
-				expressOr
-						.append("union select opscwbid, receivablefee, paybackfee from express_ops_cwb_detail where cwb in ("
-								+ orderflowcwbs + ") and state=1 ");
-				if (!customerids.equals("0")) {
-					expressOr.append(" and customerid in(" + customerids + ")");
-				}
-				if ((cwbordertypeids.length() > 0)) {
-					expressOr.append(" and cwbordertypeid="
-							+ CwbOrderTypeIdEnum.Express.getValue());
-				}
-				if (flowordertypes.length() > 0) {
-					expressOr.append(" and flowordertype in(" + flowordertypes
-							+ ")");
-				}
-				if (expressOr.length() > 0) {
-					w.append(expressOr);
-				}
-			}
 			sql += w.toString();
 		}
 		
-		String sqlSum = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from (" + sql + ") as sumTemp";
 		try {
-			return this.jdbcTemplate.queryForObject(sqlSum, new CwbMOneyMapper());
+			return this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper());
 		} catch (DataAccessException e) {
 			return new CwbOrder();
 		}
@@ -4367,7 +4321,13 @@ public class CwbDAO {
 						+ ")");
 			}
 			if (kufangidStr.length() > 0) {
-				w.append(" and carwarehouse in( " + kufangidStr + ")");
+				// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+				// w.append(" and carwarehouse in( " + kufangidStr + ")");
+				if (sign == 8) {
+					w.append(" and (cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue() +" or carwarehouse in( " + kufangidStr + "))");
+				} else {
+					w.append(" and carwarehouse in( " + kufangidStr + ")");
+				}
 			}
 			if (startbranchidStr.length() > 0) {
 				w.append(" and startbranchid in(" + startbranchidStr + ")");
@@ -4456,37 +4416,15 @@ public class CwbDAO {
 			}
 
 			if ((kufangids.length() > 0)) {
-				w.append(" and carwarehouse in(" + kufangids + ")");
+				// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+				// w.append(" and carwarehouse in(" + kufangids + ")");
+				w.append(" and (cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue() +" or carwarehouse in( " + kufangids + "))");
 			}
 			if ((cwbordertypeids.length() > 0)) {
 				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
 			}
 			if (flowordertypes.length() > 0) {
 				w.append(" and flowordertype in(" + flowordertypes + ")");
-			}
-			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
-			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
-					|| ((cwbordertypeids != null) && cwbordertypeids
-							.contains(CwbOrderTypeIdEnum.Express.getValue()
-									+ ""))) {
-				StringBuffer expressOr = new StringBuffer();
-				expressOr
-						.append("union select * from express_ops_cwb_detail where cwb in ("
-								+ orderflowcwbs + ") and state=1 ");
-				if (!customerids.equals("0")) {
-					expressOr.append(" and customerid in(" + customerids + ")");
-				}
-				if ((cwbordertypeids.length() > 0)) {
-					expressOr.append(" and cwbordertypeid="
-							+ CwbOrderTypeIdEnum.Express.getValue());
-				}
-				if (flowordertypes.length() > 0) {
-					expressOr.append(" and flowordertype in(" + flowordertypes
-							+ ")");
-				}
-				if (expressOr.length() > 0) {
-					w.append(expressOr);
-				}
 			}
 			sql += w.toString();
 		}
