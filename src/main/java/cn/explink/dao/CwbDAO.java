@@ -2188,7 +2188,8 @@ public class CwbDAO {
 
 	public void updateCwbState(String cwb, CwbStateEnum cwbstate) {
 		String sql = "update express_ops_cwb_detail set cwbstate=? where cwb=? and state=1";
-		this.jdbcTemplate.update(sql, cwbstate.getValue(), cwb);
+		int count = this.jdbcTemplate.update(sql, cwbstate.getValue(), cwb);
+		logger.info("修改订单状态：订单{}，修改为{}状态，影响行数：{}", new Object[] { cwb , cwbstate.getText(), count});
 	}
 
 	/**
