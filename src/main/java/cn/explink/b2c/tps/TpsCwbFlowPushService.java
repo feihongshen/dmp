@@ -192,7 +192,7 @@ public class TpsCwbFlowPushService {
 				for(String trancwb:transcwbList){
 					DoTrackFeedbackRequest req=new DoTrackFeedbackRequest();
 					req.setTransportNo(transportNo);
-					req.setOperateType(1);//入库对应tps的入站扫描1
+					req.setOperateType(3);//出库对应tps的出站扫描3
 					req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 					req.setOperater(operateUser==null?null:operateUser.getRealname());
 					req.setOperateTime(createDate);
@@ -228,7 +228,7 @@ public class TpsCwbFlowPushService {
 			
 			DoTrackFeedbackRequest req=new DoTrackFeedbackRequest();
 			req.setTransportNo(transportNo);
-			req.setOperateType(1);//入库对应tps的入站扫描1
+			req.setOperateType(3);//出库对应tps的出站扫描3
 			req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 			req.setOperater(operateUser==null?null:operateUser.getRealname());
 			req.setOperateTime(flow.getCredate());
