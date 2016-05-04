@@ -351,6 +351,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("mytruckid", truckid);
 		model.addAttribute("flowtype", request.getParameter("type") == null ? -1 : request.getParameter("type"));
 		String cwbs = "", cwbstr = "", cwbhuizongstr = "";
+		long baleid=0;
 		String[] cwbArr = new String[isprint.length];
 		for (int i = 0; i < isprint.length; i++) {
 			if (isprint[i].trim().length() == 0) {
@@ -380,6 +381,7 @@ public class WarehouseGroup_detailController {
 		if( !StringUtils.isEmpty(baleno) ){
 			Bale bale=this.baleDAO.getBaleOnway(baleno);
 			if(bale!=null){
+				baleid=bale.getId();
 				Map<String, List<CwbOrder>> cwbOrderListMap = this.handleQueryForBale(bale.getId(),nextbranchid,flowordertype);
 				cwbList = cwbOrderListMap.get("cwbList");
 				cwbListForBaleView = cwbOrderListMap.get("cwbListForBaleView");
@@ -492,6 +494,7 @@ public class WarehouseGroup_detailController {
 		
 		if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 1) {
 			model.addAttribute("baleno",  baleno);
+			model.addAttribute("baleid",  baleid);
 			return "warehousegroup/outbillprinting_templatenew";
 		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 2) {
 			Map<Long, List<JSONObject>> hmap = new HashMap<Long, List<JSONObject>>();
@@ -2235,7 +2238,7 @@ public class WarehouseGroup_detailController {
 		String branchids = this.getStrings(branchid);
 		if (isshow > 0) {
 			// 过滤订单打印表
-			List<GroupDetail> gdList = this.groupDetailDao.getCwbForChuKuPrintTimeNew(this.getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), "", "", baleno);
+			List<GroupDetail> gdList = this.groupDetailDao.getCwbForChuKuPrintTimeNewForBale(this.getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), "", "", baleno);
 			// 过滤包号表
 			List<Bale> baleList = this.baleDAO.getBaleByBalePrint(this.getSessionUser().getBranchid(), baleno, strtime, endtime);
 
