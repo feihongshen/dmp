@@ -508,6 +508,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/jdCwbTrack/show/');
 			$("#del").val('<%=request.getContextPath()%>/jdCwbTrack/del/');
 		}
+		else if(obj=='22010'){//EMS接口
+			$("#edit").val('<%=request.getContextPath()%>/ems/show/');
+			$("#del").val('<%=request.getContextPath()%>/ems/del/');
+		}
 		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
