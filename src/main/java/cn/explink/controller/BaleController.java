@@ -319,17 +319,21 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baletuihuochuzhanaddcwb/{cwb}/{baleno}")
+	@Transactional
 	public @ResponseBody ExplinkResponse baletuihuochuzhanaddcwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
 			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
-			this.baleService.baletuihuochuzhanaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 			
-			this.baleDAO.updateAddBaleScannum(bale.getId());
+			Bale baleOld = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim()); //加悲观锁解决：
+				
+			this.baleService.baletuihuochuzhanaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
+			this.baleDAO.updateAddBaleScannum(baleOld.getId());
+				
+			Bale bale = this.baleDAO.getBaleById(baleOld.getId());//要点：做完所有的写操作最后再读出！
 			long successCount = bale.getCwbcount();
-			long scannum = bale.getScannum() + 1;
+			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
@@ -349,17 +353,19 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baletuigonghuoshangchukuaddcwb/{cwb}/{baleno}")
+	@Transactional
 	public @ResponseBody ExplinkResponse baletuigonghuoshangchukuaddcwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
 			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
-			this.baleService.baletuigonghuoshangchukuaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 			
-			this.baleDAO.updateAddBaleScannum(bale.getId());
+			Bale baleOld = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim()); //加悲观锁解决：
+			this.baleService.baletuigonghuoshangchukuaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
+			this.baleDAO.updateAddBaleScannum(baleOld.getId());
+			Bale bale = this.baleDAO.getBaleById(baleOld.getId());//要点：做完所有的写操作最后再读出！
 			long successCount = bale.getCwbcount();
-			long scannum = bale.getScannum() + 1;
+			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
@@ -379,6 +385,7 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/sortAndChangeBaleAddCwb/{cwb}/{baleno}")
+	@Transactional
 	public @ResponseBody ExplinkResponse sortAndChangeBaleAddCwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
 			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
@@ -388,7 +395,7 @@ public class BaleController {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		if (co != null) {
 			try {
-
+				Bale baleOld = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim()); //加悲观锁解决：
 				// 判断订单状态是否为中转
 				if (this.isZhongzhuanOrder(co)) {
 					// 调用中转出库扫描逻辑
@@ -397,11 +404,10 @@ public class BaleController {
 					// 调用分拣出库扫描逻辑
 					this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
 				}
-
-				Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
-				this.baleDAO.updateAddBaleScannum(bale.getId());
+				this.baleDAO.updateAddBaleScannum(baleOld.getId());
+				Bale bale = this.baleDAO.getBaleById(baleOld.getId());//要点：做完所有的写操作最后再读出！
 				long successCount = bale.getCwbcount();
-				long scannum = bale.getScannum() + 1;
+				long scannum = bale.getScannum();
 				obj.put("successCount", successCount);
 				obj.put("scannum", scannum);
 				obj.put("errorcode", "000000");
@@ -448,8 +454,10 @@ public class BaleController {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
 		try {
-			if (co != null) {
-			
+			if (co == null) {
+				//订单不存在
+				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+			} else {
 				// 合包出库扫描快递单时提示：不允许在这里操作快递单！
 				if (this.isExpressOrder(co)) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), "不允许在这里操作快递单！");
@@ -483,7 +491,6 @@ public class BaleController {
 					}
 				}
 			}
-
 			long currentBranchId = this.getSessionUser().getBranchid();
 
 			// 封包检查
