@@ -272,6 +272,22 @@ public class GroupDetailDao {
 		sql += " order by createtime desc";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
+	
+	public List<GroupDetail> getCwbForChuKuPrintTimeNewForBale(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno) {
+		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 and baleid>0 ";
+		if (strtime.length() > 0) {
+			sql += " and createtime>'" + strtime + "'";
+		}
+		if (endtime.length() > 0) {
+			sql += " and createtime<'" + endtime + "'";
+		}
+		if (!"".equals(baleno)) {
+			sql += " and baleno='" + baleno + "'";
+		}
+
+		sql += " order by createtime desc";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
+	}
 
 	public List<GroupDetail> getCwbForChuKuPrintTimeNew2(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long driverid,long truckid) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND driverid="+driverid+" AND truckid="+truckid;
@@ -348,7 +364,7 @@ public class GroupDetailDao {
 	}
 
 	public List<GroupDetail> getGroupDetailhistoryByBale(long page, long branchid, long starttime, long endtime, long nextbranchid) {
-		String sql = "SELECT DISTINCT(baleno) baleno,baleid,nextbranchid,issignprint,flowordertype FROM express_ops_groupdetail a WHERE branchid=?";
+		String sql = "SELECT DISTINCT(baleid) baleid,baleno,nextbranchid,issignprint,flowordertype FROM express_ops_groupdetail a WHERE branchid=? and baleid>0";
 		if (starttime > 0) {
 			sql += " and issignprint>=" + starttime;
 		}
@@ -366,7 +382,7 @@ public class GroupDetailDao {
 	}
 
 	public long getGroupDetailhistoryByBaleCount(long branchid, long starttime, long endtime, long nextbranchid) {
-		String sql = "SELECT COUNT(DISTINCT(baleno)) FROM express_ops_groupdetail a WHERE branchid=?";
+		String sql = "SELECT COUNT(DISTINCT(baleid)) FROM express_ops_groupdetail a WHERE branchid=? and baleid>0";
 		if (starttime > 0) {
 			sql += " and issignprint>=" + starttime;
 		}

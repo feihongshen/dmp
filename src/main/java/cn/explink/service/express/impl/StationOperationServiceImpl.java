@@ -491,8 +491,8 @@ public class StationOperationServiceImpl implements StationOperationService {
 
 	@Override
 	public boolean checkPackageNoUnique(String packageNo) {
-		List<Bale> baleList = this.baleDao.getBaleOnwayListBycwb(packageNo);
-		if ((baleList != null) && !baleList.isEmpty()) {
+		Bale bale = this.baleDao.getBaleOnway(packageNo);
+		if (bale != null) {
 			return false;
 		}
 		return true;
