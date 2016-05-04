@@ -1982,6 +1982,16 @@ public class CwbOrderService extends BaseOrderService {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 			if (!newMPSOrder) {
 				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
+			} else {
+				//update by neo01.huang，2016-4-29
+				//1票3件或以上，扫描次数大于或等1，需要执行缺件检测
+				//原因是：由于其他步骤执行了缺件全量删除，导致本站之前创建的缺件记录都丢失了
+				//在这里需要补回缺件记录
+				if (co.getSendcarnum() >= 3 && co.getScannum() >= 1) { 
+					//补充一票多件记录
+					this.completeYpdjRecord(user, co, scancwb, flowOrderTypeEnum, isypdjusetranscwb, isAutoSupplyLink);
+					
+				}
 			}
 		}
 
@@ -2101,6 +2111,40 @@ public class CwbOrderService extends BaseOrderService {
 
 		// ==== 扫描成功后，更新配送状态为‘处理中=====
 		this.updateOXODeliveryState(co, CwbOXOStateEnum.Processing);
+	}
+	
+	/**
+	 * 补充一票多件记录
+	 * @param user 当前user
+	 * @param co 订单
+	 * @param scancwb 当前扫描的运单号
+	 * @param flowOrderTypeEnum 当前运单操作类型
+	 * @param isypdjusetranscwb 是否为1票多件订单
+	 * @param isAutoSupplyLink 是否自动补流程
+	 */
+	@Transactional
+	public void completeYpdjRecord(User user, CwbOrder co, String scancwb, 
+			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isAutoSupplyLink) {
+		this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
+		//通过订单号获取所有运单
+		List<TransCwbDetail> transCwbDetailList = transCwbDetailDAO.getTransCwbDetailListByCwb(co.getCwb());
+		if (transCwbDetailList != null && transCwbDetailList.size() != 0) {
+			//检测哪些运单在当前站，如果该运单在当前站，则需要把该运单的缺件记录去掉
+			for (TransCwbDetail transCwbDetail : transCwbDetailList) {
+				if (transCwbDetail == null) {
+					continue;
+				}
+				//如果是当前运单，则skip
+				if (scancwb.equals(transCwbDetail.getTranscwb())) {
+					continue;
+				}
+				
+				//如果该运单在当前站，则去掉该运单的缺件记录
+				if (user.getBranchid() == transCwbDetail.getCurrentbranchid()) {
+					this.intoAndOutwarehouseYpdjDel(user, co, transCwbDetail.getTranscwb(), flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+				}
+			}
+		}
 	}
 
 	/**
