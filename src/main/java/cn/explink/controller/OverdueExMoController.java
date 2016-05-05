@@ -100,6 +100,7 @@ public class OverdueExMoController {
 
 	@RequestMapping("/getbranchdata/{branch_id}/{vender_id}")
 	@ResponseBody
+	@DataSource(DatabaseType.REPLICA)
 	public OverdueBranchResultVO showBranchInfo(@PathVariable("branch_id") long branchId, @PathVariable("vender_id") long venderId, HttpServletRequest request) {
 		String jsonCond = request.getParameter("cond");
 		JSONObject jsonObject = JSONObject.fromObject(jsonCond);
