@@ -541,6 +541,10 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	 */
 	public int sendSms(OrderFlow of) {
 		CwbOrder order = this.cwbDAO.getCwbByCwb(of.getCwb());
+		if(null == order){
+			logger.error("查询订单失败(订单不存在或者state<>1)，cwb={}", of.getCwb());
+			return 0;
+		}
 		Branch b = this.branchDAO.getBranchByBranchid(of.getBranchid());
 		int channel = 0;// 根据供货商获得需要使用的短信渠道
 		if (order.getCustomerid() > 0) {
