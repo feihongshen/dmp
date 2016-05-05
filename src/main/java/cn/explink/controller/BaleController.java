@@ -329,9 +329,9 @@ public class BaleController {
 			Bale baleOld = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim()); //加悲观锁解决：
 				
 			this.baleService.baletuihuochuzhanaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			this.baleDAO.updateAddBaleScannum(baleOld.getId());
+			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
+			this.baleDAO.updateAddBaleScannum(bale.getId());
 				
-			Bale bale = this.baleDAO.getBaleById(baleOld.getId());//要点：做完所有的写操作最后再读出！
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
@@ -362,8 +362,9 @@ public class BaleController {
 			
 			Bale baleOld = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim()); //加悲观锁解决：
 			this.baleService.baletuigonghuoshangchukuaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
-			this.baleDAO.updateAddBaleScannum(baleOld.getId());
-			Bale bale = this.baleDAO.getBaleById(baleOld.getId());//要点：做完所有的写操作最后再读出！
+			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
+			this.baleDAO.updateAddBaleScannum(bale.getId());
+			//要点：做完所有的写操作最后再读出！
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
@@ -404,8 +405,9 @@ public class BaleController {
 					// 调用分拣出库扫描逻辑
 					this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
 				}
-				this.baleDAO.updateAddBaleScannum(baleOld.getId());
-				Bale bale = this.baleDAO.getBaleById(baleOld.getId());//要点：做完所有的写操作最后再读出！
+				
+				Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
+				this.baleDAO.updateAddBaleScannum(bale.getId());
 				long successCount = bale.getCwbcount();
 				long scannum = bale.getScannum();
 				obj.put("successCount", successCount);
