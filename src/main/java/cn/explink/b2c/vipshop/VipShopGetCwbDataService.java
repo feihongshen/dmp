@@ -778,6 +778,9 @@ public class VipShopGetCwbDataService {
 		}
 		
 		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp)){
+			//更新临时表的发货时间
+			dataImportDAO_B2c.update_CwbDetailTempEmaildateByCwb(order_sn, emaildate);
+			
 			//把发货时间写入订单表
 			cwbDAO.updateEmaildate(order_sn, emaildate);
 			

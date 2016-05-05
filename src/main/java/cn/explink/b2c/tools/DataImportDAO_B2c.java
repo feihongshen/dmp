@@ -774,4 +774,15 @@ public class DataImportDAO_B2c {
 		}
 
 	}
+	
+	/**
+	 * 更新临时表的emaildate(发货时间)
+	 * @param cwb
+	 * @param emaildate
+	 */
+	public void update_CwbDetailTempEmaildateByCwb(String cwb, String emaildate) {
+		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set emaildate=? where cwb=? and state = 1 ", emaildate, cwb);
+	}
+	
+	
 }

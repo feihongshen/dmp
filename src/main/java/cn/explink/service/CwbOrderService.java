@@ -593,7 +593,7 @@ public class CwbOrderService extends BaseOrderService {
 				});
 
 		if (cwbOrderDTO.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
-			this.dataImportService.insertTransCwbDetail(cwbOrderDTO, ed.getEmaildatetime());
+			this.dataImportService.insertTransCwbDetail(cwbOrderDTO, (cwbOrderDTO.getEmaildate().length() == 0 ? ed.getEmaildatetime() : cwbOrderDTO.getEmaildate()));
 		}
 		
 		//Added by leoliao at 2016-03-01
