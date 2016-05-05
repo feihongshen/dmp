@@ -42,13 +42,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tps.TpsCwbFlowService;
-import cn.explink.controller.ExplinkResponse;
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BaleCwbDao;
 import cn.explink.dao.BaleDao;
@@ -88,7 +86,6 @@ import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.YpdjHandleRecordDAO;
 import cn.explink.domain.Bale;
-import cn.explink.domain.BaleCwb;
 import cn.explink.domain.Branch;
 import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
@@ -137,6 +134,7 @@ import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.CwbOrderTypeService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
@@ -296,6 +294,9 @@ public class PDAController {
 	
 	@Autowired
 	private BaleService baleService;
+	
+	@Autowired
+	private CwbOrderTypeService cwbOrderTypeService;
 
 	private ObjectMapper om = new ObjectMapper();
 
@@ -4277,7 +4278,11 @@ public class PDAController {
 				explinkResponse.setErrorinfo(ExceptionCwbErrorTypeEnum.ExpressLuruNotAllowZHONGZHUANCHUZHAN.getText());
 				return explinkResponse;
 			}
-
+			
+			//add by neo01.huang,2016-5-4
+			//校验上门退成功订单
+			cwbOrderTypeService.validateShangMenTuiSuccess(cwbOrdercheck, FlowOrderTypeEnum.ZhongZhuanZhanChuKu);
+			
 		}
 		CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid,
 				requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, true, false);
@@ -4387,6 +4392,12 @@ public class PDAController {
 		// 如果扫描的是封在某个包里面的快递单，则将该包设为不可用
 		// CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		// this.baleDAO.updateBalesate(cwb, BaleStateEnum.BuKeYong.getValue());
+		
+		//add by neo01.huang,2016-5-4
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		//校验上门退成功订单
+		cwbOrderTypeService.validateShangMenTuiSuccess(co, FlowOrderTypeEnum.ChuKuSaoMiao);
+		
 		Bale isbale = this.baleDAO.getBaleOnway(cwb);
 		List<String> cwbList = null;
 		if(isbale==null){
