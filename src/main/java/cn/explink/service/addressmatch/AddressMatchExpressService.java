@@ -265,7 +265,11 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 						return null;
 					}
 
-					b = this.branchDAO.getEffectBranchById(addressList.getJSONObject(i).getLong("station"));
+					String stationStr = addressList.getJSONObject(i).getString("station");
+					if(stationStr.indexOf("|") > -1){//如果是这样的格式：123|456，则取123
+						stationStr = stationStr.substring(0, stationStr.indexOf("|"));
+					}
+					b = this.branchDAO.getEffectBranchById(Long.valueOf(stationStr));
 					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						return b;
 					}
