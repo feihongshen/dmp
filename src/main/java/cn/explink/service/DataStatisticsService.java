@@ -259,8 +259,16 @@ public class DataStatisticsService {
 
 				}
 			}
+			
+			//Added by leoliao at 2016-05-06  以前的揽收订单(非快递单)，走的是这个库房(0)。[与客户发货统计的条件一致，否则统计与导出数据不一致]
+			String strKufangid = this.getStrings(kufangid);
+			if(strKufangid != null && strKufangid.length() > 0){
+				strKufangid += ",0";
+			}
+			//Added end
+			
 			final String sql = this.cwbDAO.getSQLExportHuiZong(page, begindate, enddate, this.getStrings(customerids), this.getStrings(startbranchid), this.getStrings(nextbranchid),
-					this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), this.getStrings(kufangid), flowordertype, paywayid, sign,
+					this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), strKufangid, flowordertype, paywayid, sign,
 					paybackfeeIsZero, servicetype);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
