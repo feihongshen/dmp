@@ -28,6 +28,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.util.DateTimeUtil;
@@ -56,7 +57,7 @@ public class JdCwbTrackService {
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
     /**
      * 编辑接口配置信息
      */

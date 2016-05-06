@@ -29,6 +29,7 @@ import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.Page;
 
 @Service
@@ -47,7 +48,7 @@ public class ComplaintService {
 
 	@Produce(uri = "jms:topic:complaint")
 	ProducerTemplate complaintTemplate;
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	

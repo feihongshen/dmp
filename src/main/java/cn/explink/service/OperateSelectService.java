@@ -21,6 +21,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.pos.tools.JacksonMapper;
 
 @Service
 public class OperateSelectService {
@@ -29,7 +30,7 @@ public class OperateSelectService {
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	public List<OperateSelectView> getOperateSelectViewList(List<OrderFlow> orderFlowList, List<User> userList, List<Customer> customerList, List<Branch> branchList) {
 

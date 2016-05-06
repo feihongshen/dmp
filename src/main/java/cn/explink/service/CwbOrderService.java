@@ -2429,7 +2429,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 
 	private void appendCreateFlowOrderJMS(User user, long branchid, String cwb, FlowOrderTypeEnum flowordertype, String comment, Long credate, String scancwb) {
 

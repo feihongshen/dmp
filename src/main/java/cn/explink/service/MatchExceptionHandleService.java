@@ -36,6 +36,7 @@ import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.ExplinkException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.SqlBuilder;
 
 @Service
@@ -69,7 +70,7 @@ public class MatchExceptionHandleService {
 	@Autowired
 	ExceptionCwbDAO exceptioncwbdao;
 
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 
 	@Transactional
 	public JSONObject redistributionBranch(String cwb, long newBranchId) {

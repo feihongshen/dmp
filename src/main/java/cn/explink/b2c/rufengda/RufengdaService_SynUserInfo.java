@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.User;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.WebServiceHandler;
 
 /**
@@ -23,7 +24,7 @@ import cn.explink.util.WebServiceHandler;
 public class RufengdaService_SynUserInfo extends RufengdaService {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	/***
 	 * 配送员信息同步的方法 定时器1周启动一次。

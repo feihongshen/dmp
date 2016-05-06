@@ -25,6 +25,7 @@ import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.support.transcwb.OneTransToMoreCwbDao;
 import cn.explink.support.transcwb.TransCwbDao;
 
@@ -53,7 +54,7 @@ public class EditService {
 	@Autowired
 	ExcelImportEditDao excelImportEditDao;
 
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;

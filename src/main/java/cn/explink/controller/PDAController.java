@@ -293,7 +293,7 @@ public class PDAController {
 	@Autowired
 	private TpsCwbFlowService tpsCwbFlowService;
 
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();

@@ -29,6 +29,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.util.DateTimeUtil;
@@ -294,7 +295,7 @@ public class ExplinkService {
 	 * @param orderFlowAll
 	 * @return
 	 */
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	public String getDetail(OrderFlow orderFlowAll) {
 		try {
