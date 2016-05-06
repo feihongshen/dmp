@@ -524,7 +524,7 @@ public class VipShopGetCwbDataService {
 					original_weight, paywayid, attemper_no, created_dtm_loc,
 					rec_create_time, order_delivery_batch, freight,
 					cwbordertype, warehouse_addr, go_get_return_time,
-					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club);
+					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club, cmd_type);
 			
 			
 			//集包相关代码处理
@@ -553,7 +553,13 @@ public class VipShopGetCwbDataService {
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
 					return seq_arrs;
 				}
-			}			
+			}	
+			
+			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+				if ("new".equalsIgnoreCase(cmd_type)) {
+					this.insertOrderGoods(datamap, order_sn);// 插入商品列表,try防止异常
+				}
+			}
 			
 			if (cwbOrderDTO!= null) {
 				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
@@ -561,11 +567,6 @@ public class VipShopGetCwbDataService {
 				return seq_arrs;
 			}
 
-			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-				if ("new".equalsIgnoreCase(cmd_type)) {
-					this.insertOrderGoods(datamap, order_sn);// 插入商品列表,try防止异常
-				}
-			}
 
 			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);			
 			
@@ -620,7 +621,7 @@ public class VipShopGetCwbDataService {
 			String order_delivery_batch, String freight, String cwbordertype,
 			String warehouse_addr, String go_get_return_time,
 			String is_gatherpack, String is_gathercomp, String total_pack,
-			String transcwb,int mpsswitch,String vip_club) {
+			String transcwb,int mpsswitch,String vip_club, String cmd_type) {
 		String sendcarnum=total_pack.isEmpty() ? "1" : total_pack;
 		
 		dataMap.put("cwb", order_sn);
@@ -652,12 +653,12 @@ public class VipShopGetCwbDataService {
 
 		dataMap.put("cwbordertypeid", cwbordertype);
 		dataMap.put("shouldfare", freight.isEmpty() ? "0" : freight);
-		dataMap.put("cwbordertypeid", cwbordertype);
 		
 		dataMap.put("ismpsflag", choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 		dataMap.put("mpsallarrivedflag", choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
 		//团购标志
 		dataMap.put("vipclub",vip_club.equals("3")?"1":"0");
+		dataMap.put("cmd_type", cmd_type);
 		return dataMap;
 		
 	}
@@ -962,45 +963,16 @@ public class VipShopGetCwbDataService {
 		}
 	}
 	
-	
-	
-//	private void filterMpsPackCwbs(List<Map<String, String>> paraList,
-//			String order_sn,String transcwb,Map<String, String> paraMap) {
-//		try {
-//			if(paraList!=null&&paraList.size()>0){
-//				for(int i=0;i<paraList.size();i++){
-//					Map<String,String> data =paraList.get(i);
-//					if(data.get("cwb").toString().equals(order_sn)){
-//						String oldtranscwb=data.get("transcwb");
-//						String newtranscwb=transcwb;
-//						//两个数组合并
-//						String mergeTranscwb="";
-//						Set<String> set = new HashSet<String>();
-//						for(String old:oldtranscwb.split(",")){
-//							set.add(old);
-//						}
-//						for(String new1:newtranscwb.split(",")){
-//							set.add(new1);
-//						}
-//						
-//						//遍历set，放入mergeTranscwb
-//						
-//						paraList.remove(i);
-//						
-//						paraMap.put("transcwb", mergeTranscwb);
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			logger.error("订单过滤异常order_sn"+order_sn,e);
-//		}
-//	}
-
-	private void insertOrderGoods(Map<String, Object> datamap, String order_sn) {
+	public void insertOrderGoods(Map<String, Object> datamap, String order_sn) {
 		try {
 			List<Map<String, Object>> goodslist = (List<Map<String, Object>>) datamap.get("goods");
 			if ((goodslist != null) && (goodslist.size() > 0)) {
+				List<OrderGoods> orderGoodsList = null;
 				for (Map<String, Object> good : goodslist) {
+					orderGoodsList = orderGoodsDAO.getOrderGoodsList(order_sn);
+					if(!CollectionUtils.isEmpty(orderGoodsList)){
+						break;
+					}
 					OrderGoods ordergoods = new OrderGoods();
 					ordergoods.setCwb(order_sn);
 					ordergoods.setCretime(DateTimeUtil.getNowTime());
@@ -1013,7 +985,6 @@ public class VipShopGetCwbDataService {
 					ordergoods.setReturn_reason(good.get("return_reason").toString());
 					ordergoods.setCretime(DateTimeUtil.getNowTime());
 					this.orderGoodsDAO.CreateOrderGoods(ordergoods);
-
 				}
 			}
 		} catch (Exception e) {

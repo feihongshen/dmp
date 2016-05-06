@@ -1614,7 +1614,7 @@ public class BaleService {
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
 
-			this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
+			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			/**
 			 * 广州通路按包操作性能问题 初步解决方案
@@ -1626,6 +1626,9 @@ public class BaleService {
 				iszhongzhuanout = true;
 			}
 			cwbOrder = this.cwbOrderService.outWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, iszhongzhuanout, false);
+		
+			//出库时有可能自动补环节令包失效,恢复它的状态
+			this.restoreBaleState(bale);
 		}
 		return cwbOrder;
 	}
@@ -1643,9 +1646,11 @@ public class BaleService {
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
 
-			this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
+			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			this.cwbOrderService.outUntreadWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, false);
+		
+			this.restoreBaleState(bale);
 		}
 	}
 
@@ -1662,9 +1667,11 @@ public class BaleService {
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
 
-			this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
+			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			this.cwbOrderService.backtocustom(user, cwb, scancwb, 0, baleno, true);
+			
+			this.restoreBaleState(bale);
 		}
 	}
 	
@@ -1685,13 +1692,15 @@ public class BaleService {
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
 
-			this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
+			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			this.cwbOrderService.sortAndChangeOutWarehouse(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, false, false);
+		
+			this.restoreBaleState(bale);
 		}
 	}
 
-	private void _baleaddcwb(User user, String baleno, String cwb, String scancwb, long branchid) {
+	private Bale _baleaddcwb(User user, String baleno, String cwb, String scancwb, long branchid) {
 		// 如果订单存在原来的包号 包号表的订单数-1
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		//此段代码根据没必要执行，因为新方案下每次都会新建一条包记录。之前都是利用同一条包记录。
@@ -1715,6 +1724,7 @@ public class BaleService {
 		}
 		*/
 
+		long baleid=0;
 		Bale bale = this.baleDAO.getBaleWeifengbao(baleno);
 		if (bale == null) {
 			this.logger.info("创建包号" + baleno);
@@ -1724,15 +1734,17 @@ public class BaleService {
 			o.setBalestate(BaleStateEnum.WeiFengBao.getValue());
 			o.setNextbranchid(branchid);
 			o.setCwbcount(1);
-			long baleid = this.baleDAO.createBale(o);
+			baleid = this.baleDAO.createBale(o);
 			// 添加包号和订单的关系表
 			this.baleCwbDAO.createBale(baleid, baleno, scancwb);
 		} else {
 			this.baleDAO.updateAddBaleCount(bale.getId());// 更新订单数
 			// 添加包号和订单的关系表
 			this.baleCwbDAO.createBale(bale.getId(), baleno, scancwb);
+			baleid=bale.getId();
 		}
-
+		bale=this.baleDAO.getBaleById(baleid);
+		
 		this.logger.info("更新订单:" + cwb + "的包号为:" + baleno + "，下一站为:" + branchid);
 		// 更新订单表的包号、下一站
 		this.cwbDAO.updatePackagecodeAndNextbranchid(baleno, branchid, cwb);
@@ -1746,6 +1758,8 @@ public class BaleService {
 				this.executeTpsTransInterface(co, user, nextBranch.getTpsbranchcode());
 			}
 		}
+		
+		return bale;
 	}
 
 	/**
@@ -1966,9 +1980,11 @@ public class BaleService {
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
 
-			this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
+			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			this.cwbOrderService.changeoutWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, false, false);
+		
+			this.restoreBaleState(bale);
 		}
 	}
 	
@@ -2047,4 +2063,11 @@ public class BaleService {
 		return result;
 	}
 
+	private void restoreBaleState(Bale bale){
+		//出库时有可能自动补环节令包失效,恢复它的状态
+		Bale nowBale=this.baleDAO.getBaleById(bale.getId());
+		if(bale.getBalestate()!=nowBale.getBalestate()){
+			this.baleDAO.updateBalesate(bale.getId(), bale.getBalestate());
+		}
+	}
 }
