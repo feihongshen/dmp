@@ -204,6 +204,7 @@ public class OrderPayChangeService {
 		adjustPO.setReceivableAmount(order.getReceivablefee());
 		adjustPO.setPayAmount(order.getPaybackfee());
 		adjustPO.setAdjustAmount(adjustAmount);
+		adjustPO.setBranchId(order.getDeliverybranchid());
 		this.branceReportAdjustDao.addBranceReportAdjust(adjustPO);
 	}
 }
