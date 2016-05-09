@@ -27,6 +27,7 @@ public class VipShop {
 	private int resuseReasonFlag;  //拒收原因是否回传默认 0，  0回传， 1不回传
 	private int isCreateTimeToEmaildateFlag; //是否唯品会订单出仓时间作为 邮件批次时间，emaildate 默认0 ，开启：1
 	private String lefengCustomerid;
+	private String oxoState_URL;//获取OXO订单揽收状态URL
 
 	public int getDaysno() {
 		return daysno;
@@ -207,6 +208,14 @@ public class VipShop {
 
 	public void setCustomerids(String customerids) {
 		this.customerids = customerids;
+	}
+
+	public String getOxoState_URL() {
+		return oxoState_URL;
+	}
+
+	public void setOxoState_URL(String oxoState_URL) {
+		this.oxoState_URL = oxoState_URL;
 	}
 
 }
