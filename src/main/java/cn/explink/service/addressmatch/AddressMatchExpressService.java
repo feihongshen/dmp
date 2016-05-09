@@ -265,12 +265,17 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 						return null;
 					}
 
-					String stationStr = addressList.getJSONObject(i).getString("station");
-					if(null != stationStr && stationStr.indexOf("|") > -1){//如果是这样的格式：123|456，则取123
-						stationStr = stationStr.substring(0, stationStr.indexOf("|"));
-						this.logger.info("丰简地址库匹配问题，匹配到多个站点，取第一个，cwb={},匹配到station={}", cwbOrder.getCwb(), stationStr);
+					String station = addressList.getJSONObject(i).getString("station");
+					if(null == station || station.length() == 0){//为空，匹配不到站点
+						this.logger.error("丰简地址库匹配失败，cwb={}，地址={}", cwbOrder.getCwb(), address);
+						return null;
 					}
-					b = this.branchDAO.getEffectBranchById(Long.valueOf(stationStr));
+					if(station.indexOf("|") > -1){//如果是这样的格式：123|456，则取123
+						station = station.substring(0, station.indexOf("|"));
+						this.logger.info("丰简地址库匹配问题，匹配到多个站点，取第一个，cwb={},匹配到station={}", cwbOrder.getCwb(), station);
+					}
+					
+					b = this.branchDAO.getEffectBranchById(Long.valueOf(station));
 					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 						return b;
 					}
