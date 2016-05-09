@@ -169,6 +169,8 @@ public class AddressMatchOXOService implements SystemConfigChangeListner, Applic
 				cwbOrderService.updateDeliveryBranch(user, cwbOrder, branch, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
 			}
 
+		} catch (CwbException ce) {
+			logger.error("(CwbException) error while doing address match for "+ cwb, ce);
 		} catch (Exception e) {
 			logger.error("error while doing address match for "+cwb,e);
 			
