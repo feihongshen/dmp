@@ -331,7 +331,7 @@ public class BaleController {
 			this.baleService.baletuihuochuzhanaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
 			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 			this.baleDAO.updateAddBaleScannum(bale.getId());
-				
+			bale = this.baleDAO.getBaleById(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
@@ -365,6 +365,7 @@ public class BaleController {
 			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 			this.baleDAO.updateAddBaleScannum(bale.getId());
 			//要点：做完所有的写操作最后再读出！
+			bale = this.baleDAO.getBaleById(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
@@ -408,6 +409,7 @@ public class BaleController {
 				
 				Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 				this.baleDAO.updateAddBaleScannum(bale.getId());
+				bale = this.baleDAO.getBaleById(bale.getId());
 				long successCount = bale.getCwbcount();
 				long scannum = bale.getScannum();
 				obj.put("successCount", successCount);
@@ -1080,6 +1082,7 @@ public class BaleController {
 
 			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim()); //要点：做完所有的写操作最后再读出！
 			this.baleDAO.updateAddBaleScannum(bale.getId());
+			bale = this.baleDAO.getBaleById(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);

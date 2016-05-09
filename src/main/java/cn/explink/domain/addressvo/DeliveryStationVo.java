@@ -7,10 +7,6 @@ public class DeliveryStationVo {
 	private String name;
 
 	private Long customerId;
-	/**
-	 * 机构编码tpsbranchcode
-	 */
-	private String stationCode;
 
 	public Long getExternalId() {
 		return externalId;
@@ -36,18 +32,18 @@ public class DeliveryStationVo {
 		this.customerId = customerId;
 	}
 
-	public String getStationCode() {
-		return stationCode;
-	}
-
-	public void setStationCode(String stationCode) {
-		this.stationCode = stationCode;
-	}
-
 	@Override
 	public String toString() {
-		return "DeliveryStationVo [externalId=" + externalId + ", name=" + name + ", customerId=" + customerId
-				+ ", stationCode=" + stationCode + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("DeliveryStationVo [");
+		if (externalId != null)
+			builder.append("externalId=").append(externalId).append(", ");
+		if (name != null)
+			builder.append("name=").append(name).append(", ");
+		if (customerId != null)
+			builder.append("customerId=").append(customerId);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }
