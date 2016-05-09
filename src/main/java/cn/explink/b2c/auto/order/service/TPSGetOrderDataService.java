@@ -704,13 +704,13 @@ public class TPSGetOrderDataService {
 			orderDTO.setIsmpsflag(choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 			orderDTO.setMpsallarrivedflag(choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
 			
-			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(cust_order_no);
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(cust_order_no);
 			//集包相关代码处理
 			mpsallPackage(vipshop, cust_order_no, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch,orderDTO);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-
+				
 				if ("edit".equalsIgnoreCase(cmd_type)) {
 					//修改订单表
 					this.tpsDataImportDAO_B2c.updateBycwb(orderDTO);
@@ -739,6 +739,14 @@ public class TPSGetOrderDataService {
 
 			}
 			
+			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+
+				if ("new".equalsIgnoreCase(cmd_type)) {
+					// 插入商品列表,try防止异常
+					this.insertOrderGoods(order, cust_order_no);
+				}
+			}
+			
 			if (cwbOrderDTO != null ) {
 				if(is_gatherpack.equals("0")){
 					this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cust_order_no);
@@ -760,13 +768,7 @@ public class TPSGetOrderDataService {
 				
 			}
 
-			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-
-				if ("new".equalsIgnoreCase(cmd_type)) {
-					// 插入商品列表,try防止异常
-					this.insertOrderGoods(order, cust_order_no);
-				}
-			}
+			
 			
 			if ("".equals(cust_order_no)) { // 若订单号为空，则继续。
 				this.logger.info("获取订单信息为空");
@@ -803,7 +805,12 @@ public class TPSGetOrderDataService {
 		try {
 			List<TPSOrderDetails> goodslist = (List<TPSOrderDetails>) order.getDetails();
 			if ((goodslist != null) && (goodslist.size() > 0)) {
+				List<OrderGoods> orderGoodsList = null;
 				for (TPSOrderDetails good : goodslist) {
+					orderGoodsList = orderGoodsDAO.getOrderGoodsList(cust_order_no);
+					if(orderGoodsList.size()!=0){
+						break;
+					}
 					OrderGoods ordergoods = new OrderGoods();
 					ordergoods.setCwb(cust_order_no);
 					ordergoods.setCretime(DateTimeUtil.getNowTime());
