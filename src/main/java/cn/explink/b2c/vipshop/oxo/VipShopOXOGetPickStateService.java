@@ -151,7 +151,7 @@ public class VipShopOXOGetPickStateService {
 		String requestXML = this.StringXMLRequest(vipshop, request_time);
 		String MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no();
 		String sign = MD5Util.md5(MD5Str, "UTF-8").toLowerCase();
-		String endpointUrl = vipshop.getSendCwb_URL();
+		String endpointUrl = vipshop.getOxoState_URL();
 		String response_XML = null;
 
 		this.logger.info("获取VipShop_OXO提货状态XML={}", requestXML);

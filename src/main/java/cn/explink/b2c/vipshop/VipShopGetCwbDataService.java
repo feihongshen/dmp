@@ -145,7 +145,7 @@ public class VipShopGetCwbDataService {
 		
 		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
-		
+		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
