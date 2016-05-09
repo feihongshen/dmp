@@ -266,8 +266,9 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 					}
 
 					String stationStr = addressList.getJSONObject(i).getString("station");
-					if(stationStr.indexOf("|") > -1){//如果是这样的格式：123|456，则取123
+					if(null != stationStr && stationStr.indexOf("|") > -1){//如果是这样的格式：123|456，则取123
 						stationStr = stationStr.substring(0, stationStr.indexOf("|"));
+						this.logger.info("丰简地址库匹配问题，匹配到多个站点，取第一个，cwb={},匹配到station={}", cwbOrder.getCwb(), stationStr);
 					}
 					b = this.branchDAO.getEffectBranchById(Long.valueOf(stationStr));
 					if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
