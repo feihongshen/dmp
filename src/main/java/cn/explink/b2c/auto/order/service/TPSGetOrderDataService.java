@@ -237,13 +237,13 @@ public class TPSGetOrderDataService {
 	 */
 	private void convertOrderVoToCwbOrderDTO(CwbOrderDTO cwbOrder,TPSOrder order,VipShop vipshop){
 		if(StringUtils.isNotBlank(order.getBusinessType().toString())){
-			if(order.getBusinessType().equals("20")){
+			if(order.getBusinessType()==20){
 				cwbOrder.setCwbordertypeid(CwbOrderTypeIdEnum.OXO_JIT.getValue());
 			}
-			else if(order.getBusinessType().equals("40")){
+			else if(order.getBusinessType()==40){
 				cwbOrder.setCwbordertypeid(CwbOrderTypeIdEnum.OXO.getValue());
 			}
-			else if(order.getBusinessType().equals("30")){//保留类型
+			else if(order.getBusinessType()==30){//保留类型
 				//TODO保留类型
 				cwbOrder.setCwbordertypeid(4);//default OXO
 			}else{
