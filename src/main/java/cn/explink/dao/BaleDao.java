@@ -14,6 +14,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.Bale;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.util.Page;
@@ -221,6 +224,7 @@ public class BaleDao {
 		this.jdbcTemplate.update(sql, balestate, baleno);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<Bale> getBaleByBalePrint(long branchid, String baleno, String strtime, String endtime) {
 		String sql = "select * from express_ops_bale where branchid=? and cwbcount>0";
 		if (baleno.length() > 0) {
