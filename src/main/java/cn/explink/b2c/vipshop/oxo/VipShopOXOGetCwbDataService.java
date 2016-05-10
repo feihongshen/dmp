@@ -108,6 +108,7 @@ public class VipShopOXOGetCwbDataService {
 		vipshop.setCustomerids(request.getParameter("customerids"));
 		vipshop.setIsopendownload(Integer.parseInt(request.getParameter("isopendownload")));
 		vipshop.setVipshop_seq(Long.parseLong(request.getParameter("vipshop_seq")));
+		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
 		String customerids = request.getParameter("customerids");
 			
 		String oldCustomerids = "";
