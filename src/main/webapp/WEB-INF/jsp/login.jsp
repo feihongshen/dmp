@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
+<%@ page language="java" import="java.util.*" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -191,7 +191,7 @@ h1, h2, h3, h4, h5, h6 {
 						</div>
 					</td>
 					<td>
-						<div id="login" style="width: 330px;">
+						<div id="login" style="width: 350px;">
 							<div class="inner">
 								<div class="logo"
 									style="width: 290px; margin-left: -65px; text-align: left;">
@@ -205,24 +205,31 @@ h1, h2, h3, h4, h5, h6 {
 									<form name="formLogin" id="formLogin"
 										action="<%=request.getContextPath()%>/resources/j_spring_security_check"
 										method="post">
-										<div style="padding-left: 50px;" class="tip">
+										<div style="padding-left: 30px;" class="tip">
 											<input class="userName" name="j_username" type="text"
 												id="userName" title="用户名" iscookie="true" nullmsg="请输入用户名!"
-												style="width: 200px; height: 25px" />
+												style="width: 200px; height: 25px" />												
+											<label id="userName-error" class="error" for="userName" 
+												style="color: red; display: inline-block; width: 80px; height: 25px">
+												<%if (request.getParameter("login_error") != null
+														&& request.getParameter("login_error").toString().equals("t")){
+													out.print("登录失败");
+												}%>
+											</label>
 										</div>
-										<div style="padding-left: 50px;" class="tip">
+										<div style="padding-left: 30px;" class="tip">
 											<input class="password" name="j_password" type="password"
 												id="password" title="密码" nullmsg="请输入密码!"
 												style="width: 200px; height: 25px" />
 										</div>
-										<div style="padding-left: 50px;">
+										<div style="padding-left: 30px;">
 											<input name="validateCode" type="text"
 												class="login_forminput" id="validateCode" maxlength="4"
 												style="width: 120px; height: 25px" />&nbsp;&nbsp;
 												<img id="randomImage" src="<%=request.getContextPath()%>/image?a=javascript:Math.random()">
-												<a href="javascript:changeImg();" style="color: #e4393c; font-size: 12px; text-decoration: none;">换一张</a>
+												<a href="javascript:changeImg();" style="color: red; font-size: 12px; text-decoration: none;">换一张</a>
 										</div>
-										<div style="padding-left: 50px;">
+										<div style="padding-left: 30px;">
 											<input type="submit" value=" "
 												style="background:url(<%=request.getContextPath()%>/dmp40/eap/sys/image/login/denglu.png);width:80px;height:33px;" />
 											<input type="reset" value=" "
@@ -259,23 +266,8 @@ h1, h2, h3, h4, h5, h6 {
 		src="<%=request.getContextPath()%>/dmp40/plug-in/login/js/login.js"></script>
 	<script type="text/javascript"
 		src="<%=request.getContextPath()%>/dmp40/plug-in/lhgDialog/lhgdialog.min.js"></script>
-	<%
-		if (request.getParameter("login_error") != null
-				&& request.getParameter("login_error").toString()
-						.equals("t")) {
-	%>
-	<script type="text/javascript">
-		loading('登录失败！', 0);
-	</script>
-	<%
-		}
-	%>
-	
-	<script type="text/javascript">
-	$(function(){
-		changeImg();
-	});
-	
+		
+	<script type="text/javascript">	
 	function changeImg(){
 		$("#randomImage").attr("src","<%=request.getContextPath()%>/image?a="+Math.random());
 	}

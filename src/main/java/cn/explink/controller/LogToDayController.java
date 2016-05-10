@@ -29,6 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
@@ -103,6 +106,7 @@ public class LogToDayController {
 	}
 
 	@RequestMapping("/carwarehouse")
+	@DataSource(DatabaseType.REPLICA)
 	public String list(Model model, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) {
 		// 获取当前要查询的机构id
 		Branch b = branchDAO.getBranchByBranchid(branchid == 0 ? getSessionUser().getBranchid() : branchid);
@@ -126,6 +130,7 @@ public class LogToDayController {
 	}
 
 	@RequestMapping("/simpleSupervisory")
+	@DataSource(DatabaseType.REPLICA)
 	public String simpleSupervisory(Model model, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) {
 
 		Branch b = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
@@ -163,6 +168,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/todayArrival")
+	@DataSource(DatabaseType.REPLICA)
 	public String todayArrival(Model model, @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid) {
 		// 获取所有站点
 		BranchTodayLog yesterdayLog = new BranchTodayLog();
@@ -319,6 +325,7 @@ public class LogToDayController {
 	}
 
 	@RequestMapping("/todayArrivalAll")
+	@DataSource(DatabaseType.REPLICA)
 	public String todayArrivalAll(Model model, @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid) {
 		// 获取所有站点
 		BranchTodayLog yesterdayLog = new BranchTodayLog();
@@ -482,6 +489,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/todayArrivalAjax")
+	@DataSource(DatabaseType.REPLICA)
 	public String todayArrivalAjax(Model model, @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid) {
 		// 获取所有站点
 		List<Branch> branchnameList = new ArrayList<Branch>();
@@ -555,6 +563,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/todayArrivalAllAjax")
+	@DataSource(DatabaseType.REPLICA)
 	public String todayArrivalAllAjax(Model model, @RequestParam(value = "flag", required = false, defaultValue = "1") long flag,// 第几个页卡
 			@RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid) {
 		// 获取所有站点
@@ -626,6 +635,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/getTodayArrivalDTO")
+	@DataSource(DatabaseType.REPLICA)
 	public @ResponseBody JSONObject getTodayArrivalDTO(@RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
 			@RequestParam(value = "startTime", required = false, defaultValue = "") String startTime) {
 		JSONObject obj = new JSONObject();
@@ -668,6 +678,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/getTodayDeliveryDTO")
+	@DataSource(DatabaseType.REPLICA)
 	public @ResponseBody JSONObject getTodayDeliveryDTO(@RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid) {
 		JSONObject obj = new JSONObject();
 		// 获取所有站点
@@ -785,6 +796,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/getTodayFundsDTO")
+	@DataSource(DatabaseType.REPLICA)
 	public @ResponseBody JSONObject getTodayFundsDTO(@RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
 			@RequestParam(value = "startTime", required = false, defaultValue = "") String startTime) {
 		JSONObject obj = new JSONObject();
@@ -825,6 +837,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/getTodayStockDTO")
+	@DataSource(DatabaseType.REPLICA)
 	public @ResponseBody JSONObject getTodayStockDTO(@RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid) {
 		JSONObject obj = new JSONObject();
 		// 获取所有站点
@@ -943,6 +956,7 @@ public class LogToDayController {
 
 	// ================站点日报 明细begin=============
 	@RequestMapping("/show/{branchid}/{type}/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String show(Model model, @PathVariable("branchid") long branchid, @PathVariable("type") String type, @PathVariable("page") long page) {
 		String startTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 		// 获取昨日的日志
@@ -990,6 +1004,7 @@ public class LogToDayController {
 
 	// ================站点日报 明细begin=============
 	@RequestMapping("/showAll/{branchid}/{type}/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String showAll(Model model, @PathVariable("branchid") long branchid, @PathVariable("type") String type, @PathVariable("page") long page) {
 		String startTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 		// 获取昨日的日志
@@ -1036,6 +1051,7 @@ public class LogToDayController {
 	}
 
 	@RequestMapping("/showAjax/{branchid}/{type}/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String showAjax(Model model, @PathVariable("branchid") long branchid, @PathVariable("type") String type, @PathVariable("page") long page) {
 		String startTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 		// 获取昨日的日志
@@ -1082,6 +1098,7 @@ public class LogToDayController {
 	}
 
 	@RequestMapping("/showAllAjax/{branchid}/{type}/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String showAllAjax(Model model, @PathVariable("branchid") long branchid, @PathVariable("type") String type, @PathVariable("page") long page,
 			@RequestParam(value = "flag", required = false, defaultValue = "1") long flag// 第几个页卡
 	) {
@@ -1132,6 +1149,7 @@ public class LogToDayController {
 	// ================站点日报 明细end=============
 
 	@RequestMapping("/show/{id}")
+	@DataSource(DatabaseType.REPLICA)
 	public String showHistorey(Model model, @PathVariable("id") long id) {
 		// 获取昨日的日志
 		BranchTodayLog branchLog = logTodayDAO.getBranchTodayLogById(id);
@@ -1149,6 +1167,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/todayArrivalLog/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String todayArrivalLog(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "-2") long branchid, HttpServletRequest request) {
 		setModel(model, branchid, page, request);
 		return "logtoday/alllogmanage/allarrivallogmanage";
@@ -1159,9 +1178,10 @@ public class LogToDayController {
 	 * 
 	 * @param model
 	 * @param page
-	 * @return
+	 * @return 
 	 */
 	@RequestMapping("/alldeliverlogmanage/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String alldeliverlogmanage(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "-2") long branchid, HttpServletRequest request) {
 		setModel(model, branchid, page, request);
 		return "logtoday/alllogmanage/alldeliverlogmanage";
@@ -1175,6 +1195,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/allslowlogmanage/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String allslowlogmanage(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "-2") long branchid, HttpServletRequest request) {
 		setModel(model, branchid, page, request);
 		return "logtoday/alllogmanage/allslowlogmanage";
@@ -1188,6 +1209,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/allstocklogmanage/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String allstocklogmanage(Model model, @PathVariable("page") long page, @RequestParam(value = "branchid", required = false, defaultValue = "-2") long branchid, HttpServletRequest request) {
 		setModel(model, branchid, page, request);
 		return "logtoday/alllogmanage/allstocklogmanage";
@@ -1203,6 +1225,7 @@ public class LogToDayController {
 	 * @return
 	 */
 	@RequestMapping("/allhistorylog/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String allhistorylog(Model model, @PathVariable("page") long page, @RequestParam(value = "createdate", required = false, defaultValue = "") String createdate,
 			@RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid) {
 
@@ -1529,6 +1552,7 @@ public class LogToDayController {
 
 	// 导出excel
 	@RequestMapping("/exportExcel")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcel(HttpServletResponse response, @RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "type", required = false, defaultValue = "") String type, @RequestParam(value = "exportmould", required = false, defaultValue = "") String exportmould
 
@@ -1556,6 +1580,7 @@ public class LogToDayController {
 	}
 
 	@RequestMapping("/exporttable")
+	@DataSource(DatabaseType.REPLICA)
 	public void exporttable(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "createdate", required = false, defaultValue = "") String createdate) {
 		Branch nowbranch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
 		Map<Long, BranchTodayLog> branchAndTomorrow = new HashMap<Long, BranchTodayLog>();

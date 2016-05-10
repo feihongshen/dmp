@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.dao.BaleDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
@@ -54,6 +55,7 @@ import cn.explink.dao.RemarkDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Bale;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Common;
 import cn.explink.domain.Complaint;
@@ -150,6 +152,9 @@ public class WarehouseGroupController {
 
 	@Autowired
 	PayWayDao payWayDao;
+	
+	@Autowired
+	BaleDao baleDAO;
 
 	private Logger logger = LoggerFactory.getLogger(WarehouseGroupController.class);
 
@@ -852,7 +857,8 @@ public class WarehouseGroupController {
 			@RequestParam(value = "operatetype", required = false, defaultValue = "0") long operatetype,
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
-			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid) {
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid,
+			@RequestParam(value = "baleid", required = false, defaultValue = "0") long baleid) {
 		try {
 			if (cwbs.trim().length() > 0) {
 				String[] cwbsList = cwbs.split("-HH-");
@@ -885,8 +891,16 @@ public class WarehouseGroupController {
 
 				for (Long branchid : branchList) {
 					if((null!=baleno)&&(baleno.length()>0)){
-						long outwarehousegroupid=this.cwbOrderService.checkResponseBatchnoForBale(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0 ,baleno);
-						this.outwarehousegroupDao.updateOutwarehousegroupBalenoByID(baleno, outwarehousegroupid);
+						Bale bale=null;
+						if(baleid>0){
+							bale=this.baleDAO.getBaleById(baleid);
+						}
+						if(bale!=null){
+							long outwarehousegroupid=this.cwbOrderService.checkResponseBatchnoForBale(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0 ,bale.getId());
+							this.outwarehousegroupDao.updateOutwarehousegroupBalenoByID(baleno,bale.getId(), outwarehousegroupid);
+						}else{
+							logger.info("此包号已失效，不能插入到express_ops_outwarehousegroup表，baleno="+baleno+",baleid="+baleid);
+						}
 					}else{
 						long outwarehousegroupid=this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0);
 					}

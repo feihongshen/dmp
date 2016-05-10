@@ -89,6 +89,8 @@
 				<ref bean="doTime_deleteFlow" />
 				<ref bean="doTime_vipshopOXO" />
 				<ref bean="doTime_vipshopOXOPickState" />
+				<!-- 获取OXO揽收状态 -->
+				<ref bean="doTime_tpsOXOPickState" />
 				<ref bean="doTime_vipshopOXOJITFeedback" />
 				<ref bean="doTime_sendPunishInsideAutoShenheTask" />
 				<ref bean="doTime_orderLifecycleReport" />
@@ -946,6 +948,30 @@
 		<property name="concurrent" value="false" />
 	</bean>
 	<!-- 抓取唯品会OXO订单揽件状态定时器 结束 -->
+	
+	<!-- 抓取自动化OXO订单揽件状态定时器 开始 -->
+	<bean id="doTime_tpsOXOPickState" class="cn.explink.util.DatabaseInitCronTriggerBean"
+		dependency-check="default">
+		<property name="jobDetail">
+			<ref bean="getTpsOXOPickStateTask" />
+		</property>
+		<property name="cronExpression">
+			<value>0 0/15 * * * ?</value>
+		</property>
+	</bean>
+
+	<bean id="getTpsOXOPickStateTask" class="cn.explink.util.BeanInvokingJobDetailFactoryBean"
+		dependency-check="default">
+		<property name="targetBean">
+			<value>excuteTimmer</value>
+		</property>
+		<property name="targetMethod">
+			<value>getTpsOXOPickStateTask</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<!-- 抓取唯品会OXO订单揽件状态定时器 结束 -->
+	
 	<!-- 快递模式预订单数据抓取定时器 开始 -->
 	<bean id="doTime_expressPreOrder" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">

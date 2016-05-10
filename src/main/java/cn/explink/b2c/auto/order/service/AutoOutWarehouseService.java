@@ -1,13 +1,6 @@
 package cn.explink.b2c.auto.order.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,18 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.explink.dao.BaleDao;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
-import cn.explink.dao.TransCwbDetailDAO;
-import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.domain.Bale;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
-import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.User;
-import cn.explink.domain.orderflow.TranscwbOrderFlow;
-import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
-import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
@@ -165,7 +152,14 @@ public class AutoOutWarehouseService {
 					//按包出库
 					this.baleService.baleaddcwbChukuCheck(user, baleno, scannum, confirmflag == 1, user.getBranchid(), branchid);
 					this.baleService.baleaddcwb(user, baleno, scannum, branchid);
-					this.baleDAO.updateAddBaleScannum(baleno);
+					Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
+					if(bale!=null){
+						this.baleDAO.updateAddBaleScannum(bale.getId());
+					}else{
+						throw new CwbException(cwb,FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"不是处于未封包状态的包不能加入订单");
+					}
+					
+					//fengbao todo
 				}
 		}
 	

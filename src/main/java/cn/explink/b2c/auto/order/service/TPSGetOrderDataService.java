@@ -237,13 +237,13 @@ public class TPSGetOrderDataService {
 	 */
 	private void convertOrderVoToCwbOrderDTO(CwbOrderDTO cwbOrder,TPSOrder order,VipShop vipshop){
 		if(StringUtils.isNotBlank(order.getBusinessType().toString())){
-			if(order.getBusinessType().equals("20")){
+			if(order.getBusinessType()==20){
 				cwbOrder.setCwbordertypeid(CwbOrderTypeIdEnum.OXO_JIT.getValue());
 			}
-			else if(order.getBusinessType().equals("40")){
+			else if(order.getBusinessType()==40){
 				cwbOrder.setCwbordertypeid(CwbOrderTypeIdEnum.OXO.getValue());
 			}
-			else if(order.getBusinessType().equals("30")){//保留类型
+			else if(order.getBusinessType()==30){//保留类型
 				//TODO保留类型
 				cwbOrder.setCwbordertypeid(4);//default OXO
 			}else{
@@ -528,10 +528,20 @@ public class TPSGetOrderDataService {
 		long customerid = Long.valueOf(order.getCustomerid());
 		try {
 			long warehouseid = vipshop.getWarehouseid();
-			long ewarehouseid = warehouseid == 0 ? dataImportService_B2c.getTempWarehouseIdForB2c() : warehouseid;
+			//long ewarehouseid = warehouseid == 0 ? dataImportService_B2c.getTempWarehouseIdForB2c() : warehouseid;
 			//开启以出仓时间作为批次标记
 			String emaildate = order.getRemark2();
-			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, ewarehouseid, emaildate);
+			 
+			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+			if(emaildate == null || emaildate.trim().equals("")){
+				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
+				order.setRemark2(emaildate);
+			}
+
+			//导入批次表(express_ops_emaildate)emaildatetime使用当天第一条进入DMP系统订单的创建时间
+			EmailDate ed = dataImportService.getOrCreateEmailDate(customerid, 0, warehouseid);
+			//临时表(express_ops_cwb_detail_b2ctemp)和正式表(express_ops_cwb_detail)的emaildate(发货时间)取TMS的出仓时间
+			ed.setEmaildatetime(emaildate);
 			//数据导入系统入口
 			tPSOrderImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_TPSAutomate.getMethod(), order, warehouseid,ed);
 			this.logger.info("TPS自动化普通单在没有开启托运单模式下，数据插入临时表处理成功！");
@@ -557,6 +567,10 @@ public class TPSGetOrderDataService {
 		long customerid = Long.valueOf(order.getCustomerid());
 		try {
 			String emaildate = order.getRemark4();
+			if(emaildate == null || emaildate.trim().equals("")){
+				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";				
+				order.setRemark4(emaildate);
+			}
 			long warehouseid = vipshop.getWarehouseid();
 			long ewarehouseid = warehouseid == 0 ? dataImportService_B2c.getTempWarehouseIdForB2c() : warehouseid;
 			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, ewarehouseid, emaildate);
@@ -704,13 +718,13 @@ public class TPSGetOrderDataService {
 			orderDTO.setIsmpsflag(choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 			orderDTO.setMpsallarrivedflag(choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
 			
-			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(cust_order_no);
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(cust_order_no);
 			//集包相关代码处理
 			mpsallPackage(vipshop, cust_order_no, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch,orderDTO);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-
+				
 				if ("edit".equalsIgnoreCase(cmd_type)) {
 					//修改订单表
 					this.tpsDataImportDAO_B2c.updateBycwb(orderDTO);
@@ -739,6 +753,14 @@ public class TPSGetOrderDataService {
 
 			}
 			
+			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+
+				if ("new".equalsIgnoreCase(cmd_type)) {
+					// 插入商品列表,try防止异常
+					this.insertOrderGoods(order, cust_order_no);
+				}
+			}
+			
 			if (cwbOrderDTO != null ) {
 				if(is_gatherpack.equals("0")){
 					this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cust_order_no);
@@ -760,13 +782,7 @@ public class TPSGetOrderDataService {
 				
 			}
 
-			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-
-				if ("new".equalsIgnoreCase(cmd_type)) {
-					// 插入商品列表,try防止异常
-					this.insertOrderGoods(order, cust_order_no);
-				}
-			}
+			
 			
 			if ("".equals(cust_order_no)) { // 若订单号为空，则继续。
 				this.logger.info("获取订单信息为空");
@@ -803,7 +819,12 @@ public class TPSGetOrderDataService {
 		try {
 			List<TPSOrderDetails> goodslist = (List<TPSOrderDetails>) order.getDetails();
 			if ((goodslist != null) && (goodslist.size() > 0)) {
+				List<OrderGoods> orderGoodsList = null;
 				for (TPSOrderDetails good : goodslist) {
+					orderGoodsList = orderGoodsDAO.getOrderGoodsList(cust_order_no);
+					if(orderGoodsList.size()!=0){
+						break;
+					}
 					OrderGoods ordergoods = new OrderGoods();
 					ordergoods.setCwb(cust_order_no);
 					ordergoods.setCretime(DateTimeUtil.getNowTime());
@@ -1020,11 +1041,13 @@ public class TPSGetOrderDataService {
 		String emaildate = currentOrderDTO.getRemark2(); //paraMap.get("remark2"); //发货时间
 		String[] arrTranscwb = pack_nos.split(",");
 		if("1".equals(is_gatherpack) && (arrTranscwb.length==total_pack)){
+			//更新临时表的发货时间
+			dataImportDAO_B2c.update_CwbDetailTempEmaildateByCwb(cust_order_no, emaildate);
+			
 			//把发货时间写入订单表
 			cwbDAO.updateEmaildate(cust_order_no, emaildate);
 			
 			//把发货时间写入运单表
-			
 			if(arrTranscwb != null && arrTranscwb.length > 0){
 				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
 			}

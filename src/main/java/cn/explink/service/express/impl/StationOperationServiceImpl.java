@@ -491,8 +491,8 @@ public class StationOperationServiceImpl implements StationOperationService {
 
 	@Override
 	public boolean checkPackageNoUnique(String packageNo) {
-		List<Bale> baleList = this.baleDao.getBaleByBaleno(packageNo);
-		if ((baleList != null) && !baleList.isEmpty()) {
+		Bale bale = this.baleDao.getBaleOnway(packageNo);
+		if (bale != null) {
 			return false;
 		}
 		return true;
@@ -501,7 +501,11 @@ public class StationOperationServiceImpl implements StationOperationService {
 	@Override
 	public CombineQueryView queryCombineInfo(String packageNo) {
 		CombineQueryView combineQueryView = new CombineQueryView();
-		List<String> cwbList = this.baleCwbDao.getCwbsByBaleNO(packageNo);
+		Bale bale=this.baleDao.getBaleOnway(packageNo);
+		List<String> cwbList = null;
+		if(bale!=null){
+			cwbList=this.baleCwbDao.getCwbsByBale(""+bale.getId());
+		}
 		if ((cwbList == null) || cwbList.isEmpty()) {
 			return null;
 		}

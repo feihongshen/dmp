@@ -75,6 +75,9 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @RequestMapping("/funds")
 @Controller
 public class BranchPayamountController {
@@ -673,6 +676,7 @@ public class BranchPayamountController {
 	}
 
 	@RequestMapping("/deliverystatesearchdetailback_excel")
+	@DataSource(DatabaseType.REPLICA)
 	public void deliverystatesearchdetailBack_excel(Model model, HttpServletResponse response, HttpServletRequest request,
 			@RequestParam(value = "begin", required = false, defaultValue = "0") long page, @RequestParam(value = "emailStartTime1", required = false, defaultValue = "") String emailStartTime,
 			@RequestParam(value = "eamilEndTime1", required = false, defaultValue = "") String eamilEndTime,
@@ -747,6 +751,7 @@ public class BranchPayamountController {
 	}
 
 	@RequestMapping("/searchdetail_excel")
+	@DataSource(DatabaseType.REPLICA)
 	public void paymentDetail_excel(Model model, HttpServletResponse response, HttpServletRequest request) {
 		String emailStartTime = request.getSession().getAttribute("emailStartTime").toString();
 		String eamilEndTime = request.getSession().getAttribute("eamilEndTime").toString();
@@ -771,6 +776,7 @@ public class BranchPayamountController {
 	}
 
 	@RequestMapping("/searchdetail_back_excel")
+	@DataSource(DatabaseType.REPLICA)
 	public void paymentDetail_back_excel(Model model, HttpServletResponse response, HttpServletRequest request) {
 		String emailStartTime = request.getSession().getAttribute("emailStartTime").toString();
 		String eamilEndTime = request.getSession().getAttribute("eamilEndTime").toString();
