@@ -2312,9 +2312,16 @@ public class CwbOrderService extends BaseOrderService {
 
 		String sql = "update express_ops_cwb_detail set currentbranchid=?,flowordertype=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, currentbranchid, flowordertype, co.getCwb());
+		
+		if (co.getCwbstate() == CwbStateEnum.TuiGongYingShang.getValue()
+				&& co.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) {
+			this.cwbDAO.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+		}
+		
 		co.setCurrentbranchid(currentbranchid);
 		co.setNextbranchid(nextbranchid);
-		// added shenhongfei 退货站入库 2016-1-12
+		
+		// added shenhongfei 退货站入库 2016-1-12z
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoZhanRuKu, co.getStartbranchid(), currentbranchid, nextbranchid);
 		// ======按包出库时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
