@@ -335,6 +335,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("syncUserInf", 0);
 		
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
+		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
 	}
 
 	/**
@@ -375,6 +376,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("syncBranchInf", 0);
 		JobUtil.threadMap.put("syncUserInf", 0);
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
+		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1238,6 +1240,38 @@ public class JobUtil {
 			JobUtil.threadMap.put("vipshop_OXO_pickstate", 0);
 		}
 		this.logger.info("执行了获取vipshop_OXO_pickstate订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+	}
+	
+	/**
+	 * 抓取TPS,OXO订单揽件状态定时任务
+	 */
+	public void getTpsOXOPickStateTask() {
+		System.out.println("-----getTpsOXOPickStateTask启动执行");
+		// String sysValue = this.getSysOpenValue();
+		// if ("yes".equals(sysValue)) {
+		// this.logger.warn("已开启远程定时调用,本地定时任务不生效");
+		// return;
+		// }
+
+		if (JobUtil.threadMap.get("tps_OXO_pickstate") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环tps_OXO_pickstate");
+			return;
+		}
+		JobUtil.threadMap.put("tps_OXO_pickstate", 1);
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.vipShopOXOGetPickStateService.getVipShopOXOPickState(B2cEnum.VipShop_TPSAutomate.getKey());
+			endtime = System.currentTimeMillis();
+
+		} catch (Exception e) {
+			this.logger.error("执行tps_OXO_pickstate定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("tps_OXO_pickstate", 0);
+		}
+		this.logger.info("执行了获取tps_OXO_pickstate订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 
 	}
 
