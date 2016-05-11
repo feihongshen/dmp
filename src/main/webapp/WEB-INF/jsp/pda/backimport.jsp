@@ -32,10 +32,19 @@ long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 $(function(){
 	getcwbsdataForBack();
 	$("#scancwb").focus();
+	$("#customerid").multipleSelect({
+        placeholder: "请选择",
+        filter: true,
+        single: true
+    });
 });
 
 $(function(){
@@ -602,7 +611,7 @@ function yiruku(){
 	</div>
 	<input id="tip" type="hidden" />
 	<div class="saomiao_info2">
-		<div class="saomiao_inbox2">
+		<div class="saomiao_inbox2" style="z-index: 999">
 		<div id="Tag" class="saomiao_tab">
 				<ul id="bigTag">
 					<li><a href="#" id="scancwbTag" onclick="clearMsg();$(function(){$('#tt').attr('style','display:none');$('#view').attr('style','display:');$('#goods').attr('style','display:none');$('#goods').attr('style','display:none');$('#tip').val('');$('#baleno').parent().hide();$('#baleno').val('');$('#scancwb').val('');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();})" class="light">扫描订单</a></li>
@@ -611,7 +620,7 @@ function yiruku(){
 				</ul>
 			</div>
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
-			<div class="saomiao_selet2">
+			<div class="saomiao_selet2" >
 				驾驶员：
 				<select id="driverid" name="driverid" class="select1">
 					<option value="-1" selected>请选择</option>
