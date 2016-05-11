@@ -9423,14 +9423,6 @@ public class CwbDAO {
 		}
 	}
 
-	// 查询归班反馈的订单是否已经完成。
-	public long getCompletedCwbCount(String cwb, int cwbOrderTypeId,
-			int flowordertype, int deliveryState) {
-		String sql = "select count(*) from express_ops_delivery_state as ds left join express_ops_cwb_detail as cd on ds.cwb = cd.cwb where ds.gcaid > 0 and cd.cwb = ? and cd.cwbordertypeid = ? and cd.flowordertype = ? and cd.deliverystate = ? limit 0,1";
-		return this.jdbcTemplate.queryForLong(sql, cwb, cwbOrderTypeId,
-				flowordertype, deliveryState);
-	}
-
 	/**
 	 * 获取分拣和中转待出库的订单，分页列表
 	 *

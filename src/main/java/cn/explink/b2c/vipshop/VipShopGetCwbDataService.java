@@ -470,7 +470,7 @@ public class VipShopGetCwbDataService {
 	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch, Map<String, Boolean> resultMap, Set<String> lantuiNeWSet) {	
 		String order_sn = null;
 		try {
-			Map<String, String> dataMap = new HashMap<String, String>();
+			Map<String, String> dataOrderMap = new HashMap<String, String>();
 			String id = VipShopGetCwbDataService.convertEmptyString("id", datamap);
 			String seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
 			order_sn = VipShopGetCwbDataService.convertEmptyString("order_sn", datamap);
@@ -518,7 +518,7 @@ public class VipShopGetCwbDataService {
 				}
 			}
 			
-			dataMap = addOrderDtoMap(vipshop, order_sn, dataMap, buyer_name,
+			dataOrderMap = addOrderDtoMap(vipshop, order_sn, dataOrderMap, buyer_name,
 					buyer_address, tel, mobile, post_code, transport_day,
 					money, order_batch_no, add_time, customer_name, cargotype,
 					original_weight, paywayid, attemper_no, created_dtm_loc,
@@ -528,12 +528,12 @@ public class VipShopGetCwbDataService {
 			
 			
 			//集包相关代码处理
-			String mspAllPackge = mpsallPackage(vipshop, order_sn, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch,paraList,dataMap);
+			String mspAllPackge = mpsallPackage(vipshop, order_sn, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch,paraList,dataOrderMap);
 			if(mspAllPackge!=null){
 				return getSeq(seq_arrs, seq);
 			}
 			
-			if(dataMap==null || dataMap.isEmpty()){
+			if(dataOrderMap==null || dataOrderMap.isEmpty()){
 				return getSeq(seq_arrs, seq);
 			}
 						
@@ -547,7 +547,7 @@ public class VipShopGetCwbDataService {
 				if(!lantuiNeWSet.contains(order_sn) && !isExist && ("cancel".equalsIgnoreCase(cmd_type) || "edit".equalsIgnoreCase(cmd_type)) && !"".equals(seq)){
 					resultMap.put(seq, false);
 				} else {	
-					seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
+					seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataOrderMap, seq, cmd_type);
 				}
 				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
@@ -570,13 +570,13 @@ public class VipShopGetCwbDataService {
 
 			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);			
 			
-			if (dataMap.get("cwb").isEmpty()) { // 若订单号为空，则继续。
+			if (dataOrderMap.get("cwb").isEmpty()) { // 若订单号为空，则继续。
 				seq_arrs = getSeq(seq_arrs, seq);
 				return seq_arrs;
 			}
 			seq_arrs = getSeq(seq_arrs, seq);			
 			
-			paraList.add(dataMap);		
+			paraList.add(dataOrderMap);		
 
 		} catch (Exception e) {
 			String seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
