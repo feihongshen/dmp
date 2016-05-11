@@ -3396,7 +3396,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
 				.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())))
-				&& (co.getCurrentbranchid() != currentbranchid) && !anbaochuku && (co.getNextbranchid() == this.getSessionUser().getBranchid())) {
+				&& (co.getCurrentbranchid() != currentbranchid) && !anbaochuku && (co.getNextbranchid() == user.getBranchid())) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
 		}
 
@@ -8895,7 +8895,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	}
 
-	public void intohouseForExpressPackage(String cwbs, long customerid, long driverid, BatchCount batchCount, boolean useEaimDate, List<Customer> cList, List<JSONObject> objList, List<String> allEmaildate, JSONArray promt) {
+	public void intohouseForExpressPackage(User user,String cwbs, long customerid, long driverid, BatchCount batchCount, boolean useEaimDate, List<Customer> cList, List<JSONObject> objList, List<String> allEmaildate, JSONArray promt) {
 		for (String cwb : cwbs.split("\r\n")) {
 			if (cwb.trim().length() == 0) {
 				continue;
@@ -8924,7 +8924,7 @@ public class CwbOrderService extends BaseOrderService {
 			cwb = this.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			CwbOrder cwbOrder = this.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, "", "", false);
+			CwbOrder cwbOrder = this.intoWarehous(user, cwb, scancwb, customerid, driverid, 0, "", "", false);
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 			obj.put("errorcode", "000000");
 			for (Customer c : cList) {
@@ -8942,7 +8942,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 
-	public void exportHouseForExpressPackage(String cwbs, long branchid, long driverid, long truckid, long confirmflag, BatchCount batchCount, List<Customer> cList, List<JSONObject> objList) {
+	public void exportHouseForExpressPackage(User user,String cwbs, long branchid, long driverid, long truckid, long confirmflag, BatchCount batchCount, List<Customer> cList, List<JSONObject> objList) {
 		for (String cwb : cwbs.split("\r\n")) {
 			if (cwb.trim().length() == 0) {
 				continue;
@@ -8954,7 +8954,7 @@ public class CwbOrderService extends BaseOrderService {
 			cwb = this.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			CwbOrder cwbOrder = this.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, 0, confirmflag == 1, "", "", 0, false, false);
+			CwbOrder cwbOrder = this.outWarehous(user, cwb, scancwb, driverid, truckid, branchid, 0, confirmflag == 1, "", "", 0, false, false);
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 			obj.put("errorcode", "000000");
 			for (Customer c : cList) {
