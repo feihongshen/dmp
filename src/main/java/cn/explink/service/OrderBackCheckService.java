@@ -194,6 +194,7 @@ public class OrderBackCheckService {
 				CwbOrder cwborder = this.cwbDAO.getCwbByCwb(order.getCwb());
 				for (String transcwb : cwborder.getTranscwb().split(",")) {
 					this.transCwbDetailDAO.updateTransCwbDetailBytranscwb(transcwb, TransCwbStateEnum.PEISONG.getValue());
+					this.transCwbDetailDAO.updateNextbranchByTranscwb(transcwb, cwbOrder.getCurrentbranchid());//更新运单下一站
 				}
 				cwbDAO.updateNextbranch(cwbOrder);//修改下一站为当前站
 				orderBackCheckDAO.updateOrderBackCheck2(2,cwbOrder.getCwb(),user.getRealname(),dateStr);//修改为站点滞留状态

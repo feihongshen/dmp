@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1720,41 +1722,39 @@ public class EditCwbService {
 	}
 
 	// 获取已经完成了的订单
-	public String getCompletedCwbByCwb(String cwb) {
-		Long completedCount = 0L;
-		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-		String cwbMsg = "的订单不允许修改";
-		if (co != null) {
-			int flowordertype = FlowOrderTypeEnum.YiShenHe.getValue();
-			int cwbOrderTypeId = co.getCwbordertypeid();
-			int deliveryState = -1;
-			if (CwbOrderTypeIdEnum.Peisong.getValue() == cwbOrderTypeId) {
-				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
-				cwbMsg = "配送成功" + cwbMsg;
-			} else if (CwbOrderTypeIdEnum.Shangmentui.getValue() == cwbOrderTypeId) {
-				deliveryState = DeliveryStateEnum.ShangMenTuiChengGong.getValue();
-				cwbMsg = "上门退成功" + cwbMsg;
-			} else if (CwbOrderTypeIdEnum.Shangmenhuan.getValue() == cwbOrderTypeId) {
-				deliveryState = DeliveryStateEnum.ShangMenHuanChengGong.getValue();
-				cwbMsg = "上门换成功" + cwbMsg;
-			} else if (CwbOrderTypeIdEnum.OXO.getValue() == cwbOrderTypeId) {
-				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
-				cwbMsg = "OXO配送成功" + cwbMsg;
-			} else if (CwbOrderTypeIdEnum.OXO_JIT.getValue() == cwbOrderTypeId) {
-				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
-				cwbMsg = "OXO_JIT揽收成功" + cwbMsg;
-			} else if (CwbOrderTypeIdEnum.Express.getValue() == cwbOrderTypeId) {
-				deliveryState = DeliveryStateEnum.PeiSongChengGong.getValue();
-				cwbMsg = "快递配送成功" + cwbMsg;
+	public String getCompletedCwbByCwb(CwbOrder order) {
+		String cwbErrMsg = "";
+		
+		Set<Integer> unModifyFlowSet = new HashSet<Integer>();
+		unModifyFlowSet.add(FlowOrderTypeEnum.YiShenHe.getValue());//已审核
+		unModifyFlowSet.add(FlowOrderTypeEnum.TuiHuoChuZhan.getValue());//退货出站
+		unModifyFlowSet.add(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue());//退货站入库
+		unModifyFlowSet.add(FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue());//退供货商出库
+		unModifyFlowSet.add(FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue());//供货商拒收返库
+		unModifyFlowSet.add(FlowOrderTypeEnum.ShenHeWeiZaiTou.getValue());//审核为退货再投
+		unModifyFlowSet.add(FlowOrderTypeEnum.GongHuoShangTuiHuoChenggong.getValue());//退供货商成功
+		
+		Set<Integer> unModifyDeliveryStateSet = new HashSet<Integer>();
+		unModifyDeliveryStateSet.add(DeliveryStateEnum.PeiSongChengGong.getValue());
+		unModifyDeliveryStateSet.add(DeliveryStateEnum.ShangMenTuiChengGong.getValue());
+		unModifyDeliveryStateSet.add(DeliveryStateEnum.ShangMenHuanChengGong.getValue());
+		unModifyDeliveryStateSet.add(DeliveryStateEnum.JuShou.getValue());
+		unModifyDeliveryStateSet.add(DeliveryStateEnum.BuFenTuiHuo.getValue());
+		unModifyDeliveryStateSet.add(DeliveryStateEnum.HuoWuDiuShi.getValue());
+		
+		//String cwb = order.getCwb();
+		long flowordertype = order.getFlowordertype();
+		long deliverystate = order.getDeliverystate();
+		if (unModifyFlowSet.contains((int)flowordertype)) {
+			if (FlowOrderTypeEnum.YiShenHe.getValue() == (int)flowordertype) {
+				if (unModifyDeliveryStateSet.contains((int)deliverystate)) {
+					cwbErrMsg = "已经审核过的订单不允许修改！";
+				}
 			} else {
-				// do nothing
+				cwbErrMsg = "已经审核过的订单不允许修改！";
 			}
-			completedCount = this.cwbDAO.getCompletedCwbCount(cwb, cwbOrderTypeId, flowordertype, deliveryState);
 		}
-		if (completedCount > 0) {
-			return cwbMsg;
-		}
-		return "";
+		return cwbErrMsg;
 	}
 
 	// 新增站点重置反馈调整记录
