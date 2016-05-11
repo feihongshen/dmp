@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DMP各省入口</title>
+<style type="text/css">
+        #container
+        {
+            width: 98%;
+            height: 628px;
+            margin:5px 10px 15px auto;
+            border: 10px solid #E4DDE6;
+			float:left;
+        }
+		
+		#container2
+        {
+            width: 47%;
+            height: 578px;
+            margin:5px auto 15px auto;
+            border: 10px solid #E4DDE6;
+			float:right;
+        }
+        #box
+        {
+            width: 95%;
+            height: 570px;
+            margin: 23px auto;
+            border: 1px solid #e6dde4;
+            background-color: #fbf6f7;
+        }
+        .logo_box
+        {
+            width: 100%;
+            height: 65px;
+			margin-top:5px;
+   
+        }
+        .logo_left
+        {
+			float:left;
+			margin-left: 30px;
+			background-image: url("http://www.pjbest.com/css/sprite/sprite.png");
+		    background-position: 0 -208px;
+		    height: 31px;
+		    width: 160px;
+		    margin-top: 20px;
+        }
+		.logo_right
+        {
+            width: 80%;
+            height: 100%;
+            background: url(images/login/company.jpg) no-repeat;
+			float:left;
+        }
+        #title_box
+        {
+            width: 100%;
+            height: 300px;
+            
+        }
+        .jump_boxs
+        {
+            margin: 10px 20px 10px 20px;
+        }
+        .jump_box
+        {
+            float: left;
+            width: 130px;
+            height: 30px;
+            margin: 5px 20px;
+            border: 1px solid blue;
+        }
+        .jump_boxs a
+        {
+            display: block;
+            width: 128px;
+            height: 28px;
+            margin: 1px;
+            padding: 0px;
+            background-color: #0a436d;
+            text-align: center;
+            font-size: 14px;
+            text-decoration: none;
+            line-height: 28px;
+            color: #fff;
+            overflow: visible;
+        }
+        .changBtn
+		{
+		width:100%; 
+	
+		}
+        .changBtn a{
+        	text-align: center;
+          font-size: 12px;
+          text-decoration: none;
+          line-height: 28px;
+          overflow: visible;
+          color: #D70A71;
+		  margin-left:5px;
+		  
+
+        }
+    </style>
+</head>
+<body>
+<div width="100%">
+    <div id="container">
+
+        <div id="box">
+            <div class="logo_box">
+                <div class="logo_left">
+				</div>
+				<div class="logo_right">
+                </div>
+                <div class="clear"></div>
+            </div>
+			
+			<div style="height:20px;width:100%;margin-top:10px;">
+				<div style="width:50%;float:left;">
+					<span style="margin-left:40px;font-size:16px;color: #0094ff;">入口列表</span>
+				</div>
+			</div>
+            
+			<div id="title_box">
+				<div style="width:100%;">
+					<div class="jump_boxs" id="jump_box_1">
+					</div>
+			
+				</div>
+			</div>
+		
+    </div>
+
+</div>
+                                                                        
+</div>
+	
+<script type="text/javascript">
+	var areaList = [
+	    {
+	        "areaName": "沈阳",
+	        "linkUrl": "dmp.pjbest.com/sypj"
+	    },
+	    {
+	        "areaName": "上海",
+	        "linkUrl": "dmp.pjbest.com/shpj"
+	    },
+	    {
+	        "areaName": "苏州",
+	        "linkUrl": "dmp.pjbest.com/szpj"
+	    },
+	    {
+	        "areaName": "云南",
+	        "linkUrl": "dmp.pjbest.com/ynpx"
+	    },
+	    {
+	        "areaName": "浙江",
+	        "linkUrl": "dmp.pjbest.com/zjfy"
+	    },
+	    {
+	        "areaName": "黑龙江",
+	        "linkUrl": "dmp.pjbest.com/hljpj"
+	    },
+	    {
+	        "areaName": "安徽",
+	        "linkUrl": "dmp.pjbest.com/ahpx"
+	    },
+	    {
+	        "areaName": "新疆",
+	        "linkUrl": "dmp.pjbest.com/xjpx"
+	    },
+	    {
+	        "areaName": "西藏",
+	        "linkUrl": "dmp.pjbest.com/xzpj"
+	    },
+	    {
+	        "areaName": "四川",
+	        "linkUrl": "dmp.pjbest.com/scpj"
+	    },
+	    {
+	        "areaName": "贵州",
+	        "linkUrl": "dmp.pjbest.com/pxwl"
+	    },
+	    {
+	        "areaName": "河北",
+	        "linkUrl": "dmp.pjbest.com/hebeipj"
+	    },
+	    {
+	        "areaName": "山东",
+	        "linkUrl": "dmp.pjbest.com/sdpj"
+	    },
+	    {
+	        "areaName": "江西",
+	        "linkUrl": "dmp.pjbest.com/jxfy"
+	    },
+	    {
+	        "areaName": "广州/海南",
+	        "linkUrl": "dmp.pjbest.com/gztl"
+	    },
+	    {
+	        "areaName": "广州分拨中心",
+	        "linkUrl": "dmp.pjbest.com/gztlfbzx"
+	    },
+	    {
+	        "areaName": "广州TMS",
+	        "linkUrl": "dmp.pjbest.com/gztltms"
+	    },
+	    {
+	        "areaName": "吉林",
+	        "linkUrl": "dmp.pjbest.com/jlpj"
+	    },
+	    {
+	        "areaName": "北京",
+	        "linkUrl": "dmp.pjbest.com/bjpj"
+	    },
+	    {
+	        "areaName": "福建",
+	        "linkUrl": "dmp.pjbest.com/fjfy"
+	    },
+	    {
+	        "areaName": "重庆",
+	        "linkUrl": "dmp.pjbest.com/cqhy"
+	    },
+	    {
+	        "areaName": "青海",
+	        "linkUrl": "dmp.pjbest.com/qhpj"
+	    },
+	    {
+	        "areaName": "天津",
+	        "linkUrl": "dmp.pjbest.com/tjpj"
+	    },
+	    {
+	        "areaName": "河南",
+	        "linkUrl": "dmp.pjbest.com/hnadx"
+	    },
+	    {
+	        "areaName": "广西",
+	        "linkUrl": "dmp.pjbest.com/gxpx"
+	    },
+	    {
+	        "areaName": "山西",
+	        "linkUrl": "dmp.pjbest.com/sxpj"
+	    },
+	    {
+	        "areaName": "西安",
+	        "linkUrl": "dmp.pjbest.com/xapx"
+	    },
+	    {
+	        "areaName": "宁夏",
+	        "linkUrl": "dmp.pjbest.com/nxpj"
+	    },
+	    {
+	        "areaName": "湖南",
+	        "linkUrl": "dmp.pjbest.com/hnpj"
+	    },
+	    {
+	        "areaName": "甘肃",
+	        "linkUrl": "dmp.pjbest.com/gspj"
+	    }
+	];
+	
+	var addrAllHtml = '';
+	
+	for (var i = 0; i < areaList.length; i++) {
+		var areaObj = areaList[i];
+		var addrHtml = '<div class="jump_box">' +
+			'<a href="http://' + areaObj.linkUrl +'/">' + areaObj.areaName +'</a>' +
+			'</div>';
+		addrAllHtml += addrHtml;
+	}
+	
+	document.getElementById('jump_box_1').innerHTML = addrAllHtml;
+	
+</script>
+	
+</body>
+</html>

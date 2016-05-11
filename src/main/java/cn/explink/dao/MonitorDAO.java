@@ -11,6 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.controller.MonitorLogDTO;
 import cn.explink.controller.MonitorLogSim;
 import cn.explink.domain.CwbOrder;
@@ -84,6 +87,7 @@ public class MonitorDAO {
 	 * @return 
 	 * @throws Exception
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<MonitorLogSim> getMonitorLogByBranchid(String branchids,String customerids,String wheresql) {
 		String noteffectCwbsString=this.getEffectCwbsAdd(branchids, customerids, wheresql);
 		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+"  GROUP BY customerid");
@@ -92,6 +96,7 @@ public class MonitorDAO {
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
 	}
+	@DataSource(DatabaseType.REPLICA)
 	public String getEffectCwbsAdd(String branchids,String customerids,String wheresql){
 		StringBuffer buffer=new StringBuffer();
 		String zhuiString="'";
@@ -113,6 +118,7 @@ public class MonitorDAO {
 	 * @param wheresql
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<MonitorLogSim> getMonitorLogByBranchidWithZhandianzaiZhanZiJin(String branchids,String customerids,String wheresql) {
 		String cwbsString=this.getExpectZhandianZaiZhanZiJinCwb(branchids,customerids,wheresql);
 		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1  " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" AND cwb NOT IN("+cwbsString+") GROUP BY customerid");
@@ -121,6 +127,8 @@ public class MonitorDAO {
 		List<MonitorLogSim> list = jdbcTemplate.query(sql.toString(), new MonitorlogSimMapper());
 		return list;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public String getExpectZhandianZaiZhanZiJinCwb(String branchids,String customerids,String wheresql){
 		String suffer="'";
 		StringBuffer buffer=new StringBuffer();
@@ -136,6 +144,8 @@ public class MonitorDAO {
 			return "''";
 		}
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public List<MonitorLogSim> getMonitorLogByExpBranchid(String branchids,String customerids,String wheresql) {
 		StringBuffer sql = new StringBuffer("SELECT customerid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" " + (customerids.length()>0? (" and customerid in("+customerids+") "):" ")+" and branchid not in("+branchids+")  GROUP BY customerid");
 		
@@ -144,6 +154,7 @@ public class MonitorDAO {
 		return list;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorLogByType(String flowordertypes ,String customerid,long page) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"   flowordertype in("+flowordertypes+")" +
@@ -154,6 +165,7 @@ public class MonitorDAO {
 		return list;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorLogByType(String flowordertypes ,String branchids,long customerid,long page) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT cwb  FROM `express_ops_operation_time` where "+(customerid>0?("customerid ="+customerid+"  and"):"")+"  flowordertype in("+flowordertypes+") and branchid in("+branchids+")" +
@@ -163,6 +175,8 @@ public class MonitorDAO {
 
 		return list;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorLogByTypeAndNotIn(String flowordertypes ,String branchids,String customerid,long page) {
 		String effectCwbs=this.getEffectCwbs(flowordertypes, branchids, customerid, page);
 		StringBuffer sql = new StringBuffer(
@@ -175,6 +189,8 @@ public class MonitorDAO {
 
 		return list;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public String getEffectCwbs(String flowordertypes ,String branchids,String customerid,long page){
 		StringBuffer buffer=new StringBuffer();
 		String zhuiString="'";
@@ -200,6 +216,8 @@ public class MonitorDAO {
 			return "''";
 		}
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorLogByTypeAndNotIn(String flowordertypes ,String branchids,String customerid) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT cwb  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"   flowordertype in("+flowordertypes+") and branchid not in("+branchids+")");
@@ -210,6 +228,7 @@ public class MonitorDAO {
 	}
 	
 	//==============条数===========
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByTypeCount(String flowordertypes ,String customerid) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid.length()>0?("customerid in("+customerid+")  and"):"")+"    flowordertype in("+flowordertypes+")");
@@ -217,6 +236,7 @@ public class MonitorDAO {
 				return count;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByTypeCount(String flowordertypes ,String branchids,long customerid) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(customerid>0?("customerid ="+customerid+"  and"):"")+"   flowordertype in("+flowordertypes+") and branchid in("+branchids+")");
@@ -224,6 +244,8 @@ public class MonitorDAO {
 
 		return count;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByTypeAndNotInCount(String flowordertypes ,String branchids,String customerid) {
 		String noteffectcwbsString=this.getEffectCwbs(flowordertypes, branchids, customerid, -9);
 		StringBuffer sql = new StringBuffer(

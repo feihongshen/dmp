@@ -16,7 +16,8 @@ public class OutWarehouseGroup {
 	private String cwbs;
 	private long sign;
 	private String baleno;
-
+	private long baleid;
+	
 	public long getBranchid() {
 		return this.branchid;
 	}
@@ -125,6 +126,14 @@ public class OutWarehouseGroup {
 	 */
 	public void setBaleno(String baleno) {
 		this.baleno = baleno;
+	}
+
+	public long getBaleid() {
+		return baleid;
+	}
+
+	public void setBaleid(long baleid) {
+		this.baleid = baleid;
 	}
 
 }

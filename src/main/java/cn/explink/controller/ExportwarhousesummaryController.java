@@ -36,6 +36,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
@@ -259,6 +262,7 @@ public class ExportwarhousesummaryController {
 	}
 
 	@RequestMapping("/exportExcle_warhouse")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcle_warhouse(HttpServletResponse response, @RequestParam(value = "warhouseid", required = false, defaultValue = "") String warhouseid,
 			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
 		final List<Branch> zhandianes = this.branchDAO.getAllBranchBySiteType(2);
@@ -395,6 +399,7 @@ public class ExportwarhousesummaryController {
 	}
 
 	@RequestMapping("/exportExcle")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcle(Model model, HttpServletResponse response, 
 			@RequestParam(value = "exportmould", required = false, defaultValue = "") final String exportmould, @RequestParam(value = "p", required = false, defaultValue = "") long p,
 			@RequestParam(value = "detail_branchids", required = false, defaultValue = "") String branchids,

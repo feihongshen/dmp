@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.AccountCwbSummary;
 import cn.explink.util.Page;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Component
 public class AccountCwbSummaryDAO {
 	@Autowired
@@ -185,6 +188,7 @@ public class AccountCwbSummaryDAO {
 		return jdbcTemplate.queryForObject(sql, new AccountCwbSummaryRowMapper(), summaryid);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<AccountCwbSummary> getAccountCwbSummaryList(long page, long checkoutstate, String branchids, long accounttype, String starttime, String endtime) {
 		String sql = "SELECT * FROM ops_account_cwb_summary WHERE checkoutstate=? and accounttype=? ";
 		sql = this.getAccountCwbSummaryPageWhereSql(sql, checkoutstate, branchids, starttime, endtime);
@@ -194,6 +198,7 @@ public class AccountCwbSummaryDAO {
 		return jdbcTemplate.query(sql, new AccountCwbSummaryRowMapper(), checkoutstate, accounttype);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getAccountCwbSummaryCount(long checkoutstate, String branchids, long accounttype, String starttime, String endtime) {
 		String sql = "SELECT count(1) FROM ops_account_cwb_summary WHERE checkoutstate=? and accounttype=?";
 		sql = this.getAccountCwbSummaryPageWhereSql(sql, checkoutstate, branchids, starttime, endtime);

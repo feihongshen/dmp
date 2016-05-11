@@ -10,7 +10,7 @@
 	String templateName=request.getAttribute("templateName").toString();
 	String branchname=request.getAttribute("branchname").toString();
 	String username=request.getAttribute("username").toString();
-	String balenos=request.getAttribute("balenos").toString();
+	String baleids=request.getAttribute("baleids").toString();
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -62,7 +62,7 @@ function nowprint(){
 		$.ajax({
 			type:"POST",
 			url:"<%=request.getContextPath()%>/warehousegroupdetail/outbalelist_update",
-			data : {"balenos":"<%=balenos%>"},
+			data : {"baleids":"<%=baleids%>"},
 			dataType:"json",
 			success : function(data) {
 				prn1_print();

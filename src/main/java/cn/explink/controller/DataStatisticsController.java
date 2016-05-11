@@ -1170,16 +1170,24 @@ public class DataStatisticsController {
 				}
 
 			}
-			
-			String branchids = this.dataStatisticsService.getStrings(currentBranchid);
+
+			List<String> orderFlowList = this.orderFlowDAO
+					.getOrderFlowBySome(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), this.dataStatisticsService
+							.getStrings(currentBranchid), isnowdata);
+			if (orderFlowList.size() > 0) {
+				orderflowcwbs = this.dataStatisticsService.getOrderFlowCwbs(orderFlowList);
+			} else {
+				orderflowcwbs = "'--'";
+			}
+
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			String kufangids = this.dataStatisticsService.getStrings(kufangid);
 			// 获取值
-			count = this.cwbDAO.getcwborderDaoHuoCount(customerid, cwbordertypeids, orderflowcwbs, kufangids, "", begindate, enddate, branchids, isnowdata);
+			count = this.cwbDAO.getcwborderDaoHuoCount(customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
 
-			sum = this.cwbDAO.getcwborderDaoHuoSum(customerid, cwbordertypeids, orderflowcwbs, kufangids, "", begindate, enddate, branchids, isnowdata);
+			sum = this.cwbDAO.getcwborderDaoHuoSum(customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
 
-			clist = this.cwbDAO.getDaoHuocwbOrderByPage(page, customerid, cwbordertypeids, orderflowcwbs, kufangids, "", begindate, enddate, branchids, isnowdata);
+			clist = this.cwbDAO.getDaoHuocwbOrderByPage(page, customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 
@@ -1203,7 +1211,7 @@ public class DataStatisticsController {
 		this.logger.info("分站到货统计，当前操作人{},条数{}", this.getSessionUser().getRealname(), count);
 		return this.querypage(model, new String[] {}, currentBranchid, null, new String[] {}, 8, new String[] {}, cwbordertypeid, kufangid, new String[] {}, new String[] {});
 	}
-	
+
 	/**
 	 * 按到站时间，统计到站后，没有反馈的订单
 	 *

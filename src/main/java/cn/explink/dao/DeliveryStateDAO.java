@@ -24,6 +24,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.User;
@@ -1130,6 +1133,7 @@ public class DeliveryStateDAO {
 		this.jdbcTemplate.update(sql, deliverystate, sign_time, sign_time, sign_man, userid, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getDeliveryStateByCredateAndFlowordertype(String begindate, String enddate, long isauditTime, long isaudit, String[] operationOrderResultTypes, String[] dispatchbranchids,
 			long deliverid, int isTuotou, String customeridStr, int firstlevelid) {
 
@@ -1187,6 +1191,7 @@ public class DeliveryStateDAO {
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<JSONObject> getDeliveryByDayGroupByDeliverybranchid(String day, String secondDay) {
 		try {
 			String sql = "SELECT deliverybranchid,SUM(cash+otherfee+checkfee-returnedfee) AS amount,SUM(pos) AS pos FROM `express_ops_delivery_state` WHERE deliverytime>? AND deliverytime<=? AND auditingtime=''  AND state=1  GROUP BY deliverybranchid";

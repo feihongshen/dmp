@@ -29,6 +29,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
@@ -62,6 +65,7 @@ public class DeliveryCashService {
 	 *            代收金额是否大于0
 	 * @return 最外层的是变量存储 第二层是小件员 第三层是供货商 对应金额或者数量
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public Map<String, Map<Long, Map<Long, BigDecimal>>> getSummary(List<Customer> customerList, List<User> deliverList, final long deliveryid, long flowordertype, String begindate, String enddate,
 			String[] deliverystate, Integer paybackfeeIsZero) {
 		StringBuffer deliveryids = new StringBuffer();
@@ -201,6 +205,7 @@ public class DeliveryCashService {
 	 * @param deliverystate
 	 * @return 最外层的是变量存储 第二层是小件员 第三层是供货商 对应金额或者数量
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<DeliveryCash> getSummaryList(List<Customer> customerList, List<User> deliverList, final long deliveryid, long flowordertype, String begindate, String enddate, String[] deliverystate,
 			Long customerId, Integer paybackfeeIsZero) {
 		StringBuffer deliveryids = new StringBuffer();
@@ -299,6 +304,7 @@ public class DeliveryCashService {
 		return reList;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getSummaryCwbList(List<Customer> customerList, List<User> deliverList, final long deliveryid, long flowordertype, String begindate, String enddate, String[] deliverystate,
 			Long customerId, Integer paybackfeeIsZero) {
 

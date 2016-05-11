@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.core.utils.StringUtils;
 import cn.explink.domain.BaleCwb;
+import cn.explink.enumutil.BaleStateEnum;
 
 @Component
 public class BaleCwbDao {
@@ -65,17 +66,19 @@ public class BaleCwbDao {
 		return this.jdbcTemplate.queryForLong(sql, baleid, cwb);
 	}
 	public long getBaleAndCwbCount(String baleno, String cwb) {
-		String sql = "select count(1) from express_ops_bale_cwb where baleno=? and cwb=?";
-		return this.jdbcTemplate.queryForLong(sql, baleno, cwb);
+		String sql = "select count(1) from express_ops_bale_cwb a where baleno=? and cwb=? "
+				+" and exists(select 1 from express_ops_bale b where b.id=a.baleid and b.balestate in (?,?,?))";
+		return this.jdbcTemplate.queryForLong(sql, baleno, cwb, BaleStateEnum.WeiFengBao.getValue(),BaleStateEnum.YiFengBao.getValue(),
+				BaleStateEnum.YiFengBaoChuKu.getValue());
 	}
 	/**
 	 * 根据包号获取当前包扫描所有件数
 	 * @param baleno
 	 * @return
 	 */
-	public long getBaleScanCount(String baleno) {
-		String sql = "select scannum from express_ops_bale where baleno=?";
-		return this.jdbcTemplate.queryForLong(sql, baleno);
+	public long getBaleScanCount(long baleid) {
+		String sql = "select scannum from express_ops_bale where baleid=?";
+		return this.jdbcTemplate.queryForLong(sql, baleid);
 	}
 	/**
 	 * 根据订单号获取对应包号
@@ -99,14 +102,18 @@ public class BaleCwbDao {
 		}
 		
 		String queryStr = queryCondition.substring(0,queryCondition.length()-1);
-		String sql = " SELECT baleno FROM express_ops_bale_cwb WHERE cwb IN ( " + queryStr + " ) ";
-		return this.jdbcTemplate.queryForList(sql, String.class);
+		String sql = " SELECT baleno FROM express_ops_bale_cwb WHERE cwb IN ( " + queryStr + " ) "
+				+"and exists(select 1 from express_ops_bale WHERE balestate in (?,?,?))";
+		return this.jdbcTemplate.queryForList(sql, String.class,BaleStateEnum.YiFengBao.getValue(),
+				BaleStateEnum.YiFengBaoChuKu.getValue(),BaleStateEnum.WeiFengBao.getValue());
 	}
 	
 	public List<String> getCwbsByBale(String baleid) {
 		String sql = "select cwb from express_ops_bale_cwb where baleid=";
 		return this.jdbcTemplate.queryForList(sql+baleid, String.class);
 	}
+	
+	@Deprecated
 	public List<String> getCwbsByBaleNO(String baleno) {
 		String sql = "select cwb from express_ops_bale_cwb where baleno=?";
 		return this.jdbcTemplate.queryForList(sql, String.class,baleno);
@@ -119,10 +126,22 @@ public class BaleCwbDao {
 		this.jdbcTemplate.update("delete from express_ops_bale_cwb where cwb in("+cwbs+") ");
 	}
 	public List<BaleCwb> getBaleCwbByCwb(String cwb) {
-		String sql = "select * from express_ops_bale_cwb where cwb=?";
+		String sql = "select * from express_ops_bale_cwb a where cwb=? "
+				+" and exists(select 1 from express_ops_bale b where b.id=a.baleid and b.balestate in (?,?,?))";
 		try{
-		return this.jdbcTemplate.query(sql, new BaleMapper(),cwb);
+		return this.jdbcTemplate.query(sql, new BaleMapper(),cwb,BaleStateEnum.YiFengBao.getValue(),
+				BaleStateEnum.YiFengBaoChuKu.getValue(),BaleStateEnum.WeiFengBao.getValue());
 		}catch(Exception e){
+			return null;
+		}
+	}
+	
+	public String getScancwbByCwbs(long baleid,String cwbs) {
+		String sql ="select cwb from express_ops_bale_cwb where baleid=? and cwb in("+cwbs+") limit 1";
+		List<String> list=this.jdbcTemplate.queryForList(sql,new Long[]{baleid},String.class);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}else{
 			return null;
 		}
 	}

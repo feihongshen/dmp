@@ -53,8 +53,8 @@ $(function() {
 	
 });
 
-function bdprint(baleno){
-	location.href="<%=request.getContextPath() %>/warehousegroupdetail/outbalelist_print?isprint="+baleno;
+function bdprint(baleid){
+	location.href="<%=request.getContextPath() %>/warehousegroupdetail/outbalelist_print?isprint="+baleid;
 }
 
 </script>
@@ -98,7 +98,7 @@ function bdprint(baleno){
 						<td align="center"><%=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(og.getIssignprint())%></td>
 						<td align="center"><%for(FlowOrderTypeEnum ft : FlowOrderTypeEnum.values()){if(og.getFlowordertype()==ft.getValue()){ %><%=ft.getText() %><%}} %></td>
 						<td align="center">
-							<a href ="javascript:;" onclick="bdprint('<%=og.getBaleno()%>')">交接单打印 </a>
+							<a href ="javascript:;" onclick="bdprint('<%=og.getBaleid()%>')">交接单打印 </a>
 							（<%=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(og.getIssignprint())%>已打印）
 						</td>
 					</tr>

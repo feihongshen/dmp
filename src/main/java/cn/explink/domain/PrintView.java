@@ -132,6 +132,16 @@ public class PrintView {
 	private String deliverybranch;
 	
 	private String baleno;
+	private long baleid;
+
+	
+	public long getBaleid() {
+		return baleid;
+	}
+
+	public void setBaleid(long baleid) {
+		this.baleid = baleid;
+	}
 
 	public String getBaleno() {
 		return baleno;

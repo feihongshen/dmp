@@ -19,6 +19,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.TruckDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.Bale;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Truck;
@@ -125,7 +126,8 @@ public class ExpressOutStationController extends ExpressCommonController {
 					res = this.expressOutStationService.executeOutStationOpeBaleNo(this.getSessionUser(), scanNo, params);
 					if (res.getStatus()) {
 						// 匹配地址库
-						List<String> cwbList = this.cwborderService.getCwbsByBaleNO(scanNo);
+						Bale bale=(Bale) checkResMap.get("bale");
+						List<String> cwbList = this.cwborderService.getCwbsByBale(bale.getId());
 						for (String cwb : cwbList) {
 							CwbOrder cwbOrder = this.cwborderService.getCwbByCwb(cwb);
 							this.matchStation(cwb, this.getSessionUser().getUserid(), cwbOrder.getConsigneeaddress());
