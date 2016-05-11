@@ -1,0 +1,1 @@
+ALTER TABLE express_ops_groupdetail DROP KEY Groupdetail_Baleid_Idx;
