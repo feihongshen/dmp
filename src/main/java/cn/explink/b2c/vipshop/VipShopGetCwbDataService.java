@@ -524,7 +524,7 @@ public class VipShopGetCwbDataService {
 					original_weight, paywayid, attemper_no, created_dtm_loc,
 					rec_create_time, order_delivery_batch, freight,
 					cwbordertype, warehouse_addr, go_get_return_time,
-					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club, cmd_type);
+					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club, cmd_type, seq);
 			
 			
 			//集包相关代码处理
@@ -621,9 +621,10 @@ public class VipShopGetCwbDataService {
 			String order_delivery_batch, String freight, String cwbordertype,
 			String warehouse_addr, String go_get_return_time,
 			String is_gatherpack, String is_gathercomp, String total_pack,
-			String transcwb,int mpsswitch,String vip_club, String cmd_type) {
+			String transcwb,int mpsswitch,String vip_club, String cmd_type, String seq) {
 		String sendcarnum=total_pack.isEmpty() ? "1" : total_pack;
 		
+		dataMap.put("seq", seq);
 		dataMap.put("cwb", order_sn);
 		dataMap.put("transcwb", transcwb);
 		
