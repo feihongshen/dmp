@@ -963,16 +963,16 @@ public class VipShopGetCwbDataService {
 		}
 	}
 	
+	@Transactional
 	public void insertOrderGoods(Map<String, Object> datamap, String order_sn) {
-		try {
-			List<Map<String, Object>> goodslist = (List<Map<String, Object>>) datamap.get("goods");
+		List<Map<String, Object>> goodslist = (List<Map<String, Object>>) datamap.get("goods");
 			if ((goodslist != null) && (goodslist.size() > 0)) {
 				List<OrderGoods> orderGoodsList = null;
+				orderGoodsList = orderGoodsDAO.getOrderGoodsList(order_sn);
+				if(!CollectionUtils.isEmpty(orderGoodsList)){
+					return;
+				}
 				for (Map<String, Object> good : goodslist) {
-					orderGoodsList = orderGoodsDAO.getOrderGoodsList(order_sn);
-					if(!CollectionUtils.isEmpty(orderGoodsList)){
-						break;
-					}
 					OrderGoods ordergoods = new OrderGoods();
 					ordergoods.setCwb(order_sn);
 					ordergoods.setCretime(DateTimeUtil.getNowTime());
@@ -987,9 +987,6 @@ public class VipShopGetCwbDataService {
 					this.orderGoodsDAO.CreateOrderGoods(ordergoods);
 				}
 			}
-		} catch (Exception e) {
-			this.logger.error("获取商品列表异常,单号=" + order_sn, e);
-		}
 	}
 
 	private static String convertEmptyString(String str, Map m) {
