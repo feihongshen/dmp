@@ -596,7 +596,9 @@ public class WarehouseGroup_detailController {
 				 */
 
 				List<GroupDetail> groupDetails = new ArrayList<GroupDetail>();
-				groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale==null?0:bale.getId());
+				if(bale!=null){
+					groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale.getId());
+				}
 				GroupDetail groupDetail = new GroupDetail();
 				for (GroupDetail gDetail : groupDetails) {
 					groupDetail = gDetail;
@@ -957,7 +959,9 @@ public class WarehouseGroup_detailController {
 				// 包号不为空 查询groupDetail表将truckid查询出来
 
 				List<GroupDetail> groupDetails = new ArrayList<GroupDetail>();
-				groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale==null?0:bale.getId());
+				if(bale!=null){
+					groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale.getId());
+				}
 				if (groupDetails.size() > 0) {
 					model.addAttribute("truckid", groupDetails.get(0).getTruckid());
 				}
@@ -2268,12 +2272,12 @@ public class WarehouseGroup_detailController {
 		String baleids = "";
 
 		for (int i = 0; i < isprint.length; i++) {
-			if (isprint[i].trim().length() == 0) {
+			if (isprint[i]==null||isprint[i].trim().length() == 0||isprint[i].equals("0")) {
 				continue;
 			}
 			baleids +=  isprint[i] + ",";
 		}
-		baleids = baleids.length()>0?baleids.substring(0, baleids.length()-1):"0";
+		baleids = baleids.length()>0?baleids.substring(0, baleids.length()-1):"-1";
 
 		List<Long> nextbranchids = this.groupDetailDao.getBranchIdsGroupBYbranchid(baleids);
 
@@ -2377,10 +2381,14 @@ public class WarehouseGroup_detailController {
 		String[] baleidsStr =baleids.split(",");
 		try {
 			for (int i = 0; i < baleidsStr.length; i++) {
-				if (baleidsStr[i].trim().length() == 0) {
+				if (baleidsStr[i]==null||baleidsStr[i].trim().length() == 0||baleidsStr[i].equals("0")) {
 					continue;
 				}
-				this.groupDetailDao.updateGroupDetailListByBale(Long.parseLong(baleidsStr[i]));
+				long baleid=Long.parseLong(baleidsStr[i]);
+				if(baleid<1){
+					continue;
+				}
+				this.groupDetailDao.updateGroupDetailListByBale(baleid);
 			}
 			return "{\"errorCode\":0,\"error\":\"成功\"}";
 		} catch (CwbException e) {
