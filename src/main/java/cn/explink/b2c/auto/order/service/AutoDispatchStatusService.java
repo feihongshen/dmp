@@ -223,38 +223,35 @@ public class AutoDispatchStatusService {
 				try{
 					if(e instanceof CwbException){
 						CwbException cwbe=(CwbException) e;
-						if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
+						if (cwbe.getError()!=null&&cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU.getValue()) {
 							feedbackTps=false;
 							needDbLog=false;
 							fullLog=false;
-						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()) {
+						}else if (cwbe.getError()!=null&&cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU.getValue()) {
 							feedbackTps=false;
 							needDbLog=false;
 							fullLog=false;
-						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED.getValue()) {
+						}else if (cwbe.getError()!=null&&cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.OUTWAREHOUSE_MPS_NOT_ALL_ARRIVED.getValue()) {
 							//此处集单模式下出库时发生;因为按包出库原因，自动化要求必须不能是库房集单，所以不会有此异常
 							isWait=false;
 							feedbackTps=false;
 							needDbLog=false;
 							fullLog=false;
-						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR.getValue()) {
+						}else if (cwbe.getError()!=null&&cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR.getValue()) {
 							//此处入库时已有一件出库了时发生;虽然出库时也会发生，但设置为强制出库以及按包出库，自动化下忽略validateYipiaoduojianState方法里的等待，所以不会有此异常
 							feedbackTps=false;
 							needDbLog=false;
 							fullLog=false;
-						}else if (cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR.getValue()) {
+						}else if (cwbe.getError()!=null&&cwbe.getError().getValue() == ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR.getValue()) {
 							//此处出库时发生
 							isWait=false;
 							feedbackTps=false;
 							needDbLog=false;
 							fullLog=false;
+						}else if(cwbe.getError()==null){
+							isWait=false;
+							feedbackTps=false;
 						}
-					}
-					
-					if(fullLog){
-						logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type(),e);
-					}else{
-						logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type()+",error:"+e.getMessage());
 					}
 					
 					if(isWait||e instanceof AutoWaitException){
@@ -281,6 +278,12 @@ public class AutoDispatchStatusService {
 					}
 				} catch (Exception ee) {
 	        		logger.error("保存自动化异常时出错.",ee);
+	        	}finally{
+					if(fullLog){
+						logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type(),e);
+					}else{
+						logger.error("处理分拣状态出错，handleData error,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type()+",error:"+e.getMessage());
+					}
 	        	}
 				
 				

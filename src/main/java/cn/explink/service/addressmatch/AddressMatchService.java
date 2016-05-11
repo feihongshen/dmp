@@ -14,7 +14,6 @@ import net.sf.json.JSONObject;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Header;
-import org.apache.camel.Headers;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -315,7 +314,12 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					Branch b = null;
 					for (int i = 0; i < addressList.size(); i++) {
 						try {
-							b = this.branchDAO.getEffectBranchById(addressList.getJSONObject(i).getLong("station"));
+							String station = addressList.getJSONObject(i).getString("station");
+							if(null == station || station.length() == 0){//为空，匹配不到站点
+								this.logger.error("丰简地址库匹配失败，cwb={}，地址={}", cwbOrder.getCwb(), cwbOrder.getConsigneeaddress());
+								return;
+							}
+							b = this.branchDAO.getEffectBranchById(Long.valueOf(station));
 							if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 								this.cwbOrderService.updateDeliveryBranch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
 								// 触发上门退自动分站领货
