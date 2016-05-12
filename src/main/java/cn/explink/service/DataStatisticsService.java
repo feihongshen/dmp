@@ -28,6 +28,9 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.controller.CwbOrderView;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
@@ -128,6 +131,7 @@ public class DataStatisticsService {
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	@DataSource(DatabaseType.REPLICA)
 	public void DataStatisticsExportExcelMethod(HttpServletResponse response, HttpServletRequest request, long page, long sign) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
 
@@ -475,6 +479,7 @@ public class DataStatisticsService {
 	 * @param request
 	 * @param page
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public void DataStatisticsZaituExportExcelMethod(HttpServletResponse response, HttpServletRequest request, long page) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
 
@@ -681,6 +686,7 @@ public class DataStatisticsService {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void DataStatisticsExportOutWareExcelMethod(HttpServletResponse response, HttpServletRequest request, long page, long sign) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
 
@@ -907,6 +913,7 @@ public class DataStatisticsService {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void DataStatisticsExportIntoWareExcelMethod(HttpServletResponse response, HttpServletRequest request, long page) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
 
@@ -1145,6 +1152,7 @@ public class DataStatisticsService {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcelByNoresultMethod(HttpServletResponse response, String sql1, String mouldfieldids) {
 
 		String[] cloumnName1 = {}; // 导出的列名
@@ -1342,6 +1350,7 @@ public class DataStatisticsService {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void cwbExportExcelMethod(HttpServletResponse response, HttpServletRequest request, String begindate1, String enddate1, String branchid1, String customerid1, String types,
 			long istuihuozhanruku1, long tuihuotype) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
@@ -2217,6 +2226,7 @@ public class DataStatisticsService {
 		return reMap;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcelOutToComm(HttpServletResponse response, String mouldfieldids2, String commoncode, long startbranchid, int outbranchflag) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名

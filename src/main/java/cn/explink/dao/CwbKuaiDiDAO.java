@@ -12,6 +12,9 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.util.Page;
@@ -116,6 +119,7 @@ public class CwbKuaiDiDAO {
 		this.jdbcTemplate.update(sql, zhongzhuanbranchid, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbKuaiDi> getCwbKuaiDiListPage(long page, long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
 		String sql = "SELECT * from ops_cwbkuaidi_detail where ";
 		if (timeType == 1) {
@@ -131,6 +135,7 @@ public class CwbKuaiDiDAO {
 	}
 
 	// 快递订单查询
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbKuaiDi> getExpressOrderListPage(long page, long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
 		String sql = this.getQueryExpressSql(timeType, begindate, enddate, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
@@ -149,11 +154,13 @@ public class CwbKuaiDiDAO {
 	 * @param paisonguserid
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbKuaiDi> getExpressOrderListNoPage(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
 		String sql = this.getQueryExpressSql(timeType, begindate, enddate, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		return this.jdbcTemplate.query(sql, new ExpressMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbKuaiDi> getCwbKuaiDiListNoPage(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
 		String sql = "SELECT * from ops_cwbkuaidi_detail where ";
 		if (timeType == 1) {
@@ -167,6 +174,7 @@ public class CwbKuaiDiDAO {
 		return this.jdbcTemplate.query(sql, new CwbKuaiDiMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getCwbKuaiDiListCount(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
 		String sql = "SELECT count(1) from ops_cwbkuaidi_detail where ";
 		if (timeType == 1) {
@@ -224,6 +232,7 @@ public class CwbKuaiDiDAO {
 	}
 
 	// 4.2快递使用
+	@DataSource(DatabaseType.REPLICA)
 	public long getExpressOrderListCount(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
 		String sql =  this.getQueryExpressSql(timeType, begindate, enddate, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		List<CwbKuaiDi> list = this.jdbcTemplate.query(sql, new ExpressMapper());
