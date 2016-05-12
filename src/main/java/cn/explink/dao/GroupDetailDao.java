@@ -135,6 +135,9 @@ public class GroupDetailDao {
 	 * @return
 	 */
 	public List<GroupDetail> getCwbListByBaleId(long baleId, long page) {
+		if(baleId<1){
+			return null;
+		}
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		sql += "limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
@@ -147,6 +150,9 @@ public class GroupDetailDao {
 	 * @return
 	 */
 	public List<GroupDetail> getCwbListByBaleIdExport(long baleId) {
+		if(baleId<1){
+			return null;
+		}
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
 	}
@@ -157,6 +163,9 @@ public class GroupDetailDao {
 	 */
 	
 	public List<GroupDetail> getCwbListByBalenoExport(long baleId) {
+		if(baleId<1){
+			return null;
+		}
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
 	}
@@ -346,6 +355,9 @@ public class GroupDetailDao {
 	}
 
 	public List<GroupDetail> getGroupDetailListByBale(long baleid) {
+		if(baleid<1){
+			return null;
+		}
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE baleid=?";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleid);
 	}

@@ -820,11 +820,11 @@ public class TPSGetOrderDataService {
 			List<TPSOrderDetails> goodslist = (List<TPSOrderDetails>) order.getDetails();
 			if ((goodslist != null) && (goodslist.size() > 0)) {
 				List<OrderGoods> orderGoodsList = null;
+				orderGoodsList = orderGoodsDAO.getOrderGoodsList(cust_order_no);
+				if(orderGoodsList.size()!=0){
+					return;
+				}
 				for (TPSOrderDetails good : goodslist) {
-					orderGoodsList = orderGoodsDAO.getOrderGoodsList(cust_order_no);
-					if(orderGoodsList.size()!=0){
-						break;
-					}
 					OrderGoods ordergoods = new OrderGoods();
 					ordergoods.setCwb(cust_order_no);
 					ordergoods.setCretime(DateTimeUtil.getNowTime());
