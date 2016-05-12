@@ -10,6 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.Backintowarehouse_print;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
@@ -59,6 +62,7 @@ public class BackIntoprintDAO {
 				co.getDeliverid(), co.getCustomerid(), baleno, driverid, co.getBackreasonid(), remark1, remark2, remark3, comment);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<Backintowarehouse_print> getBackintoPrints(String starttime, String endtime, long flowordertype, String startbranchid, long driverid, long issignprint, User user,String breasonremark) {
 
 		String sql = "select * from express_ops_backintowarehous_print where createtime>=? and createtime<=? and flowordertype=?  and issignprint=? and branchid=" + user.getBranchid();
@@ -77,6 +81,7 @@ public class BackIntoprintDAO {
 
 		return this.jdbcTemplate.query(sql, new BackprintRowMapper(), starttime, endtime, flowordertype, issignprint);
 	}
+	@DataSource(DatabaseType.REPLICA)
 	public List<Backintowarehouse_print> getBackintoPrintsAll(String starttime, String endtime, String flowordertypes, String startbranchid, long driverid, long issignprint, String nextbranchids,String breasonremark) {
 
 		String sql = "select * from express_ops_backintowarehous_print where createtime>=? and createtime<=? and flowordertype in ("+flowordertypes+")  and issignprint=? and branchid in("+nextbranchids +") ";
@@ -117,6 +122,7 @@ public class BackIntoprintDAO {
 
 		return this.jdbcTemplate.query(sql, new BackprintRowMapper(), starttime, endtime, flowordertype,issignprint);
 	}
+	@DataSource(DatabaseType.REPLICA)
 	public List<Backintowarehouse_print> getBackintoPrintAll(String starttime, String endtime,  String flowordertypes, String startbranchid, long driverid, long issignprint, String nextbranchids,String cwbs) {
 		String sql = "select * from express_ops_backintowarehous_print where createtime>=? and createtime<=? and flowordertype in ("+flowordertypes+")  and issignprint=? and branchid in("+nextbranchids +") ";
 		if (issignprint != 0) {
