@@ -28,6 +28,7 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.EmailFinishFlagEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.YesOrNoStateEnum;
+import cn.explink.util.DateTimeUtil;
 
 @Repository
 public class ExpressCwbOrderDataImportDAO {
@@ -282,8 +283,8 @@ public class ExpressCwbOrderDataImportDAO {
 		sql.append(" cwbordertypeid,orderflowid,flowordertype,");
 		sql.append(" cargovolume,cwbstate,instationname,state,");
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
-		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag) ");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate) ");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -378,6 +379,7 @@ public class ExpressCwbOrderDataImportDAO {
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 
 				ps.setInt(++i, 1);//补录完成标识，标识=1
+				ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
 				return ps;
 			}
 		}, key);
