@@ -357,4 +357,10 @@ public class TransCwbDetailDAO {
 		String sql = "update express_ops_transcwb_detail set nextbranchid=? where cwb=?";
 		this.jdbcTemplate.update(sql, nextbranchId, cwb);
 	}
+	
+	
+	public void updateNextbranchByTranscwb(String transcwb, long nextbranchId) {
+		String sql = "update express_ops_transcwb_detail set nextbranchid=? where transcwb=?";
+		this.jdbcTemplate.update(sql, nextbranchId, transcwb);
+	}
 }

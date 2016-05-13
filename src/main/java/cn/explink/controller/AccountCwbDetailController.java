@@ -47,6 +47,9 @@ import cn.explink.service.ExportService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 /**
  * 结算管理
  * 
@@ -550,6 +553,7 @@ public class AccountCwbDetailController {
 	 * @param ids
 	 */
 	@RequestMapping("/exportOutwarehouseDetail")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportOutwarehouseDetail(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "ids", required = false, defaultValue = "") String ids) {
 		String[] cloumnName1 = new String[7]; // 导出的列名
 		String[] cloumnName2 = new String[7]; // 导出的英文列名
@@ -596,6 +600,7 @@ public class AccountCwbDetailController {
 	 * @param request
 	 */
 	@RequestMapping("/exportByOutwarehouse")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportByOutwarehouse(Model model, HttpServletResponse response, @RequestParam("summaryid") long summaryid,
 			@RequestParam(value = "flowOrderType", required = false, defaultValue = "") long flowOrderType, HttpServletRequest request) {
 		String[] cloumnName1 = new String[7]; // 导出的列名
@@ -672,6 +677,7 @@ public class AccountCwbDetailController {
 	 * @param request
 	 */
 	@RequestMapping("/exportByDelivery")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportByDelivery(Model model, HttpServletResponse response, @RequestParam("summaryid") long summaryid,
 			@RequestParam(value = "flowOrderType", required = false, defaultValue = "") long flowOrderType, HttpServletRequest request) {
 		String[] cloumnName1 = new String[9]; // 导出的列名
@@ -736,6 +742,7 @@ public class AccountCwbDetailController {
 	 * @param model
 	 */
 	@RequestMapping("/exportByDeliverySummary")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportByDeliverySummary(Model model, HttpServletResponse response, @RequestParam(value = "branchidExcel", required = false, defaultValue = "0") long branchid,
 			@RequestParam(value = "checkoutstateExcel", required = false, defaultValue = "0") long checkoutstate,
 			@RequestParam(value = "starttimeExcel", required = false, defaultValue = "") String starttime, @RequestParam(value = "endtimeExcel", required = false, defaultValue = "") String endtime,

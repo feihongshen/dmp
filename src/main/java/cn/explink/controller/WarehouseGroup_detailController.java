@@ -351,7 +351,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("mytruckid", truckid);
 		model.addAttribute("flowtype", request.getParameter("type") == null ? -1 : request.getParameter("type"));
 		String cwbs = "", cwbstr = "", cwbhuizongstr = "";
-		long baleid=0;
+		long baleid=-1;
 		String[] cwbArr = new String[isprint.length];
 		for (int i = 0; i < isprint.length; i++) {
 			if (isprint[i].trim().length() == 0) {
@@ -380,13 +380,16 @@ public class WarehouseGroup_detailController {
 		 */
 		if( !StringUtils.isEmpty(baleno) ){
 			Bale bale=this.baleDAO.getBaleOnway(baleno);
+			if(bale==null){
+				this.logger.info("the bale is not found for baleno="+baleno);	
+			}
 			if(bale!=null){
 				baleid=bale.getId();
 				Map<String, List<CwbOrder>> cwbOrderListMap = this.handleQueryForBale(bale.getId(),nextbranchid,flowordertype);
 				cwbList = cwbOrderListMap.get("cwbList");
 				cwbListForBaleView = cwbOrderListMap.get("cwbListForBaleView");
 			}
-			long baleCount = bale==null?0:bale.getScannum();
+			long baleCount = (bale==null)?0:bale.getScannum();
 			model.addAttribute("baleCount", baleCount);
 			
 //			cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype);
@@ -448,28 +451,44 @@ public class WarehouseGroup_detailController {
 		 */
 
 		if( !StringUtils.isEmpty(baleno) ){
-			for (CwbOrder cwb : cwbListForBaleView) {
-				mapForCustomer.put(cwb.getCustomerid(), cwb);
-				for (Branch b : branchList) {
-					if (cwb.getNextbranchid() == b.getBranchid()) {
-						if (!map.containsKey(cwb.getNextbranchid())) {
-							List<CwbOrder> orders = new ArrayList<CwbOrder>();
-							map.put(cwb.getNextbranchid(), orders);
-							logger.info("出库打印站点名称： " + b.getBranchname() + " 站点id： " + b.getBranchid());
+			if(cwbListForBaleView==null||cwbListForBaleView.isEmpty()||cwbListForBaleView.size()<1){
+				this.logger.info("cwbListForBaleView is empty");
+			}else{
+				for (CwbOrder cwb : cwbListForBaleView) {
+					if(cwb==null){
+						this.logger.info("cwb1 is empty");
+						continue;
+					}
+					mapForCustomer.put(cwb.getCustomerid(), cwb);
+					for (Branch b : branchList) {
+						if (cwb.getNextbranchid() == b.getBranchid()) {
+							if (!map.containsKey(cwb.getNextbranchid())) {
+								List<CwbOrder> orders = new ArrayList<CwbOrder>();
+								map.put(cwb.getNextbranchid(), orders);
+								logger.info("出库打印站点名称： " + b.getBranchname() + " 站点id： " + b.getBranchid());
+							}
+							map.get(cwb.getNextbranchid()).add(cwb);
+							
+							break;
 						}
-						map.get(cwb.getNextbranchid()).add(cwb);
-						
-						break;
 					}
 				}
 			}
-			for (CwbOrder cwb : cwbList) {
-				mapForCustomer.put(cwb.getCustomerid(), cwb);
-				if (!mapForBaleHandler.containsKey(cwb.getNextbranchid())) {
-					List<CwbOrder> orders = new ArrayList<CwbOrder>();
-					mapForBaleHandler.put(cwb.getNextbranchid(), orders);
+			if(cwbList==null||cwbList.isEmpty()||cwbList.size()<1){
+				this.logger.info("cwbList is empty");
+			}else{
+				for (CwbOrder cwb : cwbList) {
+					if(cwb==null){
+						this.logger.info("cwb2 is empty");
+						continue;
+					}
+					mapForCustomer.put(cwb.getCustomerid(), cwb);
+					if (!mapForBaleHandler.containsKey(cwb.getNextbranchid())) {
+						List<CwbOrder> orders = new ArrayList<CwbOrder>();
+						mapForBaleHandler.put(cwb.getNextbranchid(), orders);
+					}
+					mapForBaleHandler.get(cwb.getNextbranchid()).add(cwb);
 				}
-				mapForBaleHandler.get(cwb.getNextbranchid()).add(cwb);
 			}
 		}else{
 			for (CwbOrder cwb : cwbList) {
@@ -596,7 +615,9 @@ public class WarehouseGroup_detailController {
 				 */
 
 				List<GroupDetail> groupDetails = new ArrayList<GroupDetail>();
-				groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale==null?0:bale.getId());
+				if(bale!=null){
+					groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale.getId());
+				}
 				GroupDetail groupDetail = new GroupDetail();
 				for (GroupDetail gDetail : groupDetails) {
 					groupDetail = gDetail;
@@ -957,7 +978,9 @@ public class WarehouseGroup_detailController {
 				// 包号不为空 查询groupDetail表将truckid查询出来
 
 				List<GroupDetail> groupDetails = new ArrayList<GroupDetail>();
-				groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale==null?0:bale.getId());
+				if(bale!=null){
+					groupDetails = this.groupDetailDao.getGroupDetailListByBale(bale.getId());
+				}
 				if (groupDetails.size() > 0) {
 					model.addAttribute("truckid", groupDetails.get(0).getTruckid());
 				}
@@ -2268,12 +2291,12 @@ public class WarehouseGroup_detailController {
 		String baleids = "";
 
 		for (int i = 0; i < isprint.length; i++) {
-			if (isprint[i].trim().length() == 0) {
+			if (isprint[i]==null||isprint[i].trim().length() == 0||isprint[i].trim().equals("0")) {
 				continue;
 			}
 			baleids +=  isprint[i] + ",";
 		}
-		baleids = baleids.length()>0?baleids.substring(0, baleids.length()-1):"0";
+		baleids = baleids.length()>0?baleids.substring(0, baleids.length()-1):"-1";
 
 		List<Long> nextbranchids = this.groupDetailDao.getBranchIdsGroupBYbranchid(baleids);
 
@@ -2377,10 +2400,14 @@ public class WarehouseGroup_detailController {
 		String[] baleidsStr =baleids.split(",");
 		try {
 			for (int i = 0; i < baleidsStr.length; i++) {
-				if (baleidsStr[i].trim().length() == 0) {
+				if (baleidsStr[i]==null||baleidsStr[i].trim().length() == 0||baleidsStr[i].trim().equals("0")) {
 					continue;
 				}
-				this.groupDetailDao.updateGroupDetailListByBale(Long.parseLong(baleidsStr[i]));
+				long baleid=Long.parseLong(baleidsStr[i]);
+				if(baleid<1){
+					continue;
+				}
+				this.groupDetailDao.updateGroupDetailListByBale(baleid);
 			}
 			return "{\"errorCode\":0,\"error\":\"成功\"}";
 		} catch (CwbException e) {

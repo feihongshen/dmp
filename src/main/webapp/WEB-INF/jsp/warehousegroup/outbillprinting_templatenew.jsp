@@ -43,7 +43,7 @@
 	String type=(String)request.getAttribute("flowtype");
 	Long flowtype=Long.parseLong(type);
 	String baleno = (String)request.getAttribute("baleno") == null ? "" : (String)request.getAttribute("baleno");
-	long baleid = (Long)request.getAttribute("baleid") == null ? 0 : (Long)request.getAttribute("baleid");
+	long baleid = (Long)request.getAttribute("baleid") == null ? -1 : (Long)request.getAttribute("baleid");
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"

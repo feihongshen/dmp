@@ -20,6 +20,9 @@ import org.springframework.stereotype.Repository;
 import cn.explink.domain.OrderLifeCycleReportVO;
 import cn.explink.enumutil.CwbOrderLifeCycleTypeIdEnum;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 /**
  * 
  * OrderLifeCycleReportDao
@@ -35,6 +38,7 @@ public class OrderLifeCycleReportDao {
 	
 	private Logger logger = LoggerFactory.getLogger(OrderLifeCycleReportDao.class);
 	
+	@DataSource(DatabaseType.REPLICA)
 	public long getReportIdByCustomerAndTypeid(long customerid, int typeid) {
 		
 		List<Long> list = this.jdbcTemplate.query("select id from fn_rpt_order_lifecycle where customerid = ? and typeid = ? and state = 1 order by reportdate desc",new OrderLifeCycleReportIdRowMapper(),customerid, typeid);
@@ -46,6 +50,7 @@ public class OrderLifeCycleReportDao {
 		return reportid;
 	}
 	
+	@DataSource(DatabaseType.REPLICA)
 	public long getReportIdByCustomerAndTypeidAndReportdate(long customerid, int typeid, int reportdate) {
 		
 		List<Long> list = this.jdbcTemplate.query("select id from fn_rpt_order_lifecycle where customerid = ? and typeid = ? and reportdate = ? and state = 1",new OrderLifeCycleReportIdRowMapper(),customerid, typeid, reportdate);
@@ -65,6 +70,7 @@ public class OrderLifeCycleReportDao {
 	 *
 	 * @author jinghui.pan@pjbest.com
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<OrderLifeCycleReportVO> getListByCustomers(String selectedCustomers, int reportdate) {
 		
 		

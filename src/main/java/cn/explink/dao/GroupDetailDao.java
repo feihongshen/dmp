@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.GroupDetail;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.util.Page;
@@ -135,6 +138,9 @@ public class GroupDetailDao {
 	 * @return
 	 */
 	public List<GroupDetail> getCwbListByBaleId(long baleId, long page) {
+		if(baleId<1){
+			return null;
+		}
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		sql += "limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
@@ -147,6 +153,9 @@ public class GroupDetailDao {
 	 * @return
 	 */
 	public List<GroupDetail> getCwbListByBaleIdExport(long baleId) {
+		if(baleId<1){
+			return null;
+		}
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
 	}
@@ -155,15 +164,20 @@ public class GroupDetailDao {
 	 * @param baleno
 	 * @return
 	 */
-	
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbListByBalenoExport(long baleId) {
+		if(baleId<1){
+			return null;
+		}
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
 	}
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbListByBalenoExportByTruckid(long truckid) {
 		String sql = "select * from express_ops_groupdetail where truckid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), truckid);
 	}
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbListByBalenoExportBydriverid(long driverid) {
 		String sql = "select * from express_ops_groupdetail where driverid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), driverid);
@@ -225,6 +239,7 @@ public class GroupDetailDao {
 		jdbcTemplate.update(sql, flowordertype, branchid, nextbranchid, deliverid, customerid, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTime(long startbranchid, long nextbranchid, int flowordertype, String strtime, String endtime) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid=? AND flowordertype=? AND issignprint=0 ";
 		if (strtime.length() > 0) {
@@ -237,11 +252,13 @@ public class GroupDetailDao {
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, nextbranchid, flowordertype);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForTuiGongYingShangPrint(long customerid, long flowordertype) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE customerid=? AND flowordertype=? AND issignprint=0";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), customerid, flowordertype);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForLingHuoPrint(long deliverid, long flowordertype, String begintime, String endtime) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE deliverid=? AND flowordertype=? AND issignprint=0 and createtime>=? and createtime<=?";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), deliverid, flowordertype, begintime, endtime);
@@ -257,6 +274,7 @@ public class GroupDetailDao {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTimeNew(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 ";
 		if (strtime.length() > 0) {
@@ -289,6 +307,7 @@ public class GroupDetailDao {
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTimeNew2(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long driverid,long truckid) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND driverid="+driverid+" AND truckid="+truckid;
 		if (strtime.length() > 0) {
@@ -305,6 +324,7 @@ public class GroupDetailDao {
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
 	
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTimeNewByDriverid(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long driverid) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND driverid="+driverid;
 		if (strtime.length() > 0) {
@@ -321,6 +341,7 @@ public class GroupDetailDao {
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
 	
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTimeNewByTruckid(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long truckid) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND truckid="+truckid;
 		if (strtime.length() > 0) {
@@ -345,10 +366,20 @@ public class GroupDetailDao {
 		jdbcTemplate.update(sql, baleid, cwb, branchid,baleno);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
+	public List<GroupDetail> getGroupDetailListByBale(String baleno) {
+		String sql = "SELECT * FROM express_ops_groupdetail WHERE baleno=?";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleno);
+	}
+	
 	public List<GroupDetail> getGroupDetailListByBale(long baleid) {
+		if(baleid<1){
+			return null;
+		}
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE baleid=?";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleid);
 	}
+	
 	public List<Long> getBranchIdsGroupBYbranchid(String baleids) {
 		String sql = "SELECT nextbranchid FROM express_ops_groupdetail WHERE baleid in("+baleids+") group by nextbranchid";
 		return jdbcTemplate.queryForList(sql, Long.class);
