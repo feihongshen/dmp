@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.explink.dao.express.CityDAO;
+import cn.explink.dao.express.CountyDAO;
+import cn.explink.dao.express.ProvinceDAO;
+import cn.explink.domain.VO.express.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +20,6 @@ import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.PreOrderDao;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
-import cn.explink.domain.VO.express.ExtralInfo4Address;
-import cn.explink.domain.VO.express.PreOrderQueryDateVO;
-import cn.explink.domain.VO.express.PreOrderQueryVO;
-import cn.explink.domain.VO.express.UseridAndBranchnameVO;
 import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.domain.express.ExpressPreOrderVOForDeal;
 import cn.explink.enumutil.BranchEnum;
@@ -55,7 +55,16 @@ public class PreOrderService extends ExpressCommonService {
 	@Autowired
 	AddressMatchExpressService addressMatchExpressService;
 
-	/**
+    @Autowired
+    CountyDAO countyDAO;
+
+    @Autowired
+    CityDAO cityDAO;
+
+    @Autowired
+    ProvinceDAO provinceDAO;
+
+    /**
 	 *
 	 * @Title: getPreOrderInfo
 	 * @description 预订单查询中请求数据库数据的方法
@@ -436,4 +445,27 @@ public class PreOrderService extends ExpressCommonService {
 		this.preOrderDao.insertPreOrderRecord(preOrderDto, detailAddresStr, branch);
 	}
 
+    public List<AdressVO> getRegionsByCity(Integer cityId) {
+        return this.countyDAO.getCountyOfCity(cityId);
+    }
+
+    public List<AdressVO> getCities() {
+
+        List<AdressVO> provincelist = this.provinceDAO.getProvince();
+        Long provinceId = this.getProvinceId();
+        if (provinceId == 0) {
+            return this.cityDAO.getCityOfProvince(provincelist.size() > 0 ? provincelist.get(0).getCode() : null);
+        } else {
+            return this.cityDAO.getCityOfProvince(provinceId.intValue());
+        }
+    }
+
+    public List<Branch> getBranches() {
+        //数据库以省为单位，所以查找的是省的站点
+       return branchDAO.getBranchBySiteType(BranchEnum.ZhanDian.getValue());
+    }
+
+    public List<User>  getKDYByBranch(int branchId) {
+        return userDao.getUserByRoleAndBranchid(2, branchId);
+    }
 }
