@@ -45,6 +45,9 @@ long paisonguserid=request.getParameter("paisonguserid")==null?0:Long.parseLong(
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 	   //获取下拉框的值
@@ -100,8 +103,16 @@ $(function() {
 	    timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	});
-	$("#lanshoubranchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
-	$("#paisongbranchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
+//	$("#lanshoubranchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
+//	$("#paisongbranchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
+    $("#lanshoubranchid").multipleSelect({
+        placeholder: "请选择",
+        filter: true
+    });
+    $("#paisongbranchid").multipleSelect({
+        placeholder: "请选择",
+        filter: true
+    });
 });
 // function searchFrom(){
 // 	$('#searchForm').attr('action',1);return true;
@@ -192,8 +203,8 @@ function changeBranchDeliver(branchname,delivername,deliverid){
 		          <%} %>
 		        </select>
 		        </label>
-		        [<a href="javascript:multiSelectAll('lanshoubranchid',1,'请选择');">全选</a>]
-				[<a href="javascript:multiSelectAll('lanshoubranchid',0,'请选择');">取消全选</a>]
+		        <%--[<a href="javascript:multiSelectAll('lanshoubranchid',1,'请选择');">全选</a>]--%>
+				<%--[<a href="javascript:multiSelectAll('lanshoubranchid',0,'请选择');">取消全选</a>]--%>
 			揽收人:
 			<select name="lanshouuserid" id ="lanshouuserid" onclick="changeBranchDeliver('lanshoubranchid','lanshouuserid',<%=lanshouuserid%>);">
 		          <option value ="-1">请选择</option>
@@ -224,8 +235,8 @@ function changeBranchDeliver(branchname,delivername,deliverid){
 		          <%}%>
 			 </select>
 			 </label>
-			[<a href="javascript:multiSelectAll('paisongbranchid',1,'请选择');">全选</a>]
-			[<a href="javascript:multiSelectAll('paisongbranchid',0,'请选择');">取消全选</a>]
+			<%--[<a href="javascript:multiSelectAll('paisongbranchid',1,'请选择');">全选</a>]--%>
+			<%--[<a href="javascript:multiSelectAll('paisongbranchid',0,'请选择');">取消全选</a>]--%>
 			 派件人:
 			<select name ="paisonguserid" id ="paisonguserid" onclick="changeBranchDeliver('paisongbranchid','paisonguserid',<%=paisonguserid %>);">
 		          <option value ="-1">请选择</option>

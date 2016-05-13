@@ -28,6 +28,10 @@ long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 var data;
 var startIndex=0;
@@ -128,7 +132,12 @@ $(function(){
 		var index = $menuli2.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
-	
+	$("#customerid").multipleSelect({
+	     placeholder: "全部供应商",
+	     filter: true,
+	     single: true
+	 });
+		
 })
 	
 	function focusCwb(){
@@ -682,7 +691,7 @@ $(function(){
 		</div>
 
 		<div class="saomiao_info2">
-			<div class="saomiao_inbox2">
+			<div class="saomiao_inbox2"  style="z-index: 999">
 				<div class="saomiao_tab">
 					<ul id="bigTag">
 						<li><a href="#" id="scancwbTag"
@@ -700,7 +709,7 @@ $(function(){
 				</div>
 				<div class="saomiao_selet2">
 					客户：
-					 <select id="customerid" name="customerid" onchange="tohome();" class="select1">
+					 <select id="customerid" name="customerid" onchange="tohome();">
 						<option value="-1" selected>全部供应商</option>
 						<%
 							for (Customer c : cList) {

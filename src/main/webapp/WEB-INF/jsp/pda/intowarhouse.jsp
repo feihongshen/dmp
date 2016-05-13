@@ -39,6 +39,10 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintNew.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintFor3025.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 
 var App = {ctx:"${pageContext.request.contextPath}"};
@@ -53,6 +57,11 @@ $(function(){
 		$("#div0011").toggle();
 		
 	});
+    $("#customerid").multipleSelect({
+        placeholder: "全部供应商",
+        filter: true,
+        single: true
+    });
 	
 });
 function closeDialog(){
@@ -876,7 +885,7 @@ function openLogin(){
 				</div>
 			<div class="saomiao_selet2">
 				客户：
-				<select id="customerid" name="customerid" onchange="tohome();" class="select1">
+				<select id="customerid" name="customerid" onchange="tohome();" >
 					<option value="-1" selected>全部供应商</option>
 					<%for(Customer c : cList){ %>
 						<option value="<%=c.getCustomerid() %>" <%if(customerid==c.getCustomerid()){ %> selected=selected <%} %> ><%=c.getCustomername() %></option>

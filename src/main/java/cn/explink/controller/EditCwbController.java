@@ -492,7 +492,7 @@ public class EditCwbController {
 								zfav.setApplystate(1);
 								zfav.setApplyresult(0);
 								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
+								zfav.setFeewaytyperemark(JacksonMapper.getInstance().writeValueAsString(fre));
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
@@ -580,7 +580,7 @@ public class EditCwbController {
 								zfav.setApplystate(1);//快递应该填这个吗？实体里面没有注释
 								zfav.setApplyresult(0);//快递应该填这个吗？实体里面没有注释
 								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
+								zfav.setFeewaytyperemark(JacksonMapper.getInstance().writeValueAsString(fre));
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
@@ -646,7 +646,7 @@ public class EditCwbController {
 								zfav.setApplystate(1);
 								zfav.setApplyresult(0);
 								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
+								zfav.setFeewaytyperemark(JacksonMapper.getInstance().writeValueAsString(ftr));
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
@@ -706,7 +706,7 @@ public class EditCwbController {
 								zfav.setApplystate(1);
 								zfav.setApplyresult(0);
 								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
+								zfav.setFeewaytyperemark(JacksonMapper.getInstance().writeValueAsString(ftr));
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);

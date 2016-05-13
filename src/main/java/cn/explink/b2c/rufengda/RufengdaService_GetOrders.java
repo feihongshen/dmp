@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.WebServiceHandler;
 import cn.explink.util.MD5.DES3Utils;
@@ -39,7 +40,7 @@ public class RufengdaService_GetOrders extends RufengdaService {
 		return dataMap.get(params) != null ? dataMap.get(params).toString() : "0";
 	}
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	/**
 	 * 解析order_list

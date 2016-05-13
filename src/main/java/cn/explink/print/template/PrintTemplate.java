@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.explink.enumutil.PrintTemplateOpertatetypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 
 public class PrintTemplate {
 	
@@ -22,7 +23,7 @@ public class PrintTemplate {
 	long opertatetype;
 	List<PrintColumn> columns;
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	public long getId() {
 		return id;

@@ -108,7 +108,7 @@ public class LefengService {
 		jiontDAO.UpdateState(joint_num, state);
 	}
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	/**
 	 * 乐蜂网请求接口

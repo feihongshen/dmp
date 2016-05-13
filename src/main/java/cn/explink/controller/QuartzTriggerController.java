@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import cn.explink.pos.tools.JacksonMapper;
+
 @Controller
 @RequestMapping(value = "/quartz")
 public class QuartzTriggerController{
@@ -519,7 +521,7 @@ class DataGridReturn {
  
   class Tools {
 	  private static Logger logger = LoggerFactory.getLogger(Tools.class);
-	  static ObjectMapper mapper = new ObjectMapper();
+	  static ObjectMapper mapper = JacksonMapper.getInstance();
 		public static String obj2json(Object obj) {
 			try {
 				if (obj == null) {

@@ -42,11 +42,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tps.TpsCwbFlowService;
+import cn.explink.controller.ExplinkResponse;
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BaleCwbDao;
 import cn.explink.dao.BaleDao;
@@ -86,6 +88,7 @@ import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.YpdjHandleRecordDAO;
 import cn.explink.domain.Bale;
+import cn.explink.domain.BaleCwb;
 import cn.explink.domain.Branch;
 import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
@@ -132,9 +135,7 @@ import cn.explink.enumutil.switchs.SwitchEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
-import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
-import cn.explink.service.CwbOrderTypeService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
@@ -291,14 +292,8 @@ public class PDAController {
 	
 	@Autowired
 	private TpsCwbFlowService tpsCwbFlowService;
-	
-	@Autowired
-	private BaleService baleService;
-	
-	@Autowired
-	private CwbOrderTypeService cwbOrderTypeService;
 
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -781,7 +776,6 @@ public class PDAController {
 			obj.put("cwb", cwb);
 			try {// 成功订单
 				CwbOrder cwbOrder = this.cwbOrderService.substationGoods(this.getSessionUser(), cwb, scancwb, -1, 0, "", "", false);
-				this.baleService.disableBale(scancwb);
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				SuccessCount++;
@@ -2914,23 +2908,20 @@ public class PDAController {
 		// 订单不存在，则可能是包号，按照包号进行查询
 		if (null == co) {
 			// 这里cwb是包号
-			Bale isbale=this.baleDAO.getBaleOnway(scancwb);
-			List<String> cwbList = null;
-			if(isbale==null){
-				msg = "无此包号:" + scancwb;
-			}else{
-				cwbList = this.baleCwbDao.getCwbsByBale(""+isbale.getId());
-			}
-			if (isbale!=null&&(cwbList != null) && !cwbList.isEmpty()) {
+			List<String> cwbList = this.baleCwbDao.getCwbsByBaleNO(cwb);
+			if ((cwbList != null) && !cwbList.isEmpty()) {
 				isPackage = true;
+				List<Bale> baleList = this.baleDAO.getBaleByBaleno(cwb);
 				String validateSecondLevelMsg = this.validateSecondLevelStationPackage(cwbList);
-				if (isbale.getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
-					msg = scancwb + "已被拆包";
+				if ((baleList == null) || baleList.isEmpty()) {
+					msg = "无此包号:" + cwb;
+				} else if (baleList.get(0).getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
+					msg = cwb + "已被拆包";
 				} else if (!StringUtil.isEmpty(validateSecondLevelMsg)) {
 					msg = validateSecondLevelMsg;
 				} else {
 					// 更新包的下一站为0，当前站位操作人的站点
-					this.baleDAO.updateBranchIdAndNextBranchId(isbale.getId(), 0, this.getSessionUser().getBranchid());
+					this.baleDAO.updateBranchIdAndNextBranchId(cwb, 0, this.getSessionUser().getBranchid());
 
 					StringBuilder cwbs = new StringBuilder();
 					for (String cwbStr : cwbList) {
@@ -2957,8 +2948,8 @@ public class PDAController {
 					}
 					if (!intohouseFailed && (cwbs.length() > 0)) {
 						// 分拣库入库自动拆包 added by songkaojun 2015-11-09
-						this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.BuKeYong.getValue());
-						msg = scancwb + " 成功扫描" + batchCount.getThissuccess() + "单";
+						this.baleDAO.updateBalesate(cwb, BaleStateEnum.BuKeYong.getValue());
+						msg = cwb + " 成功扫描" + batchCount.getThissuccess() + "单";
 						// 移除下一站显示信息 songkaojun 2015-11-06
 						// msg += "<br>下一站：" + nextBranch.getBranchname();
 					}
@@ -3186,8 +3177,6 @@ public class PDAController {
 		if ((cwbOrder == null) || (cwbOrder.getCwb() == null) || (cwbOrder.getCwbordertypeid() != CwbOrderTypeIdEnum.Express.getValue())) {
 			return;
 		}
-		this.baleService.disableBale(cwbOrder.getCwb());
-		/*
 		List<BaleCwb> baleCwbList = this.baleCwbDao.getBaleCwbByCwb(cwbOrder.getCwb());
 		if ((baleCwbList == null) || baleCwbList.isEmpty()) {
 			return;
@@ -3204,7 +3193,6 @@ public class PDAController {
 				this.baleDAO.updateBalesate(bale.getBaleno(), BaleStateEnum.BuKeYong.getValue());
 			}
 		}
-		*/
 	}
 
 	private boolean addNoOrderWav(HttpServletRequest request, CwbException e, ExplinkResponse explinkResponse) {
@@ -3437,7 +3425,7 @@ public class PDAController {
 		try {
 
 			cwbOrder = this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, requestbatchno, comment, "", false, 0, 0);
-			this.baleService.disableBale(scancwb);
+
 			JSONObject obj = new JSONObject();
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 			obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
@@ -3699,24 +3687,24 @@ public class PDAController {
 			@RequestParam(value = "comment", required = true, defaultValue = "") String comment) {
 		User user = this.getSessionUser();
 		String scancwb = cwb;
-		Bale isbale = this.baleDAO.getBaleOnway(cwb);
+		List<Bale> baleList = this.baleDAO.getBaleByBaleno(cwb);
 		ExplinkResponse resp = null;
 		JSONArray promt = null;
 		String msg = null;
 		// this.baleDAO.updateBalesate(cwb, BaleStateEnum.BuKeYong.getValue());
 		boolean isPackage = false;
-		if ((isbale == null)) {
-			msg = "无此包号:" + cwb;
-		}
-		if ((isbale != null)) {
-			if (user.getBranchid() == isbale.getBranchid()) {
+		if ((baleList != null) && (baleList.size() > 0)) {
+			if (user.getBranchid() == baleList.get(0).getBranchid()) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.ZHANDIANHEBAOBUYUNXUBENZHANDAOHUO);
 			}
+			this.baleDAO.updateBalesate(cwb, BaleStateEnum.BuKeYong.getValue());
 			// 这里cwb是包号
-			List<String> cwbList = this.baleCwbDao.getCwbsByBale(""+isbale.getId());
+			List<String> cwbList = this.baleCwbDao.getCwbsByBaleNO(cwb);
 			if ((cwbList != null) && !cwbList.isEmpty()) {
 				isPackage = true;
-				 if (isbale.getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
+				if ((baleList == null) || baleList.isEmpty()) {
+					msg = "无此包号:" + cwb;
+				} else if (baleList.get(0).getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
 					msg = cwb + "已被拆包";
 				} else {
 					StringBuilder cwbs = new StringBuilder();
@@ -3741,9 +3729,6 @@ public class PDAController {
 					}
 				}
 			}
-			//if(openbale!=null&&openbale.equals("1")){
-			this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
-			//}
 		}
 		if (!isPackage) {
 			cwb = this.cwbOrderService.translateCwb(cwb);
@@ -3870,12 +3855,10 @@ public class PDAController {
 			} else {
 				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
 			}
-			//不论成功失败都要令包设为不可用
-			//if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
-				//如果扫描的是封在某个包里面的快递单，则将该包设为不可用
-				//this.setExpressPackageUnable(cwbOrder);
-			//}
-			this.baleService.disableBale(scancwb);
+			if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+				// 如果扫描的是封在某个包里面的快递单，则将该包设为不可用
+				this.setExpressPackageUnable(cwbOrder);
+			}
 
 			explinkResponse.addLongWav(wavPath);
 			if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
@@ -3978,7 +3961,7 @@ public class PDAController {
 		 * List<CwbOrder> coList = cwbDAO.getCwbByPackageCode(packageCode);
 		 * String cwbs = "";
 		 */
-		Bale isbale = this.baleDAO.getBaleOnway(packageCode);
+		Bale isbale = this.baleDAO.getBaleByBaleno(packageCode, BaleStateEnum.KeYong.getValue());
 
 		JSONObject obj = new JSONObject();
 		obj.put("packageCode", packageCode);
@@ -3989,7 +3972,7 @@ public class PDAController {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
 			return explinkResponse;
 		} else {
-			this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
+			this.baleDAO.saveForBalestate(packageCode, BaleStateEnum.YiDaoHuo.getValue(), BaleStateEnum.KeYong.getValue());
 			ExplinkResponse explinkResponse = new ExplinkResponse("000000", CwbFlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getText(), obj);
 			explinkResponse.setErrorinfo("\n按包到货成功，已到货");
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -4062,23 +4045,20 @@ public class PDAController {
 		// 订单不存在，则可能是包号，按照包号进行查询
 		if (null == co) {
 			// 这里cwb是包号
-			Bale isbale = this.baleDAO.getBaleOnway(cwb);
-			List<String> cwbList = null;
-			if(isbale==null){
-				msg = "（异常扫描）无此包号:" + cwb;
-			}else{
-				cwbList = this.baleCwbDao.getCwbsByBale(""+isbale.getId());
-			}		
+			List<String> cwbList = this.baleCwbDao.getCwbsByBaleNO(cwb);
 			if ((cwbList != null) && !cwbList.isEmpty()) {
 				isPackage = true;
 				if (branchid == 0) {
 					msg = "（异常扫描）请先选择下一站";
 				} else {
-					if (isbale.getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
+					List<Bale> baleList = this.baleDAO.getBaleByBaleno(cwb);
+					if ((baleList == null) || baleList.isEmpty()) {
+						msg = "（异常扫描）无此包号:" + cwb;
+					} else if (baleList.get(0).getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
 						msg = "（异常扫描）" + cwb + "已被拆包";
 					} else {
 						// 更新包的下一站为用户选择的下一站，当前站为0
-						this.baleDAO.updateBranchIdAndNextBranchId(isbale.getId(), branchid, 0);
+						this.baleDAO.updateBranchIdAndNextBranchId(cwb, branchid, 0);
 
 						StringBuilder cwbs = new StringBuilder();
 						for (String cwbStr : cwbList) {
@@ -4278,11 +4258,7 @@ public class PDAController {
 				explinkResponse.setErrorinfo(ExceptionCwbErrorTypeEnum.ExpressLuruNotAllowZHONGZHUANCHUZHAN.getText());
 				return explinkResponse;
 			}
-			
-			//add by neo01.huang,2016-5-4
-			//校验上门退成功订单
-			cwbOrderTypeService.validateShangMenTuiSuccess(cwbOrdercheck, FlowOrderTypeEnum.ZhongZhuanZhanChuKu);
-			
+
 		}
 		CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid,
 				requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, true, false);
@@ -4385,6 +4361,7 @@ public class PDAController {
 		JSONObject obj = new JSONObject();
 
 		String scancwb = cwb;
+		List<Bale> baleList = this.baleDAO.getBaleByBaleno(cwb);
 		ExplinkResponse resp = null;
 		JSONArray promt = null;
 		String msg = null;
@@ -4392,24 +4369,15 @@ public class PDAController {
 		// 如果扫描的是封在某个包里面的快递单，则将该包设为不可用
 		// CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		// this.baleDAO.updateBalesate(cwb, BaleStateEnum.BuKeYong.getValue());
-		
-		//add by neo01.huang,2016-5-4
-		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-		//校验上门退成功订单
-		cwbOrderTypeService.validateShangMenTuiSuccess(co, FlowOrderTypeEnum.ChuKuSaoMiao);
-		
-		Bale isbale = this.baleDAO.getBaleOnway(cwb);
-		List<String> cwbList = null;
-		if(isbale==null){
-			msg = "（异常扫描）无此包号:" + cwb;
-		}else{
-			cwbList = this.baleCwbDao.getCwbsByBale(""+isbale.getId());
-		}	
-		if (isbale!=null) {
+		if ((baleList != null) && (baleList.size() > 0)) {
 			// 这里cwb是包号
+			List<String> cwbList = this.baleCwbDao.getCwbsByBaleNO(cwb);
+
 			if ((cwbList != null) && !cwbList.isEmpty()) {
 				isPackage = true;
-				if (isbale.getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
+				if ((baleList == null) || baleList.isEmpty()) {
+					msg = "无此包号:" + cwb;
+				} else if (baleList.get(0).getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
 					msg = cwb + "已被拆包";
 				} else {
 
@@ -5376,7 +5344,6 @@ public class PDAController {
 			}
 			cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 0, 0);
 		}
-		this.baleService.disableBale(scancwb);
 		JSONObject obj = new JSONObject();
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 		if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
@@ -5469,7 +5436,6 @@ public class PDAController {
 					}
 				}
 				thissuccess++;
-				this.baleService.disableBale(scancwb);
 			} catch (CwbException ce) {// 出现验证错误
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
@@ -5909,28 +5875,28 @@ public class PDAController {
 			@RequestParam(value = "sysintowarhouse", required = true, defaultValue = "0") long sysintowarhouse) {
 		JSONObject obj = new JSONObject();
 
-		//List<Bale> balesinglelist = this.baleDAO.getBaleByBalestate(baleno, BaleStateEnum.WeiDaoZhan.getValue());
+		List<Bale> balesinglelist = this.baleDAO.getBaleByBalestate(baleno, BaleStateEnum.WeiDaoZhan.getValue());
 
-		Bale isbale = this.baleDAO.getBaleOnway(baleno);
+		List<Bale> isbaleList = this.baleDAO.getBaleByBaleno(baleno);
 
 		List<GroupDetail> gdcwblist = null;
 		String cwbs = "";
-		if (isbale==null) {// 该包不存在
+		if (isbaleList.size() == 0) {// 该包不存在
 			obj.put("errorinfo", "1");
-			//} else if (balesinglelist.size() == 0) {// 未到站状态的该包不存在
-			//obj.put("errorinfo", "1");
-		} else {
-			if (isbale.getBranchid() == this.getSessionUser().getBranchid()) {
-				this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiRuKu.getValue());
+		} else if (balesinglelist.size() == 0) {// 未到站状态的该包不存在
+			obj.put("errorinfo", "1");
+		} else if (balesinglelist.size() != 0) {
+			if (balesinglelist.get(0).getBranchid() == this.getSessionUser().getBranchid()) {
+				this.baleDAO.saveForState(baleno, this.getSessionUser().getBranchid(), BaleStateEnum.YiRuKu.getValue());
 
-				gdcwblist = this.groupDetailDAO.getBroupDetailForBale(isbale.getId(), driverid, BaleStateEnum.YiRuKu.getValue(), this.getSessionUser().getBranchid());
+				gdcwblist = this.groupDetailDAO.getBroupDetailForBale(baleno, driverid, BaleStateEnum.YiRuKu.getValue(), this.getSessionUser().getBranchid());
 
 			} else {// 非本站包
-				this.baleDAO.saveForBranchidAndState(isbale.getId(), this.getSessionUser().getBranchid(), BaleStateEnum.FeiBenZhanBao.getValue());
-				gdcwblist = this.groupDetailDAO.getBroupDetailForBale(isbale.getId(), driverid, BaleStateEnum.FeiBenZhanBao.getValue(), this.getSessionUser().getBranchid());
+				this.baleDAO.saveForBranchidAndState(baleno, this.getSessionUser().getBranchid(), BaleStateEnum.FeiBenZhanBao.getValue());
+				gdcwblist = this.groupDetailDAO.getBroupDetailForBale(baleno, driverid, BaleStateEnum.FeiBenZhanBao.getValue(), this.getSessionUser().getBranchid());
 
 			}
-			if (this.groupDetailDAO.getBroupDetailForBale(isbale.getId(), driverid, BaleStateEnum.WeiDaoZhan.getValue(), this.getSessionUser().getBranchid()).size() > 0) {
+			if (this.groupDetailDAO.getBroupDetailForBale(baleno, driverid, BaleStateEnum.WeiDaoZhan.getValue(), this.getSessionUser().getBranchid()).size() > 0) {
 				long groupid = gdcwblist.get(0).getGroupid();
 				this.baleDAO.saveForBranchidAndGroupid(this.getSessionUser().getBranchid(), BaleStateEnum.YiDaoHuo.getValue(), groupid);
 			}

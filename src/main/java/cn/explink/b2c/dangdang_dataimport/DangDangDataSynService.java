@@ -547,7 +547,7 @@ public class DangDangDataSynService {
 		}
 		ddresp.setError_list(errlist);
 
-		return new ObjectMapper().writeValueAsString(ddresp);
+		return JacksonMapper.getInstance().writeValueAsString(ddresp);
 	}
 
 	public static void main(String[] args) {
