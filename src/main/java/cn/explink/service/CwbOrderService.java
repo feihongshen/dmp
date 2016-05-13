@@ -502,14 +502,14 @@ public class CwbOrderService extends BaseOrderService {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpstranscwb) "
+						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpstranscwb,credate) "
 						+ "values(?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ " ?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
-						+ "?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+						+ "?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 
@@ -588,6 +588,7 @@ public class CwbOrderService extends BaseOrderService {
 						ps.setInt(66, FlowOrderTypeEnum.DaoRuShuJu.getValue());
 						ps.setInt(67, cwbOrderDTO.getVipclub());
 						ps.setString(68, cwbOrderDTO.getTpsTranscwb());
+						ps.setTimestamp(69, Timestamp.valueOf(DateTimeUtil.getNowTime()));
 					}
 
 				});
@@ -857,8 +858,8 @@ public class CwbOrderService extends BaseOrderService {
 			}
 
 			// 订单不存在时插入一条新数据
-			String sql = "insert into express_ops_cwb_detail (cwb,startbranchid,customerid,flowordertype,cwbstate) values(?,?,?,?,?)";
-			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, CwbFlowOrderTypeEnum.WeiDaoHuo.getValue(), CwbStateEnum.WUShuju.getValue());
+			String sql = "insert into express_ops_cwb_detail (cwb,startbranchid,customerid,flowordertype,cwbstate,credate) values(?,?,?,?,?,?)";
+			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, CwbFlowOrderTypeEnum.WeiDaoHuo.getValue(), CwbStateEnum.WUShuju.getValue(),Timestamp.valueOf(DateTimeUtil.getNowTime()));
 			co = this.cwbDAO.getCwbByCwb(cwb);
 		} else {
 			// //选择了供货商，但是非本供货商
@@ -2312,9 +2313,16 @@ public class CwbOrderService extends BaseOrderService {
 
 		String sql = "update express_ops_cwb_detail set currentbranchid=?,flowordertype=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, currentbranchid, flowordertype, co.getCwb());
+		
+		if (co.getCwbstate() == CwbStateEnum.TuiGongYingShang.getValue()
+				&& co.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) {
+			this.cwbDAO.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+		}
+		
 		co.setCurrentbranchid(currentbranchid);
 		co.setNextbranchid(nextbranchid);
-		// added shenhongfei 退货站入库 2016-1-12
+		
+		// added shenhongfei 退货站入库 2016-1-12z
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoZhanRuKu, co.getStartbranchid(), currentbranchid, nextbranchid);
 		// ======按包出库时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
@@ -2743,8 +2751,8 @@ public class CwbOrderService extends BaseOrderService {
 
 	private CwbOrder createCwbDetail(User user, long customerid, String cwb) {
 		try {
-			String sql = "insert into express_ops_cwb_detail (cwb,currentbranchid,customerid,emailfinishflag,cwbordertypeid,cwbstate) values(?,?,?,?,?,?)";
-			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, EmailFinishFlagEnum.YouHuoWuDan.getValue(), CwbOrderTypeIdEnum.Peisong.getValue(), CwbStateEnum.WUShuju.getValue());
+			String sql = "insert into express_ops_cwb_detail (cwb,currentbranchid,customerid,emailfinishflag,cwbordertypeid,cwbstate,credate) values(?,?,?,?,?,?,?)";
+			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, EmailFinishFlagEnum.YouHuoWuDan.getValue(), CwbOrderTypeIdEnum.Peisong.getValue(), CwbStateEnum.WUShuju.getValue(),Timestamp.valueOf(DateTimeUtil.getNowTime()));
 
 			return this.cwbDAO.getCwbByCwb(cwb);
 		} catch (Exception e) {
@@ -3396,7 +3404,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
 				.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())))
-				&& (co.getCurrentbranchid() != currentbranchid) && !anbaochuku && (co.getNextbranchid() == this.getSessionUser().getBranchid())) {
+				&& (co.getCurrentbranchid() != currentbranchid) && !anbaochuku && (co.getNextbranchid() == user.getBranchid())) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
 		}
 
@@ -8251,8 +8259,8 @@ public class CwbOrderService extends BaseOrderService {
 		 */
 
 		// 订单不存在时插入一条新数据
-		String sql = "insert into express_ops_cwb_detail (cwb,currentbranchid,customerid,flowordertype,cwbstate,cwbordertypeid) values(?,?,?,?,?,?)";
-		this.jdbcTemplate.update(sql, cwb, user.getBranchid(), -2, flowOrderTypeEnum.getValue(), CwbStateEnum.PeiShong.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
+		String sql = "insert into express_ops_cwb_detail (cwb,currentbranchid,customerid,flowordertype,cwbstate,cwbordertypeid,credate) values(?,?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, cwb, user.getBranchid(), -2, flowOrderTypeEnum.getValue(), CwbStateEnum.PeiShong.getValue(), CwbOrderTypeIdEnum.Peisong.getValue(),Timestamp.valueOf(DateTimeUtil.getNowTime()));
 
 		// 入站时间
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -8895,7 +8903,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	}
 
-	public void intohouseForExpressPackage(String cwbs, long customerid, long driverid, BatchCount batchCount, boolean useEaimDate, List<Customer> cList, List<JSONObject> objList, List<String> allEmaildate, JSONArray promt) {
+	public void intohouseForExpressPackage(User user,String cwbs, long customerid, long driverid, BatchCount batchCount, boolean useEaimDate, List<Customer> cList, List<JSONObject> objList, List<String> allEmaildate, JSONArray promt) {
 		for (String cwb : cwbs.split("\r\n")) {
 			if (cwb.trim().length() == 0) {
 				continue;
@@ -8924,7 +8932,7 @@ public class CwbOrderService extends BaseOrderService {
 			cwb = this.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			CwbOrder cwbOrder = this.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, "", "", false);
+			CwbOrder cwbOrder = this.intoWarehous(user, cwb, scancwb, customerid, driverid, 0, "", "", false);
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 			obj.put("errorcode", "000000");
 			for (Customer c : cList) {
@@ -8942,7 +8950,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 
-	public void exportHouseForExpressPackage(String cwbs, long branchid, long driverid, long truckid, long confirmflag, BatchCount batchCount, List<Customer> cList, List<JSONObject> objList) {
+	public void exportHouseForExpressPackage(User user,String cwbs, long branchid, long driverid, long truckid, long confirmflag, BatchCount batchCount, List<Customer> cList, List<JSONObject> objList) {
 		for (String cwb : cwbs.split("\r\n")) {
 			if (cwb.trim().length() == 0) {
 				continue;
@@ -8954,7 +8962,7 @@ public class CwbOrderService extends BaseOrderService {
 			cwb = this.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			CwbOrder cwbOrder = this.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, 0, confirmflag == 1, "", "", 0, false, false);
+			CwbOrder cwbOrder = this.outWarehous(user, cwb, scancwb, driverid, truckid, branchid, 0, confirmflag == 1, "", "", 0, false, false);
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 			obj.put("errorcode", "000000");
 			for (Customer c : cList) {
