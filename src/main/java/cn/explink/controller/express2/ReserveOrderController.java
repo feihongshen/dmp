@@ -1,6 +1,7 @@
 package cn.explink.controller.express2;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.pjbest.deliveryorder.enumeration.OrderStatusEnum;
+import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 
 import cn.explink.controller.ExplinkResponse;
 import cn.explink.controller.express.ExpressCommonController;
@@ -52,7 +56,21 @@ public class ReserveOrderController extends ExpressCommonController {
 	 * @return
 	 */
 	@RequestMapping("/query")
-	public String query() {
+	public String query(Model model) {
+		// 查找本省的所有城市
+		List<AdressVO> cities = this.reserveOrderService.getCities();
+		model.addAttribute("cityList", cities);
+
+		// 查找本省的所有站点
+		List<Branch> branches = this.reserveOrderService.getBranches();
+		model.addAttribute("branchList", branches);
+
+		// 预约单状态
+		List<OrderStatusEnum> orderStatusList = new ArrayList<OrderStatusEnum>();
+		for (OrderStatusEnum orderStatus : OrderStatusEnum.values()) {
+			orderStatusList.add(orderStatus);
+		}
+		model.addAttribute("orderStatusList", orderStatusList);
 		return "express2/reserveOrder/query";
 	}
 	
@@ -94,16 +112,47 @@ public class ReserveOrderController extends ExpressCommonController {
 	 */
 	@ResponseBody
 	@RequestMapping("/queryList")
-	public void queryList(HttpServletResponse response,
-			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
-			@RequestParam(value = "rows", required = false, defaultValue = "10") int rows
-			) throws JsonGenerationException, JsonMappingException, IOException {
-		ReserveOrderPageVo reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(page, rows);
+	public void queryList(HttpServletResponse response, @RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "10") int rows, String reserveOrderNo, String appointTimeStart,
+			String appointTimeEnd, String cnorProv, String cnorCity, String cnorMobile, String acceptOrg,
+			String courier, String reserveOrderStatusList)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		// 填充数据
+		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+		if(StringUtils.isNotBlank(reserveOrderNo)) {
+			omReserveOrderModel.setReserveOrderNo(reserveOrderNo);
+		}
+		if(StringUtils.isNotBlank(appointTimeStart)) {
+			omReserveOrderModel.setAppointTimeStart(appointTimeStart);
+		}
+		if(StringUtils.isNotBlank(appointTimeEnd)) {
+			omReserveOrderModel.setAppointTimeEnd(appointTimeEnd);
+		}
+		if(StringUtils.isNotBlank(cnorProv)) {
+			omReserveOrderModel.setCnorProv(cnorProv);
+		}
+		if(StringUtils.isNotBlank(cnorCity)) {
+			omReserveOrderModel.setCnorCity(cnorCity);
+		}
+		if(StringUtils.isNotBlank(cnorMobile)) {
+			omReserveOrderModel.setCnorMobile(cnorMobile);
+		}
+		if(StringUtils.isNotBlank(acceptOrg)) {
+			omReserveOrderModel.setAcceptOrg(acceptOrg);
+		}
+		if(StringUtils.isNotBlank(courier)) {
+			omReserveOrderModel.setCourier(courier);
+		}
+		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
+			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
+		}
+		ReserveOrderPageVo reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
 		DataGridReturn dg = new DataGridReturn();
 		dg.setRows(reserveOrderPageVo.getReserveOrderVoList());
 		dg.setTotal(reserveOrderPageVo.getTotalRecord());
 		Tools.outData2Page(Tools.obj2json(dg), response);
-	}	
+	}
+	
     @RequestMapping("/getCountyByCity")
     @ResponseBody
     public JSONObject getCountyByCity(int cityId) {

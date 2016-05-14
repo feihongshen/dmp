@@ -1,51 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+ <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in//jquery/jquery-1.8.3.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
-    <link id="skinlayercss" href="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/skin/layer.css" rel="stylesheet"
-          type="text/css">
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/tools/dataformat.js"></script>
-    <link id="easyuiTheme" rel="stylesheet"
-          href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/default/easyui.css" type="text/css">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/icon.css" type="text/css">
-    <link rel="stylesheet" type="text/css"
-          href="<%=request.getContextPath()%>/dmp40/plug-in/accordion/css/accordion.css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/jquery.easyui.min.1.3.2.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/locale/easyui-lang-zh_CN.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/tools/syUtil.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/extends/datagrid-scrollview.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/My97DatePicker/WdatePicker.js"></script>
-    <link type="text/css" rel="stylesheet"
-          href="<%=request.getContextPath()%>/dmp40/plug-in/My97DatePicker/skin/WdatePicker.css">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/dmp40/plug-in/tools/css/common.css" type="text/css">
-    
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/tools/curdtools.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/tools/easyuiextend.js"></script>
-    
-    <link rel="stylesheet"
-          href="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-autocomplete/jquery.autocomplete.css"
-          type="text/css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-autocomplete/jquery.autocomplete.min.js"></script>
-    <link href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap.min.css" rel="stylesheet"
-          type="text/css">
-    <link href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"
-          type="text/css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/js/bootstrap-table.js"></script>
-      <link href="<%=request.getContextPath()%>/js/multiSelcet/multiple-select.css" rel="stylesheet" type="text/css">
-      <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+<title>快递预约单查询</title>
+<%@ include file="common.jsp" %>
 </head>
 <body class="easyui-layout" leftmargin="0" topmargin="0">
 	<div data-options="region:'center'"
@@ -80,55 +40,56 @@
 				<tr>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约单号：</td>
 					<td>
-						<input type ="text" style="width:140px;"/>
+						<input id="reserveOrderNo" name="reserveOrderNo" type ="text" style="width:140px;"/>
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约时间：</td>
 					<td>
-						<input type ="text" name ="createTimeStart" id="createTimeStart"  value=""  style="width:140px;" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"/>
+						<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
 					</td>
 					<td style="border: 0px; text-align: center; vertical-align: middle;width:65px;">至</td>
 					<td>
-						<span id="createTimeEnd_div">
-							<input type ="text" name ="createTimeEnd" id="createTimeEnd"  value="" style="width:140px;" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"/>
-						</span>
+						<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
 					<td>
-						<select name="cityId"  id="cityId" style="width:100px;">
-							<option value=-1>全部</option>
-							<option value ="1">测试1</option>
-							<option value ="2">测试2</option>
+						<select name="cnorProv"  id="cnorProv" style="width:100px;">
+							<option value="" selected="selected">市</option>
+							<c:forEach items="${cityList}" var="list">
+								<option value="${list.id}" code="${list.code}">${list.name}</option>
+							</c:forEach>
 						</select>
-						<select name="areaId"  id="areaId" style="width:100px;">
-							<option value=-1>全部</option>
-							<option value ="1">测试1</option>
-							<option value ="2">测试2</option>
+						<select name="cnorCity"  id="cnorCity" style="width:100px;">
+							<option value="">区/县</option>
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">手机/固话：</td>
 					<td>
-						<input type ="text" style="width:140px;"/>
+						<input id="cnorMobile" name="cnorMobile" type ="text" style="width:140px;"/>
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">站点：</td>
 					<td>
-						<input type ="text" style="width:140px;"/>
+						<select name="acceptOrg"  id="acceptOrg" style="width:140px;">
+							<option value="">站点</option>
+							<c:forEach items="${branchList}" var="list">
+								<option value="${list.branchid}">${list.branchname}</option>
+							</c:forEach>
+						</select>
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">快递员：</td>
 					<td>
-						<select name="kId"  id="kId" style="width:140px;">
-							<option value=-1>全部</option>
-							<option value ="1">测试1</option>
-							<option value ="2">测试2</option>
+						<select name="courier"  id="courier" style="width:140px;">
+							<option value="">快递员</option>
 						</select>
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约状态：</td>
 					<td>
-						<select name="yId"  id="yId" style="width:140px;">
-							<option value=-1>全部</option>
-							<option value ="1">测试1</option>
-							<option value ="2">测试2</option>
+						<select name="reserveOrderStatusList" id="reserveOrderStatusList" style="width:140px;">
+							<option value="">预约状态</option>
+							<c:forEach items="${orderStatusList }" var="orderStatus">
+								<option value="${orderStatus.index}">${orderStatus.name}</option>
+							</c:forEach>
 						</select>
 					</td>
 				</tr>
@@ -140,10 +101,6 @@
 		    </div>
 		</div>
 	</div>
-	<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
-	<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
-	<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
-	<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
 </body>
 <script type="text/javascript">
 	$(function() {
@@ -154,7 +111,15 @@
 	function doSearch() {
 		//查询list
 		$('#dg_rsList').datagrid('load',{
-			
+			reserveOrderNo:$("#reserveOrderNo").val(),
+			appointTimeStart:$("#appointTimeStart").val(),
+			appointTimeEnd:$("#appointTimeEnd").val(),
+			cnorProv:$("#cnorProv").val(),
+			cnorCity:$("#cnorCity").val(),
+			cnorMobile:$("#cnorMobile").val(),
+			acceptOrg:$("#acceptOrg").val(),
+			courier:$("#courier").val(),
+			reserveOrderStatusList:$("#reserveOrderStatusList").val()
 		});
 	}
 </script>
