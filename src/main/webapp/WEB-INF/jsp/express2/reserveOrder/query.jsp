@@ -11,7 +11,7 @@
 	<div data-options="region:'center'"
 		style="height: 100%; overflow-x: auto; overflow-y: auto;">
 		<table id="dg_rsList" class="easyui-datagrid"
-			url="<%=request.getContextPath()%>/express2/reserveOrder/queryList" toolbar="#signFee_toolbar"
+			url="<%=request.getContextPath()%>/express2/reserveOrder/queryList/query" toolbar="#signFee_toolbar"
 			showFooter="true" fit="true" fitColumns="false"  singleSelect="true"
 			width="100%" pageSize="10" rownumbers="true" pagination="true"  pageList="[10,30,50]">
 			<thead>
@@ -71,7 +71,7 @@
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">站点：</td>
 					<td>
 						<select name="acceptOrg"  id="acceptOrg" style="width:140px;">
-							<option value="">站点</option>
+							<option value="">请选择</option>
 							<c:forEach items="${branchList}" var="list">
 								<option value="${list.branchid}">${list.branchname}</option>
 							</c:forEach>
@@ -83,10 +83,10 @@
 							<option value="">快递员</option>
 						</select>
 					</td>
-					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约状态：</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约单状态：</td>
 					<td>
 						<select name="reserveOrderStatusList" id="reserveOrderStatusList" style="width:140px;">
-							<option value="">预约状态</option>
+							<option value="">请选择</option>
 							<c:forEach items="${orderStatusList }" var="orderStatus">
 								<option value="${orderStatus.index}">${orderStatus.name}</option>
 							</c:forEach>
@@ -95,32 +95,11 @@
 				</tr>
 			</table>
 		</form>
-			<div style="margin:0px;text-align:center;" >
+			<div style="margin:0px;" >
 		    		<div class="btn btn-default" onclick="doSearch();" style="margin-right:5px;" id= "searchData"><i class="icon-search"></i>查询</div>
-		    		<div class="btn btn-default" onclick="exportExcel();" style="margin-left:20px;"><i class="icon-download-alt"></i>导出</div>
+		    		<div class="btn btn-default" onclick="exportExcel();" style="margin-left:5px;"><i class="icon-download-alt"></i>导出</div>
 		    </div>
 		</div>
 	</div>
 </body>
-<script type="text/javascript">
-	$(function() {
-		//单选模糊查询下拉框
-		//$("#search_table select").combobox();
-	});
-	
-	function doSearch() {
-		//查询list
-		$('#dg_rsList').datagrid('load',{
-			reserveOrderNo:$("#reserveOrderNo").val(),
-			appointTimeStart:$("#appointTimeStart").val(),
-			appointTimeEnd:$("#appointTimeEnd").val(),
-			cnorProv:$("#cnorProv").val(),
-			cnorCity:$("#cnorCity").val(),
-			cnorMobile:$("#cnorMobile").val(),
-			acceptOrg:$("#acceptOrg").val(),
-			courier:$("#courier").val(),
-			reserveOrderStatusList:$("#reserveOrderStatusList").val()
-		});
-	}
-</script>
 </html>

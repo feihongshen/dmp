@@ -1,7 +1,6 @@
 package cn.explink.controller.express2;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -64,13 +64,8 @@ public class ReserveOrderController extends ExpressCommonController {
 		// 查找本省的所有站点
 		List<Branch> branches = this.reserveOrderService.getBranches();
 		model.addAttribute("branchList", branches);
-
-		// 预约单状态
-		List<OrderStatusEnum> orderStatusList = new ArrayList<OrderStatusEnum>();
-		for (OrderStatusEnum orderStatus : OrderStatusEnum.values()) {
-			orderStatusList.add(orderStatus);
-		}
-		model.addAttribute("orderStatusList", orderStatusList);
+		
+		model.addAttribute("orderStatusList", OrderStatusEnum.values());
 		return "express2/reserveOrder/query";
 	}
 	
@@ -89,7 +84,9 @@ public class ReserveOrderController extends ExpressCommonController {
         //查找本省的所有站点
         List<Branch> branches = this.reserveOrderService.getBranches();
         model.addAttribute("branchList",branches);
-
+        
+		// 预约单状态
+		model.addAttribute("orderStatusList", OrderStatusEnum.values());
         return "express2/reserveOrder/handle";
 	}
 	
@@ -111,11 +108,11 @@ public class ReserveOrderController extends ExpressCommonController {
 	 * @date 2016年5月13日 下午5:39:59
 	 */
 	@ResponseBody
-	@RequestMapping("/queryList")
-	public void queryList(HttpServletResponse response, @RequestParam(defaultValue = "1") int page,
-			@RequestParam(defaultValue = "10") int rows, String reserveOrderNo, String appointTimeStart,
-			String appointTimeEnd, String cnorProv, String cnorCity, String cnorMobile, String acceptOrg,
-			String courier, String reserveOrderStatusList)
+	@RequestMapping("/queryList/{queryType}")
+	public void queryList(HttpServletResponse response, @PathVariable("queryType") String queryType,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
+			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, String cnorProv, String cnorCity,
+			String cnorMobile, String acceptOrg, String courier, String reserveOrderStatusList)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		// 填充数据
 		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();

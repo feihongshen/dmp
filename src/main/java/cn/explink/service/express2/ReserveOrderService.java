@@ -3,9 +3,7 @@ package cn.explink.service.express2;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderService;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderServiceHelper;
-import com.pjbest.deliveryorder.enumeration.OrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.pjbest.deliveryorder.service.PjReserveOrderPageModel;
 import com.vip.osp.core.context.InvocationContext;
@@ -87,11 +84,6 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 		List<ReserveOrderVo> voList = new ArrayList<ReserveOrderVo>(poList.size());
 		// po转vo
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		// 把预约单状态转map，方便查询
-		Map<Integer, String> orderStatusMap = new HashMap<Integer, String>();
-		for (OrderStatusEnum orderStatus : OrderStatusEnum.values()) {
-			orderStatusMap.put(orderStatus.getIndex(), orderStatus.getName());
-		}
 		for (OmReserveOrderModel po : poList) {
 			ReserveOrderVo vo = new ReserveOrderVo();
 			vo.setOmReserveOrderId(po.getOmReserveOrderId());
@@ -112,10 +104,8 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 				vo.setRequireTime(requireTime);
 				vo.setRequireTimeStr(sdf.format(requireTime));
 			}
-			if (po.getReserveOrderStatus() != null) {
-				vo.setReserveOrderStatus(po.getReserveOrderStatus());
-				vo.setReserveOrderStatusName(orderStatusMap.get(po.getReserveOrderStatus().intValue()));
-			}
+			vo.setReserveOrderStatus(po.getReserveOrderStatus());
+			vo.setReserveOrderStatusName(po.getReserveOrderStatusName());
 			vo.setReason(po.getReason());
 			vo.setTransportNo(po.getTransportNo());
 			vo.setAcceptOrg(po.getAcceptOrg());
