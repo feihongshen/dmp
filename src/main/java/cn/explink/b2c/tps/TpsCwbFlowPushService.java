@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
-import com.pjbest.deliveryorder.service.DoTrackBoxInfo;
+//import com.pjbest.deliveryorder.service.DoTrackBoxInfo;
 import com.pjbest.deliveryorder.service.DoTrackFeedbackRequest;
 import com.vip.osp.core.context.InvocationContext;
 import com.vip.osp.core.exception.OspException;
@@ -113,7 +113,7 @@ public class TpsCwbFlowPushService {
 						List<String> transcwbList=new ArrayList<String>();
 						for(DoTrackFeedbackRequest req:reqList){
 							send(req,6000);
-							transcwbList.add(req.getBoxInfo().getBoxNo());
+//							transcwbList.add(req.getBoxInfo().getBoxNo());
 						}
 						this.tpsCwbFlowService.complete(vo,transcwbList,1);
 					}
@@ -196,11 +196,11 @@ public class TpsCwbFlowPushService {
 					req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 					req.setOperater(operateUser==null?null:operateUser.getRealname());
 					req.setOperateTime(createDate);
-					DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
-					boxInfo.setBoxNo(trancwb);
-					boxInfo.setVolume(new Double("0.01"));
-					boxInfo.setWeight(new Double("0.01"));
-					req.setBoxInfo(boxInfo);
+//					DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
+//					boxInfo.setBoxNo(trancwb);
+//					boxInfo.setVolume(new Double("0.01"));
+//					boxInfo.setWeight(new Double("0.01"));
+//					req.setBoxInfo(boxInfo);
 					reqList.add(req);
 				}
 			}
@@ -246,11 +246,11 @@ public class TpsCwbFlowPushService {
 				weight=transCwbDetail.getWeight().doubleValue();
 			}
 			
-			DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
-			boxInfo.setBoxNo(vo.getScancwb());
-			boxInfo.setVolume(volume);
-			boxInfo.setWeight(weight);
-			req.setBoxInfo(boxInfo);
+//			DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
+//			boxInfo.setBoxNo(vo.getScancwb());
+//			boxInfo.setVolume(volume);
+//			boxInfo.setWeight(weight);
+//			req.setBoxInfo(boxInfo);
 			
 			reqList.add(req);
 		}

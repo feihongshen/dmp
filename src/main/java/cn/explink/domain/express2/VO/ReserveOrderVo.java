@@ -66,7 +66,7 @@ public class ReserveOrderVo {
 	/**
 	 * 预约单状态值
 	 */
-	private String reserveOrderStatusVal;
+	private String reserveOrderStatusName;
 	
 	/**
 	 * 原因
@@ -87,6 +87,21 @@ public class ReserveOrderVo {
 	* 揽件机构名称
 	*/
 	private String acceptOrgName;
+	
+	/**
+	* 揽件员
+	*/
+	private String courier;
+	
+	/**
+	* 揽件员名称
+	*/
+	private String courierName;
+	
+	/**
+	 * 备注
+	 */
+	private String cnorRemark;
 
 	public Integer getOmReserveOrderId() {
 		return omReserveOrderId;
@@ -152,20 +167,20 @@ public class ReserveOrderVo {
 		this.cnorAddr = cnorAddr;
 	}
 
-	public String getRequireTimeStr() {
-		return requireTimeStr;
-	}
-
-	public void setRequireTimeStr(String requireTimeStr) {
-		this.requireTimeStr = requireTimeStr;
-	}
-
 	public Date getRequireTime() {
 		return requireTime;
 	}
 
 	public void setRequireTime(Date requireTime) {
 		this.requireTime = requireTime;
+	}
+
+	public String getRequireTimeStr() {
+		return requireTimeStr;
+	}
+
+	public void setRequireTimeStr(String requireTimeStr) {
+		this.requireTimeStr = requireTimeStr;
 	}
 
 	public Byte getReserveOrderStatus() {
@@ -176,12 +191,12 @@ public class ReserveOrderVo {
 		this.reserveOrderStatus = reserveOrderStatus;
 	}
 
-	public String getReserveOrderStatusVal() {
-		return reserveOrderStatusVal;
+	public String getReserveOrderStatusName() {
+		return reserveOrderStatusName;
 	}
 
-	public void setReserveOrderStatusVal(String reserveOrderStatusVal) {
-		this.reserveOrderStatusVal = reserveOrderStatusVal;
+	public void setReserveOrderStatusName(String reserveOrderStatusName) {
+		this.reserveOrderStatusName = reserveOrderStatusName;
 	}
 
 	public String getReason() {
@@ -214,5 +229,40 @@ public class ReserveOrderVo {
 
 	public void setAcceptOrgName(String acceptOrgName) {
 		this.acceptOrgName = acceptOrgName;
+	}
+
+	public String getCourier() {
+		return courier;
+	}
+
+	public void setCourier(String courier) {
+		this.courier = courier;
+	}
+
+	public String getCourierName() {
+		return courierName;
+	}
+
+	public void setCourierName(String courierName) {
+		this.courierName = courierName;
+	}
+
+	public String getCnorRemark() {
+		return cnorRemark;
+	}
+
+	public void setCnorRemark(String cnorRemark) {
+		this.cnorRemark = cnorRemark;
+	}
+
+	@Override
+	public String toString() {
+		return "ReserveOrderVo [omReserveOrderId=" + omReserveOrderId + ", reserveOrderNo=" + reserveOrderNo
+				+ ", appointTime=" + appointTime + ", appointTimeStr=" + appointTimeStr + ", cnorName=" + cnorName
+				+ ", cnorMobile=" + cnorMobile + ", cnorTel=" + cnorTel + ", cnorAddr=" + cnorAddr + ", requireTime="
+				+ requireTime + ", requireTimeStr=" + requireTimeStr + ", reserveOrderStatus=" + reserveOrderStatus
+				+ ", reserveOrderStatusName=" + reserveOrderStatusName + ", reason=" + reason + ", transportNo="
+				+ transportNo + ", acceptOrg=" + acceptOrg + ", acceptOrgName=" + acceptOrgName + ", courier=" + courier
+				+ ", courierName=" + courierName + ", cnorRemark=" + cnorRemark + "]";
 	}
 }

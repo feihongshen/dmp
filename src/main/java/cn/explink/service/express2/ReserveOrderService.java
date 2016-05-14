@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderService;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderServiceHelper;
-import com.pjbest.deliveryorder.enumeration.OrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.pjbest.deliveryorder.service.PjReserveOrderPageModel;
 import com.vip.osp.core.context.InvocationContext;
@@ -28,6 +27,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressInfoDetailVO;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
+import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.service.express.ExpressCommonService;
@@ -62,8 +62,8 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	 * @date 2016年5月13日 下午6:13:22
 	 * @return
 	 */
-	public List<ReserveOrderVo> getReserveOrderVoList() {
-		OmReserveOrderModel omReserveOrderModel = null;//new OmReserveOrderModel();
+	public ReserveOrderPageVo getReserveOrderPage(int page, int rows) {
+		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
 		
 		// 记录入库数据
 		try {
@@ -71,12 +71,12 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
-		
-		InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT); 
+
+		InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 		PjReserveOrderPageModel pjReserveOrderPageModel = null;
 		try {
-			pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(omReserveOrderModel,1,10);
+			pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(omReserveOrderModel, page - 1, rows);
 			// 返回数据记录
 			logger.info("pjReserveOrderPageModel:{}", pjReserveOrderPageModel.getReserveOrders().size());
 		} catch (OspException e) {
@@ -86,12 +86,12 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 		List<ReserveOrderVo> voList = new ArrayList<ReserveOrderVo>(poList.size());
 		// po转vo
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		for(OmReserveOrderModel po : poList) {
+		for (OmReserveOrderModel po : poList) {
 			ReserveOrderVo vo = new ReserveOrderVo();
 			vo.setOmReserveOrderId(po.getOmReserveOrderId());
 			vo.setReserveOrderNo(po.getReserveOrderNo());
 			Long appointTimeMs = po.getAppointTime();
-			if(appointTimeMs != null) {
+			if (appointTimeMs != null) {
 				Date appointTime = new Date(appointTimeMs);
 				vo.setAppointTime(appointTime);
 				vo.setAppointTimeStr(sdf.format(appointTime));
@@ -101,29 +101,25 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 			vo.setCnorTel(po.getCnorTel());
 			vo.setCnorAddr(po.getCnorAddr());
 			Long requireTimeMs = po.getRequireTime();
-			if(requireTimeMs != null) {
-				Date appointTime = new Date(requireTimeMs);
-				vo.setRequireTime(appointTime);
-				vo.setRequireTimeStr(sdf.format(appointTime));
+			if (requireTimeMs != null) {
+				Date requireTime = new Date(requireTimeMs);
+				vo.setRequireTime(requireTime);
+				vo.setRequireTimeStr(sdf.format(requireTime));
 			}
-			Integer reservrOrderStatus = po.getReserveOrderStatus() == null ? null : po.getReserveOrderStatus().intValue();
-			if(reservrOrderStatus != null) {
-				vo.setReserveOrderStatus(po.getReserveOrderStatus());
-				String reservrOrderStatusVal = null;
-				for(OrderStatusEnum e : OrderStatusEnum.values()) {
-					if(e.getIndex().intValue() == reservrOrderStatus.intValue()) {
-						reservrOrderStatusVal = e.getName();
-					}
-				}
-				vo.setReserveOrderStatusVal(reservrOrderStatusVal);
-			}
+			vo.setReserveOrderStatus(po.getReserveOrderStatus());
+			vo.setReserveOrderStatusName(po.getReserveOrderStatusName());
 			vo.setReason(po.getReason());
 			vo.setTransportNo(po.getTransportNo());
 			vo.setAcceptOrg(po.getAcceptOrg());
 			vo.setAcceptOrgName(po.getAcceptOrgName());
+			vo.setCnorRemark(po.getCnorRemark());
 			voList.add(vo);
 		}
-		return voList;
+		// 封装分页信息
+		ReserveOrderPageVo reserveOrderPageVo = new ReserveOrderPageVo();
+		reserveOrderPageVo.setTotalRecord(pjReserveOrderPageModel.getTotalRecord());
+		reserveOrderPageVo.setReserveOrderVoList(voList);
+		return reserveOrderPageVo;
 	}
 	
 	/**

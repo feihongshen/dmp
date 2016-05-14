@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.controller.ExplinkResponse;
@@ -27,7 +28,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
-import cn.explink.domain.express2.VO.ReserveOrderVo;
+import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.Tools;
 import net.sf.json.JSONObject;
@@ -93,15 +94,16 @@ public class ReserveOrderController extends ExpressCommonController {
 	 */
 	@ResponseBody
 	@RequestMapping("/queryList")
-	public void queryList(HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
-		List<ReserveOrderVo> reserveOrderVoList = this.reserveOrderService.getReserveOrderVoList();
-		int count = reserveOrderVoList.size();
+	public void queryList(HttpServletResponse response,
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+			@RequestParam(value = "rows", required = false, defaultValue = "10") int rows
+			) throws JsonGenerationException, JsonMappingException, IOException {
+		ReserveOrderPageVo reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(page, rows);
 		DataGridReturn dg = new DataGridReturn();
-		dg.setRows(reserveOrderVoList);
-		dg.setTotal(count);
+		dg.setRows(reserveOrderPageVo.getReserveOrderVoList());
+		dg.setTotal(reserveOrderPageVo.getTotalRecord());
 		Tools.outData2Page(Tools.obj2json(dg), response);
-	}
-	
+	}	
     @RequestMapping("/getCountyByCity")
     @ResponseBody
     public JSONObject getCountyByCity(int cityId) {

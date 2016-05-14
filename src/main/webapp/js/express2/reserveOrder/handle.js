@@ -14,7 +14,7 @@ $(function () {
     })
 
     $("#branch").change(function () {
-        changeKDY($(this).val());
+        changeCourier($(this).val());
     })
 
     $("#openEditPreOderPanelBtn").click(function () {
@@ -38,7 +38,7 @@ $(function () {
 
             $.ajax({
                 type: "POST",
-                url: "getCountyByCity",
+                url: contextPath + "/express2/reserveOrder/getCountyByCity",
                 dataType: "json",
                 data: {
                     "cityId": cityId
@@ -60,7 +60,7 @@ $(function () {
     }
 
 
-    function changeKDY(branchId) {
+    function changeCourier(branchId) {
         var kdySelect = $("#kdy");
         if (branchId && branchId.length > 0) {
             //var citySelect;
@@ -70,7 +70,7 @@ $(function () {
 
             $.ajax({
                 type: "POST",
-                url: "getCourierByBranch",
+                url: contextPath + "/express2/reserveOrder/getCourierByBranch",
                 dataType: "json",
                 data: {
                     "branchId": branchId

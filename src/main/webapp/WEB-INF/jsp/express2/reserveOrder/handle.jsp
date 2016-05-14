@@ -66,6 +66,9 @@
       <script type="text/javascript" src="webpage/fnc/js/upload/swfupload.js"></script>
       <script type="text/javascript" src="webpage/fnc/js/upload/jquery.swfupload.js"></script>
       <script type="text/javascript" src="webpage/fnc/js/upload/swfupload.queue.js"></script>--%>
+    <script type="text/javascript">
+    	var contextPath = '<%=request.getContextPath()%>';
+    </script>
     <script src="${pageContext.request.contextPath}/js/express2/reserveOrder/handle.js" type="text/javascript"></script>
 </head>
 
