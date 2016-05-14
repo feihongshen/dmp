@@ -2,11 +2,13 @@ package cn.explink.service.express2;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,11 @@ import com.pjbest.deliveryorder.bizservice.PjReserveOrderServiceHelper;
 import com.pjbest.deliveryorder.enumeration.OrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.pjbest.deliveryorder.service.PjReserveOrderPageModel;
+import com.pjbest.deliveryorder.service.ReserveOrderLogModel;
 import com.vip.osp.core.context.InvocationContext;
 import com.vip.osp.core.exception.OspException;
 
+import cn.explink.core.utils.JsonUtil;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
@@ -34,7 +38,6 @@ import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.service.express.ExpressCommonService;
-import cn.explink.util.JsonUtil;
 
 /**
  * 预约单Service
@@ -208,14 +211,29 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	 * 查询预约单日志
 	 * @param reserveOrderNo 预约单号
 	 * @return 返回预约单日志list
+	 * @throws OspException 
 	 */
-	public List<ReserveOrderLogVo> queryReserveOrderLog(String reserveOrderNo) {
+	public List<ReserveOrderLogVo> queryReserveOrderLog(String reserveOrderNo) throws OspException {
 		
 		InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT); 
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
-		
-		
-		return null;
+		List<ReserveOrderLogModel> reserveOrderLogModelList = pjReserveOrderService.getReserveOrderLogs(reserveOrderNo); 
+		if (reserveOrderLogModelList == null || reserveOrderLogModelList.size() == 0) {
+			return Collections.emptyList();
+		}
+		//System.out.println("reserveOrderLogModelList:" + JsonUtil.translateToJson(reserveOrderLogModelList));
+		List<ReserveOrderLogVo> logVoList = new ArrayList<ReserveOrderLogVo>();
+		for (ReserveOrderLogModel reserveOrderLogModel : reserveOrderLogModelList) {
+			ReserveOrderLogVo logVo = new ReserveOrderLogVo();
+			try {
+				PropertyUtils.copyProperties(logVo, reserveOrderLogModel);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			logVoList.add(logVo);
+		}
+		return logVoList;
 	}
+
 	
 }

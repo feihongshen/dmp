@@ -3,9 +3,7 @@ package cn.explink.controller.express2;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pjbest.deliveryorder.enumeration.OrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
+import com.vip.osp.core.exception.OspException;
 
 import cn.explink.controller.ExplinkResponse;
 import cn.explink.controller.express.ExpressCommonController;
@@ -177,19 +176,18 @@ public class ReserveOrderController extends ExpressCommonController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping("queryReserveOrderLog")
+	@RequestMapping("/queryReserveOrderLog")
 	public String queryReserveOrderLog(String reserveOrderNo) {
 		reserveOrderNo = StringUtils.trimToEmpty(reserveOrderNo);
 		
 		ExplinkResponse explinkResponse = new ExplinkResponse();
-		
 		if (reserveOrderNo.length() == 0) {
 			explinkResponse.setStatuscode(Boolean.FALSE.toString());
 			explinkResponse.setErrorinfo("预约单号为空");
 			return JsonUtil.translateToJson(explinkResponse);
 		}
 		
-		Map<String, Object> responseBody = new HashMap<String, Object>();
+		JSONObject responseBody = new JSONObject();
 		explinkResponse.setBody(responseBody);
 		
 		List<ReserveOrderLogVo> reserveOrderLogVoList = Collections.emptyList();
@@ -199,11 +197,17 @@ public class ReserveOrderController extends ExpressCommonController {
 			if (reserveOrderLogVoList == null) {
 				reserveOrderLogVoList = Collections.emptyList();
 			}
+		} catch (OspException e) {
+			logger.error(e.getMessage(), e);
+			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
+			
 		}
 		responseBody.put("reserveOrderLogVoList", reserveOrderLogVoList);
+		//System.out.println("explinkResponse:" + JsonUtil.translateToJson(explinkResponse));
 		return JsonUtil.translateToJson(explinkResponse);
 	}
+
 	
 }
