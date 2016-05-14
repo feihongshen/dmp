@@ -76,7 +76,7 @@
 <div data-options="region:'center'" style="overflow-x:hidden;overflow-y:auto;">
 
         <table id="dg" style="height:400px;" width="100%" toolbar="#toolbar" showFooter="true"
-           url="<%=request.getContextPath()%>/reserveOrder/queryList" fitColumns="false" singleSelect="false" checkOnSelect="true"
+           url="<%=request.getContextPath()%>/express2/reserveOrder/queryList" fitColumns="false" singleSelect="false" checkOnSelect="true"
            selectOnCheck="false" rownumbers="true"
            pageSize="10" pagination="true" pageList="[10,50,100,200,300]">
         <thead>
@@ -91,11 +91,9 @@
             <th field="requireTimeStr" align="center" width="150px;">预约上门时间</th>
             <th field="reservrOrderStatusVal" align="center" width="130px;">预约单状态</th>
             <th field="reason" align="center" width="130px;">原因 </th>
-            <th field="transportNo" align="center" width="130px;">运单号 </th>
             <th field="acceptOrgName" align="center" width="130px;">站点</th>
-            <th field="creator" align="center" width="80px;">策略创建人</th>
-            <th field="stateName" align="center" width="80px;">策略状态</th>
-            <th field="activeTime" align="center" width="130px;">激活时间</th>
+            <th field="courierName" align="center" width="80px;">快递员</th>
+            <th field="??" align="center" width="80px;">备注</th>
         </tr>
         </thead>
     </table>
@@ -157,7 +155,7 @@
                             </td>
                             <td>快递员：</td>
                             <td>
-                                <select id="kdy" name="kdy">
+                                <select id="courier" name="courier">
                                     <option value="">请选择</option>
                                     <%--<option value="">---请选择---</option>--%>
                                     <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
@@ -343,7 +341,7 @@
             <tr>
                 <td>快递员：</td>
                 <td>
-                    <select id="distributeKdySelect" name="distributeKdySelect">
+                    <select id="distributeCourierSelect" name="distributeCourierSelect">
                         <option value="">请选择</option>
                         <%--<option value="">---请选择---</option>--%>
                         <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>

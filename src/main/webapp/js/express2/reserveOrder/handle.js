@@ -3,18 +3,21 @@ $(function () {
     $('#dg').datagrid({});
 
 
-    $("#city").change(function () {
+    $('#city').change(function () {
         changeCounty($(this).val(), "#county");
     })
 
-    $("#city4edit").change(function () {
+    $('#city4edit').change(function () {
         changeCounty($(this).val(), "#county4edit");
     })
 
-    $("#branch").change(function () {
-        changeCourier($(this).val());
+    $('#branch').change(function () {
+        changeCourier($(this).val(), "#courier");
     })
 
+    $('#distributeBranchSelect').change(function () {
+        changeCourier($(this).val(), "#distributeCourierSelect");
+    })
 
     //修改预定单panel
     var editPreOrderPanel = null;
@@ -25,7 +28,11 @@ $(function () {
     //分配站点panel
     var distributeBranchPanel = null;
 
-    $("#editPreOrderPanelBtn").click(function () {
+    $('#editPreOrderPanelBtn').click(function () {
+        if (checkAtLeastSelectOneRow()) {
+            return false;
+        }
+
         //打开条件生成账单面板
         editPreOrderPanel = $.layer({
             type: 1,
@@ -39,7 +46,11 @@ $(function () {
             }
         });
     })
-    $("#deletePreOrderBtn").click(function () {
+    $('#deletePreOrderBtn').click(function () {
+        if (checkAtLeastSelectOneRow()) {
+            return false;
+        }
+
         //打开关闭预约单面板
         closePreOrderPanel = $.layer({
             type: 1,
@@ -53,7 +64,10 @@ $(function () {
             }
         });
     })
-    $("#returnToCentrelBtn").click(function () {
+    $('#returnToCentralBtn').click(function () {
+        if (checkAtLeastSelectOneRow()) {
+            return false;
+        }
         //打开退回总部面板
         returnToCentralPanel = $.layer({
             type: 1,
@@ -67,7 +81,35 @@ $(function () {
             }
         });
     })
-    $("#distributeBranchBtn").click(function () {
+
+
+    $('#distributeBranchBtn').click(function () {
+        if (checkAtLeastSelectOneRow()) {
+            return false;
+        }
+        var rows = $('#dg').datagrid('getChecked');
+
+        if (rows.length == 1) {
+            $('#distributeBranchSelect option:selected').removeAttr('selected');
+            $('#distributeBranchSelect option').each(function () {
+                if ($(this).text() == rows[0].acceptOrgName) {
+                    $(this).attr('selected', 'selected');
+                    return false;
+                }
+            });
+
+            $('#distributeCourierSelect option:selected').removeAttr('selected');
+            $('#distributeCourierSelect option').each(function () {
+                if ($(this).text() == rows[0].courierName) {
+                    $(this).attr('selected', 'selected');
+                    return false;
+                }
+            });
+        } else {
+            $('#distributeBranchSelect option:selected').removeAttr('selected');
+            $('#distributeCourierSelect option:selected').removeAttr('selected');
+        }
+
         //打开退回总部面板
         distributeBranchPanel = $.layer({
             type: 1,
@@ -82,18 +124,20 @@ $(function () {
         });
     })
 
-    $("#confirmEditPreOrderBtn").click(function () {
+    $('#confirmEditPreOrderBtn').click(function () {
         confirmEditPreOrder();
     })
-    $("#closeEditPreOrderPanel").click(function () {
+    $('#closeEditPreOrderPanel').click(function () {
         closePanel(editPreOrderPanel);
     })
-
-    $("#closeClosePreOrderPanel").click(function () {
+    $('#confirmClosePreOrderBtn').click(function () {
+        confirmClosePreOrder();
+    })
+    $('#closeClosePreOrderPanel').click(function () {
         closePanel(closePreOrderPanel);
     })
 
-    $("#closeDistributeBranchPanel").click(function () {
+    $('#closeDistributeBranchPanel').click(function () {
         closePanel(distributeBranchPanel);
     })
 
@@ -101,7 +145,7 @@ $(function () {
         var countySelect = $(changedItem);
         if (cityId && cityId.length > 0) {
             //var citySelect;
-            //citySelect = $("#sender_provinceid_id");
+            //citySelect = $('#sender_provinceid_id");
 
             //var provinceCode = provinceSelect.find("option:selected").attr("code");
 
@@ -129,11 +173,11 @@ $(function () {
     }
 
 
-    function changeCourier(branchId) {
-        var kdySelect = $("#kdy");
+    function changeCourier(branchId, changedItem) {
+        var courierSelect = $(changedItem);
         if (branchId && branchId.length > 0) {
             //var citySelect;
-            //citySelect = $("#sender_provinceid_id");
+            //citySelect = $('#sender_provinceid_id");
 
             //var provinceCode = provinceSelect.find("option:selected").attr("code");
 
@@ -145,16 +189,17 @@ $(function () {
                     "branchId": branchId
                 },
                 success: function (data) {
-                    var kdyList = data.kdyList;
+                    var courierList = data.courierList;
 
-                    kdySelect.empty();
-                    for (var i = 0; i < kdyList.length; i++) {
-                        kdySelect.get(0).add(new Option(kdyList[i].username, kdyList[i].userid));
+                    courierSelect.empty();
+                    courierSelect.get(0).add(new Option("请选择", ""));
+                    for (var i = 0; i < courierList.length; i++) {
+                        courierSelect.get(0).add(new Option(courierList[i].username, courierList[i].userid));
                     }
                 }
             });
         } else {
-            kdySelect.empty();
+            courierSelect.empty();
         }
     }
 
@@ -173,9 +218,62 @@ $(function () {
         });
     }
 
+    function confirmClosePreOrder() {
+        var param = {}
+
+        $.ajax({
+            type: "POST",
+            url: "",
+            dataType: "json",
+            data: param,
+            success: function (data) {
+
+            }
+        });
+    }
+
+    function checkAtLeastSelectOneRow() {
+        var rows = $('#dg').datagrid('getChecked');
+        if (!rows || rows.length < 1) {
+            allertMsg.alertError("请选择预约单");
+            return true;
+        }
+    }
+
     function closePanel(panel) {
         if (panel)
             layer.close(panel)
+    }
+
+    var allertMsg = {
+        /**
+         * 成功提示
+         * @param msg  提示信息
+         */
+        "msgOk": function (msg) {
+            layer.msg(msg || "Error", 1, 1);
+        }
+        /**
+         * 弹出错误信息
+         * @param msg  提示信息
+         */
+        , "msgError": function (msg) {
+            layer.msg(msg || "Error", 1, 3);
+        }
+        /**
+         * 弹出成功提示
+         * @param msg  提示信息
+         */
+        , "alertOk": function (msg) {
+            layer.alert(msg || "OK", 1);
+        }
+        /**
+         * 弹出错误提示
+         * @param msg  提示信息
+         */
+        , "alertError": function (msg) {
+            layer.alert(msg || "Error", 3);
+        }
     }
 })
 

@@ -113,12 +113,15 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 			vo.setAcceptOrg(po.getAcceptOrg());
 			vo.setAcceptOrgName(po.getAcceptOrgName());
 			vo.setCnorRemark(po.getCnorRemark());
+            vo.setCourierName(po.getCourierName());
 			voList.add(vo);
 		}
 		// 封装分页信息
 		ReserveOrderPageVo reserveOrderPageVo = new ReserveOrderPageVo();
 		reserveOrderPageVo.setTotalRecord(pjReserveOrderPageModel.getTotalRecord());
 		reserveOrderPageVo.setReserveOrderVoList(voList);
+
+
 		return reserveOrderPageVo;
 	}
 	

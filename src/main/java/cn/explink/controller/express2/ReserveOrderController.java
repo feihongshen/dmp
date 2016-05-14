@@ -117,8 +117,8 @@ public class ReserveOrderController extends ExpressCommonController {
     @ResponseBody
     public JSONObject getCourierByBranch(int branchId) {
         JSONObject obj = new JSONObject();
-        List<User> kdyList = this.reserveOrderService.getCourierByBranch(branchId);
-        obj.put("kdyList", kdyList);
+        List<User> courierList = this.reserveOrderService.getCourierByBranch(branchId);
+        obj.put("courierList", courierList);
         return obj;
     }
 	
