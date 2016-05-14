@@ -1,8 +1,6 @@
 package cn.explink.controller;
 
 import java.io.IOException;
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,9 +8,10 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cn.explink.domain.VO.ReserveOrderVo;
+import cn.explink.domain.VO.ReserveOrderPageVo;
 import cn.explink.service.ReserveOrderService;
 
 /**
@@ -65,12 +64,14 @@ public class ReserveOrderController {
 	 */
 	@ResponseBody
 	@RequestMapping("/queryList")
-	public void queryList(HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
-		List<ReserveOrderVo> reserveOrderVoList = this.reserveOrderService.getReserveOrderVoList();
-		int count = reserveOrderVoList.size();
+	public void queryList(HttpServletResponse response,
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+			@RequestParam(value = "rows", required = false, defaultValue = "10") int rows
+			) throws JsonGenerationException, JsonMappingException, IOException {
+		ReserveOrderPageVo reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(page, rows);
 		DataGridReturn dg = new DataGridReturn();
-		dg.setRows(reserveOrderVoList);
-		dg.setTotal(count);
+		dg.setRows(reserveOrderPageVo.getReserveOrderVoList());
+		dg.setTotal(reserveOrderPageVo.getTotalRecord());
 		Tools.outData2Page(Tools.obj2json(dg), response);
 	}
 }

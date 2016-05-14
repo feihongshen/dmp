@@ -57,20 +57,19 @@
 			<thead>
 				<tr>
 					<th field="omReserveOrderId"  hidden="true" align="center" width="180px;">id</th>
-					<th field="reserveOrderNo" align="center" width="150px;">预约单号</th>
+					<th field="reserveOrderNo" align="center" width="130px;">预约单号</th>
 					<th field="appointTimeStr" align="center" width="130px;">下单时间</th>
-					<th field="cnorName" align="center" width="130px;">寄件人</th>
+					<th field="cnorName" align="center" width="100px;">寄件人</th>
 					<th field="cnorMobile" align="center" width="100px;">手机</th>
-					<th field="cnorTel" align="center" width="120px;">固话</th>
+					<th field="cnorTel" align="center" width="100px;">固话</th>
 					<th field="cnorAddr" align="center" width="130px;">寄件地址</th>
-					<th field="requireTimeStr" align="center" width="150px;">预约上门时间</th>
-					<th field="reservrOrderStatusVal" align="center" width="130px;">预约单状态</th>
+					<th field="requireTimeStr" align="center" width="130px;">预约上门时间</th>
+					<th field="reservrOrderStatusName" align="center" width="100px;">预约单状态</th>
 					<th field="reason" align="center" width="130px;">原因 </th>
-					<th field="transportNo" align="center" width="130px;">运单号 </th>
-					<th field="acceptOrgName" align="center" width="130px;">站点</th>
-					<th field="creator" align="center" width="80px;">策略创建人</th>
-					<th field="stateName" align="center" width="80px;">策略状态</th>
-					<th field="activeTime" align="center" width="130px;">激活时间</th>
+					<th field="transportNo" align="center" width="100px;">运单号 </th>
+					<th field="acceptOrgName" align="center" width="100px;">站点</th>
+					<th field="courierName" align="center" width="80px;">快递员</th>
+					<<th field="cnorRemark" align="center" width="80px;">备注</th>
 				</tr>
 			</thead>
 		</table>
@@ -150,6 +149,13 @@
 	$(function() {
 		//单选模糊查询下拉框
 		//$("#search_table select").combobox();
-	})
+	});
+	
+	function doSearch() {
+		//查询list
+		$('#dg_rsList').datagrid('load',{
+			
+		});
+	}
 </script>
 </html>
