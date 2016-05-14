@@ -186,10 +186,10 @@
                                 <div class="btn btn-default" onclick="doQuery();" style="margin-right:5px;"><i
                                         class="icon-search"></i>查询
                                 </div>
-                                <div class="btn btn-default" id="editPreOrderPanelBtn" style="margin-right:5px;"><i
+                                <div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i
                                         class="icon-plus"></i>修改
                                 </div>
-                                <div class="btn btn-default" id="deletePreOrderBtn" style="margin-right:5px;">
+                                <div class="btn btn-default" id="deleteReserveOrderBtn" style="margin-right:5px;">
                                     <i class="icon-arrow-up"></i>关闭
                                 </div>
                                 <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i
@@ -263,10 +263,10 @@
         </table>
         <hr style="margin-top:20px;margin-bottom:20px; border-top:1px solid #cccccc;"/>
         <div class="pull-right">
-            <div class="btn btn-default" style="margin-right:5px;" id="confirmEditPreOrderBtn"><i
+            <div class="btn btn-default" style="margin-right:5px;" id="confirmEditReserveOrderBtn"><i
                     class="icon-ok"></i>确定
             </div>
-            <div class="btn btn-default" id="closeEditPreOrderPanel"><i class="icon-remove"></i>取消</div>
+            <div class="btn btn-default" id="closeEditReserveOrderPanel"><i class="icon-remove"></i>取消</div>
         </div>
     </div>
 </div>
@@ -281,16 +281,16 @@
             </tr>
             <tr>
                 <td style="border: 0px; vertical-align: middle;">
-                    <textarea id="" rows=5 name="" class="textarea easyui-validatebox"></textarea>
+                    <textarea id="closeReason" rows=5 name="" class="textarea easyui-validatebox"></textarea>
                 </td>
             </tr>
         </table>
         <hr style="margin-top:20px;margin-bottom:20px; border-top:1px solid #cccccc;"/>
         <div class="pull-right">
-            <div class="btn btn-default" style="margin-right:5px;" id="confirmClosePreOrderBtn"><i
+            <div class="btn btn-default" style="margin-right:5px;" id="confirmCloseReserveOrderBtn"><i
                     class="icon-ok"></i>确定
             </div>
-            <div class="btn btn-default" id="closeClosePreOrderPanel"><i class="icon-remove"></i>取消</div>
+            <div class="btn btn-default" id="closeCloseReserveOrderPanel"><i class="icon-remove"></i>取消</div>
         </div>
     </div>
 </div>

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.pjbest.deliveryorder.bizservice.PjReserveOrderResponse;
+import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
+import com.pjbest.deliveryorder.service.PjSaleOrderAlloRequestHelper;
+import com.pjbest.deliveryorder.service.PjSaleOrderFeedbackRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -212,5 +216,45 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 		
 		return null;
 	}
-	
+
+    /**
+     * 关闭预约单
+     * @param reserveOrderNos
+     * @param closeReason
+     * @return 成功 - true， 失败 - false
+     */
+    public boolean closeReserveOrder(String[] reserveOrderNos, String closeReason) {
+
+        // 记录入库数据
+//        try {
+//            logger.info("omReserveOrderModel:{}", JsonUtil.translateToJson(omReserveOrderModel));
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//        }
+
+        InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
+        PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
+
+        boolean isClosingSuc = true;
+        for (String reserveOrderNo : reserveOrderNos) {
+            PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
+            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
+            pjSaleOrderFeedbackRequest.setReason(closeReason);
+            pjSaleOrderFeedbackRequest.setOperateType(ReserveOrderStatusEnum.HadClosed.getIndex());
+
+            try {
+                PjReserveOrderResponse reserveOrderResponse = pjReserveOrderService.feedbackReserveOrder(pjSaleOrderFeedbackRequest);
+                // 返回数据记录
+                logger.info("reserveOrderResponse result code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
+                logger.info("reserveOrderResponse result message - ", reserveOrderResponse.getResultMsg());
+
+                isClosingSuc = isClosingSuc && ("1".equals(reserveOrderResponse.getResultCode()));
+
+            } catch (OspException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        return isClosingSuc;
+    }
 }

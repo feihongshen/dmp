@@ -20,21 +20,21 @@ $(function () {
     })
 
     //修改预定单panel
-    var editPreOrderPanel = null;
+    var editReserveOrderPanel = null;
     //关闭预定单panel
-    var closePreOrderPanel = null;
+    var closeReserveOrderPanel = null;
     //返回总部panel
     var returnToCentralPanel = null;
     //分配站点panel
     var distributeBranchPanel = null;
 
-    $('#editPreOrderPanelBtn').click(function () {
+    $('#editReserveOrderPanelBtn').click(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
 
         //打开条件生成账单面板
-        editPreOrderPanel = $.layer({
+        editReserveOrderPanel = $.layer({
             type: 1,
             title: '修改预约单',
             shadeClose: true,
@@ -46,13 +46,13 @@ $(function () {
             }
         });
     })
-    $('#deletePreOrderBtn').click(function () {
+    $('#deleteReserveOrderBtn').click(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
 
         //打开关闭预约单面板
-        closePreOrderPanel = $.layer({
+        closeReserveOrderPanel = $.layer({
             type: 1,
             title: '关闭预约单',
             shadeClose: true,
@@ -124,17 +124,17 @@ $(function () {
         });
     })
 
-    $('#confirmEditPreOrderBtn').click(function () {
-        confirmEditPreOrder();
+    $('#confirmEditReserveOrderBtn').click(function () {
+        confirmEditReserveOrder();
     })
-    $('#closeEditPreOrderPanel').click(function () {
-        closePanel(editPreOrderPanel);
+    $('#closeEditReserveOrderPanel').click(function () {
+        closePanel(editReserveOrderPanel);
     })
-    $('#confirmClosePreOrderBtn').click(function () {
-        confirmClosePreOrder();
+    $('#confirmCloseReserveOrderBtn').click(function () {
+        confirmCloseReserveOrder();
     })
-    $('#closeClosePreOrderPanel').click(function () {
-        closePanel(closePreOrderPanel);
+    $('#closeCloseReserveOrderPanel').click(function () {
+        closePanel(closeReserveOrderPanel);
     })
 
     $('#closeDistributeBranchPanel').click(function () {
@@ -203,7 +203,7 @@ $(function () {
         }
     }
 
-    function confirmEditPreOrder() {
+    function confirmEditReserveOrder() {
 
         var param = {}
 
@@ -218,16 +218,28 @@ $(function () {
         });
     }
 
-    function confirmClosePreOrder() {
-        var param = {}
+    function confirmCloseReserveOrder() {
+        var rows = $('#dg').datagrid('getChecked');
+
+        var reserveOrderNos = [] ;
+        $.each(rows, function(index, value){
+            reserveOrderNos.push(value.reserveOrderNo);
+        })
+
+        var param = {
+            reserveOrderNos : reserveOrderNos.join(",") ,
+            closeReason : $('#closeReason').val()
+        }
 
         $.ajax({
             type: "POST",
-            url: "",
+            url: contextPath + "/express2/reserveOrder/closeReserveOrder",
             dataType: "json",
             data: param,
             success: function (data) {
-
+                $('#dg').datagrid('reload');
+                $('#closeReason').val("");
+                closePanel(closeReserveOrderPanel);
             }
         });
     }
