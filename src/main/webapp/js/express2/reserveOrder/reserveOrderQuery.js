@@ -15,7 +15,15 @@ $(function() {
  * @param {Object} index the row index.
  */
 function reserveOrderNoFormatter(value, row, index) {
-	return '<a href="#">'+ value + '</a>';
+	return '<a href="javascript:reserveOrderNoOnClick(\'' + value + '\')" >'+ value + '</a>';
+}
+
+/**
+ * 预约单号点击事件
+ * @param {String} reserveOrderNo
+ */
+function reserveOrderNoOnClick(reserveOrderNo) {
+	alert(reserveOrderNo);
 }
 
 function doSearch() {

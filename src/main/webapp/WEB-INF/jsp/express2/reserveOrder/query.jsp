@@ -10,33 +10,10 @@
 <body class="easyui-layout" leftmargin="0" topmargin="0">
 	<div data-options="region:'center'"
 		style="height: 100%; overflow-x: auto; overflow-y: auto;">
-		<table id="dg_rsList" class="easyui-datagrid"
-			url="<%=request.getContextPath()%>/express2/reserveOrder/queryList/query" toolbar="#signFee_toolbar"
-			showFooter="true" fit="true" fitColumns="false"  singleSelect="true"
-			width="100%" pageSize="10" rownumbers="true" pagination="true"  pageList="[10,30,50]">
-			<thead>
-				<tr>
-					<th field="omReserveOrderId"  hidden="true" align="center" width="180px;">id</th>
-					<th field="reserveOrderNo" align="center" width="130px;">预约单号</th>
-					<th field="appointTimeStr" align="center" width="130px;">下单时间</th>
-					<th field="cnorName" align="center" width="100px;">寄件人</th>
-					<th field="cnorMobile" align="center" width="100px;">手机</th>
-					<th field="cnorTel" align="center" width="100px;">固话</th>
-					<th field="cnorAddr" align="center" width="130px;">寄件地址</th>
-					<th field="requireTimeStr" align="center" width="130px;">预约上门时间</th>
-					<th field="reservrOrderStatusName" align="center" width="100px;">预约单状态</th>
-					<th field="reason" align="center" width="130px;">原因 </th>
-					<th field="transportNo" align="center" width="100px;">运单号 </th>
-					<th field="acceptOrgName" align="center" width="100px;">站点</th>
-					<th field="courierName" align="center" width="80px;">快递员</th>
-					<th field="cnorRemark" align="center" width="80px;">备注</th>
-				</tr>
-			</thead>
-		</table>
-
+		<table id="dg_rsList"></table>
 		<div id="signFee_toolbar" style="padding: 10px">
 		<form action="" id="search_form" style="margin:0px;">
-			<table id="search_table">
+			<table id="search_table" width="100%">
 				<tr>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约单号：</td>
 					<td>
@@ -102,4 +79,64 @@
 		</div>
 	</div>
 </body>
+<script type="text/javascript">
+	/**
+	 * 初始化表格
+	 */
+	function initDataGrid() {
+		$('#dg_rsList').datagrid({
+			url: contextPath + '/express2/reserveOrder/queryList/query',
+			toolbar: "#signFee_toolbar",
+			showFooter: true,
+			fit: true,
+			fitColumns: false,
+			singleSelect: true,
+			pageSize: 10,
+			rownumbers: true,
+			pagination: true,
+			pageList: [10,30,50],
+		    columns:[[
+		        {field:'omReserveOrderId', title:'预约单id', hidden:true},
+		        {field:'reserveOrderNo', title:'预约单号', width:130, align:'center',
+		        	formatter: reserveOrderNoFormatter
+		       	},
+		        {field:'appointTimeStr', title:'下单时间', width:130, align:'center'},
+		        {field:'cnorName', title:'寄件人', width:100, align:'center'},
+		        {field:'cnorMobile', title:'手机', width:100, align:'center'},
+		        {field:'cnorTel', title:'固话', width:100, align:'center'},
+		        {field:'cnorAddr', title:'寄件地址', width:130, align:'center'},
+		        {field:'requireTimeStr', title:'预约上门时间', width:130, align:'center'},
+		        {field:'reservrOrderStatusName', title:'预约单状态', width:100, align:'center'},
+		        {field:'reason', title:'原因', width:130, align:'center'},
+		        {field:'transportNo', title:'运单号', width:100, align:'center'},
+		        {field:'acceptOrgName', title:'站点', width:100, align:'center'},
+		        {field:'courierName', title:'快递员', width:80, align:'center'},
+		        {field:'cnorRemark', title:'备注', width:80, align:'center'}
+		    ]]
+		});
+	}
+	
+	function doSearch() {
+		//查询list
+		$('#dg_rsList').datagrid('load',{
+			reserveOrderNo:$("#reserveOrderNo").val(),
+			appointTimeStart:$("#appointTimeStart").val(),
+			appointTimeEnd:$("#appointTimeEnd").val(),
+			cnorProv:$("#cnorProv").val(),
+			cnorCity:$("#cnorCity").val(),
+			cnorMobile:$("#cnorMobile").val(),
+			acceptOrg:$("#acceptOrg").val(),
+			courier:$("#courier").val(),
+			reserveOrderStatusList:$("#reserveOrderStatusList").val()
+		});
+	}
+	
+	$(function() {
+		//单选模糊查询下拉框
+		//$("#search_table select").combobox();
+		
+		//初始化表格
+		initDataGrid();
+	});
+</script>
 </html>
