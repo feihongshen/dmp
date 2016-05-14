@@ -75,31 +75,27 @@
 <body class="easyui-layout" leftmargin="0" topmargin="0">
 <div data-options="region:'center'" style="overflow-x:hidden;overflow-y:auto;">
 
-    <table id="dg" style="height:400px;" width="100%" toolbar="#toolbar" showFooter="true"
-           url="query" fitColumns="false" singleSelect="false" checkOnSelect="true"
-           selectOnCheck="false"
+        <table id="dg" style="height:400px;" width="100%" toolbar="#toolbar" showFooter="true"
+           url="<%=request.getContextPath()%>/reserveOrder/queryList" fitColumns="false" singleSelect="false" checkOnSelect="true"
+           selectOnCheck="false" rownumbers="true"
            pageSize="10" pagination="true" pageList="[10,50,100,200,300]">
         <thead>
         <tr>
-            <th field="cb" checkbox="true"></th>
-            <th field="billType" hidden="true"></th>
-            <th field="billNo" width="160">账单编号</th>
-            <th field="customerName" width="105">客户名称</th>
-            <th field="dateTypeName" width="80">日期类型</th>
-            <th field="settleTime" width="130">结算日期</th>
-            <th field="verifyTime" width="130">核销日期</th>
-            <th field="billTypeTitle" width="110">账单类型</th>
-            <th field="deliverOrgName" width="110">发货仓库</th>
-            <th field="billCount" width="60">单数</th>
-            <th field="billAmount" width="80">金额</th>
-            <th field="remark" width="100">备注</th>
-            <th field="mustRukuName" width="50">必须入库</th>
-            <th field="statusTitle" width="50">状态</th>
-            <th field="startTime" width="130">起始日期</th>
-            <th field="endTime" width="130">截止日期</th>
-            <th field="creator" width="85">创建人</th>
-            <th field="confirmUser" width="85">确认人</th>
-            <th field="verifyUser" width="85">核销人</th>
+            <th field="omReserveOrderId" checkbox="true"  align="center" width="180px;">id</th>
+            <th field="reserveOrderNo" align="center" width="150px;">预约单号</th>
+            <th field="appointTimeStr" align="center" width="130px;">下单时间</th>
+            <th field="cnorName" align="center" width="130px;">寄件人</th>
+            <th field="cnorMobile" align="center" width="100px;">手机</th>
+            <th field="cnorTel" align="center" width="120px;">固话</th>
+            <th field="cnorAddr" align="center" width="130px;">寄件地址</th>
+            <th field="requireTimeStr" align="center" width="150px;">预约上门时间</th>
+            <th field="reservrOrderStatusVal" align="center" width="130px;">预约单状态</th>
+            <th field="reason" align="center" width="130px;">原因 </th>
+            <th field="transportNo" align="center" width="130px;">运单号 </th>
+            <th field="acceptOrgName" align="center" width="130px;">站点</th>
+            <th field="creator" align="center" width="80px;">策略创建人</th>
+            <th field="stateName" align="center" width="80px;">策略状态</th>
+            <th field="activeTime" align="center" width="130px;">激活时间</th>
         </tr>
         </thead>
     </table>
@@ -150,8 +146,7 @@
                                 <select id="branch" name="branch">
                                     <option value="">请选择</option>
                                     <c:forEach items="${branchList}" var="list">
-                                        <option value="${list.branchid}"
-                                                selected="selected">${list.branchname}</option>
+                                        <option value="${list.branchid}">${list.branchname}</option>
                                     </c:forEach>
                                     <%--<option value="">---请选择---</option>--%>
                                     <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
@@ -193,16 +188,16 @@
                                 <div class="btn btn-default" onclick="doQuery();" style="margin-right:5px;"><i
                                         class="icon-search"></i>查询
                                 </div>
-                                <div class="btn btn-default" id="openEditPreOderPanelBtn" style="margin-right:5px;"><i
+                                <div class="btn btn-default" id="editPreOrderPanelBtn" style="margin-right:5px;"><i
                                         class="icon-plus"></i>修改
                                 </div>
-                                <div class="btn btn-default" onclick="openImportBtnPanel();" style="margin-right:5px;">
+                                <div class="btn btn-default" id="deletePreOrderBtn" style="margin-right:5px;">
                                     <i class="icon-arrow-up"></i>关闭
                                 </div>
-                                <div class="btn btn-default" onclick="doBatchRemoveBill();" style="margin-right:5px;"><i
+                                <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i
                                         class="icon-remove"></i>退回总部
                                 </div>
-                                <div class="btn btn-default" onclick="updateBillStatusToChecked();"
+                                <div class="btn btn-default" id="distributeBranchBtn"
                                      style="margin-right:5px;"><i class="icon-eye-open"></i>分配站点
                                 </div>
                                 <div class="btn btn-default" onclick="doExportBill();" style="margin-right:5px;"><i
@@ -274,6 +269,97 @@
                     class="icon-ok"></i>确定
             </div>
             <div class="btn btn-default" id="closeEditPreOrderPanel"><i class="icon-remove"></i>取消</div>
+        </div>
+    </div>
+</div>
+<div id="dialog2" title="关闭预约单" style="display:none;">
+    <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
+        <table>
+            <tr>
+                <td style="border: 0px; text-align: left; vertical-align: middle;padding-left: 10px;width: 40%;">
+                    关闭原因：
+                </td>
+
+            </tr>
+            <tr>
+                <td style="border: 0px; vertical-align: middle;">
+                    <textarea id="" rows=5 name="" class="textarea easyui-validatebox"></textarea>
+                </td>
+            </tr>
+        </table>
+        <hr style="margin-top:20px;margin-bottom:20px; border-top:1px solid #cccccc;"/>
+        <div class="pull-right">
+            <div class="btn btn-default" style="margin-right:5px;" id="confirmClosePreOrderBtn"><i
+                    class="icon-ok"></i>确定
+            </div>
+            <div class="btn btn-default" id="closeClosePreOrderPanel"><i class="icon-remove"></i>取消</div>
+        </div>
+    </div>
+</div>
+<div id="dialog3" title="退回总部" style="display:none;">
+    <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
+        <table>
+            <tr>
+                <td style="border: 0px; text-align: left; vertical-align: middle;padding-left: 10px;width: 40%;">
+                    退回原因：
+                </td>
+
+            </tr>
+            <tr>
+                <td style="border: 0px; vertical-align: middle;">
+                    <textarea id="" rows=5 name="" class="textarea easyui-validatebox"></textarea>
+                </td>
+            </tr>
+        </table>
+        <hr style="margin-top:20px;margin-bottom:20px; border-top:1px solid #cccccc;"/>
+        <div class="pull-right">
+            <div class="btn btn-default" style="margin-right:5px;" id="confirmReturnToCentralBtn"><i
+                    class="icon-ok"></i>确定
+            </div>
+            <div class="btn btn-default" id="closeReturnToCentralPanel"><i class="icon-remove"></i>取消</div>
+        </div>
+    </div>
+</div>
+<div id="dialog4" title="分配站点" style="display:none;">
+    <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
+        <table>
+            <tr>
+                <td>站点：</td>
+                <td>
+                    <select id="distributeBranchSelect" name="distributeBranchSelect">
+                        <option value="">请选择</option>
+                        <c:forEach items="${branchList}" var="list">
+                            <option value="${list.branchid}">${list.branchname}</option>
+                        </c:forEach>
+                        <%--<option value="">---请选择---</option>--%>
+                        <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
+                        <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
+                        <%--</option>--%>
+                        <%--<%} %>--%>
+                    </select>
+                </td>
+
+            </tr>
+            <tr>
+                <td>快递员：</td>
+                <td>
+                    <select id="distributeKdySelect" name="distributeKdySelect">
+                        <option value="">请选择</option>
+                        <%--<option value="">---请选择---</option>--%>
+                        <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
+                        <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
+                        <%--</option>--%>
+                        <%--<%} %>--%>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <hr style="margin-top:20px;margin-bottom:20px; border-top:1px solid #cccccc;"/>
+        <div class="pull-right">
+            <div class="btn btn-default" style="margin-right:5px;" id="confirmDistributeBranchBtn"><i
+                    class="icon-ok"></i>确定
+            </div>
+            <div class="btn btn-default" id="closeDistributeBranchPanel"><i class="icon-remove"></i>取消</div>
         </div>
     </div>
 </div>
