@@ -510,10 +510,13 @@ public class VipShopGetCwbDataService {
 			created_dtm_loc = choseCreateDtmLoc(created_dtm_loc);
 			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
 			//团购标志
-			String vip_club = VipShopGetCwbDataService.convertEmptyString("vip_club", datamap);
+			String vip_club = VipShopGetCwbDataService.convertEmptyString("vip_club", datamap).trim();
 			
 			if(vipshop.getIsOpenLefengflag()==1){//开启乐蜂网
-				if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
+				//Modified by leoliao at 2016-05-15 
+				//区分乐蜂订单逻辑如下：根据上游系统提供的接口数据字段vip_club值来区分是否为乐蜂订单，当且仅当vip_club值为14时，订单为乐蜂订单。
+				//if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
+				if(!vip_club.equals("14") && !cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
 					return getSeq(seq_arrs, seq);
 				}
 			}
@@ -640,7 +643,8 @@ public class VipShopGetCwbDataService {
 		
 		
 		dataMap.put("sendcargoname", "[发出商品]");
-		dataMap.put("customerid", choseCustomerId(vipshop, customer_name));
+		//dataMap.put("customerid", choseCustomerId(vipshop, customer_name));
+		dataMap.put("customerid", choseCustomerId(vipshop, vip_club));
 		dataMap.put("remark1", order_batch_no); // 交接单号
 		dataMap.put("remark2", (vipshop.getIsCreateTimeToEmaildateFlag()==1?add_time:rec_create_time)); // 如果开启生成批次，则remark2是出仓时间，否则是订单生成时间
 
@@ -726,13 +730,32 @@ public class VipShopGetCwbDataService {
 		return remarkFreight;
 	}
 
-	private String choseCustomerId(VipShop vipshop, String customer_name) {
+	/*
+	private String choseCustomerIdX(VipShop vipshop, String customer_name) {
 		String customerid=vipshop.getCustomerids();  //默认选择唯品会customerid
 		
 		if((customer_name!=null&&customer_name.contains("乐蜂")))
 		{
 			customerid=vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids():vipshop.getLefengCustomerid();
 		}
+		return customerid;
+	}*/
+	
+	/**
+	 * TMS-DMP,TPS-DMP的订单查询接口，
+	 * 修改区分乐蜂订单逻辑如下： 根据上游系统提供的接口数据字段vip_club值来区分是否为乐蜂订单，当且仅当vip_club值为14时，订单为乐蜂订单。
+	 * @author leo01.liao
+	 * @param vipshop
+	 * @param vip_club
+	 * @return
+	 */
+	private String choseCustomerId(VipShop vipshop, String vip_club) {
+		String customerid = vipshop.getCustomerids();  //默认选择唯品会customerid
+		
+		if(vip_club != null && vip_club.trim().equals("14")){
+			customerid = (vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid().trim());
+		}
+		
 		return customerid;
 	}
 
