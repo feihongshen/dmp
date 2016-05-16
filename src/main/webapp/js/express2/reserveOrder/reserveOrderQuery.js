@@ -4,7 +4,7 @@ $(function() {
     });
 	
 	$("#acceptOrg").change(function () {
-        changeCourier($(this).val());
+        changeCourier($(this).val(), "#courier");
     });
 });
 
@@ -72,11 +72,11 @@ function changeCounty(cityId, changedItem) {
     }
 }
     
-    function changeCourier(branchId) {
-        var kdySelect = $("#courier");
-        if (branchId && branchId.length > 0) {
+    function changeCourier(acceptOrg,changedItem) {
+    	var courierSelect = $(changedItem);
+        if (acceptOrg && acceptOrg.length > 0) {
             //var citySelect;
-            //citySelect = $("#sender_provinceid_id");
+            //citySelect = $('#sender_provinceid_id");
 
             //var provinceCode = provinceSelect.find("option:selected").attr("code");
 
@@ -85,20 +85,19 @@ function changeCounty(cityId, changedItem) {
                 url: contextPath + "/express2/reserveOrder/getCourierByBranch",
                 dataType: "json",
                 data: {
-                    "branchId": branchId
+                    "branchId": acceptOrg
                 },
                 success: function (data) {
-                    var kdyList = data.kdyList;
+                    var courierList = data.courierList;
 
-                    kdySelect.empty();
-                    kdySelect.get(0).add(new Option("请选择", ""));
-                    for (var i = 0; i < kdyList.length; i++) {
-                        kdySelect.get(0).add(new Option(kdyList[i].realname, kdyList[i].userid));
+                    courierSelect.empty();
+                    courierSelect.get(0).add(new Option("请选择", ""));
+                    for (var i = 0; i < courierList.length; i++) {
+                        courierSelect.get(0).add(new Option(courierList[i].username, courierList[i].userid));
                     }
                 }
             });
         } else {
-            kdySelect.empty();
-            kdySelect.get(0).add(new Option("请选择", ""));
+            courierSelect.empty();
         }
     }

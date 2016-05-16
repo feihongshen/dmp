@@ -73,7 +73,7 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
-        var rows = $('#dg').datagrid('getChecked');
+        var rows = $('#dg_rsList').datagrid('getChecked');
 
         if (rows.length == 1) {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
@@ -143,7 +143,7 @@ $(function () {
     }
 
     function confirmCloseReserveOrder() {
-        var rows = $('#dg').datagrid('getChecked');
+        var rows = $('#dg_rsList').datagrid('getChecked');
 
         var reserveOrderNos = [] ;
         $.each(rows, function(index, value){
@@ -161,7 +161,10 @@ $(function () {
             dataType: "json",
             data: param,
             success: function (data) {
-                $('#dg').datagrid('reload');
+                if (data.errorMsg){
+                    allertMsg.alertError(data.errorMsg);
+                }
+                $('#dg_rsList').datagrid('reload');
                 $('#closeReason').val("");
                 closePanel(closeReserveOrderPanel);
             }
@@ -169,7 +172,7 @@ $(function () {
     }
 
     function checkAtLeastSelectOneRow() {
-        var rows = $('#dg').datagrid('getChecked');
+        var rows = $('#dg_rsList').datagrid('getChecked');
         if (!rows || rows.length < 1) {
             allertMsg.alertError("请选择预约单");
             return true;
