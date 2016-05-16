@@ -40,14 +40,14 @@ form select,input[type="text"],input[type="number"]{
 }
 .multiSelect{
 		display: inline-block;
-	}
-	.multiSelect input{
+}
+.multiSelect input{
 	 	margin: 0px;
 	  	padding: 0px;
 	  	line-height: 15px;
 	  	border: 0px;
 		height:25px;
-	}
+}
 .datepicker{
 		height:30px !important;
 		width:170px !important;

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.vipshop.mercury.util.DateUtil;
 
+import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.dao.IEmsOrderDao;
 import cn.explink.domain.EmsOrderPO;
 import cn.explink.domain.Field;
@@ -63,12 +64,14 @@ public class EmsOrderDaoImpl implements IEmsOrderDao {
 	 */
 	@Override
 	public int getEmsUnpushOrderCount(QueryCondition qc) {
-		StringBuffer sql = new StringBuffer("select count(ems.id)") ;
-		sql.append("  from dmp_ems_order_b2ctemp ems , express_ops_cwb_detail de ") ;
-		sql.append(" , express_set_customer_info info ,express_set_branch br ") ;
+		StringBuffer sql = new StringBuffer("select count(de.cwb)") ;
+		sql.append("  from express_ops_cwb_detail de ,express_set_customer_info info ,express_set_branch br ") ;
 		sql.append(" where info.customerid = de.customerid ") ;
-		sql.append(" and ems.cwb = de.cwb and de.deliverybranchid = br.branchid ") ;
-		sql.append(" and ems.state = 0 ") ;
+		sql.append(" and de.deliverybranchid = br.branchid ") ;
+		sql.append(" and br.branchid = ").append(B2cEnum.EMS.getKey()) ;
+		sql.append(" and case when de.ismpsflag = 1 and info.mpsswitch != 0 then de.ismpsflag = 1 ") ;
+		sql.append(" else de.receivablefee > 0 and  de.shouldfare > 0 end  ") ;
+		sql.append(" and de.state = 1 ") ;
 		sql.append(this.setEmsUnpushOrderSqlCondition(qc)) ;
 		return this.jdbcTemplate.queryForInt(sql.toString());
 	}
@@ -85,11 +88,13 @@ public class EmsOrderDaoImpl implements IEmsOrderDao {
 		StringBuffer sql = new StringBuffer("select de.cwb as order_number, de.cwbordertypeid as order_type ,de.cwbstate as order_status ") ;
 		sql.append(" , de.flowordertype as order_current_status , br.branchname as brance_name ,  de.emaildate as delivery_time ") ;
 		sql.append(" , info.customername as delivery_customer , de.consigneeaddress as recipient_address ,  de.consigneemobile as recipient_mobile ") ;
-		sql.append("  from dmp_ems_order_b2ctemp ems , express_ops_cwb_detail de ") ;
-		sql.append(" , express_set_customer_info info ,express_set_branch br ") ;
+		sql.append("  from express_ops_cwb_detail de ,express_set_customer_info info ,express_set_branch br ") ;
 		sql.append(" where info.customerid = de.customerid ") ;
-		sql.append(" and ems.cwb = de.cwb and de.deliverybranchid = br.branchid ") ;
-		sql.append(" and ems.state = 0 ") ;
+		sql.append(" and de.deliverybranchid = br.branchid ") ;
+		sql.append(" and br.branchid = ").append(B2cEnum.EMS.getKey()) ;
+		sql.append(" and case when de.ismpsflag = 1 and info.mpsswitch != 0 then de.ismpsflag = 1 ") ;
+		sql.append(" else de.receivablefee > 0 and  de.shouldfare > 0 end  ") ;
+		sql.append(" and de.state = 1 ") ;
 		sql.append(this.setEmsUnpushOrderSqlCondition(qc)) ;
 		sql.append(" limit ? , ? ") ;
 		return this.jdbcTemplate.query(sql.toString(), new EmsOrderPOMapper() , (qc.getRealPage() - 1) * qc.getPageSize() , qc.getPageSize());
