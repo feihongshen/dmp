@@ -26,7 +26,7 @@
 		style="height: 100%; overflow-x: auto; overflow-y: auto;">
 		<table id="dg_rsList"></table>
 		<div id="signFee_toolbar" style="padding: 10px">
-		<form action="" id="search_form" style="margin:0px;">
+		<form action="" id="searchForm" style="margin:0px;">
 			<table id="search_table">
         <tr>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约单号：</td>
@@ -72,7 +72,7 @@
                                     <option value="">请选择</option>
                                 </select>
                             </td>
-					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约单状态：</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:80px;">预约单状态：</td>
 					<td>
 						<select name="reserveOrderStatusList" id="reserveOrderStatusList" style="width:140px;">
 							<option value="">请选择</option>
@@ -297,6 +297,20 @@
 			courier:$("#courier").val(),
 			reserveOrderStatusList:$("#reserveOrderStatusList").val()
 		});
+	}
+	
+	function exportExcel() {
+		var $searchForm = $("#searchForm");
+		//保存现场
+		var action = $searchForm.attr("action");
+		var target = $searchForm.attr("action");
+		//提交请求
+		$searchForm.attr("action", contextPath + "/express2/reserveOrder/exportExcel/handle");
+		$searchForm.attr("target", "_blank");
+		$searchForm.submit();
+		//恢复现场
+		$searchForm.attr("action", action);
+		$searchForm.attr("target", target);
 	}
 	
 	$(function() {

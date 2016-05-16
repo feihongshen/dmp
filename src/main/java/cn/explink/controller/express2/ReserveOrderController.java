@@ -1,7 +1,9 @@
 package cn.explink.controller.express2;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -9,6 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
@@ -32,7 +39,9 @@ import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
+import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.service.express2.ReserveOrderService;
+import cn.explink.util.ExcelUtils;
 import cn.explink.util.Tools;
 import net.sf.json.JSONObject;
 
@@ -147,6 +156,124 @@ public class ReserveOrderController extends ExpressCommonController {
 		dg.setRows(reserveOrderPageVo.getReserveOrderVoList());
 		dg.setTotal(reserveOrderPageVo.getTotalRecord());
 		Tools.outData2Page(Tools.obj2json(dg), response);
+	}
+	
+	/**
+	 * 导出到Excel
+	 * @throws Exception 
+	 * @date 2016年5月13日 下午5:39:59
+	 */
+	@ResponseBody
+	@RequestMapping("/exportExcel/{queryType}")
+	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") String queryType,
+			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, String cnorProv, String cnorCity,
+			String cnorMobile, String acceptOrg, String courier, String reserveOrderStatusList) throws Exception {
+		// 填充数据
+		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+		if(StringUtils.isNotBlank(reserveOrderNo)) {
+			omReserveOrderModel.setReserveOrderNo(reserveOrderNo);
+		}
+		if(StringUtils.isNotBlank(appointTimeStart)) {
+			omReserveOrderModel.setAppointTimeStart(appointTimeStart);
+		}
+		if(StringUtils.isNotBlank(appointTimeEnd)) {
+			omReserveOrderModel.setAppointTimeEnd(appointTimeEnd);
+		}
+		if(StringUtils.isNotBlank(cnorProv)) {
+			omReserveOrderModel.setCnorProv(cnorProv);
+		}
+		if(StringUtils.isNotBlank(cnorCity)) {
+			omReserveOrderModel.setCnorCity(cnorCity);
+		}
+		if(StringUtils.isNotBlank(cnorMobile)) {
+			omReserveOrderModel.setCnorMobile(cnorMobile);
+		}
+		if(StringUtils.isNotBlank(acceptOrg)) {
+			omReserveOrderModel.setAcceptOrg(acceptOrg);
+		}
+		if(StringUtils.isNotBlank(courier)) {
+			omReserveOrderModel.setCourier(courier);
+		}
+		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
+			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
+		}
+		final List<ReserveOrderVo> reserveOrderList = this.reserveOrderService.getTotalReserveOrders(omReserveOrderModel);
+		String sheetName = "订单信息"; // sheet的名称
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		String fileName = "快递预约单_" + df.format(new Date()) + ".xlsx"; // 文件名
+		final String[] cloumnName = {"预约单号", "下单时间", "寄件人", "手机", "固话", "寄件地址", "预约上门时间", "预约单状态", "原因", "运单号", "站点", "快递员", "备注"};
+		ExcelUtils excelUtil = new ExcelUtils() {
+
+			@Override
+			public void fillData(Sheet sheet, CellStyle style) {
+				Font font = sheet.getWorkbook().createFont();
+				font.setFontName("宋体");
+				font.setFontHeightInPoints((short) 10);
+				style.setFont(font);
+				//设置列的默认值
+				for(int i = 0; i < cloumnName.length; i++) {
+					sheet.setColumnWidth(i, 4000);
+				}
+				for (int i = 0; i < reserveOrderList.size(); i++) {
+					ReserveOrderVo vo = reserveOrderList.get(i);
+					Row row = sheet.createRow(i + 1);
+					short colIndex = 0;
+					
+					Cell cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getReserveOrderNo());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getAppointTimeStr());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCnorName());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCnorMobile());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCnorTel());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCnorAddr());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getRequireTimeStr());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getReserveOrderStatusName());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getReason());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getTransportNo());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getAcceptOrgName());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCnorName());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCnorRemark());
+				}
+			}
+		};
+		excelUtil.excel(response, cloumnName, sheetName, fileName);
 	}
 	
     @RequestMapping("/getCountyByCity")

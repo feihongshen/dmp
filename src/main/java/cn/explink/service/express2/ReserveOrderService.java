@@ -103,7 +103,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 		PjReserveOrderPageModel pjReserveOrderPageModel = null;
 		try {
-			pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(omReserveOrderModel, page - 1, rows);
+			pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(omReserveOrderModel, page, rows);
 			// 返回数据记录
 			logger.info("pjReserveOrderPageModel:{}", pjReserveOrderPageModel.getReserveOrders().size());
 		} catch (OspException e) {
@@ -150,6 +150,33 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
 		return reserveOrderPageVo;
+	}
+	
+	/**
+	 * 获取全部的预约当
+	 * @date 2016年5月16日 下午5:28:52
+	 * @param omReserveOrderModel
+	 * @return
+	 */
+	public List<ReserveOrderVo> getTotalReserveOrders(OmReserveOrderModel omReserveOrderModel) {
+		List<ReserveOrderVo> reserveOrderList = new ArrayList<ReserveOrderVo>();
+		final int MAX_ROW_SIZE = 10000; //最大导出数量
+		final int ROW_SIZE = 90; //分批次查询数量
+		//int page = 1; //起始页
+		//第一次查询
+		ReserveOrderPageVo reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, 1, ROW_SIZE);
+		reserveOrderList.addAll(reserveOrderPageVo.getReserveOrderVoList());
+		int maxRowSize = reserveOrderPageVo.getTotalRecord();
+		if(maxRowSize > MAX_ROW_SIZE) {
+			maxRowSize = MAX_ROW_SIZE;
+		}
+		//继续查询
+		int pageSize = (int) Math.ceil((double) maxRowSize / (double) ROW_SIZE);
+		for(int page = 2; page <= pageSize; page++) {
+			reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, page, ROW_SIZE);
+			reserveOrderList.addAll(reserveOrderPageVo.getReserveOrderVoList());
+		}
+		return reserveOrderList;
 	}
 	
 	/**
