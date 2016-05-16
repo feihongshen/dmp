@@ -23,6 +23,9 @@ import cn.explink.domain.GotoClassAuditing;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.util.Page;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Component
 public class GotoClassAuditingDAO {
 	private final class GotoClassAuditingRowMapper implements RowMapper<GotoClassAuditing> {
@@ -350,6 +353,7 @@ public class GotoClassAuditingDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<JSONObject> getAuditingByDayGroupByBranchid(String day, String secondDay) {
 		try {
 			String sql = "SELECT branchid,SUM(`payupamount`) as amount,SUM(`payupamount_pos`) as pos FROM `express_ops_goto_class_auditing` WHERE payupid=0 AND auditingtime>? AND auditingtime<=? GROUP BY branchid";

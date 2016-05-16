@@ -1,11 +1,16 @@
 package cn.explink.domain;
 
+import java.sql.Timestamp;
+
+
 public class TpsCwbFlowVo {
 	private String cwb;
 	private String scancwb;
 	private long flowordertype;
 	private String errinfo;
 	private int state;
+	private int trytime;
+	private Timestamp createtime;
 	
 	public String getCwb() {
 		return cwb;
@@ -37,6 +42,18 @@ public class TpsCwbFlowVo {
 	public void setState(int state) {
 		this.state = state;
 	}
-	
+	public int getTrytime() {
+		return trytime;
+	}
+	public void setTrytime(int trytime) {
+		this.trytime = trytime;
+	}
+	public Timestamp getCreatetime() {
+		return createtime;
+	}
+	public void setCreatetime(Timestamp createtime) {
+		this.createtime = createtime;
+	}
+
 	
 }

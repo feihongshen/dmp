@@ -27,7 +27,9 @@ public class TpsCwbFlowDao {
 			vo.setErrinfo(rs.getString("errinfo"));
 			vo.setFlowordertype(rs.getLong("flowordertype"));
 			vo.setScancwb(rs.getString("scancwb"));
-			
+			vo.setState(rs.getInt("status"));
+			vo.setTrytime(rs.getInt("trytime"));
+			vo.setCreatetime(rs.getTimestamp("createtime"));
 			return vo;
 		}
 	}
@@ -36,24 +38,42 @@ public class TpsCwbFlowDao {
 			"insert into express_ops_tps_flow_tmp (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime)"
 			+" values(?,?,?,?,CURRENT_TIMESTAMP,?,0)";
 	
+	private final static String TPS_FLOW_SQL_SAVE_SENT=
+			"insert into express_ops_tps_flow_tmp_sent (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime)"
+			+" values(?,?,?,?,?,?,?)";
+	
+	
 	private final static String TPS_FLOW_SQL_LIST=
-			"select * from express_ops_tps_flow_tmp where status in (0,2) and trytime<? and flowordertype=? order by createtime limit ?";
+			"select * from express_ops_tps_flow_tmp where trytime<? order by createtime limit ?";
 	
 	private final static String TPS_FLOW_SQL_UPDATE=
 			"update express_ops_tps_flow_tmp set status=?,errinfo=?,trytime=trytime+1 where cwb=? and scancwb=? and flowordertype=?";
 	
 	private final static String TPS_FLOW_SQL_HOUSEKEEP=
-			"delete from express_ops_tps_flow_tmp where createtime<DATE_SUB(NOW(),INTERVAL ? DAY) or status=1";
+			"delete from express_ops_tps_flow_tmp where createtime<DATE_SUB(NOW(),INTERVAL ? DAY)";
+	
+	private final static String TPS_FLOW_SQL_HOUSEKEEP_SENT=
+			"delete from express_ops_tps_flow_tmp_sent where createtime<DATE_SUB(NOW(),INTERVAL ? DAY)";
 	
 	private final static String TPS_FLOW_SQL_DELETE=
 			"delete from express_ops_tps_flow_tmp where cwb=? and scancwb=? and flowordertype=?";
 	
+	private final static String TPS_FLOW_SQL_EXIST=
+			"select cwb from express_ops_tps_flow_tmp where cwb=? and scancwb=? limit 1";
+	
+	private final static String TPS_FLOW_SQL_EXIST_SENT=
+			"select cwb from express_ops_tps_flow_tmp_sent where cwb=? and scancwb=? limit 1";
+	
 	public void save(TpsCwbFlowVo vo){
 		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getState());
 	}
+	
+	public void saveSent(TpsCwbFlowVo vo){
+		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE_SENT, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getCreatetime(),vo.getState(),vo.getTrytime());
+	}
 
-	public List<TpsCwbFlowVo> list(int size,int trytime,int flowordertype){
-		return this.jdbcTemplate.query(TPS_FLOW_SQL_LIST,new TpsCwbFlowVoMapper(),trytime,flowordertype,size);
+	public List<TpsCwbFlowVo> list(int size,int trytime){
+		return this.jdbcTemplate.query(TPS_FLOW_SQL_LIST,new TpsCwbFlowVoMapper(),trytime,size);
 	}
 
 	public void update(TpsCwbFlowVo vo){
@@ -64,7 +84,25 @@ public class TpsCwbFlowDao {
 		return jdbcTemplate.update(TPS_FLOW_SQL_HOUSEKEEP,day);
 	}
 	
+	public int deleteSent(int day){
+		return jdbcTemplate.update(TPS_FLOW_SQL_HOUSEKEEP_SENT,day);
+	}
+	
 	public int delete(TpsCwbFlowVo vo){
 		return jdbcTemplate.update(TPS_FLOW_SQL_DELETE,vo.getCwb(),vo.getScancwb(),vo.getFlowordertype());
+	}
+	
+	public boolean  checkExist(String cwb,String scancwb){
+		List<String> list= this.jdbcTemplate.queryForList(TPS_FLOW_SQL_EXIST,String.class,cwb,scancwb);
+		if(list!=null&&list.size()>0){
+			return true;
+		}else{
+			List<String> sentlist= this.jdbcTemplate.queryForList(TPS_FLOW_SQL_EXIST_SENT,String.class,cwb,scancwb);
+			if(sentlist!=null&&sentlist.size()>0){
+				return true;
+			}else{
+				return false;
+			}
+		}
 	}
 }

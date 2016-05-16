@@ -58,6 +58,3 @@ ALTER TABLE `fn_pay_detail` ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创�
 -- 修改表fn_pay_platform_interface
 ALTER TABLE `fn_pay_platform_interface` ADD COLUMN `creator` VARCHAR(50) NULL  COMMENT '创建人';
 
-
-
-

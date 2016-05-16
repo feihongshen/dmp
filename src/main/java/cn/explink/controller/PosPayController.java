@@ -29,6 +29,9 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.PosPayMoneyService;
 import cn.explink.util.Page;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @RequestMapping("/pospay")
 @Controller
 public class PosPayController {
@@ -52,6 +55,7 @@ public class PosPayController {
 	}
 
 	@RequestMapping("/list/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String list(Model model, @PathVariable("page") long page, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "pos_code", required = false, defaultValue = "") String pos_code, @RequestParam(value = "starttime", required = false, defaultValue = "") String starttime,
 			@RequestParam(value = "endtime", required = false, defaultValue = "") String endtime, @RequestParam(value = "branchid", required = false, defaultValue = "-1") long branchid,
@@ -91,6 +95,7 @@ public class PosPayController {
 	}
 
 	@RequestMapping("/save_excel")
+	@DataSource(DatabaseType.REPLICA)
 	public void saveAsExcel(Model model, HttpServletRequest request, HttpServletResponse response) {
 		List<User> userList = userDAO.getAllUser();
 		posPayMoneyService.PosPayRecord_selectSaveAsExcel(userList, request, response);

@@ -145,7 +145,7 @@ public class VipShopGetCwbDataService {
 		
 		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
-		
+		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
@@ -470,7 +470,7 @@ public class VipShopGetCwbDataService {
 	private String saveMapDataAndGetMaxSEQ(VipShop vipshop, List<Map<String, String>> paraList, String seq_arrs, Map<String, Object> datamap,int mpsswitch, Map<String, Boolean> resultMap, Set<String> lantuiNeWSet) {	
 		String order_sn = null;
 		try {
-			Map<String, String> dataMap = new HashMap<String, String>();
+			Map<String, String> dataOrderMap = new HashMap<String, String>();
 			String id = VipShopGetCwbDataService.convertEmptyString("id", datamap);
 			String seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
 			order_sn = VipShopGetCwbDataService.convertEmptyString("order_sn", datamap);
@@ -510,30 +510,33 @@ public class VipShopGetCwbDataService {
 			created_dtm_loc = choseCreateDtmLoc(created_dtm_loc);
 			String transcwb=pack_nos!=null&&!pack_nos.isEmpty()?pack_nos:order_sn;
 			//团购标志
-			String vip_club = VipShopGetCwbDataService.convertEmptyString("vip_club", datamap);
+			String vip_club = VipShopGetCwbDataService.convertEmptyString("vip_club", datamap).trim();
 			
 			if(vipshop.getIsOpenLefengflag()==1){//开启乐蜂网
-				if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
+				//Modified by leoliao at 2016-05-15 
+				//区分乐蜂订单逻辑如下：根据上游系统提供的接口数据字段vip_club值来区分是否为乐蜂订单，当且仅当vip_club值为14时，订单为乐蜂订单。
+				//if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
+				if(!vip_club.equals("14") && !cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
 					return getSeq(seq_arrs, seq);
 				}
 			}
 			
-			dataMap = addOrderDtoMap(vipshop, order_sn, dataMap, buyer_name,
+			dataOrderMap = addOrderDtoMap(vipshop, order_sn, dataOrderMap, buyer_name,
 					buyer_address, tel, mobile, post_code, transport_day,
 					money, order_batch_no, add_time, customer_name, cargotype,
 					original_weight, paywayid, attemper_no, created_dtm_loc,
 					rec_create_time, order_delivery_batch, freight,
 					cwbordertype, warehouse_addr, go_get_return_time,
-					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club, cmd_type);
+					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club, cmd_type, seq);
 			
 			
 			//集包相关代码处理
-			String mspAllPackge = mpsallPackage(vipshop, order_sn, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch,paraList,dataMap);
+			String mspAllPackge = mpsallPackage(vipshop, order_sn, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch,paraList,dataOrderMap);
 			if(mspAllPackge!=null){
 				return getSeq(seq_arrs, seq);
 			}
 			
-			if(dataMap==null || dataMap.isEmpty()){
+			if(dataOrderMap==null || dataOrderMap.isEmpty()){
 				return getSeq(seq_arrs, seq);
 			}
 						
@@ -547,7 +550,7 @@ public class VipShopGetCwbDataService {
 				if(!lantuiNeWSet.contains(order_sn) && !isExist && ("cancel".equalsIgnoreCase(cmd_type) || "edit".equalsIgnoreCase(cmd_type)) && !"".equals(seq)){
 					resultMap.put(seq, false);
 				} else {	
-					seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
+					seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataOrderMap, seq, cmd_type);
 				}
 				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
@@ -570,13 +573,13 @@ public class VipShopGetCwbDataService {
 
 			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);			
 			
-			if (dataMap.get("cwb").isEmpty()) { // 若订单号为空，则继续。
+			if (dataOrderMap.get("cwb").isEmpty()) { // 若订单号为空，则继续。
 				seq_arrs = getSeq(seq_arrs, seq);
 				return seq_arrs;
 			}
 			seq_arrs = getSeq(seq_arrs, seq);			
 			
-			paraList.add(dataMap);		
+			paraList.add(dataOrderMap);		
 
 		} catch (Exception e) {
 			String seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
@@ -621,9 +624,10 @@ public class VipShopGetCwbDataService {
 			String order_delivery_batch, String freight, String cwbordertype,
 			String warehouse_addr, String go_get_return_time,
 			String is_gatherpack, String is_gathercomp, String total_pack,
-			String transcwb,int mpsswitch,String vip_club, String cmd_type) {
+			String transcwb,int mpsswitch,String vip_club, String cmd_type, String seq) {
 		String sendcarnum=total_pack.isEmpty() ? "1" : total_pack;
 		
+		dataMap.put("seq", seq);
 		dataMap.put("cwb", order_sn);
 		dataMap.put("transcwb", transcwb);
 		
@@ -639,7 +643,8 @@ public class VipShopGetCwbDataService {
 		
 		
 		dataMap.put("sendcargoname", "[发出商品]");
-		dataMap.put("customerid", choseCustomerId(vipshop, customer_name));
+		//dataMap.put("customerid", choseCustomerId(vipshop, customer_name));
+		dataMap.put("customerid", choseCustomerId(vipshop, vip_club));
 		dataMap.put("remark1", order_batch_no); // 交接单号
 		dataMap.put("remark2", (vipshop.getIsCreateTimeToEmaildateFlag()==1?add_time:rec_create_time)); // 如果开启生成批次，则remark2是出仓时间，否则是订单生成时间
 
@@ -725,13 +730,32 @@ public class VipShopGetCwbDataService {
 		return remarkFreight;
 	}
 
-	private String choseCustomerId(VipShop vipshop, String customer_name) {
+	/*
+	private String choseCustomerIdX(VipShop vipshop, String customer_name) {
 		String customerid=vipshop.getCustomerids();  //默认选择唯品会customerid
 		
 		if((customer_name!=null&&customer_name.contains("乐蜂")))
 		{
 			customerid=vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids():vipshop.getLefengCustomerid();
 		}
+		return customerid;
+	}*/
+	
+	/**
+	 * TMS-DMP,TPS-DMP的订单查询接口，
+	 * 修改区分乐蜂订单逻辑如下： 根据上游系统提供的接口数据字段vip_club值来区分是否为乐蜂订单，当且仅当vip_club值为14时，订单为乐蜂订单。
+	 * @author leo01.liao
+	 * @param vipshop
+	 * @param vip_club
+	 * @return
+	 */
+	private String choseCustomerId(VipShop vipshop, String vip_club) {
+		String customerid = vipshop.getCustomerids();  //默认选择唯品会customerid
+		
+		if(vip_club != null && vip_club.trim().equals("14")){
+			customerid = (vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid().trim());
+		}
+		
 		return customerid;
 	}
 
@@ -963,16 +987,16 @@ public class VipShopGetCwbDataService {
 		}
 	}
 	
+	@Transactional
 	public void insertOrderGoods(Map<String, Object> datamap, String order_sn) {
-		try {
-			List<Map<String, Object>> goodslist = (List<Map<String, Object>>) datamap.get("goods");
+		List<Map<String, Object>> goodslist = (List<Map<String, Object>>) datamap.get("goods");
 			if ((goodslist != null) && (goodslist.size() > 0)) {
 				List<OrderGoods> orderGoodsList = null;
+				orderGoodsList = orderGoodsDAO.getOrderGoodsList(order_sn);
+				if(!CollectionUtils.isEmpty(orderGoodsList)){
+					return;
+				}
 				for (Map<String, Object> good : goodslist) {
-					orderGoodsList = orderGoodsDAO.getOrderGoodsList(order_sn);
-					if(!CollectionUtils.isEmpty(orderGoodsList)){
-						break;
-					}
 					OrderGoods ordergoods = new OrderGoods();
 					ordergoods.setCwb(order_sn);
 					ordergoods.setCretime(DateTimeUtil.getNowTime());
@@ -987,9 +1011,6 @@ public class VipShopGetCwbDataService {
 					this.orderGoodsDAO.CreateOrderGoods(ordergoods);
 				}
 			}
-		} catch (Exception e) {
-			this.logger.error("获取商品列表异常,单号=" + order_sn, e);
-		}
 	}
 
 	private static String convertEmptyString(String str, Map m) {

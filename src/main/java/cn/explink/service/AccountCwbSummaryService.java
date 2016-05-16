@@ -14,6 +14,9 @@ import cn.explink.domain.AccountCwbSummary;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Service
 public class AccountCwbSummaryService {
 	private Logger logger = LoggerFactory.getLogger(AccountCwbSummaryService.class);
@@ -34,6 +37,7 @@ public class AccountCwbSummaryService {
 	 * @param branchids
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<AccountCwbSummary> getAccountCwbSummaryListByBranchAndUser(List<Branch> branchList, List<User> userList, long page, long checkoutstate, String branchids, long accounttype,
 			String starttime, String endtime) {
 		try {

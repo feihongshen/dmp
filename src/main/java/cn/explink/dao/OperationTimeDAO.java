@@ -21,6 +21,9 @@ import cn.explink.domain.OperationTime;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Page;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Component
 public class OperationTimeDAO {
 
@@ -140,6 +143,7 @@ public class OperationTimeDAO {
 	 * @param enddate
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public Map<Long, Long> getOperationTimeByCredateAndFlowordertypeGroupBranch(long outTime, int flowordertype, long customerid, String begindate, String enddate) {
 		String sql = "SELECT COUNT(1) AS num, branchid FROM express_ops_operation_time ot left join express_ops_cwb_detail cd ON cd.cwb=ot.cwb  "
 				+ "WHERE ot.credate<? AND ot.flowordertype=? and cd.state=1 ";
@@ -158,6 +162,7 @@ public class OperationTimeDAO {
 	 * @param enddate
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public Map<Long, Long> getZhongZhuanOperationTimeByCredateAndFlowordertypeGroupBranch(long outTime, String flowordertypes, long customerid, String begindate, String enddate) {
 		String sql = "SELECT COUNT(1) AS num, branchid FROM express_ops_operation_time ot left join express_ops_cwb_detail cd ON cd.cwb=ot.cwb  " + "WHERE ot.credate<? AND ot.flowordertype in("
 				+ flowordertypes + ") and cd.state=1 ";
@@ -206,6 +211,7 @@ public class OperationTimeDAO {
 	 * @param enddate
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public Map<Long, Long> getOperationTimeByCredateAndFlowordertypeGroupNextbranch(long outTime, int flowordertype, long customerid, String begindate, String enddate) {
 		String sql = "SELECT COUNT(1) AS num,ot.nextbranchid AS branchid FROM express_ops_operation_time ot left join express_ops_cwb_detail cd ON cd.cwb=ot.cwb "
 				+ "WHERE ot.credate<? AND ot.flowordertype=? and cd.state=1 ";
@@ -237,6 +243,7 @@ public class OperationTimeDAO {
 	 * @param enddate
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public Map<Long, Long> getOperationTimeByCredateAndFlowordertypesGroupNextbranch(long outTime, String flowordertypes, long customerid, String begindate, String enddate) {
 		String sql = "SELECT COUNT(1) AS num,ot.nextbranchid AS branchid FROM express_ops_operation_time ot left join express_ops_cwb_detail cd ON cd.cwb=ot.cwb "
 				+ "WHERE ot.credate<? AND ot.flowordertype in(" + flowordertypes + ") and cd.state=1 ";
@@ -270,6 +277,7 @@ public class OperationTimeDAO {
 	 * @param enddate
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public Map<Long, Long> getOperationTimeByCredateAndFlowordertypeAndDeliverystateGroupNextbranch(long outTime, String flowordertypes, int deliverystate, long customerid, String begindate,
 			String enddate) {
 		String sql = "SELECT COUNT(1) AS num, branchid FROM express_ops_operation_time ot left join express_ops_cwb_detail cd ON cd.cwb=ot.cwb " + "WHERE ot.credate<? AND ot.flowordertype in("

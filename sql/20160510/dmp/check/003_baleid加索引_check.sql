@@ -1,0 +1,1 @@
+SELECT 'baleid加索引' AS '脚本文件名',IF((SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema = schema() and table_name = 'express_ops_groupdetail' and index_name = 'Groupdetail_Baleid_Idx' and column_name = 'baleid') = 1,'success','failed') AS '执行结果';

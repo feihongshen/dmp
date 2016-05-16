@@ -240,8 +240,8 @@ function nowprint(){
 			</tr>
 			<tr>
 				<td height="12px">退货仓地址:</td>
-				<td colspan="4"><%=co.getRemark5() %>/<%for (Customer c : customerlist) {if (c.getCustomerid() == co.getCustomerid()) {	%>
-					<%=c.getCustomername()%> <%}}%></td>
+				<td colspan="4"><%=co.getRemark5() %>/<font size=5><%for (Customer c : customerlist) {if (c.getCustomerid() == co.getCustomerid()) {	%>
+					<%=c.getCustomername()%> <%}}%></font></td>
 				<td height="12px">建议最晚揽件时间:</td>
 				<td colspan="2"><%=co.getCustomercommand()!=null&&co.getCustomercommand().contains("预约揽收时间")?(co.getCustomercommand().substring(co.getCustomercommand().indexOf("预约揽收时间:")+9)):"" %></td>
 			</tr>

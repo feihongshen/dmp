@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
@@ -51,7 +53,8 @@ import cn.explink.util.ServiceUtil;
 @Controller
 @RequestMapping("/bale")
 public class BaleController {
-
+	private Logger logger = LoggerFactory.getLogger(BaleController.class);
+	
 	@Autowired
 	BaleDao baleDAO;
 	@Autowired
@@ -249,6 +252,7 @@ public class BaleController {
 			}
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
 			obj.put("errorcode", "111111");
 			obj.put("errorenum", e.getError());
 			obj.put("errorinfo", e.getMessage());
@@ -304,6 +308,7 @@ public class BaleController {
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
 			obj.put("errorcode", "111111");
 			obj.put("errorinfo", e.getMessage());
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -331,13 +336,14 @@ public class BaleController {
 			this.baleService.baletuihuochuzhanaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
 			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 			this.baleDAO.updateAddBaleScannum(bale.getId());
-				
+			bale = this.baleDAO.getBaleById(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
 			obj.put("errorcode", "111111");
 			obj.put("errorinfo", e.getMessage());
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -365,12 +371,14 @@ public class BaleController {
 			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 			this.baleDAO.updateAddBaleScannum(bale.getId());
 			//要点：做完所有的写操作最后再读出！
+			bale = this.baleDAO.getBaleById(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
 			obj.put("errorcode", "111111");
 			obj.put("errorinfo", e.getMessage());
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -403,17 +411,20 @@ public class BaleController {
 					this.baleService.sortAndChangeBaleAddCwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
 				} else {
 					// 调用分拣出库扫描逻辑
-					this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
+					CwbOrder cwbOrder=this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
+					this.tpsCwbFlowService.save(cwbOrder,scancwb, FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
 				}
 				
 				Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 				this.baleDAO.updateAddBaleScannum(bale.getId());
+				bale = this.baleDAO.getBaleById(bale.getId());
 				long successCount = bale.getCwbcount();
 				long scannum = bale.getScannum();
 				obj.put("successCount", successCount);
 				obj.put("scannum", scannum);
 				obj.put("errorcode", "000000");
 			} catch (CwbException e) {
+				this.logger.error("cwb="+cwb,e);
 				obj.put("errorcode", "111111");
 				obj.put("errorinfo", e.getMessage());
 				explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -509,6 +520,7 @@ public class BaleController {
 			} 
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
 			obj.put("errorcode", "111111");
 			obj.put("errorenum", e.getError());
 			obj.put("errorinfo", e.getMessage());
@@ -533,6 +545,7 @@ public class BaleController {
 			obj.put("errorcode", "000000");
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 		} catch (CwbException e) {
+			this.logger.error("baleno="+baleno,e);
 			obj.put("errorcode", "111111");
 			obj.put("errorinfo", e.getMessage());
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
@@ -563,6 +576,7 @@ public class BaleController {
 				bale=this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 				obj.put("errorcode", "000000");
 			} catch (CwbException e) {
+				this.logger.error("baleno="+baleno,e);
 				flag = false;
 				obj.put("errorcode", "111111");
 				obj.put("errorinfo", "(按包出库异常)" + e.getMessage());
@@ -693,6 +707,7 @@ public class BaleController {
 			try {
 				bale=this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
+				this.logger.error("baleno="+baleno,e);
 				flag = false;
 				obj.put("errorcode", "111111");
 				obj.put("errorinfo", "(按包出库异常)" + e.getMessage());
@@ -819,6 +834,7 @@ public class BaleController {
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
+					this.logger.error("cwb="+cwb,e);
 					obj.put("errorinfo", "(合包到货异常)" + cwb + e.getMessage());
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				}
@@ -846,6 +862,7 @@ public class BaleController {
 			try {
 				bale=this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
+				this.logger.error("baleno="+baleno,e);
 				flag = false;
 				obj.put("errorcode", "111111");
 				obj.put("errorinfo", "(按包出站异常)" + e.getMessage());
@@ -941,6 +958,7 @@ public class BaleController {
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
+					this.logger.error("cwb="+cwb,e);
 					obj.put("errorinfo", "(合包到货异常)" + cwb + e.getMessage());
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				}
@@ -986,6 +1004,7 @@ public class BaleController {
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				} catch (CwbException e) {
+					this.logger.error("cwb="+cwb,e);
 					obj.put("errorinfo", "(合包到货异常)" + cwb + e.getMessage());
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());
 				}
@@ -1006,6 +1025,7 @@ public class BaleController {
 			try {
 				bale=this.baleService.fengbao(this.getSessionUser(), baleno.trim(), branchid);
 			} catch (CwbException e) {
+				this.logger.error("baleno="+baleno,e);
 				flag = false;
 				obj.put("errorcode", "111111");
 				obj.put("errorinfo", "(按包出库异常)" + e.getMessage());
@@ -1080,12 +1100,14 @@ public class BaleController {
 
 			Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim()); //要点：做完所有的写操作最后再读出！
 			this.baleDAO.updateAddBaleScannum(bale.getId());
+			bale = this.baleDAO.getBaleById(bale.getId());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
 		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
 			obj.put("errorcode", "111111");
 			obj.put("errorinfo", e.getMessage());
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl());

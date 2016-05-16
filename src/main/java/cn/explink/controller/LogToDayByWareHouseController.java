@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
@@ -92,6 +95,7 @@ public class LogToDayByWareHouseController {
 	}
 
 	@RequestMapping("/nowlog")
+	@DataSource(DatabaseType.REPLICA)
 	public String nowlog(Model model, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) {
 	
 		List<Branch> kufangList = branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue());
@@ -213,6 +217,7 @@ public class LogToDayByWareHouseController {
 	}
 
 	@RequestMapping("/historylog")
+	@DataSource(DatabaseType.REPLICA)
 	public String historylog(Model model, @RequestParam(value = "createdate", required = false, defaultValue = "") String createdate,
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) {
 
@@ -237,6 +242,7 @@ public class LogToDayByWareHouseController {
 	}
 
 	@RequestMapping("/show/{customerid}/{type}/{count}/{branchid}/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String show(Model model, @PathVariable("customerid") long customerid, @PathVariable("type") String type, @PathVariable("count") long count, @PathVariable("branchid") long branchid,
 			@PathVariable("page") long page) {
 		// List<Branch> kufangList=
@@ -288,6 +294,7 @@ public class LogToDayByWareHouseController {
 	}
 
 	@RequestMapping("/exportExcel")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcel(HttpServletResponse response, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
 			@RequestParam(value = "type", required = false, defaultValue = "") String type, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid,
 			@RequestParam(value = "exportmould", required = false, defaultValue = "") String exportmould
