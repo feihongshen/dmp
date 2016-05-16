@@ -209,10 +209,18 @@ public class ReserveOrderController extends ExpressCommonController {
 
 
     @RequestMapping("/closeReserveOrder")
-    public void closeReserveOrder(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
+    @ResponseBody
+    public JSONObject closeReserveOrder(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
                                   @RequestParam(value = "closeReason", required = true) String closeReason,
                                   HttpServletRequest request, HttpServletResponse response
     ) {
-        reserveOrderService.closeReserveOrder(reserveOrderNos.split(","), closeReason);
+
+        JSONObject obj = new JSONObject();
+        try {
+            reserveOrderService.closeReserveOrder(reserveOrderNos.split(","), closeReason);
+        } catch (OspException e) {
+            obj.put("errorMsg", e.getReturnMessage());
+        }
+        return obj;
     }
 }

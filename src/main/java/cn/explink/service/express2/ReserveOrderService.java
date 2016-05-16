@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,31 @@ public class ReserveOrderService extends ExpressCommonService {
 private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	public static final int OSP_INVOKE_TIMEOUT = 60000;
-	
+
+    public enum PJReserverOrderOperationCode {
+        YiShenHe(38, "已审核"), RenWuTueHui(35, "任务退回"), RenWuQueRen(34, "任务确认"), GuanBi(33, "关闭"),
+        FanKuiJiLiu(32, "反馈滞留"), LanJianShiBai(31, "揽件失败"), LanJianShiBaiTuiHui(30, "揽件超区(退回)"),
+        ZhanDianChaoQu(29, "站点超区"), ShengGongSiChaoQu(28, "省公司超区"), LanJianChengGong(27, "揽件成功"),
+        YiLanJianFenPei(26, "已揽件分配"), YiFenPeiZhanDian(25, "已分配站点"), YiFenPeiShengGongSi(24, "已分配省公司");
+
+        private int value;
+        private String text;
+
+        PJReserverOrderOperationCode(int value, String text) {
+            this.value = value;
+            this.text = text;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
+
+
 	@Autowired
 	BranchDAO branchDAO;
 	@Autowired
@@ -238,7 +263,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
      * @param closeReason
      * @return 成功 - true， 失败 - false
      */
-    public boolean closeReserveOrder(String[] reserveOrderNos, String closeReason) {
+    public void closeReserveOrder(String[] reserveOrderNos, String closeReason) throws OspException {
 
         // 记录入库数据
 //        try {
@@ -250,12 +275,18 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
         InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
         PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 
-        boolean isClosingSuc = true;
+        User user = this.getSessionUser();
+        String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+        String operator = user.getUsername();
         for (String reserveOrderNo : reserveOrderNos) {
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
             pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
             pjSaleOrderFeedbackRequest.setReason(closeReason);
-            pjSaleOrderFeedbackRequest.setOperateType(ReserveOrderStatusEnum.HadClosed.getIndex());
+            pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.GuanBi.getValue());
+            pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
+            pjSaleOrderFeedbackRequest.setOperater(operator);
+            Date now = new Date();
+            pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
 
             try {
                 PjReserveOrderResponse reserveOrderResponse = pjReserveOrderService.feedbackReserveOrder(pjSaleOrderFeedbackRequest);
@@ -263,13 +294,12 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
                 logger.info("reserveOrderResponse result code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
                 logger.info("reserveOrderResponse result message - ", reserveOrderResponse.getResultMsg());
 
-                isClosingSuc = isClosingSuc && ("1".equals(reserveOrderResponse.getResultCode()));
-
             } catch (OspException e) {
+                logger.info("Osp Exception thrown", e.getReturnMessage());
                 logger.error(e.getMessage(), e);
+                throw e;
             }
         }
 
-        return isClosingSuc;
     }
 }

@@ -258,13 +258,13 @@
 			showFooter: true,
 			fit: true,
 			fitColumns: false,
-			singleSelect: true,
+			singleSelect: false,
 			pageSize: 10,
 			rownumbers: true,
 			pagination: true,
 			pageList: [10,30,50],
 		    columns:[[
-		        {field:'omReserveOrderId', title:'预约单id', hidden:true},
+		        {field:'omReserveOrderId', title:'预约单id', checkbox: true},
 		        {field:'reserveOrderNo', title:'预约单号', width:130, align:'center',
 		        	formatter: reserveOrderNoFormatter
 		       	},
