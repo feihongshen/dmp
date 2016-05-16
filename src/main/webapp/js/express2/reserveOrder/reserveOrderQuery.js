@@ -72,33 +72,33 @@ function changeCounty(cityId, changedItem) {
     }
 }
     
-    function changeCourier(branchId) {
-        var kdySelect = $("#courier");
-        if (branchId && branchId.length > 0) {
-            //var citySelect;
-            //citySelect = $("#sender_provinceid_id");
+function changeCourier(branchId) {
+    var kdySelect = $("#courier");
+    if (branchId && branchId.length > 0) {
+        //var citySelect;
+        //citySelect = $("#sender_provinceid_id");
 
-            //var provinceCode = provinceSelect.find("option:selected").attr("code");
+        //var provinceCode = provinceSelect.find("option:selected").attr("code");
 
-            $.ajax({
-                type: "POST",
-                url: contextPath + "/express2/reserveOrder/getCourierByBranch",
-                dataType: "json",
-                data: {
-                    "branchId": branchId
-                },
-                success: function (data) {
-                    var kdyList = data.kdyList;
+        $.ajax({
+            type: "POST",
+            url: contextPath + "/express2/reserveOrder/getCourierByBranch",
+            dataType: "json",
+            data: {
+                "branchId": branchId
+            },
+            success: function (data) {
+                var kdyList = data.kdyList;
 
-                    kdySelect.empty();
-                    kdySelect.get(0).add(new Option("请选择", ""));
-                    for (var i = 0; i < kdyList.length; i++) {
-                        kdySelect.get(0).add(new Option(kdyList[i].realname, kdyList[i].userid));
-                    }
+                kdySelect.empty();
+                kdySelect.get(0).add(new Option("请选择", ""));
+                for (var i = 0; i < kdyList.length; i++) {
+                    kdySelect.get(0).add(new Option(kdyList[i].realname, kdyList[i].userid));
                 }
-            });
-        } else {
-            kdySelect.empty();
-            kdySelect.get(0).add(new Option("请选择", ""));
-        }
+            }
+        });
+    } else {
+        kdySelect.empty();
+        kdySelect.get(0).add(new Option("请选择", ""));
     }
+}

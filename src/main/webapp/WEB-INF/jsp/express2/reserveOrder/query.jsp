@@ -13,18 +13,16 @@
 		<table id="dg_rsList"></table>
 		<div id="signFee_toolbar" style="padding: 10px">
 		<form action="" id="search_form" style="margin:0px;">
-			<table id="search_table" width="100%">
+			<table id="search_table">
 				<tr>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约单号：</td>
 					<td>
 						<input id="reserveOrderNo" name="reserveOrderNo" type ="text" style="width:140px;"/>
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约时间：</td>
-					<td>
+					<td colspan="3">
 						<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
-					</td>
-					<td style="border: 0px; text-align: center; vertical-align: middle;width:65px;">至</td>
-					<td>
+						至
 						<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
