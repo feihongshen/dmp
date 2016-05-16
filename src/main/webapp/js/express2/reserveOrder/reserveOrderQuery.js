@@ -11,6 +11,13 @@ $(function() {
         changeCourier($(this).val(), "#distributeCourierSelect");
     });
 
+    $("#province4edit").change(function () {
+        changeCity($(this).val(), "#city4edit");
+    });
+
+    $("#city4edit").change(function () {
+        changeCounty($(this).val(), "#county4edit");
+    })
 });
 
 /**

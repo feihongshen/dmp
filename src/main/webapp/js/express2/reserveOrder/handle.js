@@ -1,7 +1,5 @@
 $(function () {
-    $("#city4edit").change(function () {
-        changeCounty($(this).val(), "#county4edit");
-    })
+
 
 
 
@@ -18,6 +16,21 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
+        var rows = $('#dg_rsList').datagrid('getChecked');
+        if(rows.length != 1){
+            allertMsg.alertError("请只选择一张预约单");
+            return false;
+        }
+
+        var selectedRow = rows[0];
+
+        $("#reserveOrderNo4edit").val(selectedRow.reserveOrderNo);
+        $('#cnorName4eidt').val(selectedRow.cnorName);
+        $('#province4edit').val("");
+        $('#city4edit').val("");
+        $('#county4edit').val("");
+        $('#cnorAddr4edit').val(selectedRow.cnorAddr);
+        $('#requireTimeStr4edit').val(selectedRow.requireTimeStr);
 
         //打开条件生成账单面板
         editReserveOrderPanel = $.layer({
@@ -139,37 +152,23 @@ $(function () {
         closePanel(distributeBranchPanel);
     })
 
+
     function confirmEditReserveOrder() {
-
-        var param = {}
-
-        $.ajax({
-            type: "POST",
-            url: "",
-            dataType: "json",
-            data: param,
-            success: function (data) {
-
-            }
-        });
-    }
-
-    function confirmCloseReserveOrder() {
         var rows = $('#dg_rsList').datagrid('getChecked');
 
-        var reserveOrderNos = [] ;
-        $.each(rows, function(index, value){
-            reserveOrderNos.push(value.reserveOrderNo);
-        })
-
         var param = {
-            reserveOrderNos : reserveOrderNos.join(",") ,
-            closeReason : $('#closeReason').val()
+            reserveOrderNo : rows[0].reserveOrderNo,
+            cnorName4eidt : $('#cnorName4eidt').val(),
+            province4edit : $('#province4edit').val(),
+            city4edit : $('#city4edit').val(),
+            county4edit : $('#county4edit').val(),
+            cnorAddr4edit : $('#cnorAddr4edit').val(),
+            requireTimeStr4edit : $('#requireTimeStr4edit').val()
         }
 
         $.ajax({
             type: "POST",
-            url: contextPath + "/express2/reserveOrder/closeReserveOrder",
+            url: contextPath + "/express2/reserveOrder/editReserveOrder",
             dataType: "json",
             data: param,
             success: function (data) {
@@ -177,8 +176,14 @@ $(function () {
                     allertMsg.alertError(data.errorMsg);
                 }
                 $('#dg_rsList').datagrid('reload');
-                $('#closeReason').val("");
-                closePanel(closeReserveOrderPanel);
+                $("#reserveOrderNo4edit").val("");
+                $('#cnorName4eidt').val("");
+                //$('#province4edit').val("");
+                $('#city4edit').val("");
+                $('#county4edit').val("");
+                $('#cnorAddr4edit').val("");
+                $('#requireTimeStr4edit').val("");
+                closePanel(editReserveOrderPanel);
             }
         });
     }

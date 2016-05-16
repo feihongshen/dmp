@@ -95,6 +95,10 @@ public class ReserveOrderController extends ExpressCommonController {
         
 		// 预约单状态
 		model.addAttribute("orderStatusList", OrderStatusEnum.values());
+
+        String provinceName = this.reserveOrderService.getAdressInfoByBranchid().getProvinceName();
+        model.addAttribute("provinceName", provinceName);
+
         return "express2/reserveOrder/handle";
 	}
 	

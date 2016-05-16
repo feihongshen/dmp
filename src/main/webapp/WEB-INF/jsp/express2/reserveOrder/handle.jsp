@@ -102,19 +102,20 @@
                     预约单号：
                 </td>
                 <td style="border: 0px; vertical-align: middle;">
-                    <input/>
+                    <input id="reserveOrderNo4edit" readonly="true"/>
                 </td>
             </tr>
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">寄件人</td>
                 <td style="border: 0px; vertical-align: middle;">
-                    <input/>
+                    <input id="cnorName4eidt"/>
                 </td>
             </tr>
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">地址：</td>
                 <td style="border: 0px; vertical-align: middle;">
                     <select id="province4edit" disabled="disabled" name="province4edit" style="width: 31%">
+                       <option value=""><%=request.getAttribute("provinceName")%></option>
                         <%-- <%for (CustomWareHouse cw : wareHouseList) { %>
                          <option class="customerid2_<%=cw.getCustomerid() %>"
                                  value="<%=cw.getWarehouseid() %>"><%=cw.getCustomerwarehouse() %>
@@ -134,13 +135,13 @@
             </tr>
             <tr>
                 <td></td>
-                <td><input/></td>
+                <td><input id="cnorAddr4edit"/></td>
             </tr>
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">预约上门时间：</td>
                 <td style="border: 0px; vertical-align: middle; ">
-                    <input style="width: 94%;" type="text" name="start_time"
-                           id="start_time" <%--style="height:30px;"--%> value=""
+                    <input style="width: 94%;" type="text" name="requireTimeStr4edit"
+                           id="requireTimeStr4edit" <%--style="height:30px;"--%> value=""
                            onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
                 </td>
             </tr>
