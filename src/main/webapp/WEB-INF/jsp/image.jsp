@@ -64,14 +64,6 @@
 	g.dispose();
 	// 将认证码存入SESSION
 	session.setAttribute("validateCode", sRand);
-	// TODO added by wangwei, 用于DEBUG验证码，以后会撤销修改, start
-	System.out.println("---------- generate ValidateCode, start ----------");
-	System.out.println("(new Date()).toString() = " + (new Date()).toString());
-	System.out.println("session.getId() = " + session.getId());
-	System.out.println("sRand = " + sRand);
-	System.out.println("session.getAttribute(\"validateCode\") = " + session.getAttribute("validateCode"));
-	System.out.println("---------- generate ValidateCode, end ----------");
-	// TODO added by wangwei, 用于DEBUG验证码，以后会撤销修改, end
 	//System.out.println(request.getParameter("id")+"1111111111:"+session.getAttribute("rand"));
 
 	// 输出图象到页面
