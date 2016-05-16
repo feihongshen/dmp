@@ -8,7 +8,7 @@ public class EMSFlowEntity implements java.io.Serializable {
 	private String emailnum;
 	private int state;
 	private String flowContent;
-	private String action;
+	private String emsAction;
 	private long emsFlowordertype;
 	private String properdelivery;
 	private String notproperdelivery;
@@ -37,11 +37,11 @@ public class EMSFlowEntity implements java.io.Serializable {
 	public void setFlowContent(String flowContent) {
 		this.flowContent = flowContent;
 	}
-	public String getAction() {
-		return action;
+	public String getEmsAction() {
+		return emsAction;
 	}
-	public void setAction(String action) {
-		this.action = action;
+	public void setEmsAction(String emsAction) {
+		this.emsAction = emsAction;
 	}
 	public long getEmsFlowordertype() {
 		return emsFlowordertype;

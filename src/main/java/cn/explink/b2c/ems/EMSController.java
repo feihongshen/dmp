@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import sun.misc.BASE64Encoder;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.JiontDAO;
@@ -101,19 +102,20 @@ public class EMSController {
 			int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
 			if (isOpenFlag == 0) {
 				backInfo.setSuccess("0");
-				backInfo.setRemark("落地配为开启接口对接");
-				this.logger.info("落地配为开启EMS接口对接!");
+				backInfo.setRemark("品骏未开启接口对接");
+				this.logger.info("品骏未开启EMS接口对接!");
 			}else{
 				// 读取请求内容
-		        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+		        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream(),"UTF-8"));
 		        String line = null;
 		        StringBuilder sb = new StringBuilder();
 		        while((line = br.readLine())!=null){
 		            sb.append(line);
 		        }
-
 		        // 将资料解码
 		        String reqBody = sb.toString();
+		       /* byte[] bytes = sb.toString().getBytes("UTF-8");
+		        reqBody=new String(bytes,"UTF-8");*/
 		        this.logger.info("EMS运单轨迹报文:{}",reqBody);
 		        JSONObject jsonObject=JSONObject.fromObject(reqBody);
 		        String listexpressmail=jsonObject.getString("listexpressmail");
@@ -144,33 +146,14 @@ public class EMSController {
 		}
 	}
 	
-
-	/**
-	 * 获取ems运单轨迹
-	 */
-	/*@RequestMapping("/transcwbFlow")
-	public @ResponseBody String getTranscwbFlow(HttpServletRequest request, HttpServletResponse response) {
-		String sign = request.getParameter("sign");// 签名
-		try {
-			request.setCharacterEncoding("UTF-8");
-			response.setCharacterEncoding("UTF-8");
-	        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
-	        String line = null;
-	        StringBuilder sb = new StringBuilder();
-	        while((line = br.readLine())!=null){
-	            sb.append(line);
-	        }
-
-	        // 将资料解码
-	        String reqBody = sb.toString();
-	        System.out.println(reqBody);
-	        JSONArray jsonarray = JSONArray.fromObject(reqBody);  
-		    List<TPSOrder> dataList = (List<TPSOrder>)JSONArray.toCollection(jsonarray,TPSOrder.class); 
-            // 断开连接
-			return dataList.size()+"";
-		} catch (Exception e) {
-			logger.error("[EMS_运单轨迹]处理业务逻辑异常！", e);
-			return "[EMS_运单轨迹]处理业务逻辑异常！";
-		}
-	}*/
+	public static void mian(String args[]){
+		String str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response> "
+				+ "<result>0</result><errorDesc></errorDesc><errorCode></errorCode>"
+				+ "<qryData><bigAccountDataId>test0017-1</bigAccountDataId><billno>ems0017-1</billno>"
+				+ "<backBillno></backBillno></qryData></response>";
+		@SuppressWarnings("restriction")
+		String base64Sendstr = new BASE64Encoder().encode(str.getBytes());
+		System.out.println(base64Sendstr);
+	}
+	
 }

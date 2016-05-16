@@ -13,6 +13,7 @@
 <script src="<%=request.getContextPath()%>/js/jquery-1.8.0.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/easyui/jquery.easyui.min.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-1.3.6/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
 	
 	<link rel="stylesheet" href="<%=request.getContextPath()%>/css/easyui/themes/default/easyui.css" type="text/css" media="all" />
 	<link href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">

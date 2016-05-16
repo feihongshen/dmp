@@ -66,6 +66,9 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.OrderBackCheckService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
+import cn.explink.util.Tools;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 @Service
 public class EMSService {
@@ -109,15 +112,16 @@ public class EMSService {
 	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		EMS ems = new EMS();
-		ems.setEmsStateKey(request.getParameter("emsStateKey"));
+		ems.setSysAccount(request.getParameter("sysAccount"));
 		ems.setEmsStateUrl(request.getParameter("emsStateUrl"));
-		ems.setEmsTranscwbCount(Integer.parseInt(request.getParameter("emsTranscwbCount")));
-		ems.setEmsTranscwbPrivateKey(request.getParameter("emsTranscwbPrivateKey"));
 		ems.setEmsTranscwbUrl(request.getParameter("emsTranscwbUrl"));
-		ems.setOrderPrivateKey(request.getParameter("orderPrivateKey"));
+		ems.setEncodeKey(request.getParameter("encodeKey"));
 		ems.setOrderSendUrl(request.getParameter("orderSendUrl"));
-		ems.setResendOrderCount(Integer.parseInt(request.getParameter("resendOrderCount")));
 		ems.setSendOrderCount(Integer.parseInt(request.getParameter("sendOrderCount")));
+		ems.setSupportKey(Integer.parseInt(request.getParameter("supportKey")));
+		ems.setAppKey(request.getParameter("appKey"));
+		ems.setEmsDiliveryid(Long.parseLong(request.getParameter("emsDiliveryid")));
+		ems.setEmsBranchid(Long.parseLong(request.getParameter("emsBranchid")));
 
 		JSONObject jsonObj = JSONObject.fromObject(ems);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
@@ -160,34 +164,14 @@ public class EMSService {
 	}
 	
 	
-	/**
-	 * 获取EMS推送运单轨迹数据接口开始
-	 */
-	public String requestTranscwbInterface(EMS ems) throws Exception {
-		try {
-			// 构建Xml
-			String responseXML="";
-			//String responseXML = BuildTrackInfoXML(billcode);
-			logger.debug("[京东]查询跟踪返回XML=[{}]", responseXML);
-
-			return responseXML;
-
-		} catch (Exception e) {
-			String error = "处理[京东]查询请求发生未知异常:" + e.getMessage();
-			logger.error(error, e);
-			return error;
-		}
-	}
-	
 	//处理数据逻辑，构建返回报文
 	@Transactional
-	public void checkEMSData(ExpressMail expressMail, String listexpressmail) {
+	public void checkEMSData(ExpressMail expressMail, String listexpressmail)throws Exception {
 		 //
 		 String mailnum = expressMail.getMailnum();
 		 //从ems运单对照表获取dmp运单号
 	     String transcwb = eMSDAO.getTranscwbByEmailNo(mailnum);
 	     
-		
         if (transcwb.trim().length() == 0) {
 			this.logger.info("dmp运单号不存在！");
 			throw new CwbException("","落地配;运单号不存在！");
@@ -196,10 +180,18 @@ public class EMSService {
     	transcwb = transcwb.trim();
     	String cwb = this.cwbOrderService.translateCwb(transcwb);
     	CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
+    	if(order==null){
+    		this.logger.info("dmp订单不存在！订单号["+cwb+"]");
+			throw new CwbException("","落地配订单不存在！订单号["+cwb+"]");
+    	}
     	String action = expressMail.getAction();
     	String properdelivery = expressMail.getProperdelivery();
     	String notproperdelivery = expressMail.getNotproperdelivery();
     	OrderFlow orderFlow = orderFlowDAO.getOrderCurrentFlowByCwb(cwb);
+    	if(orderFlow==null){
+    		this.logger.info("dmp轨迹不存在！订单号["+cwb+"]");
+			throw new CwbException("","落地配轨迹不存在！订单号["+cwb+"]");
+    	}
 		if(action.equals("10") && StringUtil.isEmpty(expressMail.getProperdelivery())){
 			this.logger.info("EMS的签收信息异常,action=10(妥投)时，properdelivery为空。运单号：[" + transcwb + "]");
 			throw new CwbException("","EMS的签收信息异常,action=10(妥投)时，properdelivery为空。运单号：[" + transcwb + "]");
@@ -222,13 +214,13 @@ public class EMSService {
 					this.logger.info("EMS的action为40，且订单状态不是为审核为拒 时不做处理，运单号：[" + transcwb + "]");
 					throw new CwbException("","EMS的action为40，且订单状态不是为审核为拒 时不做处理，运单号：[" + transcwb + "]");
 				}
-			}else if(action.equals("10")){
+			}else if(action.equals("10")){//妥投
 				emsFlowordertype=9;
-			}else if(action.equals("20")){
+			}else if(action.equals("20")){//配送失败
 				emsFlowordertype=9;
 			}else if(action.equals("50")){
 				emsFlowordertype = 6;
-			}else if(action.equals("51")&&flow==7){
+			}else if(action.equals("51")){
 				emsFlowordertype=7;
 			}else {
 				this.logger.info("EMS，action值不合理，dmp无法操作，action=["+action+"]! 运单号：[" + transcwb + "]");
@@ -238,34 +230,51 @@ public class EMSService {
 			this.logger.info("EMS，action值为空，dmp无法操作，action=["+action+"]! 运单号：[" + transcwb + "]");
 			throw new CwbException("","EMS，action值为空，dmp无法操作，action=["+action+"]! 运单号：[" + transcwb + "]");
 		}
+		
+		//根据订单号、运单号、操作状去除重复数据
+		List<EMSFlowEntity> flowList = eMSDAO.getFlowByCondition(transcwb,mailnum,emsFlowordertype);
+		if(flowList.size()!=0){
+			throw new CwbException("","轨迹数据重复！运单号["+transcwb+"]");
+		}
+		String credate = Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss");
 		 //保存获取的ems运单轨迹报文
-        eMSDAO.saveEMSFlowInfo(transcwb,mailnum,listexpressmail,action,emsFlowordertype, properdelivery,notproperdelivery);
+        eMSDAO.saveEMSFlowInfo(transcwb,mailnum,listexpressmail,action,emsFlowordertype, properdelivery,notproperdelivery,credate);
 
 	}
 	
 
 	//处理ems轨迹逻辑
 	@Transactional
-	public void handleTranscwbFlowResult(EMS ems,EMSFlowEntity emsFlowEntity) {
+	public int handleTranscwbFlowResult(EMS ems,EMSFlowEntity emsFlowEntity)throws Exception {
 		 //从ems运单对照表获取dmp运单号
 	     String transcwb = emsFlowEntity.getTranscwb();
-	     
+	    Branch emsbranch = branchDAO.getBranchByBranchid(ems.getEmsBranchid());
         if (transcwb.trim().length() == 0) {
 			this.logger.info("dmp运单号不存在！");
-			throw new CwbException("","落地配;运单号不存在！");
+			return 2;
+			/*throw new CwbException("","落地配;运单号不存在！");*/
 		}
         
         transcwb = transcwb.trim();
 		String cwb = this.cwbOrderService.translateCwb(transcwb);
 		CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
+		/*String cwbByAddTrans = eMSDAO.getCwbByAddTranscwb(transcwb);
+		if(!StringUtils.isEmpty(cwbByAddTrans)){
+			order = this.cwbDAO.getCwbByCwb(cwbByAddTrans);
+		}*/
+		if(order==null){
+			this.logger.info("EMS运单号，对应的DMP订单号不存在！EMS运单号：[" + emsFlowEntity.getEmailnum() + "]");
+			throw new CwbException("","EMS运单号，对应的DMP订单号不存在！EMS运单号：[" + emsFlowEntity.getEmailnum() + "]");
+		}
 		//获取EMS退货出站下一站信息
-		Branch nextBranch = branchDAO.getBranchByIdAdd(12);
-		User deliveryUser = this.userDAO.getUserByUserid(4378);
-		String action = emsFlowEntity.getAction();
+		long tuihuoid = emsbranch.getTuihuoid();
+		Branch emsTuihuoBranch = branchDAO.getBranchByBranchid(tuihuoid);
+		User deliveryUser = this.userDAO.getUserByUserid(ems.getEmsDiliveryid());
+		String action = emsFlowEntity.getEmsAction();
 		String properdelivery = emsFlowEntity.getProperdelivery();
 		OrderFlow orderFlow = orderFlowDAO.getOrderCurrentFlowByCwb(cwb);
 		Date d = new Date();
-		BigDecimal bd = new BigDecimal("0");
+		BigDecimal bd = BigDecimal.ZERO;
 		Map<String, Object> parameters = null; 
 		DeliveryStateDTO dsDTO = new DeliveryStateDTO();
 		Integer sign_typeid = 0;
@@ -281,6 +290,12 @@ public class EMSService {
 		}
 		
 		int flow = orderFlow.getFlowordertype();
+		//校验ems轨迹顺序
+		int validateFlag = validateEMSOrder(emsFlowEntity.getEmsFlowordertype(),flow);
+		if(validateFlag==0){
+			return 2;
+		}
+		
 		if(!StringUtils.isEmpty(action)){
 			if(action.equals("00")||action.equals("30")||action.equals("60")){
 				//不做处理
@@ -310,7 +325,7 @@ public class EMSService {
 						this.clientConfirm(cwb);
 					}
 					//模拟退货出站（依据该客户是否要退货出站审核，如果要审核，模拟退货出站审核+退货出站；否则，直接模拟退货出站）
-					this.imitateCwbexportUntreadWarhouse(transcwb, deliveryUser,nextBranch);
+					this.imitateCwbexportUntreadWarhouse(transcwb, deliveryUser,emsTuihuoBranch);
 				}else{
 					//不做处理
 					this.logger.info("EMS的action为40，且订单状态不是为审核为拒 时不做处理，运单号：[" + transcwb + "]");
@@ -411,16 +426,18 @@ public class EMSService {
 			throw new CwbException("","EMS，action值为空，dmp无法操作，action=["+action+"]! 运单号：[" + transcwb + "]");
 		}
 		eMSDAO.changeEmsTraceDataState(emsFlowEntity.getId(),EMSTraceDataEnum.chulichenggong.getValue(),"处理成功");
+		return 1;
 	}
 
     //获取当前session
     private User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		return userDetail.getUser();
+		/*ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();*/
+    	return this.userDAO.getUserByUserid(4378);
 	}
     
     //模拟（非合包）站点到货,分站到货
-    public void subStationScan(String transcwb){
+    public void subStationScan(String transcwb) throws Exception{
     	User user = this.getSessionUser();
 		String cwb = this.cwbOrderService.translateCwb(transcwb);
 		CwbOrder cwbOrderOld = this.cwbDAO.getCwbByCwb(cwb);
@@ -481,7 +498,9 @@ public class EMSService {
 			CwbOrder cwbOrder = this.cwbOrderService.substationGoods(this.getSessionUser(), cwb, transcwb, 0, 0, "", "", false);
 		}catch(Exception e){
 			this.logger.info("EMS模拟站点到货异常! 运单号：[" + transcwb + "]");
+			throw e;
 			//修改临时表对应数据的状态
+			/*eMSDAO.changeEmsTraceDataState(id, state, remark);*/
 		}
     }
     
@@ -772,82 +791,69 @@ public class EMSService {
 		return sdv;
 	}
 
-	public long excute_getEmsEmailNoTask(String cwb) {
-		long count = 0;
-		String customerids = "";
-		String remark = "";
-		String cretime = DateTimeUtil.getNowTime();
-
-		/*try {
-			int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
-			if (isOpenFlag == 0) {
-				logger.info("未开启EMS接口对接！");
-				return -1;
-			}
-			
-			//获取EMS接口配置信息
-			EMS ems = this.getEmsObject(B2cEnum.EMS.getKey());
-
-			count = getEMSTeanscwb(cwb,B2cEnum.EMS.getKey()); // 下载
-			
-			Maikolin maikolin = getMaikaolin(B2cEnum.Maikaolin.getKey());
-			customerids = maikolin.getCustomerids();
-
-		} catch (Exception e) {
-			remark = "未知异常" + e.getMessage();
-			logger.error(remark, e);
-		}
-		remark = !remark.isEmpty() && count == 0 ? "未下载到数据" : remark;
-		if (count > 0) {
-			remark = "下载完成";
-		}
-
-		b2cAutoDownloadMonitorDAO.saveB2cDownloadRecord(customerids.indexOf(",") > 0 ? customerids.substring(0, customerids.length() - 1) : customerids, cretime, count, remark);
-		*/return count;
-	}
-	
-	public long getEMSTeanscwb(String cwb,int key) {
-		EMS ems = this.getEmsObject(key);
+	//远程获取ems运单号，并保存到运单对照表
+	public void getEMSTranscwb(String transcwb,EMS ems) throws Exception{
 		String emsTranscwbUrl = ems.getEmsTranscwbUrl();
 		//对接授权码
-		String appKey = "";
-		/*
-		 * 1.拼接requestXML是发送给EMS的xml信息 2.requestXML发送给EMS
-		 */
-		String requestXML = TranscwbRequestStr(ems.getEmsTranscwbUrl(), ems.getEmsTranscwbPrivateKey(),appKey, cwb);
-		String response_XML = null;
-
+		String appKey = ems.getAppKey();
+		
+		//1.拼接requestXML是发送给EMS的xml信息 2.response_XML发送给EMS
+		String requestXML = TranscwbRequestStr(ems.getEmsTranscwbUrl(), ems.getEncodeKey(),appKey, transcwb);
+		String response_XML = "";
+		
 		logger.info("请求[EMS]运单号XML={}", requestXML);
-
+		//将发送给ems的订单信息字符串进行base64加密
+		String base64Sendstr = new BASE64Encoder().encode(requestXML.getBytes());
+		
 		try {
-			String resquest_XML = HTTPInvokeWs(requestXML, emsTranscwbUrl);
-			logger.info("请求[EMS]运单号接口返回xml{}", resquest_XML);
-
-			if (resquest_XML.contains("<result>0</result>")) {
-				String errorDesc = resquest_XML.substring(resquest_XML.indexOf("<errorDesc>") + 11, resquest_XML.indexOf("</errorDesc>"));
-				String errorCode = resquest_XML.substring(resquest_XML.indexOf("<errorCode>") + 11, resquest_XML.indexOf("</errorCode>"));
+			response_XML = HTTPInvokeWs(base64Sendstr, emsTranscwbUrl);
+			
+			//将返回给dmp的订单信息字符串进行base64解密
+			response_XML = new String(new BASE64Decoder().decodeBuffer(response_XML));
+			logger.info("请求[EMS]运单号接口返回xml{}", response_XML);
+			
+			if (response_XML.contains("<result>0</result>")) {
+				String errorDesc = response_XML.substring(response_XML.indexOf("<errorDesc>") + 11, response_XML.indexOf("</errorDesc>"));
+				String errorCode = response_XML.substring(response_XML.indexOf("<errorCode>") + 11, response_XML.indexOf("</errorCode>"));
 				logger.info("请求[EMS]运单号异常<result>0</result>,errorCode={}，errorDesc={}",errorCode,errorDesc);
-				return 0;
+				return;
 			}
 
 			// 3.成功了,解析xml
-			EMSTranscwb eMSTranscwb = EMSUnmarchal.Unmarchal(resquest_XML);
+			EMSTranscwb eMSTranscwb = EMSUnmarchal.Unmarchal(response_XML);
 			EmsAndDmpTranscwb emsAndDmpTranscwb = eMSTranscwb.getQryData();
+			
 			if (emsAndDmpTranscwb == null) {
-				logger.warn("请求[EMS]没有获取到EMS对应运单号!");
-				return 0;
+				logger.info("请求[EMS]没有获取到EMS对应运单号!");
+				return;
+			} 
+			
+			transcwb = transcwb.trim();
+	    	String cwb = this.cwbOrderService.translateCwb(transcwb);
+	    	
+	    	long existTranscwb = eMSDAO.getListByTranscwb(transcwb);
+	    	if(existTranscwb!=0){
+	    		logger.info("该运单号已获取对应的ems运单号！dmp运单号为：{}",transcwb);
+				return;
+	    	}
+	    	
+	    	//解析并将获取的运单号信息存储到dmp与ems运单对照关系表
+			eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb,transcwb,emsAndDmpTranscwb.getBillno());
+			
+			//更新订单临时表"获取运单状态字段"值
+			List<SendToEMSOrder> orderList = eMSDAO.getSendOrderByTranscwb(transcwb);
+			if(orderList.size()==0){
+				throw new CwbException("","EMS订单下发临时表中没有对应运单记录!运单号为：["+transcwb+"]"); 
+			}else{
+				eMSDAO.updateGetTranscwbStateByTranscwb(transcwb);
 			}
-
-			//解析并将获取的运单号信息存储到dmp与ems运单对照关系表
-			//List<Map<String, String>> packageList = buildParmsList(packageOne, warehouseid); // 构建对象
-			logger.info("[麦考林]下载订单信息调用数据导入接口-插入数据库成功!");
-			return 1;
+			logger.info("请求[EMS]获取到对应运单号成功!");
+			return;
 
 		} catch (Exception e) {
 			logger.error("处理请求[EMS]运单号异常！返回信息：" + response_XML + ",异常原因：" + e.getMessage(), e);
-			return 0;
+			throw e;
 		}
-
 	}
 
 	//拼接运单对照关系请求报文
@@ -883,15 +889,93 @@ public class EMSService {
 	}
 	
 	//校验ems轨迹顺序
-	public void validateEMSOrder(long emsFlowordertype,long cwbOrderType){
+	public int validateEMSOrder(long emsFlowordertype,long cwbOrderType){
+		int flag = 1;
 		if(emsFlowordertype==0){
-			return;
-		}else if(emsFlowordertype==6 && !(cwbOrderType==1||cwbOrderType==2||cwbOrderType==3||cwbOrderType==4)){
-			return;
+			flag = 0;
+		}else if(emsFlowordertype==6 && !(cwbOrderType==1||cwbOrderType==2||cwbOrderType==3||cwbOrderType==4||cwbOrderType==6)){
+			flag = 0;
 		}else if(emsFlowordertype==7 && cwbOrderType!=7){
-			return;
+			flag = 0;
 		}else if(emsFlowordertype==9 && cwbOrderType!=9){
-			return;
+			flag = 0;
 		}
+		return flag;
 	}
+	
+	//拼接发送给ems订单信息字符串
+	public String getObjectToXmlStr(List<SendToEMSOrder> list,String sysAccount,String passWord,
+			String printKind,String appKey,String encodeKey) { 
+		StringBuffer objstr = new StringBuffer();
+		for(SendToEMSOrder orderInfo : list){
+			objstr.append(orderInfo.getData());
+		}
+		StringBuffer stringBuffer = new StringBuffer(); 
+		stringBuffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><XMLInfo>");
+		stringBuffer.append("<sysAccount>"+sysAccount+"</sysAccount>");
+		stringBuffer.append("<passWord>"+passWord+"</passWord>");
+		stringBuffer.append("<printKind>"+printKind+"</printKind>");
+		stringBuffer.append("<appKey>"+appKey+"</appKey>");
+		stringBuffer.append("<encodeKey>"+encodeKey+"</encodeKey>");
+		stringBuffer.append("<printDatas>");
+		stringBuffer.append("<printData>");
+		stringBuffer.append(objstr);
+		stringBuffer.append("</printData>");
+		stringBuffer.append("</printDatas>");
+		stringBuffer.append("</XMLInfo>");
+		return stringBuffer.toString(); 
+	}
+	
+	//处理发送订单信息给ems逻辑
+	@SuppressWarnings("restriction")
+	@Transactional
+	public void handleSendOrderToEMS(EMS ems,List<SendToEMSOrder> subList){
+		String sysAccount=ems.getSysAccount();
+		String passWord=ems.getEncodeKey();
+		String printKind=1+"";
+		String appKey=ems.getAppKey();
+		String encodeKey=ems.getEncodeKey();
+		String sendOrderUrl = ems.getOrderSendUrl();
+		String sendstr = this.getObjectToXmlStr(subList,sysAccount,passWord,printKind,appKey,encodeKey);
+		List<SendToEMSOrder> currentList = subList;
+		try {
+			logger.info("[EMS]订单下发接口,发送报文xml{}", sendstr);
+			//将发送给ems的订单信息字符串进行base64加密
+			String base64Sendstr = new BASE64Encoder().encode(sendstr.getBytes());
+			
+			String response_XML = this.HTTPInvokeWs(base64Sendstr, sendOrderUrl);
+			//将返回给dmp的订单信息字符串进行base64解密
+			response_XML = new String(new BASE64Decoder().decodeBuffer(response_XML));
+			logger.info("[EMS]订单下发接口返回xml{}", response_XML);
+			
+			// 3.成功了,解析xml
+			EMSOrderResultBack eMSOrderResultBack = EMSUnmarchal.UnmarchalOrder(response_XML);
+			List<ErrorDetail> errorDetail = eMSOrderResultBack.getErrorDetail();
+			
+			if (eMSOrderResultBack!=null && eMSOrderResultBack.getResult().equals("0")) {
+				logger.info("EMS订单下发失败,外层错误代码:{},外层错误描述:{}",eMSOrderResultBack.getErrorCode(),eMSOrderResultBack.getErrorDesc());
+				//更改订单临时表，发送状态为2：发送失败
+				if(errorDetail.size()!=0){
+					for(ErrorDetail detail : errorDetail){
+						eMSDAO.updateOrderTemp(detail.getDataID(),detail.getDataError(),2);
+						logger.info("EMS订单下发失败,订单号为：{}",detail.getDataID());
+						SendToEMSOrder errOder = eMSDAO.getSendOrderByTranscwb(detail.getDataID()).get(0);
+						currentList.remove(errOder);
+					}
+				}else{
+					throw new CwbException("","EMS订单下发信息返回异常,没有异常运单信息!");
+				}
+			}
+			
+			//更改订单临时表，发送状态为1：发送成功
+			for(SendToEMSOrder order : currentList){
+				eMSDAO.updateOrderTemp(order.getTranscwb(),"发送成功！",1);
+				logger.info("EMS订单下发成功，运单号为：{}",order.getTranscwb());
+			}
+		} catch (Exception e) {
+			logger.info("EMS订单下发信息返回异常,异常信息为：{}！异常报文为：{}",e.getMessage(),sendstr);
+		} 
+		
+	}
+
 }
