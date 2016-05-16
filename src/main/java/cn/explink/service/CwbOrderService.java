@@ -502,14 +502,14 @@ public class CwbOrderService extends BaseOrderService {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,deliverybranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpstranscwb) "
+						+ "remark1,remark2,remark3,remark4,remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpstranscwb,credate) "
 						+ "values(?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ "  ?,?,?,?,?,?,?,?,?,?,"
 						+ " ?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
 						+ "?,?,?,?,?,?,?,?,?,? ,"
-						+ "?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+						+ "?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 
@@ -588,12 +588,13 @@ public class CwbOrderService extends BaseOrderService {
 						ps.setInt(66, FlowOrderTypeEnum.DaoRuShuJu.getValue());
 						ps.setInt(67, cwbOrderDTO.getVipclub());
 						ps.setString(68, cwbOrderDTO.getTpsTranscwb());
+						ps.setTimestamp(69, Timestamp.valueOf(DateTimeUtil.getNowTime()));
 					}
 
 				});
 
 		if (cwbOrderDTO.getIsmpsflag() == IsmpsflagEnum.yes.getValue()) {
-			this.dataImportService.insertTransCwbDetail(cwbOrderDTO, ed.getEmaildatetime());
+			this.dataImportService.insertTransCwbDetail(cwbOrderDTO, (cwbOrderDTO.getEmaildate().length() == 0 ? ed.getEmaildatetime() : cwbOrderDTO.getEmaildate()));
 		}
 		
 		//Added by leoliao at 2016-03-01
@@ -857,8 +858,8 @@ public class CwbOrderService extends BaseOrderService {
 			}
 
 			// 订单不存在时插入一条新数据
-			String sql = "insert into express_ops_cwb_detail (cwb,startbranchid,customerid,flowordertype,cwbstate) values(?,?,?,?,?)";
-			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, CwbFlowOrderTypeEnum.WeiDaoHuo.getValue(), CwbStateEnum.WUShuju.getValue());
+			String sql = "insert into express_ops_cwb_detail (cwb,startbranchid,customerid,flowordertype,cwbstate,credate) values(?,?,?,?,?,?)";
+			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, CwbFlowOrderTypeEnum.WeiDaoHuo.getValue(), CwbStateEnum.WUShuju.getValue(),Timestamp.valueOf(DateTimeUtil.getNowTime()));
 			co = this.cwbDAO.getCwbByCwb(cwb);
 		} else {
 			// //选择了供货商，但是非本供货商
@@ -1755,18 +1756,22 @@ public class CwbOrderService extends BaseOrderService {
 			nextbranchid = cwbOrder.getNextbranchid();
 			
 			//Added by leoliao at 2016-03-30 到货扫描在到错货的情况计算扫描次数需要把flowordertype改为8(到错货)
-			if ((nextbranchid != 0) && (nextbranchid != userbranch.getBranchid()) && (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
-				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
-				flowOrderType = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-			}
+//			if ((nextbranchid != 0) && (nextbranchid != userbranch.getBranchid()) && (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
+//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
+//				flowOrderType = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+//			}
 			//Added end
 		}		
 		
-		this.mpsCommonService.resetScannumByTranscwb(scancwb, flowOrderType, user.getBranchid(), nextbranchid);
+//		this.mpsCommonService.resetScannumByTranscwb(scancwb, flowOrderType, user.getBranchid(), nextbranchid);
+		
+		//update neo01.huang,2016-4-21
+		//重设扫描次数（分站到货扫描）
+		this.mpsCommonService.resetScannumByTranscwbForArrive(scancwb, flowOrderType, user.getBranchid());
 	}
 
 	private CwbOrder handleSubstationGoodsYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co,
@@ -1798,19 +1803,26 @@ public class CwbOrderService extends BaseOrderService {
 					//this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 					
 					//Added by leoliao at 2016-03-30 到货扫描在到错货的情况需要把flowordertype改为8(到错货)，然后删除缺件表记录。
-					long flowOrderTypeTemp = flowOrderTypeEnum.getValue();
-					if ((co.getNextbranchid() != 0) && (co.getNextbranchid() != currentbranchid) 
-						&& (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) 
-						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
-						flowOrderTypeTemp = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-					}
-					
-					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeTemp, isypdjusetranscwb, 0);
+//					long flowOrderTypeTemp = flowOrderTypeEnum.getValue();
+//					if ((co.getNextbranchid() != 0) && (co.getNextbranchid() != currentbranchid) 
+//						&& (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) 
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()) 
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue()) 
+//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
+//						flowOrderTypeTemp = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+//					}
+//					
+//					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeTemp, isypdjusetranscwb, 0);
 					//Added end
+					
+					//update by neo01.huang，2016-4-21
+					//清除缺件记录
+					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+					//同时，也要把当前站点的到错货的缺件记录，也一并删除
+					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), isypdjusetranscwb, 0);
+					
 				}
 				if (newMPSOrder) {
 					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
@@ -1971,6 +1983,16 @@ public class CwbOrderService extends BaseOrderService {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 			if (!newMPSOrder) {
 				this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
+			} else {
+				//update by neo01.huang，2016-4-29
+				//1票3件或以上，扫描次数大于或等1，需要执行缺件检测
+				//原因是：由于其他步骤执行了缺件全量删除，导致本站之前创建的缺件记录都丢失了
+				//在这里需要补回缺件记录
+				if (co.getSendcarnum() >= 3 && co.getScannum() >= 1) { 
+					//补充一票多件记录
+					this.completeYpdjRecord(user, co, scancwb, flowOrderTypeEnum, isypdjusetranscwb, isAutoSupplyLink);
+					
+				}
 			}
 		}
 
@@ -2090,6 +2112,40 @@ public class CwbOrderService extends BaseOrderService {
 
 		// ==== 扫描成功后，更新配送状态为‘处理中=====
 		this.updateOXODeliveryState(co, CwbOXOStateEnum.Processing);
+	}
+	
+	/**
+	 * 补充一票多件记录
+	 * @param user 当前user
+	 * @param co 订单
+	 * @param scancwb 当前扫描的运单号
+	 * @param flowOrderTypeEnum 当前运单操作类型
+	 * @param isypdjusetranscwb 是否为1票多件订单
+	 * @param isAutoSupplyLink 是否自动补流程
+	 */
+	@Transactional
+	public void completeYpdjRecord(User user, CwbOrder co, String scancwb, 
+			FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isAutoSupplyLink) {
+		this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
+		//通过订单号获取所有运单
+		List<TransCwbDetail> transCwbDetailList = transCwbDetailDAO.getTransCwbDetailListByCwb(co.getCwb());
+		if (transCwbDetailList != null && transCwbDetailList.size() != 0) {
+			//检测哪些运单在当前站，如果该运单在当前站，则需要把该运单的缺件记录去掉
+			for (TransCwbDetail transCwbDetail : transCwbDetailList) {
+				if (transCwbDetail == null) {
+					continue;
+				}
+				//如果是当前运单，则skip
+				if (scancwb.equals(transCwbDetail.getTranscwb())) {
+					continue;
+				}
+				
+				//如果该运单在当前站，则去掉该运单的缺件记录
+				if (user.getBranchid() == transCwbDetail.getCurrentbranchid()) {
+					this.intoAndOutwarehouseYpdjDel(user, co, transCwbDetail.getTranscwb(), flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+				}
+			}
+		}
 	}
 
 	/**
@@ -2257,9 +2313,16 @@ public class CwbOrderService extends BaseOrderService {
 
 		String sql = "update express_ops_cwb_detail set currentbranchid=?,flowordertype=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, currentbranchid, flowordertype, co.getCwb());
+		
+		if (co.getCwbstate() == CwbStateEnum.TuiGongYingShang.getValue()
+				&& co.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) {
+			this.cwbDAO.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+		}
+		
 		co.setCurrentbranchid(currentbranchid);
 		co.setNextbranchid(nextbranchid);
-		// added shenhongfei 退货站入库 2016-1-12
+		
+		// added shenhongfei 退货站入库 2016-1-12z
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoZhanRuKu, co.getStartbranchid(), currentbranchid, nextbranchid);
 		// ======按包出库时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
@@ -2402,18 +2465,18 @@ public class CwbOrderService extends BaseOrderService {
 
 	public void baleDaoHuo(CwbOrder co) {
 		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
-			Bale isbale = this.baleDAO.getBaleByBaleno(co.getPackagecode(), BaleStateEnum.KeYong.getValue());
+			Bale isbale = this.baleDAO.getBaleOnway(co.getPackagecode());
 			if (isbale != null) {
-				this.baleDAO.saveForBalestate(co.getPackagecode(), BaleStateEnum.YiDaoHuo.getValue(), BaleStateEnum.KeYong.getValue());
+				this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
 			}
 		}
 	}
 
 	public void baleDaoHuo_fzdh(CwbOrder co) {
 		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
-			Bale isbale = this.baleDAO.getBaleByBaleno(co.getPackagecode(), BaleStateEnum.YiFengBaoChuKu.getValue());
+			Bale isbale = this.baleDAO.getBaleOnway(co.getPackagecode());
 			if (isbale != null) {
-				this.baleDAO.saveForBalestate(co.getPackagecode(), BaleStateEnum.YiDaoHuo.getValue(), BaleStateEnum.YiFengBaoChuKu.getValue());
+				this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
 			}
 		}
 	}
@@ -2688,8 +2751,8 @@ public class CwbOrderService extends BaseOrderService {
 
 	private CwbOrder createCwbDetail(User user, long customerid, String cwb) {
 		try {
-			String sql = "insert into express_ops_cwb_detail (cwb,currentbranchid,customerid,emailfinishflag,cwbordertypeid,cwbstate) values(?,?,?,?,?,?)";
-			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, EmailFinishFlagEnum.YouHuoWuDan.getValue(), CwbOrderTypeIdEnum.Peisong.getValue(), CwbStateEnum.WUShuju.getValue());
+			String sql = "insert into express_ops_cwb_detail (cwb,currentbranchid,customerid,emailfinishflag,cwbordertypeid,cwbstate,credate) values(?,?,?,?,?,?,?)";
+			this.jdbcTemplate.update(sql, cwb, user.getBranchid(), customerid, EmailFinishFlagEnum.YouHuoWuDan.getValue(), CwbOrderTypeIdEnum.Peisong.getValue(), CwbStateEnum.WUShuju.getValue(),Timestamp.valueOf(DateTimeUtil.getNowTime()));
 
 			return this.cwbDAO.getCwbByCwb(cwb);
 		} catch (Exception e) {
@@ -3341,7 +3404,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
 				.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())))
-				&& (co.getCurrentbranchid() != currentbranchid) && !anbaochuku && (co.getNextbranchid() == this.getSessionUser().getBranchid())) {
+				&& (co.getCurrentbranchid() != currentbranchid) && !anbaochuku && (co.getNextbranchid() == user.getBranchid())) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
 		}
 
@@ -3642,7 +3705,7 @@ public class CwbOrderService extends BaseOrderService {
 			transcwbArr=transcwbs.split(":");
 		}
 		
-		if(transcwbArr!=null&&transcwbArr.length>1){
+		if(transcwbArr!=null&&transcwbArr.length>0){
 			for(String transcwbStr:transcwbArr){
 				String transcwb=transcwbStr==null?null:transcwbStr.trim();
 				if(transcwb!=null&&transcwb.length()>0){
@@ -4065,7 +4128,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 
 		if (!packagecode.equals("") && (packagecode.length() > 0)) {
-			Bale isbale = this.baleDAO.getBaleByBaleno(packagecode, BaleStateEnum.KeYong.getValue());
+			Bale isbale = this.baleDAO.getBaleOnwayBycwb(packagecode);
 			if (packagecode.equals("0")) {
 				throw new CwbException(cwb, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BAO_HAO_BU_CUN_ZAI);
 			} else {
@@ -4073,7 +4136,7 @@ public class CwbOrderService extends BaseOrderService {
 					Bale bale = new Bale();
 					bale.setBaleno(packagecode);
 					bale.setBranchid(user.getBranchid());
-					bale.setBalestate(BaleStateEnum.KeYong.getValue());
+					bale.setBalestate(BaleStateEnum.WeiFengBao.getValue());
 					this.baleDAO.createBale(bale);
 				}
 			}
@@ -4381,7 +4444,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		// 更新订单打印的包号信息
 		if (!"".equals(co.getPackagecode())) {
-			Bale bale = this.baleDAO.getBaleOneByBaleno(co.getPackagecode());
+			Bale bale = this.baleDAO.getBaleOnway(co.getPackagecode());
 			if (bale != null) {
 				this.groupDetailDAO.updateGroupDetailByBale(bale.getId(), co.getPackagecode(), cwb, user.getBranchid());
 			}
@@ -5000,7 +5063,7 @@ public class CwbOrderService extends BaseOrderService {
 				}
 			}
 			if (!"".equals(packagecode)) {
-				Bale bale = this.baleDAO.getBaleOneByBaleno(packagecode);
+				Bale bale = this.baleDAO.getBaleOnway(packagecode);
 				if (bale != null) {
 					this.groupDetailDAO.updateGroupDetailByBale(bale.getId(), bale.getBaleno(), cwb, user.getBranchid());
 				}
@@ -5751,7 +5814,6 @@ public class CwbOrderService extends BaseOrderService {
 							o = this.orderBackCheckService.loadFormForOrderBackCheck(co, co.getDeliverybranchid(), user.getUserid(), 1, DeliveryStateEnum.BuFenTuiHuo.getValue());
 						}
 						this.orderBackCheckDAO.createOrderBackCheck(o);
-						logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 					}
 
 					/*
@@ -5778,10 +5840,12 @@ public class CwbOrderService extends BaseOrderService {
 					//this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 					
 					//Added by leoliao at 2016-03-24 退货需要审核则订单状态要保留为配送(已向蓝生确认)
-					this.updateCwbState(cwb, CwbStateEnum.PeiShong);
+					//this.updateCwbState(cwb, CwbStateEnum.PeiShong);
+					this.cwbDAO.updateCwbState(cwb, CwbStateEnum.PeiShong);//modify by vic.liang 2016/05/03 审核后偶尔出现订单状态没有修改成功，this.updateCwbState -->this.cwbDAO.updateCwbState 尝试去掉updateCwbState的事务
+					logger.info("退货审核：订单{}，修改为配送状态", new Object[] { cwb });
 
 				} else {
-					for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
+					/*for (long i : this.cwbRouteService.getNextPossibleBranch(user.getBranchid())) {
 						bList.add(this.branchDAO.getBranchByBranchid(i));
 					}
 
@@ -5789,7 +5853,7 @@ public class CwbOrderService extends BaseOrderService {
 						if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
 							tuihuoNextBranch = b;
 						}
-					}
+					}*///重复代码
 					if (tuihuoNextBranch == null) {
 						tuihuoNextBranch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getTuihuoid());
@@ -5797,7 +5861,9 @@ public class CwbOrderService extends BaseOrderService {
 						// 更改下一站为退货站
 						this.cwbDAO.updateNextBranchid(cwb, tuihuoNextBranch.getBranchid());
 					}
-					this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					
+					//this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+					this.cwbDAO.updateCwbState(cwb, CwbStateEnum.TuiHuo);//modify by vic.liang 2016/05/03 审核后偶尔出现订单状态没有修改成功，this.updateCwbState -->this.cwbDAO.updateCwbState 尝试去掉updateCwbState的事务
 					logger.info("退货审核：订单{}，修改为退货状态", new Object[] { cwb });
 				}
 
@@ -7364,7 +7430,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @return
 	 */
 	@Transactional
-	public long checkResponseBatchnoForBale(User user, long requestbatchno, long branchid, long driverid, long truckid, long state, long operatetype, String cwbs, long customerid, String baleno) {
+	public long checkResponseBatchnoForBale(User user, long requestbatchno, long branchid, long driverid, long truckid, long state, long operatetype, String cwbs, long customerid,long baleid) {
 		// 不传批次号也不存在符合条件的批次号的时候创建一条新的批次信息
 
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -7399,10 +7465,10 @@ public class CwbOrderService extends BaseOrderService {
 		//DMP 4.2.8 由于分拣中转合包打印，所有当出库扫描打印的时候包含包含
 		if (flowordertype == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
 			String flowordertypes = FlowOrderTypeEnum.ChuKuSaoMiao.getValue() + "," + FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue();
-			this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypesForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertypes, baleno);
+			this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypesForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertypes, baleid);
 
 		}else{
-			this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertype, baleno);
+			this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertype, baleid);
 		}
 		
 		
@@ -7480,7 +7546,11 @@ public class CwbOrderService extends BaseOrderService {
 				list.addAll(oList);
 			}
 		} else if (baleno.length() > 0) {
-			list = this.cwbDAO.getListByPackagecode(baleno, page);
+			//此包号最近一次的使用
+			Bale bale=this.baleDAO.getLastBaleByBaleno(baleno);
+			if(bale!=null){
+				list = this.getListByBale(bale.getId(), page);
+			}
 		} else if (transcwb.length() > 0) {
 			list = this.cwbDAO.getListByTransCwb(transcwb, page);
 		} else {
@@ -8189,8 +8259,8 @@ public class CwbOrderService extends BaseOrderService {
 		 */
 
 		// 订单不存在时插入一条新数据
-		String sql = "insert into express_ops_cwb_detail (cwb,currentbranchid,customerid,flowordertype,cwbstate,cwbordertypeid) values(?,?,?,?,?,?)";
-		this.jdbcTemplate.update(sql, cwb, user.getBranchid(), -2, flowOrderTypeEnum.getValue(), CwbStateEnum.PeiShong.getValue(), CwbOrderTypeIdEnum.Peisong.getValue());
+		String sql = "insert into express_ops_cwb_detail (cwb,currentbranchid,customerid,flowordertype,cwbstate,cwbordertypeid,credate) values(?,?,?,?,?,?,?)";
+		this.jdbcTemplate.update(sql, cwb, user.getBranchid(), -2, flowOrderTypeEnum.getValue(), CwbStateEnum.PeiShong.getValue(), CwbOrderTypeIdEnum.Peisong.getValue(),Timestamp.valueOf(DateTimeUtil.getNowTime()));
 
 		// 入站时间
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -8833,7 +8903,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	}
 
-	public void intohouseForExpressPackage(String cwbs, long customerid, long driverid, BatchCount batchCount, boolean useEaimDate, List<Customer> cList, List<JSONObject> objList, List<String> allEmaildate, JSONArray promt) {
+	public void intohouseForExpressPackage(User user,String cwbs, long customerid, long driverid, BatchCount batchCount, boolean useEaimDate, List<Customer> cList, List<JSONObject> objList, List<String> allEmaildate, JSONArray promt) {
 		for (String cwb : cwbs.split("\r\n")) {
 			if (cwb.trim().length() == 0) {
 				continue;
@@ -8862,7 +8932,7 @@ public class CwbOrderService extends BaseOrderService {
 			cwb = this.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			CwbOrder cwbOrder = this.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, "", "", false);
+			CwbOrder cwbOrder = this.intoWarehous(user, cwb, scancwb, customerid, driverid, 0, "", "", false);
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 			obj.put("errorcode", "000000");
 			for (Customer c : cList) {
@@ -8880,7 +8950,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 
-	public void exportHouseForExpressPackage(String cwbs, long branchid, long driverid, long truckid, long confirmflag, BatchCount batchCount, List<Customer> cList, List<JSONObject> objList) {
+	public void exportHouseForExpressPackage(User user,String cwbs, long branchid, long driverid, long truckid, long confirmflag, BatchCount batchCount, List<Customer> cList, List<JSONObject> objList) {
 		for (String cwb : cwbs.split("\r\n")) {
 			if (cwb.trim().length() == 0) {
 				continue;
@@ -8892,7 +8962,7 @@ public class CwbOrderService extends BaseOrderService {
 			cwb = this.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			CwbOrder cwbOrder = this.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, 0, confirmflag == 1, "", "", 0, false, false);
+			CwbOrder cwbOrder = this.outWarehous(user, cwb, scancwb, driverid, truckid, branchid, 0, confirmflag == 1, "", "", 0, false, false);
 			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 			obj.put("errorcode", "000000");
 			for (Customer c : cList) {
@@ -8910,8 +8980,8 @@ public class CwbOrderService extends BaseOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	public List<String> getCwbsByBaleNO(String baleno) {
-		return this.baleCwbDAO.getCwbsByBaleNO(baleno);
+	public List<String> getCwbsByBale(long baleid) {
+		return this.baleCwbDAO.getCwbsByBale(""+baleid);
 	}
 
 	/**
@@ -9584,6 +9654,33 @@ public class CwbOrderService extends BaseOrderService {
 		//更新deliverystate的值
 		deliveryStateDAO.updateDeliveryStateValue(cwb, deliverystate);
 		logger.info("updateForwardOrderDeliveryState->update ok!");
+	}
+	
+	public List<CwbOrder> getListByBale(long baleid,long page){
+		List<String> orderNoStrs = this.baleCwbDAO.getCwbsByBale(""+baleid);
+		//所有真实订单号 Strs
+		StringBuilder cwbsSB = new StringBuilder();
+		String cwbs = "";
+		if( null != orderNoStrs && !orderNoStrs.isEmpty()){
+			for (String tempNo : orderNoStrs) {
+				String targetCwb = this.translateCwb(tempNo);
+				cwbsSB.append("'").append(targetCwb).append("',");
+			}
+		}
+		if( cwbsSB.length() > 0){
+			cwbs = cwbsSB.substring(0,cwbsSB.length()-1);
+		}
+		
+		if(cwbs!=null&&cwbs.length()>0){
+			if(page>0){
+				return  this.cwbDAO.getCwbByCwbsPage(page,cwbs);
+			}else{
+				return  this.cwbDAO.getcwborderList(cwbs);
+			}
+			
+		}else{
+			return null;
+		}
 	}
 	
 }

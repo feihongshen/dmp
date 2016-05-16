@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.controller.MonitorKucunDTO;
 import cn.explink.controller.MonitorKucunSim;
 import cn.explink.controller.MonitorLogSim;
@@ -54,6 +57,7 @@ public class MonitorKucunDAO {
 	 * @return 
 	 * @throws Exception
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<MonitorKucunSim> getMonitorLogByBranchid(String branchids ,String wheresql,String branchname) {
 		StringBuffer sql = new StringBuffer("SELECT "+branchname+" as branchid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_cwb_detail` WHERE  "+wheresql+" AND state=1   GROUP BY "+branchname+"");
 
@@ -69,6 +73,7 @@ public class MonitorKucunDAO {
 	 * @return 
 	 * @throws Exception
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<MonitorKucunSim> getMonitorLogByBranchid(String branchids ,String wheresql) {
 		
 		
@@ -95,6 +100,7 @@ public class MonitorKucunDAO {
 		return list;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorLogByType(String wheresql ,String branchid,long page,String branchids) {
 		
 		StringBuffer sql = new StringBuffer("SELECT cwb FROM  `express_ops_operation_time` WHERE  "+wheresql+" and "+(branchid.length()>0?("branchid in("+branchid+") "):" branchid IN("+branchids+") ")+"  " +
@@ -104,6 +110,8 @@ public class MonitorKucunDAO {
 
 		return list;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorLogByTypeNoPage(String wheresql ,String branchid,String branchids) {
 		
 		StringBuffer sql = new StringBuffer("SELECT cwb FROM  `express_ops_operation_time` WHERE  "+wheresql+" and "+(branchid.length()>0?("branchid in("+branchid+") "):" branchid IN("+branchids+") ")+"  " +
@@ -113,6 +121,8 @@ public class MonitorKucunDAO {
 		
 		return list;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorKucunByType(String flowordertypes ,String branchid,long page,String branchids) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid.length()>0?("branchid in("+branchid+")  and"):" branchid IN("+branchids+") and ")+"  (flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)))" +
@@ -122,6 +132,8 @@ public class MonitorKucunDAO {
 		
 		return list;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorKucunByTypeNoPage(String flowordertypes ,String branchid,String branchids) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid.length()>0?("branchid in("+branchid+")  and"):" branchid IN("+branchids+") and ")+"  (flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)))" +
@@ -131,6 +143,8 @@ public class MonitorKucunDAO {
 		
 		return list;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorKucunByTypeAll(String flowordertypes ,long branchid,long page,String branchids) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT cwb  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):" branchid IN("+branchids+") and ")
@@ -145,18 +159,23 @@ public class MonitorKucunDAO {
 	
 	
 	//==============条数===========
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByTypeCount(String flowordertypes ,String branchid,String branchids) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid.length()>0?("branchid in("+branchid+")  and"):" branchid IN("+branchids+") and ")+"    flowordertype in("+flowordertypes+")");
 				long count = jdbcTemplate.queryForLong(sql.toString());
 				return count;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorKucunByTypeCount(String flowordertypes ,String branchid,String branchids) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid.length()>0?("branchid in("+branchid+")  and"):" branchid IN("+branchids+") and ")+ "(flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)))" );
 		long count = jdbcTemplate.queryForLong(sql.toString());
 		return count;
 	}
+	
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorKucunByTypeCountAll(String flowordertypes ,long branchid,String branchids) {
 		StringBuffer sql = new StringBuffer(
 				"SELECT count(1)  FROM `express_ops_operation_time` where  "+(branchid>0?("branchid ="+branchid+"  and"):" branchid IN("+branchids+") and ")+

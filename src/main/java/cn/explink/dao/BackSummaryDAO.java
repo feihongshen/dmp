@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.BackSummary;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Component
 public class BackSummaryDAO {
 	@Autowired
@@ -62,6 +65,7 @@ public class BackSummaryDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<BackSummary> getBackSummaryList(String starttime, String endtime) {
 		String sql = "SELECT * FROM ops_back_summary WHERE createtime>=? and createtime<=? ORDER BY createtime DESC";
 		return jdbcTemplate.query(sql, new BackSummaryRowMapper(), starttime, endtime);

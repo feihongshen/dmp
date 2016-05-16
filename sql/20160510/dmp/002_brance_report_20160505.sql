@@ -1,0 +1,11 @@
+ALTER TABLE `fn_brance_report`
+MODIFY COLUMN `create_time`  timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间' ,
+ADD COLUMN `update_time`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间' ;
+
+ALTER TABLE `fn_brance_report_adjust`
+MODIFY COLUMN `create_time`  timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间' ,
+ADD COLUMN `update_time`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ;
+
+ALTER TABLE `fn_brance_report_detail`
+MODIFY COLUMN `create_time`  timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间' ,
+ADD COLUMN `update_time`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ;

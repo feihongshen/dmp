@@ -4,13 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.neo4j.cypher.internal.compiler.v2_1.docbuilders.internalDocBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.GroupDetail;
+import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.util.Page;
 
 @Component
@@ -51,6 +54,7 @@ public class GroupDetailDao {
 		@Override
 		public GroupDetail mapRow(ResultSet rs, int rowNum) throws SQLException {
 			GroupDetail groupDetail = new GroupDetail();
+			groupDetail.setBaleid(rs.getLong("baleid"));
 			groupDetail.setBaleno(rs.getString("baleno"));
 			groupDetail.setNextbranchid(rs.getLong("nextbranchid"));
 			groupDetail.setIssignprint(rs.getLong("issignprint"));
@@ -82,10 +86,10 @@ public class GroupDetailDao {
 		jdbcTemplate.update(sql, baleid, cwb, groupid);
 	}
 
-	public List<GroupDetail> getBroupDetailForBale(String baleno, long driverid, long balestate, long branchid) {
+	public List<GroupDetail> getBroupDetailForBale(long baleid, long driverid, long balestate, long branchid) {
 		try {
-			String sql = "select gd.* from express_ops_groupdetail gd left outer join express_ops_outwarehousegroup og on gd.groupid=og.id where gd.baleid=(select id from express_ops_bale where baleno=? and branchid=? and balestate=?) and og.driverid=?";
-			return jdbcTemplate.query(sql, new GroupDetailMapper(), baleno, branchid, balestate, driverid);
+			String sql = "select gd.* from express_ops_groupdetail gd left outer join express_ops_outwarehousegroup og on gd.groupid=og.id where gd.baleid=(select id from express_ops_bale where id=? and branchid=? and balestate=?) and og.driverid=?";
+			return jdbcTemplate.query(sql, new GroupDetailMapper(), baleid, branchid, balestate, driverid);
 		} catch (Exception e) {
 			return null;
 		}
@@ -134,6 +138,9 @@ public class GroupDetailDao {
 	 * @return
 	 */
 	public List<GroupDetail> getCwbListByBaleId(long baleId, long page) {
+		if(baleId<1){
+			return null;
+		}
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		sql += "limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
@@ -146,6 +153,9 @@ public class GroupDetailDao {
 	 * @return
 	 */
 	public List<GroupDetail> getCwbListByBaleIdExport(long baleId) {
+		if(baleId<1){
+			return null;
+		}
 		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
 	}
@@ -154,15 +164,20 @@ public class GroupDetailDao {
 	 * @param baleno
 	 * @return
 	 */
-	
-	public List<GroupDetail> getCwbListByBalenoExport(String baleId) {
-		String sql = "select * from express_ops_groupdetail where baleno=? ";
+	@DataSource(DatabaseType.REPLICA)
+	public List<GroupDetail> getCwbListByBalenoExport(long baleId) {
+		if(baleId<1){
+			return null;
+		}
+		String sql = "select * from express_ops_groupdetail where baleid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleId);
 	}
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbListByBalenoExportByTruckid(long truckid) {
 		String sql = "select * from express_ops_groupdetail where truckid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), truckid);
 	}
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbListByBalenoExportBydriverid(long driverid) {
 		String sql = "select * from express_ops_groupdetail where driverid=? ";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), driverid);
@@ -191,9 +206,9 @@ public class GroupDetailDao {
 	 * @param branchid
 	 * @param flowordertype
 	 */
-	public void delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(String cwbs, long branchid, long flowordertype,String baleno) {
-		String sql = "DELETE FROM express_ops_groupdetail where cwb in(" + cwbs + ") and branchid=? and flowordertype=? and issignprint=0 and groupid=0 and baleno=?";
-		jdbcTemplate.update(sql, branchid, flowordertype,baleno);
+	public void delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(String cwbs, long branchid, long flowordertype,long baleid) {
+		String sql = "DELETE FROM express_ops_groupdetail where cwb in(" + cwbs + ") and branchid=? and flowordertype=? and issignprint=0 and groupid=0 and baleid=?";
+		jdbcTemplate.update(sql, branchid, flowordertype,baleid);
 	}
 	
 	/**
@@ -203,9 +218,9 @@ public class GroupDetailDao {
 	 * @param flowordertypes
 	 * @baleno baleno
 	 */
-	public void delGroupDetailByCwbsAndBranchidAndFlowordertypesForBale(String cwbs, long branchid, String flowordertypes,String baleno) {
-		String sql = "DELETE FROM express_ops_groupdetail where cwb in(" + cwbs + ") and branchid=? and flowordertype in(" + flowordertypes + ") and issignprint=0 and groupid=0 and baleno=?";
-		jdbcTemplate.update(sql, branchid,baleno);
+	public void delGroupDetailByCwbsAndBranchidAndFlowordertypesForBale(String cwbs, long branchid, String flowordertypes,long baleid) {
+		String sql = "DELETE FROM express_ops_groupdetail where cwb in(" + cwbs + ") and branchid=? and flowordertype in(" + flowordertypes + ") and issignprint=0 and groupid=0 and baleid=?";
+		jdbcTemplate.update(sql, branchid,baleid);
 	}
 
 	public List<GroupDetail> getAllGroupDetailByGroupids(String groupids) {
@@ -224,6 +239,7 @@ public class GroupDetailDao {
 		jdbcTemplate.update(sql, flowordertype, branchid, nextbranchid, deliverid, customerid, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTime(long startbranchid, long nextbranchid, int flowordertype, String strtime, String endtime) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid=? AND flowordertype=? AND issignprint=0 ";
 		if (strtime.length() > 0) {
@@ -236,11 +252,13 @@ public class GroupDetailDao {
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, nextbranchid, flowordertype);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForTuiGongYingShangPrint(long customerid, long flowordertype) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE customerid=? AND flowordertype=? AND issignprint=0";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), customerid, flowordertype);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForLingHuoPrint(long deliverid, long flowordertype, String begintime, String endtime) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE deliverid=? AND flowordertype=? AND issignprint=0 and createtime>=? and createtime<=?";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), deliverid, flowordertype, begintime, endtime);
@@ -256,6 +274,7 @@ public class GroupDetailDao {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTimeNew(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 ";
 		if (strtime.length() > 0) {
@@ -271,7 +290,24 @@ public class GroupDetailDao {
 		sql += " order by createtime desc";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
+	
+	public List<GroupDetail> getCwbForChuKuPrintTimeNewForBale(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno) {
+		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 and baleid>0 ";
+		if (strtime.length() > 0) {
+			sql += " and createtime>'" + strtime + "'";
+		}
+		if (endtime.length() > 0) {
+			sql += " and createtime<'" + endtime + "'";
+		}
+		if (!"".equals(baleno)) {
+			sql += " and baleno='" + baleno + "'";
+		}
 
+		sql += " order by createtime desc";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
+	}
+
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTimeNew2(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long driverid,long truckid) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND driverid="+driverid+" AND truckid="+truckid;
 		if (strtime.length() > 0) {
@@ -288,6 +324,7 @@ public class GroupDetailDao {
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
 	
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTimeNewByDriverid(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long driverid) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND driverid="+driverid;
 		if (strtime.length() > 0) {
@@ -304,6 +341,7 @@ public class GroupDetailDao {
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), startbranchid, flowordertype);
 	}
 	
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getCwbForChuKuPrintTimeNewByTruckid(long startbranchid, String branchids, int flowordertype, String strtime, String endtime, String baleno,long truckid) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE branchid=? AND nextbranchid in(" + branchids + ") AND flowordertype=? AND issignprint=0 AND truckid="+truckid;
 		if (strtime.length() > 0) {
@@ -328,26 +366,36 @@ public class GroupDetailDao {
 		jdbcTemplate.update(sql, baleid, cwb, branchid,baleno);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<GroupDetail> getGroupDetailListByBale(String baleno) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE baleno=?";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleno);
 	}
-	public List<Long> getBranchIdsGroupBYbranchid(String balenos) {
-		String sql = "SELECT nextbranchid FROM express_ops_groupdetail WHERE baleno in("+balenos+") group by nextbranchid";
+	
+	public List<GroupDetail> getGroupDetailListByBale(long baleid) {
+		if(baleid<1){
+			return null;
+		}
+		String sql = "SELECT * FROM express_ops_groupdetail WHERE baleid=?";
+		return jdbcTemplate.query(sql, new GroupDetailMapper(), baleid);
+	}
+	
+	public List<Long> getBranchIdsGroupBYbranchid(String baleids) {
+		String sql = "SELECT nextbranchid FROM express_ops_groupdetail WHERE baleid in("+baleids+") group by nextbranchid";
 		return jdbcTemplate.queryForList(sql, Long.class);
 	}
-	public List<String> getBalesBybranchid(String balenos,long branchid) {
-		String sql = "SELECT DISTINCT baleno FROM express_ops_groupdetail WHERE baleno in("+balenos+") and nextbranchid="+branchid+"";
-		return jdbcTemplate.queryForList(sql, String.class);
+	public List<Long> getBalesBybranchid(String baleids,long branchid) {
+		String sql = "SELECT DISTINCT baleid FROM express_ops_groupdetail WHERE baleid in("+baleids+") and nextbranchid="+branchid+"";
+		return jdbcTemplate.queryForList(sql, Long.class);
 	}
 
-	public void updateGroupDetailListByBale(String baleno) {
-		String sql = "update express_ops_groupdetail set issignprint=? where baleno=? and issignprint=0 ";
-		jdbcTemplate.update(sql, System.currentTimeMillis(), baleno);
+	public void updateGroupDetailListByBale(long baleid) {
+		String sql = "update express_ops_groupdetail set issignprint=? where baleid=? and issignprint=0 ";
+		jdbcTemplate.update(sql, System.currentTimeMillis(), baleid);
 	}
 
 	public List<GroupDetail> getGroupDetailhistoryByBale(long page, long branchid, long starttime, long endtime, long nextbranchid) {
-		String sql = "SELECT DISTINCT(baleno) baleno,nextbranchid,issignprint,flowordertype FROM express_ops_groupdetail WHERE issignprint>0 AND branchid=?";
+		String sql = "SELECT DISTINCT(baleid) baleid,baleno,nextbranchid,issignprint,flowordertype FROM express_ops_groupdetail a WHERE branchid=? and baleid>0";
 		if (starttime > 0) {
 			sql += " and issignprint>=" + starttime;
 		}
@@ -357,12 +405,15 @@ public class GroupDetailDao {
 		if (nextbranchid > 0) {
 			sql += " and nextbranchid=" + nextbranchid;
 		}
+		sql += " AND (issignprint>0 OR not exists(select 1 from express_ops_bale b where b.id=a.baleid and b.balestate in (?,?,?)))";
 		sql += " limit " + (page - 1) * Page.ONE_PAGE_NUMBER + " ," + Page.ONE_PAGE_NUMBER;
-		return jdbcTemplate.query(sql, new GroupDetailByBaleMapper(), branchid);
+		return jdbcTemplate.query(sql, new GroupDetailByBaleMapper(), branchid
+				,BaleStateEnum.YiFengBao.getValue(),BaleStateEnum.YiFengBaoChuKu.getValue(),BaleStateEnum.WeiFengBao.getValue()
+				);
 	}
 
 	public long getGroupDetailhistoryByBaleCount(long branchid, long starttime, long endtime, long nextbranchid) {
-		String sql = "SELECT COUNT(DISTINCT(baleno)) FROM express_ops_groupdetail WHERE issignprint>0 AND branchid=?";
+		String sql = "SELECT COUNT(DISTINCT(baleid)) FROM express_ops_groupdetail a WHERE branchid=? and baleid>0";
 		if (starttime > 0) {
 			sql += " and issignprint>=" + starttime;
 		}
@@ -372,7 +423,11 @@ public class GroupDetailDao {
 		if (nextbranchid > 0) {
 			sql += " and nextbranchid=" + nextbranchid;
 		}
-		return jdbcTemplate.queryForLong(sql, branchid);
+		sql += " AND (issignprint>0 OR not exists(select 1 from express_ops_bale b where b.id=a.baleid and b.balestate in (?,?,?)))";
+
+		return jdbcTemplate.queryForLong(sql, branchid
+				,BaleStateEnum.YiFengBao.getValue(),BaleStateEnum.YiFengBaoChuKu.getValue(),BaleStateEnum.WeiFengBao.getValue()
+				);
 	}
 	
 	public List<GroupDetail> getGroupDetailListByCwb(String cwb) {

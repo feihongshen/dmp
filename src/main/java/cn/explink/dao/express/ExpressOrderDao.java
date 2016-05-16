@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.express.ExpressCombineTypeEnum;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 import cn.explink.util.Tools;
@@ -301,8 +303,9 @@ public class ExpressOrderDao {
 		}
 		// 未合包
 		//sql.append(" and detail.cwb not in(select bale_cwb.cwb from express_ops_bale_cwb bale_cwb inner join express_ops_bale bale on bale_cwb.baleid=bale.id where bale.balestate<>7)");
-		sql.append(" and not exists (select 1 from express_ops_bale_cwb bale_cwb, express_ops_bale bale where bale_cwb.baleid=bale.id and detail.cwb = bale_cwb.cwb and bale.balestate<>7)");
-
+		//sql.append(" and not exists (select 1 from express_ops_bale_cwb bale_cwb, express_ops_bale bale where bale_cwb.baleid=bale.id and detail.cwb = bale_cwb.cwb and bale.balestate<>7)");
+		sql.append(" and not exists (select 1 from express_ops_bale_cwb bale_cwb, express_ops_bale bale where bale_cwb.baleid=bale.id and bale.branchid=" + currentBranchid + " and bale.balestate<>7 and bale_cwb.cwb=detail.cwb)");
+		
 		if ((excludeWaybillNoList != null) && !excludeWaybillNoList.isEmpty()) {
 			sql.append(" and detail.cwb not ");
 			sql.append(Tools.assembleInByList(excludeWaybillNoList));
@@ -600,7 +603,7 @@ public class ExpressOrderDao {
 	 */
 	public void importEmbracedData(List<EmbracedOrderVO> list, User userparam, Branch branch) {
 		final User user = userparam;
-		final String sql = "insert into express_ops_cwb_detail (" + "cwb," + "flowordertype," + "cwbstate," + "collectorid," + "collectorname," + "currentbranchid," + "inputdatetime," + "cwbordertypeid," + "paymethod," + "customerid," + "transcwb," + "isadditionflag," + "senderprovinceid," + "senderprovince," + "sendercityid," + "sendercity," + "sendercellphone," + "sendertelephone," + "recprovinceid," + "cwbprovince," + "reccityid," + "cwbcity," + "consigneemobile," + "consigneephone," + "sendcarnum," + "inputhandlerid," + "inputhandlername," + "sendername," + "sendercountyid," + "sendercounty," + "senderstreetid," + "senderstreet," + "consigneename," + "reccountyid," + "cwbcounty," + "entrustname," + "sendnum," + "carrealweight," + "hascod," + "receivablefee," + "hasinsurance," + "insuredfee," + "realweight," + "monthsettleno," + "senderaddress," + "consigneeaddress," + "length," + "width," + "height," + "other," + "recstreetid," + "recstreet," + "announcedvalue," + "shouldfare," + "totalfee," + "packagefee," + "chargeweight," + "recareacode," + "sendareacode," + "kgs," + "emaildateid," + "instationhandlerid," + "instationhandlername," + "instationdatetime," + "instationid," + "instationname," + "carsize)" + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		final String sql = "insert into express_ops_cwb_detail (" + "cwb," + "flowordertype," + "cwbstate," + "collectorid," + "collectorname," + "currentbranchid," + "inputdatetime," + "cwbordertypeid," + "paymethod," + "customerid," + "transcwb," + "isadditionflag," + "senderprovinceid," + "senderprovince," + "sendercityid," + "sendercity," + "sendercellphone," + "sendertelephone," + "recprovinceid," + "cwbprovince," + "reccityid," + "cwbcity," + "consigneemobile," + "consigneephone," + "sendcarnum," + "inputhandlerid," + "inputhandlername," + "sendername," + "sendercountyid," + "sendercounty," + "senderstreetid," + "senderstreet," + "consigneename," + "reccountyid," + "cwbcounty," + "entrustname," + "sendnum," + "carrealweight," + "hascod," + "receivablefee," + "hasinsurance," + "insuredfee," + "realweight," + "monthsettleno," + "senderaddress," + "consigneeaddress," + "length," + "width," + "height," + "other," + "recstreetid," + "recstreet," + "announcedvalue," + "shouldfare," + "totalfee," + "packagefee," + "chargeweight," + "recareacode," + "sendareacode," + "kgs," + "emaildateid," + "instationhandlerid," + "instationhandlername," + "instationdatetime," + "instationid," + "instationname," + "carsize," + "credate)" + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
 
 		for (int i = 0; i < circleTimes; i++) {
@@ -692,6 +695,7 @@ public class ExpressOrderDao {
 						ps.setString(j++, embracedOrder.getInstationname());
 						ps.setString(j++, StringUtil.nullConvertToEmptyString(embracedOrder.getGoods_longth()) + "CM *" + StringUtil.nullConvertToEmptyString(embracedOrder.getGoods_width()) + "CM *" + StringUtil
 								.nullConvertToEmptyString(embracedOrder.getGoods_height()) + "CM");
+						ps.setTimestamp(j++, Timestamp.valueOf(DateTimeUtil.getNowTime()));
 					}
 
 					@Override

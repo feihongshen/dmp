@@ -13,10 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CwbDAO;
 import cn.explink.dao.TpsCwbFlowDao;
+import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.TpsCwbFlowVo;
-
+import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import net.sf.json.JSONObject;
 
@@ -28,10 +32,16 @@ public class TpsCwbFlowService {
 	private TpsCwbFlowDao tpsCwbFlowDao;
 	@Autowired
 	private JointService jointService;
+	@Autowired
+	private BranchDAO branchDAO;
+	
+	@Autowired
+	private CwbDAO cwbDAO;
 	
 	@Transactional
-	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype) {
-		if (flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype,long currentbranchid) {
+		if (flowordertype.getValue() == FlowOrderTypeEnum.RuKu.getValue()||
+			flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
 			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.TPS_Cwb_Flow.getKey());//
 			if(isOpenFlag!=1){
 				this.logger.info("订单体积重量反馈tps开关未开启.");
@@ -44,48 +54,67 @@ public class TpsCwbFlowService {
 				return;
 			}
 			
-			if(co==null||scancwb==null){
+			if(co==null||scancwb==null||CwbOrderTypeIdEnum.Peisong.getValue()!=co.getCwbordertypeid()){
 				return;
 			}
-			Set<Long> customerids= getVipshopId(cfg.getCustomerids());
-			if(customerids!=null&&customerids.contains(co.getCustomerid())){
+			
+			Branch currentbranch = this.branchDAO.getBranchById(currentbranchid);
+			if(currentbranch==null||currentbranch.getSitetype()!=BranchEnum.KuFang.getValue()){
+				return;
+			}
+			
+			String transportNo=cwbDAO.getTpsTransportNoByCwb(co.getCwb());
+			if(transportNo==null||transportNo.length()<1){
+				this.logger.info("tps运单号为空时不保存,cwb="+co.getCwb());
+				return;
+			}
+			
+			if (flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+				boolean exist= this.tpsCwbFlowDao.checkExist(co.getCwb(), scancwb);
+				if(exist){
+					this.logger.info("入库时保存过,cwb="+co.getCwb());
+					return;
+				}
+			}
+
+			//暂时不考虑外单;外单tps运单号目前放在oms数据库
+			//Set<Long> customerids= getVipshopId(cfg.getCustomerids());
+			//if(customerids!=null&&customerids.contains(co.getCustomerid())){
 				TpsCwbFlowVo vo = new TpsCwbFlowVo();
 				vo.setCwb(co.getCwb());
 				vo.setFlowordertype(flowordertype.getValue());
 				vo.setScancwb(scancwb);
 				vo.setState(0);
 				this.tpsCwbFlowDao.save(vo);
-			}
+			//}
 		}  	
 	}
 
 	@Transactional
-	public List<TpsCwbFlowVo> retrieveData(int size,int trytime,int flowordertype){
-		return this.tpsCwbFlowDao.list(size, trytime, flowordertype);
+	public List<TpsCwbFlowVo> retrieveData(int size,int trytime){
+		return this.tpsCwbFlowDao.list(size, trytime);
 	}
 
 	@Transactional
-	public void update(TpsCwbFlowVo vo){
+	public void comleteWithError(TpsCwbFlowVo vo,String errorInfo){
+		vo.setErrinfo(errorInfo);
+		vo.setState(2);//0等待处理，1成功处理，2错误
 		this.tpsCwbFlowDao.update(vo);
 	}
 	
 	@Transactional
-	public void complete(TpsCwbFlowVo vo,List<String> transcwbList,int state){
+	public void complete(TpsCwbFlowVo vo){
 		this.tpsCwbFlowDao.delete(vo);
-		for(String transcwb:transcwbList){
-			TpsCwbFlowVo flowVo=new TpsCwbFlowVo();
-			flowVo.setCwb(vo.getCwb());
-			flowVo.setScancwb(transcwb);
-			flowVo.setFlowordertype(vo.getFlowordertype());
-			flowVo.setState(state);
-			this.tpsCwbFlowDao.save(flowVo);
-		}
-		
+		vo.setErrinfo("");
+		vo.setState(1);//0等待处理，1成功处理，2错误
+		vo.setTrytime(vo.getTrytime()+1);
+		this.tpsCwbFlowDao.saveSent(vo);
 	}
 	
 	@Transactional
 	public void housekeep(int day){
 		this.tpsCwbFlowDao.delete(day);
+		this.tpsCwbFlowDao.deleteSent(day);
 	}
 	
 	private Set<Long> getVipshopId(String customerids){
@@ -121,7 +150,5 @@ public class TpsCwbFlowService {
 				
 		return cfg;
 	}
-	
 
-	
 }

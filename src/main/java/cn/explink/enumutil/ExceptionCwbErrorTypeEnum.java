@@ -59,7 +59,8 @@ public enum ExceptionCwbErrorTypeEnum {
 					171, "分拣中转出库不支持一票多件订单!"),
 	
 			BU_SHI_ZHE_GE_MU_DI_DI_zong(200, "不是这个目的地的货"),
-			Weishenhebuxutuihuozaitou(201,"未审核的订单不允许退货再投！！");
+			Weishenhebuxutuihuozaitou(201,"未审核的订单不允许退货再投！！"),
+			SHANG_MEN_TUI_CHENG_GONG_TUI_HUO_CHU_ZHAN(203, "上门退成功的订单，不能做 “{0}” 的操作");
 	
 
 	private int value;

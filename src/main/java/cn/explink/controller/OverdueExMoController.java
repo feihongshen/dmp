@@ -51,6 +51,9 @@ import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ExcelUtils;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 /**
  * 超期异常监控控制器.
  * 
@@ -84,6 +87,7 @@ public class OverdueExMoController {
 	}
 
 	@RequestMapping("/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public ModelAndView list(@PathVariable("page") int page, OverdueExMoCondVO condVO) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("cond", condVO);
@@ -96,6 +100,7 @@ public class OverdueExMoController {
 
 	@RequestMapping("/getbranchdata/{branch_id}/{vender_id}")
 	@ResponseBody
+	@DataSource(DatabaseType.REPLICA)
 	public OverdueBranchResultVO showBranchInfo(@PathVariable("branch_id") long branchId, @PathVariable("vender_id") long venderId, HttpServletRequest request) {
 		String jsonCond = request.getParameter("cond");
 		JSONObject jsonObject = JSONObject.fromObject(jsonCond);
@@ -112,6 +117,7 @@ public class OverdueExMoController {
 	}
 
 	@RequestMapping("/exportdata")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportData(OverdueExMoCondVO condVO, HttpServletResponse response) throws Exception {
 		if (condVO.getOrgs().isEmpty() || (condVO.getVenderId() == 0)) {
 			return;
@@ -135,6 +141,7 @@ public class OverdueExMoController {
 	}
 
 	@RequestMapping("/showdetail/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public ModelAndView showDetial(@PathVariable("page") int page, ModelAndView mav, OverdueExMoDetailCondVO condVO) {
 		mav.addObject("cond", condVO);
 		mav.addObject("result", this.getDetailResult(condVO, page));
@@ -144,6 +151,7 @@ public class OverdueExMoController {
 	}
 
 	@RequestMapping("/exportdetail")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportDetail(HttpServletResponse response, OverdueExMoDetailCondVO condVO) throws Exception {
 		Branch branch = this.getBranchDAO().getBranchByBranchid(condVO.getOrgId());
 		Map<ShowColEnum, TimeEffectiveVO> teMap = this.queryTimeEffectiveMap(condVO);

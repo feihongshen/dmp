@@ -70,7 +70,7 @@ public class OrderBackRukuRecordDao {
 		String sql = "";
 		if(auditstate==0){
 			sql = "select re.* from express_orderbackruku_record as re left join express_ops_cwb_detail as de on re.cwb = de.cwb"
-					+" where de.state=1 and re.auditstate =0 and de.flowordertype in(15,28)";
+					+" where de.state=1 and re.auditstate =0 and de.flowordertype=15";
 			StringBuffer sb = new StringBuffer();
 			if(!"".equals(cwb)){
 				sb.append(" and re.cwb in("+cwb+")");

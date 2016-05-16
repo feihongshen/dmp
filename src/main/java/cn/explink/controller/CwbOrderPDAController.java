@@ -828,6 +828,7 @@ public class CwbOrderPDAController {
 		String baleNO;
 		String nextbranch;
 		long nextBranchid;
+		Bale bale=null;
 		try {
 			Document document = DocumentHelper.parseText(strPara);
 			Element rootElt = document.getRootElement();
@@ -843,7 +844,7 @@ public class CwbOrderPDAController {
 			return PDAResponse;
 		}
 		try {
-			this.baleService.fengbao(this.getSessionUser(), baleNO.trim(), nextBranchid);
+			bale=this.baleService.fengbao(this.getSessionUser(), baleNO.trim(), nextBranchid);
 		} catch (CwbException e) {
 			statuscode = CwbOrderPDAEnum.Feng_Bao.getCode();
 			errorinfo = e.getMessage();
@@ -881,7 +882,7 @@ public class CwbOrderPDAController {
 			}
 			if (successCount > 0) {// 成功
 				// 更改包的状态
-				this.baleDao.updateBalesate(baleNO, BaleStateEnum.YiFengBaoChuKu.getValue());
+				this.baleDao.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
 				statuscode = "000000";
 				errorinfo = "成功" + String.valueOf(successCount) + "件,失败" + String.valueOf(errorCount) + "件";
 				errorinfovediurl = request.getContextPath() + ServiceUtil.waverrorPath + BalePDAEnum.YI_CHANG_BAO_HAO.getVediourl();
@@ -1088,7 +1089,7 @@ public class CwbOrderPDAController {
 		BalePDAEnum balePDAEnum = this.verficationBaleNO(bale);
 		statuscode = balePDAEnum.getCode();
 		if (statuscode.equals(BalePDAEnum.OK.getCode())) {
-			Bale co = this.baleDao.getBaleOneByBaleno(bale);
+			Bale co = this.baleDao.getBaleOnway(bale);
 			body.append("<bale>").append(co.getBaleno()).append("</bale>");
 			long nextBranchid = co.getNextbranchid();
 			Branch branch = this.branchDAO.getBranchByBranchid(nextBranchid);
@@ -1132,7 +1133,7 @@ public class CwbOrderPDAController {
 		BalePDAEnum balePDAEnum = this.verficationBaleNO(baleNO);
 		statuscode = balePDAEnum.getCode();
 		if (statuscode.equals(BalePDAEnum.OK.getCode())) {
-			Bale co = this.baleDao.getBaleOneByBaleno(baleNO);
+			Bale co = this.baleDao.getBaleOnway(baleNO);
 			body.append("<bale>").append(co.getBaleno()).append("</bale>");
 		} else {
 			errorinfo = balePDAEnum.getError();
@@ -2527,7 +2528,7 @@ public class CwbOrderPDAController {
 		Matcher matcher = pattern.matcher(baleNO);
 		Bale co = null;
 		if ((baleNO.length() != 0) && matcher.matches()) {
-			co = this.baleDao.getBaleOneByBaleno(baleNO);
+			co = this.baleDao.getBaleOnway(baleNO);
 		}
 
 		if (!matcher.matches()) {

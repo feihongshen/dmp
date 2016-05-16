@@ -14,6 +14,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.OutWarehouseGroup;
 import cn.explink.enumutil.OutWarehouseGroupEnum;
 import cn.explink.enumutil.OutwarehousegroupOperateEnum;
@@ -40,6 +43,7 @@ public class OutWarehouseGroupDAO {
 			owg.setCwbs(StringUtil.nullConvertToEmptyString(rs.getString("cwbs")));
 			owg.setSign(rs.getLong("sign"));
 			owg.setBaleno(rs.getString("baleno"));
+			owg.setBaleid(rs.getLong("baleid"));
 			return owg;
 		}
 
@@ -201,6 +205,7 @@ public class OutWarehouseGroupDAO {
 		return sql;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<OutWarehouseGroup> getOutWarehouseGroupByPage(long page, long branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid,
 			long currentbranchid) {
 		String sql = "select * from express_ops_outwarehousegroup";
@@ -210,6 +215,7 @@ public class OutWarehouseGroupDAO {
 		return outwarehouseList;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<OutWarehouseGroup> getOutWarehouseGroupByPage2(long page, long branchid, String beginemaildate, String endemaildate, long driverid,long truckid, long operatetype, long customerid,
 			long currentbranchid) {
 		String sql = "select * from express_ops_outwarehousegroup";
@@ -219,6 +225,7 @@ public class OutWarehouseGroupDAO {
 		return outwarehouseList;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<OutWarehouseGroup> getOutWarehouseGroupByPage(long page, String branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid) {
 		String sql = "select * from express_ops_outwarehousegroup";
 		sql = this.getOutWarehouseGroupByPageWhereSql(sql, branchid, beginemaildate, endemaildate, driverid, operatetype, customerid);
@@ -227,12 +234,14 @@ public class OutWarehouseGroupDAO {
 		return outwarehouseList;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getOutWarehouseGroupCount(long branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid, long currentbranchid) {
 		String sql = "select count(1) from express_ops_outwarehousegroup";
 		sql = this.getOutWarehouseGroupByPageWhereSql(sql, branchid, beginemaildate, endemaildate, driverid, operatetype, customerid, currentbranchid);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getOutWarehouseGroupCount(String branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid) {
 		String sql = "select count(1) from express_ops_outwarehousegroup";
 		sql = this.getOutWarehouseGroupByPageWhereSql(sql, branchid, beginemaildate, endemaildate, driverid, operatetype, customerid);
@@ -388,8 +397,8 @@ public class OutWarehouseGroupDAO {
 		String sql = "update express_ops_outwarehousegroup set cwbs=?,sign=1 where id=? and sign=0";
 		this.jdbcTemplate.update(sql, cwbs, id);
 	}
-	public int updateOutwarehousegroupBalenoByID(String baleno,long id){
-		String sql = "update express_ops_outwarehousegroup set baleno=? where id=?";
-		return this.jdbcTemplate.update(sql,baleno,id);
+	public int updateOutwarehousegroupBalenoByID(String baleno,long baleid,long id){
+		String sql = "update express_ops_outwarehousegroup set baleno=?,baleid=? where id=?";
+		return this.jdbcTemplate.update(sql,baleno,baleid,id);
 	}
 }

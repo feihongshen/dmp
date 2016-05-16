@@ -1,0 +1,1 @@
+select count(1) from INFORMATION_SCHEMA.COLUMNS	where TABLE_SCHEMA = schema()	and TABLE_NAME = 'express_ops_cwb_error' and COLUMN_NAME = 'message' and data_type = 'text';	-- 结果为1

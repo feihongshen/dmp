@@ -80,7 +80,7 @@ public class TpsCwbFlowPushService {
 				return;
 			}
 			
-			List<TpsCwbFlowVo> dataList= tpsCwbFlowService.retrieveData(cfg.getMaxDataSize(),cfg.getMaxTryTime(),FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+			List<TpsCwbFlowVo> dataList= tpsCwbFlowService.retrieveData(cfg.getMaxDataSize(),cfg.getMaxTryTime());
 			handleData(dataList);
 			housekeepData(cfg);
 		} catch (Exception ex) {
@@ -103,20 +103,11 @@ public class TpsCwbFlowPushService {
 				List<DoTrackFeedbackRequest> reqList=prepareRequest(vo);
 				
 				if(reqList!=null&&reqList.size()>0){
-					if(reqList.size()<2){
-						DoTrackFeedbackRequest req=reqList.get(0);
+					for(DoTrackFeedbackRequest req:reqList){
 						send(req,6000);
-						vo.setErrinfo("");
-						vo.setState(1);//0等待处理，1成功处理，2错误
-						this.tpsCwbFlowService.update(vo);
-					}else{
-						List<String> transcwbList=new ArrayList<String>();
-						for(DoTrackFeedbackRequest req:reqList){
-							send(req,6000);
-							transcwbList.add(req.getBoxInfo().getBoxNo());
-						}
-						this.tpsCwbFlowService.complete(vo,transcwbList,1);
 					}
+					this.tpsCwbFlowService.complete(vo);
+					
 				}else{
 					throw new RuntimeException("请求对象为空.");
 				}
@@ -124,9 +115,7 @@ public class TpsCwbFlowPushService {
 				logger.info("体积重量推送tps成功.cwb="+vo.getCwb()+",scancwb="+vo.getScancwb());
 			} catch (Exception e) {
 				logger.error("体积重量推送tps时出错.cwb="+vo.getCwb()+",scancwb="+vo.getScancwb(),e);
-				vo.setErrinfo("push tps error."+e.getMessage());
-				vo.setState(2);
-				this.tpsCwbFlowService.update(vo);
+				this.tpsCwbFlowService.comleteWithError(vo,"体积重量推送tps时出错."+e.getMessage());
 			}
 		}
 	}
@@ -155,8 +144,11 @@ public class TpsCwbFlowPushService {
 					transcwbList.add(vo.getCwb());
 				}else{
 					transcwbList=cwbOrderService.getTranscwbList(co.getTranscwb());
+					if(transcwbList==null||transcwbList.size()<1){
+						throw new RuntimeException("没找到此订单号的相关运单号.");
+					}
 				}
-				OrderFlow orderFlow=orderFlowDAO.getOrderFlowByCwbAndFlowtype(vo.getCwb(), ""+vo.getFlowordertype());
+				OrderFlow orderFlow=orderFlowDAO.queryFlow(vo.getCwb(), FlowOrderTypeEnum.getByValue((int)vo.getFlowordertype()));
 				if(orderFlow==null){
 					throw new RuntimeException("没找到此订单号的操作明细1.");
 				}
@@ -171,7 +163,7 @@ public class TpsCwbFlowPushService {
 					branchid=transcwbOrderFlow.getBranchid();
 					createDate=transcwbOrderFlow.getCredate();
 				}else{
-					OrderFlow orderFlow=orderFlowDAO.getOrderFlowByCwbAndFlowtype(vo.getCwb(), ""+vo.getFlowordertype());
+					OrderFlow orderFlow=orderFlowDAO.queryFlow(vo.getCwb(),  FlowOrderTypeEnum.getByValue((int)vo.getFlowordertype()));
 					if(orderFlow==null){
 						throw new RuntimeException("没找到此订单号的操作明细2.");
 					}
@@ -189,7 +181,7 @@ public class TpsCwbFlowPushService {
 				for(String trancwb:transcwbList){
 					DoTrackFeedbackRequest req=new DoTrackFeedbackRequest();
 					req.setTransportNo(transportNo);
-					req.setOperateType(1);//入库对应tps的入站扫描1
+					req.setOperateType(3);//出库对应tps的出站扫描3
 					req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 					req.setOperater(operateUser==null?null:operateUser.getRealname());
 					req.setOperateTime(createDate);
@@ -225,7 +217,7 @@ public class TpsCwbFlowPushService {
 			
 			DoTrackFeedbackRequest req=new DoTrackFeedbackRequest();
 			req.setTransportNo(transportNo);
-			req.setOperateType(1);//入库对应tps的入站扫描1
+			req.setOperateType(3);//出库对应tps的出站扫描3
 			req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 			req.setOperater(operateUser==null?null:operateUser.getRealname());
 			req.setOperateTime(flow.getCredate());
@@ -263,7 +255,7 @@ public class TpsCwbFlowPushService {
 				String now=sdf.format(Calendar.getInstance().getTime());
 				if(!now.equals(this.today)){
 					this.today=now;
-					int day=(cfg==null||cfg.getHousekeepDay()<7)?7:cfg.getHousekeepDay();
+					int day=(cfg==null||cfg.getHousekeepDay()<2)?2:cfg.getHousekeepDay();
 					this.tpsCwbFlowService.housekeep(day);
 				}
 			}

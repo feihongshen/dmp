@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.auto.order.service.OrderPayChangeService;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.AccountAreaDAO;
@@ -120,6 +122,11 @@ import cn.explink.util.TuiGongHuoShangPage;
 @Controller
 public class CwbOrderController {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	@Qualifier("orderPayChangeService")
+	private OrderPayChangeService orderPayChangeService ;
+	
 	@Autowired
 	CwbDAO cwbDao;
 	@Autowired
@@ -1784,7 +1791,11 @@ public class CwbOrderController {
 					long cwbcount = this.emaildateDao.getEmailDateById(co.getEmaildateid()).getCwbcount() - 1;
 					this.emaildateDao.editEditEmaildateForCwbcount(cwbcount, co.getEmaildateid());
 				}
-				this.shiXiaoDAO.creAbnormalOrdernew(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb, co
+				Date disableDate = new Date() ;
+				// add by bruce shangguan 20160412 订单失效，添加应付甲方调整记录
+				this.orderPayChangeService.disabledOrder(co, disableDate);
+				// end 20160412 
+				this.shiXiaoDAO.creAbnormalOrdernew(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(disableDate), co.getCurrentbranchid(), co.getCustomerid(), cwb, co
 						.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), this.getSessionUser().getUserid(), loseeffect, co.getCwbstate(), co.getEmaildate());
 
 				//买单结算的客户订单失效需要判断是否已经生成客户账单，如果生成了客户账单，要生成客户调整账单

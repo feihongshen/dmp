@@ -15,6 +15,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.util.Page;
 
@@ -83,6 +86,7 @@ public class TuihuoRecordDAO {
 		jdbcTemplate.update(sql, tuihuozhanrukutime, id);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<TuihuoRecord> getTuihuoRecordByTuihuochuzhan(String begindate, String enddate, String branchids, String customerids, long istuihuozhanruku, long page) {
 		String sql = "SELECT * from ops_tuihuorecord where tuihuochuzhantime >= ? and tuihuochuzhantime <=? ";
 		if (branchids.length() > 0 || customerids.length() > 0 || istuihuozhanruku > 0) {
@@ -104,6 +108,7 @@ public class TuihuoRecordDAO {
 		return jdbcTemplate.query(sql, new TuihuoRecordMapper(), begindate, enddate, (page - 1) * Page.ONE_PAGE_NUMBER, Page.ONE_PAGE_NUMBER);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getCountTuihuoRecordByTuihuochuzhan(String begindate, String enddate, String branchids, String customerids, long istuihuozhanruku) {
 		String sql = "SELECT count(1) from ops_tuihuorecord where tuihuochuzhantime >= ? and tuihuochuzhantime <=? ";
 		if (branchids.length() > 0 || customerids.length() > 0 || istuihuozhanruku > 0) {
@@ -149,6 +154,7 @@ public class TuihuoRecordDAO {
 		return jdbcTemplate.query(sql, new TuihuoRecordMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getCountTuihuoRecordByTuihuozhanruku(String begindate, String enddate, String branchids, String customerids, String cwbordertypeids) {
 		String sql = "SELECT count(1) from ops_tuihuorecord  where tuihuozhanrukutime >= ? and tuihuozhanrukutime <= ? ";
 		if (branchids.length() > 0 || customerids.length() > 0 || cwbordertypeids.length() > 0) {
@@ -167,6 +173,7 @@ public class TuihuoRecordDAO {
 		return jdbcTemplate.queryForLong(sql, begindate, enddate);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<TuihuoRecord> getTuihuoRecordByTuihuozhanrukuOnPage(String begindate, String enddate, String branchids, String customerids, String cwbordertypeids, long page) {
 		String sql = "SELECT * from ops_tuihuorecord  where tuihuozhanrukutime >= ? and tuihuozhanrukutime <= ? ";
 		if (branchids.length() > 0 || customerids.length() > 0 || cwbordertypeids.length() > 0) {

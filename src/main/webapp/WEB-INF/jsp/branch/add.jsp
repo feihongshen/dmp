@@ -9,6 +9,7 @@
 <%@page import="cn.explink.enumutil.CftAccountTypeEnum"%>
 <%@page import="cn.explink.enumutil.PayCerTypeEnum"%>
 <%@page import="net.sf.json.JSONObject"%>
+<%@page import="cn.explink.enumutil.OrgPayInTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<Menu> menuPDAList = (List<Menu>) request.getAttribute("PDAmenu");
@@ -70,7 +71,7 @@
 				<li><span>邮箱：</span><input type="text" name="branchemail" id="branchemail" maxlength="50"/></li>
 				 <!-- <li><span>预付款后缴款设置：</span><input type="hidden" name="" class ="zhandian" /></li> -->
 				 
-				 
+				 <li><span>对应滑槽口号：</span><input type="text" name="outputno" id="outputno" maxlength="50"/></li>
 				 <li><span>结算类型：</span>
 				 	<select id ="accounttype" name ="accounttype" class ="zhandian"  style="width:150px;">
 				 	 <option value ="0">==请选择==</option> 
@@ -198,7 +199,13 @@
 		             	}
 		             %>
 		           </select>*</li>
-					
+				 <li><span>缴款方式：</span><select id ="payinType" name ="payinType" >
+				    <%
+				    	for(OrgPayInTypeEnum temp: OrgPayInTypeEnum.values()){%>
+							<option value ="<%=temp.getValue()%>"><%=temp.getText()%></option>
+					<%} %>
+	
+				  </select>*</li>	
 				 <li><span>分拣线提示方式：</span><select id ="remandtype" name ="remandtype" >
 		             <option value ="0">==请选择==</option> 
 		             <option value ="<%=BranchEnum.BuQiYong.getValue()%>"><%=BranchEnum.BuQiYong.getText()%></option>
@@ -211,8 +218,8 @@
 				 <!-- <li><span>导出信息设置：</span><input type="hidden" name="" class ="kefu" /></li> 
 		         <li><span>查询统计内容设置：</span><input type="hidden" name="" class ="yunying" /></li>-->
 	         	<!-- 自动核销用到的站点账户信息 -->
-	         	 <li><span><input name="payMethodType" id="tl" type="radio" value="0" checked="checked"  onclick="payMthodchange(this)"/>通联</span>
-	         	 	<span><input name="payMethodType" id="cft" type="radio" value="1" onclick="payMthodchange(this)"/>财付通</span></li>
+	         	 <li><span><input name="payMethodType" id="tl" type="radio" value="0" checked="checked"  onclick="payMthodchange(this.id)"/>通联</span>
+	         	 	<span><input name="payMethodType" id="cft" type="radio" value="1" onclick="payMthodchange(this.id)"/>财付通</span></li>
 	         	 <li><span>银行卡账号：</span><input type="text" name="bankCardNo" id="bankCardNo" maxlength="50" onblur="isbranchnum(this)"/>*</li>
 		         <li><span>银行代码：</span><select id="bankCode" name="bankCode" class="select1" >
 					<%

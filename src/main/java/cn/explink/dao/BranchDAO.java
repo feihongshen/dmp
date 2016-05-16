@@ -126,6 +126,10 @@ public class BranchDAO {
 			branch.setCftAccountProp(rs.getInt("cft_account_prop"));
 			branch.setCftCertId(rs.getString("cft_cert_id"));
 			branch.setCftCertType(rs.getInt("cft_cert_type"));
+			branch.setPayinType(rs.getInt("payin_type"));
+			
+			//自动分拣使用的出货口号
+			branch.setOutputno(rs.getString("outputno"));
 			return branch;
 		}
 	}
@@ -352,12 +356,97 @@ public class BranchDAO {
 		this.jdbcTemplate
 				.update("update express_set_branch set branchname=?,branchaddress=?,branchcontactman=?,branchphone=?,"
 						+ "branchmobile=?,branchfax=?,branchemail=?,contractflag=?,contractrate=?,cwbtobranchid=?,branchcode=?,"
+						+ "payfeeupdateflag=?,backtodeliverflag=?,branchpaytoheadflag=?,branchfinishdayflag=?,creditamount=?,branchwavfile=?,"
+						+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
+						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchcity=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
+						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,backtime=?,branch_bail=?,pfruleid=?, "
+						+ "bank_card_no=?,bank_code=?,owner_name=?,bank_account_type=?,cft_account_no=?,cft_bank_code=?,cft_account_name=?,cft_account_prop=?,cft_cert_id=?,cft_cert_type=?,tpsbranchcode=?,payin_type=? "
+						+ " where branchid=?", new PreparedStatementSetter() {
+
+					@Override
+					public void setValues(PreparedStatement ps)
+							throws SQLException {
+						// TODO Auto-generated method stub
+						ps.setString(1, branch.getBranchname());
+						ps.setString(2, branch.getBranchaddress());
+						ps.setString(3, branch.getBranchcontactman());
+						ps.setString(4, branch.getBranchphone());
+						ps.setString(5, branch.getBranchmobile());
+						ps.setString(6, branch.getBranchfax());
+						ps.setString(7, branch.getBranchemail());
+						ps.setString(8, branch.getContractflag());
+						ps.setBigDecimal(9, branch.getContractrate());
+						ps.setString(10, branch.getCwbtobranchid());
+						ps.setString(11, branch.getBranchcode());
+						ps.setString(12, branch.getPayfeeupdateflag());
+						ps.setString(13, branch.getBacktodeliverflag());
+						ps.setString(14, branch.getBranchpaytoheadflag());
+						ps.setString(15, branch.getBranchfinishdayflag());
+						ps.setBigDecimal(16, branch.getCreditamount());
+						ps.setString(17, branch.getBranchwavfile());
+						ps.setString(18, "1");
+						ps.setString(19, branch.getNoemailimportflag());
+						ps.setString(20, branch.getErrorcwbdeliverflag());
+						ps.setString(21, branch.getErrorcwbbranchflag());
+						ps.setString(22, branch.getBranchcodewavfile());
+						ps.setString(23, branch.getImportwavtype());
+						ps.setString(24, branch.getExportwavtype());
+						ps.setBigDecimal(25, branch.getBranchinsurefee());
+						ps.setString(26, branch.getBranchprovince());
+						ps.setString(27, branch.getBranchcity());
+						ps.setString(28, branch.getNoemaildeliverflag());
+						ps.setInt(29, branch.getSendstartbranchid());
+						ps.setInt(30, branch.getSitetype());
+						ps.setLong(31, branch.getCheckremandtype());
+						ps.setString(32, branch.getBranchmatter());
+						ps.setInt(33, branch.getAccountareaid());
+						ps.setString(34, branch.getFunctionids());
+						ps.setLong(35, branch.getZhongzhuanid());
+						ps.setLong(36, branch.getTuihuoid());
+						ps.setLong(37, branch.getCaiwuid());
+						ps.setString(38, branch.getBankcard());
+
+						ps.setInt(39, branch.getAccounttype());
+						ps.setInt(40, branch.getAccountexcesstype());
+						ps.setBigDecimal(41, branch.getAccountexcessfee());
+						ps.setLong(42, branch.getAccountbranch());
+						ps.setBigDecimal(43, branch.getCredit());
+
+						ps.setLong(44, branch.getBacktime());
+						ps.setBigDecimal(45, branch.getBranchBail());
+						ps.setLong(46, branch.getPfruleid());
+
+						ps.setString(47, branch.getBankCardNo());
+						ps.setString(48, branch.getBankCode());
+						ps.setString(49, branch.getOwnerName());
+						ps.setInt(50, branch.getBankAccountType());
+
+						ps.setString(51, branch.getCftAccountNo());
+						ps.setString(52, branch.getCftBankCode());
+						ps.setString(53, branch.getCftAccountName());
+						ps.setInt(54, branch.getCftAccountProp());
+						ps.setString(55, branch.getCftCertId());
+						ps.setInt(56, branch.getCftCertType());
+						ps.setString(57, branch.getTpsbranchcode());
+						ps.setInt(58, branch.getPayinType());
+						ps.setLong(59, branch.getBranchid());
+					}
+				});
+
+	}
+
+	@SystemInstallOperation
+	@CacheEvict(value = "branchCache", key = "#branch.branchid")
+	public void saveBranchNoFile(final Branch branch) {
+		this.jdbcTemplate
+				.update("update express_set_branch set branchname=?,branchaddress=?,branchcontactman=?,branchphone=?,"
+						+ "branchmobile=?,branchfax=?,branchemail=?,contractflag=?,contractrate=?,cwbtobranchid=?,branchcode=?,"
 						+ "payfeeupdateflag=?,backtodeliverflag=?,branchpaytoheadflag=?,branchfinishdayflag=?,creditamount=?,"
 						+ "brancheffectflag=?,noemailimportflag=?,errorcwbdeliverflag=?,errorcwbbranchflag=?,branchcodewavfile=?,importwavtype=?,"
 						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchwavfile=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
 						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,bindmsksid=?,"
 						+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?,"
-						+ "bank_card_no=?,bank_code=?,owner_name=?,bank_account_type=?,cft_account_no=?,cft_bank_code=?,cft_account_name=?,cft_account_prop=?,cft_cert_id=?,cft_cert_type=?,tpsbranchcode=? "
+						+ "bank_card_no=?,bank_code=?,owner_name=?,bank_account_type=?,cft_account_no=?,cft_bank_code=?,cft_account_name=?,cft_account_prop=?,cft_cert_id=?,cft_cert_type=?,tpsbranchcode=?,payin_type=?,outputno=? "
 						+ " where branchid=?", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps)
@@ -429,7 +518,9 @@ public class BranchDAO {
 						ps.setString(60, branch.getCftCertId());
 						ps.setInt(61, branch.getCftCertType());
 						ps.setString(62, branch.getTpsbranchcode());
-						ps.setLong(63, branch.getBranchid());
+						ps.setInt(63, branch.getPayinType());
+						ps.setString(64, branch.getOutputno());
+						ps.setLong(65, branch.getBranchid());
 					}
 				});
 	}
@@ -478,7 +569,7 @@ public class BranchDAO {
 			public PreparedStatement createPreparedStatement(
 					java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
-				ps = con.prepareStatement("insert into express_set_branch(branchid,branchname,branchaddress,branchcontactman,branchphone,branchmobile," + "branchfax,branchemail,contractflag,contractrate,cwbtobranchid,branchcode,payfeeupdateflag,backtodeliverflag," + "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag," + "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag," + "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid," + "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid,bank_card_no,bank_code,owner_name,bank_account_type,cft_account_no,cft_bank_code,cft_account_name,cft_account_prop,cft_cert_id,cft_cert_type,tpsbranchcode) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
+				ps = con.prepareStatement("insert into express_set_branch(branchid,branchname,branchaddress,branchcontactman,branchphone,branchmobile," + "branchfax,branchemail,contractflag,contractrate,cwbtobranchid,branchcode,payfeeupdateflag,backtodeliverflag," + "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag," + "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag," + "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid," + "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid,bank_card_no,bank_code,owner_name,bank_account_type,cft_account_no,cft_bank_code,cft_account_name,cft_account_prop,cft_cert_id,cft_cert_type,tpsbranchcode,payin_type,outputno) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
 				ps.setLong(1, branch.getBranchid());
 				ps.setString(2, branch.getBranchname());
 				ps.setString(3, branch.getBranchaddress());
@@ -542,6 +633,8 @@ public class BranchDAO {
 				ps.setString(61, branch.getCftCertId());
 				ps.setInt(62, branch.getCftCertType());
 				ps.setString(63, branch.getTpsbranchcode());// 为快递上传tps新增的机构编码
+				ps.setInt(64, branch.getPayinType());
+				ps.setString(65, branch.getOutputno());//自动分拣的出货口
 				return ps;
 			}
 		}, key);
@@ -1267,5 +1360,12 @@ public class BranchDAO {
 		list = this.jdbcTemplate.query(sql, new BranchRowMapper());
 		return list;
 	}
+
+	public List<Branch> getBranchByOutputNo(String outputno) {
+		List<Branch> list = new ArrayList<Branch>();
+		String sql = "select  * from express_set_branch where outputno = ?" ;
+		list = this.jdbcTemplate.query(sql, new BranchRowMapper(),outputno);
+		return list;
+}
 
 }
