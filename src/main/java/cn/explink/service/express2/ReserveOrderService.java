@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderResponse;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderService;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderServiceHelper;
-import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.pjbest.deliveryorder.service.PjReserveOrderPageModel;
 import com.pjbest.deliveryorder.service.PjSaleOrderFeedbackRequest;
@@ -251,10 +249,13 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+			//转换
+			logVo.convert();
 			logVoList.add(logVo);
 		}
 		return logVoList;
 	}
+
 
 
     /**
