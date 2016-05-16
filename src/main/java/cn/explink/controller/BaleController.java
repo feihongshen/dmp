@@ -411,7 +411,8 @@ public class BaleController {
 					this.baleService.sortAndChangeBaleAddCwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
 				} else {
 					// 调用分拣出库扫描逻辑
-					this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
+					CwbOrder cwbOrder=this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
+					this.tpsCwbFlowService.save(cwbOrder,scancwb, FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
 				}
 				
 				Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());

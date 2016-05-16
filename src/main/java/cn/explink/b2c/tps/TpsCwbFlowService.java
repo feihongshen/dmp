@@ -40,7 +40,8 @@ public class TpsCwbFlowService {
 	
 	@Transactional
 	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype,long currentbranchid) {
-		if (flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+		if (flowordertype.getValue() == FlowOrderTypeEnum.RuKu.getValue()||
+			flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
 			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.TPS_Cwb_Flow.getKey());//
 			if(isOpenFlag!=1){
 				this.logger.info("订单体积重量反馈tps开关未开启.");
@@ -67,6 +68,14 @@ public class TpsCwbFlowService {
 				this.logger.info("tps运单号为空时不保存,cwb="+co.getCwb());
 				return;
 			}
+			
+			if (flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+				boolean exist= this.tpsCwbFlowDao.checkExist(co.getCwb(), scancwb);
+				if(exist){
+					this.logger.info("入库时保存过,cwb="+co.getCwb());
+					return;
+				}
+			}
 
 			//暂时不考虑外单;外单tps运单号目前放在oms数据库
 			//Set<Long> customerids= getVipshopId(cfg.getCustomerids());
@@ -82,32 +91,30 @@ public class TpsCwbFlowService {
 	}
 
 	@Transactional
-	public List<TpsCwbFlowVo> retrieveData(int size,int trytime,int flowordertype){
-		return this.tpsCwbFlowDao.list(size, trytime, flowordertype);
+	public List<TpsCwbFlowVo> retrieveData(int size,int trytime){
+		return this.tpsCwbFlowDao.list(size, trytime);
 	}
 
 	@Transactional
-	public void update(TpsCwbFlowVo vo){
+	public void comleteWithError(TpsCwbFlowVo vo,String errorInfo){
+		vo.setErrinfo(errorInfo);
+		vo.setState(2);//0等待处理，1成功处理，2错误
 		this.tpsCwbFlowDao.update(vo);
 	}
 	
 	@Transactional
-	public void complete(TpsCwbFlowVo vo,List<String> transcwbList,int state){
+	public void complete(TpsCwbFlowVo vo){
 		this.tpsCwbFlowDao.delete(vo);
-		for(String transcwb:transcwbList){
-			TpsCwbFlowVo flowVo=new TpsCwbFlowVo();
-			flowVo.setCwb(vo.getCwb());
-			flowVo.setScancwb(transcwb);
-			flowVo.setFlowordertype(vo.getFlowordertype());
-			flowVo.setState(state);
-			this.tpsCwbFlowDao.save(flowVo);
-		}
-		
+		vo.setErrinfo("");
+		vo.setState(1);//0等待处理，1成功处理，2错误
+		vo.setTrytime(vo.getTrytime()+1);
+		this.tpsCwbFlowDao.saveSent(vo);
 	}
 	
 	@Transactional
 	public void housekeep(int day){
 		this.tpsCwbFlowDao.delete(day);
+		this.tpsCwbFlowDao.deleteSent(day);
 	}
 	
 	private Set<Long> getVipshopId(String customerids){
@@ -143,7 +150,5 @@ public class TpsCwbFlowService {
 				
 		return cfg;
 	}
-	
 
-	
 }

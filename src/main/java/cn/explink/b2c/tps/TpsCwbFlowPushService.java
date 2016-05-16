@@ -80,7 +80,7 @@ public class TpsCwbFlowPushService {
 				return;
 			}
 			
-			List<TpsCwbFlowVo> dataList= tpsCwbFlowService.retrieveData(cfg.getMaxDataSize(),cfg.getMaxTryTime(),FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+			List<TpsCwbFlowVo> dataList= tpsCwbFlowService.retrieveData(cfg.getMaxDataSize(),cfg.getMaxTryTime());
 			handleData(dataList);
 			housekeepData(cfg);
 		} catch (Exception ex) {
@@ -103,20 +103,11 @@ public class TpsCwbFlowPushService {
 				List<DoTrackFeedbackRequest> reqList=prepareRequest(vo);
 				
 				if(reqList!=null&&reqList.size()>0){
-					if(reqList.size()<2){
-						DoTrackFeedbackRequest req=reqList.get(0);
+					for(DoTrackFeedbackRequest req:reqList){
 						send(req,6000);
-						vo.setErrinfo("");
-						vo.setState(1);//0等待处理，1成功处理，2错误
-						this.tpsCwbFlowService.update(vo);
-					}else{
-						List<String> transcwbList=new ArrayList<String>();
-						for(DoTrackFeedbackRequest req:reqList){
-							send(req,6000);
-							transcwbList.add(req.getBoxInfo().getBoxNo());
-						}
-						this.tpsCwbFlowService.complete(vo,transcwbList,1);
 					}
+					this.tpsCwbFlowService.complete(vo);
+					
 				}else{
 					throw new RuntimeException("请求对象为空.");
 				}
@@ -124,9 +115,7 @@ public class TpsCwbFlowPushService {
 				logger.info("体积重量推送tps成功.cwb="+vo.getCwb()+",scancwb="+vo.getScancwb());
 			} catch (Exception e) {
 				logger.error("体积重量推送tps时出错.cwb="+vo.getCwb()+",scancwb="+vo.getScancwb(),e);
-				vo.setErrinfo("push tps error."+e.getMessage());
-				vo.setState(2);
-				this.tpsCwbFlowService.update(vo);
+				this.tpsCwbFlowService.comleteWithError(vo,"体积重量推送tps时出错."+e.getMessage());
 			}
 		}
 	}
@@ -266,7 +255,7 @@ public class TpsCwbFlowPushService {
 				String now=sdf.format(Calendar.getInstance().getTime());
 				if(!now.equals(this.today)){
 					this.today=now;
-					int day=(cfg==null||cfg.getHousekeepDay()<7)?7:cfg.getHousekeepDay();
+					int day=(cfg==null||cfg.getHousekeepDay()<2)?2:cfg.getHousekeepDay();
 					this.tpsCwbFlowService.housekeep(day);
 				}
 			}
