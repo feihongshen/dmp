@@ -1,0 +1,1 @@
+SELECT 'tps_weight_inware' AS '脚本文件名',IF((SELECT COUNT(1) FROM express_ops_tps_flow_tmp_sent) >=0,'success','failed') AS '执行结果';
