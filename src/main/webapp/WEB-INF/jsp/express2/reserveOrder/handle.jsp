@@ -15,200 +15,87 @@
 //    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 %>
 <head>
-
-
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>客户账单核对</title>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-1.8.3.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
-    <link id="skinlayercss" href="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/skin/layer.css"
-          rel="stylesheet"
-          type="text/css">
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/tools/dataformat.js"></script>
-    <link id="easyuiTheme" rel="stylesheet"
-          href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/default/easyui.css" type="text/css">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/icon.css" type="text/css">
-    <link rel="stylesheet" type="text/css"
-          href="<%=request.getContextPath()%>/dmp40/plug-in/accordion/css/accordion.css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/jquery.easyui.min.1.3.2.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/locale/easyui-lang-zh_CN.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/tools/syUtil.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/extends/datagrid-scrollview.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/My97DatePicker/WdatePicker.js"></script>
-    <link type="text/css" rel="stylesheet"
-          href="<%=request.getContextPath()%>/dmp40/plug-in/My97DatePicker/skin/WdatePicker.css">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/dmp40/plug-in/tools/css/common.css" type="text/css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/lhgDialog/lhgdialog.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/tools/curdtools.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/tools/easyuiextend.js"></script>
-    <%--<script type="text/javascript" src="eap/sys/js/eapTools.js"></script>--%>
-    <link rel="stylesheet"
-          href="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-autocomplete/jquery.autocomplete.css"
-          type="text/css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/jquery/jquery-autocomplete/jquery.autocomplete.min.js"></script>
-    <link href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap.min.css" rel="stylesheet"
-          type="text/css">
-    <link href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet"
-          type="text/css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/js/bootstrap-table.js"></script>
-    <%--  <link href="webpage/fnc/js/multiSelcet/multiple-select.css" rel="stylesheet" type="text/css">
-      <script src="webpage/fnc/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
-      <script type="text/javascript" src="webpage/fnc/js/upload/swfupload.js"></script>
-      <script type="text/javascript" src="webpage/fnc/js/upload/jquery.swfupload.js"></script>
-      <script type="text/javascript" src="webpage/fnc/js/upload/swfupload.queue.js"></script>--%>
-    <script type="text/javascript">
-    	var contextPath = '<%=request.getContextPath()%>';
-    </script>
+    <%@ include file="common.jsp" %>
     <script src="${pageContext.request.contextPath}/js/express2/reserveOrder/handle.js" type="text/javascript"></script>
 </head>
 
 <body class="easyui-layout" leftmargin="0" topmargin="0">
-<div data-options="region:'center'" style="overflow-x:hidden;overflow-y:auto;">
-
-        <table id="dg" style="height:400px;" width="100%" toolbar="#toolbar" showFooter="true"
-           url="<%=request.getContextPath()%>/express2/reserveOrder/queryList" fitColumns="false" singleSelect="false" checkOnSelect="true"
-           selectOnCheck="false" rownumbers="true"
-           pageSize="10" pagination="true" pageList="[10,50,100,200,300]">
-        <thead>
+	<div data-options="region:'center'"
+		style="height: 100%; overflow-x: auto; overflow-y: auto;">
+		<table id="dg_rsList"></table>
+		<div id="signFee_toolbar" style="padding: 10px">
+		<form action="" id="search_form" style="margin:0px;">
+			<table id="search_table">
         <tr>
-            <th field="omReserveOrderId" checkbox="true"  align="center" width="180px;">id</th>
-            <th field="reserveOrderNo" align="center" width="150px;">预约单号</th>
-            <th field="appointTimeStr" align="center" width="130px;">下单时间</th>
-            <th field="cnorName" align="center" width="130px;">寄件人</th>
-            <th field="cnorMobile" align="center" width="100px;">手机</th>
-            <th field="cnorTel" align="center" width="120px;">固话</th>
-            <th field="cnorAddr" align="center" width="130px;">寄件地址</th>
-            <th field="requireTimeStr" align="center" width="150px;">预约上门时间</th>
-            <th field="reservrOrderStatusVal" align="center" width="130px;">预约单状态</th>
-            <th field="reason" align="center" width="130px;">原因 </th>
-            <th field="acceptOrgName" align="center" width="130px;">站点</th>
-            <th field="courierName" align="center" width="80px;">快递员</th>
-            <th field="??" align="center" width="80px;">备注</th>
-        </tr>
-        </thead>
-    </table>
-    <div id="toolbar">
-        <table width="100%" border="0">
-            <tr>
-                <td colspan="2">
-                    <table width="100%" height="82" border="0">
-                        <tr>
-                            <td>预约单号：</td>
-                            <td><input id="billNos" name="billNos"/></td>
-                            <td>下单时间：</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约单号：</td>
+					<td>
+						<input id="reserveOrderNo" name="reserveOrderNo" type ="text" style="width:140px;"/>
+					</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约时间：</td>
                             <td>
-                                <input type="text" name="beginTime" id="beginTime" value=""
-                                       onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
+						<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
                             </td>
-                            <td>到</td>
+					<td style="border: 0px; text-align: center; vertical-align: middle;width:65px;">至</td>
                             <td>
-                                <input type="text" name="endTime" id="endTime" value=""
-                                       onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
+						<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
                             </td>
-                            <td>市区：</td>
-                            <td width="10%">
-                                <select id="city" name="city">
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
+					<td>
+						<select name="cnorProv"  id="cnorProv" style="width:100px;">
                                     <option value="" selected="selected">市</option>
                                     <c:forEach items="${cityList}" var="list">
                                         <option value="${list.id}" code="${list.code}">${list.name}</option>
                                     </c:forEach>
                                 </select>
-                            </td>
-                            <td width="10%">
-                                <select id="county" name="county">
+						<select name="cnorCity"  id="cnorCity" style="width:100px;">
                                     <option value="">区/县</option>
-                                    <%--<%for (BillStatueEnum bs : BillStatueEnum.values()) { %>--%>
-                                    <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
-                                    <%--</option>--%>
-                                    <%--<%} %>--%>
                                 </select>
                             </td>
                         </tr>
                         <tr>
-                            <td>手机/固话：</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">手机/固话：</td>
                             <td>
-                                <input/>
+						<input id="cnorMobile" name="cnorMobile" type ="text" style="width:140px;"/>
                             </td>
-                            <td>站点：</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">站点：</td>
                             <td>
-                                <select id="branch" name="branch">
+						<select name="acceptOrg"  id="acceptOrg" style="width:140px;">
                                     <option value="">请选择</option>
                                     <c:forEach items="${branchList}" var="list">
                                         <option value="${list.branchid}">${list.branchname}</option>
                                     </c:forEach>
-                                    <%--<option value="">---请选择---</option>--%>
-                                    <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
-                                    <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
-                                    <%--</option>--%>
-                                    <%--<%} %>--%>
                                 </select>
                             </td>
-                            <td>快递员：</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">快递员：</td>
                             <td>
-                                <select id="courier" name="courier">
+						<select name="courier"  id="courier" style="width:140px;">
                                     <option value="">请选择</option>
-                                    <%--<option value="">---请选择---</option>--%>
-                                    <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
-                                    <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
-                                    <%--</option>--%>
-                                    <%--<%} %>--%>
                                 </select>
                             </td>
-                            <td>预约订单状态：</td>
-                            <td colspan="2">
-                                <select id="status" name="billType">
-                                    <%--<option value="">---请选择---</option>--%>
-                                    <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
-                                    <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
-                                    <%--</option>--%>
-                                    <%--<%} %>--%>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约单状态：</td>
+					<td>
+						<select name="reserveOrderStatusList" id="reserveOrderStatusList" style="width:140px;">
+							<option value="">请选择</option>
+							<c:forEach items="${orderStatusList }" var="orderStatus">
+								<option value="${orderStatus.index}">${orderStatus.name}</option>
+							</c:forEach>
                                 </select>
                             </td>
                         </tr>
                     </table>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <table width="100%" height="20" border="0">
-                        <tr>
-                            <td>
-                                <div class="btn btn-default" onclick="doQuery();" style="margin-right:5px;"><i
-                                        class="icon-search"></i>查询
+               		</form>
+			<div style="margin:0px;" >
+		    	<div class="btn btn-default" onclick="doSearch();" style="margin-right:5px;" id= "searchData"><i class="icon-search"></i>查询</div>
+		    	<div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i class="icon-plus"></i>修改</div>
+		    	<div class="btn btn-default" id="deleteReserveOrderBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>关闭</div>
+		    	<div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-remove"></i>退回总部</div>
+		    	<div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i class="icon-eye-open"></i>分配站点</div>
+		    	<div class="btn btn-default" onclick="exportExcel();" style="margin-left:5px;"><i class="icon-download-alt"></i>导出</div>
                                 </div>
-                                <div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i
-                                        class="icon-plus"></i>修改
                                 </div>
-                                <div class="btn btn-default" id="deleteReserveOrderBtn" style="margin-right:5px;">
-                                    <i class="icon-arrow-up"></i>关闭
                                 </div>
-                                <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i
-                                        class="icon-remove"></i>退回总部
-                                </div>
-                                <div class="btn btn-default" id="distributeBranchBtn"
-                                     style="margin-right:5px;"><i class="icon-eye-open"></i>分配站点
-                                </div>
-                                <div class="btn btn-default" onclick="doExportBill();" style="margin-right:5px;"><i
-                                        class="icon-download-alt"></i>导出
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </div>
-</div>
 <div id="dialog1" title="修改预约单" style="display:none;">
     <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
         <table>
@@ -362,4 +249,64 @@
     </div>
 </div>
 </body>
+<script type="text/javascript">
+	/**
+	 * 初始化表格
+	 */
+	function initDataGrid() {
+		$('#dg_rsList').datagrid({
+			url: contextPath + '/express2/reserveOrder/queryList/query',
+			toolbar: "#signFee_toolbar",
+			showFooter: true,
+			fit: true,
+			fitColumns: false,
+			singleSelect: true,
+			pageSize: 10,
+			rownumbers: true,
+			pagination: true,
+			pageList: [10,30,50],
+		    columns:[[
+		        {field:'omReserveOrderId', title:'预约单id', hidden:true},
+		        {field:'reserveOrderNo', title:'预约单号', width:130, align:'center',
+		        	formatter: reserveOrderNoFormatter
+		       	},
+		        {field:'appointTimeStr', title:'下单时间', width:130, align:'center'},
+		        {field:'cnorName', title:'寄件人', width:100, align:'center'},
+		        {field:'cnorMobile', title:'手机', width:100, align:'center'},
+		        {field:'cnorTel', title:'固话', width:100, align:'center'},
+		        {field:'cnorAddr', title:'寄件地址', width:130, align:'center'},
+		        {field:'requireTimeStr', title:'预约上门时间', width:130, align:'center'},
+		        {field:'reservrOrderStatusName', title:'预约单状态', width:100, align:'center'},
+		        {field:'reason', title:'原因', width:130, align:'center'},
+		        {field:'transportNo', title:'运单号', width:100, align:'center'},
+		        {field:'acceptOrgName', title:'站点', width:100, align:'center'},
+		        {field:'courierName', title:'快递员', width:80, align:'center'},
+		        {field:'cnorRemark', title:'备注', width:80, align:'center'}
+		    ]]
+		});
+	}
+	
+	function doSearch() {
+		//查询list
+		$('#dg_rsList').datagrid('load',{
+			reserveOrderNo:$("#reserveOrderNo").val(),
+			appointTimeStart:$("#appointTimeStart").val(),
+			appointTimeEnd:$("#appointTimeEnd").val(),
+			cnorProv:$("#cnorProv").val(),
+			cnorCity:$("#cnorCity").val(),
+			cnorMobile:$("#cnorMobile").val(),
+			acceptOrg:$("#acceptOrg").val(),
+			courier:$("#courier").val(),
+			reserveOrderStatusList:$("#reserveOrderStatusList").val()
+		});
+	}
+	
+	$(function() {
+		//单选模糊查询下拉框
+		//$("#search_table select").combobox();
+		
+		//初始化表格
+		initDataGrid();
+	});
+</script>
 </html>
