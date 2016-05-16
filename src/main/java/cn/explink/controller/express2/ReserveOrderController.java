@@ -206,8 +206,6 @@ public class ReserveOrderController extends ExpressCommonController {
 		return JsonUtil.translateToJson(dg);
 	}
 
-
-
     @RequestMapping("/closeReserveOrder")
     @ResponseBody
     public JSONObject closeReserveOrder(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
@@ -218,6 +216,68 @@ public class ReserveOrderController extends ExpressCommonController {
         JSONObject obj = new JSONObject();
         try {
             reserveOrderService.closeReserveOrder(reserveOrderNos.split(","), closeReason);
+        } catch (OspException e) {
+            obj.put("errorMsg", e.getReturnMessage());
+        }
+        return obj;
+    }
+    @RequestMapping("/returnToCentral")
+    @ResponseBody
+    public JSONObject returnToCentral(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
+                                  @RequestParam(value = "returnReason", required = true) String returnReason,
+                                  HttpServletRequest request, HttpServletResponse response
+    ) {
+
+        JSONObject obj = new JSONObject();
+        try {
+            reserveOrderService.returnToCentral(reserveOrderNos.split(","), returnReason);
+        } catch (OspException e) {
+            obj.put("errorMsg", e.getReturnMessage());
+        }
+        return obj;
+    }
+    @RequestMapping("/distributeBranch")
+    @ResponseBody
+    public JSONObject distributeBranch(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
+                                       @RequestParam(value = "distributeBranch", required = true) int distributeBranch,
+                                       @RequestParam(value = "distributeCourier", required = true) int distributeCourier,
+                                       HttpServletRequest request, HttpServletResponse response
+    ) {
+
+        JSONObject obj = new JSONObject();
+
+        String selectedTpsbranchCode = null;
+        List<Branch> branches = reserveOrderService.getBranches();
+        for (int i = 0; i < branches.size(); i++) {
+            Branch branch = branches.get(i);
+            if (branch.getBranchid() == distributeBranch){
+                selectedTpsbranchCode = branch.getTpsbranchcode();
+                break;
+            }
+        }
+
+        if(selectedTpsbranchCode == null){
+            obj.put("errorMsg", "站点TPSBranchCode不存在");
+            return obj;
+        }
+
+        String selectedCourierName = null;
+
+        List<User> courierList = this.reserveOrderService.getCourierByBranch(distributeBranch);
+        for (int i = 0; i < courierList.size(); i++) {
+            User courier = courierList.get(i);
+            if (courier.getUserid() == distributeCourier){
+                selectedCourierName = courier.getUsername();
+            }
+        }
+
+        if(selectedCourierName == null){
+            obj.put("errorMsg", "快递员不存在");
+            return obj;
+        }
+
+        try {
+            reserveOrderService.distributeBranch(reserveOrderNos.split(","), selectedTpsbranchCode, distributeCourier, selectedCourierName);
         } catch (OspException e) {
             obj.put("errorMsg", e.getReturnMessage());
         }

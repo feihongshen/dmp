@@ -190,7 +190,7 @@
             </tr>
             <tr>
                 <td style="border: 0px; vertical-align: middle;">
-                    <textarea id="" rows=5 name="" class="textarea easyui-validatebox"></textarea>
+                    <textarea id="returnReason" rows=5 name="" class="textarea easyui-validatebox"></textarea>
                 </td>
             </tr>
         </table>

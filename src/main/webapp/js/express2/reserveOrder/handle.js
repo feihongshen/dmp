@@ -113,16 +113,28 @@ $(function () {
     $('#confirmEditReserveOrderBtn').click(function () {
         confirmEditReserveOrder();
     })
-    $('#closeEditReserveOrderPanel').click(function () {
-        closePanel(editReserveOrderPanel);
-    })
     $('#confirmCloseReserveOrderBtn').click(function () {
         confirmCloseReserveOrder();
     })
+    $('#confirmReturnToCentralBtn').click(function () {
+        confirmReturnToCentral();
+    })
+    $('#confirmDistributeBranchBtn').click(function () {
+        confirmDistributeBranch();
+    })
+
     $('#closeCloseReserveOrderPanel').click(function () {
         closePanel(closeReserveOrderPanel);
     })
-
+    $('#closeEditReserveOrderPanel').click(function () {
+        closePanel(editReserveOrderPanel);
+    })
+    $('#closeDistributeBranchPanel').click(function () {
+        closePanel(distributeBranchPanel);
+    })
+    $('#closeReturnToCentralPanel').click(function () {
+        closePanel(returnToCentralPanel);
+    })
     $('#closeDistributeBranchPanel').click(function () {
         closePanel(distributeBranchPanel);
     })
@@ -167,6 +179,92 @@ $(function () {
                 $('#dg_rsList').datagrid('reload');
                 $('#closeReason').val("");
                 closePanel(closeReserveOrderPanel);
+            }
+        });
+    }
+    function confirmCloseReserveOrder() {
+        var rows = $('#dg_rsList').datagrid('getChecked');
+
+        var reserveOrderNos = [] ;
+        $.each(rows, function(index, value){
+            reserveOrderNos.push(value.reserveOrderNo);
+        })
+
+        var param = {
+            reserveOrderNos : reserveOrderNos.join(",") ,
+            closeReason : $('#closeReason').val()
+        }
+
+        $.ajax({
+            type: "POST",
+            url: contextPath + "/express2/reserveOrder/closeReserveOrder",
+            dataType: "json",
+            data: param,
+            success: function (data) {
+                if (data.errorMsg){
+                    allertMsg.alertError(data.errorMsg);
+                }
+                $('#dg_rsList').datagrid('reload');
+                $('#closeReason').val("");
+                closePanel(closeReserveOrderPanel);
+            }
+        });
+    }
+    function confirmReturnToCentral() {
+        var rows = $('#dg_rsList').datagrid('getChecked');
+
+        var reserveOrderNos = [] ;
+        $.each(rows, function(index, value){
+            reserveOrderNos.push(value.reserveOrderNo);
+        })
+
+        var param = {
+            reserveOrderNos : reserveOrderNos.join(",") ,
+            returnReason : $('#returnReason').val()
+        }
+
+        $.ajax({
+            type: "POST",
+            url: contextPath + "/express2/reserveOrder/returnToCentral",
+            dataType: "json",
+            data: param,
+            success: function (data) {
+                if (data.errorMsg){
+                    allertMsg.alertError(data.errorMsg);
+                }
+                $('#dg_rsList').datagrid('reload');
+                $('#returnReason').val("");
+                closePanel(returnToCentralPanel);
+            }
+        });
+    }
+    function confirmDistributeBranch() {
+        var rows = $('#dg_rsList').datagrid('getChecked');
+
+        var reserveOrderNos = [] ;
+        $.each(rows, function(index, value){
+            reserveOrderNos.push(value.reserveOrderNo);
+        })
+
+        var param = {
+            reserveOrderNos : reserveOrderNos.join(",") ,
+            distributeBranch : $('#distributeBranchSelect').val(),
+            distributeCourier : $('#distributeCourierSelect').val()
+        }
+
+        $.ajax({
+            type: "POST",
+            url: contextPath + "/express2/reserveOrder/distributeBranch",
+            dataType: "json",
+            data: param,
+            success: function (data) {
+                if (data.errorMsg){
+                    allertMsg.alertError(data.errorMsg);
+                }
+                $('#dg_rsList').datagrid('reload');
+                $('#distributeBranch').val("");
+                $('#distributeCourier').val("");
+                closePanel(distributeBranchPanel);
             }
         });
     }

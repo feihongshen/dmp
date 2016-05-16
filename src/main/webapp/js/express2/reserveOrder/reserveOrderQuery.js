@@ -6,6 +6,11 @@ $(function() {
 	$("#acceptOrg").change(function () {
         changeCourier($(this).val(), "#courier");
     });
+
+    $("#distributeBranchSelect").change(function () {
+        changeCourier($(this).val(), "#distributeCourierSelect");
+    });
+
 });
 
 /**
