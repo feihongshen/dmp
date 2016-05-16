@@ -1,6 +1,9 @@
 package cn.explink.domain.express2.VO;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 /**
  * 预约单日志Vo
@@ -38,7 +41,22 @@ public class ReserveOrderLogVo implements Serializable {
 	* 物流状态信息
 	*/
 	private String trackDetail;
+	
+	//-------------转换出来的属性----------------------
+	/**
+	 * 格式化后的操作时间
+	 */
+	private String operateTimeStr;
+	//-----------------------------------
 
+	/**
+	 * 转换
+	 */
+	public void convert() {
+		Date operateTimeDate = new Date(operateTime);
+		this.operateTimeStr = DateFormatUtils.format(operateTimeDate, "yyyy-MM-dd HH:mm:ss");
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -86,5 +104,14 @@ public class ReserveOrderLogVo implements Serializable {
 	public void setTrackDetail(String trackDetail) {
 		this.trackDetail = trackDetail;
 	}
+
+	public String getOperateTimeStr() {
+		return operateTimeStr;
+	}
+
+	public void setOperateTimeStr(String operateTimeStr) {
+		this.operateTimeStr = operateTimeStr;
+	}
+	
 
 }

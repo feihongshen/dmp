@@ -23,8 +23,41 @@ function reserveOrderNoFormatter(value, row, index) {
  * @param {String} reserveOrderNo
  */
 function reserveOrderNoOnClick(reserveOrderNo) {
-	alert(reserveOrderNo);
+	var htmlContent = 
+		'<div style="width:800px; height:300px; padding:20px; border:1px solid #ccc; background-color:#eee;">' +
+			'<table id="reserveOrderLogGrid"></table>' +
+		'</div>';
+	
+	$.layer({
+	    type: 1,
+	    title: '<span style="font-size:16px;font-weight:bold;">预约单轨迹(' + reserveOrderNo + ')</span>',
+	    area: ['auto', 'auto'],
+	    border: [0], //去掉默认边框
+	    shade: [0.5, '#000'], //去掉遮罩
+	    shadeClose: true,
+	    closeBtn: [0, true], //去掉默认关闭按钮
+	    page: {
+	        html: htmlContent
+	    }
+	});
+	
+	$('#reserveOrderLogGrid').datagrid({
+		url: contextPath + '/express2/reserveOrder/queryReserveOrderLog?reserveOrderNo=' + reserveOrderNo,
+		fit: true,
+		fitColumns: false,
+		singleSelect: true,
+		rownumbers: true,
+	    columns:[[
+	        {field:'id', title:'预约单id', hidden:true},
+	        {field:'reserveOrderNo', title:'预约单号', hidden:true},
+	        {field:'operateTimeStr', title:'操作时间', width:130, align:'center'},
+	        {field:'operator', title:'操作人', width:130, align:'center'},
+	        {field:'operateType', title:'操作类型', width:100, align:'center'},
+	        {field:'trackDetail', title:'物流状态信息', align:'center'}
+	    ]]
+	});
 }
+
 
 function doSearch() {
 	//查询list

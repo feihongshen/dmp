@@ -31,7 +31,6 @@ import com.pjbest.deliveryorder.enumeration.OrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.vip.osp.core.exception.OspException;
 
-import cn.explink.controller.ExplinkResponse;
 import cn.explink.controller.express.ExpressCommonController;
 import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.core.utils.JsonUtil;
@@ -305,15 +304,14 @@ public class ReserveOrderController extends ExpressCommonController {
 	public String queryReserveOrderLog(String reserveOrderNo) {
 		reserveOrderNo = StringUtils.trimToEmpty(reserveOrderNo);
 		
-		ExplinkResponse explinkResponse = new ExplinkResponse();
-		if (reserveOrderNo.length() == 0) {
-			explinkResponse.setStatuscode(Boolean.FALSE.toString());
-			explinkResponse.setErrorinfo("预约单号为空");
-			return JsonUtil.translateToJson(explinkResponse);
-		}
+		DataGridReturn dg = new DataGridReturn();
+		dg.setRows(Collections.emptyList());
+		dg.setTotal(0);
 		
-		JSONObject responseBody = new JSONObject();
-		explinkResponse.setBody(responseBody);
+		if (reserveOrderNo.length() == 0) {
+			logger.warn("queryReserveOrderLog->请输入预约单号");
+			return JsonUtil.translateToJson(dg);
+		}
 		
 		List<ReserveOrderLogVo> reserveOrderLogVoList = Collections.emptyList();
 		try {
@@ -322,6 +320,8 @@ public class ReserveOrderController extends ExpressCommonController {
 			if (reserveOrderLogVoList == null) {
 				reserveOrderLogVoList = Collections.emptyList();
 			}
+			dg.setRows(reserveOrderLogVoList);
+			dg.setTotal(reserveOrderLogVoList.size());
 		} catch (OspException e) {
 			logger.error(e.getMessage(), e);
 			
@@ -329,10 +329,10 @@ public class ReserveOrderController extends ExpressCommonController {
 			logger.error(e.getMessage(), e);
 			
 		}
-		responseBody.put("reserveOrderLogVoList", reserveOrderLogVoList);
-		//System.out.println("explinkResponse:" + JsonUtil.translateToJson(explinkResponse));
-		return JsonUtil.translateToJson(explinkResponse);
+		//System.out.println("reserveOrderLogVoList:" + JsonUtil.translateToJson(reserveOrderLogVoList));
+		return JsonUtil.translateToJson(dg);
 	}
+
 
 
     @RequestMapping("/closeReserveOrder")
