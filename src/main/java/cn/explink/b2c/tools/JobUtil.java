@@ -1,8 +1,5 @@
 package cn.explink.b2c.tools;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,7 @@ import cn.explink.b2c.efast.EfastInsertCwbDetailTimmer;
 import cn.explink.b2c.efast.EfastService_getOrderDetailList;
 import cn.explink.b2c.efast.EfastService_getOrderList;
 import cn.explink.b2c.ems.EMSService;
+import cn.explink.b2c.ems.EMSTimmer;
 import cn.explink.b2c.explink.core_down.AcquisitionOrderService;
 import cn.explink.b2c.explink.core_down.EpaiApiService_Download;
 import cn.explink.b2c.explink.core_down.EpaiApiService_ExportCallBack;
@@ -293,6 +291,8 @@ public class JobUtil {
 	UserInfService userInfService;
 	@Autowired
 	EMSService eMSService;
+	@Autowired
+	EMSTimmer eMSTimmer;
 	
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new RedisMapImpl<String, Integer>("JobUtil");
@@ -1782,7 +1782,7 @@ public class JobUtil {
 			}
 			JobUtil.threadMap.put("emsEmailNo", 1);
 
-			//this.eMSService.excute_getEmsEmailNoTask(); // 下载
+			this.eMSTimmer.getEmsMailNoTask(); // 下载
 
 		} catch (Exception e) {
 			this.logger.error("maikolin执行定时器异常", e);
@@ -1817,5 +1817,28 @@ public class JobUtil {
 		}
 
 		this.logger.info("执行了获取vipshoptimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	//执行推送订单信息给ems定时器 ;
+	public void sendOrderToEMS() {
+		if (JobUtil.threadMap.get("sendOrderToEMSTimmer") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环EMS订单推送操作");
+			return;
+		}
+		JobUtil.threadMap.put("sendOrderToEMSTimmer", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.eMSTimmer.SendOrderOps();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行sendOrderToEMSTimmer定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("sendOrderToEMSTimmer", 0);
+		}
+
+		this.logger.info("执行了获取sendOrderToEMSTimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 }

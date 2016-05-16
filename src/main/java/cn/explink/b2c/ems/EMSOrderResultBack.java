@@ -1,18 +1,22 @@
 package cn.explink.b2c.ems;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * 获取dmp与ems运单对照关系报文对象
+ * EMS订单下发返回异常信息对象
  * @author huan.zhou
  */
 @XmlRootElement(name = "response")
-public class EMSTranscwb {
+public class EMSOrderResultBack {
     private String result;
     private String errorDesc;
     private String errorCode;
-    private EmsAndDmpTranscwb qryData;
+    private List<ErrorDetail> errorDetail;
+    
+    @XmlElement(name = "result")
 	public String getResult() {
 		return result;
 	}
@@ -33,12 +37,11 @@ public class EMSTranscwb {
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
-	@XmlElement(name = "qryData")
-	public EmsAndDmpTranscwb getQryData() {
-		return qryData;
+	public List<ErrorDetail> getErrorDetail() {
+		return errorDetail;
 	}
-	public void setQryData(EmsAndDmpTranscwb qryData) {
-		this.qryData = qryData;
+	public void setErrorDetail(List<ErrorDetail> errorDetail) {
+		this.errorDetail = errorDetail;
 	}
-    
+	
 }
