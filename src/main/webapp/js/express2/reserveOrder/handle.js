@@ -123,11 +123,10 @@ $(function () {
         });
     });
     $('#feedbackBtn').click(function () {
+        if (checkAtLeastSelectOneRow()) {
+            return false;
+        }
         var rows = $('#dg_rsList').datagrid('getChecked');
-        //if(rows.length != 1){
-        //    allertMsg.alertError("请只选择一张预约单");
-        //    return false;
-        //}
         if (rows.length == 1) {
             var selectedRow = rows[0];
             $("#reserveOrderNo4Feedback").val(selectedRow.reserveOrderNo);
@@ -189,7 +188,6 @@ $(function () {
     $('#closeFeedbackPanel').click(function () {
         closePanel(feedBackPanel);
     });
-
 
     function confirmEditReserveOrder() {
         var rows = $('#dg_rsList').datagrid('getChecked');
@@ -263,6 +261,7 @@ $(function () {
 
         var param = {
             reserveOrderNos : reserveOrderNos.join(",") ,
+            returnType : returnType,
             returnReason : $('#returnReason').val()
         };
 
@@ -320,11 +319,11 @@ $(function () {
         });
 
         var param = {
-            reserveOrderNos : reserveOrderNos,
+            reserveOrderNos : reserveOrderNos.join(","),
             optCode4Feedback : $('#optCode4Feedback').val(),
             reason4Feedback : $('#reason4Feedback').val(),
             cnorRemark4Feedback : $('#cnorRemark4Feedback').val(),
-            requireTimeStr4Feedback : $('requireTimeStr4Feedback').val()
+            requireTimeStr4Feedback : $('#requireTimeStr4Feedback').val()
         };
 
         $.ajax({

@@ -51,16 +51,24 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public enum PJReserverOrderOperationCode {
         YiShenHe(38, "已审核"), RenWuTueHui(35, "任务退回"), RenWuQueRen(34, "任务确认"), GuanBi(33, "关闭"),
-        FanKuiJiLiu(32, "反馈滞留"), LanJianShiBai(31, "揽件失败"), LanJianShiBaiTuiHui(30, "揽件超区(退回)"),
-        ZhanDianChaoQu(29, "站点超区"), ShengGongSiChaoQu(28, "省公司超区"), LanJianChengGong(27, "揽件成功"),
+        FanKuiJiLiu(32, "反馈滞留", "延迟揽件"), LanJianShiBai(31, "揽件失败"), LanJianShiBaiTuiHui(30, "揽件超区(退回)"),
+        ZhanDianChaoQu(29, "站点超区", "揽件超区"), ShengGongSiChaoQu(28, "省公司超区"), LanJianChengGong(27, "揽件成功"),
         YiLanJianFenPei(26, "已揽件分配"), YiFenPeiZhanDian(25, "已分配站点"), YiFenPeiShengGongSi(24, "已分配省公司");
 
         private int value;
         private String text;
+        private String displayText = "";
+
+        PJReserverOrderOperationCode(int value, String text, String displayText) {
+            this.value = value;
+            this.text = text;
+            this.displayText = displayText;
+        }
 
         PJReserverOrderOperationCode(int value, String text) {
             this.value = value;
             this.text = text;
+            this.displayText = text;
         }
 
         public int getValue() {
@@ -69,6 +77,10 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         public String getText() {
             return text;
+        }
+
+        public String getDisplayText() {
+            return displayText;
         }
     }
 
@@ -279,7 +291,14 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     }
 
-    public void returnToCentral(String[] reserveOrderNos, String returnReason) throws OspException {
+    /**
+     * 返回总公司
+     * @param reserveOrderNos
+     * @param returnReason
+     * @param returnType
+     * @throws OspException
+     */
+    public void returnToCentral(String[] reserveOrderNos, String returnReason, int returnType) throws OspException {
 
         User user = this.getSessionUser();
         String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
@@ -288,7 +307,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
             pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
             pjSaleOrderFeedbackRequest.setReason(returnReason);
-            pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.LanJianShiBaiTuiHui.getValue());
+            pjSaleOrderFeedbackRequest.setOperateType(returnType);
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
             Date now = new Date();
@@ -299,6 +318,14 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
     }
 
 
+    /**
+     * 分配快递员
+     * @param reserveOrderNos
+     * @param tpsbranchCode
+     * @param courierId
+     * @param courierName
+     * @throws OspException
+     */
     public void distributeBranch(String[] reserveOrderNos, String tpsbranchCode, int courierId, String courierName) throws OspException{
 
         User user = this.getSessionUser();
@@ -323,7 +350,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
 
-    public void feedback(String[] reserveOrderNos, int optCode4Feedback, String reason4Feedback, String cnorRemark4Feedback) throws OspException {
+    public void feedback(String[] reserveOrderNos, int optCode4Feedback, String reason4Feedback, String cnorRemark4Feedback, String requireTimeStr4Feedback) throws OspException {
 
         User user = this.getSessionUser();
         String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
@@ -336,6 +363,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
             pjSaleOrderFeedbackRequest.setReason(reason4Feedback);
             pjSaleOrderFeedbackRequest.setRemark(cnorRemark4Feedback);
             pjSaleOrderFeedbackRequest.setOperater(operator);
+//            pjSaleOrderFeedbackRequest.set
             Date now = new Date();
             pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
 
@@ -345,6 +373,11 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
     }
 
 
+    /**
+     * 反馈服务
+     * @param pjSaleOrderFeedbackRequest
+     * @throws OspException
+     */
     private void feedbackReserveOrder(PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest) throws OspException{
         InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
         PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();

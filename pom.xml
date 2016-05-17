@@ -670,6 +670,11 @@
 			</exclusions> 
 			<type>pom</type> 
 		</dependency>
+        <dependency>
+            <groupId>com.vip.tps</groupId>
+            <artifactId>tps-base-service-api</artifactId>
+            <version>1.16.3_03</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>

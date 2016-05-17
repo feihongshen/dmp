@@ -1,3 +1,5 @@
+<%@ page import="cn.explink.enumutil.ReserveOrderQueryTypeEnum" %>
+<%@ page import="cn.explink.service.express2.ReserveOrderService" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -52,19 +54,13 @@
                     <td>
                         <input id="cnorMobile" name="cnorMobile" type="text" style="width:140px;"/>
                     </td>
-                    <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">站点：</td>
-                    <td>
-                        <select name="acceptOrg" id="acceptOrg" style="width:140px;">
-                            <option value="">请选择</option>
-                            <c:forEach items="${branchList}" var="list">
-                                <option value="${list.branchid}">${list.branchname}</option>
-                            </c:forEach>
-                        </select>
-                    </td>
                     <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">快递员：</td>
                     <td>
                         <select name="courier" id="courier" style="width:140px;">
                             <option value="">请选择</option>
+                            <c:forEach items="${courierList }" var="list">
+                                <option value="${list.userid}">${list.realname}</option>
+                            </c:forEach>
                         </select>
                     </td>
                     <td style="border: 0px; text-align: right; vertical-align: middle;width:80px;">预约单状态：</td>
@@ -190,27 +186,31 @@
                     <select id="optCode4Feedback" name="optCode4Feedback">
                         <option value="">请选择</option>
                         <c:forEach items="${feedbackOptCodes}" var="list">
-                            <option value="${list.value}">${list.text}</option>
+                            <option value="${list.value}">${list.displayText}</option>
                         </c:forEach>
                     </select>
                 </td>
             </tr>
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;width: 40%;">
-                    反馈为：
+                    原因：
                 </td>
                 <td style="border: 0px; vertical-align: middle;">
                     <select id="reason4Feedback" name="reason4Feedback">
                         <option value="">请选择</option>
+                        <c:forEach items="${reverseReason}" var="list">
+                            <option value="${list.codeValue}">${list.displayValue}</option>
+                        </c:forEach>
+
                     </select>
                 </td>
             </tr>
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">预约上门时间：</td>
                 <td style="border: 0px; vertical-align: middle; ">
-                    <input style="width: 94%;" type="text" name="requireTimeStr4Feedback" readonly="readonly"
-                           id="requireTimeStr4Feedback" <%--style="height:30px;"--%> value=""
-                           onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', readonly:true})"/>
+                    <input style="width: 94%;" type="text" name="requireTimeStr4Feedback"
+                           id="requireTimeStr4Feedback" <%--style="height:30px;"--%> value="" disabled="disabled"
+                           onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
                 </td>
             </tr>
             <tr>
@@ -264,11 +264,6 @@
                         <c:forEach items="${branchList}" var="list">
                             <option value="${list.branchid}">${list.branchname}</option>
                         </c:forEach>
-                        <%--<option value="">---请选择---</option>--%>
-                        <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
-                        <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
-                        <%--</option>--%>
-                        <%--<%} %>--%>
                     </select>
                 </td>
 
@@ -278,11 +273,6 @@
                 <td>
                     <select id="distributeCourierSelect" name="distributeCourierSelect">
                         <option value="">请选择</option>
-                        <%--<option value="">---请选择---</option>--%>
-                        <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
-                        <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
-                        <%--</option>--%>
-                        <%--<%} %>--%>
                     </select>
                 </td>
             </tr>
@@ -313,7 +303,7 @@
             rownumbers: true,
             pagination: true,
             pageList: [10, 30, 50],
-            queryParams: {queryType: "warehouseQuery"},
+            <%--queryParams: {queryType: '<%=ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue()%>'},--%>
             columns: [[
                 {field: 'omReserveOrderId', title: '预约单id', checkbox: true},
                 {
@@ -365,12 +355,22 @@
         $searchForm.attr("target", target);
     }
 
-    $(function () {
-        //单选模糊查询下拉框
-        //$("#search_table select").combobox();
+    // 站点退回 - 退回类型为站点超区
+    var returnType = "<%= ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>";
 
+    $(function () {
         //初始化表格
         initDataGrid();
+
+        //反馈为下拉菜单， 选择揽件失败或揽件超区，不可修改预约上门时间；选择延迟揽件，可修改预约上门时间。
+        $('#optCode4Feedback').change(function () {
+            var selectedValue = $(this).val();
+            if (selectedValue == "<%=ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()%>" || selectedValue == "<%=ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>"){
+                $('#requireTimeStr4Feedback').removeAttr('disabled');
+            }else {
+                $('#requireTimeStr4Feedback').attr("disabled",'disabled');
+            }
+        });
     });
 </script>
 </html>

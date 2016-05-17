@@ -11,6 +11,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.vip.tps.base.service.SbCodeDefModel;
+import com.vip.tps.base.service.SbCodeTypeService;
+import com.vip.tps.base.service.SbCodeTypeServiceHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -63,8 +66,9 @@ public class ReserveOrderController extends ExpressCommonController {
 	
 	@Resource
 	private BranchService branchService;
-	
-	/**
+
+    private static final String RESERVE_EXCEPTION_REASON = "RESERVE_EXCEPTION_REASON";
+    /**
 	 * 快递预约单查询
 	 * @date 2016年5月13日 上午11:10:28
 	 * @return
@@ -118,7 +122,10 @@ public class ReserveOrderController extends ExpressCommonController {
 	 */
 	@RequestMapping("/handleWarehouse")
 	public String handleWarehouse(Model model) {
-        handle(model);
+//        handle(model);
+        List<User> courierList = this.reserveOrderService.getCourierByBranch(Long.valueOf(this.getSessionUser().getBranchid()).intValue());
+        model.addAttribute("courierList",courierList);
+
         List<ReserveOrderService.PJReserverOrderOperationCode> feedbackOptCodes = new ArrayList<ReserveOrderService.PJReserverOrderOperationCode>();
 
         feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu);
@@ -126,7 +133,15 @@ public class ReserveOrderController extends ExpressCommonController {
         feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai);
 
         model.addAttribute("feedbackOptCodes",feedbackOptCodes);
-		return "express2/reserveOrder/warehouseHandle";
+
+        SbCodeTypeService sbCodeTypeService = new SbCodeTypeServiceHelper.SbCodeTypeServiceClient();
+
+        try {
+            model.addAttribute("reverseReason", sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON));
+        } catch (OspException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return "express2/reserveOrder/warehouseHandle";
 	}
 	
 	/**
@@ -302,7 +317,12 @@ public class ReserveOrderController extends ExpressCommonController {
 		};
 		excelUtil.excel(response, cloumnName, sheetName, fileName);
 	}
-	
+
+    /**
+     * 根据城市返回区
+     * @param cityId
+     * @return
+     */
     @RequestMapping("/getCountyByCity")
     @ResponseBody
     public JSONObject getCountyByCity(int cityId) {
@@ -312,6 +332,11 @@ public class ReserveOrderController extends ExpressCommonController {
         return obj;
     }
 
+    /**
+     * 根据站点查找派送员
+     * @param branchId
+     * @return jsonObject
+     */
     @RequestMapping("/getCourierByBranch")
     @ResponseBody
     public JSONObject getCourierByBranch(int branchId) {
@@ -324,7 +349,7 @@ public class ReserveOrderController extends ExpressCommonController {
 	/**
 	 * 查询预约单日志
 	 * @param reserveOrderNo 预约单号
-	 * @return
+	 * @return jsonObject
 	 */
 	@ResponseBody
 	@RequestMapping("/queryReserveOrderLog")
@@ -360,6 +385,14 @@ public class ReserveOrderController extends ExpressCommonController {
 		return JsonUtil.translateToJson(dg);
 	}
 
+    /**
+     * 关闭预约单
+     * @param reserveOrderNos 预约单号
+     * @param closeReason 关闭原因
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping("/closeReserveOrder")
     @ResponseBody
     public JSONObject closeReserveOrder(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
@@ -375,21 +408,42 @@ public class ReserveOrderController extends ExpressCommonController {
         }
         return obj;
     }
+
+
+    /**退回
+     * @param reserveOrderNos
+     * @param returnReason
+     * @param returnType
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping("/returnToCentral")
     @ResponseBody
     public JSONObject returnToCentral(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
                                   @RequestParam(value = "returnReason", required = true) String returnReason,
+                                  @RequestParam(value = "returnType", required = true) int returnType,
                                   HttpServletRequest request, HttpServletResponse response
     ) {
 
         JSONObject obj = new JSONObject();
         try {
-            reserveOrderService.returnToCentral(reserveOrderNos.split(","), returnReason);
+            reserveOrderService.returnToCentral(reserveOrderNos.split(","), returnReason, returnType);
         } catch (OspException e) {
             obj.put("errorMsg", e.getReturnMessage());
         }
         return obj;
     }
+
+    /**
+     * 分配快递员
+     * @param reserveOrderNos 预约单号
+     * @param distributeBranch 站点
+     * @param distributeCourier 快递员
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping("/distributeBranch")
     @ResponseBody
     public JSONObject distributeBranch(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
@@ -438,25 +492,52 @@ public class ReserveOrderController extends ExpressCommonController {
         return obj;
     }
 
+    /**
+     * 反馈
+     * @param reserveOrderNos 预约单号
+     * @param optCode4Feedback 反馈为
+     * @param reason4Feedback 原因
+     * @param cnorRemark4Feedback 备注
+     * @param requireTimeStr4Feedback 预约上门时间
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping("/feedback")
     @ResponseBody
     public JSONObject feedback(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
-                                       @RequestParam(value = "optCode4Feedback", required = true) int optCode4Feedback,
-                                       @RequestParam(value = "reason4Feedback", required = true) String reason4Feedback,
-                                       @RequestParam(value = "cnorRemark4Feedback", required = true) String cnorRemark4Feedback,
+                                       @RequestParam(value = "optCode4Feedback" ) int optCode4Feedback,
+                                       @RequestParam(value = "reason4Feedback" ) String reason4Feedback,
+                                       @RequestParam(value = "cnorRemark4Feedback" ) String cnorRemark4Feedback,
+                                       @RequestParam(value = "requireTimeStr4Feedback" ) String requireTimeStr4Feedback,
                                        HttpServletRequest request, HttpServletResponse response
     ) {
 
         JSONObject obj = new JSONObject();
 
+        SbCodeTypeService sbCodeTypeService = new SbCodeTypeServiceHelper.SbCodeTypeServiceClient();
+
+        String displayValue = null;
         try {
-            reserveOrderService.feedback(reserveOrderNos.split(","), optCode4Feedback, reason4Feedback, cnorRemark4Feedback);
+            List<SbCodeDefModel> reasons = sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON);
+            for (int i = 0; i < reasons.size(); i++) {
+                SbCodeDefModel reason = reasons.get(i);
+                if (reason.getCodeValue().equals(reason4Feedback)){
+                    displayValue = reason.getDisplayValue();
+                }
+
+            }
+        } catch (OspException e) {
+            obj.put("errorMsg", e.getReturnMessage());
+            return obj;
+        }
+
+        try {
+            reserveOrderService.feedback(reserveOrderNos.split(","), optCode4Feedback, displayValue, cnorRemark4Feedback, requireTimeStr4Feedback);
         } catch (OspException e) {
             obj.put("errorMsg", e.getReturnMessage());
         }
         return obj;
     }
-
-
 
 }

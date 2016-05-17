@@ -1,3 +1,4 @@
+<%@ page import="cn.explink.service.express2.ReserveOrderService" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -304,8 +305,10 @@
 		$searchForm.attr("action", action);
 		$searchForm.attr("target", target);
 	}
-	
-	$(function() {
+    // 省点退回 - 退回类型为省公司超区
+    var returnType = "<%= ReserveOrderService.PJReserverOrderOperationCode.ShengGongSiChaoQu.getValue()%>";
+
+    $(function() {
 		//单选模糊查询下拉框
 		//$("#search_table select").combobox();
 		
