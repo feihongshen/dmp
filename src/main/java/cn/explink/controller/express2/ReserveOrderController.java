@@ -41,6 +41,8 @@ import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
+import cn.explink.enumutil.ReserveOrderQueryTypeEnum;
+import cn.explink.service.BranchService;
 import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Tools;
@@ -59,6 +61,9 @@ public class ReserveOrderController extends ExpressCommonController {
 	@Resource
 	private ReserveOrderService reserveOrderService;
 	
+	@Resource
+	private BranchService branchService;
+	
 	/**
 	 * 快递预约单查询
 	 * @date 2016年5月13日 上午11:10:28
@@ -75,6 +80,9 @@ public class ReserveOrderController extends ExpressCommonController {
 		model.addAttribute("branchList", branches);
 		
 		model.addAttribute("orderStatusList", OrderStatusEnum.values());
+		
+		// 是否是站长
+		model.addAttribute("isWarehouseMaster", this.isWarehouseMaster());
 		return "express2/reserveOrder/query";
 	}
 	
@@ -163,6 +171,12 @@ public class ReserveOrderController extends ExpressCommonController {
 		}
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
+		}
+		if ((StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())
+				|| StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue()))
+				&& this.isWarehouseMaster()) {
+			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
+			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
 		}
 		ReserveOrderPageVo reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
 		DataGridReturn dg = new DataGridReturn();

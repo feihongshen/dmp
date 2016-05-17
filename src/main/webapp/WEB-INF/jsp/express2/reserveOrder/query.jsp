@@ -30,7 +30,7 @@
 						<select name="cnorProv"  id="cnorProv" style="width:100px;">
 							<option value="" selected="selected">市</option>
 							<c:forEach items="${cityList}" var="list">
-								<option value="${list.id}" code="${list.code}">${list.name}</option>
+								<option value="${list.id}">${list.name}</option>
 							</c:forEach>
 						</select>
 						<select name="cnorCity"  id="cnorCity" style="width:100px;">
@@ -45,10 +45,10 @@
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">站点：</td>
 					<td>
-						<select name="acceptOrg"  id="acceptOrg" style="width:140px;">
+						<select name="acceptOrg"  id="acceptOrg" style="width:140px;" <c:if test="${isWarehouseMaster}">disabled="disabled"</c:if>>
 							<option value="">请选择</option>
 							<c:forEach items="${branchList}" var="list">
-								<option value="${list.branchid}">${list.branchname}</option>
+								<option value="${list.branchid}" tpsbranchcode="${list.tpsbranchcode }">${list.branchname}</option>
 							</c:forEach>
 						</select>
 					</td>
@@ -123,7 +123,7 @@
 			cnorProv:$("#cnorProv").val(),
 			cnorCity:$("#cnorCity").val(),
 			cnorMobile:$("#cnorMobile").val(),
-			acceptOrg:$("#acceptOrg").val(),
+			acceptOrg:$("#acceptOrg option:selected").attr("tpsbranchcode"),
 			courier:$("#courier").val(),
 			reserveOrderStatusList:$("#reserveOrderStatusList").val()
 		});

@@ -220,7 +220,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
     public List<User>  getCourierByBranch(int branchId) {
         return userDao.getUserByRoleAndBranchid(2, branchId);
     }
-	
+    
 	/**
 	 * 查询预约单日志
 	 * @param reserveOrderNo 预约单号

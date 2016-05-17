@@ -282,6 +282,14 @@ public class BranchService {
 					.buildMessageHeader("branchid", branchid + "").getMqException());
 		}
 	}
+	
+	public Branch getBranchByBranchid(long branchid) {
+		return this.branchDao.getBranchByBranchid(branchid);
+	}
+	
+	public List<Branch> getBranchByTpsBranchcode(String tpsbranchcode) {
+		return this.branchDao.getBranchByTpsBranchcode(tpsbranchcode);
+	}
 
 	/**
 	 * 获取页面数据渲染缓存

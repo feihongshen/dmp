@@ -53,7 +53,7 @@
 						<select name="acceptOrg"  id="acceptOrg" style="width:140px;">
                                     <option value="">请选择</option>
                                     <c:forEach items="${branchList}" var="list">
-                                        <option value="${list.branchid}">${list.branchname}</option>
+                                        <option value="${list.branchid}" tpsbranchcode="${list.tpsbranchcode }">${list.branchname}</option>
                                     </c:forEach>
                                 </select>
                             </td>
@@ -245,7 +245,7 @@
 	 */
 	function initDataGrid() {
 		$('#dg_rsList').datagrid({
-			url: contextPath + '/express2/reserveOrder/queryList/query',
+			url: contextPath + '/express2/reserveOrder/queryList/handle',
 			toolbar: "#signFee_toolbar",
 			showFooter: true,
 			fit: true,
@@ -285,7 +285,7 @@
 			cnorProv:$("#cnorProv").val(),
 			cnorCity:$("#cnorCity").val(),
 			cnorMobile:$("#cnorMobile").val(),
-			acceptOrg:$("#acceptOrg").val(),
+			acceptOrg:$("#acceptOrg option:selected").attr("tpsbranchcode"),
 			courier:$("#courier").val(),
 			reserveOrderStatusList:$("#reserveOrderStatusList").val()
 		});
