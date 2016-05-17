@@ -41,10 +41,10 @@ import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
-import cn.explink.enumutil.ReserveOrderQueryTypeEnum;
 import cn.explink.service.BranchService;
 import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.Tools;
 import net.sf.json.JSONObject;
 
@@ -172,13 +172,23 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
 		}
-		if ((StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())
-				|| StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue()))
-				&& this.isWarehouseMaster()) {
+		//默认省编号
+		String carrierCode = ResourceBundleUtil.expressCarrierCode;
+		omReserveOrderModel.setCarrierCode(carrierCode);
+		boolean isQuery = true;
+		if (this.isWarehouseMaster()) {
+			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
 			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+		} else if(!this.isProvQualityControlr() && !this.isAdmin()) {
+			isQuery = false;
 		}
-		ReserveOrderPageVo reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
+		ReserveOrderPageVo reserveOrderPageVo;
+		if(!isQuery) {
+			reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
+		} else {
+			reserveOrderPageVo = new ReserveOrderPageVo();
+		}
 		DataGridReturn dg = new DataGridReturn();
 		dg.setRows(reserveOrderPageVo.getReserveOrderVoList());
 		dg.setTotal(reserveOrderPageVo.getTotalRecord());
