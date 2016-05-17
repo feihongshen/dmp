@@ -32,13 +32,13 @@
 						</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
 					<td>
-						<select name="cnorProv"  id="cnorProv" style="width:100px;">
+						<select name="cnorCity"  id="cnorCity" style="width:100px;">
                                     <option value="" selected="selected">市</option>
                                     <c:forEach items="${cityList}" var="list">
                                         <option value="${list.id}" code="${list.code}">${list.name}</option>
                                     </c:forEach>
                                 </select>
-						<select name="cnorCity"  id="cnorCity" style="width:100px;">
+						<select name="cnorRegion"  id="cnorRegion" style="width:100px;">
                                     <option value="">区/县</option>
                                 </select>
                             </td>
@@ -282,7 +282,7 @@
 			reserveOrderNo:$("#reserveOrderNo").val(),
 			appointTimeStart:$("#appointTimeStart").val(),
 			appointTimeEnd:$("#appointTimeEnd").val(),
-			cnorProv:$("#cnorProv").val(),
+			cnorRegion:$("#cnorRegion").val(),
 			cnorCity:$("#cnorCity").val(),
 			cnorMobile:$("#cnorMobile").val(),
 			acceptOrg:$("#acceptOrg option:selected").attr("tpsbranchcode"),

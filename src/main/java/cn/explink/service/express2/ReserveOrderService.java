@@ -30,7 +30,6 @@ import cn.explink.dao.express.CountyDAO;
 import cn.explink.dao.express.ProvinceDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
-import cn.explink.domain.VO.express.AdressInfoDetailVO;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
@@ -361,5 +360,26 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
             throw e;
         }
     };
-
+    
+    public OmReserveOrderModel getReserveOrderAddress(Integer cnorCity, Integer cnorRegion) {
+    	OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+    	if(cnorCity == null) {
+    		return omReserveOrderModel;
+    	}
+    	AdressVO city = this.cityDAO.getProvinceById(cnorCity);
+    	omReserveOrderModel.setCnorCity(city.getCode());
+    	omReserveOrderModel.setCnorCityName(city.getName());
+    	
+    	AdressVO prov = this.provinceDAO.getProvinceByCode(city.getParentCode());
+    	if(prov != null) {
+    		omReserveOrderModel.setCnorProv(prov.getCode());
+        	omReserveOrderModel.setCnorProvName(prov.getName());
+    	}
+    	if(cnorRegion != null) {
+    		AdressVO region = this.countyDAO.getCountyById(cnorRegion);
+        	omReserveOrderModel.setCnorRegion(region.getCode());
+        	omReserveOrderModel.setCnorRegionName(region.getName());
+    	}
+    	return omReserveOrderModel;
+    }
 }

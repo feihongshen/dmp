@@ -1,6 +1,6 @@
 $(function () {
-    $("#cnorProv").change(function () {
-        changeCounty($(this).val(), "#cnorCity");
+    $("#cnorCity").change(function () {
+        changeCounty($(this).val(), "#cnorRegion");
     });
 
     $("#acceptOrg").change(function () {
@@ -79,7 +79,7 @@ function doSearch() {
         reserveOrderNo: $("#reserveOrderNo").val(),
         appointTimeStart: $("#appointTimeStart").val(),
         appointTimeEnd: $("#appointTimeEnd").val(),
-        cnorProv: $("#cnorProv").val(),
+        cnorRegion: $("#cnorRegion").val(),
         cnorCity: $("#cnorCity").val(),
         cnorMobile: $("#cnorMobile").val(),
         acceptOrg: $("#acceptOrg").val(),

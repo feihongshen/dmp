@@ -106,10 +106,10 @@ public class CityDAO {
 	}
 
 	public AdressVO getProvinceById(int id) {
-		String sql = "select id,code,name from express_set_city where id=" + id;
+		String sql = "select id,code,name,province_code AS parentCode from express_set_city where id=" + id;
 		AdressVO adressVO = null;
 		try {
-			adressVO = this.jdbcTemplate.queryForObject(sql, new CityRowMapper4Query());
+			adressVO = this.jdbcTemplate.queryForObject(sql, new CityRowMapper());
 		} catch (DataAccessException e) {
 			return null;
 		}
