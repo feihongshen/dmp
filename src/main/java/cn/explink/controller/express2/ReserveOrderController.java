@@ -24,6 +24,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,10 +45,11 @@ import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
-import cn.explink.enumutil.ReserveOrderQueryTypeEnum;
 import cn.explink.service.BranchService;
+import cn.explink.service.UserService;
 import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.Tools;
 import net.sf.json.JSONObject;
 
@@ -67,6 +69,9 @@ public class ReserveOrderController extends ExpressCommonController {
 	@Resource
 	private BranchService branchService;
 
+	@Resource
+    private UserService userService;
+	
     private static final String RESERVE_EXCEPTION_REASON = "RESERVE_EXCEPTION_REASON";
     /**
 	 * 快递预约单查询
@@ -155,11 +160,11 @@ public class ReserveOrderController extends ExpressCommonController {
 	@RequestMapping("/queryList/{queryType}")
 	public void queryList(HttpServletResponse response, @PathVariable("queryType") String queryType,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
-			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, String cnorProv, String cnorCity,
-			String cnorMobile, String acceptOrg, String courier, String reserveOrderStatusList)
+			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
+			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		// 填充数据
-		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
 		if(StringUtils.isNotBlank(reserveOrderNo)) {
 			omReserveOrderModel.setReserveOrderNo(reserveOrderNo);
 		}
@@ -169,31 +174,40 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(appointTimeEnd)) {
 			omReserveOrderModel.setAppointTimeEnd(appointTimeEnd);
 		}
-		if(StringUtils.isNotBlank(cnorProv)) {
-			omReserveOrderModel.setCnorProv(cnorProv);
-		}
-		if(StringUtils.isNotBlank(cnorCity)) {
-			omReserveOrderModel.setCnorCity(cnorCity);
-		}
 		if(StringUtils.isNotBlank(cnorMobile)) {
 			omReserveOrderModel.setCnorMobile(cnorMobile);
 		}
 		if(StringUtils.isNotBlank(acceptOrg)) {
 			omReserveOrderModel.setAcceptOrg(acceptOrg);
 		}
-		if(StringUtils.isNotBlank(courier)) {
-			omReserveOrderModel.setCourier(courier);
+		if(courier != null) {
+			User user = this.userService.getUserByUserid(courier);
+			omReserveOrderModel.setCourier(user.getUsername());
 		}
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
 		}
-		if ((StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())
-				|| StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue()))
-				&& this.isWarehouseMaster()) {
+		//默认省编号
+		String carrierCode = ResourceBundleUtil.expressCarrierCode;
+		omReserveOrderModel.setCarrierCode(carrierCode);
+		boolean isQuery = true;
+		if (this.isWarehouseMaster()) {
+			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
 			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+		} else if(this.isProvQualityControlr() || this.isAdmin()) {
+			if(StringUtils.isNotBlank(acceptOrg)) {
+				omReserveOrderModel.setAcceptOrg(acceptOrg);
+			}
+		} else {
+			isQuery = false;
 		}
-		ReserveOrderPageVo reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
+		ReserveOrderPageVo reserveOrderPageVo;
+		if(isQuery) {
+			reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
+		} else {
+			reserveOrderPageVo = new ReserveOrderPageVo();
+		}
 		DataGridReturn dg = new DataGridReturn();
 		dg.setRows(reserveOrderPageVo.getReserveOrderVoList());
 		dg.setTotal(reserveOrderPageVo.getTotalRecord());
@@ -208,10 +222,11 @@ public class ReserveOrderController extends ExpressCommonController {
 	@ResponseBody
 	@RequestMapping("/exportExcel/{queryType}")
 	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") String queryType,
-			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, String cnorProv, String cnorCity,
-			String cnorMobile, String acceptOrg, String courier, String reserveOrderStatusList) throws Exception {
+			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
+			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
+			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList) throws Exception {
 		// 填充数据
-		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
 		if(StringUtils.isNotBlank(reserveOrderNo)) {
 			omReserveOrderModel.setReserveOrderNo(reserveOrderNo);
 		}
@@ -221,25 +236,39 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(appointTimeEnd)) {
 			omReserveOrderModel.setAppointTimeEnd(appointTimeEnd);
 		}
-		if(StringUtils.isNotBlank(cnorProv)) {
-			omReserveOrderModel.setCnorProv(cnorProv);
-		}
-		if(StringUtils.isNotBlank(cnorCity)) {
-			omReserveOrderModel.setCnorCity(cnorCity);
-		}
 		if(StringUtils.isNotBlank(cnorMobile)) {
 			omReserveOrderModel.setCnorMobile(cnorMobile);
 		}
-		if(StringUtils.isNotBlank(acceptOrg)) {
-			omReserveOrderModel.setAcceptOrg(acceptOrg);
-		}
-		if(StringUtils.isNotBlank(courier)) {
-			omReserveOrderModel.setCourier(courier);
+		if(courier != null) {
+			User user = this.userService.getUserByUserid(courier);
+			omReserveOrderModel.setCourier(user.getUsername());
 		}
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
 		}
-		final List<ReserveOrderVo> reserveOrderList = this.reserveOrderService.getTotalReserveOrders(omReserveOrderModel);
+		//默认省编号
+		String carrierCode = ResourceBundleUtil.expressCarrierCode;
+		omReserveOrderModel.setCarrierCode(carrierCode);
+		boolean isQuery = true;
+		if (this.isWarehouseMaster()) {
+			//站长只能看到本站点的
+			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
+			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+		} else if(this.isProvQualityControlr() || this.isAdmin()) {
+		if(StringUtils.isNotBlank(acceptOrg)) {
+			omReserveOrderModel.setAcceptOrg(acceptOrg);
+				Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
+				omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+		}
+		} else {
+			isQuery = false;
+		}
+		final List<ReserveOrderVo> reserveOrderList;
+		if(isQuery) {
+			reserveOrderList = this.reserveOrderService.getTotalReserveOrders(omReserveOrderModel);
+		} else {
+			reserveOrderList = new ArrayList<ReserveOrderVo>();
+		}
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "快递预约单_" + df.format(new Date()) + ".xlsx"; // 文件名
