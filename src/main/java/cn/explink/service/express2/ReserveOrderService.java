@@ -202,38 +202,6 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
             return this.cityDAO.getCityOfProvince(provinceId.intValue());
         }
     }
-    
-    /**
-	 *
-	 * @Title: getProvinceId
-	 * @description 获取站点的省（先对比省的id，如果没对比上，在对比省的name，如果还没有则返回0）
-	 * @author 刘武强
-	 * @date  2015年8月17日下午8:13:35
-	 * @param  @return
-	 * @return  long
-	 * @throws
-	 */
-	public long getProvinceId() {
-		AdressInfoDetailVO adressInfoDetailVO = this.getAdressInfoByBranchid();
-		List<AdressVO> Adresslist = this.provinceDAO.getAllProvince();
-		//对比省的id
-		Long provinceId = adressInfoDetailVO.getProvinceId();
-		if (provinceId != null) {
-			for (AdressVO temp : Adresslist) {
-				if (provinceId == temp.getId()) {
-					return provinceId;
-				}
-			}
-		}
-		//对比省的name
-		String provinceName = adressInfoDetailVO.getProvinceName();
-		for (AdressVO temp : Adresslist) {
-			if ((provinceName != null) && provinceName.equals(temp.getName())) {
-				return temp.getId();
-			}
-		}
-		return 0;
-	}
 
     /**
      * 获取所有站点
@@ -293,16 +261,6 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
      */
     public void closeReserveOrder(String[] reserveOrderNos, String closeReason) throws OspException {
 
-        // 记录入库数据
-//        try {
-//            logger.info("omReserveOrderModel:{}", JsonUtil.translateToJson(omReserveOrderModel));
-//        } catch (Exception e) {
-//            logger.error(e.getMessage(), e);
-//        }
-
-        InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
-        PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
-
         User user = this.getSessionUser();
         String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
         String operator = user.getUsername();
@@ -316,18 +274,69 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
             Date now = new Date();
             pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
 
-            try {
-                PjReserveOrderResponse reserveOrderResponse = pjReserveOrderService.feedbackReserveOrder(pjSaleOrderFeedbackRequest);
-                // 返回数据记录
-                logger.info("reserveOrderResponse result code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
-                logger.info("reserveOrderResponse result message - ", reserveOrderResponse.getResultMsg());
-
-            } catch (OspException e) {
-                logger.info("Osp Exception thrown", e.getReturnMessage());
-                logger.error(e.getMessage(), e);
-                throw e;
-            }
+            feedbackReserveOrder(pjSaleOrderFeedbackRequest);
         }
 
     }
+
+
+    public void returnToCentral(String[] reserveOrderNos, String returnReason) throws OspException {
+
+        User user = this.getSessionUser();
+        String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+        String operator = user.getUsername();
+        for (String reserveOrderNo : reserveOrderNos) {
+            PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
+            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
+            pjSaleOrderFeedbackRequest.setReason(returnReason);
+            pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.LanJianShiBaiTuiHui.getValue());
+            pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
+            pjSaleOrderFeedbackRequest.setOperater(operator);
+            Date now = new Date();
+            pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
+
+            feedbackReserveOrder(pjSaleOrderFeedbackRequest);
+        }
+    }
+
+
+    public void distributeBranch(String[] reserveOrderNos, String tpsbranchCode, int courierId, String courierName) throws OspException{
+
+        User user = this.getSessionUser();
+        String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+        String operator = user.getUsername();
+        for (String reserveOrderNo : reserveOrderNos) {
+            PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
+            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
+            pjSaleOrderFeedbackRequest.setAcceptOrg(tpsbranchCode);
+            pjSaleOrderFeedbackRequest.setCourier(String.valueOf(courierId));
+            pjSaleOrderFeedbackRequest.setCourierName(String.valueOf(courierName));
+            pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.YiLanJianFenPei.getValue());
+            pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
+            pjSaleOrderFeedbackRequest.setOperater(operator);
+            Date now = new Date();
+            pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
+
+            feedbackReserveOrder(pjSaleOrderFeedbackRequest);
+        }
+
+    }
+
+    private void feedbackReserveOrder(PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest) throws OspException{
+        InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
+        PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
+
+        try {
+            PjReserveOrderResponse reserveOrderResponse = pjReserveOrderService.feedbackReserveOrder(pjSaleOrderFeedbackRequest);
+            // 返回数据记录
+            logger.info("reserveOrderResponse result code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
+            logger.info("reserveOrderResponse result message - ", reserveOrderResponse.getResultMsg());
+
+        } catch (OspException e) {
+            logger.info("Osp Exception thrown", e.getReturnMessage());
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    };
+
 }

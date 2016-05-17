@@ -6,6 +6,18 @@ $(function() {
 	$("#acceptOrg").change(function () {
         changeCourier($(this).val(), "#courier");
     });
+
+    $("#distributeBranchSelect").change(function () {
+        changeCourier($(this).val(), "#distributeCourierSelect");
+    });
+
+    $("#province4edit").change(function () {
+        changeCity($(this).val(), "#city4edit");
+    });
+
+    $("#city4edit").change(function () {
+        changeCounty($(this).val(), "#county4edit");
+    })
 });
 
 /**
@@ -15,14 +27,14 @@ $(function() {
  * @param {Object} index the row index.
  */
 function reserveOrderNoFormatter(value, row, index) {
-	return '<a href="javascript:reserveOrderNoOnClick(\'' + value + '\')" >'+ value + '</a>';
+	return '<a href="javascript:void(0);" onclick="reserveOrderNoOnClick(event,\'' + value + '\')" >'+ value + '</a>';
 }
 
 /**
  * 预约单号点击事件
  * @param {String} reserveOrderNo
  */
-function reserveOrderNoOnClick(reserveOrderNo) {
+function reserveOrderNoOnClick(event, reserveOrderNo) {
 	var htmlContent = 
 		'<div style="width:800px; height:300px; padding:20px; border:1px solid #ccc; background-color:#eee;">' +
 			'<table id="reserveOrderLogGrid"></table>' +
@@ -56,6 +68,8 @@ function reserveOrderNoOnClick(reserveOrderNo) {
 	        {field:'trackDetail', title:'物流状态信息', align:'center'}
 	    ]]
 	});
+	event.stopPropagation();
+	return false;
 }
 
 
