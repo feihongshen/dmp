@@ -39,6 +39,7 @@ $(function(){
         single: true,
         maxHeight: 55
     });
+    $('.ms-choice > span').css('overflow','visible');
 });
 $(function() {
 	var $menuli = $(".saomiao_tab2 ul li");
