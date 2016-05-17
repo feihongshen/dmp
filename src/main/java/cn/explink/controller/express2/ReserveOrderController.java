@@ -21,6 +21,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.service.BranchService;
+import cn.explink.service.UserService;
 import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.ResourceBundleUtil;
@@ -63,6 +65,9 @@ public class ReserveOrderController extends ExpressCommonController {
 	
 	@Resource
 	private BranchService branchService;
+	
+	@Resource
+    private UserService userService;
 	
 	/**
 	 * 快递预约单查询
@@ -141,7 +146,7 @@ public class ReserveOrderController extends ExpressCommonController {
 	public void queryList(HttpServletResponse response, @PathVariable("queryType") String queryType,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
 			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
-			String cnorMobile, String acceptOrg, String courier, String reserveOrderStatusList)
+			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		// 填充数据
 		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
@@ -160,8 +165,9 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(acceptOrg)) {
 			omReserveOrderModel.setAcceptOrg(acceptOrg);
 		}
-		if(StringUtils.isNotBlank(courier)) {
-			omReserveOrderModel.setCourier(courier);
+		if(courier != null) {
+			User user = this.userService.getUserByUserid(courier);
+			omReserveOrderModel.setCourier(user.getUsername());
 		}
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
@@ -174,7 +180,11 @@ public class ReserveOrderController extends ExpressCommonController {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
 			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		} else if(!this.isProvQualityControlr() && !this.isAdmin()) {
+		} else if(this.isProvQualityControlr() || this.isAdmin()) {
+			if(StringUtils.isNotBlank(acceptOrg)) {
+				omReserveOrderModel.setAcceptOrg(acceptOrg);
+			}
+		} else {
 			isQuery = false;
 		}
 		ReserveOrderPageVo reserveOrderPageVo;
@@ -199,8 +209,7 @@ public class ReserveOrderController extends ExpressCommonController {
 	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") String queryType,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
 			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
-			String cnorMobile, String acceptOrg, String courier, String reserveOrderStatusList)
-			throws Exception {
+			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList) throws Exception {
 		// 填充数据
 		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
 		if(StringUtils.isNotBlank(reserveOrderNo)) {
@@ -215,11 +224,9 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(cnorMobile)) {
 			omReserveOrderModel.setCnorMobile(cnorMobile);
 		}
-		if(StringUtils.isNotBlank(acceptOrg)) {
-			omReserveOrderModel.setAcceptOrg(acceptOrg);
-		}
-		if(StringUtils.isNotBlank(courier)) {
-			omReserveOrderModel.setCourier(courier);
+		if(courier != null) {
+			User user = this.userService.getUserByUserid(courier);
+			omReserveOrderModel.setCourier(user.getUsername());
 		}
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
@@ -232,7 +239,13 @@ public class ReserveOrderController extends ExpressCommonController {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
 			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		} else if(!this.isProvQualityControlr() && !this.isAdmin()) {
+		} else if(this.isProvQualityControlr() || this.isAdmin()) {
+			if(StringUtils.isNotBlank(acceptOrg)) {
+				omReserveOrderModel.setAcceptOrg(acceptOrg);
+				Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
+				omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+			}
+		} else {
 			isQuery = false;
 		}
 		final List<ReserveOrderVo> reserveOrderList;
