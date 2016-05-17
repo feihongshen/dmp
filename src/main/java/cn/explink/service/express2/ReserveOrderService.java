@@ -279,7 +279,6 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     }
 
-
     public void returnToCentral(String[] reserveOrderNos, String returnReason) throws OspException {
 
         User user = this.getSessionUser();
@@ -321,6 +320,30 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
         }
 
     }
+
+
+
+    public void feedback(String[] reserveOrderNos, int optCode4Feedback, String reason4Feedback, String cnorRemark4Feedback) throws OspException {
+
+        User user = this.getSessionUser();
+        String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+        String operator = user.getUsername();
+        for (String reserveOrderNo : reserveOrderNos) {
+            PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
+            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
+            pjSaleOrderFeedbackRequest.setOperateType(optCode4Feedback);
+            pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
+            pjSaleOrderFeedbackRequest.setReason(reason4Feedback);
+            pjSaleOrderFeedbackRequest.setRemark(cnorRemark4Feedback);
+            pjSaleOrderFeedbackRequest.setOperater(operator);
+            Date now = new Date();
+            pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
+
+            feedbackReserveOrder(pjSaleOrderFeedbackRequest);
+        }
+
+    }
+
 
     private void feedbackReserveOrder(PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest) throws OspException{
         InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);

@@ -1,9 +1,9 @@
-$(function() {
-	$("#cnorProv").change(function () {
+$(function () {
+    $("#cnorProv").change(function () {
         changeCounty($(this).val(), "#cnorCity");
     });
-	
-	$("#acceptOrg").change(function () {
+
+    $("#acceptOrg").change(function () {
         changeCourier($(this).val(), "#courier");
     });
 
@@ -27,7 +27,7 @@ $(function() {
  * @param {Object} index the row index.
  */
 function reserveOrderNoFormatter(value, row, index) {
-	return '<a href="javascript:void(0);" onclick="reserveOrderNoOnClick(event,\'' + value + '\')" >'+ value + '</a>';
+    return '<a href="javascript:void(0);" onclick="reserveOrderNoOnClick(event,\'' + value + '\')" >' + value + '</a>';
 }
 
 /**
@@ -35,57 +35,57 @@ function reserveOrderNoFormatter(value, row, index) {
  * @param {String} reserveOrderNo
  */
 function reserveOrderNoOnClick(event, reserveOrderNo) {
-	var htmlContent = 
-		'<div style="width:800px; height:300px; padding:20px; border:1px solid #ccc; background-color:#eee;">' +
-			'<table id="reserveOrderLogGrid"></table>' +
-		'</div>';
-	
-	$.layer({
-	    type: 1,
-	    title: '<span style="font-size:16px;font-weight:bold;">预约单轨迹(' + reserveOrderNo + ')</span>',
-	    area: ['auto', 'auto'],
-	    border: [0], //去掉默认边框
-	    shade: [0.5, '#000'], //去掉遮罩
-	    shadeClose: true,
-	    closeBtn: [0, true], //去掉默认关闭按钮
-	    page: {
-	        html: htmlContent
-	    }
-	});
-	
-	$('#reserveOrderLogGrid').datagrid({
-		url: contextPath + '/express2/reserveOrder/queryReserveOrderLog?reserveOrderNo=' + reserveOrderNo,
-		fit: true,
-		fitColumns: false,
-		singleSelect: true,
-		rownumbers: true,
-	    columns:[[
-	        {field:'id', title:'预约单id', hidden:true},
-	        {field:'reserveOrderNo', title:'预约单号', hidden:true},
-	        {field:'operateTimeStr', title:'操作时间', width:130, align:'center'},
-	        {field:'operator', title:'操作人', width:130, align:'center'},
-	        {field:'operateType', title:'操作类型', width:100, align:'center'},
-	        {field:'trackDetail', title:'物流状态信息', align:'center'}
-	    ]]
-	});
-	event.stopPropagation();
-	return false;
+    var htmlContent =
+        '<div style="width:800px; height:300px; padding:20px; border:1px solid #ccc; background-color:#eee;">' +
+        '<table id="reserveOrderLogGrid"></table>' +
+        '</div>';
+
+    $.layer({
+        type: 1,
+        title: '<span style="font-size:16px;font-weight:bold;">预约单轨迹(' + reserveOrderNo + ')</span>',
+        area: ['auto', 'auto'],
+        border: [0], //去掉默认边框
+        shade: [0.5, '#000'], //去掉遮罩
+        shadeClose: true,
+        closeBtn: [0, true], //去掉默认关闭按钮
+        page: {
+            html: htmlContent
+        }
+    });
+
+    $('#reserveOrderLogGrid').datagrid({
+        url: contextPath + '/express2/reserveOrder/queryReserveOrderLog?reserveOrderNo=' + reserveOrderNo,
+        fit: true,
+        fitColumns: false,
+        singleSelect: true,
+        rownumbers: true,
+        columns: [[
+            {field: 'id', title: '预约单id', hidden: true},
+            {field: 'reserveOrderNo', title: '预约单号', hidden: true},
+            {field: 'operateTimeStr', title: '操作时间', width: 130, align: 'center'},
+            {field: 'operator', title: '操作人', width: 130, align: 'center'},
+            {field: 'operateType', title: '操作类型', width: 100, align: 'center'},
+            {field: 'trackDetail', title: '物流状态信息', align: 'center'}
+        ]]
+    });
+    event.stopPropagation();
+    return false;
 }
 
 
 function doSearch() {
-	//查询list
-	$('#dg_rsList').datagrid('load',{
-		reserveOrderNo:$("#reserveOrderNo").val(),
-		appointTimeStart:$("#appointTimeStart").val(),
-		appointTimeEnd:$("#appointTimeEnd").val(),
-		cnorProv:$("#cnorProv").val(),
-		cnorCity:$("#cnorCity").val(),
-		cnorMobile:$("#cnorMobile").val(),
-		acceptOrg:$("#acceptOrg").val(),
-		courier:$("#courier").val(),
-		reserveOrderStatusList:$("#reserveOrderStatusList").val()
-	});
+    //查询list
+    $('#dg_rsList').datagrid('load', {
+        reserveOrderNo: $("#reserveOrderNo").val(),
+        appointTimeStart: $("#appointTimeStart").val(),
+        appointTimeEnd: $("#appointTimeEnd").val(),
+        cnorProv: $("#cnorProv").val(),
+        cnorCity: $("#cnorCity").val(),
+        cnorMobile: $("#cnorMobile").val(),
+        acceptOrg: $("#acceptOrg").val(),
+        courier: $("#courier").val(),
+        reserveOrderStatusList: $("#reserveOrderStatusList").val()
+    });
 }
 
 function changeCounty(cityId, changedItem) {
@@ -118,9 +118,9 @@ function changeCounty(cityId, changedItem) {
         countySelect.get(0).add(new Option("区/县", ""));
     }
 }
-    
-function changeCourier(acceptOrg,changedItem) {
-	var courierSelect = $(changedItem);
+
+function changeCourier(acceptOrg, changedItem) {
+    var courierSelect = $(changedItem);
     if (acceptOrg && acceptOrg.length > 0) {
         //var citySelect;
         //citySelect = $('#sender_provinceid_id");
@@ -147,4 +147,47 @@ function changeCourier(acceptOrg,changedItem) {
     } else {
         courierSelect.empty();
     }
+}
+var allertMsg = {
+    /**
+     * 成功提示
+     * @param msg  提示信息
+     */
+    "msgOk": function (msg) {
+        layer.msg(msg || "Error", 1, 1);
+    }
+    /**
+     * 弹出错误信息
+     * @param msg  提示信息
+     */
+    , "msgError": function (msg) {
+        layer.msg(msg || "Error", 1, 3);
+    }
+    /**
+     * 弹出成功提示
+     * @param msg  提示信息
+     */
+    , "alertOk": function (msg) {
+        layer.alert(msg || "OK", 1);
+    }
+    /**
+     * 弹出错误提示
+     * @param msg  提示信息
+     */
+    , "alertError": function (msg) {
+        layer.alert(msg || "Error", 3);
+    }
+}
+
+function checkAtLeastSelectOneRow() {
+    var rows = $('#dg_rsList').datagrid('getChecked');
+    if (!rows || rows.length < 1) {
+        allertMsg.alertError("请选择预约单");
+        return true;
+    }
+}
+
+function closePanel(panel) {
+    if (panel)
+        layer.close(panel)
 }

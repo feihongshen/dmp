@@ -2,6 +2,7 @@ package cn.explink.controller.express2;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -108,7 +109,15 @@ public class ReserveOrderController extends ExpressCommonController {
 	 * @return
 	 */
 	@RequestMapping("/handleWarehouse")
-	public String warehouseHandle() {
+	public String handleWarehouse(Model model) {
+        handle(model);
+        List<ReserveOrderService.PJReserverOrderOperationCode> feedbackOptCodes = new ArrayList<ReserveOrderService.PJReserverOrderOperationCode>();
+
+        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu);
+        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu);
+        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai);
+
+        model.addAttribute("feedbackOptCodes",feedbackOptCodes);
 		return "express2/reserveOrder/warehouseHandle";
 	}
 	
@@ -414,4 +423,26 @@ public class ReserveOrderController extends ExpressCommonController {
         }
         return obj;
     }
+
+    @RequestMapping("/feedback")
+    @ResponseBody
+    public JSONObject feedback(@RequestParam(value = "reserveOrderNos", required = true) String reserveOrderNos,
+                                       @RequestParam(value = "optCode4Feedback", required = true) int optCode4Feedback,
+                                       @RequestParam(value = "reason4Feedback", required = true) String reason4Feedback,
+                                       @RequestParam(value = "cnorRemark4Feedback", required = true) String cnorRemark4Feedback,
+                                       HttpServletRequest request, HttpServletResponse response
+    ) {
+
+        JSONObject obj = new JSONObject();
+
+        try {
+            reserveOrderService.feedback(reserveOrderNos.split(","), optCode4Feedback, reason4Feedback, cnorRemark4Feedback);
+        } catch (OspException e) {
+            obj.put("errorMsg", e.getReturnMessage());
+        }
+        return obj;
+    }
+
+
+
 }

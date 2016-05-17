@@ -1,8 +1,5 @@
 $(function () {
 
-
-
-
     //修改预定单panel
     var editReserveOrderPanel = null;
     //关闭预定单panel
@@ -11,6 +8,11 @@ $(function () {
     var returnToCentralPanel = null;
     //分配站点panel
     var distributeBranchPanel = null;
+
+
+    //站点快递预约单处理的反馈panel
+    var feedBackPanel = null;
+
 
     $('#editReserveOrderPanelBtn').click(function () {
         if (checkAtLeastSelectOneRow()) {
@@ -25,7 +27,7 @@ $(function () {
         var selectedRow = rows[0];
 
         $("#reserveOrderNo4edit").val(selectedRow.reserveOrderNo);
-        $('#cnorName4eidt').val(selectedRow.cnorName);
+        $('#cnorName4edit').val(selectedRow.cnorName);
         $('#province4edit').val("");
         $('#city4edit').val("");
         $('#county4edit').val("");
@@ -44,7 +46,7 @@ $(function () {
                 dom: '#dialog1'
             }
         });
-    })
+    });
     $('#deleteReserveOrderBtn').click(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
@@ -62,7 +64,7 @@ $(function () {
                 dom: '#dialog2'
             }
         });
-    })
+    });
     $('#returnToCentralBtn').click(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
@@ -79,9 +81,7 @@ $(function () {
                 dom: '#dialog3'
             }
         });
-    })
-
-
+    });
     $('#distributeBranchBtn').click(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
@@ -121,36 +121,74 @@ $(function () {
                 dom: '#dialog4'
             }
         });
-    })
+    });
+    $('#feedbackBtn').click(function () {
+        var rows = $('#dg_rsList').datagrid('getChecked');
+        //if(rows.length != 1){
+        //    allertMsg.alertError("请只选择一张预约单");
+        //    return false;
+        //}
+        if (rows.length == 1) {
+            var selectedRow = rows[0];
+            $("#reserveOrderNo4Feedback").val(selectedRow.reserveOrderNo);
+            $('#courierName4Feedback').val(selectedRow.cnorName);
+            $('#requireTimeStr4Feedback').val(selectedRow.requireTimeStr);
+        } else {
+            $("#reserveOrderNo4Feedback").val("");
+            $('#courierName4Feedback').val("");
+            $('#requireTimeStr4Feedback').val("");
+        }
+
+        $('#type4Feedback').val("");
+        $('#reason4Feedback').val("");
+        $('#cnorRemark4Feedback').val("");
+
+        //打开条件生成账单面板
+        feedBackPanel = $.layer({
+            type: 1,
+            title: '反馈',
+            shadeClose: true,
+            maxmin: false,
+            fix: false,
+            area: [400, 500],
+            page: {
+                dom: '#dialog2'
+            }
+        });
+    });
+
 
     $('#confirmEditReserveOrderBtn').click(function () {
         confirmEditReserveOrder();
-    })
+    });
     $('#confirmCloseReserveOrderBtn').click(function () {
         confirmCloseReserveOrder();
-    })
+    });
     $('#confirmReturnToCentralBtn').click(function () {
         confirmReturnToCentral();
-    })
+    });
     $('#confirmDistributeBranchBtn').click(function () {
         confirmDistributeBranch();
-    })
+    });
+    $('#confirmFeedbackBtn').click(function () {
+        confirmFeedback();
+    });
 
     $('#closeCloseReserveOrderPanel').click(function () {
         closePanel(closeReserveOrderPanel);
-    })
+    });
     $('#closeEditReserveOrderPanel').click(function () {
         closePanel(editReserveOrderPanel);
-    })
+    });
     $('#closeDistributeBranchPanel').click(function () {
         closePanel(distributeBranchPanel);
-    })
+    });
     $('#closeReturnToCentralPanel').click(function () {
         closePanel(returnToCentralPanel);
-    })
-    $('#closeDistributeBranchPanel').click(function () {
-        closePanel(distributeBranchPanel);
-    })
+    });
+    $('#closeFeedbackPanel').click(function () {
+        closePanel(feedBackPanel);
+    });
 
 
     function confirmEditReserveOrder() {
@@ -158,13 +196,13 @@ $(function () {
 
         var param = {
             reserveOrderNo : rows[0].reserveOrderNo,
-            cnorName4eidt : $('#cnorName4eidt').val(),
+            cnorName4edit : $('#cnorName4edit').val(),
             province4edit : $('#province4edit').val(),
             city4edit : $('#city4edit').val(),
             county4edit : $('#county4edit').val(),
             cnorAddr4edit : $('#cnorAddr4edit').val(),
             requireTimeStr4edit : $('#requireTimeStr4edit').val()
-        }
+        };
 
         $.ajax({
             type: "POST",
@@ -193,12 +231,12 @@ $(function () {
         var reserveOrderNos = [] ;
         $.each(rows, function(index, value){
             reserveOrderNos.push(value.reserveOrderNo);
-        })
+        });
 
         var param = {
             reserveOrderNos : reserveOrderNos.join(",") ,
             closeReason : $('#closeReason').val()
-        }
+        };
 
         $.ajax({
             type: "POST",
@@ -221,12 +259,12 @@ $(function () {
         var reserveOrderNos = [] ;
         $.each(rows, function(index, value){
             reserveOrderNos.push(value.reserveOrderNo);
-        })
+        });
 
         var param = {
             reserveOrderNos : reserveOrderNos.join(",") ,
             returnReason : $('#returnReason').val()
-        }
+        };
 
         $.ajax({
             type: "POST",
@@ -249,13 +287,13 @@ $(function () {
         var reserveOrderNos = [] ;
         $.each(rows, function(index, value){
             reserveOrderNos.push(value.reserveOrderNo);
-        })
+        });
 
         var param = {
             reserveOrderNos : reserveOrderNos.join(",") ,
             distributeBranch : $('#distributeBranchSelect').val(),
             distributeCourier : $('#distributeCourierSelect').val()
-        }
+        };
 
         $.ajax({
             type: "POST",
@@ -273,49 +311,42 @@ $(function () {
             }
         });
     }
-
-    function checkAtLeastSelectOneRow() {
+    function confirmFeedback() {
         var rows = $('#dg_rsList').datagrid('getChecked');
-        if (!rows || rows.length < 1) {
-            allertMsg.alertError("请选择预约单");
-            return true;
-        }
+
+        var reserveOrderNos = [] ;
+        $.each(rows, function(index, value){
+            reserveOrderNos.push(value.reserveOrderNo);
+        });
+
+        var param = {
+            reserveOrderNos : reserveOrderNos,
+            optCode4Feedback : $('#optCode4Feedback').val(),
+            reason4Feedback : $('#reason4Feedback').val(),
+            cnorRemark4Feedback : $('#cnorRemark4Feedback').val(),
+            requireTimeStr4Feedback : $('requireTimeStr4Feedback').val()
+        };
+
+        $.ajax({
+            type: "POST",
+            url: contextPath + "/express2/reserveOrder/feedback",
+            dataType: "json",
+            data: param,
+            success: function (data) {
+                if (data.errorMsg){
+                    allertMsg.alertError(data.errorMsg);
+                }
+                $('#dg_rsList').datagrid('reload');
+                $("#reserveOrderNo4Feedback").val("");
+                $('#courierName4Feedback').val("");
+                $('#optCode4Feedback').val("");
+                $('#reason4Feedback').val("");
+                $('#requireTimeStr4Feedback').val("");
+                $('#cnorRemark4Feedback').val("");
+                closePanel(feedBackPanel);
+            }
+        });
     }
 
-    function closePanel(panel) {
-        if (panel)
-            layer.close(panel)
-    }
-
-    var allertMsg = {
-        /**
-         * 成功提示
-         * @param msg  提示信息
-         */
-        "msgOk": function (msg) {
-            layer.msg(msg || "Error", 1, 1);
-        }
-        /**
-         * 弹出错误信息
-         * @param msg  提示信息
-         */
-        , "msgError": function (msg) {
-            layer.msg(msg || "Error", 1, 3);
-        }
-        /**
-         * 弹出成功提示
-         * @param msg  提示信息
-         */
-        , "alertOk": function (msg) {
-            layer.alert(msg || "OK", 1);
-        }
-        /**
-         * 弹出错误提示
-         * @param msg  提示信息
-         */
-        , "alertError": function (msg) {
-            layer.alert(msg || "Error", 3);
-        }
-    }
-})
+});
 

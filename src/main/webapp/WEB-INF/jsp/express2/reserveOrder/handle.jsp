@@ -1,22 +1,13 @@
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.HashMap" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%--<%@ taglib prefix="t" uri="/easyui-tags"%>--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<%
-    // Map<String, List<String>> cityDistrictMap = request.getAttribute("cityDistrictMap") == null ? new HashMap<String, List<String>>() : (Map<String, List<String>>) request.getAttribute("city");
-//    List<CustomWareHouse> wareHouseList = request.getAttribute("wareHouseList") == null ? new ArrayList<CustomWareHouse>() : (List<CustomWareHouse>) request.getAttribute("wareHouseList");
-//    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-%>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>客户账单核对</title>
+    <title>快递预约单处理</title>
     <%@ include file="common.jsp" %>
     <script src="${pageContext.request.contextPath}/js/express2/reserveOrder/handle.js" type="text/javascript"></script>
 </head>
@@ -108,7 +99,7 @@
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">寄件人</td>
                 <td style="border: 0px; vertical-align: middle;">
-                    <input id="cnorName4eidt"/>
+                    <input id="cnorName4edit"/>
                 </td>
             </tr>
             <tr>
