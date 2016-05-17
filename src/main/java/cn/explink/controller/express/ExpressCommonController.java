@@ -21,6 +21,16 @@ public class ExpressCommonController {
 	 * 管理员角色ID
 	 */
 	private static final long ADMIN_ROLE_ID = 0;
+	
+	/**
+	 * 站长角色ID
+	 */
+	private static final long WAREHOUSE_MASTER_ID = 4;
+	
+	/**
+	 * 省质控
+	 */
+	private static final long PROV_QUALITY_CONTROL_ID = 22;
 
 	@Autowired
 	private SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -35,6 +45,22 @@ public class ExpressCommonController {
 	protected boolean isAdmin() {
 		User user = this.getSessionUser();
 		if (user.getRoleid() == ExpressCommonController.ADMIN_ROLE_ID) {
+			return true;
+		}
+		return false;
+	}
+	
+	protected boolean isWarehouseMaster() {
+		User user = this.getSessionUser();
+		if (user.getRoleid() == ExpressCommonController.WAREHOUSE_MASTER_ID) {
+			return true;
+		}
+		return false;
+	}
+	
+	protected boolean isProvQualityControlr() {
+		User user = this.getSessionUser();
+		if (user.getRoleid() == ExpressCommonController.WAREHOUSE_MASTER_ID) {
 			return true;
 		}
 		return false;

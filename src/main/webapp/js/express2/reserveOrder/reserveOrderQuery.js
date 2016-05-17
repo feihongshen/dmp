@@ -126,11 +126,12 @@ function changeCourier(acceptOrg,changedItem) {
                 courierSelect.empty();
                 courierSelect.get(0).add(new Option("请选择", ""));
                 for (var i = 0; i < courierList.length; i++) {
-                    courierSelect.get(0).add(new Option(courierList[i].username, courierList[i].userid));
+                    courierSelect.get(0).add(new Option(courierList[i].realname, courierList[i].userid));
                 }
             }
         });
     } else {
         courierSelect.empty();
+        courierSelect.get(0).add(new Option("请选择", ""));
     }
 }
