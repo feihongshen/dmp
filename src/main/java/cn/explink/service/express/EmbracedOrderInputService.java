@@ -1,6 +1,7 @@
 package cn.explink.service.express;
 
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,7 @@ import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.enumutil.express.ExpressOrderStatusEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.express.tps.enums.FeedbackOperateTypeEnum;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
 import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
@@ -465,6 +467,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("instationdatetime", date);
 			params.put("instationid", branch.getBranchid());
 			params.put("instationname", branch.getBranchname());
+			
+			params.put("credate",Timestamp.valueOf(DateTimeUtil.getNowTime()));
 
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
 			System.out.println("补录：inset方法，补录标志位：" + embracedOrderVO.getIsadditionflag());
