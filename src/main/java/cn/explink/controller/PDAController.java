@@ -786,6 +786,7 @@ public class PDAController {
 				obj.put("errorcode", "000000");
 				SuccessCount++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -1995,6 +1996,7 @@ public class PDAController {
 				obj.put("errorcode", "000000");
 				linghuoSuccessCount++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				if (ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen.equals(ce.getError())) { // 订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
 					// 领货失败
 					if ((alertErrorMsg != null) && (alertErrorMsg.length() > 0)) {
@@ -2807,6 +2809,7 @@ public class PDAController {
 				obj.put("errorcode", "000000");
 				succesCount++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				errorCount++;
 				if (cwbOrder != null) {
