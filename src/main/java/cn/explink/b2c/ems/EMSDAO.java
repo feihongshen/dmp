@@ -109,7 +109,7 @@ public class EMSDAO {
 
 	//根据运单号获取EMS接口表中订单号
 	public String getCwbByAddTranscwb(String transcwb) {
-		String sql = "select cwb from dmp_ems_order_b2ctemp where transcwb=? and addTranscwbFlag=1 limit 0,1";
+		String sql = "select cwb from express_ems_order_b2ctemp where transcwb=? and addTranscwbFlag=1 limit 0,1";
 		List<Map<String, Object>> cwbObj = this.jdbcTemplate.queryForList(sql,transcwb);
 		String cwb = "";
 		if ((cwbObj != null) && (cwbObj.size() > 0)) {
@@ -121,7 +121,7 @@ public class EMSDAO {
 	
 	//根据运单号获取EMS接口表中订单信息
 	public List<SendToEMSOrder> getOrderInfoByTranscwb(String transcwb) {
-		String sql = "select * from dmp_ems_order_b2ctemp where cwb=? ";
+		String sql = "select * from express_ems_order_b2ctemp where cwb=? ";
 		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new SendToEMSOrderMapper(),transcwb);
 		return list;
 	}
@@ -130,7 +130,7 @@ public class EMSDAO {
 	public void saveOrderInfo(final String cwb,final String transcwb,final String credate,
 			final int addTranscwbFlag,final String data) {
 		this.jdbcTemplate
-		.update("insert into dmp_ems_order_b2ctemp(cwb,transcwb,credate,getMailnumFlag,addTranscwbFlag,data) values(?,?,?,?,?,?)", new PreparedStatementSetter() {
+		.update("insert into express_ems_order_b2ctemp(cwb,transcwb,credate,getMailnumFlag,addTranscwbFlag,data) values(?,?,?,?,?,?)", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, cwb);
@@ -146,27 +146,30 @@ public class EMSDAO {
 
 	//获取需要发送给ems的订单信息
 	public List<SendToEMSOrder> getSendToEMSOrderList() {
-		String sql = "select * from dmp_ems_order_b2ctemp where "
-				+ "state=0 ";
+		String sql = "select * from express_ems_order_b2ctemp where "
+				+ "state=0 limit 0,2000 ";
+		//测试
+		/*String sql = "select * from express_ems_order_b2ctemp where "
+				+ "state=0 limit 0,2 ";*/
 		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new SendToEMSOrderMapper());
 		return list;
 	}
 
 	public void updateOrderTemp(String dataID, String dataError,int state) {
-		String sql = "update dmp_ems_order_b2ctemp set state="+state+",remark="+dataError+" where transcwb=?";
+		String sql = "update express_ems_order_b2ctemp set state="+state+",remark='"+dataError+"' where transcwb=?";
 		this.jdbcTemplate.update(sql,dataID);
 	}
 
 	//根据运单号获取发送给EMS的订单信息
 	public List<SendToEMSOrder> getSendOrderByTranscwb(String dataID) {
-		String sql = "select * from dmp_ems_order_b2ctemp where transcwb="+dataID;
+		String sql = "select * from express_ems_order_b2ctemp where transcwb='"+dataID+"'";
 		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new SendToEMSOrderMapper());
 		return list;
 	}
 
 	//根据运单号修改订单临时表中是否已获取运单的状态
 	public List<SendToEMSOrder> updateGetTranscwbStateByTranscwb(String dataID) {
-		String sql = "update dmp_ems_order_b2ctemp set getMailnumFlag=1 where transcwb="+dataID;
+		String sql = "update express_ems_order_b2ctemp set getMailnumFlag=1 where transcwb="+dataID;
 		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new SendToEMSOrderMapper());
 		return list;
 	}
@@ -174,23 +177,16 @@ public class EMSDAO {
 	
 	//获取没有获取EMS运单号,且dmp订单信息已经推送给ems的数据
 	public List<Map<String, Object>> getTranscwbs() {
-		String sql = "select transcwb from dmp_ems_order_b2ctemp where getMailnumFlag=0 and state=1 order by id asc limit 0,500";
+		/*String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 and state=1 order by id asc limit 0,500";*/
+		String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 order by id asc limit 0,500";
 		List<Map<String, Object>> transcwbs = this.jdbcTemplate.queryForList(sql);
-		/*List transcwbs[] = new String[transcwbObj.size()];
-		if ((transcwbObj != null) && (transcwbObj.size() > 0)) {
-			Map<String, Object> map = new HashMap<String, Object>();
-			for(int i=0;i<transcwbObj.size();i++){
-				map = transcwbObj.get(i);
-				transcwbs[i] = map.get("transcwb")+"";
-			}
-		}*/
 		return transcwbs;
 	}
 	
 	//获取没有获取EMS运单号的ems数据
-	public List<EMSFlowEntity> getFlowByCondition(String transcwb,String mailNum,long emsFlowordertype) {
+	public List<EMSFlowEntity> getFlowByCondition(String transcwb,String mailNum,long emsFlowordertype, String action) {
 		String sql = "select * from express_ems_flow_info where transcwb='"+transcwb+"' and email_num='"+mailNum+"'" 
-				+ " and emsFlowordertype="+emsFlowordertype;
+				+ " and emsFlowordertype="+emsFlowordertype+" and emsAction='"+action+"'";
 		List<EMSFlowEntity> entity = this.jdbcTemplate.query(sql,new EMSFlowMapper());
 		return entity;
 	}

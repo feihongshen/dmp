@@ -45,18 +45,12 @@ public class EMSTimmer {
 	}
 	
 	public void selectTempAndImitateDmpOpt(){
-		try {
-			EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
-			for(int i=0;i<15;i++){
-				//String result = dealWithOders(vipshop, lefengCustomerid);
-				
-				String result = dealWithOrders(ems);				
-				if(result==null){
-					break;
-				}
+		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
+		for(int i=0;i<15;i++){
+			String result = dealWithOrders(ems);				
+			if(result==null){
+				break;
 			}
-		} catch (Exception e) {
-			logger.error("0EMS0定时器查询临时表，模拟dmp相关操作执行异常!异常原因:", e);
 		}
 	}
 	
@@ -114,6 +108,7 @@ public class EMSTimmer {
 				remark = e.getMessage(); 
 				state=EMSTraceDataEnum.chulishibai.getValue();
 				logger.error("EMS定时器查询临时表，模拟dmp相关操作执行异常!异常原因={}", e);
+				
 			}finally{
 				if(state!=0){
 					eMSDAO.changeEmsTraceDataState(eMSFlowEntity.getId(),state,remark);
@@ -122,6 +117,7 @@ public class EMSTimmer {
 		}
 	}
 	
+	//推送订单信息给ems定时器
 	public void SendOrderOps(){
 		try {
 			EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
@@ -148,6 +144,8 @@ public class EMSTimmer {
 		if(countNoMps > 0){
 			int k = 1;
 			int batch = 50;
+			/*//测试
+			int batch = 1;*/
 			while (true) {
 				try{
 					int fromIndex = (k - 1) * batch;

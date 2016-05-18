@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.domain.CwbOrder;
@@ -43,6 +44,8 @@ public class FlowFromJMSToEMSOrderService {
 	CwbDAO cwbDAO;
 	@Autowired
 	TransCwbDao transCwbDao;
+	@Autowired
+	EMSService eMSService;
 	/*@Produce(uri = "jms:queue:sendBToCToDmp")
 	ProducerTemplate sendBToCToDmpProducer;*/
 
@@ -77,10 +80,9 @@ public class FlowFromJMSToEMSOrderService {
 	}
 
 	public void saveOrderForEms(@Header("orderFlow") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
-		//EMS配送站id
-		long branchid = 468;
+		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
 		try {
-			doSaveOrderForEms(parm,branchid);
+			doSaveOrderForEms(parm,ems.getEmsBranchid());
 		} catch (Exception e1) {
 			this.logger.error("error while handle orderflow", e1);
 			// 把未完成MQ插入到数据库中, start
@@ -168,6 +170,11 @@ public class FlowFromJMSToEMSOrderService {
 				String data = getStringToEMS(order,transcwb);
 				
 				if(StringUtil.isEmpty(data)){
+					return;
+				}
+				List<SendToEMSOrder> oldOrder = eMSDAO.getSendOrderByTranscwb(transcwb);
+				if(oldOrder.size()!=0){
+					this.logger.info("发送给ems的对应数据在接口临时表中已存在，运单号为：{}",transcwb);
 					return;
 				}
 				//每个运单号对应临时表中一条记录

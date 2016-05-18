@@ -106,7 +106,7 @@ public class EMSController {
 				this.logger.info("品骏未开启EMS接口对接!");
 			}else{
 				// 读取请求内容
-		        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream(),"UTF-8"));
+		        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream(),"GBK"));
 		        String line = null;
 		        StringBuilder sb = new StringBuilder();
 		        while((line = br.readLine())!=null){
@@ -139,6 +139,7 @@ public class EMSController {
 			 backInfo.setSuccess("0");
 			 backInfo.setRemark(e.getMessage());
 			 logger.error("[EMS_运单轨迹]处理业务逻辑异常:{}", e);
+			 e.printStackTrace();
 		}finally{
 			JSONObject jsonObject=new JSONObject();
 			jsonObject.put("response", jsonObject);
