@@ -11,9 +11,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.vip.tps.base.service.SbCodeDefModel;
-import com.vip.tps.base.service.SbCodeTypeService;
-import com.vip.tps.base.service.SbCodeTypeServiceHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -24,7 +21,6 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,16 +31,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.pjbest.deliveryorder.enumeration.OrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.vip.osp.core.exception.OspException;
+import com.vip.tps.base.service.SbCodeDefModel;
+import com.vip.tps.base.service.SbCodeTypeService;
+import com.vip.tps.base.service.SbCodeTypeServiceHelper;
 
+import cn.explink.controller.ExplinkResponse;
 import cn.explink.controller.express.ExpressCommonController;
 import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.core.utils.JsonUtil;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
+import cn.explink.domain.express2.VO.ReserveOrderEditVo;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
+import cn.explink.exception.ExplinkException;
 import cn.explink.service.BranchService;
 import cn.explink.service.UserService;
 import cn.explink.service.express2.ReserveOrderService;
@@ -569,4 +571,51 @@ public class ReserveOrderController extends ExpressCommonController {
         return obj;
     }
 
+   /**
+     * 修改预约单
+     * @param reserveOrderEditVo 预约单修改vo
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/editReserveOrder")
+    public String editReserveOrder(ReserveOrderEditVo vo) {
+    	final String logPrefix = "editReserveOrder->";
+    	
+    	ExplinkResponse explinkResponse = new ExplinkResponse();
+    	
+    	logger.info("{}vo:{}", logPrefix, JsonUtil.translateToJson(vo));
+    	try {
+    		vo.validate();
+    	} catch (IllegalStateException e) {
+    		explinkResponse.setStatuscode(Boolean.FALSE.toString());
+    		explinkResponse.setErrorinfo(e.getMessage());
+    		logger.info("{}explinkResponse:{}", logPrefix, JsonUtil.translateToJson(explinkResponse));
+    		return JsonUtil.translateToJson(explinkResponse);
+    	}
+    	logger.info("{}vo->after validate:{}", logPrefix, JsonUtil.translateToJson(vo));
+    	
+    	try {
+    		//修改预约单
+    		reserveOrderService.editReserveOrder(vo);
+    		
+    	} catch (ExplinkException e) {
+    		logger.info(e.getMessage());
+    		explinkResponse.setStatuscode(Boolean.FALSE.toString());
+    		explinkResponse.setErrorinfo(e.getMessage());
+    		
+    	} catch (OspException e) {
+    		logger.error(e.getMessage(), e);
+    		explinkResponse.setStatuscode(Boolean.FALSE.toString());
+    		explinkResponse.setErrorinfo("TPS系统错误");
+    		
+		} catch(Exception e) {
+    		logger.error(e.getMessage(), e);
+    		explinkResponse.setStatuscode(Boolean.FALSE.toString());
+    		explinkResponse.setErrorinfo("系统错误");
+    		
+    	}
+    	
+    	return JsonUtil.translateToJson(explinkResponse);
+    }
+	
 }
