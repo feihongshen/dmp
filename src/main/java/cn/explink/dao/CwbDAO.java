@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
@@ -147,7 +148,26 @@ public class CwbDAO {
 				.getString("consigneephone")));
 	}
 
-	private final class CwbMapper implements RowMapper<CwbOrder> {
+    public List<CwbOrder> getCwbByCwbsLowerCase(List<String> cwbs) {
+        if (cwbs.size() > 0) {
+            String cwbsStr [] = new String [cwbs.size()];
+            StringBuilder sql = new StringBuilder("SELECT * FROM express_ops_cwb_detail WHERE lower(cwb) IN(");
+            for (int i = 0; i < cwbs.size(); i++) {
+                String cwb =  cwbs.get(i);
+                cwbsStr[i] = cwb;
+                sql.append("LOWER(?)");
+                if (i < cwbs.size() - 1)
+                    sql.append(",");
+            }
+            sql.append(") and state=1 ");
+
+            return this.jdbcTemplate.query(sql.toString(), cwbsStr, new CwbMapper());
+        } else {
+            return null;
+        }
+    }
+
+    private final class CwbMapper implements RowMapper<CwbOrder> {
 
 		@Override
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
