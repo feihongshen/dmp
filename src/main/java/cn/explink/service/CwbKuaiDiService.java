@@ -125,9 +125,10 @@ public class CwbKuaiDiService {
 	 * @param request
 	 * @param response
 	 * @param user
+	 * @throws Exception 
 	 */
 	// @Transactional
-	public void savebulu(HttpServletRequest request, HttpServletResponse response, User user) {
+	public void savebulu(HttpServletRequest request, HttpServletResponse response, User user) throws Exception {
 		CwbKuaiDi kd = new CwbKuaiDi();
 		// 必选字段 付款方式、收件人、收件人地址、收件人手机
 		kd.setPaytype(Long.parseLong(request.getParameter("paytype") == null ? "0" : request.getParameter("paytype")));
@@ -202,7 +203,7 @@ public class CwbKuaiDiService {
 		String carsize = chang + "_" + kuan + "_" + gao;
 		cwbKuaiDiDAO.updateKuDi(kd);
 		cwbDAO.updateCwbByParams(cwb, consigneename, consigneeaddress, consigneemobile, cwbcity, consigneepostcode, sendcarname, sendcarnum, carrealweight, receivablefee, carsize, consigneephone);
-		addressMatchService.matchAddress(user.getUserid(), cwb);// 地址库匹配
+		addressMatchService.doMatchAddress(user.getUserid(), cwb);// 地址库匹配
 
 	}
 

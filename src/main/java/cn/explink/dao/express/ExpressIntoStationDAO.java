@@ -239,4 +239,15 @@ public class ExpressIntoStationDAO {
 //		return this.jdbcTemplate.update(sql.toString(),currentBranchId,intoStationName,FlowOrderTypeEnum.LanJianRuZhan.getValue(),currentBranchId,currentBranchId,nextBranchId);
 		return this.jdbcTemplate.update(sql.toString(),currentBranchId,intoStationName,FlowOrderTypeEnum.LanJianRuZhan.getValue(),currentBranchId,currentBranchId,nextBranchId,currentBranchId,intoStationName);
 	}
+	
+	/**
+	 * @param ids
+	 * 运单录入和揽件入站之外的操作做交接操作
+	 */
+	public Integer executeIntoStationForOth(String ids,Long currentBranchId, String pickExpressTime,String intoStationName) {
+		StringBuffer sql = new StringBuffer();
+		sql.append(" update express_ops_cwb_detail c ");
+		sql.append(" set ishandover=1, instationhandoverid=?,instationhandovername=?,instationhandovertime='"+pickExpressTime+"'  where c.opscwbid in("+ids+") and state = 1");
+		return this.jdbcTemplate.update(sql.toString(),currentBranchId,intoStationName);
+	}
 }

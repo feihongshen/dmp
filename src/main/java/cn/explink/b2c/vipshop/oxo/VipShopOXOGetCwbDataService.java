@@ -37,8 +37,10 @@ import cn.explink.b2c.vipshop.oxo.response.TpsOrderVo;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOXOStateEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -76,6 +78,9 @@ public class VipShopOXOGetCwbDataService {
 	@Autowired
 	CustomerService customerService;
 
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
 	private Logger logger = LoggerFactory.getLogger(VipShopOXOGetCwbDataService.class);
 
 	public VipShop getVipShop(int key) {
@@ -103,6 +108,7 @@ public class VipShopOXOGetCwbDataService {
 		vipshop.setCustomerids(request.getParameter("customerids"));
 		vipshop.setIsopendownload(Integer.parseInt(request.getParameter("isopendownload")));
 		vipshop.setVipshop_seq(Long.parseLong(request.getParameter("vipshop_seq")));
+		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
 		String customerids = request.getParameter("customerids");
 			
 		String oldCustomerids = "";
@@ -422,7 +428,16 @@ public class VipShopOXOGetCwbDataService {
 								map.put("userid", "1");
 								map.put("address", orderMap.get("remark4").replaceAll("&", ""));
 								map.put("notifytype", 0);
-								addressmatch.sendBodyAndHeaders(null, map);
+								try{
+									this.logger.info("消息发送端：addressmatch, header={}", map.toString());
+									addressmatch.sendBodyAndHeaders(null, map);
+								}catch(Exception e){
+									logger.error("", e);
+									//写MQ异常表
+									this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".extractedDataImport")
+											.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+											.buildMessageHeaderObject(map).getMqException());
+								}
 							}
 							if(StringUtils.isNotBlank(orderMap.get("consigneeaddress")) && !orderMap.get("consigneeaddress").equals(cwbOrder_biz.getConsigneeaddress())){
 								//重新解析派件站点
@@ -431,7 +446,15 @@ public class VipShopOXOGetCwbDataService {
 								map.put("userid", "1");
 								map.put("address", orderMap.get("consigneeaddress"));
 								map.put("notifytype", 1);
-								addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+								try{
+									addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+								}catch(Exception e){
+									logger.error("", e);
+									//写MQ异常表
+									this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".extractedDataImport")
+											.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+											.buildMessageHeaderObject(map).getMqException());
+								}
 							}
 			
 						}

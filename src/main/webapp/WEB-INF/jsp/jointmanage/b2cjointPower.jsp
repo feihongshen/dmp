@@ -25,7 +25,7 @@
 
 <%
 List<JointPower> powerlist = (List<JointPower>)request.getAttribute("b2cenumlist");
-B2cEnum enums[]=B2cEnum.values();
+B2cEnum enums[]=B2cEnum.valuesSortedByText();
 %>
  
 <script type="text/javascript">

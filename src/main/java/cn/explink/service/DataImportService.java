@@ -46,6 +46,7 @@ import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.ExcelImportEditDao;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.NoPiPeiCwbDetailDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ReasonDao;
@@ -63,6 +64,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.ImportValidationManager;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
@@ -151,12 +153,14 @@ public class DataImportService {
 
 	@Produce(uri = "jms:topic:addressmatch")
 	ProducerTemplate addressmatch;
-	@Produce(uri = "jms:queue:editInsert")
-	ProducerTemplate editInsert;
+
 	@Autowired
 	ExcelImportEditDao excelImportEditDao;
 	@Autowired
 	TransCwbDetailDAO transCwbDetailDAO;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
@@ -191,9 +195,14 @@ public class DataImportService {
 				errorOrder.put("message", e.getMessage());
 
 				try {
+					logger.info("消息发送端：importCwbErrorProducer, errorOrder={}", errorOrder.toString());
 					this.importCwbErrorProducer.sendBodyAndHeader(null, "errorOrder", errorOrder.toString());
 				} catch (Exception ee) {
-
+					logger.error("", ee);
+					//写MQ异常表
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".importData")
+							.buildExceptionInfo(e.toString()).buildTopic(this.importCwbErrorProducer.getDefaultEndpoint().getEndpointUri())
+							.buildMessageHeader("errorOrder", errorOrder.toString()).getMqException());
 				}
 			}
 		}
@@ -212,7 +221,16 @@ public class DataImportService {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("cwb", cwbOrderDTO.getCwb());
 			map.put("userid", user.getUserid());
-			this.addressmatch.sendBodyAndHeaders(null, map);
+			try{
+				logger.info("消息发送端：addressmatch, header={}", map.toString());
+				addressmatch.sendBodyAndHeaders(null, map);
+			}catch(Exception e){
+				logger.error("", e);
+				//写MQ异常表
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".importSingleData")
+						.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+						.buildMessageHeaderObject(map).getMqException());
+			}
 		}
 	}
 
@@ -225,14 +243,20 @@ public class DataImportService {
 	@Transactional
 	public void resendAddressmatch(User user, List<CwbOrder> cwborderList) {
 		for (CwbOrder cwbOrder : cwborderList) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
 			try {
-				HashMap<String, Object> map = new HashMap<String, Object>();
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", user.getUserid());
+				logger.info("消息发送端：addressmatch, header={}", map.toString());
 				this.addressmatch.sendBodyAndHeaders(null, map);
 			} catch (Exception e) {
 				logger.error("", e);
-				this.logger.info(cwbOrder.getCwb() + "匹配站点失败");
+				this.logger.error(cwbOrder.getCwb() + "匹配站点失败");
+				//写MQ异常表
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".resendAddressmatch")
+						.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+						.buildMessageHeaderObject(map).getMqException());
+		
 			}
 		}
 	}
@@ -268,7 +292,9 @@ public class DataImportService {
 
 	public void datalose(long emaildateid) {
 		try {
-			this.loseCwb.sendBodyAndHeader(null, "loseCwbByEmaildateid", "{\"emaildateid\":" + emaildateid + "}");
+			String header = "{\"emaildateid\":" + emaildateid + "}";
+			logger.info("消息发送端：loseCwb, loseCwbByEmaildateid={}", header);
+			this.loseCwb.sendBodyAndHeader(null, "loseCwbByEmaildateid", header);
 		} catch (Exception e) {
 		}
 	}
@@ -288,10 +314,17 @@ public class DataImportService {
 	ProducerTemplate batchedit;
 
 	public void batchedit(long customerwarehouseid, long serviceareaid, String editemaildate, long emaildateid) {
+		String header = "{\"emaildateid\":" + emaildateid + ",\"editemaildate\":\"" + editemaildate + "\",\"warehouseid\":" + customerwarehouseid + ",\"areaid\":" + serviceareaid + "}";
 		try {
-			this.batchedit
-					.sendBodyAndHeader(null, "emaildate", "{\"emaildateid\":" + emaildateid + ",\"editemaildate\":\"" + editemaildate + "\",\"warehouseid\":" + customerwarehouseid + ",\"areaid\":" + serviceareaid + "}");
+			logger.info("消息发送端：batchedit, emaildate={}", header);
+			this.batchedit.sendBodyAndHeader(null, "emaildate", header);
 		} catch (Exception e) {
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".batchedit")
+					.buildExceptionInfo(e.toString()).buildTopic(this.batchedit.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("emaildate", header).getMqException());
+	
 		}
 
 	}

@@ -54,6 +54,9 @@ import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ExcelUtils;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Controller
 @RequestMapping("/smtfaresettle")
 public class SmtFareSettleController {
@@ -78,6 +81,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/station/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public ModelAndView showStation(@PathVariable("page") int page, SmtFareSettleCondVO cond, ModelAndView mav) {
 		mav.addObject("constant", this.getSmtFareSettleConstVO(false, cond));
 		mav.addObject("result", this.getStationResultVO(page, cond));
@@ -88,6 +92,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/deliver/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public ModelAndView showDeliver(@PathVariable("page") int page, SmtFareSettleCondVO cond, ModelAndView mav) {
 		mav.addObject("constant", this.getSmtFareSettleConstVO(true, cond));
 		mav.addObject("result", this.getDeliverResultVO(page, cond));
@@ -99,6 +104,7 @@ public class SmtFareSettleController {
 
 	@RequestMapping("/getdeliverdata/{deliverId}/{venderId}")
 	@ResponseBody
+	@DataSource(DatabaseType.REPLICA)
 	public SmtFareSettleVO getDeliverData(@PathVariable("deliverId") long deliverId, @PathVariable("venderId") long venderId, HttpServletRequest request) {
 		String strCond = request.getParameter("cond");
 		JSONObject obj = JSONObject.fromObject(strCond);
@@ -109,6 +115,7 @@ public class SmtFareSettleController {
 
 	@RequestMapping("/getstationdata/{stationId}/{venderId}")
 	@ResponseBody
+	@DataSource(DatabaseType.REPLICA)
 	public SmtFareSettleVO getStationData(@PathVariable("stationId") long stationId, @PathVariable("venderId") long venderId, HttpServletRequest request) {
 		String strCond = request.getParameter("cond");
 		JSONObject obj = JSONObject.fromObject(strCond);
@@ -118,6 +125,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/getstationdeliver")
+	@DataSource(DatabaseType.REPLICA)
 	@ResponseBody
 	public Map<Long, String> getStationDeliver(HttpServletRequest request) {
 		String strStationId = request.getParameter("stationId");
@@ -127,6 +135,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/detail_d/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public ModelAndView showDeliverDetail(@PathVariable("page") int page, SmtFareSettleDetailCondVO condVO) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("cond", condVO);
@@ -138,6 +147,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/detail_s/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public ModelAndView showStationDetail(@PathVariable("page") int page, SmtFareSettleDetailCondVO condVO) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("cond", condVO);
@@ -148,6 +158,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/export/station")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportStation(SmtFareSettleCondVO condVO, HttpServletResponse response) throws Exception {
 		List<Long> stationIdList = this.getStationIdList(condVO);
 		List<Long> venderIdList = this.getCustomerIdList(condVO);
@@ -158,6 +169,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/export/detail_s")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportStationDetial(SmtFareSettleDetailCondVO condVO, HttpServletResponse response) throws Exception {
 		String sql = this.getDetialSql(-1, condVO, false, false);
 		Object[] paras = new Object[] { condVO.getStationId(), condVO.getVenderId() };
@@ -169,6 +181,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/export/deliver")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportDeliver(SmtFareSettleCondVO condVO, HttpServletResponse response) throws Exception {
 		List<Long> deliverIdList = this.getDeliverIdList(condVO);
 		List<Long> venderIdList = this.getCustomerIdList(condVO);
@@ -179,6 +192,7 @@ public class SmtFareSettleController {
 	}
 
 	@RequestMapping("/export/detail_d")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportDeliverDetial(SmtFareSettleDetailCondVO condVO, HttpServletResponse response) throws Exception {
 		String sql = this.getDetialSql(-1, condVO, true, false);
 		Object[] paras = new Object[] { condVO.getDeliverId(), condVO.getVenderId() };

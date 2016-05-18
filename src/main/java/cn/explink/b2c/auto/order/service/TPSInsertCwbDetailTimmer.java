@@ -21,8 +21,10 @@ import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.service.CwbOrderService;
@@ -58,6 +60,9 @@ public class TPSInsertCwbDetailTimmer {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	/*@Autowired
 	ExceptionCwbDAO exceptionCwbDAO;*/
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -187,7 +192,16 @@ public class TPSInsertCwbDetailTimmer {
 					map.put("userid", "1");
 					map.put("address", pickAddress);
 					map.put("notifytype", 0);
-					addressmatch.sendBodyAndHeaders(null, map);//解析提货站点
+					try{
+						this.logger.info("消息发送端：addressmatch, header={}", map.toString());
+						addressmatch.sendBodyAndHeaders(null, map);//解析提货站点
+					}catch(Exception e){
+						logger.error("", e);
+						//写MQ异常表
+						this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".ImportSignOrder")
+								.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+								.buildMessageHeaderObject(map).getMqException());
+					}
 				}
 				
 				if(StringUtils.isNotBlank(cwbOrder.getConsigneeaddress())){
@@ -196,14 +210,30 @@ public class TPSInsertCwbDetailTimmer {
 					map.put("userid", "1");
 					map.put("address", cwbOrder.getConsigneeaddress());
 					map.put("notifytype", 1);
-					addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+					try{
+						addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+					}catch(Exception e){
+						logger.error("", e);
+						//写MQ异常表
+						this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".ImportSignOrder")
+								.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+								.buildMessageHeaderObject(map).getMqException());
+					}
 				}
             }else{
             	if (cwbOrder.getExcelbranch() == null || cwbOrder.getExcelbranch().length() == 0) {
     				HashMap<String, Object> map = new HashMap<String, Object>();
     				map.put("cwb", cwbOrder.getCwb());
     				map.put("userid", "1");
-    				addressmatch.sendBodyAndHeaders(null, map);
+    				try{
+    					addressmatch.sendBodyAndHeaders(null, map);
+					}catch(Exception e){
+						logger.error("", e);
+						//写MQ异常表
+						this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".ImportSignOrder")
+								.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+								.buildMessageHeaderObject(map).getMqException());
+					}
     			}
             }
 		}

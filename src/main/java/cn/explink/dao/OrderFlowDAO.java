@@ -25,6 +25,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Page;
@@ -228,6 +231,24 @@ public class OrderFlowDAO {
 		return map;
 	}
 
+	/**
+	 * 获取某种操作类型的最新流程记录
+	 * @param cwb
+	 * @param flowOrderType
+	 * @return
+	 */
+	public OrderFlow findOrderFlow(String cwb , int flowOrderType){
+		StringBuffer sql = new StringBuffer("select * from express_ops_order_flow flow where flow.cwb = '") ;
+		sql.append(cwb).append("'") ;
+		sql.append(" and flow.flowordertype = ").append(flowOrderType) ;
+		sql.append(" order by flow.credate desc ") ;
+		List<OrderFlow> orderFlowList = this.jdbcTemplate.query(sql.toString(),  new OrderFlowRowMapper());
+		if(orderFlowList == null || orderFlowList.size() == 0){
+			return null ;
+		}
+		return orderFlowList.get(0) ;
+	}
+	
 	public List<OrderFlow> getOrderFlowByFlowordertypeAndCwb(long flowordertype, String cwb, long branchid) {
 		String sql = "select * from express_ops_order_flow where flowordertype=? and cwb=? and branchid=?";
 		return this.jdbcTemplate.query(sql, new OrderFlowRealRowMapper(), flowordertype, cwb, branchid);
@@ -502,6 +523,7 @@ public class OrderFlowDAO {
 		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail(), flowordertype, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getOrderFlowByCredateAndFlowordertype(String begindate, String enddate, long flowordertype, final String[] operationOrderResultTypes, final String[] dispatchbranchids,
 			long nextbranchid, long deliverid) {
 		String sql = "select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)  where flowordertype=" + flowordertype;
@@ -663,6 +685,7 @@ public class OrderFlowDAO {
 		// jdbcTemplate.queryForList(sql, String.class);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getOrderFlowForZhongZhuan(String begindate, String enddate, long flowordertype, final String[] nextbranchids, final String[] startbranchids) {
 		String sql = "select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)  where flowordertype =" + flowordertype;
 		StringBuilder deliverystatesql = new StringBuilder();
@@ -723,6 +746,7 @@ public class OrderFlowDAO {
 		return cwbList;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<OrderFlow> getOrderFlowForZhanDianChuZhan(String begindate, String enddate, final String[] startbranchids, final String[] nextbranchids, final long flowordertype) {
 		String sql = "select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx) where credate >= '" + begindate + "' ";
 		StringBuilder deliverystatesql = new StringBuilder();
@@ -845,6 +869,7 @@ public class OrderFlowDAO {
 	}
 
 	// ============统计到站无结果的订单===五步===begin===============
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getOneCwbs(String flowordertypes, String begindate, String enddate, String kufangids, String branchids) {
 		String sql = "SELECT DISTINCT d.cwb FROM `express_ops_order_flow` AS f FORCE INDEX(FlowCredateIdx) LEFT JOIN `express_ops_cwb_detail` AS d ON f.cwb=d.cwb " + "WHERE f.flowordertype in("
 				+ flowordertypes + ") and d.state=1  AND f.credate>=? AND f.credate<=?";
@@ -862,22 +887,26 @@ public class OrderFlowDAO {
 		return this.jdbcTemplate.queryForList(sql, String.class, begindate, enddate);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getTwoCwbs(String flowordertypes, String cwbs, String enddate) {
 		String sql = "SELECT DISTINCT cwb FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")" + " AND flowordertype in(" + flowordertypes + ") AND credate>? ";
 
 		return this.jdbcTemplate.queryForList(sql, String.class, enddate);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getThreeCwbs(String flowordertypes, String cwbs, String noIncwbs) {
 		String sql = "SELECT DISTINCT cwb FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")" + " AND cwb NOT IN(" + noIncwbs + ") AND flowordertype in(" + flowordertypes + ") ";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getFourCwbs(String cwbs) {
 		String sql = "SELECT DISTINCT cwb  FROM `express_ops_delivery_state` WHERE cwb IN(" + cwbs + ") " + "AND state=1 AND `deliverystate`>0";
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getFiveCwbs(String flowordertypes, String cwbs, String noIncwbs, long page) {
 		String sql = "SELECT DISTINCT cwb FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")  " + "AND cwb NOT IN(" + noIncwbs + ") AND flowordertype in(" + flowordertypes + ") ";
 		if (page > 0) {
@@ -886,6 +915,7 @@ public class OrderFlowDAO {
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getFiveCwbsCount(String flowordertypes, String cwbs, String noIncwbs) {
 		String sql = "SELECT count(DISTINCT cwb) FROM express_ops_order_flow WHERE cwb IN(" + cwbs + ")  " + "AND cwb NOT IN(" + noIncwbs + ") AND flowordertype in(" + flowordertypes + ") ";
 		return this.jdbcTemplate.queryForLong(sql);
@@ -939,6 +969,7 @@ public class OrderFlowDAO {
 		return this.jdbcTemplate.queryForList(sql, String.class, flowordertype, emailStartTime, eamilEndTime);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getIntoCwbDetailAndOrderFlow(String begindate, String enddate, long flowordertype, long branchid) {
 		String sql = "select cwb from express_ops_order_flow where flowordertype=" + flowordertype + " and credate >= '" + begindate + "' and credate <= '" + enddate + "' ";
 

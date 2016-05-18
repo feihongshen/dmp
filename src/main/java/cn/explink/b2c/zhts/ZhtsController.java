@@ -1,5 +1,7 @@
 package cn.explink.b2c.zhts;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,14 +83,21 @@ public class ZhtsController {
 	}
 
 	@RequestMapping("/orderTrack")
-	public @ResponseBody String receiver(HttpServletRequest request) {
+	public @ResponseBody String receiver(HttpServletRequest request) throws UnsupportedEncodingException {
 		String userCode = request.getParameter("userCode");
 		String sign = request.getParameter("sign");
 		String requestTime = request.getParameter("requestTime");
 		String content = request.getParameter("content");
+		if(userCode==null||sign==null||requestTime==null||content==null){
+			return "请求参数不能为空";
+		}
+		
+		content = URLDecoder.decode(content, "UTF-8");
 		
 		logger.info("中浩接收订单轨迹参数userCode={},sign={},requestTime={},content={}",new Object[]{userCode,sign,requestTime,content});
 
+		
+		
 		String responseMsg = zhtsService.receivedOrderTrack(userCode, sign, requestTime, content);
 		
 		logger.info("中浩途胜返回接口信息={}",responseMsg);

@@ -19,8 +19,10 @@ import cn.explink.b2c.yihaodian.Yihaodian;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
@@ -49,6 +51,9 @@ public class HXGInsertCwbDetailTimmer {
 	@Autowired
 	DataImportService dataImportService;
 
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
 	/**
 	 * 好享购定时器，查询临时表，插入数据到detail表中。
 	 */
@@ -122,7 +127,16 @@ public class HXGInsertCwbDetailTimmer {
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", "1");
-				addressmatch.sendBodyAndHeaders(null, map);
+				try{
+					this.logger.info("消息发送端：addressmatch, header={}", map.toString());
+					addressmatch.sendBodyAndHeaders(null, map);
+				}catch(Exception e){
+					logger.error("", e);
+					//写MQ异常表
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".ImportSignOrder")
+							.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+							.buildMessageHeaderObject(map).getMqException());
+				}
 			}
 
 		}

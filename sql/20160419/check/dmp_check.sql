@@ -1,0 +1,2 @@
+select cwb, count(1) from express_ops_cwb_detail_b2ctemp group by cwb having count(1) > 1;	-- 结果为0
+select count(1) cnt from INFORMATION_SCHEMA.STATISTICS where TABLE_SCHEMA = schema() and TABLE_NAME = 'express_ops_cwb_detail_b2ctemp' and INDEX_NAME = 'b2ctemp_cwb_unique' and COLUMN_NAME = 'cwb';	-- 结果为1

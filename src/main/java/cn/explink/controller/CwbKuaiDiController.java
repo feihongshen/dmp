@@ -263,7 +263,7 @@ public class CwbKuaiDiController {
 	}
 
 	@RequestMapping("/savebulu")
-	public @ResponseBody String saveBuLu(HttpServletResponse response, HttpServletRequest request) {
+	public @ResponseBody String saveBuLu(HttpServletResponse response, HttpServletRequest request) throws Exception {
 		this.cwbKuaiDiService.savebulu(request, response, this.getSessionUser());
 		return "{\"erroeCode\":\"0\"}";
 

@@ -73,7 +73,7 @@ function delSuccess(data){
 
 					</tr>
 					<%
-						for(B2cEnum em:B2cEnum.values()){ 
+						for(B2cEnum em:B2cEnum.valuesSortedByText()){ 
 																		String text=em.getText();
 																		int key=em.getKey();
 																		for(JointPower power:powerlist){
@@ -447,7 +447,7 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/gxdxAddress/del/');
 		}
 		
-		else if(obj=='20122'||obj=='20123'||obj=='20124'||obj=='20125'||obj=='20126'){
+		else if(obj=='20122'||obj=='20123'||obj=='20124'||obj=='20125'||obj=='20126'||obj.substr(0,2)=='29'){
 			$("#edit").val('<%=request.getContextPath()%>/vipshop/show/');
 			$("#del").val('<%=request.getContextPath()%>/vipshop/del/');
 		}
@@ -511,6 +511,11 @@ function delSuccess(data){
 		else if(obj=='22010'){//EMS接口
 			$("#edit").val('<%=request.getContextPath()%>/ems/show/');
 			$("#del").val('<%=request.getContextPath()%>/ems/del/');
+		}
+		
+		else if(obj=='20229'){
+			$("#edit").val('<%=request.getContextPath()%>/tpsCwbFlow/show/');
+			$("#del").val('<%=request.getContextPath()%>/tpsCwbFlow/del/');
 		}
 		
 		else{

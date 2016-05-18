@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OperationDetail;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Component
 public class OperationDetailDAO {
 	@Autowired
@@ -37,6 +40,7 @@ public class OperationDetailDAO {
 		jdbcTemplate.update(sql, timeid);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<Map<String, Object>> getDetailBranch(long timeid, String branchids) {
 		String sql = "SELECT a.branchid,b.branchname FROM express_set_operation_detail a,express_set_branch b WHERE a.branchid=b.branchid ";
 		if (timeid > 0) {

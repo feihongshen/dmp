@@ -77,6 +77,9 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Controller
 @RequestMapping("/ExceptionMonitor")
 public class ExceptionMonitor {
@@ -695,6 +698,7 @@ public class ExceptionMonitor {
 	}
 
 	@RequestMapping("/exportException")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "cwbs", required = false, defaultValue = "") final String cwbs) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名

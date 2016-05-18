@@ -43,6 +43,7 @@
 	String type=(String)request.getAttribute("flowtype");
 	Long flowtype=Long.parseLong(type);
 	String baleno = (String)request.getAttribute("baleno") == null ? "" : (String)request.getAttribute("baleno");
+	long baleid = (Long)request.getAttribute("baleid") == null ? -1 : (Long)request.getAttribute("baleid");
 %>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
 	xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -96,13 +97,14 @@ function setcreowg(){
 		operatetype = <%=OutwarehousegroupOperateEnum.KuDuiKuChuKu.getValue()%>;
 	<%}%>
 	var baleno="";
+	var baleid="<%=baleid%>";
 	if($("#baleno").length>0){
 		baleno=$("#baleno").text();
 	}
 	 $.ajax({
 			type: "POST",
 			url:"<%=request.getContextPath()%>/warehousegroup/creowgnew",
-			data : {"cwbs":"<%=huizongcwbs%>","operatetype":operatetype,"driverid":<%=deliverid%>,"baleno":baleno},
+			data : {"cwbs":"<%=huizongcwbs%>","operatetype":operatetype,"driverid":<%=deliverid%>,"baleno":baleno,"baleid":baleid},
 			dataType:"json",
 			success : function(data) {
 				if(data.errorCode==0){

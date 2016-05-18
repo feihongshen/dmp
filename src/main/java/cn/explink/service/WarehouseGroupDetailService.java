@@ -119,7 +119,7 @@ public class WarehouseGroupDetailService {
 						printView.setCwb(co.getCwb());
 						printView.setDeliverid(gd.getDeliverid());
 						printView.setFlowordertype(co.getFlowordertype());
-						printView.setBaleno(co.getPackagecode());
+						printView.setBaleno(gd.getBaleno()!=null&&gd.getBaleno().trim().length()>0?gd.getBaleno():co.getPackagecode());
 						printView.setCustomername(this.getQueryCustomerName(customerList, co.getCustomerid()));// 供货商的名称
 						printView.setNextbranchname(this.getQueryBranchName(branchList, gd.getNextbranchid()));// 下一站
 						printView.setOutstoreroomtime(gd.getCreatetime());// 出库时间
@@ -503,8 +503,9 @@ public class WarehouseGroupDetailService {
 			for (Bale bale : baleList) {
 				if (gdList != null && !gdList.isEmpty()) {
 					for (GroupDetail gd : gdList) {
-						if (bale.getBaleno().equals(gd.getBaleno())) {
+						if (bale.getId()==gd.getBaleid()) {
 							PrintView printView = new PrintView();
+							printView.setBaleid(bale.getId());
 							printView.setPackagecode(bale.getBaleno());
 							printView.setCustomerwarehouseid(this.getQueryBranchName(branchList, bale.getBranchid()));// 发货仓库
 							printView.setOutstoreroomtime(bale.getCretime().toString());// 出库时间

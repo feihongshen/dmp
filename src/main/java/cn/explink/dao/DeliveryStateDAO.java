@@ -24,6 +24,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.User;
@@ -1130,6 +1133,7 @@ public class DeliveryStateDAO {
 		this.jdbcTemplate.update(sql, deliverystate, sign_time, sign_time, sign_man, userid, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getDeliveryStateByCredateAndFlowordertype(String begindate, String enddate, long isauditTime, long isaudit, String[] operationOrderResultTypes, String[] dispatchbranchids,
 			long deliverid, int isTuotou, String customeridStr, int firstlevelid) {
 
@@ -1187,6 +1191,7 @@ public class DeliveryStateDAO {
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<JSONObject> getDeliveryByDayGroupByDeliverybranchid(String day, String secondDay) {
 		try {
 			String sql = "SELECT deliverybranchid,SUM(cash+otherfee+checkfee-returnedfee) AS amount,SUM(pos) AS pos FROM `express_ops_delivery_state` WHERE deliverytime>? AND deliverytime<=? AND auditingtime=''  AND state=1  GROUP BY deliverybranchid";
@@ -1719,4 +1724,16 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set deliverybranchid=? where cwb='" + cwb + "' and state=1";
 		this.jdbcTemplate.update(sql, deliverybranchid);
 	}
+	
+	/**
+	 * 更新deliverystate的值
+	 * @param cwb 订单号
+	 * @param deliverystate 配送状态
+	 * @author neo01.huang
+	 */
+	public void updateDeliveryStateValue(String cwb, int deliverystate){
+		String sql = "update express_ops_delivery_state set deliverystate=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, deliverystate, cwb);
+	}
+	
 }

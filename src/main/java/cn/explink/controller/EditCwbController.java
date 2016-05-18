@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -106,8 +104,7 @@ public class EditCwbController {
 	DataImportService dataImportService;
 	@Autowired
 	EditCwbService editCwbService;
-	@Produce(uri = "jms:topic:addressmatch")
-	ProducerTemplate addressmatch;
+
 	@Autowired
 	EditCwbDAO editCwbDAO;
 	@Autowired
@@ -880,7 +877,7 @@ public class EditCwbController {
 			if ((co.getExcelbranch() == null) || (co.getExcelbranch().length() == 0) || (co.getDeliverybranchid() == 0)) {
 				this.logger.info("地址库-------");
 				if (!old.getConsigneeaddress().equals(co.getConsigneeaddress())) {
-					this.addressMatchService.matchAddress(this.getSessionUser().getUserid(), co.getCwb());
+					this.addressMatchService.doMatchAddress(this.getSessionUser().getUserid(), co.getCwb());
 				}
 			}
 			// 修改匹配站

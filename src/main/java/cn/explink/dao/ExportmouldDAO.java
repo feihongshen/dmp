@@ -10,6 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.Exportmould;
 import cn.explink.domain.SetExportField;
 import cn.explink.util.Page;
@@ -74,6 +77,7 @@ public class ExportmouldDAO {
 		jdbcTemplate.update("update express_ops_exportmould set roleid=?,rolename=?,mouldname=?,mouldfieldids=? where id =?", roleid, rolename, mouldname, mouldfieldids, id);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<Exportmould> getAllExportmouldByUser(long roleid) {
 		return jdbcTemplate.query("select * from express_ops_exportmould where status =1 and roleid=? order by id", new ExportmouldRowMapper(), roleid);
 	}

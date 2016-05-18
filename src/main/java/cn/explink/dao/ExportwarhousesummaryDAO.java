@@ -11,6 +11,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Exportwarhousesummary;
 import cn.explink.domain.User;
@@ -206,6 +209,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<Exportwarhousesummary> getBranchSum(String nextbranchid, String startbranchid, String strtime, String endtime) {
 		String sql = "select SUBSTR(credate,1,10) as credate , nextbranchid, COUNT(cwb) as branchsum" + " from express_ops_warehouse_to_branch  " + " WHERE " + " startbranchid in (" + startbranchid
 				+ ") " + " and nextbranchid in (" + nextbranchid + ") " + " and   type='1' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and credate < '" + endtime + "'"
@@ -225,6 +229,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<Exportwarhousesummary> getBranchAllSum(String nextbranchid, String startbranchid, String strtime, String endtime) {
 		String sql = "select SUBSTR(credate,1,10) as credate , nextbranchid, COUNT(cwb) as branchsum" + " from express_ops_warehouse_to_branch  " + " WHERE " + " startbranchid in (" + startbranchid
 				+ ") " + " and nextbranchid in (" + nextbranchid + ") " + " and   type='1' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and credate < '" + endtime + "'"
@@ -246,6 +251,7 @@ public class ExportwarhousesummaryDAO {
 	 * @return
 	 */
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<Exportwarhousesummary> getWarhouseSum(String branchid, String strtime, String endtime) {
 		String sql = "select SUBSTR(credate,1,10) as credate , branchid as nextbranchid ,COUNT(cwb) as branchsum" + " from express_ops_order_intowarhouse   " + " WHERE " + " branchid in (" + branchid
 				+ ") " + " and   flowordertype='4' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and   credate < '" + endtime + "'" + " GROUP BY 1 ";
@@ -265,6 +271,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public int getWarhouseAllSum(String branchid, String strtime, String endtime) {
 		String sql = "select COUNT(cwb) as branchsum" + " from express_ops_order_intowarhouse   " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and   credate > '" + strtime + "'" + " and   credate < '" + endtime + "'";
@@ -284,6 +291,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<Exportwarhousesummary> getBranchAllDay(String nextbranchid, String startbranchid, String strtime, String endtime) {
 		String sql = "select SUBSTR(credate,1,10) as credate , nextbranchid, COUNT(cwb) as branchsum" + " from express_ops_warehouse_to_branch  " + " WHERE " + " startbranchid in (" + startbranchid
 				+ ") " + " and nextbranchid in (" + nextbranchid + ") " + " and   type='1' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and credate < '" + endtime + "'"
@@ -303,6 +311,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public int getAllBranchAllDay(String nextbranchid, String startbranchid, String strtime, String endtime) {
 		String sql = " select COUNT(cwb) as branchsum" + " from express_ops_warehouse_to_branch  " + " WHERE " + " startbranchid in (" + startbranchid + ") " + " and nextbranchid in (" + nextbranchid
 				+ ") " + " and   type='1' " + " and   state='1' " + " and   credate > '" + strtime + "'" + " and credate < '" + endtime + "'";
@@ -321,6 +330,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbsByeveryday(long page,String branchid, String strtime) {
 		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE "
 				+ " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
@@ -333,6 +343,7 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbsByeverydayexcel(long page, String branchid, String strtime) {
 		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE " + " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
 				+ " and SUBSTR(credate,1,10) = '" + strtime + "'" + " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
@@ -344,6 +355,7 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public int getCwbsByeverydaycount(String branchid, String strtime) {
 		String sql = " select COUNT(cwb) " + " from express_ops_order_intowarhouse  " + " WHERE "
 				+ " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
@@ -363,6 +375,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbsByAlleveryday(long page, String branchid, String strtime, String endtime) {
 		String sql = " select cwb " + " from express_ops_order_intowarhouse  " + " WHERE "
 				+ " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
@@ -376,6 +389,7 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public int getCwbsByAlleverydaycount(String branchid, String strtime, String endtime) {
 		String sql = " select COUNT(cwb) " + " from express_ops_order_intowarhouse  " + " WHERE "
 				+ " branchid in (" + branchid + ") " + " and   flowordertype='4' " + " and   state='1' "
@@ -395,6 +409,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbsByBrancheveryday(long page, String warhouseids,String branchid, String strtime) {
 		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE "
 	+ " startbranchid in ("+warhouseids+") and"
@@ -408,6 +423,7 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public int getCwbsByBrancheverydaycount(String warhouseids,String branchid, String strtime) {
 		String sql = " select Count(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE " 
 				+ " startbranchid in ("+warhouseids+") and"
@@ -428,6 +444,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbsByBranchAllday(long page,String warhouseids, String branchid, String strtime, String endtime) {
 		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE "
 				+ " startbranchid in ("+warhouseids+") and"
@@ -441,6 +458,7 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public int getCwbsByBranchAlldaycount(String warhouseids,String branchid, String strtime, String endtime) {
 		String sql = " select COUNT(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE "
 				+ " startbranchid in ("+warhouseids+") and"
@@ -461,6 +479,7 @@ public class ExportwarhousesummaryDAO {
 	 * @param endtime
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbsByALLBrancheveryday(long page,String warhouseids, String branchid, String strtime, String endtime) {
 		String sql = " select cwb " + " from express_ops_warehouse_to_branch  " + " WHERE "
 				+ " startbranchid in ("+warhouseids+") and"
@@ -474,6 +493,7 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public int getCwbsByALLBrancheverydaycount(String warhouseids,String branchid, String strtime, String endtime) {
 		String sql = " select COUNT(cwb) " + " from express_ops_warehouse_to_branch  " + " WHERE "
 				+ " startbranchid in ("+warhouseids+") and"
@@ -486,6 +506,7 @@ public class ExportwarhousesummaryDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbsDetail(String cwb) {
 		String sql = " select * " + " from express_ops_cwb_detail  " + " WHERE " + " cwb in (" + cwb + ") " + " and   state='1' ";
 		try {
@@ -584,6 +605,7 @@ public class ExportwarhousesummaryDAO {
 		return cwborderlist;
 	}
 	
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> findcwbByCwbsAndDateAndtypePageLike(String cwbs,String startdate,String enddate,String cwbtypeid,int start,int pageSize){
 		String sql="select * from express_ops_order_intowarhouse where cwb like '%"+cwbs+"%' and state=1 and credate>='"+startdate+"' and credate<='"+enddate+"' limit "+start+","+pageSize;
 		List<CwbOrder> cwblist;
@@ -614,6 +636,7 @@ public class ExportwarhousesummaryDAO {
 		return cwborderlist;
 	}
 	
+	@DataSource(DatabaseType.REPLICA)
 	public long findcwbByCwbsAndDateAndtypeLikeCount(String cwbs,String startdate,String enddate,String cwbtypeid){
 		String sql="select * from express_ops_order_intowarhouse where cwb like '%"+cwbs+"%' and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"'";
 		List<CwbOrder> cwblist=jdbcTemplate.query(sql, new Cwbs());
@@ -634,6 +657,7 @@ public class ExportwarhousesummaryDAO {
 		}
 		return totalcount;
 	}
+	@DataSource(DatabaseType.REPLICA)
 	public long findcwbByCwbsAndDateAndtypeCount(String cwbs,String startdate,String enddate,String cwbtypeid){
 		String sql="select * from express_ops_order_intowarhouse where cwb in ("+cwbs+") and state=1  and credate>='"+startdate+"' and credate<='"+enddate+"'";
 		List<CwbOrder> cwblist=jdbcTemplate.query(sql, new Cwbs());

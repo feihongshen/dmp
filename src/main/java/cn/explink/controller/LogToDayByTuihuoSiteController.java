@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
@@ -86,6 +89,7 @@ public class LogToDayByTuihuoSiteController {
 	}
 
 	@RequestMapping("/nowlog")
+	@DataSource(DatabaseType.REPLICA)
 	public String nowlog(Model model, @RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid) {
 		List<Branch> tuihuoList = branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue());
 		if (branchid == 0) {
@@ -144,6 +148,7 @@ public class LogToDayByTuihuoSiteController {
 	}
 
 	@RequestMapping("/getYingtuiCount")
+	@DataSource(DatabaseType.REPLICA)
 	public @ResponseBody JSONObject getYingtuiCount() {
 		JSONObject obj = new JSONObject();
 		// 站点应退
@@ -154,6 +159,7 @@ public class LogToDayByTuihuoSiteController {
 	}
 
 	@RequestMapping("/historylog")
+	@DataSource(DatabaseType.REPLICA)
 	public String historylog(Model model, @RequestParam(value = "createdate", required = false, defaultValue = "") String createdate) {
 		List<Branch> kufangList = branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue());
 		long branchid = (kufangList != null && kufangList.size() > 0) ? kufangList.get(0).getBranchid() : 0;
@@ -166,6 +172,7 @@ public class LogToDayByTuihuoSiteController {
 	}
 
 	@RequestMapping("/show/{type}/{page}")
+	@DataSource(DatabaseType.REPLICA)
 	public String show(Model model, @PathVariable("type") String type, @PathVariable("page") long page) {
 		List<Branch> kufangList = branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue());
 		long branchid = (kufangList != null && kufangList.size() > 0) ? kufangList.get(0).getBranchid() : 0;
@@ -205,6 +212,7 @@ public class LogToDayByTuihuoSiteController {
 	}
 
 	@RequestMapping("/exportExcel")
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcel(HttpServletResponse response, @RequestParam(value = "type", required = false, defaultValue = "") String type,
 			@RequestParam(value = "branchid", defaultValue = "0", required = false) long branchid, @RequestParam(value = "exportmould", required = false, defaultValue = "") String exportmould
 

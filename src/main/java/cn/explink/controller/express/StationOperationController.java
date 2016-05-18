@@ -44,6 +44,7 @@ import cn.explink.domain.VO.express.ExpressOrderQueryResult;
 import cn.explink.domain.express.CwbOrderForCombine;
 import cn.explink.domain.express.ExpressPreOrder;
 import cn.explink.domain.express.ExpressWeigh;
+import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.express.DistributeConditionEnum;
 import cn.explink.enumutil.express.ExcuteStateEnum;
 import cn.explink.enumutil.express.ExpressCombineTypeEnum;
@@ -456,7 +457,7 @@ public class StationOperationController extends ExpressCommonController {
 		Bale bale = new Bale();
 		bale.setBaleno(packageNo);
 		// TODO
-		// bale.setBalestate(BaleStateEnum);
+		bale.setBalestate(BaleStateEnum.WeiFengBao.getValue());
 		bale.setBranchid(this.getCurrentBranchid());
 		bale.setNextbranchid(nextBranch);
 		bale.setCwbcount(waybillNoList.size());

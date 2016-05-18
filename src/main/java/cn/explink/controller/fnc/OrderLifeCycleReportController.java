@@ -42,6 +42,9 @@ import cn.explink.service.fnc.OrderLifeCycleReportService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Tools;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Controller
 @RequestMapping("/orderlifecycle")
 public class OrderLifeCycleReportController {
@@ -113,6 +116,7 @@ public class OrderLifeCycleReportController {
 	 */
 	@RequestMapping("/export2Excel")
 	@ResponseBody
+	@DataSource(DatabaseType.REPLICA)
 	public void export2Excel(
 			@RequestParam(value = "customers", required = false, defaultValue="") String customers,
 			@RequestParam(value = "queryDate", required = true, defaultValue="") String queryDate,
@@ -285,6 +289,7 @@ public class OrderLifeCycleReportController {
 	 */
 	@RequestMapping("/exportDetail2Excel")
 	@ResponseBody
+	@DataSource(DatabaseType.REPLICA)
 	public void exportDetail2Excel(
 			@RequestParam(value = "fnrptlifecycleid", required = false, defaultValue="-1") Long fnrptlifecycleid,
 			@RequestParam(value = "page", required = true, defaultValue="0") int page,

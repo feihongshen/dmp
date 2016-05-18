@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Tools;
 
@@ -45,6 +46,8 @@ public class TransCwbDetailDAO {
 			tcd.setEmaildate(rs.getString("emaildate"));
 			tcd.setCommonphraseid(rs.getInt("commonphraseid"));
 			tcd.setCommonphrase(rs.getString("commonphrase"));
+			tcd.setVolume(rs.getBigDecimal("cargovolume"));
+			tcd.setWeight(rs.getBigDecimal("carrealweight"));
 			return tcd;
 		}
 	}
@@ -343,5 +346,15 @@ public class TransCwbDetailDAO {
 		Date dtEmaildate = DateTimeUtil.parseDate(emaildate, DateTimeUtil.DEF_DATETIME_FORMAT);
 		
 		this.jdbcTemplate.update("update express_ops_transcwb_detail set emaildate=? where transcwb in(" + strIn + ") ", dtEmaildate);
+	}
+	
+	/**
+	 * 更新运单的下一站
+	 * @param cwb
+	 * @param nextbranchId
+	 */
+	public void updateNextbranch(String cwb, long nextbranchId) {
+		String sql = "update express_ops_transcwb_detail set nextbranchid=? where cwb=?";
+		this.jdbcTemplate.update(sql, nextbranchId, cwb);
 	}
 }

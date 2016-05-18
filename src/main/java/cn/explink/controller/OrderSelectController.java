@@ -1061,6 +1061,13 @@ public class OrderSelectController {
 		GotoClassAuditing gotoClassAuditingGuiBan = this.gotoClassAuditingDAO.getGotoClassAuditingByGcaid(view.getGcaid());
 		User deliveryname = this.userDAO.getUserByUserid(view.getDeliverid());
 		Branch currentbranch = this.branchDAO.getBranchByBranchid(view.getCurrentbranchid());
+		
+		if(order.getIsmpsflag()==1 && order.getMpsallarrivedflag()!=1){
+			model.addAttribute("isGathercomp", "0");
+		}else{
+			model.addAttribute("isGathercomp", "1");
+		}
+		
 		model.addAttribute("deliveryname", deliveryname);
 		model.addAttribute("customer", customer);
 		model.addAttribute("invarhousebranch", invarhousebranch == null ? new Branch() : invarhousebranch);

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop-3.1.xsd          http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans-3.1.xsd          http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.1.xsd          http://www.springframework.org/schema/jee  http://www.springframework.org/schema/jee/spring-jee-3.1.xsd          http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx/spring-tx-3.1.xsd  http://cxf.apache.org/jaxws  http://cxf.apache.org/schemas/jaxws.xsd ">
+	<context:component-scan base-package="com.pjbest.splitting.aspect" />
+	<context:spring-configured />
+	<bean id="dataSourceInterceptor" class="com.pjbest.splitting.aspect.DataSourceInterceptor">
+		<property name="order" value="20" />
+	</bean>
+	<tx:annotation-driven order="30"
+		proxy-target-class="true" />
+	<aop:aspectj-autoproxy proxy-target-class="true">
+		<aop:include name="dataSourceInterceptor" />
+	</aop:aspectj-autoproxy>
+</beans>

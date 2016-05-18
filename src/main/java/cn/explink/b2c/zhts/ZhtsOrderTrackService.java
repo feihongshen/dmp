@@ -71,7 +71,6 @@ public class ZhtsOrderTrackService {
 			
 			String requestTime = DateTimeUtil.getNowTime("yyyyMMddHHmmss");
 			String sign = MD5Util.md5(epaiApi.getUserCode()+requestTime+epaiApi.getPrivate_key());
-			
 			String xml = ObjectUnMarchal.POJOtoXml(orderTrack);
 			
 			Map<String,String> paraMap = new HashMap<String, String>();
@@ -106,7 +105,10 @@ public class ZhtsOrderTrackService {
 		order.setOperationTime(DateTimeUtil.formatDate(orderFlowObj.getCredate()));
 		order.setOperationTrack(explinkService.getDetail(orderFlowObj));
 		order.setOperatorName(userDAO.getUserByidAdd(orderFlowObj.getUserid()).getRealname());
+		order.setStatus(OrderTrackEnum.getOrderTrackStatusByFlowId(orderFlowObj.getFlowordertype(), cwbOrder.getDeliverystate()));
 		orderTrack.setOrder(order);
+	
+		
 		return orderTrack;
 	}
 }

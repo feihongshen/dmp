@@ -13,7 +13,8 @@ import net.sf.json.JSONObject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.lang3.StringUtils;
-import org.neo4j.cypher.internal.compiler.v2_1.docbuilders.internalDocBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +22,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.dao.BranchContractDAO;
 import cn.explink.dao.BranchContractDetailDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.ExpressSetBranchContract;
 import cn.explink.domain.ExpressSetBranchContractDetail;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.VO.ExpressSetBranchContractDetailVO;
 import cn.explink.domain.VO.ExpressSetBranchContractVO;
 import cn.explink.util.BeanUtilsSelfDef;
@@ -39,6 +42,11 @@ public class BranchContractService {
 	BranchContractDAO branchContractDAO;
 	@Autowired
 	BranchContractDetailDAO branchContractDetailDAO;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public ExpressSetBranchContractVO getBranchContractVO(int id) {
 		// 返回加盟商合同主表VO的list
@@ -382,11 +390,13 @@ public class BranchContractService {
 	ProducerTemplate addzhandian;
 	@Produce(uri = "jms:topic:savezhandian")
 	ProducerTemplate savezhandian;
-
+	
 	public void addzhandianToAddress(long branchid, Branch branch) {
+		JSONObject branchToJson = new JSONObject();
 		try {
+			this.logger.info("消息发送端：addzhandian, branchid={}", branchid);
 			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
-			JSONObject branchToJson = new JSONObject();
+			
 			branchToJson.put("branchid", branchid);
 			branchToJson.put("branchname", branch.getBranchname());
 			branchToJson.put("branchphone", branch.getBranchphone());
@@ -399,21 +409,20 @@ public class BranchContractService {
 			branchToJson.put("branchprovince", branch.getBranchprovince());
 			branchToJson.put("brancharea", branch.getBrancharea());
 
+			this.logger.info("消息发送端：savezhandian, branch={}", branchToJson.toString());
 			this.savezhandian.sendBodyAndHeader(null, "branch",
 					branchToJson.toString());
 		} catch (Exception e) {
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".addzhandianToAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(this.addzhandian.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("branchid", branchid + "").getMqException());
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".addzhandianToAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(this.savezhandian.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("branch", branchToJson.toString()).getMqException());
 		}
 	}
-
-	// @Produce(uri = "jms:topic:delzhandian")
-	// ProducerTemplate delzhandian;
-	//
-	// public void delBranch(long branchid) {
-	// try {
-	// this.delzhandian.sendBodyAndHeader(null, "branchid", branchid);
-	// } catch (Exception e) {
-	// }
-	// }
 	
 	
 	public String loadexceptfile(MultipartFile file) {

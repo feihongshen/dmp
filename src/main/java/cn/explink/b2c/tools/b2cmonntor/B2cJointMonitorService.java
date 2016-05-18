@@ -27,8 +27,11 @@ import cn.explink.b2c.vipshop.VipShopFlowEnum;
 import cn.explink.b2c.yihaodian.YihaodianFlowEnum;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
@@ -67,6 +70,11 @@ public class B2cJointMonitorService {
 	B2cJointMonitorDAO b2cJointMonitorDAO;
 	@Autowired
 	private CamelContext camelContext;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR = "jms:queue:VirtualTopicConsumers.dmpmointor1.b2cDataSendResultMonitor";
 
 	@PostConstruct
 	public void init() {
@@ -75,7 +83,7 @@ public class B2cJointMonitorService {
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					this.from("jms:queue:VirtualTopicConsumers.dmpmointor1.b2cDataSendResultMonitor?concurrentConsumers=5").to("bean:b2cJointMonitorService?method=updateDMPB2cDataMonitor")
+					this.from(MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR + "?concurrentConsumers=5").to("bean:b2cJointMonitorService?method=updateDMPB2cDataMonitor")
 							.routeId("updateDMPB2cData");
 				}
 
@@ -240,18 +248,24 @@ public class B2cJointMonitorService {
 	/**
 	 * 监听oms中的方法，修改send_b2c_flag=1，2
 	 */
-	public void updateDMPB2cDataMonitor(@Header("monitorb2cdata") String parm) {
+	public void updateDMPB2cDataMonitor(@Header("monitorb2cdata") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.debug("接收OMS-JMS:" + parm);
-		JSONArray array = JSONArray.fromObject(parm);
-		for (int i = 0; i < array.size(); i++) {
-			B2CMonitorData bdata;
-			try {
+		try {
+			JSONArray array = JSONArray.fromObject(parm);
+			for (int i = 0; i < array.size(); i++) {
+				B2CMonitorData bdata;
 				bdata = this.objectMapper.readValue(array.get(i).toString(), B2CMonitorData.class);
 				this.b2cdataDAO.updateB2cDataMonitor(bdata.getCwb(), bdata.getFlowordertype(), bdata.getSend_b2c_flag(), bdata.getExpt_reason());
-			} catch (Exception e) {
-				this.logger.error("DMP接收OMS发送B2cData数据异常", e);
 			}
-
+		} catch (Exception e) {
+			this.logger.error("DMP接收OMS发送B2cData数据异常", e);
+			// 把未完成MQ插入到数据库中, start
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".updateDMPB2cDataMonitor")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_B2C_DATA_SEND_RESULT_MONITOR)
+					.buildMessageHeader("monitorb2cdata", parm)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 

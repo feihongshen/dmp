@@ -43,6 +43,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL" value="<%=vipshop.getGetCwb_URL() %>"  maxlength="300">*
 						</li>
+						<%-- <li><span>oxo揽收状态URL：</span>
+							<input type ="text" id="oxoState_URL" name ="oxoState_URL" value="<%=vipshop.getOxoState_URL() %>"  maxlength="300">
+						</li> --%>
 						<li><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL" value="<%=vipshop.getSendCwb_URL() %>"  maxlength="300">*
 						</li>
@@ -84,6 +87,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>获取订单的URL：</span>
 							<input type ="text" id="getCwb_URL" name ="getCwb_URL"   maxlength="300">*
 						</li>
+						<!-- <li><span>oxo揽收状态URL：</span>
+							<input type ="text" id="oxoState_URL" name ="oxoState_URL" value=""  maxlength="300">
+						</li> -->
 						<li><span>反馈URL：</span>
 							<input type ="text" id="sendCwb_URL" name ="sendCwb_URL"  maxlength="300"/>*
 						</li>
