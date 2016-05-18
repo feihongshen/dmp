@@ -257,22 +257,13 @@
     <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
         <table>
             <tr>
-                <td>站点：</td>
-                <td>
-                    <select id="distributeBranchSelect" name="distributeBranchSelect">
-                        <option value="">请选择</option>
-                        <c:forEach items="${branchList}" var="list">
-                            <option value="${list.branchid}">${list.branchname}</option>
-                        </c:forEach>
-                    </select>
-                </td>
-
-            </tr>
-            <tr>
                 <td>快递员：</td>
                 <td>
                     <select id="distributeCourierSelect" name="distributeCourierSelect">
                         <option value="">请选择</option>
+                        <c:forEach items="${courierList }" var="list">
+                            <option value="${list.userid}">${list.realname}</option>
+                        </c:forEach>
                     </select>
                 </td>
             </tr>

@@ -226,21 +226,23 @@ $(function () {
     function confirmCloseReserveOrder() {
         var rows = $('#dg_rsList').datagrid('getChecked');
 
-        var reserveOrderNos = [] ;
-        $.each(rows, function(index, value){
-            reserveOrderNos.push(value.reserveOrderNo);
+        var param = [];
+
+        $.each(rows, function (index, value) {
+            var reserveOrder = {};
+            reserveOrder.reserveOrderNo = value.reserveOrderNo;
+            reserveOrder.recordVersion = value.recordVersion;
+            reserveOrder.reason = $('#closeReason').val()
+            param.push(reserveOrder);
         });
 
-        var param = {
-            reserveOrderNos : reserveOrderNos.join(",") ,
-            closeReason : $('#closeReason').val()
-        };
 
         $.ajax({
             type: "POST",
             url: contextPath + "/express2/reserveOrder/closeReserveOrder",
             dataType: "json",
-            data: param,
+            contentType: "application/json",
+            data: JSON.stringify(param)  ,
             success: function (data) {
                 if (data.errorMsg){
                     allertMsg.alertError(data.errorMsg);
@@ -254,22 +256,23 @@ $(function () {
     function confirmReturnToCentral() {
         var rows = $('#dg_rsList').datagrid('getChecked');
 
-        var reserveOrderNos = [] ;
-        $.each(rows, function(index, value){
-            reserveOrderNos.push(value.reserveOrderNo);
-        });
+        var param = [];
 
-        var param = {
-            reserveOrderNos : reserveOrderNos.join(",") ,
-            returnType : returnType,
-            returnReason : $('#returnReason').val()
-        };
+        $.each(rows, function (index, value) {
+            var reserveOrder = {};
+            reserveOrder.reserveOrderNo = value.reserveOrderNo;
+            reserveOrder.recordVersion = value.recordVersion;
+            reserveOrder.operateType = returnType;
+            reserveOrder.reason = $('#returnReason').val();
+            param.push(reserveOrder);
+        });
 
         $.ajax({
             type: "POST",
             url: contextPath + "/express2/reserveOrder/returnToCentral",
             dataType: "json",
-            data: param,
+            contentType: "application/json",
+            data: JSON.stringify(param)  ,
             success: function (data) {
                 if (data.errorMsg){
                     allertMsg.alertError(data.errorMsg);
@@ -280,25 +283,36 @@ $(function () {
             }
         });
     }
+
     function confirmDistributeBranch() {
         var rows = $('#dg_rsList').datagrid('getChecked');
 
-        var reserveOrderNos = [] ;
-        $.each(rows, function(index, value){
-            reserveOrderNos.push(value.reserveOrderNo);
-        });
+        var param = [];
 
-        var param = {
-            reserveOrderNos : reserveOrderNos.join(",") ,
-            distributeBranch : $('#distributeBranchSelect').val(),
-            distributeCourier : $('#distributeCourierSelect').val()
-        };
+        var distributeBranch ;
+        if($('#distributeBranchSelect').val()){
+            distributeBranch = $('#distributeBranchSelect').val();
+        }else {
+            distributeBranch = "";
+        }
+
+        var distributeCourier = $('#distributeCourierSelect').val();
+
+        $.each(rows, function (index, value) {
+            var reserveOrder = {};
+            reserveOrder.reserveOrderNo = value.reserveOrderNo;
+            reserveOrder.recordVersion = value.recordVersion;
+            reserveOrder.acceptOrg = distributeBranch;
+            reserveOrder.courier = distributeCourier;
+            param.push(reserveOrder);
+        });
 
         $.ajax({
             type: "POST",
             url: contextPath + "/express2/reserveOrder/distributeBranch",
             dataType: "json",
-            data: param,
+            contentType: "application/json",
+            data: JSON.stringify(param)  ,
             success: function (data) {
                 if (data.errorMsg){
                     allertMsg.alertError(data.errorMsg);
@@ -313,24 +327,39 @@ $(function () {
     function confirmFeedback() {
         var rows = $('#dg_rsList').datagrid('getChecked');
 
-        var reserveOrderNos = [] ;
-        $.each(rows, function(index, value){
-            reserveOrderNos.push(value.reserveOrderNo);
+        //var reserveOrderNos = [] ;
+        //$.each(rows, function(index, value){
+        //    reserveOrderNos.push(value.reserveOrderNo);
+        //});
+
+        //var param = {
+        //    reserveOrderNos : reserveOrderNos.join(","),
+        //    optCode4Feedback : $('#optCode4Feedback').val(),
+        //    reason4Feedback : $('#reason4Feedback').val(),
+        //    cnorRemark4Feedback : $('#cnorRemark4Feedback').val(),
+        //    requireTimeStr4Feedback : $('#requireTimeStr4Feedback').val()
+        //};
+
+        var param = [];
+
+        $.each(rows, function (index, value) {
+            var reserveOrder = {};
+            reserveOrder.reserveOrderNo = value.reserveOrderNo;
+            reserveOrder.recordVersion = value.recordVersion;
+            reserveOrder.operateType =  $('#optCode4Feedback').val();
+            reserveOrder.reason = $('#reason4Feedback').val();
+            reserveOrder.cnorRemark = $('#cnorRemark4Feedback').val();
+            reserveOrder.requireTimeStr = $('#requireTimeStr4Feedback').val();
+            param.push(reserveOrder);
         });
 
-        var param = {
-            reserveOrderNos : reserveOrderNos.join(","),
-            optCode4Feedback : $('#optCode4Feedback').val(),
-            reason4Feedback : $('#reason4Feedback').val(),
-            cnorRemark4Feedback : $('#cnorRemark4Feedback').val(),
-            requireTimeStr4Feedback : $('#requireTimeStr4Feedback').val()
-        };
 
         $.ajax({
             type: "POST",
             url: contextPath + "/express2/reserveOrder/feedback",
             dataType: "json",
-            data: param,
+            contentType: "application/json",
+            data: JSON.stringify(param),
             success: function (data) {
                 if (data.errorMsg){
                     allertMsg.alertError(data.errorMsg);

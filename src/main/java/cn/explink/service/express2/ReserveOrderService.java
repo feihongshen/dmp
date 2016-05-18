@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import cn.explink.core.bean.BeanConverter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,6 +153,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 			vo.setAcceptOrgName(po.getAcceptOrgName());
 			vo.setCnorRemark(po.getCnorRemark());
             vo.setCourierName(po.getCourierName());
+            vo.setRecordVersion(po.getRecordVersion());
 			voList.add(vo);
 		}
 		// 封装分页信息
@@ -263,22 +265,24 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	}
 
 
-
     /**
      * 关闭预约单
-     * @param reserveOrderNos
-     * @param closeReason
-     * @return 成功 - true， 失败 - false
+     * @param omReserveOrderModels
+     * @throws OspException
      */
-    public void closeReserveOrder(String[] reserveOrderNos, String closeReason) throws OspException {
+    public void closeReserveOrder(List<OmReserveOrderModel> omReserveOrderModels) throws OspException {
 
         User user = this.getSessionUser();
-        String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+        Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid()) ;
+        if (branch == null){
+            throw new OspException("","用户没有机构信息。");
+        }
+        String operateOrg = branch.getTpsbranchcode();
         String operator = user.getUsername();
-        for (String reserveOrderNo : reserveOrderNos) {
+        for (OmReserveOrderModel omReserveOrderModel  : omReserveOrderModels) {
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
-            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
-            pjSaleOrderFeedbackRequest.setReason(closeReason);
+            pjSaleOrderFeedbackRequest.setReserveOrderNo(omReserveOrderModel.getReserveOrderNo());
+            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
             pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.GuanBi.getValue());
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
@@ -290,22 +294,27 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     }
 
+
     /**
-     * 返回总公司
-     * @param reserveOrderNos
-     * @param returnReason
+     * 返回操作
+     * @param omReserveOrderModels
      * @param returnType
      * @throws OspException
      */
-    public void returnToCentral(String[] reserveOrderNos, String returnReason, int returnType) throws OspException {
+    public void returnToCentral(List<OmReserveOrderModel> omReserveOrderModels, int returnType) throws OspException {
 
         User user = this.getSessionUser();
-        String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+        Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid()) ;
+            if (branch == null){
+                throw new OspException("","用户没有机构信息。");
+        }
+        String operateOrg = branch.getTpsbranchcode();
         String operator = user.getUsername();
-        for (String reserveOrderNo : reserveOrderNos) {
+        for (OmReserveOrderModel omReserveOrderModel  : omReserveOrderModels) {
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
-            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
-            pjSaleOrderFeedbackRequest.setReason(returnReason);
+            pjSaleOrderFeedbackRequest.setReserveOrderNo(omReserveOrderModel.getReserveOrderNo());
+//            pjSaleOrderFeedbackRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
+            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
             pjSaleOrderFeedbackRequest.setOperateType(returnType);
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
@@ -319,48 +328,68 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 分配快递员
-     * @param reserveOrderNos
-     * @param tpsbranchCode
-     * @param courierId
-     * @param courierName
+     * @param omReserveOrderModels
      * @throws OspException
      */
-    public void distributeBranch(String[] reserveOrderNos, String tpsbranchCode, int courierId, String courierName) throws OspException{
+    public void distributeBranch(List<OmReserveOrderModel> omReserveOrderModels) throws OspException{
 
         User user = this.getSessionUser();
-        String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+        Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid()) ;
+        if (branch == null){
+            throw new OspException("","操作用户没有机构信息");
+        }
+        String operateOrg = branch.getTpsbranchcode();
         String operator = user.getUsername();
-        for (String reserveOrderNo : reserveOrderNos) {
+        for (OmReserveOrderModel omReserveOrderModel : omReserveOrderModels) {
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
-            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
-            pjSaleOrderFeedbackRequest.setAcceptOrg(tpsbranchCode);
-            pjSaleOrderFeedbackRequest.setCourier(String.valueOf(courierId));
-            pjSaleOrderFeedbackRequest.setCourierName(String.valueOf(courierName));
+            pjSaleOrderFeedbackRequest.setReserveOrderNo(omReserveOrderModel.getReserveOrderNo());
+//            pjSaleOrderFeedbackRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
+            pjSaleOrderFeedbackRequest.setAcceptOrg(omReserveOrderModel.getAcceptOrg());
+            pjSaleOrderFeedbackRequest.setCourier(omReserveOrderModel.getCourier());
+            pjSaleOrderFeedbackRequest.setCourierName(omReserveOrderModel.getCourierName());
             pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.YiLanJianFenPei.getValue());
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
             Date now = new Date();
             pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
-
             feedbackReserveOrder(pjSaleOrderFeedbackRequest);
         }
+//
+//        for (String reserveOrderNo : reserveOrderNos) {
+//            PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
+//            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
+//            pjSaleOrderFeedbackRequest.setAcceptOrg(tpsbranchCode);
+//            pjSaleOrderFeedbackRequest.setCourier(String.valueOf(courierId));
+//            pjSaleOrderFeedbackRequest.setCourierName(String.valueOf(courierName));
+//            pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.YiLanJianFenPei.getValue());
+//            pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
+//            pjSaleOrderFeedbackRequest.setOperater(operator);
+//            Date now = new Date();
+//            pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
+//
+//            feedbackReserveOrder(pjSaleOrderFeedbackRequest);
+//        }
 
     }
 
 
 
-    public void feedback(String[] reserveOrderNos, int optCode4Feedback, String reason4Feedback, String cnorRemark4Feedback, String requireTimeStr4Feedback) throws OspException {
+    public void feedback(List<OmReserveOrderModel> omReserveOrderModels, int operateType) throws OspException {
 
         User user = this.getSessionUser();
-        String operateOrg = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+        Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid()) ;
+        if (branch == null){
+            throw new OspException("","操作用户没有机构信息");
+        }
+        String operateOrg = branch.getTpsbranchcode();
         String operator = user.getUsername();
-        for (String reserveOrderNo : reserveOrderNos) {
+        for (OmReserveOrderModel omReserveOrderModel : omReserveOrderModels) {
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
-            pjSaleOrderFeedbackRequest.setReserveOrderNo(reserveOrderNo);
-            pjSaleOrderFeedbackRequest.setOperateType(optCode4Feedback);
+            pjSaleOrderFeedbackRequest.setReserveOrderNo(omReserveOrderModel.getReserveOrderNo());
+            pjSaleOrderFeedbackRequest.setOperateType(operateType);
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
-            pjSaleOrderFeedbackRequest.setReason(reason4Feedback);
-            pjSaleOrderFeedbackRequest.setRemark(cnorRemark4Feedback);
+            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
+            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
             pjSaleOrderFeedbackRequest.setOperater(operator);
 //            pjSaleOrderFeedbackRequest.set
             Date now = new Date();

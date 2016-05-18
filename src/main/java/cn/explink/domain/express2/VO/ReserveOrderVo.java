@@ -103,6 +103,13 @@ public class ReserveOrderVo {
 	 */
 	private String cnorRemark;
 
+    /**
+     * 版本号
+     */
+    private long recordVersion;
+
+    private int operateType;
+
 	public Integer getOmReserveOrderId() {
 		return omReserveOrderId;
 	}
@@ -255,6 +262,21 @@ public class ReserveOrderVo {
 		this.cnorRemark = cnorRemark;
 	}
 
+    public long getRecordVersion() {
+        return recordVersion;
+    }
+
+    public void setRecordVersion(long recordVersion) {
+        this.recordVersion = recordVersion;
+    }
+
+    public int getOperateType() {
+        return operateType;
+    }
+
+    public void setOperateType(int operateType) {
+        this.operateType = operateType;
+    }
 	@Override
 	public String toString() {
 		return "ReserveOrderVo [omReserveOrderId=" + omReserveOrderId + ", reserveOrderNo=" + reserveOrderNo
@@ -265,4 +287,5 @@ public class ReserveOrderVo {
 				+ transportNo + ", acceptOrg=" + acceptOrg + ", acceptOrgName=" + acceptOrgName + ", courier=" + courier
 				+ ", courierName=" + courierName + ", cnorRemark=" + cnorRemark + "]";
 	}
+
 }
