@@ -20,7 +20,7 @@ $(function () {
         }
         var rows = $('#dg_rsList').datagrid('getChecked');
         if(rows.length != 1){
-            allertMsg.alertError("请只选择一张预约单");
+            allertMsg.alertError("请只选择一个预约单");
             return false;
         }
 
@@ -208,8 +208,8 @@ $(function () {
             dataType: "json",
             data: param,
             success: function (data) {
-                if (data.errorMsg){
-                    allertMsg.alertError(data.errorMsg);
+                if (data.errorinfo){
+                    allertMsg.alertError(data.errorinfo);
                 }
                 $('#dg_rsList').datagrid('reload');
                 $("#reserveOrderNo4edit").val("");

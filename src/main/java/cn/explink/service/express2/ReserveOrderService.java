@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pjbest.deliveryorder.bizservice.PjReserveOrderRequest;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderResponse;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderService;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderServiceHelper;
@@ -32,10 +33,12 @@ import cn.explink.dao.express.ProvinceDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
+import cn.explink.domain.express2.VO.ReserveOrderEditVo;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.exception.ExplinkException;
 import cn.explink.service.express.ExpressCommonService;
 
 /**
@@ -48,6 +51,9 @@ public class ReserveOrderService extends ExpressCommonService {
 private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	public static final int OSP_INVOKE_TIMEOUT = 60000;
+	
+	/**TPS接口请求方*/
+	public static final String TPS_REQUESTER = "DMP";
 
     public enum PJReserverOrderOperationCode {
         YiShenHe(38, "已审核"), RenWuTueHui(35, "任务退回"), RenWuQueRen(34, "任务确认"), GuanBi(33, "关闭"),
@@ -444,4 +450,44 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
     	}
     	return omReserveOrderModel;
     }
+	
+	/**
+     * 修改预约单
+     * @param vo 预约单编辑vo
+     * @throws OspException 
+     */
+    public void editReserveOrder(ReserveOrderEditVo vo) throws OspException {
+    	final String logPrefix = "editReserveOrder->";
+    	InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT); 
+		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
+		//通过预约单号获取预约单
+		OmReserveOrderModel omReserveOrderModel = pjReserveOrderService.getReserveOrderWithDetailByNo(vo.getReserveOrderNo());
+		if (omReserveOrderModel == null) {
+			throw new ExplinkException("预约单不存在，预约单号：" + vo.getReserveOrderNo());
+		}
+		logger.info("{}omReserveOrderModel:{}", logPrefix, JsonUtil.translateToJson(omReserveOrderModel));
+		
+		PjReserveOrderRequest pjReserveOrderRequest = new PjReserveOrderRequest();
+		pjReserveOrderRequest.setReserveOrderNo(vo.getReserveOrderNo()); //预约单号
+		pjReserveOrderRequest.setCnorName(vo.getCnorName4eidt()); //寄件人姓名
+		pjReserveOrderRequest.setCnorProv("广东省"); //省份编码 TODO:$neo01.huang$之后再动态加载
+		pjReserveOrderRequest.setCnorCity(vo.getCity4edit()); //城市编码
+		pjReserveOrderRequest.setCnorRegion(vo.getCounty4edit()); //区域编码
+		pjReserveOrderRequest.setCnorAddr(vo.getCnorAddr4edit()); //寄件地址
+		pjReserveOrderRequest.setRequireTime(vo.getRequireTimeLong()); //预约上门时间
+		pjReserveOrderRequest.setRequester(TPS_REQUESTER); //请求方
+		pjReserveOrderRequest.setOperater("管理员" + System.currentTimeMillis()); //操作人名称 TODO:$neo01.huang$之后再动态加载
+		pjReserveOrderRequest.setOperateOrg("101"); //操作机构 TODO:$neo01.huang$之后再动态加载
+		
+		logger.info("{}pjReserveOrderRequest:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderRequest));
+		
+		//修改预约单
+		PjReserveOrderResponse pjReserveOrderResponse = pjReserveOrderService.updateReserveOrder(pjReserveOrderRequest);
+		if (pjReserveOrderResponse == null) {
+			throw new ExplinkException("TPS的response对象为空，预约单号：" + vo.getReserveOrderNo());
+		}
+		logger.info("{}pjReserveOrderResponse:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderResponse));
+		
+    }
+	
 }
