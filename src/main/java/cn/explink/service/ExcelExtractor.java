@@ -1037,8 +1037,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				this.createErrNote(temp.getOrderNo(), "运单号为空", failList);
 				cwbOrders.remove(temp);
 				continue;
-			} else if (!ExcelExtractor.isOnlyNum(temp.getOrderNo().trim())) {
-				this.createErrNote(temp.getOrderNo(), "运单号输入不合法：不是由数字组成", failList);
+			} else if (!ExcelExtractor.isNumOrLetter(temp.getOrderNo().trim())) {
+				this.createErrNote(temp.getOrderNo(), "运单号输入不合法：不是由数字和字母组成", failList);
 				cwbOrders.remove(temp);
 				continue;
 			}
@@ -3279,7 +3279,22 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		Matcher m = p.matcher(telNum);
 		return m.matches();
 	}
-
+	
+	/**
+	 *
+	 * @Title: isNumOrLetter
+	 * @description 判断是否为数字和字母组合
+	 * @param  @return
+	 * @return  boolean
+	 * @throws
+	 */
+	public static boolean isNumOrLetter(String telNum) {
+		String regex = "^[0-9A-Za-z]*$";
+		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(telNum);
+		return m.matches();
+	}
+	
 	/**
 	 *
 	 * @Title: isTelePhoneNum

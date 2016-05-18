@@ -11,6 +11,7 @@
 <%@page import="cn.explink.enumutil.CftAccountTypeEnum"%>
 <%@page import="cn.explink.enumutil.PayCerTypeEnum"%>
 <%@page import="net.sf.json.JSONObject"%>
+<%@page import="cn.explink.enumutil.OrgPayInTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	Branch branch = (Branch)request.getAttribute("b");
@@ -24,6 +25,14 @@
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
 	List<JSONObject> tlBankList = (List<JSONObject>)request.getAttribute("tlBankList");
 	List<JSONObject> cftBankList = (List<JSONObject>)request.getAttribute("cftBankList");
+	
+	int payMethodTypeValue = 0;
+	if(branch.getBankCardNo()!=null && !branch.getBankCardNo().equals("")) {
+		payMethodTypeValue = 0;
+	} else if(branch.getCftAccountNo()!=null && !branch.getCftAccountNo().equals("")){
+		payMethodTypeValue = 1;
+	}
+	
 %>
 
 <script type="text/javascript" >
@@ -278,6 +287,17 @@
 	             	}
 	             %>
 	           </select>*</li>
+	         <li><span>缴款方式：</span><select id ="payinType" name ="payinType" >
+			    <%
+			    	for(OrgPayInTypeEnum temp: OrgPayInTypeEnum.values()){
+			    		if(temp.getValue()== branch.getPayinType()){
+							%>
+							<option value ="<%=temp.getValue()%>"  selected ="selected"><%=temp.getText()%></option>
+					<%}else{ %>
+							<option value ="<%=temp.getValue()%>"><%=temp.getText()%></option>
+					<%}} %>
+
+			  </select>*</li>
 			 
 			 <li><span>分拣线提示方式：</span><select id ="remandtype" name ="remandtype" >
 	             <option value ="0">==请选择==</option> 
@@ -306,8 +326,8 @@
 			 <li><span>邮件：</span><input type="text" name="branchmatter" id="branchmatter" value ="<%=branch.getBranchmatter()%>" maxlength="50" /></li>
 			<!--  <li><span>导出信息设置：</span><input type="hidden" name="" class ="kefu" /></li>
 	         <li><span>查询统计内容设置：</span><input type="hidden" name="" class ="yunying" /></li> -->
-			<li><span><input name="payMethodType" id="tl" type="radio" value="0" checked="checked"  onclick="payMthodchange(this)"/>通联</span>
-				<span><input name="payMethodType" id="cft" type="radio" value="1" onclick="payMthodchange(this)"/>财付通</span></li>
+			<li><span><input name="payMethodType" id="tl" type="radio" value="0" <%if(payMethodTypeValue==0){out.print("checked=\"checked\"");}%> onclick="payMthodchange(this.id)"/>通联</span>
+				<span><input name="payMethodType" id="cft" type="radio" value="1" <%if(payMethodTypeValue==1){out.print("checked=\"checked\"");}%> onclick="payMthodchange(this.id)"/>财付通</span></li>
 			<li><span>银行卡账号：</span><input type="text" name="bankCardNo" id="bankCardNo" maxlength="50" onblur="isbranchnum(this)"  value ="<%=branch.getBankCardNo() == null ? "":branch.getBankCardNo()%>"/>*</li>
 			       
 			<li><span>银行代码：</span><select id="bankCode" name="bankCode" class="select1" >
@@ -355,8 +375,8 @@
 					<option value ="<%=temp.getValue()%>"><%=temp.getText()%></option>
 				<%}} %>
 		  	</select>*</li>
-		  	 <li><span>开户人证件号：</span><input type="text" name="cftCertId" id="cftCertId" maxlength="50" value ="<%=branch.getCftCertId()== null ? "":branch.getCftCertId()%>"/>*</li>
-			  <li><span>开户证件类型：</span><select id ="cftCertType" name ="cftCertType" >
+		  	<li><span>开户人证件号：</span><input type="text" name="cftCertId" id="cftCertId" maxlength="50" value ="<%=branch.getCftCertId()== null ? "":branch.getCftCertId()%>"/>*</li>
+			<li><span>开户证件类型：</span><select id ="cftCertType" name ="cftCertType" >
 			    <%
 			    	for(PayCerTypeEnum temp: PayCerTypeEnum.getAllStatus()){
 			    		if(temp.getValue()== branch.getCftCertType()){
@@ -366,7 +386,7 @@
 							<option value ="<%=temp.getValue()%>"><%=temp.getText()%></option>
 					<%}} %>
 
-			  </select>*</li>
+			</select>*</li>
          </ul>
 	         <input type="hidden" id="branchid" name="branchid" value ="<%=branch.getBranchid() %>"  />
 	         

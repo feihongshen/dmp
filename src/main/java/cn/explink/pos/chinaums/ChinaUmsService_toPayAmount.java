@@ -152,6 +152,9 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 
 						DeliveryState deliverstate = deliveryStateDAO.getActiveDeliveryStateByCwb(cwbOrder.getCwb());
 						ExcuteCwbSignHandler(corder, deliverstate, respNote, rootnote,version);
+						
+						//更新正向订单的deliverystate, added by neo01.huang
+						//cwbOrderService.updateForwardOrderDeliveryState(cwbOrder.getCwbordertypeid(), cwbOrder.getCwb(), DeliveryStateEnum.PeiSongChengGong.getValue());
 
 					} catch (Exception e) {
 						logger.error("支付异常cwb=" + cwbOrder.getCwb(), e);
@@ -222,7 +225,7 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 	 */
 	private ChinaUmsRespNote ExcuteCwbSignHandler(CwbOrder cwbOrder, DeliveryState deliverstate, ChinaUmsRespNote respNote, Transaction rootnote,int version) {
 		try {
-
+			
 			BigDecimal totalAmount = deliverstate.getPos().add(deliverstate.getCash()).add(deliverstate.getCheckfee()).add(deliverstate.getOtherfee());
 			BigDecimal pos = deliverstate.getPos();
 			BigDecimal cash = deliverstate.getCash();

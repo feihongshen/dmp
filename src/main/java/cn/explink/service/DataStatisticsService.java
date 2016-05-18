@@ -28,6 +28,9 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.controller.CwbOrderView;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
@@ -128,6 +131,7 @@ public class DataStatisticsService {
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	@DataSource(DatabaseType.REPLICA)
 	public void DataStatisticsExportExcelMethod(HttpServletResponse response, HttpServletRequest request, long page, long sign) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
 
@@ -259,8 +263,16 @@ public class DataStatisticsService {
 
 				}
 			}
+			
+			//Added by leoliao at 2016-05-06  以前的揽收订单(非快递单)，走的是这个库房(0)。[与客户发货统计的条件一致，否则统计与导出数据不一致]
+			String strKufangid = this.getStrings(kufangid);
+			if(strKufangid != null && strKufangid.length() > 0){
+				strKufangid += ",0";
+			}
+			//Added end
+			
 			final String sql = this.cwbDAO.getSQLExportHuiZong(page, begindate, enddate, this.getStrings(customerids), this.getStrings(startbranchid), this.getStrings(nextbranchid),
-					this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), this.getStrings(kufangid), flowordertype, paywayid, sign,
+					this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), strKufangid, flowordertype, paywayid, sign,
 					paybackfeeIsZero, servicetype);
 
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
@@ -467,6 +479,7 @@ public class DataStatisticsService {
 	 * @param request
 	 * @param page
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public void DataStatisticsZaituExportExcelMethod(HttpServletResponse response, HttpServletRequest request, long page) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
 
@@ -673,6 +686,7 @@ public class DataStatisticsService {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void DataStatisticsExportOutWareExcelMethod(HttpServletResponse response, HttpServletRequest request, long page, long sign) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
 
@@ -899,6 +913,7 @@ public class DataStatisticsService {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void DataStatisticsExportIntoWareExcelMethod(HttpServletResponse response, HttpServletRequest request, long page) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
 
@@ -1137,6 +1152,7 @@ public class DataStatisticsService {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcelByNoresultMethod(HttpServletResponse response, String sql1, String mouldfieldids) {
 
 		String[] cloumnName1 = {}; // 导出的列名
@@ -1334,6 +1350,7 @@ public class DataStatisticsService {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void cwbExportExcelMethod(HttpServletResponse response, HttpServletRequest request, String begindate1, String enddate1, String branchid1, String customerid1, String types,
 			long istuihuozhanruku1, long tuihuotype) {
 		String mouldfieldids2 = request.getParameter("exportmould2"); // 导出模板
@@ -2209,6 +2226,7 @@ public class DataStatisticsService {
 		return reMap;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public void exportExcelOutToComm(HttpServletResponse response, String mouldfieldids2, String commoncode, long startbranchid, int outbranchflag) {
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名

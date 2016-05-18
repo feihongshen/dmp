@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,7 +145,7 @@ public class VipShopGetCwbDataService {
 		
 		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
-		
+		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
@@ -503,7 +504,7 @@ public class VipShopGetCwbDataService {
 			String is_gathercomp = VipShopGetCwbDataService.convertEmptyString("is_gathercomp", datamap); //最后一箱:1最后一箱 ，0默认 
 			String pack_nos = VipShopGetCwbDataService.convertEmptyString("pack_nos", datamap); // 箱号会随着集单次数追加
 			String total_pack = VipShopGetCwbDataService.convertEmptyString("total_pack", datamap); // 新增箱数
-			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(order_sn);
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(order_sn);
 			
 			String cargotype = choseCargotype(service_type);
 			created_dtm_loc = choseCreateDtmLoc(created_dtm_loc);
@@ -523,7 +524,7 @@ public class VipShopGetCwbDataService {
 					original_weight, paywayid, attemper_no, created_dtm_loc,
 					rec_create_time, order_delivery_batch, freight,
 					cwbordertype, warehouse_addr, go_get_return_time,
-					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club);
+					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club, cmd_type, seq);
 			
 			
 			//集包相关代码处理
@@ -537,21 +538,28 @@ public class VipShopGetCwbDataService {
 			}
 						
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+				boolean isExist = cwbDAO.isExistByCwb(order_sn);
 				if("new".equalsIgnoreCase(cmd_type)){
 					lantuiNeWSet.add(order_sn);
 				}
 				// 如果是order_sn对应订单不存在，标识不处理取消
 				// 因为取消跟修改会去重，所以当包括新增的时候，不需要处理取消。
-				if(!lantuiNeWSet.contains(order_sn) && cwbOrderDTO == null && "cancel".equalsIgnoreCase(cmd_type) && !"".equals(seq)){
+				if(!lantuiNeWSet.contains(order_sn) && !isExist && ("cancel".equalsIgnoreCase(cmd_type) || "edit".equalsIgnoreCase(cmd_type)) && !"".equals(seq)){
 					resultMap.put(seq, false);
+				} else {	
+					seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				}
-				
-				seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataMap, seq, cmd_type);
 				//防止多次取消订单导致出现有效订单的情况 Added by leoliao at 2013-03-02
 				if ("cancel".equalsIgnoreCase(cmd_type)) {
 					return seq_arrs;
 				}
-			}			
+			}	
+			
+			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+				if ("new".equalsIgnoreCase(cmd_type)) {
+					this.insertOrderGoods(datamap, order_sn);// 插入商品列表,try防止异常
+				}
+			}
 			
 			if (cwbOrderDTO!= null) {
 				this.logger.info("获取唯品会订单有重复,已过滤...cwb={},更新SEQ={}", order_sn, seq);
@@ -559,11 +567,6 @@ public class VipShopGetCwbDataService {
 				return seq_arrs;
 			}
 
-			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-				if ("new".equalsIgnoreCase(cmd_type)) {
-					this.insertOrderGoods(datamap, order_sn);// 插入商品列表,try防止异常
-				}
-			}
 
 			this.logger.info("唯品会订单cwb={},seq={}", order_sn, seq);			
 			
@@ -576,6 +579,10 @@ public class VipShopGetCwbDataService {
 			paraList.add(dataMap);		
 
 		} catch (Exception e) {
+			String seq = VipShopGetCwbDataService.convertEmptyString("seq", datamap);
+			if(StringUtils.isNotEmpty(seq)){
+				resultMap.put(seq, false);
+			}
 			this.logger.error("唯品会订单下载处理单条信息异常,cwb=" + order_sn, e);
 		}
 		return seq_arrs;
@@ -614,9 +621,10 @@ public class VipShopGetCwbDataService {
 			String order_delivery_batch, String freight, String cwbordertype,
 			String warehouse_addr, String go_get_return_time,
 			String is_gatherpack, String is_gathercomp, String total_pack,
-			String transcwb,int mpsswitch,String vip_club) {
+			String transcwb,int mpsswitch,String vip_club, String cmd_type, String seq) {
 		String sendcarnum=total_pack.isEmpty() ? "1" : total_pack;
 		
+		dataMap.put("seq", seq);
 		dataMap.put("cwb", order_sn);
 		dataMap.put("transcwb", transcwb);
 		
@@ -646,12 +654,12 @@ public class VipShopGetCwbDataService {
 
 		dataMap.put("cwbordertypeid", cwbordertype);
 		dataMap.put("shouldfare", freight.isEmpty() ? "0" : freight);
-		dataMap.put("cwbordertypeid", cwbordertype);
 		
 		dataMap.put("ismpsflag", choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 		dataMap.put("mpsallarrivedflag", choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
 		//团购标志
 		dataMap.put("vipclub",vip_club.equals("3")?"1":"0");
+		dataMap.put("cmd_type", cmd_type);
 		return dataMap;
 		
 	}
@@ -772,6 +780,9 @@ public class VipShopGetCwbDataService {
 		}
 		
 		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp)){
+			//更新临时表的发货时间
+			dataImportDAO_B2c.update_CwbDetailTempEmaildateByCwb(order_sn, emaildate);
+			
 			//把发货时间写入订单表
 			cwbDAO.updateEmaildate(order_sn, emaildate);
 			
@@ -953,44 +964,15 @@ public class VipShopGetCwbDataService {
 		}
 	}
 	
-	
-	
-//	private void filterMpsPackCwbs(List<Map<String, String>> paraList,
-//			String order_sn,String transcwb,Map<String, String> paraMap) {
-//		try {
-//			if(paraList!=null&&paraList.size()>0){
-//				for(int i=0;i<paraList.size();i++){
-//					Map<String,String> data =paraList.get(i);
-//					if(data.get("cwb").toString().equals(order_sn)){
-//						String oldtranscwb=data.get("transcwb");
-//						String newtranscwb=transcwb;
-//						//两个数组合并
-//						String mergeTranscwb="";
-//						Set<String> set = new HashSet<String>();
-//						for(String old:oldtranscwb.split(",")){
-//							set.add(old);
-//						}
-//						for(String new1:newtranscwb.split(",")){
-//							set.add(new1);
-//						}
-//						
-//						//遍历set，放入mergeTranscwb
-//						
-//						paraList.remove(i);
-//						
-//						paraMap.put("transcwb", mergeTranscwb);
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			logger.error("订单过滤异常order_sn"+order_sn,e);
-//		}
-//	}
-
-	private void insertOrderGoods(Map<String, Object> datamap, String order_sn) {
-		try {
-			List<Map<String, Object>> goodslist = (List<Map<String, Object>>) datamap.get("goods");
+	@Transactional
+	public void insertOrderGoods(Map<String, Object> datamap, String order_sn) {
+		List<Map<String, Object>> goodslist = (List<Map<String, Object>>) datamap.get("goods");
 			if ((goodslist != null) && (goodslist.size() > 0)) {
+				List<OrderGoods> orderGoodsList = null;
+				orderGoodsList = orderGoodsDAO.getOrderGoodsList(order_sn);
+				if(!CollectionUtils.isEmpty(orderGoodsList)){
+					return;
+				}
 				for (Map<String, Object> good : goodslist) {
 					OrderGoods ordergoods = new OrderGoods();
 					ordergoods.setCwb(order_sn);
@@ -1004,12 +986,8 @@ public class VipShopGetCwbDataService {
 					ordergoods.setReturn_reason(good.get("return_reason").toString());
 					ordergoods.setCretime(DateTimeUtil.getNowTime());
 					this.orderGoodsDAO.CreateOrderGoods(ordergoods);
-
 				}
 			}
-		} catch (Exception e) {
-			this.logger.error("获取商品列表异常,单号=" + order_sn, e);
-		}
 	}
 
 	private static String convertEmptyString(String str, Map m) {

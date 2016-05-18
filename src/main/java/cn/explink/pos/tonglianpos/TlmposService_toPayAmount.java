@@ -6,16 +6,19 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.exception.CwbException;
 
 import cn.explink.pos.tonglianpos.xmldto.Transaction;
 import cn.explink.pos.tools.PosEnum;
+import cn.explink.service.CwbOrderService;
 import cn.explink.util.DateTimeUtil;
 
 @Service
@@ -100,6 +103,10 @@ public class TlmposService_toPayAmount extends TlmposService {
 
 				respNote.setResp_code(TlmposExptMsgEnum.Success.getResp_code());
 				respNote.setResp_msg(TlmposExptMsgEnum.Success.getResp_msg());
+				
+				//更新正向订单的deliverystate, added by neo01.huang
+				//cwbOrderService.updateForwardOrderDeliveryState(cwbOrder.getCwbordertypeid(), cwbOrder.getCwb(), DeliveryStateEnum.PeiSongChengGong.getValue());
+				
 				return respNote;
 			}
 

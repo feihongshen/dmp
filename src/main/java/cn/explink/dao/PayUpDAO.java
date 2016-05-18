@@ -27,6 +27,9 @@ import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Component
 public class PayUpDAO {
 	
@@ -658,6 +661,7 @@ public class PayUpDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<JSONObject> getPayupByDayGroupByBranchid(String day, String secondDay) {
 		try {
 			String sql = "SELECT branchid,SUM(`amount`) AS amount,SUM(`amountpos`) AS pos FROM `express_ops_pay_up` WHERE upstate=0 AND credatetime>? AND credatetime<=? GROUP BY branchid";

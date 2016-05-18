@@ -425,13 +425,13 @@ function callfunction(cwb){//getEmailDateByIds
 										}else{ --%>
 											
 											$("#scancwb").val("");
-											if("${isOpenDialog}" != "open"){
+											/* if("${isOpenDialog}" != "open"){ */
 												$("#msg").html("（异常扫描）" + data.errorinfo);
-											}else{
+											/* }else{
 												$("#msg1").html("（异常扫描）" + data.errorinfo);
 												$('#find').dialog('open');
 												$("#scancwb").blur();
-											}
+											} */
 										<%-- } --%>
 									}else if(data.statuscode=="102"){
 										if(!confirm("尚未匹配站点，是否放弃入库？")){

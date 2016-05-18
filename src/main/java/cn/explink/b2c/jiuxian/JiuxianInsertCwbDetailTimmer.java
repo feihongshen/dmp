@@ -17,8 +17,10 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
@@ -46,6 +48,9 @@ public class JiuxianInsertCwbDetailTimmer {
 	@Autowired
 	DataImportService dataImportService;
 
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
 	public void selectTempAndInsertToCwbDetail(int yhd_key) {
 
 		JiuxianWang jiuxian = jiuxianService.getJiuxianShenghuo(yhd_key);
@@ -113,7 +118,16 @@ public class JiuxianInsertCwbDetailTimmer {
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", "1");
-				addressmatch.sendBodyAndHeaders(null, map);
+				try{
+					this.logger.info("消息发送端：addressmatch, header={}", map.toString());
+					addressmatch.sendBodyAndHeaders(null, map);
+				}catch(Exception e){
+					logger.error("", e);
+					//写MQ异常表
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".ImportSignOrder")
+							.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+							.buildMessageHeaderObject(map).getMqException());
+				}
 			}
 
 		}

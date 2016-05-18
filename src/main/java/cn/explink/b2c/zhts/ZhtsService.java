@@ -20,9 +20,12 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.weisuda.xml.ObjectUnMarchal;
+import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CommonDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderTrackDAO;
+import cn.explink.domain.Common;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.orderflow.OrderNote;
 import cn.explink.domain.orderflow.OrderTrack;
@@ -43,7 +46,11 @@ public class ZhtsService {
 	OrderTrackDAO orderTrackDAO;
 	@Autowired
 	CwbDAO cwbDAO;
-
+	@Autowired
+	CommonDAO commonDAO;
+	@Autowired
+	BranchDAO branchDAO;
+	
 	private static List<B2cEnum> zhtsearchList=new ArrayList<B2cEnum>();
 	static{
 		for(B2cEnum enums:B2cEnum.values()){
@@ -126,7 +133,13 @@ public class ZhtsService {
 		try {
 			
 			Zhts zhts = this.searchZhts(userCode);
+			
 			if(zhts==null){
+				return responseMsg(ZhtsExpEmum.YongHuBuCunZai.getErrCode(), ZhtsExpEmum.YongHuBuCunZai.getErrMsg());
+			}
+			
+			Common common =  commonDAO.getCommonByCommonnumber(userCode);
+			if(common==null){
 				return responseMsg(ZhtsExpEmum.YongHuBuCunZai.getErrCode(), ZhtsExpEmum.YongHuBuCunZai.getErrMsg());
 			}
 			
@@ -135,7 +148,6 @@ public class ZhtsService {
 				return responseMsg(ZhtsExpEmum.QianMingCuoWu.getErrCode(), ZhtsExpEmum.QianMingCuoWu.getErrMsg());
 			}
 			
-			
 			OrderTrack orderTrack = (OrderTrack) ObjectUnMarchal.XmltoPOJO(content, new OrderTrack());
 			
 			CwbOrder co =cwbDAO.getCwbByCwb(orderTrack.getOrder().getOrderNo());
@@ -143,8 +155,12 @@ public class ZhtsService {
 				return responseMsg(ZhtsExpEmum.YeWuYiChang.getErrCode(), "订单不存在");
 			}
 			
-			orderTrackDAO.creOrderTrack(orderTrack.getOrder());
+			OrderNote order = orderTrack.getOrder();
+			order.setUserCode(userCode);
 			
+			replaceSensitive(common, order); //敏感词替换
+			
+			orderTrackDAO.creOrderTrack(order);
 			
 			return responseMsg(ZhtsExpEmum.Success.getErrCode(), ZhtsExpEmum.Success.getErrMsg());
 			
@@ -155,10 +171,32 @@ public class ZhtsService {
 		
 		
 	}
+
+	private void replaceSensitive(Common common, OrderNote order) {
+		
+		try {
+			String sensitive = common.getSensitiveWord();  //敏感词 A|B|C
+			if(sensitive!=null&&!sensitive.isEmpty()){
+				String operationTrack=order.getOperationTrack();
+				for(String arrStr:sensitive.split("\\|")){
+					operationTrack=operationTrack.replace(arrStr,branchDAO.getBranchById(common.getBranchid()).getBranchname());
+				}
+				order.setOperationTrack(operationTrack);
+			}
+		} catch (Exception e) {
+			logger.error("敏感词替换失败",e);
+		}
+	}
 	
-	
+
 	
 	public static void main(String[] args) throws PropertyException, JAXBException, UnsupportedEncodingException {
+		String str="A|B|C";
+		System.out.println(str.split("\\|").length);
+		for(String s:str.split("\\|")){
+			System.out.println(s);
+		}
+		
 		OrderTrack tao=new OrderTrack();
 		OrderNote order=new OrderNote();
 		order.setOrderNo("111");
@@ -168,7 +206,7 @@ public class ZhtsService {
 		
 		
 		
-		logger.info(ObjectUnMarchal.POJOtoXml(tao));
+		System.out.println(ObjectUnMarchal.POJOtoXml(tao));
 		String content="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><OrderTrack>"
 		  +"<order>"
 		  +"<order_no>35501201</order_no>"  
@@ -181,7 +219,7 @@ public class ZhtsService {
 		
 		OrderTrack orderTrack = (OrderTrack) ObjectUnMarchal.XmltoPOJO(content, new OrderTrack());
 		
-		logger.info(orderTrack.getOrder().getOrderNo()+"=="+orderTrack.getOrder().getOperationTime());
+		System.out.println(orderTrack.getOrder().getOrderNo()+"=="+orderTrack.getOrder().getOperationTime());
 		
 	}
 	

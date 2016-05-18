@@ -1,5 +1,7 @@
 package cn.explink.b2c.weisuda;
 
+import java.io.IOException;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -8,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.explink.dao.MqExceptionDAO;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.util.JsonUtil;
 
@@ -21,19 +25,28 @@ public class CourierService {
 	@Produce(uri = "jms:topic:courierUpdate")
 	ProducerTemplate courierUpdate;
 
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
 	public void courierUpdate(User user) {
 		try {
 			this.logger.info("=========修改派送员唯速达" + user.getRealname() + "=================");
 			String jsonUser = JsonUtil.translateToJson(user);
+			this.logger.info("消息发送端：courierUpdate, body={},header={user:update}", jsonUser);
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "update");
 		} catch (Exception e) {
 			logger.error("", e);
+			//写MQ异常表
+			try {
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".courierUpdate")
+						.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
+						.buildMessageBody(JsonUtil.translateToJson(user)).buildMessageHeader("user", "update").getMqException());
+			} catch (IOException e1) {
+				logger.error("转换异常", e1);
+			}
 		}
 
 	}
-
-	@Produce(uri = "jms:topic:carrierDel")
-	ProducerTemplate carrierDel;
 
 	public void carrierDel(User user) {
 		try {
@@ -42,6 +55,14 @@ public class CourierService {
 			this.courierUpdate.sendBodyAndHeader(jsonUser, "user", "del");
 		} catch (Exception e) {
 			logger.error("", e);
+			
+			try {
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".carrierDel")
+						.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
+						.buildMessageBody(JsonUtil.translateToJson(user)).buildMessageHeader("user", "del").getMqException());
+			} catch (IOException e1) {
+				logger.error("转换异常", e1);
+			}
 		}
 
 	}
@@ -51,6 +72,9 @@ public class CourierService {
 			this.courierUpdate.sendBodyAndHeader(null, "customer", "update");
 		} catch (Exception e) {
 			this.logger.error("供货商通知异常JMS", e);
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".customerUpdate")
+					.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("customer", "update").getMqException());
 		}
 
 	}
@@ -60,6 +84,9 @@ public class CourierService {
 			this.courierUpdate.sendBodyAndHeader(null, "platformcustomer", "update");
 		} catch (Exception e) {
 			this.logger.error("(对接平台)供货商通知异常JMS", e);
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".platformCustomerUpdate")
+					.buildExceptionInfo(e.toString()).buildTopic(this.courierUpdate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader("platformcustomer", "update").getMqException());
 
 		}
 	}

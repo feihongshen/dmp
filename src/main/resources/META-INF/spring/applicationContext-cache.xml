@@ -16,7 +16,14 @@
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
 		p:hostName="${redis.host}" p:port="${redis.port}" p:usePool="true" />
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
-		p:connectionFactory-ref="jedisConnectionFactory" />
+		p:connectionFactory-ref="jedisConnectionFactory">
+		  <property name="keySerializer">  
+          	  <bean class="org.springframework.data.redis.serializer.KeyObjectRedisSerializer"></bean>  
+	      </property>  
+	      <property name="hashKeySerializer">  
+		      <bean class="org.springframework.data.redis.serializer.KeyObjectRedisSerializer"></bean>  
+		  </property>
+	</bean>
 	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
 		p:connectionFactory-ref="jedisConnectionFactory" />
 	<bean id="cachePrefix"

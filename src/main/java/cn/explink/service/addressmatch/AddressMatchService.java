@@ -2,6 +2,7 @@ package cn.explink.service.addressmatch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +30,15 @@ import cn.explink.b2c.zjfeiyuan.responsedto.ResponseData;
 import cn.explink.b2c.zjfeiyuan.service.RequestFYService;
 import cn.explink.consts.ConstPool;
 import cn.explink.dao.AddressCustomerStationDao;
-
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.addressvo.AddressCustomerStationVO;
 import cn.explink.domain.addressvo.AddressMappingResult;
 import cn.explink.domain.addressvo.AddressMappingResultEnum;
@@ -116,6 +119,15 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	@Autowired
 	private AddressCustomerStationDao addressCustomerStationDao;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	@Autowired
+	private AddressMatchLogService addressMatchLogService;
+	
+	private static final String MQ_FROM_URI_ADDRESS_MATCH = "jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch";
+	
+	private static final String MQ_FROM_URI_ADD_ZHANDIAN = "jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian";
 
 	public void init() {
 		this.logger.info("init addressmatch camel routes");
@@ -136,7 +148,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						this.from(MQ_FROM_URI_ADDRESS_MATCH + "?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=matchAddress").routeId("地址匹配");
 						/*
 						 * this.from(
@@ -146,7 +158,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						 * to("bean:addressMatchService?method=matchAddressMap")
 						 * .routeId("地址百度匹配");
 						 */
-						this.from("jms:queue:VirtualTopicConsumers.omsToAddressmatch.addzhandian?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						this.from(MQ_FROM_URI_ADD_ZHANDIAN + "?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=addZhanDian").routeId("创建地址库中的站点");
 					}
 				});
@@ -155,7 +167,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				this.camelContext.addRoutes(new RouteBuilder() {
 					@Override
 					public void configure() throws Exception {
-						this.from("jms:queue:VirtualTopicConsumers.cwborderinsert.addressmatch?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
+						this.from(MQ_FROM_URI_ADDRESS_MATCH + "?concurrentConsumers=" + AddressMatchService.this.addressMatchConsumerCount)
 								.to("bean:addressMatchService?method=empty").routeId("地址匹配");
 						/*
 						 * this.from(
@@ -177,13 +189,20 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 
 	}
 
-	public void addZhanDian(@Header("branchid") String branchid) {
+	public void addZhanDian(@Header("branchid") String branchid, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		this.logger.info("add zhandian branche id:{}", branchid);
 		try {
 			Branch b = this.branchDAO.getBranchByBranchid(Long.parseLong(branchid));
 			JSONReslutUtil.getResultMessage(this.addZhanDian_url, "userid=" + this.address_userid + "&stationId=" + b.getBranchid() + "&name=" + b.getBranchname(), "POST");
 		} catch (Exception e) {
 			this.logger.error("error add zhandian branche id:{}", branchid);
+			
+			// 把未完成MQ插入到数据库中, start
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".addZhanDian")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADD_ZHANDIAN)
+					.buildMessageHeader("branchid", branchid)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
@@ -225,8 +244,26 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		ordervo.setCustomerId(Long.parseLong(ResourceBundleUtil.addresscustomerid));
 		return ordervo;
 	}
+	
+	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb, @Header("MessageHeaderUUID") String messageHeaderUUID) {
+		try {
+			doMatchAddress(userid, cwb);
+		} catch (Exception e) {
+			this.logger.error("error while doing address match for "+cwb, e);
+			// 把未完成MQ插入到数据库中, start
+			Map<String, String> headers = new HashMap<String, String>();
+			headers.put("userid", String.valueOf(userid));
+			headers.put("cwb",cwb);
+			
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".matchAddress")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_ADDRESS_MATCH)
+					.buildMessageHeader(headers)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
+		}
+	}
 
-	public void matchAddress(@Header("userid") long userid, @Header("cwb") String cwb) {
+	public void doMatchAddress(long userid, String cwb) throws Exception {
 		this.logger.info("start address match for {}", cwb);
 		try {
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
@@ -277,7 +314,12 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					Branch b = null;
 					for (int i = 0; i < addressList.size(); i++) {
 						try {
-							b = this.branchDAO.getEffectBranchById(addressList.getJSONObject(i).getLong("station"));
+							String station = addressList.getJSONObject(i).getString("station");
+							if(null == station || station.length() == 0){//为空，匹配不到站点
+								this.logger.error("丰简地址库匹配失败，cwb={}，地址={}", cwbOrder.getCwb(), cwbOrder.getConsigneeaddress());
+								return;
+							}
+							b = this.branchDAO.getEffectBranchById(Long.valueOf(station));
 							if ((b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
 								this.cwbOrderService.updateDeliveryBranch(user, cwbOrder, b, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
 								// 触发上门退自动分站领货
@@ -292,6 +334,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			}
 		} catch (Exception e) {
 			this.logger.error("error while doing address match for "+cwb, e);
+			throw e;
 		}
 	}
 
@@ -554,7 +597,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 		return json;
 	}
 
-	private JSONArray invokeNewAddressMatchService(String itemno, String Address) {
+	public JSONArray invokeNewAddressMatchService(String itemno, String Address) {
 		// TODO 启用新地址库 调用webservice
 		List<OrderVo> orderVoList = new ArrayList<OrderVo>();
 		try {
@@ -564,10 +607,15 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			String address = Address;
 			orderVoList.add(this.getOrderVoByDuiJie(orderId, address));
 			AddressMappingResult addressreturn = this.addressMappingService.mappingAddress(this.getApplicationVo(), orderVoList);
+			
+			//生产地址匹配日志，add by neo01.huang，2016-4-14
+			addressMatchLogService.produceAddressMatchLog(itemno, address, orderId, addressreturn);
+			
 			int successFlag = addressreturn.getResultCode().getCode();
 			if (successFlag != 0) {
 				return null;
 			}
+			
 
 			OrderAddressMappingResult mappingresult = addressreturn.getResultMap().get(orderId);
 			if (mappingresult != null) {

@@ -3,9 +3,8 @@ package cn.explink.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.camel.CamelContext;
+import org.apache.camel.Header;
 import org.apache.camel.Headers;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -13,15 +12,16 @@ import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 
 @Component
 @DependsOn({ "systemInstallDAO" })
@@ -40,6 +40,11 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 
 	@Produce(uri = "jms:topic:systeminstall")
 	ProducerTemplate systemInstallProducerTemplate;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
+	
+	private static final String MQ_FROM_URI_SYSTEM_INSTALL = "jms:topic:systeminstall";
 
 	public void init() {
 		logger.info("init addressmatch camel routes");
@@ -48,7 +53,7 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 			camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
-					from("jms:topic:systeminstall").to("bean:systemInstallService?method=notifyChange").routeId("配置改动");
+					from(MQ_FROM_URI_SYSTEM_INSTALL).to("bean:systemInstallService?method=notifyChange").routeId("配置改动");
 				}
 			});
 		} catch (Exception e) {
@@ -57,9 +62,20 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 
 	}
 
-	public void notifyChange(@Headers() Map<String, String> parameters) {
-		for (SystemConfigChangeListner systemConfigChangeListner : systemConfigChangeListners) {
-			systemConfigChangeListner.onChange(parameters);
+	public void notifyChange(@Headers() Map<String, String> parameters, @Header("MessageHeaderUUID") String messageHeaderUUID) {
+		try {
+			for (SystemConfigChangeListner systemConfigChangeListner : systemConfigChangeListners) {
+				systemConfigChangeListner.onChange(parameters);
+			}
+		} catch (Exception e) {
+			// 把未完成MQ插入到数据库中, start
+			Map<String, String> headers = parameters;
+			//消费MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".notifyChange")
+					.buildExceptionInfo(e.toString()).buildTopic(MQ_FROM_URI_SYSTEM_INSTALL)
+					.buildMessageHeader(headers)
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
+			// 把未完成MQ插入到数据库中, end
 		}
 	}
 
@@ -77,13 +93,31 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 
 	public void creSystemInstall(String chinesename, String name, String value) {
 		systemInstallDAO.creSystemInstall(chinesename, name, value);
-		systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
+		try{
+			logger.info("消息发送端：systemInstallProducerTemplate, {}={}", name, value);
+			systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
+		}catch(Exception e){
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".creSystemInstall")
+					.buildExceptionInfo(e.toString()).buildTopic(this.systemInstallProducerTemplate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader(name, value).getMqException());
+		}
 
 	}
 
 	public void saveSystemInstall(String chinesename, String name, String value, long id) {
 		systemInstallDAO.saveSystemInstall(chinesename, name, value, id);
-		systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
+		try{
+			logger.info("消息发送端：systemInstallProducerTemplate, {}={}", name, value);
+			systemInstallProducerTemplate.sendBodyAndHeader(null, name, value);
+		}catch(Exception e){
+			logger.error("", e);
+			//写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".saveSystemInstall")
+					.buildExceptionInfo(e.toString()).buildTopic(this.systemInstallProducerTemplate.getDefaultEndpoint().getEndpointUri())
+					.buildMessageHeader(name, value).getMqException());
+		}
 	}
 
 	@Override

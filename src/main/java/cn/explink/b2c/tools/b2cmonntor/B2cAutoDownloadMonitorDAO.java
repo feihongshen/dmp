@@ -12,6 +12,9 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.util.Page;
 
 @Component
@@ -33,6 +36,7 @@ public class B2cAutoDownloadMonitorDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<B2cAutoDownloadMonitor> selectB2cMonitorDataList(String customerid, String starttime, String endtime, long page) {
 		String sql = "SELECT * FROM  b2c_download_record where 1=1  ";
 		sql += this.whereSqlByB2cMonitorData(customerid, starttime, endtime);
@@ -45,6 +49,7 @@ public class B2cAutoDownloadMonitorDAO {
 		return jdbcTemplate.query(sql, new B2cDownloadMonitor());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long selectB2cMonitorDataCount(String customerid, String starttime, String endtime) {
 		String sql = "SELECT count(1) FROM  b2c_download_record where 1=1  ";
 		sql += this.whereSqlByB2cMonitorData(customerid, starttime, endtime);

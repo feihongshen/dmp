@@ -28,6 +28,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
@@ -1183,6 +1185,18 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 是否存在这个订单在正式表
+	 */
+	public boolean isExistByCwb(String cwb) {
+		String sql = " select count(1) from express_ops_cwb_detail where cwb = ?";
+		int count = jdbcTemplate.queryForObject(sql, new Object[] { cwb }, Integer.class);
+		if (count >= 1) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * 原来使用了select 。。。 for update来锁行。但是cwb不是主键,所以锁表了。若此时有大量的关于订单的操作,尤其
@@ -2063,6 +2077,17 @@ public class CwbDAO {
 		}
 		this.jdbcTemplate.update(sql, carrealweight, carsize, scancwb);
 	}
+	
+	/**
+	 * 更新订单重量
+	 * @param orderWeight
+	 * @param cwb
+	 */
+	public void saveCwbWeight(BigDecimal orderWeight , String cwb){
+		StringBuffer sql = new StringBuffer() ;
+		sql.append("update express_ops_cwb_detail set carrealweight=? where cwb=? and state =1 ") ;
+		this.jdbcTemplate.update(sql.toString(),orderWeight,cwb) ;
+	}
 
 	public void saveCwbForPrintChangecwb(String carrealweight, String carsize,
 			String transcwb, String cwb) {
@@ -2176,7 +2201,8 @@ public class CwbDAO {
 
 	public void updateCwbState(String cwb, CwbStateEnum cwbstate) {
 		String sql = "update express_ops_cwb_detail set cwbstate=? where cwb=? and state=1";
-		this.jdbcTemplate.update(sql, cwbstate.getValue(), cwb);
+		int count = this.jdbcTemplate.update(sql, cwbstate.getValue(), cwb);
+		logger.info("修改订单状态：订单{}，修改为{}状态，影响行数：{}", new Object[] { cwb , cwbstate.getText(), count});
 	}
 
 	/**
@@ -3714,6 +3740,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getcwborderCountHuiZong(String begindate, String enddate,
 			String customerids, String startbranchids, String nextbranchids,
 			String cwbordertypeids, String orderflowcwbs,
@@ -3732,6 +3759,7 @@ public class CwbDAO {
 	}
 
 	// 分站到货统计统计订单数
+	@DataSource(DatabaseType.REPLICA)
 	public long getcwborderDaoHuoCount(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
 			String flowordertypes) {
@@ -3747,7 +3775,9 @@ public class CwbDAO {
 			}
 
 			if (kufangids.length() > 0) {
-				w.append(" and carwarehouse in(" + kufangids + ")");
+				// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+				// w.append(" and carwarehouse in(" + kufangids + ")");
+				w.append(" and (cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue() +" or carwarehouse in( " + kufangids + "))");
 			}
 			if (cwbordertypeids.length() > 0) {
 				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
@@ -3757,6 +3787,7 @@ public class CwbDAO {
 			}
 			sql += w.toString();
 		}
+		
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
 		} catch (DataAccessException e) {
@@ -3933,6 +3964,7 @@ public class CwbDAO {
 		return sql;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getcwborderCountHuiZong(String customerids,
 			String cwbordertypeids, String orderflowcwbs, long flowordertype,
 			long paywayid, String[] operationOrderResultTypes,
@@ -3983,6 +4015,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getcwborderSumHuiZong(String begindate, String enddate,
 			String customerids, String startbranchids, String nextbranchids,
 			String cwbordertypeids, String orderflowcwbs,
@@ -4001,6 +4034,7 @@ public class CwbDAO {
 	}
 
 	// 分站到货统计查询总金额
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getcwborderDaoHuoSum(String customerids,
 			String cwbordertypeids, String orderflowcwbs, String kufangids,
 			String flowordertypes) {
@@ -4016,7 +4050,9 @@ public class CwbDAO {
 			}
 
 			if (kufangids.length() > 0) {
-				w.append(" and carwarehouse in(" + kufangids + ")");
+				// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+				// w.append(" and carwarehouse in(" + kufangids + ")");
+				w.append(" and (cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue() +" or carwarehouse in( " + kufangids + "))");
 			}
 			if (cwbordertypeids.length() > 0) {
 				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
@@ -4026,6 +4062,7 @@ public class CwbDAO {
 			}
 			sql += w.toString();
 		}
+		
 		try {
 			return this.jdbcTemplate.queryForObject(sql, new CwbMOneyMapper());
 		} catch (DataAccessException e) {
@@ -4033,6 +4070,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getcwborderSumHuiZong(String customerids,
 			String cwbordertypeids, String orderflowcwbs, long flowordertype,
 			long paywayid, String[] operationOrderResultTypes,
@@ -4302,7 +4340,13 @@ public class CwbDAO {
 						+ ")");
 			}
 			if (kufangidStr.length() > 0) {
-				w.append(" and carwarehouse in( " + kufangidStr + ")");
+				// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+				// w.append(" and carwarehouse in( " + kufangidStr + ")");
+				if (sign == 8) {
+					w.append(" and (cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue() +" or carwarehouse in( " + kufangidStr + "))");
+				} else {
+					w.append(" and carwarehouse in( " + kufangidStr + ")");
+				}
 			}
 			if (startbranchidStr.length() > 0) {
 				w.append(" and startbranchid in(" + startbranchidStr + ")");
@@ -4358,6 +4402,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getcwbOrderByPageHuiZong(long page, String begindate,
 			String enddate, String orderName, String customerids,
 			String startbranchids, String nextbranchids,
@@ -4376,6 +4421,7 @@ public class CwbDAO {
 	}
 
 	// 分站到货统计查询订单list
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getDaoHuocwbOrderByPage(long page,
 			String customerids, String cwbordertypeids, String orderflowcwbs,
 			String kufangids, String flowordertypes) {
@@ -4391,37 +4437,15 @@ public class CwbDAO {
 			}
 
 			if ((kufangids.length() > 0)) {
-				w.append(" and carwarehouse in(" + kufangids + ")");
+				// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+				// w.append(" and carwarehouse in(" + kufangids + ")");
+				w.append(" and (cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue() +" or carwarehouse in( " + kufangids + "))");
 			}
 			if ((cwbordertypeids.length() > 0)) {
 				w.append(" and cwbordertypeid in(" + cwbordertypeids + ")");
 			}
 			if (flowordertypes.length() > 0) {
 				w.append(" and flowordertype in(" + flowordertypes + ")");
-			}
-			// 刘武强加-11.17 如果是快递单那么发货站点carwarehouse是空，所以区分对待
-			if (((cwbordertypeids != null) && (cwbordertypeids.length() == 0))
-					|| ((cwbordertypeids != null) && cwbordertypeids
-							.contains(CwbOrderTypeIdEnum.Express.getValue()
-									+ ""))) {
-				StringBuffer expressOr = new StringBuffer();
-				expressOr
-						.append("union select * from express_ops_cwb_detail where cwb in ("
-								+ orderflowcwbs + ") and state=1 ");
-				if (!customerids.equals("0")) {
-					expressOr.append(" and customerid in(" + customerids + ")");
-				}
-				if ((cwbordertypeids.length() > 0)) {
-					expressOr.append(" and cwbordertypeid="
-							+ CwbOrderTypeIdEnum.Express.getValue());
-				}
-				if (flowordertypes.length() > 0) {
-					expressOr.append(" and flowordertype in(" + flowordertypes
-							+ ")");
-				}
-				if (expressOr.length() > 0) {
-					w.append(expressOr);
-				}
 			}
 			sql += w.toString();
 		}
@@ -4431,6 +4455,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getcwbOrderByPageHuiZong(long page, String orderName,
 			String customerids, String cwbordertypeids, String orderflowcwbs,
 			long flowordertype, long paywayid,
@@ -4595,9 +4620,9 @@ public class CwbDAO {
 						branchid, deliverystate);
 	}
 
-	public List<CwbOrder> getCwbByPackageCode(String packageCode) {
-		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleno = '"
-				+ packageCode + "' ";
+	public List<CwbOrder> getCwbByBaleid(long baleid) {
+		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleid ="
+				+ baleid;
 		List<String> baleCwbList = this.jdbcTemplate.queryForList(baleCwbSql,
 				String.class);
 		StringBuilder targetString = new StringBuilder();
@@ -5373,18 +5398,21 @@ public class CwbDAO {
 				+ branchid + " and detail.state=1 and record.flowordertype " + Tools.assembleInByList(flowordertypeList) + " and detail.cwb in(" + cwbs + ")";
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbOrderByCwbs(String cwbs) {
 		String sql = "select * from express_ops_cwb_detail where state=1 and cwb in("
 				+ cwbs + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getCwbOrderByCwbsCount(String cwbs) {
 		String sql = "select count(1) from express_ops_cwb_detail where state=1 and cwb in("
 				+ cwbs + ")";
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getSumByCwbs(String cwbs) {
 		String sql = "select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail where state=1 and cwb in("
 				+ cwbs + ")";
@@ -6118,6 +6146,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, resendtime, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getCwbDetailByParamAndCwbsPage(long page,
 			String customerids, String emaildatebegin, String emaildateend,
 			long cwbordertypeid, long nextbranchid) {
@@ -6177,6 +6206,7 @@ public class CwbDAO {
 		return sql;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getCwbDetailByParamAndCwbsCount(String customerids,
 			String emaildatebegin, String emaildateend, long cwbordertypeid,
 			long nextbranchid) {
@@ -7032,6 +7062,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, remark5, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getIntoCwbByCwbsPage(long page, String cwbs,
 			String customers, long cwbordertypeid, String emaildatebegin,
 			String emaildateend) {
@@ -7056,6 +7087,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getIntoCwbByCwbsCount(String cwbs, String customers,
 			long cwbordertypeid, String emaildatebegin, String emaildateend) {
 		String sql = "SELECT count(1) from express_ops_cwb_detail where cwb in("
@@ -7124,6 +7156,7 @@ public class CwbDAO {
 	 * @param i
 	 * @return
 	 */
+	@DataSource(DatabaseType.REPLICA)
 	public long getcwbOrderByOutWarehouseCountNew(String begindate,
 			String enddate, String orderName, String customerids,
 			String kufangids, String nextbranchids, String cwbordertypeids,
@@ -7136,6 +7169,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql, begindate, enddate);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getcwbOrderByOutWarehouseSumNew(String begindate,
 			String enddate, String orderName, String customerids,
 			String kufangids, String nextbranchids, String cwbordertypeids,
@@ -7152,6 +7186,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getcwbOrderByOutWarehouseNew(long page,
 			String begindate, String enddate, String orderName,
 			String customerids, String kufangids, String nextbranchids,
@@ -7336,15 +7371,14 @@ public class CwbDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs, long branchid,
-			String baleno) {
+			long baleid) {
 		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
 				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
 				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
 				+ "FROM express_ops_groupdetail op LEFT JOIN express_ops_cwb_detail cd ON cd.cwb=op.cwb where op.cwb in("
 				+ cwbs
-				+ ") and op.baleno='"
-				+ baleno
-				+ "'"
+				+ ") and op.baleid="
+				+ baleid
 				+ "  and cd.state=1 ";
 		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
 	}
@@ -8177,6 +8211,7 @@ public class CwbDAO {
 		this.jdbcTemplate.update(sql, reasonid, reasonContent, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getMonitorLogByBranchid(String branchids,
 			String customerids, String wheresql, long page) {
 		StringBuffer sql = new StringBuffer(
@@ -8199,6 +8234,7 @@ public class CwbDAO {
 		return list;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByBranchid(String branchids, String customerids,
 			String wheresql) {
 		String notcwbString = this.getEffectiveCwbString(branchids,
@@ -8214,6 +8250,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByBranchidWithZhandianzaizhanzijinOrAll(
 			String branchids, String customerids, String wheresql) {
 		StringBuffer sql = new StringBuffer(
@@ -8227,6 +8264,7 @@ public class CwbDAO {
 		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public String getEffectiveCwbString(String branchids, String customerids,
 			String wheresql) {
 		String suffer = "'";
@@ -8249,6 +8287,7 @@ public class CwbDAO {
 		}
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<CwbOrder> getMonitorLogByType(String wheresql, String branchid,
 			long page, String branchids) {
 
@@ -8298,6 +8337,7 @@ public class CwbDAO {
 		return sql.toString();
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getMonitorLogByType(String wheresql, String branchid,
 			String branchids) {
 
@@ -9538,9 +9578,17 @@ public class CwbDAO {
 		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  WHERE state=1 AND customerid=? AND flowordertype=? "
 				+ " and deliverybranchid>0 ORDER BY opscwbid LIMIT 0,?  ", new CwbMapper(),customerid,flowordertype,maxCount);
 	}
-
 	public void updateTranscwbByCwb(String cwb, String addTranscwbs) {
 		this.jdbcTemplate.update(
 				"update express_ops_cwb_detail set transcwb=? where cwb=? and state = 1 ",addTranscwbs, cwb);		
+	}
+	public String getTpsTransportNoByCwb(String cwb) {
+		try {
+			return this.jdbcTemplate
+					.queryForObject(
+							"SELECT tpstranscwb from express_ops_cwb_detail where cwb=? and state=1 limit 0,1",String.class,cwb);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 }

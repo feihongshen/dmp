@@ -19,8 +19,10 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
@@ -57,6 +59,8 @@ public class VipshopInsertCwbDetailTimmer {
 	@Autowired
 	TransCwbDao transCwbDao;
 	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 
 	/**
 	 * 唯品会定时器，查询临时表，插入数据到detail表中。
@@ -101,38 +105,6 @@ public class VipshopInsertCwbDetailTimmer {
 		} catch (Exception e) {
 			logger.error("0唯品会0定时器临时表插入或修改方法执行异常!异常原因:", e);
 		}
-	}
-
-	private String dealWithOders(VipShop vipshop, String lefengCustomerid) {
-		
-		String cwbordertypeids=CwbOrderTypeIdEnum.Peisong.getValue()+","+CwbOrderTypeIdEnum.Shangmentui.getValue()+","+CwbOrderTypeIdEnum.Shangmenhuan.getValue();
-		
-		List<CwbOrderDTO> cwbOrderList=dataImportDAO_B2c.getCwbOrderTempByKeysExtends((vipshop.getCustomerids()+","+lefengCustomerid),cwbordertypeids);
-
-		if (cwbOrderList == null) {
-			return null;
-		}
-		if (cwbOrderList.size() == 0) {
-			return null;
-		}
-
-		int k = 1;
-		int batch = 50;
-		while (true) {
-
-			int fromIndex = (k - 1) * batch;
-			if (fromIndex >= cwbOrderList.size()) {
-				break;
-			}
-			int toIdx = k * batch;
-			if (k * batch > cwbOrderList.size()) {
-				toIdx = cwbOrderList.size();
-			}
-			List<CwbOrderDTO> subList = cwbOrderList.subList(fromIndex, toIdx);
-			ImportSubList(vipshop.getCustomerids(), vipshop.getWarehouseid(), subList, vipshop);
-			k++;
-		}
-		return "OK";
 	}
 
 	@Transactional
@@ -229,7 +201,16 @@ public class VipshopInsertCwbDetailTimmer {
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				map.put("cwb", cwbOrder.getCwb());
 				map.put("userid", "1");
-				addressmatch.sendBodyAndHeaders(null, map);
+				try{
+					this.logger.info("消息发送端：addressmatch, header={}", map.toString());
+					addressmatch.sendBodyAndHeaders(null, map);
+				}catch(Exception e){
+					logger.error("", e);
+					//写MQ异常表
+					this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".ImportSignOrder")
+							.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+							.buildMessageHeaderObject(map).getMqException());
+				}
 			}
 		}
 		dataImportDAO_B2c.update_CwbDetailTempByCwb(cwbOrder.getOpscwbid());
@@ -439,7 +420,15 @@ public class VipshopInsertCwbDetailTimmer {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("cwb", cwbOrderDto.getCwb());
 			map.put("userid", "1");
-			addressmatch.sendBodyAndHeaders(null, map);
+			try{
+				addressmatch.sendBodyAndHeaders(null, map);
+			}catch(Exception e){
+				logger.error("", e);
+				//写MQ异常表
+				this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".processIntoTable")
+						.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+						.buildMessageHeaderObject(map).getMqException());
+			}
 		}
 	}
 	

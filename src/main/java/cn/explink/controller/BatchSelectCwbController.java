@@ -33,6 +33,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
@@ -210,6 +213,7 @@ public class BatchSelectCwbController {
 	}
 
 	@RequestMapping("/batchSelectExpore")
+	@DataSource(DatabaseType.REPLICA)
 	public void batchSelectExpore(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "batchcwb2", required = false, defaultValue = "") String batchcwb2, @RequestParam(value = "exportmould2", required = false, defaultValue = "") final String mouldfieldids2) {
 		String[] cwbs = batchcwb2.trim().split("\r\n");
 

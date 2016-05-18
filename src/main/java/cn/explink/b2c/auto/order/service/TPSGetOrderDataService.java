@@ -36,11 +36,13 @@ import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.ExcelColumnSet;
+import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOXOStateEnum;
@@ -96,6 +98,9 @@ public class TPSGetOrderDataService {
 	JointService jointService;
 	@Autowired
 	TransCwbDao transCwbDao;
+	
+	@Autowired
+	private MqExceptionDAO mqExceptionDAO;
 	
 	private Logger logger = LoggerFactory.getLogger(TPSGetOrderDataService.class);
     
@@ -232,13 +237,13 @@ public class TPSGetOrderDataService {
 	 */
 	private void convertOrderVoToCwbOrderDTO(CwbOrderDTO cwbOrder,TPSOrder order,VipShop vipshop){
 		if(StringUtils.isNotBlank(order.getBusinessType().toString())){
-			if(order.getBusinessType().equals("20")){
+			if(order.getBusinessType()==20){
 				cwbOrder.setCwbordertypeid(CwbOrderTypeIdEnum.OXO_JIT.getValue());
 			}
-			else if(order.getBusinessType().equals("40")){
+			else if(order.getBusinessType()==40){
 				cwbOrder.setCwbordertypeid(CwbOrderTypeIdEnum.OXO.getValue());
 			}
-			else if(order.getBusinessType().equals("30")){//保留类型
+			else if(order.getBusinessType()==30){//保留类型
 				//TODO保留类型
 				cwbOrder.setCwbordertypeid(4);//default OXO
 			}else{
@@ -309,7 +314,8 @@ public class TPSGetOrderDataService {
 		//cwbOrder.setStartbranchid(vipshop.getWarehouseid());
 		//团购标识
 		cwbOrder.setVipclub(order.getVipClub().equals("3")?1:0);
-				
+		//tps运单号	
+		cwbOrder.setTpsTranscwb(order.getOrderSn());
 	}
 	
 	/**
@@ -441,7 +447,17 @@ public class TPSGetOrderDataService {
 							map.put("userid", "1");
 							map.put("address", orderMap.get("remark4").replaceAll("&", ""));
 							map.put("notifytype", 0);
-							addressmatch.sendBodyAndHeaders(null, map);
+							try{
+								this.logger.info("消息发送端：addressmatch, header={}", map.toString());
+								addressmatch.sendBodyAndHeaders(null, map);
+							}catch(Exception e){
+								logger.error("", e);
+								//写MQ异常表
+								this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".extractedOXODataImport")
+										.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+										.buildMessageHeaderObject(map).getMqException());
+							}
+							
 						}
 						if(StringUtils.isNotBlank(orderMap.get("consigneeaddress")) && !orderMap.get("consigneeaddress").equals(cwbOrder_biz.getConsigneeaddress())){
 							//重新解析派件站点
@@ -450,7 +466,15 @@ public class TPSGetOrderDataService {
 							map.put("userid", "1");
 							map.put("address", orderMap.get("consigneeaddress"));
 							map.put("notifytype", 1);
-							addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+							try{
+								addressmatch.sendBodyAndHeaders(null, map);//解析派件站点
+							}catch(Exception e){
+								logger.error("", e);
+								//写MQ异常表
+								this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".extractedOXODataImport")
+										.buildExceptionInfo(e.toString()).buildTopic(this.addressmatch.getDefaultEndpoint().getEndpointUri())
+										.buildMessageHeaderObject(map).getMqException());
+							}
 						}
 		
 					}
@@ -504,10 +528,20 @@ public class TPSGetOrderDataService {
 		long customerid = Long.valueOf(order.getCustomerid());
 		try {
 			long warehouseid = vipshop.getWarehouseid();
-			long ewarehouseid = warehouseid == 0 ? dataImportService_B2c.getTempWarehouseIdForB2c() : warehouseid;
+			//long ewarehouseid = warehouseid == 0 ? dataImportService_B2c.getTempWarehouseIdForB2c() : warehouseid;
 			//开启以出仓时间作为批次标记
 			String emaildate = order.getRemark2();
-			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, ewarehouseid, emaildate);
+			 
+			//Added by leoliao at 2016-03-09 如果传过来的出仓时间为空，则使用当前日期作为批次时间
+			if(emaildate == null || emaildate.trim().equals("")){
+				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";
+				order.setRemark2(emaildate);
+			}
+
+			//导入批次表(express_ops_emaildate)emaildatetime使用当天第一条进入DMP系统订单的创建时间
+			EmailDate ed = dataImportService.getOrCreateEmailDate(customerid, 0, warehouseid);
+			//临时表(express_ops_cwb_detail_b2ctemp)和正式表(express_ops_cwb_detail)的emaildate(发货时间)取TMS的出仓时间
+			ed.setEmaildatetime(emaildate);
 			//数据导入系统入口
 			tPSOrderImportService_B2c.Analizy_DataDealByB2c(customerid, B2cEnum.VipShop_TPSAutomate.getMethod(), order, warehouseid,ed);
 			this.logger.info("TPS自动化普通单在没有开启托运单模式下，数据插入临时表处理成功！");
@@ -533,6 +567,10 @@ public class TPSGetOrderDataService {
 		long customerid = Long.valueOf(order.getCustomerid());
 		try {
 			String emaildate = order.getRemark4();
+			if(emaildate == null || emaildate.trim().equals("")){
+				emaildate = DateTimeUtil.getNowDate() + " 00:00:00";				
+				order.setRemark4(emaildate);
+			}
 			long warehouseid = vipshop.getWarehouseid();
 			long ewarehouseid = warehouseid == 0 ? dataImportService_B2c.getTempWarehouseIdForB2c() : warehouseid;
 			EmailDate ed = dataImportService.getEmailDate_B2CByEmaildate(customerid, 0, ewarehouseid, emaildate);
@@ -572,8 +610,6 @@ public class TPSGetOrderDataService {
 			/**
 			 * 新增参数
 			 */
-			BigDecimal original_weight = new BigDecimal("0");/*(BigDecimal) (String.valueOf(order.getOriginalWeight()).equals("") ? "0" : order.getOriginalWeight())*/; // 重量
-			BigDecimal original_volume = new BigDecimal("0");/*(BigDecimal) (String.valueOf(order.getOriginalVolume()).equals("") ? "0" : order.getOriginalVolume())*/; // 体积
 			int ext_pay_type = (null==order.getPayment()||"".equals(order.getPayment().toString())) ? 0 : order.getPayment(); // 扩展支付方式
 			int paywayid = (ext_pay_type==1) ? PaytypeEnum.Pos.getValue() : PaytypeEnum.Xianjin.getValue();
 			String created_dtm_loc = this.toDateForm(order.getCreateTime());//记录生成时间
@@ -589,7 +625,15 @@ public class TPSGetOrderDataService {
 			//20：OXO-JIT,30：配送,40：OXO直送,60：上门退
 			int business_type = order.getBusinessType();
 			String cwbordertype = (business_type==60) ? String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()) : String.valueOf(CwbOrderTypeIdEnum.Peisong.getValue());
-           
+			BigDecimal original_weight = null;
+			BigDecimal original_volume = null;
+			if(business_type==30){
+				original_weight = new BigDecimal("0");/**/; // 重量
+				original_volume = new BigDecimal("0");/**/; // 体积
+			}else{
+				original_weight = (String.valueOf(order.getOriginalWeight()).equals("") ? new BigDecimal("0") : order.getOriginalWeight());
+				original_volume = (String.valueOf(order.getOriginalVolume()).equals("") ? new BigDecimal("0") : order.getOriginalVolume());
+			}
 			String is_gatherpack = order.getIsGatherpack().toString(); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
 			String is_gathercomp = order.getIsGathercomp().toString(); //最后一箱:1最后一箱 ，0默认 
 			
@@ -668,17 +712,19 @@ public class TPSGetOrderDataService {
 			orderDTO.setIsaudit(orderDTO.getIsaudit());
 			//团购标识
 			orderDTO.setVipclub(order.getVipClub().equals("3")?1:0);
+			//tps运单号	
+			orderDTO.setTpsTranscwb(order_sn);
 			//objOrder = this.getCwbOrderAccordingtoConf(excelColumnSet,orderDTO);
 			orderDTO.setIsmpsflag(choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 			orderDTO.setMpsallarrivedflag(choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
 			
-			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(cust_order_no);
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(cust_order_no);
 			//集包相关代码处理
 			mpsallPackage(vipshop, cust_order_no, is_gatherpack, is_gathercomp,pack_nos, total_pack, cwbOrderDTO,mpsswitch,orderDTO);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
 			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-
+				
 				if ("edit".equalsIgnoreCase(cmd_type)) {
 					//修改订单表
 					this.tpsDataImportDAO_B2c.updateBycwb(orderDTO);
@@ -707,13 +753,22 @@ public class TPSGetOrderDataService {
 
 			}
 			
+			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
+
+				if ("new".equalsIgnoreCase(cmd_type)) {
+					// 插入商品列表,try防止异常
+					this.insertOrderGoods(order, cust_order_no);
+				}
+			}
+			
 			if (cwbOrderDTO != null ) {
 				if(is_gatherpack.equals("0")){
 					this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cust_order_no);
 					return null;
 				//集单模式校验重复
 				}else if(is_gatherpack.equals("1")){
-					String oldTranscwb = cwbOrderDTO.getTranscwb();
+					return null;
+					/*String oldTranscwb = cwbOrderDTO.getTranscwb();
 					String currentTranscwb = transcwb;
 					if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
 						if(orderDTO.getMpsallarrivedflag()==VipGathercompEnum.Last.getValue()){
@@ -722,18 +777,12 @@ public class TPSGetOrderDataService {
 					}
 					if(oldTranscwb.split(",").length>currentTranscwb.split(",").length){
 						return null;
-					}
+					}*/
 				}
 				
 			}
 
-			if (cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))) {
-
-				if ("new".equalsIgnoreCase(cmd_type)) {
-					// 插入商品列表,try防止异常
-					this.insertOrderGoods(order, cust_order_no);
-				}
-			}
+			
 			
 			if ("".equals(cust_order_no)) { // 若订单号为空，则继续。
 				this.logger.info("获取订单信息为空");
@@ -770,6 +819,11 @@ public class TPSGetOrderDataService {
 		try {
 			List<TPSOrderDetails> goodslist = (List<TPSOrderDetails>) order.getDetails();
 			if ((goodslist != null) && (goodslist.size() > 0)) {
+				List<OrderGoods> orderGoodsList = null;
+				orderGoodsList = orderGoodsDAO.getOrderGoodsList(cust_order_no);
+				if(orderGoodsList.size()!=0){
+					return;
+				}
 				for (TPSOrderDetails good : goodslist) {
 					OrderGoods ordergoods = new OrderGoods();
 					ordergoods.setCwb(cust_order_no);
@@ -987,11 +1041,13 @@ public class TPSGetOrderDataService {
 		String emaildate = currentOrderDTO.getRemark2(); //paraMap.get("remark2"); //发货时间
 		String[] arrTranscwb = pack_nos.split(",");
 		if("1".equals(is_gatherpack) && (arrTranscwb.length==total_pack)){
+			//更新临时表的发货时间
+			dataImportDAO_B2c.update_CwbDetailTempEmaildateByCwb(cust_order_no, emaildate);
+			
 			//把发货时间写入订单表
 			cwbDAO.updateEmaildate(cust_order_no, emaildate);
 			
 			//把发货时间写入运单表
-			
 			if(arrTranscwb != null && arrTranscwb.length > 0){
 				dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
 			}
@@ -1035,7 +1091,7 @@ public class TPSGetOrderDataService {
 		//后者大于前者，覆盖前者
 		if(oldTranscwb.split(",").length<currentTranscwb.split(",").length){
 			this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
-					total_pack,mpsallarrivedflag);
+					currentOrderDTO.getSendcargonum(),mpsallarrivedflag);
 		}
 		//后者==前者，移除不是最后一箱的
 		if(oldTranscwb.split(",").length==currentTranscwb.split(",").length){
@@ -1043,7 +1099,7 @@ public class TPSGetOrderDataService {
 					&&Integer.valueOf(cwbOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Default.getValue())
 					||Integer.valueOf(currentOrderDTO.getMpsallarrivedflag())==VipGathercompEnum.Last.getValue()){
 				this.changeInfoOfOrder(cwbOrderDTO,cust_order_no,pack_nos,
-						total_pack,mpsallarrivedflag);
+						currentOrderDTO.getSendcargonum(),mpsallarrivedflag);
 			}
 		}
 		//后者小于前者，不做修改

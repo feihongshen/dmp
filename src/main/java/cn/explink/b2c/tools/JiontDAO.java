@@ -34,7 +34,7 @@ public class JiontDAO {
 		}
 	}
 
-	@Cacheable(value = "jointCache", key = "#key")
+	@Cacheable(value = "jointCache", key = "#key", condition = "#result ne null")
 	public JointEntity getJointEntity(int key) {
 		JointEntity jointEntity = null;
 		try {
