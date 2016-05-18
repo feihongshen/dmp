@@ -285,8 +285,8 @@ public class AbnormalOrderController {
                 if (cwbOrders != null) {
                     for (CwbOrder cwbOrder : cwbOrders) {
                         //如果客户基本信息，定义了单好区分大小写, 0 : 不区分大小写
-                        if (customerIDandIgnoreCaseMap.get(cwbOrder.getCustomerid()) == 1) {
-                            //忽略大小写的情况， 显示
+                        if (customerIDandIgnoreCaseMap.get(cwbOrder.getCustomerid()) == 0) {
+                            //不区分大小写的情况， 显示
                             cwbList.add(cwbOrder);
                         }
                     }
