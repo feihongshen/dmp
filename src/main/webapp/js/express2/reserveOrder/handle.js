@@ -161,7 +161,7 @@ $(function () {
         	}
         });
         if(!flag) {
-        	allertMsg.alertError("站点超区、已分配省公司状态的预约单才能退回总部！");
+        	allertMsg.alertError("选中的预约单无法做退回总部操作！");
         	return false;
         }
         //打开退回总部面板
@@ -194,7 +194,7 @@ $(function () {
         	}
         });
         if(!flag) {
-        	allertMsg.alertError("已分配省公司、已分配站点、站点超区的预约单才能分配站点！");
+        	allertMsg.alertError("选中的预约单无法做分配站点操作！");
         	return false;
         }
         if (rows.length == 1) {

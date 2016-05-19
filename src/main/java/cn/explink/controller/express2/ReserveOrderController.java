@@ -49,6 +49,7 @@ import cn.explink.domain.express2.VO.ReserveOrderEditVo;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
+import cn.explink.enumutil.ReserveOrderQueryTypeEnum;
 import cn.explink.enumutil.express2.ReserveOrderStatusClassifyEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.service.BranchService;
@@ -151,7 +152,15 @@ public class ReserveOrderController extends ExpressCommonController {
         List<User> courierList = this.reserveOrderService.getCourierByBranch(Long.valueOf(this.getSessionUser().getBranchid()).intValue());
         model.addAttribute("courierList",courierList);
 
-        model.addAttribute("feedbackOptCodes",ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toArray());
+        List<ReserveOrderService.PJReserverOrderOperationCode> feedbackOptCodes = new ArrayList<ReserveOrderService.PJReserverOrderOperationCode>();
+
+        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu);
+        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu);
+        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai);
+
+        model.addAttribute("feedbackOptCodes",feedbackOptCodes);
+        
+        model.addAttribute("reserveOrderStatusList", ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toArray());
 
         SbCodeTypeService sbCodeTypeService = new SbCodeTypeServiceHelper.SbCodeTypeServiceClient();
 
@@ -211,25 +220,43 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
 		} else {
-			omReserveOrderModel.setReserveOrderStatusList(ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString());
+			String reserveOrderStatusStr = null;
+			if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
+				if(this.isWarehouseMaster()) {
+					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString();
+				} else {
+					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toString();
+				}
+			} else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
+				if(this.isWarehouseMaster()) {
+					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
+				} else {
+					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
+				}
+			} else {
+				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toString();
+			}
+			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusStr);
 		}
 		//默认省编号
-		String carrierCode = ResourceBundleUtil.expressCarrierCode;
-        omReserveOrderModel.setCarrierCode(carrierCode);
+//		String carrierCode = ResourceBundleUtil.expressCarrierCode;
+//        omReserveOrderModel.setCarrierCode(carrierCode);
 		boolean isQuery = true;
-		if (this.isWarehouseMaster()) {
-			//站长只能看到本站点的
-			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		} else if(this.isCustomService() || this.isAdmin()) {
-			if(StringUtils.isNotBlank(acceptOrg)) {
-				omReserveOrderModel.setAcceptOrg(acceptOrg);
-			}
-		} else {
-			isQuery = false;
-		}
+//		if (this.isWarehouseMaster()) {
+//			//站长只能看到本站点的
+//			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
+//            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+//		} else if(this.isCustomService() || this.isAdmin()) {
+//			if(StringUtils.isNotBlank(acceptOrg)) {
+//				omReserveOrderModel.setAcceptOrg(acceptOrg);
+//			}
+//		} else {
+//			isQuery = false;
+//		}
 		ReserveOrderPageVo reserveOrderPageVo;
 		if(isQuery) {
+			omReserveOrderModel = new OmReserveOrderModel();
+			omReserveOrderModel.setReserveOrderNo(reserveOrderNo);
 			reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
 		} else {
 			reserveOrderPageVo = new ReserveOrderPageVo();
@@ -273,7 +300,23 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
 		} else {
-			omReserveOrderModel.setReserveOrderStatusList(ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString());
+			String reserveOrderStatusStr = null;
+			if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
+				if(this.isWarehouseMaster()) {
+					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString();
+				} else {
+					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toString();
+				}
+			} else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
+				if(this.isWarehouseMaster()) {
+					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
+				} else {
+					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
+				}
+			} else {
+				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toString();
+			}
+			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusStr);
 		}
 		//默认省编号
 		String carrierCode = ResourceBundleUtil.expressCarrierCode;
@@ -560,8 +603,10 @@ public class ReserveOrderController extends ExpressCommonController {
                 }
             }else{
                 logger.info("{} 站点分配快递员", logPrefix);
+                obj.put("errorMsg", "站点不存在");
+                logger.error("{} 站点不存在", logPrefix);
+                return obj;
             }
-
             Long distributeCourier = Long.parseLong(reserveOrderVos[0].getCourier());
 
             String selectedCourierName = null;
@@ -592,6 +637,9 @@ public class ReserveOrderController extends ExpressCommonController {
                 }
                 omReserveOrderModel.setCourier(distributeCourier.toString());
                 omReserveOrderModel.setCourierName(selectedCourierName);
+                if(distributeCourier != null && StringUtils.isNotBlank(selectedTpsbranchCode)) {
+                	
+                }
                 omReserveOrderModels.add(omReserveOrderModel);
             }
 

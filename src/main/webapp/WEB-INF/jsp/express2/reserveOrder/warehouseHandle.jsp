@@ -1,3 +1,4 @@
+<%@page import="com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum"%>
 <%@ page import="cn.explink.enumutil.ReserveOrderQueryTypeEnum" %>
 <%@ page import="cn.explink.service.express2.ReserveOrderService" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
@@ -67,7 +68,7 @@
                     <td>
                         <select name="reserveOrderStatusList" id="reserveOrderStatusList" style="width:140px;">
                             <option value="">请选择</option>
-                            <c:forEach items="${orderStatusList }" var="orderStatus">
+                            <c:forEach items="${reserveOrderStatusList }" var="orderStatus">
                                 <option value="${orderStatus.index}">${orderStatus.name}</option>
                             </c:forEach>
                         </select>
@@ -291,7 +292,11 @@
 
     // 站点退回 - 退回类型为站点超区
     var returnType = "<%= ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>";
-
+    
+    var hadAllocationPro = "<%= ReserveOrderStatusEnum.HadAllocationPro.getIndex()%>";
+    var hadAllocationStation = "<%= ReserveOrderStatusEnum.HadAllocationStation.getIndex()%>";
+    var haveStationOutZone = "<%= ReserveOrderStatusEnum.HaveStationOutZone.getIndex()%>";
+    
     $(function () {
         //初始化表格
         initDataGrid();
