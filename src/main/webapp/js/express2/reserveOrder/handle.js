@@ -29,8 +29,44 @@ $(function () {
         $("#reserveOrderNo4edit").val(selectedRow.reserveOrderNo);
         $('#cnorName4edit').val(selectedRow.cnorName);
         $('#province4edit').val("");
-        $('#city4edit').val("");
-        $('#county4edit').val("");
+        
+        if ($('#province4edit option:contains("' + selectedRow.cnorProvName + '")').length > 0) {
+        	
+        	//如果匹配到城市，则设置城市的值
+        	var $cityOption = $('#city4edit option:contains("' + selectedRow.cnorCityName + '")');
+        	if ($cityOption.length > 0) {
+        		setSelectValue('city4edit', $cityOption.val()); 
+        		$('#city4edit').change();
+        		
+        		//监听区的数据加载
+        		createDetector('county4editDetector',
+        			function() {
+        				return $('#county4edit option').length > 1;
+        			},
+        			function() {
+        				
+        				//如果匹配到区，则设置区的值
+        				var $countryOption = $('#county4edit option:contains("' + selectedRow.cnorRegionName + '")');
+        				if ($countryOption.length > 0) {
+        					setSelectValue('county4edit', $countryOption.val());
+        					
+        				} else {
+        					$('#county4edit').val("");
+        				}
+        				
+        				
+        			}, 310);
+        		
+        	} else {
+        		$('#city4edit').val("");
+        		$('#county4edit').val("");
+        	}
+        	
+        } else {
+        	$('#city4edit').val("");
+        	$('#county4edit').val("");
+        }
+        
         $('#cnorAddr4edit').val(selectedRow.cnorAddr);
         $('#requireTimeStr4edit').val(selectedRow.requireTimeStr);
 
@@ -41,12 +77,57 @@ $(function () {
             shadeClose: true,
             maxmin: false,
             fix: false,
-            area: [400, 300],
+            area: [500, 300],
             page: {
                 dom: '#dialog1'
             }
         });
     });
+    
+    /**
+	 * 设置select框的值
+	 * @param {String} id select框的id
+	 * @param {String} value 要设置的value
+	 */
+	function setSelectValue(id, value) {
+		var sel = document.getElementById(id);
+		if(!sel) return;
+		for (var i = 0, len = sel.options.length; i < len; i++) {        
+	        if (sel.options[i].value == value) {
+				sel.selectedIndex = i;        
+	            break;        
+	        }        
+	    }  
+	}
+	
+	/**
+	 * 创建侦察器
+	 * @param {String} detectorId 侦察器id，存放到window对象中
+	 * @param {Function} conditionFun 执行条件方法，返回false就继续侦查
+	 * @param {Function} targetFun 目标方法
+	 * @param {Number} interval 侦查时间间隔
+	 */
+	function createDetector(detectorId ,conditionFun, targetFun, interval) {
+		var timmer = window.setInterval(function() {
+			//console.log(detectorId + " execute");
+			if(conditionFun()) {
+				deleteDetector(detectorId);
+				targetFun();
+			}
+		}, interval);
+		window[detectorId] = timmer;
+	}
+	
+	/**
+	 * 删除侦察器
+	 * @param {String} detectorId 侦察器id
+	 */
+	function deleteDetector(detectorId) {
+		if(window[detectorId]) {
+			window.clearInterval(window[detectorId]);
+		}
+	}
+    
     $('#deleteReserveOrderBtn').click(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
@@ -197,7 +278,9 @@ $(function () {
             cnorName4edit : $('#cnorName4edit').val(),
             province4edit : $('#province4edit').val(),
             city4edit : $('#city4edit').val(),
+            cityName4edit : $('#city4edit option:selected').text(),
             county4edit : $('#county4edit').val(),
+            countyName4edit : $('#county4edit  option:selected').text(),
             cnorAddr4edit : $('#cnorAddr4edit').val(),
             requireTimeStr4edit : $('#requireTimeStr4edit').val()
         };
@@ -210,6 +293,7 @@ $(function () {
             success: function (data) {
                 if (data.errorinfo){
                     allertMsg.alertError(data.errorinfo);
+                    return;
                 }
                 $('#dg_rsList').datagrid('reload');
                 $("#reserveOrderNo4edit").val("");
