@@ -62,7 +62,7 @@
 					<td>
 						<select name="reserveOrderStatusList" id="reserveOrderStatusList" style="width:140px;">
 							<option value="">请选择</option>
-							<c:forEach items="${orderStatusList }" var="orderStatus">
+							<c:forEach items="${reserveOrderStatusList }" var="orderStatus">
 								<option value="${orderStatus.index}">${orderStatus.name}</option>
 							</c:forEach>
 						</select>

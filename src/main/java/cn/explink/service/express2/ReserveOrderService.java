@@ -48,7 +48,7 @@ import cn.explink.service.express.ExpressCommonService;
 @Service
 public class ReserveOrderService extends ExpressCommonService {
 	
-private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	public static final int OSP_INVOKE_TIMEOUT = 60000;
 	
@@ -89,7 +89,6 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
             return displayText;
         }
     }
-
 
 	@Autowired
 	BranchDAO branchDAO;
@@ -535,6 +534,4 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 		}
 		return prov;
     }
-
-	
 }

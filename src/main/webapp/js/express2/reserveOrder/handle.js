@@ -150,6 +150,20 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
+        var rows = $('#dg_rsList').datagrid('getChecked');
+        
+        var flag = true;
+        $.each(rows, function (index, value) {
+        	var reserveOrderStatus = value.reserveOrderStatus;
+        	if(reserveOrderStatus != hadAllocationPro && reserveOrderStatus != haveStationOutZone) {
+        		flag = false;
+        		return false;
+        	}
+        });
+        if(!flag) {
+        	allertMsg.alertError("站点超区、已分配省公司状态的预约单才能退回总部！");
+        	return false;
+        }
         //打开退回总部面板
         returnToCentralPanel = $.layer({
             type: 1,
@@ -168,7 +182,21 @@ $(function () {
             return false;
         }
         var rows = $('#dg_rsList').datagrid('getChecked');
-
+        
+        var flag = true;
+        $.each(rows, function (index, value) {
+        	var reserveOrderStatus = value.reserveOrderStatus;
+        	if(reserveOrderStatus != hadAllocationPro  
+        			&& reserveOrderStatus !=hadAllocationStation 
+        			&& reserveOrderStatus != haveStationOutZone) {
+        		flag = false;
+        		return false;
+        	}
+        });
+        if(!flag) {
+        	allertMsg.alertError("已分配省公司、已分配站点、站点超区的预约单才能分配站点！");
+        	return false;
+        }
         if (rows.length == 1) {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
             $('#distributeBranchSelect option').each(function () {

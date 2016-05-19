@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.pjbest.deliveryorder.enumeration.OrderStatusEnum;
+import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.vip.osp.core.exception.OspException;
 import com.vip.tps.base.service.SbCodeDefModel;
@@ -48,6 +48,7 @@ import cn.explink.domain.express2.VO.ReserveOrderEditVo;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
+import cn.explink.enumutil.express2.ReserveOrderStatusClassifyEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.service.BranchService;
 import cn.explink.service.UserService;
@@ -92,7 +93,14 @@ public class ReserveOrderController extends ExpressCommonController {
 		List<Branch> branches = this.reserveOrderService.getBranches();
 		model.addAttribute("branchList", branches);
 		
-		model.addAttribute("orderStatusList", OrderStatusEnum.values());
+		// 预约单状态
+        ReserveOrderStatusEnum[] reserveOrderStatusList;
+        if(this.isWarehouseMaster()) {
+        	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toArray();
+        } else {
+        	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toArray();
+        }
+        model.addAttribute("reserveOrderStatusList", reserveOrderStatusList);
 		
 		// 是否是站长
 		model.addAttribute("isWarehouseMaster", this.isWarehouseMaster());
@@ -115,8 +123,14 @@ public class ReserveOrderController extends ExpressCommonController {
         List<Branch> branches = this.reserveOrderService.getBranches();
         model.addAttribute("branchList",branches);
         
-		// 预约单状态
-		model.addAttribute("orderStatusList", OrderStatusEnum.values());
+        // 预约单状态
+        ReserveOrderStatusEnum[] reserveOrderStatusList;
+        if(this.isWarehouseMaster()) {
+        	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toArray();
+        } else {
+        	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toArray();
+        }
+        model.addAttribute("reserveOrderStatusList", reserveOrderStatusList);
 
 		if (!CollectionUtils.isEmpty(cities)) {
 			String provinceName = reserveOrderService.getCurProvince(cities.get(0).getId()).getName();
@@ -137,13 +151,7 @@ public class ReserveOrderController extends ExpressCommonController {
         List<User> courierList = this.reserveOrderService.getCourierByBranch(Long.valueOf(this.getSessionUser().getBranchid()).intValue());
         model.addAttribute("courierList",courierList);
 
-        List<ReserveOrderService.PJReserverOrderOperationCode> feedbackOptCodes = new ArrayList<ReserveOrderService.PJReserverOrderOperationCode>();
-
-        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu);
-        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu);
-        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai);
-
-        model.addAttribute("feedbackOptCodes",feedbackOptCodes);
+        model.addAttribute("feedbackOptCodes",ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toArray());
 
         SbCodeTypeService sbCodeTypeService = new SbCodeTypeServiceHelper.SbCodeTypeServiceClient();
 
@@ -202,6 +210,8 @@ public class ReserveOrderController extends ExpressCommonController {
 		}
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
+		} else {
+			omReserveOrderModel.setReserveOrderStatusList(ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString());
 		}
 		//默认省编号
 		String carrierCode = ResourceBundleUtil.expressCarrierCode;
@@ -211,7 +221,7 @@ public class ReserveOrderController extends ExpressCommonController {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
             omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		} else if(this.isProvQualityControlr() || this.isAdmin()) {
+		} else if(this.isCustomService() || this.isAdmin()) {
 			if(StringUtils.isNotBlank(acceptOrg)) {
 				omReserveOrderModel.setAcceptOrg(acceptOrg);
 			}
@@ -262,6 +272,8 @@ public class ReserveOrderController extends ExpressCommonController {
 		}
 		if(StringUtils.isNotBlank(reserveOrderStatusList)) {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
+		} else {
+			omReserveOrderModel.setReserveOrderStatusList(ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString());
 		}
 		//默认省编号
 		String carrierCode = ResourceBundleUtil.expressCarrierCode;
@@ -271,7 +283,7 @@ public class ReserveOrderController extends ExpressCommonController {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
 			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		} else if(this.isProvQualityControlr() || this.isAdmin()) {
+		} else if(this.isCustomService() || this.isAdmin()) {
 		if(StringUtils.isNotBlank(acceptOrg)) {
 			omReserveOrderModel.setAcceptOrg(acceptOrg);
 				Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
