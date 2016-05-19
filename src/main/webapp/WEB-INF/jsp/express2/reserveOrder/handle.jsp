@@ -1,3 +1,4 @@
+<%@page import="com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum"%>
 <%@ page import="cn.explink.service.express2.ReserveOrderService" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -68,7 +69,7 @@
 					<td>
 						<select name="reserveOrderStatusList" id="reserveOrderStatusList" style="width:140px;">
 							<option value="">请选择</option>
-							<c:forEach items="${orderStatusList }" var="orderStatus">
+							<c:forEach items="${reserveOrderStatusList }" var="orderStatus">
 								<option value="${orderStatus.index}">${orderStatus.name}</option>
 							</c:forEach>
                                 </select>
@@ -206,6 +207,7 @@
 		        {field:'cnorTel', title:'固话', width:100, align:'center'},
 		        {field:'cnorAddr', title:'寄件地址', width:130, align:'center'},
 		        {field:'requireTimeStr', title:'预约上门时间', width:130, align:'center'},
+		        {field:'reserveOrderStatus', title:'预约单状态', width:100, align:'center',display:'none'},
 		        {field:'reserveOrderStatusName', title:'预约单状态', width:100, align:'center'},
 		        {field:'reason', title:'原因', width:130, align:'center'},
 		        {field:'transportNo', title:'运单号', width:100, align:'center'},
@@ -247,7 +249,11 @@
 	}
     // 省点退回 - 退回类型为省公司超区
     var returnType = "<%= ReserveOrderService.PJReserverOrderOperationCode.ShengGongSiChaoQu.getValue()%>";
-
+    
+    var hadAllocationPro = "<%= ReserveOrderStatusEnum.HadAllocationPro.getIndex()%>";
+    var hadAllocationStation = "<%= ReserveOrderStatusEnum.HadAllocationStation.getIndex()%>";
+    var haveStationOutZone = "<%= ReserveOrderStatusEnum.HaveStationOutZone.getIndex()%>";
+    
     $(function() {
 		//单选模糊查询下拉框
 		//$("#search_table select").combobox();

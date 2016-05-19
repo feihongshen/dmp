@@ -30,7 +30,7 @@ public class ExpressCommonController {
 	/**
 	 * 省质控
 	 */
-	private static final long PROV_QUALITY_CONTROL_ID = 22;
+	private static final long CUSTOM_SERVICE_ID = 1;
 
 	@Autowired
 	private SecurityContextHolderStrategy securityContextHolderStrategy;
@@ -58,9 +58,9 @@ public class ExpressCommonController {
 		return false;
 	}
 	
-	protected boolean isProvQualityControlr() {
+	protected boolean isCustomService() {
 		User user = this.getSessionUser();
-		if (user.getRoleid() == ExpressCommonController.WAREHOUSE_MASTER_ID) {
+		if (user.getRoleid() == ExpressCommonController.CUSTOM_SERVICE_ID) {
 			return true;
 		}
 		return false;
