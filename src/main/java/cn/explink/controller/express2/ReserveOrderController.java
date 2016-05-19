@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -130,7 +131,6 @@ public class ReserveOrderController extends ExpressCommonController {
 	 */
 	@RequestMapping("/handleWarehouse")
 	public String handleWarehouse(Model model) {
-//        handle(model);
         List<User> courierList = this.reserveOrderService.getCourierByBranch(Long.valueOf(this.getSessionUser().getBranchid()).intValue());
         model.addAttribute("courierList",courierList);
 
@@ -430,25 +430,25 @@ public class ReserveOrderController extends ExpressCommonController {
     public JSONObject closeReserveOrder(@RequestBody ReserveOrderVo[] reserveOrderVos,
                                   HttpServletRequest request, HttpServletResponse response
     ) {
+        final String logPrefix = "closeReserveOrder->";
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
         if (reserveOrderVos.length > 0) {
-            int operateType = reserveOrderVos[0].getOperateType();
 
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
             for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
+
                 OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
                 omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
                 omReserveOrderModel.setReason(reserveOrderVo.getReason());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
-            try {
-                reserveOrderService.closeReserveOrder(omReserveOrderModels);
-            } catch (OspException e) {
-                obj.put("errorMsg", e.getReturnMessage());
-            }
+            List<String> statusMsg = new ArrayList<String>();
+            reserveOrderService.closeReserveOrder(omReserveOrderModels, statusMsg);
+            buildErrorMsg(obj, statusMsg);
         }
         return obj;
     }
@@ -465,25 +465,29 @@ public class ReserveOrderController extends ExpressCommonController {
     public JSONObject returnToCentral(@RequestBody ReserveOrderVo[] reserveOrderVos,
                                   HttpServletRequest request, HttpServletResponse response
     ) {
+        final String logPrefix = "returnToCentral->";
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
         if (reserveOrderVos.length > 0) {
             int operateType = reserveOrderVos[0].getOperateType();
+            logger.info("{} operateType: {}", logPrefix, operateType);
 
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
             for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
+
                 OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
                 omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
                 omReserveOrderModel.setReason(reserveOrderVo.getReason());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
-            try {
-                reserveOrderService.returnToCentral(omReserveOrderModels, operateType);
-            } catch (OspException e) {
-                obj.put("errorMsg", e.getReturnMessage());
-            }
+
+            List<String> statusMsg = new ArrayList<String>();
+
+            reserveOrderService.returnToCentral(omReserveOrderModels, operateType, statusMsg);
+            buildErrorMsg(obj, statusMsg);
         }
         return obj;
     }
@@ -500,64 +504,79 @@ public class ReserveOrderController extends ExpressCommonController {
     public JSONObject distributeBranch(@RequestBody ReserveOrderVo[] reserveOrderVos,
                                        HttpServletRequest request, HttpServletResponse response
     ) {
+        final String logPrefix = "distributeBranch->";
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
-        if(reserveOrderVos.length > 0){
+        if (reserveOrderVos.length > 0) {
 
-            Long distributeBranch = Long.parseLong(reserveOrderVos[0].getAcceptOrg());
-            Long distributeCourier = Long.parseLong(reserveOrderVos[0].getCourier());
-            //找TPS CODE
+            String selectedBranch = reserveOrderVos[0].getAcceptOrg();
             String selectedTpsbranchCode = null;
-            List<Branch> branches = reserveOrderService.getBranches();
-            for (int i = 0; i < branches.size(); i++) {
-                Branch branch = branches.get(i);
-                if (branch.getBranchid() == distributeBranch){
-                    selectedTpsbranchCode = branch.getTpsbranchcode();
-                    break;
+            //选择站点默认值是登录人员自己的站点
+            Long distributeBranch = this.getSessionUser().getBranchid();
+            //选择了站点
+            if (NumberUtils.isNumber(selectedBranch)) {
+                logger.info("{} 省点分配站点和快递员", logPrefix);
+                distributeBranch = Long.parseLong(selectedBranch);
+                //找TPS CODE
+                List<Branch> branches = reserveOrderService.getBranches();
+                for (int i = 0; i < branches.size(); i++) {
+                    Branch branch = branches.get(i);
+                    if (branch.getBranchid() == distributeBranch) {
+                        selectedTpsbranchCode = branch.getTpsbranchcode();
+                        logger.info("{} selectedTpsbranchCode: {}", logPrefix, selectedTpsbranchCode);
+                        break;
+                    }
                 }
+                if (selectedTpsbranchCode == null) {
+                    obj.put("errorMsg", "站点TPSBranchCode不存在");
+                    logger.error("{} 站点TPSBranchCode不存在", logPrefix);
+                    return obj;
+                }
+            }else{
+                logger.info("{} 站点分配快递员", logPrefix);
             }
 
-            if(selectedTpsbranchCode == null){
-                obj.put("errorMsg", "站点TPSBranchCode不存在");
-                return obj;
-            }
+            Long distributeCourier = Long.parseLong(reserveOrderVos[0].getCourier());
 
             String selectedCourierName = null;
             //找快递员名字
             List<User> courierList = this.reserveOrderService.getCourierByBranch(distributeBranch.intValue());
             for (int i = 0; i < courierList.size(); i++) {
                 User courier = courierList.get(i);
-                if (courier.getUserid() == distributeCourier){
+                if (courier.getUserid() == distributeCourier) {
                     selectedCourierName = courier.getUsername();
+                    logger.info("{} selectedCourierName: {}", logPrefix, selectedCourierName);
                 }
             }
 
-            if(selectedCourierName == null){
+            if (selectedCourierName == null) {
                 obj.put("errorMsg", "快递员不存在");
+                logger.error("{} 快递员不存在", logPrefix);
                 return obj;
             }
 
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
             for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
                 OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
                 omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
-                omReserveOrderModel.setAcceptOrg(selectedTpsbranchCode);
+                if (selectedTpsbranchCode != null) {
+                    omReserveOrderModel.setAcceptOrg(selectedTpsbranchCode);
+                }
                 omReserveOrderModel.setCourier(distributeCourier.toString());
                 omReserveOrderModel.setCourierName(selectedCourierName);
                 omReserveOrderModels.add(omReserveOrderModel);
             }
-        }
 
-//
-        try {
-            reserveOrderService.distributeBranch(omReserveOrderModels);
-        } catch (OspException e) {
-            obj.put("errorMsg", e.getReturnMessage());
+            List<String> statusMsg = new ArrayList<String>();
+            reserveOrderService.distributeBranch(omReserveOrderModels, statusMsg);
+            buildErrorMsg(obj,statusMsg);
         }
         return obj;
     }
+
 
     /**
      * 反馈
@@ -576,13 +595,18 @@ public class ReserveOrderController extends ExpressCommonController {
                                @RequestBody ReserveOrderVo[] reserveOrderVos,
                                HttpServletRequest request, HttpServletResponse response
     ) {
+        final String logPrefix = "feedback->";
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
         if (reserveOrderVos.length > 0) {
 
             String reason4Feedback = reserveOrderVos[0].getReason();
+            logger.info("{} reason4Feedback {}", logPrefix, reason4Feedback);
+
             int operateType = reserveOrderVos[0].getOperateType();
+            logger.info("{} operateType {}", logPrefix, operateType);
+
             SbCodeTypeService sbCodeTypeService = new SbCodeTypeServiceHelper.SbCodeTypeServiceClient();
 
             String displayValue = null;
@@ -592,8 +616,8 @@ public class ReserveOrderController extends ExpressCommonController {
                     SbCodeDefModel reason = reasons.get(i);
                     if (reason.getCodeValue().equals(reason4Feedback)) {
                         displayValue = reason.getDisplayValue();
+                        logger.info("{} displayValue {}", logPrefix, displayValue);
                     }
-
                 }
             } catch (OspException e) {
                 obj.put("errorMsg", e.getReturnMessage());
@@ -601,6 +625,7 @@ public class ReserveOrderController extends ExpressCommonController {
             }
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
             for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
                 OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
                 omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
@@ -609,18 +634,17 @@ public class ReserveOrderController extends ExpressCommonController {
                 omReserveOrderModel.setRequireTimeStr(reserveOrderVo.getRequireTimeStr());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
-            try {
-                reserveOrderService.feedback(omReserveOrderModels, operateType);
-            } catch (OspException e) {
-                obj.put("errorMsg", e.getReturnMessage());
-            }
+
+            List<String> statusMsg = new ArrayList<String>();
+            reserveOrderService.feedback(omReserveOrderModels, operateType,statusMsg);
+            buildErrorMsg(obj, statusMsg);
         }
         return obj;
     }
 
    /**
      * 修改预约单
-     * @param reserveOrderEditVo 预约单修改vo
+     * @param vo 预约单修改vo
      * @return
      */
     @ResponseBody
@@ -659,10 +683,20 @@ public class ReserveOrderController extends ExpressCommonController {
     		logger.error(e.getMessage(), e);
     		explinkResponse.setStatuscode(Boolean.FALSE.toString());
     		explinkResponse.setErrorinfo("系统错误");
-    		
     	}
     	
     	return JsonUtil.translateToJson(explinkResponse);
     }
-	
+
+    private void buildErrorMsg(JSONObject obj, List<String> statusMsg) {
+        StringBuilder msg = new StringBuilder();
+        for (int i = 0; i < statusMsg.size(); i++) {
+            String status = statusMsg.get(i);
+            msg.append(status);
+            if (i < statusMsg.size()) {
+                msg.append("<br/>");
+            }
+        }
+        obj.put("errorMsg", msg.toString());
+    }
 }
