@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.pjbest.deliveryorder.service.DoTrackBoxInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +114,7 @@ public class TpsCwbFlowPushService {
 						List<String> transcwbList=new ArrayList<String>();
 						for(DoTrackFeedbackRequest req:reqList){
 							send(req,6000);
-//							transcwbList.add(req.getBoxInfo().getBoxNo());
+							transcwbList.add(req.getBoxInfo().getBoxNo());
 						}
 						this.tpsCwbFlowService.complete(vo,transcwbList,1);
 					}
@@ -196,11 +197,11 @@ public class TpsCwbFlowPushService {
 					req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 					req.setOperater(operateUser==null?null:operateUser.getRealname());
 					req.setOperateTime(createDate);
-//					DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
-//					boxInfo.setBoxNo(trancwb);
-//					boxInfo.setVolume(new Double("0.01"));
-//					boxInfo.setWeight(new Double("0.01"));
-//					req.setBoxInfo(boxInfo);
+					DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
+					boxInfo.setBoxNo(trancwb);
+					boxInfo.setVolume(new Double("0.01"));
+					boxInfo.setWeight(new Double("0.01"));
+					req.setBoxInfo(boxInfo);
 					reqList.add(req);
 				}
 			}
