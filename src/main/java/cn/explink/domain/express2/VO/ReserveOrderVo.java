@@ -109,6 +109,19 @@ public class ReserveOrderVo {
     private long recordVersion;
 
     private int operateType;
+	
+	/**
+	* 发货省份
+	*/
+	private String cnorProvName;
+	/**
+	* 发货城市
+	*/
+	private String cnorCityName;
+	/**
+	* 发货地区
+	*/
+	private String cnorRegionName;
 
 	public Integer getOmReserveOrderId() {
 		return omReserveOrderId;
@@ -277,6 +290,31 @@ public class ReserveOrderVo {
     public void setOperateType(int operateType) {
         this.operateType = operateType;
     }
+
+	public String getCnorProvName() {
+		return cnorProvName;
+	}
+
+	public void setCnorProvName(String cnorProvName) {
+		this.cnorProvName = cnorProvName;
+	}
+
+	public String getCnorCityName() {
+		return cnorCityName;
+	}
+
+	public void setCnorCityName(String cnorCityName) {
+		this.cnorCityName = cnorCityName;
+	}
+
+	public String getCnorRegionName() {
+		return cnorRegionName;
+	}
+
+	public void setCnorRegionName(String cnorRegionName) {
+		this.cnorRegionName = cnorRegionName;
+	}
+
 	@Override
 	public String toString() {
 		return "ReserveOrderVo [omReserveOrderId=" + omReserveOrderId + ", reserveOrderNo=" + reserveOrderNo
@@ -285,7 +323,11 @@ public class ReserveOrderVo {
 				+ requireTime + ", requireTimeStr=" + requireTimeStr + ", reserveOrderStatus=" + reserveOrderStatus
 				+ ", reserveOrderStatusName=" + reserveOrderStatusName + ", reason=" + reason + ", transportNo="
 				+ transportNo + ", acceptOrg=" + acceptOrg + ", acceptOrgName=" + acceptOrgName + ", courier=" + courier
-				+ ", courierName=" + courierName + ", cnorRemark=" + cnorRemark + "]";
+				+ ", courierName=" + courierName + ", cnorRemark=" + cnorRemark + ", recordVersion=" + recordVersion
+				+ ", operateType=" + operateType + ", cnorProvName=" + cnorProvName + ", cnorCityName=" + cnorCityName
+				+ ", cnorRegionName=" + cnorRegionName + "]";
 	}
+	
+	
 
 }

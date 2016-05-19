@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -118,8 +119,10 @@ public class ReserveOrderController extends ExpressCommonController {
 		// 预约单状态
 		model.addAttribute("orderStatusList", OrderStatusEnum.values());
 
-        String provinceName = this.reserveOrderService.getAdressInfoByBranchid().getProvinceName();
-        model.addAttribute("provinceName", provinceName);
+		if (!CollectionUtils.isEmpty(cities)) {
+			String provinceName = reserveOrderService.getCurProvince(cities.get(0).getId()).getName();
+	        model.addAttribute("provinceName", provinceName);
+		}
 
         return "express2/reserveOrder/handle";
 	}
@@ -149,6 +152,16 @@ public class ReserveOrderController extends ExpressCommonController {
         } catch (OspException e) {
             logger.error(e.getMessage(), e);
         }
+        
+        // 查找本省的所有城市
+ 		List<AdressVO> cities = this.reserveOrderService.getCities();
+ 		model.addAttribute("cityList", cities);
+        
+        if (!CollectionUtils.isEmpty(cities)) {
+			String provinceName = reserveOrderService.getCurProvince(cities.get(0).getId()).getName();
+	        model.addAttribute("provinceName", provinceName);
+		}
+        
         return "express2/reserveOrder/warehouseHandle";
 	}
 	
@@ -667,7 +680,7 @@ public class ReserveOrderController extends ExpressCommonController {
     	
     	try {
     		//修改预约单
-    		reserveOrderService.editReserveOrder(vo);
+    		reserveOrderService.editReserveOrder(vo, super.getSessionUser());
     		
     	} catch (ExplinkException e) {
     		logger.info(e.getMessage());

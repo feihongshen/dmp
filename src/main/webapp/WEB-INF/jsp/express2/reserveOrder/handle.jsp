@@ -206,7 +206,7 @@
 		        {field:'cnorTel', title:'固话', width:100, align:'center'},
 		        {field:'cnorAddr', title:'寄件地址', width:130, align:'center'},
 		        {field:'requireTimeStr', title:'预约上门时间', width:130, align:'center'},
-		        {field:'reservrOrderStatusName', title:'预约单状态', width:100, align:'center'},
+		        {field:'reserveOrderStatusName', title:'预约单状态', width:100, align:'center'},
 		        {field:'reason', title:'原因', width:130, align:'center'},
 		        {field:'transportNo', title:'运单号', width:100, align:'center'},
 		        {field:'acceptOrgName', title:'站点', width:100, align:'center'},

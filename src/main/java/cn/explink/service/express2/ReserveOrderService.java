@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.explink.core.bean.BeanConverter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,7 @@ import com.pjbest.deliveryorder.bizservice.PjReserveOrderRequest;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderResponse;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderService;
 import com.pjbest.deliveryorder.bizservice.PjReserveOrderServiceHelper;
+import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.pjbest.deliveryorder.service.PjReserveOrderPageModel;
 import com.pjbest.deliveryorder.service.PjSaleOrderFeedbackRequest;
@@ -162,6 +162,9 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 			vo.setCnorRemark(po.getCnorRemark());
             vo.setCourierName(po.getCourierName());
             vo.setRecordVersion(po.getRecordVersion());
+			vo.setCnorProvName(po.getCnorProvName());
+            vo.setCnorCityName(po.getCnorCityName());
+            vo.setCnorRegionName(po.getCnorRegionName());
 			voList.add(vo);
 		}
 		// 封装分页信息
@@ -465,7 +468,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
      * @param vo 预约单编辑vo
      * @throws OspException 
      */
-    public void editReserveOrder(ReserveOrderEditVo vo) throws OspException {
+    public void editReserveOrder(ReserveOrderEditVo vo, User user) throws OspException {
     	final String logPrefix = "editReserveOrder->";
     	InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT); 
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
@@ -476,17 +479,41 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 		}
 		logger.info("{}omReserveOrderModel:{}", logPrefix, JsonUtil.translateToJson(omReserveOrderModel));
 		
+		if (ReserveOrderStatusEnum.HadReceiveSuccess.getIndex().intValue() == omReserveOrderModel.getReserveOrderStatus().intValue() ||
+				ReserveOrderStatusEnum.HaveReciveFailure.getIndex().intValue() == omReserveOrderModel.getReserveOrderStatus().intValue() ||
+				ReserveOrderStatusEnum.HadClosed.getIndex().intValue() == omReserveOrderModel.getReserveOrderStatus().intValue() ) {
+			throw new ExplinkException("状态为揽件成功、揽件失败、已关闭的预约单不允许修改，预约单号：" + vo.getReserveOrderNo());
+		}
+		
+		
 		PjReserveOrderRequest pjReserveOrderRequest = new PjReserveOrderRequest();
 		pjReserveOrderRequest.setReserveOrderNo(vo.getReserveOrderNo()); //预约单号
-		pjReserveOrderRequest.setCnorName(vo.getCnorName4eidt()); //寄件人姓名
-		pjReserveOrderRequest.setCnorProv("广东省"); //省份编码 TODO:$neo01.huang$之后再动态加载
-		pjReserveOrderRequest.setCnorCity(vo.getCity4edit()); //城市编码
-		pjReserveOrderRequest.setCnorRegion(vo.getCounty4edit()); //区域编码
+		pjReserveOrderRequest.setCnorName(vo.getCnorName4edit()); //寄件人姓名
+		
+		//获取当前所在省
+		AdressVO prov = getCurProvince(vo.getCity4editInt());
+		pjReserveOrderRequest.setCnorProv(prov.getName()); //省份编码，传名称
+		
+		pjReserveOrderRequest.setCnorCity(vo.getCityName4edit()); //城市编码，传名称
+		pjReserveOrderRequest.setCnorRegion(vo.getCountyName4edit()); //区域编码，传名称
 		pjReserveOrderRequest.setCnorAddr(vo.getCnorAddr4edit()); //寄件地址
 		pjReserveOrderRequest.setRequireTime(vo.getRequireTimeLong()); //预约上门时间
 		pjReserveOrderRequest.setRequester(TPS_REQUESTER); //请求方
-		pjReserveOrderRequest.setOperater("管理员" + System.currentTimeMillis()); //操作人名称 TODO:$neo01.huang$之后再动态加载
-		pjReserveOrderRequest.setOperateOrg("101"); //操作机构 TODO:$neo01.huang$之后再动态加载
+		pjReserveOrderRequest.setOperater(user.getUsername()); //操作人名称
+		
+		//原值回传
+		pjReserveOrderRequest.setWeight(omReserveOrderModel.getWeight());
+		pjReserveOrderRequest.setAppointTime(omReserveOrderModel.getAppointTime());
+		pjReserveOrderRequest.setCnorMobile(omReserveOrderModel.getCnorMobile());
+		pjReserveOrderRequest.setCnorTel(omReserveOrderModel.getCnorTel());
+		pjReserveOrderRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
+		
+		Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid());
+		if (branch == null) {
+			throw new ExplinkException("当前用户所属机构不存在");
+		}
+		String operateOrg = branch.getTpsbranchcode();
+		pjReserveOrderRequest.setOperateOrg(operateOrg); //操作机构
 		
 		logger.info("{}pjReserveOrderRequest:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderRequest));
 		
@@ -496,7 +523,27 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
 			throw new ExplinkException("TPS的response对象为空，预约单号：" + vo.getReserveOrderNo());
 		}
 		logger.info("{}pjReserveOrderResponse:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderResponse));
-		
+		if (!"1".equals(pjReserveOrderResponse.getResultCode())) {
+			throw new ExplinkException(pjReserveOrderResponse.getResultMsg() + "，预约单号：" + vo.getReserveOrderNo());
+		}
     }
+    
+    /**
+     * 获取当前所在省
+     * @param cityId 城市id
+     * @return
+     */
+    public AdressVO getCurProvince(int cityId) {
+    	AdressVO city = this.cityDAO.getProvinceById(cityId);
+		if (city == null) {
+			throw new ExplinkException("市不存在，市的id为：" + cityId);
+		}
+		AdressVO prov = this.provinceDAO.getProvinceByCode(city.getParentCode());
+		if (prov == null) {
+			throw new ExplinkException("省不存在，省的编号为：" + city.getParentCode());
+		}
+		return prov;
+    }
+
 	
 }
