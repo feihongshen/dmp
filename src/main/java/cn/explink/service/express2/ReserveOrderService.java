@@ -405,6 +405,7 @@ private final Logger logger = LoggerFactory.getLogger(this.getClass());
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
             pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
+//            pjSaleOrderFeedbackRequest.sett
             pjSaleOrderFeedbackRequest.setOperater(operator);
             Date now = new Date();
             pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());

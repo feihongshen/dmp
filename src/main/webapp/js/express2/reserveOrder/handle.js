@@ -374,7 +374,7 @@ $(function () {
         var param = [];
 
         var distributeBranch ;
-        if($('#distributeBranchSelect').val()){
+        if($('#distributeBranchSelect') && $('#distributeBranchSelect').val()){
             distributeBranch = $('#distributeBranchSelect').val();
         }else {
             distributeBranch = "";
@@ -424,13 +424,29 @@ $(function () {
         //    requireTimeStr4Feedback : $('#requireTimeStr4Feedback').val()
         //};
 
+        //validate Inputs
+        //延迟揽件状态的预约单，可反馈为揽件超区和揽件失败两种状态，选择该两种状态的任何一种都必须选择原因
+        var operateType =  $('#optCode4Feedback').val();
+        var reason = $('#reason4Feedback').val();
+        if (!operateType || operateType.length < 1) {
+            allertMsg.alertError("反馈为为必填");
+            return false;
+        }
+
+        if (operateType == LAN_JIAN_CHAO_QU || operateType == LAN_JIAN_SHI_BAI) {
+            if (!reason || reason.length < 1) {
+                allertMsg.alertError("原因为必填");
+                return false;
+            }
+        }
+
         var param = [];
 
         $.each(rows, function (index, value) {
             var reserveOrder = {};
             reserveOrder.reserveOrderNo = value.reserveOrderNo;
             reserveOrder.recordVersion = value.recordVersion;
-            reserveOrder.operateType =  $('#optCode4Feedback').val();
+            reserveOrder.operateType =  operateType;
             reserveOrder.reason = $('#reason4Feedback').val();
             reserveOrder.cnorRemark = $('#cnorRemark4Feedback').val();
             reserveOrder.requireTimeStr = $('#requireTimeStr4Feedback').val();

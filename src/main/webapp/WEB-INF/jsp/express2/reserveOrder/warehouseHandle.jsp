@@ -291,6 +291,8 @@
 
     // 站点退回 - 退回类型为站点超区
     var returnType = "<%= ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>";
+    var LAN_JIAN_CHAO_QU = "<%= ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>";
+    var LAN_JIAN_SHI_BAI = "<%= ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()%>";
 
     $(function () {
         //初始化表格
