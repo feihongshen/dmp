@@ -217,7 +217,6 @@ public class ReserveOrderController extends ExpressCommonController {
 		String carrierCode = ResourceBundleUtil.expressCarrierCode;
         omReserveOrderModel.setCarrierCode(carrierCode);
 		boolean isQuery = true;
-<<<<<<< HEAD
 //		if (this.isWarehouseMaster()) {
 //			//站长只能看到本站点的
 //			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
@@ -229,7 +228,6 @@ public class ReserveOrderController extends ExpressCommonController {
 //		} else {
 //			isQuery = false;
 //		}
-=======
 		if (this.isWarehouseMaster()) {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
@@ -241,7 +239,6 @@ public class ReserveOrderController extends ExpressCommonController {
 		} else {
 			isQuery = false;
 		}
->>>>>>> 911455952222ac42ae9ac0f9aec8cf0104d27c11
 		ReserveOrderPageVo reserveOrderPageVo;
 		if(isQuery) {
 			reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
