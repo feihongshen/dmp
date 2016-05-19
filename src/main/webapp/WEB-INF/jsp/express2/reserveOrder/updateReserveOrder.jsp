@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <div id="dialog1" title="修改预约单" style="display:none;">
-    <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
+    <div style="margin-top: 20px; margin-left:10px;margin-right:10px; width: 460px;">
         <table>
             <tr>
-                <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;width: 40%;">
+                <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;width: 30%;">
                     预约单号：
                 </td>
                 <td style="border: 0px; vertical-align: middle;">
@@ -19,7 +19,7 @@
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">地址：</td>
                 <td style="border: 0px; vertical-align: middle;">
-                    <select id="province4edit" disabled="disabled" name="province4edit" style="width: 31%">
+                    <select id="province4edit" disabled="disabled" name="province4edit" style="width: 90px;">
                        <option value=""><%=request.getAttribute("provinceName")%></option>
                         <%-- <%for (CustomWareHouse cw : wareHouseList) { %>
                          <option class="customerid2_<%=cw.getCustomerid() %>"
@@ -27,13 +27,13 @@
                          </option>
                          <%} %>--%>
                     </select>
-                    <select id="city4edit" name="city4edit" style="width: 31%">
+                    <select id="city4edit" name="city4edit" style="width: 90px;">
                         <option value="" selected="selected">市</option>
                         <c:forEach items="${cityList}" var="list">
                             <option value="${list.id}" code="${list.code}">${list.name}</option>
                         </c:forEach>
                     </select>
-                    <select id="county4edit" name="county4edit" style="width: 31%">
+                    <select id="county4edit" name="county4edit" style="width: 100px;">
                         <option value="">区/县</option>
                     </select>
                 </td>

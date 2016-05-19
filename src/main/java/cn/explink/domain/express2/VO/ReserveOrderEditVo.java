@@ -23,15 +23,23 @@ public class ReserveOrderEditVo implements Serializable {
 	/**
 	 * 寄件人姓名
 	 */
-	private String cnorName4eidt;
+	private String cnorName4edit;
 	/**
-	 * 市名称
+	 * 市编码
 	 */
 	private String city4edit;
 	/**
-	 * 区名称
+	 * 市名称
+	 */
+	private String cityName4edit;
+	/**
+	 * 区编码
 	 */
 	private String county4edit;
+	/**
+	 * 区名称
+	 */
+	private String countyName4edit;
 	/**
 	 * 寄件人详细地址
 	 */
@@ -42,6 +50,14 @@ public class ReserveOrderEditVo implements Serializable {
 	private String requireTimeStr4edit;
 	
 	//----------转换后的属性------------
+	/**
+	 * 市编码
+	 */
+	private Integer city4editInt;
+	/**
+	 * 区编码
+	 */
+	private Integer county4editInt;
 	/**
 	 * 预约上门时间
 	 */
@@ -57,7 +73,7 @@ public class ReserveOrderEditVo implements Serializable {
 	 */
 	public void validate() {
 		reserveOrderNo = StringUtils.trimToEmpty(reserveOrderNo);
-		cnorName4eidt = StringUtils.trimToEmpty(cnorName4eidt);
+		cnorName4edit = StringUtils.trimToEmpty(cnorName4edit);
 		city4edit = StringUtils.trimToEmpty(city4edit);
 		county4edit = StringUtils.trimToEmpty(county4edit);
 		cnorAddr4edit = StringUtils.trimToEmpty(cnorAddr4edit);
@@ -66,8 +82,11 @@ public class ReserveOrderEditVo implements Serializable {
 		if (reserveOrderNo.length() == 0) {
 			throw new IllegalStateException("请输入预约单号");
 		}
-		if (cnorName4eidt.length() == 0) {
+		if (cnorName4edit.length() == 0) {
 			throw new IllegalStateException("请输入寄件人");
+		}
+		if (cnorName4edit.length() > 64) {
+			throw new IllegalStateException("寄件人最大长度为64");
 		}
 		if (city4edit.length() == 0) {
 			throw new IllegalStateException("请输入市");
@@ -77,6 +96,9 @@ public class ReserveOrderEditVo implements Serializable {
 		}
 		if (cnorAddr4edit.length() == 0) {
 			throw new IllegalStateException("请输入地址");
+		}
+		if (cnorAddr4edit.length() > 256) {
+			throw new IllegalStateException("地址最大长度为256");
 		}
 		
 		if (requireTimeStr4edit.length() != 0) {
@@ -90,6 +112,19 @@ public class ReserveOrderEditVo implements Serializable {
 			requireTime = null;
 			requireTimeLong = null;
 		}
+		
+		try {
+			city4editInt = Integer.parseInt(city4edit);
+		} catch (NumberFormatException e) {
+			throw new IllegalStateException("市的编码不是数字");
+		}
+		
+		try {
+			county4editInt = Integer.parseInt(county4edit);
+		} catch (NumberFormatException e) {
+			throw new IllegalStateException("区的编码不是数字");
+		}
+		
 	}
 
 	public String getReserveOrderNo() {
@@ -100,12 +135,12 @@ public class ReserveOrderEditVo implements Serializable {
 		this.reserveOrderNo = reserveOrderNo;
 	}
 
-	public String getCnorName4eidt() {
-		return cnorName4eidt;
+	public String getCnorName4edit() {
+		return cnorName4edit;
 	}
 
-	public void setCnorName4eidt(String cnorName4eidt) {
-		this.cnorName4eidt = cnorName4eidt;
+	public void setCnorName4edit(String cnorName4edit) {
+		this.cnorName4edit = cnorName4edit;
 	}
 
 	public String getCity4edit() {
@@ -155,5 +190,38 @@ public class ReserveOrderEditVo implements Serializable {
 	public void setRequireTimeLong(Long requireTimeLong) {
 		this.requireTimeLong = requireTimeLong;
 	}
+
+	public String getCityName4edit() {
+		return cityName4edit;
+	}
+
+	public void setCityName4edit(String cityName4edit) {
+		this.cityName4edit = cityName4edit;
+	}
+
+	public String getCountyName4edit() {
+		return countyName4edit;
+	}
+
+	public void setCountyName4edit(String countyName4edit) {
+		this.countyName4edit = countyName4edit;
+	}
+
+	public Integer getCity4editInt() {
+		return city4editInt;
+	}
+
+	public void setCity4editInt(Integer city4editInt) {
+		this.city4editInt = city4editInt;
+	}
+
+	public Integer getCounty4editInt() {
+		return county4editInt;
+	}
+
+	public void setCounty4editInt(Integer county4editInt) {
+		this.county4editInt = county4editInt;
+	}
+	
 	
 }
