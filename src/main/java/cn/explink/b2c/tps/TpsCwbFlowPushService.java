@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.pjbest.deliveryorder.service.DoTrackBoxInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
-//import com.pjbest.deliveryorder.service.DoTrackBoxInfo;
+import com.pjbest.deliveryorder.service.DoTrackBoxInfo;
 import com.pjbest.deliveryorder.service.DoTrackFeedbackRequest;
 import com.vip.osp.core.context.InvocationContext;
 import com.vip.osp.core.exception.OspException;
@@ -247,11 +246,11 @@ public class TpsCwbFlowPushService {
 				weight=transCwbDetail.getWeight().doubleValue();
 			}
 			
-//			DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
-//			boxInfo.setBoxNo(vo.getScancwb());
-//			boxInfo.setVolume(volume);
-//			boxInfo.setWeight(weight);
-//			req.setBoxInfo(boxInfo);
+			DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
+			boxInfo.setBoxNo(vo.getScancwb());
+			boxInfo.setVolume(volume);
+			boxInfo.setWeight(weight);
+			req.setBoxInfo(boxInfo);
 			
 			reqList.add(req);
 		}
