@@ -297,6 +297,9 @@
     var hadAllocationStation = "<%= ReserveOrderStatusEnum.HadAllocationStation.getIndex()%>";
     var haveStationOutZone = "<%= ReserveOrderStatusEnum.HaveStationOutZone.getIndex()%>";
     
+    var LAN_JIAN_CHAO_QU = "<%= ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>";
+    var LAN_JIAN_SHI_BAI = "<%= ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()%>";
+
     $(function () {
         //初始化表格
         initDataGrid();
