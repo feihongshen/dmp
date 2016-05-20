@@ -8982,15 +8982,4 @@ CREATE TABLE `cs_complaint_accept` (
 			call proc_add_column_if_not_exists('express_ops_transcwb_detail', 'carrealweight', 'ALTER TABLE `express_ops_transcwb_detail` ADD COLUMN `carrealweight` decimal(18,3) default ''0.000'' NULL after `nextbranchid`;');
 		</sql>
 	</changeSet>
-	<changeSet id="mali-2016-03-24" author="mali">
-		<sql>
-			ALTER TABLE `express_set_branch` ADD COLUMN `outputno` varchar(50) COLLATE utf8_bin DEFAULT '' COMMENT '自动分拣线的出货口' AFTER `branchemail`;
-			CREATE TABLE `express_set_entrance` (
-			`entranceno`  varchar(50) COLLATE utf8_bin DEFAULT '' COMMENT '上货口编号' ,
-			`entranceip`  varchar(19) NOT NULL COMMENT '上货口ip' ,
-			`enable` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否启用，0：启用，1：停用'
-			);
-			INSERT INTO `express_set_system_install` ( `name`, `value`, `chinesename`) VALUES ( 'AutoAllocating', '1', '自动分拨开关（0：关闭，1：开启）');
-		</sql>
-	</changeSet>
 </databaseChangeLog>

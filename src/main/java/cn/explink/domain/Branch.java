@@ -87,8 +87,6 @@ public class Branch implements java.io.Serializable {
 	
 	private String tpsbranchcode;//上传tps时所用的机构编码
 	
-	private String outputno;//自动化分拣使用的出货口编号
-	
 	//自动核销用到的字段
 	/*
 	 * 通联-银行账号
@@ -766,14 +764,6 @@ public class Branch implements java.io.Serializable {
 		this.cftCertId = cftCertId;
 	}
 
-	public String getOutputno() {
-		return outputno;
-	}
-
-	public void setOutputno(String outputno) {
-		this.outputno = outputno;
-	}
-
 	public int getPayinType() {
 		return payinType;
 	}
@@ -782,9 +772,6 @@ public class Branch implements java.io.Serializable {
 		this.payinType = payinType;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
+	
 	
 }
