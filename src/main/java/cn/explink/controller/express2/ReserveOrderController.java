@@ -158,7 +158,6 @@ public class ReserveOrderController extends ExpressCommonController {
         feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai);
 
         model.addAttribute("feedbackOptCodes",feedbackOptCodes);
-        model.addAttribute("feedbackOptCodes",ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toArray());
 
         SbCodeTypeService sbCodeTypeService = new SbCodeTypeServiceHelper.SbCodeTypeServiceClient();
 
@@ -240,6 +239,17 @@ public class ReserveOrderController extends ExpressCommonController {
 		String carrierCode = ResourceBundleUtil.expressCarrierCode;
         omReserveOrderModel.setCarrierCode(carrierCode);
 		boolean isQuery = true;
+//		if (this.isWarehouseMaster()) {
+//			//站长只能看到本站点的
+//			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
+//            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+//		} else if(this.isProvQualityControlr() || this.isAdmin()) {
+//			if(StringUtils.isNotBlank(acceptOrg)) {
+//				omReserveOrderModel.setAcceptOrg(acceptOrg);
+//			}
+//		} else {
+//			isQuery = false;
+//		}
 		if (this.isWarehouseMaster()) {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
