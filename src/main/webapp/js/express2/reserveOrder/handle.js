@@ -421,7 +421,7 @@ $(function () {
 
         $.ajax({
             type: "POST",
-            url: contextPath + "/express2/reserveOrder/distributeBranch",
+            url: contextPath + "/express2/reserveOrder/distributeBranch/" + queryType,
             dataType: "json",
             contentType: "application/json",
             data: JSON.stringify(param)  ,

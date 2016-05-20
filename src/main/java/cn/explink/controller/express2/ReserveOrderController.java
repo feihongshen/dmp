@@ -575,11 +575,10 @@ public class ReserveOrderController extends ExpressCommonController {
      * @param response
      * @return
      */
-    @RequestMapping("/distributeBranch")
+    @RequestMapping("/distributeBranch/{queryType}")
     @ResponseBody
-    public JSONObject distributeBranch(@RequestBody ReserveOrderVo[] reserveOrderVos,
-                                       HttpServletRequest request, HttpServletResponse response
-    ) {
+	public JSONObject distributeBranch(@RequestBody ReserveOrderVo[] reserveOrderVos,
+			@PathVariable("queryType") String queryType, HttpServletRequest request, HttpServletResponse response) {
         final String logPrefix = "distributeBranch->";
 
         JSONObject obj = new JSONObject();
@@ -587,6 +586,11 @@ public class ReserveOrderController extends ExpressCommonController {
         if (reserveOrderVos.length > 0) {
 
             String selectedBranch = reserveOrderVos[0].getAcceptOrg();
+            if(StringUtils.isBlank(selectedBranch) && StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
+            	obj.put("errorMsg", "请选择站点！");
+                logger.error("{} 没有选择站点", logPrefix);
+                return obj;
+            }
             String selectedTpsbranchCode = null;
             //选择站点默认值是登录人员自己的站点
             Long distributeBranch = this.getSessionUser().getBranchid();
@@ -609,8 +613,12 @@ public class ReserveOrderController extends ExpressCommonController {
                     logger.error("{} 站点TPSBranchCode不存在", logPrefix);
                     return obj;
                 }
-            }else{
-                logger.info("{} 站点分配快递员", logPrefix);
+            } else if(StringUtils.isNotBlank(selectedBranch)) {
+            	obj.put("errorMsg", "站点不存在");
+                logger.error("{} 站点不存在", logPrefix);
+                return obj;
+            } else {
+            	logger.info("{} 站点分配快递员", logPrefix);
             }
 
             Long distributeCourier = Long.parseLong(reserveOrderVos[0].getCourier());
@@ -645,6 +653,12 @@ public class ReserveOrderController extends ExpressCommonController {
                 }
                 omReserveOrderModel.setCourier(selectedCourier);
                 omReserveOrderModel.setCourierName(selectedCourierName);
+                // 不选择快递员，预约单的状态改为已分配站点；否则，预约单的状态为已揽件分配
+                if(StringUtils.isBlank(selectedCourier)) {
+                	omReserveOrderModel.setReserveOrderStatus(ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue());
+                } else {
+                	omReserveOrderModel.setReserveOrderStatus(ReserveOrderStatusEnum.HadAllocationCourier.getIndex().byteValue());
+                }
                 omReserveOrderModels.add(omReserveOrderModel);
             }
 

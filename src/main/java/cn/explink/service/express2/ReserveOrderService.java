@@ -4,10 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -369,7 +366,7 @@ public class ReserveOrderService extends ExpressCommonService {
             pjSaleOrderFeedbackRequest.setAcceptOrg(omReserveOrderModel.getAcceptOrg());
             pjSaleOrderFeedbackRequest.setCourier(omReserveOrderModel.getCourier());
             pjSaleOrderFeedbackRequest.setCourierName(omReserveOrderModel.getCourierName());
-            pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.YiLanJianFenPei.getValue());
+            pjSaleOrderFeedbackRequest.setOperateType(omReserveOrderModel.getReserveOrderStatus().intValue());
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
             Date now = new Date();

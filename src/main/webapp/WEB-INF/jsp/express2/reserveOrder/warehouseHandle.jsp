@@ -223,12 +223,13 @@
 </div>
 </body>
 <script type="text/javascript">
+	var queryType = "<%=ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue()%>;"
     /**
      * 初始化表格
      */
     function initDataGrid() {
         $('#dg_rsList').datagrid({
-            url: contextPath + '/express2/reserveOrder/queryList/query',
+            url: contextPath + '/express2/reserveOrder/queryList/' + queryType,
             toolbar: "#signFee_toolbar",
             showFooter: true,
             fit: true,
@@ -238,7 +239,6 @@
             rownumbers: true,
             pagination: true,
             pageList: [10, 30, 50],
-            <%--queryParams: {queryType: '<%=ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue()%>'},--%>
             columns: [[
                 {field: 'omReserveOrderId', title: '预约单id', checkbox: true},
                 {
@@ -282,7 +282,7 @@
         var action = $searchForm.attr("action");
         var target = $searchForm.attr("action");
         //提交请求
-        $searchForm.attr("action", contextPath + "/express2/reserveOrder/exportExcel/handle");
+        $searchForm.attr("action", contextPath + "/express2/reserveOrder/exportExcel/" + queryType);
         $searchForm.attr("target", "_blank");
         $searchForm.submit();
         //恢复现场

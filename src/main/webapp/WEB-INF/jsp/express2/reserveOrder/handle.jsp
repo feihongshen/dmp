@@ -1,5 +1,6 @@
 <%@page import="com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum"%>
 <%@ page import="cn.explink.service.express2.ReserveOrderService" %>
+<%@ page import="cn.explink.enumutil.ReserveOrderQueryTypeEnum" %>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -181,6 +182,9 @@
 </div>
 </body>
 <script type="text/javascript">
+
+	var queryType = "<%=ReserveOrderQueryTypeEnum.HANDLE.getValue()%>;"
+
 	/**
 	 * 初始化表格
 	 */
