@@ -11,6 +11,9 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.ShangMenTuiCwbDetail;
 import cn.explink.util.StringUtil;
 
@@ -94,6 +97,7 @@ public class ShangMenTuiCwbDetailDAO {
 		return jdbcTemplate.queryForLong(sql, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getShangMenTuiCwbDetailByCustomerid(String customerids, long printType, String begindate, String enddate, long deliverybranchid,String orders,String selectype) {
 		if (selectype.equals("1")) {
 			if (!orders.isEmpty()&&orders.length()>0){
