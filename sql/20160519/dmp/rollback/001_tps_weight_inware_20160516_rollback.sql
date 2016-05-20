@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS `express_ops_tps_flow_tmp_sent`;

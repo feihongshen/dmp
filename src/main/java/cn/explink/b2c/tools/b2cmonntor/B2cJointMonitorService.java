@@ -36,6 +36,7 @@ import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.util.JMath;
 
@@ -112,7 +113,7 @@ public class B2cJointMonitorService {
 		}
 	}
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	private void saveDmpB2cDataMonitor(OrderFlow of) throws Exception {
 		CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.objectMapper.readValue(of.getFloworderdetail(), CwbOrderWithDeliveryState.class);

@@ -45,6 +45,7 @@ import cn.explink.domain.ShangMenTuiCwbDetail;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.UserService;
@@ -94,7 +95,7 @@ public class ChangeLogContronller {
 	@Autowired
 	AbnormalWriteBackDAO abnormalWriteBackDAO;
 
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 
 	public static boolean changeCheck = true;
 

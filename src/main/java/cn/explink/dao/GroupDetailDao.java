@@ -91,7 +91,16 @@ public class GroupDetailDao {
 			return null;
 		}
 	}
-
+	
+	public List<GroupDetail> getBroupDetailForBale(String baleno, long driverid, long balestate, long branchid) {
+		try {
+			String sql = "select gd.* from express_ops_groupdetail gd left outer join express_ops_outwarehousegroup og on gd.groupid=og.id where gd.baleid=(select id from express_ops_bale where baleno=? and branchid=? and balestate=?) and og.driverid=?";
+			return jdbcTemplate.query(sql, new GroupDetailMapper(), baleno, branchid, balestate, driverid);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
 	public long getGroupDetailCount(long userid, long emailfinishflag, long reacherrorflag) {
 		String sql = "SELECT COUNT(1) FROM express_ops_groupdetail gd LEFT OUTER JOIN express_ops_cwb_detail cd ON gd.cwb=cd.cwb WHERE gd.userid=?";
 		if (emailfinishflag > 0) {

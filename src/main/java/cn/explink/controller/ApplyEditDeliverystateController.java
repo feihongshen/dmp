@@ -55,6 +55,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
@@ -479,16 +480,20 @@ public class ApplyEditDeliverystateController {
 		try {
 			for (String applyid : applyids.split(",")) {
 				int applyidint = Integer.parseInt(applyid);
-				ZhiFuApplyView zhifu = this.zhiFuApplyDao.getCheckstate(applyidint, 2);
+				ZhiFuApplyView zhifu = this.zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
 				if (zhifu != null) {
-					sb.append(zhifu.getCwb() + ",");
-				} else {
-					String auditname = this.getSessionUser().getRealname();
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					String dateStr = sdf.format(new Date());
-					this.zhiFuApplyDao.updateStatePassByCwb(applyidint, auditname, dateStr);// 更改状态为通过审核
-					auditnum += 1;
-				}
+					CwbOrder order = this.cwbDAO.getCwbByCwb(zhifu.getCwb());
+					String errMsg = this.editCwbService.getCompletedCwbByCwb(order);
+					if (2 == zhifu.getApplystate() || errMsg != null && !errMsg.isEmpty()) {//订单已审核或者在退货途中不允许审核成功
+						sb.append(zhifu.getCwb() + ",");
+					} else {
+						String auditname = this.getSessionUser().getRealname();
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String dateStr = sdf.format(new Date());
+						this.zhiFuApplyDao.updateStatePassByCwb(applyidint, auditname, dateStr);// 更改状态为通过审核
+						auditnum += 1;
+					}
+				} 
 			}
 		} catch (Exception e) {
 			return "{\"code\":1,\"msg\":\"审核通过出现异常!\"}";
@@ -573,7 +578,6 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/editPaywayInfoModifyConfirmpass")
 	public @ResponseBody String editPaywayInfoModifyConfirmpass(Model model, HttpServletRequest request) throws Exception {
 		String applyids = request.getParameter("applyids");
-
 		List<EdtiCwb_DeliveryStateDetail> ecList = new ArrayList<EdtiCwb_DeliveryStateDetail>();
 		List<String> errorList = new ArrayList<String>();
 		long cwbpricerevisenum = 0;// 金额修改单量
@@ -584,48 +588,53 @@ public class ApplyEditDeliverystateController {
 		StringBuffer cwbStr = new StringBuffer("");
 		for (String applyid : applyids.split(",")) {
 			// zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid));//更改状态为确认通过
-			ZhiFuApplyView zfav = this.zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
-			FeeWayTypeRemark fwtr = JsonUtil.readValue(zfav.getFeewaytyperemark(), FeeWayTypeRemark.class);
-			String cofirmname = this.getSessionUser().getRealname();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String confirmtime = sdf.format(new Date());
 			try {
-				if (zfav.getConfirmstate() == 2) {
-					sb.append(zfav.getCwb() + ",");
-				} else {
-					if (zfav.getApplyway() == ApplyEnum.dingdanjinE.getValue()) {
-						long lon = this.zhiFuApplyDao.getApplystateCount(zfav.getCwb(), 1);
-						if (lon > 0) {
-							cwbStr.append(zfav.getCwb());// 添加订单有待确认并且有待审核的订单单号(确认通过时。。。)
+				ZhiFuApplyView zfav = this.zhiFuApplyDao.getZhiFuViewByApplyid(applyid);
+				FeeWayTypeRemark fwtr = JsonUtil.readValue(zfav.getFeewaytyperemark(), FeeWayTypeRemark.class);
+				String cofirmname = this.getSessionUser().getRealname();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String confirmtime = sdf.format(new Date());
+				if (zfav != null) {
+					CwbOrder order = this.cwbDAO.getCwbByCwb(zfav.getCwb());
+					String errMsg = this.editCwbService.getCompletedCwbByCwb(order);
+					if (2 == zfav.getConfirmstate() || errMsg != null && !errMsg.isEmpty()) {//订单已审核或者在退货途中不允许审核成功   2016-05-11 modify by vic.liang 
+						sb.append(zfav.getCwb() + ",");
+					} else {
+						if (zfav.getApplyway() == ApplyEnum.dingdanjinE.getValue()) {
+							long lon = this.zhiFuApplyDao.getApplystateCount(zfav.getCwb(), 1);
+							if (lon > 0) {
+								cwbStr.append(zfav.getCwb());// 添加订单有待确认并且有待审核的订单单号(确认通过时。。。)
+							}
+							this.todoConfirmFeeResult(fwtr, ecList, errorList, model); // 修改金额时的最终结算部分操作
+							// add by bruce shangguan 20160413 修改订单金额 ，添加应付甲方调整记录
+							this.orderPayChangeService.updateStateConfirmPass(applyid, cofirmname, confirmtime);
+							// end 20160413
+							this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
+							cwbpricerevisenum += 1;
+							// return "{\"errorCode\":0,\"msg\":\"true1\"}";
+						} else if (zfav.getApplyway() == ApplyEnum.zhifufangshi.getValue()) {
+							this.todoConfirmWayResult(fwtr, ecList, errorList, model);
+							this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
+							applywayrevisenum += 1;
+							// return "{\"errorCode\":0,\"msg\":\"true2\"}";
+						} else if (zfav.getApplyway() == ApplyEnum.dingdanleixing.getValue()) {
+							this.todoConfirmTypeResult(fwtr, ecList, errorList, model);
+							this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
+							cwbtyperevisenum += 1;
+							// return "{\"errorCode\":0,\"msg\":\"true3\"}";
+						} else if (zfav.getApplyway() == ApplyEnum.kuaidiyunfeijine.getValue()) {
+							long lon = this.zhiFuApplyDao.getApplystateCount(zfav.getCwb(), zfav.getApplyway());
+							if (lon > 0) {
+								cwbStr.append(zfav.getCwb());// 添加订单有待确认并且有待审核的订单单号(确认通过时。。。)
+							}
+							// TODE 修改运费金额的处理
+							this.todoConfirmShouldfareResult(fwtr, ecList, errorList, model); // 修改运费金额时的最终结算部分操作
+							this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
+							expressrevisenum += 1;
 						}
-						this.todoConfirmFeeResult(fwtr, ecList, errorList, model); // 修改金额时的最终结算部分操作
-						// add by bruce shangguan 20160413 修改订单金额 ，添加应付甲方调整记录
-						this.orderPayChangeService.updateStateConfirmPass(applyid, cofirmname, confirmtime);
-						// end 20160413
-						this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
-						cwbpricerevisenum += 1;
-						// return "{\"errorCode\":0,\"msg\":\"true1\"}";
-					} else if (zfav.getApplyway() == ApplyEnum.zhifufangshi.getValue()) {
-						this.todoConfirmWayResult(fwtr, ecList, errorList, model);
-						this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
-						applywayrevisenum += 1;
-						// return "{\"errorCode\":0,\"msg\":\"true2\"}";
-					} else if (zfav.getApplyway() == ApplyEnum.dingdanleixing.getValue()) {
-						this.todoConfirmTypeResult(fwtr, ecList, errorList, model);
-						this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
-						cwbtyperevisenum += 1;
-						// return "{\"errorCode\":0,\"msg\":\"true3\"}";
-					} else if (zfav.getApplyway() == ApplyEnum.kuaidiyunfeijine.getValue()) {
-						long lon = this.zhiFuApplyDao.getApplystateCount(zfav.getCwb(), zfav.getApplyway());
-						if (lon > 0) {
-							cwbStr.append(zfav.getCwb());// 添加订单有待确认并且有待审核的订单单号(确认通过时。。。)
-						}
-						// TODE 修改运费金额的处理
-						this.todoConfirmShouldfareResult(fwtr, ecList, errorList, model); // 修改运费金额时的最终结算部分操作
-						this.zhiFuApplyDao.updateStateConfirmPassByCwb(Integer.parseInt(applyid), cofirmname, confirmtime);// 更改状态为确认通过
-						expressrevisenum += 1;
 					}
 				}
+			
 			} catch (Exception e) {
 				this.logger.error("", e);
 				return "{\"code\":1,\"msg\":\"支付信息修改异常!\"}";
@@ -1259,7 +1268,7 @@ public class ApplyEditDeliverystateController {
 
 				try {
 					this.applyEditDeliverystateDAO.agreeSaveApplyEditDeliverystateById(id, receivedfeecash.add(receivedfeecheque).add(receivedfeeother), receivedfeepos, this.getSessionUser()
-							.getUserid(), DateTimeUtil.getNowTime(), new ObjectMapper().writeValueAsString(cwbOrderWithDeliveryState).toString());
+							.getUserid(), DateTimeUtil.getNowTime(), JacksonMapper.getInstance().writeValueAsString(cwbOrderWithDeliveryState).toString());
 				} catch (Exception e) {
 					this.logger.error("error while saveing applyEditDeliverystate", e);
 				}

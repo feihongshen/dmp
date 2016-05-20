@@ -206,9 +206,9 @@ public class EditCwbController {
 				cods.setCwbOrder(co);
 				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
 				// 存储订单表记录和反馈表记录，用于前端判断
-				String completedCwb = editCwbService.getCompletedCwbByCwb(co.getCwb());//已经完成的订单不能修改订单支付信息
+				String completedCwb = editCwbService.getCompletedCwbByCwb(co);//已经审核过的订单不能修改订单支付信息
 				if (completedCwb != null && !completedCwb.isEmpty()) { 
-					cods.setError(completedCwb + "订单金额");
+					cods.setError(completedCwb);
 					prohibitedCods.add(cods);
 				} else {
 					allowCods.add(cods);
@@ -226,9 +226,9 @@ public class EditCwbController {
 				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
 				cods.setCwbOrder(co);
 				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
-				String completedCwb = editCwbService.getCompletedCwbByCwb(co.getCwb());
-			    if (completedCwb != null && !completedCwb.isEmpty()) { //已经完成的订单不能修改订单支付信息
-				    cods.setError(completedCwb + "订单支付方式");
+				String completedCwb = editCwbService.getCompletedCwbByCwb(co);
+				if (completedCwb != null && !completedCwb.isEmpty()) { //已经审核过的订单不能修改订单支付信息
+				    cods.setError(completedCwb);
 					prohibitedCods.add(cods);
 				} else if (co.getReceivablefee().compareTo(BigDecimal.ZERO) <= 0 || co.getDeliverystate() == 0) { // 存储订单表记录和反馈表记录，用于前端判断 如果代收金额
 					cods.setError("代收货款应收金额少于等于0或者未反馈的订单不允许修改订单支付方式");
@@ -249,10 +249,9 @@ public class EditCwbController {
 				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
 				cods.setCwbOrder(co);
 				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
-				
-				String completedCwb = editCwbService.getCompletedCwbByCwb(co.getCwb());
+				String completedCwb = editCwbService.getCompletedCwbByCwb(co);
 				if (completedCwb != null && !completedCwb.isEmpty()) {
-					cods.setError(completedCwb + "订单类型"); //已完成的订单不允许修改订单类型
+					cods.setError(completedCwb); //已审核过的订单不允许修改订单类型
 					prohibitedCods.add(cods);
 				} else if ((cods.getDeliveryState() != null) && (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (cods.getDeliveryState().getInfactfare()
 						.compareTo(BigDecimal.ZERO) > 0)) {
@@ -276,9 +275,12 @@ public class EditCwbController {
 				CwbOrderWithDeliveryState cods = new CwbOrderWithDeliveryState();
 				cods.setCwbOrder(co);
 				cods.setDeliveryState(this.deliveryStateDAO.getDeliveryByCwbAndDeliverystate(co.getCwb()));
-				//将非快递单过滤掉
-				if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
-					allowCods.add(cods);
+				String completedCwb = editCwbService.getCompletedCwbByCwb(co); // 已经审核过的订单不允许修改支付信息
+				if (completedCwb == null || completedCwb.isEmpty()) {
+					//将非快递单过滤掉
+					if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
+						allowCods.add(cods);
+					}
 				}
 			}
 			model.addAttribute("allowCods", allowCods);
@@ -492,7 +494,7 @@ public class EditCwbController {
 								zfav.setApplystate(1);
 								zfav.setApplyresult(0);
 								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
+								zfav.setFeewaytyperemark(JacksonMapper.getInstance().writeValueAsString(fre));
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
@@ -580,7 +582,7 @@ public class EditCwbController {
 								zfav.setApplystate(1);//快递应该填这个吗？实体里面没有注释
 								zfav.setApplyresult(0);//快递应该填这个吗？实体里面没有注释
 								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(fre));
+								zfav.setFeewaytyperemark(JacksonMapper.getInstance().writeValueAsString(fre));
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
@@ -646,7 +648,7 @@ public class EditCwbController {
 								zfav.setApplystate(1);
 								zfav.setApplyresult(0);
 								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
+								zfav.setFeewaytyperemark(JacksonMapper.getInstance().writeValueAsString(ftr));
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
@@ -706,7 +708,7 @@ public class EditCwbController {
 								zfav.setApplystate(1);
 								zfav.setApplyresult(0);
 								zfav.setUserid(Integer.parseInt(String.valueOf(requestUser)));
-								zfav.setFeewaytyperemark(new ObjectMapper().writeValueAsString(ftr));
+								zfav.setFeewaytyperemark(JacksonMapper.getInstance().writeValueAsString(ftr));
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 								String dateStr = sdf.format(new Date());
 								zfav.setApplytime(dateStr);
@@ -854,8 +856,8 @@ public class EditCwbController {
 		this.logger.info("修改订单号：{}开始,editname" + editname + "editmobile" + editmobile + "editcommand" + editcommand + "editaddress" + editaddress, cwb);
 		CwbOrder old = this.cwbDAO.getCwbByCwb(cwb);
 		
-		//已经完成的订单不允许修改
-		String completedCwb = editCwbService.getCompletedCwbByCwb(cwb);
+		//已经审核过的订单不允许修改
+		String completedCwb = editCwbService.getCompletedCwbByCwb(old);
 		if (completedCwb != null && !completedCwb.isEmpty()) {
 			return "{\"errorCode\":1,\"error\":\"修改失败，"+completedCwb+"订单信息！\"}";
 		}

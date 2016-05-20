@@ -42,14 +42,15 @@ import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cn.explink.pos.tools.JacksonMapper;
 	
 public class Tools {
 	public final static int DB_OPERATION_MAX = 10000;
-	static ObjectMapper outMapper = new ObjectMapper();
-	static ObjectMapper mapper = new ObjectMapper();
+	static ObjectMapper outMapper = JacksonMapper.getInstance();
+	static ObjectMapper mapper = JacksonMapper.getInstance();
 	public static String SPLIT_PATTERN = ",|;|，|；|(\\n)";
 	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
 	/**

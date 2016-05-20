@@ -1,0 +1,1 @@
+ALTER TABLE express_ops_groupdetail ADD KEY Groupdetail_Baleid_Idx (`baleid`);

@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.MD5.MD5Util;
 
 @Service("jMSScanListenService")
@@ -52,7 +53,7 @@ public class JMSScanListenService {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	// public void scanListenService(@Header("orderFlow")String parm) throws
 	// IOException{

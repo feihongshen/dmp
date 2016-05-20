@@ -25,10 +25,21 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 $(function(){
 	getcwbsdataForCustomer();
 	$("#scancwb").focus();
+	$("#customerid").multipleSelect({
+        placeholder: "请选择",
+        filter: true,
+        single: true,
+        maxHeight: 55
+    });
+    $('.ms-choice > span').css('overflow','visible');
 });
 $(function() {
 	var $menuli = $(".saomiao_tab2 ul li");
@@ -518,8 +529,8 @@ function chuku(){
 			<br clear="all">
 		</div>
 
-		<div class="saomiao_info2">
-			<div class="saomiao_inbox2">
+		<div class="saomiao_info2" >
+			<div class="saomiao_inbox2" >
 				<div class="saomiao_tab">
 					<ul id="bigTag">
 						<li><a href="#" id="scancwbTag"
@@ -530,8 +541,8 @@ function chuku(){
 					</ul>
 				</div>
 				<div class="saomiao_selet2"></div>
-				<div class="saomiao_inwrith2">
-					<div class="saomiao_left2">
+				<div class="saomiao_inwrith2" >
+					<div class="saomiao_left2" >
 						<p style="display: none;">
 							<span>包号：</span> <input type="text" class="saomiao_inputtxt2" value="" id="baleno"
 								name="baleno"
@@ -540,13 +551,13 @@ function chuku(){
 								onclick="ranCreate();" /> <input type="button" id="handCreate" value="手工输入" class="button"
 								onclick="hanCreate();" />
 						</p>
-						<p>
+						<p><div class="saomiao_selet2" style="height: 60px">
 						供货商：<select id="customerid" name="customerid">
 						<option value="-1">请选择供货商</option>
 						<%for(Customer customer:customerlist){ %>
 						<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername() %></option>
 						<%} %>
-						</select>
+						</select></div>
 						</p>
 						<p>
 							<span>订单号：</span> <input class="saomiao_inputtxt2" type="text" id="scancwb" name="scancwb"
