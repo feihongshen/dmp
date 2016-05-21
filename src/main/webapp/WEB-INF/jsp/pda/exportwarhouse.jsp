@@ -840,7 +840,7 @@ function baleaddcwb(scancwb,baleno){
 	}
 	$.ajax({
 		type: "POST",
-		url:url ,
+		url : url ,
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
