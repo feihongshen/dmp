@@ -1,0 +1,1 @@
+SELECT count(*) FROM `express_set_system_install` WHERE name = 'Express2ROExcelRows';

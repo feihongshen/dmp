@@ -240,11 +240,9 @@ $(function () {
             var selectedRow = rows[0];
             $("#reserveOrderNo4Feedback").val(selectedRow.reserveOrderNo);
             $('#courierName4Feedback').val(selectedRow.cnorName);
-            $('#requireTimeStr4Feedback').val(selectedRow.requireTimeStr);
         } else {
             $("#reserveOrderNo4Feedback").val("");
             $('#courierName4Feedback').val("");
-            $('#requireTimeStr4Feedback').val("");
         }
 
         $('#type4Feedback').val("");
@@ -439,19 +437,6 @@ $(function () {
     function confirmFeedback() {
         var rows = $('#dg_rsList').datagrid('getChecked');
 
-        //var reserveOrderNos = [] ;
-        //$.each(rows, function(index, value){
-        //    reserveOrderNos.push(value.reserveOrderNo);
-        //});
-
-        //var param = {
-        //    reserveOrderNos : reserveOrderNos.join(","),
-        //    optCode4Feedback : $('#optCode4Feedback').val(),
-        //    reason4Feedback : $('#reason4Feedback').val(),
-        //    cnorRemark4Feedback : $('#cnorRemark4Feedback').val(),
-        //    requireTimeStr4Feedback : $('#requireTimeStr4Feedback').val()
-        //};
-
         //validate Inputs
         //延迟揽件状态的预约单，可反馈为揽件超区和揽件失败两种状态，选择该两种状态的任何一种都必须选择原因
         var operateType =  $('#optCode4Feedback').val();
@@ -477,7 +462,6 @@ $(function () {
             reserveOrder.operateType =  operateType;
             reserveOrder.reason = $('#reason4Feedback').val();
             reserveOrder.cnorRemark = $('#cnorRemark4Feedback').val();
-            reserveOrder.requireTimeStr = $('#requireTimeStr4Feedback').val();
             param.push(reserveOrder);
         });
 
@@ -497,7 +481,6 @@ $(function () {
                 $('#courierName4Feedback').val("");
                 $('#optCode4Feedback').val("");
                 $('#reason4Feedback').val("");
-                $('#requireTimeStr4Feedback').val("");
                 $('#cnorRemark4Feedback').val("");
                 closePanel(feedBackPanel);
             }

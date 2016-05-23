@@ -3,9 +3,18 @@ $(function () {
         changeCounty($(this).val(), "#cnorRegion");
     });
 
+    $("#acceptOrg").multipleSelect({
+        placeholder: "请选择",
+        single: true,
+        filter: true,
+        maxHeight: 200
+    });
+
     $("#acceptOrg").change(function () {
         changeCourier($(this).val(), "#courier");
     });
+
+    $("#search_table .ms-parent").css("padding-bottom", "7px");
 
     $("#distributeBranchSelect").change(function () {
         changeCourier($(this).val(), "#distributeCourierSelect");

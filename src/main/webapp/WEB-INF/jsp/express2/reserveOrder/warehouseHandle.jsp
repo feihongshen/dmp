@@ -149,14 +149,14 @@
                     </select>
                 </td>
             </tr>
-            <tr>
-                <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">预约上门时间：</td>
-                <td style="border: 0px; vertical-align: middle; ">
-                    <input style="width: 94%;" type="text" name="requireTimeStr4Feedback"
-                           id="requireTimeStr4Feedback" <%--style="height:30px;"--%> value="" disabled="disabled"
-                           onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
-                </td>
-            </tr>
+            <%--<tr>--%>
+                <%--<td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">预约上门时间：</td>--%>
+                <%--<td style="border: 0px; vertical-align: middle; ">--%>
+                    <%--<input style="width: 94%;" type="text" name="requireTimeStr4Feedback"--%>
+                           <%--id="requireTimeStr4Feedback" &lt;%&ndash;style="height:30px;"&ndash;%&gt; value="" disabled="disabled"--%>
+                           <%--onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>--%>
+                <%--</td>--%>
+            <%--</tr>--%>
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">备注</td>
                 <td style="border: 0px; vertical-align: middle; ">
@@ -270,7 +270,7 @@
 //            cnorProv:$("#cnorProv").val(),
 //            cnorCity:$("#cnorCity").val(),
             cnorMobile: $("#cnorMobile").val(),
-            acceptOrg: $("#acceptOrg").val(),
+//            acceptOrg: $("#acceptOrg").val(),
             courier: $("#courier").val(),
             reserveOrderStatusList: $("#reserveOrderStatusList").val()
         });
@@ -304,15 +304,6 @@
         //初始化表格
         initDataGrid();
 
-        //反馈为下拉菜单， 选择揽件失败或揽件超区，不可修改预约上门时间；选择延迟揽件，可修改预约上门时间。
-        $('#optCode4Feedback').change(function () {
-            var selectedValue = $(this).val();
-            if (selectedValue == "<%=ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()%>" || selectedValue == "<%=ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>"){
-                $('#requireTimeStr4Feedback').removeAttr('disabled');
-            }else {
-                $('#requireTimeStr4Feedback').attr("disabled",'disabled');
-            }
-        });
     });
 </script>
 </html>

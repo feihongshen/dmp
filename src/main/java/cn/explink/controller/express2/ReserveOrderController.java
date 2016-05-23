@@ -241,19 +241,8 @@ public class ReserveOrderController extends ExpressCommonController {
 		String carrierCode = ResourceBundleUtil.expressCarrierCode;
         omReserveOrderModel.setCarrierCode(carrierCode);
 		boolean isQuery = true;
-		if (this.isWarehouseMaster()) {
-			//站长只能看到本站点的
-			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		} else if(this.isCustomService() || this.isAdmin()) {
-			if(StringUtils.isNotBlank(acceptOrg)) {
-				omReserveOrderModel.setAcceptOrg(acceptOrg);
-			}
-		} else {
-			isQuery = false;
-		}
-		if (this.isWarehouseMaster()) {
-			//站长只能看到本站点的
+        if (this.isWarehouseMaster() || this.isCourier()) {
+            //站长或小件员只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
             omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
 		} else if(this.isCustomService() || this.isAdmin()) {
@@ -330,7 +319,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		String carrierCode = ResourceBundleUtil.expressCarrierCode;
 		omReserveOrderModel.setCarrierCode(carrierCode);
 		boolean isQuery = true;
-		if (this.isWarehouseMaster()) {
+		if (this.isWarehouseMaster() || this.isCourier()) {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
 			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
@@ -519,7 +508,9 @@ public class ReserveOrderController extends ExpressCommonController {
                 OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
                 omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
-                omReserveOrderModel.setReason(reserveOrderVo.getReason());
+//                omReserveOrderModel.setReason(reserveOrderVo.getReason());
+                //关闭原因写到备注
+                omReserveOrderModel.setRemark(reserveOrderVo.getReason());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
             List<String> errMsg = new ArrayList<String>();
@@ -556,7 +547,9 @@ public class ReserveOrderController extends ExpressCommonController {
                 OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
                 omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
-                omReserveOrderModel.setReason(reserveOrderVo.getReason());
+//                omReserveOrderModel.setReason(reserveOrderVo.getReason());
+                //关闭原因写到备注
+                omReserveOrderModel.setRemark(reserveOrderVo.getReason());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
 
@@ -721,7 +714,6 @@ public class ReserveOrderController extends ExpressCommonController {
             omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
             omReserveOrderModel.setReason(displayValue);
             omReserveOrderModel.setRemark(reserveOrderVo.getCnorRemark());
-            omReserveOrderModel.setRequireTimeStr(reserveOrderVo.getRequireTimeStr());
             omReserveOrderModels.add(omReserveOrderModel);
         }
 

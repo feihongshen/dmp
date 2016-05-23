@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,13 @@ import com.vip.osp.core.exception.OspException;
 
 import cn.explink.core.utils.JsonUtil;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
 import cn.explink.dao.express.CountyDAO;
 import cn.explink.dao.express.ProvinceDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express2.VO.ReserveOrderEditVo;
@@ -95,12 +99,14 @@ public class ReserveOrderService extends ExpressCommonService {
 	UserDAO userDao;
 	@Autowired
     CountyDAO countyDAO;
-
     @Autowired
     CityDAO cityDAO;
-
     @Autowired
     ProvinceDAO provinceDAO;
+    @Autowired
+    SystemInstallDAO systemInstallDAO;
+
+    private static final String MAX_ROW_SIZE_DB_IN_DB  = "Express2ROExcelRows";
 	
 	/**
 	 * 获取预约单列表
@@ -180,15 +186,22 @@ public class ReserveOrderService extends ExpressCommonService {
 	 */
 	public List<ReserveOrderVo> getTotalReserveOrders(OmReserveOrderModel omReserveOrderModel) {
 		List<ReserveOrderVo> reserveOrderList = new ArrayList<ReserveOrderVo>();
-		final int MAX_ROW_SIZE = 10000; //最大导出数量
+		final int DEFAULT_MAX_ROW_SIZE = 10000; //默认最大导出数量
+
+        int maxRowSizeDefined = DEFAULT_MAX_ROW_SIZE;
+        SystemInstall systemInstall = systemInstallDAO.getSystemInstallByName(MAX_ROW_SIZE_DB_IN_DB);
+        if (systemInstall != null && NumberUtils.isNumber(systemInstall.getValue())) {
+            maxRowSizeDefined = Integer.parseInt(systemInstall.getValue());
+        }
+
 		final int ROW_SIZE = 90; //分批次查询数量
 		//int page = 1; //起始页
 		//第一次查询
 		ReserveOrderPageVo reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, 1, ROW_SIZE);
 		reserveOrderList.addAll(reserveOrderPageVo.getReserveOrderVoList());
 		int maxRowSize = reserveOrderPageVo.getTotalRecord();
-		if(maxRowSize > MAX_ROW_SIZE) {
-			maxRowSize = MAX_ROW_SIZE;
+		if(maxRowSize > maxRowSizeDefined) {
+			maxRowSize = maxRowSizeDefined;
 		}
 		//继续查询
 		int pageSize = (int) Math.ceil((double) maxRowSize / (double) ROW_SIZE);
@@ -291,7 +304,8 @@ public class ReserveOrderService extends ExpressCommonService {
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
             pjSaleOrderFeedbackRequest.setReserveOrderNo(omReserveOrderModel.getReserveOrderNo());
             pjSaleOrderFeedbackRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
-            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
+//            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
+            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
             pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.GuanBi.getValue());
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
@@ -328,7 +342,8 @@ public class ReserveOrderService extends ExpressCommonService {
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
             pjSaleOrderFeedbackRequest.setReserveOrderNo(omReserveOrderModel.getReserveOrderNo());
             pjSaleOrderFeedbackRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
-            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
+//            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
+            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
             pjSaleOrderFeedbackRequest.setOperateType(returnType);
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
@@ -401,7 +416,6 @@ public class ReserveOrderService extends ExpressCommonService {
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
             pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
-//            pjSaleOrderFeedbackRequest.sett
             pjSaleOrderFeedbackRequest.setOperater(operator);
             Date now = new Date();
             pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
