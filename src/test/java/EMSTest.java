@@ -1,9 +1,13 @@
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 import cn.explink.b2c.benlaishenghuo.BenLaiShengHuoService;
 import cn.explink.b2c.ems.EMS;
 import cn.explink.b2c.ems.EMSDAO;
@@ -36,10 +40,10 @@ public class EMSTest extends BaseTest{
 	//抓取ems运单号单元测试
 	@Test
 	public void testOrderList(){
-		String transcwb = "huan0516004-3";
+		String transcwb = "huan0520003-3";
 		String response_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response> "
 				+ "<result>1</result><errorDesc></errorDesc><errorCode></errorCode>"
-				+ "<qryData><bigAccountDataId>huan0516004-3</bigAccountDataId><billno>ems0516004-1</billno>"
+				+ "<qryData><bigAccountDataId>huan0520003-3</bigAccountDataId><billno>ems0520003-3</billno>"
 				+ "<backBillno></backBillno></qryData></response>";
 		try {
 			
@@ -89,7 +93,9 @@ public class EMSTest extends BaseTest{
 	@Test
 	public void testSenderOrder(){
 		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
-		eMSTimmer.sendOrderToEMS(ems);
+		List<SendToEMSOrder> subList = null;
+		//eMSService.handleSendOrderToEMS(ems,subList);
+		eMSTimmer.sendOrderToEMS();
 	}
 	
 	//获取ems运单号测试
@@ -99,7 +105,20 @@ public class EMSTest extends BaseTest{
 	}
 	
 	public static void main(String[] args){
-		String okTime = (new Date()).toString();
-		System.out.println(okTime);
+		
+		String s = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48cmVzcG9uc2U"
+				+ "+PHJlc3VsdD4xPC9yZXN1bHQ"
+				+ "+PGVycm9yRGVzYz7ml6DplJnor6/kv6Hmga88L2Vycm9yRGVzYz48ZXJyb3JDb2RlPkUwMDA8L2Vy"
+				+ "cm9yQ29kZT48L3Jlc3BvbnNlPg==";
+		try {
+			String str = new String(new BASE64Decoder().decodeBuffer(s));
+			System.out.println(str);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
+	
+	
 }

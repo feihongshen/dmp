@@ -177,8 +177,9 @@ public class EMSDAO {
 	
 	//获取没有获取EMS运单号,且dmp订单信息已经推送给ems的数据
 	public List<Map<String, Object>> getTranscwbs() {
-		/*String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 and state=1 order by id asc limit 0,500";*/
-		String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 order by id asc limit 0,500";
+		String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 and state=1 order by id asc limit 0,500";
+		//测试
+		//String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 order by id asc limit 0,1";
 		List<Map<String, Object>> transcwbs = this.jdbcTemplate.queryForList(sql);
 		return transcwbs;
 	}

@@ -17,8 +17,11 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -46,6 +49,8 @@ public class FlowFromJMSToEMSOrderService {
 	TransCwbDao transCwbDao;
 	@Autowired
 	EMSService eMSService;
+	@Autowired
+	MqExceptionDAO mqExceptionDAO;
 	/*@Produce(uri = "jms:queue:sendBToCToDmp")
 	ProducerTemplate sendBToCToDmpProducer;*/
 
@@ -87,10 +92,10 @@ public class FlowFromJMSToEMSOrderService {
 			this.logger.error("error while handle orderflow", e1);
 			// 把未完成MQ插入到数据库中, start
 			//消费MQ异常表
-			/*this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".saveFlowB2cSend")
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".saveFlowB2cSend")
 					.buildExceptionInfo(e1.toString()).buildTopic(MQ_FROM_URI)
 					.buildMessageHeader("orderFlow", parm)
-					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());*/
+					.buildMessageHeaderUUID(messageHeaderUUID).buildMessageSource(MessageSourceEnum.receiver.getIndex()).getMqException());
 			// 把未完成MQ插入到数据库中, end
 		}
 	}
@@ -101,11 +106,6 @@ public class FlowFromJMSToEMSOrderService {
 		this.logger.info("EMS订单保存， 环节信息处理,{}", parm);
 		try {
 			OrderFlow orderflow = this.objectMapper.readValue(parm, OrderFlow.class);
-			//测试
-			/*OrderFlow orderflow = new OrderFlow();
-			orderflow.setCwb("1234");
-			orderflow.setFloworderid(6);
-			orderflow.setFlowordertype(6);*/
 			int floworderType = orderflow.getFlowordertype();
 			if (!this.flowList.contains(floworderType)) {
 				this.logger.warn("RE:cwb=" + orderflow.getCwb() + ",flowordertype=" + orderflow.getFlowordertype());
@@ -228,34 +228,24 @@ public class FlowFromJMSToEMSOrderService {
 		//寄件人姓名
 		if(!StringUtil.isEmpty(order.getSendername())){
 			eMSOrderInfo.setScontactor(order.getSendername());
-		}else{
-			eMSOrderInfo.setScontactor("***");
 		}
 		//寄件人电话1
-		eMSOrderInfo.setScustMobile("***");
+		eMSOrderInfo.setScustMobile("13*****0000");
 		//寄件人地址
 		if(order.getCwbstate()==CwbOrderTypeIdEnum.Express.getValue()){
 			eMSOrderInfo.setScustAddr(order.getSenderstreet());
-		}else{
-			eMSOrderInfo.setScustAddr("***");
 		}
 		//收件人姓名
 		if(!StringUtil.isEmpty(order.getConsigneename())){
 			eMSOrderInfo.setTcontactor(order.getConsigneename());
-		}else{
-			eMSOrderInfo.setTcontactor("***");
 		}
 		//收件人电话
 		if(!StringUtil.isEmpty(order.getConsigneemobile())){
 			eMSOrderInfo.setTcustMobile(order.getConsigneemobile());
-		}else{
-			eMSOrderInfo.setTcustMobile("***");
 		}
 		//收件人地址
 		if(!StringUtil.isEmpty(order.getConsigneeaddress())){
 			eMSOrderInfo.setTcustAddr(order.getConsigneeaddress());
-		}else{
-			eMSOrderInfo.setTcustAddr("***");
 		}
 		//货物重量
 		eMSOrderInfo.setWeight(order.getCarrealweight());
@@ -266,8 +256,20 @@ public class FlowFromJMSToEMSOrderService {
 			eMSOrderInfo.setFee(order.getShouldfare());
 		}
 		eMSOrderInfo.setCustomerDn(transcwb);
+		//ems校验字段给只
+		/*eMSOrderInfo.setProcdate(Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+		eMSOrderInfo.setLength(BigDecimal.ZERO);
+		eMSOrderInfo.setInsure(BigDecimal.ZERO);
+		eMSOrderInfo.setInsurance(BigDecimal.ZERO);
+		eMSOrderInfo.setSubBillCount(order.getSendnum());
+		eMSOrderInfo.setMainBillFlag(3+"");
+		eMSOrderInfo.setMainSubPayMode(1+"");
+		eMSOrderInfo.setInsureType(2+"");
+		eMSOrderInfo.setPayMode(1+"");*/
+		
 		list.add(eMSOrderInfo);
 		String datastr = Tools.getObjectToXml(list);
+		
 		return datastr;
 	}
 

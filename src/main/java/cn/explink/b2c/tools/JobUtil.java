@@ -339,9 +339,14 @@ public class JobUtil {
 		
 		JobUtil.threadMap.put("syncBranchInf", 0);
 		JobUtil.threadMap.put("syncUserInf", 0);
-		JobUtil.threadMap.put("emsEmailNo", 0);
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
 		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
+		
+		//EMS定时器
+		JobUtil.threadMap.put("sendOrderToEMS", 0);
+		JobUtil.threadMap.put("getEmsEmailNo", 0);
+		JobUtil.threadMap.put("imitateEMSTraceToDmpOpt", 0);
+	
 	}
 
 	/**
@@ -384,8 +389,12 @@ public class JobUtil {
 		//
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
 		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
-		JobUtil.threadMap.put("emsEmailNo", 0);
 		this.logger.info("系统自动初始化定时器完成");
+		
+		//EMS定时器 
+		JobUtil.threadMap.put("sendOrderToEMS", 0);
+		JobUtil.threadMap.put("getEmsEmailNo", 0);
+		JobUtil.threadMap.put("imitateEMSTraceToDmpOpt", 0);
 	}
 
 	/**
@@ -1830,7 +1839,7 @@ public class JobUtil {
 	/**
 	 * 执行获取EMS运单号的定时器
 	 */
-	public void getEmsEmailNo() {
+	public void getEmsEmailNo_task() {
 		long starttime = System.currentTimeMillis();
 		try {
 			String sysValue = this.getSysOpenValue();
@@ -1839,28 +1848,28 @@ public class JobUtil {
 				return;
 			}
 
-			if (JobUtil.threadMap.get("emsEmailNo") == 1) {
+			if (JobUtil.threadMap.get("getEmsEmailNo") == 1) {
 				this.logger.warn("本地定时器没有执行完毕，跳出循环EMS运单号获取");
 				return;
 			}
-			JobUtil.threadMap.put("emsEmailNo", 1);
+			JobUtil.threadMap.put("getEmsEmailNo", 1);
 
 			this.eMSTimmer.getEmsMailNoTask(); // 下载
 
 		} catch (Exception e) {
-			this.logger.error("maikolin执行定时器异常", e);
+			this.logger.error("getEmsEmailNo执行定时器异常", e);
 		} finally {
-			JobUtil.threadMap.put("maikolin", 0);
+			JobUtil.threadMap.put("getEmsEmailNo", 0);
 
 		}
 
 		long endtime = System.currentTimeMillis();
 
-		this.logger.info("执行了获取maikolin订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		this.logger.info("执行了获取getEmsEmailNo订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
 	//执行ems轨迹模拟dmp操作定时器  EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
-	public void imitateEMSTraceToDmpOpt() {
+	public void imitateEMSTraceToDmpOpt_task() {
 		if (JobUtil.threadMap.get("imitateEMSTraceToDmpOpt") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环EMS轨迹模拟dmp操作");
 			return;
@@ -1871,38 +1880,38 @@ public class JobUtil {
 		long endtime = 0;
 		try {
 			starttime = System.currentTimeMillis();
-			this.vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetails();
+			this.eMSTimmer.imitateDmpOpt();
 			endtime = System.currentTimeMillis();
 		} catch (Exception e) {
-			this.logger.error("执行vipshoptimmer定时器异常", e);
+			this.logger.error("执行imitateEMSTraceToDmpOpt定时器异常", e);
 		} finally {
-			JobUtil.threadMap.put("vipshoptimmer", 0);
+			JobUtil.threadMap.put("imitateEMSTraceToDmpOpt", 0);
 		}
 
-		this.logger.info("执行了获取vipshoptimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		this.logger.info("执行了获取imitateEMSTraceToDmpOpt订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 	
 	//执行推送订单信息给ems定时器 ;
-	public void sendOrderToEMS() {
-		if (JobUtil.threadMap.get("sendOrderToEMSTimmer") == 1) {
+	public void sendOrderToEMS_task() {
+		if (JobUtil.threadMap.get("sendOrderToEMS") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环EMS订单推送操作");
 			return;
 		}
-		JobUtil.threadMap.put("sendOrderToEMSTimmer", 1);
+		JobUtil.threadMap.put("sendOrderToEMS", 1);
 
 		long starttime = 0;
 		long endtime = 0;
 		try {
 			starttime = System.currentTimeMillis();
-			this.eMSTimmer.SendOrderOps();
+			this.eMSTimmer.sendOrderToEMS();
 			endtime = System.currentTimeMillis();
 		} catch (Exception e) {
-			this.logger.error("执行sendOrderToEMSTimmer定时器异常", e);
+			this.logger.error("执行sendOrderToEMS定时器异常", e);
 		} finally {
-			JobUtil.threadMap.put("sendOrderToEMSTimmer", 0);
+			JobUtil.threadMap.put("sendOrderToEMS", 0);
 		}
 
-		this.logger.info("执行了获取sendOrderToEMSTimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		this.logger.info("执行了获取sendOrderToEMS订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
 }

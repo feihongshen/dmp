@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,15 +21,20 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.httpclient.HttpException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 import cn.explink.b2c.tools.ExptCodeJoint;
 import cn.explink.b2c.tools.ExptCodeJointDAO;
 import cn.explink.b2c.tools.JiontDAO;
@@ -43,7 +49,9 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.CwbStateControlDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
+import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -51,13 +59,13 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbStateControl;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassOld;
+import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
-import cn.explink.enumutil.EMSTraceDataEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
@@ -70,8 +78,6 @@ import cn.explink.service.OrderBackCheckService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 import cn.explink.util.Tools;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 @Service
 public class EMSService {
@@ -111,6 +117,10 @@ public class EMSService {
 	ExptCodeJointDAO exptCodeJointDAO;
 	@Autowired
 	EMSDAO eMSDAO;
+	@Autowired
+	OrderBackCheckDAO orderBackCheckDAO;
+	@Autowired
+	TransCwbDetailDAO transCwbDetailDAO;
 	
 	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
@@ -300,7 +310,8 @@ public class EMSService {
 		//校验ems轨迹顺序
 		int validateFlag = validateEMSOrder(emsFlowEntity.getEmsFlowordertype(),flow,order);
 		if(validateFlag==0){
-			throw new CwbException("","EMS运单轨迹顺序异常！当前订单操作状态flowordertype="+flow+", EMS的action为："+emsFlowEntity.getEmsAction());
+			this.logger.info("EMS运单轨迹顺序异常！当前订单操作状态flowordertype="+flow+", EMS的action为："+emsFlowEntity.getEmsAction());
+			return 0;
 		}
 		//订单当前操作状态
 		DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(order.getCwb());
@@ -330,7 +341,8 @@ public class EMSService {
 					boolean chechFlag = customer.getNeedchecked() == 1 ? true : false;
 					// chechFlag (退货是否需要审核的标识 0：否 ,1：是)
 					if (chechFlag) {
-						this.clientConfirm(cwb,emsDelivery);
+						OrderBackCheck back = orderBackCheckDAO.getOrderBackCheckByCwb(order.getCwb());
+						this.clientConfirm(back.getId()+"",emsDelivery);
 					}
 					//模拟退货出站（依据该客户是否要退货出站审核，如果要审核，模拟退货出站审核+退货出站；否则，直接模拟退货出站）
 					this.imitateCwbexportUntreadWarhouse(transcwb, emsDelivery,emsTuihuoBranch);
@@ -539,13 +551,16 @@ public class EMSService {
     }
     
     //模拟退货出站
-    public void imitateCwbexportUntreadWarhouse(String transcwb,User emsDelivery,Branch nextBranch){
+    public void imitateCwbexportUntreadWarhouse(String transcwb,User emsDelivery,Branch nextBranch)throws Exception{
 		String cwb = this.cwbOrderService.translateCwb(transcwb);
 		try{
 			//CwbOrder cwbOrder = this.cwbOrderService.outUntreadWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno, confirmflag == 1, comment, baleno, false);// 为包号修改
 			CwbOrder cwbOrder = this.cwbOrderService.outUntreadWarehous(emsDelivery, cwb, transcwb, emsDelivery.getUserid(), 0, nextBranch.getBranchid(), 0, false, "", "", false);
+			transCwbDetailDAO.updatePreviousbranchidByCwb(cwb, emsDelivery.getBranchid());
 		}catch(Exception e){
 			this.logger.info("EMS模拟退货出站异常! 运单号：[" + transcwb + "]");
+			System.out.println("e");
+			throw e;
 		}
 		
 	}
@@ -822,20 +837,35 @@ public class EMSService {
 		String emsTranscwbUrl = ems.getEmsTranscwbUrl();
 		//对接授权码
 		String appKey = ems.getAppKey();
-		
-		//1.拼接requestXML是发送给EMS的xml信息 2.response_XML发送给EMS
-		String requestXML = TranscwbRequestStr(ems.getSysAccount(), ems.getEncodeKey(),appKey, transcwb);
+		BufferedReader in = null;
 		String response_XML = "";
 		
-		logger.info("请求[EMS]运单号XML={}", requestXML);
-		//将发送给ems的订单信息字符串进行base64加密
-		String base64Sendstr = new BASE64Encoder().encode(requestXML.getBytes());
-		
 		try {
-			response_XML = HTTPInvokeWs(base64Sendstr, emsTranscwbUrl);
+			//1.拼接requestXML是发送给EMS的xml信息 2.response_XML发送给EMS
+			String requestXML = TranscwbRequestStr(ems.getSysAccount(), ems.getEncodeKey(),appKey, transcwb);
+			
+			logger.info("请求[EMS]运单号XML={}", requestXML);
+			//将发送给ems的订单信息字符串进行base64加密
+			String base64Sendstr = new BASE64Encoder().encode(requestXML.getBytes());
+			base64Sendstr = URLEncoder.encode(base64Sendstr);
+			// 创建HttpClient实例     
+	        HttpClient httpclient = new DefaultHttpClient();  
+			HttpPost httpposts = new HttpPost(emsTranscwbUrl + base64Sendstr);    
+	        HttpResponse response = httpclient.execute(httpposts); 
+	        in = new BufferedReader(new InputStreamReader(response.getEntity()  
+	                .getContent()));  
+	        StringBuffer sb = new StringBuffer("");  
+	        String line = "";  
+	        String NL = System.getProperty("line.separator");  
+	        while ((line = in.readLine()) != null) {  
+	            sb.append(line + NL);  
+	        }  
+	        in.close();  
+	        String result = sb.toString();  
 			
 			//将返回给dmp的订单信息字符串进行base64解密
-			response_XML = new String(new BASE64Decoder().decodeBuffer(response_XML));
+			response_XML = new String(new BASE64Decoder().decodeBuffer(result));
+			//将返回给dmp的订单信息字符串进行base64解密
 			logger.info("请求[EMS]运单号接口返回xml{}", response_XML);
 			
 			if (response_XML.contains("<result>0</result>")) {
@@ -889,30 +919,6 @@ public class EMSService {
 		return xml;
 	}
 	
-	private String HTTPInvokeWs(String requestXML, String url) throws HttpException, IOException {
-		URL url1 = new URL(url);
-		HttpURLConnection httpURLConnection = (HttpURLConnection) url1.openConnection();
-		httpURLConnection.setRequestProperty("content-type", "text/xml");
-		httpURLConnection.setRequestProperty("Accept-Charset", "utf-8");
-		httpURLConnection.setRequestProperty("contentType", "utf-8");
-		httpURLConnection.setDoOutput(true);
-		httpURLConnection.setDoInput(true);
-		httpURLConnection.setRequestMethod("POST");
-		httpURLConnection.setConnectTimeout(30000);
-		httpURLConnection.setReadTimeout(30000);
-		httpURLConnection.connect();
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(httpURLConnection.getOutputStream(), "UTF-8"));
-		out.write(requestXML);
-		out.flush();
-		// 接收服务器的返回：
-		BufferedReader reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "utf-8"));
-		StringBuilder buffer = new StringBuilder();
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			buffer.append(line);
-		}
-		return buffer.toString();
-	}
 	
 	//校验ems轨迹顺序
 	public int validateEMSOrder(long emsFlowordertype,long currentOrderType,CwbOrder order){
@@ -932,26 +938,28 @@ public class EMSService {
 		}else if((order.getSendcarnum() > 1) || (order.getBackcarnum() > 1)){
 			OrderFlow orderFlow = null;
 			String flowOrderStr = "";
-			if(currentOrderType==6){
+			if(emsFlowordertype==6){
 				flowOrderStr = CwbFlowOrderTypeEnum.WeiDaoHuo.getValue()+","+
 						CwbFlowOrderTypeEnum.TiHuo.getValue()+","+
 						CwbFlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue()+","+
 						CwbFlowOrderTypeEnum.RuKu.getValue()+","+
 						CwbFlowOrderTypeEnum.ChuKuSaoMiao.getValue()+","+
 						CwbFlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+
+						CwbFlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()+","+
 						CwbFlowOrderTypeEnum.FenZhanLingHuo.getValue()+","+
 						CwbFlowOrderTypeEnum.YiShenHe.getValue();
 				orderFlow = orderFlowDAO.getOrderFlowByCwbAndFlowtype(order.getCwb(),flowOrderStr);
-			}else if(currentOrderType==7){
+			}else if(emsFlowordertype==7){
 				flowOrderStr = CwbFlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()+","+
+						CwbFlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()+","+
 						CwbFlowOrderTypeEnum.FenZhanLingHuo.getValue()+","+
 						CwbFlowOrderTypeEnum.YiShenHe.getValue();
 				orderFlow = orderFlowDAO.getOrderFlowByCwbAndFlowtype(order.getCwb(),flowOrderStr);
-			}else if(currentOrderType==9){
+			}else if(emsFlowordertype==9){
 				flowOrderStr = CwbFlowOrderTypeEnum.FenZhanLingHuo.getValue()+","+
 						CwbFlowOrderTypeEnum.YiShenHe.getValue();
 				orderFlow = orderFlowDAO.getOrderFlowByCwbAndFlowtype(order.getCwb(),flowOrderStr);
-			}else if(currentOrderType==36){
+			}else if(emsFlowordertype==36){
 				flowOrderStr = CwbFlowOrderTypeEnum.YiShenHe.getValue()+"";
 				orderFlow = orderFlowDAO.getOrderFlowByCwbAndFlowtype(order.getCwb(),flowOrderStr);
 			}
@@ -998,16 +1006,34 @@ public class EMSService {
 		String appKey=ems.getAppKey();
 		String encodeKey=ems.getEncodeKey();
 		String sendOrderUrl = ems.getOrderSendUrl();
-		String sendstr = this.getObjectToXmlStr(subList,sysAccount,passWord,printKind,appKey,"1");
+		String sendstr = this.getObjectToXmlStr(subList,sysAccount,passWord,printKind,appKey,encodeKey);
+		//String sendOrderUrl = "http://os.ems.com.cn:8081/zkweb/bigaccount/getBigAccountDataAction.do?method=getPrintDatas&xml=";
 		List<SendToEMSOrder> currentList = subList;
+		BufferedReader in = null;
 		try {
 			logger.info("[EMS]订单下发接口,发送报文xml{}", sendstr);
 			//将发送给ems的订单信息字符串进行base64加密
 			String base64Sendstr = new BASE64Encoder().encode(sendstr.getBytes());
+			base64Sendstr = URLEncoder.encode(base64Sendstr);
+			//String base64Sendstr="http://os.ems.com.cn:8081/zkweb/bigaccount/getBigAccountDataAction.do?method=getPrintDatas&xml=PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8%2BCjxYTUxJbmZvPgo8c3lzQWNjb3VudD5BMTIzNDU2Nzg5MFo8L3N5c0FjY291bnQ%2BCjxwYXNzV29yZD5lMTBhZGMzOTQ5YmE1OWFiYmU1NmUwNTdmMjBmODgzZTwvcGFzc1dvcmQ%2BCjxhcHBLZXk%2BU0E3MTI1MTQ0QjNhNkJCMDA8L2FwcEtleT4KPHByaW50S2luZD4yPC9wcmludEtpbmQ%2BCjxwcmludERhdGFzPgo8cHJpbnREYXRhPgo8YmlnQWNjb3VudERhdGFJZD4yMDE1MTIwOTE3Mjc0MDIwPC9iaWdBY2NvdW50RGF0YUlkPgo8YnVzaW5lc3NUeXBlPjQ8L2J1c2luZXNzVHlwZT4KPGJpbGxubz5LREJHMTAwNjE4MjIxPC9iaWxsbm8%2BCjxzY29udGFjdG9yPmFhYTwvc2NvbnRhY3Rvcj4KPHNjdXN0TW9iaWxlPjEzMzMzMzMzMzMzPC9zY3VzdE1vYmlsZT4KPHNjdXN0Q29tcD5iYmI8L3NjdXN0Q29tcD4KPHRjb250YWN0b3I%2BY2NjPC90Y29udGFjdG9yPgo8dGN1c3RNb2JpbGU%2BMTU4NTY1OTg2MDY8L3RjdXN0TW9iaWxlPgo8dGN1c3RBZGRyPmVlZWVlZWVlZWVlPC90Y3VzdEFkZHI%2BCjx0Y3VzdFByb3ZpbmNlPuWuieW%2BveecgTwvdGN1c3RQcm92aW5jZT4KPHRjdXN0Q2l0eT7lronluobluII8L3RjdXN0Q2l0eT4KPHRjdXN0Q291bnR5PuWuv%2BadvuWOvzwvdGN1c3RDb3VudHk%2BCjwvcHJpbnREYXRhPgo8L3ByaW50RGF0YXM%2BCjwvWE1MSW5mbz4K";
+			// 创建HttpClient实例     
+	        HttpClient httpclient = new DefaultHttpClient();  
+			HttpPost httpposts = new HttpPost(sendOrderUrl + base64Sendstr);    
+	        HttpResponse response = httpclient.execute(httpposts); 
+	        in = new BufferedReader(new InputStreamReader(response.getEntity()  
+                    .getContent()));  
+            StringBuffer sb = new StringBuffer("");  
+            String line = "";  
+            String NL = System.getProperty("line.separator");  
+            while ((line = in.readLine()) != null) {  
+                sb.append(line + NL);  
+            }  
+            in.close();  
+            String result = sb.toString();  
 			
-			String response_XML = this.HTTPInvokeWs(base64Sendstr, sendOrderUrl);
+			//String response_XML = this.HTTPInvokeWs(base64Sendstr, sendOrderUrl);
 			//将返回给dmp的订单信息字符串进行base64解密
-			response_XML = new String(new BASE64Decoder().decodeBuffer(response_XML));
+			String response_XML = new String(new BASE64Decoder().decodeBuffer(result));
 			logger.info("[EMS]订单下发接口返回xml{}", response_XML);
 			
 			// 3.成功了,解析xml

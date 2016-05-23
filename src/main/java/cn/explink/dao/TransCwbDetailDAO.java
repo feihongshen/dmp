@@ -380,4 +380,9 @@ public class TransCwbDetailDAO {
 		 sql.append(" where cwb = '").append(cwb).append("'");
 		return this.jdbcTemplate.query(sql.toString(), new TransCwbRowMapper());
 	}
+	
+	public void updatePreviousbranchidByCwb(final String cwb, long previousbranchid) {
+		String sql = "update express_ops_transcwb_detail set previousbranchid=? where cwb=?";
+		this.jdbcTemplate.update(sql, previousbranchid, cwb);
+	}
 }

@@ -11,7 +11,7 @@ public class EMSOrderInfo {
 	private String businessType;//业务类型
 	private String billno;//邮件号
 	private String dateType;//时间类型
-	private String procdate;//时间
+	/*private String procdate;//时间*/
 	private String scontactor;//寄件人姓名
 	private String scustMobile;//寄件人电话1
 	private String scustTelplus;//寄件人电话2
@@ -31,9 +31,9 @@ public class EMSOrderInfo {
 	private String tcustCity;//收件人所在市
 	private String tcustCounty;//收件人所在区县
 	private BigDecimal weight;//货物重量
-	private BigDecimal length;//货物长度
+	/*private BigDecimal length;//货物长度
 	private BigDecimal insure;//保价金额
-	private BigDecimal insurance;//保险金额
+	private BigDecimal insurance;//保险金额*/
 	private BigDecimal fee;//货款金额
 	private String feeUppercase;//大写货款金额
 	private String cargoDesc;//内件信息
@@ -42,12 +42,12 @@ public class EMSOrderInfo {
 	private String remark;//备注
 	private String productCode;//邮件产品代码
 	private String customerDn;//运单号
-	private Integer subBillCount;//分单数
+	/*private Integer subBillCount;//分单数*/
 	private String mainBillNo;//主单邮件号
-	private String mainBillFlag;//主分单标识
+	/*private String mainBillFlag;//主分单标识
 	private String mainSubPayMode;//一票多单计费方式
 	private String payMode;//付费类型
-	private String insureType;//所负责任
+	private String insureType;//所负责任*/
 	private String dshk;//代收货款（附加服务）
 	private String blank2;//预留，不实际使用
 	private String blank3;//预留，不实际使用
@@ -76,12 +76,6 @@ public class EMSOrderInfo {
 	}
 	public void setDateType(String dateType) {
 		this.dateType = dateType;
-	}
-	public String getProcdate() {
-		return procdate;
-	}
-	public void setProcdate(String procdate) {
-		this.procdate = procdate;
 	}
 	public String getScontactor() {
 		return scontactor;
@@ -197,24 +191,6 @@ public class EMSOrderInfo {
 	public void setWeight(BigDecimal weight) {
 		this.weight = weight;
 	}
-	public BigDecimal getLength() {
-		return length;
-	}
-	public void setLength(BigDecimal length) {
-		this.length = length;
-	}
-	public BigDecimal getInsure() {
-		return insure;
-	}
-	public void setInsure(BigDecimal insure) {
-		this.insure = insure;
-	}
-	public BigDecimal getInsurance() {
-		return insurance;
-	}
-	public void setInsurance(BigDecimal insurance) {
-		this.insurance = insurance;
-	}
 	public BigDecimal getFee() {
 		return fee;
 	}
@@ -263,41 +239,11 @@ public class EMSOrderInfo {
 	public void setCustomerDn(String customerDn) {
 		this.customerDn = customerDn;
 	}
-	public Integer getSubBillCount() {
-		return subBillCount;
-	}
-	public void setSubBillCount(Integer subBillCount) {
-		this.subBillCount = subBillCount;
-	}
 	public String getMainBillNo() {
 		return mainBillNo;
 	}
 	public void setMainBillNo(String mainBillNo) {
 		this.mainBillNo = mainBillNo;
-	}
-	public String getMainBillFlag() {
-		return mainBillFlag;
-	}
-	public void setMainBillFlag(String mainBillFlag) {
-		this.mainBillFlag = mainBillFlag;
-	}
-	public String getMainSubPayMode() {
-		return mainSubPayMode;
-	}
-	public void setMainSubPayMode(String mainSubPayMode) {
-		this.mainSubPayMode = mainSubPayMode;
-	}
-	public String getPayMode() {
-		return payMode;
-	}
-	public void setPayMode(String payMode) {
-		this.payMode = payMode;
-	}
-	public String getInsureType() {
-		return insureType;
-	}
-	public void setInsureType(String insureType) {
-		this.insureType = insureType;
 	}
 	public String getDshk() {
 		return dshk;

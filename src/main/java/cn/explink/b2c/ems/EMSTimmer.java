@@ -13,7 +13,6 @@ import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.enumutil.EMSTraceDataEnum;
 import cn.explink.service.CwbOrderService;
-import cn.explink.util.Tools;
 
 @Service
 public class EMSTimmer {
@@ -57,8 +56,7 @@ public class EMSTimmer {
 	/**
 	 * 执行转业务处理
 	 */
-	private String dealWithOrders(EMS ems) {
-		
+	public String dealWithOrders(EMS ems) {
 		//获取未转业务的记录
 		List<EMSFlowEntity> eMSFlowEntityList = eMSDAO.getEMSFlowEntityList();
 		if(eMSFlowEntityList == null || eMSFlowEntityList.isEmpty()){
@@ -110,15 +108,13 @@ public class EMSTimmer {
 				logger.error("EMS定时器查询临时表，模拟dmp相关操作执行异常!异常原因={}", e);
 				
 			}finally{
-				if(state!=0){
-					eMSDAO.changeEmsTraceDataState(eMSFlowEntity.getId(),state,remark);
-				}
+				eMSDAO.changeEmsTraceDataState(eMSFlowEntity.getId(),state,remark);
 			}
 		}
 	}
 	
 	//推送订单信息给ems定时器
-	public void SendOrderOps(){
+	/*public void sendOrderOps(){
 		try {
 			EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
 			for(int i=0;i<15;i++){
@@ -130,10 +126,11 @@ public class EMSTimmer {
 		} catch (Exception e) {
 			logger.error("0EMS0定时器查询临时表，模拟dmp相关操作执行异常!异常原因:", e);
 		}
-	}
+	}*/
 
 	//推送订单信息给EMS
-	public String sendOrderToEMS(EMS ems) {
+	public String sendOrderToEMS() {
+		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
 		//获取需要推送给EMS的数据
 		List<SendToEMSOrder> sendToEMSOrderList = eMSDAO.getSendToEMSOrderList();
 		if(sendToEMSOrderList == null || sendToEMSOrderList.isEmpty()){
@@ -144,8 +141,8 @@ public class EMSTimmer {
 		if(countNoMps > 0){
 			int k = 1;
 			int batch = 50;
-			/*//测试
-			int batch = 1;*/
+			//测试
+			/*int batch = 1;*/
 			while (true) {
 				try{
 					int fromIndex = (k - 1) * batch;
@@ -170,7 +167,7 @@ public class EMSTimmer {
 		return "OK";
 	}
 
-	//获取EMS运单号
+	
 	/*public void getEmsMailNoTask() {
 		//获取需要推送给EMS的数据
 		List<Map<String, Object>> transcwbs = eMSDAO.getTranscwbs();
@@ -200,7 +197,7 @@ public class EMSTimmer {
 			}
 		}
 	}*/
-	
+	//获取EMS运单号
 	public void getEmsMailNoTask() {
 		//获取需要推送给EMS的数据
 		List<Map<String, Object>> transcwbs = eMSDAO.getTranscwbs();
