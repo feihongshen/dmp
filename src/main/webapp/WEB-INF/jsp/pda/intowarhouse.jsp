@@ -5,13 +5,12 @@ l<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.o
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
 <%@page import="cn.explink.enumutil.CwbOrderPDAEnum,cn.explink.util.ServiceUtil"%>
-<%@page import="cn.explink.domain.User,cn.explink.domain.Entrance,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
+<%@page import="cn.explink.domain.User,cn.explink.domain.Customer,cn.explink.domain.Switch"%>
 <%@page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<CwbDetailView> weirukuList = (List<CwbDetailView>)request.getAttribute("weirukulist");
 List<CwbDetailView> yirukulist = (List<CwbDetailView>)request.getAttribute("yirukulist");
 List<Customer> cList = (List<Customer>)request.getAttribute("customerlist");
-List<Entrance> eList = (List<Entrance>)request.getAttribute("entrancelist");
 List<User> uList = (List<User>)request.getAttribute("userList");
 Switch ck_switch = (Switch) request.getAttribute("ck_switch");
 int sitetype=(Integer)request.getAttribute("sitetype");
@@ -48,12 +47,6 @@ $(function(){
 	if('${isOpenDialog}'=='open'){
 		$('#find').dialog('close');
 	}
-	if('${auto_allocat}'=="1"){
-		$('#autoallocating_switch').show();	
-	}
-	else if('${auto_allocat}'=="0"){
-		$('#autoallocating_switch').hide();
-	}
 	$("#cwbnohide").click(function(){
 		
 		$("#cwbno").toggle();
@@ -62,8 +55,6 @@ $(function(){
 	});
 	
 });
-
-
 function closeDialog(){
 	$('#find').dialog('close');
 	$("#scancwb").focus();
@@ -286,10 +277,7 @@ function callfunction(cwb){//getEmailDateByIds
 			requestbatchno, rk_switch, comment) {
 		
 		var flag=false;
-		if('${auto_allocat}'=="1"&&$("#entryselect").val()=='-1'){
-			alert("请选择自动分拨机入口");
-			return;
-		}
+		
 		if (scancwb.length > 0) {
 			$("#close_box").hide();
 
@@ -328,9 +316,7 @@ function callfunction(cwb){//getEmailDateByIds
 									+ "&requestbatchno=" + requestbatchno,
 							data : {
 								"comment" : comment,
-								"youhuowudanflag":$("#youhuowudanflag").val(),
-								"autoallocatid":$("#entryselect").val(),
-								"direction" :$("input[type='radio']:checked").val()
+								"youhuowudanflag":$("#youhuowudanflag").val()
 							},
 							dataType : "json",
 							success : function(data) {
@@ -839,42 +825,6 @@ function openLogin(){
 	function closeLogin(){
 	   document.getElementById("win").style.display="none";
 	}
-	
-function connect(){
-	if($("#entryselect").val()=='-1'){
-		alert("请选择自动分拨机入口");
-		return;
-	}
-	$.ajax({
- 		type: "POST",
- 		url: "<%=request.getContextPath()%>/PDA/connect",
- 		data:{
-			"entranceno":$("#entryselect").val()
-		},
- 		dataType : "json",
- 		success : function(data) {
- 			
- 		}
- 	});
-}
-
-function flush(){
-	if($("#entryselect").val()=='-1'){
-		alert("请选择自动分拨机入口");
-		return;
-	}
-	$.ajax({
- 		type: "POST",
- 		url: "<%=request.getContextPath()%>/PDA/flush",
- 		data:{
-			"entranceno":$("#entryselect").val()
-		},
- 		dataType : "json",
- 		success : function(data) {
- 			
- 		}
- 	});
-}
 </script>
 </head>
 <body style="background:#eef9ff" marginwidth="0" marginheight="0">
@@ -945,8 +895,9 @@ function flush(){
 					<%} %>
 				</select>
 			</div>
-			<div>
-					<span>
+			<div class="saomiao_inwrith2">
+				<div class="saomiao_left2">
+					<p>
 						<%
 							if(isprintnew.equals("2")){ 
 						%>
@@ -962,25 +913,7 @@ function flush(){
 						<%
 							}
 						%>
-						</span>
-						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 150px">
-						<option value="-1" selected>请选择</option>
-						<%
-							for (Entrance e : eList) {
-						%>
-						<option value="<%=e.getEntranceno()%>"><%=e.getEntranceno()+"("+e.getEntranceip()+")"%></option>
-						<%
-							}
-						%>
-						</select> 
-						<input type="button" id="connect" onclick="connect()"  value="连接" />
-						<input type="button" id="flush" onclick="flush()"  value="清空队列" />
-						<input type="radio" name="direction" id="forward" value="0" checked="checked" />正向
-						<input type="radio"  name="direction" id="backward" value="1" />逆向
-						</span>					
-					</div>
-			<div class="saomiao_inwrith2">
-				<div class="saomiao_left2">								
+					</p>
 					<p style="display: none;">
 					<span>包号：</span>
 						<input type="text" class="saomiao_inputtxt2" value=""  id="baleno" name="baleno" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}"/>
