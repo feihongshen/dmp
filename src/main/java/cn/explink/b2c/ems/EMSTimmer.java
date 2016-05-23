@@ -31,16 +31,12 @@ public class EMSTimmer {
 	 * EMS定时器，查询临时表，模拟dmp相关操作
 	 */
 	public void imitateDmpOpt(){
-		for (B2cEnum enums : B2cEnum.values()) { 
-			if (enums.getMethod().equals("EMS")) {
-				int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
-				if (isOpenFlag == 0) {
-					logger.info("未开启mes[" + enums.getKey() + "]对接！");
-					continue;
-				}
-				selectTempAndImitateDmpOpt();
-			}
+		int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
+		if (isOpenFlag == 0) {
+			logger.info("未开启EMS接口对接！");
+			return;
 		}
+		selectTempAndImitateDmpOpt();
 	}
 	
 	public void selectTempAndImitateDmpOpt(){
@@ -129,12 +125,17 @@ public class EMSTimmer {
 	}*/
 
 	//推送订单信息给EMS
-	public String sendOrderToEMS() {
+	public void sendOrderToEMS() {
+		int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
+		if (isOpenFlag == 0) {
+			logger.info("未开启EMS接口对接！");
+			return;
+		}
 		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
 		//获取需要推送给EMS的数据
 		List<SendToEMSOrder> sendToEMSOrderList = eMSDAO.getSendToEMSOrderList();
 		if(sendToEMSOrderList == null || sendToEMSOrderList.isEmpty()){
-			return null;
+			return;
 		}
 		
 		int countNoMps = sendToEMSOrderList.size();
@@ -163,8 +164,7 @@ public class EMSTimmer {
 				}
 			}
 		}
-		
-		return "OK";
+		return;
 	}
 
 	
