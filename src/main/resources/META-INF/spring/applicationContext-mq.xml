@@ -60,4 +60,18 @@
    	  
    	  </bean>	
   	  <!--end....消费下发订单信息-->
+  	  <!-- start 消费tps下发订单信息 -->
+  	  <bean id="tpsOrderConsumer" class="cn.explink.b2c.auto.order.mq.ConsumerTemplate" >
+            <property name="callBack" ref="tpsOrderMQCallback"/> 
+            <!-- channel -->
+            <property name="exchangeKey" value="TPS_ORDER_CHANNEL" /> 
+             <!-- 队列 -->
+            <property name="queueKey" value="TPS_ORDER_QUEUE" /> 
+            <!-- 每次获取数量 -->
+            <property name="fetchCount" value="10"/> 
+            <!-- 是否自动提交 -->
+            <property name="autoCommit" value="false"/> 
+            <property name="mqConfigService" ref="mqConfigService"/> 
+      </bean>      
+  	  <!--  end 消费tps下发订单信息-->
 </beans>

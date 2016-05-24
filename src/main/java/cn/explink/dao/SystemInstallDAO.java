@@ -163,4 +163,17 @@ public class SystemInstallDAO {
 		this.jdbcTemplate.update(sql, id);
 
 	}
+	
+	/**
+	 * 参数是否真假，只针对可boolean的参数
+	 */
+	public boolean isBoolenInstall(String name){
+		SystemInstall systemInstall = getSystemInstall("feedbackOrderResult");
+		// 是否开启接口
+		if(systemInstall == null || "0".equals(systemInstall.getValue())){
+			return false;
+		}
+		
+		return true;
+	}
 }
