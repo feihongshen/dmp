@@ -81,8 +81,8 @@
 			<div style="margin:0px;" >
 		    	<div class="btn btn-default" onclick="doSearch();" style="margin-right:5px;" id= "searchData"><i class="icon-search"></i>查询</div>
 		    	<div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i class="icon-plus"></i>修改</div>
-		    	<div class="btn btn-default" id="deleteReserveOrderBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>关闭</div>
-		    	<div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-remove"></i>退回总部</div>
+		    	<div class="btn btn-default" id="deleteReserveOrderBtn" style="margin-right:5px;"><i class="icon-remove"></i>关闭</div>
+		    	<div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部</div>
 		    	<div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i class="icon-eye-open"></i>分配站点</div>
 		    	<div class="btn btn-default" onclick="exportExcel();" style="margin-left:5px;"><i class="icon-download-alt"></i>导出</div>
                                 </div>
@@ -157,19 +157,19 @@
                 </td>
 
             </tr>
-            <tr>
+            <%--<tr>
                 <td>快递员：</td>
                 <td>
                     <select id="distributeCourierSelect" name="distributeCourierSelect">
                         <option value="">请选择</option>
-                        <%--<option value="">---请选择---</option>--%>
-                        <%--<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>--%>
-                        <%--<option value="<%=bs.getValue() %>"><%=bs.getText()%>--%>
-                        <%--</option>--%>
-                        <%--<%} %>--%>
+                        &lt;%&ndash;<option value="">---请选择---</option>&ndash;%&gt;
+                        &lt;%&ndash;<%for (BillTypeEnum bs : BillTypeEnum.values()) { %>&ndash;%&gt;
+                        &lt;%&ndash;<option value="<%=bs.getValue() %>"><%=bs.getText()%>&ndash;%&gt;
+                        &lt;%&ndash;</option>&ndash;%&gt;
+                        &lt;%&ndash;<%} %>&ndash;%&gt;
                     </select>
                 </td>
-            </tr>
+            </tr>--%>
         </table>
         <hr style="margin-top:20px;margin-bottom:20px; border-top:1px solid #cccccc;"/>
         <div class="pull-right">
@@ -184,6 +184,7 @@
 <script type="text/javascript">
 
 	var queryType = "<%=ReserveOrderQueryTypeEnum.HANDLE.getValue()%>;"
+    var isHandlePage = true;
 
 	/**
 	 * 初始化表格
@@ -211,10 +212,10 @@
 		        {field:'cnorTel', title:'固话', width:100, align:'center'},
 		        {field:'cnorAddr', title:'寄件地址', width:130, align:'center'},
 		        {field:'requireTimeStr', title:'预约上门时间', width:130, align:'center'},
-		        {field:'reserveOrderStatus', title:'预约单状态', width:100, align:'center',display:'none'},
+//		        {field:'reserveOrderStatus', title:'预约单状态', width:100, align:'center',display:'none'},
 		        {field:'reserveOrderStatusName', title:'预约单状态', width:100, align:'center'},
 		        {field:'reason', title:'原因', width:130, align:'center'},
-		        {field:'transportNo', title:'运单号', width:100, align:'center'},
+//		        {field:'transportNo', title:'运单号', width:100, align:'center'},
 		        {field:'acceptOrgName', title:'站点', width:100, align:'center'},
 		        {field:'courierName', title:'快递员', width:80, align:'center'},
 		        {field:'cnorRemark', title:'备注', width:80, align:'center'},

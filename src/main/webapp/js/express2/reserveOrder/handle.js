@@ -194,7 +194,11 @@ $(function () {
         	}
         });
         if(!flag) {
-        	allertMsg.alertError("选中的预约单无法做分配站点操作！");
+            if (isHandlePage) {
+                allertMsg.alertError("选中的预约单无法做分配站点操作！");
+            } else {
+                allertMsg.alertError("选中的预约单无法做分配快递员操作！");
+            }
         	return false;
         }
         if (rows.length == 1) {
@@ -217,11 +221,17 @@ $(function () {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
             $('#distributeCourierSelect option:selected').removeAttr('selected');
         }
+        var title;
+        if (isHandlePage) {
+            title = '分配站点';
+        } else {
+            title = '分配快递员';
+        }
 
         //打开退回总部面板
         distributeBranchPanel = $.layer({
             type: 1,
-            title: '分配站点',
+            title: title,
             shadeClose: true,
             maxmin: false,
             fix: false,
@@ -240,11 +250,9 @@ $(function () {
             var selectedRow = rows[0];
             $("#reserveOrderNo4Feedback").val(selectedRow.reserveOrderNo);
             $('#courierName4Feedback').val(selectedRow.cnorName);
-            $('#requireTimeStr4Feedback').val(selectedRow.requireTimeStr);
         } else {
             $("#reserveOrderNo4Feedback").val("");
             $('#courierName4Feedback').val("");
-            $('#requireTimeStr4Feedback').val("");
         }
 
         $('#type4Feedback').val("");
@@ -401,14 +409,19 @@ $(function () {
 
         var param = [];
 
-        var distributeBranch ;
-        if($('#distributeBranchSelect') && $('#distributeBranchSelect').val()){
+        var distributeBranch;
+        if ($('#distributeBranchSelect') && $('#distributeBranchSelect').val()) {
             distributeBranch = $('#distributeBranchSelect').val();
-        }else {
+        } else {
             distributeBranch = "";
         }
 
-        var distributeCourier = $('#distributeCourierSelect').val();
+        var distributeCourier;
+        if ($('#distributeCourierSelect') && $('#distributeCourierSelect').val()) {
+            distributeCourier = $('#distributeCourierSelect').val();
+        } else {
+            distributeCourier = "";
+        }
 
         $.each(rows, function (index, value) {
             var reserveOrder = {};
@@ -430,27 +443,19 @@ $(function () {
                     allertMsg.alertError(data.errorMsg);
                 }
                 $('#dg_rsList').datagrid('reload');
-                $('#distributeBranch').val("");
-                $('#distributeCourier').val("");
+                if ($('#distributeBranch')) {
+                    $('#distributeBranch').val("");
+                }
+                if ($('#distributeCourier')) {
+                    $('#distributeCourier').val("");
+                }
                 closePanel(distributeBranchPanel);
             }
         });
     }
+
     function confirmFeedback() {
         var rows = $('#dg_rsList').datagrid('getChecked');
-
-        //var reserveOrderNos = [] ;
-        //$.each(rows, function(index, value){
-        //    reserveOrderNos.push(value.reserveOrderNo);
-        //});
-
-        //var param = {
-        //    reserveOrderNos : reserveOrderNos.join(","),
-        //    optCode4Feedback : $('#optCode4Feedback').val(),
-        //    reason4Feedback : $('#reason4Feedback').val(),
-        //    cnorRemark4Feedback : $('#cnorRemark4Feedback').val(),
-        //    requireTimeStr4Feedback : $('#requireTimeStr4Feedback').val()
-        //};
 
         //validate Inputs
         //延迟揽件状态的预约单，可反馈为揽件超区和揽件失败两种状态，选择该两种状态的任何一种都必须选择原因
@@ -477,7 +482,6 @@ $(function () {
             reserveOrder.operateType =  operateType;
             reserveOrder.reason = $('#reason4Feedback').val();
             reserveOrder.cnorRemark = $('#cnorRemark4Feedback').val();
-            reserveOrder.requireTimeStr = $('#requireTimeStr4Feedback').val();
             param.push(reserveOrder);
         });
 
@@ -497,7 +501,6 @@ $(function () {
                 $('#courierName4Feedback').val("");
                 $('#optCode4Feedback').val("");
                 $('#reason4Feedback').val("");
-                $('#requireTimeStr4Feedback').val("");
                 $('#cnorRemark4Feedback').val("");
                 closePanel(feedBackPanel);
             }

@@ -33,17 +33,17 @@ public enum ReserveOrderStatusClassifyEnum {
 		}),
 	
 	HANDLE_BY_CUSTOM_SERVICE(new ReserveOrderStatusEnum[] {
-			ReserveOrderStatusEnum.HaveProOutZone,
-			ReserveOrderStatusEnum.HadAllocationPro,
-			ReserveOrderStatusEnum.HadAllocationStation,
-			ReserveOrderStatusEnum.HadAllocationCourier,
-			ReserveOrderStatusEnum.HadReceiveSuccess,
-			ReserveOrderStatusEnum.HaveStationOutZone,
-			ReserveOrderStatusEnum.HaveReciveOutZone,
-			ReserveOrderStatusEnum.HaveReciveFailure,
-			ReserveOrderStatusEnum.HaveFeedbackRetention,
-			ReserveOrderStatusEnum.HadClosed
-		}),
+//			ReserveOrderStatusEnum.HaveProOutZone,
+            ReserveOrderStatusEnum.HadAllocationPro,
+            ReserveOrderStatusEnum.HadAllocationStation,
+            ReserveOrderStatusEnum.HadAllocationCourier,
+//			ReserveOrderStatusEnum.HadReceiveSuccess,
+            ReserveOrderStatusEnum.HaveStationOutZone,
+            ReserveOrderStatusEnum.HaveReciveOutZone,
+//			ReserveOrderStatusEnum.HaveReciveFailure,
+            ReserveOrderStatusEnum.HaveFeedbackRetention,
+//			ReserveOrderStatusEnum.HadClosed
+    }),
 	
 	HANDLE_BY_WAREHOUSE_MASTER(new ReserveOrderStatusEnum[] {
 			ReserveOrderStatusEnum.HadAllocationStation,

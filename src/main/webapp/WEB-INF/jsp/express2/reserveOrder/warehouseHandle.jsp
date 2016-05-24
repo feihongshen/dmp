@@ -83,12 +83,12 @@
             <div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i
                     class="icon-plus"></i>修改
             </div>
-            <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-remove"></i>退回总部
+            <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部
             </div>
             <div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i
-                    class="icon-eye-open"></i>分配站点
+                    class="icon-eye-open"></i>分配快递员
             </div>
-            <div class="btn btn-default" id="feedbackBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>反馈
+            <div class="btn btn-default" id="feedbackBtn" style="margin-right:5px;"><i class="icon-comment"></i>反馈
             </div>
             <div class="btn btn-default" onclick="exportExcel();" style="margin-left:5px;"><i
                     class="icon-download-alt"></i>导出
@@ -149,14 +149,14 @@
                     </select>
                 </td>
             </tr>
-            <tr>
-                <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">预约上门时间：</td>
-                <td style="border: 0px; vertical-align: middle; ">
-                    <input style="width: 94%;" type="text" name="requireTimeStr4Feedback"
-                           id="requireTimeStr4Feedback" <%--style="height:30px;"--%> value="" disabled="disabled"
-                           onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
-                </td>
-            </tr>
+            <%--<tr>--%>
+                <%--<td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">预约上门时间：</td>--%>
+                <%--<td style="border: 0px; vertical-align: middle; ">--%>
+                    <%--<input style="width: 94%;" type="text" name="requireTimeStr4Feedback"--%>
+                           <%--id="requireTimeStr4Feedback" &lt;%&ndash;style="height:30px;"&ndash;%&gt; value="" disabled="disabled"--%>
+                           <%--onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>--%>
+                <%--</td>--%>
+            <%--</tr>--%>
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">备注</td>
                 <td style="border: 0px; vertical-align: middle; ">
@@ -197,7 +197,7 @@
         </div>
     </div>
 </div>
-<div id="dialog4" title="分配站点" style="display:none;">
+<div id="dialog4" title="分配快递员" style="display:none;">
     <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
         <table>
             <tr>
@@ -224,6 +224,8 @@
 </body>
 <script type="text/javascript">
 	var queryType = "<%=ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue()%>;"
+    
+    var isHandlePage = false;
     /**
      * 初始化表格
      */
@@ -253,8 +255,8 @@
                 {field: 'requireTimeStr', title: '预约上门时间', width: 130, align: 'center'},
                 {field: 'reserveOrderStatusName', title: '预约单状态', width: 100, align: 'center'},
                 {field: 'reason', title: '原因', width: 130, align: 'center'},
-                {field: 'transportNo', title: '运单号', width: 100, align: 'center'},
-                {field: 'acceptOrgName', title: '站点', width: 100, align: 'center'},
+//                {field: 'transportNo', title: '运单号', width: 100, align: 'center'},
+//                {field: 'acceptOrgName', title: '站点', width: 100, align: 'center'},
                 {field: 'courierName', title: '快递员', width: 80, align: 'center'},
                 {field: 'cnorRemark', title: '备注', width: 80, align: 'center'}
             ]]
@@ -270,7 +272,7 @@
 //            cnorProv:$("#cnorProv").val(),
 //            cnorCity:$("#cnorCity").val(),
             cnorMobile: $("#cnorMobile").val(),
-            acceptOrg: $("#acceptOrg").val(),
+//            acceptOrg: $("#acceptOrg").val(),
             courier: $("#courier").val(),
             reserveOrderStatusList: $("#reserveOrderStatusList").val()
         });
@@ -304,15 +306,6 @@
         //初始化表格
         initDataGrid();
 
-        //反馈为下拉菜单， 选择揽件失败或揽件超区，不可修改预约上门时间；选择延迟揽件，可修改预约上门时间。
-        $('#optCode4Feedback').change(function () {
-            var selectedValue = $(this).val();
-            if (selectedValue == "<%=ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()%>" || selectedValue == "<%=ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>"){
-                $('#requireTimeStr4Feedback').removeAttr('disabled');
-            }else {
-                $('#requireTimeStr4Feedback').attr("disabled",'disabled');
-            }
-        });
     });
 </script>
 </html>

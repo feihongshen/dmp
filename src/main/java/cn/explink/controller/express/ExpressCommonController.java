@@ -32,7 +32,13 @@ public class ExpressCommonController {
 	 */
 	private static final long CUSTOM_SERVICE_ID = 1;
 
-	@Autowired
+    /**
+     * 小件员角色ID
+     */
+    private static final long COURIER_ROLE_ID = 2;
+
+
+    @Autowired
 	private SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -65,4 +71,12 @@ public class ExpressCommonController {
 		}
 		return false;
 	}
+
+    protected boolean isCourier() {
+        User user = this.getSessionUser();
+        if (user.getRoleid() == ExpressCommonController.COURIER_ROLE_ID) {
+            return true;
+        }
+        return false;
+    }
 }
