@@ -10,6 +10,13 @@ $(function () {
         maxHeight: 200
     });
 
+    $("#courier").multipleSelect({
+        placeholder: "请选择",
+        single: true,
+        filter: true,
+        maxHeight: 200
+    });
+
     $("#acceptOrg").change(function () {
         changeCourier($(this).val(), "#courier");
     });
@@ -157,6 +164,8 @@ function changeCourier(acceptOrg, changedItem) {
         courierSelect.empty();
         courierSelect.get(0).add(new Option("请选择", ""));
     }
+
+    courierSelect.multipleSelect("refresh");
 }
 var allertMsg = {
     /**

@@ -83,12 +83,12 @@
             <div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i
                     class="icon-plus"></i>修改
             </div>
-            <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-remove"></i>退回总部
+            <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部
             </div>
             <div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i
-                    class="icon-eye-open"></i>分配站点
+                    class="icon-eye-open"></i>分配快递员
             </div>
-            <div class="btn btn-default" id="feedbackBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>反馈
+            <div class="btn btn-default" id="feedbackBtn" style="margin-right:5px;"><i class="icon-comment"></i>反馈
             </div>
             <div class="btn btn-default" onclick="exportExcel();" style="margin-left:5px;"><i
                     class="icon-download-alt"></i>导出
@@ -197,7 +197,7 @@
         </div>
     </div>
 </div>
-<div id="dialog4" title="分配站点" style="display:none;">
+<div id="dialog4" title="分配快递员" style="display:none;">
     <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
         <table>
             <tr>
@@ -224,6 +224,8 @@
 </body>
 <script type="text/javascript">
 	var queryType = "<%=ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue()%>;"
+    
+    var isHandlePage = false;
     /**
      * 初始化表格
      */
@@ -253,8 +255,8 @@
                 {field: 'requireTimeStr', title: '预约上门时间', width: 130, align: 'center'},
                 {field: 'reserveOrderStatusName', title: '预约单状态', width: 100, align: 'center'},
                 {field: 'reason', title: '原因', width: 130, align: 'center'},
-                {field: 'transportNo', title: '运单号', width: 100, align: 'center'},
-                {field: 'acceptOrgName', title: '站点', width: 100, align: 'center'},
+//                {field: 'transportNo', title: '运单号', width: 100, align: 'center'},
+//                {field: 'acceptOrgName', title: '站点', width: 100, align: 'center'},
                 {field: 'courierName', title: '快递员', width: 80, align: 'center'},
                 {field: 'cnorRemark', title: '备注', width: 80, align: 'center'}
             ]]

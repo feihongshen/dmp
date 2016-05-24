@@ -243,12 +243,12 @@ public class ReserveOrderController extends ExpressCommonController {
 		boolean isQuery = true;
         if (this.isWarehouseMaster() || this.isCourier()) {
             //站长或小件员只能看到本站点的
-			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+//			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
+//            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
 		} else if(this.isCustomService() || this.isAdmin()) {
-			if(StringUtils.isNotBlank(acceptOrg)) {
-				omReserveOrderModel.setAcceptOrg(acceptOrg);
-			}
+//			if(StringUtils.isNotBlank(acceptOrg)) {
+//				omReserveOrderModel.setAcceptOrg(acceptOrg);
+//			}
 		} else {
 			isQuery = false;
 		}
@@ -579,60 +579,64 @@ public class ReserveOrderController extends ExpressCommonController {
         if (reserveOrderVos.length > 0) {
 
             String selectedBranch = reserveOrderVos[0].getAcceptOrg();
-            if(StringUtils.isBlank(selectedBranch) && StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-            	obj.put("errorMsg", "请选择站点！");
-                logger.error("{} 没有选择站点", logPrefix);
-                return obj;
-            }
+            String selectedCourier = reserveOrderVos[0].getCourier();
+
             String selectedTpsbranchCode = null;
             //选择站点默认值是登录人员自己的站点
             Long distributeBranch = this.getSessionUser().getBranchid();
-            //选择了站点
-            if (NumberUtils.isNumber(selectedBranch)) {
-                logger.info("{} 省点分配站点和快递员", logPrefix);
-                distributeBranch = Long.parseLong(selectedBranch);
-                //找TPS CODE
-                List<Branch> branches = reserveOrderService.getBranches();
-                for (int i = 0; i < branches.size(); i++) {
-                    Branch branch = branches.get(i);
-                    if (branch.getBranchid() == distributeBranch) {
-                        selectedTpsbranchCode = branch.getTpsbranchcode();
-                        logger.info("{} selectedTpsbranchCode: {}", logPrefix, selectedTpsbranchCode);
-                        break;
-                    }
-                }
-                if (selectedTpsbranchCode == null) {
-                    obj.put("errorMsg", "站点TPSBranchCode不存在");
-                    logger.error("{} 站点TPSBranchCode不存在", logPrefix);
-                    return obj;
-                }
-            } else if(StringUtils.isNotBlank(selectedBranch)) {
-            	obj.put("errorMsg", "站点不存在");
-                logger.error("{} 站点不存在", logPrefix);
-                return obj;
-            } else {
-            	logger.info("{} 站点分配快递员", logPrefix);
-            }
-
-            Long distributeCourier = Long.parseLong(reserveOrderVos[0].getCourier());
 
             String selectedCourierName = null;
-            String selectedCourier = null;
-            //找快递员名字
-            List<User> courierList = this.reserveOrderService.getCourierByBranch(distributeBranch.intValue());
-            for (int i = 0; i < courierList.size(); i++) {
-                User courier = courierList.get(i);
-                if (courier.getUserid() == distributeCourier) {
-                    selectedCourierName = courier.getRealname();
-                    selectedCourier = courier.getUsername();
-                    logger.info("{} selectedCourierName: {}", logPrefix, selectedCourierName);
-                }
-            }
 
-            if (selectedCourierName == null) {
-                obj.put("errorMsg", "快递员不存在");
-                logger.error("{} 快递员不存在", logPrefix);
-                return obj;
+            String courierLoginName = null;
+
+            if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
+
+                if (StringUtils.isNotBlank(selectedBranch) && NumberUtils.isNumber(selectedBranch)) {
+                    logger.info("{} 省点分配站点和快递员", logPrefix);
+                    distributeBranch = Long.parseLong(selectedBranch);
+                    //找TPS CODE
+                    List<Branch> branches = reserveOrderService.getBranches();
+                    for (int i = 0; i < branches.size(); i++) {
+                        Branch branch = branches.get(i);
+                        if (branch.getBranchid() == distributeBranch) {
+                            selectedTpsbranchCode = branch.getTpsbranchcode();
+                            logger.info("{} selectedTpsbranchCode: {}", logPrefix, selectedTpsbranchCode);
+                            break;
+                        }
+                    }
+                    if (selectedTpsbranchCode == null) {
+                        obj.put("errorMsg", "站点TPSBranchCode不存在");
+                        logger.error("{} 站点TPSBranchCode不存在", logPrefix);
+                        return obj;
+                    }
+                } else {
+                    obj.put("errorMsg", "请选择站点！");
+                    logger.error("{} 没有选择站点", logPrefix);
+                    return obj;
+                }
+            }else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())  ) {
+                if( StringUtils.isNotBlank(selectedCourier) && NumberUtils.isNumber(selectedCourier)){
+                    Long distributeCourier = Long.parseLong(selectedCourier);
+                    //找快递员名字
+                    List<User> courierList = this.reserveOrderService.getCourierByBranch(distributeBranch.intValue());
+                    for (int i = 0; i < courierList.size(); i++) {
+                        User courier = courierList.get(i);
+                        if (courier.getUserid() == distributeCourier) {
+                            selectedCourierName = courier.getRealname();
+                            courierLoginName = courier.getUsername();
+                            logger.info("{} selectedCourierName: {}", logPrefix, selectedCourierName);
+                        }
+                    }
+                    if (selectedCourierName == null) {
+                        obj.put("errorMsg", "快递员不存在");
+                        logger.error("{} 快递员不存在", logPrefix);
+                        return obj;
+                    }
+                }else {
+                    obj.put("errorMsg", "请选择小件员！");
+                    logger.error("{} 没有选择小件员", logPrefix);
+                    return obj;
+                }
             }
 
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
@@ -641,16 +645,13 @@ public class ReserveOrderController extends ExpressCommonController {
                 OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
                 omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
-                if (selectedTpsbranchCode != null) {
+                if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
                     omReserveOrderModel.setAcceptOrg(selectedTpsbranchCode);
-                }
-                omReserveOrderModel.setCourier(selectedCourier);
-                omReserveOrderModel.setCourierName(selectedCourierName);
-                // 不选择快递员，预约单的状态改为已分配站点；否则，预约单的状态为已揽件分配
-                if(StringUtils.isBlank(selectedCourier)) {
-                	omReserveOrderModel.setReserveOrderStatus(ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue());
-                } else {
-                	omReserveOrderModel.setReserveOrderStatus(ReserveOrderStatusEnum.HadAllocationCourier.getIndex().byteValue());
+                    omReserveOrderModel.setReserveOrderStatus(Integer.valueOf(ReserveOrderService.PJReserverOrderOperationCode.YiFenPeiZhanDian.getValue()).byteValue());
+                }else if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())){
+                    omReserveOrderModel.setCourier(courierLoginName);
+                    omReserveOrderModel.setCourierName(selectedCourierName);
+                    omReserveOrderModel.setReserveOrderStatus(Integer.valueOf(ReserveOrderService.PJReserverOrderOperationCode.YiLanJianFenPei.getValue()).byteValue());
                 }
                 omReserveOrderModels.add(omReserveOrderModel);
             }
