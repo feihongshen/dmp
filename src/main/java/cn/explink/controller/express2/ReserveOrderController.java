@@ -127,11 +127,11 @@ public class ReserveOrderController extends ExpressCommonController {
         
         // 预约单状态
         ReserveOrderStatusEnum[] reserveOrderStatusList;
-        if(this.isWarehouseMaster()) {
-        	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toArray();
-        } else {
-        	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toArray();
-        }
+//        if(this.isWarehouseMaster()) {
+//        	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toArray();
+//        } else {
+        reserveOrderStatusList = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toArray();
+//        }
         model.addAttribute("reserveOrderStatusList", reserveOrderStatusList);
 
 		if (!CollectionUtils.isEmpty(cities)) {
@@ -198,7 +198,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		// 填充数据
 		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
 		if(StringUtils.isNotBlank(reserveOrderNo)) {
-			omReserveOrderModel.setReserveOrderNo(reserveOrderNo);
+			omReserveOrderModel.setReserveOrderNo(StringUtils.strip(reserveOrderNo));
 		}
 		if(StringUtils.isNotBlank(appointTimeStart)) {
 			omReserveOrderModel.setAppointTimeStart(appointTimeStart);
@@ -207,7 +207,7 @@ public class ReserveOrderController extends ExpressCommonController {
 			omReserveOrderModel.setAppointTimeEnd(appointTimeEnd);
 		}
 		if(StringUtils.isNotBlank(cnorMobile)) {
-			omReserveOrderModel.setCnorMobile(cnorMobile);
+			omReserveOrderModel.setCnorMobile(StringUtils.strip(cnorMobile));
 		}
 		if(StringUtils.isNotBlank(acceptOrg)) {
 			omReserveOrderModel.setAcceptOrg(acceptOrg);
@@ -227,11 +227,11 @@ public class ReserveOrderController extends ExpressCommonController {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toString();
 				}
 			} else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-				if(this.isWarehouseMaster()) {
-					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
-				} else {
+//				if(this.isWarehouseMaster()) {
+//					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
+//				} else {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
-				}
+//				}
 			} else {
 				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toString();
 			}
@@ -243,12 +243,12 @@ public class ReserveOrderController extends ExpressCommonController {
 		boolean isQuery = true;
         if (this.isWarehouseMaster() || this.isCourier()) {
             //站长或小件员只能看到本站点的
-//			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-//            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
+            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
 		} else if(this.isCustomService() || this.isAdmin()) {
-//			if(StringUtils.isNotBlank(acceptOrg)) {
-//				omReserveOrderModel.setAcceptOrg(acceptOrg);
-//			}
+			if(StringUtils.isNotBlank(acceptOrg)) {
+				omReserveOrderModel.setAcceptOrg(acceptOrg);
+			}
 		} else {
 			isQuery = false;
 		}
@@ -305,11 +305,11 @@ public class ReserveOrderController extends ExpressCommonController {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toString();
 				}
 			} else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-				if(this.isWarehouseMaster()) {
-					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
-				} else {
+//				if(this.isWarehouseMaster()) {
+//					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
+//				} else {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
-				}
+//				}
 			} else {
 				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toString();
 			}
