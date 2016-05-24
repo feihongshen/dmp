@@ -7,8 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
 import cn.explink.b2c.auto.order.mq.TpsOrderMQCallback;
@@ -16,7 +17,6 @@ import cn.explink.b2c.auto.order.service.ExpressOrderService;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendDetailVO;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendVO;
 import cn.explink.dao.SystemInstallDAO;
-import cn.explink.domain.SystemInstall;
 
 import com.pjbest.deliveryorder.wcs.constants.WcsContants.CmdType;
 
@@ -25,7 +25,7 @@ import com.pjbest.deliveryorder.wcs.constants.WcsContants.CmdType;
  * @author jian.xie
  *
  */
-@Component("expressOrderHandler")
+@Service("expressOrderHandler")
 public class ExpressOrderHandler implements IOrderHandler {
 	
 	protected Logger logger = LoggerFactory.getLogger(TpsOrderMQCallback.class);
@@ -87,6 +87,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 	 */
 	private ExpressDetailTemp getExprssDetailTemp(InfDmpOrderSendVO orderSend){
 		ExpressDetailTemp expressDetailTemp = new ExpressDetailTemp();
+		expressDetailTemp.setTpsTransId(orderSend.getMessageId());
 		expressDetailTemp.setTransportNo(orderSend.getTransportNo());
 		if(StringUtils.isEmpty(orderSend.getCustOrderNo())){
 			expressDetailTemp.setCustOrderNo(orderSend.getTransportNo());
@@ -122,8 +123,8 @@ public class ExpressOrderHandler implements IOrderHandler {
 		expressDetailTemp.setCodAmount(new BigDecimal(orderSend.getCodAmount()));
 		expressDetailTemp.setTotalBox(orderSend.getTotalPack());// 合计箱数
 		expressDetailTemp.setTotalWeight(new BigDecimal(orderSend.getOriginalWeight())); // 重量
-		expressDetailTemp.setCalculateWeight(new BigDecimal(orderSend.getExpress().getCalculateWeight()));
-		expressDetailTemp.setTotalVolume(new BigDecimal(orderSend.getOriginalVolume()));
+		expressDetailTemp.setCalculateWeight(new BigDecimal(orderSend.getExpress().getCalculateWeight()));// 计费重量
+		expressDetailTemp.setTotalVolume(new BigDecimal(orderSend.getOriginalVolume())); // 总体积
 		expressDetailTemp.setAssuranceValue(new BigDecimal(orderSend.getValuationValue()));// 保价金额
 		expressDetailTemp.setAssuranceFee(new BigDecimal(orderSend.getExpress().getValuationFee()));// 保费
 		expressDetailTemp.setPayType(orderSend.getPayType());
@@ -134,25 +135,41 @@ public class ExpressOrderHandler implements IOrderHandler {
 		expressDetailTemp.setAccountId(orderSend.getExpress().getAccountId());
 		expressDetailTemp.setPackingFee(new BigDecimal(orderSend.getExpress().getPackingFee()));
 		expressDetailTemp.setExpressImage(orderSend.getExpress().getExpressImage());
-//		expressDetailTemp.setCneeCorpName(orderSend.getCn);// 收货公司名称 
+		expressDetailTemp.setCneeCorpName(orderSend.getExpress().getCneeCorpName());// 收货公司名称 
 		expressDetailTemp.setExpressProductType(orderSend.getExpress().getProductType());//快递产品类型
 		//运费合计   运费+保费+包装费
 		double carriage = orderSend.getFreight() + orderSend.getExpress().getValuationFee() + orderSend.getExpress().getPackingFee();
 		expressDetailTemp.setCarriage(new BigDecimal(carriage));
+		expressDetailTemp.setIsAcceptProv(orderSend.getExpress().getIsAcceptProv() ? 1 : 0 );
 		// 运单明细对象
 		// 商品明细
 		List<InfDmpOrderSendDetailVO> details = orderSend.getDetails();
 		InfDmpOrderSendDetailVO detailVO = null;
-		for(int i = 0, size = details.size(); i < size; i++){
-			detailVO = details.get(0);
+		if(!CollectionUtils.isEmpty(details)){
+			detailVO = details.get(0);// 特殊处理，只要第一条记录
 			expressDetailTemp.setSizeSn(detailVO.getGoodsCode());
+			expressDetailTemp.setCargoName(detailVO.getGoodsName());
 			expressDetailTemp.setCount(detailVO.getGoodsNum());
 			expressDetailTemp.setUnit(detailVO.getGoodsSize());
 			expressDetailTemp.setPrice(new BigDecimal(detailVO.getPrice()));
 			expressDetailTemp.setCustPackNo(detailVO.getCustPackNo());
-			break;// 特殊处理，只要第一条记录
+		}else{
+			expressDetailTemp.setSizeSn("");
+			expressDetailTemp.setCargoName("");
+			expressDetailTemp.setCount(0);
+			expressDetailTemp.setUnit("");
+			expressDetailTemp.setPrice(new BigDecimal(0.00));
+			expressDetailTemp.setCustPackNo("");
 		}
+		// 快递属性
+		expressDetailTemp.setCargoLength(new BigDecimal(orderSend.getExpress().getLength()));
+		expressDetailTemp.setCargoWidth(new BigDecimal(orderSend.getExpress().getWidth()));
+		expressDetailTemp.setCargoHeight(new BigDecimal(orderSend.getExpress().getHeight()));
+		expressDetailTemp.setWeight(new BigDecimal(orderSend.getOriginalWeight()));
+		expressDetailTemp.setVolume(new BigDecimal(orderSend.getOriginalVolume()));
 		
+		
+		expressDetailTemp.setTotalNum(details.size());
 		return expressDetailTemp;
 	}
 	

@@ -11,6 +11,7 @@
             <list>  
                 <ref bean="autoDispatchStatusConsumer" />
                 <ref bean="tpsOrderAutomateConsumer" />
+                <ref bean="tpsOrderConsumer" />
             </list>  
         </property> 
         <property name="senderList">  

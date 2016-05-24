@@ -237,7 +237,7 @@ public class ExpressDetailTemp {
 	
 	private int				expressProductType;	// 快递产品类型
 	
-	private int				provinceType;		// 省份类型
+	private int				isAcceptProv;		// 省份类型 0 派件省，1揽件省
 	
 	public String getTpsTransId() {
 		return tpsTransId;
@@ -593,11 +593,12 @@ public class ExpressDetailTemp {
 	public void setExpressProductType(int expressProductType) {
 		this.expressProductType = expressProductType;
 	}
-	public int getProvinceType() {
-		return provinceType;
+	public int getIsAcceptProv() {
+		return isAcceptProv;
 	}
-	public void setProvinceType(int provinceType) {
-		this.provinceType = provinceType;
+	public void setIsAcceptProv(int isAcceptProv) {
+		this.isAcceptProv = isAcceptProv;
 	}
+	
 	
 }

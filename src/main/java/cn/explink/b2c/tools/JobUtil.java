@@ -340,6 +340,7 @@ public class JobUtil {
 		
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
 		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
+		JobUtil.threadMap.put("expressOrderTransfer", 0);
 	}
 
 	/**
@@ -381,6 +382,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("syncUserInf", 0);
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
 		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
+		JobUtil.threadMap.put("expressOrderTransfer", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 

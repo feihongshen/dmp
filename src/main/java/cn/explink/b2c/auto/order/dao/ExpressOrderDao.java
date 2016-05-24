@@ -11,7 +11,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -19,9 +18,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
-import cn.explink.b2c.pjwl.ExpressCwbOrderDTO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
@@ -118,7 +117,12 @@ public class ExpressOrderDao {
 	public ExpressDetailTemp getCwbOrderExpresstemp(String tpsTranId) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * from express_ops_cwb_exprss_detail_temp where tps_trans_id= ? limit 0,1");
-		return this.jdbcTemplate.queryForObject(sql.toString(), new ExpressDetailTempMapper(), tpsTranId);
+		List<ExpressDetailTemp> list = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper(), tpsTranId);
+		if(CollectionUtils.isEmpty(list)){
+			return null;
+		}else {
+			return list.get(0);
+		}
 	}
 
 	/**
@@ -141,7 +145,7 @@ public class ExpressOrderDao {
 		sql.append(" count,cargo_length,cargo_width,cargo_height,");
 		sql.append(" weight,volume,cust_pack_no,size_sn,");
 		sql.append(" price,unit,tps_trans_id,create_time,is_hand_over,");
-		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,province_type)");
+		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov)");
 		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -227,7 +231,7 @@ public class ExpressOrderDao {
 				ps.setBigDecimal(++i, expressDetailTemp.getPackingFee());
 				ps.setString(++i, expressDetailTemp.getExpressImage());
 				ps.setString(++i, expressDetailTemp.getCneeCorpName());
-				ps.setInt(++i, expressDetailTemp.getProvinceType());
+				ps.setInt(++i, expressDetailTemp.getIsAcceptProv());
 				return ps;
 			}
 		}, key);
@@ -241,7 +245,7 @@ public class ExpressOrderDao {
 	 */
 	public List<ExpressDetailTemp> getExpressDetailTempListNotOver(int provinceType) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and province_type=? order by create_time limit 0,2000 ");
+		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov=? order by create_time limit 0,2000 ");
 		List<ExpressDetailTemp> transOrderList = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper(), provinceType);
 		return transOrderList;
 	}
