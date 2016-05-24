@@ -168,7 +168,7 @@ public class SystemInstallDAO {
 	 * 参数是否真假，只针对可boolean的参数
 	 */
 	public boolean isBoolenInstall(String name){
-		SystemInstall systemInstall = getSystemInstall("feedbackOrderResult");
+		SystemInstall systemInstall = getSystemInstall(name);
 		// 是否开启接口
 		if(systemInstall == null || "0".equals(systemInstall.getValue())){
 			return false;

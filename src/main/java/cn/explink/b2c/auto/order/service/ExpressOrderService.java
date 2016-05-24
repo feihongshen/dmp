@@ -3,12 +3,14 @@ package cn.explink.b2c.auto.order.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.auto.order.dao.ExpressOrderDao;
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
@@ -77,7 +79,7 @@ public class ExpressOrderService {
 	 */
 	public void expressOrderTransfer(){
 		List<ExpressDetailTemp> expressDetailTempList = expressOrderDao.getExpressDetailTempListNotOver(1);
-		if (expressDetailTempList == null || expressDetailTempList.size() == 0) {
+		if (CollectionUtils.isEmpty(expressDetailTempList)) {
 			logger.info("无快递订单需要转业务");
 			return;
 		}
@@ -106,6 +108,7 @@ public class ExpressOrderService {
 			try {
 				insertSigleCwbOrder(expressDetailTemp);
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.error("定时器临时表插入或修改方法执行异常!transOrderNo=" + expressDetailTemp.getTransportNo(), e);
 			}
 		}
@@ -123,7 +126,11 @@ public class ExpressOrderService {
 			logger.warn("查询临时表-检测到有重复数据,已过滤!订单号：{}", cwbOrder.getCwb());
 		} else {
 			//同步匹配站点
-			Branch branch = this.matchDeliveryBranch(expressDetailTemp.getTransportNo(),expressDetailTemp.getCneeAddr());
+			Branch branch = null;
+			if(StringUtils.isNotEmpty(expressDetailTemp.getCneeAddr())){
+				branch = this.matchDeliveryBranch(expressDetailTemp.getTransportNo(),expressDetailTemp.getCneeAddr());
+			}
+			
 			//插入主表
 			expressOrderDao.insertCwbOrder(expressDetailTemp,branch);
 			logger.info("定时器临时表插入detail表成功!cwb={}", expressDetailTemp.getTransportNo());

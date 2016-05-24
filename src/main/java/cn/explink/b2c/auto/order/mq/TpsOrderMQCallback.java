@@ -1,9 +1,7 @@
 package cn.explink.b2c.auto.order.mq;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -70,7 +68,7 @@ public class TpsOrderMQCallback implements IVMSCallback {
 		try {
 			msg = new String(e.getPayload(), "utf-8");
 			this.logger.info("TPS订单下发接口报文：" + msg);			
-			InfDmpOrderSendVO orderSend = objectMapper.readValue(msg, InfDmpOrderSendVO.class);
+			InfDmpOrderSendVO orderSend = objectMapper.readValue(msg, InfDmpOrderSendVO[].class)[0];
 			// 效验数据
 			if(!verify(orderSend, msg)){
 				return;
@@ -82,6 +80,7 @@ public class TpsOrderMQCallback implements IVMSCallback {
 			orderHandler.dealWith(orderSend);			
 		} catch (Exception ex) {
 			this.logger.error("消费TPS订单下发数据时解析异常!", ex);
+			ex.printStackTrace();
 			feedbackException(msg, ex.getMessage(), null);
 		} finally {
 			// 确认消费
