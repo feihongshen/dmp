@@ -30,6 +30,11 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.YesOrNoStateEnum;
 import cn.explink.util.DateTimeUtil;
 
+/**
+ * 快递单数据操作
+ * @author jian.xie
+ *
+ */
 @Repository
 public class ExpressCwbOrderDataImportDAO {
 
@@ -51,59 +56,59 @@ public class ExpressCwbOrderDataImportDAO {
 	private final class ExpressCwbOrderDTOMapper implements RowMapper<ExpressCwbOrderDTO> {
 		@Override
 		public ExpressCwbOrderDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-			ExpressCwbOrderDTO tempPreOrder = new ExpressCwbOrderDTO();
-			tempPreOrder.setId(rs.getString("tps_trans_id"));
-			tempPreOrder.setTransportNo(rs.getString("transport_no"));
-			tempPreOrder.setCustOrderNo(rs.getString("cust_order_no"));
-			tempPreOrder.setCustCode(rs.getString("cust_code"));
-			tempPreOrder.setAcceptDept(rs.getString("accept_dept"));
-			tempPreOrder.setAcceptOperator(rs.getString("accept_operator"));
-			tempPreOrder.setCnorProv(rs.getString("cnor_prov"));
-			tempPreOrder.setCnorCity(rs.getString("cnor_city"));
-			tempPreOrder.setCnorRegion(rs.getString("cnor_region"));
-			tempPreOrder.setCnorTown(rs.getString("cnor_town"));
-			tempPreOrder.setCnorAddr(rs.getString("cnor_addr"));
-			tempPreOrder.setCnorName(rs.getString("cnor_name"));
-			tempPreOrder.setCnorMobile(rs.getString("cnor_mobile"));
-			tempPreOrder.setCnorTel(rs.getString("cnor_tel"));
-			tempPreOrder.setCnorRemark(rs.getString("cnor_remark"));
-			tempPreOrder.setCneeProv(rs.getString("cnee_prov"));
-			tempPreOrder.setCneeCity(rs.getString("cnee_city"));
-			tempPreOrder.setCneeRegion(rs.getString("cnee_region"));
-			tempPreOrder.setCneeTown(rs.getString("cnee_town"));
-			tempPreOrder.setCneeAddr(rs.getString("cnee_addr"));
-			tempPreOrder.setCneeName(rs.getString("cnee_name"));
-			tempPreOrder.setCneeMobile(rs.getString("cnee_mobile"));
-			tempPreOrder.setCneeTel(rs.getString("cnee_tel"));
-			tempPreOrder.setCneePeriod(rs.getInt("cnee_period"));
-			tempPreOrder.setCneeRemark(rs.getString("cnee_remark"));
-			tempPreOrder.setCneeCertificate(rs.getString("cnee_certificate"));
-			tempPreOrder.setCneeNo(rs.getString("cnee_no"));
-			tempPreOrder.setIsCod(rs.getInt("is_cod"));
-			tempPreOrder.setCodAmount(rs.getBigDecimal("cod_amount"));
-			tempPreOrder.setCarriage(rs.getBigDecimal("carriage"));
-			tempPreOrder.setTotalNum(rs.getInt("total_num"));
-			tempPreOrder.setTotalWeight(rs.getBigDecimal("total_weight"));
-			tempPreOrder.setCalculateWeight(rs.getBigDecimal("calculate_weight"));
-			tempPreOrder.setTotalVolume(rs.getBigDecimal("total_volume"));
-			tempPreOrder.setTotalBox(rs.getInt("total_box"));
-			tempPreOrder.setAssuranceValue(rs.getBigDecimal("assurance_value"));
-			tempPreOrder.setAssuranceFee(rs.getBigDecimal("assurance_fee"));
-			tempPreOrder.setPayType(rs.getInt("pay_type"));
-			tempPreOrder.setPayment(rs.getInt("payment"));
-			tempPreOrder.setDetails(rs.getString("details"));
-			tempPreOrder.setCargoName(rs.getString("cargo_name"));
-			tempPreOrder.setCount(rs.getInt("count"));
-			tempPreOrder.setCargoLength(rs.getBigDecimal("cargo_length"));
-			tempPreOrder.setCargoWidth(rs.getBigDecimal("cargo_width"));
-			tempPreOrder.setCargoHeight(rs.getBigDecimal("cargo_height"));
-			tempPreOrder.setWeight(rs.getBigDecimal("weight"));
-			tempPreOrder.setVolume(rs.getBigDecimal("volume"));
-			tempPreOrder.setCustPackNo(rs.getString("cust_pack_no"));
-			tempPreOrder.setSizeSn(rs.getString("size_sn"));
-			tempPreOrder.setPrice(rs.getBigDecimal("price"));
-			tempPreOrder.setUnit(rs.getString("unit"));
-			return tempPreOrder;
+			ExpressCwbOrderDTO order = new ExpressCwbOrderDTO();
+			order.setId(rs.getString("tps_trans_id"));
+			order.setTransportNo(rs.getString("transport_no"));
+			order.setCustOrderNo(rs.getString("cust_order_no"));
+			order.setCustCode(rs.getString("cust_code"));
+			order.setAcceptDept(rs.getString("accept_dept"));
+			order.setAcceptOperator(rs.getString("accept_operator"));
+			order.setCnorProv(rs.getString("cnor_prov"));
+			order.setCnorCity(rs.getString("cnor_city"));
+			order.setCnorRegion(rs.getString("cnor_region"));
+			order.setCnorTown(rs.getString("cnor_town"));
+			order.setCnorAddr(rs.getString("cnor_addr"));
+			order.setCnorName(rs.getString("cnor_name"));
+			order.setCnorMobile(rs.getString("cnor_mobile"));
+			order.setCnorTel(rs.getString("cnor_tel"));
+			order.setCnorRemark(rs.getString("cnor_remark"));
+			order.setCneeProv(rs.getString("cnee_prov"));
+			order.setCneeCity(rs.getString("cnee_city"));
+			order.setCneeRegion(rs.getString("cnee_region"));
+			order.setCneeTown(rs.getString("cnee_town"));
+			order.setCneeAddr(rs.getString("cnee_addr"));
+			order.setCneeName(rs.getString("cnee_name"));
+			order.setCneeMobile(rs.getString("cnee_mobile"));
+			order.setCneeTel(rs.getString("cnee_tel"));
+			order.setCneePeriod(rs.getInt("cnee_period"));
+			order.setCneeRemark(rs.getString("cnee_remark"));
+			order.setCneeCertificate(rs.getString("cnee_certificate"));
+			order.setCneeNo(rs.getString("cnee_no"));
+			order.setIsCod(rs.getInt("is_cod"));
+			order.setCodAmount(rs.getBigDecimal("cod_amount"));
+			order.setCarriage(rs.getBigDecimal("carriage"));
+			order.setTotalNum(rs.getInt("total_num"));
+			order.setTotalWeight(rs.getBigDecimal("total_weight"));
+			order.setCalculateWeight(rs.getBigDecimal("calculate_weight"));
+			order.setTotalVolume(rs.getBigDecimal("total_volume"));
+			order.setTotalBox(rs.getInt("total_box"));
+			order.setAssuranceValue(rs.getBigDecimal("assurance_value"));
+			order.setAssuranceFee(rs.getBigDecimal("assurance_fee"));
+			order.setPayType(rs.getInt("pay_type"));
+			order.setPayment(rs.getInt("payment"));
+			order.setDetails(rs.getString("details"));
+			order.setCargoName(rs.getString("cargo_name"));
+			order.setCount(rs.getInt("count"));
+			order.setCargoLength(rs.getBigDecimal("cargo_length"));
+			order.setCargoWidth(rs.getBigDecimal("cargo_width"));
+			order.setCargoHeight(rs.getBigDecimal("cargo_height"));
+			order.setWeight(rs.getBigDecimal("weight"));
+			order.setVolume(rs.getBigDecimal("volume"));
+			order.setCustPackNo(rs.getString("cust_pack_no"));
+			order.setSizeSn(rs.getString("size_sn"));
+			order.setPrice(rs.getBigDecimal("price"));
+			order.setUnit(rs.getString("unit"));
+			return order;
 		}
 	}
 

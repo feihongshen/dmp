@@ -3,7 +3,7 @@ package cn.explink.b2c.pjwl;
 import java.math.BigDecimal;
 
 /**
- * 运单 dto 用于接收tps运单单转换后的容器
+ * 运单 dto 用于接收tps运单单转换后的容器与临时表对应
  * @author jiangyu 2015年9月9日
  *
  */

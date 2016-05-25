@@ -666,19 +666,20 @@ public class TPSGetOrderDataService {
 			String customer_name = order.getCustomerName();
 			String customerid=vipshop.getCustomerids();  //默认选择唯品会customerid
 			
-			//Modified by leoliao at 2016-05-15
-			//区分乐蜂订单逻辑如下：根据上游系统提供的接口数据字段vip_club值来区分是否为乐蜂订单，当且仅当vip_club值为14时，订单为乐蜂订单。
-			String vipclub = (order.getVipClub()==null?"" : order.getVipClub().trim());
+			//Modified by leoliao at 2016-05-20
+			//区分乐蜂订单逻辑如下：根据上游系统提供的接口数据字段do_type值来区分是否为乐蜂订单，当且仅当do_type值为1时，订单为乐蜂订单。
+			int do_type = order.getDoType()==null?999 : order.getDoType().intValue();
 			if(vipshop.getIsOpenLefengflag()==1){//开启乐蜂网
 				//if((customer_name==null||customer_name.isEmpty()||!customer_name.contains("乐蜂"))&&!cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
-				if(!vipclub.equals("14") && !cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
+				if(do_type != 1 && !cwbordertype.equals(String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue()))){
+					this.logger.info("开启乐峰网标识,但非乐峰订单cwb={}则返回null!", cust_order_no);
 					return null;
 				}
 			}
 			
 			//if((customer_name!=null&&customer_name.contains("乐蜂"))){
-			if(vipclub.equals("14")){
-				customerid = (vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid());
+			if(do_type == 1){
+				customerid = (vipshop.getLefengCustomerid()==null || vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid());
 			}
 			//Modified end
 			
