@@ -17,6 +17,13 @@ $(function () {
         maxHeight: 200
     });
 
+    $("#distributeBranchSelect").multipleSelect({
+        placeholder: "请选择",
+        single: true,
+        filter: true,
+        maxHeight: 200
+    });
+
     $("#acceptOrg").change(function () {
         changeCourier($(this).val(), "#courier");
     });
@@ -194,6 +201,10 @@ var allertMsg = {
      * @param msg  提示信息
      */
     , "alertError": function (msg) {
+        if(msg){
+            msg = msg.replace(new RegExp("BusinessException 系统异常：","gm"),"")
+        }
+
         layer.alert(msg || "Error", 3);
     }
 }

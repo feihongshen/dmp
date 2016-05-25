@@ -97,7 +97,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		
 		// 预约单状态
         ReserveOrderStatusEnum[] reserveOrderStatusList;
-        if(this.isWarehouseMaster()) {
+        if(this.isWarehouseMaster() || this.isCourier()) {
         	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toArray();
         } else {
         	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toArray();
@@ -124,7 +124,7 @@ public class ReserveOrderController extends ExpressCommonController {
         //查找本省的所有站点
         List<Branch> branches = this.reserveOrderService.getBranches();
         model.addAttribute("branchList",branches);
-        
+
         // 预约单状态
         ReserveOrderStatusEnum[] reserveOrderStatusList;
 //        if(this.isWarehouseMaster()) {
@@ -210,7 +210,8 @@ public class ReserveOrderController extends ExpressCommonController {
 			omReserveOrderModel.setCnorMobile(StringUtils.strip(cnorMobile));
 		}
 		if(StringUtils.isNotBlank(acceptOrg)) {
-			omReserveOrderModel.setAcceptOrg(acceptOrg);
+//			omReserveOrderModel.setAcceptOrg(acceptOrg);
+			omReserveOrderModel.setCarrierSiteCode(acceptOrg);
 		}
 		if(courier != null) {
 			User user = this.userService.getUserByUserid(courier);
@@ -244,10 +245,12 @@ public class ReserveOrderController extends ExpressCommonController {
         if (this.isWarehouseMaster() || this.isCourier()) {
             //站长或小件员只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		} else if(this.isCustomService() || this.isAdmin()) {
+//            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+            omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
+        } else if(this.isCustomService() || this.isAdmin()) {
 			if(StringUtils.isNotBlank(acceptOrg)) {
-				omReserveOrderModel.setAcceptOrg(acceptOrg);
+//				omReserveOrderModel.setAcceptOrg(acceptOrg);
+                omReserveOrderModel.setCarrierSiteCode(carrierCode);
 			}
 		} else {
 			isQuery = false;
@@ -323,14 +326,14 @@ public class ReserveOrderController extends ExpressCommonController {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
 			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		} else if(this.isCustomService() || this.isAdmin()) {
-		if(StringUtils.isNotBlank(acceptOrg)) {
-			omReserveOrderModel.setAcceptOrg(acceptOrg);
-				Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
-				omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-		}
-		} else {
-			isQuery = false;
+        } else if (this.isCustomService() || this.isAdmin()) {
+            if (StringUtils.isNotBlank(acceptOrg)) {
+                omReserveOrderModel.setAcceptOrg(acceptOrg);
+                Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
+                omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+            }
+        } else {
+            isQuery = false;
 		}
 		final List<ReserveOrderVo> reserveOrderList;
 		if(isQuery) {

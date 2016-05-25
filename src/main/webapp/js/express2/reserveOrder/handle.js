@@ -197,8 +197,9 @@ $(function () {
             if (isHandlePage) {
                 allertMsg.alertError("选中的预约单无法做分配站点操作！");
             } else {
-                allertMsg.alertError("选中的预约单无法做分配快递员操作！");
+                allertMsg.alertError("选中的预约单无法做分配k操作！");
             }
+
         	return false;
         }
         if (rows.length == 1) {
@@ -443,11 +444,13 @@ $(function () {
                     allertMsg.alertError(data.errorMsg);
                 }
                 $('#dg_rsList').datagrid('reload');
-                if ($('#distributeBranch')) {
-                    $('#distributeBranch').val("");
+                if ($('#distributeBranchSelect')) {
+                    $('#distributeBranchSelect').val("");
+                    $('#distributeBranchSelect').multipleSelect("refresh");
                 }
-                if ($('#distributeCourier')) {
-                    $('#distributeCourier').val("");
+                if ($('#distributeCourierSelect')) {
+                    $('#distributeCourierSelect').val("");
+                    $('#distributeCourierSelect').multipleSelect("refresh");
                 }
                 closePanel(distributeBranchPanel);
             }
