@@ -14,8 +14,11 @@ import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.auto.order.dao.ExpressOrderDao;
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
+import cn.explink.dao.BranchDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.User;
 import cn.explink.domain.VO.express.ExtralInfo4Address;
 import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.enumutil.express.ExpressOperationEnum;
@@ -43,6 +46,12 @@ public class ExpressOrderService {
 	
 	@Autowired
 	AddressMatchExpressService addressMatchExpressService;
+	
+	@Autowired
+	BranchDAO branchDAO;
+	
+	@Autowired
+	UserDAO userDAO;
 	
 	/**
 	 * 根据 tpsTranId查询临时表，
@@ -130,9 +139,17 @@ public class ExpressOrderService {
 			if(StringUtils.isNotEmpty(expressDetailTemp.getCneeAddr())){
 				branch = this.matchDeliveryBranch(expressDetailTemp.getTransportNo(),expressDetailTemp.getCneeAddr());
 			}
+			// 
+			List<Branch> listBranch  = branchDAO.getBranchByTpsBranchcode(expressDetailTemp.getAcceptDept());
+			Branch acceptBranch = null;
+			if(!CollectionUtils.isEmpty(listBranch)){
+				acceptBranch = listBranch.get(0);				
+			}
+			// 小件员
+			User user = userDAO.getUserByUsername(expressDetailTemp.getAcceptOperator());
 			
 			//插入主表
-			expressOrderDao.insertCwbOrder(expressDetailTemp,branch);
+			expressOrderDao.insertCwbOrder(expressDetailTemp, branch, acceptBranch, user);
 			logger.info("定时器临时表插入detail表成功!cwb={}", expressDetailTemp.getTransportNo());
 		}
 		//更新记录
