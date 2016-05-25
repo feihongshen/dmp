@@ -148,6 +148,7 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	String customerwarehouseid;// 客户发货仓库id
 	long emaildateid;// 发货时间Id
 	String emaildate;// 发货时间
+	long emaildateTimestamp; //发货时间时间戳
 	long serviceareaid;// 服务区域id
 	long customerid;// 供货商id
 	String shipcwb;// 供货商运单号
@@ -1882,5 +1883,12 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	public void setCompletedatetime(Date completedatetime) {
 		this.completedatetime = completedatetime;
 	}
+	
+	public long getEmaildateTimestamp() {
+		return emaildateTimestamp;
+	}
 
+	public void setEmaildateTimestamp(long emaildateTimestamp) {
+		this.emaildateTimestamp = emaildateTimestamp;
+	}
 }
