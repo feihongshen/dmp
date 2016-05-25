@@ -1308,6 +1308,10 @@ function check_user() {
 		alert("员工登录密码两次输入不一致");
 		return false;
 	}
+	if(!isPasswordValid($('#password').val())){
+		alert("密码至少要含小写字母、大写字母、数字、特殊字符中的任意三种且长度至少需要八位");
+		return false;
+	}
 	if ($("#roleid").val() == -1) {
 		alert("请选择员工对应的角色");
 		return false;
@@ -1388,6 +1392,44 @@ function roleChange() {
 	$("#tip").html("");
 	if ($("#roleid").val() == '2' || $("#roleid").val() == '4') {
 		$("#tip").html("*");
+	}
+}
+function isPasswordValid(loginPwd){
+	if(loginPwd.length<8)
+		return false;
+	var flag1=false,flag2=false,flag3=false,flag4=false;
+	for(var i=0;i<loginPwd.length;i++){
+		var asc=loginPwd.charCodeAt(i);
+			//判断是否数字
+			if(48<=asc&&asc<=57)
+				flag1=true;
+			//判断是否小写字母
+			if(65<=asc&&asc<=90)
+				flag2=true;
+			//判断是否是大写字母
+			if(97<=asc&&asc<=122)
+				flag4=true;
+			//判断是否字符
+			if((33<=asc&&asc<=47)||(58<=asc&&asc<=64)||(91<=asc&&asc<=96)||(123<=asc&&asc<=126))
+				flag3=true;
+	}
+	var count = 0;
+	if(flag1 == true){
+		count++;
+	}
+	if(flag2 == true){
+		count++;
+	}
+	if(flag3 == true){
+		count++;
+	}
+	if(flag4 == true){
+		count++;
+	}
+	if(count == 3 || count == 4){
+		return true;
+	}else{
+		return false;
 	}
 }
 function submitAddUser(form) {
@@ -4616,6 +4658,10 @@ function check_userbranch() {
 	}
 	if ($("#password1").val() != $("#password").val()) {
 		alert("员工登录密码两次输入不一致");
+		return false;
+	}
+	if(!isPasswordValid($('#password').val())){
+		alert("密码至少要含小写字母、大写字母、数字、特殊字符中的任意三种且长度至少需要八位");
 		return false;
 	}
 	if ($("#usermobile").val().length == 0) {

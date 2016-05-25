@@ -51,8 +51,8 @@ initUser[1]="<%=u.getEmployeestatus() %>,employeestatus";
 			           </select>
 			        </li>
 					<li><span>登录用户名：</span><input type="text" id="username" name="username" value="<%=u.getUsername() %>" maxlength="50"/>*</li>
-					 <li><span>登录密码：</span><input type="text" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
-			         <li><span>确认密码：</span><input type="text" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
+					 <li><span>登录密码：</span><input type="password" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
+			         <li><span>确认密码：</span><input type="password" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 			        <li><span>工作状态：</span>
 						<select id="employeestatus" name="employeestatus" onchange="changeJSstate('<%=request.getContextPath()%>/user/getjiesuanstate');">
 							<option value="<%=UserEmployeestatusEnum.GongZuo.getValue() %>" ><%=UserEmployeestatusEnum.GongZuo.getText() %></option>
