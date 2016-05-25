@@ -41,6 +41,8 @@ $(function () {
     $("#city4edit").change(function () {
         changeCounty($(this).val(), "#county4edit");
     })
+
+
 });
 
 /**
@@ -174,6 +176,7 @@ function changeCourier(acceptOrg, changedItem) {
 
     courierSelect.multipleSelect("refresh");
 }
+
 var allertMsg = {
     /**
      * 成功提示

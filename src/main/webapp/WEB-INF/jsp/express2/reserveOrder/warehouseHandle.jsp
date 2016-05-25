@@ -83,7 +83,7 @@
             <div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i
                     class="icon-plus"></i>修改
             </div>
-            <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部
+            <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回省公司
             </div>
             <div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i
                     class="icon-eye-open"></i>分配快递员
@@ -142,10 +142,18 @@
                 <td style="border: 0px; vertical-align: middle;">
                     <select id="reason4Feedback" name="reason4Feedback">
                         <option value="">请选择</option>
-                        <c:forEach items="${reverseReason}" var="list">
-                            <option value="${list.codeValue}">${list.displayValue}</option>
-                        </c:forEach>
-
+<%--
+                        <div id="reverseExceptionReason">
+--%>
+                            <c:forEach items="${reverseExceptionReason}" var="list">
+                                <option name="reverseExceptionReasonOpt" value="${list.codeValue}">${list.displayValue}</option>
+                            </c:forEach>
+<%--    </div>
+                        <div id="reverseRetentionReason">--%>
+                            <c:forEach items="${reverseRetentionReason}" var="list">
+                                <option name="reverseRetentionReasonOpt" value="${list.codeValue}">${list.displayValue}</option>
+                            </c:forEach>
+                      <%--  </div>--%>
                     </select>
                 </td>
             </tr>
@@ -173,12 +181,12 @@
         </div>
     </div>
 </div>
-<div id="dialog3" title=" 退回总部" style="display:none;">
+<div id="dialog3" title="退回省公司" style="display:none;">
     <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
         <table>
             <tr>
                 <td style="border: 0px; text-align: left; vertical-align: middle;padding-left: 10px;width: 40%;">
-                     退回总部：
+                    备注：
                 </td>
 
             </tr>
@@ -298,9 +306,43 @@
     var hadAllocationPro = "<%= ReserveOrderStatusEnum.HadAllocationPro.getIndex()%>";
     var hadAllocationStation = "<%= ReserveOrderStatusEnum.HadAllocationStation.getIndex()%>";
     var haveStationOutZone = "<%= ReserveOrderStatusEnum.HaveStationOutZone.getIndex()%>";
-    
-    var LAN_JIAN_CHAO_QU = "<%= ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>";
+
+
+    $("#optCode4Feedback").change(function () {
+        changeReason4Feedback($(this).val());
+    })
+
     var LAN_JIAN_SHI_BAI = "<%= ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()%>";
+    var FAN_KUI_JI_LIU = "<%= ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu.getValue()%>";
+
+    function changeReason4Feedback(operateType) {
+        $('#reason4Feedback').val("");
+        if (operateType == LAN_JIAN_SHI_BAI) {
+            $.each($("#reason4Feedback option"), function (index, value) {
+                if ($(this).attr('name')) {
+                    if ($(this).attr('name') == "reverseExceptionReasonOpt") {
+                        $(this).show();
+                    } else if ($(this).attr('name') == "reverseRetentionReasonOpt") {
+                        $(this).hide();
+                    }
+                }
+            });
+        } else if (operateType == FAN_KUI_JI_LIU) {
+            $.each($("#reason4Feedback option"), function (index, value) {
+                if ($(this).attr('name')) {
+                    if ($(this).attr('name') == "reverseExceptionReasonOpt") {
+                        $(this).hide();
+                    } else if ($(this).attr('name') == "reverseRetentionReasonOpt") {
+                        $(this).show();
+                    }
+                }
+            });
+        } else {
+            $.each($("#reason4Feedback option"), function (index, value) {
+                $(this).hide();
+            });
+        }
+    }
 
     $(function () {
         //初始化表格

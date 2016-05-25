@@ -150,24 +150,24 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
-        var rows = $('#dg_rsList').datagrid('getChecked');
+        //var rows = $('#dg_rsList').datagrid('getChecked');
         
-        var flag = true;
-        $.each(rows, function (index, value) {
-        	var reserveOrderStatus = value.reserveOrderStatus;
-        	if(reserveOrderStatus != hadAllocationPro && reserveOrderStatus != haveStationOutZone) {
-        		flag = false;
-        		return false;
-        	}
-        });
-        if(!flag) {
-        	allertMsg.alertError("选中的预约单无法做退回总部操作！");
-        	return false;
-        }
+        //var flag = true;
+        //$.each(rows, function (index, value) {
+        //	var reserveOrderStatus = value.reserveOrderStatus;
+        //	if(reserveOrderStatus != hadAllocationPro && reserveOrderStatus != haveStationOutZone) {
+        //		flag = false;
+        //		return false;
+        //	}
+        //});
+        //if(!flag) {
+        //	allertMsg.alertError("选中的预约单无法做退回总部操作！");
+        //	return false;
+        //}
         //打开退回总部面板
         returnToCentralPanel = $.layer({
             type: 1,
-            title: '退回总部',
+            title: $('#dialog3').attr('title'),
             shadeClose: true,
             maxmin: false,
             fix: false,
@@ -181,27 +181,27 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
-        var rows = $('#dg_rsList').datagrid('getChecked');
-        
-        var flag = true;
-        $.each(rows, function (index, value) {
-        	var reserveOrderStatus = value.reserveOrderStatus;
-        	if(reserveOrderStatus != hadAllocationPro  
-        			&& reserveOrderStatus !=hadAllocationStation 
-        			&& reserveOrderStatus != haveStationOutZone) {
-        		flag = false;
-        		return false;
-        	}
-        });
-        if(!flag) {
-            if (isHandlePage) {
-                allertMsg.alertError("选中的预约单无法做分配站点操作！");
-            } else {
-                allertMsg.alertError("选中的预约单无法做分配k操作！");
-            }
-
-        	return false;
-        }
+        //var rows = $('#dg_rsList').datagrid('getChecked');
+        //
+        //var flag = true;
+        //$.each(rows, function (index, value) {
+        //	var reserveOrderStatus = value.reserveOrderStatus;
+        //	if(reserveOrderStatus != hadAllocationPro
+        //			&& reserveOrderStatus !=hadAllocationStation
+        //			&& reserveOrderStatus != haveStationOutZone) {
+        //		flag = false;
+        //		return false;
+        //	}
+        //});
+        //if(!flag) {
+        //    if (isHandlePage) {
+        //        allertMsg.alertError("选中的预约单无法做分配站点操作！");
+        //    } else {
+        //        allertMsg.alertError("选中的预约单无法做分配操作！");
+        //    }
+        //
+        //	return false;
+        //}
         if (rows.length == 1) {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
             $('#distributeBranchSelect option').each(function () {
@@ -250,7 +250,7 @@ $(function () {
         if (rows.length == 1) {
             var selectedRow = rows[0];
             $("#reserveOrderNo4Feedback").val(selectedRow.reserveOrderNo);
-            $('#courierName4Feedback').val(selectedRow.cnorName);
+            $('#courierName4Feedback').val(selectedRow.courierName);
         } else {
             $("#reserveOrderNo4Feedback").val("");
             $('#courierName4Feedback').val("");
@@ -259,6 +259,13 @@ $(function () {
         $('#type4Feedback').val("");
         $('#reason4Feedback').val("");
         $('#cnorRemark4Feedback').val("");
+        $.each($("#reason4Feedback option"), function (index, value) {
+            if ($(this).attr('name')) {
+                $(this).hide();
+            }
+        });
+
+        //$('option[name=reverseRetentionReason]').hide();
 
         //打开条件生成账单面板
         feedBackPanel = $.layer({
@@ -465,17 +472,16 @@ $(function () {
         var operateType =  $('#optCode4Feedback').val();
         var reason = $('#reason4Feedback').val();
         if (!operateType || operateType.length < 1) {
-            allertMsg.alertError("反馈为为必填");
+            allertMsg.alertError("反馈为必填");
             return false;
         }
 
-        if (operateType == LAN_JIAN_CHAO_QU || operateType == LAN_JIAN_SHI_BAI) {
-            if (!reason || reason.length < 1) {
-                allertMsg.alertError("原因为必填");
-                return false;
-            }
-        }
-
+        //if (operateType == LAN_JIAN_CHAO_QU || operateType == LAN_JIAN_SHI_BAI) {
+        //    if (!reason || reason.length < 1) {
+        //        allertMsg.alertError("原因必填");
+        //        return false;
+        //    }
+        //}
         var param = [];
 
         $.each(rows, function (index, value) {
