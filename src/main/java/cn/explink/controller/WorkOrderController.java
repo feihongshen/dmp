@@ -279,7 +279,6 @@ public class WorkOrderController {
 				
 			} 
 		}
-		AATestController.insertAcceptNo(acceptNo);
 		return acceptNo;
 	}
 	
