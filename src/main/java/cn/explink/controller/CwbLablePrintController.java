@@ -3,6 +3,7 @@ package cn.explink.controller;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -71,6 +73,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EmailDate;
+import cn.explink.domain.PrintOrderLabelVo;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
@@ -750,5 +753,40 @@ public class CwbLablePrintController {
 		model.addAttribute("sitetype", sitetype);
 		model.addAttribute("pagesize", pagesize);
 		return "cwblableprint/branchcodeprint";
+	}
+	
+	/**
+	 * 面单打印
+	 * 2016年5月23日 上午11:01:30
+	 * @return
+	 * @throws ParseException 
+	 */
+	@RequestMapping("/printOrderLabel")
+	public String printOrderLabel(Model model, @RequestParam(value = "cwb") List<String> cwbList) throws ParseException {
+		List<CwbOrder> cwbOrderList = this.cwborderService.getCwbOrderListByCwbs(cwbList);
+		List<PrintOrderLabelVo> printOrderLabelVoList = new ArrayList<PrintOrderLabelVo>();
+		for(CwbOrder cwbOrder : cwbOrderList) {
+			PrintOrderLabelVo vo = new PrintOrderLabelVo();
+			// 日期格式转换
+			if(StringUtils.isNotBlank(cwbOrder.getEmaildate())) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date emaildate = sdf.parse(cwbOrder.getEmaildate());
+				sdf = new SimpleDateFormat("yyyy-M-d");
+				String emaildateStr = sdf.format(emaildate);
+				cwbOrder.setEmaildate(emaildateStr);
+			}
+			vo.setCwbOrder(cwbOrder);
+			Branch branch = null;
+			if(cwbOrder.getDeliverybranchid() != 0) {
+				branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+			}
+			if(branch == null) {
+				branch = new Branch();
+			}
+			vo.setBranch(branch);
+			printOrderLabelVoList.add(vo);
+		}
+		model.addAttribute("printOrderLabelVoList", printOrderLabelVoList);
+		return "cwblableprint/printOrderLabel";
 	}
 }

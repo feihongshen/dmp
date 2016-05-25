@@ -185,7 +185,7 @@ public class DataImportController {
 		model.addAttribute("addressStart", this.addressStartDAO.isAddressStart());
 
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Long day7 = (System.currentTimeMillis() / 1000) - (60 * 60 * 24 * 5);
+		Long day7 = (System.currentTimeMillis() / 1000) - (60 * 60 * 24 * 7);
 		// model.addAttribute("emaildateList",
 		// emaildateDAO.getEmailDateByDateByUserid(df.format(new
 		// Date(day7*1000)), df.format(new
