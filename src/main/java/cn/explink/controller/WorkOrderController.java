@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -119,6 +124,12 @@ public class WorkOrderController {
 	@Autowired
 	private CsPushSmsDao csPushSmsDao;
 	
+	@Autowired
+	private RedisTemplate<String, Serializable> redisTemplate;
+	
+	/**工单号锁缓存超时时间，单位：秒*/
+	public static final int ACCEPTNO_LOCK_CACHE_TIMEOUT = 5;
+	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -209,7 +220,7 @@ public class WorkOrderController {
 	
 	@RequestMapping("/CreateComplainWorkOrder")
 	public String CreateComplainWorkOrder(Model model,@RequestParam(value="opscwbid",defaultValue="",required=true) int opscwbid,@RequestParam(value="CallerPhoneValue",defaultValue="",required=true) String CallerPhoneValue){
-		String transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);
+		String transcwb = createAcceptNo();
 		CsComplaintAccept co=workorderdao.getCsComplaintAcceptByAcceptNo(transcwb);
 //		while(co!=null){
 //			transcwb="G"+DateTimeUtil.getNowTimeNo()+((int)Math.random()*10);
@@ -240,6 +251,65 @@ public class WorkOrderController {
 			model.addAttribute("ca", ca);
 			model.addAttribute("lb", lb);
 		return "workorder/CreateComplainWorkOrder";
+	}
+	
+	/**
+	 * 创建工单号
+	 * @return
+	 * @author neo01.huang
+	 * 2016-5-25
+	 */
+	@ResponseBody
+	@RequestMapping("createAcceptNo")
+	public String createAcceptNo() {
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		String acceptNo = null;
+		synchronized (this) {
+			Date date = new Date();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			acceptNo = "G" + df.format(date);
+			acceptNo = acceptNo.substring(0, acceptNo.length() - 2);
+			if (!tryAcceptNoLock(acceptNo)) {
+				date = new Date();
+				acceptNo = "G" + df.format(date) + "" + ((int)Math.random()*10);
+				
+			} 
+		}
+		AATestController.insertAcceptNo(acceptNo);
+		return acceptNo;
+	}
+	
+	/**
+	 * 尝试获取工单号分布式锁
+	 * @return
+	 */
+	private boolean tryAcceptNoLock(final String acceptNo) {
+		try {
+			
+			final String key = ResourceBundleUtil.RedisPrefix + ":acceptNo:" + acceptNo; 
+			Boolean isSet = redisTemplate.execute(new RedisCallback<Boolean>() {
+				@Override
+				public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+					boolean isSetSuccess = connection.setNX(key.getBytes(), acceptNo.getBytes());
+					if (isSetSuccess) {
+						connection.expire(key.getBytes(), ACCEPTNO_LOCK_CACHE_TIMEOUT);
+					}
+					return isSetSuccess;
+				}
+			});
+			
+			if (isSet) {
+				return true;
+			}
+			
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
 	}
 	
 	@RequestMapping("/NewAddMaintain")
@@ -475,6 +545,13 @@ public class WorkOrderController {
 		cca.setCustomerid(co.getCustomerid());
 		String username=getSessionUser().getUsername();
 		cca.setHandleUser(username);
+		
+		//add by neo01.huang,加入工单号重复校验
+		CsComplaintAccept csComplaintAccept = workorderdao.getCsComplaintAcceptByAcceptNo(cca.getAcceptNo());
+		if (csComplaintAccept != null) {
+			return "{\"errorCode\":1,\"error\":工单号重复，" + cca.getAcceptNo() + "\"}";
+		}
+		
 		workorderdao.saveComplainWorkOrderF(cca);
 	
 		return "{\"errorCode\":0,\"error\":\"保存成功\"}";
@@ -1152,6 +1229,12 @@ public class WorkOrderController {
 		cca.setCustomerid(co.getCustomerid());
 		String username=getSessionUser().getUsername();
 		cca.setHandleUser(username);
+		
+		//add by neo01.huang,加入工单号重复校验
+		CsComplaintAccept csComplaintAccept = workorderdao.getCsComplaintAcceptByAcceptNo(cca.getAcceptNo());
+		if (csComplaintAccept != null) {
+			return "{\"errorCode\":1,\"error\":工单号重复，" + cca.getAcceptNo() + "\"}";
+		}
 		workorderdao.saveComplainWorkOrderF(cca);
 		
 		//构建数据
