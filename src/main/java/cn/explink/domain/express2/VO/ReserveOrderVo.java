@@ -123,6 +123,12 @@ public class ReserveOrderVo {
 	*/
 	private String cnorRegionName;
 
+
+    /**
+     * DMP 站点编码 branchCode
+     */
+    private String carrierSiteCode;
+
 	public Integer getOmReserveOrderId() {
 		return omReserveOrderId;
 	}
@@ -327,7 +333,13 @@ public class ReserveOrderVo {
 				+ ", operateType=" + operateType + ", cnorProvName=" + cnorProvName + ", cnorCityName=" + cnorCityName
 				+ ", cnorRegionName=" + cnorRegionName + "]";
 	}
-	
-	
 
+
+    public String getCarrierSiteCode() {
+        return carrierSiteCode;
+    }
+
+    public void setCarrierSiteCode(String carrierSiteCode) {
+        this.carrierSiteCode = carrierSiteCode;
+    }
 }

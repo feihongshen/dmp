@@ -173,12 +173,12 @@
         </div>
     </div>
 </div>
-<div id="dialog3" title="退回省公司" style="display:none;">
+<div id="dialog3" title=" 退回总部" style="display:none;">
     <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
         <table>
             <tr>
                 <td style="border: 0px; text-align: left; vertical-align: middle;padding-left: 10px;width: 40%;">
-                    退回省公司：
+                     退回总部：
                 </td>
 
             </tr>
@@ -258,7 +258,7 @@
 //                {field: 'transportNo', title: '运单号', width: 100, align: 'center'},
 //                {field: 'acceptOrgName', title: '站点', width: 100, align: 'center'},
                 {field: 'courierName', title: '快递员', width: 80, align: 'center'},
-                {field: 'cnorRemark', title: '备注', width: 80, align: 'center'}
+                {field: 'remark', title: '备注', width: 80, align: 'center'}
             ]]
         });
     }

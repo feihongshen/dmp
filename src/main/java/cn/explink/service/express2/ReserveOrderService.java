@@ -159,15 +159,20 @@ public class ReserveOrderService extends ExpressCommonService {
 			vo.setReserveOrderStatusName(po.getReserveOrderStatusName());
 			vo.setReason(po.getReason());
 			vo.setTransportNo(po.getTransportNo());
-			vo.setAcceptOrg(po.getAcceptOrg());
-			vo.setAcceptOrgName(po.getAcceptOrgName());
-			vo.setCnorRemark(po.getCnorRemark());
+//			vo.setAcceptOrg(po.getAcceptOrg());
+//			vo.setAcceptOrgName(po.getAcceptOrgName());
+            List<Branch> acceptBranches = branchDAO.getBranchByTpsBranchcode(po.getCarrierSiteCode());
+            if (acceptBranches != null && acceptBranches.size() > 0) {
+                vo.setAcceptOrgName(acceptBranches.get(0).getBranchname());
+            }
+            vo.setCnorRemark(po.getCnorRemark());
             vo.setCourierName(po.getCourierName());
             vo.setRecordVersion(po.getRecordVersion());
 			vo.setCnorProvName(po.getCnorProvName());
             vo.setCnorCityName(po.getCnorCityName());
             vo.setCnorRegionName(po.getCnorRegionName());
-			voList.add(vo);
+            vo.setCarrierSiteCode(po.getCarrierSiteCode());
+            voList.add(vo);
 		}
 		// 封装分页信息
 		ReserveOrderPageVo reserveOrderPageVo = new ReserveOrderPageVo();

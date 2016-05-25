@@ -218,7 +218,7 @@
 //		        {field:'transportNo', title:'运单号', width:100, align:'center'},
 		        {field:'acceptOrgName', title:'站点', width:100, align:'center'},
 		        {field:'courierName', title:'快递员', width:80, align:'center'},
-		        {field:'cnorRemark', title:'备注', width:80, align:'center'},
+		        {field:'remark', title:'备注', width:80, align:'center'},
 		        {field:'recordVersion',hidden : true, width:80, align:'center'}
 		    ]]
 		});
