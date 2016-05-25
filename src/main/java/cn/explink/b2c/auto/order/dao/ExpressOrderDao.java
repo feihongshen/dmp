@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
@@ -105,6 +106,15 @@ public class ExpressOrderDao {
 			expressDetailTemp.setSizeSn(rs.getString("size_sn"));
 			expressDetailTemp.setPrice(rs.getBigDecimal("price"));
 			expressDetailTemp.setUnit(rs.getString("unit"));
+			expressDetailTemp.setCnorCorpNo(rs.getString("cnor_corp_no"));
+			expressDetailTemp.setCnorCorpName(rs.getString("cnor_corp_name"));
+			expressDetailTemp.setFreight(rs.getBigDecimal("freight"));
+			expressDetailTemp.setAccountId(rs.getString("account_id"));
+			expressDetailTemp.setPackingFee(rs.getBigDecimal("packing_fee"));
+			expressDetailTemp.setExpressImage(rs.getString("express_image"));
+			expressDetailTemp.setCneeCorpName(rs.getString("cnee_corp_name"));
+			expressDetailTemp.setExpressProductType(rs.getInt("express_product_type"));
+			expressDetailTemp.setIsAcceptProv(rs.getInt("is_accept_prov"));
 			return expressDetailTemp;
 		}
 	}
@@ -145,7 +155,7 @@ public class ExpressOrderDao {
 		sql.append(" count,cargo_length,cargo_width,cargo_height,");
 		sql.append(" weight,volume,cust_pack_no,size_sn,");
 		sql.append(" price,unit,tps_trans_id,create_time,is_hand_over,");
-		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov)");
+		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_produce_type)");
 		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -232,6 +242,7 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getExpressImage());
 				ps.setString(++i, expressDetailTemp.getCneeCorpName());
 				ps.setInt(++i, expressDetailTemp.getIsAcceptProv());
+				ps.setInt(++i, expressDetailTemp.getExpressProductType());
 				return ps;
 			}
 		}, key);
@@ -281,10 +292,10 @@ public class ExpressOrderDao {
 	 * @param deliverBranchId
 	 * @param transOrder
 	 */
-	public long insertCwbOrder(final ExpressDetailTemp expressDetailTemp, final Branch branch) {
+	public long insertCwbOrder(final ExpressDetailTemp expressDetailTemp, final Branch branch, final Branch acceptBranch, final User user) {
 		final StringBuffer sql = new StringBuffer();
 		sql.append(" insert into express_ops_cwb_detail ( ");
-		sql.append(" cwb,transcwb,collectorname,senderprovince,");//sendercustomcode,
+		sql.append(" cwb,transcwb,collectorid,collectorname,senderprovince,");//sendercustomcode,
 		sql.append(" sendercity,sendercounty,senderstreet,sendercellphone,");
 		sql.append(" sendertelephone,senderaddress,sendername,consigneename,");
 		sql.append(" cwbprovince,cwbcity,cwbcounty,recstreet,");
@@ -295,7 +306,8 @@ public class ExpressOrderDao {
 		sql.append(" cwbordertypeid,orderflowid,flowordertype,");
 		sql.append(" cargovolume,cwbstate,instationname,state,");
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
-		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate) ");
+		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate ");
+		sql.append(" , cnor_corp_no,cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,express_produce_type)");
 		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
@@ -310,7 +322,8 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getTransportNo());
 				ps.setString(++i, expressDetailTemp.getTransportNo());
 				//				ps.setString(++i, cwbOrderDTO.getCustCode());
-				ps.setString(++i, expressDetailTemp.getAcceptOperator());
+				ps.setString(++i, user.getUserid() + "");// 小件员id
+				ps.setString(++i, user.getRealname());// 小件员名称
 				ps.setString(++i, expressDetailTemp.getCnorProv());
 
 				ps.setString(++i, expressDetailTemp.getCnorCity());
@@ -355,7 +368,7 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getCnorRemark());
 
 				ps.setBigDecimal(++i, expressDetailTemp.getCodAmount());
-				ps.setBigDecimal(++i, expressDetailTemp.getCarriage());
+				ps.setBigDecimal(++i, expressDetailTemp.getFreight());// 运费
 				ps.setInt(++i, expressDetailTemp.getTotalNum());
 				ps.setInt(++i, expressDetailTemp.getIsCod());
 
@@ -371,7 +384,8 @@ public class ExpressOrderDao {
 
 				ps.setLong(++i, CwbOrderTypeIdEnum.Express.getValue());
 				ps.setInt(++i, FlowOrderTypeEnum.DaoRuShuJu.getValue());
-				ps.setInt(++i, EmailFinishFlagEnum.WeiDaoHuo.getValue());
+				
+				ps.setInt(++i, 1001);
 
 				ps.setFloat(++i, expressDetailTemp.getTotalVolume().floatValue());
 				ps.setLong(++i, CwbStateEnum.PeiShong.getValue());
@@ -385,13 +399,24 @@ public class ExpressOrderDao {
 				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
 				ps.setInt(++i, ((null != branch)?CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue():CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));//是否匹配状态位
 
+				ps.setBigDecimal(++i, expressDetailTemp.getCarriage());// 费用合计
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
-				ps.setBigDecimal(++i, BigDecimal.ZERO);
-
-				ps.setInt(++i, 1);//补录完成标识，标识=1
+				if(expressDetailTemp.getIsAcceptProv() == 1){
+					ps.setInt(++i, 0);//补录完成标识，
+				}else{
+					ps.setInt(++i, 1);
+				}
 				ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
+				ps.setString(++i, expressDetailTemp.getCnorCorpNo());
+				ps.setString(++i, expressDetailTemp.getCnorCorpName());
+				ps.setBigDecimal(++i, expressDetailTemp.getFreight());
+				ps.setString(++i, expressDetailTemp.getAccountId());
+				ps.setBigDecimal(++i, expressDetailTemp.getPackingFee());
+				ps.setString(++i, expressDetailTemp.getExpressImage());
+				ps.setString(++i, expressDetailTemp.getCneeCorpName());
+				ps.setInt(++i, expressDetailTemp.getExpressProductType());
 				return ps;
 			}
 		}, key);
