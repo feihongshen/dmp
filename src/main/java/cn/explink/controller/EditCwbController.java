@@ -320,7 +320,7 @@ public class EditCwbController {
 			List<String> errorList = new ArrayList<String>();
 			for (String cwb : cwbs) {
 				try {
-					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, requestUser, this.getSessionUser().getUserid());
+					EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, requestUser, this.getSessionUser());
 					ecList.add(ec_dsd);
 				} catch (ExplinkException ee) {
 					errorList.add(cwb + "_" + ee.getMessage());
@@ -343,7 +343,7 @@ public class EditCwbController {
 		List<String> errorList = new ArrayList<String>();
 		for (String cwb : cwbs) {
 			try {
-				EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, (long) 0, this.getSessionUser().getUserid());
+				EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, (long) 0, this.getSessionUser());
 				ecList.add(ec_dsd);
 			} catch (ExplinkException ee) {
 				errorList.add(cwb + "_" + FlowOrderTypeEnum.YiShenHe.getValue() + "_" + ee.getMessage());
