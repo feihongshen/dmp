@@ -7,4 +7,4 @@ DROP column packing_fee ,
 DROP column express_image ,
 DROP column cnee_corp_name ,
 DROP column is_accept_prov ,
-DROP column express_produce_type ;
+DROP column express_product_type ;

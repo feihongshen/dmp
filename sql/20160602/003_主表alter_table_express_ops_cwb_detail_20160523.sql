@@ -5,4 +5,4 @@ add column account_id varchar(100) NOT NULL DEFAULT '' COMMENT '月结账号',
 add column packing_fee decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '包装费',
 add column express_image varchar(100) NOT NULL DEFAULT '' COMMENT '图片url',
 add column cnee_corp_name varchar(50) NOT NULL DEFAULT '' COMMENT '收货公司名称',
-add column express_produce_type int not null default '0' comment '快递产品类型';
+add column express_product_type int not null default '0' comment '快递产品类型';

@@ -6,4 +6,4 @@ desc express_ops_cwb_exprss_detail_temp 'packing_fee';
 desc express_ops_cwb_exprss_detail_temp 'express_image';
 desc express_ops_cwb_exprss_detail_temp 'cnee_corp_name';
 desc express_ops_cwb_exprss_detail_temp 'is_accept_prov';
-desc express_ops_cwb_exprss_detail_temp 'express_produce_type';
+desc express_ops_cwb_exprss_detail_temp 'express_product_type';
