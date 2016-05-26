@@ -1,0 +1,9 @@
+desc express_ops_cwb_exprss_detail_temp 'cnor_corp_no';
+desc express_ops_cwb_exprss_detail_temp 'cnor_corp_name';
+desc express_ops_cwb_exprss_detail_temp 'freight';
+desc express_ops_cwb_exprss_detail_temp 'account_id';
+desc express_ops_cwb_exprss_detail_temp 'packing_fee';
+desc express_ops_cwb_exprss_detail_temp 'express_image';
+desc express_ops_cwb_exprss_detail_temp 'cnee_corp_name';
+desc express_ops_cwb_exprss_detail_temp 'is_accept_prov';
+desc express_ops_cwb_exprss_detail_temp 'express_produce_type';
