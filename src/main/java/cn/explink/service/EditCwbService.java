@@ -239,12 +239,13 @@ public class EditCwbService {
 		// 删除返单表
 		this.returnCwbsDAO.deleteReturnCwbByCwb(cwb);
 
+
 		/**
 		 * 云订单重置审核状态
 		 */
 		try {
 			JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=1&cwb=" + co.getCwb() + "&nextbranchid=" + nextbranchid + "&flowordertype="
-					+ FlowOrderTypeEnum.FenZhanLingHuo.getValue() + "&currentbranchid=0&deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue(), "POST");
+					+ FlowOrderTypeEnum.FenZhanLingHuo.getValue() + "&currentbranchid=0&deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue()+ "&customerid=" +co.getCustomerid() , "POST");
 		} catch (IOException e1) {
 			logger.error("", e1);
 			this.logger.info("云订单重置审核状态异常:" + co.getCwb());
@@ -485,28 +486,6 @@ public class EditCwbService {
 		return ec_dsd;
 	}
 	
-	//外单重置反馈时推给tps
-	public void pushResetStateToTps(User editUser,String cwb){
-		//外单判断
-		ThirdPartyOrder2DOCfg pushCfg=thirdPartyOrder2DOCfgService.getThirdPartyOrder2DOCfg(B2cEnum.ThirdPartyOrder_2_DO.getKey());
-		if(pushCfg == null){
-			return;
-		}
-		if(pushCfg.getTrackOpenFlag() != 1){
-			return;
-		}
-		
-		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-		if(co==null){
-			return;
-		}
-		
-		boolean isOther=thirdPartyOrder2DOCfgService.isThirdPartyCustomer(co.getCustomerid(),pushCfg);
-		if(isOther){
-			this.logger.info("开始外单重置反馈推TPS接口,cwb={},flowordertype={}",co.getCwb(),FlowOrderTypeEnum.ChongZhiFanKui.getValue());
-			this.cwborderService.createFloworder(editUser, editUser.getBranchid(), co, FlowOrderTypeEnum.ChongZhiFanKui, "", System.currentTimeMillis(), co.getCwb(), false);
-		}
-	}
 
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public EdtiCwb_DeliveryStateDetail analysisAndSaveByKuaiDiYunFei(String cwb, String isDeliveryState, BigDecimal shouldfare, BigDecimal cash, BigDecimal pos, BigDecimal checkfee,

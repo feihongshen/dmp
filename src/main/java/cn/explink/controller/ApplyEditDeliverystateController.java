@@ -324,8 +324,7 @@ public class ApplyEditDeliverystateController {
 								}
 							}
 						}
-						//外单重置反馈时推给TPS
-						this.editCwbService.pushResetStateToTps(this.getSessionUser(),cwb);
+
 					} else {
 						cwbStr += cwb + ",";
 					}
