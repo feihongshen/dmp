@@ -43,6 +43,7 @@ import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.express2.ReserveOrderDmpStatusEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.service.express.ExpressCommonService;
 
@@ -62,7 +63,7 @@ public class ReserveOrderService extends ExpressCommonService {
 
     public enum PJReserverOrderOperationCode {
         YiShenHe(38, "已审核"), RenWuTueHui(35, "任务退回"), RenWuQueRen(34, "任务确认"), GuanBi(33, "关闭"),
-        FanKuiJiLiu(32, "反馈滞留", "延迟揽件"), LanJianShiBai(31, "揽件失败"), LanJianShiBaiTuiHui(30, "揽件超区(退回)", "揽件超区"),
+        FanKuiJiLiu(32, "反馈滞留"), LanJianShiBai(31, "揽件失败"), LanJianShiBaiTuiHui(30, "揽件超区(退回)", "揽件超区"),
         ZhanDianChaoQu(29, "站点超区"), ShengGongSiChaoQu(28, "省公司超区"), LanJianChengGong(27, "揽件成功"),
         YiLanJianFenPei(26, "已揽件分配"), YiFenPeiZhanDian(25, "已分配站点"), YiFenPeiShengGongSi(24, "已分配省公司");
 
@@ -164,7 +165,9 @@ public class ReserveOrderService extends ExpressCommonService {
 				vo.setRequireTimeStr(sdf.format(requireTime));
 			}
 			vo.setReserveOrderStatus(po.getReserveOrderStatus());
-			vo.setReserveOrderStatusName(po.getReserveOrderStatusName());
+			// 转换成本地状态名称
+			Integer reserveOrderStatus = po.getReserveOrderStatus() == null ? null : po.getReserveOrderStatus().intValue();
+			vo.setReserveOrderStatusName(ReserveOrderDmpStatusEnum.getNameByIndex(reserveOrderStatus));
 			vo.setReason(po.getReason());
 			vo.setTransportNo(po.getTransportNo());
 //			vo.setAcceptOrg(po.getAcceptOrg());
@@ -201,14 +204,14 @@ public class ReserveOrderService extends ExpressCommonService {
 	public List<ReserveOrderVo> getTotalReserveOrders(OmReserveOrderModel omReserveOrderModel) {
 		List<ReserveOrderVo> reserveOrderList = new ArrayList<ReserveOrderVo>();
 		final int DEFAULT_MAX_ROW_SIZE = 10000; //默认最大导出数量
+		final int ROW_SIZE = 1000; //分批次查询数量
 
         int maxRowSizeDefined = DEFAULT_MAX_ROW_SIZE;
+        // 从系统加载最大导出量，如果系统没有配置的话，就是用默认值
         SystemInstall systemInstall = systemInstallDAO.getSystemInstallByName(MAX_ROW_SIZE_DB_IN_DB);
         if (systemInstall != null && NumberUtils.isNumber(systemInstall.getValue())) {
             maxRowSizeDefined = Integer.parseInt(systemInstall.getValue());
         }
-
-		final int ROW_SIZE = 90; //分批次查询数量
 		//int page = 1; //起始页
 		//第一次查询
 		ReserveOrderPageVo reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, 1, ROW_SIZE);

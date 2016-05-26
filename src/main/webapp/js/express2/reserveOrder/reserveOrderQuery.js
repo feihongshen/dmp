@@ -1,4 +1,11 @@
 $(function () {
+	
+	$("input[type='text']").blur(function() {
+		var text = $(this).val();
+		text = $.trim(text);
+		$(this).val(text);
+	});
+	
     $("#cnorCity").change(function () {
         changeCounty($(this).val(), "#cnorRegion");
     });
