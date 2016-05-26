@@ -1,0 +1,1 @@
+SELECT '修改表tpo_send_do_inf' AS '脚本注释',IF((SELECT COUNT(1) FROM information_schema.columns WHERE table_schema = SCHEMA() AND table_name = 'tpo_send_do_inf' AND column_name IN('state','operate_type')) = 2,'success','failed') AS '执行结果';

@@ -72,6 +72,7 @@ import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -920,6 +921,20 @@ public class EditCwbController {
 			Branch branch2 = this.branchDAO.getBranchByBranchname(checkbranchname);
 			long branchid = branch2.getBranchid();
 			this.cwbInfoDao.createEditInfo(old, branchid, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
+			/**
+			 * 修改云订单信息  add gordon.zhou 2016/5/26
+			 */
+			try {
+				CwbOrder order  = this.cwbDAO.getCwbByCwb(completedCwb);
+				long newDeliveryBranchid = (order == null ? branchid : order.getDeliverybranchid());
+				String omsUrl = this.editCwbService.omsUrl();
+				JSONReslutUtil.getResultMessageChangeLog(omsUrl + "/OMSChange/editcwb", "type=5&cwb=" + co.getCwb() + "&branchid=" + newDeliveryBranchid + "&consigneename="
+						+ editname +"&consigneemobile=" + editmobile + "&consigneeaddress=" + editaddress
+						+ "&customercommand=" + editcommand , "POST");
+			} catch (Exception e1) {
+				this.logger.error("修改云订单信息异常:"+ co.getCwb(), e1);
+			}
+			
 			long count = this.orderAddressReviseDao.countReviseAddress(cwb);
 			if (count == 0) {
 				this.orderAddressReviseDao
