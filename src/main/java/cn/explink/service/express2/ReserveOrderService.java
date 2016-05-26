@@ -7,10 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import cn.explink.util.ResourceBundleUtil;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +21,7 @@ import com.pjbest.deliveryorder.bizservice.PjReserveOrderServiceHelper;
 import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.pjbest.deliveryorder.service.PjReserveOrderPageModel;
+import com.pjbest.deliveryorder.service.PjReserveOrderQueryModel;
 import com.pjbest.deliveryorder.service.PjSaleOrderFeedbackRequest;
 import com.pjbest.deliveryorder.service.ReserveOrderLogModel;
 import com.vip.osp.core.context.InvocationContext;
@@ -129,8 +127,12 @@ public class ReserveOrderService extends ExpressCommonService {
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 		PjReserveOrderPageModel pjReserveOrderPageModel = null;
 		try {
+			PjReserveOrderQueryModel pjReserveOrderQueryModel = new PjReserveOrderQueryModel();
+			pjReserveOrderQueryModel.setPageNo(page);
+			pjReserveOrderQueryModel.setPageSize(rows);
+			pjReserveOrderQueryModel.setCondition(omReserveOrderModel);
             logger.info("getReserveOrderPage request: " + toInfoString(omReserveOrderModel));
-            pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(omReserveOrderModel, page, rows);
+            pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(pjReserveOrderQueryModel);
 			// 返回数据记录
 //			logger.info("getReserveOrderPage response: ", pjReserveOrderPageModel.getReserveOrders().size());
             logger.info("getReserveOrderPage response: " + toInfoString(pjReserveOrderPageModel));
