@@ -30,7 +30,7 @@ function updateCarrealweight(orderNumber , carrealweight){
 		success : function(rs) {
 			var errorMsg = rs.errorMsg ;
 			if(errorMsg != undefined && errorMsg != ""){
-				EapTip.msgError(errorMsg) ;
+				$.messager.alert("提示" , errorMsg , "warning") ;
 				return ;
 			}
 			EapTip.msgOk("订单号：" + orderNumber + "，补录成功!");
