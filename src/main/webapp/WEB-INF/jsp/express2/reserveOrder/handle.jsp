@@ -94,7 +94,7 @@
         <table>
             <tr>
                 <td style="border: 0px; text-align: left; vertical-align: middle;padding-left: 10px;width: 40%;">
-                    关闭原因：
+                    备注：
                 </td>
 
             </tr>
@@ -118,7 +118,7 @@
         <table>
             <tr>
                 <td style="border: 0px; text-align: left; vertical-align: middle;padding-left: 10px;width: 40%;">
-                    退回原因：
+                    备注：
                 </td>
 
             </tr>

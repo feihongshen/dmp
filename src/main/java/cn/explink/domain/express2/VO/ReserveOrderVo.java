@@ -123,6 +123,10 @@ public class ReserveOrderVo {
 	*/
 	private String cnorRegionName;
 
+    /**
+     * 备注
+     */
+    private String remark;
 
     /**
      * DMP 站点编码 branchCode
@@ -341,5 +345,13 @@ public class ReserveOrderVo {
 
     public void setCarrierSiteCode(String carrierSiteCode) {
         this.carrierSiteCode = carrierSiteCode;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

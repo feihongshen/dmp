@@ -80,6 +80,7 @@ public class ReserveOrderController extends ExpressCommonController {
     private UserService userService;
 	
     private static final String RESERVE_EXCEPTION_REASON = "RESERVE_EXCEPTION_REASON";
+    private static final String RESERVE_RETENTION_REASON = "RESERVE_RETENTION_REASON";
     /**
 	 * 快递预约单查询
 	 * @date 2016年5月13日 上午11:10:28
@@ -87,7 +88,7 @@ public class ReserveOrderController extends ExpressCommonController {
 	 */
 	@RequestMapping("/query")
 	public String query(Model model) {
-		// 查找本省的所有城市
+        // 查找本省的所有城市
 		List<AdressVO> cities = this.reserveOrderService.getCities();
 		model.addAttribute("cityList", cities);
 
@@ -153,7 +154,7 @@ public class ReserveOrderController extends ExpressCommonController {
         model.addAttribute("courierList",courierList);
 		List<ReserveOrderService.PJReserverOrderOperationCode> feedbackOptCodes = new ArrayList<ReserveOrderService.PJReserverOrderOperationCode>();
 
-        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu);
+        feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBaiTuiHui);
         feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu);
         feedbackOptCodes.add(ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai);
 
@@ -164,11 +165,12 @@ public class ReserveOrderController extends ExpressCommonController {
         SbCodeTypeService sbCodeTypeService = new SbCodeTypeServiceHelper.SbCodeTypeServiceClient();
 
         try {
-            model.addAttribute("reverseReason", sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON));
+            model.addAttribute("reverseExceptionReason", sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON));
+            model.addAttribute("reverseRetentionReason", sbCodeTypeService.findCodeDefList(RESERVE_RETENTION_REASON));
         } catch (OspException e) {
             logger.error(e.getMessage(), e);
         }
-        
+
         // 查找本省的所有城市
  		List<AdressVO> cities = this.reserveOrderService.getCities();
  		model.addAttribute("cityList", cities);
@@ -683,10 +685,10 @@ public class ReserveOrderController extends ExpressCommonController {
         List<OmReserveOrderModel> omReserveOrderModels = null;
         List<String> errMsg = new ArrayList<String>();
 
-        if (!validateFeedback(reserveOrderVos, errMsg)) {
-            buildErrorMsg(obj, errMsg);
-            return obj;
-        }
+//        if (!validateFeedback(reserveOrderVos, errMsg)) {
+//            buildErrorMsg(obj, errMsg);
+//            return obj;
+//        }
 
         String reason4Feedback = reserveOrderVos[0].getReason();
         logger.info("{} reason4Feedback {}", logPrefix, reason4Feedback);
@@ -726,25 +728,25 @@ public class ReserveOrderController extends ExpressCommonController {
         return obj;
     }
 
-    private boolean validateFeedback(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
-
-        if(reserveOrderVos.length < 1){
-            errMsg.add("请选择至少一条预约单");
-            return false;
-        }
-
-        String reason4Feedback = reserveOrderVos[0].getReason();
-        int operateType = reserveOrderVos[0].getOperateType();
-
-        if (operateType == ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue() ||
-                operateType == ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()) {
-            if (StringUtils.isBlank(reason4Feedback)) {
-                errMsg.add("原因为必填");
-                return false;
-            }
-        }
-        return true;
-    }
+//    private boolean validateFeedback(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
+//
+//        if(reserveOrderVos.length < 1){
+//            errMsg.add("请选择至少一条预约单");
+//            return false;
+//        }
+//
+//        String reason4Feedback = reserveOrderVos[0].getReason();
+//        int operateType = reserveOrderVos[0].getOperateType();
+//
+//        if (operateType == ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue() ||
+//                operateType == ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()) {
+//            if (StringUtils.isBlank(reason4Feedback)) {
+//                errMsg.add("原因为必填");
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     /**
      * 修改预约单

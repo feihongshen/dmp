@@ -6,7 +6,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import cn.explink.util.ResourceBundleUtil;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,8 +64,8 @@ public class ReserveOrderService extends ExpressCommonService {
 
     public enum PJReserverOrderOperationCode {
         YiShenHe(38, "已审核"), RenWuTueHui(35, "任务退回"), RenWuQueRen(34, "任务确认"), GuanBi(33, "关闭"),
-        FanKuiJiLiu(32, "反馈滞留", "延迟揽件"), LanJianShiBai(31, "揽件失败"), LanJianShiBaiTuiHui(30, "揽件超区(退回)"),
-        ZhanDianChaoQu(29, "站点超区", "揽件超区"), ShengGongSiChaoQu(28, "省公司超区"), LanJianChengGong(27, "揽件成功"),
+        FanKuiJiLiu(32, "反馈滞留", "延迟揽件"), LanJianShiBai(31, "揽件失败"), LanJianShiBaiTuiHui(30, "揽件超区(退回)", "揽件超区"),
+        ZhanDianChaoQu(29, "站点超区"), ShengGongSiChaoQu(28, "省公司超区"), LanJianChengGong(27, "揽件成功"),
         YiLanJianFenPei(26, "已揽件分配"), YiFenPeiZhanDian(25, "已分配站点"), YiFenPeiShengGongSi(24, "已分配省公司");
 
         private int value;
@@ -125,9 +129,11 @@ public class ReserveOrderService extends ExpressCommonService {
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 		PjReserveOrderPageModel pjReserveOrderPageModel = null;
 		try {
-			pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(omReserveOrderModel, page, rows);
+            logger.info("getReserveOrderPage request: " + toInfoString(omReserveOrderModel));
+            pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(omReserveOrderModel, page, rows);
 			// 返回数据记录
-			logger.info("pjReserveOrderPageModel:{}", pjReserveOrderPageModel.getReserveOrders().size());
+//			logger.info("getReserveOrderPage response: ", pjReserveOrderPageModel.getReserveOrders().size());
+            logger.info("getReserveOrderPage response: " + toInfoString(pjReserveOrderPageModel));
 		} catch (OspException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -172,6 +178,7 @@ public class ReserveOrderService extends ExpressCommonService {
             vo.setCnorCityName(po.getCnorCityName());
             vo.setCnorRegionName(po.getCnorRegionName());
             vo.setCarrierSiteCode(po.getCarrierSiteCode());
+            vo.setRemark(po.getRemark());
             voList.add(vo);
 		}
 		// 封装分页信息
@@ -231,14 +238,23 @@ public class ReserveOrderService extends ExpressCommonService {
      * @return
      */
     public List<AdressVO> getCities() {
-
-        List<AdressVO> provincelist = this.provinceDAO.getProvince();
-        Long provinceId = this.getProvinceId();
-        if (provinceId == 0) {
-            return this.cityDAO.getCityOfProvince(provincelist.size() > 0 ? provincelist.get(0).getCode() : null);
-        } else {
-            return this.cityDAO.getCityOfProvince(provinceId.intValue());
+//
+//        List<AdressVO> provincelist = this.provinceDAO.getProvince();
+//        Long provinceId = this.getProvinceId();
+//        if (provinceId == 0) {
+//            return this.cityDAO.getCityOfProvince(provincelist.size() > 0 ? provincelist.get(0).getCode() : null);
+//        } else {
+//            return this.cityDAO.getCityOfProvince(provinceId.intValue());
+//        }
+        String provinceCode = ResourceBundleUtil.provinceCode;
+        List<AdressVO> cities;
+        if (provinceCode != null) {
+            cities = cityDAO.getCityOfProvince(provinceCode);
+            if (cities != null){
+                return cities;
+            }
         }
+        return new ArrayList<AdressVO>();
     }
 
     /**
@@ -445,17 +461,23 @@ public class ReserveOrderService extends ExpressCommonService {
         PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 
         try {
+            logger.info("feedbackReserveOrder request: " + toInfoString(pjSaleOrderFeedbackRequest));
+
             PjReserveOrderResponse reserveOrderResponse = pjReserveOrderService.feedbackReserveOrder(pjSaleOrderFeedbackRequest);
             // 返回数据记录
-            logger.info("reserveOrderResponse result code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
-            logger.info("reserveOrderResponse result message - ", reserveOrderResponse.getResultMsg());
+            logger.info("feedbackReserveOrder response: code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
+            logger.info("feedbackReserveOrder response: message - ", reserveOrderResponse.getResultMsg());
 
         } catch (OspException e) {
             logger.info("Osp Exception thrown", e.getReturnMessage());
             logger.error(e.getMessage(), e);
             throw e;
         }
-    };
+    }
+
+    private String toInfoString(Object object) {
+        return  JsonUtil.translateToJson(object);
+    }
     
     public OmReserveOrderModel getReserveOrderAddress(Integer cnorCity, Integer cnorRegion) {
     	OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
@@ -485,7 +507,7 @@ public class ReserveOrderService extends ExpressCommonService {
      * @throws OspException 
      */
     public void editReserveOrder(ReserveOrderEditVo vo, User user) throws OspException {
-    	final String logPrefix = "editReserveOrder->";
+    	final String logPrefix = "editReserveOrder";
     	InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT); 
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 		//通过预约单号获取预约单
@@ -531,14 +553,14 @@ public class ReserveOrderService extends ExpressCommonService {
 		String operateOrg = branch.getTpsbranchcode();
 		pjReserveOrderRequest.setOperateOrg(operateOrg); //操作机构
 		
-		logger.info("{}pjReserveOrderRequest:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderRequest));
+		logger.info("{} request:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderRequest));
 		
 		//修改预约单
 		PjReserveOrderResponse pjReserveOrderResponse = pjReserveOrderService.updateReserveOrder(pjReserveOrderRequest);
 		if (pjReserveOrderResponse == null) {
 			throw new ExplinkException("TPS的response对象为空，预约单号：" + vo.getReserveOrderNo());
 		}
-		logger.info("{}pjReserveOrderResponse:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderResponse));
+		logger.info("{} response:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderResponse));
 		if (!"1".equals(pjReserveOrderResponse.getResultCode())) {
 			throw new ExplinkException(pjReserveOrderResponse.getResultMsg() + "，预约单号：" + vo.getReserveOrderNo());
 		}
