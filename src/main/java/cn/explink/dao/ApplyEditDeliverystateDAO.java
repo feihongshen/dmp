@@ -404,6 +404,14 @@ public class ApplyEditDeliverystateDAO {
 		return jdbcTemplate.queryForLong(sql);
 	}
 	
-	
+	public ApplyEditDeliverystate getApplyEditDeliverystateWithPass(String cwb){
+		try{
+			String sql = "select * from express_ops_applyeditdeliverystate where cwb=? and shenhestate=3 order by applytime desc limit 1";
+			return jdbcTemplate.queryForObject(sql, new ApplyEditDeliverystateRowMapper(),cwb);
+		}catch(Exception e){
+			return null;
+		}
+		
+	}
 
 }

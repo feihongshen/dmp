@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.b2c.tools.B2cEnum;
+import cn.explink.b2c.tps.ThirdPartyOrder2DOCfg;
+import cn.explink.b2c.tps.ThirdPartyOrder2DOCfgService;
 import cn.explink.dao.AccountCwbDetailDAO;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.AccountCwbSummaryDAO;
@@ -128,6 +131,11 @@ public class EditCwbService {
 	@Autowired
 	CwbDAO cwbDao;
 
+	@Autowired
+	CwbOrderService cwborderService;
+	@Autowired
+	ThirdPartyOrder2DOCfgService thirdPartyOrder2DOCfgService;
+	
 	/**
 	 * 修改订单 之 重置审核状态
 	 *
@@ -138,7 +146,7 @@ public class EditCwbService {
 	 * @param cwbs
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED)
-	public EdtiCwb_DeliveryStateDetail analysisAndSaveByChongZhiShenHe(String cwb, Long requestUser, Long editUser) {
+	public EdtiCwb_DeliveryStateDetail analysisAndSaveByChongZhiShenHe(String cwb, Long requestUser, User editUser) {
 		this.logger.info("EditCwb_SQL:{}重置审核状态 开始", cwb);
 		// 根据cwb 获得 订单表 express_ops_cwb_detail 有效记录 state lock
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
@@ -187,7 +195,7 @@ public class EditCwbService {
 		ec_dsd.setDsid(ds.getId());
 		ec_dsd.setEditcwbtypeid(EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue());
 		ec_dsd.setRequestUser(requestUser);
-		ec_dsd.setEditUser(editUser);
+		ec_dsd.setEditUser(editUser.getUserid());
 
 		ec_dsd.getDs().setGcaid(gca.getId());
 		ec_dsd.setFinance_audit_id(financeAuditId);
@@ -475,6 +483,29 @@ public class EditCwbService {
 		this.logger.info("EditCwb_SQL:{}重置审核状态 结束", cwb);
 
 		return ec_dsd;
+	}
+	
+	//外单重置反馈时推给tps
+	public void pushResetStateToTps(User editUser,String cwb){
+		//外单判断
+		ThirdPartyOrder2DOCfg pushCfg=thirdPartyOrder2DOCfgService.getThirdPartyOrder2DOCfg(B2cEnum.ThirdPartyOrder_2_DO.getKey());
+		if(pushCfg == null){
+			return;
+		}
+		if(pushCfg.getTrackOpenFlag() != 1){
+			return;
+		}
+		
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if(co==null){
+			return;
+		}
+		
+		boolean isOther=thirdPartyOrder2DOCfgService.isThirdPartyCustomer(co.getCustomerid(),pushCfg);
+		if(isOther){
+			this.logger.info("开始外单重置反馈推TPS接口,cwb={},flowordertype={}",co.getCwb(),FlowOrderTypeEnum.ChongZhiFanKui.getValue());
+			this.cwborderService.createFloworder(editUser, editUser.getBranchid(), co, FlowOrderTypeEnum.ChongZhiFanKui, "", System.currentTimeMillis(), co.getCwb(), false);
+		}
 	}
 
 	@Transactional(isolation = Isolation.READ_COMMITTED)

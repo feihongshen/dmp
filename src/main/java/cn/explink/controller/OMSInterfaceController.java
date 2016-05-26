@@ -36,6 +36,7 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMapp;
 import cn.explink.b2c.tools.poscodeMapp.PoscodeMappDAO;
 import cn.explink.b2c.weisuda.WeisudaService;
+import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.CustomWareHouseDAO;
@@ -140,6 +141,8 @@ public class OMSInterfaceController {
 	OrderGoodsDAO orderGoodsDAO;
 	@Autowired
 	PoscodeMappDAO poscodeMappDAO;
+	@Autowired
+	ApplyEditDeliverystateDAO applyEditDeliverystateDAO;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -997,4 +1000,8 @@ public class OMSInterfaceController {
 		return JacksonMapper.getInstance().writeValueAsString(orderGoodsDAO.getOrderGoodsList(cwb));
 	}
 
+	@RequestMapping("/getApplyEditDeliverystate/{cwb}")
+	public @ResponseBody String getBranchById(@PathVariable("cwb") String cwb) {
+		return JSONObject.fromObject(applyEditDeliverystateDAO.getApplyEditDeliverystateWithPass(cwb)).toString();//todo
+	}
 }
