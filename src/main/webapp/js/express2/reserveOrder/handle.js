@@ -181,7 +181,7 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
-        //var rows = $('#dg_rsList').datagrid('getChecked');
+        var rows = $('#dg_rsList').datagrid('getChecked');
         //
         //var flag = true;
         //$.each(rows, function (index, value) {
