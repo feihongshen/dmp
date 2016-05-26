@@ -135,7 +135,7 @@
                     </select>
                 </td>
             </tr>
-            <tr>
+            <tr id="reason4FeedbackTR">
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;width: 40%;">
                     原因：
                 </td>
@@ -318,6 +318,7 @@
     function changeReason4Feedback(operateType) {
         $('#reason4Feedback').val("");
         if (operateType == LAN_JIAN_SHI_BAI) {
+            $('#reason4FeedbackTR').show();
             $.each($("#reason4Feedback option"), function (index, value) {
                 if ($(this).attr('name')) {
                     if ($(this).attr('name') == "reverseExceptionReasonOpt") {
@@ -328,6 +329,7 @@
                 }
             });
         } else if (operateType == FAN_KUI_JI_LIU) {
+            $('#reason4FeedbackTR').show();
             $.each($("#reason4Feedback option"), function (index, value) {
                 if ($(this).attr('name')) {
                     if ($(this).attr('name') == "reverseExceptionReasonOpt") {
@@ -338,9 +340,10 @@
                 }
             });
         } else {
-            $.each($("#reason4Feedback option"), function (index, value) {
-                $(this).hide();
-            });
+//            $.each($("#reason4Feedback option"), function (index, value) {
+//                $(this).hide();
+//            });
+            $('#reason4FeedbackTR').hide();
         }
     }
 

@@ -258,6 +258,7 @@ $(function () {
 
         $('#type4Feedback').val("");
         $('#reason4Feedback').val("");
+        $('#reason4FeedbackTR').show();
         $('#cnorRemark4Feedback').val("");
         $.each($("#reason4Feedback option"), function (index, value) {
             if ($(this).attr('name')) {
