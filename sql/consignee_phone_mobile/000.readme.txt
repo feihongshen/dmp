@@ -1,0 +1,5 @@
+1、由于各个省份数据不一致，在更新需要备份数据，本次更新将不准备rollback sql
+2、各个省的以下三个数据表需要提前做好备份：
+express_set_user
+express_ops_setexportfield
+express_ops_exportmould
