@@ -73,7 +73,7 @@ $(function(){
 
 </head>
 <body>
-<div style="background:#f5f5f5" class="right_box">
+<div style="background:#f5f5f5">
 		<form id="branchroute_cre_Form" name="branchroute_cre_Form"
 			onSubmit="if(check_branchroute01()){afterSumit(this);} return false;"
 		
