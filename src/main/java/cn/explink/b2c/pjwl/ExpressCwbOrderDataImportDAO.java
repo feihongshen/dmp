@@ -238,7 +238,7 @@ public class ExpressCwbOrderDataImportDAO {
 	 */
 	public List<ExpressCwbOrderDTO> getTransOrderTempByKeys() {
 		StringBuffer sql = new StringBuffer();
-		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 order by create_time limit 0,2000 ");
+		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov =0 order by create_time limit 0,2000 ");
 		List<ExpressCwbOrderDTO> transOrderList = this.jdbcTemplate.query(sql.toString(), new ExpressCwbOrderDTOMapper());
 		return transOrderList;
 	}

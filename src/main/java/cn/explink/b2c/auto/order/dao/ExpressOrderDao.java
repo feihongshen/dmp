@@ -29,6 +29,7 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.EmailFinishFlagEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.YesOrNoStateEnum;
 import cn.explink.util.DateTimeUtil;
 
@@ -307,7 +308,7 @@ public class ExpressOrderDao {
 		sql.append(" cargovolume,cwbstate,instationname,state,");
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
 		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate ");
-		sql.append(" , cnor_corp_no,cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,express_product_type)");
+		sql.append(" , cnor_corp_no,cnor_corp_name,account_id,packing_fee,express_image,cnee_corp_name,express_product_type,customerid)");
 		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
@@ -377,7 +378,7 @@ public class ExpressOrderDao {
 				ps.setBigDecimal(++i, expressDetailTemp.getAssuranceValue());
 				ps.setBigDecimal(++i, expressDetailTemp.getAssuranceFee());
 
-				ps.setLong(++i, expressDetailTemp.getPayment());
+				ps.setLong(++i, getPayTypeValue(expressDetailTemp.getPayment()));//支付方式
 				ps.setInt(++i, expressDetailTemp.getCargoLength().intValue());
 				ps.setInt(++i, expressDetailTemp.getCargoWidth().intValue());
 				ps.setInt(++i, expressDetailTemp.getCargoHeight().intValue());
@@ -385,7 +386,7 @@ public class ExpressOrderDao {
 				ps.setLong(++i, CwbOrderTypeIdEnum.Express.getValue());
 				ps.setInt(++i, FlowOrderTypeEnum.DaoRuShuJu.getValue());
 				
-				ps.setInt(++i, 1001);
+				ps.setInt(++i, 1001);// 状态
 
 				ps.setFloat(++i, expressDetailTemp.getTotalVolume().floatValue());
 				ps.setLong(++i, CwbStateEnum.PeiShong.getValue());
@@ -411,12 +412,12 @@ public class ExpressOrderDao {
 				ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
 				ps.setString(++i, expressDetailTemp.getCnorCorpNo());
 				ps.setString(++i, expressDetailTemp.getCnorCorpName());
-				ps.setBigDecimal(++i, expressDetailTemp.getFreight());
 				ps.setString(++i, expressDetailTemp.getAccountId());
 				ps.setBigDecimal(++i, expressDetailTemp.getPackingFee());
 				ps.setString(++i, expressDetailTemp.getExpressImage());
 				ps.setString(++i, expressDetailTemp.getCneeCorpName());
 				ps.setInt(++i, expressDetailTemp.getExpressProductType());
+				ps.setInt(++i, 1000);// customerid
 				return ps;
 			}
 		}, key);
@@ -431,6 +432,65 @@ public class ExpressOrderDao {
 		StringBuffer sql = new StringBuffer();
 		sql.append("update express_ops_cwb_exprss_detail_temp set is_hand_over=1 where tps_trans_id=?");
 		this.jdbcTemplate.update(sql.toString(), tpsTransId);
+	}
+	
+	
+	/**
+	 * 根据tps的支付方式，返回dmp的支付方式
+	 * @param payment
+	 * @return
+	 */
+	private int getPayTypeValue(int payment){
+		int pay = 0;
+		switch (payment) {
+		case 0:
+			pay = PaytypeEnum.Xianjin.getValue();
+			break;
+		case 1:
+			pay = PaytypeEnum.Pos.getValue();
+			break;
+		case 2:
+			pay = PaytypeEnum.CodPos.getValue();
+			break;
+		case 3:
+			pay = PaytypeEnum.CodPos.getValue();
+			break;
+		case 4:
+			pay = PaytypeEnum.CodPos.getValue();
+			break;
+		case 5:
+			pay = PaytypeEnum.Pos.getValue();
+			break;
+		case 6:
+			pay = PaytypeEnum.Pos.getValue();
+			break;
+		case 7:
+			pay = PaytypeEnum.Pos.getValue();
+			break;
+		case 8:
+			pay = PaytypeEnum.Pos.getValue();
+			break;
+		case 9:
+			pay = PaytypeEnum.CodPos.getValue();
+			break;
+		case 10:
+			pay = PaytypeEnum.CodPos.getValue();
+			break;
+		case 11:
+			pay = PaytypeEnum.CodPos.getValue();
+			break;
+		case 12:
+			pay = PaytypeEnum.Pos.getValue();
+			break;
+		case 13:
+			pay = PaytypeEnum.Zhipiao.getValue();
+			break;
+		case 14:
+			pay = PaytypeEnum.Qita.getValue();
+			break;
+		}
+		
+		return pay;
 	}
 
 	/**
