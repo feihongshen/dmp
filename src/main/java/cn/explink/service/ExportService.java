@@ -188,20 +188,18 @@ public class ExportService {
 		cloumnName2[4] = "employeestatus";
 		cloumnName1[5] = "身份证";
 		cloumnName2[5] = "idcardno";
-		cloumnName1[6] = "手机号";
-		cloumnName2[6] = "usermobile";
-		cloumnName1[7] = "结算状态";
-		cloumnName2[7] = "jiesuanstate";
-		cloumnName1[8] = "Email/QQ/MSN";//pfruleid
-		cloumnName2[8] = "useremail";
-		cloumnName1[9] = "入职日期";
-		cloumnName2[9] = "startworkdate";
-		cloumnName1[10] = "工号";
-		cloumnName2[10] = "jobnum";
-		cloumnName1[11] = "派费规则";
-		cloumnName2[11] = "pfruleid";
-		cloumnName1[12] = "登录名";
-		cloumnName2[12] = "username";
+		cloumnName1[6] = "结算状态";
+		cloumnName2[6] = "jiesuanstate";
+		cloumnName1[7] = "Email/QQ/MSN";//pfruleid
+		cloumnName2[7] = "useremail";
+		cloumnName1[8] = "入职日期";
+		cloumnName2[8] = "startworkdate";
+		cloumnName1[9] = "工号";
+		cloumnName2[9] = "jobnum";
+		cloumnName1[10] = "派费规则";
+		cloumnName2[10] = "pfruleid";
+		cloumnName1[11] = "登录名";
+		cloumnName2[11] = "username";
 	
 	};
 	

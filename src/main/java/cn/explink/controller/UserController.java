@@ -487,8 +487,8 @@ public class UserController {
 	 */
 	@RequestMapping(value="/exportuserinfo")
 	public void exportuserinfo(HttpServletRequest request,HttpServletResponse response){
-		String[] cloumnName1 = new String[13]; // 导出的列名
-		String[] cloumnName2 = new String[13]; // 导出的英文列名
+		String[] cloumnName1 = new String[12]; // 导出的列名
+		String[] cloumnName2 = new String[12]; // 导出的英文列名
 		exportService.setUserInfo(cloumnName1, cloumnName2);
 		final String[] cloumnName = cloumnName1;
 		final String[] cloumnName3 = cloumnName2;
