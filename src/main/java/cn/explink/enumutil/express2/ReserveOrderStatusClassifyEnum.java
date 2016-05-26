@@ -1,7 +1,5 @@
 package cn.explink.enumutil.express2;
 
-import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
-
 /**
  * 预约单状态分类
  * @date 2016年5月19日 下午3:52:10

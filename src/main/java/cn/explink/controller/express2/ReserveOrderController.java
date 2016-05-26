@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.vip.osp.core.exception.OspException;
 import com.vip.tps.base.service.SbCodeDefModel;
@@ -51,6 +50,7 @@ import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.ReserveOrderQueryTypeEnum;
 import cn.explink.enumutil.express2.ReserveOrderStatusClassifyEnum;
+import cn.explink.enumutil.express2.ReserveOrderStatusEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.service.BranchService;
 import cn.explink.service.UserService;
@@ -127,12 +127,8 @@ public class ReserveOrderController extends ExpressCommonController {
         model.addAttribute("branchList",branches);
 
         // 预约单状态
-        ReserveOrderStatusEnum[] reserveOrderStatusList;
-//        if(this.isWarehouseMaster()) {
-//        	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toArray();
-//        } else {
-        reserveOrderStatusList = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toArray();
-//        }
+        ReserveOrderStatusEnum[] reserveOrderStatusList =  ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toArray();
+        
         model.addAttribute("reserveOrderStatusList", reserveOrderStatusList);
 
 		if (!CollectionUtils.isEmpty(cities)) {
