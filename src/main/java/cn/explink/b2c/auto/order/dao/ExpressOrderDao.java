@@ -155,7 +155,7 @@ public class ExpressOrderDao {
 		sql.append(" count,cargo_length,cargo_width,cargo_height,");
 		sql.append(" weight,volume,cust_pack_no,size_sn,");
 		sql.append(" price,unit,tps_trans_id,create_time,is_hand_over,");
-		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_produce_type)");
+		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_product_type)");
 		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -307,7 +307,7 @@ public class ExpressOrderDao {
 		sql.append(" cargovolume,cwbstate,instationname,state,");
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
 		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate ");
-		sql.append(" , cnor_corp_no,cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,express_produce_type)");
+		sql.append(" , cnor_corp_no,cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,express_product_type)");
 		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
