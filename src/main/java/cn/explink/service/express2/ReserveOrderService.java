@@ -43,6 +43,7 @@ import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.express2.ReserveOrderDmpStatusEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.service.express.ExpressCommonService;
 
@@ -164,7 +165,9 @@ public class ReserveOrderService extends ExpressCommonService {
 				vo.setRequireTimeStr(sdf.format(requireTime));
 			}
 			vo.setReserveOrderStatus(po.getReserveOrderStatus());
-			vo.setReserveOrderStatusName(po.getReserveOrderStatusName());
+			// 转换成本地状态名称
+			Integer reserveOrderStatus = po.getReserveOrderStatus() == null ? null : po.getReserveOrderStatus().intValue();
+			vo.setReserveOrderStatusName(ReserveOrderDmpStatusEnum.getNameByIndex(reserveOrderStatus));
 			vo.setReason(po.getReason());
 			vo.setTransportNo(po.getTransportNo());
 //			vo.setAcceptOrg(po.getAcceptOrg());

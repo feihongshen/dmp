@@ -6,75 +6,75 @@ package cn.explink.enumutil.express2;
  */
 public enum ReserveOrderStatusClassifyEnum {
 	
-	QUERY_BY_CUSTOM_SERVICE(new ReserveOrderStatusEnum[] {
-			ReserveOrderStatusEnum.HaveProOutZone,
-			ReserveOrderStatusEnum.HadAllocationPro,
-			ReserveOrderStatusEnum.HadAllocationStation,
-			ReserveOrderStatusEnum.HadAllocationCourier,
-			ReserveOrderStatusEnum.HadReceiveSuccess,
-			ReserveOrderStatusEnum.HaveStationOutZone,
-			ReserveOrderStatusEnum.HaveReciveOutZone,
-			ReserveOrderStatusEnum.HaveReciveFailure,
-			ReserveOrderStatusEnum.HaveFeedbackRetention,
-			ReserveOrderStatusEnum.HadClosed
+	QUERY_BY_CUSTOM_SERVICE(new ReserveOrderDmpStatusEnum[] {
+			ReserveOrderDmpStatusEnum.HaveProOutZone,
+			ReserveOrderDmpStatusEnum.HadAllocationPro,
+			ReserveOrderDmpStatusEnum.HadAllocationStation,
+			ReserveOrderDmpStatusEnum.HadAllocationCourier,
+			ReserveOrderDmpStatusEnum.HadReceiveSuccess,
+			ReserveOrderDmpStatusEnum.HaveStationOutZone,
+			ReserveOrderDmpStatusEnum.HaveReciveOutZone,
+			ReserveOrderDmpStatusEnum.HaveReciveFailure,
+			ReserveOrderDmpStatusEnum.HaveFeedbackRetention,
+			ReserveOrderDmpStatusEnum.HadClosed
 		}),
 	
-	QUERY_BY_WAREHOUSE_MASTER(new ReserveOrderStatusEnum[] {
-			ReserveOrderStatusEnum.HadAllocationStation,
-			ReserveOrderStatusEnum.HadAllocationCourier,
-			ReserveOrderStatusEnum.HadReceiveSuccess,
-			ReserveOrderStatusEnum.HaveStationOutZone,
-			ReserveOrderStatusEnum.HaveReciveOutZone,
-			ReserveOrderStatusEnum.HaveReciveFailure,
-			ReserveOrderStatusEnum.HaveFeedbackRetention,
-			ReserveOrderStatusEnum.HadClosed
+	QUERY_BY_WAREHOUSE_MASTER(new ReserveOrderDmpStatusEnum[] {
+			ReserveOrderDmpStatusEnum.HadAllocationStation,
+			ReserveOrderDmpStatusEnum.HadAllocationCourier,
+			ReserveOrderDmpStatusEnum.HadReceiveSuccess,
+			ReserveOrderDmpStatusEnum.HaveStationOutZone,
+			ReserveOrderDmpStatusEnum.HaveReciveOutZone,
+			ReserveOrderDmpStatusEnum.HaveReciveFailure,
+			ReserveOrderDmpStatusEnum.HaveFeedbackRetention,
+			ReserveOrderDmpStatusEnum.HadClosed
 		}),
 	
-	HANDLE_BY_CUSTOM_SERVICE(new ReserveOrderStatusEnum[] {
+	HANDLE_BY_CUSTOM_SERVICE(new ReserveOrderDmpStatusEnum[] {
 //			ReserveOrderStatusEnum.HaveProOutZone,
-            ReserveOrderStatusEnum.HadAllocationPro,
-            ReserveOrderStatusEnum.HadAllocationStation,
-            ReserveOrderStatusEnum.HadAllocationCourier,
+            ReserveOrderDmpStatusEnum.HadAllocationPro,
+            ReserveOrderDmpStatusEnum.HadAllocationStation,
+            ReserveOrderDmpStatusEnum.HadAllocationCourier,
 //			ReserveOrderStatusEnum.HadReceiveSuccess,
-            ReserveOrderStatusEnum.HaveStationOutZone,
-            ReserveOrderStatusEnum.HaveReciveOutZone,
+            ReserveOrderDmpStatusEnum.HaveStationOutZone,
+            ReserveOrderDmpStatusEnum.HaveReciveOutZone,
 //			ReserveOrderStatusEnum.HaveReciveFailure,
-            ReserveOrderStatusEnum.HaveFeedbackRetention,
+            ReserveOrderDmpStatusEnum.HaveFeedbackRetention,
 //			ReserveOrderStatusEnum.HadClosed
     }),
 	
-	HANDLE_BY_WAREHOUSE_MASTER(new ReserveOrderStatusEnum[] {
-			ReserveOrderStatusEnum.HadAllocationStation,
-			ReserveOrderStatusEnum.HadAllocationCourier,
-			ReserveOrderStatusEnum.HadReceiveSuccess,
-			ReserveOrderStatusEnum.HaveStationOutZone,
-			ReserveOrderStatusEnum.HaveReciveOutZone,
-			ReserveOrderStatusEnum.HaveReciveFailure,
-			ReserveOrderStatusEnum.HaveFeedbackRetention,
-			ReserveOrderStatusEnum.HadClosed
+	HANDLE_BY_WAREHOUSE_MASTER(new ReserveOrderDmpStatusEnum[] {
+			ReserveOrderDmpStatusEnum.HadAllocationStation,
+			ReserveOrderDmpStatusEnum.HadAllocationCourier,
+			ReserveOrderDmpStatusEnum.HadReceiveSuccess,
+			ReserveOrderDmpStatusEnum.HaveStationOutZone,
+			ReserveOrderDmpStatusEnum.HaveReciveOutZone,
+			ReserveOrderDmpStatusEnum.HaveReciveFailure,
+			ReserveOrderDmpStatusEnum.HaveFeedbackRetention,
+			ReserveOrderDmpStatusEnum.HadClosed
 		}),
 	
-	WAREHOUSE_HANDLE(new ReserveOrderStatusEnum[] {
-			ReserveOrderStatusEnum.HadAllocationStation,
-			ReserveOrderStatusEnum.HadAllocationCourier,
-			ReserveOrderStatusEnum.HaveReciveOutZone,
-			ReserveOrderStatusEnum.HaveFeedbackRetention
+	WAREHOUSE_HANDLE(new ReserveOrderDmpStatusEnum[] {
+			ReserveOrderDmpStatusEnum.HadAllocationStation,
+			ReserveOrderDmpStatusEnum.HadAllocationCourier,
+			ReserveOrderDmpStatusEnum.HaveReciveOutZone,
+			ReserveOrderDmpStatusEnum.HaveFeedbackRetention
 		});
 	
-	private ReserveOrderStatusEnum[] reserveOrderStatusArray;
+	private ReserveOrderDmpStatusEnum[] reserveOrderStatusArray;
 	
-	private ReserveOrderStatusClassifyEnum(ReserveOrderStatusEnum[] reserveOrderStatusArray) {
+	private ReserveOrderStatusClassifyEnum(ReserveOrderDmpStatusEnum[] reserveOrderStatusArray) {
 		this.reserveOrderStatusArray = reserveOrderStatusArray;
 	}
 	
-	public ReserveOrderStatusEnum[] toArray() {
+	public ReserveOrderDmpStatusEnum[] toArray() {
 		return this.reserveOrderStatusArray;
 	}
 	
 	public String toString() {
 		StringBuilder rosSb = new StringBuilder();
 		for(int i = 0; i < reserveOrderStatusArray.length; i++) {
-			ReserveOrderStatusEnum e = reserveOrderStatusArray[i];
+			ReserveOrderDmpStatusEnum e = reserveOrderStatusArray[i];
 			if(i > 0) {
 				rosSb.append(",");
 			}

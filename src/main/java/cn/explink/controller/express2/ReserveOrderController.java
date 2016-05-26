@@ -50,7 +50,7 @@ import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.ReserveOrderQueryTypeEnum;
 import cn.explink.enumutil.express2.ReserveOrderStatusClassifyEnum;
-import cn.explink.enumutil.express2.ReserveOrderStatusEnum;
+import cn.explink.enumutil.express2.ReserveOrderDmpStatusEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.service.BranchService;
 import cn.explink.service.UserService;
@@ -97,7 +97,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		model.addAttribute("branchList", branches);
 		
 		// 预约单状态
-        ReserveOrderStatusEnum[] reserveOrderStatusList;
+        ReserveOrderDmpStatusEnum[] reserveOrderStatusList;
         if(this.isWarehouseMaster() || this.isCourier()) {
         	reserveOrderStatusList = ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toArray();
         } else {
@@ -127,7 +127,7 @@ public class ReserveOrderController extends ExpressCommonController {
         model.addAttribute("branchList",branches);
 
         // 预约单状态
-        ReserveOrderStatusEnum[] reserveOrderStatusList =  ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toArray();
+        ReserveOrderDmpStatusEnum[] reserveOrderStatusList =  ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toArray();
         
         model.addAttribute("reserveOrderStatusList", reserveOrderStatusList);
 
