@@ -297,7 +297,7 @@ public class ApplyEditDeliverystateController {
 					ApplyEditDeliverystate aeds = this.applyEditDeliverystateDAO.getApplyED(cwb);
 					if (aeds != null) {
 						// 重置审核的最终方法
-						EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), this.getSessionUser().getUserid());
+						EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), this.getSessionUser());
 						// add by bruce shangguan 20160413 重置反馈订单，添加应付甲方调整记录
 						this.orderPayChangeService.resetOrder(cwb,ec_dsd, edittime);
 						// end 20160413
@@ -324,11 +324,13 @@ public class ApplyEditDeliverystateController {
 								}
 							}
 						}
+						//外单重置反馈时推给TPS
+						this.editCwbService.pushResetStateToTps(this.getSessionUser(),cwb);
 					} else {
 						cwbStr += cwb + ",";
 					}
 				} catch (Exception e) {
-					this.logger.error("订单号:" + cwb + "--产生异常原因:", e);
+					this.logger.error("订单号:" + cwb + "--审核产生异常原因:", e);
 					errorcount++;
 				}
 			}
