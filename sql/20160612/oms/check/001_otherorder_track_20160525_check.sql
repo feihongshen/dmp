@@ -1,1 +1,0 @@
-SELECT '001_otherorder_track_20160525' AS '脚本文件名',IF((SELECT COUNT(1) FROM information_schema.columns WHERE table_schema = SCHEMA() AND table_name = 'tpo_other_order_track' AND column_name='flowordertype') > 0,'success','failed') AS '执行结果';
