@@ -254,7 +254,7 @@ public class ExceptionCwbDAO {
 			}
 		}
 		if (scope == 1) {
-			sql += " and errortype='' or errortype=null ";
+			sql += " and ( errortype='' or errortype=null ) ";
 		}
 		if (scope == 2) {
 			sql += " and errortype!='' or errortype!=null ";
