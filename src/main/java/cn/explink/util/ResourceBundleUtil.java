@@ -67,7 +67,9 @@ public class ResourceBundleUtil {
 	public static final String addresspassword = ResourceBundleUtil.rbint.getString("addresspassword");
 	//快递 承运商编码
 	public static final String expressCarrierCode = rbint.getString("expressCarrierCode");
-	
+    //应用部署省份
+    public static final String provinceCode = rbint.getString("provinceCode");
+
 	// 上传通联证书路径
 	public static final String FileTongLianPath = ResourceBundleUtil.rbint.getString("fileTongLianPath");
 	
