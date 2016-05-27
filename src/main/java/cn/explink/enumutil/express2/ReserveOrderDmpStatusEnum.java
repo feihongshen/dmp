@@ -51,7 +51,6 @@ public enum ReserveOrderDmpStatusEnum {
     public static String getNameByIndex(Integer index) {
     	ReserveOrderDmpStatusEnum e = RESERVE_ORDER_STATUS_MAP.get(index);
     	return e == null ? null : e.getName();
-    	
     }
 
     public static Integer getIndexByName(String name) {
