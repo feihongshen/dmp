@@ -2,14 +2,11 @@ package cn.explink.service.express;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,16 +59,7 @@ public class TakeGoodsQueryService {
 	 * @throws ParseException
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> getcwbOrderByPage(Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery, User user, String userIds) throws ParseException {
-		List<ExpressCwbOrderForTakeGoodsQueryVO> voList = this.cwbDao.queryCwbExpressTakeGoodsQueryByPage(page, cwb4TakeGoodsQuery, userIds);
-		for(ExpressCwbOrderForTakeGoodsQueryVO vo : voList) {
-			if(StringUtils.isNotBlank(vo.getEmaildate())) {
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				Date emaildate = sdf.parse(vo.getEmaildate());
-				long emaildateTimestamp = emaildate.getTime() / 1000; //获取时间戳
-				vo.setEmaildateTimestamp(emaildateTimestamp);
-			}
-		}
-		return voList;
+		return this.cwbDao.queryCwbExpressTakeGoodsQueryByPage(page, cwb4TakeGoodsQuery, userIds);
 	}
 
 	/**
