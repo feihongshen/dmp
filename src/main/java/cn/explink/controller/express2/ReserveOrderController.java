@@ -700,7 +700,15 @@ public class ReserveOrderController extends ExpressCommonController {
 
         String displayValue = null;
         try {
-            List<SbCodeDefModel> reasons = sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON);
+            List<SbCodeDefModel> reasons = null ;
+            if (ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue() == operateType) {
+                reasons = sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON);
+            } else if (ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu.getValue() == operateType) {
+                reasons = sbCodeTypeService.findCodeDefList(RESERVE_RETENTION_REASON);
+            } else {
+                throw new OspException("没有找到原因","没有找到原因");
+            }
+
             for (int i = 0; i < reasons.size(); i++) {
                 SbCodeDefModel reason = reasons.get(i);
                 if (reason.getCodeValue().equals(reason4Feedback)) {
