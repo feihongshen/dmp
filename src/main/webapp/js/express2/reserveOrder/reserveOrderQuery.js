@@ -31,6 +31,13 @@ $(function () {
         maxHeight: 200
     });
 
+    $("#distributeCourierSelect").multipleSelect({
+        placeholder: "请选择",
+        single: true,
+        filter: true,
+        maxHeight: 200
+    });
+
     $("#acceptOrg").change(function () {
         changeCourier($(this).val(), "#courier");
     });

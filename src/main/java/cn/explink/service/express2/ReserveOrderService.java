@@ -117,14 +117,16 @@ public class ReserveOrderService extends ExpressCommonService {
 	 * @return
 	 */
 	public ReserveOrderPageVo getReserveOrderPage(OmReserveOrderModel omReserveOrderModel, int page, int rows) {
-		// 记录入库数据
+        logger.info("调用TPS查询接口开始");
+
+        // 记录入库数据
 		try {
 			logger.info("omReserveOrderModel:{}", JsonUtil.translateToJson(omReserveOrderModel));
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 
-		InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
+        InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 		PjReserveOrderPageModel pjReserveOrderPageModel = null;
 		try {
@@ -132,12 +134,13 @@ public class ReserveOrderService extends ExpressCommonService {
 			pjReserveOrderQueryModel.setPageNo(page);
 			pjReserveOrderQueryModel.setPageSize(rows);
 			pjReserveOrderQueryModel.setCondition(omReserveOrderModel);
-            logger.info("getReserveOrderPage request: " + toInfoString(omReserveOrderModel));
+            logger.info("查询报文: " + toInfoString(omReserveOrderModel));
             pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(pjReserveOrderQueryModel);
 			// 返回数据记录
 //			logger.info("getReserveOrderPage response: ", pjReserveOrderPageModel.getReserveOrders().size());
-            logger.info("getReserveOrderPage response: " + toInfoString(pjReserveOrderPageModel));
+            logger.info("查询结果: " + toInfoString(pjReserveOrderPageModel));
 		} catch (OspException e) {
+            logger.info("查询报错： ");
 			logger.error(e.getMessage(), e);
 		}
 		List<OmReserveOrderModel> poList = pjReserveOrderPageModel.getReserveOrders();
@@ -191,18 +194,20 @@ public class ReserveOrderService extends ExpressCommonService {
 		reserveOrderPageVo.setTotalRecord(pjReserveOrderPageModel.getTotalRecord());
 		reserveOrderPageVo.setReserveOrderVoList(voList);
 
+        logger.info("调用TPS查询接口结束");
 
 		return reserveOrderPageVo;
 	}
 	
 	/**
-	 * 获取全部的预约当
+	 * 获取全部的预约单
 	 * @date 2016年5月16日 下午5:28:52
 	 * @param omReserveOrderModel
 	 * @return
 	 */
 	public List<ReserveOrderVo> getTotalReserveOrders(OmReserveOrderModel omReserveOrderModel) {
-		List<ReserveOrderVo> reserveOrderList = new ArrayList<ReserveOrderVo>();
+
+        List<ReserveOrderVo> reserveOrderList = new ArrayList<ReserveOrderVo>();
 		final int DEFAULT_MAX_ROW_SIZE = 10000; //默认最大导出数量
 		final int ROW_SIZE = 1000; //分批次查询数量
 
@@ -226,7 +231,8 @@ public class ReserveOrderService extends ExpressCommonService {
 			reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, page, ROW_SIZE);
 			reserveOrderList.addAll(reserveOrderPageVo.getReserveOrderVoList());
 		}
-		return reserveOrderList;
+
+        return reserveOrderList;
 	}
 	
 	/**
@@ -462,22 +468,27 @@ public class ReserveOrderService extends ExpressCommonService {
      * @throws OspException
      */
     private void feedbackReserveOrder(PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest) throws OspException{
+        logger.info("调用TPS反馈接口开始");
+
         InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
         PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 
         try {
-            logger.info("feedbackReserveOrder request: " + toInfoString(pjSaleOrderFeedbackRequest));
+            logger.info("反馈报文: " + toInfoString(pjSaleOrderFeedbackRequest));
 
             PjReserveOrderResponse reserveOrderResponse = pjReserveOrderService.feedbackReserveOrder(pjSaleOrderFeedbackRequest);
             // 返回数据记录
-            logger.info("feedbackReserveOrder response: code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
-            logger.info("feedbackReserveOrder response: message - ", reserveOrderResponse.getResultMsg());
+            logger.info("反馈结果: code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
+            logger.info("反馈结果: message - ", reserveOrderResponse.getResultMsg());
 
         } catch (OspException e) {
-            logger.info("Osp Exception thrown", e.getReturnMessage());
+            logger.info("反馈异常");
             logger.error(e.getMessage(), e);
             throw e;
         }
+
+        logger.info("调用TPS反馈接口结束");
+
     }
 
     private String toInfoString(Object object) {
@@ -512,7 +523,9 @@ public class ReserveOrderService extends ExpressCommonService {
      * @throws OspException 
      */
     public void editReserveOrder(ReserveOrderEditVo vo, User user) throws OspException {
-    	final String logPrefix = "editReserveOrder";
+        logger.info("调用TPS修改接口开始");
+
+        final String logPrefix = "editReserveOrder";
     	InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT); 
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
 		//通过预约单号获取预约单
@@ -558,17 +571,20 @@ public class ReserveOrderService extends ExpressCommonService {
 		String operateOrg = branch.getTpsbranchcode();
 		pjReserveOrderRequest.setOperateOrg(operateOrg); //操作机构
 		
-		logger.info("{} request:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderRequest));
+		logger.info("请求报文",JsonUtil.translateToJson(pjReserveOrderRequest));
 		
 		//修改预约单
 		PjReserveOrderResponse pjReserveOrderResponse = pjReserveOrderService.updateReserveOrder(pjReserveOrderRequest);
 		if (pjReserveOrderResponse == null) {
 			throw new ExplinkException("TPS的response对象为空，预约单号：" + vo.getReserveOrderNo());
 		}
-		logger.info("{} response:{}", logPrefix, JsonUtil.translateToJson(pjReserveOrderResponse));
+		logger.info("请求结果", JsonUtil.translateToJson(pjReserveOrderResponse));
 		if (!"1".equals(pjReserveOrderResponse.getResultCode())) {
 			throw new ExplinkException(pjReserveOrderResponse.getResultMsg() + "，预约单号：" + vo.getReserveOrderNo());
 		}
+
+        logger.info("调用TPS修改接口结束");
+
     }
     
     /**

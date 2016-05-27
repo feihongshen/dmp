@@ -209,6 +209,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		}
 		if(StringUtils.isNotBlank(acceptOrg)) {
 //			omReserveOrderModel.setAcceptOrg(acceptOrg);
+            //需求更改，tps期望拿到carrierSiteCode
 			omReserveOrderModel.setCarrierSiteCode(acceptOrg);
 		}
 		if(courier != null) {
@@ -246,11 +247,10 @@ public class ReserveOrderController extends ExpressCommonController {
 //            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
             omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
         } else if(this.isCustomService() || this.isAdmin()) {
-			if(StringUtils.isNotBlank(acceptOrg)) {
-//				omReserveOrderModel.setAcceptOrg(acceptOrg);
-                omReserveOrderModel.setCarrierSiteCode(carrierCode);
-			}
-		} else {
+//            if (StringUtils.isNotBlank(acceptOrg)) {
+//                omReserveOrderModel.setCarrierSiteCode(acceptOrg);
+//            }
+        } else {
 			isQuery = false;
 		}
 		ReserveOrderPageVo reserveOrderPageVo;
@@ -291,6 +291,11 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(cnorMobile)) {
 			omReserveOrderModel.setCnorMobile(cnorMobile);
 		}
+        if(StringUtils.isNotBlank(acceptOrg)) {
+//			omReserveOrderModel.setAcceptOrg(acceptOrg);
+            //需求更改，tps期望拿到carrierSiteCode
+            omReserveOrderModel.setCarrierSiteCode(acceptOrg);
+        }
 		if(courier != null) {
 			User user = this.userService.getUserByUserid(courier);
 			omReserveOrderModel.setCourier(user.getUsername());
@@ -317,19 +322,21 @@ public class ReserveOrderController extends ExpressCommonController {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusStr);
 		}
 		//默认省编号
-		String carrierCode = ResourceBundleUtil.expressCarrierCode;
-		omReserveOrderModel.setCarrierCode(carrierCode);
+        String carrierCode = ResourceBundleUtil.expressCarrierCode;
+        omReserveOrderModel.setCarrierCode(carrierCode);
 		boolean isQuery = true;
 		if (this.isWarehouseMaster() || this.isCourier()) {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+//			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+            omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
         } else if (this.isCustomService() || this.isAdmin()) {
-            if (StringUtils.isNotBlank(acceptOrg)) {
-                omReserveOrderModel.setAcceptOrg(acceptOrg);
-                Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
-                omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-            }
+//            if (StringUtils.isNotBlank(acceptOrg)) {
+//                omReserveOrderModel.setAcceptOrg(acceptOrg);
+//                Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
+//                omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+//                omReserveOrderModel.setCarrierSiteCode(acceptOrg);
+//            }
         } else {
             isQuery = false;
 		}
@@ -696,7 +703,15 @@ public class ReserveOrderController extends ExpressCommonController {
 
         String displayValue = null;
         try {
-            List<SbCodeDefModel> reasons = sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON);
+            List<SbCodeDefModel> reasons = null ;
+            if (ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue() == operateType) {
+                reasons = sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON);
+            } else if (ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu.getValue() == operateType) {
+                reasons = sbCodeTypeService.findCodeDefList(RESERVE_RETENTION_REASON);
+            } else {
+                throw new OspException("没有找到原因","没有找到原因");
+            }
+
             for (int i = 0; i < reasons.size(); i++) {
                 SbCodeDefModel reason = reasons.get(i);
                 if (reason.getCodeValue().equals(reason4Feedback)) {
@@ -723,26 +738,6 @@ public class ReserveOrderController extends ExpressCommonController {
         buildErrorMsg(obj, errMsg);
         return obj;
     }
-
-//    private boolean validateFeedback(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
-//
-//        if(reserveOrderVos.length < 1){
-//            errMsg.add("请选择至少一条预约单");
-//            return false;
-//        }
-//
-//        String reason4Feedback = reserveOrderVos[0].getReason();
-//        int operateType = reserveOrderVos[0].getOperateType();
-//
-//        if (operateType == ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue() ||
-//                operateType == ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()) {
-//            if (StringUtils.isBlank(reason4Feedback)) {
-//                errMsg.add("原因为必填");
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
 
     /**
      * 修改预约单
