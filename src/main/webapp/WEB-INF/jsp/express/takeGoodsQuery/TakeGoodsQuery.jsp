@@ -38,6 +38,35 @@ color:#000
  <script type="text/javascript">
 <%--  $("#selectPg").val(<%=request.getAttribute("page") %>); --%>
  $(function(){
+	 $("#selectAll").click(function() {
+			var $this = $(this);
+			if($this.is(":checked")) {
+				$("input[name='cwb']").attr("checked", true);
+			} else {
+				$("input[name='cwb']").attr("checked", false);
+			}
+		});
+		
+		$("input[name='cwb']").click(function() {
+			var $this = $(this);
+			if($this.is(":checked")) {
+				var unSelectLen = $("input[name='cwb']").not(":checked").length;
+				if(unSelectLen == 0) {
+					$("#selectAll").attr("checked", true);
+				}
+			} else {
+				$("#selectAll").attr("checked", false);
+			}
+		});
+		
+		$("#print").click(function() {
+			var $cwbChecked = $("input[name='cwb']:checked");
+			if($cwbChecked.length == 0) {
+				alert("请选择订单！");
+			} else {
+				window.location.href = "<%= request.getContextPath()%>/cwbLablePrint/printOrderLabel?" + $cwbChecked.serialize();
+			}
+		});
 	$("#selectPg").val($("#selectPgValue").val());
 // 	 $('#startTime').datepicker();
 // 	 $('#endTime').datepicker();  
@@ -207,8 +236,9 @@ function formatDate(date,format){
 				</td>
 				<td style="margin-left: 50px;margin-top: -5px;width:90px">
 					<input type="hidden" id="exportFlag" name="exportFlag" value="false"/>
-					<input type="button" name="fuck" value="查询" style="width:80px;margin-left:50px" onclick="query();"/>
-					<input type="button" name="fuck" value="导出" style="width:80px;margin-left:50px" onclick="exportData();"/>
+					<input type="button" name="fuck" value="查询"  onclick="query();"/>
+					<input type="button" name="fuck" value="导出" onclick="exportData();"/>
+					<input type="button" name="print" id="print" value="打印">
 				</td>
 				<td></td>
 			</tr>
@@ -256,6 +286,9 @@ function formatDate(date,format){
 			<div style="overflow: auto;">
 				<table width="1800px" border="0" cellspacing="1" cellpadding="0" class="table_2" id="listTable">
 					<tr>
+						<td align="center" valign="middle" style="font-weight: bold;">
+							<input id="selectAll" type="checkbox"/>
+						</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 运单单号</td>
 						<td align="center" valign="middle" style="font-weight: bold;"> <div id="timeHeadDiv">揽收时间</div></td>
 						<td align="center" valign="middle" style="font-weight: bold;"> 件数</td>
@@ -284,6 +317,11 @@ function formatDate(date,format){
 						<%-- <td height="30px" align="center"  valign="middle">
 							<input type="checkbox" name="checkBox" value="${list.opscwbid}" onclick="initColor(this);"/>
 						</td> --%>
+						<td align="center" valign="middle">
+							<c:if test="${nowTimestamp - list.emaildateTimestamp lt 60 * 60 * 24 * 7 }">
+								<input name="cwb" type="checkbox" value="${list.cwb}"/>
+							</c:if>
+						</td>
 						<td align="center" valign="middle" > ${list.cwb}</td>
 						<%if(cwb4TakeGoodsQuery.getStatus()!=null && cwb4TakeGoodsQuery.getStatus()==3){%>
 						<td align="center" valign="middle" > ${list.outstationdatetime}</td>

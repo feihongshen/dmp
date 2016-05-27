@@ -24,6 +24,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.domain.Branch;
@@ -1366,6 +1367,6 @@ public class BranchDAO {
 		String sql = "select  * from express_set_branch where outputno = ?" ;
 		list = this.jdbcTemplate.query(sql, new BranchRowMapper(),outputno);
 		return list;
-}
-
+	}
+	
 }

@@ -5497,7 +5497,7 @@ public class CwbOrderService extends BaseOrderService {
 					//this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
 				}
 			}else{//当录入或修改快递单号为空时
-				if(!"".equals(co.getTranscwb())){
+				if(!"".equals(co.getTranscwb()) && nosysyemflag == null){
 					this.transCwbDao.deleteTranscwb(cwb);
 					this.transCwbDao.saveTranscwb(cwb,cwb);
 					this.cwbDAO.saveTranscwbByCwb("",cwb);
