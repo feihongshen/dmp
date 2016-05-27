@@ -104,6 +104,16 @@ public class OrderBackCheckDAO {
 			return null;
 		}
 	}
+	public OrderBackCheck getOrderBackCheckOnlyCwb(String cwb){
+		String sql = "select * from ops_order_back_check where cwb = ? ";
+		try {
+			return jdbcTemplate.queryForObject(sql, new OrderBackCheckRowMapper(), cwb);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
 	//待审核
 	public OrderBackCheck getOrderBackCheckByCheckstate(String cwb) {
 		String sql = "select * from ops_order_back_check where checkstate=1  and cwb = ? ";

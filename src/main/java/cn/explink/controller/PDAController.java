@@ -106,6 +106,7 @@ import cn.explink.domain.GroupDetail;
 import cn.explink.domain.JsonContext;
 import cn.explink.domain.Menu;
 import cn.explink.domain.OperationTime;
+import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.PrintStyle;
 import cn.explink.domain.Reason;
@@ -2038,6 +2039,17 @@ public class PDAController {
 			obj.put("cwb", cwb);
 			try {// 成功订单
 				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
+				//*******Hps_Concerto*****2016年5月26日17:23:11
+				obj.put("flowordertype", cwbOrder.getFlowordertype());
+				obj.put("cwbstate", cwbOrder.getCwbstate());
+				obj.put("deliverystate", cwbOrder.getDeliverystate());
+				OrderBackCheck oc = orderBackCheckDAO.getOrderBackCheckOnlyCwb(cwbOrder.getCwb());
+				if(oc==null){ 
+					obj.put("checkstateresultname", "");
+				}else{
+					obj.put("checkstateresultname", oc.getCheckresult()==0?"未审核":(oc.getCheckresult()==1?"确认退货":"站点配送"));
+				}
+				//*******************
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				linghuoSuccessCount++;

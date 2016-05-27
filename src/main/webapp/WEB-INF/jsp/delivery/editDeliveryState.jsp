@@ -157,7 +157,9 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    			<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
                    		<%} %>
                    <%} %>
-                   <option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+                  <%-- 
+                  	hps_Concerto 注释  2016年5月25日11:47:51	
+                   <option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option> --%>
                    
                 </select>*</li>
            		<li><span>快递单号：</span>

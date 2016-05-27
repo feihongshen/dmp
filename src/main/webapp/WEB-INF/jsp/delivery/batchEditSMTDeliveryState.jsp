@@ -269,7 +269,9 @@ function resub(form){
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>);"/> <%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>);"/> <%=DeliveryStateEnum.ShangMenJuTui.getText() %>
 							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>);"/> <%=DeliveryStateEnum.FenZhanZhiLiu.getText() %>
-							<input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>);"/> <%=DeliveryStateEnum.HuoWuDiuShi.getText() %>
+							<%--
+								hps_Concerto 注释 2016年5月25日11:55:32
+							 <input type="radio" name="deliverystate" id="deliverystate" value="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>" onclick="changeTag(<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>);"/> <%=DeliveryStateEnum.HuoWuDiuShi.getText() %> --%>
 						</td>
 					</tr>
 					<tr>
