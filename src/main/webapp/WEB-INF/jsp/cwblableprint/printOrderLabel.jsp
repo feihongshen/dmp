@@ -129,15 +129,15 @@ function nowprint(){
 			          			<td valign="middle" style="width:58mm; border-right:1px solid #585656;">
 			          				<div style="font:20px;font-family: 黑体;font-weight: bold;margin-left:5px;margin-right:5px;float:left;">收<br>件</div>
 			            			<div>
-			            				<span style="line-height:18px;font-family: 黑体;font-size: 12px;">${cwb.cwbprovince }.${cwb.cwbcity }.${cwb.cwbcounty }</span><br>
+			            				<span style="line-height:18px;font-family: 黑体;font-size: 12px;">${cwb.cwbprovince } ${cwb.cwbcity } ${cwb.cwbcounty }</span><br>
 			            				<span style="line-height:14px;font-family: 黑体;font-size: 9px;">${cwb.consigneeaddress }</span><br>
 			            				<span style="line-height:14px;font-family: 黑体;font-size: 9px;">${cwb.consigneename }</span>
 			            				<span style="margin-left:10px;font-family: Arial;font-size: 9px;">${cwb.consigneemobile }</span>
 			            			</div>
 			          			</td>
-			          			<td align="center" valign="middle">
+			          			<td align="center" valign="top">
 			          				<span style="line-height:24px;font-family: 黑体;font-size: 10px;">分拣码</span><br>
-			            			<span style="font-family: Arial;font-size: 16px;font-weight: bold;">${branch.branchcode }</span>
+			            			<span style="font-family: Arial;font-size: 16px;font-weight: bold;">11111${branch.branchcode }</span>
 			          			</td>
 			         		 </tr>
 			       		</table>
@@ -175,7 +175,7 @@ function nowprint(){
 				          		<td valign="middle">
 				          			<div style="font:20px;font-weight:bold;font-family: 黑体;margin-right:5px;margin-top:5px;float:left;">寄<br>件</div>
 				            		<div style="margin-top:5px;">
-				              			<span style="line-height:10px;font-family: 黑体;font-size: 8px;">${cwb.senderprovince }.${cwb.sendercity }.${cwb.sendercounty } ${cwb.senderstreet }${cwb.senderaddress }</span><br>
+				              			<span style="line-height:10px;font-family: 黑体;font-size: 8px;">${cwb.senderprovince }${cwb.sendercity }${cwb.sendercounty }${cwb.senderstreet }${cwb.senderaddress }</span><br>
 				            		</div>
 				            		<div style="clear:both;margin-left:5px;margin-bottom:5px;">
 				            			<span style="font-size: 8px;font-family: 黑体;">${cwb.sendername }  ${cwb.sendercellphone }</span>
@@ -202,7 +202,7 @@ function nowprint(){
             					<td valign="middle" style="width:33mm;border-right:1px solid #585656;">
             						<span style="line-height:14px;font-family:黑体;font-size: 12px;font-weight: bold;">代收货款</span><br>
                 					<span style="margin-left:12mm;line-height:14px;font-family:Arial;font-size: 12px;font-weight: bold;">${cwb.receivablefee }</span><br>
-                					<span style="line-height:14px;font-family:黑体;font-size: 8px;">运费:${cwb.infactfare }元  费用合计:${cwb.totalfee }元</span>
+                					<span style="line-height:14px;font-family:黑体;font-size: 8px;">运费:${cwb.shouldfare }元  费用合计:${cwb.totalfee }元</span>
             					</td>
            						<td valign="middle">
             	 					<span style="line-height:14px;font-family: 黑体;font-size: 8px;">收方签署：</span><br>
@@ -232,10 +232,10 @@ function nowprint(){
           						<td valign="middle" style="width:34mm;border-right:1px solid #585656;" rowspan="2">
 	          						<div style="font:20px;font-weight: bold;font-family: 黑体;margin-left:5px;margin-right:5px;float:left;">寄<br>件</div>
 	            					<div>
-	              						<span style="font-family: 黑体;font-size: 8px;">广东省.广州市.天珠江新际金大104栋.天珠江新际金大104栋</span><br>
+	              						<span style="font-family: 黑体;font-size: 8px;">${cwb.senderprovince }${cwb.sendercity }${cwb.sendercounty }${cwb.senderstreet }${cwb.senderaddress }</span><br>
 	            					</div>
 	            					<div style="margin-left:27px;lear:both;">
-	             						<span style="font-size: 8px;font-family: 黑体;">李先生  12345678345</span>
+	             						<span style="font-size: 8px;font-family: 黑体;">${cwb.sendername }  ${cwb.sendercellphone }</span>
 	            					</div>
             					</td>
             					<td valign="middle" style="height:4mm;border-bottom:1px solid #585656;">

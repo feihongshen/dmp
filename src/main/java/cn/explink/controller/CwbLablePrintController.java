@@ -763,7 +763,7 @@ public class CwbLablePrintController {
 	 */
 	@RequestMapping("/printOrderLabel")
 	public String printOrderLabel(Model model, @RequestParam(value = "cwb") List<String> cwbList) throws ParseException {
-		List<CwbOrder> cwbOrderList = this.cwborderService.getCwbOrderListByCwbs(cwbList);
+		List<CwbOrder> cwbOrderList = this.cwborderService.getCwbOrderListByCwbsWithoutState(cwbList);
 		List<PrintOrderLabelVo> printOrderLabelVoList = new ArrayList<PrintOrderLabelVo>();
 		for(CwbOrder cwbOrder : cwbOrderList) {
 			PrintOrderLabelVo vo = new PrintOrderLabelVo();
@@ -775,6 +775,18 @@ public class CwbLablePrintController {
 				String emaildateStr = sdf.format(emaildate);
 				cwbOrder.setEmaildate(emaildateStr);
 			}
+			// 费用合计 = 运费+包装+保价
+			BigDecimal totalfee = BigDecimal.ZERO;
+			if(cwbOrder.getShouldfare() != null) {
+				totalfee = totalfee.add(cwbOrder.getShouldfare());
+			}
+			if(cwbOrder.getInsuredfee() != null) {
+				totalfee = totalfee.add(cwbOrder.getInsuredfee());
+			}
+			if(cwbOrder.getPackagefee() != null) {
+				totalfee = totalfee.add(cwbOrder.getPackagefee());
+			}
+			cwbOrder.setTotalfee(totalfee);
 			vo.setCwbOrder(cwbOrder);
 			Branch branch = null;
 			if(cwbOrder.getDeliverybranchid() != 0) {
