@@ -181,27 +181,8 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
-        //var rows = $('#dg_rsList').datagrid('getChecked');
-        //
-        //var flag = true;
-        //$.each(rows, function (index, value) {
-        //	var reserveOrderStatus = value.reserveOrderStatus;
-        //	if(reserveOrderStatus != hadAllocationPro
-        //			&& reserveOrderStatus !=hadAllocationStation
-        //			&& reserveOrderStatus != haveStationOutZone) {
-        //		flag = false;
-        //		return false;
-        //	}
-        //});
-        //if(!flag) {
-        //    if (isHandlePage) {
-        //        allertMsg.alertError("选中的预约单无法做分配站点操作！");
-        //    } else {
-        //        allertMsg.alertError("选中的预约单无法做分配操作！");
-        //    }
-        //
-        //	return false;
-        //}
+        var rows = $('#dg_rsList').datagrid('getChecked');
+
         if (rows.length == 1) {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
             $('#distributeBranchSelect option').each(function () {
@@ -222,6 +203,10 @@ $(function () {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
             $('#distributeCourierSelect option:selected').removeAttr('selected');
         }
+
+        $('#distributeBranchSelect').multipleSelect("refresh");
+        $('#distributeCourierSelect').multipleSelect("refresh");
+
         var title;
         if (isHandlePage) {
             title = '分配站点';
