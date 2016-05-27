@@ -308,16 +308,30 @@ public class BaleController {
 			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
-			if(customer.getIsUsetranscwb() == 2){
-				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
+//			if(customer.getIsUsetranscwb() == 2){
+//				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
+//			}else{
+//				//扫描运单号，首先更新当前运单的货物重量，如果当前已扫描件数和订单总件数一致时，才更新订单表的货物重量
+//				this.mpsOptStateService.updateTransCwbDetailWeight(cwbOrder.getCwb(), cwb, carrealweight);
+//				if(cwbOrder.getScannum() == cwbOrder.getSendcarnum()){
+//					BigDecimal totalWeight = getWeightForOrder(cwb) ;
+//					this.cwbDAO.saveCwbWeight(totalWeight, cwb);
+//				}
+//			}
+			// add by bruce shangguan 20160530  如果是首次扫描订单号/运单号,就直接更新订单重量；否则就在订单原重量的基础上累加，再更新订单重量
+			if(cwbOrder.getScannum() == 1){
+				this.cwbDAO.saveCwbWeight(carrealweight, cwbOrder.getCwb());
 			}else{
-				//扫描运单号，首先更新当前运单的货物重量，如果当前已扫描件数和订单总件数一致时，才更新订单表的货物重量
-				this.mpsOptStateService.updateTransCwbDetailWeight(cwbOrder.getCwb(), cwb, carrealweight);
-				if(cwbOrder.getScannum() == cwbOrder.getSendcarnum()){
-					BigDecimal totalWeight = getWeightForOrder(cwb) ;
-					this.cwbDAO.saveCwbWeight(totalWeight, cwb);
-				}
+				BigDecimal totalWeight = cwbOrder.getCarrealweight() == null ? BigDecimal.ZERO : cwbOrder.getCarrealweight() ;
+				totalWeight = totalWeight.add(carrealweight);
+				this.cwbDAO.saveCwbWeight(totalWeight, cwbOrder.getCwb());
 			}
+			// 如果扫描运单号，就更新当前运单的货物重量
+			if(customer.getIsUsetranscwb() != 2){
+				this.mpsOptStateService.updateTransCwbDetailWeight(cwbOrder.getCwb(), cwb, carrealweight);
+			}
+			obj.put("newCarrealWeight", carrealweight) ;
+			// end 20160530
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");

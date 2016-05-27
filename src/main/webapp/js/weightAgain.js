@@ -39,6 +39,10 @@ function updateCarrealweight(orderNumber , carrealweight){
 		}}) ;
 }
 
+/**
+ * 获取手动录入的重量
+ * @param keyCode
+ */
 function getHandInputCarrealweight(keyCode){
 	var orderNumber = jQuery("#orderNumber").val().trim() ;
 	var carrealweight = jQuery("#weightAmount").val().trim() ;

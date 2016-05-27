@@ -4361,17 +4361,30 @@ public class PDAController {
 
 			// 如果扫描的是封在某个包里面的快递单，则将该包设为不可用
 			this.setExpressPackageUnable(cwbOrder);
-            // 如果扫描订单号，就直接更新订单表的货物重量
-			if(customer.getIsUsetranscwb() == 2){
+//            // 如果扫描订单号，就直接更新订单表的货物重量
+//			if(customer.getIsUsetranscwb() == 2){
+//				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
+//			}else{
+//				//扫描运单号，首先更新当前运单的货物重量，如果当前已扫描件数和订单总件数一致时，才更新订单表的货物重量
+//				this.mpsOptStateService.updateTransCwbDetailWeight(cwb, scancwb, carrealweight);
+//				if(cwbOrder.getScannum() == cwbOrder.getSendcarnum()){
+//					BigDecimal totalWeight = getWeightForOrder(cwb) ;
+//					this.cwbDAO.saveCwbWeight(totalWeight, cwb);
+//				}
+//			}
+			// add by bruce shangguan 20160530  如果是首次扫描订单号/运单号,就直接更新订单重量；否则就在订单原重量的基础上累加，再更新订单重量
+			if(cwbOrder.getScannum() == 1){
 				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
 			}else{
-				//扫描运单号，首先更新当前运单的货物重量，如果当前已扫描件数和订单总件数一致时，才更新订单表的货物重量
-				this.mpsOptStateService.updateTransCwbDetailWeight(cwb, scancwb, carrealweight);
-				if(cwbOrder.getScannum() == cwbOrder.getSendcarnum()){
-					BigDecimal totalWeight = getWeightForOrder(cwb) ;
-					this.cwbDAO.saveCwbWeight(totalWeight, cwb);
-				}
+				BigDecimal totalWeight = cwbOrder.getCarrealweight() == null ? BigDecimal.ZERO : cwbOrder.getCarrealweight() ;
+				totalWeight = totalWeight.add(carrealweight);
+				this.cwbDAO.saveCwbWeight(totalWeight, cwb);
 			}
+			// 如果扫描运单号，就更新当前运单的货物重量
+			if(customer.getIsUsetranscwb() != 2){
+				this.mpsOptStateService.updateTransCwbDetailWeight(cwb, scancwb, carrealweight);
+			}
+			// end 20160530
 			obj.put("newCarrealWeight", carrealweight);
 			this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 			return explinkResponse;

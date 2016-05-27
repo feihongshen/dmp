@@ -23,6 +23,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
@@ -71,6 +72,8 @@ public class FlowFromJMSToEMSOrderService {
 
 			this.flowList.add(FlowOrderTypeEnum.UpdateDeliveryBranch.getValue()); // 更改配送站
 			this.flowList.add(FlowOrderTypeEnum.ChuKuSaoMiao.getValue()); // 出库扫描
+			this.flowList.add(FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue()); // 中转站出库
+			this.flowList.add(CwbFlowOrderTypeEnum.TuiHuoZhanZaiTouSaoMiao.getValue()); // 退货站再投扫描
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {
@@ -126,6 +129,8 @@ public class FlowFromJMSToEMSOrderService {
 			}
 			//配送站为非ems的订单不发送给ems
 			if((floworderType==6&&order.getNextbranchid()!=branchid)
+					|| (floworderType==14 && order.getDeliverybranchid()!=branchid)
+					|| (floworderType==17 && order.getDeliverybranchid()!=branchid)
 					|| (floworderType==37 && order.getDeliverybranchid()!=branchid)){
 				return;
 			}
