@@ -56,7 +56,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 		if(CmdType.NEW.equals(orderSend.getCmdType())){
 			if(expressDetailTemp != null){
 				// 已存在，不能新增
-				logger.info("快递已存在，单号{}", orderSend.getTransportNo());
+				logger.info("快递已存在，单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
 				return;
 			}
 			expressOrderService.insertExpressDetailTemp(expressDetailTemp_New);
@@ -64,7 +64,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 		}else if (CmdType.EDIT.equals(orderSend.getCmdType())){// 更新
 			if(expressDetailTemp == null){
 				// 不存在，不能更新
-				logger.info("快递不存在, 单号{}", orderSend.getTransportNo());
+				logger.info("快递不存在, 单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
 				return ;				
 			} 
 			expressOrderService.updateExpressDetailTemp(expressDetailTemp_New);
