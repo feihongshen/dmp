@@ -38,9 +38,6 @@ function submitForm(form){
     alert("两次密码不一致");
     form.password.focus();
     return false;
-  } else if(!isPasswordValid(form.password.value)){
-	alert("密码至少要含小写字母、大写字母、数字、特殊字符中的任意三种且长度至少需要八位");
-	return false;
   }
     form.submit();
     return true;
