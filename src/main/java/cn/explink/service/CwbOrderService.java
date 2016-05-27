@@ -9221,6 +9221,17 @@ public class CwbOrderService extends BaseOrderService {
 		list = this.cwbDAO.getCwbsBycwbs(inStr.substring(0, inStr.length() - 1) + ")");
 		return list;
 	}
+	
+	public List<CwbOrder> getCwbOrderListByCwbsWithoutState(List<String> cwbList) {
+		List<CwbOrder> list = new ArrayList<CwbOrder>();
+		StringBuffer inStr = new StringBuffer();
+		inStr.append("('',");
+		for (String temp : cwbList) {
+			inStr.append("'").append(temp).append("'").append(",");
+		}
+		list = this.cwbDAO.getCwbsBycwbsWithoutState(inStr.substring(0, inStr.length() - 1) + ")");
+		return list;
+	}
 
 	/**
 	 * @Title: getTransCwbsListByCwbs
