@@ -252,21 +252,21 @@
             columns: [[
                 {field: 'omReserveOrderId', title: '预约单id', checkbox: true},
                 {
-                    field: 'reserveOrderNo', title: '预约单号', width: 130, align: 'center',
+                    field: 'reserveOrderNo', title: '预约单号', width: 130,
                     formatter: reserveOrderNoFormatter
                 },
-                {field: 'appointTimeStr', title: '下单时间', width: 130, align: 'center'},
-                {field: 'cnorName', title: '寄件人', width: 100, align: 'center'},
-                {field: 'cnorMobile', title: '手机', width: 100, align: 'center'},
-                {field: 'cnorTel', title: '固话', width: 100, align: 'center'},
-                {field: 'cnorAddr', title: '寄件地址', width: 130, align: 'center'},
-                {field: 'requireTimeStr', title: '预约上门时间', width: 130, align: 'center'},
-                {field: 'reserveOrderStatusName', title: '预约单状态', width: 100, align: 'center'},
-                {field: 'reason', title: '原因', width: 130, align: 'center'},
-//                {field: 'transportNo', title: '运单号', width: 100, align: 'center'},
-//                {field: 'acceptOrgName', title: '站点', width: 100, align: 'center'},
-                {field: 'courierName', title: '快递员', width: 80, align: 'center'},
-                {field: 'remark', title: '备注', width: 80, align: 'center'}
+                {field: 'appointTimeStr', title: '下单时间', width: 130},
+                {field: 'cnorName', title: '寄件人', width: 100},
+                {field: 'cnorMobile', title: '手机', width: 100},
+                {field: 'cnorTel', title: '固话', width: 100},
+                {field: 'cnorAddr', title: '寄件地址', width: 130},
+                {field: 'requireTimeStr', title: '预约上门时间', width: 130},
+                {field: 'reserveOrderStatusName', title: '预约单状态', width: 100},
+                {field: 'reason', title: '原因', width: 130},
+//                {field: 'transportNo', title: '运单号', width: 100},
+//                {field: 'acceptOrgName', title: '站点', width: 100},
+                {field: 'courierName', title: '快递员', width: 80},
+                {field: 'remark', title: '备注', width: 80}
             ]]
         });
     }
