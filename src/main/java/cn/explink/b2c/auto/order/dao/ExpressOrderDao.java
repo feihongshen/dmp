@@ -390,7 +390,8 @@ public class ExpressOrderDao {
 
 				ps.setFloat(++i, expressDetailTemp.getTotalVolume().floatValue());
 				ps.setLong(++i, CwbStateEnum.PeiShong.getValue());
-				ps.setString(++i, expressDetailTemp.getAcceptDept());
+				ps.setInt(++i, (int)acceptBranch.getBranchid());
+				ps.setString(++i, acceptBranch.getBranchname());//站点
 				ps.setInt(++i, 1);
 
 				ps.setLong(++i, 0);//上一个机构id
