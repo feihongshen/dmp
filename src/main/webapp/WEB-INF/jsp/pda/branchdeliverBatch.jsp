@@ -604,7 +604,7 @@ function tohome(){
 											</td>
 											<td width="60" align="center"><%
 											if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已审核"){%>
-											审核为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("")).getText() %>
+											审核为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
 											<%}else if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已反馈") {%>
 											反馈为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
 											<%}else{ %>
