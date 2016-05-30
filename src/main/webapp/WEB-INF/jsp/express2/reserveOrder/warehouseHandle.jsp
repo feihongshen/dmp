@@ -259,7 +259,7 @@
                 {field: 'cnorName', title: '寄件人', width: 100},
                 {field: 'cnorMobile', title: '手机', width: 100},
                 {field: 'cnorTel', title: '固话', width: 100},
-                {field:'cnorAddr', title:'寄件地址', width:130,display:"none"},
+                {field:'cnorAddr', title:'寄件地址', width:130,hidden:'true'},
     		    {field:'cnorDetailAddr', title:'寄件地址', width:130},
                 {field: 'requireTimeStr', title: '预约上门时间', width: 130},
                 {field: 'reserveOrderStatusName', title: '预约单状态', width: 100},
