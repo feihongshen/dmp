@@ -160,7 +160,8 @@ public class ReserveOrderService extends ExpressCommonService {
 			vo.setCnorName(po.getCnorName());
 			vo.setCnorMobile(po.getCnorMobile());
 			vo.setCnorTel(po.getCnorTel());
-			vo.setCnorAddr(po.getCnorProvName() + po.getCnorCityName() + po.getCnorRegionName() + po.getCnorAddr());
+			vo.setCnorAddr(po.getCnorAddr());
+			vo.setCnorDetailAddr(po.getCnorProvName() + po.getCnorCityName() + po.getCnorRegionName() + po.getCnorAddr());
 			Long requireTimeMs = po.getRequireTime();
 			if (requireTimeMs != null) {
 				Date requireTime = new Date(requireTimeMs);

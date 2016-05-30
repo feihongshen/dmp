@@ -49,6 +49,11 @@ public class ReserveOrderVo {
 	private String cnorAddr;
 	
 	/**
+	 * 寄件详细地址，包含省市区
+	 */
+	private String cnorDetailAddr;
+	
+	/**
 	 * 预约上门时间
 	 */
 	private Date requireTime;
@@ -197,6 +202,14 @@ public class ReserveOrderVo {
 		this.cnorAddr = cnorAddr;
 	}
 
+	public String getCnorDetailAddr() {
+		return cnorDetailAddr;
+	}
+
+	public void setCnorDetailAddr(String cnorDetailAddr) {
+		this.cnorDetailAddr = cnorDetailAddr;
+	}
+
 	public Date getRequireTime() {
 		return requireTime;
 	}
@@ -285,21 +298,21 @@ public class ReserveOrderVo {
 		this.cnorRemark = cnorRemark;
 	}
 
-    public long getRecordVersion() {
-        return recordVersion;
-    }
+	public long getRecordVersion() {
+		return recordVersion;
+	}
 
-    public void setRecordVersion(long recordVersion) {
-        this.recordVersion = recordVersion;
-    }
+	public void setRecordVersion(long recordVersion) {
+		this.recordVersion = recordVersion;
+	}
 
-    public int getOperateType() {
-        return operateType;
-    }
+	public int getOperateType() {
+		return operateType;
+	}
 
-    public void setOperateType(int operateType) {
-        this.operateType = operateType;
-    }
+	public void setOperateType(int operateType) {
+		this.operateType = operateType;
+	}
 
 	public String getCnorProvName() {
 		return cnorProvName;
@@ -325,33 +338,33 @@ public class ReserveOrderVo {
 		this.cnorRegionName = cnorRegionName;
 	}
 
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getCarrierSiteCode() {
+		return carrierSiteCode;
+	}
+
+	public void setCarrierSiteCode(String carrierSiteCode) {
+		this.carrierSiteCode = carrierSiteCode;
+	}
+
 	@Override
 	public String toString() {
 		return "ReserveOrderVo [omReserveOrderId=" + omReserveOrderId + ", reserveOrderNo=" + reserveOrderNo
 				+ ", appointTime=" + appointTime + ", appointTimeStr=" + appointTimeStr + ", cnorName=" + cnorName
-				+ ", cnorMobile=" + cnorMobile + ", cnorTel=" + cnorTel + ", cnorAddr=" + cnorAddr + ", requireTime="
-				+ requireTime + ", requireTimeStr=" + requireTimeStr + ", reserveOrderStatus=" + reserveOrderStatus
-				+ ", reserveOrderStatusName=" + reserveOrderStatusName + ", reason=" + reason + ", transportNo="
-				+ transportNo + ", acceptOrg=" + acceptOrg + ", acceptOrgName=" + acceptOrgName + ", courier=" + courier
-				+ ", courierName=" + courierName + ", cnorRemark=" + cnorRemark + ", recordVersion=" + recordVersion
-				+ ", operateType=" + operateType + ", cnorProvName=" + cnorProvName + ", cnorCityName=" + cnorCityName
-				+ ", cnorRegionName=" + cnorRegionName + "]";
+				+ ", cnorMobile=" + cnorMobile + ", cnorTel=" + cnorTel + ", cnorAddr=" + cnorAddr + ", cnorDetailAddr="
+				+ cnorDetailAddr + ", requireTime=" + requireTime + ", requireTimeStr=" + requireTimeStr
+				+ ", reserveOrderStatus=" + reserveOrderStatus + ", reserveOrderStatusName=" + reserveOrderStatusName
+				+ ", reason=" + reason + ", transportNo=" + transportNo + ", acceptOrg=" + acceptOrg
+				+ ", acceptOrgName=" + acceptOrgName + ", courier=" + courier + ", courierName=" + courierName
+				+ ", cnorRemark=" + cnorRemark + ", recordVersion=" + recordVersion + ", operateType=" + operateType
+				+ ", cnorProvName=" + cnorProvName + ", cnorCityName=" + cnorCityName + ", cnorRegionName="
+				+ cnorRegionName + ", remark=" + remark + ", carrierSiteCode=" + carrierSiteCode + "]";
 	}
-
-
-    public String getCarrierSiteCode() {
-        return carrierSiteCode;
-    }
-
-    public void setCarrierSiteCode(String carrierSiteCode) {
-        this.carrierSiteCode = carrierSiteCode;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
 }
