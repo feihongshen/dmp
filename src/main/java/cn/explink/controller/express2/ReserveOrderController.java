@@ -708,10 +708,11 @@ public class ReserveOrderController extends ExpressCommonController {
                 reasons = sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON);
             } else if (ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu.getValue() == operateType) {
                 reasons = sbCodeTypeService.findCodeDefList(RESERVE_RETENTION_REASON);
+            } else if (ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBaiTuiHui.getValue() == operateType) {
+            	reasons = new ArrayList<SbCodeDefModel>();
             } else {
                 throw new OspException("没有找到原因","没有找到原因");
             }
-
             for (int i = 0; i < reasons.size(); i++) {
                 SbCodeDefModel reason = reasons.get(i);
                 if (reason.getCodeValue().equals(reason4Feedback)) {
