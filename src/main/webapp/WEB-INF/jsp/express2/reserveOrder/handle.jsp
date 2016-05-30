@@ -82,7 +82,7 @@
 		    	<div class="btn btn-default" onclick="doSearch();" style="margin-right:5px;" id= "searchData"><i class="icon-search"></i>查询</div>
 		    	<div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i class="icon-plus"></i>修改</div>
 		    	<div class="btn btn-default" id="deleteReserveOrderBtn" style="margin-right:5px;"><i class="icon-remove"></i>关闭</div>
-		    	<div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部</div>
+		    	<div class="btn btn-default" isHandle="true" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部</div>
 		    	<div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i class="icon-eye-open"></i>分配站点</div>
 		    	<div class="btn btn-default" onclick="exportExcel();" style="margin-left:5px;"><i class="icon-download-alt"></i>导出</div>
                                 </div>

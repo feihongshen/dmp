@@ -150,20 +150,27 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
-        //var rows = $('#dg_rsList').datagrid('getChecked');
-        
-        //var flag = true;
-        //$.each(rows, function (index, value) {
-        //	var reserveOrderStatus = value.reserveOrderStatus;
-        //	if(reserveOrderStatus != hadAllocationPro && reserveOrderStatus != haveStationOutZone) {
-        //		flag = false;
-        //		return false;
-        //	}
-        //});
-        //if(!flag) {
-        //	allertMsg.alertError("选中的预约单无法做退回总部操作！");
-        //	return false;
-        //}
+
+        var isHandle = $(this).attr('isHandle');
+        if(isHandle){
+            var rows = $('#dg_rsList').datagrid('getChecked');
+
+            var flag = true;
+            var errReserveOrder = "";
+            $.each(rows, function (index, value) {
+                var reserveOrderStatus = value.reserveOrderStatus;
+                //if(reserveOrderStatus != hadAllocationPro && reserveOrderStatus != haveStationOutZone) {
+                if(reserveOrderStatus = haveStationOutZone) {
+                    errReserveOrder = value.reserveOrderNo;
+                    flag = false;
+                    return false;
+                }
+            });
+            if(!flag) {
+                allertMsg.alertError("{"+errReserveOrder+"} 已分配站点,不能退回总部!");
+                return false;
+            }
+        }
         //打开退回总部面板
         returnToCentralPanel = $.layer({
             type: 1,
@@ -378,6 +385,7 @@ $(function () {
             reserveOrder.recordVersion = value.recordVersion;
             reserveOrder.operateType = returnType;
             reserveOrder.reason = $('#returnReason').val();
+            reserveOrder.reserveOrderStatus = value.reserveOrderStatus;
             param.push(reserveOrder);
         });
 

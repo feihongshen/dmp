@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -544,29 +545,50 @@ public class ReserveOrderController extends ExpressCommonController {
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
-        if (reserveOrderVos.length > 0) {
-            int operateType = reserveOrderVos[0].getOperateType();
-            logger.info("{} operateType: {}", logPrefix, operateType);
+        List<String> errMsg = new ArrayList<String>();
 
-            omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
-            for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
-                logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
-
-                OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
-                omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
-                omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
-//                omReserveOrderModel.setReason(reserveOrderVo.getReason());
-                //关闭原因写到备注
-                omReserveOrderModel.setRemark(reserveOrderVo.getReason());
-                omReserveOrderModels.add(omReserveOrderModel);
-            }
-
-            List<String> errMsg = new ArrayList<String>();
-
-            reserveOrderService.returnToCentral(omReserveOrderModels, operateType, errMsg);
+        if (!validateReturnToCentral(reserveOrderVos, errMsg)) {
             buildErrorMsg(obj, errMsg);
+            return obj;
         }
+
+        int operateType = reserveOrderVos[0].getOperateType();
+        logger.info("{} operateType: {}", logPrefix, operateType);
+
+        omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
+        for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+            logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
+
+            OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+            omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
+            omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
+//                omReserveOrderModel.setReason(reserveOrderVo.getReason());
+            //关闭原因写到备注
+            omReserveOrderModel.setRemark(reserveOrderVo.getReason());
+            omReserveOrderModels.add(omReserveOrderModel);
+        }
+
+        reserveOrderService.returnToCentral(omReserveOrderModels, operateType, errMsg);
+        buildErrorMsg(obj, errMsg);
         return obj;
+    }
+
+    private boolean validateReturnToCentral(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
+        boolean isPass = true;
+
+        if (reserveOrderVos == null || reserveOrderVos.length < 1) {
+            errMsg.add("请选择至少一条预约单！");
+            isPass = false;
+        } else {
+            for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                if (ReserveOrderService.PJReserverOrderOperationCode.ShengGongSiChaoQu.getValue() == reserveOrderVo.getOperateType()
+                        && ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue() == reserveOrderVo.getReserveOrderStatus()) {
+                    errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 已分配站点,不能退回总部!");
+                    isPass = false;
+                }
+            }
+        }
+        return isPass;
     }
 
     /**
