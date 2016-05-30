@@ -763,7 +763,7 @@ public class CwbLablePrintController {
 	 */
 	@RequestMapping("/printOrderLabel")
 	public String printOrderLabel(Model model, @RequestParam(value = "cwb") List<String> cwbList) throws ParseException {
-		List<CwbOrder> cwbOrderList = this.cwborderService.getCwbOrderListByCwbsWithoutState(cwbList);
+		List<CwbOrder> cwbOrderList = this.cwborderService.getLabelPrintCwbsByCwbs(cwbList);
 		List<PrintOrderLabelVo> printOrderLabelVoList = new ArrayList<PrintOrderLabelVo>();
 		for(CwbOrder cwbOrder : cwbOrderList) {
 			PrintOrderLabelVo vo = new PrintOrderLabelVo();

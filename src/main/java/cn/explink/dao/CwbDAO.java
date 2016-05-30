@@ -25,7 +25,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
@@ -167,8 +166,18 @@ public class CwbDAO {
         }
     }
 
-    private final class CwbMapper implements RowMapper<CwbOrder> {
-
+	private final class CwbMapper implements RowMapper<CwbOrder> {
+		
+		//是否需要过滤用户信息
+		private boolean isFilterUserInfo = true;
+		
+		public CwbMapper() {
+			
+		}
+		
+		public CwbMapper(boolean isFilterUserInfo) {
+			this.isFilterUserInfo = isFilterUserInfo;
+		}
 		@Override
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CwbOrder cwbOrder = new CwbOrder();
@@ -364,7 +373,17 @@ public class CwbDAO {
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
 
-			CwbDAO.this.setValueByUser(rs, cwbOrder);
+			
+			if(isFilterUserInfo) {
+				CwbDAO.this.setValueByUser(rs, cwbOrder);
+			} else {
+				cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+				cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+				cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+				cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+				cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+				cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+			}
 
 			return cwbOrder;
 		}
@@ -8769,7 +8788,7 @@ public class CwbDAO {
 	 * @param cwbsStr
 	 * @return
 	 */
-	public List<CwbOrder> getCwbsBycwbsWithoutState(String cwbsStr) {
+	public List<CwbOrder> getLabelPrintCwbsByCwbs(String cwbsStr) {
 		try {
 			String sql = "select * from express_ops_cwb_detail where cwb in("
 					+ cwbsStr + ")";
@@ -8777,7 +8796,7 @@ public class CwbDAO {
 			if(cwbsStr!=null && cwbsStr.startsWith("(") && cwbsStr.endsWith(")")) { //如果已有括号会报错
 				sql = "select * from express_ops_cwb_detail where cwb in " + cwbsStr;
 			}
-			return this.jdbcTemplate.query(sql, new CwbMapper());
+			return this.jdbcTemplate.query(sql, new CwbMapper(false));
 		} catch (Exception e) {
 			this.logger.error("", e);
 			return null;
