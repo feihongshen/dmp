@@ -222,8 +222,7 @@ public class ReserveOrderService extends ExpressCommonService {
         if (systemInstall != null && NumberUtils.isNumber(systemInstall.getValue())) {
             maxRowSizeDefined = Integer.parseInt(systemInstall.getValue());
         }
-		//int page = 1; //起始页
-		//第一次查询
+		//第一次查询，如果批次查询量不得大于最大导出量
         int fistRowSize = ROW_SIZE > maxRowSizeDefined ? maxRowSizeDefined : ROW_SIZE;
 		ReserveOrderPageVo reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, 1, fistRowSize);
 		reserveOrderList.addAll(reserveOrderPageVo.getReserveOrderVoList());
@@ -235,13 +234,13 @@ public class ReserveOrderService extends ExpressCommonService {
 		int pageSize = (int) Math.ceil((double) maxRowSize / (double) ROW_SIZE);
 		for(int page = 2; page <= pageSize; page++) {
 			int rowSize = ROW_SIZE;
+			// 最后一页，则查询剩余的记录即可
 			if(page == pageSize) {
 				rowSize = maxRowSize - (page - 1) * ROW_SIZE;
 			}
 			reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, page, rowSize);
 			reserveOrderList.addAll(reserveOrderPageVo.getReserveOrderVoList());
 		}
-
         return reserveOrderList;
 	}
 	
