@@ -138,7 +138,7 @@ public class ReserveOrderService extends ExpressCommonService {
             pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(pjReserveOrderQueryModel);
 			// 返回数据记录
 			logger.info("查询成功: 总条数：{}", pjReserveOrderPageModel.getReserveOrders().size());
-//            logger.info("查询结果: " + toInfoString(pjReserveOrderPageModel));
+            logger.debug("查询结果: " + toInfoString(pjReserveOrderPageModel));
 		} catch (OspException e) {
             logger.info("查询报错： ");
 			logger.error(e.getMessage(), e);
