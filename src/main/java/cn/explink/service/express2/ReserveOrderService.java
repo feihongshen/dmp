@@ -224,7 +224,8 @@ public class ReserveOrderService extends ExpressCommonService {
         }
 		//int page = 1; //起始页
 		//第一次查询
-		ReserveOrderPageVo reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, 1, ROW_SIZE);
+        int fistRowSize = ROW_SIZE > maxRowSizeDefined ? maxRowSizeDefined : ROW_SIZE;
+		ReserveOrderPageVo reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, 1, fistRowSize);
 		reserveOrderList.addAll(reserveOrderPageVo.getReserveOrderVoList());
 		int maxRowSize = reserveOrderPageVo.getTotalRecord();
 		if(maxRowSize > maxRowSizeDefined) {
@@ -233,7 +234,11 @@ public class ReserveOrderService extends ExpressCommonService {
 		//继续查询
 		int pageSize = (int) Math.ceil((double) maxRowSize / (double) ROW_SIZE);
 		for(int page = 2; page <= pageSize; page++) {
-			reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, page, ROW_SIZE);
+			int rowSize = ROW_SIZE;
+			if(page == pageSize) {
+				rowSize = maxRowSize - (page - 1) * ROW_SIZE;
+			}
+			reserveOrderPageVo = this.getReserveOrderPage(omReserveOrderModel, page, rowSize);
 			reserveOrderList.addAll(reserveOrderPageVo.getReserveOrderVoList());
 		}
 
