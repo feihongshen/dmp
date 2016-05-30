@@ -39,16 +39,16 @@
                     </td>
                     <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
                     <td>
-                        <select name="cnorProv" id="cnorProv" style="width:100px;">
-                            <option value="" selected="selected">市</option>
-                            <c:forEach items="${cityList}" var="list">
-                                <option value="${list.id}" code="${list.code}">${list.name}</option>
-                            </c:forEach>
-                        </select>
-                        <select name="cnorCity" id="cnorCity" style="width:100px;">
-                            <option value="">区/县</option>
-                        </select>
-                    </td>
+                    	<select name="cnorCity" id="cnorCity" style="width: 100px;">
+                    		<option value="" selected="selected">市</option>
+								<c:forEach items="${cityList}" var="list">
+									<option value="${list.id}" code="${list.code}">${list.name}</option>
+								</c:forEach>
+						</select>
+						<select name="cnorRegion" id="cnorRegion" style="width: 100px;">
+							<option value="">区/县</option>
+						</select>
+					</td>
                 </tr>
                 <tr>
                     <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">手机/固话：</td>

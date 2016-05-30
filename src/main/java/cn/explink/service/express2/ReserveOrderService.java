@@ -180,7 +180,11 @@ public class ReserveOrderService extends ExpressCommonService {
                 vo.setAcceptOrgName(acceptBranches.get(0).getBranchname());
             }
             vo.setCnorRemark(po.getCnorRemark());
-            vo.setCourierName(po.getCourierName());
+            vo.setCourier(po.getCourier());
+            User user = this.userDao.getUserByUsername(po.getCourier());
+            if(user != null) {
+            	vo.setCourierName(user.getRealname());
+            }
             vo.setRecordVersion(po.getRecordVersion());
 			vo.setCnorProvName(po.getCnorProvName());
             vo.setCnorCityName(po.getCnorCityName());
