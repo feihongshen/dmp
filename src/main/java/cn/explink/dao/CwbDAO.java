@@ -1128,6 +1128,7 @@ public class CwbDAO {
 			co.setConsigneemobile(rs.getString("consigneemobile"));
 			co.setConsigneephone(rs.getString("consigneephone"));
 			co.setEntrustname(rs.getString("entrustname"));
+			co.setCredateTimestamp(rs.getLong("credateTimestamp"));
 			return co;
 		}
 	}
@@ -8741,6 +8742,27 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 查询订单，不包含状态
+	 * 2016年5月27日 下午5:54:21
+	 * @param cwbsStr
+	 * @return
+	 */
+	public List<CwbOrder> getCwbsBycwbsWithoutState(String cwbsStr) {
+		try {
+			String sql = "select * from express_ops_cwb_detail where cwb in("
+					+ cwbsStr + ")";
+
+			if(cwbsStr!=null && cwbsStr.startsWith("(") && cwbsStr.endsWith(")")) { //如果已有括号会报错
+				sql = "select * from express_ops_cwb_detail where cwb in " + cwbsStr;
+			}
+			return this.jdbcTemplate.query(sql, new CwbMapper());
+		} catch (Exception e) {
+			this.logger.error("", e);
+			return null;
+		}
+	}
 
 	/**
 	 * 统计揽件未到站的数量，其中flowordertype为1（已导入）,cwbordertypeid为oxo和oxo_jit,
@@ -8968,8 +8990,8 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQueryByPage(
 			Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,
 			String userIds) {
-		
-		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname FROM express_ops_cwb_detail where cwbordertypeid="
+
+		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,credate FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		
 		sqll += this.conditions4CwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,

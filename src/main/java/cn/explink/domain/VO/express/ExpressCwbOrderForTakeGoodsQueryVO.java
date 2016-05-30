@@ -148,7 +148,6 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	String customerwarehouseid;// 客户发货仓库id
 	long emaildateid;// 发货时间Id
 	String emaildate;// 发货时间
-	long emaildateTimestamp; //发货时间时间戳
 	long serviceareaid;// 服务区域id
 	long customerid;// 供货商id
 	String shipcwb;// 供货商运单号
@@ -238,6 +237,8 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	private long oxodeliverystate; //oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
 	private int branchfeebillexportflag;//加盟商派费账单导出标志
+	
+	private long credateTimestamp; //导入时间的时间戳
 
 	//以下是快递业务新增字段
 
@@ -1883,12 +1884,12 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	public void setCompletedatetime(Date completedatetime) {
 		this.completedatetime = completedatetime;
 	}
-	
-	public long getEmaildateTimestamp() {
-		return emaildateTimestamp;
+
+	public long getCredateTimestamp() {
+		return credateTimestamp;
 	}
 
-	public void setEmaildateTimestamp(long emaildateTimestamp) {
-		this.emaildateTimestamp = emaildateTimestamp;
+	public void setCredateTimestamp(long credateTimestamp) {
+		this.credateTimestamp = credateTimestamp;
 	}
 }

@@ -318,7 +318,7 @@ function formatDate(date,format){
 							<input type="checkbox" name="checkBox" value="${list.opscwbid}" onclick="initColor(this);"/>
 						</td> --%>
 						<td align="center" valign="middle">
-							<c:if test="${nowTimestamp - list.emaildateTimestamp lt 60 * 60 * 24 * 7 }">
+							<c:if test="${nowTimestamp - list.credateTimestamp lt 60 * 60 * 24 * 7 }">
 								<input name="cwb" type="checkbox" value="${list.cwb}"/>
 							</c:if>
 						</td>
