@@ -120,11 +120,11 @@ public class ReserveOrderService extends ExpressCommonService {
         logger.info("调用TPS查询接口开始");
 
         // 记录入库数据
-		try {
-			logger.info("omReserveOrderModel:{}", JsonUtil.translateToJson(omReserveOrderModel));
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+//		try {
+//			logger.info("omReserveOrderModel:{}", JsonUtil.translateToJson(omReserveOrderModel));
+//		} catch (Exception e) {
+//			logger.error(e.getMessage(), e);
+//		}
 
         InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
@@ -137,8 +137,8 @@ public class ReserveOrderService extends ExpressCommonService {
             logger.info("查询报文: " + toInfoString(omReserveOrderModel));
             pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(pjReserveOrderQueryModel);
 			// 返回数据记录
-//			logger.info("getReserveOrderPage response: ", pjReserveOrderPageModel.getReserveOrders().size());
-            logger.info("查询结果: " + toInfoString(pjReserveOrderPageModel));
+			logger.info("查询成功: 总条数：{}", pjReserveOrderPageModel.getReserveOrders().size());
+            logger.debug("查询结果: " + toInfoString(pjReserveOrderPageModel));
 		} catch (OspException e) {
             logger.info("查询报错： ");
 			logger.error(e.getMessage(), e);
