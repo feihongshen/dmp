@@ -4358,7 +4358,6 @@ public class PDAController {
 				explinkResponse.addLongWav(wavPath);
 				obj.put("cwbdeliverybranchname", "");
 			}
-
 			// 如果扫描的是封在某个包里面的快递单，则将该包设为不可用
 			this.setExpressPackageUnable(cwbOrder);
 //            // 如果扫描订单号，就直接更新订单表的货物重量
