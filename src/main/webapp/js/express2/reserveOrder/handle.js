@@ -190,6 +190,27 @@ $(function () {
         }
         var rows = $('#dg_rsList').datagrid('getChecked');
 
+        if (isHandlePage) {
+            var flag = true;
+            var errReserveOrder = "";
+            $.each(rows, function (index, value) {
+                var reserveOrderStatus = value.reserveOrderStatus;
+                if (reserveOrderStatus != hadAllocationPro
+                    && reserveOrderStatus != hadAllocationStation
+                    && reserveOrderStatus != haveStationOutZone) {
+                    errReserveOrder = value.reserveOrderNo;
+                    flag = false;
+                    return false;
+                }
+            });
+            if (!flag) {
+                //allertMsg.alertError("{"+errReserveOrder+"} 只允许对状态为：已分配省公司、已分配站点、站点超区的预约单进行分配站点操作！");
+                //else {
+                //    allertMsg.alertError("选中的预约单无法做分配操作！");
+                //}
+                //return false;
+            }
+        }
         if (rows.length == 1) {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
             $('#distributeBranchSelect option').each(function () {
@@ -431,6 +452,7 @@ $(function () {
             reserveOrder.recordVersion = value.recordVersion;
             reserveOrder.acceptOrg = distributeBranch;
             reserveOrder.courier = distributeCourier;
+            reserveOrder.reserveOrderStatus = value.reserveOrderStatus;
             param.push(reserveOrder);
         });
 
