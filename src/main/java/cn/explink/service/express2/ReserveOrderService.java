@@ -478,8 +478,12 @@ public class ReserveOrderService extends ExpressCommonService {
 
             PjReserveOrderResponse reserveOrderResponse = pjReserveOrderService.feedbackReserveOrder(pjSaleOrderFeedbackRequest);
             // 返回数据记录
-            logger.info("反馈结果: code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
-            logger.info("反馈结果: message - ", reserveOrderResponse.getResultMsg());
+            logger.info("反馈结果: code 1 success, 0 fail - {}", reserveOrderResponse.getResultCode());
+            logger.info("反馈结果: message - {}", reserveOrderResponse.getResultMsg());
+
+            if ("0".equals(reserveOrderResponse.getResultCode())){
+                throw new OspException("",reserveOrderResponse.getResultMsg());
+            }
 
         } catch (OspException e) {
             logger.info("反馈异常");
