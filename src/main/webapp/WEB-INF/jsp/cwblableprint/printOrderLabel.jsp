@@ -137,7 +137,7 @@ function nowprint(){
 			          			</td>
 			          			<td align="center" valign="top">
 			          				<span style="line-height:24px;font-family: 黑体;font-size: 10px;">分拣码</span><br>
-			            			<span style="font-family: Arial;font-size: 16px;font-weight: bold;">11111${branch.branchcode }</span>
+			            			<span style="font-family: Arial;font-size: 16px;font-weight: bold;">${branch.branchcode }</span>
 			          			</td>
 			         		 </tr>
 			       		</table>
@@ -246,7 +246,7 @@ function nowprint(){
 	            				<td valign="middle" style="height:12.5mm;">
 	            					<div style="font:16px;font-weight: bold;font-family: 黑体;margin-left:5px;margin-right:5px;float:left;">收<br>件</div>
 	            					<div>
-	            						<span style="line-height:8px;font-family: 黑体;font-size: 8px;">${cwb.cwbprovince }.${cwb.cwbcity }.${cwb.cwbcounty }</span><br>
+	            						<span style="line-height:8px;font-family: 黑体;font-size: 8px;">${cwb.cwbprovince }${cwb.cwbcity }${cwb.cwbcounty }</span><br>
 	            						<span style="line-height:8px;font-family: 黑体;font-size: 8px;">${cwb.consigneeaddress }</span><br>
 	            						<span style="line-height:8px;font-size: 8px;font-family: 黑体;">${cwb.consigneename } ${cwb.consigneemobile }</span>
 	            					</div>
@@ -263,7 +263,7 @@ function nowprint(){
 			                  	<span style="line-height:14px;font-family: 黑体;font-size: 9px;">备注</span>
 			                  </td>
 			                  <td align="center" valign="middle">
-			                  	 <span style="line-height:14px;font-family: 黑体;font-size:9px;">合计费用</span><br>
+			                  	 <span style="line-height:14px;font-family: 黑体;font-size:9px;">费用合计</span><br>
 			            		<span style="line-height:14px;font-family: Arial;font-size: 9px;">${cwb.totalfee }元</span>
 			                  </td>
 			                </tr>

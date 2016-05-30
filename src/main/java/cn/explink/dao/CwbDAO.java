@@ -8927,7 +8927,7 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQuery(
 			ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery, String userIds) {
 
-		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname FROM express_ops_cwb_detail where cwbordertypeid="
+		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		sqll += this.conditions4CwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,
 				userIds);
@@ -8951,7 +8951,7 @@ public class CwbDAO {
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbOrdersExpressTakeGoodsQueryLanJianChuZhan(
 			Long page, String cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid in(" + cwbid + ")";
 		if (paymethod != null) {
 			sql += " and paymethod=" + paymethod + "";
@@ -8972,7 +8972,7 @@ public class CwbDAO {
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbOrdersExpressTakeGoodsQueryLanJianChuZhan(
 			String cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid in(" + cwbid + ")";
 		if (paymethod != null) {
 			sql += " and paymethod=" + paymethod + "";
@@ -8990,7 +8990,7 @@ public class CwbDAO {
 	 */
 	public ExpressCwbOrderForTakeGoodsQueryVO queryCwbExpressTakeGoodsQueryLanJianChuZhan(
 			int cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid=" + cwbid;
 		if (paymethod != null) {
 			sql += " and paymethod='" + paymethod + "'";
@@ -9010,7 +9010,7 @@ public class CwbDAO {
 			Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,
 			String userIds) {
 
-		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp  FROM express_ops_cwb_detail where cwbordertypeid="
+		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		
 		sqll += this.conditions4CwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,
