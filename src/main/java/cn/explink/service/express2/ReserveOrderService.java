@@ -120,11 +120,11 @@ public class ReserveOrderService extends ExpressCommonService {
         logger.info("调用TPS查询接口开始");
 
         // 记录入库数据
-		try {
-			logger.info("omReserveOrderModel:{}", JsonUtil.translateToJson(omReserveOrderModel));
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+//		try {
+//			logger.info("omReserveOrderModel:{}", JsonUtil.translateToJson(omReserveOrderModel));
+//		} catch (Exception e) {
+//			logger.error(e.getMessage(), e);
+//		}
 
         InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
 		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
@@ -137,8 +137,8 @@ public class ReserveOrderService extends ExpressCommonService {
             logger.info("查询报文: " + toInfoString(omReserveOrderModel));
             pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(pjReserveOrderQueryModel);
 			// 返回数据记录
-//			logger.info("getReserveOrderPage response: ", pjReserveOrderPageModel.getReserveOrders().size());
-            logger.info("查询结果: " + toInfoString(pjReserveOrderPageModel));
+			logger.info("查询成功: 总条数：{}", pjReserveOrderPageModel.getReserveOrders().size());
+            logger.debug("查询结果: " + toInfoString(pjReserveOrderPageModel));
 		} catch (OspException e) {
             logger.info("查询报错： ");
 			logger.error(e.getMessage(), e);
@@ -160,7 +160,8 @@ public class ReserveOrderService extends ExpressCommonService {
 			vo.setCnorName(po.getCnorName());
 			vo.setCnorMobile(po.getCnorMobile());
 			vo.setCnorTel(po.getCnorTel());
-			vo.setCnorAddr(po.getCnorProvName() + po.getCnorCityName() + po.getCnorRegionName() + po.getCnorAddr());
+			vo.setCnorAddr(po.getCnorAddr());
+			vo.setCnorDetailAddr(po.getCnorProvName() + po.getCnorCityName() + po.getCnorRegionName() + po.getCnorAddr());
 			Long requireTimeMs = po.getRequireTime();
 			if (requireTimeMs != null) {
 				Date requireTime = new Date(requireTimeMs);
@@ -180,7 +181,11 @@ public class ReserveOrderService extends ExpressCommonService {
                 vo.setAcceptOrgName(acceptBranches.get(0).getBranchname());
             }
             vo.setCnorRemark(po.getCnorRemark());
-            vo.setCourierName(po.getCourierName());
+            vo.setCourier(po.getCourier());
+            User user = this.userDao.getUserByUsername(po.getCourier());
+            if(user != null) {
+            	vo.setCourierName(user.getRealname());
+            }
             vo.setRecordVersion(po.getRecordVersion());
 			vo.setCnorProvName(po.getCnorProvName());
             vo.setCnorCityName(po.getCnorCityName());
@@ -478,8 +483,12 @@ public class ReserveOrderService extends ExpressCommonService {
 
             PjReserveOrderResponse reserveOrderResponse = pjReserveOrderService.feedbackReserveOrder(pjSaleOrderFeedbackRequest);
             // 返回数据记录
-            logger.info("反馈结果: code 1 success, 0 fail - ", reserveOrderResponse.getResultCode());
-            logger.info("反馈结果: message - ", reserveOrderResponse.getResultMsg());
+            logger.info("反馈结果: code 1 success, 0 fail - {}", reserveOrderResponse.getResultCode());
+            logger.info("反馈结果: message - {}", reserveOrderResponse.getResultMsg());
+
+            if ("0".equals(reserveOrderResponse.getResultCode())){
+                throw new OspException("",reserveOrderResponse.getResultMsg());
+            }
 
         } catch (OspException e) {
             logger.info("反馈异常");

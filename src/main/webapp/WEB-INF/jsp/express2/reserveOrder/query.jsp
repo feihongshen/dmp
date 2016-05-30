@@ -21,9 +21,9 @@
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约时间：</td>
 					<td colspan="3">
-						<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
+						<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
 						至
-						<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
+						<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
 					<td>
@@ -102,7 +102,7 @@
 		        {field:'cnorName', title:'寄件人', width:100},
 		        {field:'cnorMobile', title:'手机', width:100},
 		        {field:'cnorTel', title:'固话', width:100},
-		        {field:'cnorAddr', title:'寄件地址', width:130},
+		        {field:'cnorDetailAddr', title:'寄件地址', width:130},
 		        {field:'requireTimeStr', title:'预约上门时间', width:130},
 		        {field:'reserveOrderStatusName', title:'预约单状态', width:100},
 		        {field:'reason', title:'原因', width:130},

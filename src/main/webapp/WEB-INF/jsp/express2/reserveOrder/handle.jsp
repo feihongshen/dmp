@@ -29,9 +29,9 @@
 					</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约时间：</td>
 	                    <td colspan="3">
-							<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
+							<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
 							至
-							<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
+							<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
 						</td>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
 					<td>
@@ -82,7 +82,7 @@
 		    	<div class="btn btn-default" onclick="doSearch();" style="margin-right:5px;" id= "searchData"><i class="icon-search"></i>查询</div>
 		    	<div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i class="icon-plus"></i>修改</div>
 		    	<div class="btn btn-default" id="deleteReserveOrderBtn" style="margin-right:5px;"><i class="icon-remove"></i>关闭</div>
-		    	<div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部</div>
+		    	<div class="btn btn-default" isHandle="true" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部</div>
 		    	<div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i class="icon-eye-open"></i>分配站点</div>
 		    	<div class="btn btn-default" onclick="exportExcel();" style="margin-left:5px;"><i class="icon-download-alt"></i>导出</div>
                                 </div>
@@ -210,7 +210,8 @@
 		        {field:'cnorName', title:'寄件人', width:100},
 		        {field:'cnorMobile', title:'手机', width:100},
 		        {field:'cnorTel', title:'固话', width:100},
-		        {field:'cnorAddr', title:'寄件地址', width:130},
+		        {field:'cnorAddr', title:'寄件地址', width:130,display:"none"},
+		        {field:'cnorDetailAddr', title:'寄件地址', width:130},
 		        {field:'requireTimeStr', title:'预约上门时间', width:130},
 //		        {field:'reserveOrderStatus', title:'预约单状态', width:100,display:'none'},
 		        {field:'reserveOrderStatusName', title:'预约单状态', width:100},
