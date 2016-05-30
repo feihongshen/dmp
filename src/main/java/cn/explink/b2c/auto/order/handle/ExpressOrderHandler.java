@@ -3,7 +3,7 @@ package cn.explink.b2c.auto.order.handle;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
+import cn.explink.b2c.auto.order.exception.ExpressOrderException;
 import cn.explink.b2c.auto.order.mq.TpsOrderMQCallback;
 import cn.explink.b2c.auto.order.service.ExpressOrderService;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendDetailVO;
@@ -77,8 +78,9 @@ public class ExpressOrderHandler implements IOrderHandler {
 	 * @return
 	 */
 	private boolean verify(InfDmpOrderSendVO orderSend) {
-		
-		
+		if(StringUtils.isEmpty(orderSend.getTransportNo())){
+			throw new ExpressOrderException("运单号为空");
+		}
 		return true;
 	}
 
@@ -119,7 +121,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 		expressDetailTemp.setCneePeriod(orderSend.getExpress().getCneePeriod());// 送货时间类型
 		expressDetailTemp.setCneeCertificate(orderSend.getExpress().getCneeCertificate());
 		expressDetailTemp.setCneeNo(orderSend.getExpress().getCneeCorpNo());
-		expressDetailTemp.setIsCod(orderSend.getIsCod() == true ? 1 : 0);
+		expressDetailTemp.setIsCod(orderSend.getIsCod() ? 1 : 0);
 		expressDetailTemp.setCodAmount(new BigDecimal(orderSend.getCodAmount()));
 		expressDetailTemp.setTotalBox(orderSend.getTotalPack());// 合计箱数
 		expressDetailTemp.setTotalWeight(new BigDecimal(orderSend.getOriginalWeight())); // 重量

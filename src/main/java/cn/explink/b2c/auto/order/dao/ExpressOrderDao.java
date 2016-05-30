@@ -308,8 +308,8 @@ public class ExpressOrderDao {
 		sql.append(" cargovolume,cwbstate,instationid,instationname,state,");
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
 		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate ");
-		sql.append(" , cnor_corp_no,cnor_corp_name,account_id,packing_fee,express_image,cnee_corp_name,express_product_type,customerid)");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" , cnor_corp_no,cnor_corp_name,account_id,packagefee,express_image,cnee_corp_name,express_product_type,customerid,hasinsurance)");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -371,7 +371,11 @@ public class ExpressOrderDao {
 				ps.setBigDecimal(++i, expressDetailTemp.getCodAmount());
 				ps.setBigDecimal(++i, expressDetailTemp.getFreight());// 运费
 				ps.setInt(++i, expressDetailTemp.getTotalNum());
-				ps.setInt(++i, expressDetailTemp.getIsCod());
+				if(expressDetailTemp.getCodAmount().compareTo(new BigDecimal(0)) > 0){
+					ps.setInt(++i, 1);// 是否有代收货款
+				}else{
+					ps.setInt(++i, 0);
+				}
 
 				ps.setBigDecimal(++i, expressDetailTemp.getTotalWeight());
 				ps.setBigDecimal(++i, expressDetailTemp.getCalculateWeight());
@@ -419,6 +423,12 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getCneeCorpName());
 				ps.setInt(++i, expressDetailTemp.getExpressProductType());
 				ps.setInt(++i, 1000);// customerid
+				// 是否有保价
+				if (expressDetailTemp.getAssuranceValue().compareTo(new BigDecimal(0)) > 0) {
+					ps.setInt(++i, 1);
+				} else {
+					ps.setInt(++i, 0);
+				}
 				return ps;
 			}
 		}, key);
