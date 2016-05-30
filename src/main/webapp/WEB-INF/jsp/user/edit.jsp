@@ -82,8 +82,12 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 					<li id="pda_title" ><span>用户对货物操作权限</span>（PDA）：(机构的“组织的货物操作权限”与角色的“货物操作权限”的交集)</li>
 					<ul id="pda" class="checkedbox1"></ul>
 					 <li><span>登录用户名：</span><input type="text" id="username" name="username" value="<%=u.getUsername() %>" maxlength="50" />*</li>
-					 <li><span>登录密码：</span><input type="text" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
-			         <li><span>确认密码：</span><input type="text" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
+			         <li><span>网页登录密码：</span><input type="password" id="webPassword" name="webPassword" value="<%=u.getWebPassword() %>" maxlength="50"/>*</li>
+			         <li><span>确认网页登录密码：</span><input type="password" id="webPassword1" name="webPassword1" value="<%=u.getWebPassword() %>" maxlength="50"/>*</li>
+			         <div id="pdaPwdDiv" style="display:none">
+					 <li><span>PDA登录密码：</span><input type="password" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
+			         <li><span>确认PDA登录密码：</span><input type="password" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
+			         </div>
 	           		<li><span>上传声音文件：</span><iframe id="update" name="update" src="user/update?fromAction=user_save_Form&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 			         <%if(u.getUserwavfile()!=null&&u.getUserwavfile().length()>4){ %>
 		         	<a href="#" onclick="	
