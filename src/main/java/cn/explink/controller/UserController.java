@@ -351,9 +351,21 @@ public class UserController {
 		if (password.equals(confirmpassword)) {
 			this.jdbcTemplate.update("update express_set_user set password=? where userid=?", password, this.getSessionUser().getUserid());
 			this.logger.info("operatorUser={},用户管理->updatepassword", this.getSessionUser().getUsername());
-			model.addAttribute("message", "修改成功");
+			model.addAttribute("message", "修改PDA登录密码成功");
 		} else {
-			model.addAttribute("message", "两次输入的密码不一致");
+			model.addAttribute("message", "两次输入的PDA登录密码不一致");
+		}
+		return "/passwordupdate";
+	}
+
+	@RequestMapping("updatewebpassword")
+	public String updateWebPassword(@RequestParam("webPassword") String webPassword, @RequestParam("confirmWebPassword") String confirmWebPassword, ExplinkUserDetail userDetail, Model model) {
+		if (webPassword.equals(confirmWebPassword)) {
+			this.jdbcTemplate.update("update express_set_user set webPassword=? where userid=?", webPassword, this.getSessionUser().getUserid());
+			this.logger.info("operatorUser={},用户管理->updatewebpassword", this.getSessionUser().getUsername());
+			model.addAttribute("message", "修改网页登录密码成功");
+		} else {
+			model.addAttribute("message", "两次输入的网页登录密码不一致");
 		}
 		return "/passwordupdate";
 	}
