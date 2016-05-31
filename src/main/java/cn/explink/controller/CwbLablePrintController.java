@@ -787,6 +787,12 @@ public class CwbLablePrintController {
 				totalfee = totalfee.add(cwbOrder.getPackagefee());
 			}
 			cwbOrder.setTotalfee(totalfee);
+			// 应收合计 = 费用合计 + 代收货款
+			BigDecimal shouldReceiveTotal = BigDecimal.ZERO;
+			if(cwbOrder.getReceivablefee() != null) {
+				shouldReceiveTotal = totalfee.add(cwbOrder.getReceivablefee());
+			}
+			vo.setShouldReceiveTotal(shouldReceiveTotal);
 			vo.setCwbOrder(cwbOrder);
 			Branch branch = null;
 			if(cwbOrder.getDeliverybranchid() != 0) {
