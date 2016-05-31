@@ -259,15 +259,16 @@
                 {field: 'cnorName', title: '寄件人', width: 100},
                 {field: 'cnorMobile', title: '手机', width: 100},
                 {field: 'cnorTel', title: '固话', width: 100},
-                {field:'cnorAddr', title:'寄件地址', width:130,hidden:'true'},
-    		    {field:'cnorDetailAddr', title:'寄件地址', width:130},
+                {field: 'cnorAddr', title: '寄件地址', width: 130, hidden: 'true'},
+                {field: 'cnorDetailAddr', title: '寄件地址', width: 130},
                 {field: 'requireTimeStr', title: '预约上门时间', width: 130},
+                {field: 'cnorRemark', title: '寄件人备注', width: 80},
                 {field: 'reserveOrderStatusName', title: '预约单状态', width: 100},
                 {field: 'reason', title: '原因', width: 130},
 //                {field: 'transportNo', title: '运单号', width: 100},
 //                {field: 'acceptOrgName', title: '站点', width: 100},
                 {field: 'courierName', title: '快递员', width: 80},
-                {field: 'remark', title: '备注', width: 80}
+//                {field: 'remark', title: '备注', width: 80}
             ]]
         });
     }

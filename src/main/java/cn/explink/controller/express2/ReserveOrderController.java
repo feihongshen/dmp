@@ -519,7 +519,7 @@ public class ReserveOrderController extends ExpressCommonController {
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
 //                omReserveOrderModel.setReason(reserveOrderVo.getReason());
                 //关闭原因写到备注
-                omReserveOrderModel.setRemark(reserveOrderVo.getReason());
+                omReserveOrderModel.setCnorRemark(reserveOrderVo.getReason());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
             List<String> errMsg = new ArrayList<String>();
@@ -564,7 +564,7 @@ public class ReserveOrderController extends ExpressCommonController {
             omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
 //                omReserveOrderModel.setReason(reserveOrderVo.getReason());
             //关闭原因写到备注
-            omReserveOrderModel.setRemark(reserveOrderVo.getReason());
+            omReserveOrderModel.setCnorRemark(reserveOrderVo.getReason());
             omReserveOrderModels.add(omReserveOrderModel);
         }
 
@@ -779,7 +779,7 @@ public class ReserveOrderController extends ExpressCommonController {
             omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
             omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
             omReserveOrderModel.setReason(displayValue);
-            omReserveOrderModel.setRemark(reserveOrderVo.getCnorRemark());
+            omReserveOrderModel.setCnorRemark(reserveOrderVo.getCnorRemark());
             omReserveOrderModels.add(omReserveOrderModel);
         }
 
