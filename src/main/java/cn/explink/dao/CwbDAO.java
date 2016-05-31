@@ -357,6 +357,8 @@ public class CwbDAO {
 			// mpsallarrivedflag
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
+			cwbOrder.setInstationname(rs.getString("instationname"));
+			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			
 			if(isFilterUserInfo) {
 				CwbDAO.this.setValueByUser(rs, cwbOrder);

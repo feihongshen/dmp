@@ -1,5 +1,7 @@
 package cn.explink.domain;
 
+import java.math.BigDecimal;
+
 /**
  * 面单打印
  * 2016年5月25日 下午3:39:03
@@ -9,6 +11,9 @@ public class PrintOrderLabelVo {
 	private CwbOrder cwbOrder;
 	
 	private Branch branch;
+	
+	private BigDecimal shouldReceiveTotal;
+
 
 	public CwbOrder getCwbOrder() {
 		return cwbOrder;
@@ -26,8 +31,11 @@ public class PrintOrderLabelVo {
 		this.branch = branch;
 	}
 
-	@Override
-	public String toString() {
-		return "PrintOrderLabelVo [cwbOrder=" + cwbOrder + ", branch=" + branch + "]";
+	public BigDecimal getShouldReceiveTotal() {
+		return shouldReceiveTotal;
+	}
+
+	public void setShouldReceiveTotal(BigDecimal shouldReceiveTotal) {
+		this.shouldReceiveTotal = shouldReceiveTotal;
 	}
 }
