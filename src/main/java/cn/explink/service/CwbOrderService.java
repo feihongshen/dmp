@@ -5597,6 +5597,10 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		//Added end
 		
+		//add by neo01.huang，2016-5-26，小件员归班反馈后，清除一票多件缺件记录
+		ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(co.getCwb());
+		logger.info("归班反馈->清除缺件记录,订单号:{}", co.getCwb());
+		
 		logger
 				.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash + "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
 		return map;
