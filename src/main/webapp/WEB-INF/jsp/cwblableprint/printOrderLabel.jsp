@@ -36,7 +36,7 @@ function CreateOneFormPage(){
 		var transcwb = $("#cwb_0").val();
 		LODOP.ADD_PRINT_BARCODE(100,30,145,55,"128B",transcwb);
 		LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
-		LODOP.ADD_PRINT_BARCODE(370,158,145,55,"128B",transcwb);
+		LODOP.ADD_PRINT_BARCODE(373,158,145,55,"128B",transcwb);
 		LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
 	}
 };
@@ -82,7 +82,6 @@ function nowprint(){
 }
 
 .inner_table {
-	table-layout:fixed;
 	word-break:break-all;
 }
 
@@ -126,7 +125,7 @@ function nowprint(){
             					</td>
             				</tr>
             				<tr>
-            					<td style="height: 6mm;width:30px">
+            					<td style="width:30px;height: 6mm;padding-left: 5px;padding-right: 0px;">
             						<span style="font-family: 黑体;font-size: 10px;">原寄地</span>
             					</td>
             					<td>
@@ -206,11 +205,11 @@ function nowprint(){
 			       		<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 			       			<tr>
 			       				<td valign="middle" style="width:40mm;">
-			       					<span style="line-height:14px;font-family: 黑体;font-size: 9px;">寄托物：</span><br>
-			       					<span style="line-height:14px;font-family: 黑体;font-size: 9px;">${cwb.entrustname }</span>
+			       					<div style="line-height:12px;font-family: 黑体;font-size: 9px;">寄托物：</div>
+			       					<div style="line-height:12px;font-family: 黑体;font-size: 9px;">${cwb.entrustname }</div>
 			       				</td>
 			       				<td>
-			       					<span style="line-height:14px;font-family: 黑体;font-size: 9px;">运费合计：${cwb.totalfee }元</span>
+			       					<div style="line-height:12px;font-family: 黑体;font-size: 9px;">运费合计：${cwb.totalfee }元</div>
 			       				</td>
 			       			<tr>
 			       		</table>
@@ -271,9 +270,9 @@ function nowprint(){
 	            				<td valign="middle" style="height:12.5mm;">
 	            					<div style="font:16px;font-weight: bold;font-family: 黑体;margin-left:5px;margin-right:5px;float:left;">收<br>件</div>
 	            					<div>
-	            						<span style="line-height:8px;font-family: 黑体;font-size: 8px;">${cwb.cwbprovince }${cwb.cwbcity }${cwb.cwbcounty }</span><br>
-	            						<span style="line-height:8px;font-family: 黑体;font-size: 8px;">${cwb.consigneeaddress }</span><br>
-	            						<span style="line-height:8px;font-size: 8px;font-family: 黑体;">${cwb.consigneename } ${cwb.consigneemobile }</span>
+	            						<div style="line-height:8px;font-family: 黑体;font-size: 8px;">${cwb.cwbprovince }${cwb.cwbcity }${cwb.cwbcounty }</div>
+	            						<div style="line-height:8px;font-family: 黑体;font-size: 8px;">${cwb.consigneeaddress }</div>
+	            						<div style="line-height:8px;font-size: 8px;font-family: 黑体;">${cwb.consigneename } ${cwb.consigneemobile }</div>
 	            					</div>
 	            				</td>
             				</tr>
