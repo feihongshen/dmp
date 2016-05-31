@@ -780,7 +780,7 @@ public class VipShopGetCwbDataService {
 		}
 		
 		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp)){
-			//更新临时表的发货时间
+			//更新临时表的发货时间和getDataFlag为0(重新转业务)，防止并发时发货时间取的还是未更新前的发货时间
 			dataImportDAO_B2c.update_CwbDetailTempEmaildateByCwb(order_sn, emaildate);
 			
 			//把发货时间写入订单表
