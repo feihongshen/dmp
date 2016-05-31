@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.suning.responsedto.ResponseData;
@@ -76,7 +77,7 @@ public class DataImportService_B2c {
 	 * @return
 	 * @throws Exception
 	 */
-	@Transactional
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public List<CwbOrderDTO> Analizy_DataDealByB2cNonTuoYun(long customerid, String b2cFlag, List<Map<String, String>> xmlList, 
 															long warehouse_id, boolean SaveTempTableFlag, String emaildate) throws Exception {
 		//获取虚拟库房Id,所有的B2C对接如果未设置都会导入默认的虚拟库房里面，方便能够统计到。
@@ -185,7 +186,7 @@ public class DataImportService_B2c {
 		return cwbOrders;
 	}
 
-	@Transactional
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public List<CwbOrderDTO> Analizy_DataDealByB2cByEmaildate(long customerid, String b2cFlag, List<Map<String, String>> xmlList, long warehouse_id, // 对接设置中传过来的ID
 			boolean SaveTempTableFlag, String emaildate, long cWareHouseId) throws Exception {
 

@@ -5494,7 +5494,7 @@ public class CwbOrderService extends BaseOrderService {
 					this.transCwbDao.saveTranscwb(cwb, cwb);
 					this.cwbDAO.saveTranscwbByCwb(transcwb, cwb);
 					this.cwbDAO.saveBackcarnum(transcwbList.size(), cwb);
-					this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
+					//this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
 				}
 			}else{//当录入或修改快递单号为空时
 				if(!"".equals(co.getTranscwb()) && nosysyemflag == null){
@@ -5502,7 +5502,7 @@ public class CwbOrderService extends BaseOrderService {
 					this.transCwbDao.saveTranscwb(cwb,cwb);
 					this.cwbDAO.saveTranscwbByCwb("",cwb);
 					this.cwbDAO.saveBackcarnum(1, cwb);
-					this.cwbDAO.saveSendcarnum(1, cwb);
+					//this.cwbDAO.saveSendcarnum(1, cwb);
 				}
 			}
 		}
