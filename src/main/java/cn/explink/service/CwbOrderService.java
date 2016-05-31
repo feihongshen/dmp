@@ -5597,6 +5597,10 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		//Added end
 		
+		//add by neo01.huang，2016-5-26，小件员归班反馈后，清除一票多件缺件记录
+		ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(co.getCwb());
+		logger.info("归班反馈->清除缺件记录,订单号:{}", co.getCwb());
+		
 		logger
 				.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash + "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
 		return map;
@@ -5888,7 +5892,41 @@ public class CwbOrderService extends BaseOrderService {
 					.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid,nextbranchid=? where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), tuihuoNextBranch
 							.getBranchid(), cwb);
 		} else {
-			this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
+			//this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
+			
+			//update by neo01.huang，2016-5-30
+			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+			logger.info("归班审核->更新站点信息->站点id信息：startbranchid:{}, currentbranchid:{}, nextbranchid:{}, deliverybranchid:{}, podresultid:{}",
+					cwbOrder.getStartbranchid(), cwbOrder.getCurrentbranchid(), cwbOrder.getNextbranchid(), cwbOrder.getDeliverybranchid(), podresultid);
+			
+			//==>如果startbranchid不为0，则走原来正常逻辑
+			if (cwbOrder.getStartbranchid() != 0) {
+				logger.info("归班审核->更新站点信息->如果startbranchid不为0，则走原来正常逻辑");
+				this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
+			
+			} else { //==>startbranchid为0
+				
+				logger.info("归班审核->更新站点信息->startbranchid为0");
+				long deliverybranchid = cwbOrder.getDeliverybranchid(); // 配送站点
+				
+				 //==>deliverybranchid不为0，则用deliverybranchid赋值给startbranchid、currentbranchid
+				if (deliverybranchid != 0) {
+					logger.info("归班审核->更新站点信息->deliverybranchid不为0，则用deliverybranchid赋值给startbranchid、currentbranchid");
+					this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?, startbranchid=deliverybranchid, currentbranchid=deliverybranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
+					
+				} else { //==>deliverybranchid为0，则用当前用户的branchid赋值给startbranchid、currentbranchid、deliverybranchid
+					
+					logger.info("归班审核->更新站点信息->deliverybranchid为0，则用当前用户的branchid赋值给startbranchid、currentbranchid、deliverybranchid，当前用户的branchid为：{}", user.getBranchid());
+					deliverybranchid = user.getBranchid();
+					long startbranchid = deliverybranchid; // 上一个机构id
+					long currentbranchid = deliverybranchid; // 当前机构
+					this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?, startbranchid=?, currentbranchid=?, deliverybranchid=? where cwb=? and state=1", 
+							auditFlowOrderTypeEnum.getValue(), startbranchid, currentbranchid, deliverybranchid, cwb);
+					
+				}
+				
+			}
+			
 		}
 	}
 
