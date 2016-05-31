@@ -96,6 +96,7 @@ public class TpsOrderMQCallback implements IVMSCallback {
 	 * @param cwb TODO
 	 */
 	private void feedbackException(String msg, String exceptionInfo, String cwb) {		
+		logger.info("tps订单下发异常:单号{},详情{}", cwb, exceptionInfo);
 		long msgid = this.autoExceptionService.createAutoExceptionMsg(msg, AutoInterfaceEnum.dingdanxiafa.getValue());
 		long detailId = this.autoExceptionService.createAutoExceptionDetail(cwb, "", "TPS自动化订单下发数据异常", AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0, "");
 		AutoMQExceptionDto mqe = new AutoMQExceptionDto();
@@ -113,9 +114,9 @@ public class TpsOrderMQCallback implements IVMSCallback {
 	 * @return 
 	 */
 	private boolean verify(InfDmpOrderSendVO orderSend, String msg) {
-		// TODO Auto-generated method stub
 		if(orderSend == null){
 			feedbackException(msg, "报文反序列结果为空", "报文出错");
+			return false;
 		}
 		
 		
