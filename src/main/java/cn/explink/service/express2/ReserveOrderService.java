@@ -192,7 +192,8 @@ public class ReserveOrderService extends ExpressCommonService {
             vo.setCnorCityName(po.getCnorCityName());
             vo.setCnorRegionName(po.getCnorRegionName());
             vo.setCarrierSiteCode(po.getCarrierSiteCode());
-            vo.setRemark(po.getRemark());
+//            vo.setRemark(po.getRemark());
+            vo.setCnorRemark(po.getCnorRemark());
             voList.add(vo);
 		}
 		// 封装分页信息
@@ -342,12 +343,14 @@ public class ReserveOrderService extends ExpressCommonService {
         }
         String operateOrg = branch.getTpsbranchcode();
         String operator = user.getUsername();
-        for (OmReserveOrderModel omReserveOrderModel  : omReserveOrderModels) {
+        for (OmReserveOrderModel omReserveOrderModel : omReserveOrderModels) {
             PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
             pjSaleOrderFeedbackRequest.setReserveOrderNo(omReserveOrderModel.getReserveOrderNo());
             pjSaleOrderFeedbackRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
 //            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
-            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
+            //TPS去掉了omReserveOrderModel的Remark字段，用cnorRemark字段代替
+//            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
+            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getCnorRemark());
             pjSaleOrderFeedbackRequest.setOperateType(PJReserverOrderOperationCode.GuanBi.getValue());
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
@@ -385,7 +388,7 @@ public class ReserveOrderService extends ExpressCommonService {
             pjSaleOrderFeedbackRequest.setReserveOrderNo(omReserveOrderModel.getReserveOrderNo());
             pjSaleOrderFeedbackRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
 //            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
-            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
+            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getCnorRemark());
             pjSaleOrderFeedbackRequest.setOperateType(returnType);
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setOperater(operator);
@@ -457,7 +460,7 @@ public class ReserveOrderService extends ExpressCommonService {
             pjSaleOrderFeedbackRequest.setOperateType(operateType);
             pjSaleOrderFeedbackRequest.setOperateOrg(operateOrg);
             pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
-            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getRemark());
+            pjSaleOrderFeedbackRequest.setRemark(omReserveOrderModel.getCnorRemark());
             pjSaleOrderFeedbackRequest.setOperater(operator);
             Date now = new Date();
             pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
