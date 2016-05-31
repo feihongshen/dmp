@@ -77,7 +77,7 @@
 							<option value="1">可见</option>
 						</select>*
 					</li> -->
-					<li><span>收件人信息是否可见：</span>
+					<li><span>信息是否可见：</span>
 					 <input  type="checkbox" value="1" id="consigneename" name="consigneename">收件人</input>
 					 <input type="checkbox"  value="1" id="consigneephone" name="consigneephone">收件人电话</input>
 					 <input type="checkbox"  value="1" id="consigneemobile" name="consigneemobile">收件人手机</input>

@@ -51,6 +51,7 @@ initUser[1]="<%=u.getEmployeestatus() %>,employeestatus";
 			           </select>
 			        </li>
 					<li><span>登录用户名：</span><input type="text" id="username" name="username" value="<%=u.getUsername() %>" maxlength="50"/>*</li>
+					 <li><span>　</span>密码不可查看，如忘记请直接改为新密码</li>
 			         <li><span>网页登录密码：</span><input type="password" id="webPassword" name="webPassword" value="<%=u.getWebPassword() %>" maxlength="50"/>*</li>
 			         <li><span>确认网页登录密码：</span><input type="password" id="webPassword1" name="webPassword1" value="<%=u.getWebPassword() %>" maxlength="50"/>*</li>
 					 <li><span>PDA登录密码：</span><input type="password" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
