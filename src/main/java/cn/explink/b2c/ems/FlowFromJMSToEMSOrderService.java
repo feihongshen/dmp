@@ -129,8 +129,8 @@ public class FlowFromJMSToEMSOrderService {
 			}
 			//配送站为非ems的订单不发送给ems
 			if((floworderType==6&&order.getNextbranchid()!=branchid)
-					|| (floworderType==14 && order.getDeliverybranchid()!=branchid)
-					|| (floworderType==17 && order.getDeliverybranchid()!=branchid)
+					|| (floworderType==14 && order.getNextbranchid()!=branchid)
+					|| (floworderType==17 && order.getNextbranchid()!=branchid)
 					|| (floworderType==37 && order.getDeliverybranchid()!=branchid)){
 				return;
 			}
