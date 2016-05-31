@@ -237,6 +237,7 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 				$("#msg").html("");
 			}
 			$("#scancwb").val("");
+			$("#scancwb").focus() ;
 			return false;
 		}
 		if($("#scanbaleTag").attr("class")=="light"){//出库根据包号扫描订单
@@ -256,6 +257,7 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 					dataType:"json",
 					success : function(data) {
 						$("#scancwb").val("");
+						$("#scancwb").focus() ;
 						if(data.statuscode=="000000"){
 							if(data.body.packageCode!=""){
 								$("#msg").html(data.body.packageCode+"　（"+data.errorinfo+"）");
@@ -379,6 +381,7 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 							dataType:"json",
 							success : function(data) {
 								$("#scancwb").val("");
+								$("#scancwb").focus() ;
 								if(data.statuscode=="000000"){
 									if(data.body.packageCode!=""){
 										$("#msg").html(data.body.packageCode+"　（"+data.errorinfo+"）");
@@ -795,6 +798,7 @@ function baleaddcwbCheck(){
    		dataType : "json",
    		success : function(data) {
    			$("#msg").html("");
+   			$("#scancwb").focus() ;
    			if(data.body.errorcode=="111111"){
    				if(data.body.errorenum=="Bale_ChongXinFengBao"){//此订单已在包号：XXX中封包，确认要重新封包吗?
    					/* if(confirm(data.body.errorinfo)){
@@ -812,7 +816,7 @@ function baleaddcwbCheck(){
 	   				errorvedioplay("<%=request.getContextPath()%>",data);
    				}
    				return;
-   			} 
+   			}
    			baleaddcwb(data.body.scancwb,data.body.baleno);//出库根据包号扫描订单
    		}
    	});
@@ -822,6 +826,7 @@ function baleaddcwb(scancwb,baleno){
 	if($("#baleno").val()==""){
 		alert("包号不能为空！");
 		$("#scancwb").val("");
+		$("#scancwb").focus() ;
 		return;
 	}
 /* 	if($("#baleno").val()!=baleno||$("#scancwb").val()!=scancwb){
@@ -845,6 +850,8 @@ function baleaddcwb(scancwb,baleno){
 		success : function(data) {
 			$("#msg").html("");
 			$("#scancwb").val("");
+			$("#scancwb").focus() ;
+			$("#orderWeight").val("") ;
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
 				<%-- numbervedioplay("<%=request.getContextPath()%>",data.body.successCount); --%>
@@ -858,6 +865,11 @@ function baleaddcwb(scancwb,baleno){
 					$("#scancwb").blur();
 				}
 				errorvedioplay("<%=request.getContextPath()%>",data);
+			}
+			if(data.body.newCarrealWeight != undefined &&  needWeightFlag == "checked"){
+				$("#carweightDesc").html("重量(Kg):" + data.body.newCarrealWeight+"<br/>") ;
+			}else{
+				$("#carweightDesc").html("") ;
 			}
 		}
 	});
@@ -889,6 +901,7 @@ function fengbao(){
 				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
+			$("#scancwb").focus() ;
 			
 		}
 	});
@@ -908,9 +921,7 @@ function chuku(){
 			$("#msg").html("");
 			$("#msg").html(data.body.errorinfo);
 			$("#errorTable").html("");
-			
-			
-			
+			$("#carweightDesc").html("") ;
 			if(data.body.errorListView!=null){
 	 			$.each(data.body.errorListView, function(key, value) {
 	 				var tr = document.getElementById("errorTable").insertRow();
@@ -945,6 +956,7 @@ function chuku(){
 			}
 			
 			$("#scancwb").val("");
+			$("#scancwb").focus() ;
 			$("#baleno").val("");
 			
 			if(data.body.errorListView!=null){
