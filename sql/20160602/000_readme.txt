@@ -1,0 +1,4 @@
+各个省导出模板数据需要提前做好备份，包括以下三个表：
+express_set_user
+express_ops_setexportfield
+express_ops_exportmould
