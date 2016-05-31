@@ -82,6 +82,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 					<li id="pda_title" ><span>用户对货物操作权限</span>（PDA）：(机构的“组织的货物操作权限”与角色的“货物操作权限”的交集)</li>
 					<ul id="pda" class="checkedbox1"></ul>
 					 <li><span>登录用户名：</span><input type="text" id="username" name="username" value="<%=u.getUsername() %>" maxlength="50" />*</li>
+					 <li><span>　</span>密码不可查看，如忘记请直接改为新密码</li>
 			         <li><span>网页登录密码：</span><input type="password" id="webPassword" name="webPassword" value="<%=u.getWebPassword() %>" maxlength="50"/>*</li>
 			         <li><span>确认网页登录密码：</span><input type="password" id="webPassword1" name="webPassword1" value="<%=u.getWebPassword() %>" maxlength="50"/>*</li>
 			         <div id="pdaPwdDiv" style="display:none">
@@ -106,7 +107,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 							<option value="1">可见</option>
 						</select>*
 					</li> -->
-					<li><span>收件人信息是否可见：</span>
+					<li><span>信息是否可见：</span>
 					 <input  type="checkbox" value="1" id="consigneename" name="consigneename" <%if(u.getShownameflag()==1){ %> checked="checked"<%} %>>收件人</input>
 					 <input type="checkbox"  value="1" id="consigneephone" name="consigneephone" <%if(u.getShowphoneflag()==1){ %> checked="checked"<%} %>>收件人电话</input>
 					 <input type="checkbox"  value="1" id="consigneemobile" name="consigneemobile" <%if(u.getShowmobileflag()==1){ %> checked="checked"<%} %>>收件人手机</input>
