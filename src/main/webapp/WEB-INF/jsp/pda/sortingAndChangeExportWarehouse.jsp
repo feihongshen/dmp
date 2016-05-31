@@ -72,7 +72,7 @@ var g_data = {
 	pageSize : <%=Page.DETAIL_PAGE_NUMBER%>
 };
 
-
+var requestContext = "<%=request.getContextPath()%>" ;
 
 
 $(function(){
@@ -249,8 +249,8 @@ function getcwbsquejiandataForBranchid() {
 var branchStr=[];
 var Cwbs="";
 
-function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,isOpenDialog){
-	
+function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,isOpenDialog,needWeightFlag,carrealweight){
+	$("#scancwb").focus() ;
 	if(scancwb.indexOf("@zd_")>-1){
 		$("#branchid").val(scancwb.split('_')[1]);
 		if($("#branchid").val()!=scancwb.split('_')[1]){
@@ -275,16 +275,19 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 		return false;
 	}
 	if($("#scanbaleTag").attr("class")=="light"){//出库根据包号扫描订单
-		baleaddcwbCheck();
+		baleaddcwbCheck(needWeightFlag,carrealweight);
 	}else{//出库
-		
-			
+		var url = pname+"/PDA/cwbSortingAndChangeExportWarehouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno ;
+		if(needWeightFlag == "checked"){
+			url = url + "&carrealweight="+carrealweight ;
+		}
 			$.ajax({
 				type: "POST",
-				url:pname+"/PDA/cwbSortingAndChangeExportWarehouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno,
+				url:url,
 				dataType:"json",
 				success : function(data) {
 					$("#scancwb").val("");
+					$("#scancwb").focus() ;
 					if(data.statuscode=="000000"){
 						if(data.body.packageCode!=""){
 							$("#msg").html(data.body.packageCode+"　（"+data.errorinfo+"）");
@@ -319,6 +322,11 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 								$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
 							}
 						}
+						if(data.body.newCarrealWeight != undefined){
+							$("#carweightDesc").html("重量(Kg):" + data.body.newCarrealWeight+"<br/>") ;
+						}else{
+							$("#carweightDesc").html("") ;
+						}
 					}else{
 						$("#excelbranch").html("");
 						$("#showcwb").html("");
@@ -334,6 +342,7 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 						addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
 					}
 					$("#responsebatchno").val(data.responsebatchno);
+					jQuery("#orderWeight").val("") ;
 					batchPlayWav(data.wavList);
 				}
 			});
@@ -341,13 +350,29 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 	
 }
 
-
+/**
+ * 输入单号后，
+ */
 function exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag){
+	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
+    var carrealweight = 0 ;
+    if(needWeightFlag == "checked"){
+    	carrealweight = 0.00 ; // 获取电子秤重量
+    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
+    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
+    		jQuery("#orderWeight").focus() ;
+        	return false ;
+    	}
+    }
+    exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,needWeightFlag,carrealweight);
+}
+
+function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,needWeightFlag,carrealweight){
 	if(scancwb.length>0){
 		if("${isOpenDialog}" != "open"){
-			_exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,false);
+			_exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,false,needWeightFlag,carrealweight);
 		}else{
-			_exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,true);
+			_exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,true,needWeightFlag,carrealweight);
 		}
 	}
 }
@@ -363,6 +388,7 @@ function clearMsg(){
 	$("#msg").html("");
 	$("#showcwb").html("");
 	$("#excelbranch").html("");
+	$("#carweightDesc").html("") ;
 	$("#cwbDetailshow").html("");
 }
 
@@ -480,7 +506,7 @@ function bofang(){
 	
 	
 //=============出库根据包号扫描订单检查===============
-function baleaddcwbCheck(){
+function baleaddcwbCheck(needWeightFlag,carrealweight){
 	if($("#branchid").val()==0){
 		alert("请选择下一站！");
 		return;
@@ -494,13 +520,15 @@ function baleaddcwbCheck(){
 		return;
 	}
 	var confirmflag=$("#confirmflag").attr("checked")=="checked"?1:0;
-	
+	var url = "<%=request.getContextPath()%>/bale/sortAndChangeBaleAddCwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=1&branchid="+$("#branchid").val()+"&confirmflag="+confirmflag ;
 	$.ajax({
    		type: "POST",
-   		url:"<%=request.getContextPath()%>/bale/sortAndChangeBaleAddCwbCheck/"+$("#scancwb").val()+"/"+$("#baleno").val()+"?flag=1&branchid="+$("#branchid").val()+"&confirmflag="+confirmflag,
+   		url:url ,
    		dataType : "json",
    		success : function(data) {
    			$("#msg").html("");
+   			$("#carweightDesc").html("") ;
+   			$("#orderWeight").val("") ;
    			if(data.body.errorcode=="111111"){
    				if(data.body.errorenum=="Bale_ChongXinFengBao"){//此订单已在包号：XXX中封包，确认要重新封包吗?
    					/* if(confirm(data.body.errorinfo)){
@@ -519,12 +547,12 @@ function baleaddcwbCheck(){
    				}
    				return;
    			} 
-   			baleaddcwb(data.body.scancwb,data.body.baleno);//出库根据包号扫描订单
+   			baleaddcwb(data.body.scancwb,data.body.baleno,needWeightFlag,carrealweight);//出库根据包号扫描订单
    		}
    	});
 }
 //=============出库根据包号扫描订单===============	
-function baleaddcwb(scancwb,baleno){
+function baleaddcwb(scancwb,baleno,needWeightFlag,carrealweight){
 	if($("#baleno").val()==""){
 		alert("包号不能为空！");
 		$("#scancwb").val("");
@@ -534,13 +562,19 @@ function baleaddcwb(scancwb,baleno){
 		
 		return;
 	} */
+	var url = requestContext + "/bale/sortAndChangeBaleAddCwb/"+scancwb+"/"+baleno+"?branchid="+$("#branchid").val() ;
+	if(needWeightFlag == "checked"){
+		url = url + "&carrealweight="+carrealweight ;
+	}
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/bale/sortAndChangeBaleAddCwb/"+scancwb+"/"+baleno+"?branchid="+$("#branchid").val(),
+		url : url,
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
 			$("#scancwb").val("");
+			$("#orderWeight").val("") ;
+			$("#carweightDesc").html("") ;
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
 				playWav(""+data.body.successCount);
@@ -553,6 +587,9 @@ function baleaddcwb(scancwb,baleno){
 					$("#scancwb").blur();
 				}
 				errorvedioplay("<%=request.getContextPath()%>",data);
+			}
+			if(data.body.newCarrealWeight != undefined &&  needWeightFlag == "checked"){
+				$("#carweightDesc").html("重量(Kg):" + data.body.newCarrealWeight+"<br/>") ;
 			}
 		}
 	});
@@ -570,6 +607,7 @@ function fengbao(){
 		dataType : "json",
 		success : function(data) {
 			$("#msg").html("");
+			$("#orderWeight").val("") ;
 			if(data.body.errorcode=="000000"){
 				$("#msg").html($("#baleno").val()+"包号封包成功！");
 				successvedioplay("<%=request.getContextPath()%>",data);
@@ -584,7 +622,7 @@ function fengbao(){
 				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
-			
+			$("#carweightDesc").html("") ;
 		}
 	});
 }
@@ -603,8 +641,8 @@ function chuku(){
 			$("#msg").html("");
 			$("#msg").html(data.body.errorinfo);
 			$("#errorTable").html("");
-			
-			
+			$("#carweightDesc").html("") ;
+			$("#orderWeight").val("") ;
 			
 			if(data.body.errorListView!=null){
 	 			$.each(data.body.errorListView, function(key, value) {
@@ -651,6 +689,50 @@ function chuku(){
 		}
 	});
 }
+
+function setNeedWeight(){
+	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
+	jQuery("#orderWeight").val("") ;
+	if(needWeightFlag){
+		jQuery("#orderWeight").attr("disabled" , false) ;
+	}else{
+		jQuery("#orderWeight").attr("disabled" , true) ;
+	}
+	
+}
+
+/**
+ * 校验手动输入货物重量
+ */
+function saveOrderWeight(keyCode){
+	if(keyCode != 13){
+		return ;
+	}
+	var orderWeight = jQuery("#orderWeight").val().trim() ;
+	var weightExp = /^\d+(\.\d+)?$/ ;
+	if(!weightExp.test(orderWeight)){
+		alert("请输入重量") ;
+		jQuery("#orderWeight").focus() ;
+		return ;
+	}
+	var scancwb = jQuery("#scancwb").val().trim() ;
+	if(scancwb.length <= 0){
+		alert("请输入订单号") ;
+		jQuery("#scancwb").focus() ;
+		return ;
+	}
+	var branchid = $("#branchid").val().trim() ;
+	var driverid = $("#driverid").val().trim() ;
+	var truckid = $("#truckid").val().trim() ;
+	var requestbatchno = $("#requestbatchno").val() ;
+	var baleno = $("#baleno").val() ;
+	var ck_switch = $("#ck_switch").val() ;
+	var confirmflag = $("#confirmflag").attr("checked")=="checked"?1:0;
+	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
+	exportWarehouseForWeight(requestContext,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,needWeightFlag,orderWeight) ;
+	
+}
+
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
@@ -801,6 +883,9 @@ function chuku(){
 						<%
 							}
 						%>
+					<p>
+						<span>称重:</span><input type="checkbox" id="needWeightFlag" name="needWeightFlag" onclick = "setNeedWeight()" />
+					</p>
 					<p style="display: none;">
 							<span>包号：</span><input type="text" class="saomiao_inputtxt2" name="baleno" id="baleno"
 								onKeyDown="if(event.keyCode==13&&$(this).val().length>0){if($(this).val().indexOf('@zd_')>-1){$('#branchid').val($(this).val().split('_')[1]);if($('#branchid').val()!=$(this).val().split('_')[1]){$('#msg').html('         （异常扫描）扫描站点失败');$('#branchid').val(0);}else{$('#msg').html('');}$(this).val('');return false;}if($('#branchid').val()==0){alert('请选择下一站');return;}$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}" />
@@ -821,6 +906,9 @@ function chuku(){
 								onclick="fengbao()" /> <input type="button" name="chuku" id="chuku" value="出库"
 								class="button" onclick="chuku()" />
 					</p>
+					<p>
+						<span>重量(Kg):</span><input type="text" class="saomiao_inputtxt1" id="orderWeight" name="orderWeight" disabled = "true"  onKeyDown = "saveOrderWeight(event.keyCode)" />
+					</p>
 				</div>
 				<c:if test="${isOpenDialog=='open'}">
 					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:200px;">
@@ -828,6 +916,7 @@ function chuku(){
 								<p id="msg1" name="msg1" ></p>
 								<p id="showcwb" name="showcwb"></p>
 								<p id="excelbranch" name="excelbranch" ></p>
+								<p id="carweightDesc" name="carweightDesc" ></p>
 								<p id="cwbDetailshow" name="cwbDetailshow" ></p>
 									<div style="display: none" id="EMBED"></div>
 								<div style="display: none">
@@ -858,6 +947,7 @@ function chuku(){
 					<p id="msg" name="msg" ></p>
 					<p id="showcwb" name="showcwb"></p>
 					<p id="excelbranch" name="excelbranch" ></p>
+					<p id="carweightDesc" name="carweightDesc" ></p>
 					<p id="cwbDetailshow" name="cwbDetailshow" ></p>
 						<div style="display: none" id="EMBED"></div>
 					<div style="display: none">

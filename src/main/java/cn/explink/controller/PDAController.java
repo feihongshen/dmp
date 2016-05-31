@@ -4358,20 +4358,32 @@ public class PDAController {
 				explinkResponse.addLongWav(wavPath);
 				obj.put("cwbdeliverybranchname", "");
 			}
-
 			// 如果扫描的是封在某个包里面的快递单，则将该包设为不可用
 			this.setExpressPackageUnable(cwbOrder);
-            // 如果扫描订单号，就直接更新订单表的货物重量
-			if(customer.getIsUsetranscwb() == 2){
+//            // 如果扫描订单号，就直接更新订单表的货物重量
+//			if(customer.getIsUsetranscwb() == 2){
+//				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
+//			}else{
+//				//扫描运单号，首先更新当前运单的货物重量，如果当前已扫描件数和订单总件数一致时，才更新订单表的货物重量
+//				this.mpsOptStateService.updateTransCwbDetailWeight(cwb, scancwb, carrealweight);
+//				if(cwbOrder.getScannum() == cwbOrder.getSendcarnum()){
+//					BigDecimal totalWeight = getWeightForOrder(cwb) ;
+//					this.cwbDAO.saveCwbWeight(totalWeight, cwb);
+//				}
+//			}
+			// add by bruce shangguan 20160530  如果是首次扫描订单号/运单号,就直接更新订单重量；否则就在订单原重量的基础上累加，再更新订单重量
+			if(cwbOrder.getScannum() == 1){
 				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
 			}else{
-				//扫描运单号，首先更新当前运单的货物重量，如果当前已扫描件数和订单总件数一致时，才更新订单表的货物重量
-				this.mpsOptStateService.updateTransCwbDetailWeight(cwb, scancwb, carrealweight);
-				if(cwbOrder.getScannum() == cwbOrder.getSendcarnum()){
-					BigDecimal totalWeight = getWeightForOrder(cwb) ;
-					this.cwbDAO.saveCwbWeight(totalWeight, cwb);
-				}
+				BigDecimal totalWeight = cwbOrder.getCarrealweight() == null ? BigDecimal.ZERO : cwbOrder.getCarrealweight() ;
+				totalWeight = totalWeight.add(carrealweight);
+				this.cwbDAO.saveCwbWeight(totalWeight, cwb);
 			}
+			// 如果扫描运单号，就更新当前运单的货物重量
+			if(customer.getIsUsetranscwb() != 2){
+				this.mpsOptStateService.updateTransCwbDetailWeight(cwb, scancwb, carrealweight);
+			}
+			// end 20160530
 			obj.put("newCarrealWeight", carrealweight);
 			this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 			return explinkResponse;
@@ -10728,7 +10740,8 @@ public class PDAController {
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
 			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
-			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
+			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
+			@RequestParam(value = "carrealweight", required = false, defaultValue = "0") BigDecimal carrealweight) {
 
 		ExplinkResponse explinkResponse = null;
 		String translated = this.cwbOrderService.translateCwb(cwb);
@@ -10742,9 +10755,12 @@ public class PDAController {
 			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, false);
 		} else {
 			// 调用分拣出库扫描逻辑
-			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+			if(carrealweight == null || carrealweight.compareTo(BigDecimal.ZERO) == 0){
+				explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+			}else{
+				explinkResponse = this.cwbExportWarhouseWeight(model, request, response, cwb, deliverybranchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, carrealweight) ;
+			}
 		}
-
 		return explinkResponse;
 	}
 
