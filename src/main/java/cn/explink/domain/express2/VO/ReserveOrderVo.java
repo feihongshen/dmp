@@ -137,6 +137,11 @@ public class ReserveOrderVo {
      * DMP 站点编码 branchCode
      */
     private String carrierSiteCode;
+    
+    /**
+     * 寄件公司
+     */
+    private String custName;
 
 	public Integer getOmReserveOrderId() {
 		return omReserveOrderId;
@@ -354,6 +359,14 @@ public class ReserveOrderVo {
 		this.carrierSiteCode = carrierSiteCode;
 	}
 
+	public String getCustName() {
+		return custName;
+	}
+
+	public void setCustName(String custName) {
+		this.custName = custName;
+	}
+
 	@Override
 	public String toString() {
 		return "ReserveOrderVo [omReserveOrderId=" + omReserveOrderId + ", reserveOrderNo=" + reserveOrderNo
@@ -365,6 +378,7 @@ public class ReserveOrderVo {
 				+ ", acceptOrgName=" + acceptOrgName + ", courier=" + courier + ", courierName=" + courierName
 				+ ", cnorRemark=" + cnorRemark + ", recordVersion=" + recordVersion + ", operateType=" + operateType
 				+ ", cnorProvName=" + cnorProvName + ", cnorCityName=" + cnorCityName + ", cnorRegionName="
-				+ cnorRegionName + ", remark=" + remark + ", carrierSiteCode=" + carrierSiteCode + "]";
+				+ cnorRegionName + ", remark=" + remark + ", carrierSiteCode=" + carrierSiteCode + ", custName="
+				+ custName + "]";
 	}
 }
