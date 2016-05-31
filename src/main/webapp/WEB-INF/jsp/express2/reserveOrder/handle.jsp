@@ -208,6 +208,7 @@
 		       	},
 		        {field:'appointTimeStr', title:'下单时间', width:130},
 		        {field:'cnorName', title:'寄件人', width:100},
+		        {field:'custName', title:'寄件公司', width:100},
 		        {field:'cnorMobile', title:'手机', width:100},
 		        {field:'cnorTel', title:'固话', width:100},
 		        {field:'cnorAddr', title:'寄件地址', width:130,hidden:'true'},
