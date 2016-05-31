@@ -14,6 +14,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.OutWarehouseGroup;
 import cn.explink.enumutil.OutWarehouseGroupEnum;
 import cn.explink.enumutil.OutwarehousegroupOperateEnum;
@@ -202,6 +205,7 @@ public class OutWarehouseGroupDAO {
 		return sql;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<OutWarehouseGroup> getOutWarehouseGroupByPage(long page, long branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid,
 			long currentbranchid) {
 		String sql = "select * from express_ops_outwarehousegroup";
@@ -211,6 +215,7 @@ public class OutWarehouseGroupDAO {
 		return outwarehouseList;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<OutWarehouseGroup> getOutWarehouseGroupByPage2(long page, long branchid, String beginemaildate, String endemaildate, long driverid,long truckid, long operatetype, long customerid,
 			long currentbranchid) {
 		String sql = "select * from express_ops_outwarehousegroup";
@@ -220,6 +225,7 @@ public class OutWarehouseGroupDAO {
 		return outwarehouseList;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<OutWarehouseGroup> getOutWarehouseGroupByPage(long page, String branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid) {
 		String sql = "select * from express_ops_outwarehousegroup";
 		sql = this.getOutWarehouseGroupByPageWhereSql(sql, branchid, beginemaildate, endemaildate, driverid, operatetype, customerid);
@@ -228,12 +234,14 @@ public class OutWarehouseGroupDAO {
 		return outwarehouseList;
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getOutWarehouseGroupCount(long branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid, long currentbranchid) {
 		String sql = "select count(1) from express_ops_outwarehousegroup";
 		sql = this.getOutWarehouseGroupByPageWhereSql(sql, branchid, beginemaildate, endemaildate, driverid, operatetype, customerid, currentbranchid);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public long getOutWarehouseGroupCount(String branchid, String beginemaildate, String endemaildate, long driverid, long operatetype, long customerid) {
 		String sql = "select count(1) from express_ops_outwarehousegroup";
 		sql = this.getOutWarehouseGroupByPageWhereSql(sql, branchid, beginemaildate, endemaildate, driverid, operatetype, customerid);

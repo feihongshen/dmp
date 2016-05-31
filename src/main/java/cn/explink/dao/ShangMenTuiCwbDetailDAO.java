@@ -11,6 +11,9 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.domain.ShangMenTuiCwbDetail;
 import cn.explink.util.StringUtil;
 
@@ -94,6 +97,7 @@ public class ShangMenTuiCwbDetailDAO {
 		return jdbcTemplate.queryForLong(sql, cwb);
 	}
 
+	@DataSource(DatabaseType.REPLICA)
 	public List<String> getShangMenTuiCwbDetailByCustomerid(String customerids, long printType, String begindate, String enddate, long deliverybranchid,String orders,String selectype) {
 		if (selectype.equals("1")) {
 			if (!orders.isEmpty()&&orders.length()>0){
@@ -104,7 +108,7 @@ public class ShangMenTuiCwbDetailDAO {
 		}
 		StringBuffer sql = new StringBuffer();
 	    sql.append("select distinct sd.cwb from shangmentuicwb_detail sd left join express_ops_cwb_detail cd "
-				+ " on sd.cwb=cd.cwb where cd.state=1 ");
+				+ " on sd.cwb=cd.cwb where cd.state=1 and cd.flowordertype IN(1,2,3,4,6,7,8,37) "); // hps_Concerto 只统计 导入数据 1 提货  ....
 		if (printType == 0) {
 			sql.append(" and cd.printtime='' ");
 		} else {

@@ -52,15 +52,13 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		username = username.trim();
 
 		List<User> users = userDAO.getUsersByUsername(username);
-		if (users.size() == 0) {
-			throw new AuthenticationServiceException("沒有找到用戶名" + username);
-		}
-		if (users.size() > 1) {
-			throw new AuthenticationServiceException("违反了用户名唯一约束");
-		}
 
-		if (!users.get(0).getPassword().equals(password)) {
-			throw new AuthenticationServiceException("用户名或者密码错误！");
+		if (users.size() == 0 || users.size() > 1 || !users.get(0).getPassword().equals(password)) {
+			throw new AuthenticationServiceException("用户名或者密码错误");
+		}
+		if (request.getSession().getAttribute(SPRING_SECURITY_LAST_USERNAME_KEY) != null 
+				&& !request.getSession().getAttribute(SPRING_SECURITY_LAST_USERNAME_KEY).equals(username)) {
+			throw new AuthenticationServiceException("当前浏览器已有其它用户登录");
 		}
 
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
@@ -105,6 +103,9 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 	protected void checkValidateCode(HttpServletRequest request) {
 		String sessionValidateCode = obtainSessionValidateCode(request);
 		String validateCodeParameter = obtainValidateCodeParameter(request);
+		if(StringUtils.isEmpty(sessionValidateCode)) {
+			throw new AuthenticationServiceException("验证码已过期");
+		}
 		if (StringUtils.isEmpty(validateCodeParameter) || !sessionValidateCode.equalsIgnoreCase(validateCodeParameter)) {// &&!"TTTT".equals(validateCodeParameter)
 			throw new AuthenticationServiceException("验证码不正确");
 		}
