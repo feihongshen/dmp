@@ -351,6 +351,9 @@ public class CwbDAO {
 			cwbOrder.setSendername(rs.getString("sendername"));
 			cwbOrder.setSenderprovince(rs.getString("senderprovince"));
 			cwbOrder.setSendercity(rs.getString("sendercity"));
+			cwbOrder.setSendercounty(rs.getString("sendercounty"));
+			cwbOrder.setSenderstreet(rs.getString("senderstreet"));
+			cwbOrder.setSenderaddress(rs.getString("senderaddress"));
 			cwbOrder.setSendercellphone(rs.getString("sendercellphone"));
 			cwbOrder.setSendertelephone(rs.getString("sendertelephone"));
 			cwbOrder.setReccustomerid(rs.getInt("reccustomerid"));
