@@ -254,7 +254,6 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 	if(scancwb.indexOf("@zd_")>-1){
 		$("#branchid").val(scancwb.split('_')[1]);
 		if($("#branchid").val()!=scancwb.split('_')[1]){
-			
 			if(isOpenDialog){
 				$("#msg1").html("         （异常扫描）扫描站点失败");
 				$('#find').dialog('open');
