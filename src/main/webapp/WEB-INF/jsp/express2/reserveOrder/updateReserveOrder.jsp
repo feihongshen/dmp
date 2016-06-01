@@ -45,10 +45,11 @@
             <tr>
                 <td style="border: 0px; text-align: right; vertical-align: middle;padding-left: 10px;">预约上门时间：</td>
                 <td style="border: 0px; vertical-align: middle; ">
-                    <input style="width: 94%;" type="text" name="requireTimeStr4edit"
-                           id="requireTimeStr4edit" <%--style="height:30px;"--%> value=""
-                           onFocus="WdatePicker({startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
-                </td>
+                    <input style="width: 94%; background-color: #fff; cursor: pointer" type="text" 
+                    name="requireTimeStr4edit" readonly="readonly" class="Wdate" id="requireTimeStr4edit"
+					<%--style="height:30px;"--%> value=""
+					onFocus="WdatePicker({isShowClear:false,startDate: '%y-%M-%d 00:00:00',dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+				</td>
             </tr>
 
         </table>
