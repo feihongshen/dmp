@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
@@ -34,7 +35,7 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
@@ -294,6 +295,10 @@ function editSuccess(data){
 	$("#"+data.cwb+"_exceldeliver").html(data.exceldeliver);
 	//$("#"+data.cwb+"_exceldeliver").html(data.exceldeliver);
 }
+$(function(){
+	 	/* $("#emaildate").combobox(); */
+	
+})
 </script>
 </head>
 <body  style="background:#f5f5f5">

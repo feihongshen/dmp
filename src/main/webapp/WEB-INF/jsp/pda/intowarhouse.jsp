@@ -875,6 +875,9 @@ function flush(){
  		}
  	});
 }
+$(function(){
+	$("#customerid").combobox();
+})
 </script>
 </head>
 <body style="background:#eef9ff" marginwidth="0" marginheight="0">

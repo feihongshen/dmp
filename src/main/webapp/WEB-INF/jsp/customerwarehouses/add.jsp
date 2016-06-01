@@ -7,8 +7,6 @@
 	List<CustomWareHouse> warehouses = (List<CustomWareHouse>)request.getAttribute("warehouses");
   List<Customer> customers = (List<Customer>)request.getAttribute("customers");
 %>
-
-
 <div id="box_bg"></div>
 <div id="box_contant">
 	<div id="box_top_bg"></div>
@@ -17,13 +15,14 @@
 		<form id="customerwarehouses_cre_Form" name="customerwarehouses_cre_Form" onSubmit="if(check_customerwarehouses()){submitCreateForm(this);}return false;" action="<%=request.getContextPath()%>/customerwarehouses/create" method="post"  >
 		<div id="box_form">
 				<ul>
-					<li><span>供货商：</span> 
-					<select id="customerid" name="customerid" class="select1">
+					
+					<li><div><span>供货商：</span> 
+					<select id="customerid" name="customerid" class="select1" >
 						<option value=-1>----请选择----</option>
 						<% for(Customer w1 : customers){ %>
 						<option value=<%=w1.getCustomerid()%>><%=w1.getCustomername() %></option>
 						<%} %>
-					</select>*</li>
+					</select>*</div></li>
 					<li><span>发货仓库：</span><input type="text" class="input_text1" name="customerwarehouse" id="customerwarehouse" value="${customerwarehouse.customerwarehouse }" maxlength="50">*</li>
 					<li><span>仓库编码：</span><input type="text" class="input_text1" name="warehouse_no" id="warehouse_no" value="" maxlength="50">*</li>
 				    <li><span>备注：</span><input type="text" class="input_text1" name="warehouseremark" id="warehouseremark" value="${customerwarehouse.warehouseremark }"  maxlength="50"></li>

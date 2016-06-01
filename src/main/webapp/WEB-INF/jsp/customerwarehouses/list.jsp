@@ -2,6 +2,7 @@
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.domain.CustomWareHouse"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
 <%
@@ -18,7 +19,7 @@ String name;
 <title>供货商仓库管理</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 var CustomerKeyAndValue = new Array();
@@ -30,6 +31,13 @@ function getCustomerValue(key,areaid){
 <script type="text/javascript">
 function addInit(){
 	//无处理
+	/* alert($("alert_box",parent.document).html()); */
+	/*  $("#alert_box select", parent.document).combobox();
+	alter($("div.panel combo-p",parent.document).html());  */
+	$("#alert_box select", parent.document).combobox();
+	/*
+	$($("div[class='panel combo-p']",parent.document)[1]).attr("style","position: absolute; z-index: 1; display: block; width: 150px; margin-right: 170px; left: 59px; top: 50px;")
+	$($("span.combo-arrow",parent.document)[1]).css({"margin-right":"-18px","margin-top":"-10px"}); */
 }
 function addSuccess(data){
 	$("#alert_box input[type='text']" , parent.document).val("");
@@ -45,6 +53,10 @@ function editSuccess(data){
 function delSuccess(data){
 	$("#searchForm").submit();
 }
+$(function(){
+	 $("#customerid").combobox();
+	 $("span.combo-arrow").css({"margin-right":"-18px","margin-top":"-20px"});
+ })
 </script>
 </head>
 
@@ -52,19 +64,19 @@ function delSuccess(data){
 
 <div class="right_box">
 				<div class="inputselect_box">
-				<span><input name="" type="button" value="创建供货商仓库" class="input_button1"  id="add_button"  />
+				<span><input name="" type="button" value="创建供货商仓库" class="input_button1"  id="add_button" />
 				</span>
 				<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
-					供货商：<select id="customerid" name="customerid" class="select1">	
+					<div style="float: left;">供货商：<select id="customerid" name="customerid" class="select1">	
 								<option value=-1>全部</option>
 								<%
 									for(Customer c : customers){
 								%>
-								<option value=<%=c.getCustomerid()%> ><%=c.getCustomername()%></option>
+								<option value=<%=c.getCustomerid()%>><%=c.getCustomername()%></option>
 								<%
 									}
 								%>	
-							  </select>
+							  </select></div>
 							<input type="submit" id="find" onclick="$('#searchForm').attr('action',1);return true;" value="查询" class="input_button2" />
 							<input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
 				</form>

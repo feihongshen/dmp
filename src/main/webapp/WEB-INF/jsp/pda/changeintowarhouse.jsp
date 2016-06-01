@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.domain.CwbOrder"%>
@@ -27,7 +28,6 @@ long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 var data;
@@ -686,6 +686,10 @@ function flush(){
  		}
  	});
 }
+$(function(){
+	$("#customerid").combobox();
+	})
+
 </script>
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">

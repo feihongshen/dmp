@@ -1,5 +1,4 @@
-
-<%@ include file="/WEB-INF/jsp/commonLib/header.jsp"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum,cn.explink.enumutil.ExceptionCwbErrorTypeEnum"%>
 <%@page import="cn.explink.util.Page"%>
@@ -651,6 +650,10 @@ function chuku(){
 		}
 	});
 }
+$(function(){
+	$("#branchid").combobox();
+})
+
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">

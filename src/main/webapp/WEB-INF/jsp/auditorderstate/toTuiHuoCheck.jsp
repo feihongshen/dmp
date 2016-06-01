@@ -206,6 +206,10 @@ function restData(){
 	$("#endtime").val("");
 	
 }
+$(function(){
+	$("#customerid").combobox();
+	})
+
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -237,13 +241,14 @@ function restData(){
 									</td>
 									<td align="right">客户名称:</td>
 									<td align="left">	
+									<div style="float: left;">
 										<select name ="customerid" id ="customerid" style="width:300px">
 											<option  value ="0">全部</option>
 											<%if(customerList!=null){ %>
 												<%for(Customer cus:customerList){ %>
 												<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
 												<%} }%>
-										</select>
+										</select></div>
 										配送站点:
 											<input type="text" id="branchid" name="branchid" class="easyui-validatebox" style="width: 150px;"initDataType="TABLE"
 												initDataKey="Branch" 

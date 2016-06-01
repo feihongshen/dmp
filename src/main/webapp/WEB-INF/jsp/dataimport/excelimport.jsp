@@ -2,6 +2,7 @@
 <%@page import="java.util.List"%>
 <%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.domain.Branch"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%-- 
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
@@ -18,7 +19,7 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> 
+<%--  <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>  --%>
 <script type="text/javascript"	src="<%=request.getContextPath()%>/dmp40/plug-in/My97DatePicker/WdatePicker.js"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
@@ -289,6 +290,10 @@ var file_id;
 		});
 	}
 	$(function(){
+		 $("#branchid").combobox();
+		 $("#customerid").combobox();
+		 $("#serviceareaidflag").combobox();
+		 $("#warehouseidflag").combobox();
 		$("div.panel.combo-p").css({"margin-top":"-78px","width":"155px"});
 	})
 </script>
@@ -306,14 +311,14 @@ var file_id;
 	<form name="uploadForm" id="uploadForm" method="POST" action="excelimport;jsessionid=<%=session.getId() %>" enctype="multipart/form-data" >
 			<table width="100%" height="23" border="0" cellpadding="0" cellspacing="5" class="right_set1">
 				<tr id="customertr" class=VwCtr style="display:">
-					<td width="350">订单入库库房：
+					<td width="350"><div style="float: left;">订单入库库房：
 						<select id="branchid" name="branchid" class="select1">
 						<%for (Branch branch : branchlist) {%>
 						<option value="<%=branch.getBranchid()%>"><%=branch.getBranchname()%></option>
 						<%}%>
-						</select>
+						</select></div>
 					</td>
-					<td width="300">发件供货商：
+					<td width="300"><div style="float: left;">发件供货商：
 						<%--  <select name="customerid" id="customerid" class="select1">
 							<option value="0">请选择</option>
 							<%for (Customer customer : customerlist) {%>
@@ -325,12 +330,12 @@ var file_id;
 									<%for (Customer customer : customerlist) {%>
 										<option value="<%=customer.getCustomerid()%>"><%=customer.getCustomername()%></option>
 									<%}%>
-								</select>*
+								</select>*</div>
 					</td>
-					<td>发货仓库：
+					<td><div style="float: left;">发货仓库：
 						<select name="warehouseid" id="warehouseidflag" class="select1">
 								<option value="0">请选择</option>
-						</select>
+						</select></div>
 					</td>
 					<td></td>
 				</tr>

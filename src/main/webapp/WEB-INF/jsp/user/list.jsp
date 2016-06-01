@@ -1,5 +1,5 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Branch,cn.explink.domain.Role,cn.explink.util.Page"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	List<User> userList = (List<User>)request.getAttribute("userList");
@@ -20,7 +20,7 @@
 <title>用户管理</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript">
 </script>
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet"
@@ -93,8 +93,11 @@ $(function(){
 	$("#showflag").multiSelect({
 		oneOrMoreSelected : '*',
 		noneSelected : '请选择'
-	});});
-	
+	});
+	 $("#branchid").combobox();
+	 $("#roleid").combobox();
+	 $("span.combo-arrow").css({"margin-right":"-18px","margin-top":"-20px"});
+	});
 </script>
 </head>
 
@@ -108,7 +111,7 @@ $(function(){
 	<tr>
 		<td>
 			<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
-				所属机构：<select name="branchid" class="select1">
+				<div style="float: left;">所属机构：<select id="branchid" name="branchid" class="select1">
 						 	<option value="-1">全部</option>
 						 	<%if(brancheEffectList!=null&&brancheEffectList.size()>0){
 						 		for(Branch b:brancheEffectList){
@@ -117,8 +120,8 @@ $(function(){
 						 		<%}
 						 	} %>
 						 	
-						 </select>
-				角    色：<select name="roleid" class="select1">
+						 </select></div>
+				<div style="float: left;">角    色：<select id="roleid" name="roleid" class="select1">
 						 	<option value="-1">全部</option>
 						 	<%if(roleList!=null&&roleList.size()>0){
 						 		for(Role r:roleList){
@@ -127,7 +130,7 @@ $(function(){
 						 		<%}
 						 	} %>
 						 	
-						 </select>	 
+						 </select></div> 
 				用户登录名：<input  class="input_text1" value="<%=request.getParameter("username")==null?"":request.getParameter("username") %>" name="username"/>
 				姓    名：<input   class="input_text1" value="<%=request.getParameter("realname")==null?"":request.getParameter("realname") %>" name="realname"/>
 				<input type="submit" onclick="$('#searchForm').attr('action',1);return true;" id="find" value="查询" class="input_button2" />
