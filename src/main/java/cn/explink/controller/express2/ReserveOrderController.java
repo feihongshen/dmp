@@ -208,11 +208,6 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(cnorMobile)) {
 			omReserveOrderModel.setCnorMobile(StringUtils.strip(cnorMobile));
 		}
-		if(StringUtils.isNotBlank(acceptOrg)) {
-//			omReserveOrderModel.setAcceptOrg(acceptOrg);
-            //需求更改，tps期望拿到carrierSiteCode
-			omReserveOrderModel.setCarrierSiteCode(acceptOrg);
-		}
 		if(courier != null) {
 			User user = this.userService.getUserByUserid(courier);
 			omReserveOrderModel.setCourier(user.getUsername());
@@ -228,11 +223,7 @@ public class ReserveOrderController extends ExpressCommonController {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toString();
 				}
 			} else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-//				if(this.isWarehouseMaster()) {
-//					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
-//				} else {
-					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
-//				}
+				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
 			} else {
 				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toString();
 			}
@@ -245,12 +236,10 @@ public class ReserveOrderController extends ExpressCommonController {
         if (this.isWarehouseMaster() || this.isCourier()) {
             //站长或小件员只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-//            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
             omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
         } else if(this.isCustomService() || this.isAdmin()) {
-//            if (StringUtils.isNotBlank(acceptOrg)) {
-//                omReserveOrderModel.setCarrierSiteCode(acceptOrg);
-//            }
+        	// 管理员和客服可选择站点
+        	omReserveOrderModel.setCarrierSiteCode(acceptOrg);
         } else {
 			isQuery = false;
 		}
@@ -292,11 +281,6 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(cnorMobile)) {
 			omReserveOrderModel.setCnorMobile(cnorMobile);
 		}
-        if(StringUtils.isNotBlank(acceptOrg)) {
-//			omReserveOrderModel.setAcceptOrg(acceptOrg);
-            //需求更改，tps期望拿到carrierSiteCode
-            omReserveOrderModel.setCarrierSiteCode(acceptOrg);
-        }
 		if(courier != null) {
 			User user = this.userService.getUserByUserid(courier);
 			omReserveOrderModel.setCourier(user.getUsername());
@@ -312,11 +296,7 @@ public class ReserveOrderController extends ExpressCommonController {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toString();
 				}
 			} else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-//				if(this.isWarehouseMaster()) {
-//					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
-//				} else {
-					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
-//				}
+				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
 			} else {
 				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toString();
 			}
@@ -329,15 +309,12 @@ public class ReserveOrderController extends ExpressCommonController {
 		if (this.isWarehouseMaster() || this.isCourier()) {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-//			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
             omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
         } else if (this.isCustomService() || this.isAdmin()) {
-//            if (StringUtils.isNotBlank(acceptOrg)) {
-//                omReserveOrderModel.setAcceptOrg(acceptOrg);
-//                Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
-//                omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
-//                omReserveOrderModel.setCarrierSiteCode(acceptOrg);
-//            }
+            if (StringUtils.isNotBlank(acceptOrg)) {
+                Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
+                omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
+            }
         } else {
             isQuery = false;
 		}
@@ -350,7 +327,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "ReserveOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
-		final String[] cloumnName = {"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "运单号", "站点", "快递员"};
+		final String[] cloumnName = {"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "站点", "快递员"};
 		ExcelUtils excelUtil = new ExcelUtils() {
 
 			@Override
@@ -414,15 +391,11 @@ public class ReserveOrderController extends ExpressCommonController {
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
-					cell.setCellValue(vo.getTransportNo());
-					
-					cell = row.createCell(colIndex++);
-					cell.setCellStyle(style);
 					cell.setCellValue(vo.getAcceptOrgName());
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
-					cell.setCellValue(vo.getCnorName());
+					cell.setCellValue(vo.getCourierName());
 				}
 			}
 		};
