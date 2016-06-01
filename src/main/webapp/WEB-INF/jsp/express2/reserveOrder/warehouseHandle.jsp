@@ -269,6 +269,7 @@
 //                {field: 'transportNo', title: '运单号', width: 100},
 //                {field: 'acceptOrgName', title: '站点', width: 100},
                 {field: 'courierName', title: '快递员', width: 80},
+                {field:'recordVersion',hidden : true, width:80}
 //                {field: 'remark', title: '备注', width: 80}
             ]]
         });

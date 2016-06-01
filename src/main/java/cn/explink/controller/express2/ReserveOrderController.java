@@ -804,7 +804,7 @@ public class ReserveOrderController extends ExpressCommonController {
     	
     	ExplinkResponse explinkResponse = new ExplinkResponse();
     	
-    	logger.info("{}vo:{}", logPrefix, JsonUtil.translateToJson(vo));
+//    	logger.info("{}vo:{}", logPrefix, JsonUtil.translateToJson(vo));
     	try {
     		vo.validate();
     	} catch (IllegalStateException e) {
@@ -813,7 +813,7 @@ public class ReserveOrderController extends ExpressCommonController {
     		logger.info("{}explinkResponse:{}", logPrefix, JsonUtil.translateToJson(explinkResponse));
     		return JsonUtil.translateToJson(explinkResponse);
     	}
-    	logger.info("{}vo->after validate:{}", logPrefix, JsonUtil.translateToJson(vo));
+//    	logger.info("{}vo->after validate:{}", logPrefix, JsonUtil.translateToJson(vo));
     	
     	try {
     		//修改预约单

@@ -67,7 +67,13 @@ public class ReserveOrderEditVo implements Serializable {
 	 */
 	private Long requireTimeLong;
 	//----------------------
-	
+
+
+    /**
+     * 乐观锁
+     */
+    private Long recordVersion;
+
 	/**
 	 * 校验
 	 */
@@ -222,6 +228,13 @@ public class ReserveOrderEditVo implements Serializable {
 	public void setCounty4editInt(Integer county4editInt) {
 		this.county4editInt = county4editInt;
 	}
-	
-	
+
+
+    public Long getRecordVersion() {
+        return recordVersion;
+    }
+
+    public void setRecordVersion(Long recordVersion) {
+        this.recordVersion = recordVersion;
+    }
 }
