@@ -327,7 +327,7 @@ public class BaleController {
 				this.cwbDAO.saveCwbWeight(totalWeight, cwbOrder.getCwb());
 			}
 			// 如果扫描运单号，就更新当前运单的货物重量
-			if(customer.getIsUsetranscwb() != 2){
+			if(customer != null && customer.getIsUsetranscwb() != 2){
 				this.mpsOptStateService.updateTransCwbDetailWeight(cwbOrder.getCwb(), cwb, carrealweight);
 			}
 			obj.put("newCarrealWeight", carrealweight) ;
@@ -439,7 +439,8 @@ public class BaleController {
 	@RequestMapping("/sortAndChangeBaleAddCwb/{cwb}/{baleno}")
 	@Transactional
 	public @ResponseBody ExplinkResponse sortAndChangeBaleAddCwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
-			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
+			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid,
+			@RequestParam(value = "carrealweight", required = false, defaultValue = "0") BigDecimal carrealweight) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		String scancwb = cwb.trim();
@@ -462,6 +463,21 @@ public class BaleController {
 				bale = this.baleDAO.getBaleById(bale.getId());
 				long successCount = bale.getCwbcount();
 				long scannum = bale.getScannum();
+				// add by bruce shangguan 20160530  如果是首次扫描订单号/运单号,就直接更新订单重量；否则就在订单原重量的基础上累加，再更新订单重量
+				Customer customer = this.customerDAO.getCustomerById(co.getCustomerid());
+				if(co.getScannum() == 1){
+					this.cwbDAO.saveCwbWeight(carrealweight, co.getCwb());
+				}else{
+					BigDecimal totalWeight = co.getCarrealweight() == null ? BigDecimal.ZERO : co.getCarrealweight() ;
+					totalWeight = totalWeight.add(carrealweight);
+					this.cwbDAO.saveCwbWeight(totalWeight, co.getCwb());
+				}
+				// 如果扫描运单号，就更新当前运单的货物重量
+				if(customer != null && customer.getIsUsetranscwb() != 2){
+					this.mpsOptStateService.updateTransCwbDetailWeight(co.getCwb(), cwb, carrealweight);
+				}
+				obj.put("newCarrealWeight", carrealweight) ;
+				// end 20160530
 				obj.put("successCount", successCount);
 				obj.put("scannum", scannum);
 				obj.put("errorcode", "000000");

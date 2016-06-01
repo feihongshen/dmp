@@ -10740,7 +10740,8 @@ public class PDAController {
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
 			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
-			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
+			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
+			@RequestParam(value = "carrealweight", required = false, defaultValue = "0") BigDecimal carrealweight) {
 
 		ExplinkResponse explinkResponse = null;
 		String translated = this.cwbOrderService.translateCwb(cwb);
@@ -10754,9 +10755,12 @@ public class PDAController {
 			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, false);
 		} else {
 			// 调用分拣出库扫描逻辑
-			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+			if(carrealweight == null || carrealweight.compareTo(BigDecimal.ZERO) == 0){
+				explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+			}else{
+				explinkResponse = this.cwbExportWarhouseWeight(model, request, response, cwb, deliverybranchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, carrealweight) ;
+			}
 		}
-
 		return explinkResponse;
 	}
 
