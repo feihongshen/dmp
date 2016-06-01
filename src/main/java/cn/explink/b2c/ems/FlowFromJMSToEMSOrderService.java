@@ -134,6 +134,13 @@ public class FlowFromJMSToEMSOrderService {
 					|| (floworderType==37 && order.getDeliverybranchid()!=branchid)){
 				return;
 			}
+			
+			//应收运费和应收金额均大于0的订单不发送给ems
+			if(order.getReceivablefee().compareTo(BigDecimal.ZERO)>0&&order.getShouldfare().compareTo(BigDecimal.ZERO)>0){
+				this.logger.info("应收运费和应收金额均大于0的订单不发送给ems，订单号为：{}",orderflow.getCwb());
+				return;
+			}
+			
 			//集单的数据不发送给EMS
 			if(order.getIsmpsflag() == IsmpsflagEnum.yes.getValue()){
 				return;
@@ -222,6 +229,9 @@ public class FlowFromJMSToEMSOrderService {
 		}else if((order.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()||order.getCwbordertypeid()==CwbOrderTypeIdEnum.Express.getValue()||order.getCwbordertypeid()==CwbOrderTypeIdEnum.OXO.getValue())
 				&& order.getShouldfare().compareTo(BigDecimal.ZERO)>0){
 			eMSOrderInfo.setBusinessType("3");
+		}else if(order.getReceivablefee().compareTo(BigDecimal.ZERO)>0&& order.getShouldfare().compareTo(BigDecimal.ZERO)>0){
+			this.logger.info("应收运费和应收金额均大于0的订单不发送给ems：{}" ,order.getCwb());
+			return null;
 		}else{
 			this.logger.info("订单数据不符合ems业务类型要求,订单号为：{}" ,order.getCwb());
 			return null;
