@@ -142,6 +142,7 @@ import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.GotoClassOld;
 import cn.explink.domain.GroupDetail;
 import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.NoPiPeiCwbDetail;
 import cn.explink.domain.OperationTime;
 import cn.explink.domain.OrderArriveTime;
@@ -163,7 +164,6 @@ import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.domain.YpdjHandleRecord;
 import cn.explink.domain.ZhiFuApplyView;
-import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.VO.DeliverServerParamVO;
 import cn.explink.domain.VO.DeliverServerPushVO;
 import cn.explink.domain.VO.GoodInfoVO;
@@ -6139,7 +6139,25 @@ public class CwbOrderService extends BaseOrderService {
 		 */
 		logger.info("ok:subTrStr {} | subAmount {} | subAmountPos {}", new Object[] { subTrStr, subAmount, subAmountPos });
 
-		logger.info("用户:{},开始创建归班记录,金额为{},pos为{},包含{}", new Object[] { user.getUserid(), subAmount, subAmountPos, subTrStr });
+		logger.info("用户:{},所属站点:{},开始创建归班记录,金额为{},pos为{},包含{}", new Object[] { user.getUserid(), user.getBranchid(), subAmount, subAmountPos, subTrStr });
+		
+		//Added by leoliao at 2016-06-01 解决从session中获取User的branchid为0的情况
+		if(user.getBranchid() <= 0){	
+			logger.info("(CwbOrderService.deliverAuditok) branch <= 0,重新从数据库取!");
+			try{
+				List<User> listUser = this.userDAO.getUserByid(user.getUserid());
+				if(listUser != null && listUser.size() > 0 && listUser.get(0) != null){
+					long branchidTmp = listUser.get(0).getBranchid();
+					user.setBranchid(branchidTmp);
+					
+					logger.info("重新从数据库取的branchid={}!", branchidTmp);
+				}
+			}catch(Exception ex){
+				logger.error("重新从数据库取branchid出错", ex);
+				ex.printStackTrace();
+			}
+		}
+		//Added end
 
 		Boolean isUseDeliverPayUp = false;// 用于判断是否使用小件员交款功能
 		try {
