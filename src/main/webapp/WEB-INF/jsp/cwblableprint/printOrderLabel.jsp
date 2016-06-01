@@ -130,9 +130,9 @@ function nowprint(){
             					<td style="width:30px;height: 6mm;padding-left: 5px;padding-right: 0px;">
             						<span style="font-family: 黑体;font-size: 10px;">原寄地</span>
             					</td>
-            					<td>
+            					<td style="padding-left: 5px;padding-right: 0px;">
             						<c:choose>
-            						<c:when test="${fn:length(cwb.instationname) gt 4 }">
+            						<c:when test="${fn:length(cwb.instationname) gt 5 }">
            								<span style="font-family: 黑体;font-size: 8px;font-weight: bold;">${cwb.instationname }</span>
            							</c:when>
            							<c:otherwise>
