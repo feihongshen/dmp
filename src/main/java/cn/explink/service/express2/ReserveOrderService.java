@@ -549,7 +549,7 @@ public class ReserveOrderService extends ExpressCommonService {
 		if (omReserveOrderModel == null) {
 			throw new ExplinkException("预约单不存在，预约单号：" + vo.getReserveOrderNo());
 		}
-		logger.info("{}omReserveOrderModel:{}", logPrefix, JsonUtil.translateToJson(omReserveOrderModel));
+//		logger.info("{}omReserveOrderModel:{}", logPrefix, JsonUtil.translateToJson(omReserveOrderModel));
 		
 		if (ReserveOrderStatusEnum.HadReceiveSuccess.getIndex().intValue() == omReserveOrderModel.getReserveOrderStatus().intValue() ||
 				ReserveOrderStatusEnum.HaveReciveFailure.getIndex().intValue() == omReserveOrderModel.getReserveOrderStatus().intValue() ||
@@ -572,14 +572,15 @@ public class ReserveOrderService extends ExpressCommonService {
 		pjReserveOrderRequest.setRequireTime(vo.getRequireTimeLong()); //预约上门时间
 		pjReserveOrderRequest.setRequester(TPS_REQUESTER); //请求方
 		pjReserveOrderRequest.setOperater(user.getUsername()); //操作人名称
-		
-		//原值回传
-		pjReserveOrderRequest.setWeight(omReserveOrderModel.getWeight());
-		pjReserveOrderRequest.setAppointTime(omReserveOrderModel.getAppointTime());
-		pjReserveOrderRequest.setCnorMobile(omReserveOrderModel.getCnorMobile());
-		pjReserveOrderRequest.setCnorTel(omReserveOrderModel.getCnorTel());
-		pjReserveOrderRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
-		
+        pjReserveOrderRequest.setRecordVersion(vo.getRecordVersion());
+
+        //原值回传
+        pjReserveOrderRequest.setWeight(omReserveOrderModel.getWeight());
+        pjReserveOrderRequest.setAppointTime(omReserveOrderModel.getAppointTime());
+        pjReserveOrderRequest.setCnorMobile(omReserveOrderModel.getCnorMobile());
+        pjReserveOrderRequest.setCnorTel(omReserveOrderModel.getCnorTel());
+//		pjReserveOrderRequest.setRecordVersion(omReserveOrderModel.getRecordVersion());
+
 		Branch branch = this.branchDAO.getBranchByBranchid(user.getBranchid());
 		if (branch == null) {
 			throw new ExplinkException("当前用户所属机构不存在");
@@ -587,16 +588,18 @@ public class ReserveOrderService extends ExpressCommonService {
 		String operateOrg = branch.getTpsbranchcode();
 		pjReserveOrderRequest.setOperateOrg(operateOrg); //操作机构
 		
-		logger.info("请求报文",JsonUtil.translateToJson(pjReserveOrderRequest));
+		logger.info("修改报文: {}", JsonUtil.translateToJson(pjReserveOrderRequest));
 		
 		//修改预约单
 		PjReserveOrderResponse pjReserveOrderResponse = pjReserveOrderService.updateReserveOrder(pjReserveOrderRequest);
 		if (pjReserveOrderResponse == null) {
 			throw new ExplinkException("TPS的response对象为空，预约单号：" + vo.getReserveOrderNo());
 		}
-		logger.info("请求结果", JsonUtil.translateToJson(pjReserveOrderResponse));
-		if (!"1".equals(pjReserveOrderResponse.getResultCode())) {
-			throw new ExplinkException(pjReserveOrderResponse.getResultMsg() + "，预约单号：" + vo.getReserveOrderNo());
+        logger.info("修改结果: code 1 success, 0 fail - {}", pjReserveOrderResponse.getResultCode());
+        logger.info("修改结果: message - {}", pjReserveOrderResponse.getResultMsg());
+
+		if ("0".equals(pjReserveOrderResponse.getResultCode())) {
+			throw new ExplinkException(pjReserveOrderResponse.getResultMsg());
 		}
 
         logger.info("调用TPS修改接口结束");

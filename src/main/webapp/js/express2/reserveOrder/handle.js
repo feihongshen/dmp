@@ -340,7 +340,8 @@ $(function () {
             county4edit : $('#county4edit').val(),
             countyName4edit : $('#county4edit  option:selected').text(),
             cnorAddr4edit : $('#cnorAddr4edit').val(),
-            requireTimeStr4edit : $('#requireTimeStr4edit').val()
+            requireTimeStr4edit : $('#requireTimeStr4edit').val(),
+            recordVersion : rows[0].recordVersion
         };
 
         $.ajax({
