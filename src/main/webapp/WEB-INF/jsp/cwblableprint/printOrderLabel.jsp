@@ -32,12 +32,14 @@ function CreateOneFormPage(){
 	//LODOP.SET_PRINT_PAGESIZE(0,815,1500,"A4");
 	for(var i = 0; i < ${fn:length(printOrderLabelVoList)}; i++) {
 		LODOP.NewPage();
-		LODOP.ADD_PRINT_HTM(1,1,"RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_0").outerHTML + "</body>");
-		var transcwb = $("#cwb_0").val();
-		LODOP.ADD_PRINT_BARCODE(100,30,145,55,"128B",transcwb);
-		LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
-		LODOP.ADD_PRINT_BARCODE(373,158,145,55,"128B",transcwb);
-		LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
+		LODOP.ADD_PRINT_HTM(1,1,"RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_" + i).outerHTML + "</body>");
+		var transcwb = $("#cwb_" + i).val();
+		if(transcwb != null && transcwb != "") {
+			LODOP.ADD_PRINT_BARCODE(100,30,145,55,"128B",transcwb);
+			LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
+			LODOP.ADD_PRINT_BARCODE(373,158,145,55,"128B",transcwb);
+			LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
+		}
 	}
 };
 
