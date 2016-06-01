@@ -182,6 +182,7 @@ public class ReserveOrderService extends ExpressCommonService {
             }
             vo.setCnorRemark(po.getCnorRemark());
             vo.setCourier(po.getCourier());
+            vo.setCustName(po.getCustName());
             User user = this.userDao.getUserByUsername(po.getCourier());
             if(user != null) {
             	vo.setCourierName(user.getRealname());

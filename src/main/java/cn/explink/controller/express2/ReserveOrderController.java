@@ -349,8 +349,8 @@ public class ReserveOrderController extends ExpressCommonController {
 		}
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		String fileName = "快递预约单_" + df.format(new Date()) + ".xlsx"; // 文件名
-		final String[] cloumnName = {"预约单号", "下单时间", "寄件人", "手机", "固话", "寄件地址", "预约上门时间", "预约单状态", "原因", "运单号", "站点", "快递员", "备注"};
+		String fileName = "ReserveOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
+		final String[] cloumnName = {"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "运单号", "站点", "快递员"};
 		ExcelUtils excelUtil = new ExcelUtils() {
 
 			@Override
@@ -382,6 +382,10 @@ public class ReserveOrderController extends ExpressCommonController {
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCustName());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
 					cell.setCellValue(vo.getCnorMobile());
 					
 					cell = row.createCell(colIndex++);
@@ -390,11 +394,15 @@ public class ReserveOrderController extends ExpressCommonController {
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
-					cell.setCellValue(vo.getCnorAddr());
+					cell.setCellValue(vo.getCnorDetailAddr());
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getRequireTimeStr());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCnorRemark());
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
@@ -415,10 +423,6 @@ public class ReserveOrderController extends ExpressCommonController {
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getCnorName());
-					
-					cell = row.createCell(colIndex++);
-					cell.setCellStyle(style);
-					cell.setCellValue(vo.getCnorRemark());
 				}
 			}
 		};
