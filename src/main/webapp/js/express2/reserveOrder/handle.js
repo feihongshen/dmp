@@ -151,25 +151,40 @@ $(function () {
             return false;
         }
 
-        var isHandle = $(this).attr('isHandle');
-        if(isHandle){
-            var rows = $('#dg_rsList').datagrid('getChecked');
+        var rows = $('#dg_rsList').datagrid('getChecked');
+        var handleType = $(this).attr('handleType');
+        var flag = true;
+        var errReserveOrder = "";
 
-            var flag = true;
-            var errReserveOrder = "";
+        if(handleType=="handle"){
             $.each(rows, function (index, value) {
                 var reserveOrderStatus = value.reserveOrderStatus;
-                //if(reserveOrderStatus != hadAllocationPro && reserveOrderStatus != haveStationOutZone) {
-                if(reserveOrderStatus = haveStationOutZone) {
+                if(reserveOrderStatus != haveStationOutZone && reserveOrderStatus != hadAllocationPro) {
+                //if(reserveOrderStatus != haveStationOutZone) {
                     errReserveOrder = value.reserveOrderNo;
                     flag = false;
                     return false;
                 }
             });
             if(!flag) {
-                allertMsg.alertError("{"+errReserveOrder+"} 已分配站点,不能退回总部!");
+                allertMsg.alertError("{"+errReserveOrder+"} 只有站点超区和已分配省公司状态,才能退回总部!");
                 return false;
             }
+        }else if(handleType == "handleWarehouse"){
+            $.each(rows, function (index, value) {
+                var reserveOrderStatus = value.reserveOrderStatus;
+                if(reserveOrderStatus != haveReciveOutZone && reserveOrderStatus != hadAllocationStation) {
+                    //if(reserveOrderStatus != haveStationOutZone) {
+                    errReserveOrder = value.reserveOrderNo;
+                    flag = false;
+                    return false;
+                }
+            });
+            if(!flag) {
+                allertMsg.alertError("{"+errReserveOrder+"} 只有已分配站点和揽件超区,才能退回省公司!");
+                return false;
+            }
+
         }
         //打开退回总部面板
         returnToCentralPanel = $.layer({
