@@ -5497,7 +5497,7 @@ public class CwbOrderService extends BaseOrderService {
 					//this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
 				}
 			}else{//当录入或修改快递单号为空时
-				if(!"".equals(co.getTranscwb())){
+				if(!"".equals(co.getTranscwb()) && nosysyemflag == null){
 					this.transCwbDao.deleteTranscwb(cwb);
 					this.transCwbDao.saveTranscwb(cwb,cwb);
 					this.cwbDAO.saveTranscwbByCwb("",cwb);
@@ -9219,6 +9219,17 @@ public class CwbOrderService extends BaseOrderService {
 			inStr.append("'").append(temp).append("'").append(",");
 		}
 		list = this.cwbDAO.getCwbsBycwbs(inStr.substring(0, inStr.length() - 1) + ")");
+		return list;
+	}
+	
+	public List<CwbOrder> getLabelPrintCwbsByCwbs(List<String> cwbList) {
+		List<CwbOrder> list = new ArrayList<CwbOrder>();
+		StringBuffer inStr = new StringBuffer();
+		inStr.append("('',");
+		for (String temp : cwbList) {
+			inStr.append("'").append(temp).append("'").append(",");
+		}
+		list = this.cwbDAO.getLabelPrintCwbsByCwbs(inStr.substring(0, inStr.length() - 1) + ")");
 		return list;
 	}
 

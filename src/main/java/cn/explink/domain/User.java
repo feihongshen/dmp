@@ -14,7 +14,8 @@ public class User implements Serializable {
 	String username;
 	String realname;
 	// String lastusername;
-	String password;
+	String password;	// PDA登录密码
+	String webPassword;	// 网页登录密码
 	long branchid;
 	long usercustomerid;
 	// int usertypeflag;
@@ -249,6 +250,14 @@ public class User implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getWebPassword() {
+		return this.webPassword;
+	}
+
+	public void setWebPassword(String webPassword) {
+		this.webPassword = webPassword;
 	}
 
 	public long getBranchid() {

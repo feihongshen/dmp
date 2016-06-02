@@ -165,6 +165,36 @@
 			$(this).swfupload('startUpload');
 		}).bind('uploadError', function(event, file, errorCode, message) {
 		});
+		
+		$("#selectAll").click(function() {
+			var $this = $(this);
+			if($this.is(":checked")) {
+				$("input[name='cwb']").attr("checked", true);
+			} else {
+				$("input[name='cwb']").attr("checked", false);
+			}
+		});
+		
+		$("input[name='cwb']").click(function() {
+			var $this = $(this);
+			if($this.is(":checked")) {
+				var unSelectLen = $("input[name='cwb']").not(":checked").length;
+				if(unSelectLen == 0) {
+					$("#selectAll").attr("checked", true);
+				}
+			} else {
+				$("#selectAll").attr("checked", false);
+			}
+		});
+		
+		$("#print").click(function() {
+			var $cwbChecked = $("input[name='cwb']:checked");
+			if($cwbChecked.length == 0) {
+				alert("请选择订单！");
+			} else {
+				window.location.href = "<%= request.getContextPath()%>/cwbLablePrint/printOrderLabel?" + $cwbChecked.serialize();
+			}
+		});
 
 		$("#stop").click(function(){
 			$("#stop").attr("disabled","disabled");
@@ -311,7 +341,7 @@ function editSuccess(data){
 				<tr id="customertr" class=VwCtr style="display:">
 					<td width="650" colspan="2">发货批次：
 						<select id="emaildate" name="emaildate" class="select1" style="height:20px;width:300px">
-						<option value="">请选择(5天内)(供货商_供货商仓库_结算区域)</option>
+						<option value="">请选择(7天内)(供货商_供货商仓库_结算区域)</option>
 						<%for (EmailDate e : emaildatelist) {%>
 						<option customerid="<%=e.getCustomerid()%>" warehouseid="<%=e.getWarehouseid() %>" areaid="<%=e.getAreaid() %>"  value="<%=e.getEmaildateid()%>" <%=(e.getEmaildateid()+"").equals(emaildateidParam)?"selected":"" %> 
 						><%=e.getEmaildatetime()%><%=e.getState()==1?"（已到货）":"" %>(<%=e.getCustomername()+"_"+e.getWarehousename()+"_"+e.getAreaname()  %>)
@@ -361,6 +391,7 @@ function editSuccess(data){
 						<span id="swfupload-control"><input type="text" id="txtFileName" disabled="true" style="border: solid 1px; background-color: #FFFFFF;" /><input type="button" id="button" /></span>*</td>
 					<td><input type="button" name="reUpload" id="reUpload" value="重新导入" title="此功能会更新“所有匹配到订单号的”记录，但不会修改订单当前的状态，除非匹配到的订单是“有货无单入库”" class="input_button2" />
 					<input type="button" name="stop" id="stop" value="停止导入" disabled="disabled" class="input_button2" />
+					<input type="button" name="print" id="print" value="打印"> 
 					<input type="hidden" id="anyid"/>
 					</td>
 					<td></td>
@@ -390,8 +421,11 @@ function editSuccess(data){
 						</table>
 						<table id="successOrder" width="100%" border="0" cellspacing="1" cellpadding="0" <%if(!isSuccess.equals("1")){ %>style="display: none"<%} %> class="table_2" >
 							<tr class="font_1">
-								<td width="10%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
-								<td width="8%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">收件人</td>
+								<td width="2%" height="20" align="center" valign="middle" bgcolor="#eef6ff">
+									<input id="selectAll" type="checkbox"/>
+								</td>
+								<td width="8%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+								<td width="10%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">收件人</td>
 								<td width="20%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">收件地址</td>
 								<td width="5%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">邮编</td>
 								<td width="10%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">手机</td>
@@ -400,21 +434,22 @@ function editSuccess(data){
 								<td width="5%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">时效</td>
 								<td width="8%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">订单类型</td>
 								<td width="8%" align="center" height="20" align="center" valign="middle" bgcolor="#eef6ff">订单状态</td>
-								<td width="9%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
+								<td width="7%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 							</tr>
 							<%for(CwbOrder co : SuccessList){ %>
 							<tr>
-								<td width="10%"  align="center" height="19" ><%=co.getCwb() %></td>
-								<td width="8%"  align="center" ><%="1".equals(showphoneflag)||co.getConsigneename().length()<1?co.getConsigneename():"■"+(co.getConsigneename().substring(co.getConsigneename().length()-1)) %></td>
-								<td width="20%"  align="left" ><%="1".equals(showphoneflag)||co.getConsigneeaddress().length()<4?co.getConsigneeaddress():(co.getConsigneeaddress().substring(0,4)+"■■■■■■") %></td>
-								<td width="5%"   align="center" ><%=co.getConsigneepostcode() %></td>
-								<td width="10%"  align="center" ><%="1".equals(showphoneflag)||co.getConsigneemobile().length()<4?co.getConsigneemobile():(co.getConsigneemobile().substring(0,4)+"■■■■■■") %></td>
-								<td width="10%"  align="center" id="<%=co.getCwb() %>_excelbranch"><%=co.getExcelbranch() %></td>
-								<td width="7%"   align="center" id="<%=co.getCwb() %>_exceldeliver"><%=co.getExceldeliver() %></td>
-								<td width="5%"   align="center" id="<%=co.getCwb() %>_timelimited"><%=co.getTimelimited() %></td>
-								<td width="8%"   align="center" ><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-								<td width="8%"   align="center" ><%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText() %></td>
-								<td width="9%" align="center" ><!-- [<a href="#">删除</a>] -->[<a href="javascript:;" id="edit" onclick="getEditBox('<%=request.getContextPath()%>/dataimport/getcwbforeditexcel/<%=co.getCwb() %>')">修改</a>]</td>
+								<td align="center"><input name="cwb" type="checkbox" value="<%=co.getCwb() %>"/></td>
+								<td align="center" height="19" ><%=co.getCwb() %></td>
+								<td align="center" ><%="1".equals(showphoneflag)||co.getConsigneename().length()<1?co.getConsigneename():"■"+(co.getConsigneename().substring(co.getConsigneename().length()-1)) %></td>
+								<td align="left" ><%="1".equals(showphoneflag)||co.getConsigneeaddress().length()<4?co.getConsigneeaddress():(co.getConsigneeaddress().substring(0,4)+"■■■■■■") %></td>
+								<td align="center" ><%=co.getConsigneepostcode() %></td>
+								<td walign="center" ><%="1".equals(showphoneflag)||co.getConsigneemobile().length()<4?co.getConsigneemobile():(co.getConsigneemobile().substring(0,4)+"■■■■■■") %></td>
+								<td align="center" id="<%=co.getCwb() %>_excelbranch"><%=co.getExcelbranch() %></td>
+								<td align="center" id="<%=co.getCwb() %>_exceldeliver"><%=co.getExceldeliver() %></td>
+								<td align="center" id="<%=co.getCwb() %>_timelimited"><%=co.getTimelimited() %></td>
+								<td align="center" ><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
+								<td align="center" ><%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText() %></td>
+								<td align="center" ><!-- [<a href="#">删除</a>] -->[<a href="javascript:;" id="edit" onclick="getEditBox('<%=request.getContextPath()%>/dataimport/getcwbforeditexcel/<%=co.getCwb() %>')">修改</a>]</td>
 							</tr>
 							<%} %>
 						</table>

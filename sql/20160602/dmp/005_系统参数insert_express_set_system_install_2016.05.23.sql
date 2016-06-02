@@ -1,0 +1,1 @@
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('openExpressMQInter','0', '开启快递MQ接口,0、不开启，1、开启');

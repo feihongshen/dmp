@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 
 import cn.explink.b2c.amazon.AmazonService;
 import cn.explink.b2c.auto.order.service.AutoDispatchStatusService;
+import cn.explink.b2c.auto.order.service.ExpressOrderService;
 import cn.explink.b2c.auto.order.service.TPSInsertCwbDetailTimmer;
 import cn.explink.b2c.chinamobile.ChinamobileService;
 import cn.explink.b2c.dangdang_dataimport.DangDangSynInsertCwbDetailTimmer;
@@ -285,6 +286,9 @@ public class JobUtil {
 	FlowExpService flowExpService;
 	@Autowired
 	TpsCwbFlowPushService tpsCwbFlowPushService;
+	@Autowired
+	private ExpressOrderService expressOrderService;
+	
 	
 	// public static Map<String, Integer> threadMap;
 	public static RedisMap<String, Integer> threadMap;	
@@ -336,6 +340,7 @@ public class JobUtil {
 		
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
 		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
+		JobUtil.threadMap.put("expressOrderTransfer", 0);
 	}
 
 	/**
@@ -377,6 +382,7 @@ public class JobUtil {
 		JobUtil.threadMap.put("syncUserInf", 0);
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
 		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
+		JobUtil.threadMap.put("expressOrderTransfer", 0);
 		this.logger.info("系统自动初始化定时器完成");
 	}
 
@@ -1818,6 +1824,34 @@ public class JobUtil {
 			JobUtil.threadMap.put("tpsCwbFlow", 0);
 		}
 		this.logger.info("执行了订单重量体积反馈TPS的定时器,本次耗时:{}秒", ((endTime - startTime) / 1000));
+	}
+	
+	/**
+	 * 定时器，处理快递临时表转业务
+	 */
+	public void expressOrderTransfer_Task(){
+		System.out.println("-----expressOrderTransfer启动执行");
+
+		if (JobUtil.threadMap.get("expressOrderTransfer") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环expressOrderTransfer");
+			return;
+		}
+		JobUtil.threadMap.put("expressOrderTransfer", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			expressOrderService.expressOrderTransfer();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行expressOrderTransfer定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("expressOrderTransfer", 0);
+		}
+
+		this.logger.info("执行了获取expressOrderTransfer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		
 	}
 
 }

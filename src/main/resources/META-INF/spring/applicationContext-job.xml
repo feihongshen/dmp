@@ -115,6 +115,7 @@
                 <ref bean="doTime_syncUserInf"/>
                 <ref bean="mqExceptionHandler"/>
                 <ref bean="doTime_tpsCwbFlow"/>
+                <ref bean="doTime_expressOrderTransfer"/>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -1501,6 +1502,26 @@
          </property>
          <property name="targetMethod">
              <value>tpsCwbFlow_Task</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
+     
+     <!-- 快递临时表转业务 -->
+     <bean id="doTime_expressOrderTransfer" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="expressOrderTransfer" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */1 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="expressOrderTransfer" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>expressOrderTransfer_Task</value>
          </property>
          <property name="concurrent" value="false" />
      </bean>

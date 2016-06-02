@@ -60,9 +60,8 @@ for(Long role_menu:role_menuList){%>
 											if(hasChild){
 											%>
 											<div id="menu_<%=menu_1.getId() %>" style ="display:none ;" >
-											<a href="javascript:;" onclick="juniorCheck(<%=menu_1.getId() %>)">[全选]</a>
-											<a href="javascript:;" onclick="juniorUnCheck(<%=menu_1.getId() %>)">[全不选]</a>
-
+											<a href="javascript:;" onclick="juniorCheck(<%=menu_1.getId() %>);validataJuniorCheck(<%=menu_1.getId() %>,<%=menu.getId() %>)">[全选]</a>
+											<a href="javascript:;" onclick="juniorUnCheck(<%=menu_1.getId() %>);validataJuniorCheck(<%=menu_1.getId() %>,<%=menu.getId() %>)">[全不选]</a>
 											<ul>
 											<% for(Menu menu_2: menuList){ 
 												if(menu_2.getParentid()==menu_1.getId()){
