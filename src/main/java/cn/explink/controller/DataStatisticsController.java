@@ -1392,6 +1392,11 @@ public class DataStatisticsController {
 		String threeCwbs = "";
 		String fourCwbs = "";
 		String fiveCwbsAll = "";
+		Map<String, Object> paramsMAP = new HashMap<String, Object>();
+		paramsMAP.put("begindate", begindate);
+		paramsMAP.put("enddate", enddate);
+		paramsMAP.put("kufangids", kufangids);
+		paramsMAP.put("branchids",branchids);
 		if (!"".equals(oneCwbs)) {// 如果第一步查不到订单后面的都不用管了
 			List<String> twoCwbsList = this.orderFlowDAO
 					.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs, enddate);
@@ -1415,7 +1420,7 @@ public class DataStatisticsController {
 			sql = this.cwbDAO.getSqlByCwb(fiveCwbsAll);
 		}
 		if (!"".equals(sql)) {
-			this.dataStatisticsService.exportExcelByNoresultMethod(response, sql, mouldfieldids);
+			this.dataStatisticsService.exportExcelByNoresultMethod(response, sql, paramsMAP, mouldfieldids);
 		}
 
 	}

@@ -76,6 +76,7 @@ import cn.explink.enumutil.express.ExpressSettleWayEnum;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
+import net.sf.json.JSONObject;
 
 @Service
 public class DataStatisticsService {
@@ -168,7 +169,7 @@ public class DataStatisticsService {
 		String fileName = "Order_" + df.format(new Date()) + "_"; // 文件名
 		String otherName = "";
 		String lastStr = ".xlsx";// 文件名后缀
-		long count = Long.parseLong(request.getSession().getAttribute("count") == null ? "0" : request.getSession().getAttribute("count").toString());
+		long count = Long.parseLong(request.getParameter("count") == null ? "0" : request.getParameter("count"));
 
 		if (count > 0) {
 			if (((count / Page.EXCEL_PAGE_NUMBER) + ((count % Page.EXCEL_PAGE_NUMBER) > 0 ? 1 : 0)) == 1) {
@@ -275,6 +276,11 @@ public class DataStatisticsService {
 					this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), strKufangid, flowordertype, paywayid, sign,
 					paybackfeeIsZero, servicetype);
 
+			String dataJson = this.setDataStatisticsExportExcelJson(begindate, enddate, isauditTime, nextbranchid,
+					startbranchid, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
+					kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, cwbordertypeids, paywayid,
+					isnowdata, paybackfeeIsZero, servicetype, firstlevelid);
+			
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
@@ -397,6 +403,8 @@ public class DataStatisticsService {
 			};
 
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			//记录导出文件日志
+			this.auditExportExcel(dataJson, fileName, count, this.getSessionUser().getUserid());
 
 		} catch (Exception e) {
 			logger.error("", e);
@@ -516,7 +524,7 @@ public class DataStatisticsService {
 		String fileName = "Order_" + df.format(new Date()) + "_"; // 文件名
 		String otherName = "";
 		String lastStr = ".xlsx";// 文件名后缀
-		long count = Long.parseLong(request.getSession().getAttribute("count") == null ? "0" : request.getSession().getAttribute("count").toString());
+		long count = Long.parseLong(request.getParameter("count") == null ? "0" : request.getParameter("count"));
 
 		if (count > 0) {
 			if (((count / Page.EXCEL_PAGE_NUMBER) + ((count % Page.EXCEL_PAGE_NUMBER) > 0 ? 1 : 0)) == 1) {
@@ -542,6 +550,7 @@ public class DataStatisticsService {
 			String begindate = request.getParameter("begindate1") == null ? "" : request.getParameter("begindate1").toString();
 			String enddate = request.getParameter("enddate1") == null ? "" : request.getParameter("enddate1").toString();
 			long datetype = request.getParameter("datetype1") == null ? -1 : Long.parseLong(request.getParameter("datetype1").toString());
+			String dataJson = this.setDataStatisticsZaituExportExcelJson(cwbordertypeids, nextbranchid, kufangid, begindate, enddate, datetype);
 
 			String sql = "";
 			if (datetype == 1) {
@@ -680,6 +689,8 @@ public class DataStatisticsService {
 			};
 
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+            //记录导出文件日志
+			this.auditExportExcel(dataJson, fileName, count, this.getSessionUser().getUserid());
 
 		} catch (Exception e) {
 			logger.error("", e);
@@ -723,7 +734,7 @@ public class DataStatisticsService {
 		String fileName = "Order_" + df.format(new Date()) + "_"; // 文件名
 		String otherName = "";
 		String lastStr = ".xlsx";// 文件名后缀
-		long count = Long.parseLong(request.getSession().getAttribute("count") == null ? "0" : request.getSession().getAttribute("count").toString());
+		long count = Long.parseLong(request.getParameter("count") == null ? "0" : request.getParameter("count"));
 
 		if (count > 0) {
 			if (((count / Page.EXCEL_PAGE_NUMBER) + ((count % Page.EXCEL_PAGE_NUMBER) > 0 ? 1 : 0)) == 1) {
@@ -755,6 +766,9 @@ public class DataStatisticsService {
 			String nextbranchids = this.getStrings(nextbranchid);
 
 			final String sql = this.cwbDAO.getcwbOrderByOutWarehouseSqlNew(page, begindate, enddate, customerids, kufangdis, nextbranchids, cwbordertypeids, 0);
+			String dataJson = this.setDataStatisticsExportOutWareExcelJson(cwbordertypeid, nextbranchid, kufangid,
+					customerid, begindate, enddate);
+			
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(final Sheet sheet, final CellStyle style) {
@@ -907,6 +921,8 @@ public class DataStatisticsService {
 				}
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			//记录文件导出日志
+			this.auditExportExcel(dataJson, fileName, count, this.getSessionUser().getUserid());
 
 		} catch (Exception e) {
 			logger.error("", e);
@@ -950,7 +966,7 @@ public class DataStatisticsService {
 		String fileName = "Order_" + df.format(new Date()) + "_"; // 文件名
 		String otherName = "";
 		String lastStr = ".xlsx";// 文件名后缀
-		long count = Long.parseLong(request.getParameter("count") == null ? "0" : request.getParameter("count").toString());
+		long count = Long.parseLong(request.getParameter("count") == null ? "0" : request.getParameter("count"));
 
 		if (count > 0) {
 			if (((count / Page.EXCEL_PAGE_NUMBER) + ((count % Page.EXCEL_PAGE_NUMBER) > 0 ? 1 : 0)) == 1) {
@@ -986,6 +1002,8 @@ public class DataStatisticsService {
 			if (customerids.length > 0) {
 				customers = this.getStrings(customerids);
 			}
+			String dataJson = this.setDataStatisticsExportIntoWareExcelJson(cwbordertypeid, begindate, enddate,
+					emaildatebegin, emaildateend, kufangid, isruku, customerids);
 			String sql = "";
 			if (isruku.equals("false")) {
 				sql = this.cwbDAO.getCwbDetailByParamAndCwbsSql(page, customers, emaildatebegin, emaildateend, cwbordertypeid, kufangid);
@@ -1146,6 +1164,8 @@ public class DataStatisticsService {
 				}
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			//记录文件导出日志
+			this.auditExportExcel(dataJson, fileName, count, this.getSessionUser().getUserid());
 
 		} catch (Exception e) {
 			logger.error("", e);
@@ -1153,7 +1173,7 @@ public class DataStatisticsService {
 	}
 
 	@DataSource(DatabaseType.REPLICA)
-	public void exportExcelByNoresultMethod(HttpServletResponse response, String sql1, String mouldfieldids) {
+	public void exportExcelByNoresultMethod(HttpServletResponse response, String sql1, Map<String, Object> paramsMAP, String mouldfieldids) {
 
 		String[] cloumnName1 = {}; // 导出的列名
 		String[] cloumnName2 = {}; // 导出的英文列名
@@ -1190,6 +1210,7 @@ public class DataStatisticsService {
 		String lastStr = ".xlsx";// 文件名后缀
 
 		fileName = fileName + otherName + lastStr;
+		String dataJson = this.setexportExcelByNoresultJson(paramsMAP);
 		try {
 			final String sql = sql1;
 
@@ -1342,8 +1363,30 @@ public class DataStatisticsService {
 					 */
 
 				}
+				
+				@Override
+				public long getRecordCount(){
+					try{
+						int size = (Integer) DataStatisticsService.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>(){ 
+							@Override
+							public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+								int count = 0;
+					            while(rs.next()){
+					                count = count + 1;
+					            }
+								return count;
+							}
+						});
+						return size;
+					}catch(Exception e){
+						logger.info("Not able to fetch excel row count, so use default 0");
+						return 0;
+					}
+				}
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			//记录文件导出日志
+			this.auditExportExcel(dataJson, fileName, excelUtil.getRecordCount(), this.getSessionUser().getUserid());
 
 		} catch (Exception e) {
 			logger.error("", e);
@@ -1386,6 +1429,7 @@ public class DataStatisticsService {
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
+		String dataJson = this.setcwbExportExcelJson(begindate1, enddate1, branchid1, customerid1, types, istuihuozhanruku1, tuihuotype);
 		try {
 			// 查询出数据
 			String sql1 = "";
@@ -1547,9 +1591,30 @@ public class DataStatisticsService {
 					 */
 
 				}
+				
+				@Override
+				public long getRecordCount(){
+					try{
+						int size = (Integer) DataStatisticsService.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>(){ 
+							@Override
+							public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+								int count = 0;
+					            while(rs.next()){
+					                count = count + 1;
+					            }
+								return count;
+							}
+						});
+						return size;
+					}catch(Exception e){
+						logger.info("Not able to fetch excel row count, so use default 0");
+						return 0;
+					}
+				}
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
-
+			//记录导出excel日志
+			this.auditExportExcel(dataJson, fileName, excelUtil.getRecordCount(), this.getSessionUser().getUserid());
 		} catch (Exception e) {
 			logger.error("", e);
 		}
@@ -2259,6 +2324,7 @@ public class DataStatisticsService {
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "Order_" + df.format(new Date()) + ".xlsx"; // 文件名
+		String dataJson = setexportExcelOutToCommJson(mouldfieldids2, commoncode, startbranchid, outbranchflag);
 		try {
 			// 查询出数据
 
@@ -2384,8 +2450,30 @@ public class DataStatisticsService {
 					});
 
 				}
+				
+				@Override
+				public long getRecordCount(){
+					try{
+						int size = (Integer) DataStatisticsService.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>(){ 
+							@Override
+							public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+								int count = 0;
+					            while(rs.next()){
+					                count = count + 1;
+					            }
+								return count;
+							}
+						});
+						return size;
+					}catch(Exception e){
+						logger.info("Not able to fetch excel row count, so use default 0");
+						return 0;
+					}
+				}
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			//记录导出excel日志
+			this.auditExportExcel(dataJson, fileName, excelUtil.getRecordCount(), this.getSessionUser().getUserid());
 
 		} catch (Exception e) {
 			logger.error("", e);
@@ -2431,6 +2519,129 @@ public class DataStatisticsService {
 
 		String dayBefore = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
 		return dayBefore;
+	}
+	
+	/**
+	 * 记录所有导出文件的操作
+	 * 
+	 * @param request
+	 * @param dataJson
+	 * @param userid
+	 */
+	private void auditExportExcel(String dataJson, String fileName, long count, long userid) {
+		try{
+			String logStr = String.format(
+					"UserId [%s] was exported the excel file:[name: %s, line-count: %d] by using conditions [%s]", userid, fileName, count, dataJson);
+			logger.info(logStr);
+		}catch(Exception e){
+			logger.error("Fail to log exported file info");
+		}
+	}
+	
+	private String setDataStatisticsExportExcelJson(String begindate, String enddate, long isauditTime,
+			String[] nextbranchid, String[] startbranchids, long isaudit, String[] operationOrderResultTypes,
+			String[] dispatchbranchid, long deliverid, long flowordertype, String[] kufangids, String[] currentBranchid,
+			long branchid1, String type, String[] branchid2s, String[] customerids, String[] cwbordertypeids,
+			long paywayid, long isnowdata, int paybackfeeIsZero, String servicetype, int firstlevelid) {
+		JSONObject json = new JSONObject();
+		json.put("begindate", begindate);
+		json.put("enddate", enddate);
+		json.put("cwbordertypeids", cwbordertypeids);
+		json.put("isaudit", isaudit);
+		json.put("isauditTime", isauditTime);
+		json.put("type", type);
+		json.put("startbranchids", startbranchids);
+		json.put("nextbranchid", nextbranchid);
+		json.put("dispatchbranchid", dispatchbranchid);
+		json.put("currentBranchid", currentBranchid);
+		json.put("customerids", customerids);
+		json.put("deliverid", deliverid);
+		json.put("flowordertype", flowordertype);
+		json.put("paytype", paywayid);
+		json.put("kufangids", kufangids);
+		json.put("operationOrderResultTypes", operationOrderResultTypes);
+		json.put("branchid1", branchid1);
+		json.put("branchid2s", branchid2s);
+		json.put("isnowdata", isnowdata);
+		json.put("paybackfeeIsZero", paybackfeeIsZero);
+		json.put("servicetype", servicetype);
+		json.put("firstlevelid", firstlevelid);
+		return json.toString();
+	}
+
+	private String setDataStatisticsZaituExportExcelJson(String[] cwbordertypeids, String[] nextbranchids,
+			String[] kufangids, String begindate, String enddate, long datetype) {
+		JSONObject json = new JSONObject();
+		json.put("begindate", begindate);
+		json.put("datetype", datetype);
+		json.put("enddate", enddate);
+		json.put("cwbordertypeids", cwbordertypeids);
+		json.put("nextbranchids", nextbranchids);
+		json.put("kufangids", kufangids);
+		return json.toString();
+
+	}
+
+	private String setDataStatisticsExportOutWareExcelJson(String[] cwbordertypeids, String[] nextbranchids,
+			String[] kufangids, String[] customerids, String begindate, String enddate) {
+		JSONObject json = new JSONObject();
+		json.put("begindate", begindate);
+		json.put("enddate", enddate);
+		json.put("customerids", customerids);
+		json.put("cwbordertypeids", cwbordertypeids);
+		json.put("nextbranchids", nextbranchids);
+		json.put("nextbranchids", nextbranchids);
+		json.put("kufangids", kufangids);
+		return json.toString();
+	}
+
+	private String setDataStatisticsExportIntoWareExcelJson(long cwbordertypeid, String begindate, String enddate,
+			String emaildatebegin, String emaildateend, long kufangid, String isruku, String[] customerids) {
+		JSONObject json = new JSONObject();
+		json.put("begindate", begindate);
+		json.put("enddate", enddate);
+		json.put("customerids", customerids);
+		json.put("cwbordertypeid", cwbordertypeid);
+		json.put("emaildatebegin", emaildatebegin);
+		json.put("emaildateend", emaildateend);
+		json.put("kufangid", kufangid);
+		json.put("isruku", isruku);
+		return json.toString();
+	}
+	
+	private String setexportExcelByNoresultJson(Map<String, Object> paramsMAP){
+		JSONObject json = new JSONObject();
+		for(String key : paramsMAP.keySet()){
+			if(paramsMAP.get(key).getClass().isArray()){
+				json.put(key, (String[])(paramsMAP.get(key)));
+			}else{
+				json.put(key, (String)(paramsMAP.get(key)));
+			}			
+		}
+		return json.toString();
+	}
+	
+	private String setcwbExportExcelJson(String begindate1, String enddate1, String branchid1, String customerid1, String types,
+			long istuihuozhanruku1, long tuihuotype){
+		JSONObject json = new JSONObject();
+		json.put("begindate", begindate1);
+		json.put("enddate", enddate1);
+		json.put("branchid", branchid1);
+		json.put("customerid",customerid1);
+		json.put("types",types);
+		json.put("istuihuozhanruku", istuihuozhanruku1);
+		json.put("tuihuotype", tuihuotype);
+		return json.toString();
+	}
+	
+	private String setexportExcelOutToCommJson(String mouldfieldids2, String commoncode, long startbranchid,
+			int outbranchflag) {
+		JSONObject json = new JSONObject();
+		json.put("mouldfieldids", mouldfieldids2);
+		json.put("commoncode", commoncode);
+		json.put("startbranchid", startbranchid);
+		json.put("outbranchflag", outbranchflag);
+		return json.toString();
 	}
 
 }
