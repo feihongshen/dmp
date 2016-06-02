@@ -570,9 +570,17 @@ public class ReserveOrderController extends ExpressCommonController {
         } else {
             for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
                 if (ReserveOrderService.PJReserverOrderOperationCode.ShengGongSiChaoQu.getValue() == reserveOrderVo.getOperateType()
-                        && ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue() == reserveOrderVo.getReserveOrderStatus()) {
-                    errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 已分配站点,不能退回总部!");
+                        && ReserveOrderStatusEnum.HaveStationOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
+                        && ReserveOrderStatusEnum.HadAllocationPro.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
+                    errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 只有站点超区和已分配省公司状态, 才能退回总部!");
                     isPass = false;
+                    break;
+                } else if (ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue() == reserveOrderVo.getOperateType()
+                        && ReserveOrderStatusEnum.HaveReciveOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
+                        && ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
+                    errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 只有已分配站点和揽件超区,才能退回省公司!");
+                    isPass = false;
+                    break;
                 }
             }
         }

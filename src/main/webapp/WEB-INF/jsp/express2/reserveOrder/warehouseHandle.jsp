@@ -83,7 +83,7 @@
             <div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i
                     class="icon-plus"></i>修改
             </div>
-            <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回省公司
+            <div class="btn btn-default" handleType="handleWarehouse" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回省公司
             </div>
             <div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i
                     class="icon-eye-open"></i>分配快递员
@@ -308,8 +308,11 @@
     var returnType = "<%= ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>";
     
     var hadAllocationPro = "<%= ReserveOrderStatusEnum.HadAllocationPro.getIndex()%>";
+    //已分配站点
     var hadAllocationStation = "<%= ReserveOrderStatusEnum.HadAllocationStation.getIndex()%>";
     var haveStationOutZone = "<%= ReserveOrderStatusEnum.HaveStationOutZone.getIndex()%>";
+    //揽件超区
+    var haveReciveOutZone = "<%= ReserveOrderStatusEnum.HaveReciveOutZone.getIndex()%>";
 
 
     $("#optCode4Feedback").change(function () {
