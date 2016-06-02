@@ -263,7 +263,7 @@ public class ReserveOrderController extends ExpressCommonController {
 	 */
 	@ResponseBody
 	@RequestMapping("/exportExcel/{queryType}")
-	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") String queryType,
+	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") final String queryType,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
 			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
 			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList) throws Exception {
@@ -327,7 +327,12 @@ public class ReserveOrderController extends ExpressCommonController {
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "ReserveOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
-		final String[] cloumnName = {"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "站点", "快递员"};
+		final String[] cloumnName;
+		if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
+			cloumnName = new String[]{"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "运单号", "站点", "快递员"};
+		} else {
+			cloumnName = new String[]{"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "站点", "快递员"};
+		}
 		ExcelUtils excelUtil = new ExcelUtils() {
 
 			@Override
@@ -388,6 +393,12 @@ public class ReserveOrderController extends ExpressCommonController {
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getReason());
+					
+					if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(vo.getTransportNo());
+					}
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
