@@ -168,54 +168,66 @@ public class EMSTimmer {
 	}
 
 	
-	/*public void getEmsMailNoTask() {
-		//获取需要推送给EMS的数据
-		List<Map<String, Object>> transcwbs = eMSDAO.getTranscwbs();
-		int countNoMps = transcwbs.size();
-		int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
-		if (isOpenFlag == 0) {
-			logger.info("未开启EMS接口对接！");
-			return;
-		}
-		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
-		int emsTranscwbCount = ems.getEmsTranscwbCount();
-		int count = 0;
-		StringBuffer nos = new StringBuffer();
-		if(countNoMps > 0){
-			for(int i=0;i<countNoMps;i++){
-				nos.append(transcwbs.get(i).get("transcwb"));
-				count ++;
-				if(emsTranscwbCount!=0 && count%emsTranscwbCount==0){
-					try {
-						eMSService.getEMSTranscwb(nos.toString(),ems);
-						nos.delete(0, nos.length());
-					} catch (Exception e) {
-						e.printStackTrace();
-					} 
-				}
-				
-			}
-		}
-	}*/
 	//获取EMS运单号
 	public void getEmsMailNoTask() {
+		int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
+		if (isOpenFlag == 0) {
+			logger.info("未开启EMS接口对接！");
+			return;
+		}
 		//获取需要推送给EMS的数据
 		List<Map<String, Object>> transcwbs = eMSDAO.getTranscwbs();
 		int countNoMps = transcwbs.size();
+		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
+		for(int i=0;i<countNoMps;i++){
+			try {
+				eMSService.getEMSTranscwb(transcwbs.get(i).get("transcwb")+"",ems);
+			} catch (Exception e) {
+				logger.info("获取EMS运单号异常，dmp运单号："+transcwbs.get(i).get("transcwb"));
+			} 
+		}
+	}
+
+	//初步处理EMS轨迹信息
+	public void saveFlowInfo() {
 		int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
 		if (isOpenFlag == 0) {
 			logger.info("未开启EMS接口对接！");
 			return;
 		}
 		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
+		//获取需要处理的EMS的轨迹信息
+		List<EMSFlowObjInitial> eMSFlowObjInitial = eMSDAO.getFlowInfoList();
+		if(eMSFlowObjInitial == null || eMSFlowObjInitial.isEmpty()){
+			return;
+		}
+		
+		int countNoMps = eMSFlowObjInitial.size();
 		if(countNoMps > 0){
-			for(int i=0;i<countNoMps;i++){
-				try {
-					eMSService.getEMSTranscwb(transcwbs.get(i).get("transcwb")+"",ems);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
+			int k = 1;
+			int batch = 50;
+			//测试
+			/*int batch = 1;*/
+			while (true) {
+				try{
+					int fromIndex = (k - 1) * batch;
+					if (fromIndex >= countNoMps) {
+						break;
+					}
+					
+					int toIdx = k * batch;
+					if (k * batch > countNoMps) {
+						toIdx = countNoMps;
+					}
+										
+					List<EMSFlowObjInitial> subList = eMSFlowObjInitial.subList(fromIndex, toIdx);
+					eMSService.initialHandleEMSFlow(ems,subList);
+					k++;
+				}catch(Exception ee){
+					logger.error("EMS定时器查询临时表，模拟dmp相关操作执行异常!异常原因={}", ee);
+				}
 			}
 		}
+		return;
 	}
 }

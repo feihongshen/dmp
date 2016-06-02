@@ -18,6 +18,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.httpclient.HttpException;
@@ -66,6 +67,7 @@ import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.enumutil.EMSTraceDataEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
@@ -178,8 +180,7 @@ public class EMSService {
 	
 	
 	//处理数据逻辑，构建返回报文
-	@Transactional
-	public void checkEMSData(ExpressMail expressMail, String listexpressmail)throws Exception {
+	public int checkEMSData(ExpressMail expressMail, String listexpressmail)throws Exception {
 		 //
 		 String mailnum = expressMail.getMailnum();
 		 //从ems运单对照表获取dmp运单号
@@ -251,7 +252,7 @@ public class EMSService {
 		String credate = Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss");
 		 //保存获取的ems运单轨迹报文
         eMSDAO.saveEMSFlowInfo(transcwb,mailnum,listexpressmail,action,emsFlowordertype, properdelivery,notproperdelivery,credate);
-
+        return 1;
 	}
 	
 
@@ -310,8 +311,7 @@ public class EMSService {
 		//校验ems轨迹顺序
 		int validateFlag = validateEMSOrder(emsFlowEntity.getEmsFlowordertype(),flow,order);
 		if(validateFlag==0){
-			this.logger.info("EMS运单轨迹顺序异常！当前订单操作状态flowordertype="+flow+", EMS的action为："+emsFlowEntity.getEmsAction());
-			return 0;
+			throw new CwbException("","EMS运单轨迹顺序异常！当前订单操作状态flowordertype="+flow+", EMS的action为："+emsFlowEntity.getEmsAction());
 		}
 		//订单当前操作状态
 		DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(order.getCwb());
@@ -833,6 +833,7 @@ public class EMSService {
 	}
 
 	//远程获取ems运单号，并保存到运单对照表
+	@Transactional
 	public void getEMSTranscwb(String transcwb,EMS ems) throws Exception{
 		String emsTranscwbUrl = ems.getEmsTranscwbUrl();
 		//对接授权码
@@ -1070,6 +1071,43 @@ public class EMSService {
 			logger.info("EMS订单下发信息返回异常,异常信息为：{}！异常报文为：{}",e.getMessage(),sendstr);
 		} 
 		
+	}
+
+	public void saveEmsFlowInfo(ExpressMail expressMail, String listexpressmail) {
+		String mailnum = expressMail.getMailnum();
+		String action = expressMail.getAction();
+		String credate = Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss");
+		//保存获取的ems运单轨迹报文
+        eMSDAO.saveEMSFlowInfoToTemp(mailnum,listexpressmail,credate,action);
+	}
+
+	@Transactional
+	public void initialHandleEMSFlow(EMS ems, List<EMSFlowObjInitial> subList) {
+		for (EMSFlowObjInitial eMSFlowObjInitial : subList) {
+			int state=EMSTraceDataEnum.weichuli.getValue();
+			String remark = "";
+			try {
+				JSONObject jsonObject=JSONObject.fromObject(eMSFlowObjInitial.getFlowContent());
+		        String listexpressmail=jsonObject.getString("listexpressmail");
+		        
+		        JSONArray jsonarray = JSONArray.fromObject(listexpressmail);  
+			    List<ExpressMail> dataList = (List<ExpressMail>)JSONArray.toCollection(jsonarray,ExpressMail.class);
+			    
+			    if(dataList.size()!=0){
+	            	 for(int i=0;i<dataList.size();i++){
+	            		 String transcwb = "";
+	            		 state = this.checkEMSData(dataList.get(i),eMSFlowObjInitial.getFlowContent());
+	                 }
+	            }
+			} catch (Exception e) {
+				e.printStackTrace();
+				remark = e.getMessage(); 
+				state=EMSTraceDataEnum.chulishibai.getValue();
+				logger.error("EMS定时器查询临时表，模拟dmp相关操作执行异常!异常原因={}", e);
+			}finally{
+				eMSDAO.changeEmsFlowState(eMSFlowObjInitial.getId(),state,remark);
+			}
+		}
 	}
 
 }

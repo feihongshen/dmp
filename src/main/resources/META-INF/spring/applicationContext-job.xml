@@ -1515,7 +1515,7 @@
                <ref bean="sendOrderToEMS" />
            </property>
              <property name="cronExpression">
-               <value>0 */10 * * * ?</value>
+               <value>0 */3 * * * ?</value>
            </property>
      </bean>
      
@@ -1536,7 +1536,7 @@
                <ref bean="getEmsEmailNo" />
            </property>
              <property name="cronExpression">
-               <value>0 */5 * * * ?</value>
+               <value>0 */1 * * * ?</value>
            </property>
      </bean>
      

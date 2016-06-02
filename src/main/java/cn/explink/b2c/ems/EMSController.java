@@ -128,7 +128,8 @@ public class EMSController {
 			    if(dataList.size()!=0){
 	            	 for(int i=0;i<dataList.size();i++){
 	            		 String transcwb = "";
-	            		 eMSService.checkEMSData(dataList.get(i),reqBody);
+	            		 eMSService.saveEmsFlowInfo(dataList.get(i),reqBody);
+	            		 //eMSService.checkEMSData(dataList.get(i),reqBody);
 	            		 backInfo.setSuccess("1");
 	     				 backInfo.setRemark("落地配数据接收成功");
 	     				 logger.info("接收EMS轨迹信息成功，dmp运单号:{}",transcwb);
@@ -138,7 +139,7 @@ public class EMSController {
 		} catch (Exception e) {
 			 backInfo.setSuccess("0");
 			 backInfo.setRemark(e.getMessage());
-			 logger.error("[EMS_运单轨迹]处理业务逻辑异常:{}", e);
+			 logger.error("EMS_运单轨迹信息处理异常:{}", e);
 			 e.printStackTrace();
 		}finally{
 			JSONObject jsonObject=new JSONObject();

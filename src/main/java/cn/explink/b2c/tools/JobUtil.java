@@ -1880,6 +1880,7 @@ public class JobUtil {
 		long endtime = 0;
 		try {
 			starttime = System.currentTimeMillis();
+			this.eMSTimmer.saveFlowInfo();
 			this.eMSTimmer.imitateDmpOpt();
 			endtime = System.currentTimeMillis();
 		} catch (Exception e) {

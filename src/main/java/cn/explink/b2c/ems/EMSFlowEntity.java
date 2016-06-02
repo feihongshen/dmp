@@ -12,6 +12,7 @@ public class EMSFlowEntity implements java.io.Serializable {
 	private long emsFlowordertype;
 	private String properdelivery;
 	private String notproperdelivery;
+	private int handleCount;
 	
 	public String getTranscwb() {
 		return transcwb;
@@ -66,6 +67,12 @@ public class EMSFlowEntity implements java.io.Serializable {
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+	public int getHandleCount() {
+		return handleCount;
+	}
+	public void setHandleCount(int handleCount) {
+		this.handleCount = handleCount;
 	}
 	
 }

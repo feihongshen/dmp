@@ -30,6 +30,7 @@ public class EMSDAO {
 			en.setEmsAction(rs.getString("emsAction"));
 			en.setProperdelivery(rs.getString("properdelivery"));
 			en.setNotproperdelivery(rs.getString("notproperdelivery"));
+			en.setHandleCount(rs.getInt("handleCount"));
 			return en; 
 		}
 	}
@@ -38,7 +39,7 @@ public class EMSDAO {
 		@Override
 		public SendToEMSOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			SendToEMSOrder order = new SendToEMSOrder();
-			order.setTranscwb(rs.getString("cwb"));
+			order.setCwb(rs.getString("cwb"));
 			order.setTranscwb(rs.getString("transcwb"));
 			order.setCredate(rs.getString("credate"));
 			order.setAddTranscwbFlag(rs.getString("addTranscwbFlag"));
@@ -47,6 +48,23 @@ public class EMSDAO {
 			return order; 
 		}
 	}
+	
+	private final class EMSFlowObjInitialMapper implements RowMapper<EMSFlowObjInitial> {
+		@Override
+		public EMSFlowObjInitial mapRow(ResultSet rs, int rowNum) throws SQLException {
+			EMSFlowObjInitial obj = new EMSFlowObjInitial();
+			obj.setId(rs.getLong("id"));
+			obj.setEmailnum(rs.getString("email_num"));
+			obj.setFlowContent(rs.getString("flow_content"));
+			obj.setCredate(rs.getString("credate"));
+			obj.setState(rs.getInt("state"));
+			obj.setHandleCount(rs.getInt("handleCount"));
+			obj.setAction(rs.getString("action"));
+			return obj; 
+		}
+	}
+	
+	
 	
     //保存ems运单轨迹报文信息
 	public void saveEMSFlowInfo(final String transcwb, final String mailnum,
@@ -81,16 +99,16 @@ public class EMSDAO {
 		return transcwb;
 	}
 
-	//根据ems运单号获取dmp运单号
+	//根据获取需要转业务的ems轨迹信息
 	public List<EMSFlowEntity> getEMSFlowEntityList() {
-		String sql = "select * from express_ems_flow_info where state=0 order by credate limit 0,2000";
+		String sql = "select * from express_ems_flow_info where state in(0,2) and handleCount<10 order by credate limit 0,2000";
 		List<EMSFlowEntity> emsFlowEntityList = this.jdbcTemplate.query(sql, new EMSFlowMapper());
 		return emsFlowEntityList;
 	}
 
 	//根据ems轨迹模拟dmp操作的处理结果，修改处理状态
 	public void changeEmsTraceDataState(long id,int state,String remark) {
-		String sql = "update express_ems_flow_info set state="+state+",remark='"+remark+"' where id=?";
+		String sql = "update express_ems_flow_info set state="+state+",remark='"+remark+"',handleCount=handleCount+1 where id=?";
 		this.jdbcTemplate.update(sql,id);
 	}
 
@@ -147,7 +165,7 @@ public class EMSDAO {
 	//获取需要发送给ems的订单信息
 	public List<SendToEMSOrder> getSendToEMSOrderList() {
 		String sql = "select * from express_ems_order_b2ctemp where "
-				+ "state=0 limit 0,2000 ";
+				+ "state in(0,2) and resendCount<6 limit 0,2000 ";
 		//测试
 		/*String sql = "select * from express_ems_order_b2ctemp where "
 				+ "state=0 limit 0,2 ";*/
@@ -156,7 +174,7 @@ public class EMSDAO {
 	}
 
 	public void updateOrderTemp(String dataID, String dataError,int state) {
-		String sql = "update express_ems_order_b2ctemp set state="+state+",remark='"+dataError+"' where transcwb=?";
+		String sql = "update express_ems_order_b2ctemp set state="+state+",remark='"+dataError+"',resendCount=resendCount+1 where transcwb=?";
 		this.jdbcTemplate.update(sql,dataID);
 	}
 
@@ -177,7 +195,7 @@ public class EMSDAO {
 	
 	//获取没有获取EMS运单号,且dmp订单信息已经推送给ems的数据
 	public List<Map<String, Object>> getTranscwbs() {
-		String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 and state=1 order by id asc limit 0,500";
+		String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 and state=1 order by id asc limit 0,1000";
 		//测试
 		//String sql = "select transcwb from express_ems_order_b2ctemp where getMailnumFlag=0 order by id asc limit 0,1";
 		List<Map<String, Object>> transcwbs = this.jdbcTemplate.queryForList(sql);
@@ -196,5 +214,37 @@ public class EMSDAO {
 	public long getListByTranscwb(String transcwb) {
 		String sql = "select count(1) from express_ems_dmp_transcwb where transcwb="+transcwb;
 		return this.jdbcTemplate.queryForLong(sql);
+	}
+
+	public void saveEMSFlowInfoToTemp(final String mailnum,final String listexpressmail,
+			final String credate,final String action) {
+		this.jdbcTemplate
+		.update("insert into express_ems_flow_info_temp(email_num,flow_content,credate,action) values(?,?,?,?)", new PreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setString(1, mailnum);
+				ps.setString(2, listexpressmail);
+				ps.setString(3, credate);
+				ps.setString(4, action);
+			}
+		});		
+	}
+	
+	//获取需要初步处理的ems轨迹信息
+	public List<EMSFlowObjInitial> getFlowInfoList() {
+		String sql = "select * from express_ems_flow_info_temp where "
+				+ "state in(0,2) and handleCount<6 limit 0,2000 ";
+		//测试
+		/*String sql = "select * from express_ems_flow_info_temp where "
+				+ "state in(0,2) and handleCount<6 limit 0,1 ";*/
+		List<EMSFlowObjInitial> list = this.jdbcTemplate.query(sql, new EMSFlowObjInitialMapper());
+		return list;
+	}
+
+	//修改轨迹临时表状态
+	public void changeEmsFlowState(long id, int state, String remark) {
+		String sql = "update express_ems_flow_info_temp set state="+state+",remark='"+remark+"', "
+				+ "handleCount=handleCount+1 where id=?";
+		this.jdbcTemplate.update(sql,id);
 	}
 }
