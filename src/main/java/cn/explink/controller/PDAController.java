@@ -10805,6 +10805,25 @@ public class PDAController {
 		return explinkResponse;
 	}
 
+    @RequestMapping("/isExtractInput/{cwb}")
+    public @ResponseBody ExplinkResponse cwbbranchdeliver(HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb){
+        JSONObject obj = new JSONObject();
+
+        ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+
+        CwbOrder cwbOrder = cwbOrderService.getCwbByCwb(cwb);
+
+        if (cwbOrder != null){
+            if(0 == cwbOrder.getIsadditionflag()){
+                obj.put("result", true);
+            }else {
+                obj.put("result", false);
+            }
+        }
+        return explinkResponse;
+
+    }
+
 	/**
 	 * ============================================== 代码块：分拣中转功能 end
 	 * ===============================================
