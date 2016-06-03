@@ -16,7 +16,7 @@ public enum FlowOrderTypeEnum {
 	//退供货商审核(拒收退货)--新加
 	GongYingShangJuShouTuiHuo(62, "退供应商拒收退货"),
 	UpdatePickBranch(63,"更新提货站"),
-
+	ChongZhiFanKui(64,"重置反馈"),
 	/**
 	 * 快递的三个状态
 	 */
