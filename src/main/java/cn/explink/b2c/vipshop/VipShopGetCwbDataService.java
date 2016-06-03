@@ -744,25 +744,7 @@ public class VipShopGetCwbDataService {
 		}
 		return customerid;
 	}*/
-	
-	/**
-	 * TMS-DMP,TPS-DMP的订单查询接口，
-	 * 修改区分乐蜂订单逻辑如下：根据上游系统提供的接口数据字段do_type值来区分是否为乐蜂订单，当且仅当do_type值为1时，订单为乐蜂订单。
-	 * @author leo01.liao
-	 * @param vipshop
-	 * @param do_type
-	 * @return
-	 */
-	private String choseCustomerId(VipShop vipshop, String do_type) {
-		String customerid = vipshop.getCustomerids();  //默认选择唯品会customerid
-		
-		if(do_type != null && do_type.trim().equals("1")){
-			customerid = (vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid().trim());
-		}
-		
-		return customerid;
-	}*/
-	
+
 	/**
 	 * TMS-DMP,TPS-DMP的订单查询接口，
 	 * 修改区分乐蜂订单逻辑如下：根据上游系统提供的接口数据字段do_type值来区分是否为乐蜂订单，当且仅当do_type值为1时，订单为乐蜂订单。
