@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.tools.B2cEnum;
-import cn.explink.b2c.tps.ThirdPartyOrder2DOCfg;
 import cn.explink.b2c.tps.ThirdPartyOrder2DOCfgService;
 import cn.explink.dao.AccountCwbDetailDAO;
 import cn.explink.dao.AccountCwbFareDetailDAO;
@@ -1708,7 +1706,7 @@ public class EditCwbService {
 		return ec_dsd;
 	}
 
-	public final String omsUrl() {
+	public String omsUrl() {
 		// SystemInstall omsPathUrl =
 		// systemInstallDAO.getSystemInstallByName("omsPathUrl");
 		SystemInstall omsUrl = this.systemInstallDAO.getSystemInstallByName("omsUrl");
