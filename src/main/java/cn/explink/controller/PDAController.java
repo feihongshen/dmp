@@ -11087,7 +11087,7 @@ public class PDAController {
 	}
 
     @RequestMapping("/isExtractInput/{cwb}")
-    public @ResponseBody ExplinkResponse cwbbranchdeliver(HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb){
+    public @ResponseBody ExplinkResponse isExtractInput(HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb){
         JSONObject obj = new JSONObject();
 
         ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
@@ -11095,7 +11095,7 @@ public class PDAController {
         CwbOrder cwbOrder = cwbOrderService.getCwbByCwb(cwb);
 
         if (cwbOrder != null){
-            if(0 == cwbOrder.getIsadditionflag()){
+            if(0 == cwbOrder.getIsadditionflag() && CwbOrderTypeIdEnum.Express.getValue() == cwbOrder.getCwbordertypeid()){
                 obj.put("result", true);
             }else {
                 obj.put("result", false);
