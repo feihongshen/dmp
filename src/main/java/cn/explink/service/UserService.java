@@ -102,7 +102,12 @@ public class UserService {
 		user.setLateradvance(new BigDecimal((request.getParameter("lateradvance")==null||"".equals(request.getParameter("lateradvance")))?"0.00":request.getParameter("lateradvance")));//后期补入预付款（结算中获取）
 		user.setBasicfee(new BigDecimal((request.getParameter("basicfee")==null||"".equals(request.getParameter("basicfee")))?"0.00":request.getParameter("basicfee")));//基本派费
 		user.setAreafee(new BigDecimal((request.getParameter("areafee")==null||"".equals(request.getParameter("areafee")))?"0.00":request.getParameter("areafee")));//区域派费
-		user.setPassword(StringUtil.nullConvertToEmptyString(request.getParameter("password")));
+		user.setWebPassword(StringUtil.nullConvertToEmptyString(request.getParameter("webPassword")));//网页登录密码
+		if(roleid==2 || roleid==4){
+			user.setPassword(StringUtil.nullConvertToEmptyString(request.getParameter("password")));//PDA登录密码
+		} else {
+			user.setPassword("");
+		}		
 		user.setBranchid(branchid);
 		user.setUsercustomerid(Long.parseLong(request.getParameter("usercustomerid")));
 		user.setIdcardno(StringUtil.nullConvertToEmptyString(request.getParameter("idcardno")));
@@ -282,5 +287,13 @@ public class UserService {
 		return this.userDAO.getAllUser();
 	}
 	
-
+	/**
+	 * 根据UserID获取User
+	 * @date 2016年5月17日 下午6:11:26
+	 * @param userid
+	 * @return
+	 */
+	public User getUserByUserid(long userid) {
+		return this.userDAO.getUserByUserid(userid);
+	}
 }

@@ -514,6 +514,11 @@ function delSuccess(data){
 			$("#del").val('<%=request.getContextPath()%>/tpsCwbFlow/del/');
 		}
 		
+		else if(obj=='20137'){//神州数码
+			$("#edit").val('<%=request.getContextPath()%>/shenzhoushuma/show/');
+			$("#del").val('<%=request.getContextPath()%>/shenzhoushuma/del/');
+		}
+		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

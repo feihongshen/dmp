@@ -25,7 +25,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
@@ -166,8 +165,18 @@ public class CwbDAO {
             return null;
         }
     }
-
-    private final class CwbMapper implements RowMapper<CwbOrder> {
+	private final class CwbMapper implements RowMapper<CwbOrder> {
+		
+		//是否需要过滤用户信息
+		private boolean isFilterUserInfo = true;
+		
+		public CwbMapper() {
+			
+		}
+		
+		public CwbMapper(boolean isFilterUserInfo) {
+			this.isFilterUserInfo = isFilterUserInfo;
+		}
 
 		@Override
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -342,6 +351,9 @@ public class CwbDAO {
 			cwbOrder.setSendername(rs.getString("sendername"));
 			cwbOrder.setSenderprovince(rs.getString("senderprovince"));
 			cwbOrder.setSendercity(rs.getString("sendercity"));
+			cwbOrder.setSendercounty(rs.getString("sendercounty"));
+			cwbOrder.setSenderstreet(rs.getString("senderstreet"));
+			cwbOrder.setSenderaddress(rs.getString("senderaddress"));
 			cwbOrder.setSendercellphone(rs.getString("sendercellphone"));
 			cwbOrder.setSendertelephone(rs.getString("sendertelephone"));
 			cwbOrder.setReccustomerid(rs.getInt("reccustomerid"));
@@ -363,9 +375,19 @@ public class CwbDAO {
 			// mpsallarrivedflag
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
-
-			CwbDAO.this.setValueByUser(rs, cwbOrder);
-
+			cwbOrder.setInstationname(rs.getString("instationname"));
+			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
+			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
+			if(isFilterUserInfo) {
+				CwbDAO.this.setValueByUser(rs, cwbOrder);
+			} else {
+				cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+				cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+				cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+				cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+				cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+				cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+			}
 			return cwbOrder;
 		}
 	}
@@ -1148,6 +1170,7 @@ public class CwbDAO {
 			co.setConsigneemobile(rs.getString("consigneemobile"));
 			co.setConsigneephone(rs.getString("consigneephone"));
 			co.setEntrustname(rs.getString("entrustname"));
+			co.setCredateTimestamp(rs.getLong("credateTimestamp"));
 			return co;
 		}
 	}
@@ -8761,6 +8784,27 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 查询订单，不包含状态
+	 * 2016年5月27日 下午5:54:21
+	 * @param cwbsStr
+	 * @return
+	 */
+	public List<CwbOrder> getLabelPrintCwbsByCwbs(String cwbsStr) {
+		try {
+			String sql = "select * from express_ops_cwb_detail where cwb in("
+					+ cwbsStr + ")";
+
+			if(cwbsStr!=null && cwbsStr.startsWith("(") && cwbsStr.endsWith(")")) { //如果已有括号会报错
+				sql = "select * from express_ops_cwb_detail where cwb in " + cwbsStr;
+			}
+			return this.jdbcTemplate.query(sql, new CwbMapper(false));
+		} catch (Exception e) {
+			this.logger.error("", e);
+			return null;
+		}
+	}
 
 	/**
 	 * 统计揽件未到站的数量，其中flowordertype为1（已导入）,cwbordertypeid为oxo和oxo_jit,
@@ -8906,7 +8950,7 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQuery(
 			ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery, String userIds) {
 
-		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname FROM express_ops_cwb_detail where cwbordertypeid="
+		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		sqll += this.conditions4CwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,
 				userIds);
@@ -8930,7 +8974,7 @@ public class CwbDAO {
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbOrdersExpressTakeGoodsQueryLanJianChuZhan(
 			Long page, String cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid in(" + cwbid + ")";
 		if (paymethod != null) {
 			sql += " and paymethod=" + paymethod + "";
@@ -8951,7 +8995,7 @@ public class CwbDAO {
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbOrdersExpressTakeGoodsQueryLanJianChuZhan(
 			String cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid in(" + cwbid + ")";
 		if (paymethod != null) {
 			sql += " and paymethod=" + paymethod + "";
@@ -8969,7 +9013,7 @@ public class CwbDAO {
 	 */
 	public ExpressCwbOrderForTakeGoodsQueryVO queryCwbExpressTakeGoodsQueryLanJianChuZhan(
 			int cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid=" + cwbid;
 		if (paymethod != null) {
 			sql += " and paymethod='" + paymethod + "'";
@@ -8988,8 +9032,8 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQueryByPage(
 			Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,
 			String userIds) {
-		
-		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname FROM express_ops_cwb_detail where cwbordertypeid="
+
+		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		
 		sqll += this.conditions4CwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,

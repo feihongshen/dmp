@@ -67,7 +67,9 @@ public class TakeGoodsQueryController extends ExpressCommonController {
 		List<ExpressCwbOrderForTakeGoodsQueryVO> listOrderfdsdsadfsdf = this.takeGoodsQueryService.getcwbOrderByPage(page, cwb4TakeGoodsQuery, user, userIds);
 		this.logger.info("揽件查询页面中获得订单（takeGoodsQueryService.getcwbOrderByPage(page,cwb4TakeGoodsQuery,user,userIds)）操作的时间共：" + (System.currentTimeMillis() - getOrderListTime));
 		model.addAttribute("cwborderList", listOrderfdsdsadfsdf);
-
+		// 当前时间戳
+		long nowTimestamp = System.currentTimeMillis() / 1000;
+		model.addAttribute("nowTimestamp", nowTimestamp);
 		model.addAttribute("deliveryManList", listUser);
 
 		long getCountAllTime = System.currentTimeMillis();

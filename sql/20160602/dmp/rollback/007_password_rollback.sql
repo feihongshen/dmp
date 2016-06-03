@@ -1,0 +1,1 @@
+ALTER TABLE `express_set_user` DROP COLUMN `webPassword`;

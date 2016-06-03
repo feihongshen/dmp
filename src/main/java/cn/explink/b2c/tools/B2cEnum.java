@@ -110,7 +110,9 @@ public enum B2cEnum {
 	Caifutong(20201, "自动核销-财付通-公司信息", "caifutong", 0),
 	Zhongliang_bak1(21001, "中粮(我买网)_备用1", "zhongliang_bak1", 0),
 	Zhongliang_bak2(21002, "中粮(我买网)_备用2", "zhongliang_bak2", 0),
-	JingDong_cwbTrack(22001, "京东_订单跟踪", "jingdong_cwbtrack", 0) 
+	JingDong_cwbTrack(22001, "京东_订单跟踪", "jingdong_cwbtrack", 0),
+	Shenzhoushuma(20137,"神州数码","shenzhoushuma",0),
+	ZheMeng_track(23001, "哲盟_轨迹", "zhemeng_track", 0);
 	; 
 
 

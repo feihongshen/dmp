@@ -50,6 +50,7 @@ public class ExplinkAuthenticationSuccessHandler extends SimpleUrlAuthentication
 		// Department department = departDAO.getDepartment(user.getDepartid());
 		// usermap.put("departname", department==null?"":department.getName());
 		usermap.put("isImposedOutWarehouse", user.getIsImposedOutWarehouse());
+		usermap.put("roleid", user.getRoleid());
 		session.setAttribute("usermap", usermap);
 		session.setAttribute("showphoneflag", user.getShowphoneflag());
 	}
