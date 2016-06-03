@@ -387,6 +387,7 @@ function isauditEdit(){
 		<input type="hidden" name="deliverid1" id="deliverid1" value="<%=request.getParameter("deliverid")==null?"-1":request.getParameter("deliverid")%>"/>
 		<input type="hidden" name="orderbyName1" id="orderbyName1" value="<%=request.getParameter("orderbyName")==null?"emaildate":request.getParameter("orderbyName")%>"/>
 		<input type="hidden" name="orderbyType1" id="orderbyType1" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
+		<input type="hidden" name="count" id="count" value="<%=count %>"/>
 		<div style="display: none;">
 		<select name =operationOrderResultTypes1 id ="operationOrderResultTypes1" multiple="multiple" style="width: 320px;">
                	<%for(DeliveryStateEnum c : DeliveryStateEnum.values()){ %>

@@ -265,6 +265,7 @@ function clearSelect(){
 		<input type="hidden" name="flowordertype1" id="flowordertype1" value="<%=request.getParameter("flowordertype")==null?"-1":request.getParameter("flowordertype")%>"/>
 		<input type="hidden" name="orderbyName1" id="orderbyName1" value="<%=request.getParameter("orderbyName")==null?"emaildate":request.getParameter("orderbyName")%>"/>
 		<input type="hidden" name="orderbyType1" id="orderbyType1" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
+		<input type="hidden" name="count" id="count" value="<%=count %>"/>
 		<div style="display: none;">
 			<select name ="customerid1" id ="customerid1" multiple="multiple" >
 		          <%for(Customer c : customerlist){ %>

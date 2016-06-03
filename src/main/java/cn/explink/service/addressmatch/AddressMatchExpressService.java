@@ -14,6 +14,7 @@ import net.sf.json.JSONArray;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Header;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.commons.lang.math.NumberUtils;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectReader;
@@ -262,18 +263,18 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 			Branch b = null;
 			for (int i = 0; i < addressList.size(); i++) {
 				try {
-					if (org.apache.commons.lang3.StringUtils.isBlank(addressList.getJSONObject(i).getString("station"))) {
-						return null;
-					}
-
 					String station = addressList.getJSONObject(i).getString("station");
-					if(null == station || station.length() == 0){//为空，匹配不到站点
+					if(org.apache.commons.lang3.StringUtils.isBlank(station)){//为空，匹配不到站点
 						this.logger.error("丰简地址库匹配失败，cwb={}，地址={}", cwbOrder.getCwb(), address);
-						return null;
+						continue;
 					}
 					if(station.indexOf("|") > -1){//如果是这样的格式：123|456，则取123
 						station = station.substring(0, station.indexOf("|"));
 						this.logger.info("丰简地址库匹配问题，匹配到多个站点，取第一个，cwb={},匹配到station={}", cwbOrder.getCwb(), station);
+					}
+					if(!NumberUtils.isNumber(station)){//非数字，匹配不到站点
+						this.logger.error("丰简地址库匹配失败，cwb={}，地址={}", cwbOrder.getCwb(), address);
+						continue;
 					}
 					
 					b = this.branchDAO.getEffectBranchById(Long.valueOf(station));

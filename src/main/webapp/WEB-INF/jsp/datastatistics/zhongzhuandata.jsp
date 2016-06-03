@@ -308,6 +308,7 @@ function clearSelect(){
 		<input type="hidden" name="type1" id="type1" value="<%=request.getParameter("type")==null?"startbranchid":request.getParameter("type")%>"/>
 		<input type="hidden" name="orderbyName1" id="orderbyName1" value="<%=request.getParameter("orderbyName")==null?"emaildate":request.getParameter("orderbyName")%>"/>
 		<input type="hidden" name="orderbyType1" id="orderbyType1" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
+		<input type="hidden" name="count" id="count" value="<%=count %>"/>
 		<div style="display: none;">
 			<select name ="branchid2s" id ="branchid2s"  multiple="multiple" style="width: 320px;">
 		          <%if(notuihuobranchList!=null && notuihuobranchList.size()>0){ %>

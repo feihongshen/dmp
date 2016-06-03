@@ -103,4 +103,14 @@ public abstract class ExcelUtils {
 	 */
 	public abstract void fillData(Sheet sheet, CellStyle style);
 
+	/**
+	 * 
+
+	 * 该方法生成excel文件饿数据的行数
+	 * 默认值为零，需要在具体方法中重写来获得真实的值
+	 * @return 数据行数
+	 */
+	public long getRecordCount(){
+		return 0;
+	};
 }

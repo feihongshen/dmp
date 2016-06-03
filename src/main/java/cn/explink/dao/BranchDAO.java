@@ -24,6 +24,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.domain.Branch;
@@ -127,6 +128,9 @@ public class BranchDAO {
 			branch.setCftCertId(rs.getString("cft_cert_id"));
 			branch.setCftCertType(rs.getInt("cft_cert_type"));
 			branch.setPayinType(rs.getInt("payin_type"));
+			
+			//自动分拣使用的出货口号
+			branch.setOutputno(rs.getString("outputno"));
 			return branch;
 		}
 	}
@@ -443,7 +447,7 @@ public class BranchDAO {
 						+ "exportwavtype=?,branchinsurefee=?,branchprovince=?,branchwavfile=?,noemaildeliverflag=?,sendstartbranchid=?,sitetype=?,checkremandtype=?,"
 						+ "branchmatter=?,accountareaid=?,functionids=?,zhongzhuanid=?,tuihuoid=?,caiwuid=?,bankcard=?,bindmsksid=?,"
 						+ "accounttype=?,accountexcesstype=?,accountexcessfee=?,accountbranch=?,credit=?,prescription24=?,prescription48=?,branchcity=?,brancharea=?,branchstreet=?,backtime=?,branch_bail=? ,pfruleid=?,"
-						+ "bank_card_no=?,bank_code=?,owner_name=?,bank_account_type=?,cft_account_no=?,cft_bank_code=?,cft_account_name=?,cft_account_prop=?,cft_cert_id=?,cft_cert_type=?,tpsbranchcode=?,payin_type=? "
+						+ "bank_card_no=?,bank_code=?,owner_name=?,bank_account_type=?,cft_account_no=?,cft_bank_code=?,cft_account_name=?,cft_account_prop=?,cft_cert_id=?,cft_cert_type=?,tpsbranchcode=?,payin_type=?,outputno=? "
 						+ " where branchid=?", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps)
@@ -516,7 +520,8 @@ public class BranchDAO {
 						ps.setInt(61, branch.getCftCertType());
 						ps.setString(62, branch.getTpsbranchcode());
 						ps.setInt(63, branch.getPayinType());
-						ps.setLong(64, branch.getBranchid());
+						ps.setString(64, branch.getOutputno());
+						ps.setLong(65, branch.getBranchid());
 					}
 				});
 	}
@@ -565,7 +570,7 @@ public class BranchDAO {
 			public PreparedStatement createPreparedStatement(
 					java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
-				ps = con.prepareStatement("insert into express_set_branch(branchid,branchname,branchaddress,branchcontactman,branchphone,branchmobile," + "branchfax,branchemail,contractflag,contractrate,cwbtobranchid,branchcode,payfeeupdateflag,backtodeliverflag," + "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag," + "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag," + "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid," + "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid,bank_card_no,bank_code,owner_name,bank_account_type,cft_account_no,cft_bank_code,cft_account_name,cft_account_prop,cft_cert_id,cft_cert_type,tpsbranchcode,payin_type) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
+				ps = con.prepareStatement("insert into express_set_branch(branchid,branchname,branchaddress,branchcontactman,branchphone,branchmobile," + "branchfax,branchemail,contractflag,contractrate,cwbtobranchid,branchcode,payfeeupdateflag,backtodeliverflag," + "branchpaytoheadflag,branchfinishdayflag,creditamount,branchwavfile,brancheffectflag,noemailimportflag,errorcwbdeliverflag," + "errorcwbbranchflag,branchcodewavfile,importwavtype,exportwavtype,branchinsurefee,branchprovince,branchcity,noemaildeliverflag," + "sendstartbranchid,sitetype,checkremandtype,branchmatter,accountareaid,zhongzhuanid,tuihuoid,caiwuid,functionids,bankcard,bindmsksid," + "accounttype,accountexcesstype,accountexcessfee,accountbranch,credit,prescription24,prescription48,brancharea,branchstreet,backtime,branch_bail,pfruleid,bank_card_no,bank_code,owner_name,bank_account_type,cft_account_no,cft_bank_code,cft_account_name,cft_account_prop,cft_cert_id,cft_cert_type,tpsbranchcode,payin_type,outputno) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new String[] { "branchid" });
 				ps.setLong(1, branch.getBranchid());
 				ps.setString(2, branch.getBranchname());
 				ps.setString(3, branch.getBranchaddress());
@@ -630,6 +635,7 @@ public class BranchDAO {
 				ps.setInt(62, branch.getCftCertType());
 				ps.setString(63, branch.getTpsbranchcode());// 为快递上传tps新增的机构编码
 				ps.setInt(64, branch.getPayinType());
+				ps.setString(65, branch.getOutputno());//自动分拣的出货口
 				return ps;
 			}
 		}, key);
@@ -1355,5 +1361,12 @@ public class BranchDAO {
 		list = this.jdbcTemplate.query(sql, new BranchRowMapper());
 		return list;
 	}
+
+	public List<Branch> getBranchByOutputNo(String outputno) {
+		List<Branch> list = new ArrayList<Branch>();
+		String sql = "select  * from express_set_branch where outputno = ?" ;
+		list = this.jdbcTemplate.query(sql, new BranchRowMapper(),outputno);
+		return list;
+}
 
 }
