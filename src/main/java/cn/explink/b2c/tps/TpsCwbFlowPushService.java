@@ -1,6 +1,7 @@
 package cn.explink.b2c.tps;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,6 +20,7 @@ import com.pjbest.deliveryorder.service.DoTrackFeedbackRequest;
 import com.vip.osp.core.context.InvocationContext;
 import com.vip.osp.core.exception.OspException;
 
+import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
@@ -61,8 +63,12 @@ public class TpsCwbFlowPushService {
 	private BranchDAO branchDAO;
 	@Autowired
 	private TransCwbDetailDAO transCwbDetailDAO;
+	@Autowired
+	private AutoUserService autoUserService;
 	
 	private String today="";
+	
+	private static final String DATE_FORMAT="yyyy-MM-dd HH:mm:ss";
 	
 	public void process(){
 		this.logger.info("订单重量体积推送tps开始...");
@@ -121,7 +127,7 @@ public class TpsCwbFlowPushService {
 	}
 	
 	
-	
+	//按箱来发送
 	private List<DoTrackFeedbackRequest> prepareRequest(TpsCwbFlowVo vo){
 		CwbOrder co=this.cwbDAO.getCwbByCwb(vo.getCwb());
 		if(co==null){
@@ -138,7 +144,7 @@ public class TpsCwbFlowPushService {
 			long userid=0;
 			long branchid=0;
 			Date createDate=null;
-			List<String> transcwbList=new ArrayList<String>();;
+			List<String> transcwbList=new ArrayList<String>();
 			if(vo.getCwb().equals(vo.getScancwb())){
 				if(co.getTranscwb()==null||co.getTranscwb().trim().length()<1){
 					transcwbList.add(vo.getCwb());
@@ -150,7 +156,17 @@ public class TpsCwbFlowPushService {
 				}
 				OrderFlow orderFlow=orderFlowDAO.queryFlow(vo.getCwb(), FlowOrderTypeEnum.getByValue((int)vo.getFlowordertype()));
 				if(orderFlow==null){
-					throw new RuntimeException("没找到此订单号的操作明细1.");
+					if(vo.getSendemaildate()==1){
+						logger.info("feijidan0 autouser,cwb="+vo.getCwb()+",scancwb="+vo.getScancwb());
+						//自动化入库异常时才会来到这里
+						User autoUser=this.autoUserService.getSessionUser();
+						orderFlow=new OrderFlow();
+						orderFlow.setBranchid(autoUser.getBranchid());
+						orderFlow.setUserid(autoUser.getUserid());
+						orderFlow.setCredate(new Date());
+					}else{
+						throw new RuntimeException("没找到此订单号的操作明细1.");
+					}
 				}
 				userid=orderFlow.getUserid();
 				branchid=orderFlow.getBranchid();
@@ -165,7 +181,17 @@ public class TpsCwbFlowPushService {
 				}else{
 					OrderFlow orderFlow=orderFlowDAO.queryFlow(vo.getCwb(),  FlowOrderTypeEnum.getByValue((int)vo.getFlowordertype()));
 					if(orderFlow==null){
-						throw new RuntimeException("没找到此订单号的操作明细2.");
+						if(vo.getSendemaildate()==1){
+							logger.info("feijidan1 autouser,cwb="+vo.getCwb()+",scancwb="+vo.getScancwb());
+							//自动化入库异常时才会来到这里
+							User autoUser=this.autoUserService.getSessionUser();
+							orderFlow=new OrderFlow();
+							orderFlow.setBranchid(autoUser.getBranchid());
+							orderFlow.setUserid(autoUser.getUserid());
+							orderFlow.setCredate(new Date());
+						}else{
+							throw new RuntimeException("没找到此订单号的操作明细2.");
+						}
 					}
 					transcwbList.add(vo.getScancwb());
 					userid=orderFlow.getUserid();
@@ -178,25 +204,42 @@ public class TpsCwbFlowPushService {
 			Branch operateBrach=branchDAO.getBranchById(branchid);
 			
 			if(transcwbList!=null&&transcwbList.size()>0){
+				Date emaildate=null;
 				for(String trancwb:transcwbList){
 					DoTrackFeedbackRequest req=new DoTrackFeedbackRequest();
 					req.setTransportNo(transportNo);
-					req.setOperateType(3);//出库对应tps的出站扫描3
+					req.setOperateType(vo.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue()?1:3);//出库对应tps的出站扫描3,入库对应是入站1
 					req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 					req.setOperater(operateUser==null?null:operateUser.getRealname());
 					req.setOperateTime(createDate);
 					DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
 					boxInfo.setBoxNo(trancwb);
-					boxInfo.setVolume(new Double("0.01"));
-					boxInfo.setWeight(new Double("0.01"));
+					boxInfo.setVolume(vo.getSendweight()==0?new Double("0.01"):new Double("0.01"));//非集单时dmp没表保存体积重量，为0.01则tps则不会更新他们的体积重量
+					boxInfo.setWeight(vo.getSendweight()==0?new Double("0.01"):new Double("0.01"));
 					req.setBoxInfo(boxInfo);
+					if(vo.getSendemaildate()==1){//不设置emaildate则tps不处理
+						if(emaildate==null){
+							emaildate=parseEmaildate(co.getEmaildate());
+						}
+						req.setOqcDate(emaildate);
+					}
 					reqList.add(req);
 				}
 			}
 		}else{
 			TranscwbOrderFlow flow=transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndFlowordertype(vo.getScancwb(), vo.getCwb(), vo.getFlowordertype());
 			if(flow==null){
-				throw new RuntimeException("没找到此运单号的操作明细.");
+				if(vo.getSendemaildate()==1){
+					logger.info("jidan autouser,cwb="+vo.getCwb()+",scancwb="+vo.getScancwb());
+					//自动化入库异常时才会来到这里
+					User autoUser=this.autoUserService.getSessionUser();
+					flow=new TranscwbOrderFlow();
+					flow.setBranchid(autoUser.getBranchid());
+					flow.setUserid(autoUser.getUserid());
+					flow.setCredate(new Date());
+				}else{
+					throw new RuntimeException("没找到此运单号的操作明细.");
+				}
 			}
 			List<TransCwbDetail> transCwbDetailList=transCwbDetailDAO.getTransCwbDetailListByTransCwbs("('"+vo.getScancwb()+"')");
 			TransCwbDetail transCwbDetail=null;
@@ -217,13 +260,14 @@ public class TpsCwbFlowPushService {
 			
 			DoTrackFeedbackRequest req=new DoTrackFeedbackRequest();
 			req.setTransportNo(transportNo);
-			req.setOperateType(3);//出库对应tps的出站扫描3
+			req.setOperateType(vo.getFlowordertype()==FlowOrderTypeEnum.RuKu.getValue()?1:3);//出库对应tps的出站扫描3
 			req.setOperateOrg(operateBrach==null?null:operateBrach.getTpsbranchcode());
 			req.setOperater(operateUser==null?null:operateUser.getRealname());
 			req.setOperateTime(flow.getCredate());
 			
 			Double volume=null;
-			if(transCwbDetail.getVolume()==null||transCwbDetail.getVolume().toString().equals("0.0000")){
+			Double weight=null;
+			if(vo.getSendweight()==0){
 				volume=new Double("0.01");
 			}else{
 				volume=transCwbDetail.getVolume().doubleValue();
@@ -232,7 +276,16 @@ public class TpsCwbFlowPushService {
 			if(transCwbDetail.getWeight()==null||transCwbDetail.getWeight().toString().equals("0.000")){
 				weight=new Double("0.01");
 			}else{
-				weight=transCwbDetail.getWeight().doubleValue();
+				if(transCwbDetail.getVolume()==null||transCwbDetail.getVolume().toString().equals("0.0000")){
+					volume=new Double("0.01");
+				}else{
+					volume=transCwbDetail.getVolume().doubleValue();
+				}
+				if(transCwbDetail.getWeight()==null||transCwbDetail.getWeight().toString().equals("0.000")){
+					weight=new Double("0.01");
+				}else{
+					weight=transCwbDetail.getWeight().doubleValue();
+				}
 			}
 			
 			DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
@@ -240,11 +293,29 @@ public class TpsCwbFlowPushService {
 			boxInfo.setVolume(volume);
 			boxInfo.setWeight(weight);
 			req.setBoxInfo(boxInfo);
+			if(vo.getSendemaildate()==1){
+				req.setOqcDate(parseEmaildate(co.getEmaildate()));
+			}
 			
 			reqList.add(req);
 		}
 
 		return reqList;
+	}
+	
+	private Date parseEmaildate(String date){
+		String emaildate=(date==null)?null:date.trim();
+		if(emaildate==null||emaildate.length()<1){
+			throw new RuntimeException("订单表没有出仓时间.");
+		}
+		SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT);
+		Date ed=null;
+		try {
+			ed=sdf.parse(emaildate);
+		} catch (ParseException e) {
+			throw new RuntimeException("解析出仓时间出错.emaildate="+date);
+		}
+		return ed;
 	}
 
 	private void housekeepData(TpsCwbFlowCfg cfg){
@@ -254,6 +325,7 @@ public class TpsCwbFlowPushService {
 				SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 				String now=sdf.format(Calendar.getInstance().getTime());
 				if(!now.equals(this.today)){
+					logger.info("清理重量体积临时表");
 					this.today=now;
 					int day=(cfg==null||cfg.getHousekeepDay()<2)?2:cfg.getHousekeepDay();
 					this.tpsCwbFlowService.housekeep(day);
