@@ -2993,7 +2993,7 @@ public class PDAController {
 					promt = new JSONArray();
 					boolean intohouseFailed = false;
 					try {
-						this.cwbOrderService.intohouseForExpressPackage(cwbs.toString(), customerid, driverid, batchCount, useEaimDate, cList, objList, allEmaildate, promt);
+						this.cwbOrderService.intohouseForExpressPackage(this.getSessionUser(), cwbs.toString(), customerid, driverid, batchCount, useEaimDate, cList, objList, allEmaildate, promt);
 					} catch (Exception e) {
 						intohouseFailed = true;
 						msg = e.getMessage();
@@ -4154,7 +4154,7 @@ public class PDAController {
 
 						boolean exportHouseFailed = false;
 						try {
-							this.cwbOrderService.exportHouseForExpressPackage(cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(), cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
 						} catch (Exception e) {
 							exportHouseFailed = true;
 							msg = "（异常扫描）" + e.getMessage();
