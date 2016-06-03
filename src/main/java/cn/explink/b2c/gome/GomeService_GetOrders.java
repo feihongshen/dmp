@@ -34,6 +34,7 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbTempDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbTemp;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.WebServiceHandler;
@@ -57,7 +58,7 @@ public class GomeService_GetOrders extends GomeService {
 	
 	private static Logger logger = LoggerFactory.getLogger(GomeService_GetOrders.class);
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	/***
 	 * 获取正向订单号的接口

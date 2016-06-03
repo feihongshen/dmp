@@ -33,6 +33,7 @@ import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CwbTempDAO;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.CwbOrder;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 
@@ -57,7 +58,7 @@ public class AmazonService_GetOrders extends AmazonService {
 	CustomWareHouseDAO customWarehouseDAO;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	// 定时器获取订单
 	public long getOrders() {

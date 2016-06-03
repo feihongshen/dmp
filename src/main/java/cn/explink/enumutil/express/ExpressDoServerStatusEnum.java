@@ -11,7 +11,7 @@ public enum ExpressDoServerStatusEnum {
 	PlaceOrder(0, "已下单"), 
 	MatchCarrier(10, "已分配省公司"), 
 	DistributionOrg(20, "已分配站点"), 
-	DistributionCourier(30, "已分配快递员"), 
+	DistributionCourier(30, "已揽件分配"),
 	ReceiveSuccess(40, "揽件成功"), 
 	ProvinceSurpass(50, "省公司超区"), 
 	SiteSurpass(60, "站点超区"), 

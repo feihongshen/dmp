@@ -41,6 +41,7 @@ import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.ExplinkException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.ExplinkUserDetail;
@@ -83,7 +84,7 @@ public class SmtController {
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
 
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 
 	private enum OrderTypeEnum {
 		Normal("normal"), Transfer("transfer"), All("all");

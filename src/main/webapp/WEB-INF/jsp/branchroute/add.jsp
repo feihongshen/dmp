@@ -12,6 +12,10 @@
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <%@page import="cn.explink.domain.Branch"%>
 <%@page import="cn.explink.domain.User,cn.explink.domain.Role,cn.explink.enumutil.BranchRouteEnum"%>
 <%
@@ -19,16 +23,27 @@ List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 %>
 <script>
 $(function(){
-	$("#toBranchId").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择操作下一环节' });
+	//$("#toBranchId").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择操作下一环节' });
+    $("#fromBranchId").multipleSelect({
+        placeholder: "----请选择----",
+        filter: true,
+        single: true
+    });
+    $("#toBranchId").multipleSelect({
+        placeholder: "请选择操作下一环节",
+        filter: true
+    });
 })
 
 
  function check_branchroute01() {
+	
 	if ($("#fromBranchId").val() == 0) {
 		alert("当前站点不能为空");
 		return false;
 	}
-	if ($(".checked").length<=0) {
+	
+	if ($("#toBranchId").val() == null || $("#toBranchId").val().length<=0) {
 		alert("目的站点不能为空");
 		return false;
 	}
@@ -63,10 +78,9 @@ $(function(){
 			onSubmit="if(check_branchroute01()){afterSumit(this);} return false;"
 		
 			 action="<%=request.getContextPath()%>/branchRouteControl/create;jsessionid=<%=session.getId()%>" method="post"  >
-			<div id="box_form">
 				<ul>
-					<li><span>当前站点：</span>
-						<select id="fromBranchId" name="fromBranchId" class="select1">
+					<li style="overflow: visible"><span>当前站点：</span>
+						<select id="fromBranchId" name="fromBranchId">
 							<option value="0" selected>----请选择----</option> 
 							<%for(Branch b : branchlist){ %>
 								<option value="<%=b.getBranchid() %>"> <%=b.getBranchname() %></option>
@@ -75,7 +89,7 @@ $(function(){
 					</li>
 					
 	           		<li><span>目的站点：</span>
-	           			<select id="toBranchId"  name="toBranchId" class="select1" multiple="multiple" > 
+	           			<select id="toBranchId"  name="toBranchId"  multiple="multiple" > 
 							<%for(Branch b : branchlist){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 							<%} %>
@@ -90,7 +104,6 @@ $(function(){
 						</select>*
 					</li>
 	         </ul>
-		</div>
 		<div align="center">
         <input type="submit" value="确认" class="button" id="sub" /></div>
 	</form>

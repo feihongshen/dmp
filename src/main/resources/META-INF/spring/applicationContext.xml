@@ -110,12 +110,23 @@
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
+
 	<jaxws:client id="addressService"
-		serviceClass="cn.explink.service.addressmatch.AddressSyncService"
-		address="http://${addressWebserviceIp}/service/AddressSyncService" />
+			serviceClass="cn.explink.service.addressmatch.AddressSyncService"
+			address="http://${addressWebserviceIp}/service/AddressSyncService">
+		<jaxws:properties>
+			<entry key="set-jaxb-validation-event-handler" value="false"></entry>
+		</jaxws:properties>
+	</jaxws:client>
+
 	<jaxws:client id="addressMappingService"
-		serviceClass="cn.explink.service.addressmatch.AddressMappingService"
-		address="http://${addressWebserviceIp}/service/AddressMappingService" />
+			serviceClass="cn.explink.service.addressmatch.AddressMappingService"
+			address="http://${addressWebserviceIp}/service/AddressMappingService">
+		<jaxws:properties>
+			<entry key="set-jaxb-validation-event-handler" value="false"></entry>
+		</jaxws:properties>
+	</jaxws:client>
+
 	<jaxws:client id="addressQueryService"
 		serviceClass="cn.explink.service.addressmatch.AddressQueryService"
 		address="http://${addressWebserviceIp}/service/AddressQueryService" />

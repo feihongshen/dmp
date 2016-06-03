@@ -53,6 +53,9 @@ int loginUserType =  request.getAttribute("loginUserType")==null ? 0 : (Integer)
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 	   //获取下拉框的值
@@ -99,11 +102,14 @@ $(function() {
 		timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	});
-	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
+//	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
 	$("#dispatchbranchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择配送站点' });
 	$("#cwbordertypeid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
 	$("#operationOrderResultType").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
-	
+    $("#customerid").multipleSelect({
+        placeholder: "请选择供货商",
+        filter: true
+    });
 });
 function searchFrom(){
 	$('#searchForm').attr('action',1);return true;
@@ -190,8 +196,9 @@ function clearSelect(){
 	$("#exportmould").val(0);
 	multiSelectAll('dispatchbranchid',0,'请选择配送站点');//配送站点
 	multiSelectAll('cwbordertypeid',0,'请选择');//订单类型
-	multiSelectAll('customerid',0,'请选择供货商');//供货商
+//	multiSelectAll('customerid',0,'请选择供货商');//供货商
 	multiSelectAll('operationOrderResultType',0,'请选择');//应收金额
+    $("#customerid").multipleSelect("uncheckAll").multipleSelect("refresh");
 	
 }
 </script>
@@ -299,8 +306,8 @@ function clearSelect(){
 				     }%> ><%=c.getCustomername() %></option>
 		          <%} %>
 		    </select>
-		    [<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
-			[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
+		    <%--[<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]--%>
+			<%--[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]--%>
 	</td>
 	</tr>
 	<tr>

@@ -111,6 +111,7 @@ import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.ComplaintService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
@@ -1124,7 +1125,7 @@ public class OrderSelectController {
 		return typeName;
 	}
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	private String getDetailForOutside(OrderFlow orderFlowAll) {
 		try {

@@ -1367,6 +1367,6 @@ public class BranchDAO {
 		String sql = "select  * from express_set_branch where outputno = ?" ;
 		list = this.jdbcTemplate.query(sql, new BranchRowMapper(),outputno);
 		return list;
-	}
-	
+}
+
 }
