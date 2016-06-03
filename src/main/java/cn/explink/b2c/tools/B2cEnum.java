@@ -112,9 +112,8 @@ public enum B2cEnum {
 	Zhongliang_bak2(21002, "中粮(我买网)_备用2", "zhongliang_bak2", 0),
 	JingDong_cwbTrack(22001, "京东_订单跟踪", "jingdong_cwbtrack", 0),
 	Shenzhoushuma(20137,"神州数码","shenzhoushuma",0),
-	ZheMeng_track(23001, "哲盟_轨迹", "zhemeng_track", 0);
-	EMS(22010, "邮政速递", "EMS", 0) 
-	; 
+	ZheMeng_track(23001, "哲盟_轨迹", "zhemeng_track", 0),
+	EMS(22010, "邮政速递", "EMS", 0); 
 
 
 	 

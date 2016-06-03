@@ -373,6 +373,7 @@ public class TransCwbDetailDAO {
 	public void updateNextbranchByTranscwb(String transcwb, long nextbranchId) {
 		String sql = "update express_ops_transcwb_detail set nextbranchid=? where transcwb=?";
 		this.jdbcTemplate.update(sql, nextbranchId, transcwb);
+	}
 	/**
 	 * 根据订单号，获取所有的运单
 	 *
