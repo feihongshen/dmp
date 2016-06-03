@@ -339,7 +339,7 @@ function callfunction(cwb){//getEmailDateByIds
 								"comment" : comment,
 								"youhuowudanflag":$("#youhuowudanflag").val(),
 								"autoallocatid":$("#entryselect").val(),
-								"direction" :$("input[type='radio']:checked").val()
+								"direction" :$("input[name='direction']:checked").val()
 							},
 							dataType : "json",
 							success : function(data) {
