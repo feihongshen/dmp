@@ -363,4 +363,30 @@ public class TransCwbDetailDAO {
 		String sql = "update express_ops_transcwb_detail set nextbranchid=? where transcwb=?";
 		this.jdbcTemplate.update(sql, nextbranchId, transcwb);
 	}
+	
+	/**
+	 * 查找查看每一个运单号的状态
+	 *
+	 * @return
+	 */
+	public List<Long> getTransCwbStateListByCwb(String cwb) {
+		List<Long> transCwbList = null;
+		String sql = "select transcwboptstate from express_ops_transcwb_detail where cwb=?";
+		try {
+			transCwbList = this.jdbcTemplate.queryForList(sql, Long.class, cwb);
+		} catch (DataAccessException e) {
+		}
+		return transCwbList;
+	}
+	
+	public void updateEmaildate(String cwb,String transcwb, String emaildate) {
+		if( emaildate == null || emaildate.trim().length()<1){
+			return;
+		}
+		
+		Date emaildateObj = DateTimeUtil.parseDate(emaildate, DateTimeUtil.DEF_DATETIME_FORMAT);
+		
+		String sql="update express_ops_transcwb_detail set emaildate=? where transcwb=? and cwb=?";
+		this.jdbcTemplate.update(sql, emaildateObj,transcwb,cwb);
+	}
 }

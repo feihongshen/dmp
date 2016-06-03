@@ -301,7 +301,7 @@ public class BaleController {
 			Bale bale = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim());
 			this.baleDAO.updateAddBaleScannum(bale.getId()); //要点：做完所有的写操作最后再读出！
 			bale = this.baleDAO.getBaleById(bale.getId());
-			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
+			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid(),null,true);
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
 			obj.put("successCount", successCount);
@@ -412,7 +412,7 @@ public class BaleController {
 				} else {
 					// 调用分拣出库扫描逻辑
 					CwbOrder cwbOrder=this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
-					this.tpsCwbFlowService.save(cwbOrder,scancwb, FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
+					this.tpsCwbFlowService.save(cwbOrder,scancwb, FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid(),null,true);
 				}
 				
 				Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
