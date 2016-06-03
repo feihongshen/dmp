@@ -114,16 +114,25 @@ function nowprint(){
             					<td align="center" valign="middle" style="border-right:1px solid #585656;width:45mm;" rowspan="2">
             						
             					</td>
-           						<td style="border-bottom:1px solid #585656;height: 14mm;" colspan="2">
-           							<span style="font-family: 黑体;font-size: 10px;">目的地</span><br>
-           							<c:choose>
-           							<c:when test="${fn:length(branch.branchname) gt 6 }">
-           								<span style="font-family: 黑体;font-size: 10px;font-weight: bold;">${branch.branchname }</span>
-           							</c:when>
-           							<c:otherwise>
-           								<span style="font-family: 黑体;font-size: 14px;font-weight: bold;">${branch.branchname }</span>
-           							</c:otherwise>
-           							</c:choose>
+           						<td valign="middle" style="border-bottom:1px solid #585656;padding-left: 0px;padding-right: 0px;height: 14mm;" colspan="2">
+           							<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+           								<tr>
+           									<td style="width:10px;">
+           										<div style="font-family: 黑体;font-size: 10px;">目<br>的<br>地</div>
+           									</td>
+           									<td style="padding-left: 0px;padding-right: 0px;">
+           										<c:choose>
+				           							<c:when test="${fn:length(branch.branchname) gt 12 }">
+				           								<div style="font-family: 黑体;font-size: 10px;font-weight: bold;">${branch.branchname }</div>
+				           							</c:when>
+				           							<c:otherwise>
+				           								<div style="font-family: 黑体;font-size: 12px;font-weight: bold;">${branch.branchname }</div>
+				           							</c:otherwise>
+				           							</c:choose>
+           									</td>
+           								</tr>
+           							</table>
+           							
             					</td>
             				</tr>
             				<tr>
@@ -169,12 +178,12 @@ function nowprint(){
 			      		<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 			        		<tr>
 			          			<td valign="middle" style="width:23mm;padding: 0 0 0 5px;">
-					          		<span style="line-height:12px;font-family: 黑体;font-size: 8px;">
+					          		<div style="line-height:12px;font-family: 黑体;font-size: 8px;">
 					          			业务类型：
-					          		</span><br>
-					           		<span style="line-height:12px;font-family: 黑体;font-size: 8px;">价保声明价值：${cwb.announcedvalue }元</span><br>
-					            	<span style="line-height:12px;font-family: 黑体;font-size: 8px;">重量：${cwb.carrealweight }kg</span><br>
-					            	<span style="line-height:12px;font-family: 黑体;font-size: 8px;">
+					          		</div>
+					           		<div style="line-height:12px;font-family: 黑体;font-size: 8px;">价保声明价值：${cwb.announcedvalue }元</div>
+					            	<div style="line-height:12px;font-family: 黑体;font-size: 8px;">重量：${cwb.carrealweight }kg</div>
+					            	<div style="line-height:12px;font-family: 黑体;font-size: 8px;">
 					            		付款方式：
 					            		<c:choose>
 					            			<c:when test="${cwb.paymethod eq 0}">月结</c:when>
@@ -184,10 +193,10 @@ function nowprint(){
 					            	</span>
 			          			</td>
 				          		<td valign="middle" style="width:22mm; padding: 0 0 0 0px;border-right:1px solid #585656;">
-				          			<span style="line-height:12px;font-family: 黑体;font-size: 8px;">运费：${cwb.shouldfare }元</span><br>
-				            		<span style="line-height:12px;font-family: 黑体;font-size: 8px;">保费：${cwb.insuredfee }元</span><br>
-				            		<span style="line-height:12px;font-family: 黑体;font-size: 8px;">包装费：${cwb.packagefee }元</span><br>
-				            		<span style="line-height:12px;font-family: 黑体;font-size: 8px;">月结账户：${cwb.monthsettleno }</span>
+				          			<div style="line-height:12px;font-family: 黑体;font-size: 8px;">运费：${cwb.shouldfare }元</div>
+				            		<div style="line-height:12px;font-family: 黑体;font-size: 8px;">保费：${cwb.insuredfee }元</div>
+				            		<div style="line-height:12px;font-family: 黑体;font-size: 8px;">包装费：${cwb.packagefee }元</div>
+				            		<div style="margin-left:-16px;line-height:12px;font-family: 黑体;font-size: 8px;">月结账户：${cwb.monthsettleno }</div>
 				          		</td>
 				          		<td valign="middle">
 				          			<div style="font:20px;font-weight:bold;font-family: 黑体;margin-right:5px;margin-top:5px;float:left;">寄<br>件</div>
@@ -203,15 +212,14 @@ function nowprint(){
 			      	</td>
 			    </tr>
 			    <tr>
-			       <td class="td_1" valign="top"  style="height: 9mm;padding: 5px;">
+			       <td class="td_1" valign="top"  style="height: 9mm;padding: 0 5px 0 5px;">
 			       		<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 			       			<tr>
-			       				<td valign="middle" style="width:40mm;">
-			       					<div style="line-height:12px;font-family: 黑体;font-size: 9px;">寄托物：</div>
-			       					<div style="line-height:12px;font-family: 黑体;font-size: 9px;">${cwb.entrustname }</div>
+			       				<td valign="middle" width="40%">
+			       					<div style="line-height:8px;font-family: 黑体;font-size: 8px;">寄<br>托<br>物</div>
 			       				</td>
 			       				<td>
-			       					<div style="line-height:12px;font-family: 黑体;font-size: 9px;">运费合计：${cwb.totalfee }元</div>
+			       					<div style="font-family: 黑体;font-size: 8px;">${cwb.entrustname }</div>
 			       				</td>
 			       			<tr>
 			       		</table>
