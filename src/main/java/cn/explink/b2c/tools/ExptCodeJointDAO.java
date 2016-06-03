@@ -251,7 +251,7 @@ public class ExptCodeJointDAO {
 	public ExptCodeJoint getExpListByCodeandid(long extpt_code, long customerid) {
 		List<ExptCodeJoint> list = null;
 		try {
-			String sql = "SELECT  b.customercode,j.exptcodeid,r.reasonid,b.exptid,b.expt_type,r.reasoncontent,b.support_key,b.expt_code,b.expt_msg,b.expt_remark,j.exptcode_remark "
+			String sql = "SELECT  b.customercode,b.customerid,j.exptcodeid,r.reasonid,b.exptid,b.expt_type,r.reasoncontent,b.support_key,b.expt_code,b.expt_msg,b.expt_remark,j.exptcode_remark "
 					+ " FROM  express_set_reason r INNER JOIN  express_set_exptcode_joint j ON r.`reasonid`=j.`reasonid` INNER JOIN " + " express_set_b2c_exptreason b ON j.`exptid`=b.`exptid` "
 					+ " WHERE 1=1 and b.expt_code=? and b.customerid=? ";
 

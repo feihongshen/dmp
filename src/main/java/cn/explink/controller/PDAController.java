@@ -114,6 +114,7 @@ import cn.explink.domain.SetExportField;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.StockResult;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.Truck;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
@@ -152,6 +153,7 @@ import cn.explink.service.docking.AutoAllocationService;
 import cn.explink.service.express.ExpressOutStationService;
 import cn.explink.service.mps.CwbOrderBranchInfoModificationService;
 import cn.explink.service.mps.MPSCommonService;
+import cn.explink.service.mps.MPSOptStateService;
 import cn.explink.service.mps.OrderInterceptService;
 import cn.explink.service.mps.release.OutWarehouseMPSReleaseService;
 import cn.explink.support.transcwb.TransCwbDao;
@@ -307,6 +309,9 @@ public class PDAController {
 	
 	@Autowired
 	private CwbOrderTypeService cwbOrderTypeService;
+	
+	@Autowired
+	private MPSOptStateService mpsOptStateService ;
 
 	private ObjectMapper om = new ObjectMapper();
 
@@ -4260,6 +4265,214 @@ public class PDAController {
 			return new ExplinkResponse("0001", msg, "");
 		}
 
+	}
+	
+	/**
+	 * 电子秤称重，出库扫描
+	 *
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param cwb
+	 * @param branchid
+	 * @param driverid
+	 * @param truckid
+	 * @param confirmflag
+	 * @param requestbatchno
+	 * @param orderWeight 货物重量
+	 * @return
+	 */
+	@RequestMapping("/cwbExportWarhouseWeight/{cwb}")
+	public @ResponseBody ExplinkResponse cwbExportWarhouseWeight(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
+			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
+			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid ,
+			@RequestParam(value = "carrealweight", required = false, defaultValue = "0") BigDecimal carrealweight ) {
+		// 获取不到货物重量,不允许出站
+		if(BigDecimal.ZERO.compareTo(carrealweight) >= 0){
+			return new ExplinkResponse("0002", cwb + "(获取不到重量)，不允许出库！", "");
+		}
+		long startTime = System.currentTimeMillis();
+		String msg = null;
+		boolean isPackage = false;
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		// 订单不存在，则可能是包号，按照包号进行查询
+		if (null == co) {
+			// 这里cwb是包号
+			List<String> cwbList = this.baleCwbDao.getCwbsByBaleNO(cwb);
+			if ((cwbList != null) && !cwbList.isEmpty()) {
+				isPackage = true;
+				if (branchid == 0) {
+					msg = "（异常扫描）请先选择下一站";
+				} else {
+					List<Bale> baleList = this.baleDAO.getBaleByBaleno(cwb);
+					if ((baleList == null) || baleList.isEmpty()) {
+						msg = "（异常扫描）无此包号:" + cwb;
+					} else if (baleList.get(0).getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
+						msg = "（异常扫描）" + cwb + "已被拆包";
+					} else {
+						// 更新包的下一站为用户选择的下一站，当前站为0
+						this.baleDAO.updateBranchIdAndNextBranchId(cwb, branchid, 0);
+
+						StringBuilder cwbs = new StringBuilder();
+						for (String cwbStr : cwbList) {
+							cwbs.append(cwbStr).append("\r\n");
+						}
+						BatchCount batchCount = new BatchCount(0, 0, 0);
+						List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
+
+						List<JSONObject> objList = new ArrayList<JSONObject>();
+
+						boolean exportHouseFailed = false;
+						try {
+							this.cwbOrderService.exportHouseForExpressPackage(cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+						} catch (Exception e) {
+							exportHouseFailed = true;
+							msg = "（异常扫描）" + e.getMessage();
+						}
+
+						if (!exportHouseFailed && (cwbs.length() > 0)) {
+							Branch nextBranch = this.branchDAO.getBranchByBranchid(branchid);
+							msg = cwb + " 成功扫描" + batchCount.getThissuccess() + "单";
+							msg += "<br>下一站：" + nextBranch.getBranchname();
+						}
+					}
+				}
+			}
+		}
+		if (!isPackage) {
+			JSONObject obj = new JSONObject();
+
+			ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+
+			long successCount = request.getSession().getAttribute(baleno + "-successCount") == null ? 0 : Long.parseLong(request.getSession().getAttribute(baleno + "-successCount").toString());
+			String scancwb = cwb;
+			cwb = this.cwbOrderService.translateCwb(cwb);
+			CwbOrder cwbOrder = this.cwbOrderService.outWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid,
+					requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
+			Customer customer = this.customerDAO.getCustomerById(cwbOrder.getCustomerid());
+			obj.put("packageCode", baleno);
+			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+			obj.put("cwbcustomername", customer.getCustomername());
+			// 出库报配送站声音.
+			if (cwbOrder.getNextbranchid() != 0) {
+				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+				obj.put("cwbbranchname", branch.getBranchname());
+			} else {
+				obj.put("cwbbranchname", "");
+			}
+			if ((cwbOrder.getReceivablefee() != null) && (cwbOrder.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
+				obj.put("cwbgaojia", "true");
+				explinkResponse.addShortWav(this.getErrorWavFullPath(request, WavFileName.GJ));
+			} else {
+				obj.put("cwbgaojia", "");
+			}
+			// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
+			String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+			List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
+			String cwbcustomerid = String.valueOf(cwbOrder.getCustomerid());
+			String[] showcustomer = list.get(0).getCustomerid().split(",");
+			for (String s : showcustomer) {
+				if (s.equals(cwbcustomerid)) {
+					CwbOrder order = this.cwbDAO.getCwbByCwb(cwb);
+					Object a;
+					try {
+						a = order.getClass().getMethod("get" + list.get(0).getRemark()).invoke(order);
+						obj.put("showRemark", a);
+					} catch (Exception e) {
+						this.logger.error("", e);
+						obj.put("showRemark", "Erro");
+					}
+				}
+			}
+			// 添加货物类型音频文件.
+			this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+			String wavPath = null;
+			String multiple = null;
+			if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
+				if (this.isPlayYPDJSound()) {
+					multiple = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl();
+					explinkResponse.addLongWav(multiple);
+				}
+			}
+
+			if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+				if (!baleno.equals("") && !baleno.equals("0")) {
+					successCount++;
+					request.getSession().setAttribute(baleno + "-successCount", successCount);
+					explinkResponse.setErrorinfo("\n按包出库成功，已出库" + successCount + "件");
+					obj.put("successCount", successCount);
+				}
+				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
+			} else {
+				wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl();
+			}
+
+			if (cwbOrder.getDeliverybranchid() != 0) {
+				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+				obj.put("cwbdeliverybranchname", branch.getBranchname());
+				if (!StringUtils.isEmpty(branch.getBranchwavfile())) {
+					explinkResponse.addLastWav(request.getContextPath() + ServiceUtil.wavPath + branch.getBranchwavfile());
+				} else {
+					explinkResponse.addLongWav(wavPath);
+				}
+			} else {
+				explinkResponse.addLongWav(wavPath);
+				obj.put("cwbdeliverybranchname", "");
+			}
+			// 如果扫描的是封在某个包里面的快递单，则将该包设为不可用
+			this.setExpressPackageUnable(cwbOrder);
+//            // 如果扫描订单号，就直接更新订单表的货物重量
+//			if(customer.getIsUsetranscwb() == 2){
+//				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
+//			}else{
+//				//扫描运单号，首先更新当前运单的货物重量，如果当前已扫描件数和订单总件数一致时，才更新订单表的货物重量
+//				this.mpsOptStateService.updateTransCwbDetailWeight(cwb, scancwb, carrealweight);
+//				if(cwbOrder.getScannum() == cwbOrder.getSendcarnum()){
+//					BigDecimal totalWeight = getWeightForOrder(cwb) ;
+//					this.cwbDAO.saveCwbWeight(totalWeight, cwb);
+//				}
+//			}
+			// add by bruce shangguan 20160530  如果是首次扫描订单号/运单号,就直接更新订单重量；否则就在订单原重量的基础上累加，再更新订单重量
+			if(cwbOrder.getScannum() == 1){
+				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
+			}else{
+				BigDecimal totalWeight = cwbOrder.getCarrealweight() == null ? BigDecimal.ZERO : cwbOrder.getCarrealweight() ;
+				totalWeight = totalWeight.add(carrealweight);
+				this.cwbDAO.saveCwbWeight(totalWeight, cwb);
+			}
+			// 如果扫描运单号，就更新当前运单的货物重量
+			if(customer.getIsUsetranscwb() != 2){
+				this.mpsOptStateService.updateTransCwbDetailWeight(cwb, scancwb, carrealweight);
+			}
+			// end 20160530
+			obj.put("newCarrealWeight", carrealweight);
+			this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
+			return explinkResponse;
+		} else {
+			this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
+			return new ExplinkResponse("0001", msg, "");
+		}
+	}
+	
+	/**
+	 * 根据订单号，获取其所有的运单，并统计所有运单重量
+	 * @param orderNumber
+	 * @return
+	 */
+	private BigDecimal getWeightForOrder(String orderNumber){
+		BigDecimal totalWeight = BigDecimal.ZERO ;
+		List<TransCwbDetail> translist =  this.mpsOptStateService.queryTransCwbDetail(orderNumber) ;
+		if(translist == null || translist.size() == 0){
+			return totalWeight ;
+		}
+		for (TransCwbDetail transcwbDetail : translist) {
+			if(transcwbDetail.getWeight() != null){
+				totalWeight = totalWeight.add(transcwbDetail.getWeight()) ;
+			}
+		}
+		return totalWeight ;
 	}
 
 	/**
@@ -10590,7 +10803,8 @@ public class PDAController {
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "") String requestbatchno, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
 			@RequestParam(value = "comment", required = false, defaultValue = "") String comment, @RequestParam(value = "reasonid", required = false, defaultValue = "0") long reasonid,
-			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid) {
+			@RequestParam(value = "deliverybranchid", required = false, defaultValue = "0") long deliverybranchid,
+			@RequestParam(value = "carrealweight", required = false, defaultValue = "0") BigDecimal carrealweight) {
 
 		ExplinkResponse explinkResponse = null;
 		String translated = this.cwbOrderService.translateCwb(cwb);
@@ -10604,9 +10818,12 @@ public class PDAController {
 			explinkResponse = this._cwbchangeexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, false);
 		} else {
 			// 调用分拣出库扫描逻辑
-			explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+			if(carrealweight == null || carrealweight.compareTo(BigDecimal.ZERO) == 0){
+				explinkResponse = this.cwbexportwarhouse(model, request, response, cwb, branchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid);
+			}else{
+				explinkResponse = this.cwbExportWarhouseWeight(model, request, response, cwb, deliverybranchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, carrealweight) ;
+			}
 		}
-
 		return explinkResponse;
 	}
 

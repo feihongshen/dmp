@@ -11,6 +11,7 @@ import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 import cn.explink.dao.BranchDAO;
@@ -18,6 +19,7 @@ import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OperationTimeDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.dao.YpdjHandleRecordDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -52,6 +54,8 @@ public class BaseOrderService {
 	
 	@Autowired
 	OperationTimeDAO operationTimeDAO;
+	@Autowired
+	UserDAO userDAO;
 	
 	private static Logger logger = LoggerFactory.getLogger(BaseOrderService.class);
 	
@@ -173,7 +177,13 @@ public class BaseOrderService {
 	}
 
 	protected User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		return userDetail.getUser();
+		Authentication authen = this.securityContextHolderStrategy.getContext().getAuthentication();
+		if(authen==null){
+			User user = userDAO.getUserByUsername("admin");
+			return user;
+		}else{
+			ExplinkUserDetail userDetail = (ExplinkUserDetail) authen.getPrincipal();
+			return userDetail.getUser();
+		}
 	}
 }
