@@ -218,7 +218,7 @@ public class EMSService {
 			if(action.equals("00")||action.equals("30")||action.equals("60")||action.equals("41")){
 				//不做处理
 				this.logger.info("EMS的action为00,30,41,60 时不做处理，运单号：[" + transcwb + "]");
-				throw new CwbException("","EMS的action为00,30,60 时不做处理，运单号：[" + transcwb + "]");
+				throw new CwbException("","EMS的action为00,30,41,60 时不做处理，运单号：[" + transcwb + "]");
 			}else if(action.equals("40")){
 				//if(flow==36&&order.getDeliverystate()==4){
 					emsFlowordertype = 36;
@@ -317,10 +317,10 @@ public class EMSService {
 		DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(order.getCwb());
 		
 		if(!StringUtils.isEmpty(action)){
-			if(action.equals("00")||action.equals("30")||action.equals("60")){
+			if(action.equals("00")||action.equals("30")||action.equals("41")||action.equals("60")){
 				//不做处理
-				this.logger.info("EMS的action为00,30,60 时不做处理，运单号：[" + transcwb + "]");
-				throw new CwbException("","EMS的action为00,30,60 时不做处理，运单号：[" + transcwb + "]");
+				this.logger.info("EMS的action为00,30,41,60 时不做处理，运单号：[" + transcwb + "]");
+				throw new CwbException("","EMS的action为00,30,41,60 时不做处理，运单号：[" + transcwb + "]");
 			}else if(action.equals("50")){
 				//如果此时订单状态不是出库状态，则需补环节
 				if(flow==FlowOrderTypeEnum.DaoRuShuJu.getValue()
