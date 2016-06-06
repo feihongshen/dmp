@@ -123,6 +123,7 @@ public class WarehouseGroupDetailService {
 						printView.setCustomername(this.getQueryCustomerName(customerList, co.getCustomerid()));// 供货商的名称
 						printView.setNextbranchname(this.getQueryBranchName(branchList, gd.getNextbranchid()));// 下一站
 						printView.setOutstoreroomtime(gd.getCreatetime());// 出库时间
+						printView.setCwbordertypeid(co.getCwbordertypeid());
 						printViewList.add(printView);
 						break;
 					}
