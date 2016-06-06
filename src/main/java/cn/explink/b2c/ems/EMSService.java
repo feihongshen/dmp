@@ -345,9 +345,12 @@ public class EMSService {
 					}
 					//模拟退货出站（依据该客户是否要退货出站审核，如果要审核，模拟退货出站审核+退货出站；否则，直接模拟退货出站）
 					this.imitateCwbexportUntreadWarhouse(transcwb, emsDelivery,emsTuihuoBranch);
+				}else if(flow==FlowOrderTypeEnum.TuiHuoChuZhan.getValue()){
+					//模拟退货出站
+					this.imitateCwbexportUntreadWarhouse(transcwb, emsDelivery,emsTuihuoBranch);
 				}else{
 					//不做处理
-					this.logger.info("EMS的action为40，且订单状态不是为审核为拒 时不做处理，运单号：[" + transcwb + "]");
+					this.logger.info("EMS的action为40，且订单状态不是为审核为拒收 时不做处理，运单号：[" + transcwb + "]");
 					throw new CwbException("","EMS的action为40，且订单状态不是为审核为拒 时不做处理，运单号：[" + transcwb + "]");
 				}
 			}else if(action.equals("10")&&!StringUtils.isEmpty(properdelivery)){
@@ -363,7 +366,7 @@ public class EMSService {
 				parameters = this.getDeliveryResult(emsDelivery,1l,0l,58l,bd,order.getReceivablefee(),bd,bd,bd,"","","","",sign_typeid,0l,0l,d.toString(),bd,0,0l,0l,0l,transcwb);
 				if(parameters!=null){
 					try {
-						this.cwbOrderService.deliverStatePod(emsDelivery, cwb, transcwb, parameters);
+						this.cwbOrderService.deliverStatePod(emsDelivery, cwb, "", parameters);
 					} catch (CwbException ce) {
 						this.logger.info("EMS订单模拟归班反馈为配送成功异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
 						throw ce;
@@ -402,7 +405,7 @@ public class EMSService {
 					parameters = this.getDeliveryResult(emsDelivery,9l,0l,0l,bd,bd,bd,bd,bd,"","","","",sign_typeid,0l,0l,d.toString(),bd,114,122,0l,0l,transcwb);
 					if(parameters!=null){
 						try {
-							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, transcwb, parameters);
+							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, "", parameters);
 						} catch (CwbException ce) {
 							this.logger.info("EMS订单模拟归班反馈为【滞留自动领货】异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
 							throw ce;
@@ -424,7 +427,7 @@ public class EMSService {
 					parameters = this.getDeliveryResult(emsDelivery,8l,0l,58l,bd,bd,bd,bd,bd,"","","","",sign_typeid,0l,expt.getReasonid(),d.toString(),bd,0l,0l,0l,0l,transcwb);
 					if(parameters!=null){
 						try {
-							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, transcwb, parameters);
+							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, "", parameters);
 						} catch (CwbException ce) {
 							this.logger.info("EMS订单模拟归班反馈为【货物丢失】异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
 							throw new CwbException("","EMS订单模拟归班反馈为【货物丢失】异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
@@ -443,7 +446,7 @@ public class EMSService {
 					parameters = this.getDeliveryResult(emsDelivery,4l,expt.getReasonid(),0l,bd,bd,bd,bd,bd,"","","","",sign_typeid,0l,0l,d.toString(),bd,expt.getReasonid(),0l,0l,0l,transcwb);
 					if(parameters!=null){
 						try {
-							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, transcwb, parameters);
+							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, "", parameters);
 						} catch (CwbException ce) {
 							this.logger.info("EMS订单模拟归班反馈为【拒收】异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
 						}
