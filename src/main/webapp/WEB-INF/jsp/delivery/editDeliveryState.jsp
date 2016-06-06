@@ -137,6 +137,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 						<%if(isShowZLZDLH.equals("yes")){ %>
 							<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
 						<%} %>
+						 <option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
                    <%}else if(deliverystate.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
                    		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
                    		<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"><%=DeliveryStateEnum.JuShou.getText() %></option>
@@ -148,6 +149,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 						<%if(isShowZLZDLH.equals("yes")){ %>
 							<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
 						<%} %>
+						 <option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
                    <%}else if(deliverystate.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
                    		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
                    		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
@@ -157,9 +159,8 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    			<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
                    		<%} %>
                    <%} %>
-                  <%-- 
-                  	hps_Concerto 注释  2016年5月25日11:47:51	
-                   <option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option> --%>
+                  
+                  
                    
                 </select>*</li>
            		<li><span>快递单号：</span>
