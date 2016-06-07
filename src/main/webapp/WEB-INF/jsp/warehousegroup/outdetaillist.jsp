@@ -218,7 +218,7 @@ $("#branchid").multipleSelect({
 				  <%
 				  for(int i :CwbOrderTypeIdEnum.getMap().keySet()){
 				  %>
-				 	 <option value="<%=i%>" <%request.getParameter("cwbOrderTypeId").eq %>><%bOrderTypeIdEnum.getTextByValue(i)%></option>
+				 	 <option value="<%=i%>" <%=String.valueOf(i).equals(request.getParameter("cwbOrderTypeId"))?"selected='selected'":""%>><%=CwbOrderTypeIdEnum.getTextByValue(i)%></option>
 				 	 <%
 				  } 
 				  %>

@@ -4654,7 +4654,7 @@ public class CwbDAO {
 			String sql = " SELECT * FROM express_ops_cwb_detail "
 					+ " WHERE state = 1" + " AND cwb IN ( " + quertStr + " ) ";
 			if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
-				sql += " cwbordertypeid = "+cwbOrderTypeId;
+				sql += " and cwbordertypeid = "+cwbOrderTypeId;
 			}
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} else {
