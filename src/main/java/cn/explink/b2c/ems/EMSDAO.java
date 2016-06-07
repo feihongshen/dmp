@@ -212,7 +212,7 @@ public class EMSDAO {
 	
 	//根据transcwb获取运单号对照关系
 	public long getListByTranscwb(String transcwb) {
-		String sql = "select count(1) from express_ems_dmp_transcwb where transcwb="+transcwb;
+		String sql = "select count(1) from express_ems_dmp_transcwb where transcwb='"+transcwb + "'";
 		return this.jdbcTemplate.queryForLong(sql);
 	}
 
