@@ -213,12 +213,12 @@ $("#branchid").multipleSelect({
 						<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>" class="easyui-datetimebox" style="width: 141px;margin-top: auto;"/>
 						
 				</td>
-				<td>订单类型： <select name="cwbOrderTypeId">
+				<td>订单类型：${cwbOrderTypeId} <select name="cwbOrderTypeId">
 				<option value="0">--请选择--</option>
 				  <%
-				  for(Integer i :CwbOrderTypeIdEnum.getMap().keySet()){
+				  for(int i :CwbOrderTypeIdEnum.getMap().keySet()){
 				  %>
-				 	 <option value="<%=i%>" <%=(i.equals(request.getParameter("cwbOrderTypeId"))?"selected='selected'":"")%>><%=CwbOrderTypeIdEnum.getTextByValue(i)%></option>
+				 	 <option value="<%=i%>" <%request.getParameter("cwbOrderTypeId").eq %>><%bOrderTypeIdEnum.getTextByValue(i)%></option>
 				 	 <%
 				  } 
 				  %>
