@@ -11,8 +11,6 @@ public class TpsCwbFlowVo {
 	private int state;
 	private int trytime;
 	private Timestamp createtime;
-	private int sendemaildate;//发送出仓时间,1发送,0不发送
-	private int sendweight;//发送重量体积,1发送,0不发送
 	
 	public String getCwb() {
 		return cwb;
@@ -55,18 +53,6 @@ public class TpsCwbFlowVo {
 	}
 	public void setCreatetime(Timestamp createtime) {
 		this.createtime = createtime;
-	}
-	public int getSendemaildate() {
-		return sendemaildate;
-	}
-	public void setSendemaildate(int sendemaildate) {
-		this.sendemaildate = sendemaildate;
-	}
-	public int getSendweight() {
-		return sendweight;
-	}
-	public void setSendweight(int sendweight) {
-		this.sendweight = sendweight;
 	}
 
 	

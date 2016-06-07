@@ -30,19 +30,17 @@ public class TpsCwbFlowDao {
 			vo.setState(rs.getInt("status"));
 			vo.setTrytime(rs.getInt("trytime"));
 			vo.setCreatetime(rs.getTimestamp("createtime"));
-			vo.setSendemaildate(rs.getInt("sendemaildate"));
-			vo.setSendweight(rs.getInt("sendweight"));
 			return vo;
 		}
 	}
 	
 	private final static String TPS_FLOW_SQL_SAVE=
-			"insert into express_ops_tps_flow_tmp (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime,sendemaildate,sendweight)"
-			+" values(?,?,?,?,CURRENT_TIMESTAMP,?,0,?,?)";
+			"insert into express_ops_tps_flow_tmp (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime)"
+			+" values(?,?,?,?,CURRENT_TIMESTAMP,?,0)";
 	
 	private final static String TPS_FLOW_SQL_SAVE_SENT=
-			"insert into express_ops_tps_flow_tmp_sent (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime,sendemaildate,sendweight)"
-			+" values(?,?,?,?,?,?,?,?,?)";
+			"insert into express_ops_tps_flow_tmp_sent (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime)"
+			+" values(?,?,?,?,?,?,?)";
 	
 	
 	private final static String TPS_FLOW_SQL_LIST=
@@ -66,24 +64,12 @@ public class TpsCwbFlowDao {
 	private final static String TPS_FLOW_SQL_EXIST_SENT=
 			"select cwb from express_ops_tps_flow_tmp_sent where cwb=? and scancwb=? limit 1";
 	
-	private final static String TPS_FLOW_SQL_CWB_EXIST=
-			"select cwb from express_ops_tps_flow_tmp where cwb=? limit 1";
-	
-	private final static String TPS_FLOW_SQL_CWB_EXIST_SENT=
-			"select cwb from express_ops_tps_flow_tmp_sent where cwb=? limit 1";
-	
-	private final static String TPS_FLOW_SQL_SENDEMAILDATE_EXIST=
-			"select cwb from express_ops_tps_flow_tmp where cwb=? and sendemaildate=1 limit 1";
-	
-	private final static String TPS_FLOW_SQL_SENDEMAILDATE_EXIST_SENT=
-			"select cwb from express_ops_tps_flow_tmp_sent where cwb=? and sendemaildate=1 limit 1";
-	
 	public void save(TpsCwbFlowVo vo){
-		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getState(),vo.getSendemaildate(),vo.getSendweight());
+		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getState());
 	}
 	
 	public void saveSent(TpsCwbFlowVo vo){
-		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE_SENT, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getCreatetime(),vo.getState(),vo.getTrytime(),vo.getSendemaildate(),vo.getSendweight());
+		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE_SENT, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getCreatetime(),vo.getState(),vo.getTrytime());
 	}
 
 	public List<TpsCwbFlowVo> list(int size,int trytime){
@@ -106,40 +92,12 @@ public class TpsCwbFlowDao {
 		return jdbcTemplate.update(TPS_FLOW_SQL_DELETE,vo.getCwb(),vo.getScancwb(),vo.getFlowordertype());
 	}
 	
-	public boolean  checkScancwbExist(String cwb,String scancwb){
+	public boolean  checkExist(String cwb,String scancwb){
 		List<String> list= this.jdbcTemplate.queryForList(TPS_FLOW_SQL_EXIST,String.class,cwb,scancwb);
 		if(list!=null&&list.size()>0){
 			return true;
 		}else{
 			List<String> sentlist= this.jdbcTemplate.queryForList(TPS_FLOW_SQL_EXIST_SENT,String.class,cwb,scancwb);
-			if(sentlist!=null&&sentlist.size()>0){
-				return true;
-			}else{
-				return false;
-			}
-		}
-	}
-	
-	public boolean  checkCwbExist(String cwb){
-		List<String> list= this.jdbcTemplate.queryForList(TPS_FLOW_SQL_CWB_EXIST,String.class,cwb);
-		if(list!=null&&list.size()>0){
-			return true;
-		}else{
-			List<String> sentlist= this.jdbcTemplate.queryForList(TPS_FLOW_SQL_CWB_EXIST_SENT,String.class,cwb);
-			if(sentlist!=null&&sentlist.size()>0){
-				return true;
-			}else{
-				return false;
-			}
-		}
-	}
-	
-	public boolean  checkSendemildateExist(String cwb){
-		List<String> list= this.jdbcTemplate.queryForList(TPS_FLOW_SQL_SENDEMAILDATE_EXIST,String.class,cwb);
-		if(list!=null&&list.size()>0){
-			return true;
-		}else{
-			List<String> sentlist= this.jdbcTemplate.queryForList(TPS_FLOW_SQL_SENDEMAILDATE_EXIST_SENT,String.class,cwb);
 			if(sentlist!=null&&sentlist.size()>0){
 				return true;
 			}else{
