@@ -1,13 +1,8 @@
 package cn.explink.b2c.ems;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.httpclient.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -214,11 +208,16 @@ public class EMSService {
 			throw new CwbException("","EMS的签收信息异常,action=10(妥投)时，properdelivery["+properdelivery+"],落地配无法识别。运单号：[" + transcwb + "]");
 		}
 		
+		if(action.equals("20")&&StringUtil.isEmpty(expressMail.getNotproperdelivery())){
+			this.logger.info("EMS的签收信息异常,action=20(未妥投)时，notproperdelivery为空。运单号：[" + transcwb + "]");
+			throw new CwbException("","EMS的签收信息异常,action=20(未妥投)时，notproperdelivery为空。运单号：[" + transcwb + "]");
+		}
+		
 		if(!StringUtils.isEmpty(action)){
 			if(action.equals("00")||action.equals("30")||action.equals("60")||action.equals("41")){
 				//不做处理
 				this.logger.info("EMS的action为00,30,41,60 时不做处理，运单号：[" + transcwb + "]");
-				throw new CwbException("","EMS的action为00,30,60 时不做处理，运单号：[" + transcwb + "]");
+				throw new CwbException("","EMS的action为00,30,41,60 时不做处理，运单号：[" + transcwb + "]");
 			}else if(action.equals("40")){
 				//if(flow==36&&order.getDeliverystate()==4){
 					emsFlowordertype = 36;
@@ -243,13 +242,13 @@ public class EMSService {
 			this.logger.info("EMS，action值为空，dmp无法操作，action=["+action+"]! 运单号：[" + transcwb + "]");
 			throw new CwbException("","EMS，action值为空，dmp无法操作，action=["+action+"]! 运单号：[" + transcwb + "]");
 		}
-		
+		String credate = Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss");
 		//根据订单号、运单号、操作状去除重复数据
 		List<EMSFlowEntity> flowList = eMSDAO.getFlowByCondition(transcwb,mailnum,emsFlowordertype,action);
 		if(flowList.size()!=0){
+			//eMSDAO.updateFlowInfoByCondition(transcwb,emsFlowordertype,listexpressmail,credate,expressMail);
 			throw new CwbException("","轨迹数据重复！运单号["+transcwb+"]");
 		}
-		String credate = Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss");
 		 //保存获取的ems运单轨迹报文
         eMSDAO.saveEMSFlowInfo(transcwb,mailnum,listexpressmail,action,emsFlowordertype, properdelivery,notproperdelivery,credate);
         return 1;
@@ -317,10 +316,10 @@ public class EMSService {
 		DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(order.getCwb());
 		
 		if(!StringUtils.isEmpty(action)){
-			if(action.equals("00")||action.equals("30")||action.equals("60")){
+			if(action.equals("00")||action.equals("30")||action.equals("41")||action.equals("60")){
 				//不做处理
-				this.logger.info("EMS的action为00,30,60 时不做处理，运单号：[" + transcwb + "]");
-				throw new CwbException("","EMS的action为00,30,60 时不做处理，运单号：[" + transcwb + "]");
+				this.logger.info("EMS的action为00,30,41,60 时不做处理，运单号：[" + transcwb + "]");
+				throw new CwbException("","EMS的action为00,30,41,60 时不做处理，运单号：[" + transcwb + "]");
 			}else if(action.equals("50")){
 				//如果此时订单状态不是出库状态，则需补环节
 				if(flow==FlowOrderTypeEnum.DaoRuShuJu.getValue()
@@ -346,9 +345,12 @@ public class EMSService {
 					}
 					//模拟退货出站（依据该客户是否要退货出站审核，如果要审核，模拟退货出站审核+退货出站；否则，直接模拟退货出站）
 					this.imitateCwbexportUntreadWarhouse(transcwb, emsDelivery,emsTuihuoBranch);
+				}else if(flow==FlowOrderTypeEnum.TuiHuoChuZhan.getValue()){
+					//模拟退货出站
+					this.imitateCwbexportUntreadWarhouse(transcwb, emsDelivery,emsTuihuoBranch);
 				}else{
 					//不做处理
-					this.logger.info("EMS的action为40，且订单状态不是为审核为拒 时不做处理，运单号：[" + transcwb + "]");
+					this.logger.info("EMS的action为40，且订单状态不是为审核为拒收 时不做处理，运单号：[" + transcwb + "]");
 					throw new CwbException("","EMS的action为40，且订单状态不是为审核为拒 时不做处理，运单号：[" + transcwb + "]");
 				}
 			}else if(action.equals("10")&&!StringUtils.isEmpty(properdelivery)){
@@ -364,7 +366,7 @@ public class EMSService {
 				parameters = this.getDeliveryResult(emsDelivery,1l,0l,58l,bd,order.getReceivablefee(),bd,bd,bd,"","","","",sign_typeid,0l,0l,d.toString(),bd,0,0l,0l,0l,transcwb);
 				if(parameters!=null){
 					try {
-						this.cwbOrderService.deliverStatePod(emsDelivery, cwb, transcwb, parameters);
+						this.cwbOrderService.deliverStatePod(emsDelivery, cwb, "", parameters);
 					} catch (CwbException ce) {
 						this.logger.info("EMS订单模拟归班反馈为配送成功异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
 						throw ce;
@@ -379,6 +381,7 @@ public class EMSService {
 				 */
 				this.imitateOk(cwb,"",dsDTO,1,bd,"","",bd,bd,bd,emsDelivery);
 			}else if(action.equals("20")){
+				
 				Long notproperdelivery = Long.parseLong(emsFlowEntity.getNotproperdelivery());
 				ExptCodeJoint expt = null;
 				if(notproperdelivery!=100){
@@ -402,7 +405,7 @@ public class EMSService {
 					parameters = this.getDeliveryResult(emsDelivery,9l,0l,0l,bd,bd,bd,bd,bd,"","","","",sign_typeid,0l,0l,d.toString(),bd,114,122,0l,0l,transcwb);
 					if(parameters!=null){
 						try {
-							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, transcwb, parameters);
+							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, "", parameters);
 						} catch (CwbException ce) {
 							this.logger.info("EMS订单模拟归班反馈为【滞留自动领货】异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
 							throw ce;
@@ -424,7 +427,7 @@ public class EMSService {
 					parameters = this.getDeliveryResult(emsDelivery,8l,0l,58l,bd,bd,bd,bd,bd,"","","","",sign_typeid,0l,expt.getReasonid(),d.toString(),bd,0l,0l,0l,0l,transcwb);
 					if(parameters!=null){
 						try {
-							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, transcwb, parameters);
+							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, "", parameters);
 						} catch (CwbException ce) {
 							this.logger.info("EMS订单模拟归班反馈为【货物丢失】异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
 							throw new CwbException("","EMS订单模拟归班反馈为【货物丢失】异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
@@ -443,7 +446,7 @@ public class EMSService {
 					parameters = this.getDeliveryResult(emsDelivery,4l,expt.getReasonid(),0l,bd,bd,bd,bd,bd,"","","","",sign_typeid,0l,0l,d.toString(),bd,expt.getReasonid(),0l,0l,0l,transcwb);
 					if(parameters!=null){
 						try {
-							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, transcwb, parameters);
+							this.cwbOrderService.deliverStatePod(emsDelivery, cwb, "", parameters);
 						} catch (CwbException ce) {
 							this.logger.info("EMS订单模拟归班反馈为【拒收】异常："+ce.getMessage()+"! 运单号：[" + transcwb + "]");
 						}

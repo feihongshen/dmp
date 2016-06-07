@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.tools.B2cEnum;
+import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MqExceptionDAO;
 import cn.explink.dao.OrderFlowDAO;
@@ -52,6 +53,8 @@ public class FlowFromJMSToEMSOrderService {
 	EMSService eMSService;
 	@Autowired
 	MqExceptionDAO mqExceptionDAO;
+	@Autowired
+	JointService jointService;
 	/*@Produce(uri = "jms:queue:sendBToCToDmp")
 	ProducerTemplate sendBToCToDmpProducer;*/
 
@@ -89,6 +92,10 @@ public class FlowFromJMSToEMSOrderService {
 
 	public void saveOrderForEms(@Header("orderFlow") String parm, @Header("MessageHeaderUUID") String messageHeaderUUID) {
 		EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
+		int isOpenFlag = jointService.getStateForJoint(B2cEnum.EMS.getKey());
+		if (isOpenFlag == 0) {
+			return;
+		}
 		try {
 			doSaveOrderForEms(parm,ems.getEmsBranchid());
 		} catch (Exception e1) {

@@ -34,7 +34,7 @@ EMS ems = (EMS)request.getAttribute("emsObject");
 						<li><span>异常码提供方：</span>
 							<input type ="text" id="supportKey" name ="supportKey" value="<%=ems.getSupportKey() %>"  maxlength="300">
 						</li>
-						<li><span>订单推送url：</span>
+						<li><span>轨迹推送url：</span>
 							<input type ="text" id="orderSendUrl" name ="orderSendUrl" value="<%=ems.getOrderSendUrl() %>"  maxlength="300">
 						</li>
 						<li><span>订单对接授权码：</span>
@@ -46,10 +46,10 @@ EMS ems = (EMS)request.getAttribute("emsObject");
 						<li><span>订单每次推送数量：</span>
 							<input type ="text" id="sendOrderCount" name ="sendOrderCount" onblur="validate('sendOrderCount')" value="<%=ems.getSendOrderCount() %>"  maxlength="300">
 						</li>
-						<li><span>ems运单获取url：</span>
+						<li ><span>ems运单获取url：</span>
 							<input type ="text" id="emsTranscwbUrl" name ="emsTranscwbUrl" value="<%=ems.getEmsTranscwbUrl() %>"  maxlength="300">
 						</li>
-						<li><span>状态回传url：</span>
+						<li style="display: none;"><span>状态回传url：</span>
 							<input type ="text" id="emsStateUrl" name ="emsStateUrl"  value="<%=ems.getEmsStateUrl() %>"  maxlength="300">
 						</li>
 						<li><span>EMS站点编号：</span>
@@ -68,7 +68,7 @@ EMS ems = (EMS)request.getAttribute("emsObject");
 						<li><span>异常码提供方：</span>
 							<input type ="text" id="supportKey" name ="supportKey" maxlength="300">
 						</li>
-						<li><span>订单推送url：</span>
+						<li><span>轨迹推送url：</span>
 							<input type ="text" id="orderSendUrl" name ="orderSendUrl" maxlength="300">
 						</li>
 						<li><span>订单对接授权码：</span>
@@ -83,7 +83,7 @@ EMS ems = (EMS)request.getAttribute("emsObject");
 						<li><span>ems运单获取url：</span>
 							<input type ="text" id="emsTranscwbUrl" name ="emsTranscwbUrl"  maxlength="300">
 						</li>
-						<li><span>状态回传url：</span>
+						<li style="display: none;"><span>状态回传url：</span>
 							<input type ="text" id="emsStateUrl" name ="emsStateUrl" maxlength="300">
 						</li>
 						<li><span>EMS站点编号：</span>
