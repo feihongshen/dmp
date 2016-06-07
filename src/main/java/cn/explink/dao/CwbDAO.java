@@ -9647,4 +9647,19 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 更新发货时间
+	 * @author leo01.liao
+	 * @param cwb
+	 * @param emaildate
+	 * @return
+	 */
+	public int updateCwbEmaildate(String cwb, String emaildate) {
+		if(cwb == null || cwb.trim().length()<1 || emaildate == null || emaildate.trim().length()<1){
+			return 0;
+		}
+		String sql = "update express_ops_cwb_detail set emaildate = ? where cwb = ? and state=1";
+		return this.jdbcTemplate.update(sql, emaildate,cwb);
+	}
 }
