@@ -263,7 +263,8 @@ public class PDAController {
 	OrderBackCheckDAO orderBackCheckDAO;
 	@Autowired
 	CwbApplyZhongZhuanDAO cwbApplyZhongZhuanDAO;
-
+	
+	
 	@Autowired
 	private BaleCwbDao baleCwbDao;
 
@@ -2037,6 +2038,18 @@ public class PDAController {
 						}
 					}
 					obj.put("showRemark", a);
+					DeliveryState dc = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+					//*******Hps_Concerto*****2016年5月26日17:23:11
+					obj.put("flowordertype", cwbOrder.getFlowordertype());
+					obj.put("cwbstate", cwbOrder.getCwbstate());
+					obj.put("deliverystate", dc.getDeliverystate());
+					OrderBackCheck oc = orderBackCheckDAO.getOrderBackCheckOnlyCwb(cwbOrder.getCwb());
+					if(oc==null){ 
+						obj.put("checkstateresultname", "");
+					}else{
+						obj.put("checkstateresultname", oc.getCheckresult()==0?"未审核":(oc.getCheckresult()==1?"确认退货":"站点配送"));
+					}
+					//*******************
 				}
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
 						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);

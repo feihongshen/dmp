@@ -1,3 +1,4 @@
+<%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.enumutil.DeliveryStateEnum"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
@@ -598,18 +599,22 @@ function tohome(){
 												<td width="250" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
 												<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
-											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==(Integer)obj.get("cwbstate")) {%>
+											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if ((obj.get("cwbstate")!=null&&cwb.getValue()==(Integer)obj.get("cwbstate"))) {%>
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
 											<td width="60" align="center"><%
+											System.out.print(obj.get("flowordertype"));
+											System.out.print(obj.get("deliverystate"));
+											if(obj.get("flowordertype")!=null){
 											if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已审核"){%>
 											审核为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
 											<%}else if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已反馈") {%>
 											反馈为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
 											<%}else{ %>
-											<%=CwbFlowOrderTypeEnum.getText((Integer)obj.get("deliverystate")).getText()%><%} %></td>
-											<td width="120" align="center"><%=obj.get("checkstateresultname")%></td>
+											<%=CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype"))==null?"":CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()%>
+											<%}} %></td>
+											<td width="120" align="center"><%=obj.get("checkstateresultname")==null?"":obj.get("checkstateresultname")%></td>
 											<!-- ****************************** -->
 												<td align="center"><%=obj.get("errorinfo") %></td>
 											</tr>
