@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import cn.explink.b2c.tps.TpsCwbFlowService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.domain.Branch;
@@ -39,8 +38,6 @@ public class AutoInWarehouseService {
 	private CustomerDAO customerDAO;
 	@Autowired
 	private TransCwbDetailDAO transCwbDetailDAO;
-	@Autowired
-	private TpsCwbFlowService tpsCwbFlowService;
 	
 	@Transactional
 	public void autoInWarehouse(AutoPickStatusVo data,User user){
@@ -93,11 +90,7 @@ public class AutoInWarehouseService {
 				String baleno=data.getPackage_no()==null||data.getPackage_no().length()<1?null:data.getPackage_no();
 				String deliveryBranchCode=data.getDestination_org()==null||data.getDestination_org().length()<1?"":data.getDestination_org();
 				deliveryBranchCode=deliveryBranchCode.trim();
-				String operateTime=data.getOperate_time()==null||data.getOperate_time().trim().length()<1?null:data.getOperate_time();
-				
-				if(operateTime==null){
-					throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"模拟入库时操作时间不能为空");
-				}
+
 				
 				/*
 				long deliveryBranchId=autoOrderStatusService.getDeliveryBranchId(deliveryBranchCode);
@@ -120,12 +113,10 @@ public class AutoInWarehouseService {
 				//validateIsSubCwb 验证箱号是否正确? //catch the ExceptionCwbErrorTypeEnum.Qing_SAO_MIAO_YUN_DAN_HAO ?
 				//集单也用这个方法去出库？？？
 				//不区分扫箱号标志？？？
-				String scancwb=null;
 				if(boxno!=null&&isypdjusetranscwb==1){
 					//一票多件有箱号且要扫箱号;
 					//一票一件有箱号且要扫箱号;
-					scancwb=boxno;
-					this.cwborderService.intoWarehous(user, cwb,scancwb, customerid, driverid, requestbatchno, comment, "", false);
+					this.cwborderService.intoWarehous(user, cwb,boxno, customerid, driverid, requestbatchno, comment, "", false);
 				}else{
 					//测试用例：
 					//一票多件没箱号且不扫箱号;
@@ -135,13 +126,10 @@ public class AutoInWarehouseService {
 					//一票多件有箱号且不要扫箱号;
 					//一票一件有箱号且不要扫箱号;
 					//throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"入库时没找到箱号");
-					scancwb=cwb;
+					String scancwb=cwb;
 					this.cwborderService.intoWarehous(user, cwb,scancwb, customerid, driverid, requestbatchno, comment, "", false);
 					
 				}
-
-				//保存到eamildate,看日期格式是否需要转换
-				this.tpsCwbFlowService.save(cwbOrder, scancwb, FlowOrderTypeEnum.RuKu,user.getBranchid(),operateTime,false);
 		}
 
 	//看运单数据是否已经到达
