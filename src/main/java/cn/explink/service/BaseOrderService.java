@@ -195,7 +195,13 @@ public class BaseOrderService {
 	}
 
 	protected User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		return userDetail.getUser();
+		Authentication authen = this.securityContextHolderStrategy.getContext().getAuthentication();
+		if(authen==null){
+			User user = userDAO.getUserByUsername("admin");
+			return user;
+		}else{
+			ExplinkUserDetail userDetail = (ExplinkUserDetail) authen.getPrincipal();
+			return userDetail.getUser();
+		}
 	}
 }

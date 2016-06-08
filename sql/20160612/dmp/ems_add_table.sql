@@ -1,4 +1,4 @@
---轨迹接口临时表
+-- 轨迹接口临时表
 CREATE TABLE `express_ems_flow_info_temp` (
    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
    `email_num` VARCHAR(50) NOT NULL COMMENT 'ems运单号',
@@ -13,7 +13,7 @@ CREATE TABLE `express_ems_flow_info_temp` (
  ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
---轨迹接口表
+-- 轨迹接口表
 CREATE TABLE `express_ems_flow_info` (
    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
    `transcwb` VARCHAR(50) NOT NULL COMMENT 'dmp运单号',
@@ -32,7 +32,7 @@ CREATE TABLE `express_ems_flow_info` (
  ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
---运单对照表
+-- 运单对照表
 CREATE TABLE `express_ems_dmp_transcwb` (
    `transcwb` VARCHAR(50) NOT NULL COMMENT 'dmp运单号',
    `cwb` VARCHAR(50) NOT NULL COMMENT 'dmp订单号',
@@ -43,7 +43,7 @@ CREATE TABLE `express_ems_dmp_transcwb` (
  ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
---下发ems接口订单临时表
+-- 下发ems接口订单临时表
 CREATE TABLE express_ems_order_b2ctemp(
    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
    `transcwb` VARCHAR(50) NOT NULL COMMENT 'dmp运单号',

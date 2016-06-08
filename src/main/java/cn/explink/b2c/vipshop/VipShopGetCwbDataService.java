@@ -755,15 +755,15 @@ public class VipShopGetCwbDataService {
 	 * @param do_type
 	 * @return
 	 */
-	private String choseCustomerId(VipShop vipshop, String do_type) {
-		String customerid = vipshop.getCustomerids();  //默认选择唯品会customerid
-		
-		if(do_type != null && do_type.trim().equals("1")){
-			customerid = (vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid().trim());
-		}
-		
-		return customerid;
-	}*/
+//	private String choseCustomerId(VipShop vipshop, String do_type) {
+//		String customerid = vipshop.getCustomerids();  //默认选择唯品会customerid
+//		
+//		if(do_type != null && do_type.trim().equals("1")){
+//			customerid = (vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid().trim());
+//		}
+//		
+//		return customerid;
+//	}*/
 	
 	/**
 	 * TMS-DMP,TPS-DMP的订单查询接口，
