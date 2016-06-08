@@ -1,5 +1,7 @@
 package cn.explink.b2c.vipshop;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,11 +98,16 @@ public class VipShopService {
 
 	private void excuteGetOrdersByVipshop(B2cEnum enums) {
 		int loopcount = 20;
+		VipShop vipshop = vipShopGetCwbDataService.getVipShop(enums.getKey());
+		boolean feedbackOrderResult = vipShopGetCwbDataService.isFeedbackOrderResult();
+		Map<String, Boolean> resultMap = null;
 		for (int i = 0; i < loopcount; i++) {
-			long resultflag = vipShopGetCwbDataService.getOrdersByVipShop(enums.getKey());
-		//	vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(enums.getKey());
-			if (resultflag == -1) { // -1标识下载不到或者异常，跳出循环 ,1标识仍然有数据未下载完毕
+			resultMap = vipShopGetCwbDataService.getOrdersByVipShop(enums.getKey());
+			if (resultMap == null) { // 结果为空就退出
 				return;
+			}
+			if(feedbackOrderResult && resultMap.size() >= 1){
+				vipShopGetCwbDataService.feedbackOrderResult(vipshop, resultMap);
 			}
 			logger.info("当前下载唯品会次数={}", i);
 

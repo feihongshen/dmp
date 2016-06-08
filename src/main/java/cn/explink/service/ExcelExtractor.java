@@ -637,9 +637,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 	 */
 	private void extendsImportColumn(Customer customer, CwbOrderDTO cwbOrder) {
 		if(customer.getMpsswitch()!=0){ //开启集单模式
-			if(cwbOrder.getTranscwb().split(cwbOrderService.getSplitstring(cwbOrder.getTranscwb())).length>1){
-				cwbOrder.setIsmpsflag((int)IsmpsflagEnum.yes.getValue()); //默认是一票多件模式
-				cwbOrder.setMpsallarrivedflag(MPSAllArrivedFlagEnum.YES.getValue()); //excel导入默认到齐
+			if (cwbOrder.getTranscwb() != null) { //add by neo01.huang，2016-6-1，加入非空判断，不然会有报空指针异常的风险
+				if(cwbOrder.getTranscwb().split(cwbOrderService.getSplitstring(cwbOrder.getTranscwb())).length>1){
+					cwbOrder.setIsmpsflag((int)IsmpsflagEnum.yes.getValue()); //默认是一票多件模式
+					cwbOrder.setMpsallarrivedflag(MPSAllArrivedFlagEnum.YES.getValue()); //excel导入默认到齐
+				}
 			}
 		}
 	}
@@ -698,8 +700,12 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				errorOrder.put("cwbOrderDTO", "{\"cwb\":\"" + this.removeZero(cwb) + "\",\"emaildate\":\"" + ed.getEmaildatetime() + "\"}");
 				errorOrder.put("emaildateid", ed.getEmaildateid());
 				errorOrder.put("customerid", customerId);
-				errorOrder.put("message", e.getMessage());
+				//errorOrder.put("message", e.getMessage());
+				//update by neo01.huang，如果Exception刚好是空指针异常，此时e.getMessage()就是null，加上"",
+				//可以避免后续errorOrder.getString("message")报异常
+				errorOrder.put("message", e.getMessage() + "");
 
+				
 				this.importCwbErrorService.saveOrderError(errorOrder);
 			}
 		}

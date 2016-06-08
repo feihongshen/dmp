@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +31,7 @@ import cn.explink.util.StringUtil;
 @RequestMapping("/customer")
 @Controller
 public class CustomerController {
-
+	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	CustomerDAO customerDao;
 	@Autowired
@@ -53,8 +55,7 @@ public class CustomerController {
 	}
 
 	@RequestMapping("/list/{page}")
-	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "customername", required = false, defaultValue = "") String customername,
-			@RequestParam(value = "showMessage", required = false, defaultValue = "") String showMessage) {
+	public String list(@PathVariable("page") long page, Model model, @RequestParam(value = "customername", required = false, defaultValue = "") String customername, @RequestParam(value = "showMessage", required = false, defaultValue = "") String showMessage) {
 
 		model.addAttribute("customerList", this.customerDao.getCustomerByPage(page, customername));
 		model.addAttribute("page_obj", new Page(this.customerDao.getCustomerCount(customername), page, Page.ONE_PAGE_NUMBER));
@@ -115,6 +116,7 @@ public class CustomerController {
 
 		return "customer/edit";
 	}
+
 	@RequestMapping("/add")
 	public String add(Model model, HttpServletRequest request) {
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Customer.getValue()));
@@ -132,6 +134,13 @@ public class CustomerController {
 			return "{\"errorCode\":1,\"error\":\"供货商已存在或编码重复\"}";
 		} else {
 			Customer customer = this.customerService.loadFormForCustomer(request, null, customerid);
+			//增加供应闪修改日志--刘武强
+			if (customer != null) {
+				this.logger
+						.info("供货商修改        供货商名称：" + customer.getCompanyname() + "；供货商id:" + customer.getCustomerid() + ";一票多件是否用运单号：" + (customer.getIsypdjusetranscwb() == 0 ? "否" : "是") + ";是否扫描运单号：" + (customer
+								.getIsUsetranscwb() == 0 ? "是" : "否") + ";退货订单审核:" + (customer.getNeedchecked() == 0 ? "否" : "是") + ";是否进行返单操作:" + (customer.getIsFeedbackcwb() == 0 ? "否" : "是") + ";是否生成订/运单号：" + (customer
+								.getIsAutoProductcwb() == 0 ? "否" : "是"));
+			}
 			this.customerDao.save(customer);
 			/* add by wangych address syn */
 			// TODO 增加同步代码
@@ -156,6 +165,13 @@ public class CustomerController {
 			return "{\"errorCode\":1,\"error\":\"供货商已存在或编码重复\"}";
 		} else {
 			Customer customer = this.customerService.loadFormForCustomer(request, file, customerid);
+			if (customer != null) {
+				this.logger
+						.info("供货商修改        供货商名称：" + customer.getCompanyname() + "；供货商id:" + customer.getCustomerid() + ";一票多件是否用运单号：" + (customer.getIsypdjusetranscwb() == 0 ? "否" : "是") + ";是否扫描运单号：" + (customer
+								.getIsUsetranscwb() == 0 ? "是" : "否") + ";退货订单审核:" + (customer.getNeedchecked() == 0 ? "否" : "是") + ";是否进行返单操作:" + (customer.getIsFeedbackcwb() == 0 ? "否" : "是") + ";是否生成订/运单号：" + (customer
+								.getIsAutoProductcwb() == 0 ? "否" : "是"));
+			}
+
 			this.customerDao.save(customer);
 			/* add by wangych address syn */
 			// TODO 增加同步代码

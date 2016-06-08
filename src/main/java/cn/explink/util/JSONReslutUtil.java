@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,13 @@ public class JSONReslutUtil {
 		String[] paramStr = params.split("&");// 按“&”拆分
 		if (paramStr != null && paramStr.length > 0) {
 			for (int i = 0; i < paramStr.length; i++) {
-				postMethod.addParameter(paramStr[i].split("=")[0], paramStr[i].split("=")[1]);// 按“=”拆分，第一个做为参数名，第二个作为参数值
+				// 按“=”拆分，第一个做为参数名，第二个作为参数值
+				if(StringUtils.isNotBlank(paramStr[i])) {
+					String[] itemStr = paramStr[i].split("=");
+					if (itemStr != null && itemStr.length >= 2) {
+						postMethod.addParameter(itemStr[0], itemStr[1]);
+					}
+				}
 			}
 		}
 		try {
@@ -77,7 +84,13 @@ public class JSONReslutUtil {
 		String[] paramStr = params.split("&");// 按“&”拆分
 		if (paramStr != null && paramStr.length > 0) {
 			for (int i = 0; i < paramStr.length; i++) {
-				postMethod.addParameter(paramStr[i].split("=")[0], paramStr[i].split("=")[1]);// 按“=”拆分，第一个做为参数名，第二个作为参数值
+				// 按“=”拆分，第一个做为参数名，第二个作为参数值
+				if(StringUtils.isNotBlank(paramStr[i])) {
+					String[] itemStr = paramStr[i].split("=");
+					if (itemStr != null && itemStr.length >= 2) {
+						postMethod.addParameter(itemStr[0], itemStr[1]);
+					}
+				}
 			}
 		}
 		try {
@@ -114,7 +127,13 @@ public class JSONReslutUtil {
 		String[] paramStr = params.split("&");// 按“&”拆分
 		if (paramStr != null && paramStr.length > 0) {
 			for (int i = 0; i < paramStr.length; i++) {
-				postMethod.addParameter(paramStr[i].split("=")[0], paramStr[i].split("=")[1]);// 按“=”拆分，第一个做为参数名，第二个作为参数值
+				// 按“=”拆分，第一个做为参数名，第二个作为参数值
+				if(StringUtils.isNotBlank(paramStr[i])) {
+					String[] itemStr = paramStr[i].split("=");
+					if (itemStr != null && itemStr.length >= 2) {
+						postMethod.addParameter(itemStr[0], itemStr[1]);
+					}
+				}
 			}
 		}
 		try {

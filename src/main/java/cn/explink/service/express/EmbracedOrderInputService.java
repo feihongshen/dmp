@@ -301,6 +301,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		Date date = new Date();
 
 		if (flags == 0) {
+			this.logger.info("订单录入  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
 			params.put("cwb", embracedOrderVO.getOrderNo());
 			params.put("flowordertype", FlowOrderTypeEnum.LanJianRuZhan.getValue());
 			params.put("cwbstate", CwbStateEnum.PeiShong.getValue());
@@ -316,6 +317,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("shouldfare", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 		} else if (flags == 1) {
+			this.logger.info("订单补录后在修改  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
 			params.put("completehandlerid", user.getUserid());
 			params.put("completehandlername", user.getUsername());
 			params.put("completedatetime", date);
@@ -326,6 +328,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("shouldfare", StringUtils.isNotBlank(embracedOrderVO.getFreight()) ? embracedOrderVO.getFreight() : 0.00);
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 		} else if (flags == 2) {
+			this.logger.info("订单补录  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
 			params.put("cwb", embracedOrderVO.getOrderNo());
 			params.put("flowordertype", FlowOrderTypeEnum.LanJianRuZhan.getValue());
 			params.put("cwbstate", CwbStateEnum.PeiShong.getValue());
@@ -422,24 +425,24 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			//如果详细地址里面已经含省+市+区，则不再加入省市区
 			String cneeProv = StringUtil.nullConvertToEmptyString((String) (params.get("cwbprovince")));
 			String cneeCity = StringUtil.nullConvertToEmptyString((String) (params.get("cwbcity")));
-			String cneeRegion =StringUtil.nullConvertToEmptyString((String) (params.get("cwbcounty")));
+			String cneeRegion = StringUtil.nullConvertToEmptyString((String) (params.get("cwbcounty")));
 			String cneeTown = StringUtil.nullConvertToEmptyString((String) params.get("recstreet"));
 			String consigneeaddress = StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_adress());
-			if(null != consigneeaddress){
-				if(null != cneeTown && consigneeaddress.indexOf(cneeTown) < 0){//从地址小的开始处理
+			if (null != consigneeaddress) {
+				if ((null != cneeTown) && (consigneeaddress.indexOf(cneeTown) < 0)) {//从地址小的开始处理
 					consigneeaddress = cneeTown + consigneeaddress;
 				}
-				if(null != cneeRegion && consigneeaddress.indexOf(cneeRegion) < 0){
+				if ((null != cneeRegion) && (consigneeaddress.indexOf(cneeRegion) < 0)) {
 					consigneeaddress = cneeRegion + consigneeaddress;
 				}
-				if(null != cneeCity && consigneeaddress.indexOf(cneeCity) < 0){
+				if ((null != cneeCity) && (consigneeaddress.indexOf(cneeCity) < 0)) {
 					consigneeaddress = cneeCity + consigneeaddress;
 				}
-				if(null != cneeProv && consigneeaddress.indexOf(cneeProv) < 0){
+				if ((null != cneeProv) && (consigneeaddress.indexOf(cneeProv) < 0)) {
 					consigneeaddress = cneeProv + consigneeaddress;
 				}
 			}
-			
+
 			params.put("consigneeaddress", consigneeaddress);
 			params.put("senderaddress", embracedOrderVO.getConsignee_adress() == null ? "" : StringUtil.nullConvertToEmptyString((String) (params.get("senderprovince"))) + StringUtil
 					.nullConvertToEmptyString((String) (params.get("sendercity"))) + StringUtil.nullConvertToEmptyString((String) (params.get("sendercounty"))) + StringUtil
@@ -467,8 +470,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("instationdatetime", date);
 			params.put("instationid", branch.getBranchid());
 			params.put("instationname", branch.getBranchname());
-			
-			params.put("credate",Timestamp.valueOf(DateTimeUtil.getNowTime()));
+
+			params.put("credate", Timestamp.valueOf(DateTimeUtil.getNowTime()));
 
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
 			System.out.println("补录：inset方法，补录标志位：" + embracedOrderVO.getIsadditionflag());
@@ -749,28 +752,28 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 
 				doReq.setCneeProv(embracedOrderVO.getConsignee_provinceName());
 				doReq.setCneeCity(embracedOrderVO.getConsignee_cityName());
-				
+
 				//如果详细地址里面已经含省+市+区，则不再加入省市区
 				String consigneeProvinceName = embracedOrderVO.getConsignee_provinceName();
 				String consigneeCityName = embracedOrderVO.getConsignee_cityName();
 				String consigneeCountyName = embracedOrderVO.getConsignee_countyName();
 				String consigneeTownName = embracedOrderVO.getConsignee_townName();
 				String address = embracedOrderVO.getConsignee_adress();
-				if(null != address){
-					if(null != consigneeTownName && address.indexOf(consigneeTownName) < 0){//从地址小的开始处理
+				if (null != address) {
+					if ((null != consigneeTownName) && (address.indexOf(consigneeTownName) < 0)) {//从地址小的开始处理
 						address = consigneeTownName + address;
 					}
-					if(null != consigneeCountyName && address.indexOf(consigneeCountyName) < 0){
+					if ((null != consigneeCountyName) && (address.indexOf(consigneeCountyName) < 0)) {
 						address = consigneeCountyName + address;
 					}
-					if(null != consigneeCityName && address.indexOf(consigneeCityName) < 0){
+					if ((null != consigneeCityName) && (address.indexOf(consigneeCityName) < 0)) {
 						address = consigneeCityName + address;
 					}
-					if(null != consigneeProvinceName && address.indexOf(consigneeProvinceName) < 0){
+					if ((null != consigneeProvinceName) && (address.indexOf(consigneeProvinceName) < 0)) {
 						address = consigneeProvinceName + address;
 					}
 				}
-	
+
 				doReq.setCneeAddr(address);
 				if (StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone())) {
 					doReq.setCneeMobile(embracedOrderVO.getConsignee_cellphone());

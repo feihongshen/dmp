@@ -52,7 +52,6 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		username = username.trim();
 
 		List<User> users = userDAO.getUsersByUsername(username);
-
 		if (users.size() == 0 || users.size() > 1 || !users.get(0).getWebPassword().equals(password)) {
 			throw new AuthenticationServiceException("用户名或者密码错误");
 		}

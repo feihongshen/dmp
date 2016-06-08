@@ -226,34 +226,28 @@ public class VipShopGetCwbDataService {
 	 * 获取唯品会订单信息
 	 */
 	@Transactional
-	public long getOrdersByVipShop(int vipshop_key) {
-		
-		Date dt1 = new Date();
+	public Map<String, Boolean> getOrdersByVipShop(int vipshop_key) {
 		
 		VipShop vipshop = this.getVipShop(vipshop_key);
 		int isOpenFlag = this.jointService.getStateForJoint(vipshop_key);
 		if (isOpenFlag == 0) {
 			this.logger.info("未开启vipshop[" + vipshop_key + "]对接！");
-			return -1;
+			return null;
 		}
 		if (vipshop.getIsopendownload() == 0) {
 			this.logger.info("未开启vipshop[" + vipshop_key + "]订单下载接口");
-			return -1;
+			return null;
 		}
 		
-		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
 		// 是否开启反馈订单结果接口
-		boolean feedbackOrderResult = false;
-		if(systemInstall != null && "1".equals(systemInstall.getValue())){
-			feedbackOrderResult = true;
-		}
+		boolean feedbackOrderResult = isFeedbackOrderResult();
 
 		// 构建请求，解析返回信息
 		Map<String, Object> parseMap = this.requestHttpAndCallBackAnaly(vipshop, feedbackOrderResult);
 
 		if ((parseMap == null) || (parseMap.size() == 0)) {
 			this.logger.error("系统返回xml字符串为空或解析xml失败！");
-			return -1;
+			return null;
 		}
 
 		String sys_response_code = parseMap.get("sys_response_code") != null ? parseMap.get("sys_response_code").toString() : ""; // 返回码
@@ -262,11 +256,11 @@ public class VipShopGetCwbDataService {
 			VipShopExceptionHandler.respValidateMessage(sys_response_code, sys_response_msg, vipshop);
 		} catch (Exception e) {
 			this.logger.error("返回vipshop订单查询信息验证失败！异常原因:", e);
-			return -1;
+			return null;
 		}
 		if (!"S00".equals(sys_response_code)) {
 			this.logger.info("当前唯品会返回信息异常，sys_response_code={}", sys_response_code);
-			return -1;
+			return null;
 		}
 
 		this.logger.info("请求Vipshop订单信息-返回码：[S00],success ,sys_response_msg={}", sys_response_msg);
@@ -275,7 +269,7 @@ public class VipShopGetCwbDataService {
 		boolean checkRespSign = this.checkSignResponseInfo(parseMap.get("sign").toString(), VipShopMD5Util.MD5(parseMD5Str));
 		if (!checkRespSign) {
 			this.logger.error("请求Vipshop订单信息-返回签名验证失败！本地签名：[" + VipShopMD5Util.MD5(parseMD5Str) + "],返回签名：[" + parseMap.get("sign") + "]");
-			return -1;
+			return null;
 		}
 
 		// 订单处理结果 
@@ -285,7 +279,7 @@ public class VipShopGetCwbDataService {
 		if (CollectionUtils.isEmpty(orderlist) && resultMap.size() == 0) {
 			this.updateMaxSEQ(vipshop_key, vipshop);
 			this.logger.info("请求Vipshop订单信息-没有获取到订单或者订单信息重复！,当前SEQ={}", vipshop.getVipshop_seq());
-			return -1;
+			return null;
 		}
 
 		if (vipshop.getIsTuoYunDanFlag() == 0) {
@@ -298,10 +292,17 @@ public class VipShopGetCwbDataService {
 			}
 		}
 		
-		if(feedbackOrderResult && resultMap.size() >= 1){
-			feedbackOrderResult(vipshop, resultMap);
+		return resultMap;
+	}
+	
+	public boolean isFeedbackOrderResult(){
+		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
+		// 是否开启反馈订单结果接口
+		boolean feedbackOrderResult = false;
+		if(systemInstall != null && "1".equals(systemInstall.getValue())){
+			feedbackOrderResult = true;
 		}
-		return 1;
+		return feedbackOrderResult;
 	}
 	
 	public void extractedDataImportByEmaildate(int vipshop_key,
@@ -744,7 +745,7 @@ public class VipShopGetCwbDataService {
 		}
 		return customerid;
 	}*/
-	
+
 	/**
 	 * TMS-DMP,TPS-DMP的订单查询接口，
 	 * 修改区分乐蜂订单逻辑如下：根据上游系统提供的接口数据字段do_type值来区分是否为乐蜂订单，当且仅当do_type值为1时，订单为乐蜂订单。
@@ -807,7 +808,7 @@ public class VipShopGetCwbDataService {
 		}
 		
 		if("1".equals(is_gatherpack) && "1".equals(is_gathercomp)){
-			//更新临时表的发货时间
+			//更新临时表的发货时间和getDataFlag为0(重新转业务)，防止并发时发货时间取的还是未更新前的发货时间
 			dataImportDAO_B2c.update_CwbDetailTempEmaildateByCwb(order_sn, emaildate);
 			
 			//把发货时间写入订单表
@@ -1076,7 +1077,7 @@ public class VipShopGetCwbDataService {
 	 * 把处理好的订单结果反馈给取订单方
 	 * @param vipshop
 	 */
-	private void feedbackOrderResult(VipShop vipshop, Map<String, Boolean> result){
+	public void feedbackOrderResult(VipShop vipshop, Map<String, Boolean> result){
 		String request_time = DateTimeUtil.getNowTime();
 		String requestXML = this.StringXMLFeedback(vipshop, request_time, result);
 		String MD5Str = vipshop.getPrivate_key() + VipShopConfig.version + request_time + vipshop.getShipper_no();
