@@ -32,12 +32,12 @@ function CreateOneFormPage(){
 	//LODOP.SET_PRINT_PAGESIZE(0,815,1500,"A4");
 	for(var i = 0; i < ${fn:length(printOrderLabelVoList)}; i++) {
 		LODOP.NewPage();
-		LODOP.ADD_PRINT_HTM("1mm","10mm","RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_" + i).outerHTML + "</body>");
+		LODOP.ADD_PRINT_HTM("2mm","10mm","RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_" + i).outerHTML + "</body>");
 		var transcwb = $("#transcwb_" + i).val();
 		if(transcwb != null && transcwb != "") {
 			LODOP.ADD_PRINT_BARCODE(100,65,145,55,"128B",transcwb);
 			LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
-			LODOP.ADD_PRINT_BARCODE(367,192,145,55,"128B",transcwb);
+			LODOP.ADD_PRINT_BARCODE(378,192,145,55,"128B",transcwb);
 			LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
 		}
 	}
@@ -204,7 +204,7 @@ function nowprint(){
 			      	</td>
 			    </tr>
 			    <tr>
-			       <td class="td_1" valign="top"  style="height: 8mm;padding: 0 5px 0 5px;">
+			       <td class="td_1" valign="top"  style="height: 9mm;padding: 0 5px 0 5px;">
 			       		<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 			       			<tr>
 			       				<td valign="middle" width="40%">
@@ -218,7 +218,7 @@ function nowprint(){
 			       </td>
     			</tr>
     			<tr>
-       				<td class="td_1" style="height: 12mm;">
+       				<td class="td_1" style="height: 13mm;">
       					<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
           					<tr>
           						<td valign="middle" style="width:22mm;border-right:1px solid #585656;">
