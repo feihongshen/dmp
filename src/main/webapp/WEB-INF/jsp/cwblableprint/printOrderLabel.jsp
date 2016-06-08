@@ -32,12 +32,12 @@ function CreateOneFormPage(){
 	//LODOP.SET_PRINT_PAGESIZE(0,815,1500,"A4");
 	for(var i = 0; i < ${fn:length(printOrderLabelVoList)}; i++) {
 		LODOP.NewPage();
-		LODOP.ADD_PRINT_HTM(1,1,"RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_" + i).outerHTML + "</body>");
-		var transcwb = $("#cwb_" + i).val();
+		LODOP.ADD_PRINT_HTM("1mm","10mm","RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_" + i).outerHTML + "</body>");
+		var transcwb = $("#transcwb_" + i).val();
 		if(transcwb != null && transcwb != "") {
-			LODOP.ADD_PRINT_BARCODE(100,30,145,55,"128B",transcwb);
+			LODOP.ADD_PRINT_BARCODE(100,65,145,55,"128B",transcwb);
 			LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
-			LODOP.ADD_PRINT_BARCODE(373,158,145,55,"128B",transcwb);
+			LODOP.ADD_PRINT_BARCODE(367,192,145,55,"128B",transcwb);
 			LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
 		}
 	}
@@ -53,14 +53,6 @@ function nowprint(){
 <style type="text/css" id="print_style">
 .box {
 	width: 80mm;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-top-style: solid;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
 }
 .box table {
 	border-collapse: collapse; 
@@ -99,7 +91,7 @@ function nowprint(){
 	<c:forEach var="vo" items="${printOrderLabelVoList }" varStatus="status">
 	<c:set var="cwb" value="${vo.cwbOrder }"/>
 	<c:set var="branch" value="${vo.branch }"/>
-	<input type="hidden" id="cwb_${status.index }" value="${cwb.transcwb }">
+	<input type="hidden" id="transcwb_${status.index }" value="${cwb.transcwb }">
 	<div id="printTable_${status.index}">
 		<div class="box">
 			<table style="margin:2mm 2mm 0 2mm;width: 76mm" cellpadding="0" cellspacing="0">
@@ -212,7 +204,7 @@ function nowprint(){
 			      	</td>
 			    </tr>
 			    <tr>
-			       <td class="td_1" valign="top"  style="height: 9mm;padding: 0 5px 0 5px;">
+			       <td class="td_1" valign="top"  style="height: 8mm;padding: 0 5px 0 5px;">
 			       		<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 			       			<tr>
 			       				<td valign="middle" width="40%">
@@ -226,32 +218,28 @@ function nowprint(){
 			       </td>
     			</tr>
     			<tr>
-       				<td class="td_1" style="height: 12.5mm;border-bottom-width: 0px;">
+       				<td class="td_1" style="height: 12mm;">
       					<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
           					<tr>
           						<td valign="middle" style="width:22mm;border-right:1px solid #585656;">
-              						<span style="line-height:14px;font-family: 黑体;font-size: 8px;">收件员：${cwb.collectorname }</span><br>
-              						<span style="line-height:14px;font-family: 黑体;font-size: 8px;">寄件日期：${cwb.emaildate }</span><br>
-              						<span style="line-height:14px;font-family: 黑体;font-size: 8px;">派件员：${cwb.exceldeliver }</span>
+              						<div style="line-height:14px;font-family: 黑体;font-size: 8px;">收件员：${cwb.collectorname }</div>
+              						<div style="line-height:14px;font-family: 黑体;font-size: 8px;">寄件日期：${cwb.emaildate }</div>
+              						<div style="line-height:14px;font-family: 黑体;font-size: 8px;">派件员：${cwb.exceldeliver }</div>
             					</td>
             					<td valign="middle" style="width:33mm;border-right:1px solid #585656;">
-            						<span style="line-height:14px;font-family:黑体;font-size: 8px;">代收货款:${cwb.receivablefee }元</span><br>
-                					<span style="line-height:14px;font-family:黑体;font-size: 8px;">运费合计:${cwb.totalfee }元</span><br>
-                					<span style="line-height:14px;font-family:黑体;font-size: 10px;font-weight: bold;">应收合计：${vo.shouldReceiveTotal }元</span>
+            						<div style="line-height:14px;font-family:黑体;font-size: 8px;">代收货款:${cwb.receivablefee }元</div>
+                					<div style="line-height:14px;font-family:黑体;font-size: 8px;">运费合计:${cwb.totalfee }元</div>
+                					<div style="line-height:14px;font-family:黑体;font-size: 10px;font-weight: bold;">应收合计：${vo.shouldReceiveTotal }元</div>
             					</td>
            						<td valign="middle">
-            	 					<span style="line-height:14px;font-family: 黑体;font-size: 8px;">收方签署：</span><br>
-              						<span style="line-height:14px;font-family: 黑体;font-size: 8px;">&nbsp;</span><br>
-              						<span style="line-height:14px;font-family: 黑体;font-size: 8px;">日期：</span>
+            	 					<div style="line-height:14px;font-family: 黑体;font-size: 8px;">收方签署：</div>
+              						<div style="line-height:14px;font-family: 黑体;font-size: 8px;">&nbsp;</div>
+              						<div style="line-height:14px;font-family: 黑体;font-size: 8px;">日期：</div>
             					</td>
           					</tr>
         				</table>
       				</td>
     			</tr>
-			</table>
-		</div>
-		<div class="box" style="border-top-width: 0px;">
-			<table style="margin:0 2mm 2mm 2mm;width: 76mm" cellpadding="0" cellspacing="0">
 				<tr>
       				<td style="height: 18mm;border-top-width: 0px;" class="td_1">
 	          			<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
