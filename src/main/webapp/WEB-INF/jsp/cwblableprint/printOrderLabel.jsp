@@ -35,9 +35,9 @@ function CreateOneFormPage(){
 		LODOP.ADD_PRINT_HTM("2mm","10mm","RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_" + i).outerHTML + "</body>");
 		var transcwb = $("#transcwb_" + i).val();
 		if(transcwb != null && transcwb != "") {
-			LODOP.ADD_PRINT_BARCODE(100,65,145,55,"128B",transcwb);
+			LODOP.ADD_PRINT_BARCODE(100,65,145,55,"128Auto",transcwb);
 			LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
-			LODOP.ADD_PRINT_BARCODE(378,192,145,55,"128B",transcwb);
+			LODOP.ADD_PRINT_BARCODE(378,192,145,55,"128Auto",transcwb);
 			LODOP.SET_PRINT_STYLEA(0,"FontSize",12);
 		}
 	}
