@@ -20,6 +20,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -80,6 +82,8 @@ public class OverdueExMoController {
 	private TimeEffectiveDAO timeEffectiveVO = null;
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -138,6 +142,9 @@ public class OverdueExMoController {
 			dataList.add(resultList);
 		}
 		new ExportDataUtils(response, condVO, dataList).exportData();
+		String dataJson = this.setexportDataJson(condVO);
+		//记录导出操作
+		this.auditExportExcel(dataJson, "超期监控.xlsx", dataList.size(), this.getSessionUser().getUserid());
 	}
 
 	@RequestMapping("/showdetail/{page}")
@@ -1128,6 +1135,34 @@ public class OverdueExMoController {
 			return this.dtList;
 		}
 
+	}
+	
+	private String setexportDataJson(OverdueExMoCondVO condVO){
+		JSONObject json = new JSONObject();
+		json.put("optTimeType", condVO.getOptTimeType());
+		json.put("startTime", condVO.getStartTime());
+		json.put("endTime", condVO.getEndTime());
+		json.put("orgs", condVO.getOrgs());
+		json.put("venderId", condVO.getVenderId());
+		json.put("showCols", condVO.getShowCols());
+		return json.toString();
+	}
+	
+	/**
+	 * 记录所有导出文件的操作
+	 * 
+	 * @param request
+	 * @param dataJson
+	 * @param userid
+	 */
+	private void auditExportExcel(String dataJson, String fileName, long count, long userid) {
+		try{
+			String logStr = String.format(
+					"UserId [%s] was exported the excel file:[name: %s, line-count: %d] by using conditions [%s]", userid, fileName, count, dataJson);
+			logger.info(logStr);
+		}catch(Exception e){
+			logger.error("Fail to log exported file info");
+		}
 	}
 
 }
