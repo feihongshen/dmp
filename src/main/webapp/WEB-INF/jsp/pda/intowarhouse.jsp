@@ -71,8 +71,6 @@ $(function(){
     });
 	
 });
-
-
 function closeDialog(){
 	$('#find').dialog('close');
 	$("#scancwb").focus();

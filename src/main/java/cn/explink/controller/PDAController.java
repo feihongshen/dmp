@@ -3432,7 +3432,6 @@ public class PDAController {
 			try {// 成功订单				
 				//有货无单校验
 				this.checkyouhuowudan(this.getSessionUser(), cwb, customerid, this.getSessionUser().getBranchid());
-
 				CwbOrder cwbOrder = this.cwbOrderService.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, "", "", false);
 				this.tpsCwbFlowService.save(cwbOrder,scancwb, FlowOrderTypeEnum.RuKu,this.getSessionUser().getBranchid());
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
@@ -10967,7 +10966,6 @@ public class PDAController {
 				/* thissuccess++; */
 				batchCount.setThissuccess(batchCount.getThissuccess() + 1);
 			} catch (CwbException ce) {// 出现验证错误
-				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();

@@ -80,7 +80,6 @@ public class TpsOrderMQCallback implements IVMSCallback {
 			orderHandler.dealWith(orderSend);			
 		} catch (Exception ex) {
 			this.logger.error("消费TPS订单下发数据时解析异常!", ex);
-			ex.printStackTrace();
 			feedbackException(msg, ex.getMessage(), null);
 		} finally {
 			// 确认消费
