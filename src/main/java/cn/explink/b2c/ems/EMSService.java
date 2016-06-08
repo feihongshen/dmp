@@ -244,7 +244,7 @@ public class EMSService {
 		}
 		String credate = Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss");
 		//根据订单号、运单号、操作状去除重复数据
-		List<EMSFlowEntity> flowList = eMSDAO.getFlowByCondition(transcwb,mailnum,emsFlowordertype,action);
+		List<EMSFlowEntity> flowList = eMSDAO.getFlowByCondition(transcwb,mailnum,emsFlowordertype,action, notproperdelivery);
 		if(flowList.size()!=0){
 			//eMSDAO.updateFlowInfoByCondition(transcwb,emsFlowordertype,listexpressmail,credate,expressMail);
 			throw new CwbException("","轨迹数据重复！运单号["+transcwb+"]");

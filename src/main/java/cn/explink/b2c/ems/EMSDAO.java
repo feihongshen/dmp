@@ -203,9 +203,12 @@ public class EMSDAO {
 	}
 	
 	//获取没有获取EMS运单号的ems数据
-	public List<EMSFlowEntity> getFlowByCondition(String transcwb,String mailNum,long emsFlowordertype, String action) {
+	public List<EMSFlowEntity> getFlowByCondition(String transcwb,String mailNum,long emsFlowordertype, String action, String notproperdelivery) {
 		String sql = "select * from express_ems_flow_info where transcwb='"+transcwb+"' and email_num='"+mailNum+"'" 
 				+ " and emsFlowordertype="+emsFlowordertype+" and emsAction='"+action+"'";
+		if("20".equals(action)){
+			sql += " and notproperdelivery='" + notproperdelivery + "' ";
+		} 
 		List<EMSFlowEntity> entity = this.jdbcTemplate.query(sql,new EMSFlowMapper());
 		return entity;
 	}
