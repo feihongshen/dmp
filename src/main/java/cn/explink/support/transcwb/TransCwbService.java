@@ -28,6 +28,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.CwbTranslator;
@@ -54,7 +55,7 @@ public class TransCwbService implements CwbTranslator {
 	@Autowired
 	OneTransToMoreCwbDao oneTransToMoreCwbDao;
 
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;

@@ -48,6 +48,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.express.AddressMatchEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.service.SystemConfigChangeListner;
@@ -100,7 +101,7 @@ public class AddressMatchExpressService implements SystemConfigChangeListner, Ap
 	private String address_url;
 	private String address_userid;
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 	ObjectReader expressAddressInfoReader = this.objectMapper.reader(ExtralInfo4Address.class);
 	
 	@Autowired

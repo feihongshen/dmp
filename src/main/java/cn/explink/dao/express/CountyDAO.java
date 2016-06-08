@@ -97,4 +97,18 @@ public class CountyDAO {
 		list = this.jdbcTemplate.query(sql.toString(), new CountyRowMapper());
 		return list;
 	}
+	
+	/**
+	 * 根据ID查询
+	 * @date 2016年5月17日 下午4:41:34
+	 * @param id
+	 * @return
+	 */
+	public AdressVO getCountyById(int id) {
+		StringBuffer sql = new StringBuffer();
+		AdressVO county = new AdressVO();
+		sql.append("select id,code,name,city_code as parentCode from express_set_county where id=?");
+		county = this.jdbcTemplate.queryForObject(sql.toString(), new CountyRowMapper(), id);
+		return county;
+	}
 }

@@ -287,5 +287,13 @@ public class UserService {
 		return this.userDAO.getAllUser();
 	}
 	
-
+	/**
+	 * 根据UserID获取User
+	 * @date 2016年5月17日 下午6:11:26
+	 * @param userid
+	 * @return
+	 */
+	public User getUserByUserid(long userid) {
+		return this.userDAO.getUserByUserid(userid);
+	}
 }

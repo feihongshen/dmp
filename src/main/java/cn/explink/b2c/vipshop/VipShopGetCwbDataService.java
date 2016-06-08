@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -733,17 +734,6 @@ public class VipShopGetCwbDataService {
 		return remarkFreight;
 	}
 
-	/*
-	private String choseCustomerIdX(VipShop vipshop, String customer_name) {
-		String customerid=vipshop.getCustomerids();  //默认选择唯品会customerid
-		
-		if((customer_name!=null&&customer_name.contains("乐蜂")))
-		{
-			customerid=vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids():vipshop.getLefengCustomerid();
-		}
-		return customerid;
-	}*/
-	
 	/**
 	 * TMS-DMP,TPS-DMP的订单查询接口，
 	 * 修改区分乐蜂订单逻辑如下：根据上游系统提供的接口数据字段do_type值来区分是否为乐蜂订单，当且仅当do_type值为1时，订单为乐蜂订单。
@@ -990,7 +980,7 @@ public class VipShopGetCwbDataService {
 		}
 	}
 	
-	@Transactional
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void insertOrderGoods(Map<String, Object> datamap, String order_sn) {
 		List<Map<String, Object>> goodslist = (List<Map<String, Object>>) datamap.get("goods");
 			if ((goodslist != null) && (goodslist.size() > 0)) {

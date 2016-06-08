@@ -1361,12 +1361,11 @@ public class BranchDAO {
 		list = this.jdbcTemplate.query(sql, new BranchRowMapper());
 		return list;
 	}
-
 	public List<Branch> getBranchByOutputNo(String outputno) {
 		List<Branch> list = new ArrayList<Branch>();
 		String sql = "select  * from express_set_branch where outputno = ?" ;
 		list = this.jdbcTemplate.query(sql, new BranchRowMapper(),outputno);
 		return list;
-	}
-	
+}
+
 }

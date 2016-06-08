@@ -29,6 +29,8 @@ long isscanbaleTag= request.getAttribute("isscanbaleTag")==null?1:Long.parseLong
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
 <script type="text/javascript">
 var data;
 var startIndex=0;
@@ -77,12 +79,6 @@ function moreOpt(){
 }
 var emaildate=0;
 	$(function(){
-		if('${auto_allocat}'=="1"){
-			$('#autoallocating_switch').show();	
-		}
-		else if('${auto_allocat}'=="0"){
-			$('#autoallocating_switch').hide();
-		}
 		$("#more").click(moreOpt);
 		emaildate=GetQueryString("emaildate");
 		initEmailDateUI(emaildate);
@@ -121,7 +117,7 @@ var emaildate=0;
 			
 		}) 
 
-$(function(){	
+$(function(){
 	var $menuli1 = $("#bigTag li");
 	$menuli1.click(function(){
 		$(this).children().addClass("light");
@@ -135,7 +131,12 @@ $(function(){
 		var index = $menuli2.index(this);
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
-	
+	$("#customerid").multipleSelect({
+	     placeholder: "全部供应商",
+	     filter: true,
+	     single: true
+	 });
+		
 })
 	
 	function focusCwb(){
@@ -237,10 +238,6 @@ $(function(){
 	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
-		if('${auto_allocat}'=="1"&&$("#entryselect").val()=='-1'){
-			alert("请选择自动分拨机入口");
-			return;
-		}
 		if($("#emaildate").val()>0){
 			var flag=false;
 			$(".cwbids").each(function(i,val){
@@ -283,9 +280,7 @@ $(function(){
 									+ "&driverid=" + driverid
 									+ "&requestbatchno=" + requestbatchno,
 							data : {
-								"comment" : comment,
-								"autoallocatid": $("#entryselect").val(),
-								"direction" :$("input[type='radio']:checked").val()
+								"comment" : comment
 							},
 							dataType : "json",
 							success : function(data) {
@@ -650,42 +645,6 @@ $(function(){
  		}
  	});
  }
- 
-function connect(){
-	if($("#entryselect").val()=='-1'){
-		alert("请选择自动分拨机入口");
-		return;
-	}
-	$.ajax({
- 		type: "POST",
- 		url: "<%=request.getContextPath()%>/PDA/connect",
- 		data:{
-			"entranceno":$("#entryselect").val()
-		},
- 		dataType : "json",
- 		success : function(data) {
- 			
- 		}
- 	});
-}
-
-function flush(){
-	if($("#entryselect").val()=='-1'){
-		alert("请选择自动分拨机入口");
-		return;
-	}
-	$.ajax({
- 		type: "POST",
- 		url: "<%=request.getContextPath()%>/PDA/flush",
- 		data:{
-			"entranceno":$("#entryselect").val()
-		},
- 		dataType : "json",
- 		success : function(data) {
- 			
- 		}
- 	});
-}
 </script>
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">
@@ -731,7 +690,7 @@ function flush(){
 		</div>
 
 		<div class="saomiao_info2">
-			<div class="saomiao_inbox2">
+			<div class="saomiao_inbox2"  style="z-index: 999">
 				<div class="saomiao_tab">
 					<ul id="bigTag">
 						<li><a href="#" id="scancwbTag"

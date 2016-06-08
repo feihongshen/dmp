@@ -32,6 +32,10 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 var alloutnum = "<%=yifandanchukunums%>";
 var flag="<%=flag%>";
@@ -57,6 +61,11 @@ $(function(){
 		$("#table_yituihuochuku").addClass("light");
 		$(".tabbox li").eq(1).show().siblings().hide();
 	}
+	$("#customerid").multipleSelect({
+        placeholder: "请选择",
+        filter: true,
+        single: true
+    });
 })
 
 function tabView(tab){
@@ -257,11 +266,11 @@ function search(flag){
 	</div>
 	
 	<div class="saomiao_info2">
-		<div class="saomiao_inbox2">
+		<div class="saomiao_inbox2" style="z-index: 999">
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
 			<div class="saomiao_selet2">
 						<span>供货商：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<select id="customerid" name="customerid" style="width: 200px;" class="select1">
+						<select id="customerid" name="customerid" style="width: 200px;" >
 						<option value="-1">请选择供货商</option>
 						<%for(Customer customer:customerlist){ %>
 						<option value="<%=customer.getCustomerid()%>">

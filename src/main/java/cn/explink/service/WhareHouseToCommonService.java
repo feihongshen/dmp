@@ -41,6 +41,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.WarehouseToCommen;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.StreamingStatementCreator;
 
@@ -90,7 +91,7 @@ public class WhareHouseToCommonService {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private ObjectMapper om = new ObjectMapper();
+	private ObjectMapper om = JacksonMapper.getInstance();
 
 	// 给CwbOrderView赋值
 	public List<CwbOrderView> getCwbOrderView(List<CwbOrder> clist, List<WarehouseToCommen> wcommenList, List<Branch> branchList) {

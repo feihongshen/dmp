@@ -207,5 +207,16 @@ public class ProvinceDAO {
 		}
 		return adressVO;
 	}
-
+	
+	public AdressVO getProvinceByCode(String code) {
+		String sql = "select id,code,name from express_set_province where code=?";
+		AdressVO adressVO = null;
+		try {
+			adressVO = this.jdbcTemplate.queryForObject(sql, new ProvinceRowMapper4Query(), code);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return adressVO;
+	}
 }

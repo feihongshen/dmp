@@ -21,8 +21,24 @@ public class ExpressCommonController {
 	 * 管理员角色ID
 	 */
 	private static final long ADMIN_ROLE_ID = 0;
+	
+	/**
+	 * 站长角色ID
+	 */
+	private static final long WAREHOUSE_MASTER_ID = 4;
+	
+	/**
+	 * 省质控
+	 */
+	private static final long CUSTOM_SERVICE_ID = 1;
 
-	@Autowired
+    /**
+     * 小件员角色ID
+     */
+    private static final long COURIER_ROLE_ID = 2;
+
+
+    @Autowired
 	private SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,4 +55,28 @@ public class ExpressCommonController {
 		}
 		return false;
 	}
+	
+	protected boolean isWarehouseMaster() {
+		User user = this.getSessionUser();
+		if (user.getRoleid() == ExpressCommonController.WAREHOUSE_MASTER_ID) {
+			return true;
+		}
+		return false;
+	}
+	
+	protected boolean isCustomService() {
+		User user = this.getSessionUser();
+		if (user.getRoleid() == ExpressCommonController.CUSTOM_SERVICE_ID) {
+			return true;
+		}
+		return false;
+	}
+
+    protected boolean isCourier() {
+        User user = this.getSessionUser();
+        if (user.getRoleid() == ExpressCommonController.COURIER_ROLE_ID) {
+            return true;
+        }
+        return false;
+    }
 }

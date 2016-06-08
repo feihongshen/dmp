@@ -117,7 +117,6 @@ public class ExpressOrderService {
 			try {
 				insertSigleCwbOrder(expressDetailTemp);
 			} catch (Exception e) {
-				e.printStackTrace();
 				logger.error("定时器临时表插入或修改方法执行异常!transOrderNo=" + expressDetailTemp.getTransportNo(), e);
 			}
 		}

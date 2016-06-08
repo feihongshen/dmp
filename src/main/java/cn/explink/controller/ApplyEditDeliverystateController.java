@@ -55,6 +55,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
@@ -1267,7 +1268,7 @@ public class ApplyEditDeliverystateController {
 
 				try {
 					this.applyEditDeliverystateDAO.agreeSaveApplyEditDeliverystateById(id, receivedfeecash.add(receivedfeecheque).add(receivedfeeother), receivedfeepos, this.getSessionUser()
-							.getUserid(), DateTimeUtil.getNowTime(), new ObjectMapper().writeValueAsString(cwbOrderWithDeliveryState).toString());
+							.getUserid(), DateTimeUtil.getNowTime(), JacksonMapper.getInstance().writeValueAsString(cwbOrderWithDeliveryState).toString());
 				} catch (Exception e) {
 					this.logger.error("error while saveing applyEditDeliverystate", e);
 				}
