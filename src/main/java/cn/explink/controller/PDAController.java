@@ -105,6 +105,7 @@ import cn.explink.domain.GroupDetail;
 import cn.explink.domain.JsonContext;
 import cn.explink.domain.Menu;
 import cn.explink.domain.OperationTime;
+import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.PrintStyle;
 import cn.explink.domain.Reason;
@@ -391,10 +392,8 @@ public class PDAController {
 	@RequestMapping("/intowarhousenodetail")
 	public String intowarhousenodetail(Model model) {
 		List<Customer> cList = this.customerDAO.getAllCustomers();
-		List<Entrance> eList=this.entranceDAO.getAllEnableEntrances();
 		List<User> uList = this.userDAO.getUserByRole(3);
 		model.addAttribute("customerlist", cList);
-		model.addAttribute("entrancelist", eList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("ck_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.RuKuDaYinBiaoQian.getText()));
 		model.addAttribute("RUKUPCandPDAaboutYJDPWAV",
@@ -479,25 +478,15 @@ public class PDAController {
 		model.addAttribute("sitetype", b.getSitetype());
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("userList", uList);
-		model.addAttribute("entrancelist", eList);
-		model.addAttribute("auto_allocat", autoAllocatingSwitch);
 		model.addAttribute("ck_switch", this.switchDAO.getSwitchBySwitchname(SwitchEnum.RuKuDaYinBiaoQian.getText()));
 		model.addAttribute("RUKUPCandPDAaboutYJDPWAV",
 				this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue());
 		model.addAttribute("isprintnew", this.systemInstallDAO.getSystemInstall("isprintnew").getValue());
 		model.addAttribute("showCustomerSign", showCustomerSign);
 		model.addAttribute("ifshowtag", this.systemInstallDAO.getSystemInstall("ifshowbudatag") == null ? null : this.systemInstallDAO.getSystemInstall("ifshowbudatag").getValue());
-		
-		/**
-		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
-		 */
-		if(autoAllocatingSwitch.equals("1")){
-			this.createSocketConnectMap(eList);
-		}
 		this.logger.info("进入分拣库入库页面的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 		return "pda/intowarhouse";
 	}
-	
 
 	/**
 	 * 进入中转站入库的功能页面（明细）
@@ -511,10 +500,7 @@ public class PDAController {
 
 		List<Customer> cList = this.customerDAO.getAllCustomers();
 		List<User> uList = this.userDAO.getUserByRole(3);
-		List<Entrance> eList=this.entranceDAO.getAllEnableEntrances();//分拨入口查询
 		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
-		//是否开启自动分拣设置
-		String autoAllocatingSwitch = this.systemInstallDAO.getSystemInstall("AutoAllocating").getValue();
 		// TODO 按批次查询
 		// 系统设置是否显示订单备注
 		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -831,6 +817,7 @@ public class PDAController {
 				obj.put("errorcode", "000000");
 				SuccessCount++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -2036,10 +2023,22 @@ public class PDAController {
 			obj.put("cwb", cwb);
 			try {// 成功订单
 				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
+				//*******Hps_Concerto*****2016年5月26日17:23:11
+				obj.put("flowordertype", cwbOrder.getFlowordertype());
+				obj.put("cwbstate", cwbOrder.getCwbstate());
+				obj.put("deliverystate", cwbOrder.getDeliverystate());
+				OrderBackCheck oc = orderBackCheckDAO.getOrderBackCheckOnlyCwb(cwbOrder.getCwb());
+				if(oc==null){ 
+					obj.put("checkstateresultname", "");
+				}else{
+					obj.put("checkstateresultname", oc.getCheckresult()==0?"未审核":(oc.getCheckresult()==1?"确认退货":"站点配送"));
+				}
+				//*******************
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				linghuoSuccessCount++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				if (ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen.equals(ce.getError())) { // 订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
 					// 领货失败
 					if ((alertErrorMsg != null) && (alertErrorMsg.length() > 0)) {
@@ -2852,6 +2851,7 @@ public class PDAController {
 				obj.put("errorcode", "000000");
 				succesCount++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				errorCount++;
 				if (cwbOrder != null) {
@@ -3172,6 +3172,7 @@ public class PDAController {
 				this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 				return resp;
 			} catch (CwbException e) {
+				this.logger.error("cwb="+cwb,e);
 				cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
 						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
@@ -3413,7 +3414,10 @@ public class PDAController {
 			cwb = this.cwbOrderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			try {// 成功订单
+			try {// 成功订单				
+				//有货无单校验
+				this.checkyouhuowudan(this.getSessionUser(), cwb, customerid, this.getSessionUser().getBranchid());
+
 				CwbOrder cwbOrder = this.cwbOrderService.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, "", "", false);
 				this.tpsCwbFlowService.save(cwbOrder,scancwb, FlowOrderTypeEnum.RuKu,this.getSessionUser().getBranchid());
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
@@ -3429,6 +3433,7 @@ public class PDAController {
 				}
 				batchCount.setThissuccess(batchCount.getThissuccess() + 1);
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -3643,6 +3648,7 @@ public class PDAController {
 				}
 				thissuccess++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -4806,6 +4812,7 @@ public class PDAController {
 				}
 				thissuccess++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -5018,6 +5025,7 @@ public class PDAController {
 				obj.put("errorcode", "000000");
 				SuccessCount++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -5221,6 +5229,7 @@ public class PDAController {
 				}
 				thissuccess++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -5546,6 +5555,7 @@ public class PDAController {
 				parameters.put("isbatch", true);
 				this.cwbOrderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 			} catch (CwbException e) {
+				this.logger.error("cwb="+cwb,e);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				this.exceptionCwbDAO.createExceptionCwbScan(cwb, e.getFlowordertye(), e.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(), cwbOrder == null ? 0
 						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
@@ -5635,7 +5645,8 @@ public class PDAController {
 						}
 						cwbOrder = this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, comment, "", false, 1, branchid);
 					}
-				} else if (co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()) {
+				} else if ((co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue())
+						|| (co.getCwbstate() == CwbStateEnum.TuiGongYingShang.getValue() && co.getFlowordertype() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue())) {
 					cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, scancwb, driverid, 0, comment, false, 1, 0);
 				} else if (((co.getCwbstate() == CwbStateEnum.BUFENDIUSHI.getValue()) || (co.getCwbstate() == CwbStateEnum.BUFENPOSUN.getValue())
 						|| (co.getCwbstate() == CwbStateEnum.WANQUANPOSUN.getValue()) || (co.getCwbstate() == CwbStateEnum.DiuShi.getValue()) || (co.getCwbstate() == CwbStateEnum.TuiHuo.getValue()))
@@ -5749,6 +5760,7 @@ public class PDAController {
 				thissuccess++;
 				this.baleService.disableBale(scancwb);
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -6057,6 +6069,7 @@ public class PDAController {
 				}
 				thissuccess++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -7272,6 +7285,7 @@ public class PDAController {
 				}
 				batchCount.setThissuccess(batchCount.getThissuccess() + 1);
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -7360,6 +7374,7 @@ public class PDAController {
 				}
 				thissuccess++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -9871,6 +9886,7 @@ public class PDAController {
 					obj.put("errorcode", "000000");
 					thissuccess++;
 				} catch (CwbException ce) {// 出现验证错误
+					this.logger.error("cwb="+cwb,ce);
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 					this.exceptionCwbDAO.createExceptionCwbScan(cwb, ce.getFlowordertye(), ce.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
 							cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
@@ -10684,6 +10700,7 @@ public class PDAController {
 				}
 				thissuccess++;
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -10827,6 +10844,7 @@ public class PDAController {
 				explinkResponse = this.cwbExportWarhouseWeight(model, request, response, cwb, deliverybranchid, driverid, truckid, confirmflag, requestbatchno, baleno, comment, reasonid, carrealweight) ;
 			}
 		}
+
 		return explinkResponse;
 	}
 
@@ -10907,7 +10925,6 @@ public class PDAController {
 		}
 		
 	}
-
 	/**
 	 * ============================================== 代码块：分拣中转功能 end
 	 * ===============================================
@@ -10935,6 +10952,7 @@ public class PDAController {
 				/* thissuccess++; */
 				batchCount.setThissuccess(batchCount.getThissuccess() + 1);
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();

@@ -356,13 +356,13 @@ function actionType(src)
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_1">
 			<tr class="font_1">
 				<!-- <td width="6%" align="center" valign="middle" bgcolor="#eef6ff">选择</td> -->
-				<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
+				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扫描号</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作机构</td>
-				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扫描类型</td>
-				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">错误类型</td>
+				<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">扫描类型</td>
+				<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">错误类型</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作时间</td>
-				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作人</td>
+				<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">操作人</td>
 				<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
 				
 			</tr>
@@ -370,21 +370,21 @@ function actionType(src)
 		<%if(eclist!=null){for(ExceptionCwb ec : eclist){ %>
 		<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 			<tr>
-				<td width="6%" align="center" valign="middle"><%=ec.getCwb() %></td>
+				<td width="10%" align="center" valign="middle"><%=ec.getCwb() %></td>
 				<td width="10%" align="center" valign="middle"><%=ec.getScancwb() %></td>
 				<td width="10%" align="center" valign="middle">
 					<%for(Branch b : branchlist){if(ec.getBranchid()==b.getBranchid()){ %>
 			        <%=b.getBranchname() %>
 			        <%}} %>
 				</td>
-				<td width="10%" align="center" valign="middle">
+				<td width="6%" align="center" valign="middle">
 				<%for(FlowOrderTypeEnum f:FlowOrderTypeEnum.values()){
 					if(ec.getScantype()==f.getValue()){%>
 						<%=f.getText() %>
 					<%}	
 				}%>
 				</td>
-				<td width="10%" align="center" valign="middle">
+				<td width="15%" align="center" valign="middle">
 				<%if(ec.getErrortype().length()>0&&ec.getErrortype().matches("^[0-9]*$")){ %>
 					<%for(ExceptionCwbErrorTypeEnum er:ExceptionCwbErrorTypeEnum.values()){
 						if(Long.parseLong(ec.getErrortype())==er.getValue()){%>
@@ -396,7 +396,7 @@ function actionType(src)
 				<%} %>
 				</td>
 				<td width="10%" align="center" valign="middle"><%=ec.getCreatetime() %></td>
-				<td width="10%" align="center" valign="middle">
+				<td width="5%" align="center" valign="middle">
 				<%for(User u : ulist){
 					if(ec.getUserid()==u.getUserid()){%>
 					<%=u.getRealname() %>

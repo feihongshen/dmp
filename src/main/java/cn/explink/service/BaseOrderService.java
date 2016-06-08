@@ -18,6 +18,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OperationTimeDAO;
+import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.YpdjHandleRecordDAO;
@@ -25,6 +26,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbDetailView;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -45,6 +47,9 @@ public class BaseOrderService {
 	
 	@Autowired
 	CwbDAO cwbDAO;
+	
+	@Autowired
+	OrderBackCheckDAO orderBackCheckDao;
 	
 	@Autowired
 	CustomerDAO customerDAO;
@@ -103,6 +108,7 @@ public class BaseOrderService {
 				CwbDetailView view = new CwbDetailView();
 				Map<String, String> cwbMap = allTime.isEmpty() ? new HashMap<String, String>() : (allTime.get(wco.getCwb()));
 
+				
 				view.setOpscwbid(wco.getOpscwbid());
 				view.setCwb(wco.getCwb());
 				view.setCwbordertypeid(wco.getCwbordertypeid());
@@ -115,12 +121,24 @@ public class BaseOrderService {
 				view.setCustomerid(wco.getCustomerid());
 				view.setNextbranchid(wco.getNextbranchid());
 
+				//****Hps_Concerto create 2016年5月26日16:24:30
+				view.setFlowordertype(wco.getFlowordertype());
+				view.setCwbstate(wco.getCwbstate());
+				OrderBackCheck oc = orderBackCheckDao.getOrderBackCheckOnlyCwb(wco.getCwb());
+				if(oc==null){ 
+					view.setCheckstateresultname("");
+				}else{
+					view.setCheckstateresultname(oc.getCheckresult()==0?"未审核":(oc.getCheckresult()==1?"确认退货":"站点配送"));
+				}
+				view.setDeliverystate(wco.getDeliverystate());
+				//******************
 				view.setRemarkView(this.getShowCustomer(showCustomerjSONArray, wco));
 				view.setCustomername(this.dataStatisticsService.getQueryCustomerName(customerList, wco.getCustomerid()));
 				view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") == null ? "" : cwbMap.get("InSitetime")));
 				view.setPickGoodstime(cwbMap == null ? "" : (cwbMap.get("PickGoodstime") == null ? "" : cwbMap.get("PickGoodstime")));
 				view.setOutstoreroomtime(cwbMap == null ? "" : (cwbMap.get("Outstoreroomtime") == null ? "" : cwbMap.get("Outstoreroomtime")));
 
+				
 				view.setCwbordertype(CwbOrderTypeIdEnum.getTextByValue(wco.getCwbordertypeid()));
 				view.setPickaddress(wco.getRemark4());
 
@@ -177,13 +195,7 @@ public class BaseOrderService {
 	}
 
 	protected User getSessionUser() {
-		Authentication authen = this.securityContextHolderStrategy.getContext().getAuthentication();
-		if(authen==null){
-			User user = userDAO.getUserByUsername("admin");
-			return user;
-		}else{
-			ExplinkUserDetail userDetail = (ExplinkUserDetail) authen.getPrincipal();
-			return userDetail.getUser();
-		}
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
 	}
 }

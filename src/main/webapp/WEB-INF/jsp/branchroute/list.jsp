@@ -77,7 +77,7 @@ $(document).ready(function(){
 
 <div class="right_box">
 	<div class="inputselect_box">
-	<span><input name="" type="button" value="创建货物流向" class="input_button1"  id="add_button"  onclick="openadd()"/>
+	<span><input name="" type="button" value="创建货物流向" class="input_button1"  id="add1"  onclick="openadd()"/>
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		当前站点：
