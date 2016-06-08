@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import cn.explink.dao.BaleCwbDao;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.CustomWareHouseDAO;
@@ -29,6 +30,7 @@ import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Bale;
+import cn.explink.domain.BaleCwb;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
@@ -86,6 +88,9 @@ public class WarehouseGroupDetailService {
 	JdbcTemplate jdbcTemplate;
 	@Autowired
 	TuihuoRecordDAO tuihuoRecordDAO;
+	
+	@Autowired
+	BaleCwbDao baleCwbDao;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -521,13 +526,13 @@ public class WarehouseGroupDetailService {
 		return printViewList;
 	}
 
-	public Map<String, Object> getChuKuBaleCwbView(List<Map<String, Object>> cwblist, String baleno) {
+	public Map<String, Object> getChuKuBaleCwbView(List<Map<String, Object>> cwblist, String baleno,long baleid) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (cwblist != null && !cwblist.isEmpty()) {
 				map.put("baleno", baleno);// 供货商的名称
 				map.put("count", cwblist.get(0).get("count"));
 				map.put("receivablefee", cwblist.get(0).get("receivablefee"));
-				map.put("sendcarnum", cwblist.get(0).get("sendcarnum"));
+				map.put("sendcarnum", baleCwbDao.getCwbCountByBaleId(baleid));
 				map.put("carrealweight", cwblist.get(0).get("carrealweight"));
 		}
 		return map;

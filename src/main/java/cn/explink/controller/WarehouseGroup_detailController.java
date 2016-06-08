@@ -2330,7 +2330,7 @@ public class WarehouseGroup_detailController {
 						// 获取订单数量、代收总金额
 						List<Map<String, Object>> cwbList = this.cwbDao.getCwbByPrintCwbs(cwbs.substring(0, cwbs.lastIndexOf(",")));
 						
-						Map<String, Object> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, groupDetailList.get(0).getBaleno());
+						Map<String, Object> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, groupDetailList.get(0).getBaleno(),baleid);
 						map.put("cwbListView", cwbListView);
 						map.put("drivername", groupDetailList.get(0).getDriverid()>0? this.userDAO.getAllUserByid(groupDetailList.get(0).getDriverid()).getRealname():"");
 						bList.add(map);
