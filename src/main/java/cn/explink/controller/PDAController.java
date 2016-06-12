@@ -3830,9 +3830,9 @@ public class PDAController {
 				}
 			} else {
 				Branch branchStart = this.branchDAO.getBranchByBranchid(cwbOrderOld.getStartbranchid());
-				// 如果上一站是二级站
+				// 如果上一站是二级站 ||||||| 并且当前状态为运单录入，才能说明是揽件入站（刘武强 2016.06.08）
 				if ((branchStart != null) && (branchStart.getContractflag() != null)) {
-					if (Integer.parseInt(branchStart.getContractflag()) == BranchTypeEnum.ErJiZhan.getValue()) {
+					if ((Integer.parseInt(branchStart.getContractflag()) == BranchTypeEnum.ErJiZhan.getValue()) && (cwbOrderOld.getFlowordertype() == FlowOrderTypeEnum.YunDanLuRu.getValue())) {
 						cwbOrderOld.setFlowordertype(FlowOrderTypeEnum.LanJianRuZhan.getValue());
 						cwbOrderOld.setNextbranchid(0);
 					}
