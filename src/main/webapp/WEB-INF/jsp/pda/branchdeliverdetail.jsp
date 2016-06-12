@@ -378,6 +378,27 @@ function tohome(){
 	window.location.href="<%=request.getContextPath() %>/PDA/branchdeliverdetail?deliverid="+$("#deliverid").val();
 }
 
+function scancwbKeyDownAction(event) {
+    if (event.keyCode == 13) {
+        if ($("#scancwb").val().length > 0) {
+            $.ajax({
+                type: "POST",
+                url: "<%=request.getContextPath()%>" + "/PDA/isExtractInput/" + $("#scancwb").val(),
+                dataType: "json",
+                success: function (data) {
+
+                    if (data.body && data.body.result == true) {
+                        $("#msg").html("请补录全快递单信息再领货");
+                        return false;
+                    } else {
+                        branchDeliver("<%=request.getContextPath()%>", $("#scancwb").val(), $("#deliverid").val(), $("#requestbatchno").val());
+
+                    }
+                }
+            });
+        }
+    }
+}
 
 
 </script>
@@ -436,7 +457,7 @@ function tohome(){
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
 					<p><span>订单号：</span>
-						<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value=""  onKeyDown='if(event.keyCode==13&&$(this).val().length>0){branchDeliver("<%=request.getContextPath()%>",$(this).val(),$("#deliverid").val(),$("#requestbatchno").val());}'/>
+						<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value=""  onKeyDown='return scancwbKeyDownAction(event);'/>
 					</p>
 				</div>
 				<div class="saomiao_right2">

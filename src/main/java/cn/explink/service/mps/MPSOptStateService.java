@@ -3,6 +3,7 @@
  */
 package cn.explink.service.mps;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -202,5 +203,24 @@ public final class MPSOptStateService extends AbstractMPSService {
 			}
 		}
 		return currentOptState;
+	}
+	
+	/**
+	 * 更新运单重量
+	 * @param cwb
+	 * @param transCwb
+	 * @param carrealweight
+	 */
+	public void updateTransCwbDetailWeight(String cwb , String transCwb , BigDecimal carrealweight){
+		this.getTransCwbDetailDAO().updateTransCwbDetailWeight(cwb, transCwb, carrealweight);
+	}
+	
+	/**
+	 * 根据订单号，获取所有的运单
+	 *
+	 * @return
+	 */
+	public List<TransCwbDetail> queryTransCwbDetail(String cwb){
+		return this.getTransCwbDetailDAO().queryTransCwbDetail(cwb) ;
 	}
 }

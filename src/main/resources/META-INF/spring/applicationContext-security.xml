@@ -144,6 +144,8 @@
 		<intercept-url pattern="/ScaleApplet.jar" access="permitAll" />
 		<intercept-url pattern="/ScaleApplet.cert" access="permitAll" />
 		<intercept-url pattern="/ScaleApplet.store" access="permitAll" />
+		<!-- EMS对接 -->
+		<intercept-url pattern="/ems/transcwbFlow/**" access="permitAll" />
 				
 		<intercept-url pattern="/health_check.jsp" access="permitAll" />
 				

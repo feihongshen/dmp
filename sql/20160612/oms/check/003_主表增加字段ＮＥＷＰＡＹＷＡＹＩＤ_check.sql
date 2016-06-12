@@ -1,0 +1,1 @@
+SELECT '主表添加字段newpaywayid' AS '脚本文件名','添加newpaywayid字段' AS '修改内容',IF((SELECT COUNT(1) FROM information_schema.`COLUMNS` WHERE table_schema = schema() and table_name = 'express_ops_cwb_detail'  and column_name = 'newpaywayid' and data_type='varchar') = 1,'success','failed') AS '执行结果';

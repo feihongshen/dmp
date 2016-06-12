@@ -81,4 +81,28 @@ public class ThirdPartyOrder2DOCfgService {
 		JointEntity obj = this.jiontDAO.getJointEntity(key);
 		return obj == null ? null : obj.getJoint_property();
 	}
+	
+	/**
+	 * 是否外单客户
+	 */
+	public boolean isThirdPartyCustomer(long customerid,ThirdPartyOrder2DOCfg pushCfg){
+		if(pushCfg == null){
+			return false;
+		}
+		String customeridsCfg = pushCfg.getCustomerids();
+		String[] customerIdsCfgArray = customeridsCfg.split(",|，");
+		//是否是外单客户
+		boolean isTPCust  = false;
+		for(String customeridStr : customerIdsCfgArray){
+			try{
+				if( Long.valueOf(customeridStr).longValue() == customerid){
+					isTPCust = true;
+					break;
+				}
+			}catch(Exception e){
+				//do nothing
+			}
+		}
+		return isTPCust;
+	}
 }

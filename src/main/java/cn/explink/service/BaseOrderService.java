@@ -11,6 +11,7 @@ import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 import cn.explink.dao.BranchDAO;
@@ -19,6 +20,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OperationTimeDAO;
 import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.dao.YpdjHandleRecordDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -57,6 +59,8 @@ public class BaseOrderService {
 	
 	@Autowired
 	OperationTimeDAO operationTimeDAO;
+	@Autowired
+	UserDAO userDAO;
 	
 	private static Logger logger = LoggerFactory.getLogger(BaseOrderService.class);
 	
@@ -103,6 +107,7 @@ public class BaseOrderService {
 			for (CwbOrder wco : cwbList) {
 				CwbDetailView view = new CwbDetailView();
 				Map<String, String> cwbMap = allTime.isEmpty() ? new HashMap<String, String>() : (allTime.get(wco.getCwb()));
+
 				
 				view.setOpscwbid(wco.getOpscwbid());
 				view.setCwb(wco.getCwb());
@@ -115,6 +120,7 @@ public class BaseOrderService {
 				view.setTranscwb(wco.getTranscwb());
 				view.setCustomerid(wco.getCustomerid());
 				view.setNextbranchid(wco.getNextbranchid());
+
 				//****Hps_Concerto create 2016年5月26日16:24:30
 				view.setFlowordertype(wco.getFlowordertype());
 				view.setCwbstate(wco.getCwbstate());
@@ -131,6 +137,7 @@ public class BaseOrderService {
 				view.setInSitetime(cwbMap == null ? "" : (cwbMap.get("InSitetime") == null ? "" : cwbMap.get("InSitetime")));
 				view.setPickGoodstime(cwbMap == null ? "" : (cwbMap.get("PickGoodstime") == null ? "" : cwbMap.get("PickGoodstime")));
 				view.setOutstoreroomtime(cwbMap == null ? "" : (cwbMap.get("Outstoreroomtime") == null ? "" : cwbMap.get("Outstoreroomtime")));
+
 				
 				view.setCwbordertype(CwbOrderTypeIdEnum.getTextByValue(wco.getCwbordertypeid()));
 				view.setPickaddress(wco.getRemark4());
@@ -188,7 +195,13 @@ public class BaseOrderService {
 	}
 
 	protected User getSessionUser() {
-		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		return userDetail.getUser();
+		Authentication authen = this.securityContextHolderStrategy.getContext().getAuthentication();
+		if(authen==null){
+			User user = userDAO.getUserByUsername("admin");
+			return user;
+		}else{
+			ExplinkUserDetail userDetail = (ExplinkUserDetail) authen.getPrincipal();
+			return userDetail.getUser();
+		}
 	}
 }
