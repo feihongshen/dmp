@@ -55,7 +55,7 @@ public class TuihuoRecordDAO {
 		jdbcTemplate.update(new PreparedStatementCreator() {
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
-				ps = con.prepareStatement("insert into ops_tuihuorecord(cwb,branchid,tuihuobranchid,tuihuochuzhantime,customerid,cwbordertypeid,userid) values(?,?,?,?,?,?,?)", new String[] { "id" });
+				ps = con.prepareStatement("insert into ops_tuihuorecord(cwb,branchid,tuihuobranchid,tuihuochuzhantime,customerid,cwbordertypeid,userid,tuihuozhanrukutime) values(?,?,?,?,?,?,?,?)", new String[] { "id" });
 				ps.setString(1, tr.getCwb());
 				ps.setLong(2, tr.getBranchid());
 				ps.setLong(3, tr.getTuihuobranchid());
@@ -63,6 +63,7 @@ public class TuihuoRecordDAO {
 				ps.setLong(5, tr.getCustomerid());
 				ps.setLong(6, tr.getCwbordertypeid());
 				ps.setLong(7, tr.getUserid());
+				ps.setString(8, tr.getTuihuozhanrukutime());
 				return ps;
 			}
 		}, key);
@@ -74,6 +75,17 @@ public class TuihuoRecordDAO {
 		try {
 			String sql = "update ops_tuihuorecord set branchid=?,tuihuobranchid=?,tuihuochuzhantime=?,cwbordertypeid=?,userid=? where cwb=?";
 			jdbcTemplate.update(sql, tr.getBranchid(), tr.getTuihuobranchid(), tr.getTuihuochuzhantime(), tr.getCwbordertypeid(), tr.getUserid(), tr.getCwb());
+			return 1;
+		} catch (Exception e) {
+			logger.info("失败" + e);
+			return 0;
+		}
+	}
+	
+	public long updateTuihuoRecordAll(final TuihuoRecord tr) {
+		try {
+			String sql = "update ops_tuihuorecord set branchid=?,tuihuobranchid=?,tuihuochuzhantime=?,tuihuozhanrukutime=?,cwbordertypeid=?,userid=? where cwb=?";
+			jdbcTemplate.update(sql, tr.getBranchid(), tr.getTuihuobranchid(), tr.getTuihuochuzhantime(), tr.getTuihuozhanrukutime(), tr.getCwbordertypeid(), tr.getUserid(), tr.getCwb());
 			return 1;
 		} catch (Exception e) {
 			logger.info("失败" + e);

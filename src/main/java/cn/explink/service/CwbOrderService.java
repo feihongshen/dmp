@@ -6863,6 +6863,23 @@ public class CwbOrderService extends BaseOrderService {
 			}
 			// 删除包关联表
 		}
+		// 添加退货记录
+		OrderFlow of = this.orderFlowDAO.getOrderFlowByParam(flowOrderTypeEnum.getValue(), cwb);
+		TuihuoRecord tuihuoRecord = new TuihuoRecord();
+		tuihuoRecord.setCwb(of.getCwb());
+		tuihuoRecord.setBranchid(co.getStartbranchid());
+		tuihuoRecord.setTuihuobranchid(co.getNextbranchid());
+		tuihuoRecord.setTuihuochuzhantime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
+		tuihuoRecord.setTuihuozhanrukutime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
+		tuihuoRecord.setCustomerid(co.getCustomerid());
+		tuihuoRecord.setCwbordertypeid(co.getCwbordertypeid());
+		tuihuoRecord.setUserid(of.getUserid());
+		List<TuihuoRecord> tuihuolist = this.tuihuoRecordDAO.getTuihuoRecordByCwb(of.getCwb());
+		if ((tuihuolist != null) && (tuihuolist.size() > 0)) {
+			this.tuihuoRecordDAO.updateTuihuoRecordAll(tuihuoRecord);
+		} else {
+			this.tuihuoRecordDAO.creTuihuoRecord(tuihuoRecord);
+		}
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -9188,7 +9205,6 @@ public class CwbOrderService extends BaseOrderService {
 		list = this.cwbDAO.getCwbsBycwbs(inStr.substring(0, inStr.length() - 1) + ")");
 		return list;
 	}
-
 	public List<CwbOrder> getLabelPrintCwbsByCwbs(List<String> cwbList) {
 		List<CwbOrder> list = new ArrayList<CwbOrder>();
 		StringBuffer inStr = new StringBuffer();
