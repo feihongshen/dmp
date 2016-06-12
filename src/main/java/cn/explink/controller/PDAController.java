@@ -2042,7 +2042,8 @@ public class PDAController {
 					//*******Hps_Concerto*****2016年5月26日17:23:11
 					obj.put("flowordertype", cwbOrder.getFlowordertype());
 					obj.put("cwbstate", cwbOrder.getCwbstate());
-					obj.put("deliverystate", dc.getDeliverystate());
+					//如果dc为空，那么增加判断，防止出现异常 ---刘武强20160612
+					obj.put("deliverystate", dc == null ? "" : dc.getDeliverystate());
 					OrderBackCheck oc = orderBackCheckDAO.getOrderBackCheckOnlyCwb(cwbOrder.getCwb());
 					if(oc==null){ 
 						obj.put("checkstateresultname", "");

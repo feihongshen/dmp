@@ -4604,13 +4604,9 @@ public class CwbOrderService extends BaseOrderService {
 			// added shenhongfei 小件员领货扫描 2016-1-12
 			this.orderInterceptService.checkTransCwbIsIntercept(transCwb, FlowOrderTypeEnum.FenZhanLingHuo);
 		}
-		// 是否放行订单号运单号都可以处理
-		// 如果集单模式的校验不通过，那么需要catch异常并抛给controller处理 --- 刘武强 20160612
-		try {
-			this.deliverTakeGoodsMPSReleaseService.validateReleaseCondition(scancwb);
-		} catch (CwbException e) {
-			throw e;
-		}
+		// 是否放行订单号运单号都可以处理		
+		this.deliverTakeGoodsMPSReleaseService.validateReleaseCondition(scancwb);
+		
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
