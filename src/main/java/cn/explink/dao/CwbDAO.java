@@ -1214,7 +1214,28 @@ public class CwbDAO {
 			return co;
 		}
 	}
-
+	
+	/*
+	 * 失效订单查询用VO
+	 */
+	private final class ObsoleteOrderMapper implements RowMapper<CwbOrder> {
+		@Override
+		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
+			CwbOrder obj = new CwbOrder();
+			obj.setCwb(rs.getString("cwb"));
+			obj.setTranscwb(rs.getString("transcwb"));
+			obj.setCwbordertypeid(rs.getInt("cwbordertypeid"));
+			obj.setEmaildate(rs.getString("emaildate"));
+			obj.setCustomerid(rs.getLong("customerid"));
+			obj.setCwbstate(rs.getLong("cwbstate"));
+			obj.setFlowordertype(rs.getLong("flowordertype"));
+			obj.setDeliverystate(rs.getInt("deliverystate"));
+			obj.setPrinttime(rs.getString("printtime"));
+			obj.setDeliverid(rs.getLong("deliverid"));
+			obj.setSendcarnum(rs.getLong("sendcarnum"));
+			return obj;
+		}
+	}
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -9646,5 +9667,75 @@ public class CwbDAO {
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
+	}
+	
+	/**查询失效订单
+	 * 2016-05-25
+	 * @param cwb
+	 * @param cwbordertypeids
+	 * @param maxCount
+	 * @return
+	 */
+	public List<CwbOrder> selectObsoleteCwbOrderList(String cwb,String cwbordertypeids, String beginupdatetime, String endupdatetime,
+			String beginemaildate, String endemaildate, long...page) { 
+		StringBuilder sql = new StringBuilder("select a.cwb, a.transcwb, a.cwbordertypeid, ifnull(a.emaildate,'') as emaildate, a.sendcarnum, a.customerid, "
+				+ " a.cwbstate, a.flowordertype, a.deliverystate, b.cretime as printtime, b.userid as deliverid "
+				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
+
+		if (!StringUtil.isEmpty( cwb) ) {
+			sql.append( " and a.cwb=" + cwb);
+		}
+		if (!StringUtil.isEmpty(cwbordertypeids)){
+			sql.append( " and a.cwbordertypeid in(" + cwbordertypeids +") ");
+		}
+		if (!StringUtil.isEmpty(beginupdatetime)){
+			sql.append( " and   b.cretime >='"
+					+ beginupdatetime
+					+ "' and b.cretime<='"
+					+ endupdatetime +"'" );
+		}
+		if (!StringUtil.isEmpty(beginemaildate)){
+			sql.append( " and   a.emaildate >='"
+						+ beginemaildate
+						+ "' and a.emaildate<='"
+						+ endemaildate +"'" );
+		}
+		sql.append(" order by a.emaildate limit ?,?");
+		long pageFrom = page[0]-1;
+		long pageSize = page.length>1?page[1]:10;
+		return this.jdbcTemplate.query(sql.toString(), new ObsoleteOrderMapper(), 
+				pageFrom * pageSize, pageSize);
+	}	
+	/**查询失效订单计数
+	 * 2016-05-25
+	 * @param cwb
+	 * @param cwbordertypeids
+	 * @param maxCount
+	 * @return
+	 */
+	public long selectObsoleteCwbOrderListCount(String cwb,String cwbordertypeids, String beginupdatetime, String endupdatetime,
+			String beginemaildate, String endemaildate ) { 
+		StringBuilder sql = new StringBuilder("select count(1) "
+				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
+
+		if (!StringUtil.isEmpty( cwb) ) {
+			sql.append( " and a.cwb=" + cwb);
+		}
+		if (!StringUtil.isEmpty(cwbordertypeids)){
+			sql.append( " and a.cwbordertypeid in(" + cwbordertypeids +") ");
+		}
+		if (!StringUtil.isEmpty(beginupdatetime)){
+			sql.append( " and   b.cretime >='"
+					+ beginupdatetime
+					+ "' and b.cretime<='"
+					+ endupdatetime +"'" );
+		}
+		if (!StringUtil.isEmpty(beginemaildate)){
+			sql.append( " and   a.emaildate >='"
+						+ beginemaildate
+						+ "' and a.emaildate<='"
+						+ endemaildate +"'" );
+		} 	
+		return this.jdbcTemplate.queryForLong(sql.toString());
 	}
 }
