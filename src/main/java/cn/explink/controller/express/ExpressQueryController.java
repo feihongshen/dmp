@@ -238,7 +238,6 @@ public class ExpressQueryController {
 			}
 
 			final List<CwbKuaiDiView> cwbOrderViewList = cwbViewList;
-			long count = cwbOrderViewList.size();
 			String dataJson = setexportExcelJson(request);
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
@@ -259,7 +258,7 @@ public class ExpressQueryController {
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
 			//记录导出excel日志
-			this.auditExportExcel(dataJson, fileName, excelUtil.getRecordCount(), this.getSessionUser().getUserid());
+			this.auditExportExcel(dataJson, fileName, cwbOrderViewList.size(), this.getSessionUser().getUserid());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -51,7 +51,7 @@ public class MqConfigService {
 	public void initSender(AutoExceptionSender sender){
 		String channel=getValue(sender.getChannelKey());
 		if(channel==null||channel.trim().length()<1){
-			throw new RuntimeException("MQ parameter "+sender.getChannelKey()+" is not found");
+			logger.info("MQ parameter "+sender.getChannelKey()+" is not found");
 		}else{
 			sender.setChannel(channel);
 		}
