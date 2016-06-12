@@ -19,25 +19,29 @@
 					<td>
 						<input id="reserveOrderNo" name="reserveOrderNo" type ="text" style="width:140px;"/>
 					</td>
-					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约时间：</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">下单时间：</td>
 					<td colspan="3">
 						<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
 						至
 						<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
 					</td>
-					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
-					<td>
-						<select name="cnorCity"  id="cnorCity" style="width:100px;" <c:if test="${isWarehouseMaster}">disabled="disabled"</c:if>>
-							<option value="" selected="selected">市</option>
-							<c:forEach items="${cityList}" var="list">
-								<option value="${list.id}">${list.name}</option>
-							</c:forEach>
-						</select>
-						<select name="cnorRegion"  id="cnorRegion" style="width:100px;" <c:if test="${isWarehouseMaster}">disabled="disabled"</c:if>>
-							<option value="">区/县</option>
-						</select>
-					</td>
-				</tr>
+                    <c:if test="${!isWarehouseMaster}">
+                        <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
+                        <td>
+                            <select name="cnorCity" id="cnorCity" style="width:100px;"
+                                    <c:if test="${isWarehouseMaster}">disabled="disabled"</c:if>>
+                                <option value="" selected="selected">市</option>
+                                <c:forEach items="${cityList}" var="list">
+                                    <option value="${list.id}">${list.name}</option>
+                                </c:forEach>
+                            </select>
+                            <select name="cnorRegion" id="cnorRegion" style="width:100px;"
+                                    <c:if test="${isWarehouseMaster}">disabled="disabled"</c:if>>
+                                <option value="">区/县</option>
+                            </select>
+                        </td>
+                    </c:if>
+                </tr>
 				<tr>
 					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">手机/固话：</td>
 					<td>
