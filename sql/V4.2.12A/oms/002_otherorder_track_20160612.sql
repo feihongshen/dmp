@@ -1,0 +1,1 @@
+ALTER TABLE `tpo_other_order_track` ADD COLUMN `flowordertype` int(11) DEFAULT '0' NULL;

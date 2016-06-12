@@ -1,0 +1,1 @@
+ALTER TABLE `tpo_other_order_track` DROP COLUMN `flowordertype`;

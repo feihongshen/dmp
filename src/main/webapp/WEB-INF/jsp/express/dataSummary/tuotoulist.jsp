@@ -407,6 +407,7 @@ function clearSelect(){
 		<input type="hidden" name="orderbyName1" id="orderbyName1" value="<%=request.getParameter("orderbyName")==null?"emaildate":request.getParameter("orderbyName")%>"/>
 		<input type="hidden" name="orderbyType1" id="orderbyType1" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
 		<input name="paybackfeeIsZero1" value="<%=request.getParameter("paybackfeeIsZero")!=null?request.getParameter("paybackfeeIsZero"):"-1"%>" type="hidden"/>
+		<input type="hidden" name="count" id="count" value="<%=count %>"/>
 		<div style="display: none;">
 		<select name =operationOrderResultTypes1 id ="operationOrderResultTypes1" multiple="multiple" style="width: 320px;">
                	<%for(DeliveryStateEnum c : DeliveryStateEnum.values()){ %>

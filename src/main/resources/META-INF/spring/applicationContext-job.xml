@@ -116,6 +116,10 @@
                 <ref bean="mqExceptionHandler"/>
                 <ref bean="doTime_tpsCwbFlow"/>
                 <ref bean="doTime_expressOrderTransfer"/>
+                <!-- EMS接口 -->
+                <ref bean="doTime_sendEMSOrder"/>
+                <ref bean="doTime_getEmsEmailNo"/>
+                <ref bean="doTime_imitateEMSTraceToDmpOpt"/>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -1525,4 +1529,67 @@
          </property>
          <property name="concurrent" value="false" />
      </bean>
+    <!-- 推送订单信息给MES定时器开始--> 
+	<bean id="doTime_sendEMSOrder" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="sendOrderToEMS" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */3 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="sendOrderToEMS" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>sendOrderToEMS_task</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
+     <!-- 推送订单信息给MES定时器结束--> 
+     
+     <!-- 获取MES运单号定时器开始--> 
+	<bean id="doTime_getEmsEmailNo" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="getEmsEmailNo" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */1 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="getEmsEmailNo" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>getEmsEmailNo_task</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
+     <!-- 获取MES运单号定时器结束-->
+     
+    <!-- 执行ems轨迹模拟dmp操作定时器开始--> 
+	<bean id="doTime_imitateEMSTraceToDmpOpt" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+           <property name="jobDetail">
+               <ref bean="imitateEMSTraceToDmpOpt" />
+           </property>
+             <property name="cronExpression">
+               <value>0 */5 * * * ?</value>
+           </property>
+     </bean>
+     
+     <bean id="imitateEMSTraceToDmpOpt" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
+      <property name="targetBean">
+             <value>excuteTimmer</value>
+         </property>
+         <property name="targetMethod">
+             <value>imitateEMSTraceToDmpOpt_task</value>
+         </property>
+         <property name="concurrent" value="false" />
+     </bean>
+     <!-- 执行ems轨迹模拟dmp操作定时器 结束-->
+     
 </beans>

@@ -274,6 +274,7 @@ function clearSelect(){
 		<input type="hidden" name="begindate1" id="begindate1" value="<%=starttime%>"/>
 		<input type="hidden" name="enddate1" id="enddate1" value="<%=endtime%>"/>
 		<input type="hidden" name="isnowdata" id="isnowdata" value="<%=request.getParameter("isnowdata")==null?"0":request.getParameter("isnowdata") %>"/>
+		<input type="hidden" name="count" id="count" value="<%=count %>"/>
 		
 		<div style="display: none;">
 			<select name ="kufangid1" id ="kufangid1" multiple="multiple" style="width: 320px;">
