@@ -34,6 +34,7 @@ import cn.explink.b2c.vipshop.VipGathercompEnum;
 import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.controller.CwbOrderDTO;
+import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.MqExceptionDAO;
@@ -80,6 +81,8 @@ public class TPSGetOrderDataService {
 	ProducerTemplate addressmatch;
 	@Autowired
 	CwbOrderService cwbOrderService;
+	@Autowired
+	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
 	@Autowired
 	OrderGoodsDAO orderGoodsDAO;
 	@Autowired
@@ -750,6 +753,9 @@ public class TPSGetOrderDataService {
 						orderGoodsDAO.loseOrderGoods(cust_order_no);
 						//处理订单失效相关信息
 						cwbOrderService.datalose_vipshop(cust_order_no);
+						// add by bruce shangguan 20160608  报障编号:1729 ,揽退成功之后失效的订单在运费交款存在
+						this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(cust_order_no) ;
+						// end 20160608  报障编号:1729
 					}else{ //拦截
 						//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 						cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), cust_order_no, cust_order_no,0);
