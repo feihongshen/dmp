@@ -30,6 +30,7 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderDTO;
+import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
@@ -77,7 +78,8 @@ public class VipShopGetCwbDataService {
 	OrderGoodsDAO orderGoodsDAO;
 	@Autowired
 	UserDAO userDAO;
-	
+	@Autowired
+	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
 	@Autowired
 	CwbOrderService cwbOrderService;
 	@Autowired
@@ -958,6 +960,9 @@ public class VipShopGetCwbDataService {
 				this.cwbDAO.dataLoseByCwb(order_sn);
 				orderGoodsDAO.loseOrderGoods(order_sn);
 				cwbOrderService.datalose_vipshop(order_sn);
+				// add by bruce shangguan 20160608  报障编号:1729 ,揽退成功之后失效的订单在运费交款存在
+				this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(order_sn) ;
+				// end 20160608  报障编号:1729
 			}else{ //拦截
 				//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 				cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);

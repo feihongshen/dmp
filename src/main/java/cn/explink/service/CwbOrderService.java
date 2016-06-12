@@ -1514,11 +1514,14 @@ public class CwbOrderService extends BaseOrderService {
 		int changealowflag = this.getChangealowflagByIdAdd(co);
 		if (changealowflag == 1) {
 			CwbApplyZhongZhuan cwbApplyZhongZhuan = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
-			if (cwbApplyZhongZhuan.getIshandle() == 0) {
-				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuan, flowOrderTypeEnum.getText());
-			}
-			if (cwbApplyZhongZhuan.getIshandle() == 2) {
-				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuan, flowOrderTypeEnum.getText());
+			//加上非空判断，防止异常产生 --- 刘武强20160612
+			if(cwbApplyZhongZhuan != null){
+				if (cwbApplyZhongZhuan.getIshandle() == 0) {
+					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuan, flowOrderTypeEnum.getText());
+				}
+				if (cwbApplyZhongZhuan.getIshandle() == 2) {
+					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Shenhebutongguobuyunxuzhongzhuan, flowOrderTypeEnum.getText());
+				}
 			}
 		}
 	}
