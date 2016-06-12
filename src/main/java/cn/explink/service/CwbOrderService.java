@@ -1896,8 +1896,8 @@ public class CwbOrderService extends BaseOrderService {
 		// 判断是够为快递单
 		if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
 			Branch branchStart = this.branchDAO.getBranchByBranchid(co.getStartbranchid());
-			// 判断是否为二级站或者为空（为空证明上一站刚刚揽件）
-			if ((branchStart.getContractflag() == null) || (Integer.parseInt(branchStart.getContractflag()) == BranchTypeEnum.ErJiZhan.getValue())) {
+			// 判断是否为二级站或者为空（为空证明上一站刚刚揽件）      |||| 并且当前状态为运单录入，才能说明是揽件入站（刘武强 2016.06.08）
+			if (((branchStart.getContractflag() == null) || (Integer.parseInt(branchStart.getContractflag()) == BranchTypeEnum.ErJiZhan.getValue())) && (co.getFlowordertype() == FlowOrderTypeEnum.YunDanLuRu.getValue())) {
 				flowOrderTypeEnum = FlowOrderTypeEnum.LanJianRuZhan;
 				// 将此订单的下一站改为0
 				String sqlstr = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
@@ -4604,8 +4604,9 @@ public class CwbOrderService extends BaseOrderService {
 			// added shenhongfei 小件员领货扫描 2016-1-12
 			this.orderInterceptService.checkTransCwbIsIntercept(transCwb, FlowOrderTypeEnum.FenZhanLingHuo);
 		}
-		// 是否放行订单号运单号都可以处理
+		// 是否放行订单号运单号都可以处理		
 		this.deliverTakeGoodsMPSReleaseService.validateReleaseCondition(scancwb);
+		
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
