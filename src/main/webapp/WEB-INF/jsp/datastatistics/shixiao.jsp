@@ -92,19 +92,19 @@ function check(){
 		$("#endtime1").val("<%=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())%>");
 	}
 
-    var dt1 = new Date(Date.parse($("#strtime1").val()));
-    var dt2 = new Date(Date.parse($("#endtime1").val()));
-    var dt3 = new Date(Date.parse($("#strtime2").val()));
-    var dt4 = new Date(Date.parse($("#endtime2").val()));
-    var diff = parseInt((dt1.getTime() - dt2.getTime()) / (1000 * 60 * 60 * 24)); //天数
+    var dt1 = new Date(Date.parse($("#strtime1").val().substring(0,10)));
+    var dt2 = new Date(Date.parse($("#endtime1").val().substring(0,10)));
+    var dt3 = new Date(Date.parse($("#strtime2").val().substring(0,10)));
+    var dt4 = new Date(Date.parse($("#endtime2").val().substring(0,10)));
+    var diff = parseInt((dt2.getTime() - dt1.getTime()) / (1000 * 60 * 60 * 24)); //天数
     if(diff>31){
-    	alert("失效时间查询范围不能超过31天");
-		return false;
+        alert("失效时间查询范围不能超过31天");
+                return false;
     }
-    diff = parseInt((dt3.getTime() - dt4.getTime()) / (1000 * 60 * 60 * 24)); //天数
+    diff = parseInt((dt4.getTime() - dt3.getTime()) / (1000 * 60 * 60 * 24)); //天数
     if(diff>31){
-    	alert("到货时间查询范围不能超过31天");
-		return false;
+        alert("到货时间查询范围不能超过31天");
+                return false;
     }
 	return true;
 }
