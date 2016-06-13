@@ -6889,23 +6889,6 @@ public class CwbOrderService extends BaseOrderService {
 			}
 			// 删除包关联表
 		}
-		// 添加退货记录
-		OrderFlow of = this.orderFlowDAO.getOrderFlowByParam(flowOrderTypeEnum.getValue(), cwb);
-		TuihuoRecord tuihuoRecord = new TuihuoRecord();
-		tuihuoRecord.setCwb(of.getCwb());
-		tuihuoRecord.setBranchid(co.getStartbranchid());
-		tuihuoRecord.setTuihuobranchid(co.getNextbranchid());
-		tuihuoRecord.setTuihuochuzhantime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
-		tuihuoRecord.setTuihuozhanrukutime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(of.getCredate()));
-		tuihuoRecord.setCustomerid(co.getCustomerid());
-		tuihuoRecord.setCwbordertypeid(co.getCwbordertypeid());
-		tuihuoRecord.setUserid(of.getUserid());
-		List<TuihuoRecord> tuihuolist = this.tuihuoRecordDAO.getTuihuoRecordByCwb(of.getCwb());
-		if ((tuihuolist != null) && (tuihuolist.size() > 0)) {
-			this.tuihuoRecordDAO.updateTuihuoRecordAll(tuihuoRecord);
-		} else {
-			this.tuihuoRecordDAO.creTuihuoRecord(tuihuoRecord);
-		}
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -7795,8 +7778,19 @@ public class CwbOrderService extends BaseOrderService {
 		// 4.监听退货站入库操作，往退货记录表更新记录
 		if (orderflow.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue()) {
 			List<TuihuoRecord> tuihuolist = this.tuihuoRecordDAO.getTuihuoRecordByCwb(orderflow.getCwb());
-
-			this.tuihuoRecordDAO.saveTuihuoRecordById(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderflow.getCredate()), tuihuolist.size() == 0 ? 0 : tuihuolist.get(0).getId());
+			if(tuihuolist.size() == 0) {
+				TuihuoRecord tuihuoRecord = new TuihuoRecord();
+				tuihuoRecord.setCwb(orderflow.getCwb());
+				tuihuoRecord.setBranchid(co.getStartbranchid());
+				tuihuoRecord.setTuihuobranchid(co.getNextbranchid());
+				tuihuoRecord.setTuihuozhanrukutime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderflow.getCredate()));
+				tuihuoRecord.setCustomerid(co.getCustomerid());
+				tuihuoRecord.setCwbordertypeid(co.getCwbordertypeid());
+				tuihuoRecord.setUserid(orderflow.getUserid());
+				this.tuihuoRecordDAO.creTuihuoRecord(tuihuoRecord);
+			} else {
+				this.tuihuoRecordDAO.saveTuihuoRecordById(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderflow.getCredate()), tuihuolist.get(0).getId());
+			}
 			logger.info("退货站入库,cwb:{}", co.getCwb());
 		}
 
