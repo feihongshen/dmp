@@ -1,0 +1,1 @@
+select 'success_失效订单查询' as `结果(为空时即失败)`,a.* from dmp40_function a where functionname='失效订单查询';
