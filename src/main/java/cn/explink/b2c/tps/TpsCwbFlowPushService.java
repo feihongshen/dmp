@@ -272,7 +272,6 @@ public class TpsCwbFlowPushService {
 			}else{
 				volume=transCwbDetail.getVolume().doubleValue();
 			}
-			Double weight=null;
 			if(transCwbDetail.getWeight()==null||transCwbDetail.getWeight().toString().equals("0.000")){
 				weight=new Double("0.01");
 			}else{
