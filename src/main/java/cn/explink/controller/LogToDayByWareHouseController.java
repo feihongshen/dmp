@@ -263,7 +263,8 @@ public class LogToDayByWareHouseController {
 		}
 		String endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		List<CwbOrder> cwborderList = null;
-		if (customerid > 0) {// 如果供货商id大于0
+		//如果供应商是“快递单”，那么他的编号是-2，小于0，需要特殊处理 -- 刘武强20160613
+		if (customerid > 0 || customerid == -2) {// 如果供货商id大于0
 			cwborderList = logToDayByWarehouseService.getOrderListByCustomeridAndType(branchid, customerid, type, startTime, endTime, page);
 		} else {
 			cwborderList = logToDayByWarehouseService.getOrderListByType(branchid, type, startTime, endTime, page);
