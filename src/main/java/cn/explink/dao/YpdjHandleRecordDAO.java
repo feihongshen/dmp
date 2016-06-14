@@ -112,6 +112,17 @@ public class YpdjHandleRecordDAO {
 		String sql = "delete from ops_ypdjhandlerecord where cwb=? and flowordertype=? and transcwb=? and customerid=? and branchid=? and nextbranchid=?";
 		this.jdbcTemplate.update(sql, cwb, flowordertype, transcwb, customerid, branchid, nextbranchid);
 	}
+	
+	/**
+	 * 清除非本站的缺件记录
+	 * @param cwb 订单号
+	 * @param branchidNotEq 站点id(not equal)
+	 * @author neo01.huang 2016-6-13
+	 */
+	public void delYpdjHandleRecord(String cwb, long branchidNotEq) {
+		String sql = "delete from ops_ypdjhandlerecord where cwb=? and branchid!=?";
+		this.jdbcTemplate.update(sql, cwb, branchidNotEq);
+	}
 
 	// 得到入库缺货件数的统计
 	public long getRukuQuejianbyBranchid(long branchid, long customerid, long emaildateid) {

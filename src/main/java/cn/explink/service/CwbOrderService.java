@@ -1789,6 +1789,10 @@ public class CwbOrderService extends BaseOrderService {
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 					//同时，也要把当前站点的到错货的缺件记录，也一并删除
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), isypdjusetranscwb, 0);
+
+					//清除非本站的缺件记录，add by neo01.huang，2016-6-14
+					ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
+					
 				}
 				if (newMPSOrder) {
 					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
