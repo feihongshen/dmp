@@ -518,6 +518,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/shenzhoushuma/show/');
 			$("#del").val('<%=request.getContextPath()%>/shenzhoushuma/del/');
 		}
+		else if(obj=='23001'){//哲盟_轨迹
+			$("#edit").val('<%=request.getContextPath()%>/zhemengTrack/show/');
+			$("#del").val('<%=request.getContextPath()%>/zhemengTrack/del/');
+		}
 		
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
