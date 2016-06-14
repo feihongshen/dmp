@@ -2209,6 +2209,7 @@
 	
 	//收件人历史信息双击事件
 	function consigneeHistoryTableDblClick(consignee){
+		var sender_adress = $("#sender_adress_id").val();
 		$("#consignee_adress_id").val("");
 		$("#area_consignee").val("");
 		$("#receive_provinceId").html($(consignee).find("td").eq(6).text());
@@ -2225,11 +2226,12 @@
 		$("#consignee_townid_id").val($(consignee).find("td").eq(9).text());
 		$("#consignee_townName_id").val($(consignee).find("td").eq(4).text());
 		$("#consignee_adress_id").val($(consignee).find("td").eq(5).text());
-		
+		$("#sender_adress_id").val(sender_adress);
 	}
 	
 	//寄件人历史信息双击事件
 	function senderHistoryTableDblClick(sender){
+		var consignee_adress = $("#consignee_adress_id").val();
 		$("#area_sender").val("")
 		$("#sender_adress_id").val("");
 		$("#BranchprovinceId").html($(sender).find("td").eq(6).text());
@@ -2245,6 +2247,7 @@
 		$("#consignee_townid_id").val($(sender).find("td").eq(9).text());
 		$("#sender_townName_id").val($(sender).find("td").eq(4).text());
 		$("#sender_adress_id").val($(sender).find("td").eq(5).text());
+		$("#consignee_adress_id").val(consignee_adress);
 	}
 	
 	//预约单信息双击事件
