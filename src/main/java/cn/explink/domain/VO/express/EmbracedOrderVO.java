@@ -1,7 +1,6 @@
 package cn.explink.domain.VO.express;
 
 import cn.explink.util.SecurityUtil;
-
 public class EmbracedOrderVO {
 	/*
 	 * 运单号

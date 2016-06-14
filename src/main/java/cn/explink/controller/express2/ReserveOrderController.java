@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
-
 import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +72,6 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.Tools;
 import net.sf.json.JSONObject;
-
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 import com.pjbest.psp.express.service.DeliveryInfoModel;
 import com.pjbest.psp.express.service.DeliveryInfoServiceHelper;
@@ -84,6 +82,7 @@ import com.vip.tps.base.service.SbCodeDefModel;
 import com.vip.tps.base.service.SbCodeTypeService;
 import com.vip.tps.base.service.SbCodeTypeServiceHelper;
 import com.pjbest.psp.express.service.DeliveryInfoService;
+
 /**
  * 预约单 Controller
  * @date 2016年5月13日 上午11:04:29
@@ -915,5 +914,79 @@ public class ReserveOrderController extends ExpressCommonController {
             }
         }
         obj.put("errorMsg", msg.toString());
+    }
+    
+    /**
+     * 根据电话号码获取预约单号
+     * @param telephone
+     * @return jsonObject
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("/getReserveOrderBySenderPhone")
+    @ResponseBody
+    public Map getReserveOrderBySenderPhone(String senderPhone,String phoneFlag) {
+        Map obj = new HashMap();
+        OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel ();
+        omReserveOrderModel.setCnorTel(senderPhone);
+        omReserveOrderModel.setReserveOrderStatusList("20,30,70,90");
+        ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,3);
+        List<Map<String, Object>>  orderList = cwbDAO.getCwbOrderByPhone(senderPhone,phoneFlag);
+        obj.put("reserveOrderList", reserveOrder.getReserveOrderVoList());
+        obj.put("orderList", orderList);
+        return obj;
+    }
+    
+    /**
+     * 根据电话号码获取收件人信息
+     * @param telephone
+     * @return jsonObject
+     */
+    @RequestMapping("/getReserveOrderByConsignPhone")
+    @ResponseBody
+    public List<Map<String, Object>> getReserveOrderByConsignPhone(String consignPhone,String phoneFlag) {
+        List<Map<String,Object>> orderList = cwbDAO.getCwbOrderByPhone(consignPhone,phoneFlag);
+        return orderList;
+    }
+    
+    /**
+     * 调用接口获取运费
+     */
+    @SuppressWarnings("null")
+	@RequestMapping("/getFeeByCondition")
+    @ResponseBody
+    public DeliveryInfoModel getFeeByCondition(String senderProvince,String senderCity,
+    		String consigneeProvince,String consigneeCity,String productType,String actualWeight,
+    		String goodsLongth,String goodsWidth,String goodsHeight,String payMethod) {
+    	PriceTimeQueryByNameVoModel priceTimeQueryByNameVoModel = new PriceTimeQueryByNameVoModel();
+    	DeliveryInfoService deliveryInfoService = new DeliveryInfoServiceHelper.DeliveryInfoServiceClient();
+    	priceTimeQueryByNameVoModel.setStartingProvinceName(senderProvince);
+    	priceTimeQueryByNameVoModel.setStartingCityName(senderCity);
+    	priceTimeQueryByNameVoModel.setDestinationProvinceName(consigneeProvince);
+    	priceTimeQueryByNameVoModel.setDestinationCityName(consigneeCity);
+    	priceTimeQueryByNameVoModel.setProductCode(Integer.parseInt(productType));
+    	if(!StringUtils.isEmpty(actualWeight)){
+    		priceTimeQueryByNameVoModel.setWeight(Double.parseDouble(actualWeight));
+    	}
+    	if(!StringUtils.isEmpty(goodsLongth)){
+    		priceTimeQueryByNameVoModel.setLength(Double.parseDouble(goodsLongth));
+    	}
+    	if(!StringUtils.isEmpty(goodsWidth)){
+    		priceTimeQueryByNameVoModel.setWidth(Double.parseDouble(goodsWidth));
+    	}
+    	if(!StringUtils.isEmpty(goodsHeight)){
+    		priceTimeQueryByNameVoModel.setHeight(Double.parseDouble(goodsHeight));
+    	}
+    	priceTimeQueryByNameVoModel.setPayType(Byte.parseByte(payMethod));
+    	List<DeliveryInfoModel> deliveryInfoModel = null;
+    	//DeliveryInfoModel deliveryInfoModel = new DeliveryInfoModel();
+    	try {
+    		deliveryInfoModel = deliveryInfoService.priceTimeQueryByAreaName(priceTimeQueryByNameVoModel);
+    		/*deliveryInfoModel.setPrice(12.2);
+    		deliveryInfoModel.setCalWeight(2.2);*/
+    	} catch (OspException e) {
+			logger.error(e.getMessage(), e);
+		}
+    	return deliveryInfoModel.get(0);
+    		//return deliveryInfoModel;
     }
 }

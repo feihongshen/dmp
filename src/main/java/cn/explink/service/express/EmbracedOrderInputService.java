@@ -57,6 +57,8 @@ import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPCargoInfo;
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+
 @Transactional
 @Service
 public class EmbracedOrderInputService extends ExpressCommonService {
@@ -813,6 +815,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 						address = consigneeProvinceName + address;
 					}
 				}
+
 	
 				doReq.setCneeAddr(address);
 				if (StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone())) {
