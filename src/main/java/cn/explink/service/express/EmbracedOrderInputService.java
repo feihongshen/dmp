@@ -327,6 +327,10 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 																																			// jiangyu
 			params.put("shouldfare", StringUtils.isNotBlank(embracedOrderVO.getFreight()) ? embracedOrderVO.getFreight() : 0.00);
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
+		
+			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
+			params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+			params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
 		} else if (flags == 2) {
 			this.logger.info("订单补录  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
 			params.put("cwb", embracedOrderVO.getOrderNo());
@@ -348,6 +352,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 																																			// jiangyu
 			params.put("shouldfare", StringUtils.isNotBlank(embracedOrderVO.getFreight()) ? embracedOrderVO.getFreight() : 0.00);
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
+			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
+			params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+			params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
 		}
 		params.put("transcwb", embracedOrderVO.getOrderNo());// 将订单号写入transcwb
 		params.put("senderprovinceid", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid()) ? embracedOrderVO.getSender_provinceid() : null);
@@ -442,7 +449,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					consigneeaddress = cneeProv + consigneeaddress;
 				}
 			}
-
+			
 			params.put("consigneeaddress", consigneeaddress);
 			params.put("senderaddress", embracedOrderVO.getConsignee_adress() == null ? "" : StringUtil.nullConvertToEmptyString((String) (params.get("senderprovince"))) + StringUtil
 					.nullConvertToEmptyString((String) (params.get("sendercity"))) + StringUtil.nullConvertToEmptyString((String) (params.get("sendercounty"))) + StringUtil
@@ -472,7 +479,6 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("instationname", branch.getBranchname());
 
 			params.put("credate", Timestamp.valueOf(DateTimeUtil.getNowTime()));
-
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
 			System.out.println("补录：inset方法，补录标志位：" + embracedOrderVO.getIsadditionflag());
 			// 如果是新建运单，那么他的状态为入站，调用tps状态反馈接口 11.19 如果状态有改变，且变为揽件入站，则需要保存流程信息
@@ -752,7 +758,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 
 				doReq.setCneeProv(embracedOrderVO.getConsignee_provinceName());
 				doReq.setCneeCity(embracedOrderVO.getConsignee_cityName());
-
+				
 				//如果详细地址里面已经含省+市+区，则不再加入省市区
 				String consigneeProvinceName = embracedOrderVO.getConsignee_provinceName();
 				String consigneeCityName = embracedOrderVO.getConsignee_cityName();
@@ -773,7 +779,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 						address = consigneeProvinceName + address;
 					}
 				}
-
+	
 				doReq.setCneeAddr(address);
 				if (StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone())) {
 					doReq.setCneeMobile(embracedOrderVO.getConsignee_cellphone());

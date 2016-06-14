@@ -305,6 +305,12 @@ public class EmbracedOrderVO {
 	 * 货物尺寸
 	 */
 	private String carsize;
+	
+	//快递产品类型，服务产品
+	private Integer express_product_type;
+	
+	//支付类型
+	private Integer paywayid;
 
 	public String getOrderNo() {
 		return this.orderNo;
@@ -912,6 +918,22 @@ public class EmbracedOrderVO {
 
 	public void setCarsize(String carsize) {
 		this.carsize = carsize;
+	}
+
+	public Integer getExpress_product_type() {
+		return express_product_type;
+	}
+
+	public void setExpress_product_type(Integer express_product_type) {
+		this.express_product_type = express_product_type;
+	}
+
+	public Integer getPaywayid() {
+		return paywayid;
+	}
+
+	public void setPaywayid(Integer paywayid) {
+		this.paywayid = paywayid;
 	}
 
 }
