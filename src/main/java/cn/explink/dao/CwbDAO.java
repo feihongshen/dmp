@@ -9665,7 +9665,7 @@ public class CwbDAO {
 	 */
 	public List<CwbOrder> selectObsoleteCwbOrderList(String cwb,String cwbordertypeids, String beginupdatetime, String endupdatetime,
 			String beginemaildate, String endemaildate, long...page) { 
-		StringBuilder sql = new StringBuilder("select a.cwb, a.transcwb, a.cwbordertypeid, ifnull(a.emaildate,'') as emaildate, a.sendcarnum, a.customerid, "
+		StringBuilder sql = new StringBuilder("select distinct a.cwb, a.transcwb, a.cwbordertypeid, ifnull(max(a.emaildate),'') as emaildate, a.sendcarnum, a.customerid, "
 				+ " a.cwbstate, a.flowordertype, a.deliverystate, b.cretime as printtime, b.userid as deliverid "
 				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
 
@@ -9687,7 +9687,7 @@ public class CwbDAO {
 						+ "' and a.emaildate<='"
 						+ endemaildate +"'" );
 		}
-		sql.append(" order by a.emaildate limit ?,?");
+		sql.append(" group by a.cwb order by a.emaildate limit ?,?");
 		long pageFrom = page[0]-1;
 		long pageSize = page.length>1?page[1]:10;
 		return this.jdbcTemplate.query(sql.toString(), new ObsoleteOrderMapper(), 
@@ -9702,7 +9702,7 @@ public class CwbDAO {
 	 */
 	public long selectObsoleteCwbOrderListCount(String cwb,String cwbordertypeids, String beginupdatetime, String endupdatetime,
 			String beginemaildate, String endemaildate ) { 
-		StringBuilder sql = new StringBuilder("select count(1) "
+		StringBuilder sql = new StringBuilder("select count(distinct a.cwb) "
 				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
 
 		if (!StringUtil.isEmpty( cwb) ) {

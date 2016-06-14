@@ -69,12 +69,12 @@ $(function() {
 });
 
 function check(){
-	if($("#strtime2").val()==""){
-		alert("请选择开始发货时间");
+	if($("#strtime1").val()==""){
+		alert("请选择开始失效时间");
 		return false;
 	}
-	if($("#endtime2").val()==""){
-		alert("请选择结束发货时间");
+	if($("#endtime1").val()==""){
+		alert("请选择结束失效时间");
 		return false;
 	}
 	if($("#strtime2").val()>$("#endtime2").val() && $("#endtime2").val() !=''){
@@ -307,12 +307,10 @@ function clearSelect(){
 				$("#begin").val(1);
 				
 				$searchForm.attr("action", "<%=request.getContextPath()%>/datastatistics/obsoleteOrder/excel");
-				$searchForm.attr("target", "_blank");
 				$searchForm.submit();
 
 				//恢复现场
 				$searchForm.attr("action", action);
-				$searchForm.attr("target", "_self");
 				$("#btnexp" ).attr("disabled",false);
 				$("#btnexp" ).val("导  出");
 				$("#begin").val(0);
