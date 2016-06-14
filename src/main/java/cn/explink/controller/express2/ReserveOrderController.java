@@ -263,10 +263,12 @@ public class ReserveOrderController extends ExpressCommonController {
 	 */
 	@ResponseBody
 	@RequestMapping("/exportExcel/{queryType}")
-	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") final String queryType,
+	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") String queryType,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
 			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
 			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList) throws Exception {
+        final boolean isFromQueryPage = StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue());
+        final boolean isFromHandleWarehousePage = StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue());
 		// 填充数据
 		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
 		if(StringUtils.isNotBlank(reserveOrderNo)) {
@@ -289,7 +291,7 @@ public class ReserveOrderController extends ExpressCommonController {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
 		} else {
 			String reserveOrderStatusStr = null;
-			if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
+			if(isFromQueryPage) {
 				if(this.isWarehouseMaster()) {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString();
 				} else {
@@ -327,13 +329,30 @@ public class ReserveOrderController extends ExpressCommonController {
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "ReserveOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
-		final String[] cloumnName;
-		if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
-			cloumnName = new String[]{"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "运单号", "站点", "快递员"};
-		} else {
-			cloumnName = new String[]{"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "站点", "快递员"};
-		}
-		ExcelUtils excelUtil = new ExcelUtils() {
+//        String[] cloumnName = null;
+        final List<String> columnNames = new ArrayList<String>();
+        columnNames.add("预约单号");
+        columnNames.add("下单时间");
+        columnNames.add("寄件人");
+        columnNames.add("寄件公司");
+        columnNames.add("手机");
+        columnNames.add("固话");
+        columnNames.add("寄件地址");
+        columnNames.add("预约上门时间");
+        columnNames.add("寄件人备注");
+        columnNames.add("预约单状态");
+        columnNames.add("原因");
+        if (isFromQueryPage) {
+            columnNames.add("运单号");
+        }
+        if (!isFromHandleWarehousePage) {
+            columnNames.add("站点");
+        }
+        columnNames.add("快递员");
+
+
+
+        ExcelUtils excelUtil = new ExcelUtils() {
 
 			@Override
 			public void fillData(Sheet sheet, CellStyle style) {
@@ -342,7 +361,7 @@ public class ReserveOrderController extends ExpressCommonController {
 				font.setFontHeightInPoints((short) 10);
 				style.setFont(font);
 				//设置列的默认值
-				for(int i = 0; i < cloumnName.length; i++) {
+				for(int i = 0; i < columnNames.size(); i++) {
 					sheet.setColumnWidth(i, 4000);
 				}
 				for (int i = 0; i < reserveOrderList.size(); i++) {
@@ -393,24 +412,25 @@ public class ReserveOrderController extends ExpressCommonController {
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getReason());
-					
-					if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
-						cell = row.createCell(colIndex++);
-						cell.setCellStyle(style);
-						cell.setCellValue(vo.getTransportNo());
-					}
-					
-					cell = row.createCell(colIndex++);
-					cell.setCellStyle(style);
-					cell.setCellValue(vo.getAcceptOrgName());
-					
-					cell = row.createCell(colIndex++);
+                    if (isFromQueryPage) {
+                        cell = row.createCell(colIndex++);
+                        cell.setCellStyle(style);
+                        cell.setCellValue(vo.getTransportNo());
+                    }
+
+                    if (!isFromHandleWarehousePage) {
+                        cell = row.createCell(colIndex++);
+                        cell.setCellStyle(style);
+                        cell.setCellValue(vo.getAcceptOrgName());
+                    }
+
+                    cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getCourierName());
 				}
 			}
 		};
-		excelUtil.excel(response, cloumnName, sheetName, fileName);
+		excelUtil.excel(response, columnNames.toArray(new String[columnNames.size()]), sheetName, fileName);
 	}
 
     /**
@@ -496,6 +516,12 @@ public class ReserveOrderController extends ExpressCommonController {
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
+        List<String> errMsg = new ArrayList<String>();
+
+        if (!validateCloseReserveOrder(reserveOrderVos, errMsg)) {
+            buildErrorMsg(obj, errMsg);
+            return obj;
+        }
         if (reserveOrderVos.length > 0) {
 
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
@@ -510,7 +536,6 @@ public class ReserveOrderController extends ExpressCommonController {
                 omReserveOrderModel.setCnorRemark(reserveOrderVo.getReason());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
-            List<String> errMsg = new ArrayList<String>();
             reserveOrderService.closeReserveOrder(omReserveOrderModels, errMsg);
             buildErrorMsg(obj, errMsg);
         }
@@ -579,6 +604,25 @@ public class ReserveOrderController extends ExpressCommonController {
                         && ReserveOrderStatusEnum.HaveReciveOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
                         && ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
                     errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 只有已分配站点和揽件超区,才能退回省公司!");
+                    isPass = false;
+                    break;
+                }
+            }
+        }
+        return isPass;
+    }
+
+    private boolean validateCloseReserveOrder(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
+        boolean isPass = true;
+
+        if (reserveOrderVos == null || reserveOrderVos.length < 1) {
+            errMsg.add("请选择至少一条预约单！");
+            isPass = false;
+        } else {
+            for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                if (ReserveOrderStatusEnum.HaveStationOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
+                        && ReserveOrderStatusEnum.HadAllocationPro.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
+                    errMsg.add("{" + reserveOrderVo.getReserveOrderNo() + "} 只有站点超区和已分配省公司状态, 才能关闭!");
                     isPass = false;
                     break;
                 }

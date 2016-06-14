@@ -133,6 +133,23 @@ $(function () {
             return false;
         }
 
+        var rows = $('#dg_rsList').datagrid('getChecked');
+        var flag = true;
+        var errReserveOrder = "";
+
+        $.each(rows, function (index, value) {
+            var reserveOrderStatus = value.reserveOrderStatus;
+            if (reserveOrderStatus != haveStationOutZone && reserveOrderStatus != hadAllocationPro) {
+                errReserveOrder = value.reserveOrderNo;
+                flag = false;
+                return false;
+            }
+        });
+        if (!flag) {
+            allertMsg.alertError("{" + errReserveOrder + "} 只有站点超区和已分配省公司状态,才允许关闭!");
+            return false;
+        }
+
         //打开关闭预约单面板
         closeReserveOrderPanel = $.layer({
             type: 1,
@@ -390,7 +407,8 @@ $(function () {
             var reserveOrder = {};
             reserveOrder.reserveOrderNo = value.reserveOrderNo;
             reserveOrder.recordVersion = value.recordVersion;
-            reserveOrder.reason = $('#closeReason').val()
+            reserveOrder.reason = $('#closeReason').val();
+            reserveOrder.reserveOrderStatus = value.reserveOrderStatus;
             param.push(reserveOrder);
         });
 
