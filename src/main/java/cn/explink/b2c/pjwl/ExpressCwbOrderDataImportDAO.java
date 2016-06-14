@@ -397,4 +397,15 @@ public class ExpressCwbOrderDataImportDAO {
 			this.logger.error("修改运单号临时表数据 is_hand_over失败！transOrderId=" + tpsTransId, e);
 		}
 	}
+	
+	//根据快递单号查询图片url
+	public String getExpressImageById(String transport_no) {
+		try {
+			return this.jdbcTemplate
+					.queryForObject(
+							"SELECT express_image from express_ops_cwb_exprss_detail_temp where transport_no=? limit 0,1",String.class,transport_no);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 }

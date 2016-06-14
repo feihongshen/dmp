@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +25,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
+import com.pjbest.psp.express.service.DeliveryInfoModel;
+import com.pjbest.psp.express.service.DeliveryInfoServiceHelper;
+import com.pjbest.psp.express.service.PriceTimeQueryByNameVoModel;
 import com.vip.osp.core.exception.OspException;
 import com.vip.tps.base.service.SbCodeDefModel;
 import com.vip.tps.base.service.SbCodeTypeService;
@@ -41,9 +47,13 @@ import cn.explink.controller.ExplinkResponse;
 import cn.explink.controller.express.ExpressCommonController;
 import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.core.utils.JsonUtil;
+import cn.explink.dao.CwbDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
+import cn.explink.domain.VO.express.EmbracedOrderVO;
+import cn.explink.domain.express.ExpressWeigh;
 import cn.explink.domain.express2.VO.ReserveOrderEditVo;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
@@ -59,6 +69,8 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.Tools;
 import net.sf.json.JSONObject;
+
+import com.pjbest.psp.express.service.DeliveryInfoService;
 
 /**
  * 预约单 Controller
@@ -78,6 +90,9 @@ public class ReserveOrderController extends ExpressCommonController {
 
 	@Resource
     private UserService userService;
+	
+	@Resource
+	private CwbDAO cwbDAO;
 	
     private static final String RESERVE_EXCEPTION_REASON = "RESERVE_EXCEPTION_REASON";
     private static final String RESERVE_RETENTION_REASON = "RESERVE_RETENTION_REASON";
@@ -800,5 +815,79 @@ public class ReserveOrderController extends ExpressCommonController {
             }
         }
         obj.put("errorMsg", msg.toString());
+    }
+    
+    /**
+     * 根据电话号码获取预约单号
+     * @param telephone
+     * @return jsonObject
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("/getReserveOrderBySenderPhone")
+    @ResponseBody
+    public Map getReserveOrderBySenderPhone(String senderPhone,String phoneFlag) {
+        Map obj = new HashMap();
+        OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel ();
+        omReserveOrderModel.setCnorTel(senderPhone);
+        omReserveOrderModel.setReserveOrderStatusList("20,30,70,90");
+        ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,3);
+        List<Map<String, Object>>  orderList = cwbDAO.getCwbOrderByPhone(senderPhone,phoneFlag);
+        obj.put("reserveOrderList", reserveOrder.getReserveOrderVoList());
+        obj.put("orderList", orderList);
+        return obj;
+    }
+    
+    /**
+     * 根据电话号码获取收件人信息
+     * @param telephone
+     * @return jsonObject
+     */
+    @RequestMapping("/getReserveOrderByConsignPhone")
+    @ResponseBody
+    public List<Map<String, Object>> getReserveOrderByConsignPhone(String consignPhone,String phoneFlag) {
+        List<Map<String,Object>> orderList = cwbDAO.getCwbOrderByPhone(consignPhone,phoneFlag);
+        return orderList;
+    }
+    
+    /**
+     * 调用接口获取运费
+     */
+    @SuppressWarnings("null")
+	@RequestMapping("/getFeeByCondition")
+    @ResponseBody
+    public DeliveryInfoModel getFeeByCondition(String senderProvince,String senderCity,
+    		String consigneeProvince,String consigneeCity,String productType,String actualWeight,
+    		String goodsLongth,String goodsWidth,String goodsHeight,String payMethod) {
+    	PriceTimeQueryByNameVoModel priceTimeQueryByNameVoModel = new PriceTimeQueryByNameVoModel();
+    	DeliveryInfoService deliveryInfoService = new DeliveryInfoServiceHelper.DeliveryInfoServiceClient();
+    	priceTimeQueryByNameVoModel.setStartingProvinceName(senderProvince);
+    	priceTimeQueryByNameVoModel.setStartingCityName(senderCity);
+    	priceTimeQueryByNameVoModel.setDestinationProvinceName(consigneeProvince);
+    	priceTimeQueryByNameVoModel.setDestinationCityName(consigneeCity);
+    	priceTimeQueryByNameVoModel.setProductCode(Integer.parseInt(productType));
+    	if(!StringUtils.isEmpty(actualWeight)){
+    		priceTimeQueryByNameVoModel.setWeight(Double.parseDouble(actualWeight));
+    	}
+    	if(!StringUtils.isEmpty(goodsLongth)){
+    		priceTimeQueryByNameVoModel.setLength(Double.parseDouble(goodsLongth));
+    	}
+    	if(!StringUtils.isEmpty(goodsWidth)){
+    		priceTimeQueryByNameVoModel.setWidth(Double.parseDouble(goodsWidth));
+    	}
+    	if(!StringUtils.isEmpty(goodsHeight)){
+    		priceTimeQueryByNameVoModel.setHeight(Double.parseDouble(goodsHeight));
+    	}
+    	priceTimeQueryByNameVoModel.setPayType(Byte.parseByte(payMethod));
+    	List<DeliveryInfoModel> deliveryInfoModel = null;
+    	//DeliveryInfoModel deliveryInfoModel = new DeliveryInfoModel();
+    	try {
+    		deliveryInfoModel = deliveryInfoService.priceTimeQueryByAreaName(priceTimeQueryByNameVoModel);
+    		/*deliveryInfoModel.setPrice(12.2);
+    		deliveryInfoModel.setCalWeight(2.2);*/
+    	} catch (OspException e) {
+			logger.error(e.getMessage(), e);
+		}
+    	return deliveryInfoModel.get(0);
+    		//return deliveryInfoModel;
     }
 }

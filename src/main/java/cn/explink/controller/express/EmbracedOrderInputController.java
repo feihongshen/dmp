@@ -25,7 +25,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.explink.b2c.pjwl.ExpressCwbOrderDataImportDAO;
+import cn.explink.dao.CwbDAO;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.express.AdressInfoDetailVO;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.VO.express.EmbracedImportOrderVO;
 import cn.explink.domain.VO.express.EmbracedImportResult;
@@ -33,13 +37,17 @@ import cn.explink.domain.VO.express.EmbracedOrderVO;
 import cn.explink.domain.express.ExpressPreOrder;
 import cn.explink.domain.express.ExpressWeigh;
 import cn.explink.domain.express.NewAreaForm;
+import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.service.Excel2003Extractor;
 import cn.explink.service.Excel2007Extractor;
 import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ResultCollectorManager;
 import cn.explink.service.express.EmbracedOrderInputService;
+import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExportUtil4Express;
 import cn.explink.util.Page;
+
+import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 
 /**
  *
@@ -63,6 +71,12 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 
 	@Autowired
 	ResultCollectorManager resultCollectorManager;
+	@Autowired
+	ExpressCwbOrderDataImportDAO expressCwbOrderDataImportDAO;
+	@Autowired
+	CwbDAO cwbDAO;
+	@Autowired
+	ReserveOrderService reserveOrderService;
 
 	private ExcelExtractor excelExtractor = null;
 	private static final String CONTENT_TYPE = "text/html; charset=GBK";
@@ -112,6 +126,8 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 	public String embracedOrderExtraInputInit(Model model, String orderNo) {
 		this.logger.info("进入揽收运单补录页面时间为：" + System.currentTimeMillis());
 		long startTime = System.currentTimeMillis();
+		AdressInfoDetailVO adressInfoDetailVO = this.embracedOrderInputService.getAdressInfoByBranchid();
+		
 		//获取尚未补录的订单
 		model.addAttribute("notExtraInputNumber", this.embracedOrderInputService.getNonExtraInputOrder(1, Page.ONE_PAGE_NUMBER).get("count"));
 		//站点的省
@@ -128,6 +144,10 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 		//uat后新加
 		model.addAttribute("branchname", this.embracedOrderInputService.getBracnch().getBranchname());
 		model.addAttribute("deliveryMansList", this.embracedOrderInputService.getDeliveryManBybranchid());
+		
+		//获取根据所在机构的地址
+		model.addAttribute("adressInfoDetailVO", adressInfoDetailVO);
+		
 		this.logger.info("请求揽收运单补录页面时间为：" + (System.currentTimeMillis() - startTime) + "毫秒");
 		return "express/stationOperation/embracedOrderExtraStandard";
 	}
@@ -292,9 +312,24 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 		JSONObject obj = new JSONObject();
 		EmbracedOrderVO embracedOrderVO = this.embracedOrderInputService.judgeCwbOrderByCwb(orderNo);
 		ExpressWeigh expressWeigh = this.embracedOrderInputService.getWeighByCwb(orderNo, this.getSessionUser().getBranchid());
+		//查询快递单号的图片路径
+		String expressImage = expressCwbOrderDataImportDAO.getExpressImageById(orderNo);
+		
+		//根据运单号获取预约单号
+		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+		String tpstransportNo = cwbDAO.getTpsTransportNoByCwb(orderNo);
+         
+        String reserveOrderNo = "";
+		if(tpstransportNo!=null&&!tpstransportNo.isEmpty()){
+			omReserveOrderModel.setTransportNo(tpstransportNo);    
+			ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
+			reserveOrderNo = reserveOrder.getReserveOrderVoList().get(0).getReserveOrderNo();
+		}
 		obj.put("embracedOrderVO", embracedOrderVO);
 		obj.put("expressWeigh", expressWeigh);
 		obj.put("branchid", this.getSessionUser().getBranchid());
+		obj.put("expressImage", expressImage);
+		obj.put("reserveOrderNo", reserveOrderNo);
 		return obj;
 	}
 
