@@ -52,6 +52,7 @@ import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BillStateEnum;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
@@ -851,10 +852,12 @@ public class ApplyEditDeliverystateController {
 				} else if ((deliverystate == null) || (deliverystate.getDeliverystate() == 0) || (deliverystate.getGcaid() == 0)) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
 					continue;
-				} else if ((deliverystate.getDeliverystate() == DeliveryStateEnum.JuShou.getValue()) && (customer.getNeedchecked() == 1)) {
+				} /*else if ((deliverystate.getDeliverystate() == DeliveryStateEnum.JuShou.getValue()) && (customer.getNeedchecked() == 1)) {
 					errorCwbs.append(cwbStr + ":拒收的订单已开启退货出站审核，不能申请修改反馈状态！");
 					continue;
-				} else if ((deliverystate != null) && (deliverystate.getPayupid() == 0)) {// &&
+				}*/else if(corder.getCwbstate() != CwbStateEnum.PeiShong.getValue()){
+					
+				}else if ((deliverystate != null) && (deliverystate.getPayupid() == 0)) {// &&
 																							// deliverystate.getIssendcustomer()
 																							// ==
 																							// 0
