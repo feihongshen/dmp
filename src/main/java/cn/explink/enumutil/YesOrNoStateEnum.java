@@ -1,7 +1,7 @@
 package cn.explink.enumutil;
 
 public enum YesOrNoStateEnum {
-	Yes(1, "是"), No(0, "否");
+	Yes(1, "是"), No(0, "否"), Error(2, "出错");
 	private int value;
 	private String text;
 

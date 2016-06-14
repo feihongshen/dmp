@@ -226,7 +226,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private String generateMainTransNo(String seqRuleNo, Map<String, String> contextVars) throws ExpressTpsInterfaceException {
+	public String generateMainTransNo(String seqRuleNo, Map<String, String> contextVars) throws ExpressTpsInterfaceException {
 		String result = "";
 		MainIdService mainIdService = new MainIdServiceHelper.MainIdServiceClient();
 		try {
@@ -243,7 +243,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @param listStrNo
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private void snifferPreOrderNoFeedBack(List<String> listStrNo) throws ExpressTpsInterfaceException {
+	public void snifferPreOrderNoFeedBack(List<String> listStrNo) throws ExpressTpsInterfaceException {
 		PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
 		try {
 			pjDeliveryOrderService.makeSaleOrderSuccessList(listStrNo);
@@ -258,7 +258,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @param listStrNo 预约单号集合
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private void snifferTransNoFeedBack(List<String> listStrNo) throws ExpressTpsInterfaceException {
+	public void snifferTransNoFeedBack(List<String> listStrNo) throws ExpressTpsInterfaceException {
 		PjDeliveryOrder4DMPService pjDeliveryOrder4DMPService = new PjDeliveryOrder4DMPServiceHelper.PjDeliveryOrder4DMPServiceClient();
 		try {
 			pjDeliveryOrder4DMPService.makeDeliveryOrderSuccessList(listStrNo);
@@ -275,7 +275,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private Boolean checkTransNoBelongPackage(String transNo, String packageNo) throws ExpressTpsInterfaceException {
+	public Boolean checkTransNoBelongPackage(String transNo, String packageNo) throws ExpressTpsInterfaceException {
 		Boolean resultFlag = false;
 		PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
 		try {
@@ -293,7 +293,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private List<PjDeliverOrder4DMPRequest> handOverDmpCarrier(String carrierCode) throws ExpressTpsInterfaceException {
+	public List<PjDeliverOrder4DMPRequest> handOverDmpCarrier(String carrierCode) throws ExpressTpsInterfaceException {
 		PjDeliveryOrder4DMPService pjDeliveryOrder4DMPService = new PjDeliveryOrder4DMPServiceHelper.PjDeliveryOrder4DMPServiceClient();
 		List<PjDeliverOrder4DMPRequest> result = new ArrayList<PjDeliverOrder4DMPRequest>();
 		try {
@@ -311,7 +311,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private Boolean handleUnPackingInfo(PjUnPackRequest unPackRequest) throws ExpressTpsInterfaceException {
+	public Boolean handleUnPackingInfo(PjUnPackRequest unPackRequest) throws ExpressTpsInterfaceException {
 		Boolean resultFlag = false;
 		PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
 		try {
@@ -337,7 +337,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private Boolean handlePackingInfo(PjDcPackageModel packModel) throws ExpressTpsInterfaceException {
+	public Boolean handlePackingInfo(PjDcPackageModel packModel) throws ExpressTpsInterfaceException {
 		Boolean resultFlag = false;
 		PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
 		try {
@@ -355,7 +355,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private List<PjDeliveryTrackInfo> queryTransNoTrace(String transNo) throws ExpressTpsInterfaceException {
+	public List<PjDeliveryTrackInfo> queryTransNoTrace(String transNo) throws ExpressTpsInterfaceException {
 		PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
 		List<PjDeliveryTrackInfo> result = new ArrayList<PjDeliveryTrackInfo>();
 		try {
@@ -373,7 +373,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private Boolean transNoFeedBackProcess(PjTransportFeedbackRequest transNoFeedBack) throws ExpressTpsInterfaceException {
+	public Boolean transNoFeedBackProcess(PjTransportFeedbackRequest transNoFeedBack) throws ExpressTpsInterfaceException {
 		Boolean resultFlag = false;
 		PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
 		try {
@@ -435,7 +435,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private List<PjDeliveryTrackInfo> getPreOrderQureyResult(String reserveOrderNo) throws ExpressTpsInterfaceException {
+	public List<PjDeliveryTrackInfo> getPreOrderQureyResult(String reserveOrderNo) throws ExpressTpsInterfaceException {
 		List<PjDeliveryTrackInfo> pjDeliveryTrackInfo = new ArrayList<PjDeliveryTrackInfo>();
 		try {
 			if (!Tools.isEmpty(reserveOrderNo)) {
@@ -457,7 +457,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	private Boolean preOrderFeedBackProcess(PjSaleOrderFeedbackRequest request) throws ExpressTpsInterfaceException {
+	public Boolean preOrderFeedBackProcess(PjSaleOrderFeedbackRequest request) throws ExpressTpsInterfaceException {
 		Boolean resultFlag = false;
 		try {
 			//揽件反馈
