@@ -321,7 +321,8 @@ public class EmbracedOrderInputController extends ExpressCommonController {
          
         String reserveOrderNo = "";
 		if(tpstransportNo!=null&&!tpstransportNo.isEmpty()){
-			omReserveOrderModel.setTransportNo(tpstransportNo);    
+			omReserveOrderModel.setTransportNo(tpstransportNo);
+			omReserveOrderModel.setReserveOrderStatusList("20,30,70,90");
 			ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
 			reserveOrderNo = reserveOrder.getReserveOrderVoList().get(0).getReserveOrderNo();
 		}
