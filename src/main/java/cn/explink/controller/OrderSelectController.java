@@ -129,6 +129,7 @@ import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
 
+import com.alibaba.fastjson.JSON;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryTrackInfo;
@@ -750,6 +751,7 @@ public class OrderSelectController {
 				return jspPage;
 			}
 			for (PjDeliveryTrackInfo temp : result) {
+				this.logger.info("请求TPS运单状态反馈结果：" + JSON.toJSONString(temp));
 				JoinMessageVO joinMessage = new JoinMessageVO();
 				BeanUtils.copyProperties(temp, joinMessage);
 				// joinMessage.connectMessage();
