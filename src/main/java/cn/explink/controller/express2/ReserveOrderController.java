@@ -13,6 +13,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -25,7 +27,6 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,33 +35,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.pjbest.deliveryorder.service.OmReserveOrderModel;
-import com.pjbest.psp.express.service.DeliveryInfoModel;
-import com.pjbest.psp.express.service.DeliveryInfoServiceHelper;
-import com.pjbest.psp.express.service.PriceTimeQueryByNameVoModel;
-import com.vip.osp.core.exception.OspException;
-import com.vip.tps.base.service.SbCodeDefModel;
-import com.vip.tps.base.service.SbCodeTypeService;
-import com.vip.tps.base.service.SbCodeTypeServiceHelper;
-
 import cn.explink.controller.ExplinkResponse;
 import cn.explink.controller.express.ExpressCommonController;
 import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.core.utils.JsonUtil;
 import cn.explink.dao.CwbDAO;
 import cn.explink.domain.Branch;
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
-import cn.explink.domain.VO.express.EmbracedOrderVO;
-import cn.explink.domain.express.ExpressWeigh;
 import cn.explink.domain.express2.VO.ReserveOrderEditVo;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.ReserveOrderQueryTypeEnum;
-import cn.explink.enumutil.express2.ReserveOrderStatusClassifyEnum;
 import cn.explink.enumutil.express2.ReserveOrderDmpStatusEnum;
+import cn.explink.enumutil.express2.ReserveOrderStatusClassifyEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.service.BranchService;
 import cn.explink.service.UserService;
@@ -68,9 +57,16 @@ import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.Tools;
-import net.sf.json.JSONObject;
 
-import com.pjbest.psp.express.service.DeliveryInfoService;
+import com.pjbest.deliveryorder.service.OmReserveOrderModel;
+import com.pjbest.psp.express.service.DeliveryInfoModel;
+import com.pjbest.psp.express.service.DeliveryInfoServiceHelper;
+import com.pjbest.psp.express.service.DeliveryInfoServiceHelper.DeliveryInfoServiceClient;
+import com.pjbest.psp.express.service.PriceTimeQueryByNameVoModel;
+import com.vip.osp.core.exception.OspException;
+import com.vip.tps.base.service.SbCodeDefModel;
+import com.vip.tps.base.service.SbCodeTypeService;
+import com.vip.tps.base.service.SbCodeTypeServiceHelper;
 
 /**
  * 预约单 Controller
@@ -852,14 +848,13 @@ public class ReserveOrderController extends ExpressCommonController {
     /**
      * 调用接口获取运费
      */
-    @SuppressWarnings("null")
 	@RequestMapping("/getFeeByCondition")
     @ResponseBody
     public DeliveryInfoModel getFeeByCondition(String senderProvince,String senderCity,
     		String consigneeProvince,String consigneeCity,String productType,String actualWeight,
     		String goodsLongth,String goodsWidth,String goodsHeight,String payMethod) {
     	PriceTimeQueryByNameVoModel priceTimeQueryByNameVoModel = new PriceTimeQueryByNameVoModel();
-    	DeliveryInfoService deliveryInfoService = new DeliveryInfoServiceHelper.DeliveryInfoServiceClient();
+    	DeliveryInfoServiceClient deliveryInfoService = new DeliveryInfoServiceClient();
     	priceTimeQueryByNameVoModel.setStartingProvinceName(senderProvince);
     	priceTimeQueryByNameVoModel.setStartingCityName(senderCity);
     	priceTimeQueryByNameVoModel.setDestinationProvinceName(consigneeProvince);
@@ -887,7 +882,11 @@ public class ReserveOrderController extends ExpressCommonController {
     	} catch (OspException e) {
 			logger.error(e.getMessage(), e);
 		}
-    	return deliveryInfoModel.get(0);
-    		//return deliveryInfoModel;
+    	if(deliveryInfoModel!=null && deliveryInfoModel.size()!=0){
+    		return deliveryInfoModel.get(0);
+    	}else{
+    		return null;
+    	}
+    	
     }
 }

@@ -38,6 +38,7 @@ import cn.explink.domain.express.ExpressPreOrder;
 import cn.explink.domain.express.ExpressWeigh;
 import cn.explink.domain.express.NewAreaForm;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
+import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.service.Excel2003Extractor;
 import cn.explink.service.Excel2007Extractor;
 import cn.explink.service.ExcelExtractor;
@@ -46,8 +47,10 @@ import cn.explink.service.express.EmbracedOrderInputService;
 import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExportUtil4Express;
 import cn.explink.util.Page;
+import cn.explink.util.StringUtil;
 
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
+import com.vip.osp.core.exception.OspException;
 
 /**
  *
@@ -319,18 +322,20 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
 		String tpstransportNo = cwbDAO.getTpsTransportNoByCwb(orderNo);
          
-        String reserveOrderNo = "";
+		ReserveOrderVo  reserveOrder = null;
 		if(tpstransportNo!=null&&!tpstransportNo.isEmpty()){
 			omReserveOrderModel.setTransportNo(tpstransportNo);
 			omReserveOrderModel.setReserveOrderStatusList("20,30,70,90");
-			ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
-			reserveOrderNo = reserveOrder.getReserveOrderVoList().get(0).getReserveOrderNo();
+			ReserveOrderPageVo reserveOrderVO = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
+			if(reserveOrderVO.getReserveOrderVoList().size()!=0){
+				reserveOrder = reserveOrderVO.getReserveOrderVoList().get(0);
+			}
 		}
 		obj.put("embracedOrderVO", embracedOrderVO);
 		obj.put("expressWeigh", expressWeigh);
 		obj.put("branchid", this.getSessionUser().getBranchid());
 		obj.put("expressImage", expressImage);
-		obj.put("reserveOrderNo", reserveOrderNo);
+		obj.put("reserveOrder", reserveOrder);
 		return obj;
 	}
 
@@ -388,6 +393,10 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 	public String extraInputSave(Model model, EmbracedOrderVO embracedOrderVO, int isRead) {
 		// save数据（放在service里面，添加事务）
 		String flag = this.embracedOrderInputService.savaEmbracedOrderVO(embracedOrderVO, "0".equals(embracedOrderVO.getIsadditionflag()) ? 2 : 1);
+		if(StringUtil.isEmpty(embracedOrderVO.getReserveOrderNo())){
+			//快递二期新增，反馈预约单状态:揽收成功给tps
+			this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO);
+		}
 		//刘武强 11.17  对页面读取的实际重量进行保存
 		this.embracedOrderInputService.savaexpressWeigh(embracedOrderVO, isRead);
 		// 获取回显数据
@@ -615,4 +624,6 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 	public void changeSenderAddr() {
 		this.embracedOrderInputService.changeSenderAddr();
 	}
+	
+	
 }

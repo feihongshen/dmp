@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import cn.explink.util.ResourceBundleUtil;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
+import cn.explink.domain.VO.express.EmbracedOrderVO;
 import cn.explink.domain.express2.VO.ReserveOrderEditVo;
 import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
@@ -586,5 +588,28 @@ public class ReserveOrderService extends ExpressCommonService {
 			throw new ExplinkException("省不存在，省的编号为：" + city.getParentCode());
 		}
 		return prov;
+    }
+    
+    /**
+     * 反馈预约单揽件成功给tps
+     * @param omReserveOrderModels
+     * @param returnType
+     * @throws OspException
+     */
+    public void returnReserveOrderStateToTps(EmbracedOrderVO embracedOrderVO) {
+        PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
+        pjSaleOrderFeedbackRequest.setReserveOrderNo(embracedOrderVO.getReserveOrderNo());
+        pjSaleOrderFeedbackRequest.setRecordVersion(embracedOrderVO.getRecordVersion());
+//            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
+        pjSaleOrderFeedbackRequest.setOperateOrg("27");
+        pjSaleOrderFeedbackRequest.setOperater(embracedOrderVO.getDelivermanName());
+        Date now = new Date();
+        pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
+
+        try {
+            feedbackReserveOrder(pjSaleOrderFeedbackRequest);
+        }catch (OspException e){
+        	logger.error(e.getMessage(), e);
+        }
     }
 }

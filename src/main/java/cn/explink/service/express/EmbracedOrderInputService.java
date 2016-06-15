@@ -325,8 +325,14 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 		
 			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
-			params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
-			params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+			if(embracedOrderVO.getPayment_method().equals("1")){
+				params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+				params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+			}else{
+				params.put("paywayid", "0");// 快递二期增加支付方式
+				params.put("newpaywayid", "0");// 快递二期增加支付方式
+			}
+			
 		} else if (flags == 2) {
 			params.put("cwb", embracedOrderVO.getOrderNo());
 			params.put("flowordertype", FlowOrderTypeEnum.LanJianRuZhan.getValue());
@@ -348,8 +354,13 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("shouldfare", StringUtils.isNotBlank(embracedOrderVO.getFreight()) ? embracedOrderVO.getFreight() : 0.00);
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
-			params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
-			params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+			if(embracedOrderVO.getPayment_method().equals("1")){
+				params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+				params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+			}else{
+				params.put("paywayid", "0");// 快递二期增加支付方式
+				params.put("newpaywayid", "0");// 快递二期增加支付方式
+			}
 		}
 		params.put("transcwb", embracedOrderVO.getOrderNo());// 将订单号写入transcwb
 		params.put("senderprovinceid", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid()) ? embracedOrderVO.getSender_provinceid() : null);

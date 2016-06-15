@@ -311,6 +311,12 @@ public class EmbracedOrderVO {
 	
 	//支付类型
 	private Integer paywayid;
+	
+	//预约单号
+	private String reserveOrderNo;
+	
+	//版本号
+	private Long recordVersion;
 
 	public String getOrderNo() {
 		return this.orderNo;
@@ -936,4 +942,20 @@ public class EmbracedOrderVO {
 		this.paywayid = paywayid;
 	}
 
+	public String getReserveOrderNo() {
+		return reserveOrderNo;
+	}
+
+	public void setReserveOrderNo(String reserveOrderNo) {
+		this.reserveOrderNo = reserveOrderNo;
+	}
+
+	public Long getRecordVersion() {
+		return recordVersion;
+	}
+
+	public void setRecordVersion(Long recordVersion) {
+		this.recordVersion = recordVersion;
+	}
+	
 }

@@ -116,6 +116,7 @@
 	                <td class="tdrigth">预约单号:</td>
 	                <td class="tdleft"><input type="text" name="reserveOrderNo" id="reserveOrderNo"  
 	                      readonly="readonly" style="background:#EBEBE4;width:100%;" /></td>
+                    <td id="recordVersionTd" style="display:none;"><input type="text" name="recordVersion" id="recordVersion"/></td>
 	                <td class="tdrigth">服务产品:</td>
 	                <td>
 	                	<select name="express_product_type" id="express_product_type"  style="width:100%;" onchange="getFeeByCondition()">
@@ -462,9 +463,9 @@
 						</td>
 						
 					</tr>
-					<tr>
-					    <td class="tdrigth" style="vertical-align:middle; text-align:center;">支付方式：</td>
-					   <td> 
+					<tr >
+					   <td style="display:none;" id="paywayName" class="tdrigth" style="vertical-align:middle; text-align:center;">支付方式：</td>
+					   <td style="display:none;" id="paywayidTd" > 
 						   <select name="paywayid" id="paywayid"  style="width:100%;" >
 								<option value="1" >现金</option>
 								<option value="2" >pos支付扫描</option>
@@ -473,7 +474,7 @@
 						</td>
 						<td class="tdrigth" style="vertical-align:middle; text-align:center;">月结账号：</td>
 						<td class="tdleft" style="vertical-align:middle; text-align:center;"><input type="text" name="monthly_account_number" id="monthly_account_number_id" style="width:100%;" /></td>
-						<td class="tdcenter" style="vertical-align:middle; text-align:center;" ><font color="red">月结：月结账户必填</font></td>
+						<td class="tdcenter" style="vertical-align:middle; text-align:center;" ><font color="red">月结/第三方支付：月结/第三方支付账户必填</font></td>
 					</tr>
 				</table>
 		</fieldset>	
@@ -644,6 +645,14 @@
 			}else{
 				$("#monthly_account_number_id").css('background','#ffffff');
 				$("#monthly_account_number_id").attr("readonly",false);
+			}
+			
+			if($("input[name='payment_method']:checked").val() == 1){
+				document.getElementById('paywayidTd').style.display = "";
+				document.getElementById('paywayName').style.display = "";
+			}else{
+				document.getElementById('paywayidTd').style.display = "none";
+				document.getElementById('paywayName').style.display = "none";
 			}
 	});
 	
@@ -1484,7 +1493,12 @@
 					$("#receive_countyId").html(data.embracedOrderVO.consignee_countyid);
 					$("#receive_townId").html(data.embracedOrderVO.consignee_townid); 
 					 initArea(); 
-					$("#reserveOrderNo").val(data.reserveOrderNo);
+					 console.log(data.reserveOrder)
+					 if(data.reserveOrder!=undefined){
+						 $("#reserveOrderNo").val(data.reserveOrder.reserveOrderNo);
+							$("#recordVersion").val(data.reserveOrder.recordVersion);  
+					 }
+					
 					$("#sender_adress_id").val(data.embracedOrderVO.sender_adress);
 					$("#sender_cellphone_id").val(data.embracedOrderVO.sender_cellphone);
 					$("#sender_telephone_id").val(data.embracedOrderVO.sender_telephone);
@@ -1549,7 +1563,6 @@
 						$("#packing_amount_id").val(data.embracedOrderVO.packing_amount);
 					}
 					//把付款方式给选上 $("#payment_method_id").val(); 完成
-					debugger;
 					if(data.embracedOrderVO.payment_method == 0){
 						$("#Radio3").attr("checked","checked");
 						$(".RadioClass").change();
@@ -2160,7 +2173,7 @@
 				if(data.reserveOrderList.length!=0){
 					for(var i=0;i<data.reserveOrderList.length;i++){
 						var reserveOrder=data.reserveOrderList[i];
-						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td><td>'+reserveOrder.cnorAddr+'</td><td>'+reserveOrder.requireTime+'</td></tr>');
+						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td><td>'+reserveOrder.cnorAddr+'</td><td>'+reserveOrder.requireTime+'</td><td style="display:none">'+reserveOrder.recordVersion+'</td></tr>');
 						
 					}
 				}
@@ -2253,6 +2266,7 @@
 	//预约单信息双击事件
 	function reserveTableDblClick(reserve){
 		$("#reserveOrderNo").val($(reserve).find("td").eq(0).text());
+		$("#reserveOrderNo").val($(reserve).find("td").eq(4).text());
 	}
 	
 	function getFeeByCondition(){
