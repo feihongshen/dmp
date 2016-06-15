@@ -77,6 +77,14 @@ function check(){
 		alert("请选择结束失效时间");
 		return false;
 	}
+	if($("#strtime2").val()!="" && $("#endtime2").val()==""){
+		alert("请选择结束发货时间");
+		return false;
+	}
+	if($("#strtime2").val()=="" && $("#endtime2").val()!=""){
+		alert("请选择开始发货时间");
+		return false;
+	}
 	if($("#strtime2").val()>$("#endtime2").val() && $("#endtime2").val() !=''){
 		alert("开始发货时间不能大于结束时间");
 		return false;

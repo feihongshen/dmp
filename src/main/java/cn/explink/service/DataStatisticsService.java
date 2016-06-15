@@ -1868,6 +1868,7 @@ public class DataStatisticsService {
 
 				// 添加揽件省 added by songkaojun 2015-11-17
 				cwbOrderView.setSenderprovince(c.getSenderprovince());
+				cwbOrderView.setVipclub(c.getVipclub()==0?"否":"是");
 				cwbOrderViewList.add(cwbOrderView);
 
 			}
