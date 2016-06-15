@@ -48,11 +48,12 @@ import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.enumutil.express.ExpressOrderStatusEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.express.tps.enums.FeedbackOperateTypeEnum;
+import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
-import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
-import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPCargoInfo;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderCargoRequest;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
 @Transactional
@@ -86,6 +87,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 	ExpressWeighDAO expressWeighDAO;
 	@Autowired
 	CwbOrderService cwbOrderService;
+	@Autowired
+	ReserveOrderService reserveOrderService;
 
 	@SuppressWarnings("serial")
 	Map<String, Integer> checkmMap = new HashMap<String, Integer>() {
@@ -519,6 +522,10 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			}
 		}
 		if ("true".equals(flag)) {
+			if(!StringUtil.isEmpty(embracedOrderVO.getReserveOrderNo())){
+				//快递二期新增，反馈预约单状态:揽收成功给tps
+				this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO);
+			}
 			this.logger.info("保存成功");
 		} else {
 			this.logger.info("保存失败");
@@ -691,7 +698,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("不能判断是录入还是补录，dmp信息回写失败！");
 		} else {
 			try {
-				PjDeliverOrder4DMPRequest doReq = new PjDeliverOrder4DMPRequest();
+				PjDeliveryOrderRequest doReq = new PjDeliveryOrderRequest();
 				doReq.setTransportNo(embracedOrderVO.getOrderNo());
 				// doReq.setCustOrderNo(embracedOrderVO.getOrderNo());//接口要求运单号和订单号不一样，但快递是一样的，并且非必填项，所以不set
 				// doReq.setAcceptDept(this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid())
@@ -699,6 +706,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				doReq.setAcceptDept(this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getTpsbranchcode());// 揽件站点tps编码
 				// doReq.setAcceptDept("gdfy");//用于测试，因为目前tps和快递的站点尚未统一，没法校验这个
 				doReq.setAcceptOperator(embracedOrderVO.getDelivermanName());
+				//快递二期增加必填字段：操作人
+				doReq.setCreatedByUser(this.getSessionUser().getUsername());
+				doReq.setCreatedOffice(this.getSessionUser().getBranchid()+"");
 				doReq.setCnorProv(embracedOrderVO.getSender_provinceName());
 				doReq.setCnorCity(embracedOrderVO.getSender_cityName());
 				if (!"input".equals(inputOrEmbrace)) {// 只有补录才有的数据回写
@@ -713,8 +723,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					doReq.setCneeCertificate(StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_certificateNo()));
 					doReq.setCustCode(StringUtil.nullConvertToEmptyString(embracedOrderVO.getSender_No()));
 					doReq.setCneeNo(StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_No()));
-					doReq.setIsCod(embracedOrderVO.getCollection());
-					doReq.setCodAmount(((embracedOrderVO.getCollection_amount() != null) && (!"".equals(embracedOrderVO.getCollection_amount()))) ? embracedOrderVO.getCollection_amount() : "0.00");// 按照王海要求，默认改为0.00
+					doReq.setIsCod(Boolean.parseBoolean(embracedOrderVO.getCollection()));
+					doReq.setCodAmount(Double.parseDouble(((embracedOrderVO.getCollection_amount() != null) && (!"".equals(embracedOrderVO.getCollection_amount()))) ? embracedOrderVO.getCollection_amount() : "0.00"));// 按照王海要求，默认改为0.00
 					doReq.setCarriage(((embracedOrderVO.getFreight_total() != null) && (!"".equals(embracedOrderVO.getFreight_total()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getFreight_total()), 2) : 0);
 					doReq.setTotalWeight(((embracedOrderVO.getActual_weight() != null) && (!"".equals(embracedOrderVO.getActual_weight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
@@ -722,29 +732,34 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					doReq.setCalculateWeight(((embracedOrderVO.getCharge_weight() != null) && (!"".equals(embracedOrderVO.getCharge_weight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getCharge_weight()), 2) : 0);
 					doReq.setTotalVolume(((embracedOrderVO.getGoods_kgs() != null) && (!"".equals(embracedOrderVO.getGoods_kgs()))) ? this.toFixed(Double.parseDouble(embracedOrderVO.getGoods_kgs()) / 1000, 2) : 0);//
-					doReq.setTotalBox(embracedOrderVO.getGoods_number().trim());//
+					doReq.setTotalBox(Integer.parseInt(embracedOrderVO.getGoods_number().trim()));//
 					doReq.setAssuranceValue(((embracedOrderVO.getInsured_amount() != null) && (!"".equals(embracedOrderVO.getInsured_amount()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getInsured_amount()), 2) : 0);
 					doReq.setAssuranceFee(((embracedOrderVO.getInsured_cost() != null) && (!"".equals(embracedOrderVO.getInsured_cost()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getInsured_cost()), 2) : 0);
-					doReq.setPayType(embracedOrderVO.getPayment_method());
+					doReq.setPackingFee(((embracedOrderVO.getPacking_amount() != null) && (!"".equals(embracedOrderVO.getPacking_amount()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
+							.getPacking_amount()), 2) : 0);
+					doReq.setPayType(Integer.parseInt(embracedOrderVO.getPayment_method()));
 					// doReq.setPayment("0".equals(embracedOrderVO.getPayment_method().trim())
 					// ? "0" : "-1");
-					doReq.setPayment("-1");// 11.13 马哥说运单里任何情况都传-1
+					doReq.setPayment(-1);// 11.13 马哥说运单里任何情况都传-1
 					doReq.setCnorRemark(embracedOrderVO.getRemarks());
+					//快递二期新增：运费
+					doReq.setActualFee(Double.parseDouble(embracedOrderVO.getFreight()));
+					doReq.setProductType(embracedOrderVO.getExpress_product_type());
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					try {
-						doReq.setPickerTime(formatter.format(formatter.parse(embracedOrderVO.getInputdatetime().substring(0, 19))));
+						doReq.setPickerTime(formatter.parse(embracedOrderVO.getInputdatetime().substring(0, 19)));
 					} catch (Exception e) {
 						Date uDate = new Date();
-						String strDate = formatter.format(uDate.getTime());
-						doReq.setPickerTime(strDate);
+						//String strDate = formatter.format(uDate.getTime());
+						doReq.setPickerTime(uDate);
 						this.logger.info("补录界面进行了新建运单操作！");
 					}
-					List<PjDeliveryOrder4DMPCargoInfo> goodslist = new ArrayList<PjDeliveryOrder4DMPCargoInfo>();
-					PjDeliveryOrder4DMPCargoInfo goodsinfo = new PjDeliveryOrder4DMPCargoInfo();
+					List<PjDeliveryOrderCargoRequest> goodslist = new ArrayList<PjDeliveryOrderCargoRequest>();
+					PjDeliveryOrderCargoRequest goodsinfo = new PjDeliveryOrderCargoRequest();
 					goodsinfo.setCargoName(embracedOrderVO.getGoods_name());
-					goodsinfo.setCount(embracedOrderVO.getGoods_number().trim());
+					goodsinfo.setCount(Integer.parseInt(embracedOrderVO.getGoods_number().trim()));
 					goodsinfo.setWeight(((embracedOrderVO.getGoods_weight() != null) && (!"".equals(embracedOrderVO.getGoods_weight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getGoods_weight()), 2) : 0);
 					goodsinfo
@@ -776,17 +791,17 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				String consigneeCountyName = embracedOrderVO.getConsignee_countyName();
 				String consigneeTownName = embracedOrderVO.getConsignee_townName();
 				String address = embracedOrderVO.getConsignee_adress();
-				if (null != address) {
-					if ((null != consigneeTownName) && (address.indexOf(consigneeTownName) < 0)) {//从地址小的开始处理
+				if(null != address){
+					if(null != consigneeTownName && address.indexOf(consigneeTownName) < 0){//从地址小的开始处理
 						address = consigneeTownName + address;
 					}
-					if ((null != consigneeCountyName) && (address.indexOf(consigneeCountyName) < 0)) {
+					if(null != consigneeCountyName && address.indexOf(consigneeCountyName) < 0){
 						address = consigneeCountyName + address;
 					}
-					if ((null != consigneeCityName) && (address.indexOf(consigneeCityName) < 0)) {
+					if(null != consigneeCityName && address.indexOf(consigneeCityName) < 0){
 						address = consigneeCityName + address;
 					}
-					if ((null != consigneeProvinceName) && (address.indexOf(consigneeProvinceName) < 0)) {
+					if(null != consigneeProvinceName && address.indexOf(consigneeProvinceName) < 0){
 						address = consigneeProvinceName + address;
 					}
 				}
@@ -798,10 +813,10 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				if (StringUtils.isNotBlank(embracedOrderVO.getConsignee_telephone())) {
 					doReq.setCneeTel(embracedOrderVO.getConsignee_telephone());
 				}
-				doReq.setCneePeriod("0");
+				doReq.setCneePeriod(0);
 				// doReq.setCneeRemark("");//忽略
-				doReq.setTotalNum(embracedOrderVO.getNumber());
-				List<PjDeliverOrder4DMPRequest> requestlist = new ArrayList<PjDeliverOrder4DMPRequest>();
+				doReq.setTotalNum(Integer.parseInt(embracedOrderVO.getNumber()));
+				List<PjDeliveryOrderRequest> requestlist = new ArrayList<PjDeliveryOrderRequest>();
 				requestlist.add(doReq);
 				ExpressOperationInfo paramObj = new ExpressOperationInfo(ExpressOperationEnum.CreateTransNO);
 				paramObj.setRequestlist(requestlist);

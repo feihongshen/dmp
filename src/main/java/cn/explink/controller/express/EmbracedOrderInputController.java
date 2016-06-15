@@ -393,10 +393,6 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 	public String extraInputSave(Model model, EmbracedOrderVO embracedOrderVO, int isRead) {
 		// save数据（放在service里面，添加事务）
 		String flag = this.embracedOrderInputService.savaEmbracedOrderVO(embracedOrderVO, "0".equals(embracedOrderVO.getIsadditionflag()) ? 2 : 1);
-		if(StringUtil.isEmpty(embracedOrderVO.getReserveOrderNo())){
-			//快递二期新增，反馈预约单状态:揽收成功给tps
-			this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO);
-		}
 		//刘武强 11.17  对页面读取的实际重量进行保存
 		this.embracedOrderInputService.savaexpressWeigh(embracedOrderVO, isRead);
 		// 获取回显数据
