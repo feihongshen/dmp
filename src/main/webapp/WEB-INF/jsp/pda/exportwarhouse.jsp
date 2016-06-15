@@ -337,7 +337,7 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 							addAndRemoval(scancwb,"errorTable",false,$("#branchid").combobox("getValue"));
 							//errorvedioplay(pname,data);
 						}
-						if(data.body.newCarrealWeight != undefined){
+						if(data.hasOwnProperty('newCarrealWeight') && data.body.newCarrealWeight != undefined){
 							$("#carweightDesc").html("重量(Kg):" + data.body.newCarrealWeight+"<br/>") ;
 						}else{
 							$("#carweightDesc").html("") ;
