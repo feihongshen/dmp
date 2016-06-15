@@ -412,7 +412,7 @@
 					<td class="tdcenter">费用合计：</td>
 					<td class="tdleft"><input type="text" name="freight_total" id="freight_total_id"  readonly="readonly" style=" font-size:22px;color:red;height:30px;background:#EBEBE4;width:100%;"/></td>
 					<td class="tdrigth">运费<font>*</font>:</td>
-					<td class="tdleft"><input type="text" name="freight" id="freight_id" onblur="calculateFreight(this)" style="width:100%;" onchange="toFix(this,2)"/></td>
+					<td class="tdleft"><input type="text" name="freight" id="freight_id" style="width:100%;" onchange="toFix(this,2)"/></td>
 					<td class="tdrigth">包装费用:</td>
 					<td class="tdleft"><input type="text" name="packing_amount" id="packing_amount_id" onblur="calculateFreight(this)" style="width:100%;" onchange="toFix(this,2)"/></td>
 					<td class="tdrigth">是否保价:</td>
@@ -1712,6 +1712,11 @@
 			return;
 		}
 		//计算运费合计
+		 getFreightToal()
+	}
+	
+	function getFreightToal(){
+		//计算运费合计
 		var packing_amount = $.trim($("#packing_amount_id").val());
 		var insured_cost = $.trim($("#insured_cost_id").val());
 		var freight = $.trim($("#freight_id").val());
@@ -1887,6 +1892,9 @@
 		$("#"+obj.id).val(number.toFixed(x));
 		if(obj.id=="actual_weight_id"){
 			getFeeByCondition();
+		}
+		if(obj.id=="freight_id"){
+			calculateFreight(obj);
 		}
 	}
 	
@@ -2330,6 +2338,7 @@
 			success : function(data) {
 				$("#freight_id").val(data.price);
 				$("#charge_weight_id").val(data.calWeight);
+				 getFreightToal();
 			}
 		});
 	}
