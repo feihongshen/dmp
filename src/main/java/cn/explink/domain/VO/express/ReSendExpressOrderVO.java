@@ -25,6 +25,9 @@ public class ReSendExpressOrderVO {
 	 * 创建时间
 	 */
 	private String createTime;
+	
+	//操作类型
+	private int operationType;
 
 	public Long getId() {
 		return this.id;
@@ -72,6 +75,14 @@ public class ReSendExpressOrderVO {
 
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
+	}
+
+	public int getOperationType() {
+		return operationType;
+	}
+
+	public void setOperationType(int operationType) {
+		this.operationType = operationType;
 	}
 
 }

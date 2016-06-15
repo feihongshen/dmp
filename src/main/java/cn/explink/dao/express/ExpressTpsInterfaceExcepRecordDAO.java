@@ -44,6 +44,8 @@ public class ExpressTpsInterfaceExcepRecordDAO {
 			vo.setErrMsg(rs.getString("err_msg"));
 			vo.setCreateTime(rs.getString("create_time") != null ? rs.getString("create_time").substring(0, 19) : "");
 			vo.setMethodParams(rs.getString("method_params"));
+			vo.setOperationType(rs.getInt("operation_type"));
+			
 			return vo;
 		}
 	}
@@ -236,5 +238,44 @@ public class ExpressTpsInterfaceExcepRecordDAO {
 		sql.append("select * from express_ops_tps_interface_excep where id in(" + ids + ")");
 		//查询页面数据
 		return this.jdbcTemplate.query(sql.toString(), new TpsInterfaceRowMap());
+	}
+	
+	/**
+	 * 获取需要重发的数据
+	 * @author leo01.liao
+	 * @param executeCount
+	 * @param maxCount
+	 * @return
+	 */
+	public List<ReSendExpressOrderVO> getTpsInterfaceInfoForResend(int executeCount, int maxCount) {
+		if(executeCount <= 0){
+			executeCount = 20;
+		}
+		
+		if(maxCount <= 0){
+			maxCount = 2000;
+		}
+		
+		StringBuffer sql = new StringBuffer();
+		sql.append("select * from express_ops_tps_interface_excep ");
+		sql.append(" where ope_flag != 1 and execute_count <= ").append(executeCount);
+		sql.append(" limit 0, ").append(maxCount);
+		
+		//查询页面数据
+		return this.jdbcTemplate.query(sql.toString(), new TpsInterfaceRowMap());
+	}
+	
+	/**
+	 * 记录重发结果信息
+	 * @param id
+	 * @param errMsg
+	 */
+	public void updateTpsInterfaceForResend(long id, String errMsg, int opeFlag) {
+		StringBuffer sql = new StringBuffer();
+		sql.append(" update express_ops_tps_interface_excep ");
+		sql.append(" set err_msg=?, update_time=?, ope_flag=?, execute_count=execute_count+1 ");
+		sql.append(" where id=? ");
+		
+		this.jdbcTemplate.update(sql.toString(), errMsg, new Timestamp(System.currentTimeMillis()), opeFlag, id);
 	}
 }
