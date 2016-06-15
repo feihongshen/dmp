@@ -98,7 +98,7 @@ public class SystemInstallController {
 			return "{\"errorCode\":1,\"error\":\"该设置不存在\"}";
 		} else {
 			SystemInstall cs2 = systemInstallDAO.getSystemInstall(name);
-			if (cs2 != null) {
+			if (cs2 != null && cs2.getId() != id) {
 				return "{\"errorCode\":1,\"error\":\"该变量已存在\"}";
 			}
 			systemInstallService.saveSystemInstall(chinesename, name, value, id);
