@@ -55,7 +55,7 @@ public class TuihuoRecordDAO {
 		jdbcTemplate.update(new PreparedStatementCreator() {
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
-				ps = con.prepareStatement("insert into ops_tuihuorecord(cwb,branchid,tuihuobranchid,tuihuochuzhantime,customerid,cwbordertypeid,userid) values(?,?,?,?,?,?,?)", new String[] { "id" });
+				ps = con.prepareStatement("insert into ops_tuihuorecord(cwb,branchid,tuihuobranchid,tuihuochuzhantime,customerid,cwbordertypeid,userid,tuihuozhanrukutime) values(?,?,?,?,?,?,?,?)", new String[] { "id" });
 				ps.setString(1, tr.getCwb());
 				ps.setLong(2, tr.getBranchid());
 				ps.setLong(3, tr.getTuihuobranchid());
@@ -63,6 +63,7 @@ public class TuihuoRecordDAO {
 				ps.setLong(5, tr.getCustomerid());
 				ps.setLong(6, tr.getCwbordertypeid());
 				ps.setLong(7, tr.getUserid());
+				ps.setString(8, tr.getTuihuozhanrukutime());
 				return ps;
 			}
 		}, key);

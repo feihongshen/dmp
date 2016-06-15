@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OrderbackRecord;
-import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 import cn.explink.util.TuiGongHuoShangPage;
 
@@ -37,7 +36,7 @@ public class OrderbackRecordDao {
 	}
 
 	private final class RecordMapper implements RowMapper<JSONObject> {
-		
+
 		@Override
 		public JSONObject mapRow(ResultSet rs, int rowNum) throws SQLException {
 			JSONObject obj = new JSONObject();
@@ -52,10 +51,10 @@ public class OrderbackRecordDao {
 			return obj;
 		}
 	}
-	
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-	
+
 	/**
 	 * 创建一条操作记录
 	 *
@@ -95,12 +94,12 @@ public class OrderbackRecordDao {
 		}
 		sql += w;
 		if (page!=-9) {
-			 sql+=" limit " + (page - 1) * TuiGongHuoShangPage.ONE_PAGE_NUMBER + " ," + TuiGongHuoShangPage.ONE_PAGE_NUMBER;
+			 sql+=" limit " + ((page - 1) * TuiGongHuoShangPage.ONE_PAGE_NUMBER) + " ," + TuiGongHuoShangPage.ONE_PAGE_NUMBER;
 
 		}
-		return jdbcTemplate.query(sql, new OrderbackRecordMapper());
+		return this.jdbcTemplate.query(sql, new OrderbackRecordMapper());
 	}
-	
+
 	public long getCwbOrdersByCwbsCount(String cwb, int cwbtypeid,long customerid, long shenhestate, String begindate, String enddate) {
 		String sql = " select count(1) from express_ops_orderback_record where 1=1";
 		if(!"".equals(cwb)){
@@ -123,13 +122,13 @@ public class OrderbackRecordDao {
 			w.append(" and createtime <= '" + enddate + "' ");
 		}
 			sql += w;
-		return jdbcTemplate.queryForLong(sql);
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 	public void updateShenheState(int shenhestate,String cwb,String auditname,String audittime) {
 		String sql = "update express_ops_orderback_record set shenhestate=?,auditname=?,audittime=? where cwb=? order by id desc limit 1";
-		jdbcTemplate.update(sql,shenhestate,auditname,audittime,cwb);
+		this.jdbcTemplate.update(sql,shenhestate,auditname,audittime,cwb);
 	}
-	
+
 	public OrderbackRecord getOBRecord(String cwb){
 		try{
 			String sql = "select * from express_ops_orderback_record where cwb=? and shenhestate!=0 order by id desc limit 1";
@@ -139,7 +138,7 @@ public class OrderbackRecordDao {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 供货商拒收返库校验条件
 	 * @param cwb
@@ -153,5 +152,16 @@ public class OrderbackRecordDao {
 //			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * 按照订单号cwb将express_ops_orderback_record表中的记录删掉
+	 *
+	 * @author 刘武强
+	 * @param cwb
+	 */
+	public void deleteByCwb(String cwb) {
+		String sql = "delete  from express_ops_orderback_record where cwb=?";
+		this.jdbcTemplate.update(sql, cwb);
 	}
 }
