@@ -22,7 +22,7 @@ public class ExplinkUserDetail implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return user.getPassword();
+		return user.getWebPassword();
 	}
 
 	@Override

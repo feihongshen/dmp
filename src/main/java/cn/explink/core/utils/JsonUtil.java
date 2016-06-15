@@ -4,6 +4,8 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
+import cn.explink.pos.tools.JacksonMapper;
+
 /**
  * jason 工具类
  * @author gaoll
@@ -11,7 +13,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
  */
 public class JsonUtil {
 
-	private static ObjectMapper objectMapper = new ObjectMapper();
+	private static ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	static {
 		objectMapper.getSerializationConfig().withSerializationInclusion(Inclusion.NON_EMPTY);

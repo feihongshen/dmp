@@ -237,6 +237,8 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	private long oxodeliverystate; //oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
 	private int branchfeebillexportflag;//加盟商派费账单导出标志
+	
+	private long credateTimestamp; //导入时间的时间戳
 
 	//以下是快递业务新增字段
 
@@ -1883,4 +1885,11 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 		this.completedatetime = completedatetime;
 	}
 
+	public long getCredateTimestamp() {
+		return credateTimestamp;
+	}
+
+	public void setCredateTimestamp(long credateTimestamp) {
+		this.credateTimestamp = credateTimestamp;
+	}
 }

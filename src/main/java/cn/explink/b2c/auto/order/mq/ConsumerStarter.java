@@ -111,9 +111,14 @@ public class ConsumerStarter implements ApplicationListener<ContextRefreshedEven
 			 */
 
 			for(ConsumerTemplate template: callBackList){
-				ISubscriber subscriber=client.subscribe(template.getQueueName(), SubQoS.build().prefetchCount(template.getFetchCount()).autoCommit(template.getAutoCommit()), template.getCallBack());
-				subscriberMap.put(template.getQueueKey(), subscriber);
-				logger.info("MQ subscriber started sucessfully! queueName="+template.getQueueName()+",prefetchCount="+template.getFetchCount()+",autoCommit="+template.getAutoCommit());
+				try {
+					ISubscriber subscriber = client.subscribe(template.getQueueName(), SubQoS.build().prefetchCount(template.getFetchCount()).autoCommit(template.getAutoCommit()),
+							template.getCallBack());
+					subscriberMap.put(template.getQueueKey(), subscriber);
+					logger.info("MQ subscriber started sucessfully! queueName=" + template.getQueueName() + ",prefetchCount=" + template.getFetchCount() + ",autoCommit=" + template.getAutoCommit());
+				} catch (Exception e) {
+					logger.info("rabbit mq start error:", e);
+				}
 			}
 
 			logger.info("Completed to connect to rabbit mq.");

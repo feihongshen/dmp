@@ -27,6 +27,7 @@ import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.domain.express.ExpressTpsInterfaceExcepRecord;
 import cn.explink.enumutil.YesOrNoStateEnum;
 import cn.explink.enumutil.express.ExpressOperationEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.Tools;
 import cn.explink.util.express.ExpressTpsInterfaceException;
 
@@ -65,7 +66,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	@Autowired
 	private GeneralDAO generalDAO;
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 	ObjectReader expressOperationInfoReader = this.objectMapper.reader(ExpressOperationInfo.class);
 	
 	@Autowired

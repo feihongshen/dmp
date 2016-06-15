@@ -49,7 +49,7 @@ public class UserDAO {
 			user.setUserid(rs.getInt("userid"));
 			user.setUsername(rs.getString("username"));
 			user.setRealname(StringUtil.nullConvertToEmptyString(rs.getString("realname")));
-			user.setPassword(rs.getString("password"));
+			user.setPassword(rs.getString("password"));//PDA登录密码
 			user.setBranchid(rs.getLong("branchid"));
 			user.setUsercustomerid(rs.getLong("usercustomerid"));
 			user.setIdcardno(StringUtil.nullConvertToEmptyString(rs.getString("idcardno")));
@@ -84,6 +84,7 @@ public class UserDAO {
 			user.setLateradvance(rs.getBigDecimal("lateradvance"));// 后期预付款
 			user.setBasicfee(rs.getBigDecimal("basicfee"));// 基本派费
 			user.setAreafee(rs.getBigDecimal("areafee"));// 区域派费
+			user.setWebPassword(rs.getString("webPassword"));//网页登录密码
 			return user;
 		}
 
@@ -273,13 +274,13 @@ public class UserDAO {
 	public void creUser(final User user) {		
 		KeyHolder key = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator() {
-			String sql = "insert into express_set_user (username,password,realname,idcardno,employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee)  values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = "insert into express_set_user (username,password,realname,idcardno,employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee,webPassword)  values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement(sql, new String[] { "userid"});
 				ps.setString(1, user.getUsername());
-				ps.setString(2, user.getPassword());
+				ps.setString(2, user.getPassword());//PDA登录密码
 				ps.setString(3, user.getRealname());
 				ps.setString(4, user.getIdcardno());
 				ps.setInt(5, user.getEmployeestatus());
@@ -309,17 +310,18 @@ public class UserDAO {
 				ps.setBigDecimal(29, user.getLateradvance());
 				ps.setBigDecimal(30, user.getBasicfee());// 基本派费
 				ps.setBigDecimal(31, user.getAreafee());// 区域派费
+				ps.setString(32, user.getWebPassword());//网页登录密码
 				return ps;
 			}
 		}, key);		
 		user.setUserid(key.getKey().longValue());
 		
 //		this.jdbcTemplate
-//				.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary," + "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment," + "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+//				.update("insert into express_set_user (username,password,realname,idcardno," + "employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary," + "usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment," + "fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee,webPassword) " + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 //					@Override
 //					public void setValues(PreparedStatement ps) throws SQLException {
 //						ps.setString(1, user.getUsername());
-//						ps.setString(2, user.getPassword());
+//						ps.setString(2, user.getPassword());//PDA登录密码
 //						ps.setString(3, user.getRealname());
 //						ps.setString(4, user.getIdcardno());
 //						ps.setInt(5, user.getEmployeestatus());
@@ -349,6 +351,7 @@ public class UserDAO {
 //						ps.setBigDecimal(29, user.getLateradvance());
 //						ps.setBigDecimal(30, user.getBasicfee());// 基本派费
 //						ps.setBigDecimal(31, user.getAreafee());// 区域派费
+//						ps.setString(32, user.getWebPassword());//网页登录密码
 //					}
 //
 //				});
@@ -358,11 +361,11 @@ public class UserDAO {
 	@CacheEvict(value = "userCache", key = "#user.userid")
 	public void saveUser(final User user) {
 		this.jdbcTemplate
-				.update("update express_set_user set username=?,password=?,realname=?,idcardno=?," + "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?," + "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?," + "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?," + "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?" + " where userid=? and userDeleteFlag=1 ", new PreparedStatementSetter() {
+				.update("update express_set_user set username=?,password=?,realname=?,idcardno=?," + "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?," + "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?," + "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?," + "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?,webPassword=?" + " where userid=? and userDeleteFlag=1 ", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, user.getUsername());
-						ps.setString(2, user.getPassword());
+						ps.setString(2, user.getPassword());//PDA登录密码
 						ps.setString(3, user.getRealname());
 						ps.setString(4, user.getIdcardno());
 						ps.setInt(5, user.getEmployeestatus());
@@ -392,7 +395,8 @@ public class UserDAO {
 						ps.setBigDecimal(29, user.getLateradvance());
 						ps.setBigDecimal(30, user.getBasicfee());// 基本派费
 						ps.setBigDecimal(31, user.getAreafee());// 区域派费
-						ps.setLong(32, user.getUserid());
+						ps.setString(32, user.getWebPassword());//网页登录密码
+						ps.setLong(33, user.getUserid());
 					}
 
 				});
@@ -1160,4 +1164,16 @@ public class UserDAO {
 		return userList;
 	}
 	
+	public Map<Long, String> getAllUserRealNameMap() {
+		String sql = "select userid, realname from express_set_user ";
+		final Map<Long, String> deliverMap = new HashMap<Long, String>();
+		this.jdbcTemplate.query(sql, new RowCallbackHandler() {
+
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				deliverMap.put(rs.getLong("userid"), rs.getString("realname"));
+			}
+		});
+		return deliverMap;
+	}
 }

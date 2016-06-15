@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -218,10 +219,6 @@ public class ReserveOrderController extends ExpressCommonController {
 		if(StringUtils.isNotBlank(cnorMobile)) {
 			omReserveOrderModel.setCnorMobile(StringUtils.strip(cnorMobile));
 		}
-		if(StringUtils.isNotBlank(acceptOrg)) {
-//			omReserveOrderModel.setAcceptOrg(acceptOrg);
-			omReserveOrderModel.setCarrierSiteCode(acceptOrg);
-		}
 		if(courier != null) {
 			User user = this.userService.getUserByUserid(courier);
 			omReserveOrderModel.setCourier(user.getUsername());
@@ -237,11 +234,7 @@ public class ReserveOrderController extends ExpressCommonController {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toString();
 				}
 			} else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-//				if(this.isWarehouseMaster()) {
-//					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
-//				} else {
-					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
-//				}
+				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
 			} else {
 				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toString();
 			}
@@ -254,14 +247,11 @@ public class ReserveOrderController extends ExpressCommonController {
         if (this.isWarehouseMaster() || this.isCourier()) {
             //站长或小件员只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-//            omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
             omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
         } else if(this.isCustomService() || this.isAdmin()) {
-			if(StringUtils.isNotBlank(acceptOrg)) {
-//				omReserveOrderModel.setAcceptOrg(acceptOrg);
-                omReserveOrderModel.setCarrierSiteCode(carrierCode);
-			}
-		} else {
+        	// 管理员和客服可选择站点
+        	omReserveOrderModel.setCarrierSiteCode(acceptOrg);
+        } else {
 			isQuery = false;
 		}
 		ReserveOrderPageVo reserveOrderPageVo;
@@ -288,6 +278,8 @@ public class ReserveOrderController extends ExpressCommonController {
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
 			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
 			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList) throws Exception {
+        final boolean isFromQueryPage = StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue());
+        final boolean isFromHandleWarehousePage = StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue());
 		// 填充数据
 		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
 		if(StringUtils.isNotBlank(reserveOrderNo)) {
@@ -310,36 +302,31 @@ public class ReserveOrderController extends ExpressCommonController {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
 		} else {
 			String reserveOrderStatusStr = null;
-			if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
+			if(isFromQueryPage) {
 				if(this.isWarehouseMaster()) {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString();
 				} else {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_CUSTOM_SERVICE.toString();
 				}
 			} else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-//				if(this.isWarehouseMaster()) {
-//					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_WAREHOUSE_MASTER.toString();
-//				} else {
-					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
-//				}
+				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.HANDLE_BY_CUSTOM_SERVICE.toString();
 			} else {
 				reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.WAREHOUSE_HANDLE.toString();
 			}
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusStr);
 		}
 		//默认省编号
-		String carrierCode = ResourceBundleUtil.expressCarrierCode;
-		omReserveOrderModel.setCarrierCode(carrierCode);
+        String carrierCode = ResourceBundleUtil.expressCarrierCode;
+        omReserveOrderModel.setCarrierCode(carrierCode);
 		boolean isQuery = true;
 		if (this.isWarehouseMaster() || this.isCourier()) {
 			//站长只能看到本站点的
 			Branch branch = this.branchService.getBranchByBranchid(this.getSessionUser().getBranchid());
-			omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+            omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
         } else if (this.isCustomService() || this.isAdmin()) {
             if (StringUtils.isNotBlank(acceptOrg)) {
-                omReserveOrderModel.setAcceptOrg(acceptOrg);
                 Branch branch = this.branchService.getBranchByBranchid(Integer.parseInt(acceptOrg));
-                omReserveOrderModel.setAcceptOrg(branch.getTpsbranchcode());
+                omReserveOrderModel.setCarrierSiteCode(branch.getTpsbranchcode());
             }
         } else {
             isQuery = false;
@@ -352,9 +339,31 @@ public class ReserveOrderController extends ExpressCommonController {
 		}
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		String fileName = "快递预约单_" + df.format(new Date()) + ".xlsx"; // 文件名
-		final String[] cloumnName = {"预约单号", "下单时间", "寄件人", "手机", "固话", "寄件地址", "预约上门时间", "预约单状态", "原因", "运单号", "站点", "快递员", "备注"};
-		ExcelUtils excelUtil = new ExcelUtils() {
+		String fileName = "ReserveOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
+//        String[] cloumnName = null;
+        final List<String> columnNames = new ArrayList<String>();
+        columnNames.add("预约单号");
+        columnNames.add("下单时间");
+        columnNames.add("寄件人");
+        columnNames.add("寄件公司");
+        columnNames.add("手机");
+        columnNames.add("固话");
+        columnNames.add("寄件地址");
+        columnNames.add("预约上门时间");
+        columnNames.add("寄件人备注");
+        columnNames.add("预约单状态");
+        columnNames.add("原因");
+        if (isFromQueryPage) {
+            columnNames.add("运单号");
+        }
+        if (!isFromHandleWarehousePage) {
+            columnNames.add("站点");
+        }
+        columnNames.add("快递员");
+
+
+
+        ExcelUtils excelUtil = new ExcelUtils() {
 
 			@Override
 			public void fillData(Sheet sheet, CellStyle style) {
@@ -363,7 +372,7 @@ public class ReserveOrderController extends ExpressCommonController {
 				font.setFontHeightInPoints((short) 10);
 				style.setFont(font);
 				//设置列的默认值
-				for(int i = 0; i < cloumnName.length; i++) {
+				for(int i = 0; i < columnNames.size(); i++) {
 					sheet.setColumnWidth(i, 4000);
 				}
 				for (int i = 0; i < reserveOrderList.size(); i++) {
@@ -385,6 +394,10 @@ public class ReserveOrderController extends ExpressCommonController {
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCustName());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
 					cell.setCellValue(vo.getCnorMobile());
 					
 					cell = row.createCell(colIndex++);
@@ -393,11 +406,15 @@ public class ReserveOrderController extends ExpressCommonController {
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
-					cell.setCellValue(vo.getCnorAddr());
+					cell.setCellValue(vo.getCnorDetailAddr());
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getRequireTimeStr());
+					
+					cell = row.createCell(colIndex++);
+					cell.setCellStyle(style);
+					cell.setCellValue(vo.getCnorRemark());
 					
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
@@ -406,26 +423,25 @@ public class ReserveOrderController extends ExpressCommonController {
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getReason());
-					
-					cell = row.createCell(colIndex++);
+                    if (isFromQueryPage) {
+                        cell = row.createCell(colIndex++);
+                        cell.setCellStyle(style);
+                        cell.setCellValue(vo.getTransportNo());
+                    }
+
+                    if (!isFromHandleWarehousePage) {
+                        cell = row.createCell(colIndex++);
+                        cell.setCellStyle(style);
+                        cell.setCellValue(vo.getAcceptOrgName());
+                    }
+
+                    cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
-					cell.setCellValue(vo.getTransportNo());
-					
-					cell = row.createCell(colIndex++);
-					cell.setCellStyle(style);
-					cell.setCellValue(vo.getAcceptOrgName());
-					
-					cell = row.createCell(colIndex++);
-					cell.setCellStyle(style);
-					cell.setCellValue(vo.getCnorName());
-					
-					cell = row.createCell(colIndex++);
-					cell.setCellStyle(style);
-					cell.setCellValue(vo.getCnorRemark());
+					cell.setCellValue(vo.getCourierName());
 				}
 			}
 		};
-		excelUtil.excel(response, cloumnName, sheetName, fileName);
+		excelUtil.excel(response, columnNames.toArray(new String[columnNames.size()]), sheetName, fileName);
 	}
 
     /**
@@ -511,6 +527,12 @@ public class ReserveOrderController extends ExpressCommonController {
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
+        List<String> errMsg = new ArrayList<String>();
+
+        if (!validateCloseReserveOrder(reserveOrderVos, errMsg)) {
+            buildErrorMsg(obj, errMsg);
+            return obj;
+        }
         if (reserveOrderVos.length > 0) {
 
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
@@ -522,10 +544,9 @@ public class ReserveOrderController extends ExpressCommonController {
                 omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
 //                omReserveOrderModel.setReason(reserveOrderVo.getReason());
                 //关闭原因写到备注
-                omReserveOrderModel.setRemark(reserveOrderVo.getReason());
+                omReserveOrderModel.setCnorRemark(reserveOrderVo.getReason());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
-            List<String> errMsg = new ArrayList<String>();
             reserveOrderService.closeReserveOrder(omReserveOrderModels, errMsg);
             buildErrorMsg(obj, errMsg);
         }
@@ -548,29 +569,77 @@ public class ReserveOrderController extends ExpressCommonController {
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
-        if (reserveOrderVos.length > 0) {
-            int operateType = reserveOrderVos[0].getOperateType();
-            logger.info("{} operateType: {}", logPrefix, operateType);
+        List<String> errMsg = new ArrayList<String>();
 
-            omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
-            for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
-                logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
-
-                OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
-                omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
-                omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
-//                omReserveOrderModel.setReason(reserveOrderVo.getReason());
-                //关闭原因写到备注
-                omReserveOrderModel.setRemark(reserveOrderVo.getReason());
-                omReserveOrderModels.add(omReserveOrderModel);
-            }
-
-            List<String> errMsg = new ArrayList<String>();
-
-            reserveOrderService.returnToCentral(omReserveOrderModels, operateType, errMsg);
+        if (!validateReturnToCentral(reserveOrderVos, errMsg)) {
             buildErrorMsg(obj, errMsg);
+            return obj;
         }
+
+        int operateType = reserveOrderVos[0].getOperateType();
+        logger.info("{} operateType: {}", logPrefix, operateType);
+
+        omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
+        for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+            logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
+
+            OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+            omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
+            omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
+//                omReserveOrderModel.setReason(reserveOrderVo.getReason());
+            //关闭原因写到备注
+            omReserveOrderModel.setCnorRemark(reserveOrderVo.getReason());
+            omReserveOrderModels.add(omReserveOrderModel);
+        }
+
+        reserveOrderService.returnToCentral(omReserveOrderModels, operateType, errMsg);
+        buildErrorMsg(obj, errMsg);
         return obj;
+    }
+
+    private boolean validateReturnToCentral(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
+        boolean isPass = true;
+
+        if (reserveOrderVos == null || reserveOrderVos.length < 1) {
+            errMsg.add("请选择至少一条预约单！");
+            isPass = false;
+        } else {
+            for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                if (ReserveOrderService.PJReserverOrderOperationCode.ShengGongSiChaoQu.getValue() == reserveOrderVo.getOperateType()
+                        && ReserveOrderStatusEnum.HaveStationOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
+                        && ReserveOrderStatusEnum.HadAllocationPro.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
+                    errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 只有站点超区和已分配省公司状态, 才能退回总部!");
+                    isPass = false;
+                    break;
+                } else if (ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue() == reserveOrderVo.getOperateType()
+                        && ReserveOrderStatusEnum.HaveReciveOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
+                        && ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
+                    errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 只有已分配站点和揽件超区,才能退回省公司!");
+                    isPass = false;
+                    break;
+                }
+            }
+        }
+        return isPass;
+    }
+
+    private boolean validateCloseReserveOrder(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
+        boolean isPass = true;
+
+        if (reserveOrderVos == null || reserveOrderVos.length < 1) {
+            errMsg.add("请选择至少一条预约单！");
+            isPass = false;
+        } else {
+            for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                if (ReserveOrderStatusEnum.HaveStationOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
+                        && ReserveOrderStatusEnum.HadAllocationPro.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
+                    errMsg.add("{" + reserveOrderVo.getReserveOrderNo() + "} 只有站点超区和已分配省公司状态, 才能关闭!");
+                    isPass = false;
+                    break;
+                }
+            }
+        }
+        return isPass;
     }
 
     /**
@@ -588,91 +657,117 @@ public class ReserveOrderController extends ExpressCommonController {
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
-        if (reserveOrderVos.length > 0) {
 
-            String selectedBranch = reserveOrderVos[0].getAcceptOrg();
-            String selectedCourier = reserveOrderVos[0].getCourier();
-
-            String selectedTpsbranchCode = null;
-            //选择站点默认值是登录人员自己的站点
-            Long distributeBranch = this.getSessionUser().getBranchid();
-
-            String selectedCourierName = null;
-
-            String courierLoginName = null;
-
-            if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-
-                if (StringUtils.isNotBlank(selectedBranch) && NumberUtils.isNumber(selectedBranch)) {
-                    logger.info("{} 省点分配站点和快递员", logPrefix);
-                    distributeBranch = Long.parseLong(selectedBranch);
-                    //找TPS CODE
-                    List<Branch> branches = reserveOrderService.getBranches();
-                    for (int i = 0; i < branches.size(); i++) {
-                        Branch branch = branches.get(i);
-                        if (branch.getBranchid() == distributeBranch) {
-                            selectedTpsbranchCode = branch.getTpsbranchcode();
-                            logger.info("{} selectedTpsbranchCode: {}", logPrefix, selectedTpsbranchCode);
-                            break;
-                        }
-                    }
-                    if (selectedTpsbranchCode == null) {
-                        obj.put("errorMsg", "站点TPSBranchCode不存在");
-                        logger.error("{} 站点TPSBranchCode不存在", logPrefix);
-                        return obj;
-                    }
-                } else {
-                    obj.put("errorMsg", "请选择站点！");
-                    logger.error("{} 没有选择站点", logPrefix);
-                    return obj;
-                }
-            }else if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())  ) {
-                if( StringUtils.isNotBlank(selectedCourier) && NumberUtils.isNumber(selectedCourier)){
-                    Long distributeCourier = Long.parseLong(selectedCourier);
-                    //找快递员名字
-                    List<User> courierList = this.reserveOrderService.getCourierByBranch(distributeBranch.intValue());
-                    for (int i = 0; i < courierList.size(); i++) {
-                        User courier = courierList.get(i);
-                        if (courier.getUserid() == distributeCourier) {
-                            selectedCourierName = courier.getRealname();
-                            courierLoginName = courier.getUsername();
-                            logger.info("{} selectedCourierName: {}", logPrefix, selectedCourierName);
-                        }
-                    }
-                    if (selectedCourierName == null) {
-                        obj.put("errorMsg", "快递员不存在");
-                        logger.error("{} 快递员不存在", logPrefix);
-                        return obj;
-                    }
-                }else {
-                    obj.put("errorMsg", "请选择小件员！");
-                    logger.error("{} 没有选择小件员", logPrefix);
-                    return obj;
-                }
-            }
-
-            omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
-            for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
-                logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
-                OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
-                omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
-                omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
-                if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
-                    omReserveOrderModel.setAcceptOrg(selectedTpsbranchCode);
-                    omReserveOrderModel.setReserveOrderStatus(Integer.valueOf(ReserveOrderService.PJReserverOrderOperationCode.YiFenPeiZhanDian.getValue()).byteValue());
-                }else if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())){
-                    omReserveOrderModel.setCourier(courierLoginName);
-                    omReserveOrderModel.setCourierName(selectedCourierName);
-                    omReserveOrderModel.setReserveOrderStatus(Integer.valueOf(ReserveOrderService.PJReserverOrderOperationCode.YiLanJianFenPei.getValue()).byteValue());
-                }
-                omReserveOrderModels.add(omReserveOrderModel);
-            }
-
-            List<String> errMsg = new ArrayList<String>();
-            reserveOrderService.distributeBranch(omReserveOrderModels, errMsg);
-            buildErrorMsg(obj,errMsg);
+        List<String> errMsg = new ArrayList<String>();
+        if (!validateDistributeBranch(reserveOrderVos, queryType, errMsg)) {
+            buildErrorMsg(obj, errMsg);
+            return obj;
         }
+
+        String selectedBranch = reserveOrderVos[0].getAcceptOrg();
+        String selectedCourier = reserveOrderVos[0].getCourier();
+
+        String selectedTpsbranchCode = null;
+        //选择站点默认值是登录人员自己的站点
+        Long distributeBranch = this.getSessionUser().getBranchid();
+
+        String selectedCourierName = null;
+
+        String courierLoginName = null;
+
+        if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
+
+            if (StringUtils.isNotBlank(selectedBranch) && NumberUtils.isNumber(selectedBranch)) {
+                logger.info("{} 省点分配站点和快递员", logPrefix);
+                distributeBranch = Long.parseLong(selectedBranch);
+                //找TPS CODE
+                List<Branch> branches = reserveOrderService.getBranches();
+                for (int i = 0; i < branches.size(); i++) {
+                    Branch branch = branches.get(i);
+                    if (branch.getBranchid() == distributeBranch) {
+                        selectedTpsbranchCode = branch.getTpsbranchcode();
+                        logger.info("{} selectedTpsbranchCode: {}", logPrefix, selectedTpsbranchCode);
+                        break;
+                    }
+                }
+                if (selectedTpsbranchCode == null) {
+                    obj.put("errorMsg", "站点TPSBranchCode不存在");
+                    logger.error("{} 站点TPSBranchCode不存在", logPrefix);
+                    return obj;
+                }
+            } else {
+                obj.put("errorMsg", "请选择站点！");
+                logger.error("{} 没有选择站点", logPrefix);
+                return obj;
+            }
+        } else if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())) {
+            if (StringUtils.isNotBlank(selectedCourier) && NumberUtils.isNumber(selectedCourier)) {
+                Long distributeCourier = Long.parseLong(selectedCourier);
+                //找快递员名字
+                List<User> courierList = this.reserveOrderService.getCourierByBranch(distributeBranch.intValue());
+                for (int i = 0; i < courierList.size(); i++) {
+                    User courier = courierList.get(i);
+                    if (courier.getUserid() == distributeCourier) {
+                        selectedCourierName = courier.getRealname();
+                        courierLoginName = courier.getUsername();
+                        logger.info("{} selectedCourierName: {}", logPrefix, selectedCourierName);
+                    }
+                }
+                if (selectedCourierName == null) {
+                    obj.put("errorMsg", "快递员不存在");
+                    logger.error("{} 快递员不存在", logPrefix);
+                    return obj;
+                }
+            } else {
+                obj.put("errorMsg", "请选择小件员！");
+                logger.error("{} 没有选择小件员", logPrefix);
+                return obj;
+            }
+        }
+
+        omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
+        for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+            logger.info("{} reserveOrder: {}", logPrefix, JsonUtil.translateToJson(reserveOrderVo));
+            OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
+            omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
+            omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
+            if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
+                omReserveOrderModel.setAcceptOrg(selectedTpsbranchCode);
+                omReserveOrderModel.setReserveOrderStatus(Integer.valueOf(ReserveOrderService.PJReserverOrderOperationCode.YiFenPeiZhanDian.getValue()).byteValue());
+            } else if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue())) {
+                omReserveOrderModel.setCourier(courierLoginName);
+                omReserveOrderModel.setCourierName(selectedCourierName);
+                omReserveOrderModel.setReserveOrderStatus(Integer.valueOf(ReserveOrderService.PJReserverOrderOperationCode.YiLanJianFenPei.getValue()).byteValue());
+            }
+            omReserveOrderModels.add(omReserveOrderModel);
+        }
+
+        reserveOrderService.distributeBranch(omReserveOrderModels, errMsg);
+        buildErrorMsg(obj, errMsg);
         return obj;
+    }
+
+    private boolean validateDistributeBranch(ReserveOrderVo[] reserveOrderVos, String queryType, List<String> errMsg) {
+        boolean isPass = true;
+
+        if (reserveOrderVos == null || reserveOrderVos.length < 1) {
+            errMsg.add("请选择至少一条预约单！");
+            isPass = false;
+        } else {
+            if (StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.HANDLE.getValue())) {
+                for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                    if (!(
+                            ReserveOrderStatusEnum.HadAllocationPro.getIndex().byteValue() == reserveOrderVo.getReserveOrderStatus()
+                                    ||  ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue() == reserveOrderVo.getReserveOrderStatus()
+                                    ||  ReserveOrderStatusEnum.HaveStationOutZone.getIndex().byteValue() == reserveOrderVo.getReserveOrderStatus()
+                        )){
+                        errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 只允许对状态为：已分配省公司、已分配站点、站点超区的预约单进行分配站点操作！");
+                        isPass = false;
+                    }
+                }
+            }
+        }
+        return isPass;
     }
 
 
@@ -707,7 +802,16 @@ public class ReserveOrderController extends ExpressCommonController {
 
         String displayValue = null;
         try {
-            List<SbCodeDefModel> reasons = sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON);
+            List<SbCodeDefModel> reasons = null ;
+            if (ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue() == operateType) {
+                reasons = sbCodeTypeService.findCodeDefList(RESERVE_EXCEPTION_REASON);
+            } else if (ReserveOrderService.PJReserverOrderOperationCode.FanKuiJiLiu.getValue() == operateType) {
+                reasons = sbCodeTypeService.findCodeDefList(RESERVE_RETENTION_REASON);
+            } else if (ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBaiTuiHui.getValue() == operateType) {
+            	reasons = new ArrayList<SbCodeDefModel>();
+            } else {
+                throw new OspException("没有找到原因","没有找到原因");
+            }
             for (int i = 0; i < reasons.size(); i++) {
                 SbCodeDefModel reason = reasons.get(i);
                 if (reason.getCodeValue().equals(reason4Feedback)) {
@@ -726,7 +830,7 @@ public class ReserveOrderController extends ExpressCommonController {
             omReserveOrderModel.setReserveOrderNo(reserveOrderVo.getReserveOrderNo());
             omReserveOrderModel.setRecordVersion(reserveOrderVo.getRecordVersion());
             omReserveOrderModel.setReason(displayValue);
-            omReserveOrderModel.setRemark(reserveOrderVo.getCnorRemark());
+            omReserveOrderModel.setCnorRemark(reserveOrderVo.getCnorRemark());
             omReserveOrderModels.add(omReserveOrderModel);
         }
 
@@ -734,26 +838,6 @@ public class ReserveOrderController extends ExpressCommonController {
         buildErrorMsg(obj, errMsg);
         return obj;
     }
-
-//    private boolean validateFeedback(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
-//
-//        if(reserveOrderVos.length < 1){
-//            errMsg.add("请选择至少一条预约单");
-//            return false;
-//        }
-//
-//        String reason4Feedback = reserveOrderVos[0].getReason();
-//        int operateType = reserveOrderVos[0].getOperateType();
-//
-//        if (operateType == ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue() ||
-//                operateType == ReserveOrderService.PJReserverOrderOperationCode.LanJianShiBai.getValue()) {
-//            if (StringUtils.isBlank(reason4Feedback)) {
-//                errMsg.add("原因为必填");
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
 
     /**
      * 修改预约单
@@ -767,7 +851,7 @@ public class ReserveOrderController extends ExpressCommonController {
     	
     	ExplinkResponse explinkResponse = new ExplinkResponse();
     	
-    	logger.info("{}vo:{}", logPrefix, JsonUtil.translateToJson(vo));
+//    	logger.info("{}vo:{}", logPrefix, JsonUtil.translateToJson(vo));
     	try {
     		vo.validate();
     	} catch (IllegalStateException e) {
@@ -776,7 +860,7 @@ public class ReserveOrderController extends ExpressCommonController {
     		logger.info("{}explinkResponse:{}", logPrefix, JsonUtil.translateToJson(explinkResponse));
     		return JsonUtil.translateToJson(explinkResponse);
     	}
-    	logger.info("{}vo->after validate:{}", logPrefix, JsonUtil.translateToJson(vo));
+//    	logger.info("{}vo->after validate:{}", logPrefix, JsonUtil.translateToJson(vo));
     	
     	try {
     		//修改预约单

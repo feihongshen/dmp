@@ -52,15 +52,9 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		username = username.trim();
 
 		List<User> users = userDAO.getUsersByUsername(username);
-		if (users.size() == 0) {
-			throw new AuthenticationServiceException("沒有找到用戶名" + username);
-		}
-		if (users.size() > 1) {
-			throw new AuthenticationServiceException("违反了用户名唯一约束");
-		}
 
-		if (!users.get(0).getPassword().equals(password)) {
-			throw new AuthenticationServiceException("用户名或者密码错误！");
+		if (users.size() == 0 || users.size() > 1 || !users.get(0).getWebPassword().equals(password)) {
+			throw new AuthenticationServiceException("用户名或者密码错误");
 		}
 
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
@@ -103,16 +97,11 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 	 * 
 	 */
 	protected void checkValidateCode(HttpServletRequest request) {
-		// TODO added by wangwei, 用于DEBUG验证码，以后会撤销修改, start
-		System.out.println("---------- check ValidateCode, start ----------");
-		System.out.println("(new Date()).toString() = " + (new Date()).toString());
-		System.out.println("request.getSession().getId() = " + request.getSession().getId());
-		System.out.println("request.getSession().getAttribute(\"validateCode\") = " + request.getSession().getAttribute("validateCode"));
-		System.out.println("request.getParameter(\"validateCode\") = " + request.getParameter("validateCode"));
-		System.out.println("---------- check ValidateCode, end ----------");
-		// TODO added by wangwei, 用于DEBUG验证码，以后会撤销修改, end
 		String sessionValidateCode = obtainSessionValidateCode(request);
 		String validateCodeParameter = obtainValidateCodeParameter(request);
+		if(StringUtils.isEmpty(sessionValidateCode)) {
+			throw new AuthenticationServiceException("验证码已过期");
+		}
 		if (StringUtils.isEmpty(validateCodeParameter) || !sessionValidateCode.equalsIgnoreCase(validateCodeParameter)) {// &&!"TTTT".equals(validateCodeParameter)
 			throw new AuthenticationServiceException("验证码不正确");
 		}

@@ -8,10 +8,11 @@
 %>
 <%
 	String status = "FAILED";
-	HealthCheck healthCheck = HealthCheckImpl.get_instance();
-	if (healthCheck != null && healthCheck.doCheck(1) > 0) {
+	// 2016-5-10 健康检查忽略数据库的检查 
+	// HealthCheck healthCheck = HealthCheckImpl.get_instance();
+	// if (healthCheck != null && healthCheck.doCheck(1) > 0) {
 		status = "OK";
-	}
+	// }
 	out.print(status);
 	session.invalidate();
 %>

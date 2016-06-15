@@ -78,6 +78,7 @@ import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
+import net.sf.json.JSONObject;
 
 @RequestMapping("/batchselectcwb")
 @Controller
@@ -281,6 +282,7 @@ public class BatchSelectCwbController {
 		String lastStr = ".xlsx";// 文件名后缀
 
 		fileName = fileName + otherName + lastStr;
+		String dataJson = this.setbatchSelectExporeJson(batchcwb2, mouldfieldids2);
 		try {
 			final String sql = this.cwbDAO.getSqlByCwb(lastcwbs);
 
@@ -387,8 +389,30 @@ public class BatchSelectCwbController {
 						}
 					});
 				}
+				
+				@Override
+				public long getRecordCount(){
+					try{
+						int size = (Integer) BatchSelectCwbController.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() { 
+							@Override
+							public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+								int count = 0;
+					            while(rs.next()){
+					                count = count + 1;
+					            }
+								return count;
+							}
+						});
+						return size;
+					}catch(Exception e){
+						logger.info("Not able to fetch excel row count, so use default 0");
+						return 0;
+					}
+				}
 			};
 			excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			//记录导出excel日志
+			this.auditExportExcel(dataJson, fileName, excelUtil.getRecordCount(), this.getSessionUser().getUserid());
 		} catch (Exception e) {
 			logger.error("", e);
 		}
@@ -606,5 +630,29 @@ public class BatchSelectCwbController {
 			}
 		}
 		return customerwarehouse;
+	}
+	
+	/**
+	 * 记录所有导出文件的操作
+	 * 
+	 * @param request
+	 * @param dataJson
+	 * @param userid
+	 */
+	private void auditExportExcel(String dataJson, String fileName, long count, long userid) {
+		try{
+			String logStr = String.format(
+					"UserId [%s] was exported the excel file:[name: %s, line-count: %d] by using conditions [%s]", userid, fileName, count, dataJson);
+			logger.info(logStr);
+		}catch(Exception e){
+			logger.error("Fail to log exported file info");
+		}
+	}
+	
+	private String setbatchSelectExporeJson(String batchcwb2, String mouldfieldids2){
+		JSONObject json = new JSONObject();
+		json.put("batchcwb", batchcwb2);
+		json.put("mouldfieldids", mouldfieldids2);
+		return json.toString();
 	}
 }

@@ -2,6 +2,7 @@ package cn.explink.controller;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -179,13 +180,14 @@ public class BranchController {
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
 		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
+		
 		if (list.size() > 0) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
 		} else if ((tpscodeList != null) && (tpscodeList.size() > 0)) {
 			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
-		} else {
+		}else {
 			Branch bh = this.branchService.loadFormForBranch(request, null, functionids);
 
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
@@ -243,7 +245,8 @@ public class BranchController {
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
 		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
-		String oldbranchname = this.branchDAO.getBranchById(branchid).getBranchname();
+		Branch branchVO=this.branchDAO.getBranchById(branchid);
+		String oldbranchname = branchVO.getBranchname();
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null) && (codeList.get(0).getBranchid() != branchid)) {
@@ -299,14 +302,15 @@ public class BranchController {
 		List<Branch> list = this.branchDAO.getBranchByBranchnameCheck(branchname);
 		List<Branch> codeList = this.branchDAO.getBranchByBranchcodeCheck(branchcode);
 		List<Branch> tpscodeList = this.branchDAO.getBranchByTpsBranchcodeCheck(tpsbranchcode);
-		String oldbranchname = this.branchDAO.getBranchById(branchid).getBranchname();
+		Branch branchVO=this.branchDAO.getBranchById(branchid);
+		String oldbranchname = branchVO.getBranchname();
 		if ((list.size() > 0) && (list.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构名称已存在\"}";
 		} else if ((codeList.size() > 0) && (codeList != null) && (codeList.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"分拣码已存在\"}";
 		}else if ((tpscodeList != null) && (tpscodeList.size() > 0) && (tpscodeList.get(0).getBranchid() != branchid)) {
 			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
-		} else {
+		}else {
 			Branch branch = this.branchService.loadFormForBranch(request, null, wavh, functionids);
 			branch.setBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {

@@ -1,5 +1,6 @@
 package cn.explink.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,9 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.domain.Bale;
 import cn.explink.domain.Branch;
+import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
@@ -46,6 +49,7 @@ import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.KfzdOrderService;
+import cn.explink.service.mps.MPSOptStateService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
@@ -79,6 +83,8 @@ public class BaleController {
 	KfzdOrderService kfzdOrderService;
 	@Autowired
 	TpsCwbFlowService tpsCwbFlowService;
+	@Autowired
+	private MPSOptStateService mpsOptStateService ;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -285,8 +291,10 @@ public class BaleController {
 	 */
 	@RequestMapping("/baleaddcwb/{cwb}/{baleno}")
 	@Transactional
-	public @ResponseBody ExplinkResponse baleaddcwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
-			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
+	public @ResponseBody ExplinkResponse baleaddcwb(Model model, HttpServletRequest request, HttpServletResponse response,
+			@PathVariable(value = "cwb") String cwb,@PathVariable(value = "baleno") String baleno, 
+			@RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid ,
+			@RequestParam(value = "carrealweight", required = true, defaultValue = "0") BigDecimal carrealweight) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		try {
@@ -297,13 +305,37 @@ public class BaleController {
 //			cwb=this.cwbOrderService.translateCwb(cwb);
 			
 //			this.cwbDAO.updateScannumAuto(cwb);
-			
+			Customer customer = this.customerDAO.getCustomerById(cwbOrder.getCustomerid());
 			Bale bale = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim());
 			this.baleDAO.updateAddBaleScannum(bale.getId()); //要点：做完所有的写操作最后再读出！
 			bale = this.baleDAO.getBaleById(bale.getId());
-			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid());
+			this.tpsCwbFlowService.save(cwbOrder,cwb.trim(), FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid(),null,true);
 			long successCount = bale.getCwbcount();
 			long scannum = bale.getScannum();
+//			if(customer.getIsUsetranscwb() == 2){
+//				this.cwbDAO.saveCwbWeight(carrealweight, cwb);
+//			}else{
+//				//扫描运单号，首先更新当前运单的货物重量，如果当前已扫描件数和订单总件数一致时，才更新订单表的货物重量
+//				this.mpsOptStateService.updateTransCwbDetailWeight(cwbOrder.getCwb(), cwb, carrealweight);
+//				if(cwbOrder.getScannum() == cwbOrder.getSendcarnum()){
+//					BigDecimal totalWeight = getWeightForOrder(cwb) ;
+//					this.cwbDAO.saveCwbWeight(totalWeight, cwb);
+//				}
+//			}
+			// add by bruce shangguan 20160530  如果是首次扫描订单号/运单号,就直接更新订单重量；否则就在订单原重量的基础上累加，再更新订单重量
+			if(cwbOrder.getScannum() == 1){
+				this.cwbDAO.saveCwbWeight(carrealweight, cwbOrder.getCwb());
+			}else{
+				BigDecimal totalWeight = cwbOrder.getCarrealweight() == null ? BigDecimal.ZERO : cwbOrder.getCarrealweight() ;
+				totalWeight = totalWeight.add(carrealweight);
+				this.cwbDAO.saveCwbWeight(totalWeight, cwbOrder.getCwb());
+			}
+			// 如果扫描运单号，就更新当前运单的货物重量
+			if(customer != null && customer.getIsUsetranscwb() != 2){
+				this.mpsOptStateService.updateTransCwbDetailWeight(cwbOrder.getCwb(), cwb, carrealweight);
+			}
+			obj.put("newCarrealWeight", carrealweight) ;
+			// end 20160530
 			obj.put("successCount", successCount);
 			obj.put("scannum", scannum);
 			obj.put("errorcode", "000000");
@@ -316,6 +348,24 @@ public class BaleController {
 		return explinkResponse;
 	}
 	
+	/**
+	 * 根据订单号，获取其所有的运单，并统计所有运单重量
+	 * @param orderNumber
+	 * @return
+	 */
+	private BigDecimal getWeightForOrder(String orderNumber){
+		BigDecimal totalWeight = BigDecimal.ZERO ;
+		List<TransCwbDetail> translist =  this.mpsOptStateService.queryTransCwbDetail(orderNumber) ;
+		if(translist == null || translist.size() == 0){
+			return totalWeight ;
+		}
+		for (TransCwbDetail transcwbDetail : translist) {
+			if(transcwbDetail.getWeight() != null){
+				totalWeight = totalWeight.add(transcwbDetail.getWeight()) ;
+			}
+		}
+		return totalWeight ;
+	}
 	
 	/**
 	 * 退货出站根据包号扫描订单
@@ -396,7 +446,8 @@ public class BaleController {
 	@RequestMapping("/sortAndChangeBaleAddCwb/{cwb}/{baleno}")
 	@Transactional
 	public @ResponseBody ExplinkResponse sortAndChangeBaleAddCwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
-			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
+			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid,
+			@RequestParam(value = "carrealweight", required = false, defaultValue = "0") BigDecimal carrealweight) {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		String scancwb = cwb.trim();
@@ -411,7 +462,8 @@ public class BaleController {
 					this.baleService.sortAndChangeBaleAddCwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
 				} else {
 					// 调用分拣出库扫描逻辑
-					this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
+					CwbOrder cwbOrder=this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), scancwb, branchid);
+					this.tpsCwbFlowService.save(cwbOrder,scancwb, FlowOrderTypeEnum.ChuKuSaoMiao,this.getSessionUser().getBranchid(),null,true);
 				}
 				
 				Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
@@ -419,6 +471,21 @@ public class BaleController {
 				bale = this.baleDAO.getBaleById(bale.getId());
 				long successCount = bale.getCwbcount();
 				long scannum = bale.getScannum();
+				// add by bruce shangguan 20160530  如果是首次扫描订单号/运单号,就直接更新订单重量；否则就在订单原重量的基础上累加，再更新订单重量
+				Customer customer = this.customerDAO.getCustomerById(co.getCustomerid());
+				if(co.getScannum() == 1){
+					this.cwbDAO.saveCwbWeight(carrealweight, co.getCwb());
+				}else{
+					BigDecimal totalWeight = co.getCarrealweight() == null ? BigDecimal.ZERO : co.getCarrealweight() ;
+					totalWeight = totalWeight.add(carrealweight);
+					this.cwbDAO.saveCwbWeight(totalWeight, co.getCwb());
+				}
+				// 如果扫描运单号，就更新当前运单的货物重量
+				if(customer != null && customer.getIsUsetranscwb() != 2){
+					this.mpsOptStateService.updateTransCwbDetailWeight(co.getCwb(), cwb, carrealweight);
+				}
+				obj.put("newCarrealWeight", carrealweight) ;
+				// end 20160530
 				obj.put("successCount", successCount);
 				obj.put("scannum", scannum);
 				obj.put("errorcode", "000000");

@@ -1,3 +1,6 @@
+<%@page import="cn.explink.enumutil.CwbStateEnum"%>
+<%@page import="cn.explink.enumutil.DeliveryStateEnum"%>
+<%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
@@ -375,6 +378,27 @@ function tohome(){
 	window.location.href="<%=request.getContextPath() %>/PDA/branchdeliverdetail?deliverid="+$("#deliverid").val();
 }
 
+function scancwbKeyDownAction(event) {
+    if (event.keyCode == 13) {
+        if ($("#scancwb").val().length > 0) {
+            $.ajax({
+                type: "POST",
+                url: "<%=request.getContextPath()%>" + "/PDA/isExtractInput/" + $("#scancwb").val(),
+                dataType: "json",
+                success: function (data) {
+
+                    if (data.body && data.body.result == true) {
+                        $("#msg").html("请补录全快递单信息再领货");
+                        return false;
+                    } else {
+                        branchDeliver("<%=request.getContextPath()%>", $("#scancwb").val(), $("#deliverid").val(), $("#requestbatchno").val());
+
+                    }
+                }
+            });
+        }
+    }
+}
 
 
 </script>
@@ -433,7 +457,7 @@ function tohome(){
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
 					<p><span>订单号：</span>
-						<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value=""  onKeyDown='if(event.keyCode==13&&$(this).val().length>0){branchDeliver("<%=request.getContextPath()%>",$(this).val(),$("#deliverid").val(),$("#requestbatchno").val());}'/>
+						<input type="text" class="saomiao_inputtxt2" id="scancwb" name="scancwb" value=""  onKeyDown='return scancwbKeyDownAction(event);'/>
 					</p>
 				</div>
 				<div class="saomiao_right2">
@@ -491,7 +515,13 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td align="center" bgcolor="#f1f1f1">地址</td>
+										
+										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
+										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
+										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
+										<td align="center" bgcolor="#f1f1f1">退货出站审核结果</td>
+										<!-- ******************************************** -->
 									</tr>
 								</table>
 								<div style="height: 160px; overflow-y: scroll">
@@ -507,7 +537,23 @@ function tohome(){
 											<%if(showCustomerSign){ %>
 													<td width="100"><%=co.getRemarkView() %></td>
 												<%} %>
-											<td align="left"><%=co.getConsigneeaddress() %></td>
+											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
+											<td width="60" align="center">
+											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
+											<%=cwb.getText()%>
+											<% }}%>
+											</td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
+											<td align="center"><%=co.getCheckstateresultname() %></td>
+											<!-- ****************************** -->
+											
 										</tr>
 										<%} %>
 										 <%if(todayweilinghuolist!=null&&todayweilinghuolist.size()==Page.DETAIL_PAGE_NUMBER){ %>
@@ -537,7 +583,12 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<!-- hps_Concerto create 2016年5月25日11:57:40 -->
+										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
+										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
+										<td align="center" bgcolor="#f1f1f1">退货出站审核结果</td>
+										<!-- ******************************************** -->
 									</tr>
 								</table>
 								<div style="height: 160px; overflow-y: scroll">
@@ -553,7 +604,22 @@ function tohome(){
 											<%if(showCustomerSign){ %>
 													<td width="100"><%=co.getRemarkView() %></td>
 												<%} %>
-											<td align="left"><%=co.getConsigneeaddress() %></td>
+											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
+											<td width="60" align="center">
+											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
+											<%=cwb.getText()%>
+											<% }}%>
+											</td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
+											<td align="center"><%=co.getCheckstateresultname() %></td>
+											<!-- ****************************** -->
 										</tr>
 										<%} %>
 										<%if(historyweilinghuolist!=null&&historyweilinghuolist.size()==Page.DETAIL_PAGE_NUMBER){ %>
@@ -583,7 +649,12 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<!-- hps_Concerto create 2016年5月25日11:57:40 -->
+										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
+										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
+										<td align="center" bgcolor="#f1f1f1">退货出站审核结果</td>
+										<!-- ******************************************** -->
 									</tr>
 								</table>
 								<div style="height: 160px; overflow-y: scroll">
@@ -598,7 +669,23 @@ function tohome(){
 											<%if(showCustomerSign){ %>
 													<td width="100"><%=co.getRemarkView() %></td>
 												<%} %>
-											<td align="left"><%=co.getConsigneeaddress() %></td>
+										
+											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
+											<td width="60" align="center">
+											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
+											<%=cwb.getText()%>
+											<% }}%>
+											</td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
+											<td align="center"><%=co.getCheckstateresultname() %></td>
+											<!-- ****************************** -->
 										</tr>
 										<%} %>
 										<%if(yilinghuolist!=null&&yilinghuolist.size()==Page.DETAIL_PAGE_NUMBER){ %>
@@ -629,7 +716,13 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<!-- hps_Concerto create 2016年5月25日11:57:40 -->
+										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
+										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
+										<td align="center" bgcolor="#f1f1f1">退货出站审核结果</td>
+										<!-- ******************************************** -->
+										
 									</tr>
 								</table>
 								<div style="height: 160px; overflow-y: scroll">

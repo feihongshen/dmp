@@ -27,30 +27,28 @@
                     <td>
                         <input id="reserveOrderNo" name="reserveOrderNo" type="text" style="width:140px;"/>
                     </td>
-                    <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约时间：</td>
+                    <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">下单时间：</td>
                     <td colspan="3">
                         <input type="text" name="appointTimeStart" id="appointTimeStart" value="" readonly="readonly"
-                               style="width:150px;cursor:pointer" class="Wdate"
+                               style="background-color:#fff;width:150px;cursor:pointer" class="Wdate"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
                         至
                         <input type="text" name="appointTimeEnd" id="appointTimeEnd" value="" readonly="readonly"
-                               style="width:150px;cursor:pointer" class="Wdate"
+                               style="background-color:#fff;width:150px;cursor:pointer" class="Wdate"
                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
                     </td>
-                    <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
+                    <%--<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
                     <td>
-                        <select name="cnorProv" id="cnorProv" style="width:100px;">
-                            <option value="" selected="selected">市</option>
-                            <c:forEach items="${cityList}" var="list">
-                                <option value="${list.id}" code="${list.code}">${list.name}</option>
-                            </c:forEach>
-                        </select>
-                        <select name="cnorCity" id="cnorCity" style="width:100px;">
-                            <option value="">区/县</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
+                    	<select name="cnorCity" id="cnorCity" style="width: 100px;">
+                    		<option value="" selected="selected">市</option>
+								<c:forEach items="${cityList}" var="list">
+									<option value="${list.id}" code="${list.code}">${list.name}</option>
+								</c:forEach>
+						</select>
+						<select name="cnorRegion" id="cnorRegion" style="width: 100px;">
+							<option value="">区/县</option>
+						</select>
+					</td>--%>
                     <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">手机/固话：</td>
                     <td>
                         <input id="cnorMobile" name="cnorMobile" type="text" style="width:140px;"/>
@@ -64,6 +62,8 @@
                             </c:forEach>
                         </select>
                     </td>
+                </tr>
+                <tr>
                     <td style="border: 0px; text-align: right; vertical-align: middle;width:80px;">预约单状态：</td>
                     <td>
                         <select name="reserveOrderStatusList" id="reserveOrderStatusList" style="width:140px;">
@@ -83,7 +83,7 @@
             <div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i
                     class="icon-plus"></i>修改
             </div>
-            <div class="btn btn-default" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回省公司
+            <div class="btn btn-default" handleType="handleWarehouse" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回
             </div>
             <div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i
                     class="icon-eye-open"></i>分配快递员
@@ -181,7 +181,7 @@
         </div>
     </div>
 </div>
-<div id="dialog3" title="退回省公司" style="display:none;">
+<div id="dialog3" title="退回" style="display:none;">
     <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
         <table>
             <tr>
@@ -257,16 +257,20 @@
                 },
                 {field: 'appointTimeStr', title: '下单时间', width: 130},
                 {field: 'cnorName', title: '寄件人', width: 100},
+                {field:'custName', title:'寄件公司', width:100},
                 {field: 'cnorMobile', title: '手机', width: 100},
                 {field: 'cnorTel', title: '固话', width: 100},
-                {field: 'cnorAddr', title: '寄件地址', width: 130},
+                {field: 'cnorAddr', title: '寄件地址', width: 130, hidden: 'true'},
+                {field: 'cnorDetailAddr', title: '寄件地址', width: 130},
                 {field: 'requireTimeStr', title: '预约上门时间', width: 130},
+                {field: 'cnorRemark', title: '寄件人备注', width: 80},
                 {field: 'reserveOrderStatusName', title: '预约单状态', width: 100},
                 {field: 'reason', title: '原因', width: 130},
 //                {field: 'transportNo', title: '运单号', width: 100},
 //                {field: 'acceptOrgName', title: '站点', width: 100},
                 {field: 'courierName', title: '快递员', width: 80},
-                {field: 'remark', title: '备注', width: 80}
+                {field:'recordVersion',hidden : true, width:80}
+//                {field: 'remark', title: '备注', width: 80}
             ]]
         });
     }
@@ -290,7 +294,7 @@
         var $searchForm = $("#searchForm");
         //保存现场
         var action = $searchForm.attr("action");
-        var target = $searchForm.attr("action");
+        var target = $searchForm.attr("target");
         //提交请求
         $searchForm.attr("action", contextPath + "/express2/reserveOrder/exportExcel/" + queryType);
         $searchForm.attr("target", "_blank");
@@ -304,8 +308,11 @@
     var returnType = "<%= ReserveOrderService.PJReserverOrderOperationCode.ZhanDianChaoQu.getValue()%>";
     
     var hadAllocationPro = "<%= ReserveOrderStatusEnum.HadAllocationPro.getIndex()%>";
+    //已分配站点
     var hadAllocationStation = "<%= ReserveOrderStatusEnum.HadAllocationStation.getIndex()%>";
     var haveStationOutZone = "<%= ReserveOrderStatusEnum.HaveStationOutZone.getIndex()%>";
+    //揽件超区
+    var haveReciveOutZone = "<%= ReserveOrderStatusEnum.HaveReciveOutZone.getIndex()%>";
 
 
     $("#optCode4Feedback").change(function () {

@@ -45,11 +45,12 @@ import org.slf4j.LoggerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import cn.explink.pos.tools.JacksonMapper;
 	
 public class Tools {
 	public final static int DB_OPERATION_MAX = 10000;
-	static ObjectMapper outMapper = new ObjectMapper();
-	static ObjectMapper mapper = new ObjectMapper();
+	static ObjectMapper outMapper = JacksonMapper.getInstance();
+	static ObjectMapper mapper = JacksonMapper.getInstance();
 	public static String SPLIT_PATTERN = ",|;|，|；|(\\n)";
 	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
 	/**
@@ -1198,5 +1199,34 @@ public class Tools {
 			setMethod.invoke(dest, new Object[] { targetVal });
 		}
 		return dest;
+	}
+	
+	//将list转换为xml格式的String类型（List中存放的对象为实体类）* 
+	public static <T> String getObjectToXml(List<T> list) { 
+		StringBuffer stringBuffer = new StringBuffer(); 
+		// 循环遍历list 
+		for (int i = 0; i < list.size(); i++) { 
+			Object object = list.get(i); 
+			// 取得实体类中的每个元素
+			Field[] fields = object.getClass().getDeclaredFields(); 
+			// 遍历所有元素
+			for (int j = 0; j < fields.length; j++) { 
+				try { 
+					String name = fields[j].getName(); 
+					// 拼接get方法名
+					Method method = object.getClass().getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1), new Class[] {});
+					// 利用反射机制，取得对应的数据
+					Object result = method.invoke(object, new Object[] {}); 
+					stringBuffer.append("<" + name); 
+					stringBuffer.append(">"); 
+					stringBuffer.append(result); 
+					stringBuffer.append("</" + name); 
+					stringBuffer.append(">"); 
+				} catch (Exception e) { 
+					e.getStackTrace(); 
+				} 
+			} 
+		} 
+		return stringBuffer.toString(); 
 	}
 }

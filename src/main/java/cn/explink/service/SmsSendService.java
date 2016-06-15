@@ -59,6 +59,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.SmsSendManageEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.StreamingStatementCreator;
 
@@ -93,7 +94,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	ObjectMapper objectMapper = JacksonMapper.getInstance();
 	ObjectReader orderFlowReader = this.objectMapper.reader(OrderFlow.class);
 
 	private static Logger logger = LoggerFactory.getLogger(SmsSendService.class);

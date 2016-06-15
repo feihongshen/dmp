@@ -228,6 +228,10 @@ public class TPSOrder {
     private Integer isGathercomp;
     
     List<TPSOrderDetails> details;
+    
+    //订单类型：1-乐蜂订单, 2-海淘订单, 3-OXO订单, 4-普通订单, 5-海淘直发,6-普通直发单
+    private Integer doType;
+    
 
     public List<TPSOrderDetails> getDetails() {
         return this.details;
@@ -756,6 +760,14 @@ public class TPSOrder {
 
 	public void setIsGathercomp(Integer isGathercomp) {
 		this.isGathercomp = isGathercomp;
+	}
+
+	public Integer getDoType() {
+		return doType;
+	}
+
+	public void setDoType(Integer doType) {
+		this.doType = doType;
 	}
 
 }

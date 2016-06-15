@@ -34,7 +34,7 @@ public class MqConfigService {
 		//channel
 		String channel=getValue(consumer.getExchangeKey());
 		if(channel==null||channel.trim().length()<1){
-			throw new RuntimeException("MQ parameter "+consumer.getExchangeKey()+" is not found");
+			logger.info("MQ parameter "+consumer.getExchangeKey()+" is not found");
 		}else{
 			consumer.setExchangeName(channel);
 		}
@@ -42,7 +42,7 @@ public class MqConfigService {
 		//queue
 		String queue=getValue(consumer.getQueueKey());
 		if(queue==null||queue.trim().length()<1){
-			throw new RuntimeException("MQ parameter "+consumer.getQueueKey()+" is not found");
+			logger.info("MQ parameter "+consumer.getQueueKey()+" is not found");
 		}else{
 			consumer.setQueueName(queue);
 		}
@@ -51,7 +51,7 @@ public class MqConfigService {
 	public void initSender(AutoExceptionSender sender){
 		String channel=getValue(sender.getChannelKey());
 		if(channel==null||channel.trim().length()<1){
-			throw new RuntimeException("MQ parameter "+sender.getChannelKey()+" is not found");
+			logger.info("MQ parameter "+sender.getChannelKey()+" is not found");
 		}else{
 			sender.setChannel(channel);
 		}

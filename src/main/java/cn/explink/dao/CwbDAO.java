@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
@@ -147,7 +148,36 @@ public class CwbDAO {
 				.getString("consigneephone")));
 	}
 
+    public List<CwbOrder> getCwbByCwbsLowerCase(List<String> cwbs) {
+        if (cwbs.size() > 0) {
+            String cwbsStr [] = new String [cwbs.size()];
+            StringBuilder sql = new StringBuilder("SELECT * FROM express_ops_cwb_detail WHERE lower(cwb) IN(");
+            for (int i = 0; i < cwbs.size(); i++) {
+                String cwb =  cwbs.get(i);
+                cwbsStr[i] = cwb;
+                sql.append("LOWER(?)");
+                if (i < cwbs.size() - 1)
+                    sql.append(",");
+            }
+            sql.append(") and state=1 ");
+
+            return this.jdbcTemplate.query(sql.toString(), cwbsStr, new CwbMapper());
+        } else {
+            return null;
+        }
+    }
 	private final class CwbMapper implements RowMapper<CwbOrder> {
+		
+		//是否需要过滤用户信息
+		private boolean isFilterUserInfo = true;
+		
+		public CwbMapper() {
+			
+		}
+		
+		public CwbMapper(boolean isFilterUserInfo) {
+			this.isFilterUserInfo = isFilterUserInfo;
+		}
 
 		@Override
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -322,6 +352,9 @@ public class CwbDAO {
 			cwbOrder.setSendername(rs.getString("sendername"));
 			cwbOrder.setSenderprovince(rs.getString("senderprovince"));
 			cwbOrder.setSendercity(rs.getString("sendercity"));
+			cwbOrder.setSendercounty(rs.getString("sendercounty"));
+			cwbOrder.setSenderstreet(rs.getString("senderstreet"));
+			cwbOrder.setSenderaddress(rs.getString("senderaddress"));
 			cwbOrder.setSendercellphone(rs.getString("sendercellphone"));
 			cwbOrder.setSendertelephone(rs.getString("sendertelephone"));
 			cwbOrder.setReccustomerid(rs.getInt("reccustomerid"));
@@ -344,7 +377,19 @@ public class CwbDAO {
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
 
-			CwbDAO.this.setValueByUser(rs, cwbOrder);
+			cwbOrder.setInstationname(rs.getString("instationname"));
+			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
+			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
+			if(isFilterUserInfo) {
+				CwbDAO.this.setValueByUser(rs, cwbOrder);
+			} else {
+				cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+				cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+				cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+				cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+				cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
+				cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+			}
 
 			return cwbOrder;
 		}
@@ -1173,6 +1218,28 @@ public class CwbDAO {
 		}
 	}
 
+	
+	/*
+	 * 失效订单查询用VO
+	 */
+	private final class ObsoleteOrderMapper implements RowMapper<CwbOrder> {
+		@Override
+		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
+			CwbOrder obj = new CwbOrder();
+			obj.setCwb(rs.getString("cwb"));
+			obj.setTranscwb(rs.getString("transcwb"));
+			obj.setCwbordertypeid(rs.getInt("cwbordertypeid"));
+			obj.setEmaildate(rs.getString("emaildate"));
+			obj.setCustomerid(rs.getLong("customerid"));
+			obj.setCwbstate(rs.getLong("cwbstate"));
+			obj.setFlowordertype(rs.getLong("flowordertype"));
+			obj.setDeliverystate(rs.getInt("deliverystate"));
+			obj.setPrinttime(rs.getString("printtime"));
+			obj.setDeliverid(rs.getLong("deliverid"));
+			obj.setSendcarnum(rs.getLong("sendcarnum"));
+			return obj;
+		}
+	}
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -2077,6 +2144,17 @@ public class CwbDAO {
 			sql = "update express_ops_cwb_detail set carrealweight=?,carsize=? where commoncwb=? and state =1 ";
 		}
 		this.jdbcTemplate.update(sql, carrealweight, carsize, scancwb);
+	}
+	
+	/**
+	 * 更新订单重量
+	 * @param orderWeight
+	 * @param cwb
+	 */
+	public void saveCwbWeight(BigDecimal orderWeight , String cwb){
+		StringBuffer sql = new StringBuffer() ;
+		sql.append("update express_ops_cwb_detail set carrealweight=? where cwb=? and state =1 ") ;
+		this.jdbcTemplate.update(sql.toString(),orderWeight,cwb) ;
 	}
 
 	public void saveCwbForPrintChangecwb(String carrealweight, String carsize,
@@ -8741,6 +8819,27 @@ public class CwbDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 查询订单，不包含状态
+	 * 2016年5月27日 下午5:54:21
+	 * @param cwbsStr
+	 * @return
+	 */
+	public List<CwbOrder> getLabelPrintCwbsByCwbs(String cwbsStr) {
+		try {
+			String sql = "select * from express_ops_cwb_detail where cwb in("
+					+ cwbsStr + ")";
+
+			if(cwbsStr!=null && cwbsStr.startsWith("(") && cwbsStr.endsWith(")")) { //如果已有括号会报错
+				sql = "select * from express_ops_cwb_detail where cwb in " + cwbsStr;
+			}
+			return this.jdbcTemplate.query(sql, new CwbMapper(false));
+		} catch (Exception e) {
+			this.logger.error("", e);
+			return null;
+		}
+	}
 
 	/**
 	 * 统计揽件未到站的数量，其中flowordertype为1（已导入）,cwbordertypeid为oxo和oxo_jit,
@@ -8886,7 +8985,7 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQuery(
 			ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery, String userIds) {
 
-		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname FROM express_ops_cwb_detail where cwbordertypeid="
+		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		sqll += this.conditions4CwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,
 				userIds);
@@ -8910,7 +9009,7 @@ public class CwbDAO {
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbOrdersExpressTakeGoodsQueryLanJianChuZhan(
 			Long page, String cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid in(" + cwbid + ")";
 		if (paymethod != null) {
 			sql += " and paymethod=" + paymethod + "";
@@ -8931,7 +9030,7 @@ public class CwbDAO {
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbOrdersExpressTakeGoodsQueryLanJianChuZhan(
 			String cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid in(" + cwbid + ")";
 		if (paymethod != null) {
 			sql += " and paymethod=" + paymethod + "";
@@ -8968,8 +9067,7 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQueryByPage(
 			Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,
 			String userIds) {
-		
-		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname FROM express_ops_cwb_detail where cwbordertypeid="
+		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		
 		sqll += this.conditions4CwbExpressTakeGoodsQuery(cwb4TakeGoodsQuery,
@@ -9560,7 +9658,10 @@ public class CwbDAO {
 		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  WHERE state=1 AND customerid=? AND flowordertype=? "
 				+ " and deliverybranchid>0 ORDER BY opscwbid LIMIT 0,?  ", new CwbMapper(),customerid,flowordertype,maxCount);
 	}
-	
+	public void updateTranscwbByCwb(String cwb, String addTranscwbs) {
+		this.jdbcTemplate.update(
+				"update express_ops_cwb_detail set transcwb=? where cwb=? and state = 1 ",addTranscwbs, cwb);		
+	}
 	public String getTpsTransportNoByCwb(String cwb) {
 		try {
 			return this.jdbcTemplate
@@ -9571,6 +9672,91 @@ public class CwbDAO {
 		}
 	}
 	
+	/**查询失效订单
+	 * 2016-05-25
+	 * @param cwb
+	 * @param cwbordertypeids
+	 * @param maxCount
+	 * @return
+	 */
+	public List<CwbOrder> selectObsoleteCwbOrderList(String cwb,String cwbordertypeids, String beginupdatetime, String endupdatetime,
+			String beginemaildate, String endemaildate, long...page) { 
+		StringBuilder sql = new StringBuilder("select distinct a.cwb, a.transcwb, a.cwbordertypeid, ifnull(max(a.emaildate),'') as emaildate, a.sendcarnum, a.customerid, "
+				+ " a.cwbstate, a.flowordertype, a.deliverystate, b.cretime as printtime, b.userid as deliverid "
+				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
+
+		if (!StringUtil.isEmpty( cwb) ) {
+			sql.append( " and a.cwb=" + cwb);
+		}
+		if (!StringUtil.isEmpty(cwbordertypeids)){
+			sql.append( " and a.cwbordertypeid in(" + cwbordertypeids +") ");
+		}
+		if (!StringUtil.isEmpty(beginupdatetime)){
+			sql.append( " and   b.cretime >='"
+					+ beginupdatetime
+					+ "' and b.cretime<='"
+					+ endupdatetime +"'" );
+		}
+		if (!StringUtil.isEmpty(beginemaildate)){
+			sql.append( " and   a.emaildate >='"
+						+ beginemaildate
+						+ "' and a.emaildate<='"
+						+ endemaildate +"'" );
+		}
+		sql.append(" group by a.cwb order by a.emaildate limit ?,?");
+		long pageFrom = page[0]-1;
+		long pageSize = page.length>1?page[1]:10;
+		return this.jdbcTemplate.query(sql.toString(), new ObsoleteOrderMapper(), 
+				pageFrom * pageSize, pageSize);
+	}	
+	/**查询失效订单计数
+	 * 2016-05-25
+	 * @param cwb
+	 * @param cwbordertypeids
+	 * @param maxCount
+	 * @return
+	 */
+	public long selectObsoleteCwbOrderListCount(String cwb,String cwbordertypeids, String beginupdatetime, String endupdatetime,
+			String beginemaildate, String endemaildate ) { 
+		StringBuilder sql = new StringBuilder("select count(distinct a.cwb) "
+				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
+
+		if (!StringUtil.isEmpty( cwb) ) {
+			sql.append( " and a.cwb=" + cwb);
+		}
+		if (!StringUtil.isEmpty(cwbordertypeids)){
+			sql.append( " and a.cwbordertypeid in(" + cwbordertypeids +") ");
+		}
+		if (!StringUtil.isEmpty(beginupdatetime)){
+			sql.append( " and   b.cretime >='"
+					+ beginupdatetime
+					+ "' and b.cretime<='"
+					+ endupdatetime +"'" );
+		}
+		if (!StringUtil.isEmpty(beginemaildate)){
+			sql.append( " and   a.emaildate >='"
+						+ beginemaildate
+						+ "' and a.emaildate<='"
+						+ endemaildate +"'" );
+		} 	
+		return this.jdbcTemplate.queryForLong(sql.toString());
+	}
+
+	/**
+	 * 更新发货时间
+	 * @author leo01.liao
+	 * @param cwb
+	 * @param emaildate
+	 * @return
+	 */
+	public int updateCwbEmaildate(String cwb, String emaildate) {
+		if(cwb == null || cwb.trim().length()<1 || emaildate == null || emaildate.trim().length()<1){
+			return 0;
+		}
+		String sql = "update express_ops_cwb_detail set emaildate = ? where cwb = ? and state=1";
+		return this.jdbcTemplate.update(sql, emaildate,cwb);
+	}
+
 	public List<Map<String, Object>> getCwbOrderByPhone(String phone, String flag) {
 		StringBuffer sql= new StringBuffer("");
 		new StringBuffer("");
@@ -9594,5 +9780,4 @@ public class CwbDAO {
 		
 		return this.jdbcTemplate.queryForList(sql.toString());
 	}
-	
 }

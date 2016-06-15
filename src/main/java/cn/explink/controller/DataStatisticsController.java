@@ -14,11 +14,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.codehaus.jackson.JsonParseException;
@@ -38,6 +37,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
@@ -75,8 +77,10 @@ import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
+import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.OrderTypeEnum;
 import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -84,6 +88,8 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @RequestMapping("/datastatistics")
 @Controller
@@ -1392,6 +1398,11 @@ public class DataStatisticsController {
 		String threeCwbs = "";
 		String fourCwbs = "";
 		String fiveCwbsAll = "";
+		Map<String, Object> paramsMAP = new HashMap<String, Object>();
+		paramsMAP.put("begindate", begindate);
+		paramsMAP.put("enddate", enddate);
+		paramsMAP.put("kufangids", kufangids);
+		paramsMAP.put("branchids",branchids);
 		if (!"".equals(oneCwbs)) {// 如果第一步查不到订单后面的都不用管了
 			List<String> twoCwbsList = this.orderFlowDAO
 					.getTwoCwbs(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), oneCwbs, enddate);
@@ -1415,7 +1426,7 @@ public class DataStatisticsController {
 			sql = this.cwbDAO.getSqlByCwb(fiveCwbsAll);
 		}
 		if (!"".equals(sql)) {
-			this.dataStatisticsService.exportExcelByNoresultMethod(response, sql, mouldfieldids);
+			this.dataStatisticsService.exportExcelByNoresultMethod(response, sql, paramsMAP, mouldfieldids);
 		}
 
 	}
@@ -2391,4 +2402,172 @@ public class DataStatisticsController {
 		}
 		return false;
 	}
+	
+	/**
+	 * 
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param cwb
+	 * @param cwbordertypeids
+	 * @param beginupdatetime
+	 * @param endupdatetime
+	 * @param beginemaildate
+	 * @param endemaildate
+	 * @param page
+	 * @return
+	 */
+	@RequestMapping("/obsoleteOrder/{page}")
+	@DataSource(DatabaseType.REPLICA)
+	public String queryObsoleteOrder(Model model, HttpServletRequest request, HttpServletResponse response, 
+			@RequestParam(value = "cwb", required = false ) String cwb,
+			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeids,
+			@RequestParam(value = "beginupdatetime", required = false, defaultValue = "") String beginupdatetime,
+			@RequestParam(value = "endupdatetime", required = false, defaultValue = "") String endupdatetime,
+			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
+			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate,
+			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
+			@PathVariable(value = "page") long page) {
+		List<CwbOrder> result = null;
+		long count = 0;
+		Page pageparm = null;
+		try {
+			if(isshow!=0){
+				//因为逻辑较简单，可以直接调用dao层
+				count = this.cwbDAO.selectObsoleteCwbOrderListCount(cwb, StringUtils.join(cwbordertypeids,','), beginupdatetime, endupdatetime, 
+						beginemaildate, endemaildate);
+				result = this.cwbDAO.selectObsoleteCwbOrderList(cwb, StringUtils.join(cwbordertypeids,','), beginupdatetime, endupdatetime, 
+						beginemaildate, endemaildate, page);
+				Map<Long, Customer> customermap = this.customerDAO.getAllCustomersToMap();
+				Map<Long, String> usermap = this.userDAO.getAllUserRealNameMap();
+	
+				pageparm = new Page(count, page, 10);
+				model.addAttribute("cwb", cwb);
+				model.addAttribute("cwbordertypeidStr", cwbordertypeids);
+				model.addAttribute("beginupdatetime", beginupdatetime);
+				model.addAttribute("endupdatetime", endupdatetime);
+				model.addAttribute("beginemaildate", beginemaildate);
+				model.addAttribute("endemaildate", endemaildate);
+				model.addAttribute("customermap",customermap);
+				model.addAttribute("usermap", usermap);
+				model.addAttribute("pageparm", pageparm);
+				model.addAttribute("result", result);
+				model.addAttribute("count", count);
+			}
+		} catch (Exception e) {
+			this.logger.error("queryObsoleteOrder failed ", e);
+		}
+		return "datastatistics/shixiao";
+	}
+	/**
+	 * Excel导出
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param cwb
+	 * @param cwbordertypeids
+	 * @param beginupdatetime
+	 * @param endupdatetime
+	 * @param beginemaildate
+	 * @param endemaildate 
+	 * @return
+	 */	
+	@RequestMapping("/obsoleteOrder/excel")
+	@DataSource(DatabaseType.REPLICA)
+	public String queryObsoleteOrder(Model model, HttpServletRequest request, HttpServletResponse response, 
+			@RequestParam(value = "cwb", required = false ) String cwb,
+			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeids,
+			@RequestParam(value = "beginupdatetime", required = false, defaultValue = "") String beginupdatetime,
+			@RequestParam(value = "endupdatetime", required = false, defaultValue = "") String endupdatetime,
+			@RequestParam(value = "beginemaildate", required = false, defaultValue = "") String beginemaildate,
+			@RequestParam(value = "endemaildate", required = false, defaultValue = "") String endemaildate ) {
+		
+		long count = 0;
+		Page pageparm = null;
+		try {
+			//因为逻辑较简单，可以直接调用dao层 
+			count = this.cwbDAO.selectObsoleteCwbOrderListCount(cwb, StringUtils.join(cwbordertypeids,','), beginupdatetime, endupdatetime, 
+					beginemaildate, endemaildate);
+			final List<CwbOrder> result = this.cwbDAO.selectObsoleteCwbOrderList(cwb, StringUtils.join(cwbordertypeids,','), beginupdatetime, endupdatetime, 
+					beginemaildate, endemaildate, 1, 65535); //Excel2003的最大行数
+			String sheetName = "失效订单信息"; // sheet的名称
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+			String fileName = "ObsoleteOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
+			final String[] cloumnName = {"订单号", "运单号", "订单类型", "发货时间", "发货件数", "发货客户", "订单状态", "订单操作类型", "配送状态", "数据状态", "失效时间", "失效人" };
+			final CustomerDAO _customerDAO = this.customerDAO;
+			final UserDAO _userDAO = this.userDAO;
+			ExcelUtils excelUtil = new ExcelUtils() {
+				@Override
+				public void fillData(Sheet sheet, CellStyle style) {
+					Font font = sheet.getWorkbook().createFont();
+					font.setFontName("宋体");
+					font.setFontHeightInPoints((short) 10);
+					style.setFont(font);
+					//设置列的默认值
+					for(int i = 0; i < cloumnName.length; i++) {
+						sheet.setColumnWidth(i, 4000);
+					}
+					for (int i = 0; i < result.size(); i++) {
+						CwbOrder vo = result.get(i);
+						Row row = sheet.createRow(i + 1);
+						short colIndex = 0;
+						
+						Cell cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(vo.getCwb());
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(vo.getTranscwb());
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(OrderTypeEnum.getByValue(vo.getCwbordertypeid()));
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(vo.getEmaildate());
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(vo.getSendcarnum());
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style); 
+						cell.setCellValue(_customerDAO.getCustomerById(vo.getCustomerid()).getCustomername());
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(CwbStateEnum.getTextByValue((int)vo.getCwbstate()));
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(FlowOrderTypeEnum.getByValue((int)vo.getFlowordertype()).getText());
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(DeliveryStateEnum.getByValue(vo.getDeliverystate()).getText());
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue("失效");
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(vo.getPrinttime());
+						
+						cell = row.createCell(colIndex++);
+						cell.setCellStyle(style);
+						cell.setCellValue(_userDAO.getUserByUserid(vo.getDeliverid()).getRealname());
+						
+					}
+				}
+			};
+			excelUtil.excel(response, cloumnName, sheetName, fileName);
+		} catch (Exception e) {
+			this.logger.error("queryObsoleteOrder failed ", e);
+		}
+		return "datastatistics/shixiao";
+	}
+
 }

@@ -759,13 +759,15 @@ public class DataImportDAO_B2c {
 			return;
 		}
 		
+		String emaildate    = cwbOrderDto.getEmaildate(); //发货时间
 		long opscwbid       = cwbOrderDto.getOpscwbid();
 		int  sendCarnum     = cwbOrderDto.getSendcargonum(); //发货数量
 		int  mpsAllArrivedFlag = cwbOrderDto.getMpsallarrivedflag(); //是否集齐标识
 		
 		try {
 			String sqlUpdate = "update express_ops_cwb_detail_b2ctemp set getDataFlag=" + opscwbid + 
-							   " where opscwbid=" + opscwbid + " and mpsallarrivedflag=" + mpsAllArrivedFlag + " and sendcarnum=" + sendCarnum;
+							   " where opscwbid=" + opscwbid + " and mpsallarrivedflag=" + mpsAllArrivedFlag + 
+							   " and sendcarnum=" + sendCarnum + " and emaildate='" + emaildate + "'";
 			
 			this.jdbcTemplate.update(sqlUpdate);
 		} catch (DataAccessException e) {
@@ -776,12 +778,12 @@ public class DataImportDAO_B2c {
 	}
 	
 	/**
-	 * 更新临时表的emaildate(发货时间)
+	 * 更新临时表的emaildate(发货时间)和getDataFlag为0(重新转业务)
 	 * @param cwb
 	 * @param emaildate
 	 */
 	public void update_CwbDetailTempEmaildateByCwb(String cwb, String emaildate) {
-		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set emaildate=? where cwb=? and state = 1 ", emaildate, cwb);
+		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set emaildate=?, getDataFlag=0 where cwb=? and state = 1 ", emaildate, cwb);
 	}
 	
 	

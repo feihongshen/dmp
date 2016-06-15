@@ -21,6 +21,9 @@
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 	function initSelect(){
 		$("#toBranchId").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择操作下一环节' });
@@ -54,6 +57,19 @@ function openadd(){
 	window.location.href="<%=request.getContextPath()%>/branchRouteControl/add.action";
 }
 
+$(document).ready(function(){
+	
+    $("#fromBranchId").multipleSelect({
+        placeholder: "----请选择----",
+        filter: true,
+        single: true
+    });
+    $("#toBranchId").multipleSelect({
+        placeholder: "----请选择----",
+        filter: true,
+        single: true
+    });
+}) ;
 </script>
 </head>
 
@@ -61,18 +77,18 @@ function openadd(){
 
 <div class="right_box">
 	<div class="inputselect_box">
-	<span><input name="" type="button" value="创建货物流向" class="input_button1"  id="add_button"  onclick="openadd()"/>
+	<span><input name="" type="button" value="创建货物流向" class="input_button1"  id="add1"  onclick="openadd()"/>
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
 		当前站点：
-			<select id="fromBranchId" name="fromBranchId" class="select1">
+			<select id="fromBranchId" name="fromBranchId">
 				<option value="0" selected>----请选择----</option>
 				<%for(Branch b : branchlist){ %>
 					<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 				<%} %>
 			</select>
 		目的站点：
-         	<select id="toBranchId"  name="toBranchId" class="select1">
+         	<select id="toBranchId"  name="toBranchId" >
 				<option value="0" selected>----请选择----</option>
 				<%for(Branch b : branchlist){ %>
 					<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
@@ -92,7 +108,7 @@ function openadd(){
 	</form>
 	</div>
 	<div class="right_title">
-	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
+	<div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div><div class="jg_10"></div>
 
 	<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table">
 	<tr class="font_1">

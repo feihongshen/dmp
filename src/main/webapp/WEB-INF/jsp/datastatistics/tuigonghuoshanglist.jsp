@@ -47,6 +47,9 @@
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 	   //获取下拉框的值
@@ -128,8 +131,12 @@ $(function() {
 	    dateFormat: 'yy-mm-dd'
 	});
 	
-	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
+//	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
 	$("#cwbordertypeid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
+    $("#customerid").multipleSelect({
+        placeholder: "请选择供货商",
+        filter: true
+    });
 	
 });
 function searchFrom(){
@@ -189,8 +196,8 @@ function clearSelect(){
 				     }%> ><%=c.getCustomername() %></option>
 		          <%} %>
 		        </select>
-			[<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
-			[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
+			<%--[<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]--%>
+			<%--[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]--%>
 		</td>
 	</tr>
 	<tr>
@@ -258,6 +265,7 @@ function clearSelect(){
 		<input type="hidden" name="flowordertype1" id="flowordertype1" value="<%=request.getParameter("flowordertype")==null?"-1":request.getParameter("flowordertype")%>"/>
 		<input type="hidden" name="orderbyName1" id="orderbyName1" value="<%=request.getParameter("orderbyName")==null?"emaildate":request.getParameter("orderbyName")%>"/>
 		<input type="hidden" name="orderbyType1" id="orderbyType1" value="<%=request.getParameter("orderbyType")==null?"DESC":request.getParameter("orderbyType") %>"/>
+		<input type="hidden" name="count" id="count" value="<%=count %>"/>
 		<div style="display: none;">
 			<select name ="customerid1" id ="customerid1" multiple="multiple" >
 		          <%for(Customer c : customerlist){ %>

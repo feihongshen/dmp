@@ -81,6 +81,8 @@ function editInit(){
 	userInit();
 	window.parent.crossCapablePDA();
 	//window.parent.uploadFormInit("user_save_Form");
+	
+	parent.window.$("#roleid").change();
 }
 function editSuccess(data){
 	$("#searchForm").submit();

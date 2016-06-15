@@ -55,6 +55,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbTranslator;
 import cn.explink.service.DataImportService;
@@ -185,7 +186,7 @@ public class DataImportController {
 		model.addAttribute("addressStart", this.addressStartDAO.isAddressStart());
 
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Long day7 = (System.currentTimeMillis() / 1000) - (60 * 60 * 24 * 5);
+		Long day7 = (System.currentTimeMillis() / 1000) - (60 * 60 * 24 * 7);
 		// model.addAttribute("emaildateList",
 		// emaildateDAO.getEmailDateByDateByUserid(df.format(new
 		// Date(day7*1000)), df.format(new
@@ -266,7 +267,7 @@ public class DataImportController {
 	@RequestMapping("/import")
 	public @ResponseBody CwbOrder importCwborder(Model model, @RequestParam(value = "cwborder") String cwborderjson) throws Exception {
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		CwbOrderDTO dto = new ObjectMapper().reader(CwbOrderDTO.class).readValue(cwborderjson);
+		CwbOrderDTO dto = JacksonMapper.getInstance().reader(CwbOrderDTO.class).readValue(cwborderjson);
 		EmailDate ed = this.dataImportService.getOrCreateEmailDate(dto.getCustomerid(), 0, 0);
 		this.dataImportService.importSingleData(userDetail.getUser(), ed, false, dto);
 

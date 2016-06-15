@@ -210,10 +210,10 @@ h1, h2, h3, h4, h5, h6 {
 												id="userName" title="用户名" iscookie="true" nullmsg="请输入用户名!"
 												style="width: 200px; height: 25px" />												
 											<label id="userName-error" class="error" for="userName" 
-												style="color: red; display: inline-block; width: 80px; height: 25px">
+												style="color: red; font-size: 12px; text-decoration: none; display: inline-block; width: 90px; height: 25px">
 												<%if (request.getParameter("login_error") != null
 														&& request.getParameter("login_error").toString().equals("t")){
-													out.print("登录失败");
+													%>${SPRING_SECURITY_LAST_EXCEPTION.message}<%
 												}%>
 											</label>
 										</div>
@@ -270,6 +270,25 @@ h1, h2, h3, h4, h5, h6 {
 	<script type="text/javascript">	
 	function changeImg(){
 		$("#randomImage").attr("src","<%=request.getContextPath()%>/image?a="+Math.random());
+	}
+	
+	//点击登录
+	$("#formLogin").submit( function(event){
+		if(isOtherUserExists()){
+			if(!confirm("当前浏览器已有其它用户登录，继续登录并取代吗？")){
+				return false;
+			}
+		}
+	});
+	//是否已有用户登录
+	function isOtherUserExists(){
+		if(<%=(request.getSession() != null)%>
+				&& <%=(request.getSession().getAttribute("SPRING_SECURITY_LAST_USERNAME") != null)%>
+				&& "<%=request.getSession().getAttribute("SPRING_SECURITY_LAST_USERNAME")%>" != $('#userName').val()
+		) {
+			return true;
+		}
+		return false;
 	}
   </script>
 </body>

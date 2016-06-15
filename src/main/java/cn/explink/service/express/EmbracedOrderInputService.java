@@ -1,6 +1,7 @@
 package cn.explink.service.express;
 
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,7 @@ import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.enumutil.express.ExpressOrderStatusEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.express.tps.enums.FeedbackOperateTypeEnum;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
 import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
@@ -299,6 +301,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		Date date = new Date();
 
 		if (flags == 0) {
+			this.logger.info("订单录入  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
 			params.put("cwb", embracedOrderVO.getOrderNo());
 			params.put("flowordertype", FlowOrderTypeEnum.LanJianRuZhan.getValue());
 			params.put("cwbstate", CwbStateEnum.PeiShong.getValue());
@@ -314,6 +317,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("shouldfare", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 		} else if (flags == 1) {
+			this.logger.info("订单补录后在修改  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
 			params.put("completehandlerid", user.getUserid());
 			params.put("completehandlername", user.getUsername());
 			params.put("completedatetime", date);
@@ -334,6 +338,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			}
 			
 		} else if (flags == 2) {
+			this.logger.info("订单补录  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
 			params.put("cwb", embracedOrderVO.getOrderNo());
 			params.put("flowordertype", FlowOrderTypeEnum.LanJianRuZhan.getValue());
 			params.put("cwbstate", CwbStateEnum.PeiShong.getValue());
@@ -438,20 +443,20 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			//如果详细地址里面已经含省+市+区，则不再加入省市区
 			String cneeProv = StringUtil.nullConvertToEmptyString((String) (params.get("cwbprovince")));
 			String cneeCity = StringUtil.nullConvertToEmptyString((String) (params.get("cwbcity")));
-			String cneeRegion =StringUtil.nullConvertToEmptyString((String) (params.get("cwbcounty")));
+			String cneeRegion = StringUtil.nullConvertToEmptyString((String) (params.get("cwbcounty")));
 			String cneeTown = StringUtil.nullConvertToEmptyString((String) params.get("recstreet"));
 			String consigneeaddress = StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_adress());
-			if(null != consigneeaddress){
-				if(null != cneeTown && consigneeaddress.indexOf(cneeTown) < 0){//从地址小的开始处理
+			if (null != consigneeaddress) {
+				if ((null != cneeTown) && (consigneeaddress.indexOf(cneeTown) < 0)) {//从地址小的开始处理
 					consigneeaddress = cneeTown + consigneeaddress;
 				}
-				if(null != cneeRegion && consigneeaddress.indexOf(cneeRegion) < 0){
+				if ((null != cneeRegion) && (consigneeaddress.indexOf(cneeRegion) < 0)) {
 					consigneeaddress = cneeRegion + consigneeaddress;
 				}
-				if(null != cneeCity && consigneeaddress.indexOf(cneeCity) < 0){
+				if ((null != cneeCity) && (consigneeaddress.indexOf(cneeCity) < 0)) {
 					consigneeaddress = cneeCity + consigneeaddress;
 				}
-				if(null != cneeProv && consigneeaddress.indexOf(cneeProv) < 0){
+				if ((null != cneeProv) && (consigneeaddress.indexOf(cneeProv) < 0)) {
 					consigneeaddress = cneeProv + consigneeaddress;
 				}
 			}
@@ -484,6 +489,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("instationid", branch.getBranchid());
 			params.put("instationname", branch.getBranchname());
 
+			params.put("credate", Timestamp.valueOf(DateTimeUtil.getNowTime()));
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
 			System.out.println("补录：inset方法，补录标志位：" + embracedOrderVO.getIsadditionflag());
 			// 如果是新建运单，那么他的状态为入站，调用tps状态反馈接口 11.19 如果状态有改变，且变为揽件入站，则需要保存流程信息
@@ -770,17 +776,17 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				String consigneeCountyName = embracedOrderVO.getConsignee_countyName();
 				String consigneeTownName = embracedOrderVO.getConsignee_townName();
 				String address = embracedOrderVO.getConsignee_adress();
-				if(null != address){
-					if(null != consigneeTownName && address.indexOf(consigneeTownName) < 0){//从地址小的开始处理
+				if (null != address) {
+					if ((null != consigneeTownName) && (address.indexOf(consigneeTownName) < 0)) {//从地址小的开始处理
 						address = consigneeTownName + address;
 					}
-					if(null != consigneeCountyName && address.indexOf(consigneeCountyName) < 0){
+					if ((null != consigneeCountyName) && (address.indexOf(consigneeCountyName) < 0)) {
 						address = consigneeCountyName + address;
 					}
-					if(null != consigneeCityName && address.indexOf(consigneeCityName) < 0){
+					if ((null != consigneeCityName) && (address.indexOf(consigneeCityName) < 0)) {
 						address = consigneeCityName + address;
 					}
-					if(null != consigneeProvinceName && address.indexOf(consigneeProvinceName) < 0){
+					if ((null != consigneeProvinceName) && (address.indexOf(consigneeProvinceName) < 0)) {
 						address = consigneeProvinceName + address;
 					}
 				}

@@ -133,6 +133,23 @@ $(function () {
             return false;
         }
 
+        var rows = $('#dg_rsList').datagrid('getChecked');
+        var flag = true;
+        var errReserveOrder = "";
+
+        $.each(rows, function (index, value) {
+            var reserveOrderStatus = value.reserveOrderStatus;
+            if (reserveOrderStatus != haveStationOutZone && reserveOrderStatus != hadAllocationPro) {
+                errReserveOrder = value.reserveOrderNo;
+                flag = false;
+                return false;
+            }
+        });
+        if (!flag) {
+            allertMsg.alertError("{" + errReserveOrder + "} 只有站点超区和已分配省公司状态,才允许关闭!");
+            return false;
+        }
+
         //打开关闭预约单面板
         closeReserveOrderPanel = $.layer({
             type: 1,
@@ -150,20 +167,42 @@ $(function () {
         if (checkAtLeastSelectOneRow()) {
             return false;
         }
-        //var rows = $('#dg_rsList').datagrid('getChecked');
-        
-        //var flag = true;
-        //$.each(rows, function (index, value) {
-        //	var reserveOrderStatus = value.reserveOrderStatus;
-        //	if(reserveOrderStatus != hadAllocationPro && reserveOrderStatus != haveStationOutZone) {
-        //		flag = false;
-        //		return false;
-        //	}
-        //});
-        //if(!flag) {
-        //	allertMsg.alertError("选中的预约单无法做退回总部操作！");
-        //	return false;
-        //}
+
+        var rows = $('#dg_rsList').datagrid('getChecked');
+        var handleType = $(this).attr('handleType');
+        var flag = true;
+        var errReserveOrder = "";
+
+        if(handleType=="handle"){
+            $.each(rows, function (index, value) {
+                var reserveOrderStatus = value.reserveOrderStatus;
+                if(reserveOrderStatus != haveStationOutZone && reserveOrderStatus != hadAllocationPro) {
+                //if(reserveOrderStatus != haveStationOutZone) {
+                    errReserveOrder = value.reserveOrderNo;
+                    flag = false;
+                    return false;
+                }
+            });
+            if(!flag) {
+                allertMsg.alertError("{"+errReserveOrder+"} 只有站点超区和已分配省公司状态,才能退回总部!");
+                return false;
+            }
+        }else if(handleType == "handleWarehouse"){
+            $.each(rows, function (index, value) {
+                var reserveOrderStatus = value.reserveOrderStatus;
+                if(reserveOrderStatus != haveReciveOutZone && reserveOrderStatus != hadAllocationStation) {
+                    //if(reserveOrderStatus != haveStationOutZone) {
+                    errReserveOrder = value.reserveOrderNo;
+                    flag = false;
+                    return false;
+                }
+            });
+            if(!flag) {
+                allertMsg.alertError("{"+errReserveOrder+"} 只有已分配站点和揽件超区,才能退回省公司!");
+                return false;
+            }
+
+        }
         //打开退回总部面板
         returnToCentralPanel = $.layer({
             type: 1,
@@ -182,26 +221,28 @@ $(function () {
             return false;
         }
         var rows = $('#dg_rsList').datagrid('getChecked');
-        //
-        //var flag = true;
-        //$.each(rows, function (index, value) {
-        //	var reserveOrderStatus = value.reserveOrderStatus;
-        //	if(reserveOrderStatus != hadAllocationPro
-        //			&& reserveOrderStatus !=hadAllocationStation
-        //			&& reserveOrderStatus != haveStationOutZone) {
-        //		flag = false;
-        //		return false;
-        //	}
-        //});
-        //if(!flag) {
-        //    if (isHandlePage) {
-        //        allertMsg.alertError("选中的预约单无法做分配站点操作！");
-        //    } else {
-        //        allertMsg.alertError("选中的预约单无法做分配操作！");
-        //    }
-        //
-        //	return false;
-        //}
+
+        if (isHandlePage) {
+            var flag = true;
+            var errReserveOrder = "";
+            $.each(rows, function (index, value) {
+                var reserveOrderStatus = value.reserveOrderStatus;
+                if (reserveOrderStatus != hadAllocationPro
+                    && reserveOrderStatus != hadAllocationStation
+                    && reserveOrderStatus != haveStationOutZone) {
+                    errReserveOrder = value.reserveOrderNo;
+                    flag = false;
+                    return false;
+                }
+            });
+            if (!flag) {
+                //allertMsg.alertError("{"+errReserveOrder+"} 只允许对状态为：已分配省公司、已分配站点、站点超区的预约单进行分配站点操作！");
+                //else {
+                //    allertMsg.alertError("选中的预约单无法做分配操作！");
+                //}
+                //return false;
+            }
+        }
         if (rows.length == 1) {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
             $('#distributeBranchSelect option').each(function () {
@@ -222,6 +263,10 @@ $(function () {
             $('#distributeBranchSelect option:selected').removeAttr('selected');
             $('#distributeCourierSelect option:selected').removeAttr('selected');
         }
+
+        $('#distributeBranchSelect').multipleSelect("refresh");
+        $('#distributeCourierSelect').multipleSelect("refresh");
+
         var title;
         if (isHandlePage) {
             title = '分配站点';
@@ -327,7 +372,8 @@ $(function () {
             county4edit : $('#county4edit').val(),
             countyName4edit : $('#county4edit  option:selected').text(),
             cnorAddr4edit : $('#cnorAddr4edit').val(),
-            requireTimeStr4edit : $('#requireTimeStr4edit').val()
+            requireTimeStr4edit : $('#requireTimeStr4edit').val(),
+            recordVersion : rows[0].recordVersion
         };
 
         $.ajax({
@@ -361,7 +407,8 @@ $(function () {
             var reserveOrder = {};
             reserveOrder.reserveOrderNo = value.reserveOrderNo;
             reserveOrder.recordVersion = value.recordVersion;
-            reserveOrder.reason = $('#closeReason').val()
+            reserveOrder.reason = $('#closeReason').val();
+            reserveOrder.reserveOrderStatus = value.reserveOrderStatus;
             param.push(reserveOrder);
         });
 
@@ -393,6 +440,7 @@ $(function () {
             reserveOrder.recordVersion = value.recordVersion;
             reserveOrder.operateType = returnType;
             reserveOrder.reason = $('#returnReason').val();
+            reserveOrder.reserveOrderStatus = value.reserveOrderStatus;
             param.push(reserveOrder);
         });
 
@@ -438,6 +486,7 @@ $(function () {
             reserveOrder.recordVersion = value.recordVersion;
             reserveOrder.acceptOrg = distributeBranch;
             reserveOrder.courier = distributeCourier;
+            reserveOrder.reserveOrderStatus = value.reserveOrderStatus;
             param.push(reserveOrder);
         });
 

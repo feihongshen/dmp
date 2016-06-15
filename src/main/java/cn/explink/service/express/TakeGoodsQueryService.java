@@ -59,9 +59,7 @@ public class TakeGoodsQueryService {
 	 * @throws ParseException
 	 */
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> getcwbOrderByPage(Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery, User user, String userIds) throws ParseException {
-
 		return this.cwbDao.queryCwbExpressTakeGoodsQueryByPage(page, cwb4TakeGoodsQuery, userIds);
-
 	}
 
 	/**

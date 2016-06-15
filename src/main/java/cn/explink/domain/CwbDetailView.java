@@ -119,7 +119,16 @@ public class CwbDetailView {
 
 	private String pickaddress; //揽件地址
 	private String cwbordertype;//订单类型
+	private String checkstateresultname; //审核状态
 	
+	public String getCheckstateresultname() {
+		return checkstateresultname;
+	}
+
+	public void setCheckstateresultname(String checkstateresultname) {
+		this.checkstateresultname = checkstateresultname;
+	}
+
 	public String getTimelimited() {
 		return timelimited;
 	}

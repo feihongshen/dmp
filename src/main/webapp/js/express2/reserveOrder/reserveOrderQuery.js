@@ -31,6 +31,13 @@ $(function () {
         maxHeight: 200
     });
 
+    $("#distributeCourierSelect").multipleSelect({
+        placeholder: "请选择",
+        single: true,
+        filter: true,
+        maxHeight: 200
+    });
+
     $("#acceptOrg").change(function () {
         changeCourier($(this).val(), "#courier");
     });
@@ -140,7 +147,7 @@ function changeCounty(cityId, changedItem) {
 
                 countySelect.empty();
                 countySelect.get(0).add(new Option("区/县", ""));
-                for (var i = 1; i < countyList.length; i++) {
+                for (var i = 0; i < countyList.length; i++) {
                     countySelect.get(0).add(new Option(countyList[i].name, countyList[i].id));
                 }
             }
@@ -174,14 +181,16 @@ function changeCourier(acceptOrg, changedItem) {
                 for (var i = 0; i < courierList.length; i++) {
                     courierSelect.get(0).add(new Option(courierList[i].realname, courierList[i].userid));
                 }
+                courierSelect.multipleSelect("refresh");
             }
         });
     } else {
         courierSelect.empty();
         courierSelect.get(0).add(new Option("请选择", ""));
+        courierSelect.multipleSelect("refresh");
     }
 
-    courierSelect.multipleSelect("refresh");
+
 }
 
 var allertMsg = {

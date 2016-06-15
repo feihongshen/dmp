@@ -1025,6 +1025,8 @@ function submitBranchLoad(form) {
 	$('#swfupload-control').swfupload('addPostParam', 'cftCertType', $("#cftCertType", parent.document).val());
 	
 	$('#swfupload-control').swfupload('addPostParam', 'branchid', $("#branchid", parent.document).val());
+	//自动化分拣需要的出货口编号
+	$('#swfupload-control').swfupload('addPostParam', 'outputno', $("#outputno", parent.document).val());
 	
 	var checkedValues = new Array();
 	$('input[name="functionids"]:checked', parent.document).each(function() {
@@ -1279,6 +1281,10 @@ function check_user() {
 		alert("请选择员工所在机构");
 		return false;
 	}
+	if ($("#roleid").val() == -1) {
+		alert("请选择员工对应的角色");
+		return false;
+	}
 	/*
 	 * if ($("#showphoneflag").val() == -1) { alert("请选择员工 订单电话/手机是否可见"); return
 	 * false; }
@@ -1298,19 +1304,46 @@ function check_user() {
 		alert("员工登录名格式不正确");
 		return false;
 	}
-	if ($("#password").val().length == 0) {
-		alert("员工登录密码不能为空");
-		return false;
-	}
-	if ($("#password1").val() != $("#password").val()) {
-		alert("员工登录密码两次输入不一致");
-		return false;
-	}
-	if ($("#roleid").val() == -1) {
-		alert("请选择员工对应的角色");
-		return false;
-	}
 	
+	// 网页登录密码, start
+	if ($("#webPassword").val().length == 0) {
+		alert("网页登录密码不能为空");
+		return false;
+	}
+	if ($("#webPassword1").val() != $("#webPassword").val()) {
+		alert("网页登录密码两次输入不一致");
+		return false;
+	}
+	if(!isPasswordValidForWeb($('#webPassword').val())){
+		alert("网页登录密码至少要含小写字母、大写字母、数字、特殊字符中的任意三种，且长度至少需要八位");
+		return false;
+	}
+	if(!isUsernamePasswordNotContainEachOther($('#username').val(), $('#webPassword').val())){
+		alert("用户名与网页登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
+		return false;
+	}
+	// 网页登录密码, end
+	// PDA登录密码, start
+	if ($("#roleid").val() == 2 || $("#roleid").val() == 4){	// 小件员、站长可的PDA登录密码为必填
+		if ($("#password").val().length == 0) {
+			alert("PDA登录密码不能为空");
+			return false;
+		}
+		if ($("#password1").val() != $("#password").val()) {
+			alert("PDA登录密码两次输入不一致");
+			return false;
+		}
+		if(!isPasswordValidForPDA($('#password').val())){
+			alert("PDA登录密码必须为数字，不能过于简单，至少要含三个不同数字，数字不能为日期，且长度至少需要六位");
+			return false;
+		}
+		if(!isUsernamePasswordNotContainEachOther($('#username').val(), $('#password').val())){
+			alert("用户名与PDA登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
+			return false;
+		}
+	}
+	// PDA登录密码, end
+		
 	if ($("#roleid").val() == 2 || $("#roleid").val() == 4){
 		if ($("#username").val().length > 9) {
 			alert("小件员/站长登录名长度不能超过9位！");
@@ -1384,9 +1417,107 @@ function check_user() {
 
 function roleChange() {
 	$("#tip").html("");
+	$("#pdaPwdDiv").css('display','none');
 	if ($("#roleid").val() == '2' || $("#roleid").val() == '4') {
 		$("#tip").html("*");
+		$("#pdaPwdDiv").css('display','');
 	}
+}
+function isPasswordValidForPDA(loginPwd){
+	if(loginPwd.length<6){
+		return false;
+	}
+	//必须为纯数字
+	if(isNaN(loginPwd)){
+		return false;
+	}
+	if(loginPwd=='123456' || loginPwd=='654321' || loginPwd=='123123' || loginPwd=='321321'){
+		return false;
+	}
+	//至少含三个不同数字
+	var numberArray = loginPwd.split("");
+	var numberCountMap = new Array();
+	for(var i=0; i<numberArray.length; i++){
+		var num = numberArray[i];
+		if(isNaN(numberCountMap[num])){
+			numberCountMap[num] = 0;
+		}
+		numberCountMap[num] = numberCountMap[num] + 1;
+	}
+	var diffNumberCount = 0;
+	for(index in numberCountMap){
+		if(numberCountMap[index] > 0){
+			diffNumberCount += 1;
+		}
+	}
+	if(diffNumberCount < 3){
+		return false;
+	}
+	
+	//不能为日期（生日）
+	if(loginPwd.length==8) {
+		var loginPwdInDateStr = loginPwd.substring(0,4) + "-" + loginPwd.substring(4,6) + "-" + loginPwd.substring(6,8);
+		var loginPwdInDate = new Date(loginPwdInDateStr);
+		if(loginPwdInDate instanceof Date && loginPwdInDate.toDateString() != "Invalid Date") {
+			return false;
+		}
+	}
+	return true;
+}
+function isPasswordValidForWeb(loginPwd){
+	if(loginPwd.length<8){
+		return false;
+	}
+	var flag1=false,flag2=false,flag3=false,flag4=false;
+	for(var i=0;i<loginPwd.length;i++){
+		var asc=loginPwd.charCodeAt(i);
+			//判断是否数字
+			if(48<=asc&&asc<=57)
+				flag1=true;
+			//判断是否小写字母
+			if(65<=asc&&asc<=90)
+				flag2=true;
+			//判断是否是大写字母
+			if(97<=asc&&asc<=122)
+				flag4=true;
+			//判断是否字符
+			if((33<=asc&&asc<=47)||(58<=asc&&asc<=64)||(91<=asc&&asc<=96)||(123<=asc&&asc<=126))
+				flag3=true;
+	}
+	var count = 0;
+	if(flag1 == true){
+		count++;
+	}
+	if(flag2 == true){
+		count++;
+	}
+	if(flag3 == true){
+		count++;
+	}
+	if(flag4 == true){
+		count++;
+	}
+	if(count == 3 || count == 4){
+		return true;
+	}else{
+		return false;
+	}
+}
+function isUsernamePasswordNotContainEachOther(loginUsername, loginPwd){
+	var loginUsernameInLowerCase = loginUsername.toLowerCase();
+	var loginPwdInLowerCase = loginPwd.toLowerCase();
+	var loginPwdInLowerCaseReversed = loginPwdInLowerCase.split("").reverse().join("");
+	
+	//正序忽略大小写，不能相互包含
+	if(loginUsernameInLowerCase.indexOf(loginPwdInLowerCase) >= 0 || loginPwdInLowerCase.indexOf(loginUsernameInLowerCase) >= 0){
+		return false;
+	}
+	//倒序忽略大小 写，不能相互包含
+	if(loginUsernameInLowerCase.indexOf(loginPwdInLowerCaseReversed) >= 0 || loginPwdInLowerCaseReversed.indexOf(loginUsernameInLowerCase) >= 0){
+		return false;
+	}
+	
+	return true;
 }
 function submitAddUser(form) {
 
@@ -4608,14 +4739,44 @@ function check_userbranch() {
 		alert("登录名长度不能超过9位！");
 		return false;
 	}
+	
+	// 网页登录密码, start
+	if ($("#webPassword").val().length == 0) {
+		alert("网页登录密码不能为空");
+		return false;
+	}
+	if ($("#webPassword1").val() != $("#webPassword").val()) {
+		alert("网页登录密码两次输入不一致");
+		return false;
+	}
+	if(!isPasswordValidForWeb($('#webPassword').val())){
+		alert("网页登录密码至少要含小写字母、大写字母、数字、特殊字符中的任意三种，且长度至少需要八位");
+		return false;
+	}
+	if(!isUsernamePasswordNotContainEachOther($('#username').val(), $('#webPassword').val())){
+		alert("用户名与网页登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
+		return false;
+	}
+	// 网页登录密码, end
+	// PDA登录密码, start
 	if ($("#password").val().length == 0) {
-		alert("员工登录密码不能为空");
+		alert("PDA登录密码不能为空");
 		return false;
 	}
 	if ($("#password1").val() != $("#password").val()) {
-		alert("员工登录密码两次输入不一致");
+		alert("PDA登录密码两次输入不一致");
 		return false;
 	}
+	if(!isPasswordValidForPDA($('#password').val())){
+		alert("PDA登录密码必须为数字，不能过于简单，至少要含三个不同数字，数字不能为日期，且长度至少需要六位");
+		return false;
+	}
+	if(!isUsernamePasswordNotContainEachOther($('#username').val(), $('#password').val())){
+		alert("用户名与PDA登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
+		return false;
+	}
+	// PDA登录密码, end
+	
 	if ($("#usermobile").val().length == 0) {
 		alert("员工手机不能为空");
 		return false;

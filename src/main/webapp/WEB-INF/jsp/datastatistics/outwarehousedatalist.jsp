@@ -278,6 +278,7 @@ function clearSelect(){
 		<input type="hidden" name="sign" id="sign" value="6"/>
 		<input type="hidden" name="begindate1" id="begindate1" value="<%=starttime%>"/>
 		<input type="hidden" name="enddate1" id="enddate1" value="<%=endtime%>"/>
+		<input type="hidden" name="count" id="count" value="<%=count%>"/>
 		<div style="display: none;">
 				<select name ="nextbranchid1" id ="nextbranchid1"  multiple="multiple" style="width: 320px;">
 			          <%if(branchlist!=null && branchlist.size()>0){ %>

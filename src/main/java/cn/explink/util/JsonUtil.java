@@ -7,9 +7,11 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import cn.explink.pos.tools.JacksonMapper;
+
 public class JsonUtil {
 
-	private static ObjectMapper objectMapper = new ObjectMapper();
+	private static ObjectMapper objectMapper = JacksonMapper.getInstance();
 
 	public static String translateToJson(Object obj) throws IOException, JsonGenerationException, JsonMappingException {
 		return objectMapper.writeValueAsString(obj);

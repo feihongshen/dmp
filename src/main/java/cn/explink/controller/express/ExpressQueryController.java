@@ -61,6 +61,7 @@ import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
+import net.sf.json.JSONObject;
 
 @RequestMapping("/expressQueryController")
 @Controller
@@ -237,6 +238,7 @@ public class ExpressQueryController {
 			}
 
 			final List<CwbKuaiDiView> cwbOrderViewList = cwbViewList;
+			String dataJson = setexportExcelJson(request);
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
 				public void fillData(Sheet sheet, CellStyle style) {
@@ -255,6 +257,8 @@ public class ExpressQueryController {
 				}
 			};
 			excelUtil.excel(response, cloumnName, sheetName, fileName);
+			//记录导出excel日志
+			this.auditExportExcel(dataJson, fileName, cwbOrderViewList.size(), this.getSessionUser().getUserid());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -297,5 +301,32 @@ public class ExpressQueryController {
 
 		}
 		return cwbOrderViewList;
+	}
+	
+	private String setexportExcelJson(HttpServletRequest request){
+		JSONObject json = new JSONObject();
+		json.put("timeType", request.getParameter("timeType1") == null ? -1 : request.getParameter("timeType1"));
+		json.put("begindate", request.getParameter("begindate1") == null ? "" : request.getParameter("begindate1").toString());
+		json.put("enddate", request.getParameter("enddate1") == null ? "" : request.getParameter("enddate1").toString());
+		json.put("lanshoubranchids", request.getParameterValues("lanshoubranchid1") == null ? new String[] {} : request.getParameterValues("lanshoubranchid1"));
+		json.put("paisongbranchids", request.getParameterValues("paisongbranchid1") == null ? new String[] {} : request.getParameterValues("paisongbranchid1"));
+		return json.toString();
+	}
+	
+	/**
+	 * 记录所有导出文件的操作
+	 * 
+	 * @param request
+	 * @param dataJson
+	 * @param userid
+	 */
+	private void auditExportExcel(String dataJson, String fileName, long count, long userid) {
+		try{
+			String logStr = String.format(
+					"UserId [%s] was exported the excel file:[name: %s, line-count: %d] by using conditions [%s]", userid, fileName, count, dataJson);
+			logger.info(logStr);
+		}catch(Exception e){
+			logger.error("Fail to log exported file info");
+		}
 	}
 }

@@ -110,6 +110,7 @@ public class ShangMenTuiCwbDetailDAO {
 	    sql.append("select distinct sd.cwb from shangmentuicwb_detail sd left join express_ops_cwb_detail cd "
 				+ " on sd.cwb=cd.cwb where cd.state=1 ");
 		if (printType == 0) {
+			sql.append(" and cd.flowordertype IN(1,2,3,4,6,7,8,37) ");
 			sql.append(" and cd.printtime='' ");
 		} else {
 			sql.append(" and cd.printtime >= '" + begindate + "'  and cd.printtime <= '" + enddate + "'");
