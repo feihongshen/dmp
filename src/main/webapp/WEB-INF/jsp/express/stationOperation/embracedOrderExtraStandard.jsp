@@ -845,17 +845,17 @@
       		confirmFunction("寄件人手机或固话未填写");
         }
       	//校验寄件人手机号是否正确
-      	if($.trim(sender_cellphone.val()) != ""){
+      	/* if($.trim(sender_cellphone.val()) != ""){
       		if(!cellPhoneValidater(sender_cellphone, "寄件人")){
             	return false;
             }
-      	}
+      	} */
       	//校验寄件人固话是否正确
-      	if($.trim(sender_telephone.val()) != ""){
+      	/* if($.trim(sender_telephone.val()) != ""){
       		if(!phoneValidater(sender_telephone,"寄件人")){
             	return false;
             }
-      	}
+      	} */
       	//校验寄件人证件号是否超长
       	if($.trim(sender_certificateNo.val()) != ""){
       		if(!checkLength(sender_certificateNo, 25,"寄件人证件号",25)){
@@ -924,17 +924,17 @@
       		confirmFunction("收件人手机或固话未填写");
         }
       	//校验收件人手机号是否正确
-      	if($.trim(consignee_cellphone.val()) != ""){
+      	/* if($.trim(consignee_cellphone.val()) != ""){
       		if(!cellPhoneValidater(consignee_cellphone, "收件人")){
             	return false;
             }
-      	}
+      	} */
       	//校验收件人固话是否正确
-      	if($.trim(consignee_telephone.val()) != ""){
+      	/* if($.trim(consignee_telephone.val()) != ""){
       		if(!phoneValidater(consignee_telephone, "收件人")){
             	return false;
             }
-      	}
+      	} */
       //校验收件人证件号码是否超长
       	if($.trim(consignee_certificateNo.val()) != ""){
       		if(!checkLength(consignee_certificateNo, 25, "收件人证件号",25)){
@@ -2273,8 +2273,9 @@
 	
 	//预约单信息双击事件
 	function reserveTableDblClick(reserve){
+		console.log($(reserve).find("td").eq(4).text());
 		$("#reserveOrderNo").val($(reserve).find("td").eq(0).text());
-		$("#reserveOrderNo").val($(reserve).find("td").eq(4).text());
+		$("#recordVersionTd").val($(reserve).find("td").eq(4).text());
 	}
 	
 	function getFeeByCondition(){
