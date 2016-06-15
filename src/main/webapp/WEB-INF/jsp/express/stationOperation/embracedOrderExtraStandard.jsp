@@ -1493,7 +1493,7 @@
 					$("#receive_countyId").html(data.embracedOrderVO.consignee_countyid);
 					$("#receive_townId").html(data.embracedOrderVO.consignee_townid); 
 					 initArea(); 
-					 console.log(data.reserveOrder)
+					 console.log(data.reserveOrder.recordVersion)
 					 if(data.reserveOrder!=undefined){
 						 $("#reserveOrderNo").val(data.reserveOrder.reserveOrderNo);
 							$("#recordVersion").val(data.reserveOrder.recordVersion);  
@@ -2275,7 +2275,7 @@
 	function reserveTableDblClick(reserve){
 		console.log($(reserve).find("td").eq(4).text());
 		$("#reserveOrderNo").val($(reserve).find("td").eq(0).text());
-		$("#recordVersionTd").val($(reserve).find("td").eq(4).text());
+		$("#recordVersion").val($(reserve).find("td").eq(4).text());
 	}
 	
 	function getFeeByCondition(){
