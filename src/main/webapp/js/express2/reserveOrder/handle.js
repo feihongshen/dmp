@@ -149,7 +149,6 @@ $(function () {
             allertMsg.alertError("{" + errReserveOrder + "} 只有站点超区和已分配省公司状态,才允许关闭!");
             return false;
         }
-
         //打开关闭预约单面板
         closeReserveOrderPanel = $.layer({
             type: 1,
