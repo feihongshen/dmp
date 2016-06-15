@@ -967,6 +967,7 @@ public class ReserveOrderController extends ExpressCommonController {
 			logger.error(e.getMessage(), e);
 		}
     	if(deliveryInfoModel!=null && deliveryInfoModel.size()!=0){
+    		logger.info("运费：{} 计费重量: {}", deliveryInfoModel.get(0).getPrice(),deliveryInfoModel.get(0).getCalWeight() );
     		return deliveryInfoModel.get(0);
     	}else{
     		return null;
