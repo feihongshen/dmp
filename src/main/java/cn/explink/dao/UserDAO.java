@@ -484,6 +484,15 @@ public class UserDAO {
 			return null;
 		}
 	}
+	
+	public List<User> getUserByRoleAndBranchName(int roleid, String branchName) {
+		try {
+			String sql = "SELECT * FROM express_set_user u, express_set_branch b WHERE u.branchid = b.branchid and u.roleid=? and b.branchname=? and u.userDeleteFlag=1 and u.employeestatus=1";
+			return this.jdbcTemplate.query(sql, new UserRowMapper(), roleid, branchName);
+		} catch (EmptyResultDataAccessException ee) {
+			return null;
+		}
+	}
 
 	public List<User> getUserByRolesAndBranchid(String roleids, long branchid) {
 		try {

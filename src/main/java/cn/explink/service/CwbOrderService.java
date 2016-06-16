@@ -128,6 +128,7 @@ import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbApplyZhongZhuan;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbDiuShi;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.domain.CwbOrder;
@@ -473,7 +474,11 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	private MPSOptStateService mPSOptStateService;
 	@Autowired
-	private MqExceptionDAO mqExceptionDAO;
+	private MqExceptionDAO mqExceptionDAO; 
+	
+	@Autowired
+	private UserDAO userDao;
+	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
@@ -9662,5 +9667,36 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * 订单站点匹配到小件员
+	 * 2016年6月15日 下午6:21:31
+	 * @param page
+	 * @param customerid
+	 * @param ordercwb
+	 * @param emaildateid
+	 * @param addressCodeEditType
+	 * @param onePageNumber
+	 * @param branchid
+	 * @return
+	 */
+	public List<CwbOrderBranchMatchVo> getCwbBranchMatchVoByPageMyWarehouse(long page, long customerid, String ordercwb,
+			long emaildateid, CwbOrderAddressCodeEditTypeEnum addressCodeEditType, long onePageNumber, long branchid) {
+		List<CwbOrder> cwbOrderList = this.cwbDAO.getcwbOrderByPageIsMyWarehouse(page, customerid, ordercwb, emaildateid,
+				addressCodeEditType, onePageNumber, branchid);
+		List<CwbOrderBranchMatchVo> voList = new ArrayList<CwbOrderBranchMatchVo>(cwbOrderList.size());
+		for(CwbOrder cwbOrder : cwbOrderList) {
+			CwbOrderBranchMatchVo vo = new CwbOrderBranchMatchVo();
+			vo.setCwbOrder(cwbOrder);
+			CwbFlowOrderTypeEnum cwbFlowOrderType =  CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
+			vo.setFlowordertypeVal(cwbFlowOrderType == null ? null : cwbFlowOrderType.getText());
+			if(org.apache.commons.lang3.StringUtils.isNotBlank(cwbOrder.getExcelbranch())) {
+				List<User> courierList = this.userDao.getUserByRoleAndBranchName(2, cwbOrder.getExcelbranch());
+				vo.setCourierList(courierList);
+			}
+			voList.add(vo);
+		}
+		return voList;
 	}
 }

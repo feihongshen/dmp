@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +47,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.ExcelImportEdit;
 import cn.explink.domain.SystemInstall;
@@ -402,7 +402,7 @@ public class DataImportController {
 		model.addAttribute("branchs", branchDAO.getBanchByBranchidForStock("" + BranchEnum.ZhanDian.getValue()));
 		model.addAttribute("customers", customerDAO.getAllCustomers());
 		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-		List<CwbOrder> cwborderList = new ArrayList<CwbOrder>();
+		List<CwbOrderBranchMatchVo> cwbOrderBranchMatchVoList = new ArrayList<CwbOrderBranchMatchVo>();
 		Page pageobj = new Page();
 		long NotSuccess = 0;
 		long SuccessAddress = 0;
@@ -423,8 +423,7 @@ public class DataImportController {
 		}
 		
 		if (isshow != 0) {
-			
-			cwborderList = cwbDAO.getcwbOrderByPageIsMyWarehouse(page, customerid, cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), onePageNumber, branchid);
+			cwbOrderBranchMatchVoList = this.cwbOrderService.getCwbBranchMatchVoByPageMyWarehouse(page, customerid, cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), onePageNumber, branchid);
 			pageobj = new Page(cwbDAO.getcwborderCountIsMyWarehouse(customerid, cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), branchid), page, onePageNumber);
 			NotSuccess = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.WeiPiPei);
 			SuccessAddress = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
@@ -433,7 +432,7 @@ public class DataImportController {
 			
 		}
 		
-		model.addAttribute("Order", cwborderList);
+		model.addAttribute("cwbOrderBranchMatchVoList", cwbOrderBranchMatchVoList);
 		model.addAttribute("page_obj", pageobj);
 		model.addAttribute("page", page);
 		model.addAttribute("NotSuccess", NotSuccess);
