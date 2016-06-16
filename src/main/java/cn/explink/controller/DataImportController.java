@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +40,7 @@ import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.ExcelImportEditDao;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.ImportFieldDAO;
+import cn.explink.dao.ShiXiaoDAO;
 import cn.explink.dao.SysConfigDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
@@ -139,6 +140,9 @@ public class DataImportController {
 
 	@Autowired
 	TransCwbDao transCwbDao;
+	
+	@Autowired
+	ShiXiaoDAO shixiaoDao;
 
 	private static Logger logger = LoggerFactory.getLogger(DataImportController.class);
 
@@ -236,11 +240,17 @@ public class DataImportController {
 	}
 
 	@RequestMapping("/datalose")
+	@Transactional
 	public String datalose(Model model, @RequestParam(value = "emaildate", defaultValue = "0", required = false) long emaildateid,
 			@RequestParam(value = "isEdit", defaultValue = "no", required = false) String isEdit) {
 		if ("yes".equals(isEdit) && !ServiceUtil.isNowImport(emaildateid)) {
 			List<String> cwblist = this.cwbDAO.getCwbsListByEmailDateId(emaildateid);
 
+			for(String cwb:cwblist){
+				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+				this.shixiaoDao.creAbnormalOrdernew(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb, co
+						.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), this.getSessionUser().getUserid(), 129, co.getCwbstate(), co.getEmaildate());
+			}
 			this.transCwbDao.deleteTranscwbByCwbs(this.dataImportService.getStrings(cwblist));
 			this.cwbDAO.dataLose(emaildateid);
 			this.emaildateDAO.loseEmailDateById(emaildateid);
