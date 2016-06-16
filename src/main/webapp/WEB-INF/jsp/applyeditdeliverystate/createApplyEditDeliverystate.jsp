@@ -204,7 +204,9 @@ function changereasonremark(obj,opscwbid){
 						                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
 						                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
 						                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
-						                 		<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+						                 		<%-- 
+						                 			hps_Concerto 注释  2016年5月25日12:06:43
+						                 		<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option> --%>
 												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
 												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
 						                   <%} %>

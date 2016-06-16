@@ -360,7 +360,7 @@ function actionType(src)
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扫描号</td>
 				<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">操作机构</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扫描类型</td>
-				<td width="13%" align="center" valign="middle" bgcolor="#eef6ff">错误类型</td>
+				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">错误类型</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作时间</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作人</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
@@ -384,7 +384,7 @@ function actionType(src)
 					<%}	
 				}%>
 				</td>
-				<td width="13%" align="center" valign="middle">
+				<td width="10%" align="center" valign="middle">
 				<%if(ec.getErrortype().length()>0&&ec.getErrortype().matches("^[0-9]*$")){ %>
 					<%for(ExceptionCwbErrorTypeEnum er:ExceptionCwbErrorTypeEnum.values()){
 						if(Long.parseLong(ec.getErrortype())==er.getValue()){%>

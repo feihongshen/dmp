@@ -246,7 +246,7 @@
 		var $searchForm = $("#searchForm");
 		//保存现场
 		var action = $searchForm.attr("action");
-		var target = $searchForm.attr("action");
+		var target = $searchForm.attr("target");
 		//提交请求
 		$searchForm.attr("action", contextPath + "/express2/reserveOrder/exportExcel/handle");
 		$searchForm.attr("target", "_blank");

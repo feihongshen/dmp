@@ -9,4 +9,4 @@ CREATE TABLE `express_set_entrance` (
 );
 
 -- 系统参数
-INSERT INTO `express_set_system_install` ( `name`, `value`, `chinesename`) VALUES ( 'AutoAllocating', '1', '自动分拨开关（0：关闭，1：开启）');
+INSERT INTO `express_set_system_install` ( `name`, `value`, `chinesename`) VALUES ( 'AutoAllocating', '0', '自动分拨开关（0：关闭，1：开启）');

@@ -1,6 +1,7 @@
 package cn.explink.b2c.vipshop;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -349,6 +350,7 @@ public class VipshopInsertCwbDetailTimmer {
 			if(cwbOrder.getIsmpsflag() == IsmpsflagEnum.yes.getValue()){
 				logger.info("======一票多件[cwb="+strCwb+"]更新业务表对应的数据项==Begin====");
 				
+				String emaildate    = cwbOrderDto.getEmaildate();
 				String strTranscwbs = cwbOrderDto.getTranscwb()==null?"":cwbOrderDto.getTranscwb();
 				int    totalPack    = cwbOrderDto.getSendcargonum();
 				int    ismpsflag    = cwbOrderDto.getIsmpsflag();
@@ -372,7 +374,15 @@ public class VipshopInsertCwbDetailTimmer {
 				}
 				
 				//添加运单信息(该方法已经做了防重处理)
-				this.dataImportService.insertTransCwbDetail(cwbOrderDto, cwbOrder.getEmaildate());
+				this.dataImportService.insertTransCwbDetail(cwbOrderDto, emaildate);
+				
+				//把发货时间写入订单表
+				cwbDAO.updateEmaildate(strCwb, emaildate);
+				
+				//把发货时间写入运单表
+				if(arrTranscwb != null && arrTranscwb.length > 0){
+					dataImportService.updateEmaildate(Arrays.asList(arrTranscwb), emaildate);
+				}
 				
 				logger.info("======一票多件[cwb="+strCwb+"]更新业务表对应的数据项==End====");
 			}

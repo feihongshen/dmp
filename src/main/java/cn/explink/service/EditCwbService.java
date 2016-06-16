@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.b2c.tps.ThirdPartyOrder2DOCfgService;
 import cn.explink.dao.AccountCwbDetailDAO;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.AccountCwbSummaryDAO;
@@ -128,6 +129,11 @@ public class EditCwbService {
 	@Autowired
 	CwbDAO cwbDao;
 
+	@Autowired
+	CwbOrderService cwborderService;
+	@Autowired
+	ThirdPartyOrder2DOCfgService thirdPartyOrder2DOCfgService;
+	
 	/**
 	 * 修改订单 之 重置审核状态
 	 *
@@ -138,7 +144,7 @@ public class EditCwbService {
 	 * @param cwbs
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED)
-	public EdtiCwb_DeliveryStateDetail analysisAndSaveByChongZhiShenHe(String cwb, Long requestUser, Long editUser) {
+	public EdtiCwb_DeliveryStateDetail analysisAndSaveByChongZhiShenHe(String cwb, Long requestUser, User editUser) {
 		this.logger.info("EditCwb_SQL:{}重置审核状态 开始", cwb);
 		// 根据cwb 获得 订单表 express_ops_cwb_detail 有效记录 state lock
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock
@@ -187,7 +193,7 @@ public class EditCwbService {
 		ec_dsd.setDsid(ds.getId());
 		ec_dsd.setEditcwbtypeid(EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue());
 		ec_dsd.setRequestUser(requestUser);
-		ec_dsd.setEditUser(editUser);
+		ec_dsd.setEditUser(editUser.getUserid());
 
 		ec_dsd.getDs().setGcaid(gca.getId());
 		ec_dsd.setFinance_audit_id(financeAuditId);
@@ -231,12 +237,13 @@ public class EditCwbService {
 		// 删除返单表
 		this.returnCwbsDAO.deleteReturnCwbByCwb(cwb);
 
+
 		/**
 		 * 云订单重置审核状态
 		 */
 		try {
 			JSONReslutUtil.getResultMessageChangeLog(this.omsUrl() + "/OMSChange/editcwb", "type=1&cwb=" + co.getCwb() + "&nextbranchid=" + nextbranchid + "&flowordertype="
-					+ FlowOrderTypeEnum.FenZhanLingHuo.getValue() + "&currentbranchid=0&deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue(), "POST");
+					+ FlowOrderTypeEnum.FenZhanLingHuo.getValue() + "&currentbranchid=0&deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue()+ "&customerid=" +co.getCustomerid() , "POST");
 		} catch (IOException e1) {
 			logger.error("", e1);
 			this.logger.info("云订单重置审核状态异常:" + co.getCwb());
@@ -476,6 +483,7 @@ public class EditCwbService {
 
 		return ec_dsd;
 	}
+	
 
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public EdtiCwb_DeliveryStateDetail analysisAndSaveByKuaiDiYunFei(String cwb, String isDeliveryState, BigDecimal shouldfare, BigDecimal cash, BigDecimal pos, BigDecimal checkfee,
@@ -1698,7 +1706,7 @@ public class EditCwbService {
 		return ec_dsd;
 	}
 
-	public final String omsUrl() {
+	public String omsUrl() {
 		// SystemInstall omsPathUrl =
 		// systemInstallDAO.getSystemInstallByName("omsPathUrl");
 		SystemInstall omsUrl = this.systemInstallDAO.getSystemInstallByName("omsUrl");

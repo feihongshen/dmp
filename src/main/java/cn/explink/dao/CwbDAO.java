@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
-
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
@@ -2142,6 +2141,17 @@ public class CwbDAO {
 			sql = "update express_ops_cwb_detail set carrealweight=?,carsize=? where commoncwb=? and state =1 ";
 		}
 		this.jdbcTemplate.update(sql, carrealweight, carsize, scancwb);
+	}
+	
+	/**
+	 * 更新订单重量
+	 * @param orderWeight
+	 * @param cwb
+	 */
+	public void saveCwbWeight(BigDecimal orderWeight , String cwb){
+		StringBuffer sql = new StringBuffer() ;
+		sql.append("update express_ops_cwb_detail set carrealweight=? where cwb=? and state =1 ") ;
+		this.jdbcTemplate.update(sql.toString(),orderWeight,cwb) ;
 	}
 
 	public void saveCwbForPrintChangecwb(String carrealweight, String carsize,
@@ -9646,7 +9656,10 @@ public class CwbDAO {
 		return this.jdbcTemplate.query("select * from express_ops_cwb_detail  WHERE state=1 AND customerid=? AND flowordertype=? "
 				+ " and deliverybranchid>0 ORDER BY opscwbid LIMIT 0,?  ", new CwbMapper(),customerid,flowordertype,maxCount);
 	}
-	
+	public void updateTranscwbByCwb(String cwb, String addTranscwbs) {
+		this.jdbcTemplate.update(
+				"update express_ops_cwb_detail set transcwb=? where cwb=? and state = 1 ",addTranscwbs, cwb);		
+	}
 	public String getTpsTransportNoByCwb(String cwb) {
 		try {
 			return this.jdbcTemplate

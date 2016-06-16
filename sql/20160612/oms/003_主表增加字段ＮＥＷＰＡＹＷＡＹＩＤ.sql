@@ -1,0 +1,1 @@
+alter table `express_ops_cwb_detail` add column `newpaywayid` varchar(10) DEFAULT '1' NULL after `infactfare`;

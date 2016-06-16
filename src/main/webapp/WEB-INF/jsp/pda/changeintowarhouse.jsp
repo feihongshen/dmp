@@ -79,6 +79,12 @@ function moreOpt(){
 }
 var emaildate=0;
 	$(function(){
+		if('${auto_allocat}'=="1"){
+			$('#autoallocating_switch').show();	
+		}
+		else if('${auto_allocat}'=="0"){
+			$('#autoallocating_switch').hide();
+		}
 		$("#more").click(moreOpt);
 		emaildate=GetQueryString("emaildate");
 		initEmailDateUI(emaildate);
@@ -117,7 +123,7 @@ var emaildate=0;
 			
 		}) 
 
-$(function(){
+$(function(){	
 	var $menuli1 = $("#bigTag li");
 	$menuli1.click(function(){
 		$(this).children().addClass("light");
@@ -238,6 +244,10 @@ $(function(){
 	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
+		if('${auto_allocat}'=="1"&&$("#entryselect").val()=='-1'){
+			alert("请选择自动分拨机入口");
+			return;
+		}
 		if($("#emaildate").val()>0){
 			var flag=false;
 			$(".cwbids").each(function(i,val){
@@ -280,7 +290,9 @@ $(function(){
 									+ "&driverid=" + driverid
 									+ "&requestbatchno=" + requestbatchno,
 							data : {
-								"comment" : comment
+								"comment" : comment,
+								"autoallocatid": $("#entryselect").val(),
+								"direction" :$("input[name='direction']:checked").val()
 							},
 							dataType : "json",
 							success : function(data) {
@@ -645,6 +657,42 @@ $(function(){
  		}
  	});
  }
+ 
+function connect(){
+	if($("#entryselect").val()=='-1'){
+		alert("请选择自动分拨机入口");
+		return;
+	}
+	$.ajax({
+ 		type: "POST",
+ 		url: "<%=request.getContextPath()%>/PDA/connect",
+ 		data:{
+			"entranceno":$("#entryselect").val()
+		},
+ 		dataType : "json",
+ 		success : function(data) {
+ 			
+ 		}
+ 	});
+}
+
+function flush(){
+	if($("#entryselect").val()=='-1'){
+		alert("请选择自动分拨机入口");
+		return;
+	}
+	$.ajax({
+ 		type: "POST",
+ 		url: "<%=request.getContextPath()%>/PDA/flush",
+ 		data:{
+			"entranceno":$("#entryselect").val()
+		},
+ 		dataType : "json",
+ 		success : function(data) {
+ 			
+ 		}
+ 	});
+}
 </script>
 </head>
 <body style="background: #f5f5f5" marginwidth="0" marginheight="0">

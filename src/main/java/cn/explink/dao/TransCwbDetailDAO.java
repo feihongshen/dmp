@@ -1,5 +1,6 @@
 package cn.explink.dao;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -358,9 +359,61 @@ public class TransCwbDetailDAO {
 		this.jdbcTemplate.update(sql, nextbranchId, cwb);
 	}
 	
+	/**
+	 * 更新运单重量
+	 * @param cwb
+	 * @param transCwb
+	 * @param carrealweight
+	 */
+	public void updateTransCwbDetailWeight(String cwb , String transCwb , BigDecimal carrealweight){
+		String  sql = "update express_ops_transcwb_detail set carrealweight=?  where transcwb = ?  and cwb = ? ";
+		this.jdbcTemplate.update(sql,carrealweight,transCwb,cwb) ;
+	}
 	
 	public void updateNextbranchByTranscwb(String transcwb, long nextbranchId) {
 		String sql = "update express_ops_transcwb_detail set nextbranchid=? where transcwb=?";
 		this.jdbcTemplate.update(sql, nextbranchId, transcwb);
+	}
+	
+	/**
+	 * 查找查看每一个运单号的状态
+	 *
+	 * @return
+	 */
+	public List<Long> getTransCwbStateListByCwb(String cwb) {
+		List<Long> transCwbList = null;
+		String sql = "select transcwboptstate from express_ops_transcwb_detail where cwb=?";
+		try {
+			transCwbList = this.jdbcTemplate.queryForList(sql, Long.class, cwb);
+		} catch (DataAccessException e) {
+		}
+		return transCwbList;
+	}
+	
+	public void updateEmaildate(String cwb,String transcwb, String emaildate) {
+		if( emaildate == null || emaildate.trim().length()<1){
+			return;
+		}
+		
+		Date emaildateObj = DateTimeUtil.parseDate(emaildate, DateTimeUtil.DEF_DATETIME_FORMAT);
+		
+		String sql="update express_ops_transcwb_detail set emaildate=? where transcwb=? and cwb=?";
+		this.jdbcTemplate.update(sql, emaildateObj,transcwb,cwb);
+	}
+  
+  /**
+	 * 根据订单号，获取所有的运单
+	 *
+	 * @return
+	 */
+	public List<TransCwbDetail> queryTransCwbDetail(String cwb) {
+		StringBuffer sql = new StringBuffer("select * from express_ops_transcwb_detail") ;
+		 sql.append(" where cwb = '").append(cwb).append("'");
+		return this.jdbcTemplate.query(sql.toString(), new TransCwbRowMapper());
+	}
+	
+	public void updatePreviousbranchidByCwb(final String cwb, long previousbranchid) {
+		String sql = "update express_ops_transcwb_detail set previousbranchid=? where cwb=?";
+		this.jdbcTemplate.update(sql, previousbranchid, cwb);
 	}
 }
