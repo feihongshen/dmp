@@ -9689,7 +9689,7 @@ public class CwbDAO {
 				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
 
 		if (!StringUtil.isEmpty( cwb) ) {
-			sql.append( " and a.cwb=" + cwb);
+			sql.append( " and a.cwb='" + cwb +"'");
 		}
 		if (!StringUtil.isEmpty(cwbordertypeids)){
 			sql.append( " and a.cwbordertypeid in(" + cwbordertypeids +") ");
@@ -9725,7 +9725,7 @@ public class CwbDAO {
 				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
 
 		if (!StringUtil.isEmpty( cwb) ) {
-			sql.append( " and a.cwb=" + cwb);
+			sql.append( " and a.cwb='" + cwb +"'");
 		}
 		if (!StringUtil.isEmpty(cwbordertypeids)){
 			sql.append( " and a.cwbordertypeid in(" + cwbordertypeids +") ");
