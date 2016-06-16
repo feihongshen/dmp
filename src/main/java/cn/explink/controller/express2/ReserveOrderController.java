@@ -108,6 +108,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		
 		// 是否是站长
 		model.addAttribute("isWarehouseMaster", this.isWarehouseMaster());
+        model.addAttribute("isCustomService",this.isCustomService());
 		return "express2/reserveOrder/query";
 	}
 	

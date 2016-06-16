@@ -25,18 +25,16 @@
 						至
 						<input type ="text" name ="appointTimeEnd" id="appointTimeEnd"  value=""  readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'appointTimeStart\')}'})"/>
 					</td>
-                    <c:if test="${!isWarehouseMaster}">
+                    <c:if test="${isCustomService}">
                         <td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">市区：</td>
                         <td>
-                            <select name="cnorCity" id="cnorCity" style="width:100px;"
-                                    <c:if test="${isWarehouseMaster}">disabled="disabled"</c:if>>
+                            <select name="cnorCity" id="cnorCity" style="width:100px;">
                                 <option value="" selected="selected">市</option>
                                 <c:forEach items="${cityList}" var="list">
                                     <option value="${list.id}">${list.name}</option>
                                 </c:forEach>
                             </select>
-                            <select name="cnorRegion" id="cnorRegion" style="width:100px;"
-                                    <c:if test="${isWarehouseMaster}">disabled="disabled"</c:if>>
+                            <select name="cnorRegion" id="cnorRegion" style="width:100px;">
                                 <option value="">区/县</option>
                             </select>
                         </td>
