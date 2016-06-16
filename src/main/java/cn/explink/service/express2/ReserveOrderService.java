@@ -631,6 +631,7 @@ public class ReserveOrderService extends ExpressCommonService {
      * @param branch 
      * @param omReserveOrderModels
      * @param returnType
+     * @return 
      * @throws OspException
      */
     public void returnReserveOrderStateToTps(EmbracedOrderVO embracedOrderVO, Branch branch) {
@@ -641,6 +642,8 @@ public class ReserveOrderService extends ExpressCommonService {
         pjSaleOrderFeedbackRequest.setOperateType(27);
         pjSaleOrderFeedbackRequest.setOperater(embracedOrderVO.getDelivermanName());
         pjSaleOrderFeedbackRequest.setOperateOrg(branch.getTpsbranchcode());
+        pjSaleOrderFeedbackRequest.setTransportNo(embracedOrderVO.getOrderNo());
+        pjSaleOrderFeedbackRequest.setAcceptOrg(branch.getTpsbranchcode());
         Date now = new Date();
         pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
 

@@ -2264,7 +2264,7 @@
 		$("#sender_cityid_id").val($(sender).find("td").eq(7).text());
 		$("#sender_cityName_id").val($(sender).find("td").eq(2).text());
 		$("#sender_countyName_id").val($(sender).find("td").eq(3).text());
-		$("#consignee_townid_id").val($(sender).find("td").eq(9).text());
+		$("#sender_townid_id").val($(sender).find("td").eq(9).text());
 		$("#sender_townName_id").val($(sender).find("td").eq(4).text());
 		$("#sender_adress_id").val($(sender).find("td").eq(5).text());
 		$("#consignee_adress_id").val(consignee_adress);

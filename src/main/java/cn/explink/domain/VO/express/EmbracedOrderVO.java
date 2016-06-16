@@ -317,6 +317,9 @@ public class EmbracedOrderVO {
 	
 	//版本号
 	private Long recordVersion;
+	
+	//tps运单号
+	private String tpsTranscwb;
 
 	public String getOrderNo() {
 		return this.orderNo;
@@ -956,6 +959,14 @@ public class EmbracedOrderVO {
 
 	public void setRecordVersion(Long recordVersion) {
 		this.recordVersion = recordVersion;
+	}
+
+	public String getTpsTranscwb() {
+		return tpsTranscwb;
+	}
+
+	public void setTpsTranscwb(String tpsTranscwb) {
+		this.tpsTranscwb = tpsTranscwb;
 	}
 	
 }

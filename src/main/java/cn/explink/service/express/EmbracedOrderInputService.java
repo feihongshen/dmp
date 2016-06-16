@@ -332,7 +332,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 		
 			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
-			if(embracedOrderVO.getPayment_method().equals("1")){
+			if(embracedOrderVO.getPayment_method()!=null&&embracedOrderVO.getPayment_method().equals("1")){
 				params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
 				params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
 			}else{
@@ -362,7 +362,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("shouldfare", StringUtils.isNotBlank(embracedOrderVO.getFreight()) ? embracedOrderVO.getFreight() : 0.00);
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
-			if(embracedOrderVO.getPayment_method().equals("1")){
+			if(embracedOrderVO.getPayment_method()!=null&&embracedOrderVO.getPayment_method().equals("1")){
 				params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
 				params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
 			}else{
@@ -523,8 +523,13 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		}
 		if ("true".equals(flag)) {
 			if(!StringUtil.isEmpty(embracedOrderVO.getReserveOrderNo())){
-				//快递二期新增，反馈预约单状态:揽收成功给tps
-				this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO,branch);
+				try{
+					//快递二期新增，反馈预约单状态:揽收成功给tps
+					this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO,branch);
+				}catch(Exception e){
+					flag="false"; 
+				}
+				
 			}
 			this.logger.info("保存成功");
 		} else {
@@ -900,6 +905,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("代收货款运单未输入代收货款金额");
 			return false;
 		}
+		
 		for (String key : keys) {
 			if ("OrderNo".equals(key) || "Monthly_account_number".equals(key) || "Sender_companyName".equals(key) || "Sender_townName".equals(key) || "Sender_cellphone".equals(key) || "Sender_telephone"
 					.equals(key) || "Goods_length".equals(key) || "Goods_width".equals(key) || "Goods_high".equals(key) || "Goods_other".equals(key) || "Consignee_townName".equals(key) || "Consignee_cellphone"
