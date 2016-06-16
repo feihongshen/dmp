@@ -970,7 +970,7 @@ public class VipShopGetCwbDataService {
 			
 			//Added by leoliao at 2016-03-21 去掉重复
 			filterRepeatCwbs(paraList, order_sn);
-			
+			logger.info("执行edit,{}", order_sn);
 			return getSeq(seq_arrs, seq);
 		}
 		// 订单取消
@@ -988,7 +988,7 @@ public class VipShopGetCwbDataService {
 			}
 			
 			filterRepeatCwbs(paraList, order_sn);
-		
+			logger.info("执行cancel,{}", order_sn);
 			return getSeq(seq_arrs, seq);
 		}
 		
