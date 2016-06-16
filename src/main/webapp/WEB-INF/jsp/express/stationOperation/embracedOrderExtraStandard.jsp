@@ -1493,7 +1493,6 @@
 					$("#receive_countyId").html(data.embracedOrderVO.consignee_countyid);
 					$("#receive_townId").html(data.embracedOrderVO.consignee_townid); 
 					 initArea(); 
-					 console.log(data.reserveOrder.recordVersion)
 					 if(data.reserveOrder!=undefined){
 						 $("#reserveOrderNo").val(data.reserveOrder.reserveOrderNo);
 							$("#recordVersion").val(data.reserveOrder.recordVersion);  
@@ -1603,7 +1602,7 @@
     					delivermanIdSelect.css('background','#ffffff');
     					delivermanIdSelect.attr("readonly",false);
     				}
-    				debugger;
+    				console.log(data.expressImage);
     				//图片按钮
     				if(data.expressImage == null){
     					$("#addImg").hide();
