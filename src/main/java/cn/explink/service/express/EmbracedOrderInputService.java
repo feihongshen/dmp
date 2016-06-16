@@ -524,7 +524,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		if ("true".equals(flag)) {
 			if(!StringUtil.isEmpty(embracedOrderVO.getReserveOrderNo())){
 				//快递二期新增，反馈预约单状态:揽收成功给tps
-				this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO);
+				this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO,branch);
 			}
 			this.logger.info("保存成功");
 		} else {

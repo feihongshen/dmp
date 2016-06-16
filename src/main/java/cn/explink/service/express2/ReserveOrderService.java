@@ -628,17 +628,19 @@ public class ReserveOrderService extends ExpressCommonService {
     
     /**
      * 反馈预约单揽件成功给tps
+     * @param branch 
      * @param omReserveOrderModels
      * @param returnType
      * @throws OspException
      */
-    public void returnReserveOrderStateToTps(EmbracedOrderVO embracedOrderVO) {
+    public void returnReserveOrderStateToTps(EmbracedOrderVO embracedOrderVO, Branch branch) {
         PjSaleOrderFeedbackRequest pjSaleOrderFeedbackRequest = new PjSaleOrderFeedbackRequest();
         pjSaleOrderFeedbackRequest.setReserveOrderNo(embracedOrderVO.getReserveOrderNo());
         pjSaleOrderFeedbackRequest.setRecordVersion(embracedOrderVO.getRecordVersion());
 //            pjSaleOrderFeedbackRequest.setReason(omReserveOrderModel.getReason());
-        pjSaleOrderFeedbackRequest.setOperateOrg("27");
+        pjSaleOrderFeedbackRequest.setOperateType(27);
         pjSaleOrderFeedbackRequest.setOperater(embracedOrderVO.getDelivermanName());
+        pjSaleOrderFeedbackRequest.setOperateOrg(branch.getTpsbranchcode());
         Date now = new Date();
         pjSaleOrderFeedbackRequest.setOperateTime(now.getTime());
 
