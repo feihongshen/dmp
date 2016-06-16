@@ -121,8 +121,8 @@
 	                <td>
 	                	<select name="express_product_type" id="express_product_type"  style="width:100%;" onchange="getFeeByCondition()">
 							<option value="1" >标准</option>
-							<option value="2" >当日达</option>
-							<option value="3" >次日达</option>
+							<option value="2" >次日达</option>
+							<option value="3" >当日达</option>
 						</select>
 	                </td>
 	            </tr>
@@ -1651,7 +1651,7 @@
 			msg = "高";
 		}
 		var number = new Number(object.val());
-		object.val(number.toFixed(0));
+		object.val(number.toFixed(2));
 		//如果没有输入，则什么都不做
 		if($.trim(object.val())==""){
 			return;
