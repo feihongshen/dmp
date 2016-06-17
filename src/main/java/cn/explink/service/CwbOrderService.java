@@ -8331,7 +8331,9 @@ public class CwbOrderService extends BaseOrderService {
 	public void datalose_vipshop(String cwb) {
 
 		try {
-			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+			//CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb); 因为此时在外层已被删除（state=0），所以要改查询方法，以达到最小范围修改！
+			List<CwbOrder> coList = this.cwbDAO.getLabelPrintCwbsByCwbs("'"+cwb+"'");
+			CwbOrder co = (coList!=null && coList.size()>0)?coList.get(0):null;
 
 			this.cwbDAO.dataLoseByCwb(cwb);
 			this.deliveryStateDAO.inactiveDeliveryStateByCwb(cwb);
@@ -8352,8 +8354,8 @@ public class CwbOrderService extends BaseOrderService {
 					this.emailDateDAO.editEditEmaildateForCwbcount(cwbcount, co.getEmaildateid());
 				}
 				if (co != null) {
-					this.shiXiaoDAO.creAbnormalOrder(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb, co
-							.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1);
+					this.shiXiaoDAO.creAbnormalOrdernew(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb, co
+							.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1, 129, co.getCwbstate(), co.getEmaildate());
 				}
 				this.orderFlowDAO.deleteOrderFlowByCwb(cwb);
 			}
