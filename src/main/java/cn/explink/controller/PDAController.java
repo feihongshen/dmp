@@ -150,6 +150,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
+import cn.explink.service.UserService;
 import cn.explink.service.docking.AutoAllocationService;
 import cn.explink.service.express.ExpressOutStationService;
 import cn.explink.service.mps.CwbOrderBranchInfoModificationService;
@@ -312,6 +313,9 @@ public class PDAController {
 	
 	@Autowired
 	private MPSOptStateService mpsOptStateService ;
+	
+	@Autowired
+	private UserService userService;
 
 	private ObjectMapper om = new ObjectMapper();
 
@@ -3943,6 +3947,15 @@ public class PDAController {
 				obj.put("cwbdeliverybranchname", "");
 				obj.put("cwbdeliverybranchnamewav", "");
 			}
+			// 配送员
+			String deliverName = "";
+			if(cwbOrder.getDeliverid() != 0) {
+				User deliver = this.userService.getUserByUserid(cwbOrder.getDeliverid());
+				if(deliver != null) {
+					deliverName = deliver.getRealname();
+				}
+			}
+			obj.put("deliverName", deliverName);
 			// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
 			String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 			List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
