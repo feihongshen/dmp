@@ -358,9 +358,9 @@ public class ExpressCwbOrderDataImportDAO {
 				ps.setBigDecimal(++i, cwbOrderDTO.getAssuranceFee());
 
 				ps.setLong(++i, cwbOrderDTO.getPayment());
-				ps.setInt(++i, cwbOrderDTO.getCargoLength().intValue());
-				ps.setInt(++i, cwbOrderDTO.getCargoWidth().intValue());
-				ps.setInt(++i, cwbOrderDTO.getCargoHeight().intValue());
+				ps.setBigDecimal(++i, cwbOrderDTO.getCargoLength());// 长
+				ps.setBigDecimal(++i, cwbOrderDTO.getCargoWidth());// 宽
+				ps.setBigDecimal(++i, cwbOrderDTO.getCargoHeight());// 高
 
 				ps.setLong(++i, CwbOrderTypeIdEnum.Express.getValue());
 				ps.setInt(++i, FlowOrderTypeEnum.DaoRuShuJu.getValue());
