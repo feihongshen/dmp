@@ -33,6 +33,7 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
@@ -90,6 +91,8 @@ public class VipShopGetCwbDataService {
 	SystemInstallDAO systemInstallDAO;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
 
 	private static Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -967,7 +970,7 @@ public class VipShopGetCwbDataService {
 			
 			//Added by leoliao at 2016-03-21 去掉重复
 			filterRepeatCwbs(paraList, order_sn);
-			
+			logger.info("执行edit,{}", order_sn);
 			return getSeq(seq_arrs, seq);
 		}
 		// 订单取消
@@ -977,13 +980,15 @@ public class VipShopGetCwbDataService {
 				this.cwbDAO.dataLoseByCwb(order_sn);
 				orderGoodsDAO.loseOrderGoods(order_sn);
 				cwbOrderService.datalose_vipshop(order_sn);
+				// 使归班反馈的记录失效
+				deliveryStateDAO.inactiveDeliveryStateByCwb(order_sn);
 			}else{ //拦截
 				//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 				cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);
 			}
 			
 			filterRepeatCwbs(paraList, order_sn);
-		
+			logger.info("执行cancel,{}", order_sn);
 			return getSeq(seq_arrs, seq);
 		}
 		

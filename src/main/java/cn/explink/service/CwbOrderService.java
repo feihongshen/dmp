@@ -1513,8 +1513,8 @@ public class CwbOrderService extends BaseOrderService {
 	private void validateAppZhongZhuan(String cwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum) {
 		int changealowflag = this.getChangealowflagByIdAdd(co);
 		if (changealowflag == 1) {
-			CwbApplyZhongZhuan cwbApplyZhongZhuan = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
 			//加上非空判断，防止异常产生 --- 刘武强20160612
+			CwbApplyZhongZhuan cwbApplyZhongZhuan = this.cwbApplyZhongZhuanDAO.getCwbApplyZhongZhuanByCwb(cwb);
 			if(cwbApplyZhongZhuan != null){ 
 				if (cwbApplyZhongZhuan.getIshandle() == 0) {
 					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.Weishenhebuxuzhongzhuan, flowOrderTypeEnum.getText());
@@ -1755,11 +1755,10 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), currentbranchid, 0, 0, ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 		}
 
-		boolean newMPSOrder = this.mpsCommonService.isNewMPSOrder(scancwb);
-		
 		//一票多件是否存在运单号已经为站点到货，但不全部为到货的标志
 		boolean FenZhanDaoHuoFlag = this.getFenZhanDaoHuoFlag(co);
-
+		
+		boolean newMPSOrder = this.mpsCommonService.isNewMPSOrder(scancwb);
 		// 先更新运单状态，要不然运单流程里面的当前站为0
 		this.mpsOptStateService.updateTransCwbDetailInfo(scancwb, flowOrderTypeEnum, -1L, currentbranchid, 0L);
 
@@ -9657,7 +9656,6 @@ public class CwbOrderService extends BaseOrderService {
 			return null;
 		}
 	}
-	
 	
 	/**
 	 * 
