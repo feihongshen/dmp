@@ -2157,6 +2157,12 @@ public class CwbDAO {
 				.update("update express_ops_cwb_detail set state=1  where state =0 and emaildateid=?",
 						emaildateid);
 	}
+	
+	public void updateAddressDeliverByCwb(String cwb, long deliverid, String exceldeliver) {
+		this.jdbcTemplate.update(
+				"update express_ops_cwb_detail set deliverid=?, exceldeliver=? where state =1 and cwb=?", deliverid,
+				exceldeliver, cwb);
+	}
 
 	public void updateDeliveryBranchid(String excelbranch, long branchid,
 			String cwb, CwbOrderAddressCodeEditTypeEnum addressCodeEditType) {

@@ -7191,7 +7191,28 @@ public class CwbOrderService extends BaseOrderService {
 		this.cwbDAO.updateTuihuoBranchid(branch.getBranchid(), cwbOrder.getCwb());
 		this.updateNextBranchId(cwbOrder.getCwb());
 	}
-
+	
+	/**
+	 * 更新站点和小件员
+	 * 2016年6月17日 下午12:00:37
+	 * @param user
+	 * @param cwbOrder
+	 * @param branch
+	 * @param addresscodeedittype
+	 * @throws Exception
+	 */
+	@Transactional
+	public void updateDeliveryBranchAndCourier(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype, User deliver) throws Exception {
+		this.updateDeliveryBranch(user, cwbOrder, branch, addresscodeedittype);
+		long deliverid = 0;
+		String exceldeliver = null;
+		if(deliver != null) {
+			deliverid = deliver.getUserid();
+			exceldeliver = deliver.getRealname();
+		}
+		this.cwbDAO.updateAddressDeliverByCwb(cwbOrder.getCwb(), deliverid, exceldeliver);
+	}
+	
 	@Transactional
 	public void updateDeliveryBranch(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype) throws Exception {
 		CwbOrderService.logger.info("更新配送站点,cwb:{},站点:{}", cwbOrder.getCwb(), branch.getBranchid());
@@ -9692,7 +9713,7 @@ public class CwbOrderService extends BaseOrderService {
 			CwbFlowOrderTypeEnum cwbFlowOrderType =  CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
 			vo.setFlowordertypeVal(cwbFlowOrderType == null ? null : cwbFlowOrderType.getText());
 			if(org.apache.commons.lang3.StringUtils.isNotBlank(cwbOrder.getExcelbranch())) {
-				List<User> courierList = this.userDao.getUserByRoleAndBranchName(2, cwbOrder.getExcelbranch());
+				List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
 				vo.setCourierList(courierList);
 			}
 			voList.add(vo);

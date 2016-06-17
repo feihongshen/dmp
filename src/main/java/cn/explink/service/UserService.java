@@ -296,4 +296,15 @@ public class UserService {
 	public User getUserByUserid(long userid) {
 		return this.userDAO.getUserByUserid(userid);
 	}
+	
+	/**
+	 * 根据站点ID获取用户
+	 * 2016年6月16日 下午5:20:05
+	 * @param roleid
+	 * @param branchid
+	 * @return
+	 */
+	public List<User> getUserByRoleAndBranchid(int roleid, long branchid) {
+		return this.userDAO.getUserByRoleAndBranchid(roleid, branchid);
+	}
 }

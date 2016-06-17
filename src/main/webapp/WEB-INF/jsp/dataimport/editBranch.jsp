@@ -57,6 +57,16 @@
 	src="<%=request.getContextPath()%>/js/expdopmap.js"></script>
 <script type="text/javascript"
 	src="http://api.map.baidu.com/api?v=2.0&ak=szTBW9236HO8EDCYuk4xQlP4"></script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
+<link id="skinlayercss" href="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/skin/layer.css" rel="stylesheet" type="text/css">
 <script>
 function subEdit(form){
 	if(form.excelbranch.value.length==0){
@@ -293,37 +303,48 @@ function bdbranchmatch(){
 									bgcolor="#eef6ff">手机</td>
 								<td width="8%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">订单类型</td> -->
-								<td width="8%" align="center" align="center" valign="middle"
+								<td width="10%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">订单状态</td>
 								<!-- <td width="5%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">邮编</td> -->
-							 	<td width="29%" align="center" align="center" valign="middle"
+							 	<td width="30%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">收件地址</td> 
+								<td width="15%" align="center" align="center" valign="middle"
+									bgcolor="#eef6ff">匹配到站</td>
+								<td width="15%" align="center" align="center" valign="middle"
+									bgcolor="#eef6ff">匹配到小件员</td>
 								<td width="10%" align="center" align="center" valign="middle"
-									bgcolor="#eef6ff">匹配到站（回车保存）</td>
-								<td width="10%" align="center" align="center" valign="middle"
-									bgcolor="#eef6ff">匹配到小件员（回车保存）</td>
+									bgcolor="#eef6ff">操作</td>
 							</tr>
-							<c:forEach var="vo" items="${cwbOrderBranchMatchVoList}">
+							<c:forEach var="vo" varStatus="voStatus" items="${cwbOrderBranchMatchVoList}">
 								<tr>
-									<form id="f${vo.cwbOrder.cwb }" method="POST" onSubmit="subEdit(this);return false;" action="editexcel/${vo.cwbOrder.cwb }">
+									<form id="f${vo.cwbOrder.cwb }" method="POST">
 										<td width="10%" align="center" ><input id="machbranch" name="machbranch" type="checkbox" value="${vo.cwbOrder.cwb }" /></td>
 										<td width="10%" align="center" height="19">${vo.cwbOrder.cwb }</td>
-										<td width="8%" align="center">${vo.flowordertypeVal }</td>
-										<td width="29%" align="left" id="add${vo.cwbOrder.cwb }">${vo.cwbOrder.consigneeaddress}</td>
-										<td width="10%" align="center">
-											<input type="text" id="ladd${vo.cwbOrder.cwb}"
-											name="excelbranch" value="${vo.cwbOrder.excelbranch}"
-											onfocus="$('#add${vo.cwbOrder.cwb}').css('background','#bbffaa');"
-											onblur="$('#add${vo.cwbOrder.cwb}').css('background','#ffffff');" />
-										</td>
-										<td width="10%" align="center">
-											<select style="min-width:80%">
-												<option value="">请选择</option>
-												<c:forEach var="courier" items="${vo.courierList }">
-													<option value="${courier.userid }">${courier.realname }</option>
+										<td width="10%" align="center">${vo.flowordertypeVal }</td>
+										<td width="30%" align="left" id="add${vo.cwbOrder.cwb }">${vo.cwbOrder.consigneeaddress}</td>
+										<td width="15%" align="left">
+											<select id="branch_${voStatus.index }" name="branch" onchange="getCourier(this, '${voStatus.index }')"
+												onfocus="$('#add${vo.cwbOrder.cwb}').css('background','#bbffaa');"
+												onblur="$('#add${vo.cwbOrder.cwb}').css('background','#ffffff');">
+												<option value="" selected="selected">请选择</option>
+												<c:forEach var="branch" items="${branchList }">
+													<option value="${branch.branchid }" <c:if test="${vo.cwbOrder.deliverybranchid eq branch.branchid }">selected="selected"</c:if>>${branch.branchname }</option>
 												</c:forEach>
 											</select>
+										</td>
+										<td width="15%" align="left">
+											<select id="courier_${voStatus.index }" name="courier"
+												onfocus="$('#add${vo.cwbOrder.cwb}').css('background','#bbffaa');"
+												onblur="$('#add${vo.cwbOrder.cwb}').css('background','#ffffff');">
+												<option value="" selected="selected">请选择</option>
+												<c:forEach var="courier" items="${vo.courierList }">
+													<option value="${courier.userid }" <c:if test="${vo.cwbOrder.deliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
+												</c:forEach>
+											</select>
+										</td>
+										<td width="10%" align="center">
+											<input type="button" class="input_button2" onclick="saveBranchAndCourier('${vo.cwbOrder.cwb }', '${voStatus.index }')" value="保存"/>
 										</td>
 									</form>
 								</tr>
@@ -395,7 +416,66 @@ $(function(){
 	$("#onePageNumber").val(<%=request.getParameter("onePageNumber")==null?"10":request.getParameter("onePageNumber")%>);
 	$("#emaildate").val(<%=emaildateidParam%>);
 	$("#branchid").val(<%=branchidParam%>);
+	$("#Order select[name='branch'], #Order select[name='courier']").multipleSelect({
+        placeholder: "请选择",
+        filter: true,
+        single: true
+    });
 });
+
+function getCourier(_this, index) {
+	var branchId = $(_this).val();
+	if(branchId == null || branchId == "") {
+		initCourier(index);
+		return;
+	}
+	$.ajax({
+		type: "GET",
+        url: "<%=request.getContextPath() %>/dataimport/getCourierByBranch",
+        data: {branchId:branchId},
+        dataType: "json",
+        success: function(data) {
+        	initCourier(index, data);
+        },
+        error: function() {
+        	initCourier(index);
+        	$.messager.alert("错误", "获取小件员时发生错误！", "error"); 
+        }    
+    });
+}
+
+function initCourier(index, courierList) {
+	if(courierList == null) {
+		courierList = new Array();
+	}
+	var $courier = $("#courier_" + index);
+	$courier.empty();
+	$courier[0].add(new Option("请选择", ""));
+	$.each(courierList, function(i, courier) { 
+		$courier[0].add(new Option(courier.realname, courier.userid));
+	});
+	$courier.multipleSelect("refresh");
+}
+
+function saveBranchAndCourier(cwb, index) {
+	var branchId = $("#branch_" + index).val();
+	var courierId = $("#courier_" + index).val();
+	if(branchId == null || branchId == "") {
+		$.messager.alert("提示", "请选择站点！", "warning");
+		return;
+	}
+	$.ajax({
+		type: "POST",
+        url: "<%=request.getContextPath() %>/dataimport/saveBranchAndCourier",
+        data: {cwb:cwb, branchId:branchId, courierId:courierId},
+        dataType: "json",
+        success: function(data) {
+        	$(".tishi_box",parent.document).html(data.error);
+			$(".tishi_box",parent.document).show();
+			setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+        }    
+    });
+}
 
 function exportField(){
 	var listSize = ${fn:length(cwbOrderBranchMatchVoList)};

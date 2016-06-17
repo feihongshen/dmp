@@ -56,6 +56,7 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.BranchService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbTranslator;
 import cn.explink.service.DataImportService;
@@ -65,6 +66,7 @@ import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ResultCollector;
 import cn.explink.service.ResultCollectorManager;
+import cn.explink.service.UserService;
 import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.Page;
@@ -146,6 +148,12 @@ public class DataImportController {
 	ExcelImportEditDao excelImportEditDao;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private BranchService branchService;
 
 	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -479,7 +487,10 @@ public class DataImportController {
 		// 处理批次完毕
 		model.addAttribute("emaildateList", eList);
 		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
-
+		
+		//获取站点
+		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		model.addAttribute("branchList", branchList);
 		return "dataimport/editBranch";
 	}
 
@@ -1066,5 +1077,60 @@ public class DataImportController {
 
 		}
 		return infolist;
+	}
+	
+	/**
+	 * 根据站点获取小件员
+	 * 2016年6月16日 下午5:04:35
+	 * @param branchId
+	 * @return
+	 */
+	@RequestMapping("/getCourierByBranch")
+	@ResponseBody
+	public List<User> getCourierByBranch(long branchId) {
+		List<User> courierList = this.userService.getUserByRoleAndBranchid(2, branchId);
+		return courierList;
+	}
+	
+	/**
+	 * 保存站点跟小件员
+	 * 2016年6月17日 上午10:50:16
+	 * @return
+	 * @throws Exception 
+	 */
+	@RequestMapping("/saveBranchAndCourier")
+	@ResponseBody
+	public String saveBranchAndCourier(String cwb, long branchId, Long courierId) throws Exception {
+		Branch branch = this.branchService.getBranchByBranchid(branchId);
+		if (branch == null) {
+			return "{\"errorCode\":1,\"error\":\"没有找到指定站点\"}";
+		}
+		User deliver = null;
+		if(courierId != null) { //小件员非必须
+			deliver = this.userService.getUserByUserid(courierId);
+			if(deliver == null || deliver.getBranchid() != branchId || deliver.getRoleid() != 2) {
+				return "{\"errorCode\":1,\"error\":\"站点“" + branch.getBranchname() + "”不存在该小件员\"}";
+			}
+		}
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+		if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue())
+				|| (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+			// 都将匹配状态变更为修改
+			addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+		} else if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue())
+				|| (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是为匹配的
+																											// 或者是人工匹配的
+																											// 都将匹配状态变更为人工修改
+			addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+		}
+		try {
+			this.cwbOrderService.updateDeliveryBranchAndCourier(this.getSessionUser(), co, branch, addressCodeEditType, deliver);
+			return "{\"errorCode\":0,\"error\":\"操作成功\",\"cwb\":\"" + cwb + "\",\"excelbranch\":\""
+					+ branch.getBranchname() + "\"}";
+		} catch (CwbException ce) {
+			return "{\"errorCode\":" + ce.getError().getValue() + ",\"error\":\"" + ce.getMessage() + "\",\"cwb\":\""
+					+ cwb + "\",\"excelbranch\":\"" + branch.getBranchname() + "\"}";
+		}
 	}
 }
