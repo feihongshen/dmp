@@ -307,5 +307,12 @@ public class BranchService {
     public List<Branch> getPageCashs() {
 		return this.branchDao.getAllBranches();
 	}
-
+    
+    public Branch getBranchByBranchcode(String branchcode) {
+    	List<Branch> branchList = this.branchDao.getBranchByBranchcode(branchcode);
+    	if(branchList == null || branchList.size() == 0) {
+    		return null;
+    	}
+		return branchList.get(0);
+    }
 }

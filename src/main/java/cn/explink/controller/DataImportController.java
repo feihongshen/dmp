@@ -489,7 +489,7 @@ public class DataImportController {
 		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
 		
 		//获取站点
-		List<Branch> branchList = this.branchDAO.getAllEffectBranches();
+		List<Branch> branchList = this.branchDAO.getBanchByBranchidForStock(String.valueOf(BranchEnum.ZhanDian.getValue()));
 		model.addAttribute("branchList", branchList);
 		return "dataimport/editBranch";
 	}
@@ -548,24 +548,24 @@ public class DataImportController {
 	}
 
 	@RequestMapping("/editBatchBranch")
-	public String editBatchBranch(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
-			@RequestParam(value = "excelbranch", required = false, defaultValue = "") String excelbranch, @RequestParam(value = "branchcode", required = false, defaultValue = "") String branchcode,
+	public String editBatchBranch(Model model, HttpServletRequest request,
+			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
+			@RequestParam(value = "courierName", required = false, defaultValue = "") String courierName,
+			@RequestParam(value = "branchcode", required = false, defaultValue = "") String branchcode,
 			@RequestParam(value = "onePageNumber", defaultValue = "10", required = false) long onePageNumber, // 每页记录数
 			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示
 	) throws Exception {
 		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-		List<CwbOrder> cwborderList = new ArrayList<CwbOrder>();
+		List<CwbOrderBranchMatchVo> cwbOrderBranchMatchVoList = new ArrayList<CwbOrderBranchMatchVo>();
 		Page pageobj = new Page();
 		long count = 0;
 		if (isshow != 0) {
-			List<Branch> lb = new ArrayList<Branch>();
-			List<Branch> branchnamelist = this.branchDAO.getBranchByBranchnameCheck(branchcode.length() > 0 ? branchcode : excelbranch);
-			if (branchnamelist.size() > 0) {
-				lb = branchnamelist;
-			} else {
-				lb = this.branchDAO.getBranchByBranchcode(branchcode.length() > 0 ? branchcode : excelbranch);
-			}
-			if (lb.size() > 0) {
+			Branch branch = this.branchService.getBranchByBranchcode(branchcode);
+			if (branch != null) {
+				User deliver = null;
+				if(StringUtils.isNotBlank(courierName)) { //小件员非必须
+					deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
+				}
 				String[] cwbstr = cwbs.trim().split("\r\n");
 				List<String> cwbStrList = new ArrayList<String>();
 				for (int i = 0; i < cwbstr.length; i++) {
@@ -599,18 +599,18 @@ public class DataImportController {
 							addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 						}
 						try {
-							this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), cwbOrder, lb.get(0), addressCodeEditType);
+							this.cwbOrderService.updateDeliveryBranchAndCourier(this.getSessionUser(), cwbOrder, branch, addressCodeEditType, deliver);
 							count += 1;
 						} catch (CwbException ce) {
 							model.addAttribute("error", "匹配失败，" + ce.getMessage() + "!");
 						}
 					}
 				}
-				cwborderList = this.cwbDAO.getCwbByCwbs(cwbstrs);
+				cwbOrderBranchMatchVoList = this.cwbOrderService.getCwbBranchMatchByCwbs(cwbStrList);
 				pageobj = new Page(count, page, onePageNumber);
 			} else {
 				model.addAttribute("branchs", this.branchDAO.getBanchByBranchidForStock("" + BranchEnum.ZhanDian.getValue()));
-				model.addAttribute("Order", cwborderList);
+				model.addAttribute("cwbOrderBranchMatchVoList", cwbOrderBranchMatchVoList);
 				model.addAttribute("page_obj", pageobj);
 				model.addAttribute("page", page);
 				model.addAttribute("msg", "1");
@@ -620,7 +620,7 @@ public class DataImportController {
 
 		}
 		model.addAttribute("branchs", this.branchDAO.getBanchByBranchidForStock("" + BranchEnum.ZhanDian.getValue()));
-		model.addAttribute("Order", cwborderList);
+		model.addAttribute("cwbOrderBranchMatchVoList", cwbOrderBranchMatchVoList);
 		model.addAttribute("page_obj", pageobj);
 		model.addAttribute("page", page);
 		model.addAttribute("count", count);
@@ -1087,8 +1087,14 @@ public class DataImportController {
 	 */
 	@RequestMapping("/getCourierByBranch")
 	@ResponseBody
-	public List<User> getCourierByBranch(long branchId) {
-		List<User> courierList = this.userService.getUserByRoleAndBranchid(2, branchId);
+	public List<User> getCourierByBranch(String branchcode) {
+		Branch branch = this.branchService.getBranchByBranchcode(branchcode);
+		List<User> courierList;
+		if(branch != null) {
+			courierList = this.userService.getUserByRoleAndBranchid(2, branch.getBranchid());
+		} else {
+			courierList = new ArrayList<User>();
+		}
 		return courierList;
 	}
 	
@@ -1100,15 +1106,15 @@ public class DataImportController {
 	 */
 	@RequestMapping("/saveBranchAndCourier")
 	@ResponseBody
-	public String saveBranchAndCourier(String cwb, long branchId, Long courierId) throws Exception {
-		Branch branch = this.branchService.getBranchByBranchid(branchId);
+	public String saveBranchAndCourier(String cwb, String branchcode, String courierName) throws Exception {
+		Branch branch = this.branchService.getBranchByBranchcode(branchcode);
 		if (branch == null) {
 			return "{\"errorCode\":1,\"error\":\"没有找到指定站点\"}";
 		}
 		User deliver = null;
-		if(courierId != null) { //小件员非必须
-			deliver = this.userService.getUserByUserid(courierId);
-			if(deliver == null || deliver.getBranchid() != branchId || deliver.getRoleid() != 2) {
+		if(StringUtils.isNotBlank(courierName)) { //小件员非必须
+			deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
+			if(deliver == null) {
 				return "{\"errorCode\":1,\"error\":\"站点“" + branch.getBranchname() + "”不存在该小件员\"}";
 			}
 		}

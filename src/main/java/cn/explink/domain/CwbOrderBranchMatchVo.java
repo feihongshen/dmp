@@ -18,6 +18,11 @@ public class CwbOrderBranchMatchVo {
 	private String flowordertypeVal;
 	
 	/**
+	 * 订单状态
+	 */
+	private String orderTypeVal;
+	
+	/**
 	 * 小件员
 	 */
 	private List<User> courierList;
@@ -38,6 +43,14 @@ public class CwbOrderBranchMatchVo {
 		this.flowordertypeVal = flowordertypeVal;
 	}
 
+	public String getOrderTypeVal() {
+		return orderTypeVal;
+	}
+
+	public void setOrderTypeVal(String orderTypeVal) {
+		this.orderTypeVal = orderTypeVal;
+	}
+
 	public List<User> getCourierList() {
 		return courierList;
 	}
@@ -49,6 +62,6 @@ public class CwbOrderBranchMatchVo {
 	@Override
 	public String toString() {
 		return "CwbOrderBranchMatchVo [cwbOrder=" + cwbOrder + ", flowordertypeVal=" + flowordertypeVal
-				+ ", courierList=" + courierList + "]";
+				+ ", orderTypeVal=" + orderTypeVal + ", courierList=" + courierList + "]";
 	}
 }

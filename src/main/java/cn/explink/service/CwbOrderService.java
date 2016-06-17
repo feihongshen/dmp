@@ -9691,7 +9691,7 @@ public class CwbOrderService extends BaseOrderService {
 	}
 	
 	/**
-	 * 订单站点匹配到小件员
+	 * 订单站点匹配到小件员-分页
 	 * 2016年6月15日 下午6:21:31
 	 * @param page
 	 * @param customerid
@@ -9706,18 +9706,59 @@ public class CwbOrderService extends BaseOrderService {
 			long emaildateid, CwbOrderAddressCodeEditTypeEnum addressCodeEditType, long onePageNumber, long branchid) {
 		List<CwbOrder> cwbOrderList = this.cwbDAO.getcwbOrderByPageIsMyWarehouse(page, customerid, ordercwb, emaildateid,
 				addressCodeEditType, onePageNumber, branchid);
+		return this.cwbOrderToBranchMatchVo(cwbOrderList);
+	}
+	
+	/**
+	 * 订单站点匹配到小件员
+	 * 2016年6月17日 下午4:17:33
+	 * @param cwbList
+	 * @return
+	 */
+	public List<CwbOrderBranchMatchVo> getCwbBranchMatchByCwbs(List<String> cwbList) {
+		StringBuffer cwbBuffer = new StringBuffer();
+		String cwbstrs = "";
+		for (int i = 0; i < cwbList.size(); i++) {
+			cwbBuffer = cwbBuffer.append("'" + cwbList.get(i) + "',");
+		}
+		if (cwbBuffer.length() > 0) {
+			cwbstrs = cwbBuffer.toString().substring(0, cwbBuffer.length() - 1);
+		}
+		List<CwbOrder> cwbOrderList = this.cwbDAO.getCwbByCwbs(cwbstrs);
+		return this.cwbOrderToBranchMatchVo(cwbOrderList);
+	}
+	
+	/**
+	 * 订单转换
+	 * 2016年6月17日 下午4:16:51
+	 * @param cwbOrderList
+	 * @return
+	 */
+	private List<CwbOrderBranchMatchVo> cwbOrderToBranchMatchVo(List<CwbOrder> cwbOrderList) {
 		List<CwbOrderBranchMatchVo> voList = new ArrayList<CwbOrderBranchMatchVo>(cwbOrderList.size());
 		for(CwbOrder cwbOrder : cwbOrderList) {
-			CwbOrderBranchMatchVo vo = new CwbOrderBranchMatchVo();
-			vo.setCwbOrder(cwbOrder);
-			CwbFlowOrderTypeEnum cwbFlowOrderType =  CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
-			vo.setFlowordertypeVal(cwbFlowOrderType == null ? null : cwbFlowOrderType.getText());
-			if(org.apache.commons.lang3.StringUtils.isNotBlank(cwbOrder.getExcelbranch())) {
-				List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
-				vo.setCourierList(courierList);
-			}
-			voList.add(vo);
+			voList.add(this.cwbOrderToBranchMatchVo(cwbOrder));
 		}
 		return voList;
+	}
+	
+	/**
+	 * 订单转换
+	 * 2016年6月17日 下午4:17:02
+	 * @param cwbOrder
+	 * @return
+	 */
+	private CwbOrderBranchMatchVo cwbOrderToBranchMatchVo(CwbOrder cwbOrder) {
+		CwbOrderBranchMatchVo vo = new CwbOrderBranchMatchVo();
+		vo.setCwbOrder(cwbOrder);
+		CwbFlowOrderTypeEnum cwbFlowOrderType =  CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
+		vo.setFlowordertypeVal(cwbFlowOrderType == null ? null : cwbFlowOrderType.getText());
+		CwbOrderTypeIdEnum cwbOrderType = CwbOrderTypeIdEnum.getByValue(cwbOrder.getCwbordertypeid());
+		vo.setOrderTypeVal(cwbOrderType == null ? null : cwbOrderType.getText());
+		if(org.apache.commons.lang3.StringUtils.isNotBlank(cwbOrder.getExcelbranch())) {
+			List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
+			vo.setCourierList(courierList);
+		}
+		return vo;
 	}
 }
