@@ -14,7 +14,7 @@ public class User implements Serializable {
 	String username;
 	String realname;
 	// String lastusername;
-	String password;	// PDA登录密码
+	String password;	// POS登录密码
 	String webPassword;	// 网页登录密码
 	long branchid;
 	long usercustomerid;

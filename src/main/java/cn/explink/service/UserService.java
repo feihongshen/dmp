@@ -104,7 +104,7 @@ public class UserService {
 		user.setAreafee(new BigDecimal((request.getParameter("areafee")==null||"".equals(request.getParameter("areafee")))?"0.00":request.getParameter("areafee")));//区域派费
 		user.setWebPassword(StringUtil.nullConvertToEmptyString(request.getParameter("webPassword")));//网页登录密码
 		if(roleid==2 || roleid==4){
-			user.setPassword(StringUtil.nullConvertToEmptyString(request.getParameter("password")));//PDA登录密码
+			user.setPassword(StringUtil.nullConvertToEmptyString(request.getParameter("password")));//POS登录密码
 		} else {
 			user.setPassword("");
 		}		
