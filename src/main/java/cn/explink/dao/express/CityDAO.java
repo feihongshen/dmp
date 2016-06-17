@@ -10,8 +10,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.domain.VO.express.AdressVO;
+import cn.explink.util.StringUtil;
 
 /**
  *
@@ -114,6 +116,22 @@ public class CityDAO {
 			return null;
 		}
 		return adressVO;
+	}
+	
+	/**
+	 * 通过名字及所属省份编码获取市
+	 */
+	public AdressVO getCityByNameAndProvice(String name, AdressVO vo){
+		if(StringUtil.isEmpty(name) || vo == null){
+			return null;
+		}
+		String proviceCode = vo.getCode();
+		String sql = "select id,code,name,province_code AS parentCode from express_set_city where name= ? and province_code = ?";
+		List<AdressVO> voList = jdbcTemplate.query(sql, new CityRowMapper(), name, proviceCode);
+		if(CollectionUtils.isEmpty(voList)){
+			return null;
+		}
+		return voList.get(0);
 	}
 
 }
