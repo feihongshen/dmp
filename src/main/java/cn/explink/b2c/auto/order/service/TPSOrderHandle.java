@@ -34,7 +34,7 @@ public class TPSOrderHandle {
     			if(null!=order){
     				if(order.getBusinessType()!=60 && order.getAddTime()==null){
     					this.logger.info("没有出仓时间");
-    					throw new CwbException(order.getCustOrderNo(),FlowOrderTypeEnum.DaoRuShuJu.getValue(),"没有出仓时间");
+    					//throw new CwbException(order.getCustOrderNo(),FlowOrderTypeEnum.DaoRuShuJu.getValue(),"没有出仓时间");
     				}
     				//返回的报文订单信息解析
     				CwbOrderDTO cwbOrder = tPSGetOrderDataService.parseXmlDetailInfo(vipshop,order,mpsswitch);
