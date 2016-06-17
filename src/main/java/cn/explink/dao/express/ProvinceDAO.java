@@ -10,9 +10,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.express.NewAreaForm;
+import cn.explink.util.StringUtil;
 
 /**
  *
@@ -219,4 +221,20 @@ public class ProvinceDAO {
 		}
 		return adressVO;
 	}
+	
+	/**
+	 * 通过名字获取省对象
+	 */
+	public AdressVO getProviceByName(String name){
+		if(StringUtil.isEmpty(name)){
+			return null;
+		}
+		String sql = "select id,code,name from express_set_province where name=?";
+		List<AdressVO> voList = jdbcTemplate.query(sql, new ProvinceRowMapper(), name);
+		if(CollectionUtils.isEmpty(voList)){
+			return null;
+		}
+		return voList.get(0);
+	}
+	
 }
