@@ -32,17 +32,19 @@ public class TpsCwbFlowDao {
 			vo.setCreatetime(rs.getTimestamp("createtime"));
 			vo.setSendemaildate(rs.getInt("sendemaildate"));
 			vo.setSendweight(rs.getInt("sendweight"));
+			vo.setWeight(rs.getBigDecimal("weight"));
+			vo.setVolume(rs.getBigDecimal("volume"));
 			return vo;
 		}
 	}
 	
 	private final static String TPS_FLOW_SQL_SAVE=
-			"insert into express_ops_tps_flow_tmp (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime,sendemaildate,sendweight)"
-			+" values(?,?,?,?,CURRENT_TIMESTAMP,?,0,?,?)";
+			"insert into express_ops_tps_flow_tmp (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime,sendemaildate,sendweight,weight,volume)"
+			+" values(?,?,?,?,CURRENT_TIMESTAMP,?,0,?,?,?,?)";
 	
 	private final static String TPS_FLOW_SQL_SAVE_SENT=
-			"insert into express_ops_tps_flow_tmp_sent (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime,sendemaildate,sendweight)"
-			+" values(?,?,?,?,?,?,?,?,?)";
+			"insert into express_ops_tps_flow_tmp_sent (cwb,scancwb,flowordertype,errinfo,createtime,status,trytime,sendemaildate,sendweight,weight,volume)"
+			+" values(?,?,?,?,?,?,?,?,?,?,?)";
 	
 	
 	private final static String TPS_FLOW_SQL_LIST=
@@ -79,11 +81,11 @@ public class TpsCwbFlowDao {
 			"select cwb from express_ops_tps_flow_tmp_sent where cwb=? and sendemaildate=1 limit 1";
 	
 	public void save(TpsCwbFlowVo vo){
-		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getState(),vo.getSendemaildate(),vo.getSendweight());
+		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getState(),vo.getSendemaildate(),vo.getSendweight(),vo.getWeight(),vo.getVolume());
 	}
 	
 	public void saveSent(TpsCwbFlowVo vo){
-		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE_SENT, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getCreatetime(),vo.getState(),vo.getTrytime(),vo.getSendemaildate(),vo.getSendweight());
+		this.jdbcTemplate.update(TPS_FLOW_SQL_SAVE_SENT, vo.getCwb(),vo.getScancwb(),vo.getFlowordertype(),vo.getErrinfo(),vo.getCreatetime(),vo.getState(),vo.getTrytime(),vo.getSendemaildate(),vo.getSendweight(),vo.getWeight(),vo.getVolume());
 	}
 
 	public List<TpsCwbFlowVo> list(int size,int trytime){

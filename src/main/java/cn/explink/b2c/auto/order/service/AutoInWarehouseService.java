@@ -1,5 +1,7 @@
 package cn.explink.b2c.auto.order.service;
 
+import java.math.BigDecimal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +101,10 @@ public class AutoInWarehouseService {
 					throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"模拟入库时操作时间不能为空");
 				}
 				
+				BigDecimal cargorealweight=data.getOriginal_weight()==null||data.getOriginal_weight().trim().length()<1?null:new BigDecimal(data.getOriginal_weight());
+				BigDecimal cargovolume=data.getOriginal_volume()==null||data.getOriginal_volume().trim().length()<1?null:new BigDecimal(data.getOriginal_volume());
+
+				
 				/*
 				long deliveryBranchId=autoOrderStatusService.getDeliveryBranchId(deliveryBranchCode);
 				if(deliveryBranchCode.length()>0&&deliveryBranchId==0){
@@ -141,7 +147,7 @@ public class AutoInWarehouseService {
 				}
 
 				//保存到eamildate,看日期格式是否需要转换
-				this.tpsCwbFlowService.save(cwbOrder, scancwb, FlowOrderTypeEnum.RuKu,user.getBranchid(),operateTime,false);
+				this.tpsCwbFlowService.save(cwbOrder, scancwb, FlowOrderTypeEnum.RuKu,user.getBranchid(),operateTime,false,cargorealweight,cargovolume);
 		}
 
 	//看运单数据是否已经到达

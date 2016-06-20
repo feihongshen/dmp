@@ -237,7 +237,7 @@ public class AutoDispatchStatusService {
 					//出仓时间是无论入库正常或异常都要保存;AutoWaitException是等待订单或运单导入
 					if (OPERATE_TYPE_IN.equals(vo.getOperate_type())&& !(e instanceof AutoWaitException)) {
 						CwbOrder co = this.cwbDAO.getCwbByCwb(vo.getOrder_sn());
-						this.tpsCwbFlowService.save(co, vo.getBox_no(), FlowOrderTypeEnum.RuKu,user.getBranchid(), vo.getOperate_time(),false);
+						this.tpsCwbFlowService.save(co, vo.getBox_no(), FlowOrderTypeEnum.RuKu,user.getBranchid(), vo.getOperate_time(),false,null,null);
 						logger.info("模拟入库异常时保存了出仓时间,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no());
 					} 
 				} catch (Exception e2) {

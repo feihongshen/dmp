@@ -214,8 +214,8 @@ public class TpsCwbFlowPushService {
 					req.setOperateTime(createDate);
 					DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
 					boxInfo.setBoxNo(trancwb);
-					boxInfo.setVolume(vo.getSendweight()==0?new Double("0.01"):new Double("0.01"));//非集单时dmp没表保存体积重量，为0.01则tps则不会更新他们的体积重量
-					boxInfo.setWeight(vo.getSendweight()==0?new Double("0.01"):new Double("0.01"));
+					boxInfo.setVolume(vo.getVolume().doubleValue());
+					boxInfo.setWeight(vo.getWeight().doubleValue());
 					req.setBoxInfo(boxInfo);
 					if(vo.getSendemaildate()==1){//不设置emaildate则tps不处理
 						if(emaildate==null){
@@ -241,19 +241,6 @@ public class TpsCwbFlowPushService {
 					throw new RuntimeException("没找到此运单号的操作明细.");
 				}
 			}
-			List<TransCwbDetail> transCwbDetailList=transCwbDetailDAO.getTransCwbDetailListByTransCwbs("('"+vo.getScancwb()+"')");
-			TransCwbDetail transCwbDetail=null;
-			if(transCwbDetailList!=null&&transCwbDetailList.size()>0){
-				for(TransCwbDetail detail:transCwbDetailList){
-					if(detail.getCwb().equals(vo.getCwb())){
-						transCwbDetail=detail;
-						break;
-					}
-				}
-			}
-			if(transCwbDetail==null){
-				throw new RuntimeException("没找到此运单号的明细数据.");
-			}
 			
 			User operateUser = userDAO.getUserByUserid(flow.getUserid());
 			Branch operateBrach=branchDAO.getBranchById(flow.getBranchid());
@@ -265,28 +252,11 @@ public class TpsCwbFlowPushService {
 			req.setOperater(operateUser==null?null:operateUser.getRealname());
 			req.setOperateTime(flow.getCredate());
 			
-			Double volume=null;
-			Double weight=null;
-			if(vo.getSendweight()==0){
-				volume=new Double("0.01");
-				weight=new Double("0.01");
-			}else{
-				if(transCwbDetail.getVolume()==null||transCwbDetail.getVolume().toString().equals("0.0000")){
-					volume=new Double("0.01");
-				}else{
-					volume=transCwbDetail.getVolume().doubleValue();
-				}
-				if(transCwbDetail.getWeight()==null||transCwbDetail.getWeight().toString().equals("0.000")){
-					weight=new Double("0.01");
-				}else{
-					weight=transCwbDetail.getWeight().doubleValue();
-				}
-			}
 			
 			DoTrackBoxInfo boxInfo=new DoTrackBoxInfo();
 			boxInfo.setBoxNo(vo.getScancwb());
-			boxInfo.setVolume(volume);
-			boxInfo.setWeight(weight);
+			boxInfo.setVolume(vo.getVolume().doubleValue());
+			boxInfo.setWeight(vo.getWeight().doubleValue());
 			req.setBoxInfo(boxInfo);
 			if(vo.getSendemaildate()==1){
 				req.setOqcDate(parseEmaildate(co.getEmaildate()));
