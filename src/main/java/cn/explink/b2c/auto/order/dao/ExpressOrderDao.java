@@ -267,9 +267,9 @@ public class ExpressOrderDao {
 	 * @param provinceType 0、派件省，1、揽件省
 	 * @return
 	 */
-	public List<ExpressDetailTemp> getExpressDetailTempListNotOver(int provinceType) {
+	public List<ExpressDetailTemp> getExpressDetailTempListNotOver(String provinceType) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov=? order by create_time limit 0,2000 ");
+		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov in (?) order by create_time limit 0,2000 ");
 		List<ExpressDetailTemp> transOrderList = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper(), provinceType);
 		return transOrderList;
 	}
@@ -412,7 +412,7 @@ public class ExpressOrderDao {
 				ps.setInt(++i, 1);
 
 				ps.setLong(++i, 0);//上一个机构id
-				ps.setLong(++i, acceptBranch.getBranchid());//当前机构
+				ps.setLong(++i, 0);//当前机构
 				ps.setLong(++i, 0);//下一站目的机构id
 				ps.setLong(++i, ((null != branch)?branch.getBranchid():0L));//配送站点ID
 				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
