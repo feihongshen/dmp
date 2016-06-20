@@ -225,6 +225,23 @@ public class DeliveryStateDAO {
 	}
 
 	/**
+	 * 根据订单查询最近的一条已经审核的记录 
+	 * @author Hps_Concerto
+	 * @param cwb
+	 * @return
+	 */
+	public DeliveryState getDelivertStateYishenheCountByCwb(String cwb){
+		try{
+			String sql = "SELECT * FROM express_ops_delivery_state WHERE cwb='"+cwb+"' AND deliverystate!=0 ORDER BY auditingtime DESC LIMIT 0,1";
+			DeliveryState ob = this.jdbcTemplate.queryForObject(sql,new DeliveryStateRowMapper());
+			return ob;
+		}catch(Exception ee){
+			ee.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
 	 * 根据订单号查询反馈记录 查询最后一条信息，并且能够确保只查询到一条limit 0,1
 	 *
 	 * @param cwb

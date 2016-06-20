@@ -1,6 +1,7 @@
 package cn.explink.controller;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ExportmouldDAO;
+import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.OrgBillDetailDao;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
@@ -45,6 +47,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.FeeWayTypeRemark;
+import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.Reason;
 import cn.explink.domain.User;
 import cn.explink.domain.ZhiFuApplyView;
@@ -52,8 +55,10 @@ import cn.explink.enumutil.ApplyEditDeliverystateIshandleEnum;
 import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BillStateEnum;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbOrderTypeEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.SignTypeEnum;
@@ -69,6 +74,7 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtilsHandler;
 import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
+import cn.explink.util.StringUtil;
 
 @Controller
 @RequestMapping("/applyeditdeliverystate")
@@ -116,6 +122,10 @@ public class ApplyEditDeliverystateController {
 	FnDfAdjustmentRecordService fnDfAdjustmentRecordService;
 	@Autowired
 	OrgBillDetailDao orgBillDetailDao;
+	
+	@Autowired
+	OrderBackCheckDAO orderBackCheckDao;
+	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -288,6 +298,7 @@ public class ApplyEditDeliverystateController {
 	@RequestMapping("/getCheckboxDealPass")
 	public @ResponseBody String getCheckboxDealPass(@RequestParam(value = "cwbdata", defaultValue = "", required = false) String cwbdata) {
 		long errorcount = 0;
+		boolean ycflag = false;
 		String cwbStr = "已做过重置审核订单:";
 		if (cwbdata.length() > 0) {
 			for (String cwb : cwbdata.split(",")) {
@@ -329,6 +340,9 @@ public class ApplyEditDeliverystateController {
 					}
 				} catch (Exception e) {
 					this.logger.error("订单号:" + cwb + "--产生异常原因:", e);
+					if(e.getMessage().contains("[异常标记]")){
+						ycflag=true;
+					}
 					errorcount++;
 				}
 			}
@@ -340,8 +354,14 @@ public class ApplyEditDeliverystateController {
 		if (errorcount == 0) {
 			return "{\"errorCode\":0,\"error\":\"审核为通过\"}";
 		} else if (errorcount == cwbdata.split(",").length) {
+			if(ycflag){
+				return "{\"errorCode\":1,\"error\":\"审核单全部失败(有些订单已经审核或不是审核状态或者订单存在晚于最后一条归班审核时间的退货出站审核通过记录)\"}";
+			}
 			return "{\"errorCode\":1,\"error\":\"审核单全部失败(有些订单已经审核或不是审核状态)\"}";
 		} else {
+			if(ycflag){
+				return "{\"errorCode\":1,\"error\":\"审核单全部失败(有些订单已经审核或不是审核状态，也可能订单存在晚于最后一条归班审核时间的退货出站审核通过记录)\"}";
+			}
 			return "{\"errorCode\":1,\"error\":\"审核单部分失败(可能有些订单已经审核或不是审核状态)\"}";
 		}
 
@@ -844,7 +864,32 @@ public class ApplyEditDeliverystateController {
 						}
 					}
 				}
-
+				//Hps_Concerto  二〇一六年六月十四日 15:47:54
+				/*if(deliverystate != null){
+					OrderBackCheck obc = orderBackCheckDao.getOrderBackCheckByCheckstateAndYiShenhe(cwbStr);
+					if(obc == null){
+						
+					}
+					
+				}*/
+				if (corder != null) {
+					if (corder.getCwbstate() == CwbStateEnum.PeiShong.getValue()) {
+						if (corder.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
+							DeliveryState ds2 = this.deliveryStateDAO.getDelivertStateYishenheCountByCwb(cwbStr);
+							if (ds2 != null) {
+								List<OrderBackCheck> obc = this.orderBackCheckDao
+										.getOrderBackCheckByCheckstateAndYiShenhe(cwbStr);
+								if (obc != null) {
+									if (!this.compareDate1(obc, ds2.getAuditingtime())) {
+										errorCwbs.append(cwbStr + ":存在晚于最后1条归班审核时间的退货出站审核记录。");
+										continue;
+									}
+								}
+							}
+						}
+					}
+				}
+				//*********************
 				if (corder == null) {
 					errorCwbs.append(cwbStr + ":无此单号!");
 					continue;
@@ -852,15 +897,19 @@ public class ApplyEditDeliverystateController {
 				} else if ((deliverystate == null) || (deliverystate.getDeliverystate() == 0) || (deliverystate.getGcaid() == 0)) {
 					errorCwbs.append(cwbStr + ":未反馈的订单不能申请修改反馈状态！");
 					continue;
-				} /*else if ((deliverystate.getDeliverystate() == DeliveryStateEnum.JuShou.getValue()) && (customer.getNeedchecked() == 1)) {
+				} else if ((deliverystate.getDeliverystate() == DeliveryStateEnum.JuShou.getValue()) && (customer.getNeedchecked() == 1)) {
 					errorCwbs.append(cwbStr + ":拒收的订单已开启退货出站审核，不能申请修改反馈状态！");
 					continue;
-				}*/else if(corder.getCwbstate() != CwbStateEnum.PeiShong.getValue()){
-					
-				}else if ((deliverystate != null) && (deliverystate.getPayupid() == 0)) {// &&
+				}/*else if(corder.getCwbstate() != CwbStateEnum.PeiShong.getValue()){
+					errorCwbs.append(cwbStr+":只允许订单状态为配送的订单重置反馈");
+				}else if(corder.getFlowordertype() != FlowOrderTypeEnum.YiShenHe.getValue()){
+					errorCwbs.append(cwbStr+":只允许处在审核操作状态的订单反馈");
+				}*/else if ((deliverystate != null) && (deliverystate.getPayupid() == 0)) {// &&
 																							// deliverystate.getIssendcustomer()
 																							// ==
 																							// 0
+					
+					
 					cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
 					CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwbStr);
 					long aedsLong = this.applyEditDeliverystateDAO.getApplyEditCount(cwbStr, 1);
@@ -914,8 +963,33 @@ public class ApplyEditDeliverystateController {
 			model.addAttribute("covList", covList);
 		}
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
-
 		return "applyeditdeliverystate/createApplyEditDeliverystate";
+	}
+	
+
+	//比较归班审核 和退货出战
+		private boolean compareDate1(List<OrderBackCheck> obcs,String date2){
+			if(obcs!=null&&obcs.size()>0){
+				for (OrderBackCheck c : obcs) {
+					if(!this.compareDate(c.getAudittime(), date2)){
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		
+	private boolean compareDate(String date1,String date2){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		try {
+			Date d1 = sdf.parse(date1);
+			Date d2 = sdf.parse(date2);
+			boolean flag = d1.before(d2);
+			return flag;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	/*

@@ -2,6 +2,7 @@ package cn.explink.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
 import cn.explink.dao.FinancePayUpAuditDAO;
 import cn.explink.dao.FnOrgOrderAdjustRecordDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.PayUpDAO;
 import cn.explink.dao.ReturnCwbsDAO;
 import cn.explink.dao.SystemInstallDAO;
@@ -51,6 +53,7 @@ import cn.explink.domain.FinanceAudit;
 import cn.explink.domain.FinanceDeliverPayupDetail;
 import cn.explink.domain.FinancePayUpAudit;
 import cn.explink.domain.GotoClassAuditing;
+import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.OrgOrderAdjustmentRecord;
 import cn.explink.domain.PayUp;
 import cn.explink.domain.SystemInstall;
@@ -125,6 +128,10 @@ public class EditCwbService {
 	ReturnCwbsDAO returnCwbsDAO;
 	@Autowired
 	FnOrgOrderAdjustRecordDAO fnOrgOrderAdjustRecordDAO;
+	
+	@Autowired
+	OrderBackCheckDAO orderBackCheckDao;
+	
 	@Autowired
 	CwbDAO cwbDao;
 
@@ -145,6 +152,7 @@ public class EditCwbService {
 		// 根据 反馈表 中的gcaid 获得 归班表 express_ops_goto_class_auditing 记录 lock
 		// 根据 归班表中的payupid 获得 交款表 express_ops_pay_up 记录 lock
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		
 		if (co.getFlowordertype() != FlowOrderTypeEnum.YiShenHe.getValue()) {
 			throw new ExplinkException(co.getFlowordertype() + "_当前订单状态已经不是[已审核]状态！");
 		}
@@ -157,8 +165,29 @@ public class EditCwbService {
 		 * accountCwbFareDetailList.get(0).getFareid() > 0) { throw new
 		 * ExplinkException("当前订单运费已交款，不可重置审核状态！"); }
 		 */
+		
+		//  Hps_Concerto add 2016年6月13日 10:33:46
+		//校验该订单是否存在晚于最后一条归班审核时间的退货出站审核通过记录
+		DeliveryState ds1 = this.deliveryStateDAO.getDelivertStateYishenheCountByCwb(cwb);
+		if(ds1 != null){
+			List<OrderBackCheck> obc = this.orderBackCheckDao.getOrderBackCheckByCheckstateAndYiShenhe(cwb);
+			if(obc!=null&&obc.size()>0){
+				if (!this.compareDate1(obc, ds1.getAuditingtime())) {
+					throw new ExplinkException(cwb+":该订单存在晚于最后一条归班审核时间的退货出站记录[异常标记]");
+					//这个异常标记 是为了让那边捕获到从而 弹出的提示 不再是 : "审核未通过 当前订单或已不再是审核状态"
+				}
+			}
+		}
+		
 
 		DeliveryState ds = this.deliveryStateDAO.getDeliveryByCwbLock(cwb);
+		//立个flag
+		boolean flag = false;
+		if(ds!=null){
+			if(ds.getDeliverystate() == DeliveryStateEnum.JuShou.getValue()){
+				flag = true;
+			}
+		}
 		GotoClassAuditing gca = this.gotoClassAuditingDAO.getGotoClassAuditingByGcaid(ds.getGcaid());
 		PayUp payUp = null;
 		if (gca.getPayupid() > 0) {
@@ -472,9 +501,43 @@ public class EditCwbService {
 		this.editCwbDAO.creEditCwb(ec_dsd);
 		// 清除运费记录表信息
 		this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(cwb);
+		//当审核为“拒收”的订单重置反馈状态成功时，应将该订单从站点退货出站审核列表删除。意思是不让该订单在退货出站审核列表中出现
+		//话说我整了半天都不知道怎么让一个拒收的订单重置反馈状态的同时，还能让退货出站审核列表中有。
+		//未审核的订单一次不可能出现两条吧。不过即使出现三条也要干掉。
+		//flag 为true
+		if(flag){
+			int dcount = this.orderBackCheckDao.deleteOrderBackCheckAndWeishenheByCwb(cwb);
+			this.logger.info("该订单的状态为拒收,所以从退货出战审核列表上干掉"+(dcount==0?",但是好像并没有记录":",干掉了"+dcount+"条"));
+		}
+		
 		this.logger.info("EditCwb_SQL:{}重置审核状态 结束", cwb);
 
 		return ec_dsd;
+	}
+
+	//比较订单是否存在晚于最后一条归班审核时间的退货出站审核通过记录
+	private boolean compareDate1(List<OrderBackCheck> obcs,String date2){
+		if(obcs!=null&&obcs.size()>0){
+			for (OrderBackCheck c : obcs) {
+				if(!this.compareDate(c.getAudittime(), date2)){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	//比较两个字符串时间。
+	private boolean compareDate(String date1,String date2){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		try {
+			Date d1 = sdf.parse(date1);
+			Date d2 = sdf.parse(date2);
+			boolean flag = d1.before(d2);
+			return flag;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	@Transactional(isolation = Isolation.READ_COMMITTED)
