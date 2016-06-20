@@ -108,6 +108,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		
 		// 是否是站长
 		model.addAttribute("isWarehouseMaster", this.isWarehouseMaster());
+        model.addAttribute("isCustomService",this.isCustomService());
 		return "express2/reserveOrder/query";
 	}
 	
@@ -267,8 +268,10 @@ public class ReserveOrderController extends ExpressCommonController {
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
 			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
 			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList) throws Exception {
+
         final boolean isFromQueryPage = StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue());
         final boolean isFromHandleWarehousePage = StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue());
+
 		// 填充数据
 		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
 		if(StringUtils.isNotBlank(reserveOrderNo)) {
@@ -412,6 +415,7 @@ public class ReserveOrderController extends ExpressCommonController {
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getReason());
+
                     if (isFromQueryPage) {
                         cell = row.createCell(colIndex++);
                         cell.setCellStyle(style);
@@ -522,6 +526,7 @@ public class ReserveOrderController extends ExpressCommonController {
             buildErrorMsg(obj, errMsg);
             return obj;
         }
+
         if (reserveOrderVos.length > 0) {
 
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
