@@ -271,6 +271,25 @@ h1, h2, h3, h4, h5, h6 {
 	function changeImg(){
 		$("#randomImage").attr("src","<%=request.getContextPath()%>/image?a="+Math.random());
 	}
+	
+	//点击登录
+	$("#formLogin").submit( function(event){
+		if(isOtherUserExists()){
+			if(!confirm("当前浏览器已有其它用户登录。请退出其它用户，然后点“确定”继续登录；或点“取消”退出。")){
+				return false;
+			}
+		}
+	});
+	//是否已有用户登录
+	function isOtherUserExists(){
+		if(<%=(request.getSession() != null)%>
+				&& <%=(request.getSession().getAttribute("SPRING_SECURITY_LAST_USERNAME") != null)%>
+				&& "<%=request.getSession().getAttribute("SPRING_SECURITY_LAST_USERNAME")%>" != $('#userName').val()
+		) {
+			return true;
+		}
+		return false;
+	}
   </script>
 </body>
 </html>

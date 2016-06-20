@@ -5095,7 +5095,7 @@ public class CwbOrderService extends BaseOrderService {
 		transcwb = transcwb.replaceAll("，", ",");// 全角逗号
 		transcwb = transcwb.replaceAll("\r\n", "");
 
-		CwbOrderService.logger.info("棒棒糖请求参数cwb={},leavedreasonid={},resendtime={},zhiliuremark={}", new Object[] { cwb, leavedreasonid, resendtime, zhiliuremark });
+		CwbOrderService.logger.info("棒棒糖请求参数cwb={},leavedreasonid={},resendtime={},zhiliuremark={},transcwb={}", new Object[] { cwb, leavedreasonid, resendtime, zhiliuremark, transcwb});
 
 		// 再次判定时间格式是否正确 如果正确 应该去掉空白符共18个字
 		deliverytime = deliverytime.length() != 19 ? DateTimeUtil.getNowTime() : deliverytime;
@@ -5430,15 +5430,15 @@ public class CwbOrderService extends BaseOrderService {
 					this.transCwbDao.saveTranscwb(cwb, cwb);
 					this.cwbDAO.saveTranscwbByCwb(transcwb, cwb);
 					this.cwbDAO.saveBackcarnum(transcwbList.size(), cwb);
-					this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
+					//this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
 				}
 			}else{//当录入或修改快递单号为空时
-				if(!"".equals(co.getTranscwb())){
+				if(!"".equals(co.getTranscwb()) && nosysyemflag == null){
 					this.transCwbDao.deleteTranscwb(cwb);
 					this.transCwbDao.saveTranscwb(cwb, cwb);
 					this.cwbDAO.saveTranscwbByCwb("", cwb);
 					this.cwbDAO.saveBackcarnum(1, cwb);
-					this.cwbDAO.saveSendcarnum(1, cwb);
+					//this.cwbDAO.saveSendcarnum(1, cwb);
 				}
 			}
 		}

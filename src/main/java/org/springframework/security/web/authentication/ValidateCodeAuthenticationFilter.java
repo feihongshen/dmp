@@ -56,10 +56,6 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		if (users.size() == 0 || users.size() > 1 || !users.get(0).getWebPassword().equals(password)) {
 			throw new AuthenticationServiceException("用户名或者密码错误");
 		}
-		if (request.getSession().getAttribute(SPRING_SECURITY_LAST_USERNAME_KEY) != null 
-				&& !request.getSession().getAttribute(SPRING_SECURITY_LAST_USERNAME_KEY).equals(username)) {
-			throw new AuthenticationServiceException("当前浏览器已有其它用户登录");
-		}
 
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
 

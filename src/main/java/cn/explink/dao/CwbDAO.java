@@ -1175,6 +1175,7 @@ public class CwbDAO {
 			co.setConsigneemobile(rs.getString("consigneemobile"));
 			co.setConsigneephone(rs.getString("consigneephone"));
 			co.setEntrustname(rs.getString("entrustname"));
+			co.setCredateTimestamp(rs.getLong("credateTimestamp"));
 			return co;
 		}
 	}
