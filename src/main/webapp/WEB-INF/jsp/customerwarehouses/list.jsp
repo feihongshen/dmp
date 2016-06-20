@@ -34,7 +34,7 @@ function addInit(){
 	/* alert($("alert_box",parent.document).html()); */
 	/*  $("#alert_box select", parent.document).combobox();
 	alter($("div.panel combo-p",parent.document).html());  */
-	$("#alert_box select", parent.document).combobox();
+	/* $("#alert_box select", parent.document).combobox(); */
 	/*
 	$($("div[class='panel combo-p']",parent.document)[1]).attr("style","position: absolute; z-index: 1; display: block; width: 150px; margin-right: 170px; left: 59px; top: 50px;")
 	$($("span.combo-arrow",parent.document)[1]).css({"margin-right":"-18px","margin-top":"-10px"}); */
