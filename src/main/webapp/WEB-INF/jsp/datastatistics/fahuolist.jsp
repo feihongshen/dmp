@@ -376,6 +376,7 @@ function clearSelect(){
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >出库时间</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >支付方式</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >服务类型</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >是否团购</td>
 				
 		</tr>
 		
@@ -390,6 +391,7 @@ function clearSelect(){
 					<td  align="center" valign="middle"><%=c.getOutstoreroomtime() %></td>
 					<td  align="center" valign="middle"><%=c.getPaytype() %></td>
 					<td  align="center" valign="middle"><%=c.getCartype() %></td>
+					<td  align="center" valign="middle"><%=c.getVipclub() %></td>
 				 </tr>
 		 <%} %>
 		 <%if(request.getAttribute("count")!= null){ %>
@@ -398,6 +400,7 @@ function clearSelect(){
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle" class="high"><font color="red"><%=request.getAttribute("sum")==null?"0.00":request.getAttribute("sum") %></font>&nbsp;元 </td>
+			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>
 			<td  align="center" valign="middle">&nbsp;</td>

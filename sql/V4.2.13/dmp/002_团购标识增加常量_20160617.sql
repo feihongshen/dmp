@@ -1,0 +1,1 @@
+insert  into `express_ops_setexportfield`(`id`,`fieldname`,`exportstate`,`fieldenglishname`) values (159,'是否团购',1,'vipclub');

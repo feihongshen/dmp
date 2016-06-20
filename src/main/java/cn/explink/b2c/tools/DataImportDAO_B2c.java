@@ -22,13 +22,12 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.EmailFinishFlagEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.service.DataImportService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
 @Service
 public class DataImportDAO_B2c {
-	private Logger logger = LoggerFactory.getLogger(DataImportService.class);
+	private Logger logger = LoggerFactory.getLogger(DataImportDAO_B2c.class);
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 

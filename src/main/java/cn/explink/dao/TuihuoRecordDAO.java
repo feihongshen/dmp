@@ -81,17 +81,6 @@ public class TuihuoRecordDAO {
 			return 0;
 		}
 	}
-	
-	public long updateTuihuoRecordAll(final TuihuoRecord tr) {
-		try {
-			String sql = "update ops_tuihuorecord set branchid=?,tuihuobranchid=?,tuihuochuzhantime=?,tuihuozhanrukutime=?,cwbordertypeid=?,userid=? where cwb=?";
-			jdbcTemplate.update(sql, tr.getBranchid(), tr.getTuihuobranchid(), tr.getTuihuochuzhantime(), tr.getTuihuozhanrukutime(), tr.getCwbordertypeid(), tr.getUserid(), tr.getCwb());
-			return 1;
-		} catch (Exception e) {
-			logger.info("失败" + e);
-			return 0;
-		}
-	}
 
 	public void saveTuihuoRecordById(String tuihuozhanrukutime, long id) {
 		String sql = "update ops_tuihuorecord set tuihuozhanrukutime=? where id=?";

@@ -5,10 +5,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.domain.VO.express.AdressVO;
 
@@ -80,5 +82,21 @@ public class TownDAO {
 		sql.append("select id,code,name,county_code as parentCode from express_set_town where name in " + TownNames + " order by code asc");
 		list = this.jdbcTemplate.query(sql.toString(), new TownRowMapper());
 		return list;
+	}
+	
+	/**
+	 * 根据名称及所属的区编码获取街道
+	 */
+	public AdressVO getTownByNameAndCounty(String name, AdressVO vo){
+		if(StringUtils.isEmpty(name) || vo == null){
+			return null;
+		}
+		String countyCode = vo.getCode();
+		String sql = "select id,code,name,county_code as parentCode from express_set_town where name=? and county_code=?";
+		List<AdressVO> voList = jdbcTemplate.query(sql, new TownRowMapper(), name, countyCode);
+		if(CollectionUtils.isEmpty(voList)){
+			return null;
+		}
+		return voList.get(0);
 	}
 }
