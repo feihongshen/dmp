@@ -908,7 +908,7 @@ public class ReserveOrderController extends ExpressCommonController {
     public Map getReserveOrderBySenderPhone(String senderPhone,String phoneFlag) {
         Map obj = new HashMap();
         OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel ();
-        omReserveOrderModel.setCnorTel(senderPhone);
+        omReserveOrderModel.setCnorMobile(senderPhone);
         omReserveOrderModel.setReserveOrderStatusList("20,30,70,90");
         ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,3);
         List<Map<String, Object>>  orderList = cwbDAO.getCwbOrderByPhone(senderPhone,phoneFlag);
