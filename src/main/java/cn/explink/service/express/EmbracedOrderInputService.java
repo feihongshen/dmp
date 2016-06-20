@@ -703,6 +703,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("不能判断是录入还是补录，dmp信息回写失败！");
 		} else {
 			try {
+				Branch branch = getBracnch();
 				PjDeliveryOrderRequest doReq = new PjDeliveryOrderRequest();
 				doReq.setTransportNo(embracedOrderVO.getOrderNo());
 				// doReq.setCustOrderNo(embracedOrderVO.getOrderNo());//接口要求运单号和订单号不一样，但快递是一样的，并且非必填项，所以不set
@@ -713,7 +714,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				doReq.setAcceptOperator(embracedOrderVO.getDelivermanName());
 				//快递二期增加必填字段：操作人
 				doReq.setCreatedByUser(this.getSessionUser().getUsername());
-				doReq.setCreatedOffice(this.getSessionUser().getBranchid()+"");
+				doReq.setCreatedOffice(branch.getTpsbranchcode());
 				doReq.setCnorProv(embracedOrderVO.getSender_provinceName());
 				doReq.setCnorCity(embracedOrderVO.getSender_cityName());
 				if (!"input".equals(inputOrEmbrace)) {// 只有补录才有的数据回写
