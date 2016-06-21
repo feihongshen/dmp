@@ -5101,7 +5101,7 @@ public class CwbOrderService extends BaseOrderService {
 		transcwb = transcwb.replaceAll("，", ",");// 全角逗号
 		transcwb = transcwb.replaceAll("\r\n", "");
 
-		CwbOrderService.logger.info("棒棒糖请求参数cwb={},leavedreasonid={},resendtime={},zhiliuremark={}", new Object[] { cwb, leavedreasonid, resendtime, zhiliuremark });
+		CwbOrderService.logger.info("棒棒糖请求参数cwb={},leavedreasonid={},resendtime={},zhiliuremark={},transcwb={}", new Object[] { cwb, leavedreasonid, resendtime, zhiliuremark, transcwb});
 
 		// 再次判定时间格式是否正确 如果正确 应该去掉空白符共18个字
 		deliverytime = deliverytime.length() != 19 ? DateTimeUtil.getNowTime() : deliverytime;
@@ -8337,7 +8337,9 @@ public class CwbOrderService extends BaseOrderService {
 	public void datalose_vipshop(String cwb) {
 
 		try {
-			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+			//CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb); 因为此时在外层已被删除（state=0），所以要改查询方法，以达到最小范围修改！
+			List<CwbOrder> coList = this.cwbDAO.getLabelPrintCwbsByCwbs("'"+cwb+"'");
+			CwbOrder co = (coList!=null && coList.size()>0)?coList.get(0):null;
 
 			this.cwbDAO.dataLoseByCwb(cwb);
 			this.deliveryStateDAO.inactiveDeliveryStateByCwb(cwb);
@@ -8358,8 +8360,8 @@ public class CwbOrderService extends BaseOrderService {
 					this.emailDateDAO.editEditEmaildateForCwbcount(cwbcount, co.getEmaildateid());
 				}
 				if (co != null) {
-					this.shiXiaoDAO.creAbnormalOrder(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb, co
-							.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1);
+					this.shiXiaoDAO.creAbnormalOrdernew(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb, co
+							.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), 1, 129, co.getCwbstate(), co.getEmaildate());
 				}
 				this.orderFlowDAO.deleteOrderFlowByCwb(cwb);
 			}

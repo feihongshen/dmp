@@ -358,12 +358,12 @@ function actionType(src)
 				<!-- <td width="6%" align="center" valign="middle" bgcolor="#eef6ff">选择</td> -->
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扫描号</td>
-				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作机构</td>
-				<td width="6%" align="center" valign="middle" bgcolor="#eef6ff">扫描类型</td>
-				<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">错误类型</td>
+				<td width="8%" align="center" valign="middle" bgcolor="#eef6ff">操作机构</td>
+				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">扫描类型</td>
+				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">错误类型</td>
 				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作时间</td>
-				<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">操作人</td>
-				<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
+				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作人</td>
+				<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
 				
 			</tr>
 		</table>
@@ -372,19 +372,19 @@ function actionType(src)
 			<tr>
 				<td width="10%" align="center" valign="middle"><%=ec.getCwb() %></td>
 				<td width="10%" align="center" valign="middle"><%=ec.getScancwb() %></td>
-				<td width="10%" align="center" valign="middle">
+				<td width="8%" align="center" valign="middle">
 					<%for(Branch b : branchlist){if(ec.getBranchid()==b.getBranchid()){ %>
 			        <%=b.getBranchname() %>
 			        <%}} %>
 				</td>
-				<td width="6%" align="center" valign="middle">
+				<td width="10%" align="center" valign="middle">
 				<%for(FlowOrderTypeEnum f:FlowOrderTypeEnum.values()){
 					if(ec.getScantype()==f.getValue()){%>
 						<%=f.getText() %>
 					<%}	
 				}%>
 				</td>
-				<td width="15%" align="center" valign="middle">
+				<td width="10%" align="center" valign="middle">
 				<%if(ec.getErrortype().length()>0&&ec.getErrortype().matches("^[0-9]*$")){ %>
 					<%for(ExceptionCwbErrorTypeEnum er:ExceptionCwbErrorTypeEnum.values()){
 						if(Long.parseLong(ec.getErrortype())==er.getValue()){%>
@@ -396,18 +396,25 @@ function actionType(src)
 				<%} %>
 				</td>
 				<td width="10%" align="center" valign="middle"><%=ec.getCreatetime() %></td>
-				<td width="5%" align="center" valign="middle">
+				<td width="10%" align="center" valign="middle">
 				<%for(User u : ulist){
 					if(ec.getUserid()==u.getUserid()){%>
 					<%=u.getRealname() %>
 				<% }
 				}%>
 				</td>
-				<td width="15%" align="center" valign="middle"><%=ec.getRemark() %></td>
+				<td width="10%" align="center" valign="middle"><%=ec.getRemark() %></td>
 				
 			</tr>
 		</table>
 		<%}}%>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
 	</div>
 	<%if(page_obj.getMaxpage()>1){ %>
 			<div class="iframe_bottom">

@@ -1423,7 +1423,13 @@ public class ExportService {
 				} else {
 					a = mapRow.get("transcwb");
 				}
-			} else {
+			}  else if ("vipclub".equals(cloumname)) { 
+				if (Long.parseLong(mapRow.get("vipclub").toString()) == 1) {
+					a = "是";
+				} else {
+					a = "否";
+				}
+			}else {
 				a = mapRow.get(cloumname);
 				a = this.setAbyUser(a, cloumname);
 			}

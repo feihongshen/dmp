@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +40,9 @@ import cn.explink.service.AdvancedQueryService;
 import cn.explink.service.DataStatisticsService;
 import cn.explink.service.DeliveryCashService;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
+import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping("/deliverycash")
@@ -240,6 +243,60 @@ public class DeliveryCashController {
 			return;
 		}
 		deliveryCashService.export(summary, response);
+		
+		//以下处理打印日志
+		Map<Long, Map<Long, BigDecimal>> countMap = summary.get("count");
+		Set<Long> userids = countMap.keySet();
+		String useridsStr = getUserString(userids);
+		List<User> userList = userDAO.getAllUserByUserIds(useridsStr);
+		int count = userList == null?0:userList.size();
+		String dataJson = this.setexportDataJson(dispatchbranchid, deliveryid, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
+		String filename = "小件员工作量统计" + DateTimeUtil.getNowDate() + ".xlsx";
+		//记录打印日志
+		this.auditExportExcel(dataJson, filename, count, this.getSessionUser().getUserid());
 	}
 
+	private String setexportDataJson(String[] dispatchbranchid, long deliveryid, long flowordertype, String begindate, String enddate, String[] deliverystate, Integer paybackfeeIsZero){
+		JSONObject json = new JSONObject();
+		json.put("dispatchbranchid", dispatchbranchid);
+		json.put("deliveryid", deliveryid);
+		json.put("flowordertype", flowordertype);
+		json.put("begindate", begindate);
+		json.put("enddate", enddate);
+		json.put("deliverystate", deliverystate);
+		json.put("paybackfeeIsZero", paybackfeeIsZero);
+		return json.toString();
+	}
+	
+	/**
+	 * 记录所有导出文件的操作
+	 * 
+	 * @param request
+	 * @param dataJson
+	 * @param userid
+	 */
+	private void auditExportExcel(String dataJson, String fileName, long count, long userid) {
+		try{
+			String logStr = String.format(
+					"UserId [%s] was exported the excel file:[name: %s, line-count: %d] by using conditions [%s]", userid, fileName, count, dataJson);
+			logger.info(logStr);
+		}catch(Exception e){
+			logger.error("Fail to log exported file info");
+		}
+	}
+	
+	private String getUserString(Set<Long> userids) {
+		String strs = "";
+		if (userids.size() > 0) {
+			for (Long str : userids) {
+				strs += "'" + str + "',";
+			}
+		}
+
+		if (strs.length() > 0) {
+			strs = strs.substring(0, strs.length() - 1);
+		}
+		return strs;
+
+	}
 }

@@ -107,8 +107,8 @@ public class ShiXiaoDAO {
 
 	public void creAbnormalOrder(long opscwbid, String cretime, long currentbranchid, long customerid, String cwb, long deliverybranchid, long flowordertype, long nextbranchid, long startbranchid,
 			long userid) {
-		String sql = "insert into edit_shixiao(`opscwbid`,`cretime`,`currentbranchid`,`customerid`,`cwb`,`deliverybranchid`,`flowordertype`,`nextbranchid`,`startbranchid`,`userid`,`shixiaoreasonid`) values(?,?,?,?,?,?,?,?,?,?)";
-		jdbcTemplate.update(sql, opscwbid, cretime, currentbranchid, customerid, cwb, deliverybranchid, flowordertype, nextbranchid, startbranchid, userid);
+		String sql = "insert into edit_shixiao(`opscwbid`,`cretime`,`currentbranchid`,`customerid`,`cwb`,`deliverybranchid`,`flowordertype`,`nextbranchid`,`startbranchid`,`userid`,`shixiaoreasonid`) values(?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.update(sql, opscwbid, cretime, currentbranchid, customerid, cwb, deliverybranchid, flowordertype, nextbranchid, startbranchid, userid, 129); //默认“其他原因”
 	}
 	public void creAbnormalOrdernew(long opscwbid, String cretime, long currentbranchid, long customerid, String cwb, long deliverybranchid, long flowordertype, long nextbranchid, long startbranchid,
 			long userid,long loseeffectid,long cwbstate,String emaildate) {

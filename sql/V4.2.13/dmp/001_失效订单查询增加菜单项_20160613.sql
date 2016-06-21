@@ -1,0 +1,1 @@
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('9080', 1, '失效订单查询', '9080', 'datastatistics/obsoleteOrder/1?', '90');
