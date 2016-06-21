@@ -1164,4 +1164,16 @@ public class UserDAO {
 		return userList;
 	}
 	
+	public Map<Long, String> getAllUserRealNameMap() {
+		String sql = "select userid, realname from express_set_user ";
+		final Map<Long, String> deliverMap = new HashMap<Long, String>();
+		this.jdbcTemplate.query(sql, new RowCallbackHandler() {
+
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				deliverMap.put(rs.getLong("userid"), rs.getString("realname"));
+			}
+		});
+		return deliverMap;
+	}
 }

@@ -611,7 +611,8 @@ public class DeliveryCashService {
 		OutputStream out = null;
 		try {
 			response.setContentType("application/x-msdownload");
-			response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+//			response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+			response.setHeader("content-disposition",  String.format("attachment;filename*=utf-8'zh_cn'%s",URLEncoder.encode(filename, "utf-8")));
 			out = response.getOutputStream();
 			wb.write(out);
 			out.close();
@@ -640,5 +641,5 @@ public class DeliveryCashService {
 		return strs;
 
 	}
-
+	
 }

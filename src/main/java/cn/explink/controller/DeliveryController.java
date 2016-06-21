@@ -1090,6 +1090,11 @@ public class DeliveryController {
 					parameters.put("zhiliuremark", zhiliuremark);
 					parameters.put("fankuileixing", "SHANGMENTUI");// 添加的
 					parameters.put("firstlevelreasonid", firstlevelreasonid);
+					
+					//Added by leoliao at 2016-06-20  解决批量反馈时清空运单的问题
+					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
+					parameters.put("transcwb", (cwbOrder==null?"":cwbOrder.getTranscwb()));
+					//Added end
 
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);

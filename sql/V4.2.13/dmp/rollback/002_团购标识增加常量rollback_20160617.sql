@@ -1,0 +1,1 @@
+DELETE FROM `express_ops_setexportfield` where fieldname='是否团购';

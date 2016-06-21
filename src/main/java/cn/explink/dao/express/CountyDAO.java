@@ -5,10 +5,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.domain.VO.express.AdressVO;
 
@@ -110,5 +112,22 @@ public class CountyDAO {
 		sql.append("select id,code,name,city_code as parentCode from express_set_county where id=?");
 		county = this.jdbcTemplate.queryForObject(sql.toString(), new CountyRowMapper(), id);
 		return county;
+	}
+	
+	/**
+	 * 通过名称及所属城市获取镇
+	 * 
+	 */
+	public AdressVO getCountyByNameAndCity(String name, AdressVO vo){
+		if(StringUtils.isEmpty(name) || vo == null){
+			return null;
+		}
+		String cityCode = vo.getCode();
+		String sql = "select id,code,name,city_code as parentCode from express_set_county where name=? and city_code = ?";
+		List<AdressVO> voList = jdbcTemplate.query(sql, new CountyRowMapper(), name, cityCode);
+		if(CollectionUtils.isEmpty(voList)){
+			return null;
+		}
+		return voList.get(0);
 	}
 }

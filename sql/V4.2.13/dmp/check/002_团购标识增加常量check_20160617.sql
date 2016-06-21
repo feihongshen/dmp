@@ -1,0 +1,1 @@
+﻿select 'success_是否团购' as `结果(为空时即失败)`,a.`fieldname` from express_ops_setexportfield a where fieldname='是否团购';
