@@ -5434,15 +5434,15 @@ public class CwbOrderService extends BaseOrderService {
 					this.transCwbDao.saveTranscwb(cwb, cwb);
 					this.cwbDAO.saveTranscwbByCwb(transcwb, cwb);
 					this.cwbDAO.saveBackcarnum(transcwbList.size(), cwb);
-					this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
+					//this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
 				}
 			}else{//当录入或修改快递单号为空时
-				if("".equals(co.getTranscwb())){
+				if(!"".equals(co.getTranscwb()) && nosysyemflag == null){
 					this.transCwbDao.deleteTranscwb(cwb);
 					this.transCwbDao.saveTranscwb(cwb, cwb);
 					this.cwbDAO.saveTranscwbByCwb("", cwb);
 					this.cwbDAO.saveBackcarnum(1, cwb);
-					this.cwbDAO.saveSendcarnum(1, cwb);
+					//this.cwbDAO.saveSendcarnum(1, cwb);
 				}
 			}
 		}
@@ -9685,7 +9685,7 @@ public class CwbOrderService extends BaseOrderService {
 					//从运单轨迹表中得到运单当前的状态记录
 					TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
 					
-					if(tcof.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
+					if(tcof.getFloworderid() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
 						i -- ;
 					}
 				}
@@ -9697,3 +9697,4 @@ public class CwbOrderService extends BaseOrderService {
 		return false;
 	}
 }
+
