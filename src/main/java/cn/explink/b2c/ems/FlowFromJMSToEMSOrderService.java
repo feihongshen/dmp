@@ -112,7 +112,8 @@ public class FlowFromJMSToEMSOrderService {
 	
 	//接收环节消息，用于EMS信息存储 表:express_ems_order_b2ctemp
 	public void  doSaveOrderForEms(String parm,long branchid)throws Exception{
-		
+		this.logger.info("保存EMS订单消息开始：" + System.currentTimeMillis());
+		this.logger.info("EMS订单保存， 环节信息处理,{}", parm);
 		try {
 			OrderFlow orderflow = this.objectMapper.readValue(parm, OrderFlow.class);
 			int floworderType = orderflow.getFlowordertype();

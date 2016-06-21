@@ -17,8 +17,8 @@ import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.util.Page;
 import cn.explink.util.Tools;
 
-import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
-import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPResponse;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderResponse;
 
 @Transactional
 @Service
@@ -94,11 +94,11 @@ public class ReSendExpressOrderService extends ExpressCommonService {
 	 */
 
 	public void sendTps(ReSendExpressOrderVO vo, List<ReSendExpressOrderVO> resultVO, List<String> success, List<String> failure) {
-		List<PjDeliverOrder4DMPRequest> requestlist = new ArrayList<PjDeliverOrder4DMPRequest>();
+		List<PjDeliveryOrderRequest> requestlist = new ArrayList<PjDeliveryOrderRequest>();
 		ExpressOperationInfo params = new ExpressOperationInfo(ExpressOperationEnum.CreateTransNO);
 		params = (ExpressOperationInfo) Tools.json2Object(vo.getMethodParams(), ExpressOperationInfo.class, false);
 		requestlist.add(params.getRequestlist().get(0));
-		List<PjDeliveryOrder4DMPResponse> result = new ArrayList<PjDeliveryOrder4DMPResponse>();
+		List<PjDeliveryOrderResponse> result = new ArrayList<PjDeliveryOrderResponse>();
 		try {
 			result = this.ExpressTpsInterfaceService.createTransNo4Dmp(requestlist);
 			vo.setErrMsg("");
