@@ -9699,7 +9699,7 @@ public class CwbOrderService extends BaseOrderService {
 					//从运单轨迹表中得到运单当前的状态记录
 					TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
 					
-					if(tcof.getFloworderid() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
+					if(tcof.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
 						i -- ;
 					}
 				}
@@ -9711,3 +9711,4 @@ public class CwbOrderService extends BaseOrderService {
 		return false;
 	}
 }
+
