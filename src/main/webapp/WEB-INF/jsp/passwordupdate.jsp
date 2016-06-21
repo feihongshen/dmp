@@ -64,24 +64,24 @@ function submitFormWeb(form){
 function submitForm(form){
 	if (<%=usermap.get("roleid").toString()%> == 2 || <%=usermap.get("roleid").toString()%> == 4){
 		if (trim(form.password.value)==""){
-			alert("请输入PDA登录密码");
+			alert("请输入POS登录密码");
 			form.password.focus();
 			return false;
 		} else if (trim(form.confirmpassword.value)==""){
-			alert("请确认PDA登录密码");
+			alert("请确认POS登录密码");
 			form.confirmpassword.focus();
 			return false;
 		} else if (trim(form.confirmpassword.value)!=trim(form.password.value)){
-			alert("两次PDA登录密码不一致");
+			alert("两次POS登录密码不一致");
 			form.password.focus();
 			return false;
 		}
 		if(!isPasswordValidForPDA(form.password.value)){
-			alert("PDA登录密码必须为数字，不能过于简单，至少要含三个不同数字，数字不能为日期，且长度至少需要六位");
+			alert("POS登录密码必须为数字，不能过于简单，至少要含三个不同数字，数字不能为日期，且长度至少需要六位");
 			return false;
 		}
 		if(!isUsernamePasswordNotContainEachOther('<%=usermap.get("username").toString()%>', form.password.value)){
-			alert("用户名与PDA登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
+			alert("用户名与POS登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
 			return false;
 		}
 		form.submit();
@@ -150,7 +150,7 @@ function submitForm(form){
 				  <tr class="font_1">
 				  		<td width="30%"></td>
 				   		<td width="35%" align="center" valign="middle" colspan ="2" >
-				     		<label>修改PDA登录密码</label>
+				     		<label>修改POS登录密码</label>
 				   		</td>
 				   		<td width="35%"></td>
 				  </tr>	
@@ -164,7 +164,7 @@ function submitForm(form){
 				  </tr>	
 				  <tr class="font_1">
 				      <td width="30%"></td>
-                        <td width="15%" align="center" valign="middle">PDA登录新密码：</td>
+                        <td width="15%" align="center" valign="middle">POS登录新密码：</td>
                         <td width="20%" align="center" valign="middle">
                           <input name="password" type="password" size="30"  maxlength="60" class="TextInput"/>
                         </td>
@@ -172,7 +172,7 @@ function submitForm(form){
 				  </tr>	
 				  <tr class="font_1">
 				        <td width="30%"></td>
-                        <td width="15%" align="center" valign="middle">确认PDA登录新密码：</td>
+                        <td width="15%" align="center" valign="middle">确认POS登录新密码：</td>
                         <td width="20%" align="center" valign="middle">
                         <input name="confirmpassword" type="password" size="30"  maxlength="60" class="TextInput" />
                         </td>
