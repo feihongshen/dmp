@@ -782,8 +782,6 @@ public class EditCwbController {
 	public String editCwbInfo(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
 	) {
-		isshow = 1;
-		cwb = "yd60872\r\nyd60889\r\nyd60876";
 		if (isshow > 0) { // 查询
 			List<String> cwbList = new ArrayList<String>();
 			for (String cwbStr : cwb.split("\r\n")) {

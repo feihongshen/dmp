@@ -182,7 +182,7 @@ function editInit(){
 													<textarea  cols="20"  name="editaddress" id="editaddress${vo.cwbOrder.cwb }" >${vo.cwbOrder.consigneeaddress }</textarea>
 												</td>
 												<td width="15%" valign="middle"  align="center"  >
-													<input type="text" onkeyup="findbranch('${vo.cwbOrder.cwb }')" value="${vo.cwbOrder.excelbranch }"  name="matchaddress" id="matchaddress${vo.cwbOrder.cwb }" />
+													<input type="text" onkeyup="findbranch('${vo.cwbOrder.cwb }')" value=""  name="matchaddress" id="matchaddress${vo.cwbOrder.cwb }" />
 													<select id="branchlist${vo.cwbOrder.cwb }" onchange="setMatchAddress(this,'${vo.cwbOrder.cwb }');getCourier('${vo.cwbOrder.cwb }');">
 														<option value="">请选择</option>
 														<c:forEach var="branch" items="${branchs }">
