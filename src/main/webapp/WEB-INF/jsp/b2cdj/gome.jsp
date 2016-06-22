@@ -43,9 +43,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						<li><span>推送最大数量：</span>
 	 						<input type ="text" id="maxCount" name ="maxCount"  maxlength="300"  value="<%=gome.getMaxCount()%>"  size="15" > 
-						</li>
-						<li><span>每次循环次数：</span>
-	 						<input type ="text" id="maxCount" name ="checkCount"  maxlength="300"  value="<%=gome.getCheckCount()%>"  size="15" > 
+							<input type ="hidden" id="maxCount" name ="checkCount" value="<%=gome.getCheckCount()%>"> 
 						</li>
 						<li><span>业务代码：</span>
 	 						<input type ="text" id="businessCode" name ="businessCode"  maxlength="300"  value="<%=gome.getBusinessCode()%>"  size="50" > 
@@ -97,9 +95,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						<li><span>推送最大数量：</span>
 	 						<input type ="text" id="maxCount" name ="maxCount"  maxlength="300"  value=""  size="15" > 
-						</li>
-						<li><span>每次循环次数：</span>
-	 						<input type ="text" id="maxCount" name ="checkCount"  maxlength="300"  value=""  size="15" > 
+	 						<input type ="hidden" id="maxCount" name ="checkCount"  value="30"> 
 						</li>
 						<li><span>业务代码：</span>
 	 						<input type ="text" id="businessCode" name ="businessCode"  maxlength="300"  value=""  size="50" > 
@@ -141,4 +137,3 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 	</div>
 </div>
 <div id="box_yy"></div>
-
