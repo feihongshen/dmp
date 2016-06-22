@@ -9779,6 +9779,8 @@ public class CwbDAO {
 		}
 		
 		return this.jdbcTemplate.queryForList(sql.toString());
+	}
+	
 	public void updateBatchNo(String cwb, String batchNo,String attemperNo,String attemperTime) {
 		this.jdbcTemplate.update(
 				"update express_ops_cwb_detail set remark1=?,remark3=?,remark4=? where cwb=? and state = 1 ",batchNo,attemperNo,attemperTime,cwb);		
