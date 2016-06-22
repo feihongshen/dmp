@@ -1756,7 +1756,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 
 		//一票多件是否存在运单号已经为站点到货，但不全部为到货的标志
-		boolean FenZhanDaoHuoFlag = this.getFenZhanDaoHuoFlag(co,isypdjusetranscwb);
+		boolean FenZhanDaoHuoFlag = this.getFenZhanDaoHuoFlag(co,isypdjusetranscwb,flowOrderTypeEnum);
 		
 		boolean newMPSOrder = this.mpsCommonService.isNewMPSOrder(scancwb);
 		// 先更新运单状态，要不然运单流程里面的当前站为0
@@ -9665,7 +9665,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param order
 	 * @return
 	 */
-	private boolean getFenZhanDaoHuoFlag(CwbOrder order,long isypdjusetranscwb){
+	private boolean getFenZhanDaoHuoFlag(CwbOrder order,long isypdjusetranscwb,FlowOrderTypeEnum flowOrderTypeEnum){
 		if(order == null){//如果order为空，那么直接返回false
 			return false;
 		}
@@ -9685,7 +9685,7 @@ public class CwbOrderService extends BaseOrderService {
 					//从运单轨迹表中得到运单当前的状态记录
 					TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
 					
-					if(tcof != null && tcof.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
+					if(tcof != null && tcof.getFlowordertype() == flowOrderTypeEnum.getValue()){
 						i -- ;
 					}
 				}
