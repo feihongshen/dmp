@@ -43,8 +43,8 @@ $(function(){
 });
 
 function check(){
-	var userid=$(".multiSelectOptions  input[name='userid']:checked ").size();
-	var branchid=$(".multiSelectOptions  input[name='branchid']:checked ").size();
+	var userid=$("input[name='selectItemuserid']:checked").size();
+	var branchid=$("input[name='selectItembranchid']:checked").size();
 	if(!userid>0){
 		alert("请选择用户");
 		return false;	
