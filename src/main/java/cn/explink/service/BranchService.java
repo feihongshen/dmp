@@ -20,6 +20,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.OrgPayInTypeEnum;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
@@ -314,5 +315,27 @@ public class BranchService {
     		return null;
     	}
 		return branchList.get(0);
+    }
+    
+    /**
+     * 获取站点
+     * 2016年6月21日 下午4:37:05
+     * @param branchId
+     * @return
+     */
+    public Branch getZhanDianByBranchId(long branchid) {
+    	Branch branch = this.getBranchByBranchid(branchid);
+    	if(branch != null && branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+    		return branch;
+    	}
+    	return null;
+    }
+    
+    public Branch getBranchByBranchname(String branchname) {
+    	Branch branch = this.branchDao.getBranchByBranchname(branchname);
+    	if(branch != null && branch.getBranchid() == 0) {
+    		return null;
+    	}
+    	return branch;
     }
 }

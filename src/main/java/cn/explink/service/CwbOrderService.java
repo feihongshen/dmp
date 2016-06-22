@@ -9755,7 +9755,7 @@ public class CwbOrderService extends BaseOrderService {
 		vo.setFlowordertypeVal(cwbFlowOrderType == null ? null : cwbFlowOrderType.getText());
 		CwbOrderTypeIdEnum cwbOrderType = CwbOrderTypeIdEnum.getByValue(cwbOrder.getCwbordertypeid());
 		vo.setOrderTypeVal(cwbOrderType == null ? null : cwbOrderType.getText());
-		if(org.apache.commons.lang3.StringUtils.isNotBlank(cwbOrder.getExcelbranch())) {
+		if(cwbOrder.getDeliverybranchid() != 0) {
 			List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
 			vo.setCourierList(courierList);
 		}

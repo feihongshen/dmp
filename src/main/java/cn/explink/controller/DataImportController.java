@@ -1087,8 +1087,13 @@ public class DataImportController {
 	 */
 	@RequestMapping("/getCourierByBranch")
 	@ResponseBody
-	public List<User> getCourierByBranch(String branchcode) {
-		Branch branch = this.branchService.getBranchByBranchcode(branchcode);
+	public List<User> getCourierByBranch(String branchcode, String branchname) {
+		Branch branch = null;
+		if(StringUtils.isNotBlank(branchcode)) { //优先编码
+			branch = this.branchService.getBranchByBranchcode(branchcode);
+		} else if(StringUtils.isNotBlank(branchname)) {
+			branch = this.branchService.getBranchByBranchname(branchname);
+		}
 		List<User> courierList;
 		if(branch != null) {
 			courierList = this.userService.getUserByRoleAndBranchid(2, branch.getBranchid());
