@@ -184,9 +184,9 @@ function bdbranchmatch(){
 		});
 	}
 }
-$(function(){
+/* $(function(){
 	$("#customerid").combobox();
-	})
+	}) */
 </script>
 </head>
 <body style="background: #f5f5f5">

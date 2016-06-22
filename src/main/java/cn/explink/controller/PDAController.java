@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -174,6 +175,7 @@ public class PDAController {
 	private static final String PLAY_GP_SOUND = "playGPSound";
 
 	private static final String PLAY_YPDJ_SOUND = "RUKUPCandPDAaboutYJDPWAV";
+
 	private static final int PORT = 8008;
 
 	private Logger logger = LoggerFactory.getLogger(PDAController.class);
@@ -275,6 +277,7 @@ public class PDAController {
 	CwbApplyZhongZhuanDAO cwbApplyZhongZhuanDAO;
 	@Autowired
 	AutoAllocationService autoAllocationService;
+
 	@Autowired
 	private BaleCwbDao baleCwbDao;
 
@@ -315,10 +318,12 @@ public class PDAController {
 
 	private ObjectMapper om = new ObjectMapper();
 
+
 	private boolean playGPSound = true;
 
 	private boolean playYPDJSound = true;
 	
+
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
@@ -494,9 +499,11 @@ public class PDAController {
 		if(autoAllocatingSwitch.equals("1")){
 			this.createSocketConnectMap(eList);
 		}
+
 		this.logger.info("进入分拣库入库页面的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 		return "pda/intowarhouse";
 	}
+
 	
 
 	/**
@@ -2982,7 +2989,6 @@ public class PDAController {
 		CwbOrder cwbOrder = new CwbOrder();
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		User user = this.getSessionUser();
-
 		String branchName="";//配送站点名称
 		String outputNo="";//出货口编号
 		boolean isPackage = false;
@@ -3441,7 +3447,7 @@ public class PDAController {
 			cwb = this.cwbOrderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			try {// 成功订单				
+			try {// 成功订单
 				//有货无单校验
 				this.checkyouhuowudan(this.getSessionUser(), cwb, customerid, this.getSessionUser().getBranchid());
 				CwbOrder cwbOrder = this.cwbOrderService.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, "", "", false);
@@ -4193,7 +4199,7 @@ public class PDAController {
 
 						boolean exportHouseFailed = false;
 						try {
-							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(), cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(),cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
 						} catch (Exception e) {
 							exportHouseFailed = true;
 							msg = "（异常扫描）" + e.getMessage();
@@ -10951,6 +10957,7 @@ public class PDAController {
 		}
 		
 	}
+
 	/**
 	 * ============================================== 代码块：分拣中转功能 end
 	 * ===============================================
@@ -10978,6 +10985,7 @@ public class PDAController {
 				/* thissuccess++; */
 				batchCount.setThissuccess(batchCount.getThissuccess() + 1);
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
@@ -11154,6 +11162,7 @@ public class PDAController {
 	 * ============================================== 代码块：分拣中转功能 end
 	 * ===============================================
 	 */
+
 	/**
 	 * 建立系统中的各个中间件socket连接
 	 * @param eList
