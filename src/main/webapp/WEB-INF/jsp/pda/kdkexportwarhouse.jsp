@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
 <%@page import="cn.explink.util.Page"%>
@@ -32,7 +33,6 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -417,6 +417,9 @@ function tohome(){
 }
 
 
+$(function(){
+	$("#branchid").combobox();
+})
 
 
 </script>

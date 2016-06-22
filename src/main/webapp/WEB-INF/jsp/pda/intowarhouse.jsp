@@ -40,10 +40,8 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintNew.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintFor3025.js" type="text/javascript"></script>
-
 <link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
-
 <script type="text/javascript">
 
 var App = {ctx:"${pageContext.request.contextPath}"};
@@ -71,6 +69,8 @@ $(function(){
     });
 	
 });
+
+
 function closeDialog(){
 	$('#find').dialog('close');
 	$("#scancwb").focus();
@@ -882,6 +882,9 @@ function flush(){
  		}
  	});
 }
+$(function(){
+	$("#customerid").combobox();
+})
 </script>
 </head>
 <body style="background:#eef9ff" marginwidth="0" marginheight="0">

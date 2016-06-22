@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="net.sf.json.JSONObject"%>
@@ -24,7 +25,6 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"></link>
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -486,6 +486,9 @@ function tohome(){
 	}
 	window.location.href="<%=request.getContextPath() %>/PDA/cwbintowarhouseBatch?customerid="+$("#customerid").val()+"&emaildate="+$("#emaildate").val();
 }
+$(function(){
+	$("#customerid").combobox();
+})
 
 </script>
 </head>
