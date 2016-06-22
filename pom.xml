@@ -76,6 +76,17 @@
   			</exclusions> 
 		</dependency>
 		<dependency>
+		     <groupId>com.pjbest</groupId> 
+			 <artifactId>id-allocation-service-api</artifactId> 
+			 <version>1.1.0_03</version>
+			 <exclusions>
+  				<exclusion>
+  					<groupId>org.springframework</groupId>
+      				<artifactId>spring-context-support</artifactId>
+  				</exclusion>
+  			</exclusions> 
+		</dependency>
+		<dependency>
   			<groupId>com.pjbest.pjorganization</groupId>
   			<artifactId>pjorganization-service-api</artifactId>
   			<version>1.1.0_03</version>
