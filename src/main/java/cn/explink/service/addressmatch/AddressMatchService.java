@@ -320,9 +320,9 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 								this.logger.error("丰简地址库匹配失败，cwb={}，地址={}", cwbOrder.getCwb(), cwbOrder.getConsigneeaddress());
 								continue;
 							}
-							if(station.indexOf("|") > -1){//如果是这样的格式：123|456，则取123
-								station = station.substring(0, station.indexOf("|"));
-								this.logger.info("丰简地址库匹配问题，匹配到多个站点，取第一个，cwb={},匹配到station={}", cwbOrder.getCwb(), station);
+							if(station.indexOf("|") > -1){//如果是这样的格式：123|456，匹配到多个站点，则视为匹配失败，须人工匹配
+								this.logger.info("丰简地址库匹配问题，匹配到多个站点，cwb={},匹配到station={}", cwbOrder.getCwb(), station);
+								continue;
 							}
 							if(!NumberUtils.isNumber(station)){//非数字，匹配不到站点
 								this.logger.error("丰简地址库匹配失败，cwb={}，地址={}", cwbOrder.getCwb(), cwbOrder.getConsigneeaddress());
