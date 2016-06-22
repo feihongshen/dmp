@@ -1756,7 +1756,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 
 		//一票多件是否存在运单号已经为站点到货，但不全部为到货的标志
-		boolean FenZhanDaoHuoFlag = this.getFenZhanDaoHuoFlag(co);
+		boolean FenZhanDaoHuoFlag = this.getFenZhanDaoHuoFlag(co,isypdjusetranscwb);
 		
 		boolean newMPSOrder = this.mpsCommonService.isNewMPSOrder(scancwb);
 		// 先更新运单状态，要不然运单流程里面的当前站为0
@@ -1800,7 +1800,8 @@ public class CwbOrderService extends BaseOrderService {
 					ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
 					
 				}
-				if (newMPSOrder) {
+				//集包模式（之前写的）和非集单一票多件中，一件先出库、到货，下一件才出库、到货的情况下，需要对下一件进行到货
+				if (newMPSOrder||(!newMPSOrder && FenZhanDaoHuoFlag) ) {
 					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
 				}
 			} else {
@@ -9680,7 +9681,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param order
 	 * @return
 	 */
-	private boolean getFenZhanDaoHuoFlag(CwbOrder order){
+	private boolean getFenZhanDaoHuoFlag(CwbOrder order,long isypdjusetranscwb){
 		if(order == null){//如果order为空，那么直接返回false
 			return false;
 		}
@@ -9689,7 +9690,6 @@ public class CwbOrderService extends BaseOrderService {
 			return false;
 		}
 		String cwb = order.getCwb();
-		long isypdjusetranscwb = this.customerDAO.getCustomerById(order.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(order.getCustomerid()).getIsypdjusetranscwb();
 		if (((order.getSendcarnum() > 1) || (order.getBackcarnum() > 1)) && ((order.getTranscwb().split(",").length > 1) || (order.getTranscwb().split(":").length > 1)) && (isypdjusetranscwb == 1)) {
 			if (order.getTranscwb().indexOf(",") > -1) {
 				String[] transCwbs = order.getTranscwb().split(",");
@@ -9701,7 +9701,7 @@ public class CwbOrderService extends BaseOrderService {
 					//从运单轨迹表中得到运单当前的状态记录
 					TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
 					
-					if(tcof.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
+					if(tcof != null && tcof.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
 						i -- ;
 					}
 				}
