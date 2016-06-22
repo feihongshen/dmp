@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
-
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
@@ -376,7 +375,6 @@ public class CwbDAO {
 			// mpsallarrivedflag
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
-
 			cwbOrder.setInstationname(rs.getString("instationname"));
 			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
@@ -391,7 +389,6 @@ public class CwbDAO {
 				cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 				cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			}
-
 			return cwbOrder;
 		}
 	}
@@ -9050,7 +9047,7 @@ public class CwbDAO {
 	 */
 	public ExpressCwbOrderForTakeGoodsQueryVO queryCwbExpressTakeGoodsQueryLanJianChuZhan(
 			int cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid=" + cwbid;
 		if (paymethod != null) {
 			sql += " and paymethod='" + paymethod + "'";
@@ -9069,6 +9066,7 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQueryByPage(
 			Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,
 			String userIds) {
+
 		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		
@@ -9781,5 +9779,8 @@ public class CwbDAO {
 		}
 		
 		return this.jdbcTemplate.queryForList(sql.toString());
+	public void updateBatchNo(String cwb, String batchNo,String attemperNo,String attemperTime) {
+		this.jdbcTemplate.update(
+				"update express_ops_cwb_detail set remark1=?,remark3=?,remark4=? where cwb=? and state = 1 ",batchNo,attemperNo,attemperTime,cwb);		
 	}
 }
