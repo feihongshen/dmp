@@ -102,13 +102,13 @@ public class ShangMenTuiCwbDetailDAO {
 		if (selectype.equals("1")) {
 			if (!orders.isEmpty()&&orders.length()>0){
 				String sql = "select distinct sd.cwb from shangmentuicwb_detail sd left join express_ops_cwb_detail cd "
-						+ " on sd.cwb=cd.cwb where sd.cwb IN("+orders+")";
+						+ " on sd.cwb=cd.cwb where cd.delivery_permit=0 and sd.cwb IN("+orders+")" ;
 				return jdbcTemplate.queryForList(sql, String.class);
 			}
 		}
 		StringBuffer sql = new StringBuffer();
 	    sql.append("select distinct sd.cwb from shangmentuicwb_detail sd left join express_ops_cwb_detail cd "
-				+ " on sd.cwb=cd.cwb where cd.state=1 ");
+				+ " on sd.cwb=cd.cwb where cd.state=1 and cd.delivery_permit=0 ");
 		if (printType == 0) {
 			sql.append(" and cd.flowordertype IN(1,2,3,4,6,7,8,37) ");
 			sql.append(" and cd.printtime='' ");

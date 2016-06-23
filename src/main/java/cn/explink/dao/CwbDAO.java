@@ -389,6 +389,7 @@ public class CwbDAO {
 				cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 				cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			}
+			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
 			return cwbOrder;
 		}
 	}
@@ -3342,7 +3343,7 @@ public class CwbDAO {
 				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()
 				+ "','"
 				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()
-				+ "') and state=1 and cwb in(" + cwbs + ")";
+				+ "') and state=1 and delivery_permit=0 and cwb in(" + cwbs + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid);
 	}
 
@@ -3424,7 +3425,7 @@ public class CwbDAO {
 				+ deliveryState
 				+ " and currentbranchid="
 				+ currentbranchid
-				+ " and state=1 and flowordertype="
+				+ " and state=1 and delivery_permit=0 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue()
 				+ " and cwb in("
 				+ cwbs
@@ -3443,7 +3444,7 @@ public class CwbDAO {
 				+ deliveryStates
 				+ ") and currentbranchid="
 				+ currentbranchid
-				+ " and state=1 and flowordertype="
+				+ " and state=1 and delivery_permit=0 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue()
 				+ " and cwb in("
 				+ cwbs
@@ -3524,7 +3525,7 @@ public class CwbDAO {
 				+ deliveryState
 				+ " and currentbranchid="
 				+ currentbranchid
-				+ " and state=1 and flowordertype="
+				+ " and state=1 and delivery_permit=0 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue();
 		if (cwbs.length() > 0) {
 			sql += " and cwb in(" + cwbs + ")";
@@ -3542,7 +3543,7 @@ public class CwbDAO {
 				+ deliveryStates
 				+ ") and currentbranchid="
 				+ currentbranchid
-				+ " and state=1 and flowordertype="
+				+ " and state=1 and delivery_permit=0 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue();
 		if (cwbs.length() > 0) {
 			sql += " and cwb in(" + cwbs + ")";
@@ -7614,7 +7615,7 @@ public class CwbDAO {
 			String types, String cwbs) {
 		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid="
 				+ branchid
-				+ " and state=1 and cwb in ("
+				+ " and state=1 and delivery_permit=0 and cwb in ("
 				+ cwbs
 				+ ") and flowordertype in (" + types + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
@@ -9672,6 +9673,36 @@ public class CwbDAO {
 		}
 	}
 	
+	public void updateCwbDeliveryPermit(String cwb) {
+		String sql = "update express_ops_cwb_detail set delivery_permit=1 where cwb=? and state=1";
+		int count = this.jdbcTemplate.update(sql, cwb);
+		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb , count});
+	}
+	
+	public void updateCwbDeliveryPermitByPeiSong(String cwb) {
+		String sql = "update express_ops_cwb_detail set delivery_permit=1 where cwb like '"+cwb+"-T_' and state=1";
+		int count = this.jdbcTemplate.update(sql);
+		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb , count});
+	}
+	
+	public String queryRelatedShangMenTuiCwb (String cwb ) {
+		try {
+			return this.jdbcTemplate.queryForObject("SELECT cwb from express_ops_cwb_detail where cwb like '"+ cwb + "-T_'  and state=1 limit 0,1", String.class );
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+	
+	public List<CwbOrder> queryRelatedShangMenTuiCwbList(String cwb) {
+		try {
+			return this.jdbcTemplate.query(
+					"SELECT * from express_ops_cwb_detail where cwb like '"
+							+ cwb + "-T_' and state=1 LIMIT 0,10  ",
+					new CwbMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 	/**查询失效订单
 	 * 2016-05-25
 	 * @param cwb
