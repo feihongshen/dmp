@@ -140,6 +140,8 @@ public class CwbOrder {
 	private long oxodeliverystate; // oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
 	private int branchfeebillexportflag;// 加盟商派费账单导出标志
+	
+	private int deliverypermit;//上门退订单是否可领货 0可领 1不可领
 
 	// 以下是快递业务新增字段
 
@@ -2048,4 +2050,11 @@ public class CwbOrder {
 		this.ismpsflag = ismpsflag;
 	}
 
+	public int getDeliverypermit() {
+		return deliverypermit;
+	}
+
+	public void setDeliverypermit(int deliverypermit) {
+		this.deliverypermit = deliverypermit;
+	}
 }

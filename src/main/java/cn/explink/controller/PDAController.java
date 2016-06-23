@@ -2023,6 +2023,7 @@ public class PDAController {
 		long linghuoSuccessCount = 0;
 		String alertErrorMsg = "";
 		String alertWarnMsg = "";
+		String relatedShangMenTuiCwb = ""; // 配送单关联的上门退订单
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 		for (String cwb : cwbs.split("\r\n")) {
@@ -2051,6 +2052,12 @@ public class PDAController {
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				linghuoSuccessCount++;
+				
+				if (relatedShangMenTuiCwb.isEmpty()) {
+					relatedShangMenTuiCwb = cwbOrderService.haveRelatedShangMenTuiCwb(cwbOrder);
+				} else {
+					relatedShangMenTuiCwb += "," + cwbOrderService.haveRelatedShangMenTuiCwb(cwbOrder);
+				}
 			} catch (CwbException ce) {// 出现验证错误
 				this.logger.error("cwb="+cwb,ce);
 				if (ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen.equals(ce.getError())) { // 订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
@@ -2160,6 +2167,11 @@ public class PDAController {
 				alertWarnMsg = editCwbs.toString() + "有修改，请及时核对！";
 			}
 		}
+		if (alertErrorMsg.isEmpty() && alertWarnMsg.isEmpty()
+				&& !relatedShangMenTuiCwb.isEmpty()) {
+			alertWarnMsg = relatedShangMenTuiCwb + "有关联揽退单！";
+		}
+		
 		model.addAttribute("objList", objList);
 		model.addAttribute("customerlist", cList);
 
@@ -5456,14 +5468,14 @@ public class PDAController {
 
 		if (cwbOrder.getDeliverid() != 0) {
 			User user = this.userDAO.getUserByUserid(cwbOrder.getDeliverid());
-
 			obj.put("cwbdelivername", user.getRealname());
 			obj.put("cwbdelivernamewav", request.getContextPath() + ServiceUtil.wavPath + (user.getUserwavfile() == null ? "" : user.getUserwavfile()));
-
 		} else {
 			obj.put("cwbdelivername", "");
 			obj.put("cwbdelivernamewav", "");
 		}
+		obj.put("guanlianlantuidan", cwbOrderService.haveRelatedShangMenTuiCwb(cwbOrder));
+		
 		// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
 		String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 		List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
