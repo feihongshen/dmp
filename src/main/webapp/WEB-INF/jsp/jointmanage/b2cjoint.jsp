@@ -522,7 +522,10 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/shenzhoushuma/show/');
 			$("#del").val('<%=request.getContextPath()%>/shenzhoushuma/del/');
 		}
-		
+		else if(obj=='22501'){//TPS订单下发接口
+            $("#edit").val('<%=request.getContextPath()%>/tPSMQ/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

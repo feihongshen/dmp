@@ -8,19 +8,9 @@ import org.springframework.util.StringUtils;
 import cn.explink.domain.Common;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
-import cn.explink.util.JMath;
 
-public class CwbOrderDTO {
+public class MQCwbOrderDTO {
 	long opscwbid;
-
-	public long getOpscwbid() {
-		return this.opscwbid;
-	}
-
-	public void setOpscwbid(long opscwbid) {
-		this.opscwbid = opscwbid;
-	}
-
 	String cwb;
 	String commoncwb;
 	String consigneename;
@@ -85,10 +75,79 @@ public class CwbOrderDTO {
 	int ismpsflag; // 是否一票多件：0默认；1是一票多件'; 
 	int vipclub;
 	String tpsTranscwb;//tps运单号
-    int paymethod;//付款方式
+	int paymethod;//付款方式
+	
 	int doType;//订单类型
-	int orderSource;//订单类型：是否外单
-	BigDecimal announcedvalue;//保存申明
+	String carrierCode;//承运商编码
+	String recstreet;//收件人街道
+	BigDecimal caramount;//货物金额
+	BigDecimal announcedvalue;//保价价值
+	long cartype;//货物类型
+	int order_source;//订单类型：是否外单
+	
+	public int getPaymethod() {
+		return paymethod;
+	}
+
+	public void setPaymethod(int paymethod) {
+		this.paymethod = paymethod;
+	}
+
+	public int getDoType() {
+		return doType;
+	}
+
+	public void setDoType(int doType) {
+		this.doType = doType;
+	}
+
+	public String getCarrierCode() {
+		return carrierCode;
+	}
+
+	public void setCarrierCode(String carrierCode) {
+		this.carrierCode = carrierCode;
+	}
+
+	public String getRecstreet() {
+		return recstreet;
+	}
+
+	public void setRecstreet(String recstreet) {
+		this.recstreet = recstreet;
+	}
+
+	public BigDecimal getCaramount() {
+		return caramount;
+	}
+
+	public void setCaramount(BigDecimal caramount) {
+		this.caramount = caramount;
+	}
+
+	public BigDecimal getAnnouncedvalue() {
+		return announcedvalue;
+	}
+
+	public void setAnnouncedvalue(BigDecimal announcedvalue) {
+		this.announcedvalue = announcedvalue;
+	}
+
+	public long getCartype() {
+		return cartype;
+	}
+
+	public void setCartype(long cartype) {
+		this.cartype = cartype;
+	}
+
+	public long getOpscwbid() {
+		return this.opscwbid;
+	}
+
+	public void setOpscwbid(long opscwbid) {
+		this.opscwbid = opscwbid;
+	}
 	
 	public int getIsmpsflag() {
 		return ismpsflag;
@@ -863,35 +922,11 @@ public class CwbOrderDTO {
 		this.tpsTranscwb = tpsTranscwb;
 	}
 
-	public int getPaymethod() {
-		return paymethod;
+	public int getOrder_source() {
+		return order_source;
 	}
 
-	public void setPaymethod(int paymethod) {
-		this.paymethod = paymethod;
-	}
-
-	public int getDoType() {
-		return doType;
-	}
-
-	public void setDoType(int doType) {
-		this.doType = doType;
-	}
-
-	public int getOrderSource() {
-		return orderSource;
-	}
-
-	public void setOrderSource(int orderSource) {
-		this.orderSource = orderSource;
-	}
-
-	public BigDecimal getAnnouncedvalue() {
-		return announcedvalue;
-	}
-
-	public void setAnnouncedvalue(BigDecimal announcedvalue) {
-		this.announcedvalue = announcedvalue;
+	public void setOrder_source(int order_source) {
+		this.order_source = order_source;
 	}
 }

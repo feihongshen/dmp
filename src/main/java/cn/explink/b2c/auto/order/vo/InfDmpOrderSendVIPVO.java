@@ -11,19 +11,11 @@ package cn.explink.b2c.auto.order.vo;
  */
 public class InfDmpOrderSendVIPVO {
 
-    private String boxNo;// 箱号，多个英文逗号分隔
-
     private Long addTime;// 出仓时间
 
     private String vipClub;// 团购标识
 
     private String orderDeliveryBatch;// 订单配送批次
-
-    private Integer serviceType;// 服务类型 1 b2c,2 仓储,3 配送
-
-    private Long createTime;// 创建时间
-
-    private String orderBatchNo;// 交接单号
 
     private String attemperNo;// 托运单号
 
@@ -41,24 +33,6 @@ public class InfDmpOrderSendVIPVO {
 
     private String brandName;// oxo-供应商名称
 
-    private Integer doType;// 1-乐蜂订单 2-海淘订单 3-OXO订单 4-普通订单 5-海淘直发 6-普通直发单
-
-    public Integer getDoType() {
-        return this.doType;
-    }
-
-    public void setDoType(Integer doType) {
-        this.doType = doType;
-    }
-
-    public String getOrderBatchNo() {
-        return this.orderBatchNo;
-    }
-
-    public void setOrderBatchNo(String orderBatchNo) {
-        this.orderBatchNo = orderBatchNo;
-    }
-
     public String getAttemperNo() {
         return this.attemperNo;
     }
@@ -73,14 +47,6 @@ public class InfDmpOrderSendVIPVO {
 
     public void setAttemperNoCreateTime(Long attemperNoCreateTime) {
         this.attemperNoCreateTime = attemperNoCreateTime;
-    }
-
-    public String getBoxNo() {
-        return this.boxNo;
-    }
-
-    public void setBoxNo(String boxNo) {
-        this.boxNo = boxNo;
     }
 
     public Long getAddTime() {
@@ -105,22 +71,6 @@ public class InfDmpOrderSendVIPVO {
 
     public void setOrderDeliveryBatch(String orderDeliveryBatch) {
         this.orderDeliveryBatch = orderDeliveryBatch;
-    }
-
-    public Integer getServiceType() {
-        return this.serviceType;
-    }
-
-    public void setServiceType(Integer serviceType) {
-        this.serviceType = serviceType;
-    }
-
-    public Long getCreateTime() {
-        return this.createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
     }
 
     public Integer getIsGatherPack() {

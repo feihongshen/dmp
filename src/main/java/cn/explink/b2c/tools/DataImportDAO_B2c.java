@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import cn.explink.controller.CwbOrderDTO;
+import cn.explink.controller.MQCwbOrderDTO;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -161,6 +162,8 @@ public class DataImportDAO_B2c {
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
 			cwbOrder.setVipclub(rs.getInt("vipclub"));
 			cwbOrder.setTpsTranscwb(rs.getString("tpsTranscwb"));
+			cwbOrder.setDoType(rs.getInt("do_type"));
+			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
 			return cwbOrder;
 		}
 	}
@@ -785,5 +788,131 @@ public class DataImportDAO_B2c {
 		this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set emaildate=?, getDataFlag=0 where cwb=? and state = 1 ", emaildate, cwb);
 	}
 	
+	/**
+	 * MQ订单数据插入数据到临时表 然后定时器插入detail表
+	 * @param cwbOrderDTO
+	 * @param customerid
+	 * @param branchid
+	 * @param user
+	 * @param ed
+	 */
+	public void insertCwbOrderToTempTable(final MQCwbOrderDTO cwbOrderDTO, final long customerid, final long branchid, final User user, final EmailDate ed) {
+		this.logger.info("导入临时表一条新的订单，订单号为{}", cwbOrderDTO.getCwb());
+		this.jdbcTemplate.update(
+				"insert into express_ops_cwb_detail_b2ctemp ("
+				+ "cwb,consigneename,consigneeaddress,consigneepostcode,consigneephone,sendcarname,backcarname,receivablefee,paybackfee,carrealweight,"
+				+ "cwbremark,customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,"
+				+ "cartype,carsize,backcaramount,destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,"
+				+ "cwbdelivertypeid,customerwarehouseid,cwbprovince,cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,nextbranchid,orderflowid,"
+				+ "flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,paywayid,newpaywayid,multi_shipcwb,cargovolume,"
+				+ "consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare,ismpsflag,"
+				+ "mpsallarrivedflag,vipclub,tpstranscwb,do_type,paymethod,order_source) "
+						+ "values("
+				+ "?,?,?,?,?,?,?,?,?,?,"
+				+ "?,?,?,?,?,?,?,?,?,?, "
+				+ "?,?,?,?,?,?,?,?,?,?, "
+				+ "?,?,?,?,?,?,?,?,?,?, "
+				+ "?,?,?,?,?,?,?,?,?,?, "
+				+ "?,?,?,?,?,?,?,?,?,?, "
+				+ "?,?,?,?,?,? )", new PreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps) throws SQLException {
+						ps.setString(1, cwbOrderDTO.getCwb());
+						ps.setString(2, cwbOrderDTO.getConsigneename());
+						ps.setString(3, cwbOrderDTO.getConsigneeaddress());
+						ps.setString(4, cwbOrderDTO.getConsigneepostcode());
+						ps.setString(5, cwbOrderDTO.getConsigneephone());
+						ps.setString(6, cwbOrderDTO.getSendcargoname());
+						ps.setString(7, cwbOrderDTO.getBackcargoname());
+						ps.setFloat(8, cwbOrderDTO.getReceivablefee().floatValue());
+						ps.setFloat(9, cwbOrderDTO.getPaybackfee().floatValue());
+						ps.setFloat(10, cwbOrderDTO.getCargorealweight().floatValue());
+						ps.setString(11, cwbOrderDTO.getCwbremark());
+						ps.setLong(12, customerid);
+						ps.setString(13, ed.getEmaildatetime());
+						ps.setString(14, cwbOrderDTO.getConsigneemobile());
+						ps.setLong(15, branchid);
+						ps.setString(16, cwbOrderDTO.getExceldeliver());
+						ps.setString(17, cwbOrderDTO.getConsigneeno());
+						ps.setString(18, cwbOrderDTO.getExcelbranch());
+						ps.setFloat(19, cwbOrderDTO.getCargoamount().floatValue());
+						ps.setString(20, cwbOrderDTO.getCustomercommand());
+						ps.setString(21, cwbOrderDTO.getCargotype());
+						ps.setString(22, cwbOrderDTO.getCargosize());
+						ps.setFloat(23, cwbOrderDTO.getBackcargoamount().floatValue());
+						ps.setString(24, cwbOrderDTO.getDestination());
+						ps.setString(25, cwbOrderDTO.getTransway());
+						ps.setLong(26, cwbOrderDTO.getShipperid());
+						ps.setInt(27, cwbOrderDTO.getSendcargonum());
+						ps.setInt(28, cwbOrderDTO.getBackcargonum());
+						ps.setLong(29, user.getUserid());
+						ps.setLong(30, cwbOrderDTO.getCwbordertypeid());
+						ps.setLong(31, cwbOrderDTO.getCwbdelivertypeid());
+						ps.setLong(32, cwbOrderDTO.getCustomerwarehouseid());
+						ps.setString(33, cwbOrderDTO.getCwbprovince());
+						ps.setString(34, cwbOrderDTO.getCwbcity());
+						ps.setString(35, cwbOrderDTO.getCwbcounty());
+						ps.setString(36, cwbOrderDTO.getShipcwb());
+						ps.setString(37, cwbOrderDTO.getTranscwb());
+						ps.setLong(38, cwbOrderDTO.getServiceareaid());
+						ps.setLong(39, cwbOrderDTO.getDeliverybranchid());
+						ps.setLong(40, 0);
+						ps.setInt(41, FlowOrderTypeEnum.DaoRuShuJu.getValue());
+						ps.setInt(42, EmailFinishFlagEnum.WeiDaoHuo.getValue());
+						ps.setLong(43, (cwbOrderDTO.getCommon() == null ? 0 : cwbOrderDTO.getCommon().getId()));
+						ps.setString(44, cwbOrderDTO.getModelname());
+						ps.setLong(45, ed.getEmaildateid());
+						ps.setLong(46, branchid);
+						ps.setLong(47, cwbOrderDTO.getPaywayid());
+						ps.setString(48, cwbOrderDTO.getNewpaywayid() + "");
+						ps.setString(49, cwbOrderDTO.getMulti_shipcwb());
+						ps.setFloat(50, cwbOrderDTO.getCargovolume().floatValue());
+						ps.setString(51, cwbOrderDTO.getConsignoraddress());
+						ps.setString(52, cwbOrderDTO.getTmall_notifyid());
+						ps.setString(53, cwbOrderDTO.getRemark1());
+						ps.setString(54, cwbOrderDTO.getRemark2());
+						ps.setString(55, cwbOrderDTO.getRemark3());
+						ps.setString(56, cwbOrderDTO.getRemark4());
+						ps.setString(57, cwbOrderDTO.getRemark5());
+						ps.setString(58, cwbOrderDTO.getCommoncwb());
+						ps.setFloat(59, cwbOrderDTO.getShouldfare().floatValue());
+						ps.setInt(60, cwbOrderDTO.getIsmpsflag());
+						ps.setInt(61, cwbOrderDTO.getMpsallarrivedflag());
+						ps.setInt(62, cwbOrderDTO.getVipclub());
+						ps.setString(63, cwbOrderDTO.getTpsTranscwb());
+						ps.setInt(64, cwbOrderDTO.getDoType());//订单类型
+						ps.setInt(65, cwbOrderDTO.getPaymethod());//付款方式
+						ps.setInt(66, cwbOrderDTO.getOrder_source());//付款方式
+					}
+				});
+	}
 	
+	
+
+	/**
+	 * 使用id来进行更新以便行级锁生效--MQ下发订单新增
+	 * @param opscwbid
+	 * @param transcwb
+	 * @param sendcarnum
+	 * @param mpsallarrivedflag
+	 * @param ismpsflag
+	 */
+	public void updateTmsCollectionInfo(long opscwbid, String  transcwb, int sendcarnum, int mpsallarrivedflag, int ismpsflag, String remark1) {
+		String sql = "update express_ops_cwb_detail_b2ctemp set transcwb=?,sendcarnum=?,mpsallarrivedflag=?,ismpsflag=?,remark1=? where opscwbid=? ";
+		this.jdbcTemplate.update(sql, transcwb, sendcarnum, mpsallarrivedflag, ismpsflag,remark1, opscwbid);
+	}
+	
+	/**
+	 * 修改临时表为[插入detail表]成功 getDataFlag != 0表示已经插入到detail中--MQ下发订单新增
+	 * @param getDataFlag
+	 * @param remark1
+	 * @param opscwbid
+	 */
+	public void updateCwbDetailTempByCwb(long getDataFlag, long opscwbid, String remark1) {
+		try {
+			this.jdbcTemplate.update("update express_ops_cwb_detail_b2ctemp set getDataFlag=" + getDataFlag + ",remark1="+remark1+" where opscwbid=" + opscwbid);
+		} catch (DataAccessException e) {
+			this.logger.error("[update_CwbDetailTempByCwb(long getDataFlag, long opscwbid, String remark1)]修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
+		}
+	}
 }
