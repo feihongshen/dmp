@@ -66,6 +66,7 @@ public class CwbOrder {
 	String destination;// 目的地
 	String cwbdelivertypeid;// 订单入库机构id
 	String exceldeliver;// 指定小件员（用于地址库匹配）
+	long exceldeliverid; //指定小件员ID
 	String excelbranch;// 指定派送分站（用于地址库匹配）
 	long excelimportuserid;// 导入操作员id
 	long state;// 是否显示的状态
@@ -2048,4 +2049,11 @@ public class CwbOrder {
 		this.ismpsflag = ismpsflag;
 	}
 
+	public long getExceldeliverid() {
+		return exceldeliverid;
+	}
+
+	public void setExceldeliverid(long exceldeliverid) {
+		this.exceldeliverid = exceldeliverid;
+	}
 }

@@ -128,6 +128,7 @@ import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbApplyZhongZhuan;
+import cn.explink.domain.CwbDetailView;
 import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbDiuShi;
 import cn.explink.domain.CwbKuaiDi;
@@ -4586,6 +4587,36 @@ public class CwbOrderService extends BaseOrderService {
 		this.deliveryCashDAO.creDeliveryCash(cwb, deliverid, deliverybranchid, co.getCustomerid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), id, co.getReceivablefee());
 	}
 
+	/**
+	 * 小件员领货
+	 * 2016年6月23日 下午5:19:09
+	 * @param user
+	 * @param deliveryUser
+	 * @param cwb
+	 * @param scancwb
+	 * @return
+	 */
+	public CwbOrder receiveGoodsByDeliver(User user, User deliveryUser, String cwb, String scancwb, boolean isChaoqu) {
+		cwb = this.translateCwb(cwb);
+		if (isChaoqu == false) { //未选择超区
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+			if (co == null) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+						ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+			}
+			// 小件员地址库匹配领货优化
+			if (co.getExceldeliverid() > 0) { // 已分配小件员，必须改小件员才能领货
+				if (co.getExceldeliverid() != deliveryUser.getUserid()) {
+					User coDeliver = this.userDao.getUserByUserid(co.getExceldeliverid());
+					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+							ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_BU_PI_PEI,
+							coDeliver == null ? "" : coDeliver.getRealname(), deliveryUser.getRealname());
+				}
+			}
+		}
+		return this.receiveGoodsHandle(user, user.getBranchid(), deliveryUser, cwb, scancwb, false);
+	}
+	
 	/**
 	 * 领货扫描提交
 	 */
@@ -9760,5 +9791,23 @@ public class CwbOrderService extends BaseOrderService {
 			vo.setCourierList(courierList);
 		}
 		return vo;
+	}
+	
+	/**
+	 * 根据小件员ID过滤
+	 * 2016年6月23日 下午3:36:53
+	 * @return
+	 */
+	public List<CwbOrder> filterCwbOrderByDeliver(List<CwbOrder> cwbOrderList, long deliverid) {
+		if (deliverid <= 0 || cwbOrderList == null) {
+			return cwbOrderList;
+		}
+		List<CwbOrder> cwbOrdersDeliver = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : cwbOrderList) {
+			if (cwb.getExceldeliverid() == deliverid) {
+				cwbOrdersDeliver.add(cwb);
+			}
+		}
+		return cwbOrdersDeliver;
 	}
 }
