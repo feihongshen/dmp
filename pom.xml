@@ -66,17 +66,6 @@
 		</dependency>
 		<dependency>
 		     <groupId>com.pjbest</groupId> 
-			 <artifactId>pjdeliveryorder-service-api</artifactId> 
-			 <version>1.17.1_19</version>
-			 <exclusions>
-  				<exclusion>
-  					<groupId>org.springframework</groupId>
-      				<artifactId>spring-context-support</artifactId>
-  				</exclusion>
-  			</exclusions> 
-		</dependency>
-		<dependency>
-		     <groupId>com.pjbest</groupId> 
 			 <artifactId>id-allocation-service-api</artifactId> 
 			 <version>1.1.0_03</version>
 			 <exclusions>
@@ -686,6 +675,17 @@
             <artifactId>tps-base-service-api</artifactId>
             <version>1.16.3_03</version>
         </dependency>
+        <dependency>
+		     <groupId>com.pjbest</groupId> 
+			 <artifactId>pjdeliveryorder-service-api</artifactId> 
+			 <version>1.20.0_07</version>
+			 <exclusions>
+  				<exclusion>
+  					<groupId>org.springframework</groupId>
+      				<artifactId>spring-context-support</artifactId>
+  				</exclusion>
+  			</exclusions> 
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>
