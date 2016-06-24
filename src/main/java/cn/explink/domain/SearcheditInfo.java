@@ -19,8 +19,43 @@ public class SearcheditInfo {
 	public String oldremark;
 	public String newremark;
 	private long newbranchid;
+	private long oldexceldeliverid;
+	private String oldexceldeliver;
+	private long newexceldeliverid;
+	private String newexceldeliver;
 	
-	
+	public long getOldexceldeliverid() {
+		return oldexceldeliverid;
+	}
+
+	public void setOldexceldeliverid(long oldexceldeliverid) {
+		this.oldexceldeliverid = oldexceldeliverid;
+	}
+
+	public String getOldexceldeliver() {
+		return oldexceldeliver;
+	}
+
+	public void setOldexceldeliver(String oldexceldeliver) {
+		this.oldexceldeliver = oldexceldeliver;
+	}
+
+	public long getNewexceldeliverid() {
+		return newexceldeliverid;
+	}
+
+	public void setNewexceldeliverid(long newexceldeliverid) {
+		this.newexceldeliverid = newexceldeliverid;
+	}
+
+	public String getNewexceldeliver() {
+		return newexceldeliver;
+	}
+
+	public void setNewexceldeliver(String newexceldeliver) {
+		this.newexceldeliver = newexceldeliver;
+	}
+
 	public long getNewbranchid() {
 		return newbranchid;
 	}

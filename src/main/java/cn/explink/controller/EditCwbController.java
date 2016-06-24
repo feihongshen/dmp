@@ -862,8 +862,9 @@ public class EditCwbController {
 			}
 			// 修改匹配站
 			Branch branch = this.branchDAO.getBranchByBranchname(branchname);
+			User deliver = null;
 			if ((co != null) && (branch.getBranchid() > 0)) {
-				User deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
+				deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
 				if(deliver != null) {
 					co.setExcelbranchid(deliver.getUserid());
 					co.setExceldeliver(deliver.getRealname());
@@ -899,9 +900,12 @@ public class EditCwbController {
 					this.appearWindowDao.creWindowTime(jsonInfo, "2", userlist.get(0).getUserid(), "1");
 				}
 			}
-			Branch branch2 = this.branchDAO.getBranchByBranchname(checkbranchname);
-			long branchid = branch2.getBranchid();
-			this.cwbInfoDao.createEditInfo(old, branchid, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
+//			Branch branch2 = this.branchDAO.getBranchByBranchname(checkbranchname);
+//			long branchid = branch2.getBranchid();
+			long branchid = branch.getBranchid();
+			long exceldeliverid = deliver == null ? 0 : deliver.getUserid();
+			String exceldeliver = deliver == null ? null : deliver.getRealname();
+			this.cwbInfoDao.createEditInfo(old, branchid, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark, exceldeliverid, exceldeliver);
 			/**
 			 * 修改云订单信息  add gordon.zhou 2016/5/26
 			 */
@@ -920,7 +924,7 @@ public class EditCwbController {
 			if (count == 0) {
 				this.orderAddressReviseDao
 						.createReviseAddressInfo(cwb, old.getConsigneeaddress(), old.getEmaildate(), "系统导入", old.getConsigneenameOfkf(), old.getConsigneemobileOfkf(), "", checkbranchname, old
-								.getCustomercommand());
+								.getCustomercommand(), exceldeliver);
 			}
 
 			if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand)) || (!branchname
@@ -934,13 +938,13 @@ public class EditCwbController {
 						revisebranchName = branchname;
 					}
 					this.orderAddressReviseDao
-							.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand);
+							.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand, exceldeliver);
 
 				} else {
 					if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand))) {
 
 						this.orderAddressReviseDao
-								.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand);
+								.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand, exceldeliver);
 
 					}
 

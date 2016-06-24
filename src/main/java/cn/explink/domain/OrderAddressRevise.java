@@ -15,6 +15,7 @@ public class OrderAddressRevise {
 	private String peisongtime;//配送时间
 	private String destination;//目的站
 	private String customerrequest;//客户请求
+	private String exceldeliver;//匹配小件员
 	
 	public String getReceivemen() {
 		return receivemen;
@@ -75,6 +76,12 @@ public class OrderAddressRevise {
 	}
 	public void setModifiername(String modifiername) {
 		this.modifiername = modifiername;
+	}
+	public String getExceldeliver() {
+		return exceldeliver;
+	}
+	public void setExceldeliver(String exceldeliver) {
+		this.exceldeliver = exceldeliver;
 	}
 	
 }
