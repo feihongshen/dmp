@@ -150,6 +150,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
+import cn.explink.service.OrderBackCheckService;
 import cn.explink.service.docking.AutoAllocationService;
 import cn.explink.service.express.ExpressOutStationService;
 import cn.explink.service.mps.CwbOrderBranchInfoModificationService;
@@ -312,6 +313,9 @@ public class PDAController {
 	
 	@Autowired
 	private MPSOptStateService mpsOptStateService ;
+	
+	@Autowired
+	private OrderBackCheckService orderBackCheckService;
 
 	private ObjectMapper om = new ObjectMapper();
 
@@ -2036,6 +2040,10 @@ public class PDAController {
 			cwb = this.cwbOrderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 			try {// 成功订单
+				
+				//校验是否存在退货出站审核中的记录
+				orderBackCheckService.validateCheckStateAuditing(cwb, FlowOrderTypeEnum.FenZhanLingHuo);
+				
 				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
 				obj.put("flowordertype", cwbOrder.getFlowordertype());
@@ -5425,6 +5433,10 @@ public class PDAController {
 			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid) throws ParseException {
 		String scancwb = cwb;
 		cwb = this.cwbOrderService.translateCwb(cwb);
+		
+		//校验是否存在退货出站审核中的记录
+		orderBackCheckService.validateCheckStateAuditing(cwb, FlowOrderTypeEnum.FenZhanLingHuo);
+		
 		// json对象
 		JSONObject obj = new JSONObject();
 		// 判断当前流程是否为今日，供上门退订单分派使用.(包括重复扫描)
