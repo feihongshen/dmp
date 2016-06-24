@@ -692,6 +692,17 @@
 		     <artifactId>psp-express-service-api</artifactId>
 		     <version>1.5.2-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+		     <groupId>com.pjbest</groupId> 
+			 <artifactId>pjdeliveryorder-service-api</artifactId> 
+			 <version>1.20.0_07</version>
+			 <exclusions>
+  				<exclusion>
+  					<groupId>org.springframework</groupId>
+      				<artifactId>spring-context-support</artifactId>
+  				</exclusion>
+  			</exclusions> 
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>
