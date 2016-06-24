@@ -1188,6 +1188,9 @@ public class DeliveryStateDAO {
 			}
 			sql += deliverystatesql.toString();
 		}
+		
+		this.logger.info("DeliveryStateDAO.getDeliveryStateByCredateAndFlowordertype sql={}", sql);
+		
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 

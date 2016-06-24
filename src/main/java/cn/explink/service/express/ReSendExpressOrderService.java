@@ -3,6 +3,7 @@ package cn.explink.service.express;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,10 @@ import cn.explink.enumutil.YesOrNoStateEnum;
 import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.util.Page;
 import cn.explink.util.Tools;
+import cn.explink.util.express.ExpressTpsInterfaceException;
 
+import com.alibaba.fastjson.JSONObject;
+import com.vip.osp.core.context.InvocationContext;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderResponse;
 
@@ -116,4 +120,93 @@ public class ReSendExpressOrderService extends ExpressCommonService {
 
 	}
 
+	/**
+	 * 快递单操作重推TPS
+	 * @author leo01.liao
+	 * @return
+	 */
+	public void resendToTps(){
+		try{
+			int excuteCount = 20;
+			int maxCount    = 2000;
+			List<ReSendExpressOrderVO> listExpressOrderVO = this.expressTpsInterfaceExcepRecordDAO.getTpsInterfaceInfoForResend(excuteCount, maxCount);
+			if(listExpressOrderVO == null || listExpressOrderVO.isEmpty()){
+				this.logger.info("快递单操作重推TPS:没有符合条件的需要重推的数据！");
+				return;
+			}
+			
+			for(ReSendExpressOrderVO expressOrderVO : listExpressOrderVO){
+				try{
+					this.logger.info("快递单操作重推TPS:trans_no={},id={},operationType={},methodParams={}", 
+							         expressOrderVO.getTransNo(), expressOrderVO.getId(), expressOrderVO.getOperationType(), expressOrderVO.getMethodParams());
+					ExpressOperationInfo operationInfo = (ExpressOperationInfo) Tools.json2Object(expressOrderVO.getMethodParams(), ExpressOperationInfo.class, false);
+					operationInfo.setOperationType(expressOrderVO.getOperationType());
+					
+					this.logger.info("快递单操作重推TPS:请求参数requestlist={}", JSONObject.toJSONString(operationInfo));
+					
+					Map<String, Object> mapResult = this.doResendToTps(operationInfo);
+					
+					this.logger.info("快递单操作重推TPS:返回结果mapResult={}", JSONObject.toJSONString(mapResult));
+					
+					this.expressTpsInterfaceExcepRecordDAO.updateTpsInterfaceForResend(expressOrderVO.getId(), "", YesOrNoStateEnum.Yes.getValue());
+				}catch(Exception ee){
+					this.logger.error("快递单(trans_no="+expressOrderVO.getTransNo()+",id="+expressOrderVO.getId()+")操作重推TPS异常", ee);
+					this.expressTpsInterfaceExcepRecordDAO.updateTpsInterfaceForResend(expressOrderVO.getId(), ee.getMessage(), YesOrNoStateEnum.Error.getValue());
+				}				
+			}
+		}catch(Exception ex){
+			this.logger.error("快递单操作重推TPS异常", ex);
+		}
+	}
+	
+	/**
+	 * 调用TPS的OSP服务接口：根据不同的操作环节选择适合的接口
+	 * @author leo01.liao
+	 * @param  operationInfo
+	 * @return Map<String, Object>
+	 * @throws ExpressTpsInterfaceException
+	 */
+	private Map<String, Object> doResendToTps(ExpressOperationInfo operationInfo) throws ExpressTpsInterfaceException {
+		//存放返回结果
+		Map<String, Object> mapResult = new ConcurrentHashMap<String, Object>();
+		mapResult.clear();
+		
+		if(operationInfo == null){
+			return mapResult;
+		}
+
+		//根据不同的业务场景调用不同的服务
+		InvocationContext.Factory.getInstance().setTimeout(10000);
+		if (ExpressOperationEnum.PreOrderFeedBack.getValue().equals(operationInfo.getOperationType())) {
+			//揽件反馈接口
+			Boolean result = this.ExpressTpsInterfaceService.preOrderFeedBackProcess(operationInfo.getPreOrderfeedBack());
+			mapResult.put(ExpressOperationEnum.PreOrderFeedBack.getUniqueCode(), result);
+			this.logger.info("(快递单操作重推TPS)调用TPS接口正常，反馈操作的结果回传到Tps后的结果为：" + result);
+		} else if (ExpressOperationEnum.CreateTransNO.getValue().equals(operationInfo.getOperationType())) {
+			//创建运单接口
+			List<PjDeliveryOrderResponse> result = this.ExpressTpsInterfaceService.createTransNo4Dmp(operationInfo.getRequestlist());
+			mapResult.put(ExpressOperationEnum.CreateTransNO.getUniqueCode(), result);
+			this.logger.info("(快递单操作重推TPS)调用TPS接口正常，创建运单接口请求Tps后的结果为：{}", result);
+		} else if (ExpressOperationEnum.TransNOFeedBack.getValue().equals(operationInfo.getOperationType())) {
+			//运单状态反馈接口
+			Boolean resultFlag = this.ExpressTpsInterfaceService.transNoFeedBackProcess(operationInfo.getTransNoFeedBack());
+			mapResult.put(ExpressOperationEnum.TransNOFeedBack.getUniqueCode(), resultFlag);
+			this.logger.info("(快递单操作重推TPS)调用TPS接口正常，运单状态反馈接口请求Tps后的结果为：{}", resultFlag);
+		}else if (ExpressOperationEnum.PackOpereate.getValue().equals(operationInfo.getOperationType())) {
+			//上传打包信息接口
+			Boolean resultFlag = this.ExpressTpsInterfaceService.handlePackingInfo(operationInfo.getPackModel());
+			mapResult.put(ExpressOperationEnum.PackOpereate.getUniqueCode(), resultFlag);
+			this.logger.info("(快递单操作重推TPS)调用TPS接口正常，上传打包信息接口请求Tps后的结果为：{}", resultFlag);
+		} else if (ExpressOperationEnum.UnPackOperate.getValue().equals(operationInfo.getOperationType())) {
+			//上传拆包信息接口
+			Boolean resultFlag = this.ExpressTpsInterfaceService.handleUnPackingInfo(operationInfo.getUnPackRequest());
+			mapResult.put(ExpressOperationEnum.UnPackOperate.getUniqueCode(), resultFlag);
+			this.logger.info("(快递单操作重推TPS)调用TPS接口正常，上传拆包信息接口请求Tps后的结果为：{}", resultFlag);
+		}else{
+			this.logger.info("(快递单操作重推TPS)其他操作不重推TPS：operationType={}", operationInfo.getOperationType());
+		}
+
+		return mapResult;
+	}
+	
 }

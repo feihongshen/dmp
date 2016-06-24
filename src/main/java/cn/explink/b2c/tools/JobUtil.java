@@ -1,8 +1,5 @@
 package cn.explink.b2c.tools;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +98,7 @@ import cn.explink.service.LogToDayByWarehouseService;
 import cn.explink.service.LogToDayService;
 import cn.explink.service.PunishInsideService;
 import cn.explink.service.UserInfService;
+import cn.explink.service.express.ReSendExpressOrderService;
 import cn.explink.service.fnc.OrderLifeCycleReportService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.RedisMap;
@@ -304,6 +302,10 @@ public class JobUtil {
 	@Autowired
 	EMSTimmer eMSTimmer;
 	
+	@Autowired
+	ReSendExpressOrderService reSendExpressOrderService;
+	
+	
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new RedisMapImpl<String, Integer>("JobUtil");
 		JobUtil.threadMap.put("tmall", 0);
@@ -353,6 +355,8 @@ public class JobUtil {
 		JobUtil.threadMap.put("getEmsEmailNo", 0);
 		JobUtil.threadMap.put("imitateEMSTraceToDmpOpt", 0);
 	
+		//快递单操作推TPS
+		JobUtil.threadMap.put("resendExpressToTps", 0);
 	}
 
 	/**
@@ -401,6 +405,9 @@ public class JobUtil {
 		JobUtil.threadMap.put("sendOrderToEMS", 0);
 		JobUtil.threadMap.put("getEmsEmailNo", 0);
 		JobUtil.threadMap.put("imitateEMSTraceToDmpOpt", 0);
+		
+		//快递单操作推TPS
+		JobUtil.threadMap.put("resendExpressToTps", 0);
 	}
 
 	/**
@@ -1947,5 +1954,36 @@ public class JobUtil {
 		}
 
 		this.logger.info("执行了获取sendOrderToEMS订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	/**
+	 * 重推快递单各种操作给TPS
+	 * @author leo01.liao
+	 */
+	public void resendExpressToTps(){
+		System.out.println("-----resendExpressToTps启动执行");
+		
+		JobUtil.threadMap.put("resendExpressToTps", 0);
+
+		if (JobUtil.threadMap.get("resendExpressToTps") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环resendExpressToTps");
+			return;
+		}
+		JobUtil.threadMap.put("resendExpressToTps", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.reSendExpressOrderService.resendToTps();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行resendExpressToTps定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("resendExpressToTps", 0);
+		}
+
+		this.logger.info("执行了获取resendExpressToTps订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		
 	}
 }

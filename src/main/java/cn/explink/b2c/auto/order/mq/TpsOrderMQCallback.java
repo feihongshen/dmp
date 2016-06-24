@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.sf.json.JSONObject;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +89,6 @@ public class TpsOrderMQCallback implements IVMSCallback {
 			if(!verify(orderSend, msg)){
 				return;
 			};
-
 			JointEntity jointEntityByShipper = this.jiontDAO.getJointEntityByShipperNoForUse("\""+orderSend.getCustCode()+"\"");
 			vipshop = this.getVipShop(jointEntityByShipper.getJoint_num());
 			int isOpenFlag = this.jointService.getStateForJoint(jointEntityByShipper.getJoint_num());

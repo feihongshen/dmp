@@ -319,7 +319,7 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Produce(uri = "jms:topic:transCwbOrderFlow")
 	ProducerTemplate transCwbOrderFlowProducerTemplate;
-	
+
 	@Autowired
 	List<CwbTranslator> cwbTranslators;
 	@Autowired
@@ -1775,11 +1775,14 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), currentbranchid, 0, 0, ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 		}
 
+		//一票多件是否存在运单号已经为站点到货，但不全部为到货的标志
+		boolean FenZhanDaoHuoFlag = this.getFenZhanDaoHuoFlag(co,isypdjusetranscwb,flowOrderTypeEnum);
+		
 		boolean newMPSOrder = this.mpsCommonService.isNewMPSOrder(scancwb);
 		// 先更新运单状态，要不然运单流程里面的当前站为0
 		this.mpsOptStateService.updateTransCwbDetailInfo(scancwb, flowOrderTypeEnum, -1L, currentbranchid, 0L);
 
-		if (((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) || (newMPSOrder && (co.getScannum() > 0))) {
+		if (((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) || (newMPSOrder && (co.getScannum() > 0))|| (!newMPSOrder && FenZhanDaoHuoFlag)) {
 			if (co.getScannum() < 1) {
 				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
 			}
@@ -1812,8 +1815,12 @@ public class CwbOrderService extends BaseOrderService {
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 					//同时，也要把当前站点的到错货的缺件记录，也一并删除
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), isypdjusetranscwb, 0);
+					//清除非本站的缺件记录，add by neo01.huang，2016-6-14
+					ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
+					
 				}
-				if (newMPSOrder) {
+				//集包模式（之前写的）和非集单一票多件中，一件先出库、到货，下一件才出库、到货的情况下，需要对下一件进行到货
+				if (newMPSOrder||(!newMPSOrder && FenZhanDaoHuoFlag) ) {
 					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
 				}
 			} else {
@@ -9732,5 +9739,44 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}
 		return "";
+	}
+	
+	/**
+	 * 
+	 * 根据传入的订单，判断该订单是否是一票多件非集单并且存在一个运单为到货状态且不全为到货
+	 * @author 刘武强
+	 * @param order
+	 * @return
+	 */
+	private boolean getFenZhanDaoHuoFlag(CwbOrder order,long isypdjusetranscwb,FlowOrderTypeEnum flowOrderTypeEnum){
+		if(order == null){//如果order为空，那么直接返回false
+			return false;
+		}
+		boolean mpsSwitch=order.getIsmpsflag()>0;
+		if(mpsSwitch){ //如果为集单模式，直接返回false
+			return false;
+		}
+		String cwb = order.getCwb();
+		if (((order.getSendcarnum() > 1) || (order.getBackcarnum() > 1)) && ((order.getTranscwb().split(",").length > 1) || (order.getTranscwb().split(":").length > 1)) && (isypdjusetranscwb == 1)) {
+			if (order.getTranscwb().indexOf(",") > -1) {
+				String[] transCwbs = order.getTranscwb().split(",");
+				int i = transCwbs.length;
+				for (String transcwb : transCwbs) {//遍历所有的运单，查看是否有运单的状态为到货
+					if ("".equals(transcwb.trim())) {
+						continue;
+					}
+					//从运单轨迹表中得到运单当前的状态记录
+					TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
+					
+					if(tcof != null && tcof.getFlowordertype() == flowOrderTypeEnum.getValue()){
+						i -- ;
+					}
+				}
+				if(i != 0 && i < transCwbs.length){//如果订单不全为到货，只是有部分为到货，那么返回true
+					return true;
+				}
+			}
+		}		
+		return false;
 	}
 }

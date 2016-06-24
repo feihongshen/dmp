@@ -4041,6 +4041,9 @@ public class CwbDAO {
 		sql = this.getCwbOrderByPageWhereSqlHuiZong(sql, customerids,
 				cwbordertypeids, orderflowcwbs, flowordertype, paywayid,
 				operationOrderResultTypes, paybackfeeIsZero);
+		
+		this.logger.info("CwbDAO.getcwborderCountHuiZong sql={}", sql);
+		
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
 		} catch (DataAccessException e) {
