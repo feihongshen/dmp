@@ -31,6 +31,8 @@ import org.springframework.stereotype.Component;
 
 import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
+import com.vip.logistics.memberencrypt.Encryption;
+
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
@@ -165,6 +167,7 @@ public class CwbDAO {
             return null;
         }
     }
+
 	private final class CwbMapper implements RowMapper<CwbOrder> {
 		
 		//是否需要过滤用户信息
@@ -375,6 +378,7 @@ public class CwbDAO {
 			// mpsallarrivedflag
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
+
 			cwbOrder.setInstationname(rs.getString("instationname"));
 			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
@@ -389,6 +393,7 @@ public class CwbDAO {
 				cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 				cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			}
+
 			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
 			return cwbOrder;
 		}
@@ -5977,7 +5982,14 @@ public class CwbDAO {
 				w.append(" and consigneename = '" + consigneename + "'");
 			}
 			if (consigneemobile.length() > 0) {
-				w.append(" and consigneemobile = '" + consigneemobile + "'");
+//				w.append(" and consigneemobile = '" + consigneemobile + "'");
+				String consigneemobileEncrypted = consigneemobile;
+				try {
+					consigneemobileEncrypted = Encryption.encrypt(consigneemobile);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				w.append(" and consigneemobile in ('" + consigneemobile + "', '" + consigneemobileEncrypted + "')");
 			}
 			if (consigneeaddress.length() > 0) {
 				w.append(" and consigneeaddress like '%" + consigneeaddress
@@ -8497,7 +8509,15 @@ public class CwbDAO {
 		}
 		if ((coc.getConsigneemobile() != null)
 				&& (coc.getConsigneemobile().length() > 0)) {
-			sb.append(" and consigneemobile='" + coc.getConsigneemobile() + "'");
+//			sb.append(" and consigneemobile='" + coc.getConsigneemobile() + "'");
+			String consigneemobile = coc.getConsigneemobile();
+			String consigneemobileEncrypted = consigneemobile;
+			try {
+				consigneemobileEncrypted = Encryption.encrypt(consigneemobile);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			sb.append(" and consigneemobile in ('" + consigneemobile + "', '" + consigneemobileEncrypted + "')");
 		}
 
 		sb.append(" order by emaildate desc limit "
@@ -9070,7 +9090,6 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQueryByPage(
 			Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,
 			String userIds) {
-
 		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		

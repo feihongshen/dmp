@@ -41,6 +41,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vip.logistics.memberencrypt.Decryption;
+import com.vip.logistics.memberencrypt.Encryption;
+
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CsPushSmsDao;
 import cn.explink.dao.CustomerDAO;
@@ -59,6 +62,7 @@ import cn.explink.domain.CsComplaintAcceptVO;
 import cn.explink.domain.CsConsigneeInfo;
 import cn.explink.domain.CsConsigneeInfoVO;
 import cn.explink.domain.CsShenSuChat;
+import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.Reason;
@@ -481,7 +485,7 @@ public class WorkOrderController {
 			@RequestParam(value="staremaildate",defaultValue="",required=false) String staremaildate,
 			@RequestParam(value="endemaildate",defaultValue="",required=false) String endemaildate,
 			@PathVariable(value="page") long page
-			){
+			) throws Exception{
 	
 		String cwb1 = cos.translateCwb(coc.getCwb());
 		coc.setCwb(cwb1);	
@@ -493,11 +497,14 @@ public class WorkOrderController {
 				co.setId((c.getOpscwbid()));
 				co.setCwb(c.getCwb());
 				co.setTranscwb(c.getTranscwb());
-				co.setCustomername(customerDAO.findcustomername(c.getCustomerid()).getCustomername());
+				Customer customer = customerDAO.findcustomername(c.getCustomerid());
+				if (customer != null && customer.getCustomername() != null) {
+					co.setCustomername(customer.getCustomername());
+				}
 				co.setEmaildate(c.getEmaildate());
 				co.setConsigneename(c.getConsigneename());
 				co.setConsigneeaddress(c.getConsigneeaddress());
-				co.setConsigneemobile(c.getConsigneemobile());
+				co.setConsigneemobile(Decryption.decrypt(c.getConsigneemobile()));
 				co.setCwbstate(CwbStateEnum.getByValue(c.getCwbstate()).getText());
 				lco.add(co);				
 		}

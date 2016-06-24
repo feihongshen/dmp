@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
+import com.vip.logistics.memberencrypt.Decryption;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
@@ -137,7 +138,7 @@ public class BatchSelectCwbController {
 	}
 
 	@RequestMapping("/list/{page}")
-	public String list(Model model, HttpServletRequest request, @PathVariable(value = "page") long page, @RequestParam(value = "batchcwb", required = false, defaultValue = "") String batchcwb, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) {
+	public String list(Model model, HttpServletRequest request, @PathVariable(value = "page") long page, @RequestParam(value = "batchcwb", required = false, defaultValue = "") String batchcwb, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow) throws Exception {
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
 		Page pageparm = new Page();
 		List<CwbOrder> orderList = new ArrayList<CwbOrder>();
@@ -429,7 +430,7 @@ public class BatchSelectCwbController {
 		}
 	}
 
-	public List<CwbOrderView> getCwbOrderView(List<CwbOrder> clist, List<Customer> customerList, List<CustomWareHouse> customerWareHouseList, List<Branch> branchList, List<User> userList, List<Reason> reasonList, String begindate, String enddate, List<Remark> remarkList) {
+	public List<CwbOrderView> getCwbOrderView(List<CwbOrder> clist, List<Customer> customerList, List<CustomWareHouse> customerWareHouseList, List<Branch> branchList, List<User> userList, List<Reason> reasonList, String begindate, String enddate, List<Remark> remarkList) throws Exception {
 		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
 		if (clist.size() > 0) {
 			for (CwbOrder c : clist) {
@@ -446,8 +447,8 @@ public class BatchSelectCwbController {
 				cwbOrderView.setSendcarnum(c.getSendcarnum());
 				cwbOrderView.setConsigneeaddress(c.getConsigneeaddress());
 				cwbOrderView.setConsigneename(c.getConsigneename());
-				cwbOrderView.setConsigneemobile(c.getConsigneemobile());
-				cwbOrderView.setConsigneephone(c.getConsigneephone());
+				cwbOrderView.setConsigneemobile(Decryption.decrypt(c.getConsigneemobile()));
+				cwbOrderView.setConsigneephone(Decryption.decrypt(c.getConsigneephone()));
 				cwbOrderView.setConsigneepostcode(c.getConsigneepostcode());
 
 				cwbOrderView.setCustomername(this.getQueryCustomerName(customerList, c.getCustomerid()));// 供货商的名称
@@ -655,4 +656,4 @@ public class BatchSelectCwbController {
 		json.put("mouldfieldids", mouldfieldids2);
 		return json.toString();
 	}
-}
+		}

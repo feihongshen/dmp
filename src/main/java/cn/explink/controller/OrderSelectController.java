@@ -136,6 +136,8 @@ import com.pjbest.deliveryorder.bizservice.PjDeliveryTrackInfo;
 import com.pjbest.pjorganization.bizservice.service.SbOrgModel;
 import com.pjbest.pjorganization.bizservice.service.SbOrgService;
 import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
+import com.vip.logistics.memberencrypt.Decryption;
+import com.vip.logistics.memberencrypt.Encryption;
 import com.vip.osp.core.exception.OspException;
 
 @Controller
@@ -936,7 +938,7 @@ public class OrderSelectController {
 	}
 
 	@RequestMapping("/queckSelectOrderleft/{cwb}")
-	public String queckSelectOrderleft(Model model, @PathVariable(value = "cwb") String cwb) {
+	public String queckSelectOrderleft(Model model, @PathVariable(value = "cwb") String cwb) throws Exception {
 		cwb = this.translateCwb(cwb);
 		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
 		String jspPage = "";
@@ -944,6 +946,8 @@ public class OrderSelectController {
 		if ((order != null) && (order.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue())) {
 			EmbracedOrderVO embracedOrder = this.expressOrderDao.getCwbOrderByCwb(cwb);
 			embracedOrder = embracedOrder != null ? embracedOrder : new EmbracedOrderVO();
+			embracedOrder.setConsignee_cellphone(Decryption.decrypt(embracedOrder.getConsignee_cellphone()));
+			embracedOrder.setConsignee_telephone(Decryption.decrypt(embracedOrder.getConsignee_telephone()));			
 			model.addAttribute("embracedOrder", embracedOrder);
 			List<Customer> senderCustomer = this.customerDAO.getCustomerByCustomerid(embracedOrder.getSender_customerid() + "");
 			List<Customer> consineerCustomer = this.customerDAO.getCustomerByCustomerid(embracedOrder.getConsignee_customerid() + "");
@@ -1054,7 +1058,10 @@ public class OrderSelectController {
 
 		String oldconsigneeaddress = oldAddress == null ? "" : oldAddress;
 		view.setOldconsigneeaddress(oldconsigneeaddress);
-
+		
+		view.setConsigneephone(Decryption.decrypt(view.getConsigneephone()));
+		view.setConsigneemobile(Decryption.decrypt(view.getConsigneemobile()));
+		
 		List<OrderFlow> rukuList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.RuKu.getValue(), "", "");
 		List<OrderFlow> linghuoList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), "", "");
 		Customer customer = this.customerDAO.getCustomerById(view.getCustomerid());
@@ -2467,7 +2474,7 @@ public class OrderSelectController {
 			@RequestParam(value = "consigneeaddress", required = false, defaultValue = "") String consigneeaddress, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb,
 			@RequestParam(value = "showLetfOrRight", required = false, defaultValue = "1") long showLetfOrRight,
-			@RequestParam(value = "ischangetime", required = false, defaultValue = "0") long ischangetime) {
+			@RequestParam(value = "ischangetime", required = false, defaultValue = "0") long ischangetime) throws Exception {
 		List<CwbOrder> clist = new ArrayList<CwbOrder>();
 		Page pageparm = new Page();
 		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
@@ -2475,6 +2482,9 @@ public class OrderSelectController {
 		if (isshow != 0) {
 			String enddate = DateDayUtil.getDateAfter(begindate, 10);
 			clist = this.cwbOrderService.getListByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb, page);
+			for(CwbOrder c : clist) {
+				c.setConsigneemobileOfkf(Decryption.decrypt(c.getConsigneemobileOfkf()));
+			}
 			model.addAttribute("customerMap", this.customerDAO.getAllCustomersToMap());
 			pageparm = new Page(this.cwbOrderService.getCountByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb), page,
 					Page.ONE_PAGE_NUMBER);
@@ -2496,7 +2506,7 @@ public class OrderSelectController {
 	}
 
 	@RequestMapping("/right/{cwb}")
-	public String right(Model model, @PathVariable(value = "cwb") String cwb) {
+	public String right(Model model, @PathVariable(value = "cwb") String cwb) throws Exception {
 		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
 		if (order == null) {
 			model.addAttribute("view", null);
@@ -2525,6 +2535,7 @@ public class OrderSelectController {
 		view.setNewpaywayid(view.getNewpaywayid());
 		view.setBackreason(order.getBackreason());
 		view.setLeavedreason(order.getLeavedreason());
+		view.setConsigneemobileOfkf(Decryption.decrypt(view.getConsigneemobileOfkf()));
 
 		Customer customer = this.customerDAO.getCustomerById(view.getCustomerid());
 		Branch deliverybranch = this.branchDAO.getBranchByBranchid(view.getDeliverybranchid());
