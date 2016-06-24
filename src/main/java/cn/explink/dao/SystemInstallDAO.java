@@ -176,4 +176,17 @@ public class SystemInstallDAO {
 		
 		return true;
 	}
+	
+	/**
+	 * 参数的值
+	 */
+	public String getValueForInstall(String name){
+		SystemInstall systemInstall = getSystemInstall(name);
+		// 是否开启接口
+		if(systemInstall == null ){
+			return null;
+		}
+		
+		return systemInstall.getValue();
+	}
 }

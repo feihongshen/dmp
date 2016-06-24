@@ -140,6 +140,7 @@ public class CwbOrder {
 	private long oxodeliverystate; // oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
 	private int branchfeebillexportflag;// 加盟商派费账单导出标志
+	private int vipclub;// 是否团购标志
 
 	// 以下是快递业务新增字段
 
@@ -2048,4 +2049,11 @@ public class CwbOrder {
 		this.ismpsflag = ismpsflag;
 	}
 
+	public int getVipclub() {
+		return vipclub;
+	}
+
+	public void setVipclub(int vipclub) {
+		this.vipclub = vipclub;
+	}
 }

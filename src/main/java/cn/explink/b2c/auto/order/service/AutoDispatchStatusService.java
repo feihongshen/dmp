@@ -1,6 +1,9 @@
 package cn.explink.b2c.auto.order.service;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,19 +23,20 @@ import cn.explink.b2c.auto.order.service.AutoInWarehouseService;
 import cn.explink.b2c.auto.order.service.AutoOutWarehouseService;
 import cn.explink.b2c.auto.order.service.AutoPickStatusVo;
 import cn.explink.b2c.tools.B2cEnum;
-import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
-import cn.explink.b2c.vipshop.VipShop;
+import cn.explink.b2c.tps.TpsCwbFlowService;
+import cn.explink.dao.CwbDAO;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.enumutil.AutoInterfaceEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.enumutil.AutoCommonStatusEnum;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.XmlUtil;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 @Service
 public class AutoDispatchStatusService {
@@ -53,11 +57,18 @@ public class AutoDispatchStatusService {
 	private JointService jointService;
 	@Autowired
 	private AutoOrderStatusService autoOrderStatusService;
+	@Autowired
+	private TpsCwbFlowService tpsCwbFlowService;
+	@Autowired
+	private CwbDAO cwbDAO;
+	@Autowired
+	private AutoUserService autoUserService;
 	
 	public static final String OPERATE_TYPE_IN="1";//1是入库，3是出库
 	public static final String OPERATE_TYPE_OUT="3";//1是入库，3是出库
 	
 	private User user=null;
+	private String today="";
 
 	public void process() {
 	       this.logger.info("auto dispatch job process start...");
@@ -88,9 +99,9 @@ public class AutoDispatchStatusService {
 	        		*/
 	        		
 		    		if(user==null){
-		    			user=this.getSessionUser();
+		    			user=this.autoUserService.getSessionUser();
 		    		}else{
-		    			user.setBranchid(getPickBranch());//缓存刷新时也刷新
+		    			user.setBranchid(this.autoUserService.getPickBranch());//缓存刷新时也刷新
 		    		}
 		    		this.logger.info("auto dispatch task start...");
 		    		
@@ -137,8 +148,8 @@ public class AutoDispatchStatusService {
 	       }while(waitNum>0&&dbhavedata&&maxtry>0);
 	       
 	       if(isOpenFlag==1){
-	        	//处理那些超过1小时没订单的分拣状态记录
-	        	handleTimeoutData();
+	        	//处理那些超过7天没订单的分拣状态记录
+	    	   housekeepData();
 	      }
 		
 	}
@@ -201,13 +212,17 @@ public class AutoDispatchStatusService {
 			return resultMap;
 		}
 
+		AutoPickStatusVo currentVo=null;
 		for(AutoPickStatusMsgVo msgVo:msgVoList){
 			AutoPickStatusVo vo=msgVo.getAutoPickStatusVo();
+			currentVo=vo;
 			try {
 				if(OPERATE_TYPE_IN.equals(vo.getOperate_type())){
 					autoInWarehouseService.autoInWarehouse(vo,user);
+					logger.info("模拟入库成功,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no());
 				}else if(OPERATE_TYPE_OUT.equals(vo.getOperate_type())){
 					autoOutWarehouseService.autOutWarehouse(vo,user);
+					logger.info("模拟出库成功,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no());
 				}else{
 					throw new RuntimeException("分拣状态报文中未明的操作类型:"+vo.getOperate_type());
 				}
@@ -219,6 +234,27 @@ public class AutoDispatchStatusService {
 				boolean needDbLog=true;//需要写到异常表
 				boolean isWait=false;//需要保留消息在临时表以等待订单数据
 				boolean fullLog=true;//是否打印完整异常堆栈
+				boolean emaildateLog=false;
+				
+				try {
+					//出仓时间是无论入库正常或异常都要保存;AutoWaitException是等待订单或运单导入
+					if (OPERATE_TYPE_IN.equals(vo.getOperate_type())&& !(e instanceof AutoWaitException)) {
+						CwbOrder co = this.cwbDAO.getCwbByCwb(vo.getOrder_sn());
+						BigDecimal weight=null;
+						BigDecimal volume=null;
+						if(currentVo!=null){
+							weight=currentVo.getOriginal_weight()==null||currentVo.getOriginal_weight().trim().length()<1?null:new BigDecimal(currentVo.getOriginal_weight());
+							volume=currentVo.getOriginal_volume()==null||currentVo.getOriginal_volume().trim().length()<1?null:new BigDecimal(currentVo.getOriginal_volume());
+						}
+						this.tpsCwbFlowService.save(co, vo.getBox_no(), FlowOrderTypeEnum.RuKu,user.getBranchid(), vo.getOperate_time(),false,weight,volume);
+						logger.info("模拟入库异常时保存了出仓时间,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no());
+					} 
+				} catch (Exception e2) {
+					emaildateLog=true;
+					feedbackTps=false;
+					logger.error("模拟入库保存出仓时间时出错,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no()+"operatetype:"+vo.getOperate_type(),e2);
+					errinfo=errinfo+".模拟入库保存出仓时间时出错,"+e2.getMessage();
+				}
 				
 				try{
 					if(e instanceof CwbException){
@@ -252,6 +288,10 @@ public class AutoDispatchStatusService {
 							isWait=false;
 							feedbackTps=false;
 						}
+					}
+					
+					if(emaildateLog){
+						needDbLog=true;
 					}
 					
 					if(isWait||e instanceof AutoWaitException){
@@ -309,8 +349,25 @@ public class AutoDispatchStatusService {
 		return resultMap;
 	}
 	
+	private void housekeepData(){
+		try{
+			int hour=Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+			if(hour==2){//每天2点只运行一次
+				SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+				String now=sdf.format(Calendar.getInstance().getTime());
+				if(!now.equals(this.today)){
+					logger.info("清理自动化分拣临时表");
+					this.today=now;
+					handleTimeoutData();
+				}
+			}
+		} catch (Exception ex) {
+			logger.error("清理自动化分拣临时表的timeout数据时出错.", ex);
+		}
+	}
+	
 	private void handleTimeoutData(){
-		int timeoutHour=24*7;//视乎集单等多久？？？
+		int timeoutHour=24*7;//集单等待7天
 		List<AutoOrderStatusTmpVo> timeOutVoList= autoOrderStatusService.retrieveTimeoutOrderStatusMsg(timeoutHour,3000);//?????
 		long cnt=0;
 		if(timeOutVoList!=null){
@@ -369,28 +426,5 @@ public class AutoDispatchStatusService {
 		return dataList;
 	}
 
-	private User getSessionUser() {
-		User user=new User();
-		user.setUserid(1);//admin
-		user.setBranchid(getPickBranch());
-		user.setRealname("admin");//
-		user.setIsImposedOutWarehouse(1);//
-		return user;
-	}
-	
-	private long getPickBranch() {
-		JointEntity jointEntity=jointService.getObjectMethod(B2cEnum.VipShop_TPSAutomate.getKey());
-		if(jointEntity==null){
-			throw new RuntimeException("找不到自动化分拣库相关配置");
-		}
-		String objectMethod = jointEntity.getJoint_property();
-		JSONObject jsonObj = JSONObject.fromObject(objectMethod);
-		VipShop vipshop = (VipShop)JSONObject.toBean(jsonObj, VipShop.class);
-		
-		if(vipshop.getWarehouseid()==0){
-			throw new RuntimeException("请先配置自动化分拣库id");
-		}
-		
-		return vipshop.getWarehouseid();//?
-	}
+
 }
