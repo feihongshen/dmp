@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
+import com.vip.logistics.memberencrypt.Encryption;
 
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
@@ -5975,7 +5976,14 @@ public class CwbDAO {
 				w.append(" and consigneename = '" + consigneename + "'");
 			}
 			if (consigneemobile.length() > 0) {
-				w.append(" and consigneemobile = '" + consigneemobile + "'");
+//				w.append(" and consigneemobile = '" + consigneemobile + "'");
+				String consigneemobileEncrypted = consigneemobile;
+				try {
+					consigneemobileEncrypted = Encryption.encrypt(consigneemobile);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				w.append(" and consigneemobile in ('" + consigneemobile + "', '" + consigneemobileEncrypted + "')");
 			}
 			if (consigneeaddress.length() > 0) {
 				w.append(" and consigneeaddress like '%" + consigneeaddress
@@ -8495,7 +8503,15 @@ public class CwbDAO {
 		}
 		if ((coc.getConsigneemobile() != null)
 				&& (coc.getConsigneemobile().length() > 0)) {
-			sb.append(" and consigneemobile='" + coc.getConsigneemobile() + "'");
+//			sb.append(" and consigneemobile='" + coc.getConsigneemobile() + "'");
+			String consigneemobile = coc.getConsigneemobile();
+			String consigneemobileEncrypted = consigneemobile;
+			try {
+				consigneemobileEncrypted = Encryption.encrypt(consigneemobile);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			sb.append(" and consigneemobile in ('" + consigneemobile + "', '" + consigneemobileEncrypted + "')");
 		}
 
 		sb.append(" order by emaildate desc limit "

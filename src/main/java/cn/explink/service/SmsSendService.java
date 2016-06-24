@@ -35,6 +35,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 import org.tempuri.WmgwLocator;
 
+import com.vip.logistics.memberencrypt.Decryption;
+
 import cn.emay.sdk.test.SingletonClient;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
@@ -173,9 +175,9 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	 * @param channel
 	 *            渠道签名 已知 亿美为【当当】 移动梦网为 【易普联科】
 	 * @return
-	 * @throws UnsupportedEncodingException
+	 * @throws Exception 
 	 */
-	public String sendSms(String mobileIds, String strMsg, Integer num, long customerId, String recipients, Long userid, String ip) throws UnsupportedEncodingException {
+	public String sendSms(String mobileIds, String strMsg, Integer num, long customerId, String recipients, Long userid, String ip) throws Exception {
 
 		// strMsg = new
 		// String(strMsg.getBytes("ISO-8859-1"),"UTF-8");//web服务端只接受UTF—8方式的编码
@@ -190,6 +192,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			}
 			SmsConfig smsConf = this.smsConfigDAO.getAllSmsConfig(channel);
 
+			mobileIds = Decryption.decrypt(mobileIds);
 			ids = this.saveSendSms(recipients, mobileIds, strMsg, userid, ip, channel);
 
 			if ((mobileIds == null) || (mobileIds.trim().length() != 11)) {
@@ -365,10 +368,10 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	 * @param delivername
 	 * @param deliverphone
 	 * @return
-	 * @throws UnsupportedEncodingException
+	 * @throws Exception 
 	 */
 	public int sendSmsByTemplate(String mobileIds, Integer num, SmsConfig smsConf, SmsConfigModel smsConfigModel, String customername, String delivername, String deliverphone, String recipients,
-			String receivablefee, CwbOrder co) throws UnsupportedEncodingException {
+			String receivablefee, CwbOrder co) throws Exception {
 
 		// strMsg = new
 		// String(strMsg.getBytes("ISO-8859-1"),"UTF-8");//web服务端只接受UTF—8方式的编码
@@ -382,7 +385,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 					if (strMsg == null) {
 						return 0;
 					}
-
+					mobileIds = Decryption.decrypt(mobileIds);
 					ids = this.saveSendSms(recipients, mobileIds, strMsg, -1L, "服务器", smsConf.getChannel());
 					if ((mobileIds == null) || (mobileIds.trim().length() != 11)) {
 						this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), "手机号格式不正确", ids);
@@ -539,8 +542,9 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 	 * 
 	 * @param of
 	 * @return
+	 * @throws Exception 
 	 */
-	public int sendSms(OrderFlow of) {
+	public int sendSms(OrderFlow of) throws Exception {
 		CwbOrder order = this.cwbDAO.getCwbByCwb(of.getCwb());
 		if(null == order){
 			logger.error("查询订单失败(订单不存在或者state<>1)，cwb={}", of.getCwb());

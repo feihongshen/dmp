@@ -367,7 +367,8 @@ public class CwbOrderDTO {
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
-		this.consigneemobile = JMath.getmobileinstr(consigneemobile);
+//		this.consigneemobile = JMath.getmobileinstr(consigneemobile);
+		this.consigneemobile = consigneemobile;
 	}
 
 	public String getSendcargoname() {

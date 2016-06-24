@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.vip.logistics.memberencrypt.Decryption;
+import com.vip.logistics.memberencrypt.Encryption;
+
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -50,6 +53,7 @@ import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.StringUtil;
 
 @Service
 public class VipShopGetCwbDataService {
@@ -480,8 +484,17 @@ public class VipShopGetCwbDataService {
 			// String box_id = convertEmptyString("box_id", datamap);
 			String buyer_name = VipShopGetCwbDataService.convertEmptyString("buyer_name", datamap);
 			String buyer_address = VipShopGetCwbDataService.convertEmptyString("buyer_address", datamap);
+			// added by wangwei,start 
+			// TODO 此处为了兼容武汉系统，接收到的电话/手机号码是明文。又因为明文解密仍然是明文，所以此处算法为先解密，再加密，然后存入数据库。
 			String tel = VipShopGetCwbDataService.convertEmptyString("tel", datamap);
+			if(!StringUtil.isEmpty(tel)) {
+				tel = Encryption.encrypt(tel);
+			}
 			String mobile = VipShopGetCwbDataService.convertEmptyString("mobile", datamap);
+			if(!StringUtil.isEmpty(mobile)) {
+				mobile = Encryption.encrypt(mobile);
+			}			
+			// added by wangwei,end
 			String post_code = VipShopGetCwbDataService.convertEmptyString("post_code", datamap);
 			String transport_day = VipShopGetCwbDataService.convertEmptyString("transport_day", datamap);
 			String money = VipShopGetCwbDataService.convertEmptyString("money", datamap);
