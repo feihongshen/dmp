@@ -851,7 +851,6 @@ public class EditCwbController {
 		co.setConsigneemobile(editmobile);
 		co.setConsigneeaddress(editaddress);
 		co.setCwbremark(remark);
-
 		// 3.匹配地址库
 		try {
 			co.setExcelbranch(null);
@@ -865,6 +864,10 @@ public class EditCwbController {
 			Branch branch = this.branchDAO.getBranchByBranchname(branchname);
 			if ((co != null) && (branch.getBranchid() > 0)) {
 				User deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
+				if(deliver != null) {
+					co.setExcelbranchid(deliver.getUserid());
+					co.setExceldeliver(deliver.getRealname());
+				}
 				CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
 				if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) || (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
 					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;

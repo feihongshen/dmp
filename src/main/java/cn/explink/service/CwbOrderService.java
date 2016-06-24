@@ -7235,13 +7235,13 @@ public class CwbOrderService extends BaseOrderService {
 	@Transactional
 	public void updateDeliveryBranchAndCourier(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype, User deliver) throws Exception {
 		this.updateDeliveryBranch(user, cwbOrder, branch, addresscodeedittype);
-		long deliverid = 0;
+		long exceldeliverid = 0;
 		String exceldeliver = null;
 		if(deliver != null) {
-			deliverid = deliver.getUserid();
+			exceldeliverid = deliver.getUserid();
 			exceldeliver = deliver.getRealname();
 		}
-		this.cwbDAO.updateAddressDeliverByCwb(cwbOrder.getCwb(), deliverid, exceldeliver);
+		this.cwbDAO.updateAddressDeliverByCwb(cwbOrder.getCwb(), exceldeliverid, exceldeliver);
 	}
 	
 	@Transactional

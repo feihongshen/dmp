@@ -194,7 +194,7 @@ function editInit(){
 													<select id="courier${vo.cwbOrder.cwb }" name="courier" style="width:120px;">
 														<option value="" selected="selected">请选择</option>
 														<c:forEach var="courier" items="${vo.courierList }">
-															<option value="${courier.username }" <c:if test="${vo.cwbOrder.deliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
+															<option value="${courier.username }" <c:if test="${vo.cwbOrder.exceldeliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
 														</c:forEach>
 													</select>
 												</td>
