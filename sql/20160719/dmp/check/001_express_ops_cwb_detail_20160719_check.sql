@@ -1,0 +1,1 @@
+select exceldeliverid from express_ops_cwb_detail where 1 = 2; /*没有报错*/

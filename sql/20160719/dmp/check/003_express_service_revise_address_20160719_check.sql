@@ -1,0 +1,1 @@
+SELECT exceldeliver FROM express_service_revise_address WHERE 1=2; /*没有报错*/
