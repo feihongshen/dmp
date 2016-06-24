@@ -463,7 +463,7 @@ function scancwbKeyDownAction(event) {
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected=selected<%} %>    ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
-			        超区领货：<input type="checkbox" id="isChaoqu"/>
+			        超区领货：<input type="checkbox" id="isChaoqu" name="isChaoqu"/>
 			</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">

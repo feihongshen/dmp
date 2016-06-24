@@ -366,6 +366,7 @@ function tohome(){
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected=selected<%} %> ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
+			               超区领货：<input type="checkbox" id="isChaoqu" name="isChaoqu"/>
 				</p>
 			    <p><span>订单号：</span>
 					<textarea name="cwbs" cols="45" rows="3" id="cwbs"></textarea>
@@ -605,6 +606,7 @@ function tohome(){
 										<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 										<td width="140" align="center" bgcolor="#f1f1f1">到货时间</td>
+										<td width="140" align="center" bgcolor="#f1f1f1">批量处理操作时间</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 										<%if(showCustomerSign){ %>
@@ -627,6 +629,7 @@ function tohome(){
 												<td width="120" align="center"><%=obj.get("cwb") %></td>
 												<td width="100" align="center"><%=obj.getString("customername") %></td>
 												<td width="140" align="center"><%=obj.getString("inSitetime") %></td>
+												<td width="140" align="center"><%=obj.getString("createtime") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getString("consigneename") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getDouble("receivablefee") %></td>
 												<%if(showCustomerSign){ %>

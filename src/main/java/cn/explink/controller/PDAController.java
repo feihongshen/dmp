@@ -2010,7 +2010,7 @@ public class PDAController {
 	 */
 	@RequestMapping("/branchdeliverBatch")
 	public String branchdeliverBatch(Model model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
+			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid, boolean isChaoqu) {
 		/*
 		 * String roleids = "2,4"; List<User> uList =
 		 * this.userDAO.getUserByRolesAndBranchid(roleids,
@@ -2047,7 +2047,7 @@ public class PDAController {
 			cwb = this.cwbOrderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 			try {// 成功订单
-				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
+				CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
 				obj.put("flowordertype", cwbOrder.getFlowordertype());
 				obj.put("cwbstate", cwbOrder.getCwbstate());
@@ -2110,6 +2110,7 @@ public class PDAController {
 						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
+				obj.put("createtime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 				obj.put("errorinfo", ce.getMessage());
 				if (cwbOrder == null) {// 如果无此订单
 					obj.put("customername", "");
@@ -2243,6 +2244,7 @@ public class PDAController {
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 		// 未领货
+		todayweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(todayweilinghuolist, deliverid);
 		List<CwbDetailView> todayweilingViewlist = this.getcwbDetail(todayweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		// 已领货
@@ -2250,6 +2252,7 @@ public class PDAController {
 				showCustomerjSONArray, branchList, 3);
 
 		// 历史未领货
+		historyweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(historyweilinghuolist, deliverid);
 		List<CwbDetailView> historyweilinghuoViewList = this.getcwbDetail(historyweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		List<CwbDetailView> todayweilingCwbOrders = new ArrayList<CwbDetailView>();

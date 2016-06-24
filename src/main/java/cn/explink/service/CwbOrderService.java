@@ -4605,13 +4605,16 @@ public class CwbOrderService extends BaseOrderService {
 						ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			}
 			// 小件员地址库匹配领货优化
-			if (co.getExceldeliverid() > 0) { // 已分配小件员，必须改小件员才能领货
+			if (co.getExceldeliverid() > 0) { // 必须该小件员才能领货
 				if (co.getExceldeliverid() != deliveryUser.getUserid()) {
 					User coDeliver = this.userDao.getUserByUserid(co.getExceldeliverid());
 					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
 							ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_BU_PI_PEI,
 							coDeliver == null ? "" : coDeliver.getRealname(), deliveryUser.getRealname());
 				}
+			} else { // 未匹配小件员
+				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+						ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_WEI_PI_PEI);
 			}
 		}
 		return this.receiveGoodsHandle(user, user.getBranchid(), deliveryUser, cwb, scancwb, false);

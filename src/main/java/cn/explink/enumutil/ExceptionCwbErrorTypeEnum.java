@@ -61,7 +61,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			BU_SHI_ZHE_GE_MU_DI_DI_zong(200, "不是这个目的地的货"),
 			Weishenhebuxutuihuozaitou(201,"未审核的订单不允许退货再投！！"),
 			SHANG_MEN_TUI_CHENG_GONG_TUI_HUO_CHU_ZHAN(203, "上门退成功的订单，不能做 “{0}” 的操作"),
-			PEI_SONG_YUAN_BU_PI_PEI(204, "此订单匹配的是{0}，{1}不能进行领货！");
+			PEI_SONG_YUAN_BU_PI_PEI(204, "此订单匹配的是{0}，{1}不能进行领货！"),
+			PEI_SONG_YUAN_WEI_PI_PEI(205, "此订单未匹配配送员，不能进行领货！");
 	
 
 	private int value;
