@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.auto.order.dao.ExpressOrderDao;
 import cn.explink.b2c.auto.order.dao.TPSOrderDao;
+import cn.explink.b2c.auto.order.util.MqOrderBusinessUtil;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendDetailVO;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendVO;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -101,8 +102,8 @@ public class ShangmentuiOrderService {
 			orderDTO.setShouldfare(order.getFreight()==null?BigDecimal.ZERO:new BigDecimal(order.getFreight()));//运费
 			String required_time = order.getRequiredTime();//要求提货时间，customercommand组合之一
 			orderDTO.setAnnouncedvalue(new BigDecimal(order.getValuationValue()));//保价价值
-			orderDTO.setPaywayid(expressOrderDao.getPayTypeValue(order.getPayment()));//支付方式
-			orderDTO.setNewpaywayid(expressOrderDao.getPayTypeValue(order.getPayment())+"");
+			orderDTO.setPaywayid(MqOrderBusinessUtil.getPayTypeValue(order.getPayment()));//支付方式
+			orderDTO.setNewpaywayid(MqOrderBusinessUtil.getPayTypeValue(order.getPayment())+"");
 			//orderDTO.setTranscwb(order.getVip().getBoxNo());//运单号
 			//调试的时候注意时间格式是否符合要求
 			String add_time = mQGetOrderDataService.toDateForm(order.getVip().getAddTime());// 出仓时间

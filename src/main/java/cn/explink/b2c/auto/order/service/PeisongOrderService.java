@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.explink.b2c.auto.order.dao.ExpressOrderDao;
+import cn.explink.b2c.auto.order.util.MqOrderBusinessUtil;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendBoxVO;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendVO;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
@@ -82,8 +83,8 @@ public class PeisongOrderService {
 			orderDTO.setShouldfare(order.getFreight()==null?BigDecimal.ZERO:new BigDecimal(order.getFreight()));//运费
 			String required_time = order.getRequiredTime();//要求提货时间，customercommand组合之一
 			orderDTO.setAnnouncedvalue(new BigDecimal(order.getValuationValue()));//保价价值
-			orderDTO.setPaywayid(expressOrderDao.getPayTypeValue(order.getPayment()));//支付方式
-			orderDTO.setNewpaywayid(expressOrderDao.getPayTypeValue(order.getPayment())+"");
+			orderDTO.setPaywayid(MqOrderBusinessUtil.getPayTypeValue(order.getPayment()));//支付方式
+			orderDTO.setNewpaywayid(MqOrderBusinessUtil.getPayTypeValue(order.getPayment())+"");
 			orderDTO.setPaymethod(order.getPayType());//付款方式
 			List<InfDmpOrderSendBoxVO> boxlist = order.getBoxs();
 			String transcwb = "";
