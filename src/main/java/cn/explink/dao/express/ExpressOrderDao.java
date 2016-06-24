@@ -722,7 +722,7 @@ public class ExpressOrderDao {
 	 */
 	public void updateImportEmbracedData(List<EmbracedOrderVO> list, User userparam, Branch branch) {
 		final User user = userparam;
-		final String sqlUpdate = "update  express_ops_cwb_detail set cwb=?,flowordertype=?,cwbstate=?,collectorid=?,collectorname=?,currentbranchid=?,inputdatetime=?,cwbordertypeid=?,paymethod=?,customerid=?,transcwb=?,isadditionflag=?,senderprovinceid=?,senderprovince=?,sendercityid=?,sendercity=?,sendercellphone=?,sendertelephone=?,recprovinceid=?,cwbprovince=?,reccityid=?,cwbcity=?,consigneemobile=?,consigneephone=?,sendcarnum=?,inputhandlerid=?,inputhandlername=?,sendername=?,sendercountyid=?,sendercounty=?,senderstreetid=?,senderstreet=?,consigneename=?,reccountyid=?,cwbcounty=?,entrustname=?,sendnum=?,carrealweight=?,hascod=?,receivablefee=?,hasinsurance=?,insuredfee=?,realweight=?,monthsettleno=?,senderaddress=?,consigneeaddress=?,length=?,width=?,height=?,other=?,recstreetid=?,recstreet=?,announcedvalue=?,shouldfare=?,totalfee=?,packagefee=?,chargeweight=?,recareacode=?,sendareacode=?,kgs=?,instationhandlerid=?,instationhandlername=?,instationdatetime=?,instationid=?,instationname=?,carsize=? where cwb =?";
+		final String sqlUpdate = "update  express_ops_cwb_detail set cwb=?,flowordertype=?,cwbstate=?,collectorid=?,collectorname=?,inputdatetime=?,cwbordertypeid=?,paymethod=?,customerid=?,transcwb=?,isadditionflag=?,senderprovinceid=?,senderprovince=?,sendercityid=?,sendercity=?,sendercellphone=?,sendertelephone=?,recprovinceid=?,cwbprovince=?,reccityid=?,cwbcity=?,consigneemobile=?,consigneephone=?,sendcarnum=?,inputhandlerid=?,inputhandlername=?,sendername=?,sendercountyid=?,sendercounty=?,senderstreetid=?,senderstreet=?,consigneename=?,reccountyid=?,cwbcounty=?,entrustname=?,sendnum=?,carrealweight=?,hascod=?,receivablefee=?,hasinsurance=?,insuredfee=?,realweight=?,monthsettleno=?,senderaddress=?,consigneeaddress=?,length=?,width=?,height=?,other=?,recstreetid=?,recstreet=?,announcedvalue=?,shouldfare=?,totalfee=?,packagefee=?,chargeweight=?,recareacode=?,sendareacode=?,kgs=?,instationhandlerid=?,instationhandlername=?,instationdatetime=?,instationid=?,instationname=?,carsize=? where cwb =?";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
 
 		for (int i = 0; i < circleTimes; i++) {
@@ -746,7 +746,8 @@ public class ExpressOrderDao {
 						ps.setInt(j++, CwbStateEnum.PeiShong.getValue());
 						ps.setInt(j++, Integer.parseInt(embracedOrder.getDelivermanId()));
 						ps.setString(j++, embracedOrder.getDelivermanName());
-						ps.setLong(j++, user.getBranchid());
+						//如果是更新，那么当前站点不需要更新---刘武强20160616
+						// ps.setLong(j++, user.getBranchid());
 						ps.setDate(j++, new java.sql.Date((System.currentTimeMillis())));
 						ps.setLong(j++, CwbOrderTypeIdEnum.Express.getValue());
 						ps.setString(j++, embracedOrder.getPayment_method());
