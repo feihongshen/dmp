@@ -4779,18 +4779,6 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}
 
-		/* String usedeliverpay = "no";
-		 * 小件员领货质控使用的代码，目前先不实现 try { usedeliverpay =
-		 * systemInstallDAO.getSystemInstallByName
-		 * ("usedeliverpayup").getValue(); } catch (Exception e) {
-		 * logger.error("领货时，小件员交款系统配置获取失败"); } if (usedeliverpay.equals("yes")
-		 * &&
-		 * gotoClassAuditingDAO.getDeliverPayUpAndArrearageByDeliverid(deliveryUser
-		 * .getUserid()) > 0) { throw new
-		 * CwbException(cwb,FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
-		 * ExceptionCwbErrorTypeEnum.XiaoJianYuanYouQianKuan); }
-		 */
-
 		// 校验配送状态
 		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 
