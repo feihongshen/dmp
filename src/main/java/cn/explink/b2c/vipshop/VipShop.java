@@ -28,7 +28,13 @@ public class VipShop {
 	private int isCreateTimeToEmaildateFlag; //是否唯品会订单出仓时间作为 邮件批次时间，emaildate 默认0 ，开启：1
 	private String lefengCustomerid;
 	private String oxoState_URL;//获取OXO订单揽收状态URL
-
+	private int isGetPeisongFlag;//是否接收正常配送的订单数据
+	private int isGetShangmentuiFlag;//是否接收上门退的订单数据
+	private int isGetShangmenhuanFlag;//是否接收上门换的订单数据
+	private int isGetOXOFlag;//是否接收OXO的订单数据
+	private int isGetExpressFlag;//是否接收快递单数据
+	private int isAutoInterface;//是否自动化接口
+	
 	public int getDaysno() {
 		return daysno;
 	}
@@ -216,6 +222,54 @@ public class VipShop {
 
 	public void setOxoState_URL(String oxoState_URL) {
 		this.oxoState_URL = oxoState_URL;
+	}
+
+	public int getIsGetPeisongFlag() {
+		return isGetPeisongFlag;
+	}
+
+	public void setIsGetPeisongFlag(int isGetPeisongFlag) {
+		this.isGetPeisongFlag = isGetPeisongFlag;
+	}
+
+	public int getIsGetShangmentuiFlag() {
+		return isGetShangmentuiFlag;
+	}
+
+	public void setIsGetShangmentuiFlag(int isGetShangmentuiFlag) {
+		this.isGetShangmentuiFlag = isGetShangmentuiFlag;
+	}
+
+	public int getIsGetShangmenhuanFlag() {
+		return isGetShangmenhuanFlag;
+	}
+
+	public void setIsGetShangmenhuanFlag(int isGetShangmenhuanFlag) {
+		this.isGetShangmenhuanFlag = isGetShangmenhuanFlag;
+	}
+
+	public int getIsGetOXOFlag() {
+		return isGetOXOFlag;
+	}
+
+	public void setIsGetOXOFlag(int isGetOXOFlag) {
+		this.isGetOXOFlag = isGetOXOFlag;
+	}
+
+	public int getIsGetExpressFlag() {
+		return isGetExpressFlag;
+	}
+
+	public void setIsGetExpressFlag(int isGetExpressFlag) {
+		this.isGetExpressFlag = isGetExpressFlag;
+	}
+
+	public int getIsAutoInterface() {
+		return isAutoInterface;
+	}
+
+	public void setIsAutoInterface(int isAutoInterface) {
+		this.isAutoInterface = isAutoInterface;
 	}
 
 }

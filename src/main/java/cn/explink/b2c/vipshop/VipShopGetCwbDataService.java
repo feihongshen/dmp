@@ -51,6 +51,7 @@ import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.StringUtil;
 
 @Service
 public class VipShopGetCwbDataService {
@@ -145,7 +146,12 @@ public class VipShopGetCwbDataService {
 		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
 		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
 		vipshop.setDaysno(Integer.parseInt(daysno));*/
-		
+		//MQ接口改造，新增字段
+		vipshop.setIsGetExpressFlag((request.getParameter("isGetExpressFlag")==null||request.getParameter("isGetExpressFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetExpressFlag")));
+		vipshop.setIsGetOXOFlag((request.getParameter("isGetOXOFlag")==null||request.getParameter("isGetOXOFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetOXOFlag")));
+		vipshop.setIsGetPeisongFlag((request.getParameter("isGetPeisongFlag")==null||request.getParameter("isGetPeisongFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetPeisongFlag")));
+		vipshop.setIsGetShangmenhuanFlag((request.getParameter("isGetShangmenhuanFlag")==null||request.getParameter("isGetShangmenhuanFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetShangmenhuanFlag")));
+		vipshop.setIsGetShangmentuiFlag((request.getParameter("isGetShangmentuiFlag")==null||request.getParameter("isGetShangmentuiFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetShangmentuiFlag")));
 		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
 		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
@@ -155,6 +161,14 @@ public class VipShopGetCwbDataService {
 
 		JSONObject jsonObj = JSONObject.fromObject(vipshop);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
+		
+		//承运商编码重复的接口配置不允许保存
+		JointEntity jointEntityByShipper = this.jiontDAO.getJointEntityByShipperNo(request.getParameter("shipper_no"),joint_num);
+		if(jointEntityByShipper!=null){
+			B2cEnum b2cEnmun = B2cEnum.getEnumByKey(jointEntityByShipper.getJoint_num());
+			throw new RuntimeException("该承运商已在【" + b2cEnmun.getText() + "】接口中设置对接");
+		}
+		
 		if (jointEntity == null) {
 			jointEntity = new JointEntity();
 			jointEntity.setJoint_num(joint_num);
