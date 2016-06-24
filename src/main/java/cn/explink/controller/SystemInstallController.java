@@ -58,9 +58,9 @@ public class SystemInstallController {
 	@RequestMapping("/create")
 	public @ResponseBody String create(HttpServletRequest request, @RequestParam("chinesename") String chinesename, @RequestParam("name") String name, @RequestParam("value") String value)
 			throws Exception {
-		SystemInstall cs = systemInstallDAO.getSystemInstallByParam(chinesename, name, value);
+		SystemInstall cs = systemInstallDAO.getSystemInstall(name);
 		if (cs != null) {
-			return "{\"errorCode\":1,\"error\":\"该设置已存在\"}";
+			return "{\"errorCode\":1,\"error\":\"该变量已存在\"}";
 		} else {
 			systemInstallService.creSystemInstall(chinesename, name, value);
 			logger.info("operatorUser={},系统 设置->create", getSessionUser().getUsername());
@@ -97,6 +97,10 @@ public class SystemInstallController {
 		if (cs == null) {
 			return "{\"errorCode\":1,\"error\":\"该设置不存在\"}";
 		} else {
+			SystemInstall cs2 = systemInstallDAO.getSystemInstall(name);
+			if (cs2 != null && cs2.getId() != id) {
+				return "{\"errorCode\":1,\"error\":\"该变量已存在\"}";
+			}
 			systemInstallService.saveSystemInstall(chinesename, name, value, id);
 			if ("siteDayLogTime".equals(name) || "wareHouseDayLogTime".equals(name) || "tuiHuoDayLogTime".equals(name)) {
 				setQuartzTime(value, name);
