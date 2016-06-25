@@ -5406,8 +5406,11 @@ public class CwbOrderService extends BaseOrderService {
 
 		// 上门退成功反馈时录入快递单号
 		if ((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
-			if (!transcwb.equals("")) {
-				String[] transcwbArr = transcwb.split(",");
+			//Modified by leoliao at 2016-06-25 完善运单号(快递单号)处理逻辑，解决运单号被清空问题。
+			String paramTranscwb = (String) parameters.get("transcwb");
+			if (paramTranscwb != null && !paramTranscwb.trim().equals("")) {
+				paramTranscwb = paramTranscwb.trim();
+				String[] transcwbArr = paramTranscwb.split(",");
 				List<String> transcwbList = new ArrayList<String>();
 				for (String transcwbTmp : transcwbArr) {
 					if (transcwbTmp.length() > 0) {
@@ -5435,19 +5438,19 @@ public class CwbOrderService extends BaseOrderService {
 																		// split ,
 					}
 					this.transCwbDao.saveTranscwb(cwb, cwb);
-					this.cwbDAO.saveTranscwbByCwb(transcwb, cwb);
+					this.cwbDAO.saveTranscwbByCwb(paramTranscwb, cwb);
 					this.cwbDAO.saveBackcarnum(transcwbList.size(), cwb);
 					//this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
 				}
-			}else{//当录入或修改快递单号为空时
-				if(!"".equals(co.getTranscwb()) && nosysyemflag == null){
-					this.transCwbDao.deleteTranscwb(cwb);
-					this.transCwbDao.saveTranscwb(cwb, cwb);
-					this.cwbDAO.saveTranscwbByCwb("", cwb);
-					this.cwbDAO.saveBackcarnum(1, cwb);
-					//this.cwbDAO.saveSendcarnum(1, cwb);
-				}
+			}else if(paramTranscwb != null && paramTranscwb.trim().equals("")){
+				//当录入或修改快递单号为空时
+				this.transCwbDao.deleteTranscwb(cwb);
+				this.transCwbDao.saveTranscwb(cwb, cwb);
+				this.cwbDAO.saveTranscwbByCwb("", cwb);
+				this.cwbDAO.saveBackcarnum(1, cwb);
+				//this.cwbDAO.saveSendcarnum(1, cwb);
 			}
+			//Modified end
 		}
 
 		// 更新反馈时间
