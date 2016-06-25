@@ -1,9 +1,35 @@
 -- 站点缴款导入银行记录明细表（fn_org_recharges）新增字段
-ALTER TABLE `fn_org_recharges`   
-  ADD COLUMN `current_model` TINYINT(2) DEFAULT 1  NOT NULL  COMMENT '结算模式。1.账单，2.签收余额。默认为账单',
-  ADD COLUMN `recharge_source` TINYINT(2) NULL  COMMENT '缴款来源：1. 导入缴款',
-  ADD COLUMN `cwb` VARCHAR(100) DEFAULT ''  NOT NULL  COMMENT '订单号，当recharge_source=5时需存该字段',
-  ADD COLUMN `vpal_record_id` BIGINT(20) DEFAULT 0  NOT NULL  COMMENT '唯品代扣记录id';
+ALTER TABLE `fn_org_bank_import`   
+  ADD COLUMN `current_model` TINYINT(2) DEFAULT 1  NOT NULL  COMMENT '结算模式。1.账单，2.签收余额。默认为账单';
+
+-- 新增余额报表模式下的缴款导入表（fn_org_recharges_rptmode）
+CREATE TABLE `fn_org_recharges_rptmode` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `recharge_no` VARCHAR(30) NOT NULL DEFAULT '' COMMENT '缴款单号。年月日+5位流水号+P',
+  `org_id` BIGINT(20) DEFAULT '0' COMMENT '站点编号',
+  `paymethod` INT(11) DEFAULT '0' COMMENT '支付方式',
+  `amount` DECIMAL(19,2) DEFAULT '0.00' COMMENT '充值金额',
+  `surplus` DECIMAL(19,2) DEFAULT '0.00' COMMENT '冲抵之后剩余金额',
+  `remark` TEXT COMMENT '冲抵备注',
+  `create_time` DATETIME DEFAULT NULL COMMENT '充值时间',
+  `import_time` DATETIME DEFAULT NULL COMMENT '创建（导入）时间',
+  `creator` VARCHAR(30) DEFAULT NULL COMMENT '操作人',
+  `updated_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  COMMENT '最后更新时间',
+  `bi_id` BIGINT(20) DEFAULT '0' COMMENT '银行导入记录ID',
+  `handle_status` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '处理状态。0导入，1已处理但未核销，2已处理已核销，3处理异常，-1已撤销',
+  `picker` VARCHAR(30) NOT NULL DEFAULT '' COMMENT '小件员登录名',
+  `picker_id` BIGINT(20) DEFAULT '0' COMMENT '小件员id',
+  `payin_type` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '缴款方式。1.站点缴款，2小件员缴款',
+  `recharge_source` TINYINT(2) DEFAULT NULL COMMENT '缴款来源：1.导入缴款2.应退金额缴款3.运费调整缴款4.货款调整缴款5.代扣收款6.POSCOD自动缴款',
+  `cwb` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '订单号',
+  `vpal_record_id` BIGINT(20) NOT NULL DEFAULT '0' COMMENT '唯品代扣记录id',
+  PRIMARY KEY (`id`),
+  KEY `idx_org_id` (`org_id`),
+  KEY `idx_picker_id` (`picker_id`),
+  KEY `idx_create_time` (`create_time`),
+  KEY `idx_bi_id` (`bi_id`),
+  KEY `idx_vpal_record_id` (`vpal_record_id`)
+) ENGINE=INNODB CHARSET=utf8;
 
 -- 新增余额报表订单明细冲抵记录表（fn_orgrpt_order_recharge）
 CREATE TABLE `fn_orgrpt_order_recharge`(  

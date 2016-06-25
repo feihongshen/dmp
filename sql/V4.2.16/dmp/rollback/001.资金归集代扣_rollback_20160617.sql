@@ -1,9 +1,8 @@
-ALTER TABLE `fn_org_recharges`   
-  DROP COLUMN `current_model`,
-  DROP COLUMN `recharge_source`,
-  DROP COLUMN `cwb`,
-  DROP COLUMN `vpal_record_id`;
+ALTER TABLE `fn_org_bank_import`   
+  DROP COLUMN `current_model`;
 
+drop TABLE `fn_org_recharges_rptmode`;
+  
 drop TABLE `fn_orgrpt_order_recharge`;
 
 drop TABLE `fn_org_recharges_adjustment_record`;
