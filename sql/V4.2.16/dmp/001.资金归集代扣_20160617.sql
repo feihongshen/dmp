@@ -1,6 +1,6 @@
 -- 站点缴款导入银行记录明细表（fn_org_recharges）新增字段
 ALTER TABLE `fn_org_bank_import`   
-  ADD COLUMN `current_model` TINYINT(2) DEFAULT 1  NOT NULL  COMMENT '结算模式。1.账单，2.签收余额。默认为账单';
+  ADD COLUMN `current_mode` TINYINT(2) DEFAULT 1  NOT NULL  COMMENT '结算模式。1.账单，2.签收余额。默认为账单';
 
 -- 新增余额报表模式下的缴款导入表（fn_org_recharges_rptmode）
 CREATE TABLE `fn_org_recharges_rptmode` (
@@ -20,7 +20,7 @@ CREATE TABLE `fn_org_recharges_rptmode` (
   `picker` VARCHAR(30) NOT NULL DEFAULT '' COMMENT '小件员登录名',
   `picker_id` BIGINT(20) DEFAULT '0' COMMENT '小件员id',
   `payin_type` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '缴款方式。1.站点缴款，2小件员缴款',
-  `recharge_source` TINYINT(2) DEFAULT NULL COMMENT '缴款来源：1.导入缴款2.应退金额缴款3.运费调整缴款4.货款调整缴款5.代扣收款6.POSCOD自动缴款',
+  `recharge_source` TINYINT(2) DEFAULT NULL COMMENT '缴款来源：1.导入缴款2.应退金额缴款3.运费调整缴款4.代扣收款5.POSCOD自动缴款6.货款调整缴款',
   `cwb` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '订单号',
   `vpal_record_id` BIGINT(20) NOT NULL DEFAULT '0' COMMENT '唯品代扣记录id',
   PRIMARY KEY (`id`),

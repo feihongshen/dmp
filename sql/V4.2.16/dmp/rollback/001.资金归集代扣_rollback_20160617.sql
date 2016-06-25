@@ -1,5 +1,5 @@
 ALTER TABLE `fn_org_bank_import`   
-  DROP COLUMN `current_model`;
+  DROP COLUMN `current_mode`;
 
 drop TABLE `fn_org_recharges_rptmode`;
   
