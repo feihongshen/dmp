@@ -28,7 +28,8 @@ CREATE TABLE `fn_org_recharges_rptmode` (
   KEY `idx_picker_id` (`picker_id`),
   KEY `idx_create_time` (`create_time`),
   KEY `idx_bi_id` (`bi_id`),
-  KEY `idx_vpal_record_id` (`vpal_record_id`)
+  KEY `idx_vpal_record_id` (`vpal_record_id`),
+  KEY `idx_cwb` (`cwb`)
 ) ENGINE=INNODB CHARSET=utf8;
 
 -- 新增余额报表订单明细冲抵记录表（fn_orgrpt_order_recharge）

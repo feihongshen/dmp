@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,7 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.OrgBillDetailDao;
 import cn.explink.dao.ReasonDao;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.ZhiFuApplyDao;
 import cn.explink.domain.ApplyEditDeliverystate;
@@ -53,7 +53,9 @@ import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BillStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
+import cn.explink.enumutil.SettlementModeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
@@ -116,6 +118,8 @@ public class ApplyEditDeliverystateController {
 	FnDfAdjustmentRecordService fnDfAdjustmentRecordService;
 	@Autowired
 	OrgBillDetailDao orgBillDetailDao;
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -290,6 +294,30 @@ public class ApplyEditDeliverystateController {
 		long errorcount = 0;
 		String cwbStr = "已做过重置审核订单:";
 		if (cwbdata.length() > 0) {
+			int currentMode = SettlementModeEnum.BillMode.getValue();
+			int autoReceivedOfPOS = 0;
+			try{
+				String modeStr = this.systemInstallDAO.getSystemInstallByName("SETTLEMENTMODE").getValue();
+				currentMode = Integer.valueOf(modeStr);
+				if(currentMode != SettlementModeEnum.BillMode.getValue() && currentMode != SettlementModeEnum.SignRptMode.getValue()){
+					logger.warn("SETTLEMENTMODE={}，未按约定配置系统参数SETTLEMENTMODE的值，约定的合法值为 1 或 2，其中1表示账单模式，2表示签收余额模式。临时取值为1。", currentMode);
+					currentMode = SettlementModeEnum.BillMode.getValue();
+				}
+			}catch(Exception e){
+				logger.error("SETTLEMENTMODE={}，未按约定配置系统参数SETTLEMENTMODE的值，约定的合法值为 1 或 2，其中1表示账单模式，2表示签收余额模式。临时取值为1。", currentMode);
+			}
+			
+			try{
+				String autoFlag = this.systemInstallDAO.getSystemInstallByName("AUTORECEIVEDOFPOS").getValue();
+				autoReceivedOfPOS = Integer.valueOf(autoFlag);
+				if(autoReceivedOfPOS != 0 && autoReceivedOfPOS != 1){
+					logger.warn("AUTORECEIVEDOFPOS={}，未按约定配置系统参数AUTORECEIVEDOFPOS的值，约定的合法值为 0 或 1，其中0表示未开启，1表示开启。临时取值为0。", autoReceivedOfPOS);
+					autoReceivedOfPOS = 0;
+				}
+			}catch(Exception e){
+				logger.error("AUTORECEIVEDOFPOS={}，未按约定配置系统参数AUTORECEIVEDOFPOS的值，约定的合法值为 0 或 1，其中0表示未开启，1表示开启。临时取值为0。", autoReceivedOfPOS);
+			}
+			
 			for (String cwb : cwbdata.split(",")) {
 				try {
 					long edituserid = this.getSessionUser().getUserid();
@@ -321,6 +349,12 @@ public class ApplyEditDeliverystateController {
 								if (!todayStr.equals(autitingDateStr)) {// 归班审核时间与重置反馈时间不在同一天生成订单调整记录
 									// 重置反馈状态生成调整记录(目前是为了站点签收余额报表增加的方法)
 									this.editCwbService.createFnOrgOrderAdjustRecord(cwb, ec_dsd);
+									//  V4.2.16资金归集代扣。POSCOD自动回款，如果订单支付类型为POS 或者 COD时，当订单被重置反馈时，需写入一条回款调整记录到调整表 gordon.zhou
+									if(ec_dsd.getNewpaywayid() == PaytypeEnum.Pos.getValue() || ec_dsd.getNewpaywayid() == PaytypeEnum.CodPos.getValue()){
+										if(currentMode == SettlementModeEnum.SignRptMode.getValue() && autoReceivedOfPOS == 1){
+											this.editCwbService.createFnOrgRechargesAdjustRecord(cwb, ec_dsd);
+										}
+									}
 								}
 							}
 						}

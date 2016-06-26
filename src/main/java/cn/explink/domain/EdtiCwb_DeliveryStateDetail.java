@@ -27,6 +27,12 @@ public class EdtiCwb_DeliveryStateDetail {
 	private long editUser;// 修改人
 
 	private BigDecimal oriInfactfare;// 原实收运费
+	
+	/**
+	 * 支付方式  V4.2.16资金归集代扣。POSCOD自动回款，如果订单支付类型为POS 或者 COD时，当订单被重置反馈时，需写入一条回款调整记录到调整表 
+	 * by gordon.zhou 2016/6/24
+	 */
+	private int newpaywayid; 
 
 	public long getRequestUser() {
 		return this.requestUser;
@@ -222,6 +228,16 @@ public class EdtiCwb_DeliveryStateDetail {
 		myDs.setAuditingtime(ds.getAuditingtime());
 		myDs.setPayupid(ds.getPayupid());
 		this.ds = myDs;
+	}
+	
+	
+
+	public int getNewpaywayid() {
+		return newpaywayid;
+	}
+
+	public void setNewpaywayid(int newpaywayid) {
+		this.newpaywayid = newpaywayid;
 	}
 
 	@Override

@@ -35,6 +35,8 @@ import cn.explink.dao.FinanceAuditDAO;
 import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
 import cn.explink.dao.FinancePayUpAuditDAO;
 import cn.explink.dao.FnOrgOrderAdjustRecordDAO;
+import cn.explink.dao.FnOrgRechargesAdjustRecordDAO;
+import cn.explink.dao.FnOrgRechargesRptmodeDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.PayUpDAO;
 import cn.explink.dao.ReturnCwbsDAO;
@@ -53,6 +55,7 @@ import cn.explink.domain.FinanceDeliverPayupDetail;
 import cn.explink.domain.FinancePayUpAudit;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.OrgOrderAdjustmentRecord;
+import cn.explink.domain.OrgRechargesAdjustmentRecord;
 import cn.explink.domain.PayUp;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
@@ -134,6 +137,12 @@ public class EditCwbService {
 	@Autowired
 	ThirdPartyOrder2DOCfgService thirdPartyOrder2DOCfgService;
 	
+	@Autowired
+	FnOrgRechargesAdjustRecordDAO fnOrgRechargesAdjustRecordDAO;
+	
+	@Autowired
+	FnOrgRechargesRptmodeDAO fnOrgRechargesRptmodeDAO;
+	
 	/**
 	 * 修改订单 之 重置审核状态
 	 *
@@ -189,6 +198,19 @@ public class EditCwbService {
 		}
 		// 整理 更改对象 EdtiCwb_DeliveryStateDetail
 		EdtiCwb_DeliveryStateDetail ec_dsd = new EdtiCwb_DeliveryStateDetail();
+		// 获取归班审核时的支付方式 added by gordon.zhou 2016/6/24 
+		try{
+			Long oldPayWay = Long.valueOf(co.getPaywayid()) == null ? 1L : Long.valueOf(co.getPaywayid());
+			Long newPayWay = co.getNewpaywayid() == null ? 0L : Long.valueOf(co.getNewpaywayid());
+			if (oldPayWay.intValue() == newPayWay.intValue()) {
+				ec_dsd.setNewpaywayid(oldPayWay.intValue());
+			} else {
+				ec_dsd.setNewpaywayid(newPayWay.intValue());
+			}
+			
+		}catch(Exception e){
+			logger.error("重置反馈审核操作获取订单支付方式异常", e);
+		}
 		ec_dsd.setDs(ds);
 		ec_dsd.setDsid(ds.getId());
 		ec_dsd.setEditcwbtypeid(EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue());
@@ -1818,6 +1840,36 @@ public class EditCwbService {
 				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
 				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
 			}
+		}
+	}
+	
+	
+	/**
+	 * POS、COD支付方式订单重置反馈后新增 回款 调整记录 
+	 * @param cwb
+	 * @param ec_dsd
+	 */
+	public void createFnOrgRechargesAdjustRecord(String cwb, EdtiCwb_DeliveryStateDetail ec_dsd) {
+		if( !fnOrgRechargesRptmodeDAO.isAutoReceivedPOSCOD(cwb) ){
+			return;
+		}
+		OrgRechargesAdjustmentRecord record = new OrgRechargesAdjustmentRecord();
+		DeliveryState deliveryState = ec_dsd.getDs();
+		// 查询出对应订单号的账单详细信息
+		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
+		if (order != null) {
+			// 根据不同的订单类型
+			record.setCwb(cwb);
+			record.setDeliveryid(order.getDeliverid());
+			record.setCreatedUser(this.getSessionUser().getUsername());
+			record.setCreatedTime(new Date());
+			record.setPayMethod(ec_dsd.getNewpaywayid());
+			record.setDeliverybranchid(order.getDeliverybranchid());
+			record.setAdjustAmount(order.getReceivablefee().negate());
+			record.setSignTime(DateTimeUtil.parseDate(deliveryState.getSign_time(), DateTimeUtil.DEF_DATETIME_FORMAT));
+			
+			this.fnOrgRechargesAdjustRecordDAO.creRechargesAdjustmentRecord(record);
+
 		}
 	}
 }
