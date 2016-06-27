@@ -321,6 +321,9 @@ function weiruku(){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -331,6 +334,9 @@ function weiruku(){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -362,6 +368,9 @@ function orderbyweiruku(type){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -372,6 +381,9 @@ function orderbyweiruku(type){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -448,6 +460,9 @@ function orderbyyiruku(type){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 						+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
@@ -590,6 +605,9 @@ function tohome(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单类型</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单状态</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单当前状态</td>
 											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyweiruku('customerid')">供货商</span></td>
 											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyweiruku('emaildate')">发货时间</span></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
@@ -606,6 +624,9 @@ function tohome(){
 											<%for(CwbDetailView co : weirukuList){ %>
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" class="cwbids">
 												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="80" align="center"><%=co.getCwbordertype() %></td>
+												<td width="80" align="center"><%=co.getCwbstatetext() %></td>
+												<td width="120" align="center"><%=co.getFlowordertypetext() %></td>
 												<td width="100" align="center"><%=co.getCustomername() %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -636,6 +657,9 @@ function tohome(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单类型</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单状态</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单当前状态</td>
 											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyyiruku('customerid')">供货商</span></td>
 											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyyiruku('emaildate')">发货时间</span></td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
@@ -662,6 +686,9 @@ function tohome(){
 											<%for(CwbDetailView co : yirukulist){ %>
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>">
 												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="80" align="center"><%=co.getCwbordertype() %></td>
+												<td width="80" align="center"><%=co.getCwbstatetext() %></td>
+												<td width="120" align="center"><%=co.getFlowordertypetext() %></td>
 												<td width="100" align="center"><%=co.getCustomername() %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
 												<td width="100"><%=co.getConsigneename() %></td>
@@ -693,6 +720,9 @@ function tohome(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单类型</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单状态</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单当前状态</td>
 											<td width="120" align="center" bgcolor="#f1f1f1">运单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('customerid',$("#customerid").val())">供货商</span></td>
 											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('emaildate',$("#customerid").val())">发货时间</span></td>
@@ -741,6 +771,9 @@ function tohome(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单类型</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单状态</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单当前状态</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
@@ -748,7 +781,7 @@ function tohome(){
 											<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-											<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+											<td width="220" align="center" bgcolor="#f1f1f1">地址</td>
 											<td align="center" bgcolor="#f1f1f1">异常原因</td>
 										</tr>
 									</table>
@@ -758,6 +791,9 @@ function tohome(){
 											<%JSONObject cwbOrder =  obj.get("cwbOrder")==null?null:JSONObject.fromObject(obj.get("cwbOrder"));%>
 											<tr id="TR<%=obj.get("cwb") %>" cwb="<%=obj.get("cwb") %>" customerid="<%=cwbOrder==null?"":cwbOrder.getString("customerid") %>">
 												<td width="120" align="center"><%=obj.get("cwb") %></td>
+												<td width="80" align="center" bgcolor="#f1f1f1"><%=obj.get("cwbordertype") %></td>
+												<td width="80" align="center" bgcolor="#f1f1f1"><%=obj.get("cwbstatetext") %></td>
+												<td width="120" align="center" bgcolor="#f1f1f1"><%=obj.get("flowordertypetext") %></td>
 												<td width="100" align="center"><%=obj.getString("customername") %></td>
 												<td width="140" align="center"><%=cwbOrder==null?"":cwbOrder.getString("emaildate") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getString("consigneename") %></td>
@@ -766,7 +802,7 @@ function tohome(){
 													<td width="100"><%=obj.get("showRemark") %></td>
 												<%} %>
 												
-												<td width="350" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
+												<td width="220" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
 												<td align="center"><%=obj.get("errorinfo") %></td>
 											</tr>
 											<%}} %>
