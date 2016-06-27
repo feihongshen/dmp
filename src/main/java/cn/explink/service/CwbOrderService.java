@@ -6828,14 +6828,9 @@ public class CwbOrderService extends BaseOrderService {
 		} else {
 			this.cwbDAO.updateScannum(co.getCwb(), 1);
 		}
-		/*
 		if ((co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) || ((co.getFlowordertype() == FlowOrderTypeEnum.YiFanKui
 				.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue())) {
-		*/
-		if ((co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) ||
-				((co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())) || 
-				(co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue())) {
-			//Modified by leoliao at 2016-06-24 改为反馈为分站滞留且归班审核通过后才改为退货状态，且修改下一站为退货站
+			//Modified by leoliao at 2016-06-24 修改下一站为退货站
 			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 			
 			boolean blnNeedUpdateCurrentBranch = true; //是否需要修改当前站为退货组
