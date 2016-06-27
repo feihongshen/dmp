@@ -14,15 +14,20 @@ import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.auto.order.dao.ExpressOrderDao;
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
+import cn.explink.b2c.auto.order.util.MqOrderBusinessUtil;
+import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.ExcelColumnSet;
+import cn.explink.domain.ImportValidationManager;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.ExtralInfo4Address;
 import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.enumutil.express.ExpressOperationEnum;
+import cn.explink.service.CwbOrderValidator;
 import cn.explink.service.addressmatch.AddressMatchExpressService;
 import cn.explink.service.express.TpsInterfaceExecutor;
 
@@ -56,6 +61,9 @@ public class ExpressOrderService {
 	
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
+	
+	@Autowired
+	ImportValidationManager importValidationManager;
 	
 	/**
 	 * 根据 tpsTranId查询临时表，
@@ -163,13 +171,41 @@ public class ExpressOrderService {
 				logger.info("insertSigleCwbOrder小件员为空,单号{}", expressDetailTemp.getTransportNo());
 				return;
 			}
-			
+			// 转业务效验
+			ExcelColumnSet excelColumnSet = getExcelColumnSet();
+			List<CwbOrderValidator> vailidators = importValidationManager.getVailidators(excelColumnSet);
+			CwbOrderDTO cwbOrderDTO = getCwbOrderDTO(excelColumnSet, expressDetailTemp);
+			for (CwbOrderValidator cwbOrderValidator : vailidators) {
+				cwbOrderValidator.validate(cwbOrderDTO);
+			}
 			//插入主表
 			expressOrderDao.insertCwbOrder(expressDetailTemp, branch, acceptBranch, user);
 			logger.info("定时器临时表插入detail表成功!cwb={}", expressDetailTemp.getTransportNo());
 		}
 		//更新记录
 		expressOrderDao.updateExpressDetailTempForOver(expressDetailTemp.getTpsTransId());
+	}
+	
+	/**
+	 * 效验值
+	 */
+	private CwbOrderDTO getCwbOrderDTO(ExcelColumnSet excelColumnSet, ExpressDetailTemp expressDetailTemp){
+		CwbOrderDTO to = new CwbOrderDTO();
+		to.setCwb(expressDetailTemp.getTransportNo());
+		if(excelColumnSet.getPaywayindex() != 0){
+			to.setPaywayid(MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()));
+		}
+		return to;
+	}
+	
+	
+	/**
+	 * 效验处理
+	 */
+	private ExcelColumnSet getExcelColumnSet(){
+		ExcelColumnSet excelColumnSet = new ExcelColumnSet();
+		excelColumnSet.setPaywayindex(1);
+		return excelColumnSet;
 	}
 	
 	/**
