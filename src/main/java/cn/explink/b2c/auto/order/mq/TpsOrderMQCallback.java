@@ -174,11 +174,16 @@ public class TpsOrderMQCallback implements IVMSCallback {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
 		String date = String.valueOf(df.format(new Date()));
 		StringBuilder sub = new StringBuilder();
+		String routingKeyStr[] = consumerTemplate.getExchangeName().split("_");
+		String routingKey = "*";
+		if(routingKeyStr.length>1){
+			routingKey = routingKeyStr[routingKeyStr.length-1];
+		}
 		sub.append("<root>");
 		sub.append("<system_name>ZDH_Order</system_name>");
 		sub.append("<queue_name>" + consumerTemplate.getQueueName() + "</queue_name>");
 		sub.append("<exchange_name>" + consumerTemplate.getExchangeName() + "</exchange_name>");
-		sub.append("<routing_key>*</routing_key>");
+		sub.append("<routing_key>"+routingKey+"</routing_key>");
 		sub.append("<exception_info>" + error.getException_info() + "</exception_info>");
 		sub.append("<business_id></business_id>");
 		sub.append("<create_time>" + date + "</create_time>");
