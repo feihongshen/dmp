@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.service.TpsTranscwbPrintService;
 import cn.explink.util.Page;
@@ -58,11 +59,11 @@ public class TpsTranscwbPrintController {
 		model.addAttribute("page", page);
 		return "transcwbprint/transcwbPrintList";
 	} 
-	
+
 	/**
-	 * 打印运单号
+	 * 打印运单号页面
 	 */
-	@RequestMapping("/printTpstranscwb")
+	@RequestMapping("/printTpstranscwbPage")
 	public String printExcle(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "transcwbs", required = false, defaultValue = "") final String transcwbs) {
 		List<String> tpstranscwbList = new ArrayList<String>();
 		String[] transcwbArray = transcwbs.split(",");
@@ -70,9 +71,24 @@ public class TpsTranscwbPrintController {
 			tpstranscwbList.add(tpstranscwb);
 		}
 		//更新打印状态
-		this.transcwbPrintService.updatePrintStatus(tpstranscwbList);
+		//this.transcwbPrintService.updatePrintStatus(tpstranscwbList);
 		model.addAttribute("cwbs", tpstranscwbList);
-		return "cwblableprint/printTiaoxingma";
+		return "transcwbprint/printTranscwb";
+	}
+	
+	/**
+	 * 打印运单号
+	 */
+	@RequestMapping("/printTranscwb")
+	@ResponseBody
+	public void  printTranscwb(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "transcwbs", required = false, defaultValue = "") final String transcwbs) {
+		List<String> tpstranscwbList = new ArrayList<String>();
+		String[] transcwbArray = transcwbs.split(",");
+		for (String tpstranscwb : transcwbArray) {
+			tpstranscwbList.add(tpstranscwb);
+		}
+		//更新打印状态
+		this.transcwbPrintService.updatePrintStatus(tpstranscwbList);
 	}
 	
 }
