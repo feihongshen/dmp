@@ -412,7 +412,7 @@ public class ExpressOrderDao {
 				ps.setInt(++i, 1);
 
 				ps.setLong(++i, 0);//上一个机构id
-				ps.setLong(++i, 0);//当前机构
+				ps.setLong(++i, acceptBranch.getBranchid());//当前机构
 				ps.setLong(++i, 0);//下一站目的机构id
 				ps.setLong(++i, ((null != branch)?branch.getBranchid():0L));//配送站点ID
 				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
