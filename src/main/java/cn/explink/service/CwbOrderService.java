@@ -6861,11 +6861,17 @@ public class CwbOrderService extends BaseOrderService {
 				blnNeedUpdateCurrentBranch = false;
 			}
 			
-			logger.error("订单拦截：订单(订单号={}),nextInterceptBranchId={}", co.getCwb(), nextInterceptBranchId);
+			logger.info("订单拦截：订单(订单号={}),blnNeedUpdateCurrentBranch={},nextInterceptBranchId={})", co.getCwb(), blnNeedUpdateCurrentBranch, nextInterceptBranchId);
 			
 			if(blnNeedUpdateCurrentBranch && nextInterceptBranchId != 0){
+				//修改订单下一站为退货组
 				String sql = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
 				this.jdbcTemplate.update(sql, nextInterceptBranchId, cwb);
+				
+				//修改订单反馈状态为拒收
+				this.deliveryStateDAO.updateDeliveryStateValue(cwb, DeliveryStateEnum.JuShou.getValue());
+				
+				logger.info("订单拦截：修复订单(订单号={})反馈状态为{}", co.getCwb(), DeliveryStateEnum.JuShou.getText());
 			}
 			//Modified end
 		} else if (!((co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu
