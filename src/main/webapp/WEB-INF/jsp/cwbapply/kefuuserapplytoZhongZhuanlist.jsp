@@ -215,6 +215,10 @@ function resetData(){
 	$("#branchid").val(0);
 	$("#ishandle").val(0);
 }
+
+$(function(){
+	$("#customerid").combobox();
+	})
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -244,15 +248,15 @@ function resetData(){
 											</select>
 										</td>
 										<td>
-											&nbsp;&nbsp;
-											客户名称:
-											<select name ="customerid" id ="customerid" style="width:150px">
+											
+											<div style="float: left;">&nbsp;&nbsp;
+											客户名称：<select name ="customerid" id ="customerid" style="width:150px">
 												<option  value ="0">全部</option>
 												<%if(customerList!=null){
 													for(Customer cus:customerList){ %>
 													<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
 												<%} }%>
-											</select>
+											</select></div>
 											&nbsp;&nbsp;
 											配送站点:
 												<input type="text" id="branchid" name="branchid" class="easyui-validatebox" style="width: 110px;"initDataType="TABLE"

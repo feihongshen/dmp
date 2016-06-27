@@ -423,9 +423,9 @@ public class VipshopInsertCwbDetailTimmer {
 		
 		emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
 		cwbOrderService.insertCwbOrder(cwbOrderDto, cwbOrderDto.getCustomerid(), warehouseId, user, ed);
-		
 		logger.info("[唯品会]定时器临时表插入detail表成功!cwb={},shipcwb={},transcwb={}", cwbOrderDto.getCwb(), cwbOrderDto.getShipcwb(), cwbOrderDto.getTranscwb());
-
+        cwbOrderService.handleShangMenTuiCwbDeliveryPermit(cwbOrderDto); //处理唯品会上门退订单领货标识  2016-06-16
+		
 		if (cwbOrderDto.getExcelbranch() == null || cwbOrderDto.getExcelbranch().length() == 0) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("cwb", cwbOrderDto.getCwb());

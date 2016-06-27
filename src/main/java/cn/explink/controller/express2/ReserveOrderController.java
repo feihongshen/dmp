@@ -5,11 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
 
 import com.pjbest.deliveryorder.enumeration.ReserveOrderStatusEnum;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,16 +36,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.pjbest.deliveryorder.service.OmReserveOrderModel;
-import com.vip.osp.core.exception.OspException;
-import com.vip.tps.base.service.SbCodeDefModel;
-import com.vip.tps.base.service.SbCodeTypeService;
-import com.vip.tps.base.service.SbCodeTypeServiceHelper;
-
 import cn.explink.controller.ExplinkResponse;
 import cn.explink.controller.express.ExpressCommonController;
 import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.core.utils.JsonUtil;
+import cn.explink.dao.CwbDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
@@ -50,8 +49,8 @@ import cn.explink.domain.express2.VO.ReserveOrderLogVo;
 import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.enumutil.ReserveOrderQueryTypeEnum;
-import cn.explink.enumutil.express2.ReserveOrderStatusClassifyEnum;
 import cn.explink.enumutil.express2.ReserveOrderDmpStatusEnum;
+import cn.explink.enumutil.express2.ReserveOrderStatusClassifyEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.service.BranchService;
 import cn.explink.service.UserService;
@@ -59,7 +58,16 @@ import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.Tools;
-import net.sf.json.JSONObject;
+
+import com.pjbest.deliveryorder.service.OmReserveOrderModel;
+import com.pjbest.psp.express.service.DeliveryInfoModel;
+import com.pjbest.psp.express.service.DeliveryInfoServiceHelper;
+import com.pjbest.psp.express.service.DeliveryInfoServiceHelper.DeliveryInfoServiceClient;
+import com.pjbest.psp.express.service.PriceTimeQueryByNameVoModel;
+import com.vip.osp.core.exception.OspException;
+import com.vip.tps.base.service.SbCodeDefModel;
+import com.vip.tps.base.service.SbCodeTypeService;
+import com.vip.tps.base.service.SbCodeTypeServiceHelper;
 
 /**
  * 预约单 Controller
@@ -79,6 +87,9 @@ public class ReserveOrderController extends ExpressCommonController {
 
 	@Resource
     private UserService userService;
+	
+	@Resource
+	private CwbDAO cwbDAO;
 	
     private static final String RESERVE_EXCEPTION_REASON = "RESERVE_EXCEPTION_REASON";
     private static final String RESERVE_RETENTION_REASON = "RESERVE_RETENTION_REASON";
@@ -108,6 +119,7 @@ public class ReserveOrderController extends ExpressCommonController {
 		
 		// 是否是站长
 		model.addAttribute("isWarehouseMaster", this.isWarehouseMaster());
+        model.addAttribute("isCustomService",this.isCustomService());
 		return "express2/reserveOrder/query";
 	}
 	
@@ -263,10 +275,14 @@ public class ReserveOrderController extends ExpressCommonController {
 	 */
 	@ResponseBody
 	@RequestMapping("/exportExcel/{queryType}")
-	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") final String queryType,
+	public void exportExcel(HttpServletResponse response, @PathVariable("queryType") String queryType,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int rows,
 			String reserveOrderNo, String appointTimeStart, String appointTimeEnd, Integer cnorCity, Integer cnorRegion,
 			String cnorMobile, String acceptOrg, Long courier, String reserveOrderStatusList) throws Exception {
+
+        final boolean isFromQueryPage = StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue());
+        final boolean isFromHandleWarehousePage = StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.WAREHOUSE_HANDLE.getValue());
+
 		// 填充数据
 		OmReserveOrderModel omReserveOrderModel = this.reserveOrderService.getReserveOrderAddress(cnorCity, cnorRegion);
 		if(StringUtils.isNotBlank(reserveOrderNo)) {
@@ -289,7 +305,7 @@ public class ReserveOrderController extends ExpressCommonController {
 			omReserveOrderModel.setReserveOrderStatusList(reserveOrderStatusList);
 		} else {
 			String reserveOrderStatusStr = null;
-			if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
+			if(isFromQueryPage) {
 				if(this.isWarehouseMaster()) {
 					reserveOrderStatusStr = ReserveOrderStatusClassifyEnum.QUERY_BY_WAREHOUSE_MASTER.toString();
 				} else {
@@ -327,13 +343,30 @@ public class ReserveOrderController extends ExpressCommonController {
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "ReserveOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
-		final String[] cloumnName;
-		if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
-			cloumnName = new String[]{"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "运单号", "站点", "快递员"};
-		} else {
-			cloumnName = new String[]{"预约单号", "下单时间", "寄件人", "寄件公司", "手机", "固话", "寄件地址", "预约上门时间", "寄件人备注", "预约单状态", "原因", "站点", "快递员"};
-		}
-		ExcelUtils excelUtil = new ExcelUtils() {
+//        String[] cloumnName = null;
+        final List<String> columnNames = new ArrayList<String>();
+        columnNames.add("预约单号");
+        columnNames.add("下单时间");
+        columnNames.add("寄件人");
+        columnNames.add("寄件公司");
+        columnNames.add("手机");
+        columnNames.add("固话");
+        columnNames.add("寄件地址");
+        columnNames.add("预约上门时间");
+        columnNames.add("寄件人备注");
+        columnNames.add("预约单状态");
+        columnNames.add("原因");
+        if (isFromQueryPage) {
+            columnNames.add("运单号");
+        }
+        if (!isFromHandleWarehousePage) {
+            columnNames.add("站点");
+        }
+        columnNames.add("快递员");
+
+
+
+        ExcelUtils excelUtil = new ExcelUtils() {
 
 			@Override
 			public void fillData(Sheet sheet, CellStyle style) {
@@ -342,7 +375,7 @@ public class ReserveOrderController extends ExpressCommonController {
 				font.setFontHeightInPoints((short) 10);
 				style.setFont(font);
 				//设置列的默认值
-				for(int i = 0; i < cloumnName.length; i++) {
+				for(int i = 0; i < columnNames.size(); i++) {
 					sheet.setColumnWidth(i, 4000);
 				}
 				for (int i = 0; i < reserveOrderList.size(); i++) {
@@ -393,24 +426,26 @@ public class ReserveOrderController extends ExpressCommonController {
 					cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getReason());
-					
-					if(StringUtils.equals(queryType, ReserveOrderQueryTypeEnum.QUERY.getValue())) {
-						cell = row.createCell(colIndex++);
-						cell.setCellStyle(style);
-						cell.setCellValue(vo.getTransportNo());
-					}
-					
-					cell = row.createCell(colIndex++);
-					cell.setCellStyle(style);
-					cell.setCellValue(vo.getAcceptOrgName());
-					
-					cell = row.createCell(colIndex++);
+
+                    if (isFromQueryPage) {
+                        cell = row.createCell(colIndex++);
+                        cell.setCellStyle(style);
+                        cell.setCellValue(vo.getTransportNo());
+                    }
+
+                    if (!isFromHandleWarehousePage) {
+                        cell = row.createCell(colIndex++);
+                        cell.setCellStyle(style);
+                        cell.setCellValue(vo.getAcceptOrgName());
+                    }
+
+                    cell = row.createCell(colIndex++);
 					cell.setCellStyle(style);
 					cell.setCellValue(vo.getCourierName());
 				}
 			}
 		};
-		excelUtil.excel(response, cloumnName, sheetName, fileName);
+		excelUtil.excel(response, columnNames.toArray(new String[columnNames.size()]), sheetName, fileName);
 	}
 
     /**
@@ -496,6 +531,13 @@ public class ReserveOrderController extends ExpressCommonController {
 
         JSONObject obj = new JSONObject();
         List<OmReserveOrderModel> omReserveOrderModels = null;
+        List<String> errMsg = new ArrayList<String>();
+
+        if (!validateCloseReserveOrder(reserveOrderVos, errMsg)) {
+            buildErrorMsg(obj, errMsg);
+            return obj;
+        }
+
         if (reserveOrderVos.length > 0) {
 
             omReserveOrderModels = new ArrayList<OmReserveOrderModel>();
@@ -510,7 +552,6 @@ public class ReserveOrderController extends ExpressCommonController {
                 omReserveOrderModel.setCnorRemark(reserveOrderVo.getReason());
                 omReserveOrderModels.add(omReserveOrderModel);
             }
-            List<String> errMsg = new ArrayList<String>();
             reserveOrderService.closeReserveOrder(omReserveOrderModels, errMsg);
             buildErrorMsg(obj, errMsg);
         }
@@ -579,6 +620,25 @@ public class ReserveOrderController extends ExpressCommonController {
                         && ReserveOrderStatusEnum.HaveReciveOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
                         && ReserveOrderStatusEnum.HadAllocationStation.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
                     errMsg.add("{"+reserveOrderVo.getReserveOrderNo()+"} 只有已分配站点和揽件超区,才能退回省公司!");
+                    isPass = false;
+                    break;
+                }
+            }
+        }
+        return isPass;
+    }
+
+    private boolean validateCloseReserveOrder(ReserveOrderVo[] reserveOrderVos, List<String> errMsg) {
+        boolean isPass = true;
+
+        if (reserveOrderVos == null || reserveOrderVos.length < 1) {
+            errMsg.add("请选择至少一条预约单！");
+            isPass = false;
+        } else {
+            for (ReserveOrderVo reserveOrderVo : reserveOrderVos) {
+                if (ReserveOrderStatusEnum.HaveStationOutZone.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()
+                        && ReserveOrderStatusEnum.HadAllocationPro.getIndex().byteValue() != reserveOrderVo.getReserveOrderStatus()) {
+                    errMsg.add("{" + reserveOrderVo.getReserveOrderNo() + "} 只有站点超区和已分配省公司状态, 才能关闭!");
                     isPass = false;
                     break;
                 }
@@ -840,5 +900,83 @@ public class ReserveOrderController extends ExpressCommonController {
             }
         }
         obj.put("errorMsg", msg.toString());
+    }
+    
+    /**
+     * 根据电话号码获取预约单号
+     * @param telephone
+     * @return jsonObject
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("/getReserveOrderBySenderPhone")
+    @ResponseBody
+    public Map getReserveOrderBySenderPhone(String senderPhone,String phoneFlag) {
+        Map obj = new HashMap();
+        OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel ();
+        omReserveOrderModel.setCnorMobile(senderPhone);
+        omReserveOrderModel.setReserveOrderStatusList("20,30,70,90");
+        ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,3);
+        List<Map<String, Object>>  orderList = cwbDAO.getCwbOrderByPhone(senderPhone,phoneFlag);
+        obj.put("reserveOrderList", reserveOrder.getReserveOrderVoList());
+        obj.put("orderList", orderList);
+        return obj;
+    }
+    
+    /**
+     * 根据电话号码获取收件人信息
+     * @param telephone
+     * @return jsonObject
+     */
+    @RequestMapping("/getReserveOrderByConsignPhone")
+    @ResponseBody
+    public List<Map<String, Object>> getReserveOrderByConsignPhone(String consignPhone,String phoneFlag) {
+        List<Map<String,Object>> orderList = cwbDAO.getCwbOrderByPhone(consignPhone,phoneFlag);
+        return orderList;
+    }
+    
+    /**
+     * 调用接口获取运费
+     */
+	@RequestMapping("/getFeeByCondition")
+    @ResponseBody
+    public DeliveryInfoModel getFeeByCondition(String senderProvince,String senderCity,
+    		String consigneeProvince,String consigneeCity,String productType,String actualWeight,
+    		String goodsLongth,String goodsWidth,String goodsHeight,String payMethod) {
+    	PriceTimeQueryByNameVoModel priceTimeQueryByNameVoModel = new PriceTimeQueryByNameVoModel();
+    	DeliveryInfoServiceClient deliveryInfoService = new DeliveryInfoServiceClient();
+    	priceTimeQueryByNameVoModel.setStartingProvinceName(senderProvince);
+    	priceTimeQueryByNameVoModel.setStartingCityName(senderCity);
+    	priceTimeQueryByNameVoModel.setDestinationProvinceName(consigneeProvince);
+    	priceTimeQueryByNameVoModel.setDestinationCityName(consigneeCity);
+    	priceTimeQueryByNameVoModel.setProductCode(Integer.parseInt(productType));
+    	if(!StringUtils.isEmpty(actualWeight)){
+    		priceTimeQueryByNameVoModel.setWeight(Double.parseDouble(actualWeight));
+    	}
+    	if(!StringUtils.isEmpty(goodsLongth)){
+    		priceTimeQueryByNameVoModel.setLength(Double.parseDouble(goodsLongth));
+    	}
+    	if(!StringUtils.isEmpty(goodsWidth)){
+    		priceTimeQueryByNameVoModel.setWidth(Double.parseDouble(goodsWidth));
+    	}
+    	if(!StringUtils.isEmpty(goodsHeight)){
+    		priceTimeQueryByNameVoModel.setHeight(Double.parseDouble(goodsHeight));
+    	}
+    	priceTimeQueryByNameVoModel.setPayType(Byte.parseByte(payMethod));
+    	List<DeliveryInfoModel> deliveryInfoModel = null;
+    	//DeliveryInfoModel deliveryInfoModel = new DeliveryInfoModel();
+    	try {
+    		deliveryInfoModel = deliveryInfoService.priceTimeQueryByAreaName(priceTimeQueryByNameVoModel);
+    		/*deliveryInfoModel.setPrice(12.2);
+    		deliveryInfoModel.setCalWeight(2.2);*/
+    	} catch (OspException e) {
+			logger.error(e.getMessage(), e);
+		}
+    	if(deliveryInfoModel!=null && deliveryInfoModel.size()!=0){
+    		logger.info("运费：{} 计费重量: {}", deliveryInfoModel.get(0).getPrice(),deliveryInfoModel.get(0).getCalWeight() );
+    		return deliveryInfoModel.get(0);
+    	}else{
+    		return null;
+    	}
+    	
     }
 }

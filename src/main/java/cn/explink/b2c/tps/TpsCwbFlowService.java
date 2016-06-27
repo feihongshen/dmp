@@ -1,5 +1,6 @@
 package cn.explink.b2c.tps;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -55,7 +56,7 @@ public class TpsCwbFlowService {
 	private static final String DATE_FORMAT="yyyy-MM-dd HH:mm:ss";
 	
 	@Transactional
-	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype,long currentbranchid,String operateTime,boolean fromPage) {
+	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype,long currentbranchid,String operateTime,boolean fromPage,BigDecimal weight,BigDecimal volume) {
 		try {
 			if (flowordertype.getValue() == FlowOrderTypeEnum.RuKu.getValue()||
 				flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
@@ -123,17 +124,17 @@ public class TpsCwbFlowService {
 				//暂时不考虑外单;外单tps运单号目前放在oms数据库
 				//Set<Long> customerids= getVipshopId(cfg.getCustomerids());
 				//if(customerids!=null&&customerids.contains(co.getCustomerid())){
-					//页面扫描时要推重量体积和出仓时间，而自动化入库只推出仓时间
-					if(fromPage||sendemaildate==1){
 						TpsCwbFlowVo vo = new TpsCwbFlowVo();
 						vo.setCwb(co.getCwb());
 						vo.setFlowordertype(flowordertype.getValue());
 						vo.setScancwb(scancwb);
 						vo.setState(0);
 						vo.setSendemaildate(sendemaildate);
-						vo.setSendweight(fromPage?1:0);//自动化的不回传重量体积到tps
+						vo.setSendweight(1);//总是要回传重量体积到tps
+						vo.setWeight(weight==null?new BigDecimal("0.01"):weight);
+						vo.setVolume(volume==null?new BigDecimal("0.01"):volume);
 						this.tpsCwbFlowDao.save(vo);
-					}
+
 				//}
 			}
 		} catch (Exception e) {

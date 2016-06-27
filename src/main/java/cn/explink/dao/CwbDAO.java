@@ -382,6 +382,7 @@ public class CwbDAO {
 			cwbOrder.setInstationname(rs.getString("instationname"));
 			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
+			cwbOrder.setVipclub(rs.getInt("vipclub"));
 			if(isFilterUserInfo) {
 				CwbDAO.this.setValueByUser(rs, cwbOrder);
 			} else {
@@ -393,6 +394,7 @@ public class CwbDAO {
 				cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
 			}
 
+			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
 			return cwbOrder;
 		}
 	}
@@ -1175,6 +1177,7 @@ public class CwbDAO {
 			co.setConsigneemobile(rs.getString("consigneemobile"));
 			co.setConsigneephone(rs.getString("consigneephone"));
 			co.setEntrustname(rs.getString("entrustname"));
+			co.setCredateTimestamp(rs.getLong("credateTimestamp"));
 			return co;
 		}
 	}
@@ -3345,7 +3348,7 @@ public class CwbDAO {
 				+ FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()
 				+ "','"
 				+ FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()
-				+ "') and state=1 and cwb in(" + cwbs + ")";
+				+ "') and state=1 and delivery_permit=0 and cwb in(" + cwbs + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), branchid);
 	}
 
@@ -3427,7 +3430,7 @@ public class CwbDAO {
 				+ deliveryState
 				+ " and currentbranchid="
 				+ currentbranchid
-				+ " and state=1 and flowordertype="
+				+ " and state=1 and delivery_permit=0 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue()
 				+ " and cwb in("
 				+ cwbs
@@ -3446,7 +3449,7 @@ public class CwbDAO {
 				+ deliveryStates
 				+ ") and currentbranchid="
 				+ currentbranchid
-				+ " and state=1 and flowordertype="
+				+ " and state=1 and delivery_permit=0 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue()
 				+ " and cwb in("
 				+ cwbs
@@ -3527,7 +3530,7 @@ public class CwbDAO {
 				+ deliveryState
 				+ " and currentbranchid="
 				+ currentbranchid
-				+ " and state=1 and flowordertype="
+				+ " and state=1 and delivery_permit=0 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue();
 		if (cwbs.length() > 0) {
 			sql += " and cwb in(" + cwbs + ")";
@@ -3545,7 +3548,7 @@ public class CwbDAO {
 				+ deliveryStates
 				+ ") and currentbranchid="
 				+ currentbranchid
-				+ " and state=1 and flowordertype="
+				+ " and state=1 and delivery_permit=0 and flowordertype="
 				+ FlowOrderTypeEnum.YiShenHe.getValue();
 		if (cwbs.length() > 0) {
 			sql += " and cwb in(" + cwbs + ")";
@@ -4043,6 +4046,9 @@ public class CwbDAO {
 		sql = this.getCwbOrderByPageWhereSqlHuiZong(sql, customerids,
 				cwbordertypeids, orderflowcwbs, flowordertype, paywayid,
 				operationOrderResultTypes, paybackfeeIsZero);
+		
+		this.logger.info("CwbDAO.getcwborderCountHuiZong sql={}", sql);
+		
 		try {
 			return this.jdbcTemplate.queryForInt(sql);
 		} catch (DataAccessException e) {
@@ -7624,7 +7630,7 @@ public class CwbDAO {
 			String types, String cwbs) {
 		String sql = "SELECT * FROM express_ops_cwb_detail WHERE currentbranchid="
 				+ branchid
-				+ " and state=1 and cwb in ("
+				+ " and state=1 and delivery_permit=0 and cwb in ("
 				+ cwbs
 				+ ") and flowordertype in (" + types + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
@@ -9065,7 +9071,7 @@ public class CwbDAO {
 	 */
 	public ExpressCwbOrderForTakeGoodsQueryVO queryCwbExpressTakeGoodsQueryLanJianChuZhan(
 			int cwbid, Integer paymethod) {
-		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname from express_ops_cwb_detail where "
+		String sql = "select opscwbid,cwb,collectorid,receivablefee,senderid,senderprovinceid,sendercityid,recid,recprovinceid,reccityid,instationdatetime,sendcarnum,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,sendername,customerid,senderprovince,sendercity,sendercellphone,sendertelephone,consigneename,reccustomerid,cwbprovince,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp from express_ops_cwb_detail where "
 				+ "opscwbid=" + cwbid;
 		if (paymethod != null) {
 			sql += " and paymethod='" + paymethod + "'";
@@ -9689,6 +9695,36 @@ public class CwbDAO {
 		}
 	}
 	
+	public void updateCwbDeliveryPermit(String cwb) {
+		String sql = "update express_ops_cwb_detail set delivery_permit=1 where cwb=? and state=1";
+		int count = this.jdbcTemplate.update(sql, cwb);
+		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb , count});
+	}
+	
+	public void updateCwbDeliveryPermitByPeiSong(String cwb) {
+		String sql = "update express_ops_cwb_detail set delivery_permit=1 where cwb like '"+cwb+"-T_' and state=1";
+		int count = this.jdbcTemplate.update(sql);
+		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb , count});
+	}
+	
+	public String queryRelatedShangMenTuiCwb (String cwb ) {
+		try {
+			return this.jdbcTemplate.queryForObject("SELECT cwb from express_ops_cwb_detail where cwb like '"+ cwb + "-T_'  and state=1 limit 0,1", String.class );
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+	
+	public List<CwbOrder> queryRelatedShangMenTuiCwbList(String cwb) {
+		try {
+			return this.jdbcTemplate.query(
+					"SELECT * from express_ops_cwb_detail where cwb like '"
+							+ cwb + "-T_' and state=1 LIMIT 0,10  ",
+					new CwbMapper());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 	/**查询失效订单
 	 * 2016-05-25
 	 * @param cwb
@@ -9698,12 +9734,12 @@ public class CwbDAO {
 	 */
 	public List<CwbOrder> selectObsoleteCwbOrderList(String cwb,String cwbordertypeids, String beginupdatetime, String endupdatetime,
 			String beginemaildate, String endemaildate, long...page) { 
-		StringBuilder sql = new StringBuilder("select a.cwb, a.transcwb, a.cwbordertypeid, ifnull(a.emaildate,'') as emaildate, a.sendcarnum, a.customerid, "
+		StringBuilder sql = new StringBuilder("select distinct a.cwb, a.transcwb, a.cwbordertypeid, ifnull(max(a.emaildate),'') as emaildate, a.sendcarnum, a.customerid, "
 				+ " a.cwbstate, a.flowordertype, a.deliverystate, b.cretime as printtime, b.userid as deliverid "
 				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
 
 		if (!StringUtil.isEmpty( cwb) ) {
-			sql.append( " and a.cwb=" + cwb);
+			sql.append( " and a.cwb='" + cwb +"'");
 		}
 		if (!StringUtil.isEmpty(cwbordertypeids)){
 			sql.append( " and a.cwbordertypeid in(" + cwbordertypeids +") ");
@@ -9720,7 +9756,7 @@ public class CwbDAO {
 						+ "' and a.emaildate<='"
 						+ endemaildate +"'" );
 		}
-		sql.append(" order by a.emaildate limit ?,?");
+		sql.append(" group by a.cwb order by a.emaildate limit ?,?");
 		long pageFrom = page[0]-1;
 		long pageSize = page.length>1?page[1]:10;
 		return this.jdbcTemplate.query(sql.toString(), new ObsoleteOrderMapper(), 
@@ -9735,11 +9771,11 @@ public class CwbDAO {
 	 */
 	public long selectObsoleteCwbOrderListCount(String cwb,String cwbordertypeids, String beginupdatetime, String endupdatetime,
 			String beginemaildate, String endemaildate ) { 
-		StringBuilder sql = new StringBuilder("select count(1) "
+		StringBuilder sql = new StringBuilder("select count(distinct a.cwb) "
 				+ " from express_ops_cwb_detail a, edit_shixiao b WHERE a.cwb=b.cwb and a.state=0 ");
 
 		if (!StringUtil.isEmpty( cwb) ) {
-			sql.append( " and a.cwb=" + cwb);
+			sql.append( " and a.cwb='" + cwb +"'");
 		}
 		if (!StringUtil.isEmpty(cwbordertypeids)){
 			sql.append( " and a.cwbordertypeid in(" + cwbordertypeids +") ");
@@ -9772,5 +9808,34 @@ public class CwbDAO {
 		}
 		String sql = "update express_ops_cwb_detail set emaildate = ? where cwb = ? and state=1";
 		return this.jdbcTemplate.update(sql, emaildate,cwb);
+	}
+
+	public List<Map<String, Object>> getCwbOrderByPhone(String phone, String flag) {
+		StringBuffer sql= new StringBuffer("");
+		new StringBuffer("");
+		if(flag.equals("1") || flag.equals("2")){
+			sql.append("SELECT DISTINCT sendername,senderprovince,sendercity,sendercounty,senderstreet,senderaddress,senderprovinceid,sendercityid,sendercountyid,senderstreetid from express_ops_cwb_detail where state=1 ");
+			if(flag.equals("1")){//根据寄件人手机号
+				sql.append(" and sendercellphone='"+phone+"' ");
+			}else if(flag.equals("2")){//根据寄件人固话
+				sql.append(" and sendertelephone='"+phone+"' ");
+			}
+			sql.append(" and cwbordertypeid=6 limit 0,3");
+		}else if(flag.equals("3") || flag.equals("4")){
+			sql.append("SELECT DISTINCT consigneename,cwbprovince,cwbcity,cwbcounty,recstreet,consigneeaddress,recprovinceid,reccityid,reccountyid,recstreetid from express_ops_cwb_detail where state=1 ");
+			if(flag.equals("3")){//根据收件人手机号
+				sql.append(" and consigneemobile='"+phone+"' ");
+			}else if(flag.equals("4")){//根据收件人固话
+				sql.append(" and consigneephone='"+phone+"' ");
+			}
+			sql.append(" and cwbordertypeid=6 limit 0,3");
+		}
+		
+		return this.jdbcTemplate.queryForList(sql.toString());
+	}
+	
+	public void updateBatchNo(String cwb, String batchNo,String attemperNo,String attemperTime) {
+		this.jdbcTemplate.update(
+				"update express_ops_cwb_detail set remark1=?,remark3=?,remark4=? where cwb=? and state = 1 ",batchNo,attemperNo,attemperTime,cwb);		
 	}
 }

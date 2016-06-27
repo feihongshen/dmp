@@ -1,0 +1,1 @@
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('expressOrderTransferType','1', '快递定时器转业务类型逗号隔开');

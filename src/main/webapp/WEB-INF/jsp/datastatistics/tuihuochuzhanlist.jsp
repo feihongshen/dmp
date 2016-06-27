@@ -117,7 +117,7 @@ function clearSelect(){
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="height:100px">
 	<tr>
 		<td align="left">
-			出库时间<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
+			站点退货出站时间<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1"/>
 			到
 				<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1"/>
 			

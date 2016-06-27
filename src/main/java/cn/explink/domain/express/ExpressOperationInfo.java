@@ -5,7 +5,7 @@ import java.util.Map;
 
 import cn.explink.enumutil.express.ExpressOperationEnum;
 
-import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
 import com.pjbest.deliveryorder.dcpackage.service.PjDcPackageModel;
 import com.pjbest.deliveryorder.dcpackage.service.PjUnPackRequest;
 import com.pjbest.deliveryorder.service.PjSaleOrderFeedbackRequest;
@@ -29,7 +29,7 @@ public class ExpressOperationInfo {
 	/**
 	 * 创建运单接口
 	 */
-	private List<PjDeliverOrder4DMPRequest> requestlist;
+	private List<PjDeliveryOrderRequest> requestlist;
 	/**
 	 * 运单状态反馈结果 -------LX
 	 */
@@ -109,11 +109,11 @@ public class ExpressOperationInfo {
 		this.reserveOrderNo = reserveOrderNo;
 	}
 
-	public List<PjDeliverOrder4DMPRequest> getRequestlist() {
+	public List<PjDeliveryOrderRequest> getRequestlist() {
 		return requestlist;
 	}
 
-	public void setRequestlist(List<PjDeliverOrder4DMPRequest> requestlist) {
+	public void setRequestlist(List<PjDeliveryOrderRequest> requestlist) {
 		this.requestlist = requestlist;
 	}
 

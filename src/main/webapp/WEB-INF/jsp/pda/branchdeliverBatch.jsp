@@ -48,7 +48,39 @@ $(function(){
 		$(".tabbox li").eq(index).show().siblings().hide();
 	});
 	
-})
+	$("input[name='selectAll']").click(function() {
+		var $this = $(this);
+		var $li = $this.parents("li:first");
+		if($this.is(":checked")) {
+			$li.find("input[name='selectCwb']").attr("checked", true);
+		} else {
+			$li.find("input[name='selectCwb']").attr("checked", false);
+		}
+		copySelectCwb($li.find("input[name='selectCwb']:checked"));
+	});
+	
+	$("input[name='selectCwb']").click(function() {
+		var $this = $(this);
+		var $li = $this.parents("li:first");
+		if($this.is(":checked")) {
+			var unSelectLen = $li.find("input[name='selectCwb']").not(":checked").length;
+			if(unSelectLen == 0) {
+				$li.find("input[name='selectAll']").attr("checked", true);
+			}
+		} else {
+			$li.find("input[name='selectAll']").attr("checked", false);
+		}
+		copySelectCwb($li.find("input[name='selectCwb']:checked"));
+	});
+});
+
+function copySelectCwb($selectCwb) {
+	var cwbArray = new Array();
+	$selectCwb.each(function() {
+		cwbArray.push($(this).val());
+	});
+	$("#cwbs").val(cwbArray.join("\r\n"));
+}
 $(function(){
 	getweilingdata($("#deliverid").val());
 	$("#cwbs").focus();
@@ -295,8 +327,8 @@ function tohome(){
 
 	<div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/branchdeliverdetail" >逐单操作</a></li>		
-			<li><a href="#" class="light" >批量操作</a></li>
+			<li><a href="<%=request.getContextPath()%>/PDA/branchdeliverdetail" >逐单操作</a></li>	
+			<li><a href="#" class="light" >批量操作</a></li>	
 		</ul>
 	</div>
  
@@ -368,6 +400,7 @@ function tohome(){
 								<table width="100%" border="0" cellspacing="0" cellpadding="2"
 									class="table_5">
 									<tr>
+										<td width="30" align="center"><input name="selectAll" type="checkbox"/></td>
 										<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 										<td width="140" align="center" bgcolor="#f1f1f1">到货时间</td>
@@ -389,6 +422,7 @@ function tohome(){
 										class="table_2">
 										<%if(todayweilinghuolist!=null&&todayweilinghuolist.size()>0)for(CwbDetailView co : todayweilinghuolist){ %>
 										<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" deliverid="<%=co.getDeliverid()%>">
+											<td width="30" align="center"><input name="selectCwb" type="checkbox" value="<%=co.getCwb() %>"/></td>
 											<td width="120" align="center"><%=co.getCwb() %></td>
 											<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 											<td width="140"><%=co.getInSitetime() %></td>
@@ -434,6 +468,7 @@ function tohome(){
 								<table width="100%" border="0" cellspacing="0" cellpadding="2"
 									class="table_5">
 									<tr>
+										<td width="30" align="center"><input name="selectAll" type="checkbox"/></td>
 										<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 										<td width="140" align="center" bgcolor="#f1f1f1">到货时间</td>
@@ -455,6 +490,7 @@ function tohome(){
 										class="table_2">
 										<%if(historyweilinghuolist!=null&&historyweilinghuolist.size()>0)for(CwbDetailView co : historyweilinghuolist){ %>
 										<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" deliverid="<%=co.getDeliverid()%>">
+											<td width="30" align="center"><input name="selectCwb" type="checkbox" value="<%=co.getCwb() %>"/></td>
 											<td width="120" align="center"><%=co.getCwb() %></td>
 											<td width="100" align="center"><%for(Customer c:cList){if(c.getCustomerid()==co.getCustomerid()){out.print(c.getCustomername());break;}} %></td>
 											<td width="140"><%=co.getInSitetime() %></td>

@@ -1,5 +1,6 @@
 package cn.explink.b2c.auto.order.service;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -211,8 +212,10 @@ public class AutoDispatchStatusService {
 			return resultMap;
 		}
 
+		AutoPickStatusVo currentVo=null;
 		for(AutoPickStatusMsgVo msgVo:msgVoList){
 			AutoPickStatusVo vo=msgVo.getAutoPickStatusVo();
+			currentVo=vo;
 			try {
 				if(OPERATE_TYPE_IN.equals(vo.getOperate_type())){
 					autoInWarehouseService.autoInWarehouse(vo,user);
@@ -237,7 +240,13 @@ public class AutoDispatchStatusService {
 					//出仓时间是无论入库正常或异常都要保存;AutoWaitException是等待订单或运单导入
 					if (OPERATE_TYPE_IN.equals(vo.getOperate_type())&& !(e instanceof AutoWaitException)) {
 						CwbOrder co = this.cwbDAO.getCwbByCwb(vo.getOrder_sn());
-						this.tpsCwbFlowService.save(co, vo.getBox_no(), FlowOrderTypeEnum.RuKu,user.getBranchid(), vo.getOperate_time(),false);
+						BigDecimal weight=null;
+						BigDecimal volume=null;
+						if(currentVo!=null){
+							weight=currentVo.getOriginal_weight()==null||currentVo.getOriginal_weight().trim().length()<1?null:new BigDecimal(currentVo.getOriginal_weight());
+							volume=currentVo.getOriginal_volume()==null||currentVo.getOriginal_volume().trim().length()<1?null:new BigDecimal(currentVo.getOriginal_volume());
+						}
+						this.tpsCwbFlowService.save(co, vo.getBox_no(), FlowOrderTypeEnum.RuKu,user.getBranchid(), vo.getOperate_time(),false,weight,volume);
 						logger.info("模拟入库异常时保存了出仓时间,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no());
 					} 
 				} catch (Exception e2) {

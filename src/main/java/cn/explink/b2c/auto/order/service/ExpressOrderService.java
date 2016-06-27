@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 import cn.explink.b2c.auto.order.dao.ExpressOrderDao;
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
@@ -53,6 +54,9 @@ public class ExpressOrderService {
 	@Autowired
 	UserDAO userDAO;
 	
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
+	
 	/**
 	 * 根据 tpsTranId查询临时表，
 	 * @param tpsTranId
@@ -87,7 +91,12 @@ public class ExpressOrderService {
 	 * 转业务 
 	 */
 	public void expressOrderTransfer(){
-		List<ExpressDetailTemp> expressDetailTempList = expressOrderDao.getExpressDetailTempListNotOver(1);
+	    String provinceType = systemInstallDAO.getValueForInstall("expressOrderTransferType");
+	    if(provinceType == null){
+	    	provinceType = "1";
+	    }
+		
+		List<ExpressDetailTemp> expressDetailTempList = expressOrderDao.getExpressDetailTempListNotOver(provinceType);
 		if (CollectionUtils.isEmpty(expressDetailTempList)) {
 			logger.info("无快递订单需要转业务");
 			return;

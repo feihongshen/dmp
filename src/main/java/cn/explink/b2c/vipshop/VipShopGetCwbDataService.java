@@ -33,9 +33,11 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderDTO;
+import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
@@ -81,7 +83,8 @@ public class VipShopGetCwbDataService {
 	OrderGoodsDAO orderGoodsDAO;
 	@Autowired
 	UserDAO userDAO;
-	
+	@Autowired
+	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
 	@Autowired
 	CwbOrderService cwbOrderService;
 	@Autowired
@@ -94,6 +97,8 @@ public class VipShopGetCwbDataService {
 	SystemInstallDAO systemInstallDAO;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
 
 	private static Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -147,7 +152,12 @@ public class VipShopGetCwbDataService {
 		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
 		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
 		vipshop.setDaysno(Integer.parseInt(daysno));*/
-		
+		//MQ接口改造，新增字段
+		vipshop.setIsGetExpressFlag((request.getParameter("isGetExpressFlag")==null||request.getParameter("isGetExpressFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetExpressFlag")));
+		vipshop.setIsGetOXOFlag((request.getParameter("isGetOXOFlag")==null||request.getParameter("isGetOXOFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetOXOFlag")));
+		vipshop.setIsGetPeisongFlag((request.getParameter("isGetPeisongFlag")==null||request.getParameter("isGetPeisongFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetPeisongFlag")));
+		vipshop.setIsGetShangmenhuanFlag((request.getParameter("isGetShangmenhuanFlag")==null||request.getParameter("isGetShangmenhuanFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetShangmenhuanFlag")));
+		vipshop.setIsGetShangmentuiFlag((request.getParameter("isGetShangmentuiFlag")==null||request.getParameter("isGetShangmentuiFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetShangmentuiFlag")));
 		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
 		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
@@ -157,6 +167,14 @@ public class VipShopGetCwbDataService {
 
 		JSONObject jsonObj = JSONObject.fromObject(vipshop);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
+		
+		//承运商编码重复的接口配置不允许保存
+		JointEntity jointEntityByShipper = this.jiontDAO.getJointEntityByShipperNo(request.getParameter("shipper_no"),joint_num);
+		if(jointEntityByShipper!=null){
+			B2cEnum b2cEnmun = B2cEnum.getEnumByKey(jointEntityByShipper.getJoint_num());
+			throw new RuntimeException("该承运商已在【" + b2cEnmun.getText() + "】接口中设置对接");
+		}
+		
 		if (jointEntity == null) {
 			jointEntity = new JointEntity();
 			jointEntity.setJoint_num(joint_num);
@@ -980,7 +998,7 @@ public class VipShopGetCwbDataService {
 			
 			//Added by leoliao at 2016-03-21 去掉重复
 			filterRepeatCwbs(paraList, order_sn);
-			
+			logger.info("执行edit,{}", order_sn);
 			return getSeq(seq_arrs, seq);
 		}
 		// 订单取消
@@ -990,13 +1008,18 @@ public class VipShopGetCwbDataService {
 				this.cwbDAO.dataLoseByCwb(order_sn);
 				orderGoodsDAO.loseOrderGoods(order_sn);
 				cwbOrderService.datalose_vipshop(order_sn);
+				// 使归班反馈的记录失效
+				deliveryStateDAO.inactiveDeliveryStateByCwb(order_sn);
+				// add by bruce shangguan 20160608  报障编号:1729 ,揽退成功之后失效的订单在运费交款存在
+				this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(order_sn) ;
+				// end 20160608  报障编号:1729
 			}else{ //拦截
 				//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 				cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);
 			}
 			
 			filterRepeatCwbs(paraList, order_sn);
-		
+			logger.info("执行cancel,{}", order_sn);
 			return getSeq(seq_arrs, seq);
 		}
 		

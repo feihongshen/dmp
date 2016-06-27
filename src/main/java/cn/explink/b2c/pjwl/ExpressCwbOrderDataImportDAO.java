@@ -358,9 +358,9 @@ public class ExpressCwbOrderDataImportDAO {
 				ps.setBigDecimal(++i, cwbOrderDTO.getAssuranceFee());
 
 				ps.setLong(++i, cwbOrderDTO.getPayment());
-				ps.setInt(++i, cwbOrderDTO.getCargoLength().intValue());
-				ps.setInt(++i, cwbOrderDTO.getCargoWidth().intValue());
-				ps.setInt(++i, cwbOrderDTO.getCargoHeight().intValue());
+				ps.setBigDecimal(++i, cwbOrderDTO.getCargoLength());// 长
+				ps.setBigDecimal(++i, cwbOrderDTO.getCargoWidth());// 宽
+				ps.setBigDecimal(++i, cwbOrderDTO.getCargoHeight());// 高
 
 				ps.setLong(++i, CwbOrderTypeIdEnum.Express.getValue());
 				ps.setInt(++i, FlowOrderTypeEnum.DaoRuShuJu.getValue());
@@ -402,6 +402,17 @@ public class ExpressCwbOrderDataImportDAO {
 			this.jdbcTemplate.update(sql.toString(), tpsTransId);
 		} catch (DataAccessException e) {
 			this.logger.error("修改运单号临时表数据 is_hand_over失败！transOrderId=" + tpsTransId, e);
+		}
+	}
+	
+	//根据快递单号查询图片url
+	public String getExpressImageById(String transport_no) {
+		try {
+			return this.jdbcTemplate
+					.queryForObject(
+							"SELECT express_image from express_ops_cwb_exprss_detail_temp where transport_no=? limit 0,1",String.class,transport_no);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
 		}
 	}
 }

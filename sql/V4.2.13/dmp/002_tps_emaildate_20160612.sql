@@ -11,3 +11,11 @@ CREATE TABLE `express_ops_tps_flow_tmp_mps` (
   `transcwb` varchar(100) COLLATE utf8_bin NOT NULL COMMENT '运单号',
   KEY `tps_flow_tmp_mps_cwb_idx` (`cwb`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+ALTER TABLE `express_ops_tps_flow_tmp` 
+ADD COLUMN `weight` decimal(18,3) DEFAULT '0.01' NULL COMMENT '重量',
+ADD COLUMN `volume` decimal(19,4) DEFAULT '0.01' NULL COMMENT '体积';
+
+ALTER TABLE `express_ops_tps_flow_tmp_sent` 
+ADD COLUMN `weight` decimal(18,3) DEFAULT '0.01' NULL COMMENT '重量',
+ADD COLUMN `volume` decimal(19,4) DEFAULT '0.01' NULL COMMENT '体积';

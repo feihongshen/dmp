@@ -27,7 +27,7 @@
 					<td>
 						<input id="reserveOrderNo" name="reserveOrderNo" type ="text" style="width:140px;"/>
 					</td>
-					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">预约时间：</td>
+					<td style="border: 0px; text-align: right; vertical-align: middle;width:65px;">下单时间：</td>
 	                    <td colspan="3">
 							<input type ="text" name ="appointTimeStart" id="appointTimeStart"  value="" readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'appointTimeEnd\')}'})"/>
 							至
@@ -82,7 +82,7 @@
 		    	<div class="btn btn-default" onclick="doSearch();" style="margin-right:5px;" id= "searchData"><i class="icon-search"></i>查询</div>
 		    	<div class="btn btn-default" id="editReserveOrderPanelBtn" style="margin-right:5px;"><i class="icon-plus"></i>修改</div>
 		    	<div class="btn btn-default" id="deleteReserveOrderBtn" style="margin-right:5px;"><i class="icon-remove"></i>关闭</div>
-		    	<div class="btn btn-default" handleType="handle" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回总部</div>
+		    	<div class="btn btn-default" handleType="handle" id="returnToCentralBtn" style="margin-right:5px;"><i class="icon-arrow-up"></i>退回</div>
 		    	<div class="btn btn-default" id="distributeBranchBtn" style="margin-right:5px;"><i class="icon-eye-open"></i>分配站点</div>
 		    	<div class="btn btn-default" onclick="exportExcel();" style="margin-left:5px;"><i class="icon-download-alt"></i>导出</div>
                                 </div>
@@ -113,7 +113,7 @@
         </div>
     </div>
 </div>
-<div id="dialog3" title="退回总部" style="display:none;">
+<div id="dialog3" title="退回" style="display:none;">
     <div style="margin-top: 20px; margin-left:10px;margin-right:10px;">
         <table>
             <tr>

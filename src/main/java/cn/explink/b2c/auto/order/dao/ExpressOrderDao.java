@@ -21,15 +21,19 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
+import cn.explink.b2c.auto.order.util.MqOrderBusinessUtil;
+import cn.explink.dao.express.CityDAO;
+import cn.explink.dao.express.CountyDAO;
+import cn.explink.dao.express.ProvinceDAO;
+import cn.explink.dao.express.TownDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
-import cn.explink.enumutil.EmailFinishFlagEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.YesOrNoStateEnum;
 import cn.explink.util.DateTimeUtil;
 
@@ -44,6 +48,15 @@ public class ExpressOrderDao {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	private ProvinceDAO provinceDAO;
+	@Autowired
+	private CityDAO cityDAO;
+	@Autowired
+    private CountyDAO countyDAO;	
+	@Autowired
+	private TownDAO townDAO;
 
 	private Logger logger = LoggerFactory.getLogger(ExpressOrderDao.class);
 
@@ -173,22 +186,22 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getAcceptDept());
 
 				ps.setString(++i, expressDetailTemp.getAcceptOperator());
-				ps.setString(++i, expressDetailTemp.getCnorProv());
-				ps.setString(++i, expressDetailTemp.getCnorCity());
-				ps.setString(++i, expressDetailTemp.getCnorRegion());
+				ps.setString(++i, expressDetailTemp.getCnorProv());// 寄件省
+				ps.setString(++i, expressDetailTemp.getCnorCity());// 市
+				ps.setString(++i, expressDetailTemp.getCnorRegion());// 区
 
-				ps.setString(++i, expressDetailTemp.getCnorTown());
+				ps.setString(++i, expressDetailTemp.getCnorTown());// 街道
 				ps.setString(++i, expressDetailTemp.getCnorAddr());
 				ps.setString(++i, expressDetailTemp.getCnorName());
 				ps.setString(++i, expressDetailTemp.getCnorMobile());
 
 				ps.setString(++i, expressDetailTemp.getCnorTel());
 				ps.setString(++i, expressDetailTemp.getCnorRemark());
-				ps.setString(++i, expressDetailTemp.getCneeProv());
-				ps.setString(++i, expressDetailTemp.getCneeCity());
+				ps.setString(++i, expressDetailTemp.getCneeProv());// 收件省
+				ps.setString(++i, expressDetailTemp.getCneeCity());// 收件市
 
-				ps.setString(++i, expressDetailTemp.getCneeRegion());
-				ps.setString(++i, expressDetailTemp.getCneeTown());
+				ps.setString(++i, expressDetailTemp.getCneeRegion());// 收件区
+				ps.setString(++i, expressDetailTemp.getCneeTown());// 街道
 				ps.setString(++i, expressDetailTemp.getCneeAddr());
 				ps.setString(++i, expressDetailTemp.getCneeName());
 
@@ -230,7 +243,6 @@ public class ExpressOrderDao {
 				ps.setBigDecimal(++i, expressDetailTemp.getPrice());
 				ps.setString(++i, expressDetailTemp.getUnit());
 				ps.setString(++i, expressDetailTemp.getTpsTransId());
-				//				ps.setDate(++i, new Date(System.currentTimeMillis()));
 				ps.setTimestamp(++i, new Timestamp(System.currentTimeMillis()));
 
 				ps.setInt(++i, YesOrNoStateEnum.No.getValue());
@@ -255,9 +267,9 @@ public class ExpressOrderDao {
 	 * @param provinceType 0、派件省，1、揽件省
 	 * @return
 	 */
-	public List<ExpressDetailTemp> getExpressDetailTempListNotOver(int provinceType) {
+	public List<ExpressDetailTemp> getExpressDetailTempListNotOver(String provinceType) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov=? order by create_time limit 0,2000 ");
+		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov in (?) order by create_time limit 0,2000 ");
 		List<ExpressDetailTemp> transOrderList = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper(), provinceType);
 		return transOrderList;
 	}
@@ -308,8 +320,9 @@ public class ExpressOrderDao {
 		sql.append(" cargovolume,cwbstate,instationid,instationname,state,");
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
 		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate ");
-		sql.append(" , cnor_corp_no,cnor_corp_name,account_id,packagefee,express_image,cnee_corp_name,express_product_type,customerid,hasinsurance,paymethod,newpaywayid)");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" , cnor_corp_no,cnor_corp_name,account_id,packagefee,express_image,cnee_corp_name,express_product_type,customerid,hasinsurance,paymethod,newpaywayid,monthsettleno");
+		sql.append(" , tpstranscwb,senderprovinceid,sendercityid,sendercountyid,senderstreetid,recprovinceid,reccityid,reccountyid,recstreetid)");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -325,11 +338,11 @@ public class ExpressOrderDao {
 				//				ps.setString(++i, cwbOrderDTO.getCustCode());
 				ps.setString(++i, user.getUserid() + "");// 小件员id
 				ps.setString(++i, user.getRealname());// 小件员名称
-				ps.setString(++i, expressDetailTemp.getCnorProv());
+				ps.setString(++i, expressDetailTemp.getCnorProv());// 寄件人省
 
-				ps.setString(++i, expressDetailTemp.getCnorCity());
-				ps.setString(++i, expressDetailTemp.getCnorRegion());
-				ps.setString(++i, expressDetailTemp.getCnorTown());
+				ps.setString(++i, expressDetailTemp.getCnorCity());// 市
+				ps.setString(++i, expressDetailTemp.getCnorRegion());// 区
+				ps.setString(++i, expressDetailTemp.getCnorTown());// 街道
 				ps.setString(++i, expressDetailTemp.getCnorMobile());
 
 				ps.setString(++i, expressDetailTemp.getCnorTel());
@@ -337,10 +350,10 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getCnorName());
 				ps.setString(++i, expressDetailTemp.getCneeName());
 
-				ps.setString(++i, expressDetailTemp.getCneeProv());
-				ps.setString(++i, expressDetailTemp.getCneeCity());
-				ps.setString(++i, expressDetailTemp.getCneeRegion());
-				ps.setString(++i, expressDetailTemp.getCneeTown());
+				ps.setString(++i, expressDetailTemp.getCneeProv());// 收件人省
+				ps.setString(++i, expressDetailTemp.getCneeCity());// 市
+				ps.setString(++i, expressDetailTemp.getCneeRegion());// 区
+				ps.setString(++i, expressDetailTemp.getCneeTown());// 街道
 
 				//如果详细地址里面已经含省+市+区，则不再加入省市区
 				String cneeProv = expressDetailTemp.getCneeProv();
@@ -382,10 +395,10 @@ public class ExpressOrderDao {
 				ps.setBigDecimal(++i, expressDetailTemp.getAssuranceValue());
 				ps.setBigDecimal(++i, expressDetailTemp.getAssuranceFee());
 
-				ps.setInt(++i, getPayTypeValue(expressDetailTemp.getPayment()));//原支付方式
-				ps.setInt(++i, expressDetailTemp.getCargoLength().intValue());
-				ps.setInt(++i, expressDetailTemp.getCargoWidth().intValue());
-				ps.setInt(++i, expressDetailTemp.getCargoHeight().intValue());
+				ps.setInt(++i, MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()));//原支付方式
+				ps.setBigDecimal(++i, expressDetailTemp.getCargoLength());// 长
+				ps.setBigDecimal(++i, expressDetailTemp.getCargoWidth());// 宽
+				ps.setBigDecimal(++i, expressDetailTemp.getCargoHeight());// 高
 
 				ps.setLong(++i, CwbOrderTypeIdEnum.Express.getValue());
 				ps.setInt(++i, FlowOrderTypeEnum.DaoRuShuJu.getValue());
@@ -399,7 +412,7 @@ public class ExpressOrderDao {
 				ps.setInt(++i, 1);
 
 				ps.setLong(++i, 0);//上一个机构id
-				ps.setLong(++i, 0);//当前机构
+				ps.setLong(++i, acceptBranch.getBranchid());//当前机构
 				ps.setLong(++i, 0);//下一站目的机构id
 				ps.setLong(++i, ((null != branch)?branch.getBranchid():0L));//配送站点ID
 				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
@@ -417,7 +430,7 @@ public class ExpressOrderDao {
 				ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
 				ps.setString(++i, expressDetailTemp.getCnorCorpNo());
 				ps.setString(++i, expressDetailTemp.getCnorCorpName());
-				ps.setString(++i, expressDetailTemp.getAccountId());
+				ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号
 				ps.setBigDecimal(++i, expressDetailTemp.getPackingFee());
 				ps.setString(++i, expressDetailTemp.getExpressImage());
 				ps.setString(++i, expressDetailTemp.getCneeCorpName());
@@ -431,7 +444,60 @@ public class ExpressOrderDao {
 				}
 				// 结算方式
 				ps.setInt(++i, expressDetailTemp.getPayType());
-				ps.setString(++i, getPayTypeValue(expressDetailTemp.getPayment()) + "");// 现在支付方式 
+				ps.setString(++i, MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()) + "");// 现在支付方式 
+				ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号
+				ps.setString(++i, expressDetailTemp.getTransportNo()); // tps运单号
+				// 需要把省市区的id带出
+				// 寄件人省市区街道id
+				AdressVO vo = provinceDAO.getProviceByName(expressDetailTemp.getCnorProv());
+				if(vo !=null){
+					ps.setInt(++i, vo.getId());
+				}else{
+					ps.setInt(++i, 0);
+				}
+				vo = cityDAO.getCityByNameAndProvice(expressDetailTemp.getCnorCity(), vo);
+				if(vo !=null){
+					ps.setInt(++i, vo.getId());
+				}else{
+					ps.setInt(++i, 0);
+				}
+				vo = countyDAO.getCountyByNameAndCity(expressDetailTemp.getCnorRegion(), vo);
+				if(vo !=null){
+					ps.setInt(++i, vo.getId());
+				}else{
+					ps.setInt(++i, 0);
+				}
+				vo = townDAO.getTownByNameAndCounty(expressDetailTemp.getCnorTown(), vo);
+				if(vo !=null){
+					ps.setInt(++i, vo.getId());
+				}else{
+					ps.setInt(++i, 0);
+				}
+				// 收寄人省市区街道id
+				vo = provinceDAO.getProviceByName(expressDetailTemp.getCneeProv());
+				if(vo !=null){
+					ps.setInt(++i, vo.getId());
+				}else{
+					ps.setInt(++i, 0);
+				}
+				vo = cityDAO.getCityByNameAndProvice(expressDetailTemp.getCneeCity(), vo);
+				if(vo !=null){
+					ps.setInt(++i, vo.getId());
+				}else{
+					ps.setInt(++i, 0);
+				}
+				vo = countyDAO.getCountyByNameAndCity(expressDetailTemp.getCneeRegion(), vo);
+				if(vo !=null){
+					ps.setInt(++i, vo.getId());
+				}else{
+					ps.setInt(++i, 0);
+				}
+				vo = townDAO.getTownByNameAndCounty(expressDetailTemp.getCneeTown(), vo);
+				if(vo !=null){
+					ps.setInt(++i, vo.getId());
+				}else{
+					ps.setInt(++i, 0);
+				}
 				return ps;
 			}
 		}, key);
@@ -448,65 +514,6 @@ public class ExpressOrderDao {
 		this.jdbcTemplate.update(sql.toString(), tpsTransId);
 	}
 	
-	
-	/**
-	 * 根据tps的支付方式，返回dmp的支付方式
-	 * @param payment
-	 * @return
-	 */
-	private int getPayTypeValue(int payment){
-		int pay = 0;
-		switch (payment) {
-		case 0:
-			pay = PaytypeEnum.Xianjin.getValue();
-			break;
-		case 1:
-			pay = PaytypeEnum.Pos.getValue();
-			break;
-		case 2:
-			pay = PaytypeEnum.CodPos.getValue();
-			break;
-		case 3:
-			pay = PaytypeEnum.CodPos.getValue();
-			break;
-		case 4:
-			pay = PaytypeEnum.CodPos.getValue();
-			break;
-		case 5:
-			pay = PaytypeEnum.Pos.getValue();
-			break;
-		case 6:
-			pay = PaytypeEnum.Pos.getValue();
-			break;
-		case 7:
-			pay = PaytypeEnum.Pos.getValue();
-			break;
-		case 8:
-			pay = PaytypeEnum.Pos.getValue();
-			break;
-		case 9:
-			pay = PaytypeEnum.CodPos.getValue();
-			break;
-		case 10:
-			pay = PaytypeEnum.CodPos.getValue();
-			break;
-		case 11:
-			pay = PaytypeEnum.CodPos.getValue();
-			break;
-		case 12:
-			pay = PaytypeEnum.Pos.getValue();
-			break;
-		case 13:
-			pay = PaytypeEnum.Zhipiao.getValue();
-			break;
-		case 14:
-			pay = PaytypeEnum.Qita.getValue();
-			break;
-		}
-		
-		return pay;
-	}
-
 	/**
 	 * 更新临时表中的特定字段
 	 * @param tpsTransId
@@ -515,4 +522,5 @@ public class ExpressOrderDao {
 		// TODO
 		
 	}
+	
 }
