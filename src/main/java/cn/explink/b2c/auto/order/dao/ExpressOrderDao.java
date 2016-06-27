@@ -129,6 +129,7 @@ public class ExpressOrderDao {
 			expressDetailTemp.setCneeCorpName(rs.getString("cnee_corp_name"));
 			expressDetailTemp.setExpressProductType(rs.getInt("express_product_type"));
 			expressDetailTemp.setIsAcceptProv(rs.getInt("is_accept_prov"));
+			expressDetailTemp.setReturnCredit(rs.getBigDecimal("return_credit"));
 			return expressDetailTemp;
 		}
 	}
@@ -169,8 +170,8 @@ public class ExpressOrderDao {
 		sql.append(" count,cargo_length,cargo_width,cargo_height,");
 		sql.append(" weight,volume,cust_pack_no,size_sn,");
 		sql.append(" price,unit,tps_trans_id,create_time,is_hand_over,");
-		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_product_type)");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_product_type,return_credit)");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 
@@ -256,6 +257,7 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getCneeCorpName());
 				ps.setInt(++i, expressDetailTemp.getIsAcceptProv());
 				ps.setInt(++i, expressDetailTemp.getExpressProductType());
+				ps.setBigDecimal(++i, expressDetailTemp.getReturnCredit());// 应退金额
 				return ps;
 			}
 		}, key);
@@ -346,7 +348,7 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getCnorMobile());
 
 				ps.setString(++i, expressDetailTemp.getCnorTel());
-				ps.setString(++i, expressDetailTemp.getCnorProv() + expressDetailTemp.getCnorCity() + expressDetailTemp.getCnorRegion() + expressDetailTemp.getCnorTown() + expressDetailTemp.getCnorAddr());
+				ps.setString(++i, expressDetailTemp.getCnorAddr());
 				ps.setString(++i, expressDetailTemp.getCnorName());
 				ps.setString(++i, expressDetailTemp.getCneeName());
 
@@ -356,25 +358,7 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getCneeTown());// 街道
 
 				//如果详细地址里面已经含省+市+区，则不再加入省市区
-				String cneeProv = expressDetailTemp.getCneeProv();
-				String cneeCity = expressDetailTemp.getCneeCity();
-				String cneeRegion = expressDetailTemp.getCneeRegion();
-				String cneeTown = expressDetailTemp.getCneeTown();
 				String cneeAddr = expressDetailTemp.getCneeAddr();
-				if(null != cneeAddr){
-					if(null != cneeTown && cneeAddr.indexOf(cneeTown) < 0){//从地址小的开始处理
-						cneeAddr = cneeTown + cneeAddr;
-					}
-					if(null != cneeRegion && cneeAddr.indexOf(cneeRegion) < 0){
-						cneeAddr = cneeRegion + cneeAddr;
-					}
-					if(null != cneeCity && cneeAddr.indexOf(cneeCity) < 0){
-						cneeAddr = cneeCity + cneeAddr;
-					}
-					if(null != cneeProv && cneeAddr.indexOf(cneeProv) < 0){
-						cneeAddr = cneeProv + cneeAddr;
-					}
-				}
 				
 				ps.setString(++i, cneeAddr);
 				ps.setString(++i, expressDetailTemp.getCneeMobile());
@@ -421,7 +405,7 @@ public class ExpressOrderDao {
 				ps.setBigDecimal(++i, expressDetailTemp.getCarriage());// 费用合计
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
-				ps.setBigDecimal(++i, BigDecimal.ZERO);
+				ps.setBigDecimal(++i, expressDetailTemp.getReturnCredit());// 应退金额
 				if(expressDetailTemp.getIsAcceptProv() == 1){
 					ps.setInt(++i, 0);//补录完成标识，
 				}else{
@@ -519,7 +503,7 @@ public class ExpressOrderDao {
 	 * @param tpsTransId
 	 */
 	public void updateExpressDetailTemp(ExpressDetailTemp expressDetailTemp) {
-		// TODO
+		// TODO 未有需求
 		
 	}
 	

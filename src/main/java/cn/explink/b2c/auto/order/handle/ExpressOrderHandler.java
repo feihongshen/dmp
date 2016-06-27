@@ -43,12 +43,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 	@Override
 	@Transactional
 	public void dealWith(InfDmpOrderSendVO orderSend,VipShop vipshop) {		
-		// 判断接口是否开启	
-		/*if(!systemInstallDAO.isBoolenInstall("openExpressMQInter")){
-			logger.info("ExpressOrderHandler 接口未开启");
-			return;
-		}*/		
-		if(vipshop.getIsGetExpressFlag()==1){
+		if (vipshop.getIsGetExpressFlag() == 1) {
 			// 针对快递类型的判断
 			if(!verify(orderSend)){
 				return ;
@@ -72,10 +67,12 @@ public class ExpressOrderHandler implements IOrderHandler {
 					return ;				
 				} 
 				expressOrderService.updateExpressDetailTemp(expressDetailTemp_New);
-			}else{
-				this.logger.info("TPS接口未开启接收配送单开关");
-		    	throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"TPS接口未开启接收配送单开关");
+			} else {
+				logger.info("不存在对应的cmdtype:{},订单号：{}", orderSend.getCmdType(), orderSend.getTransportNo());
 			}
+		} else {
+			this.logger.info("TPS接口未开启接收配送单开关");
+			throw new CwbException("", FlowOrderTypeEnum.DaoRuShuJu.getValue(), "TPS接口未开启接收配送单开关");
 		}
 				
 	}
@@ -178,7 +175,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 		expressDetailTemp.setWeight(new BigDecimal(orderSend.getOriginalWeight()));
 		expressDetailTemp.setVolume(new BigDecimal(orderSend.getOriginalVolume()));
 		
-		
+		expressDetailTemp.setReturnCredit(new BigDecimal(orderSend.getReturnCredit()));
 		expressDetailTemp.setTotalNum(details.size());
 		return expressDetailTemp;
 	}

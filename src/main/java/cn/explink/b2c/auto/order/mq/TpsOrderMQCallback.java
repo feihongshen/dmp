@@ -90,6 +90,11 @@ public class TpsOrderMQCallback implements IVMSCallback {
 				return;
 			};
 			JointEntity jointEntityByShipper = this.jiontDAO.getJointEntityByShipperNoForUse("\""+orderSend.getCustCode()+"\"");
+			if(jointEntityByShipper == null){
+				this.logger.info("tps订单下发接口，承运商对应的配置不存在,承运商号：{}", orderSend.getCustCode());
+				feedbackException(msg, "tps订单下发接口，承运商对应的配置不存在", orderSend.getTransportNo());
+				return;
+			}
 			vipshop = this.getVipShop(jointEntityByShipper.getJoint_num());
 			int isOpenFlag = this.jointService.getStateForJoint(jointEntityByShipper.getJoint_num());
 			if (isOpenFlag == 1) {
