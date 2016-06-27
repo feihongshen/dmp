@@ -676,26 +676,9 @@
             <version>1.16.3_03</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.3.4</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.3.2</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpmime</artifactId>
-            <version>4.2.5</version>
-        </dependency>
-		<dependency>
 			<groupId>com.vip.logistics</groupId>
-			<artifactId>vip-member-encrypt-service-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>vip-member-encrypt</artifactId>
+			<version>0.0.7-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
