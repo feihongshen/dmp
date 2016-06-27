@@ -173,7 +173,7 @@ function printOneTranscwb(transcwb){
 </div>			
 	<div class="jg_10"></div>
 	<div class="clear"></div>
-	<form action="<%=request.getContextPath()%>/tpsTranscwbPrint/printTpstranscwb" method="post" id="searchForm2">
+	<form action="<%=request.getContextPath()%>/tpsTranscwbPrint/printTpstranscwbPage" method="post" id="searchForm2">
 			<input type="hidden" name="transcwbs" id="transcwbs" value=""/>
 	</form>
 
