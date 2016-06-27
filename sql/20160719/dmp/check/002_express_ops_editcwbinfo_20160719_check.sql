@@ -1,1 +1,0 @@
-SELECT oldexceldeliverid, oldexceldeliver, newexceldeliverid, newexceldeliver FROM express_ops_editcwbinfo WHERE 1 = 2; /*没有报错*/
