@@ -34,6 +34,7 @@ Page page_obj = request.getAttribute("page_obj")==null?null:(Page)request.getAtt
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css"/>
 
 <script type="text/javascript">
+
 //全选
 function isgetallcheck(){
 	if($('input[name="isprint"]:checked').size()>0){
@@ -173,7 +174,7 @@ function printOneTranscwb(transcwb){
 </div>			
 	<div class="jg_10"></div>
 	<div class="clear"></div>
-	<form action="<%=request.getContextPath()%>/tpsTranscwbPrint/printTpstranscwb" method="post" id="searchForm2">
+	<form action="<%=request.getContextPath()%>/tpsTranscwbPrint/printTpstranscwbPage" method="post" id="searchForm2">
 			<input type="hidden" name="transcwbs" id="transcwbs" value=""/>
 	</form>
 
