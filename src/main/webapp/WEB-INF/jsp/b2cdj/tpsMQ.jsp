@@ -111,11 +111,13 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                             <input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==1){%>checked<%}%>  >开启（订单出仓时间作为标识,开启必须关闭托运模式）
                         </li>
                         
-                        </li>
-                        
                         <li><span>是否开启集包：</span>
                             <input type ="radio" id="openmpspackageflag1" name ="openmpspackageflag" value="0" <%if(vipshop.getOpenmpspackageflag()==0){%>checked<%}%>  >关闭
                             <input type ="radio" id="openmpspackageflag2" name ="openmpspackageflag" value="1" <%if(vipshop.getOpenmpspackageflag()==1){%>checked<%}%>  >开启
+                        </li>
+                        
+                        <li style="display: none;"><span>是否订单下发接口：</span>
+                            <input type ="text" id="isTpsSendFlag" name ="isTpsSendFlag" value="1"  maxlength="300">
                         </li>
                         
                         <li><span>订单导入库房：</span>
@@ -216,6 +218,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                         <li><span>是否开启集包：</span>
                             <input type ="radio" id="openmpspackageflag1" name ="openmpspackageflag" value="0" checked >关闭
                             <input type ="radio" id="openmpspackageflag2" name ="openmpspackageflag" value="1"  >开启
+                        </li>
+                        
+                        <li style="display: none;"><span>是否订单下发接口：</span>
+                            <input type ="text" id="isTpsSendFlag" name ="isTpsSendFlag" value="1" maxlength="300">
                         </li>
                         
                         <li><span>订单导入库房：</span>

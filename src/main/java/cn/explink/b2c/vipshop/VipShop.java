@@ -34,6 +34,7 @@ public class VipShop {
 	private int isGetOXOFlag;//是否接收OXO的订单数据
 	private int isGetExpressFlag;//是否接收快递单数据
 	private int isAutoInterface;//是否自动化接口
+	private int isTpsSendFlag;//是否订单下发接口
 	
 	public int getDaysno() {
 		return daysno;
@@ -270,6 +271,14 @@ public class VipShop {
 
 	public void setIsAutoInterface(int isAutoInterface) {
 		this.isAutoInterface = isAutoInterface;
+	}
+
+	public int getIsTpsSendFlag() {
+		return isTpsSendFlag;
+	}
+
+	public void setIsTpsSendFlag(int isTpsSendFlag) {
+		this.isTpsSendFlag = isTpsSendFlag;
 	}
 
 }

@@ -222,7 +222,8 @@ public class JiontDAO {
 	public JointEntity getJointEntityByShipperNo(String key, int joint_num) {
 		JointEntity jointEntity = null;
 		try {
-			String sql = "select * from express_set_joint where joint_property like '%\""+key+"\"%' and joint_num<>"+joint_num+" limit 0,1";
+			String sql = "select * from express_set_joint where joint_property like '%\""+key+"\"%' "
+					+ "and joint_property like '%\"isTpsSendFlag\":1,%' and joint_num<>"+joint_num+" limit 0,1";
 			jointEntity = jdbcTemplate.queryForObject(sql, new PosMapper());
 		} catch (Exception e) {
 			 // e.printStackTrace();

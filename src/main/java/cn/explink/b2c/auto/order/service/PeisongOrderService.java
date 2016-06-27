@@ -158,15 +158,11 @@ public class PeisongOrderService {
 				customerid = (vipshop.getLefengCustomerid()==null || vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid());
 			}
 			//发货件数
-			if(isAutoInterface==1){
-				if(is_gatherpack==1 && total_pack!=null && total_pack==0){
-					int transcwbLength = transcwb.split(",").length;
-					orderDTO.setSendcargonum(transcwbLength);
-				}else{
-					orderDTO.setSendcargonum(total_pack.toString().isEmpty() ? 1 : total_pack);
-				}
+			if(is_gatherpack==1 && total_pack!=null && total_pack==0){
+				int transcwbLength = transcwb.split(",").length;
+				orderDTO.setSendcargonum(transcwbLength);
 			}else{
-				orderDTO.setSendcargonum(total_pack==0 ? 1:total_pack);
+				orderDTO.setSendcargonum(total_pack.toString().isEmpty() ? 1 : total_pack);
 			}
 			orderDTO.setCustomercommand("送货时间要求:" + required_time + ",订单配送批次:" + order_delivery_batch + ",预约揽收时间："+go_get_return_time);
 			orderDTO.setSendcargoname("[发出商品]");
