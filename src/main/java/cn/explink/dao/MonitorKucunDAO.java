@@ -91,7 +91,7 @@ public class MonitorKucunDAO {
 //		
 //		
 		
-		StringBuffer sql = new StringBuffer("SELECT branchid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" and branchid IN("+branchids+")   GROUP BY branchid");
+		StringBuffer sql = new StringBuffer("SELECT branchid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" and branchid IN("+branchids+") and state=1  GROUP BY branchid");
 
 		System.out.println("-- 生命周期监控:\n"+sql);
 		
