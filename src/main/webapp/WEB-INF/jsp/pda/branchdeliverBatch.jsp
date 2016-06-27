@@ -603,16 +603,16 @@ function tohome(){
 								<table width="100%" border="0" cellspacing="0" cellpadding="2"
 									class="table_5">
 									<tr>
-										<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
-										<td width="140" align="center" bgcolor="#f1f1f1">到货时间</td>
-										<td width="140" align="center" bgcolor="#f1f1f1">批量处理操作时间</td>
+										<td width="120" align="center" bgcolor="#f1f1f1">到货时间</td>
+										<td width="120" align="center" bgcolor="#f1f1f1">批量处理操作时间</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="250" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="160" align="center" bgcolor="#f1f1f1">地址</td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -626,16 +626,16 @@ function tohome(){
 										<%if(objList!=null)for(JSONObject obj : objList){if(!obj.get("errorcode").equals("000000")){ %>
 											<%JSONObject cwbOrder =  obj.get("cwbOrder")==null?null:JSONObject.fromObject(obj.get("cwbOrder"));%>
 											<tr id="TR<%=obj.get("cwb") %>"  <%if(!obj.get("errorinfo").equals("无此单号")){ %> name="export" <%} %>  cwb="<%=obj.get("cwb") %>" customerid="<%=cwbOrder==null?"":cwbOrder.getString("customerid") %>"  deliverid="<%=cwbOrder==null?"":cwbOrder.getString("deliverid")%>">
-												<td width="120" align="center"><%=obj.get("cwb") %></td>
+												<td width="100" align="center"><%=obj.get("cwb") %></td>
 												<td width="100" align="center"><%=obj.getString("customername") %></td>
-												<td width="140" align="center"><%=obj.getString("inSitetime") %></td>
-												<td width="140" align="center"><%=obj.getString("createtime") %></td>
+												<td width="120" align="center"><%=obj.getString("inSitetime") %></td>
+												<td width="120" align="center"><%=obj.getString("createtime") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getString("consigneename") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getDouble("receivablefee") %></td>
 												<%if(showCustomerSign){ %>
 												<td width="100"><%=obj.get("showRemark")==null?"":obj.get("showRemark") %></td>
 											<%} %>
-												<td width="250" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
+												<td width="160" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
 												<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
 											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if ((obj.get("cwbstate")!=null&&cwb.getValue()==(Integer)obj.get("cwbstate"))) {%>

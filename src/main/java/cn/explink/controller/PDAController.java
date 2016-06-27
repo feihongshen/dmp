@@ -3959,8 +3959,8 @@ public class PDAController {
 			}
 			// 配送员
 			String deliverName = "";
-			if(cwbOrder.getDeliverid() != 0) {
-				User deliver = this.userService.getUserByUserid(cwbOrder.getDeliverid());
+			if(cwbOrder.getExceldeliverid() != 0) {
+				User deliver = this.userService.getUserByUserid(cwbOrder.getExceldeliverid());
 				if(deliver != null) {
 					deliverName = deliver.getRealname();
 				}

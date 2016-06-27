@@ -924,7 +924,7 @@ public class EditCwbController {
 			if (count == 0) {
 				this.orderAddressReviseDao
 						.createReviseAddressInfo(cwb, old.getConsigneeaddress(), old.getEmaildate(), "系统导入", old.getConsigneenameOfkf(), old.getConsigneemobileOfkf(), "", checkbranchname, old
-								.getCustomercommand(), exceldeliver);
+								.getCustomercommand(), old.getExceldeliver());
 			}
 
 			if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand)) || (!branchname

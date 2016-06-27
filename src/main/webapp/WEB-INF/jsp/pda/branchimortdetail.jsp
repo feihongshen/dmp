@@ -122,7 +122,7 @@ function submitBranchImport(pname,scancwb,driverid,requestbatchno,rk_switch,comm
 						if(data.body.cwbOrder.deliverybranchid!=0){
 							var html = "目的站：" + data.body.cwbdeliverybranchname;
 							html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-							if(data.body.cwbOrder.deliverid != 0) {
+							if(data.body.cwbOrder.exceldeliverid != 0) {
 								html += "配送员：" + data.body.deliverName;
 							} else {
 								html += "尚未匹配配送员";
