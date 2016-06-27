@@ -1414,11 +1414,18 @@ public class CwbOrderService extends BaseOrderService {
 		}
 
 		this.baleDaoHuo(co);
+		
+		//将批次信息修改的方法加上判空（和其他功能一样），防止出现批次表记录被归档了，然后退货库入库就报错---刘武强20160627
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
 		}
 
+		/*EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
+		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
+			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
+		}
+*/
 		Branch userbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
 		Branch startbranch = this.branchDAO.getBranchByBranchid(co.getStartbranchid());
 
