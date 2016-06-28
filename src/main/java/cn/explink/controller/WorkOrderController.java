@@ -41,9 +41,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.vip.logistics.memberencrypt.Decryption;
-import com.vip.logistics.memberencrypt.Encryption;
-
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CsPushSmsDao;
 import cn.explink.dao.CustomerDAO;
@@ -85,6 +82,7 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.HttpUtil;
 import cn.explink.util.Page;
 import cn.explink.util.ResourceBundleUtil;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 /**
  * 
@@ -504,7 +502,7 @@ public class WorkOrderController {
 				co.setEmaildate(c.getEmaildate());
 				co.setConsigneename(c.getConsigneename());
 				co.setConsigneeaddress(c.getConsigneeaddress());
-				co.setConsigneemobile(Decryption.decrypt(c.getConsigneemobile()));
+				co.setConsigneemobile(SecurityUtil.getInstance().decrypt(c.getConsigneemobile()));
 				co.setCwbstate(CwbStateEnum.getByValue(c.getCwbstate()).getText());
 				lco.add(co);				
 		}

@@ -28,9 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.vip.logistics.memberencrypt.Decryption;
-import com.vip.logistics.memberencrypt.Encryption;
-
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.AppearWindowDao;
@@ -77,6 +74,7 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 
 @RequestMapping("/editcwb")
@@ -808,7 +806,7 @@ public class EditCwbController {
 				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwbStr);
 				if(co!=null) {
-					co.setConsigneemobileOfkf(Decryption.decrypt(co.getConsigneemobileOfkf()));
+					co.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(co.getConsigneemobileOfkf()));
 				}
 				if (co != null) {
 					cwborderlist.add(co);
@@ -878,7 +876,7 @@ public class EditCwbController {
 		co.setConsigneename(editname);
 		co.setCustomercommand(editcommand);
 		if(!StringUtil.isEmpty(editmobile)) {
-			co.setConsigneemobile(Encryption.encrypt(editmobile));
+			co.setConsigneemobile(SecurityUtil.getInstance().encrypt(editmobile));
 		}
 		co.setConsigneeaddress(editaddress);
 		co.setCwbremark(remark);

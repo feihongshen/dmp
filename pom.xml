@@ -689,7 +689,7 @@
         <dependency>
 			<groupId>com.vip.logistics</groupId>
 			<artifactId>vip-member-encrypt</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
+			<version>0.0.8-SNAPSHOT</version>
 		</dependency>
         <dependency>
 		     <groupId>com.pjbest.psp</groupId>
