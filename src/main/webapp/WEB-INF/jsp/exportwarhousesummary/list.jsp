@@ -36,7 +36,7 @@
 
 <script type="text/javascript">
 function check(){
-	if($(".multiSelectOptions input[name='warhouseid']:checked").size()==0){
+	if($("input[name='selectItemwarhouseid']:checked ").size()==0){
 		alert("请选择库房");
 		return false;
 	}
@@ -105,7 +105,7 @@ $(function() {
         filter: true
     });
 	
-	$("input[name='warhouseid']").click(function(){//获得库房点击后的 被选择库房的值，用于删选批次，和控制
+	$("input[name='selectItemwarhouseid']").click(function(){//获得库房点击后的 被选择库房的值，用于删选批次，和控制
 		clickCustomerSelect();
 	});
 });

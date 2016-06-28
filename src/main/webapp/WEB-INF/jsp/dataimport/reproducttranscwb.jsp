@@ -71,6 +71,7 @@ function searchForm(){
 }
 $(function(){
 	$("#customerid").combobox();
+	$("div[class='combo-panel panel-body panel-body-noheader']").css({"height":"198px"});
 })
 </script>
 </head>
