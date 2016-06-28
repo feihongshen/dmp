@@ -34,6 +34,7 @@ import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.CustomWareHouseDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
@@ -92,6 +93,8 @@ public class VipShopGetCwbDataService {
 	SystemInstallDAO systemInstallDAO;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
 
 	private static Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -969,7 +972,7 @@ public class VipShopGetCwbDataService {
 			
 			//Added by leoliao at 2016-03-21 去掉重复
 			filterRepeatCwbs(paraList, order_sn);
-			
+			logger.info("执行edit,{}", order_sn);
 			return getSeq(seq_arrs, seq);
 		}
 		// 订单取消
@@ -979,6 +982,8 @@ public class VipShopGetCwbDataService {
 				this.cwbDAO.dataLoseByCwb(order_sn);
 				orderGoodsDAO.loseOrderGoods(order_sn);
 				cwbOrderService.datalose_vipshop(order_sn);
+				// 使归班反馈的记录失效
+				deliveryStateDAO.inactiveDeliveryStateByCwb(order_sn);
 				// add by bruce shangguan 20160608  报障编号:1729 ,揽退成功之后失效的订单在运费交款存在
 				this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(order_sn) ;
 				// end 20160608  报障编号:1729
@@ -988,7 +993,7 @@ public class VipShopGetCwbDataService {
 			}
 			
 			filterRepeatCwbs(paraList, order_sn);
-		
+			logger.info("执行cancel,{}", order_sn);
 			return getSeq(seq_arrs, seq);
 		}
 		

@@ -120,6 +120,8 @@
                 <ref bean="doTime_sendEMSOrder"/>
                 <ref bean="doTime_getEmsEmailNo"/>
                 <ref bean="doTime_imitateEMSTraceToDmpOpt"/>
+                <!-- 重推快递单各种操作给TPS -->
+                <ref bean="doTime_resendExpressToTps"/>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -1591,5 +1593,27 @@
          <property name="concurrent" value="false" />
      </bean>
      <!-- 执行ems轨迹模拟dmp操作定时器 结束-->
+     
+    <!-- 重推快递单各种操作给TPS -->
+	<bean id="doTime_resendExpressToTps" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+		<property name="jobDetail">
+			<ref bean="resendExpressToTpsTimmer" />
+		</property>
+		<property name="cronExpression">
+			<value>0 */20 * * * ?</value>
+		</property>
+		<property name="description" value="重推快递单各种操作给TPS(包括快递单轨迹等)"/>
+	</bean>
+	
+	<bean id="resendExpressToTpsTimmer" class="cn.explink.util.BeanInvokingJobDetailFactoryBean"
+		dependency-check="default">
+		<property name="targetBean">
+			<value>excuteTimmer</value>
+		</property>
+		<property name="targetMethod">
+			<value>resendExpressToTps</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
      
 </beans>
