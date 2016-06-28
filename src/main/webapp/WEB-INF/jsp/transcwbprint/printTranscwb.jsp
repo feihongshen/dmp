@@ -34,7 +34,10 @@ var LODOP; //声明为全局变量
 function prn1_preview(cwbs) {	
 	CreateOneFormPage();
 	CreatePrintPage(cwbs);
-	LODOP.PREVIEW();	
+	var printStatus=LODOP.PREVIEW();
+	if(printStatus>0){//打印成功
+		updatePrintStatus(cwbs);
+	}
 };
 function prn1_print(cwbs) {		
 	CreateOneFormPage();
@@ -66,19 +69,25 @@ function nowprint(){
 	var con = confirm("您确认要打印该页吗？");
 	if(con==true){
 		//发一个ajax请求更新打印状态
-		$.ajax({
+    	updatePrintStatus('<%=cwbs%>');
+	    //打印
+	    prn1_print('<%=cwbs%>');
+	    	
+	}
+}
+//更新打印状态
+function updatePrintStatus(cwbs){
+	$.ajax({
 	    type: "post",
 	    async: false, 
 	    url: "printTranscwb",
-	    data:{transcwbs:<%=cwbs%>},
+	    data:{transcwbs:cwbs},
         datatype: "json",
-	    success: function (result) {
-	    	//打印
-	    	prn1_print('<%=cwbs%>');
-	    }
+	    success: function (result) {//更新成功
+	   		}
 		});	
-	}
 }
+
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
@@ -104,7 +113,7 @@ function nowprint(){
 	<a href="javascript:prn1_preview('<%=cwbs%>');">打印预览</a>
 	<a href="javascript:nowprint();">直接打印</a>
 	<a href="javascript:prn1_printA(<%=cwbs%>);">选择打印机</a>
-	<a href="javascript:history.go(-1);">返回</a>
+	<a href="javascript:location.href='printList/1';">返回</a>
 <%} %>
 </body>
 </html>
