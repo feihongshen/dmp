@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import com.pjbest.splitting.aspect.DataSource;
@@ -91,7 +92,7 @@ public class MonitorKucunDAO {
 //		
 //		
 		
-		StringBuffer sql = new StringBuffer("SELECT branchid,COUNT(1) as dcount, SUM(receivablefee+paybackfee) as dsum FROM  `express_ops_operation_time` WHERE  "+wheresql+" and branchid IN("+branchids+") and state=1  GROUP BY branchid");
+		StringBuffer sql = new StringBuffer("SELECT ot.branchid as branchid,COUNT(1) as dcount, SUM(ot.receivablefee+ot.paybackfee) as dsum FROM  `express_ops_operation_time` ot LEFT JOIN express_ops_cwb_detail AS de ON ot.cwb = de.cwb WHERE  "+wheresql+" and ot.branchid IN("+branchids+") and de.state=1  GROUP BY branchid");
 
 		System.out.println("-- 生命周期监控:\n"+sql);
 		
