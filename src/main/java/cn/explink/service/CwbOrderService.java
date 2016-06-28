@@ -6832,7 +6832,7 @@ public class CwbOrderService extends BaseOrderService {
 			long    nextInterceptBranchId      = 0; //订单拦截的下一站(根据站点的流向配置，找到对应的退货组)
 			
 			Branch currentBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid());
-			if(currentBranch == null){
+			if(co.getCurrentbranchid() == 0 || currentBranch == null){
 				Branch startBranch = this.branchDAO.getBranchByBranchid(co.getStartbranchid());
 				if(startBranch == null){
 					//没上一站
@@ -6861,11 +6861,17 @@ public class CwbOrderService extends BaseOrderService {
 				blnNeedUpdateCurrentBranch = false;
 			}
 			
-			logger.error("订单拦截：订单(订单号={}),nextInterceptBranchId={}", co.getCwb(), nextInterceptBranchId);
+			logger.info("订单拦截：订单(订单号={}),blnNeedUpdateCurrentBranch={},nextInterceptBranchId={})", co.getCwb(), blnNeedUpdateCurrentBranch, nextInterceptBranchId);
 			
 			if(blnNeedUpdateCurrentBranch && nextInterceptBranchId != 0){
+				//修改订单下一站为退货组
 				String sql = "update express_ops_cwb_detail set nextbranchid=? where cwb=? and state=1";
 				this.jdbcTemplate.update(sql, nextInterceptBranchId, cwb);
+				
+				//修改订单反馈状态为拒收
+				this.deliveryStateDAO.updateDeliveryStateValue(cwb, DeliveryStateEnum.JuShou.getValue());
+				
+				logger.info("订单拦截：修复订单(订单号={})反馈状态为{}", co.getCwb(), DeliveryStateEnum.JuShou.getText());
 			}
 			//Modified end
 		} else if (!((co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu
@@ -9449,7 +9455,7 @@ public class CwbOrderService extends BaseOrderService {
 				}else if(temp.getCurrentbranchid() == 0 && temp.getPreviousbranchid() != 0) {
 					//Added by leoliao at 2016-06-24 当前站为0则，取上一站，然后获取其对应的退货组。订单拦截即使是出库未到站，也需要进行拦截，此时可以在站点直接进行退货出站操作！
 					Branch transPreviousBranch = this.branchDAO.getBranchByBranchid(temp.getPreviousbranchid());
-					if(transPreviousBranch != null){
+					if(temp.getPreviousbranchid() != 0 && transPreviousBranch != null){
 						List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(temp.getPreviousbranchid());// 根据站点的流向配置，找到他对应的退货组
 						if ((branchidList.size() == 0)) {
 							// 如果没有配置的退货组，则异常
