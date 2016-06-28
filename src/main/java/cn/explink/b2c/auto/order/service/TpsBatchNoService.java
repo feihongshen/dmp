@@ -20,15 +20,16 @@ public class TpsBatchNoService {
 	@Transactional
 	public void save(String cwb,TpsBatchNoDoBoxInfo boxInfo){
 		if(cwb==null||cwb.length()<1||boxInfo==null||boxInfo.getTmsBatchNo()==null||boxInfo.getTmsBatchNo().length()<1){
-			throw new RuntimeException("订单号或交接单号数据为空");
+			throw new RuntimeException("报文里订单号或交接单号数据为空");
 		}
 		
 		//mq消息并发处理时要同步
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		
 		if(co==null){
-			logger.info("batchno co not found.cwb="+cwb);
-			return;
+			String err="DMP里没找到此订单数据,订单号="+cwb;
+			logger.error(err);
+			throw new RuntimeException(err);
 		}
 		
 		//交接单号

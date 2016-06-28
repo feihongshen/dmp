@@ -42,9 +42,9 @@ public class TpsBatchNoCallback implements IVMSCallback{
 	@Qualifier("tpsBatchNoConsumer")
 	private ConsumerTemplate consumerTemplate;
 	@Autowired
-	private JointService jointService;
-	@Autowired
 	private TpsBatchNoService tsBatchNoService;
+	@Autowired
+	private AutoUserService autoUserService;
 
 	private final static String MSG_ENCODE="utf-8";
 	
@@ -57,7 +57,7 @@ public class TpsBatchNoCallback implements IVMSCallback{
         	String cwb="";
         	String transcwb="";
 	        try {
-	        	isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+	        	isOpenFlag=this.autoUserService.getAutoFlag();
 
 	        	if(isOpenFlag==1){
 		        	msg = new String(e.getPayload(), MSG_ENCODE);
@@ -71,10 +71,13 @@ public class TpsBatchNoCallback implements IVMSCallback{
 		            	if(vo.getBoxInfo()!=null){
 		            		transcwb=vo.getBoxInfo().getBoxNo();
 		            	}
+		            	
+		            	tsBatchNoService.save(cwb, vo.getBoxInfo());
+				        this.logger.info("交接单号保存成功.cwb=" + cwb+",transcwb="+transcwb); 
+		            }else{
+		            	throw new RuntimeException("解析交接单号报文数据出错");
 		            }
-		            
-		            tsBatchNoService.save(cwb, vo.getBoxInfo());
-		            this.logger.info("交接单号保存成功.cwb=" + cwb+",transcwb="+transcwb); 
+		           
 	        	}
 	        } catch (Exception ex) {
 	        	logger.error("消费交接单号信息出错,msg:"+msg,ex);

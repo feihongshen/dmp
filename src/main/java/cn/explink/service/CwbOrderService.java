@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import cn.explink.aspect.OrderFlowOperation;
+import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.b2c.tools.B2cEnum;
@@ -466,6 +467,9 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	private CwbOrderBranchInfoModificationService cwbOrderBranchInfoModificationService;
+	
+	@Autowired
+	private AutoUserService autoUserService;
 
 	@Autowired
 	private MPSCommonService mpsCommonService;
@@ -3637,7 +3641,7 @@ public class CwbOrderService extends BaseOrderService {
 	private boolean automateCheck(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum) {
 		boolean allarrive = false;
 		try {
-			int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+			int isOpenFlag = this.autoUserService.getAutoFlag();
 			if (isOpenFlag == 1) {
 				if (flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.RuKu.getValue()) {
 					allarrive = true;
