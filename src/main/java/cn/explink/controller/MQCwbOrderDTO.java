@@ -80,7 +80,6 @@ public class MQCwbOrderDTO {
 	int doType;//订单类型
 	String carrierCode;//承运商编码
 	String recstreet;//收件人街道
-	BigDecimal caramount;//货物金额
 	BigDecimal announcedvalue;//保价价值
 	long cartype;//货物类型
 	int order_source;//订单类型：是否外单
@@ -115,14 +114,6 @@ public class MQCwbOrderDTO {
 
 	public void setRecstreet(String recstreet) {
 		this.recstreet = recstreet;
-	}
-
-	public BigDecimal getCaramount() {
-		return caramount;
-	}
-
-	public void setCaramount(BigDecimal caramount) {
-		this.caramount = caramount;
 	}
 
 	public BigDecimal getAnnouncedvalue() {

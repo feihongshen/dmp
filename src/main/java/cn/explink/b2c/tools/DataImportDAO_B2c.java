@@ -806,7 +806,7 @@ public class DataImportDAO_B2c {
 				+ "cwbdelivertypeid,customerwarehouseid,cwbprovince,cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,nextbranchid,orderflowid,"
 				+ "flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,paywayid,newpaywayid,multi_shipcwb,cargovolume,"
 				+ "consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare,ismpsflag,"
-				+ "mpsallarrivedflag,vipclub,tpstranscwb,do_type,paymethod,order_source) "
+				+ "mpsallarrivedflag,vipclub,tpstranscwb,do_type,paymethod,order_source,announcedvalue) "
 						+ "values("
 				+ "?,?,?,?,?,?,?,?,?,?,"
 				+ "?,?,?,?,?,?,?,?,?,?, "
@@ -814,7 +814,7 @@ public class DataImportDAO_B2c {
 				+ "?,?,?,?,?,?,?,?,?,?, "
 				+ "?,?,?,?,?,?,?,?,?,?, "
 				+ "?,?,?,?,?,?,?,?,?,?, "
-				+ "?,?,?,?,?,? )", new PreparedStatementSetter() {
+				+ "?,?,?,?,?,?,? )", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, cwbOrderDTO.getCwb());
@@ -883,6 +883,7 @@ public class DataImportDAO_B2c {
 						ps.setInt(64, cwbOrderDTO.getDoType());//订单类型
 						ps.setInt(65, cwbOrderDTO.getPaymethod());//付款方式
 						ps.setInt(66, cwbOrderDTO.getOrder_source());//付款方式
+						ps.setFloat(67, cwbOrderDTO.getAnnouncedvalue().floatValue());//保价价值
 					}
 				});
 	}
