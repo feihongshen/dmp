@@ -104,7 +104,13 @@ public class PeisongOrderService {
 			orderDTO.setTranscwb(transcwb);//运单号
 			//调试的时候注意时间格式是否符合要求
 			String add_time = mQGetOrderDataService.toDateForm(order.getVip().getAddTime());// 出仓时间
-			orderDTO.setVipclub(Integer.parseInt(order.getVip().getVipClub()));//团购标识
+			String vipClub = order.getVip().getVipClub();
+			if(StringUtil.isEmpty(vipClub)){
+				orderDTO.setVipclub(0);//团购标识
+			}else{
+				orderDTO.setVipclub(Integer.parseInt(vipClub));//团购标识
+			}
+			
 			String order_delivery_batch = order.getVip().getOrderDeliveryBatch(); // 1（默认）-一配订单：2-二配订单
 			if ("1".equals(order_delivery_batch)) {
 				order_delivery_batch = "一配订单";

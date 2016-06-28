@@ -161,7 +161,9 @@ public class VipShopGetCwbDataService {
 		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
 		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
-		vipshop.setIsTpsSendFlag(Integer.parseInt(request.getParameter("isTpsSendFlag")));
+		if(request.getParameter("isTpsSendFlag")!=null){
+			vipshop.setIsTpsSendFlag(Integer.parseInt(request.getParameter("isTpsSendFlag")));
+		}
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
