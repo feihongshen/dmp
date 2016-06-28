@@ -432,14 +432,14 @@ public class MonitorLogController {
 				}
 			}
 			//入库
-			List<MonitorKucunSim> rukuList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," (flowordertype IN( 4,12,15,7,8,9,35) OR (flowordertype =36 AND deliverystate NOT IN(1,2,3)) ) ");
+			List<MonitorKucunSim> rukuList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," (ot.flowordertype IN( 4,12,15,7,8,9,35) OR (ot.flowordertype =36 AND ot.deliverystate NOT IN(1,2,3)) ) ");
 			if(rukuList != null && rukuList.size()>0){
 				for (MonitorKucunSim mon: rukuList) {
 					rukuMap.put(mon.getBranchid(), mon);
 				}
 			}
 			//出库
-			List<MonitorKucunSim> chukuList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," flowordertype IN( 6,14,40,27) ");
+			List<MonitorKucunSim> chukuList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," ot.flowordertype IN( 6,14,40,27) ");
 			if(chukuList != null && chukuList.size()>0){
 				for (MonitorKucunSim mon: chukuList) {
 					chukuMap.put(mon.getBranchid(), mon);
