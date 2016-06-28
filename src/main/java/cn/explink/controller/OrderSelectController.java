@@ -125,6 +125,7 @@ import cn.explink.util.DateDayUtil;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
@@ -136,8 +137,6 @@ import com.pjbest.deliveryorder.bizservice.PjDeliveryTrackInfo;
 import com.pjbest.pjorganization.bizservice.service.SbOrgModel;
 import com.pjbest.pjorganization.bizservice.service.SbOrgService;
 import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
-import com.vip.logistics.memberencrypt.Decryption;
-import com.vip.logistics.memberencrypt.Encryption;
 import com.vip.osp.core.exception.OspException;
 
 @Controller
@@ -946,8 +945,8 @@ public class OrderSelectController {
 		if ((order != null) && (order.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue())) {
 			EmbracedOrderVO embracedOrder = this.expressOrderDao.getCwbOrderByCwb(cwb);
 			embracedOrder = embracedOrder != null ? embracedOrder : new EmbracedOrderVO();
-			embracedOrder.setConsignee_cellphone(Decryption.decrypt(embracedOrder.getConsignee_cellphone()));
-			embracedOrder.setConsignee_telephone(Decryption.decrypt(embracedOrder.getConsignee_telephone()));			
+			embracedOrder.setConsignee_cellphone(SecurityUtil.getInstance().decrypt(embracedOrder.getConsignee_cellphone()));
+			embracedOrder.setConsignee_telephone(SecurityUtil.getInstance().decrypt(embracedOrder.getConsignee_telephone()));			
 			model.addAttribute("embracedOrder", embracedOrder);
 			List<Customer> senderCustomer = this.customerDAO.getCustomerByCustomerid(embracedOrder.getSender_customerid() + "");
 			List<Customer> consineerCustomer = this.customerDAO.getCustomerByCustomerid(embracedOrder.getConsignee_customerid() + "");
@@ -1059,8 +1058,8 @@ public class OrderSelectController {
 		String oldconsigneeaddress = oldAddress == null ? "" : oldAddress;
 		view.setOldconsigneeaddress(oldconsigneeaddress);
 		
-		view.setConsigneephone(Decryption.decrypt(view.getConsigneephone()));
-		view.setConsigneemobile(Decryption.decrypt(view.getConsigneemobile()));
+		view.setConsigneephone(SecurityUtil.getInstance().decrypt(view.getConsigneephone()));
+		view.setConsigneemobile(SecurityUtil.getInstance().decrypt(view.getConsigneemobile()));
 		
 		List<OrderFlow> rukuList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.RuKu.getValue(), "", "");
 		List<OrderFlow> linghuoList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), "", "");
@@ -2483,7 +2482,7 @@ public class OrderSelectController {
 			String enddate = DateDayUtil.getDateAfter(begindate, 10);
 			clist = this.cwbOrderService.getListByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb, page);
 			for(CwbOrder c : clist) {
-				c.setConsigneemobileOfkf(Decryption.decrypt(c.getConsigneemobileOfkf()));
+				c.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(c.getConsigneemobileOfkf()));
 			}
 			model.addAttribute("customerMap", this.customerDAO.getAllCustomersToMap());
 			pageparm = new Page(this.cwbOrderService.getCountByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb), page,
@@ -2535,7 +2534,7 @@ public class OrderSelectController {
 		view.setNewpaywayid(view.getNewpaywayid());
 		view.setBackreason(order.getBackreason());
 		view.setLeavedreason(order.getLeavedreason());
-		view.setConsigneemobileOfkf(Decryption.decrypt(view.getConsigneemobileOfkf()));
+		view.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(view.getConsigneemobileOfkf()));
 
 		Customer customer = this.customerDAO.getCustomerById(view.getCustomerid());
 		Branch deliverybranch = this.branchDAO.getBranchByBranchid(view.getDeliverybranchid());

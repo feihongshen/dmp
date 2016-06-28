@@ -35,8 +35,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 import org.tempuri.WmgwLocator;
 
-import com.vip.logistics.memberencrypt.Decryption;
-
 import cn.emay.sdk.test.SingletonClient;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
@@ -63,6 +61,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.SmsSendManageEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.util.ExcelUtils;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StreamingStatementCreator;
 
 @Service
@@ -192,7 +191,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 			}
 			SmsConfig smsConf = this.smsConfigDAO.getAllSmsConfig(channel);
 
-			mobileIds = Decryption.decrypt(mobileIds);
+			mobileIds = SecurityUtil.getInstance().decrypt(mobileIds);
 			ids = this.saveSendSms(recipients, mobileIds, strMsg, userid, ip, channel);
 
 			if ((mobileIds == null) || (mobileIds.trim().length() != 11)) {
@@ -385,7 +384,7 @@ public class SmsSendService implements SystemConfigChangeListner, ApplicationLis
 					if (strMsg == null) {
 						return 0;
 					}
-					mobileIds = Decryption.decrypt(mobileIds);
+					mobileIds = SecurityUtil.getInstance().decrypt(mobileIds);
 					ids = this.saveSendSms(recipients, mobileIds, strMsg, -1L, "服务器", smsConf.getChannel());
 					if ((mobileIds == null) || (mobileIds.trim().length() != 11)) {
 						this.smsManageDao.updateSendSmsState(SmsSendManageEnum.Failure.getValue(), "手机号格式不正确", ids);

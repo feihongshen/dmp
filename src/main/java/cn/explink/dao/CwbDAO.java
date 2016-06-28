@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
-import com.vip.logistics.memberencrypt.Encryption;
 
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
@@ -58,6 +57,7 @@ import cn.explink.enumutil.express.ExpressSettleWayEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 import cn.explink.util.Tools;
 
@@ -5985,7 +5985,7 @@ public class CwbDAO {
 //				w.append(" and consigneemobile = '" + consigneemobile + "'");
 				String consigneemobileEncrypted = consigneemobile;
 				try {
-					consigneemobileEncrypted = Encryption.encrypt(consigneemobile);
+					consigneemobileEncrypted = SecurityUtil.getInstance().encrypt(consigneemobile);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -8513,7 +8513,7 @@ public class CwbDAO {
 			String consigneemobile = coc.getConsigneemobile();
 			String consigneemobileEncrypted = consigneemobile;
 			try {
-				consigneemobileEncrypted = Encryption.encrypt(consigneemobile);
+				consigneemobileEncrypted = SecurityUtil.getInstance().encrypt(consigneemobile);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

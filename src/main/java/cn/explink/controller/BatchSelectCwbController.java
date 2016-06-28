@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
-import com.vip.logistics.memberencrypt.Decryption;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
@@ -78,6 +77,7 @@ import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StreamingStatementCreator;
 import net.sf.json.JSONObject;
 
@@ -447,8 +447,8 @@ public class BatchSelectCwbController {
 				cwbOrderView.setSendcarnum(c.getSendcarnum());
 				cwbOrderView.setConsigneeaddress(c.getConsigneeaddress());
 				cwbOrderView.setConsigneename(c.getConsigneename());
-				cwbOrderView.setConsigneemobile(Decryption.decrypt(c.getConsigneemobile()));
-				cwbOrderView.setConsigneephone(Decryption.decrypt(c.getConsigneephone()));
+				cwbOrderView.setConsigneemobile(SecurityUtil.getInstance().decrypt(c.getConsigneemobile()));
+				cwbOrderView.setConsigneephone(SecurityUtil.getInstance().decrypt(c.getConsigneephone()));
 				cwbOrderView.setConsigneepostcode(c.getConsigneepostcode());
 
 				cwbOrderView.setCustomername(this.getQueryCustomerName(customerList, c.getCustomerid()));// 供货商的名称
