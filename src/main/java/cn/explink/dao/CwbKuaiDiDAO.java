@@ -341,7 +341,8 @@ public class CwbKuaiDiDAO {
 				+ " from express_ops_cwb_detail as cd ";
 //		if ((timeType == 2) || (paisongbranchids.length() > 0) || (paisonguserid > 0)) {
 			sql = sql + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb";
-			sql = sql + " left join express_set_customer_info as ci on cd.customerid =ci.customerid";
+			//将反馈表和主表都加上state=1的条件，防止重复的计算同一个快递单---刘武强20160628
+			sql = sql + " left join express_set_customer_info as ci on cd.customerid =ci.customerid and ds.state=1 and cd.state=1";
 //		}
 
 

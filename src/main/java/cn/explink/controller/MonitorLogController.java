@@ -425,7 +425,7 @@ public class MonitorLogController {
 		List<MonitorKucunDTO> monitorList =  new ArrayList<MonitorKucunDTO>();
 		if(request.getParameter("isnow") != null && request.getParameter("isnow").equals("1") && branchList != null && branchList.size()>0 ){
 			//未到货
-			List<MonitorKucunSim> weidaohuoList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," flowordertype in(1,2) "," nextbranchid");
+			List<MonitorKucunSim> weidaohuoList =   monitorKucunDAO.getMonitorLogByBranchid(branchids," op.flowordertype in(1,2) "," op.nextbranchid");
 			if(weidaohuoList != null && weidaohuoList.size()>0){
 				for (MonitorKucunSim mon: weidaohuoList) {
 					weidaohuoMap.put(mon.getBranchid(), mon);
@@ -614,7 +614,7 @@ public class MonitorLogController {
 						} else {
 							cwbs1 = "'--'";
 						}
-						cwbList =   monitorKucunDAO.getMonitorLogByTypeNoPage( " flowordertype in(6,14,40,27) ", branchid,branchids);
+						cwbList =   monitorKucunDAO.getMonitorLogByTypeNoPage( " op.flowordertype in(6,14,40,27) ", branchid,branchids);
 						String cwbs2 ="";
 						if (cwbList.size() > 0) {
 							cwbs2 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
