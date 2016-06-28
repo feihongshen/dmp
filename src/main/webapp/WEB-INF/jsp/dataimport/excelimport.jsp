@@ -295,6 +295,7 @@ var file_id;
 		 $("#serviceareaidflag").combobox();
 		 $("#warehouseidflag").combobox();
 		$("div.panel.combo-p").css({"margin-top":"-78px","width":"155px"});
+		$("div[class='combo-panel panel-body panel-body-noheader']").css({"height":"198px"});
 	})
 </script>
 </head>

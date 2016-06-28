@@ -686,9 +686,9 @@ function flush(){
  		}
  	});
 }
-$(function(){
+/* $(function(){
 	$("#customerid").combobox();
-	})
+	}) */
 
 </script>
 </head>
