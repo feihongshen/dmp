@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.vip.logistics.memberencrypt.Decryption;
-
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomWareHouseDAO;
@@ -62,6 +60,7 @@ import cn.explink.service.LogToDayService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 import net.sf.json.JSONObject;
 
@@ -277,7 +276,7 @@ public class ExpressQueryController {
 			cwbKuaiDiView.setLanshoubranchname(this.dataStatisticsService.getQueryBranchName(branchList, ck.getLanshoubranchid()));
 			cwbKuaiDiView.setLanshoutime(ck.getLanshoutime());
 			cwbKuaiDiView.setConsigneename(ck.getSendconsigneename());
-			cwbKuaiDiView.setConsigneemobile(Decryption.decrypt(ck.getSendconsigneemobile()));
+			cwbKuaiDiView.setConsigneemobile(SecurityUtil.getInstance().decrypt(ck.getSendconsigneemobile()));
 			cwbKuaiDiView.setConsigneeaddress(ck.getSendconsigneeaddress());
 			cwbKuaiDiView.setAllfee(ck.getAllfee() == null ? BigDecimal.ZERO : ck.getAllfee());
 			cwbKuaiDiView.setFlowordertype(ck.getFlowordertype());
