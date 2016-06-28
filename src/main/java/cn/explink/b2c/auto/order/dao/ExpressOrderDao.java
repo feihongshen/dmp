@@ -130,6 +130,7 @@ public class ExpressOrderDao {
 			expressDetailTemp.setExpressProductType(rs.getInt("express_product_type"));
 			expressDetailTemp.setIsAcceptProv(rs.getInt("is_accept_prov"));
 			expressDetailTemp.setReturnCredit(rs.getBigDecimal("return_credit"));
+			expressDetailTemp.setOrderSource(rs.getInt("order_source"));
 			return expressDetailTemp;
 		}
 	}
@@ -170,8 +171,8 @@ public class ExpressOrderDao {
 		sql.append(" count,cargo_length,cargo_width,cargo_height,");
 		sql.append(" weight,volume,cust_pack_no,size_sn,");
 		sql.append(" price,unit,tps_trans_id,create_time,is_hand_over,");
-		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_product_type,return_credit)");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_product_type,return_credit,order_source)");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 
@@ -258,6 +259,7 @@ public class ExpressOrderDao {
 				ps.setInt(++i, expressDetailTemp.getIsAcceptProv());
 				ps.setInt(++i, expressDetailTemp.getExpressProductType());
 				ps.setBigDecimal(++i, expressDetailTemp.getReturnCredit());// 应退金额
+				ps.setInt(++i, expressDetailTemp.getOrderSource());// 订单来源
 				return ps;
 			}
 		}, key);
@@ -323,8 +325,8 @@ public class ExpressOrderDao {
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
 		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate ");
 		sql.append(" , cnor_corp_no,cnor_corp_name,account_id,packagefee,express_image,cnee_corp_name,express_product_type,customerid,hasinsurance,paymethod,newpaywayid,monthsettleno");
-		sql.append(" , tpstranscwb,senderprovinceid,sendercityid,sendercountyid,senderstreetid,recprovinceid,reccityid,reccountyid,recstreetid)");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" , tpstranscwb,senderprovinceid,sendercityid,sendercountyid,senderstreetid,recprovinceid,reccityid,reccountyid,recstreetid,order_source)");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -482,6 +484,7 @@ public class ExpressOrderDao {
 				}else{
 					ps.setInt(++i, 0);
 				}
+				ps.setInt(++i, expressDetailTemp.getOrderSource());// 订单来源
 				return ps;
 			}
 		}, key);

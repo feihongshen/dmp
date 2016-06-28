@@ -241,6 +241,8 @@ public class ExpressDetailTemp {
 	
 	private BigDecimal		returnCredit;		// 应退金额
 	
+	private int				orderSource;		// 订单来源
+	
 	public String getTpsTransId() {
 		return tpsTransId;
 	}
@@ -606,6 +608,12 @@ public class ExpressDetailTemp {
 	}
 	public void setReturnCredit(BigDecimal returnCredit) {
 		this.returnCredit = returnCredit;
+	}
+	public int getOrderSource() {
+		return orderSource;
+	}
+	public void setOrderSource(int orderSource) {
+		this.orderSource = orderSource;
 	}
 	
 }

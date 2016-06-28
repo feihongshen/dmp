@@ -232,11 +232,12 @@ public class JiontDAO {
 	}
 
 	//根据承运上编码查询有效接口设置
-	@Cacheable(value = "jointCache", key = "#key", condition = "#result ne null")
+	/*@Cacheable(value = "jointCache", key = "#key", condition = "#result ne null")*/
 	public JointEntity getJointEntityByShipperNoForUse(String key) {
 		JointEntity jointEntity = null;
 		try {
-			String sql = "select * from express_set_joint where joint_property like '%"+key+"%' and state=1 limit 0,1";
+			String sql = "select * from express_set_joint where joint_property like '%"+key+"%' "
+					+ "and joint_property like '%\"isTpsSendFlag\":1,%' and state=1 limit 0,1";
 			jointEntity = jdbcTemplate.queryForObject(sql, new PosMapper());
 		} catch (Exception e) {
 			 // e.printStackTrace();

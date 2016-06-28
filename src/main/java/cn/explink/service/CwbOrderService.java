@@ -505,7 +505,7 @@ public class CwbOrderService extends BaseOrderService {
 						+ "flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,remark1,remark2,remark3,remark4,"
 						+ "remark5,paywayid,newpaywayid,nextbranchid,tuihuoid,cargovolume,consignoraddress,multi_shipcwb,addresscodeedittype,printtime,"
 						+ "commoncwb,shouldfare,cwbstate,ismpsflag,mpsallarrivedflag,mpsoptstate,vipclub,tpstranscwb,credate,do_type,"
-						+ "paymethod,order_source) " 
+						+ "paymethod,order_source,announcedvalue) " 
 						+ "values("
 						+ "?,?,?,?,?,?,?,?,?,?," 
 						+ "?,?,?,?,?,?,?,?,?,?," 
@@ -514,7 +514,7 @@ public class CwbOrderService extends BaseOrderService {
 						+ "?,?,?,?,?,?,?,?,?,?," 
 						+ "?,?,?,?,?,?,?,?,?,?," 
 						+ "?,?,?,?,?,?,?,?,?,?,"
-						+ "?,?)", new PreparedStatementSetter() {
+						+ "?,?,?)", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 
@@ -597,6 +597,7 @@ public class CwbOrderService extends BaseOrderService {
 						ps.setInt(70, cwbOrderDTO.getDoType());
 						ps.setInt(71, cwbOrderDTO.getPaymethod());
 						ps.setInt(72, cwbOrderDTO.getOrderSource());
+						ps.setFloat(73, cwbOrderDTO.getAnnouncedvalue().floatValue());
 					}
 
 				});

@@ -77,7 +77,7 @@ public class PeisongOrderService {
 			}
 			orderDTO.setCargorealweight(original_weight);// 重量
 			orderDTO.setCargovolume(original_volume);//体积
-			orderDTO.setCaramount((null==order.getOrderSum()||"".equals(order.getOrderSum().toString())) ? BigDecimal.ZERO : new BigDecimal(order.getOrderSum()));//货物金额
+			orderDTO.setCargoamount((null==order.getOrderSum()||"".equals(order.getOrderSum().toString())) ? BigDecimal.ZERO : new BigDecimal(order.getOrderSum()));//货物金额
 			orderDTO.setReceivablefee(new BigDecimal(order.getCodAmount()));
 			orderDTO.setPaybackfee(new BigDecimal(order.getReturnCredit()));//应退金额
 			orderDTO.setShouldfare(order.getFreight()==null?BigDecimal.ZERO:new BigDecimal(order.getFreight()));//运费

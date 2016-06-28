@@ -177,6 +177,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 		
 		expressDetailTemp.setReturnCredit(new BigDecimal(orderSend.getReturnCredit()));
 		expressDetailTemp.setTotalNum(details.size());
+		expressDetailTemp.setOrderSource(orderSend.getOrderSource());
 		return expressDetailTemp;
 	}
 	

@@ -162,6 +162,9 @@ public class VipShopGetCwbDataService {
 		if(request.getParameter("isTpsSendFlag")!=null){
 			vipshop.setIsTpsSendFlag(Integer.parseInt(request.getParameter("isTpsSendFlag")));
 		}
+		if(request.getParameter("isAutoInterface")!=null){
+			vipshop.setIsAutoInterface(Integer.parseInt(request.getParameter("isAutoInterface")));
+		}
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
