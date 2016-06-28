@@ -32,6 +32,8 @@ function checkSel(){
 }
 $(function(){
 	$("#emaildate").combobox();
+	$("input[class='combo-text validatebox-text validatebox-f textbox']").css({"width":"500"});
+	$("div[class='combo-panel panel-body panel-body-noheader']").css({"height":"198px"});
 	})
 </script>
 </head>
