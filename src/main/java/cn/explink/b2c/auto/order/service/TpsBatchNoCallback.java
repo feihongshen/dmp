@@ -24,6 +24,7 @@ import cn.explink.b2c.tools.JointService;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
 import cn.explink.enumutil.AutoInterfaceEnum;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.XmlUtil;
 import net.sf.json.JSONObject;
 
@@ -142,7 +143,7 @@ public class TpsBatchNoCallback implements IVMSCallback{
 		mqe.setExchange_name(consumerTemplate.getExchangeName());//
 		mqe.setQueue_name(consumerTemplate.getQueueName());//
 		mqe.setRemark("");
-		mqe.setRouting_key("*");//
+		mqe.setRouting_key(ResourceBundleUtil.expressCarrierCode);//
 		mqe.setSystem_name("DMP");//
 		mqe.setMessage("<![CDATA["+mqe.getMessage()+"]]>");//250 length?
 		
