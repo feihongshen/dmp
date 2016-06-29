@@ -1,6 +1,9 @@
 package cn.explink.b2c.auto.order.service;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +45,8 @@ public class TpsBatchNoService {
 			if(co.getRemark1()==null||co.getRemark1().length()<1){
 				co.setRemark1(batchNo);
 			}else{
-				String orderBatchNos[]=co.getRemark1().split(",");
-				boolean exist=false;
-				for(String no:orderBatchNos){
-					if(batchNo.equals(no)){
-						exist=true;
-						break;//test
-					}
-				}
-				if(!exist){
-					co.setRemark1(co.getRemark1()+","+batchNo);
-				}
+				String remark1=makeValue(batchNo,co.getRemark1());
+				co.setRemark1(remark1);
 			}
 		}
 		
@@ -66,17 +60,8 @@ public class TpsBatchNoService {
 			if(co.getRemark3()==null||co.getRemark3().length()<1){
 				co.setRemark3(attemperNo);
 			}else{
-				String orderAttemperNos[]=co.getRemark3().split(",");
-				boolean exist=false;
-				for(String no:orderAttemperNos){
-					if(attemperNo.equals(no)){
-						exist=true;
-						break;//test
-					}
-				}
-				if(!exist){
-					co.setRemark3(co.getRemark3()+","+attemperNo);
-				}
+				String remark3=makeValue(attemperNo,co.getRemark3());
+				co.setRemark3(remark3);
 			}
 		}
 		
@@ -90,21 +75,48 @@ public class TpsBatchNoService {
 			if(co.getRemark4()==null||co.getRemark4().length()<1){
 				co.setRemark4(attemperTime);
 			}else{
-				String orderAttemperTimes[]=co.getRemark4().split(",");
-				boolean exist=false;
-				for(String time:orderAttemperTimes){
-					if(attemperTime.equals(time)){
-						exist=true;
-						break;//test
-					}
-				}
-				if(!exist){
-					co.setRemark4(co.getRemark4()+","+attemperTime);
-				}
+				String remark4=makeValue(attemperTime,co.getRemark4());
+				co.setRemark4(remark4);
 			}
 		}
 		
 		this.cwbDAO.updateBatchNo(cwb, co.getRemark1(), co.getRemark3(), co.getRemark4());
+	}
+	
+	private String makeValue(String data,String dbValue){
+		String dot=",";
+		String result="";
+		String orderBatchNos[]=null;
+		if(dbValue!=null){
+			orderBatchNos=dbValue.split(dot);
+		}
+		Set<String> set=new HashSet<String>();
+		if(orderBatchNos!=null&&orderBatchNos.length>0){
+			for(String no:orderBatchNos){
+				if(no==null||no.trim().length()<1){
+					continue;
+				}
+				set.add(no.trim());
+			}
+		}
+		if(data!=null){
+			data=data.trim();
+			if(data.length()>0){
+				set.add(data);
+			}
+		}
+
+		if(set.size()>0){
+			for(String v:set){
+				if(result.length()<1){
+					result=v;
+				}else{
+					result=result+dot+v;
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 }
