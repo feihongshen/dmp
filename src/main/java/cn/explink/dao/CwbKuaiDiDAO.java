@@ -219,15 +219,15 @@ public class CwbKuaiDiDAO {
 				w.append(" and cd.collectorid = " + lanshouuserid);
 			}
 			if (paisongbranchids.length() > 0) {
-				w.append(" and cd.deliverybranchid in(" + paisongbranchids + ") and ds.state=1 ");
+				w.append(" and cd.deliverybranchid in(" + paisongbranchids + ")");
 			}
 			if (paisonguserid > 0) {
-				w.append(" and ds.deliveryid=" + paisonguserid + " and ds.state=1 ");
+				w.append(" and ds.deliveryid=" + paisonguserid);
 			}
 
 			sql += w.toString();
 		}
-		sql = sql + " and cd.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
+		sql = sql + " and cd.state=1 and ds.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
 		return sql;
 	}
 
