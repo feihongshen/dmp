@@ -60,7 +60,7 @@ function CreatePrintPage(cwbs) {
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));
 	for(var i=0;i<cwbs.toString().split(",").length;i++){
 		var cwb = cwbs.toString().split(",")[i];
-		LODOP.ADD_PRINT_BARCODE(2,2,"5cm","3cm","128Auto",cwb);
+		LODOP.ADD_PRINT_BARCODE(2,2,"35mm","15mm","128Auto",cwb);
 		LODOP.SET_PRINT_STYLEA(0, "FontSize", 6);
 		LODOP.NewPage(); 
 	}
