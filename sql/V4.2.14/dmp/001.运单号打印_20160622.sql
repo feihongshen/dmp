@@ -1,4 +1,4 @@
-#新增express_ops_tpstranscwb表
+-- 新增express_ops_tpstranscwb表
 CREATE TABLE `express_ops_tpstranscwb` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
 	`tpstranscwb` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '品骏运单号',
@@ -11,5 +11,5 @@ CREATE TABLE `express_ops_tpstranscwb` (
 	INDEX `detail_tpstranscwb_idx` (`tpstranscwb`)
 )COLLATE='utf8_general_ci' ENGINE=InnoDB;
 
-#创建运单号打印菜单
+-- 创建运单号打印菜单
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('505070', '2', '运单号打印', '505070', 'tpsTranscwbPrint/printList/1?', '5050');

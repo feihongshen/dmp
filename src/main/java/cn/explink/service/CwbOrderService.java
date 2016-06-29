@@ -597,7 +597,7 @@ public class CwbOrderService extends BaseOrderService {
 						ps.setInt(70, cwbOrderDTO.getDoType());
 						ps.setInt(71, cwbOrderDTO.getPaymethod());
 						ps.setInt(72, cwbOrderDTO.getOrderSource());
-						ps.setFloat(73, cwbOrderDTO.getAnnouncedvalue().floatValue());
+						ps.setFloat(73, cwbOrderDTO.getAnnouncedvalue()==null ? 0 : cwbOrderDTO.getAnnouncedvalue().floatValue());
 					}
 
 				});

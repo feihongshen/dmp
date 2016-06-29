@@ -71,8 +71,8 @@ public class ExpressOrderHandler implements IOrderHandler {
 				logger.info("不存在对应的cmdtype:{},订单号：{}", orderSend.getCmdType(), orderSend.getTransportNo());
 			}
 		} else {
-			this.logger.info("TPS接口未开启接收配送单开关");
-			throw new CwbException("", FlowOrderTypeEnum.DaoRuShuJu.getValue(), "TPS接口未开启接收配送单开关");
+			this.logger.info("TPS接口未开启接收快递单开关");
+			throw new CwbException("", FlowOrderTypeEnum.DaoRuShuJu.getValue(), "TPS接口未开启接收快递单开关");
 		}
 				
 	}

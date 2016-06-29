@@ -133,7 +133,7 @@ public class TpsOrderMQCallback implements IVMSCallback {
 	private void feedbackException(String msg, String exceptionInfo, String cwb) {		
 		logger.info("tps订单下发异常:单号{},详情{}", cwb, exceptionInfo);
 		long msgid = this.autoExceptionService.createAutoExceptionMsg(msg, AutoInterfaceEnum.dingdanxiafa.getValue());
-		long detailId = this.autoExceptionService.createAutoExceptionDetail(cwb, "", "TPS自动化订单下发数据异常", AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0, "");
+		long detailId = this.autoExceptionService.createAutoExceptionDetail(cwb, "", "TPS订单下发数据异常", AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0, "");
 		AutoMQExceptionDto mqe = new AutoMQExceptionDto();
 		mqe.setBusiness_id("");
 		mqe.setException_info(exceptionInfo);

@@ -1,2 +1,0 @@
-DELETE FROM express_auto_param_config WHERE NAME='MQ_REC_TPS_BATCHNO_CHANNEL';
-DELETE FROM express_auto_param_config WHERE NAME='MQ_REC_TPS_BATCHNO_QUEUE';
