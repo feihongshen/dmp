@@ -883,7 +883,7 @@ public class DataImportDAO_B2c {
 						ps.setInt(64, cwbOrderDTO.getDoType());//订单类型
 						ps.setInt(65, cwbOrderDTO.getPaymethod());//付款方式
 						ps.setInt(66, cwbOrderDTO.getOrder_source());//付款方式
-						ps.setFloat(67, cwbOrderDTO.getAnnouncedvalue().floatValue());//保价价值
+						ps.setFloat(67, cwbOrderDTO.getAnnouncedvalue() == null ? 0 : cwbOrderDTO.getAnnouncedvalue().floatValue());//保价价值
 					}
 				});
 	}

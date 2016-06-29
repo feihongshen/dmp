@@ -1,6 +1,8 @@
 
 package cn.explink.b2c.auto.order.vo;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * 推送DMP箱明细vo
  * <p>
@@ -9,6 +11,7 @@ package cn.explink.b2c.auto.order.vo;
  * @author vince.zhou
  * @since 1.0
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InfDmpOrderSendBoxVO {
 
     private String boxNo;// 箱号

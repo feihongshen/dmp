@@ -1,6 +1,8 @@
 
 package cn.explink.b2c.auto.order.vo;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * 运单下发DMP--VIP相关字段(包括oxo，揽退，正常单)
  * <p>
@@ -9,6 +11,7 @@ package cn.explink.b2c.auto.order.vo;
  * @author vince.zhou
  * @since 1.0
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InfDmpOrderSendVIPVO {
 
     private Long addTime;// 出仓时间
