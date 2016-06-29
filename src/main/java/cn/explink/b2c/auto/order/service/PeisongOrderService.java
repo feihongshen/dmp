@@ -92,7 +92,9 @@ public class PeisongOrderService {
 			if(boxlist!=null && boxlist.size()!=0){
 				for(int i=0; i<boxlist.size(); i++){
 					transcwb += boxlist.get(i).getBoxNo() + ",";
-					order_batch_no += boxlist.get(i).getBatchNo() + ",";
+					if(!StringUtil.isEmpty(boxlist.get(i).getBatchNo())){
+						order_batch_no += boxlist.get(i).getBatchNo() + ",";
+					}
 				}
 				if (transcwb.length() > 0) {
 					transcwb = transcwb.substring(0, transcwb.length() - 1);
@@ -139,7 +141,9 @@ public class PeisongOrderService {
 			
 			orderDTO.setRemark1(order_batch_no);
 			String attemper_no = order.getVip().getAttemperNo();//托运单号
-			orderDTO.setRemark3("托运单号:" + attemper_no);
+			if(!StringUtil.isEmpty(attemper_no)){
+				orderDTO.setRemark3(attemper_no);
+			}
 			String attemper_no_create_time = mQGetOrderDataService.toDateForm(order.getVip().getAttemperNoCreateTime());
 			if ((attemper_no_create_time == null) || attemper_no_create_time.isEmpty()) {
 				attemper_no_create_time = DateTimeUtil.getNowDate() + " 00:00:00";

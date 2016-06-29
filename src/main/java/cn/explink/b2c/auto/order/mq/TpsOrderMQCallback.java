@@ -179,7 +179,7 @@ public class TpsOrderMQCallback implements IVMSCallback {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
 		String date = String.valueOf(df.format(new Date()));
 		StringBuilder sub = new StringBuilder();
-		String routingKeyStr[] = consumerTemplate.getExchangeName().split("_");
+		String routingKeyStr[] = consumerTemplate.getQueueName().split("_");
 		String routingKey = "*";
 		if(routingKeyStr.length>1){
 			routingKey = routingKeyStr[routingKeyStr.length-1];
