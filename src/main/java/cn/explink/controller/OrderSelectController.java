@@ -2482,7 +2482,9 @@ public class OrderSelectController {
 			String enddate = DateDayUtil.getDateAfter(begindate, 10);
 			clist = this.cwbOrderService.getListByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb, page);
 			for(CwbOrder c : clist) {
-				c.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(c.getConsigneemobileOfkf()));
+				String consigneemobileOfkfDecrypted = SecurityUtil.getInstance().decrypt(c.getConsigneemobileOfkf());
+				consigneemobileOfkfDecrypted = hideMoiblePhoneCode(consigneemobileOfkfDecrypted);
+				c.setConsigneemobileOfkf(consigneemobileOfkfDecrypted);
 			}
 			model.addAttribute("customerMap", this.customerDAO.getAllCustomersToMap());
 			pageparm = new Page(this.cwbOrderService.getCountByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb), page,
@@ -2502,6 +2504,18 @@ public class OrderSelectController {
 		model.addAttribute("cwbs", cwbs);
 		return "/neworderquery/left";
 
+	}
+	
+	private String hideMoiblePhoneCode(String consigneemobileOfkfDecrypted) {
+		String result = "";
+		if(consigneemobileOfkfDecrypted != null && consigneemobileOfkfDecrypted.length() > 4) {
+			int length = consigneemobileOfkfDecrypted.length();
+			result = consigneemobileOfkfDecrypted.substring(0, length - 4).replaceAll("\\d","*") 
+					+ consigneemobileOfkfDecrypted.substring(length - 4);;
+		} else {
+			result = consigneemobileOfkfDecrypted;
+		}
+		return result;
 	}
 
 	@RequestMapping("/right/{cwb}")
