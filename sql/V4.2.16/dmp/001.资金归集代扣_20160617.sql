@@ -185,21 +185,22 @@ CREATE TABLE `fn_vpal_record`(
 ) ENGINE=INNODB CHARSET=utf8;
 
 -- 新增代扣对账文件列表（fn_vpal_check_filelist）
-CREATE TABLE `fn_vpal_check_filelist`(  
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `filename` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '文件名',
-  `filepath` VARCHAR(200) NOT NULL DEFAULT '' COMMENT '文件路径',
-  `check_date` INT(11) COMMENT '对账日期yyyyMMdd',
-  `file_format` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '文件格式',
-  `created_time` DATETIME COMMENT '文件接收时间',
-  `file_size` INT(11) DEFAULT 0 COMMENT '文件大小，单位KB',
-  `user_down_time` INT(11) DEFAULT 0 COMMENT '用户下载文件次数',
-  `download_state` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '文件接收状态：0.未接收（下载）成功，1.已接收（下载）',
-  `updated_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  COMMENT '最后更新时间',
+CREATE TABLE `fn_vpal_check_filelist` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `filename` varchar(50) NOT NULL DEFAULT '' COMMENT '文件名',
+  `filepath` varchar(200) NOT NULL DEFAULT '' COMMENT '文件路径',
+  `check_date` int(11) DEFAULT NULL COMMENT '对账日期yyyyMMdd',
+  `file_format` varchar(10) NOT NULL DEFAULT '' COMMENT '文件格式',
+  `created_time` datetime DEFAULT NULL COMMENT '文件接收时间',
+  `file_size` int(11) DEFAULT '0' COMMENT '文件大小，单位KB',
+  `user_down_time` int(11) DEFAULT '0' COMMENT '用户下载文件次数',
+  `download_state` tinyint(1) NOT NULL DEFAULT '0' COMMENT '文件接收状态：0.未接收（下载）成功，1.已接收（下载）',
+  `state_desc` varchar(200) DEFAULT NULL COMMENT '下载状态描述',
+  `updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
   PRIMARY KEY (`id`),
-  INDEX `idx_check_date` (`check_date`),
-  INDEX `idx_created_time` (`created_time`)
-) ENGINE=INNODB CHARSET=utf8;
+  KEY `idx_check_date` (`check_date`),
+  KEY `idx_created_time` (`created_time`)
+) ENGINE=InnoDB CHARSET=utf8;
 
 -- 新增各大银行信息字典表（fn_set_bank）
 CREATE TABLE `fn_set_bank`(  
