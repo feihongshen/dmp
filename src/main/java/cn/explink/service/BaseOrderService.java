@@ -29,7 +29,10 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.CwbStateEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
 
 public class BaseOrderService {
 
@@ -121,6 +124,20 @@ public class BaseOrderService {
 				view.setCustomerid(wco.getCustomerid());
 				view.setNextbranchid(wco.getNextbranchid());
 
+				//***Hps_Concerto create 2016年6月27日 11:17:07
+				 for (CwbStateEnum  cwb   : CwbStateEnum.values()){
+					 if(cwb.getValue()==wco.getCwbstate()){
+						 view.setCwbstatetext(cwb.getText());
+					 }
+				 } 
+				 if(CwbFlowOrderTypeEnum.getText(wco.getFlowordertype()).getText()=="已审核"){
+					 view.setFlowordertypetext("审核为："+DeliveryStateEnum.getByValue(wco.getDeliverystate()).getText());
+				 }else if(CwbFlowOrderTypeEnum.getText(wco.getFlowordertype()).getText()=="已反馈") {
+					view.setFlowordertypetext(DeliveryStateEnum.getByValue(wco.getDeliverystate()).getText()); 
+				 }else{
+					view.setFlowordertypetext(CwbFlowOrderTypeEnum.getText(wco.getFlowordertype()).getText());
+				 }
+				//*************
 				//****Hps_Concerto create 2016年5月26日16:24:30
 				view.setFlowordertype(wco.getFlowordertype());
 				view.setCwbstate(wco.getCwbstate());
