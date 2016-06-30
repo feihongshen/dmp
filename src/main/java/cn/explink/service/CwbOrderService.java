@@ -7690,6 +7690,23 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		return listBranch;
 	}
+	
+	/**
+	 * 返回当前站点指定类型的下一站点
+	 * @param user
+	 * @param branchEnum
+	 * @return
+	 */
+	public List<Branch> getNextPossibleBranches(User user, BranchEnum branchEnum){
+		List<Branch> listBranch = getNextPossibleBranches(user);
+		List<Branch> branchList = new ArrayList<Branch>();
+		for(Branch branch : listBranch){
+			if(branch.getSitetype() == branchEnum.getValue()){
+				branchList.add(branch);
+			}
+		}
+		return branchList;
+	}
 
 	@Transactional
 	public void cwbremark(String batchcwb, String cwbremark, User user) {
