@@ -802,6 +802,23 @@ public class CwbLablePrintController {
 				branch = new Branch();
 			}
 			vo.setBranch(branch);
+			// 目的地
+			StringBuilder destinationSb = new StringBuilder("");
+			String cwbprovince = cwbOrder.getCwbprovince();
+			if(StringUtils.isNotBlank(cwbprovince)) {
+				if(cwbprovince.endsWith("省") || cwbprovince.endsWith("市")) { // 去省级的尾部
+					cwbprovince = cwbprovince.substring(0, cwbprovince.length() - 1);
+				}
+				destinationSb.append(cwbprovince);
+			}
+			String cwbcity = cwbOrder.getCwbcity();
+			if(StringUtils.isNotBlank(cwbcity)) {
+				if(cwbcity.endsWith("市") || cwbcity.endsWith("区")) { // 去市级的尾部
+					cwbcity = cwbcity.substring(0, cwbcity.length() - 1);
+				}
+				destinationSb.append(cwbcity);
+			}
+			vo.setDestination(destinationSb.toString());
 			printOrderLabelVoList.add(vo);
 		}
 		model.addAttribute("printOrderLabelVoList", printOrderLabelVoList);
