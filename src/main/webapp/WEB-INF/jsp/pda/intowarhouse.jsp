@@ -1233,9 +1233,6 @@ function flush(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
-											<td width="80" align="center" bgcolor="#f1f1f1">订单类型</td>
-											<td width="80" align="center" bgcolor="#f1f1f1">订单状态</td>
-											<td width="120" align="center" bgcolor="#f1f1f1">订单当前状态</td>
 											<td width="120" align="center" bgcolor="#f1f1f1">运单号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('customerid',$('#customerid').val())">供货商</span></td>
 											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbygetrukucwbquejiandataList('emaildate',$('#customerid').val())">发货时间</span></td>

@@ -3483,11 +3483,11 @@ public class PDAController {
 				batchCount.setThissuccess(batchCount.getThissuccess() + 1);
 			} catch (CwbException ce) {// 出现验证错误
 				this.logger.error("cwb="+cwb,ce);
+				//***Hps_Concerto  add 2016年6月27日 17:30:48
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				String cwbordertype="";
 				String flowordertypetext="";
 				String cwbstatetext="";
-				//***Hps_Concerto  add 2016年6月27日 17:30:48
 				if(cwbOrder!=null){
 					for (CwbStateEnum  cr   : CwbStateEnum.values()){
 						 if(cr.getValue()==cwbOrder.getCwbstate()){
@@ -6940,6 +6940,39 @@ public class PDAController {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getRukuQuejianbyBranchidList(this.getSessionUser().getBranchid(), customerid, 1, emaildate);
 		for (JSONObject obj : quejianList) {
+			//Hps_Concerto create  2016年6月29日 10:14:43
+			String cwbstatetext="";
+			String cwbordertypetext="";
+			String flowordertypetext="";
+			String cwb = (String)(obj.get("cwb")==null?"":obj.get("cwb"));
+			if(!cwb.equals("")){
+				CwbOrder cwborder = this.cwbDAO.getCwbByCwb(cwb);
+				if(cwborder!=null){
+			/*<td width="80" align="center" bgcolor="#f1f1f1"><%=obj.get("cwbordertype") %></td>
+			<td width="80" align="center" bgcolor="#f1f1f1"><%=obj.get("cwbstatetext") %></td>
+			<td width="120" align="center" bgcolor="#f1f1f1"><%=obj.get("flowordertypetext") %></td>*/
+			for (CwbStateEnum  c   : CwbStateEnum.values()){
+				 if(c.getValue()==cwborder.getCwbstate()){
+					 cwbstatetext=c.getText();
+				 }
+			 } 
+			long flowordertype=cwborder.getFlowordertype();
+			int deliverystate = cwborder.getDeliverystate();
+			if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
+				flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
+			 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
+				 flowordertypetext=DeliveryStateEnum.getByValue(deliverystate).getText(); 
+			 }else{
+				 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
+			 }
+			cwbordertypetext = CwbOrderTypeIdEnum.getTextByValue(cwborder.getCwbordertypeid());
+				}
+			}
+			obj.put("cwbstatetext", cwbstatetext);
+			obj.put("cwbordertype", cwbordertypetext);
+			obj.put("flowordertypetext", flowordertypetext);
+			
+			//*************
 			String transcwb = "";
 			String explink = "explink";
 			if (obj.getString("transcwb").indexOf(explink) > -1) {
@@ -7026,6 +7059,39 @@ public class PDAController {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getRukuQuejianbyBranchidList(this.getSessionUser().getBranchid(), customerid, page, emaildate);
 		for (JSONObject obj : quejianList) {
+			//Hps_Concerto create  2016年6月29日 10:14:43
+			String cwbstatetext="";
+			String cwbordertypetext="";
+			String flowordertypetext="";
+			String cwb = (String)(obj.get("cwb")==null?"":obj.get("cwb"));
+			if(!cwb.equals("")){
+				CwbOrder cwborder = this.cwbDAO.getCwbByCwb(cwb);
+				if(cwborder!=null){
+			/*<td width="80" align="center" bgcolor="#f1f1f1"><%=obj.get("cwbordertype") %></td>
+			<td width="80" align="center" bgcolor="#f1f1f1"><%=obj.get("cwbstatetext") %></td>
+			<td width="120" align="center" bgcolor="#f1f1f1"><%=obj.get("flowordertypetext") %></td>*/
+			for (CwbStateEnum  c   : CwbStateEnum.values()){
+				 if(c.getValue()==cwborder.getCwbstate()){
+					 cwbstatetext=c.getText();
+				 }
+			 } 
+			long flowordertype=cwborder.getFlowordertype();
+			int deliverystate = cwborder.getDeliverystate();
+			if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
+				flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
+			 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
+				 flowordertypetext=DeliveryStateEnum.getByValue(deliverystate).getText(); 
+			 }else{
+				 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
+			 }
+			cwbordertypetext = CwbOrderTypeIdEnum.getTextByValue(cwborder.getCwbordertypeid());
+				}
+			}
+			obj.put("cwbstatetext", cwbstatetext);
+			obj.put("cwbordertype", cwbordertypetext);
+			obj.put("flowordertypetext", flowordertypetext);
+			
+			//*************
 			String transcwb = "";
 			String explink = "explink";
 			if (obj.getString("transcwb").indexOf("explink") > -1) {
@@ -10145,6 +10211,39 @@ public class PDAController {
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		List<JSONObject> quejianList = this.ypdjHandleRecordDAO.getRukuQuejianbyBranchidList(this.getSessionUser().getBranchid(), customerid, orderby, emaildate, asc);
 		for (JSONObject obj : quejianList) {
+			//Hps_Concerto create  2016年6月29日 10:14:43
+			String cwbstatetext="";
+			String cwbordertypetext="";
+			String flowordertypetext="";
+			String cwb = (String)(obj.get("cwb")==null?"":obj.get("cwb"));
+			if(!cwb.equals("")){
+				CwbOrder cwborder = this.cwbDAO.getCwbByCwb(cwb);
+				if(cwborder!=null){
+			/*<td width="80" align="center" bgcolor="#f1f1f1"><%=obj.get("cwbordertype") %></td>
+			<td width="80" align="center" bgcolor="#f1f1f1"><%=obj.get("cwbstatetext") %></td>
+			<td width="120" align="center" bgcolor="#f1f1f1"><%=obj.get("flowordertypetext") %></td>*/
+			for (CwbStateEnum  c   : CwbStateEnum.values()){
+				 if(c.getValue()==cwborder.getCwbstate()){
+					 cwbstatetext=c.getText();
+				 }
+			 } 
+			long flowordertype=cwborder.getFlowordertype();
+			int deliverystate = cwborder.getDeliverystate();
+			if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
+				flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
+			 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
+				 flowordertypetext=DeliveryStateEnum.getByValue(deliverystate).getText(); 
+			 }else{
+				 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
+			 }
+			cwbordertypetext = CwbOrderTypeIdEnum.getTextByValue(cwborder.getCwbordertypeid());
+				}
+			}
+			obj.put("cwbstatetext", cwbstatetext);
+			obj.put("cwbordertype", cwbordertypetext);
+			obj.put("flowordertypetext", flowordertypetext);
+			
+			//*************
 			String transcwb = "";
 			String explink = "explink";
 			if (obj.getString("transcwb").indexOf("explink") > -1) {
