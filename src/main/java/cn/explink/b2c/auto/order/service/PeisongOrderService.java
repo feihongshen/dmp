@@ -153,10 +153,13 @@ public class PeisongOrderService {
 			int is_gatherpack = order.getVip().getIsGatherPack(); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
 			int is_gathercomp = order.getVip().getIsGatherComp();//最后一箱:1最后一箱 ，0默认 
 			
-			
-			
-			
 			Integer total_pack = order.getTotalPack(); // 新增箱数
+			
+			if(is_gatherpack==0 && boxlist.size()!=total_pack){
+				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+			}
+			
 			int sendcarnum = order.getTotalPack();
 			
 			int cwbordertype = CwbOrderTypeIdEnum.Peisong.getValue();
