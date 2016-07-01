@@ -531,6 +531,11 @@ function delSuccess(data){
             $("#edit").val('<%=request.getContextPath()%>/tPSMQ/show/');
             $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
         }
+		
+		else if(obj=='22601'){ //订单轨迹推送给tps
+            $("#edit").val('<%=request.getContextPath()%>/orderTraceToTPS/show/');
+            $("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
+        }
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
