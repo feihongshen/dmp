@@ -20,6 +20,7 @@ import cn.explink.domain.QueryCondition;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.OrderTypeEnum;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.Tools;
 
 @Repository("emsOrderDao")
@@ -51,7 +52,7 @@ public class EmsOrderDaoImpl implements IEmsOrderDao {
 			emsOrderPO.setDeliveryTime(deliveryTime);
 			emsOrderPO.setDeliveryCustomer(rs.getString("delivery_customer"));
 			emsOrderPO.setRecipientAddress(rs.getString("recipient_address"));
-			emsOrderPO.setRecipientMobile(rs.getString("recipient_mobile"));
+			emsOrderPO.setRecipientMobile(SecurityUtil.getInstance().decrypt(rs.getString("recipient_mobile")));
 			return emsOrderPO;
 		}
 		
