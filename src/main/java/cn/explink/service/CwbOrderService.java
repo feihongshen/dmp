@@ -4112,7 +4112,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 
-		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) && (co.getIsmpsflag() == IsmpsflagEnum.yes.getValue())) {
+		if (((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) || (co.getIsmpsflag() == IsmpsflagEnum.yes.getValue())) {
 			return this
 					.handleKDKOutowarehouseYipiaoduojian(user, cwb, scancwb, currentbranchid, branchid, requestbatchno, forceOut, comment, packagecode, isauto, reasonid, co, FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao, isypdjusetranscwb, isAutoSupplyLink);
 		} else if ((co.getSendcarnum() == 1) || (co.getBackcarnum() == 1)) {
