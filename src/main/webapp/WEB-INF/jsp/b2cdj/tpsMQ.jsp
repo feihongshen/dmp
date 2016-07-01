@@ -88,7 +88,6 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                             <input type="checkbox" name ="isGetShangmentuiFlag" value="1" <%if(vipshop.getIsGetShangmentuiFlag()==1){%>checked<%}%>  >上门退
                             <input type="checkbox" name ="isGetShangmenhuanFlag" value="1" <%if(vipshop.getIsGetShangmenhuanFlag()==1){%>checked<%}%>  >上门换
                             <input type="checkbox" name ="isGetOXOFlag" value="1" <%if(vipshop.getIsGetOXOFlag()==1){%>checked<%}%>  >OXO/OXO_JIT
-                            <input type="checkbox" name ="isGetExpressFlag" value="1" <%if(vipshop.getIsGetExpressFlag()==1){%>checked<%}%>  >快递
                         </li>
                         <li><span>是否自动化接口：</span>
                             <input type ="radio" id="isAutoInterface1" name ="isAutoInterface" value="0" <%if(vipshop.getIsAutoInterface()==0){%>checked<%}%>  >否
@@ -185,7 +184,6 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                             <input type="checkbox" name ="isGetShangmentuiFlag" value="1" >上门退
                             <input type="checkbox" name ="isGetShangmenhuanFlag" value="1"  >上门换
                             <input type="checkbox" name ="isGetOXOFlag" value="1" >OXO/OXO_JIT
-                            <input type="checkbox" name ="isGetExpressFlag" value="1"  >快递
                         </li>
                          <li><span>是否自动化接口：</span>
                             <input type ="radio" id="isAutoInterface1" name ="isAutoInterface" value="0" checked>否

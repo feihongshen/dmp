@@ -25,7 +25,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.vip.logistics.memberencrypt.Decryption;
 import com.vip.logistics.memberencrypt.Encryption;
-
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -123,30 +122,30 @@ public class VipShopGetCwbDataService {
 		vipshop.setSelb2cnum((request.getParameter("selb2cnum")==null||("".equals(request.getParameter("selb2cnum"))))?200:(Long.valueOf(request.getParameter("selb2cnum"))));
 		vipshop.setShipper_no(request.getParameter("shipper_no"));
 		vipshop.setPrivate_key(request.getParameter("private_key"));
-		vipshop.setGetMaxCount(Integer.parseInt(request.getParameter("getMaxCount")));
-		vipshop.setSendMaxCount(Integer.parseInt(request.getParameter("sendMaxCount")));
-		vipshop.setGetCwb_URL(request.getParameter("getCwb_URL"));
-		vipshop.setSendCwb_URL(request.getParameter("sendCwb_URL"));
-		vipshop.setCustomerids(request.getParameter("customerids"));
-		vipshop.setWarehouseid(Long.parseLong(request.getParameter("warehouseid")));
-		vipshop.setVipshop_seq(Long.parseLong(request.getParameter("vipshop_seq")));
+		vipshop.setGetMaxCount(request.getParameter("getMaxCount")==null||request.getParameter("getMaxCount").trim().equals("")?0:Integer.parseInt(request.getParameter("getMaxCount")));
+		vipshop.setSendMaxCount(request.getParameter("sendMaxCount")==null||request.getParameter("sendMaxCount").trim().equals("")?0:Integer.parseInt(request.getParameter("sendMaxCount")));
+		vipshop.setGetCwb_URL(request.getParameter("getCwb_URL")==null?"":request.getParameter("getCwb_URL"));
+		vipshop.setSendCwb_URL(request.getParameter("sendCwb_URL")==null?"":request.getParameter("sendCwb_URL"));
+		vipshop.setCustomerids(request.getParameter("customerids")==null?"":request.getParameter("customerids"));
+		vipshop.setWarehouseid(request.getParameter("warehouseid")==null||request.getParameter("warehouseid").trim().equals("")?0:Long.parseLong(request.getParameter("warehouseid")));
+		vipshop.setVipshop_seq(request.getParameter("vipshop_seq")==null||request.getParameter("vipshop_seq").trim().equals("")?0:Long.parseLong(request.getParameter("vipshop_seq")));
 		String customerids = request.getParameter("customerids");
-		vipshop.setIsopendownload(Integer.parseInt(request.getParameter("isopendownload")));
-		vipshop.setForward_hours(Integer.parseInt(request.getParameter("forward_hours")));
-		vipshop.setIsTuoYunDanFlag(Integer.parseInt(request.getParameter("isTuoYunDanFlag")));
-		vipshop.setIsShangmentuiFlag(Integer.parseInt(request.getParameter("isShangmentuiFlag").equals("") ? "0" : request.getParameter("isShangmentuiFlag")));
+		vipshop.setIsopendownload(request.getParameter("isopendownload")==null||request.getParameter("isopendownload").trim().equals("")?0:Integer.parseInt(request.getParameter("isopendownload")));
+		vipshop.setForward_hours(request.getParameter("forward_hours")==null||request.getParameter("forward_hours").trim().equals("")?0:Integer.parseInt(request.getParameter("forward_hours")));
+		vipshop.setIsTuoYunDanFlag(request.getParameter("isTuoYunDanFlag")==null||request.getParameter("isTuoYunDanFlag").trim().equals("")?0:Integer.parseInt(request.getParameter("isTuoYunDanFlag")));
+		vipshop.setIsShangmentuiFlag(request.getParameter("isShangmentuiFlag")==null||request.getParameter("isShangmentuiFlag").trim().equals("")?0:Integer.parseInt(request.getParameter("isShangmentuiFlag")));
 		
-		String cancelOrIntercept=request.getParameter("cancelOrIntercept").equals("")?"0":request.getParameter("cancelOrIntercept");
+		String cancelOrIntercept=request.getParameter("cancelOrIntercept")==null||request.getParameter("cancelOrIntercept").equals("")?"0":request.getParameter("cancelOrIntercept");
 		vipshop.setCancelOrIntercept(Integer.parseInt(cancelOrIntercept));
 		
-		String isOpenLefengflag=request.getParameter("isOpenLefengflag").equals("")?"0":request.getParameter("isOpenLefengflag");
+		String isOpenLefengflag=request.getParameter("isOpenLefengflag")==null||request.getParameter("isOpenLefengflag").equals("")?"0":request.getParameter("isOpenLefengflag");
 		vipshop.setIsOpenLefengflag(Integer.parseInt(isOpenLefengflag));
 
-		String resuseReasonFlag=request.getParameter("resuseReasonFlag").equals("")?"0":request.getParameter("resuseReasonFlag");
+		String resuseReasonFlag=request.getParameter("resuseReasonFlag")==null||request.getParameter("resuseReasonFlag").equals("")?"0":request.getParameter("resuseReasonFlag");
 		vipshop.setResuseReasonFlag(Integer.parseInt(resuseReasonFlag));
-		String lefengCustomerid=request.getParameter("lefengCustomerid");
+		String lefengCustomerid=request.getParameter("lefengCustomerid")==null?"":request.getParameter("lefengCustomerid");
 		vipshop.setLefengCustomerid(lefengCustomerid);
-		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
+		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag")==null||request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
 		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
 		/*String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
 		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
@@ -159,8 +158,14 @@ public class VipShopGetCwbDataService {
 		vipshop.setIsGetShangmenhuanFlag((request.getParameter("isGetShangmenhuanFlag")==null||request.getParameter("isGetShangmenhuanFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetShangmenhuanFlag")));
 		vipshop.setIsGetShangmentuiFlag((request.getParameter("isGetShangmentuiFlag")==null||request.getParameter("isGetShangmentuiFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetShangmentuiFlag")));
 		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
-		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
-		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
+		vipshop.setTransflowUrl(request.getParameter("transflowUrl")==null?"":request.getParameter("transflowUrl"));
+		vipshop.setOxoState_URL(request.getParameter("oxoState_URL")==null?"":request.getParameter("oxoState_URL"));
+		if(request.getParameter("isTpsSendFlag")!=null){
+			vipshop.setIsTpsSendFlag(Integer.parseInt(request.getParameter("isTpsSendFlag")));
+		}
+		if(request.getParameter("isAutoInterface")!=null){
+			vipshop.setIsAutoInterface(request.getParameter("isAutoInterface").trim().equals("")?0:Integer.parseInt(request.getParameter("isAutoInterface")));
+		}
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
