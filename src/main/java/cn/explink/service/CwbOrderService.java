@@ -4603,6 +4603,12 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Transactional
 	public CwbOrder receiveGoodsHandle(User user, long currentbranchid, User deliveryUser, String cwb, String scancwb, boolean isauto) {
+		
+		//add by neo01.huang，2016-6-29
+		//领货校验到齐、同站领货
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+		deliverTakeGoodsMPSReleaseService.validateReveiveGoodsAllArrivedAndSameBranch(cwbOrder, scancwb, user.getBranchid());
+		
 		// 对于扫描订单号的，将运单号查询处理分别处理
 		List<String> transCwbList = new ArrayList<String>();
 		if ((cwb != null) && cwb.equalsIgnoreCase(scancwb)) {
@@ -7689,6 +7695,23 @@ public class CwbOrderService extends BaseOrderService {
 			listBranch = this.branchDAO.getBranchByBranchIdsNotNull(ids.substring(1, ids.length() - 1));
 		}
 		return listBranch;
+	}
+	
+	/**
+	 * 返回当前站点指定类型的下一站点
+	 * @param user
+	 * @param branchEnum
+	 * @return
+	 */
+	public List<Branch> getNextPossibleBranches(User user, BranchEnum branchEnum){
+		List<Branch> listBranch = getNextPossibleBranches(user);
+		List<Branch> branchList = new ArrayList<Branch>();
+		for(Branch branch : listBranch){
+			if(branch.getSitetype() == branchEnum.getValue()){
+				branchList.add(branch);
+			}
+		}
+		return branchList;
 	}
 
 	@Transactional

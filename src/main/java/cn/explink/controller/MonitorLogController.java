@@ -233,7 +233,7 @@ public class MonitorLogController {
 				}
 			}
 			//到站
-			List<MonitorLogSim> daozhanList =   monitorDAO.getMonitorLogByExpBranchid(branchids,customerids," flowordertype IN(7,8,9,35,36) ");
+			List<MonitorLogSim> daozhanList =   monitorDAO.getMonitorLogByExpBranchid(branchids,customerids," op.flowordertype IN(7,8,9,35,36) ");
 			if(daozhanList != null && daozhanList.size()>0){
 				for (MonitorLogSim mon: daozhanList) {
 					daozhanMap.put(mon.getCustomerid(), mon);
