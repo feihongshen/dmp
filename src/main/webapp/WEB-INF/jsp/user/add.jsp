@@ -66,8 +66,8 @@
 			        <li><span>网页登录密码：</span><input type="password" id="webPassword" name="webPassword" value="" maxlength="50"/>*</li>
 			        <li><span>确认网页登录密码：</span><input type="password" id="webPassword1" name="webPassword1" value="" maxlength="50"/>*</li>
 			        <div id="pdaPwdDiv" style="display:none">
-					<li><span>PDA登录密码：</span><input type="password" id="password" name="password" value="" maxlength="50"/>*</li>
-			        <li><span>确认PDA登录密码：</span><input type="password" id="password1" name="password1" value="" maxlength="50"/>*</li>
+					<li><span>POS登录密码：</span><input type="password" id="password" name="password" value="" maxlength="50"/>*</li>
+			        <li><span>确认POS登录密码：</span><input type="password" id="password1" name="password1" value="" maxlength="50"/>*</li>
 			        </div>
 	           		<li><span>上传声音文件：</span><iframe id="update" name="update" src="user/update?fromAction=user_cre_Form&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe></li>
 	           	<!-- 	<li><span>导出时联系方式：</span>

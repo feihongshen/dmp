@@ -177,6 +177,10 @@ function resethence(){
 	$("#losebackbranchid").val(0);
 	$("#cwb").val("");
 }
+$(function(){
+	$("#customerid").combobox();
+	})
+
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">

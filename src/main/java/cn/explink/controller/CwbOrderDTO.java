@@ -85,6 +85,10 @@ public class CwbOrderDTO {
 	int ismpsflag; // 是否一票多件：0默认；1是一票多件'; 
 	int vipclub;
 	String tpsTranscwb;//tps运单号
+    int paymethod;//付款方式
+	int doType;//订单类型
+	int orderSource;//订单类型：是否外单
+	BigDecimal announcedvalue;//保存申明
 	
 	public int getIsmpsflag() {
 		return ismpsflag;
@@ -367,6 +371,7 @@ public class CwbOrderDTO {
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
+//		this.consigneemobile = JMath.getmobileinstr(consigneemobile);
 		this.consigneemobile = consigneemobile;
 	}
 
@@ -857,5 +862,37 @@ public class CwbOrderDTO {
 
 	public void setTpsTranscwb(String tpsTranscwb) {
 		this.tpsTranscwb = tpsTranscwb;
+	}
+
+	public int getPaymethod() {
+		return paymethod;
+	}
+
+	public void setPaymethod(int paymethod) {
+		this.paymethod = paymethod;
+	}
+
+	public int getDoType() {
+		return doType;
+	}
+
+	public void setDoType(int doType) {
+		this.doType = doType;
+	}
+
+	public int getOrderSource() {
+		return orderSource;
+	}
+
+	public void setOrderSource(int orderSource) {
+		this.orderSource = orderSource;
+	}
+
+	public BigDecimal getAnnouncedvalue() {
+		return announcedvalue;
+	}
+
+	public void setAnnouncedvalue(BigDecimal announcedvalue) {
+		this.announcedvalue = announcedvalue;
 	}
 }

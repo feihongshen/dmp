@@ -84,7 +84,7 @@ public class AutoDispatchStatusService {
 	        List<AutoMQExceptionDto> errorList=null;
 
 	        try {
-	        	isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+	        	isOpenFlag=this.autoUserService.getAutoFlag();
 	        	if(isOpenFlag!=1){
 	        		this.logger.info("自动化分拣状态处理未开启.");
 	        		return;

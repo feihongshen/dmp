@@ -183,6 +183,7 @@ public class TPSInsertCwbDetailTimmer {
 			emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
 			cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), warehouseid, user, ed);
 			logger.info("[TPS自动化]定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
+			cwbOrderService.handleShangMenTuiCwbDeliveryPermit(cwbOrder);//处理唯品会上门退订单领货标识  2016-06-16
 			
 			if(cwbOrder.getCwbordertypeid()==4||cwbOrder.getCwbordertypeid()==5){
 				if(StringUtils.isNotBlank(cwbOrder.getRemark4())){

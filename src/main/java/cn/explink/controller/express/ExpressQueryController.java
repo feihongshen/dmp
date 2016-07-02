@@ -60,6 +60,7 @@ import cn.explink.service.LogToDayService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 import net.sf.json.JSONObject;
 
@@ -144,6 +145,7 @@ public class ExpressQueryController {
 	 * @param response
 	 * @param request
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping("/kuaidilist/{page}")
 	public String kuaidilist(Model model, @PathVariable(value = "page") long page, @RequestParam(value = "timeType", required = false, defaultValue = "1") long timeType,
@@ -152,7 +154,7 @@ public class ExpressQueryController {
 			@RequestParam(value = "lanshouuserid", required = false, defaultValue = "0") long lanshouuserid,
 			@RequestParam(value = "paisongbranchid", required = false, defaultValue = "") String[] paisongbranchids,
 			@RequestParam(value = "paisonguserid", required = false, defaultValue = "0") long paisonguserid, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
-			HttpServletResponse response, HttpServletRequest request) {
+			HttpServletResponse response, HttpServletRequest request) throws Exception {
 		Page pageparm = new Page();
 		List<CwbKuaiDi> cwbKuaiDilist = new ArrayList<CwbKuaiDi>();
 		List<CwbKuaiDiView> cwbViewList = new ArrayList<CwbKuaiDiView>();
@@ -264,7 +266,7 @@ public class ExpressQueryController {
 		}
 	}
 
-	public List<CwbKuaiDiView> getCwbKuaiDiViewCount10(List<CwbKuaiDi> cwbKuaiDilist, List<Branch> branchList, List<User> userList) {
+	public List<CwbKuaiDiView> getCwbKuaiDiViewCount10(List<CwbKuaiDi> cwbKuaiDilist, List<Branch> branchList, List<User> userList) throws Exception {
 		List<CwbKuaiDiView> cwbOrderViewList = new ArrayList<CwbKuaiDiView>();
 		Map<Long, Customer> customerMap = this.customerDao.getAllCustomersToMap();
 		for (CwbKuaiDi ck : cwbKuaiDilist) {
@@ -274,7 +276,7 @@ public class ExpressQueryController {
 			cwbKuaiDiView.setLanshoubranchname(this.dataStatisticsService.getQueryBranchName(branchList, ck.getLanshoubranchid()));
 			cwbKuaiDiView.setLanshoutime(ck.getLanshoutime());
 			cwbKuaiDiView.setConsigneename(ck.getSendconsigneename());
-			cwbKuaiDiView.setConsigneemobile(ck.getSendconsigneemobile());
+			cwbKuaiDiView.setConsigneemobile(SecurityUtil.getInstance().decrypt(ck.getSendconsigneemobile()));
 			cwbKuaiDiView.setConsigneeaddress(ck.getSendconsigneeaddress());
 			cwbKuaiDiView.setAllfee(ck.getAllfee() == null ? BigDecimal.ZERO : ck.getAllfee());
 			cwbKuaiDiView.setFlowordertype(ck.getFlowordertype());

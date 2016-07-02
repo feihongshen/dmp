@@ -3,6 +3,8 @@ package cn.explink.b2c.auto.order.vo;
 
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * 运单下发DMP--VO
  * <p>
@@ -11,6 +13,7 @@ import java.util.List;
  * @author vince.zhou
  * @since 1.0
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InfDmpOrderSendVO {
 
     private String messageId;// 唯一id，uuid
@@ -99,11 +102,51 @@ public class InfDmpOrderSendVO {
 
     private Double returnCredit;// 应退金额
 
+    private Integer doType;// 1-乐蜂订单 2-海淘订单 3-OXO订单 4-普通订单 5-海淘直发 6-普通直发单
+
+    private Integer orderSource;// 运单表orderSource，揽退单需要转成外单4
+
+    private Long createTime;// 创建时间
+
     private List<InfDmpOrderSendDetailVO> details;// 商品明细
 
     private InfDmpOrderSendExpressVO express;// 快递专用vo
 
     private InfDmpOrderSendVIPVO vip;// vip业务相关vo，包括oxo，正常单，揽退
+
+    private List<InfDmpOrderSendBoxVO> boxs;// 箱信息vo
+
+    public Long getCreateTime() {
+        return this.createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
+    public List<InfDmpOrderSendBoxVO> getBoxs() {
+        return this.boxs;
+    }
+
+    public void setBoxs(List<InfDmpOrderSendBoxVO> boxs) {
+        this.boxs = boxs;
+    }
+
+    public Integer getOrderSource() {
+        return this.orderSource;
+    }
+
+    public void setOrderSource(Integer orderSource) {
+        this.orderSource = orderSource;
+    }
+
+    public Integer getDoType() {
+        return this.doType;
+    }
+
+    public void setDoType(Integer doType) {
+        this.doType = doType;
+    }
 
     public String getCustomerCode() {
         return this.customerCode;

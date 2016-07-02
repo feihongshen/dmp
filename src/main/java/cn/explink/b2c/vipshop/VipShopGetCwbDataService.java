@@ -52,6 +52,8 @@ import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.SecurityUtil;
+import cn.explink.util.StringUtil;
 
 @Service
 public class VipShopGetCwbDataService {
@@ -148,16 +150,35 @@ public class VipShopGetCwbDataService {
 		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
 		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
 		vipshop.setDaysno(Integer.parseInt(daysno));*/
-		
+		//MQ接口改造，新增字段
+		vipshop.setIsGetExpressFlag((request.getParameter("isGetExpressFlag")==null||request.getParameter("isGetExpressFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetExpressFlag")));
+		vipshop.setIsGetOXOFlag((request.getParameter("isGetOXOFlag")==null||request.getParameter("isGetOXOFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetOXOFlag")));
+		vipshop.setIsGetPeisongFlag((request.getParameter("isGetPeisongFlag")==null||request.getParameter("isGetPeisongFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetPeisongFlag")));
+		vipshop.setIsGetShangmenhuanFlag((request.getParameter("isGetShangmenhuanFlag")==null||request.getParameter("isGetShangmenhuanFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetShangmenhuanFlag")));
+		vipshop.setIsGetShangmentuiFlag((request.getParameter("isGetShangmentuiFlag")==null||request.getParameter("isGetShangmentuiFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetShangmentuiFlag")));
 		vipshop.setOpenmpspackageflag(Integer.valueOf((request.getParameter("openmpspackageflag")==null||("".equals(request.getParameter("openmpspackageflag"))))?0:(Integer.valueOf(request.getParameter("openmpspackageflag")))));
 		vipshop.setTransflowUrl(request.getParameter("transflowUrl"));
 		vipshop.setOxoState_URL(request.getParameter("oxoState_URL"));
+		if(request.getParameter("isTpsSendFlag")!=null){
+			vipshop.setIsTpsSendFlag(Integer.parseInt(request.getParameter("isTpsSendFlag")));
+		}
+		if(request.getParameter("isAutoInterface")!=null){
+			vipshop.setIsAutoInterface(Integer.parseInt(request.getParameter("isAutoInterface")));
+		}
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
 
 		JSONObject jsonObj = JSONObject.fromObject(vipshop);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
+		
+		//承运商编码重复的接口配置不允许保存
+		JointEntity jointEntityByShipper = this.jiontDAO.getJointEntityByShipperNo(request.getParameter("shipper_no"),joint_num);
+		if(jointEntityByShipper!=null){
+			B2cEnum b2cEnmun = B2cEnum.getEnumByKey(jointEntityByShipper.getJoint_num());
+			throw new RuntimeException("该承运商已在【" + b2cEnmun.getText() + "】接口中设置对接");
+		}
+		
 		if (jointEntity == null) {
 			jointEntity = new JointEntity();
 			jointEntity.setJoint_num(joint_num);
@@ -485,8 +506,17 @@ public class VipShopGetCwbDataService {
 			// String box_id = convertEmptyString("box_id", datamap);
 			String buyer_name = VipShopGetCwbDataService.convertEmptyString("buyer_name", datamap);
 			String buyer_address = VipShopGetCwbDataService.convertEmptyString("buyer_address", datamap);
+			// added by wangwei,start 
+			// TODO 此处为了兼容武汉系统，接收到的电话/手机号码是明文。又因为密文加密仍然是密文，所以此处算法为不管之前是明文还是密文，再加密，然后存入数据库。
 			String tel = VipShopGetCwbDataService.convertEmptyString("tel", datamap);
+			if(!StringUtil.isEmpty(tel)) {
+				tel = SecurityUtil.getInstance().encrypt(tel);
+			}
 			String mobile = VipShopGetCwbDataService.convertEmptyString("mobile", datamap);
+			if(!StringUtil.isEmpty(mobile)) {
+				mobile = SecurityUtil.getInstance().encrypt(mobile);
+			}			
+			// added by wangwei,end
 			String post_code = VipShopGetCwbDataService.convertEmptyString("post_code", datamap);
 			String transport_day = VipShopGetCwbDataService.convertEmptyString("transport_day", datamap);
 			String money = VipShopGetCwbDataService.convertEmptyString("money", datamap);

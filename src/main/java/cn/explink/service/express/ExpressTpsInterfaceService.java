@@ -35,6 +35,8 @@ import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPResponse;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPService;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPServiceHelper;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderResponse;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryTrackInfo;
@@ -143,7 +145,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 
 				} else if (ExpressOperationEnum.CreateTransNO.getValue().equals(operationInfo.getOperationType())) {
 					//创建运单接口
-					List<PjDeliveryOrder4DMPResponse> result = this.createTransNo4Dmp(operationInfo.getRequestlist());
+					List<PjDeliveryOrderResponse> result = this.createTransNo4Dmp(operationInfo.getRequestlist());
 					resultMap.put(ExpressOperationEnum.CreateTransNO.getUniqueCode(), result);
 					this.logger.info("调用TPS接口正常，创建运单接口请求Tps后的结果为：{}", result);
 
@@ -400,12 +402,17 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @throws
 	 * @throws ExpressTpsInterfaceException
 	 */
-	public List<PjDeliveryOrder4DMPResponse> createTransNo4Dmp(List<PjDeliverOrder4DMPRequest> requestlist) throws ExpressTpsInterfaceException {
-		PjDeliveryOrder4DMPService pjDeliveryOrder4DMPService = new PjDeliveryOrder4DMPServiceHelper.PjDeliveryOrder4DMPServiceClient();
-		List<PjDeliveryOrder4DMPResponse> resultlist = new ArrayList<PjDeliveryOrder4DMPResponse>();
+	public List<PjDeliveryOrderResponse> createTransNo4Dmp(List<PjDeliveryOrderRequest> requestlist) throws ExpressTpsInterfaceException {
+		PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
+		List<PjDeliveryOrderResponse> resultlist = new ArrayList<PjDeliveryOrderResponse>();
+		PjDeliveryOrderResponse result = new PjDeliveryOrderResponse();;
 		InvocationContext.Factory.getInstance().setTimeout(10000);//10s内没完成，抛出延时异常
 		try {
-			resultlist = pjDeliveryOrder4DMPService.createDeliveryOrder(requestlist);
+			for(int i=0;i<requestlist.size();i++){
+				result = pjDeliveryOrderService.inputDeliveryOrder(requestlist.get(i));
+				resultlist.add(result);
+			}
+			
 			if ((resultlist.size() <= 0) || (resultlist.size() > 1)) {
 				this.logger.info("没有返回信息或者返回信息大于1条");
 				//调用失败信息存入数据库

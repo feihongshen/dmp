@@ -29,6 +29,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderView;
@@ -159,6 +160,8 @@ public class BaleService {
 	JointService jointService;
 	@Autowired
 	TpsInterfaceExecutor tpsInterfaceExecutor;
+	@Autowired
+	AutoUserService autoUserService;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -1253,7 +1256,7 @@ public class BaleService {
 					.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()))) && (co.getCurrentbranchid() != currentbranchid)) {
 				boolean ignore=false;
 				if(co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()){
-					int isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+					int isOpenFlag=this.autoUserService.getAutoFlag();
 					if(isOpenFlag==1){
 						ignore=true;
 					}

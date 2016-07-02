@@ -151,6 +151,12 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 						alert(data.body.editCwb);
 					}
 					
+					$("#guanlianlantuidan").hide();
+					if(data.body.guanlianlantuidan != ""){
+						$("#guanlianlantuidan").show();
+					}
+					
+					
 					//var checkRecord = data.body.checkRecord;
 					//alert(checkRecord);
 					//getweilingdata(data.body.cwbOrder.deliverid);
@@ -465,6 +471,7 @@ function scancwbKeyDownAction(event) {
 					<p id="cwbordertype" name="cwbordertype"></p>
 					<p id="showcwb" name="showcwb"></p>
 					<p id="cwbgaojia" name="cwbgaojia" style="display: none" >高价</p>
+					<p id="guanlianlantuidan" name="guanlianlantuidan" style="display: none" ><font color="red" size="12">关联揽退单</font></p>
 					<p id="consigneeaddress" name="consigneeaddress"></p>
 					<p id="fee" name="fee"></p>
 					<p id="exceldeliverid" name="exceldeliverid"></p>

@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="net.sf.json.JSONObject"%>
@@ -27,7 +28,6 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -248,6 +248,9 @@ function yiruku(){
 function tohome(){
 	window.location.href="<%=request.getContextPath() %>/PDA/cwbkdkexportwarhouseBatch?branchid="+$("#branchid").val();
 }
+$(function(){
+	$("#branchid").combobox();
+})
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">

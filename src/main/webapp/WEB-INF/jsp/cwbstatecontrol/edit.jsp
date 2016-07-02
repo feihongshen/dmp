@@ -16,9 +16,23 @@ int fromstate = (Integer)request.getAttribute("fromstate");
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
+<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <script>
 $(function(){
-	$("#tostate").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择操作下一环节' });
+	 $("#tostate").multipleSelect({
+	        placeholder: "请选择操作下一环节",
+	        filter: true
+	    });
 })
 
 function check_cwbstatecontrol(form){
@@ -34,17 +48,16 @@ function check_cwbstatecontrol(form){
 }
 </script>
 <div style="background:#f5f5f5">
-	<div id="box_in_bg">
 		<h2>修改订单流程</h2>
+		<br />
 		<form id="cwbstatecontrol_cre_Form" name="cwbstatecontrol_cre_Form"
 			 onSubmit="check_cwbstatecontrol(this);return false;" 
 			 action="<%=request.getContextPath()%>/cwbStateControl/save/<%=fromstate%>" method="post"  >
-			<div id="box_form">
-				<ul>
-					<li><span>当前环节：</span>
+				<div style="text-align: center"><span>当前环节：</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<%for(FlowOrderTypeEnum fte : FlowOrderTypeEnum.values()){if(fromstate==fte.getValue()){ %>
 						<%=fte.getText() %>
-						<%}} %>
+						<%}} %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+						<br />
 						<%-- <select id="fromstate" name="fromstate">
 							<option value="0" selected>----请选择----</option>
 							<option value="<%=FlowOrderTypeEnum.DaoRuShuJu.getValue() %>"  <%if(fromstate==FlowOrderTypeEnum.DaoRuShuJu.getValue()){ %>selected<%}%>><%=FlowOrderTypeEnum.DaoRuShuJu.getText() %></option>
@@ -64,8 +77,7 @@ function check_cwbstatecontrol(form){
 							<option value="<%=FlowOrderTypeEnum.PosZhiFu.getValue() %>"  <%if(fromstate==FlowOrderTypeEnum.PosZhiFu.getValue()){ %>selected<%}%>><%=FlowOrderTypeEnum.PosZhiFu.getText() %></option>
 							<option value="<%=FlowOrderTypeEnum.CheXiaoFanKui.getValue() %>"  <%if(fromstate==FlowOrderTypeEnum.CheXiaoFanKui.getValue()){ %>selected<%}%>><%=FlowOrderTypeEnum.CheXiaoFanKui.getText() %></option>
 						</select>* --%>
-					</li>
-	           		<li><span>下一环节：</span>
+	          <div style="text-align: center"><span>下一环节：</span>
 	           			<select id="tostate"  name="tostate" multiple="multiple"  style="height 30px;width: 500px">
 							<option value="<%=FlowOrderTypeEnum.DaoRuShuJu.getValue() %>" <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.DaoRuShuJu.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.DaoRuShuJu.getText() %></option>
 							<option value="<%=FlowOrderTypeEnum.TiHuo.getValue() %>" <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.TiHuo.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.TiHuo.getText() %></option>
@@ -91,13 +103,11 @@ function check_cwbstatecontrol(form){
 							<option value="<%=FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue() %>"  <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getText() %></option>
 							<option value="<%=FlowOrderTypeEnum.LanJianChuZhan.getValue() %>"  <%for(CwbStateControl cs : cscList){if(cs.getTostate()==FlowOrderTypeEnum.LanJianChuZhan.getValue()){ %>selected<% break;}}%>><%=FlowOrderTypeEnum.LanJianChuZhan.getText() %></option>
 							
-						</select>*
-					</li>
-	         </ul>
-		</div>
+						</select>*</div>
+				
+	      
 		<div align="center">
         <input type="submit" value="确认" class="button" id="sub" />
         <input type="button" value="返回" class="button" id="cancel" onclick="location='<%=request.getContextPath()%>/cwbStateControl/list'" /></div>
 	</form>
-	</div>
 </div>

@@ -125,6 +125,7 @@ import cn.explink.util.DateDayUtil;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
 import cn.explink.util.MD5.MD5Util;
@@ -936,7 +937,7 @@ public class OrderSelectController {
 	}
 
 	@RequestMapping("/queckSelectOrderleft/{cwb}")
-	public String queckSelectOrderleft(Model model, @PathVariable(value = "cwb") String cwb) {
+	public String queckSelectOrderleft(Model model, @PathVariable(value = "cwb") String cwb) throws Exception {
 		cwb = this.translateCwb(cwb);
 		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
 		String jspPage = "";
@@ -944,6 +945,8 @@ public class OrderSelectController {
 		if ((order != null) && (order.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue())) {
 			EmbracedOrderVO embracedOrder = this.expressOrderDao.getCwbOrderByCwb(cwb);
 			embracedOrder = embracedOrder != null ? embracedOrder : new EmbracedOrderVO();
+			embracedOrder.setConsignee_cellphone(SecurityUtil.getInstance().decrypt(embracedOrder.getConsignee_cellphone()));
+			embracedOrder.setConsignee_telephone(SecurityUtil.getInstance().decrypt(embracedOrder.getConsignee_telephone()));			
 			model.addAttribute("embracedOrder", embracedOrder);
 			List<Customer> senderCustomer = this.customerDAO.getCustomerByCustomerid(embracedOrder.getSender_customerid() + "");
 			List<Customer> consineerCustomer = this.customerDAO.getCustomerByCustomerid(embracedOrder.getConsignee_customerid() + "");
@@ -1054,7 +1057,10 @@ public class OrderSelectController {
 
 		String oldconsigneeaddress = oldAddress == null ? "" : oldAddress;
 		view.setOldconsigneeaddress(oldconsigneeaddress);
-
+		
+		view.setConsigneephone(SecurityUtil.getInstance().decrypt(view.getConsigneephone()));
+		view.setConsigneemobile(SecurityUtil.getInstance().decrypt(view.getConsigneemobile()));
+		
 		List<OrderFlow> rukuList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.RuKu.getValue(), "", "");
 		List<OrderFlow> linghuoList = this.orderFlowDAO.getOrderFlowByCwbAndFlowordertype(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), "", "");
 		Customer customer = this.customerDAO.getCustomerById(view.getCustomerid());
@@ -2467,7 +2473,7 @@ public class OrderSelectController {
 			@RequestParam(value = "consigneeaddress", required = false, defaultValue = "") String consigneeaddress, @RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno, @RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb,
 			@RequestParam(value = "showLetfOrRight", required = false, defaultValue = "1") long showLetfOrRight,
-			@RequestParam(value = "ischangetime", required = false, defaultValue = "0") long ischangetime) {
+			@RequestParam(value = "ischangetime", required = false, defaultValue = "0") long ischangetime) throws Exception {
 		List<CwbOrder> clist = new ArrayList<CwbOrder>();
 		Page pageparm = new Page();
 		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.Amazon.getKey());
@@ -2475,6 +2481,11 @@ public class OrderSelectController {
 		if (isshow != 0) {
 			String enddate = DateDayUtil.getDateAfter(begindate, 10);
 			clist = this.cwbOrderService.getListByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb, page);
+			for(CwbOrder c : clist) {
+				String consigneemobileOfkfDecrypted = SecurityUtil.getInstance().decrypt(c.getConsigneemobileOfkf());
+				consigneemobileOfkfDecrypted = hideMoiblePhoneCode(consigneemobileOfkfDecrypted);
+				c.setConsigneemobileOfkf(consigneemobileOfkfDecrypted);
+			}
 			model.addAttribute("customerMap", this.customerDAO.getAllCustomersToMap());
 			pageparm = new Page(this.cwbOrderService.getCountByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb), page,
 					Page.ONE_PAGE_NUMBER);
@@ -2494,9 +2505,21 @@ public class OrderSelectController {
 		return "/neworderquery/left";
 
 	}
+	
+	private String hideMoiblePhoneCode(String consigneemobileOfkfDecrypted) {
+		String result = "";
+		if(consigneemobileOfkfDecrypted != null && consigneemobileOfkfDecrypted.length() > 4) {
+			int length = consigneemobileOfkfDecrypted.length();
+			result = consigneemobileOfkfDecrypted.substring(0, length - 4).replaceAll("\\d","*") 
+					+ consigneemobileOfkfDecrypted.substring(length - 4);;
+		} else {
+			result = consigneemobileOfkfDecrypted;
+		}
+		return result;
+	}
 
 	@RequestMapping("/right/{cwb}")
-	public String right(Model model, @PathVariable(value = "cwb") String cwb) {
+	public String right(Model model, @PathVariable(value = "cwb") String cwb) throws Exception {
 		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
 		if (order == null) {
 			model.addAttribute("view", null);
@@ -2525,6 +2548,7 @@ public class OrderSelectController {
 		view.setNewpaywayid(view.getNewpaywayid());
 		view.setBackreason(order.getBackreason());
 		view.setLeavedreason(order.getLeavedreason());
+		view.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(view.getConsigneemobileOfkf()));
 
 		Customer customer = this.customerDAO.getCustomerById(view.getCustomerid());
 		Branch deliverybranch = this.branchDAO.getBranchByBranchid(view.getDeliverybranchid());

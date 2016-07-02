@@ -12,6 +12,7 @@
                 <ref bean="autoDispatchStatusConsumer" />
                 <ref bean="tpsOrderAutomateConsumer" />
                 <ref bean="tpsOrderConsumer" />
+                <ref bean="tpsBatchNoConsumer" />
             </list>  
         </property> 
         <property name="senderList">  
@@ -75,4 +76,19 @@
             <property name="mqConfigService" ref="mqConfigService"/> 
       </bean>      
   	  <!--  end 消费tps下发订单信息-->
+  	  
+  	  <!-- start 消费tps下发交接单号信息 -->
+  	  <bean id="tpsBatchNoConsumer" class="cn.explink.b2c.auto.order.mq.ConsumerTemplate" >
+		  	<property name="callBack" ref="tpsBatchNoCallback"/> 
+		  	<!-- channel -->
+		  	<property name="exchangeKey" value="MQ_REC_TPS_BATCHNO_CHANNEL" /> 
+		  	 <!-- 队列 -->
+		  	<property name="queueKey" value="MQ_REC_TPS_BATCHNO_QUEUE" /> 
+		  	<!-- 每次获取数量 -->
+		  	<property name="fetchCount" value="10"/> 
+		  	<!-- 是否自动提交 -->
+		  	<property name="autoCommit" value="false"/> 
+		  	<property name="mqConfigService" ref="mqConfigService"/> 
+	  </bean> 
+  	  <!-- end 消费tps下发交接单号信息 -->
 </beans>

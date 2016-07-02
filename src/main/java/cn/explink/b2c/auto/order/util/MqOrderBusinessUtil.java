@@ -17,6 +17,7 @@ public class MqOrderBusinessUtil {
 	public static int getPayTypeValue(int payment){
 		int pay = 0;
 		switch (payment) {
+		case -1:
 		case 0:
 			pay = PaytypeEnum.Xianjin.getValue();
 			break;

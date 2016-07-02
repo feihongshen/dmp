@@ -21,9 +21,16 @@
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
-	$("#branchids").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择机构类型' });
+	$("#branchids").multipleSelect({
+        placeholder: "请选择机构类型",
+        filter: true
+    });
+	
 });
 
 //停用启用
@@ -82,8 +89,6 @@ function changeSitetype(){
 				 }%>><%=b.getBranchname()%></option>
 	          <%}}%>
 			 </select>
-			 [<a href="javascript:multiSelectAll('branchids',1,'请选择');">全选</a>]
-			 [<a href="javascript:multiSelectAll('branchids',0,'请选择');">取消全选</a>]
 			<input type="submit" id="find" value="查询"  class="input_button2" />
 		</form>
 	</div>
