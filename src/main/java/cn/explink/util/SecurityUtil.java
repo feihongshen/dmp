@@ -1,5 +1,6 @@
 package cn.explink.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ public class SecurityUtil {
 
 //	@Autowired
 //	private SystemInstallDAO systemInstallDAO;
+	
+	private final static String DECRYPT_FAIL_RESULT = "******"; 
 
 	private static SecurityUtil instance = null;
 
@@ -39,7 +42,7 @@ public class SecurityUtil {
 			return plainText;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return cipherText;
+			return DECRYPT_FAIL_RESULT;
 		}
 
 	}
@@ -50,7 +53,12 @@ public class SecurityUtil {
 			return plainTexts;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return cipherTexts;
+			
+			List<String> starStrings = new ArrayList<String>();
+			for(int i = 0; i<cipherTexts.size(); i++) {
+				starStrings.add(DECRYPT_FAIL_RESULT);
+			}
+			return starStrings;
 		}
 
 	}
