@@ -771,12 +771,11 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobile() {
-
-		return this.consigneemobile;
+		return SecurityUtil.getInstance().decrypt(this.consigneemobile);
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
-		this.consigneemobile = SecurityUtil.getInstance().decrypt(consigneemobile);
+		this.consigneemobile = consigneemobile;
 	}
 
 	public BigDecimal getReceivablefee() {
@@ -1461,7 +1460,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobileOfkf() {
-		return this.consigneemobileOfkf;
+		return SecurityUtil.getInstance().decrypt(this.consigneemobileOfkf);
 	}
 
 	public void setConsigneemobileOfkf(String consigneemobileOfkf) {
@@ -1469,7 +1468,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneephoneOfkf() {
-		return this.consigneephoneOfkf;
+		return SecurityUtil.getInstance().decrypt(this.consigneephoneOfkf);
 	}
 
 	public void setConsigneephoneOfkf(String consigneephoneOfkf) {
