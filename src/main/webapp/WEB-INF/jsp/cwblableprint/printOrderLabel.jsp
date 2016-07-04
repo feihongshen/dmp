@@ -32,12 +32,12 @@ function CreateOneFormPage(){
 	//LODOP.SET_PRINT_PAGESIZE(0,815,1500,"A4");
 	for(var i = 0; i < ${fn:length(printOrderLabelVoList)}; i++) {
 		LODOP.NewPage();
-		LODOP.ADD_PRINT_HTM("2mm","10mm","RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_" + i).outerHTML + "</body>");
+		LODOP.ADD_PRINT_HTM("2.5mm","10mm","RightMargin:0mm","BottomMargin:0mm", strBodyStyle + "<body>" + document.getElementById("printTable_" + i).outerHTML + "</body>");
 		var transcwb = $("#transcwb_" + i).val();
-		 if(transcwb != null && transcwb != "") {
-			LODOP.ADD_PRINT_BARCODE(108,65,120,40,"128Auto",transcwb);
+		if(transcwb != null && transcwb != "") {
+			LODOP.ADD_PRINT_BARCODE(108,53,150,40,"128Auto",transcwb);
 			LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
-			LODOP.ADD_PRINT_BARCODE(223,75,120,40,"128Auto",transcwb);
+			LODOP.ADD_PRINT_BARCODE(224,67,150,40,"128Auto",transcwb);
 			LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
 		}
 	}
@@ -113,8 +113,11 @@ function nowprint(){
 			    					<div style="font-family: 黑体;font-weight: bold;font-size: 14px;">寄<br>件</div>
 			    				</td>
 			    				<td valign="middle">
-			    					<div style="line-height:10px;font-family: 黑体;font-size: 8px;padding-left:0px;padding-right: 2px;"><font style="font-size: 10px;">${cwb.senderprovince }${cwb.sendercity }${cwb.sendercounty }</font>${cwb.senderaddress }</div>
-			    					<div style="line-height:10px;font-family: 黑体;font-size: 8px;padding-left:0px;padding-right: 2px;">${cwb.sendername }  ${cwb.sendercellphone }</div>
+			    					<div style="line-height:10px;font-family: 黑体;font-size: 8px;padding-left: 0px;padding-right: 2px;">
+				    					<font style="font-size: 10px;">${cwb.senderprovince }${cwb.sendercity }${cwb.sendercounty }</font>${cwb.senderaddress }
+				    					<br>
+				    					${cwb.sendername }  ${cwb.sendercellphone }
+			    					</div>
 			    				</td>
 			    			</tr>
 			    		</table>
@@ -155,7 +158,7 @@ function nowprint(){
 			    				<td style="border-right:1px solid #585656; width:50mm;">
 			    					<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 			    						<tr>
-			    							<td style="border-bottom:1px solid #585656;height:14.6mm;" colspan="2">
+			    							<td style="border-bottom:1px solid #585656;height:14.6mm;" colspan="2">&nbsp;
 			    							</td>
 			    						</tr>
 			    						<tr>
@@ -249,7 +252,7 @@ function nowprint(){
 				          		<td style="width:4mm;" valign="middle">
 						    		<div style="font-family: 黑体;font-weight: bold;font-size: 14px;">寄<br>件</div>
 						    	</td>
-			    				<td>
+			    				<td valign="middle">
 			    					<div style="line-height:10px;font-family: 黑体;font-size: 8px;padding-left: 0px;padding-right: 2px;">
 				    					<font style="font-size: 10px;">${cwb.senderprovince }${cwb.sendercity }${cwb.sendercounty }</font>${cwb.senderaddress }
 				    					<br>
