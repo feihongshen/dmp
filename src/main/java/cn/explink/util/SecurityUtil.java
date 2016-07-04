@@ -48,8 +48,9 @@ public class SecurityUtil {
 
 	public String encrypt(String plainText) {
 		try {
-			String cipherText = Encryption.encrypt(plainText);
-			return cipherText;
+//			String cipherText = Encryption.encrypt(plainText);
+//			return cipherText;
+			return plainText;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return plainText;
@@ -58,8 +59,9 @@ public class SecurityUtil {
 
 	public List<String> encryptMulti(List<String> plainTexts) {
 		try {
-			List<String> cipherTexts = Decryption.decrypt(plainTexts);
-			return cipherTexts;
+//			List<String> cipherTexts = Decryption.decrypt(plainTexts);
+//			return cipherTexts;
+			return plainTexts;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return plainTexts;
