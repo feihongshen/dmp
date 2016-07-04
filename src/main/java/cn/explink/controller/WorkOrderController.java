@@ -774,6 +774,9 @@ public class WorkOrderController {
 		model.addAttribute("connameList", connameList);
 		model.addAttribute("alluser",userDao.getAllUser());
 		model.addAttribute("currentuser", getSessionUser().getRoleid());
+		model.addAttribute("customers",customerDAO.getAllCustomers());
+		String[] customerStr = {};
+		model.addAttribute("customerStr", cv.getCustomerIds() == null ? customerStr : cv.getCustomerIds().split(","));
 		return "workorder/WorkOrderQueryManage";		
 	}
 	@RequestMapping("/selectBranch")
