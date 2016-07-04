@@ -971,7 +971,7 @@ public class EditCwbController {
 			EmailDate ed = this.dataImportService.getEmailDate_B2CByEmaildate(co.getCustomerid(), co.getCustomerwarehouseid(), co.getCustomerwarehouseid(), co.getEmaildate());
 			userDetail.getUser().setBranchid(Long.valueOf(ed.getWarehouseid()));
 			this.emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
-			this.cwbOrderService.updateExcelCwb(co, co.getCustomerid(), ed.getWarehouseid(), userDetail.getUser(), ed, true);
+			this.cwbOrderService.updateExcelCwb(co, co.getCustomerid(), (old == null || "".equals(old.getCarwarehouse()))?0:Long.valueOf(old.getCarwarehouse()), userDetail.getUser(), ed, true);
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} catch (Exception e) {
 			this.logger.error("调用地址库异常", e);
