@@ -7655,16 +7655,23 @@ public class CwbDAO {
 	public List<CwbOrder> getCwbOrderByDelivery(String...params) {
 		StringBuffer sql = new StringBuffer();
 		String cwbs = params[0];
-		if(params.length>1 && "WEIPIPEI".equals(params[1]))
+		if(params.length>1 && "WEIPIPEI".equals(params[1])){
 			sql.append("select * from express_ops_cwb_detail where state=1 and flowordertype<>"+CwbFlowOrderTypeEnum.YiShenHe.getValue());
-		else
+			//Added by leoliao at 2016-06-29 加上配送站点为0的条件			
+			sql.append(" and deliverybranchid=0 ");
+			//Added end
+		}else{
 			sql.append("select * from express_ops_cwb_detail where state=1 ");
+		}
 			
 		if (!"".equals(cwbs)) {
 			sql.append(" and cwb in(" + cwbs + ")");
 			String ordercwbs = "'" + cwbs.replace("'", "") + "'";
 			sql.append(" ORDER BY FIND_IN_SET(cwb," + ordercwbs + ")");
 		}
+		
+		logger.info("CwbDAO getCwbOrderByDelivery sql:{}", sql);
+		
 		return this.jdbcTemplate.query(sql.toString(), new CwbMapper());
 	}
 

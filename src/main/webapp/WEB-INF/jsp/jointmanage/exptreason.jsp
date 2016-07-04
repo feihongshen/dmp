@@ -29,7 +29,10 @@ List<ExptReason> exptreasonlist =(List<ExptReason>)request.getAttribute("exptrea
 Page page_obj = (Page)request.getAttribute("page_obj");
 int support_key=Integer.parseInt(request.getAttribute("support_key")!=null?request.getAttribute("support_key").toString():"0");
 List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist");
- int customerid=Integer.parseInt(request.getAttribute("customerid")!=null?request.getAttribute("customerid").toString():"0");
+int customerid=Integer.parseInt(request.getAttribute("customerid")!=null?request.getAttribute("customerid").toString():"0");
+
+//Added by leoliao at 2016-07-01 解决POSEnum枚举类里面的编码与客户ID冲突
+String support_key_selected = (request.getAttribute("support_key_selected")==null?"0" : request.getAttribute("support_key_selected").toString());
 %>
 
 <script type="text/javascript">
@@ -85,10 +88,10 @@ List<Customer> customerlist =(List<Customer>)request.getAttribute("customerlist"
 						<option value="-1">全部</option>
 						<%for(Customer en : customerlist){ %>
 						<option value="1_<%=en.getCustomerid()%>"
-							<%if(en.getCustomerid()==support_key){%> selected <%} %>><%=en.getCustomername() %></option>
+							<%if(("1_"+en.getCustomerid()).equals(support_key_selected)){%> selected <%} %>><%=en.getCustomername() %></option>
 						<%} %>
 						<%for(PosEnum p : PosEnum.values()){ %>
-						<option value="<%=p.getKey()%>" <%if(support_key==p.getKey()){%>
+						<option value="<%=p.getKey()%>" <%if(String.valueOf(p.getKey()).equals(support_key_selected)){%>
 							selected <%} %>><%=p.getText() %></option>
 						<%} %>
 					</select> <input type="submit"

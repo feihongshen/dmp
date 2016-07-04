@@ -7,16 +7,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-
-import com.pjbest.splitting.aspect.DataSource;
-import com.pjbest.splitting.routing.DatabaseType;
 
 import cn.explink.controller.MonitorKucunDTO;
 import cn.explink.controller.MonitorKucunSim;
-import cn.explink.controller.MonitorLogSim;
 import cn.explink.util.Page;
+
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
 
 
 @Component
@@ -60,7 +58,7 @@ public class MonitorKucunDAO {
 	 */
 	@DataSource(DatabaseType.REPLICA)
 	public List<MonitorKucunSim> getMonitorLogByBranchid(String branchids ,String wheresql,String branchname) {
-		StringBuffer sql = new StringBuffer("SELECT "+branchname+" as branchid,COUNT(1) as dcount, SUM(op.receivablefee+op.paybackfee) as dsum FROM  `express_ops_cwb_detail` op left join express_ops_cwb_detail as de on op.cwb=de.cwb   WHERE de.state=1 and  "+wheresql+" GROUP BY "+branchname+"");
+		StringBuffer sql = new StringBuffer("SELECT "+branchname+" as op.branchid,COUNT(1) as dcount, SUM(op.receivablefee+op.paybackfee) as dsum FROM  `express_ops_cwb_detail` op left join express_ops_cwb_detail as de on op.cwb=de.cwb   WHERE de.state=1 and  "+wheresql+" GROUP BY "+branchname+"");
 
 		System.out.println("-- 生命周期监控:\n"+sql);
 		List<MonitorKucunSim> list = jdbcTemplate.query(sql.toString(), new MonitorKucunSimMapper());

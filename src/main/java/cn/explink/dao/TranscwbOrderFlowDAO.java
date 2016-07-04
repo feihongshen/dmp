@@ -9,26 +9,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import cn.explink.core.utils.JsonUtil;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.util.StreamingStatementCreator;
 
 @Component
 public class TranscwbOrderFlowDAO {
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static final String SCANNUM_MAP_SCANCWB = "scancwb";
 
 	private static final String SCANNUM_MAP_COUNT = "scannum";
+	
+	private static final String SCANNUM_MAP_CWB = "cwb";
 
 	private final class TranscwbOrderFlowRowMapper implements RowMapper<TranscwbOrderFlow> {
 		@Override
@@ -51,6 +60,9 @@ public class TranscwbOrderFlowDAO {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	/**
 	 * 创建一条操作记录
@@ -189,36 +201,43 @@ public class TranscwbOrderFlowDAO {
 
 	public int getScanNumByTranscwbOrderFlow(String scancwb, String cwb, long flowordertype, long branchid) {
 		List<Map<String, Object>> resultList = this.getScanCwbCountMapByTranscwbOrderFlow(cwb, flowordertype, branchid);
-		// 当前运单扫描次数
-		Integer currentTransCwbCount = Integer.valueOf(0);
-		// 兄弟运单
-		Map<String, Integer> siblingTransCwbMap = new HashMap<String, Integer>();
-		for (Map<String, Object> resultMap : resultList) {
-			Object transcwbObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB);
-			Object countObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT);
-			Integer count = Integer.valueOf(0);
-			if (transcwbObj != null) {
-				String transcwb = (String) transcwbObj;
-				// 当前扫描的运单
-				if (scancwb.equals(transcwb)) {
-					currentTransCwbCount = Integer.parseInt(((Long) countObj).toString());
-					continue;
-				}
-				if (countObj != null) {
-					count = Integer.parseInt(((Long) countObj).toString());
-				}
-				siblingTransCwbMap.put(transcwb, count);
-			}
-		}
-
 		int scannum = 0;
-		Set<String> siblingTransCwbKeySet = siblingTransCwbMap.keySet();
-		for (String siblingTransCwbKey : siblingTransCwbKeySet) {
-			// 当前运单某个操作状态扫描次数比某个兄弟运单的小，说明兄弟运单扫描过，所以++
-			if (currentTransCwbCount.compareTo(siblingTransCwbMap.get(siblingTransCwbKey)) < 0) {
-				scannum++;
-			}
+		if(CollectionUtils.isEmpty(resultList)){
+			return scannum;
 		}
+		Map<String, Object> resultMap = resultList.get(0);
+		Object countObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT);
+		scannum = Integer.parseInt(countObj.toString());
+//		// 当前运单扫描次数
+//		Integer currentTransCwbCount = Integer.valueOf(0);
+//		// 兄弟运单
+//		Map<String, Integer> siblingTransCwbMap = new HashMap<String, Integer>();
+//		for (Map<String, Object> resultMap : resultList) {
+//			Object transcwbObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB);
+//			Object countObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT);
+//			Integer count = Integer.valueOf(0);
+//			if (transcwbObj != null) {
+//				String transcwb = (String) transcwbObj;
+//				// 当前扫描的运单
+//				if (scancwb.equals(transcwb)) {
+//					currentTransCwbCount = Integer.parseInt(((Long) countObj).toString());
+//					continue;
+//				}
+//				if (countObj != null) {
+//					count = Integer.parseInt(((Long) countObj).toString());
+//				}
+//				siblingTransCwbMap.put(transcwb, count);
+//			}
+//		}
+//
+//		int scannum = 0;
+//		Set<String> siblingTransCwbKeySet = siblingTransCwbMap.keySet();
+//		for (String siblingTransCwbKey : siblingTransCwbKeySet) {
+//			// 当前运单某个操作状态扫描次数比某个兄弟运单的小，说明兄弟运单扫描过，所以++
+//			if (currentTransCwbCount.compareTo(siblingTransCwbMap.get(siblingTransCwbKey)) < 0) {
+//				scannum++;
+//			}
+//		}
 		return scannum;
 	}
 	
@@ -277,9 +296,16 @@ public class TranscwbOrderFlowDAO {
 	 * @return key:运单号 value:扫描次数
 	 */
 	private List<Map<String, Object>> getScanCwbCountMapByTranscwbOrderFlow(String cwb, long flowordertype, long branchid) {
+//		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+//		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB + ",count(scancwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
+//				+ " FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND branchid=? " + " group by scancwb ";
+//		try {
+//			result = this.jdbcTemplate.queryForList(sql, cwb, flowordertype, branchid);
+//		} catch (DataAccessException e) {
+//		}
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB + ",count(scancwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
-				+ " FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND branchid=? " + " group by scancwb ";
+		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_CWB + ",count(cwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
+				+ " FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND branchid=? and isnow=1 ";
 		try {
 			result = this.jdbcTemplate.queryForList(sql, cwb, flowordertype, branchid);
 		} catch (DataAccessException e) {
@@ -319,5 +345,42 @@ public class TranscwbOrderFlowDAO {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * 查询express_ops_transcwb_orderflow
+	 * @param param 参数map
+	 * @param orderBy 排序
+	 * @return
+	 */
+	public List<TranscwbOrderFlow> queryTranscwbOrderFlow(Map<String, Object> paramMap, String orderBy) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * FROM express_ops_transcwb_orderflow t ");
+		sql.append(" WHERE 1=1 ");
+		
+		if (paramMap.get("flowordertype") != null) {
+			sql.append(" AND t.flowordertype = :flowordertype ");
+		}
+		if (paramMap.get("flowordertypeIn") != null) {
+			sql.append(" AND t.flowordertype IN (" + paramMap.get("flowordertypeIn").toString() + ") ");
+		}
+		if (paramMap.get("isnow") != null) {
+			sql.append(" AND t.isnow = :isnow ");
+		}
+		if (paramMap.get("cwb") != null) {
+			sql.append(" AND t.cwb = :cwb ");
+		}
+		if (paramMap.get("branchid") != null) {
+			sql.append(" AND t.branchid = :branchid ");
+		}
+		if (orderBy != null) {
+			sql.append(" ORDER BY ");
+			sql.append(orderBy);
+			sql.append(" ");
+		}
+		String sqlStr = sql.toString();
+		logger.info("queryTranscwbOrderFlow->sqlStr:{}", sqlStr);
+		logger.info("queryTranscwbOrderFlow->paramMap:{}", JsonUtil.translateToJson(paramMap));
+		return namedParameterJdbcTemplate.query(sqlStr, paramMap, new TranscwbOrderFlowRowMapper());
 	}
 }

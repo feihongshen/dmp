@@ -150,6 +150,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
+import cn.explink.service.OrderBackCheckService;
 import cn.explink.service.docking.AutoAllocationService;
 import cn.explink.service.express.ExpressOutStationService;
 import cn.explink.service.mps.CwbOrderBranchInfoModificationService;
@@ -312,6 +313,9 @@ public class PDAController {
 	
 	@Autowired
 	private MPSOptStateService mpsOptStateService ;
+	
+	@Autowired
+	private OrderBackCheckService orderBackCheckService;
 
 	private ObjectMapper om = new ObjectMapper();
 
@@ -991,14 +995,7 @@ public class PDAController {
 	@RequestMapping("/branchbackexport")
 	public String branchbackexport(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag// 为包号修改
 	) {
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
-		List<Branch> removeList = new ArrayList<Branch>();
-		for (Branch b : bList) {// 去掉中转站和库房
-			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
-				removeList.add(b);
-			}
-		}
-		bList.removeAll(removeList);
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser(), BranchEnum.TuiHuo);
 
 		// TODO只有做了订单拦截的订单才是待退货
 		List<CwbOrder> cwbAllList = this.getAuditTuiHuo();
@@ -1251,7 +1248,7 @@ public class PDAController {
 	@RequestMapping("/exportwarhouse")
 	public String exportwarhouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
 		long startTime = System.currentTimeMillis();
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser(), BranchEnum.TuiHuo);
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
 
@@ -2036,6 +2033,10 @@ public class PDAController {
 			cwb = this.cwbOrderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 			try {// 成功订单
+				
+				//校验是否存在退货出站审核中的记录
+				orderBackCheckService.validateCheckStateAuditing(cwb, FlowOrderTypeEnum.FenZhanLingHuo);
+				
 				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
 				obj.put("flowordertype", cwbOrder.getFlowordertype());
@@ -5305,14 +5306,7 @@ public class PDAController {
 		}
 		model.addAttribute("msg", msg);
 
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
-		List<Branch> removeList = new ArrayList<Branch>();
-		for (Branch b : bList) {// 去掉中转站
-			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
-				removeList.add(b);
-			}
-		}
-		bList.removeAll(removeList);
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser(), BranchEnum.TuiHuo);
 
 		List<CwbOrder> weichuzhanlist = this.getAuditTuiHuo();
 		List<CwbOrder> yichuzhanlist = this.cwbDAO.getCwbByFlowOrderTypeAndNextbranchidAndStartbranchidList(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid(), branchid);
@@ -5425,6 +5419,10 @@ public class PDAController {
 			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid) throws ParseException {
 		String scancwb = cwb;
 		cwb = this.cwbOrderService.translateCwb(cwb);
+		
+		//校验是否存在退货出站审核中的记录
+		orderBackCheckService.validateCheckStateAuditing(cwb, FlowOrderTypeEnum.FenZhanLingHuo);
+		
 		// json对象
 		JSONObject obj = new JSONObject();
 		// 判断当前流程是否为今日，供上门退订单分派使用.(包括重复扫描)
@@ -7266,7 +7264,7 @@ public class PDAController {
 		// 已出库明细
 		List<CwbDetailView> yichukuViewlist = this.getcwbDetail(yiChuKuList, cList, showCustomerjSONArray, null, 0);
 
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser(), BranchEnum.TuiHuo);
 		model.addAttribute("branchList", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
