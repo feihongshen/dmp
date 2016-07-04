@@ -395,6 +395,7 @@ public class CwbDAO {
 			}
 
 			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
+			cwbOrder.setTpstranscwb(rs.getString("tpstranscwb"));
 			return cwbOrder;
 		}
 	}
