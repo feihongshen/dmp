@@ -1248,7 +1248,7 @@ public class PDAController {
 	@RequestMapping("/exportwarhouse")
 	public String exportwarhouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
 		long startTime = System.currentTimeMillis();
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser(), BranchEnum.TuiHuo);
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
 

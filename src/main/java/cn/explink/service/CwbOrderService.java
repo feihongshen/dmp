@@ -473,6 +473,9 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	private MPSOptStateService mPSOptStateService;
 	@Autowired
+	private BaleService baleService;
+	
+	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
@@ -1135,7 +1138,7 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}
 
-		this.baleDaoHuo(co);
+		this.baleDaoHuo(scancwb);
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
@@ -1413,7 +1416,7 @@ public class CwbOrderService extends BaseOrderService {
 			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
 		}
 
-		this.baleDaoHuo(co);
+		this.baleDaoHuo(scancwb);
 
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
@@ -1979,7 +1982,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, -1L, currentbranchid, NextBranchid);
 
-		this.baleDaoHuo_fzdh(co);
+		this.baleDaoHuo_fzdh(scancwb);
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
@@ -2436,22 +2439,17 @@ public class CwbOrderService extends BaseOrderService {
 		this.createFloworder(user, branchid, co.getCwb(), flowordertype, comment, credate, null);
 	}
 
-	public void baleDaoHuo(CwbOrder co) {
-		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
-			Bale isbale = this.baleDAO.getBaleOnway(co.getPackagecode());
-			if (isbale != null) {
-				this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
-			}
-		}
+	public void baleDaoHuo(String scancwb) {
+		baleService.disableBale(scancwb);
 	}
 
-	public void baleDaoHuo_fzdh(CwbOrder co) {
-		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
-			Bale isbale = this.baleDAO.getBaleOnway(co.getPackagecode());
-			if (isbale != null) {
-				this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
-			}
-		}
+	/**
+	 * modify by jian_xie
+	 * 修改成通过id更新包状态
+	 * @param scancwb
+	 */
+	public void baleDaoHuo_fzdh(String scancwb) {
+		baleService.disableBale(scancwb);
 	}
 
 	private ObjectMapper om = JacksonMapper.getInstance();
