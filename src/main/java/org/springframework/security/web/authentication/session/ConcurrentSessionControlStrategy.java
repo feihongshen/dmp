@@ -20,6 +20,8 @@ import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.util.Assert;
 
+import cn.explink.schedule.Constants;
+
 /**
  * Strategy which handles concurrent session-control, in addition to the
  * functionality provided by the base class.
@@ -91,6 +93,12 @@ public class ConcurrentSessionControlStrategy extends SessionFixationProtectionS
 			HttpSession session = request.getSession(false);
 
 			if (session != null) {
+				//PDA不使用浏览器登录，可跳过检查
+				boolean isAccessSourceFromPDA = Boolean.valueOf(String.valueOf(session.getAttribute(Constants.IS_ACCESS_SOURCE_FROM_PDA)));
+				if(isAccessSourceFromPDA) {
+					return;
+				}
+				
 				// Only permit it though if this request is associated with one
 				// of the already registered sessions
 				for (SessionInformation si : sessions) {
@@ -105,7 +113,7 @@ public class ConcurrentSessionControlStrategy extends SessionFixationProtectionS
 
 		allowableSessionsExceeded(sessions, allowedSessions, sessionRegistry);
 	}
-
+	
 	/**
 	 * Method intended for use by subclasses to override the maximum number of
 	 * sessions that are permitted for a particular authentication. The default
@@ -151,7 +159,6 @@ public class ConcurrentSessionControlStrategy extends SessionFixationProtectionS
 		}
 
 		leastRecentlyUsed.expireNow();
-		sessionRegistry.removeSessionInformation(leastRecentlyUsed.getSessionId());
 	}
 
 	@Override

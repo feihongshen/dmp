@@ -204,6 +204,9 @@ public class ComplaintController {
 				} catch (UnsupportedEncodingException e) {
 					sms = "催件投诉短信发送 短信平台异常！";
 					this.logger.info("投诉发送短信，小件员:{},手机号：{} ，短信发送异常！", delivery.getRealname(), delivery.getUsermobile());
+				} catch (Exception e) {
+					sms = "催件投诉短信发送 未知异常！";
+					this.logger.info("投诉发送短信，小件员:{},手机号：{} ，短信发送异常！", delivery.getRealname(), delivery.getUsermobile());
 				}
 			}
 		}

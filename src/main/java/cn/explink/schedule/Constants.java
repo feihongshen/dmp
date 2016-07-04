@@ -142,4 +142,9 @@ public class Constants {
 	/**
 	 * ADD BY WANGYCH END
 	 */
+	
+	/*
+	 * 登录来源是否为PDA
+	 */
+	public static final String IS_ACCESS_SOURCE_FROM_PDA = "isAccessSourceFromPDA";
 }

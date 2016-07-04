@@ -204,6 +204,9 @@ function resetData(){
 	$("#endtime").val("");
 	$("#auditstate").val(0);
 }
+$(function(){
+	$("#customerid").combobox();
+	})
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">

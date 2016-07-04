@@ -154,6 +154,7 @@ public class FlowFromJMSToEMSOrderService {
 			
 			this.logger.info("保存EMS订单消息开始：" + System.currentTimeMillis());
 			this.logger.info("EMS订单保存， 环节信息处理,{}", parm);
+			
 			int sendnum =Integer.parseInt(order.getSendcarnum()+"");
 			String[] arrTranscwb = new String[sendnum];
 			String transcwbstr = order.getTranscwb();

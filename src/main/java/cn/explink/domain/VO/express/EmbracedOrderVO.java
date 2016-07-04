@@ -305,6 +305,21 @@ public class EmbracedOrderVO {
 	 * 货物尺寸
 	 */
 	private String carsize;
+	
+	//快递产品类型，服务产品
+	private Integer express_product_type;
+	
+	//支付类型
+	private Integer paywayid;
+	
+	//预约单号
+	private String reserveOrderNo;
+	
+	//版本号
+	private Long recordVersion;
+	
+	//tps运单号
+	private String tpsTranscwb;
 
 	public String getOrderNo() {
 		return this.orderNo;
@@ -914,4 +929,44 @@ public class EmbracedOrderVO {
 		this.carsize = carsize;
 	}
 
+	public Integer getExpress_product_type() {
+		return express_product_type;
+	}
+
+	public void setExpress_product_type(Integer express_product_type) {
+		this.express_product_type = express_product_type;
+	}
+
+	public Integer getPaywayid() {
+		return paywayid;
+	}
+
+	public void setPaywayid(Integer paywayid) {
+		this.paywayid = paywayid;
+	}
+
+	public String getReserveOrderNo() {
+		return reserveOrderNo;
+	}
+
+	public void setReserveOrderNo(String reserveOrderNo) {
+		this.reserveOrderNo = reserveOrderNo;
+	}
+
+	public Long getRecordVersion() {
+		return recordVersion;
+	}
+
+	public void setRecordVersion(Long recordVersion) {
+		this.recordVersion = recordVersion;
+	}
+
+	public String getTpsTranscwb() {
+		return tpsTranscwb;
+	}
+
+	public void setTpsTranscwb(String tpsTranscwb) {
+		this.tpsTranscwb = tpsTranscwb;
+	}
+	
 }

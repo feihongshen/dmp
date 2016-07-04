@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
 <%@page import="cn.explink.util.StringUtil"%>
 <%@page import="cn.explink.domain.Branch"%>
@@ -19,7 +20,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 <script type="text/javascript">
 function editInit(){
@@ -28,19 +28,23 @@ function editInit(){
 function editSuccess(data){
 	$("#searchForm").submit();
 }
-
+$(function(){
+	$("#branchid").combobox();
+	$("span.combo-arrow").css({"margin-right":"-18px","margin-top":"-20px"});
+	
+	})
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5">
 <div class="right_box">
 <div class="inputselect_box">
 <form id="searchForm" action ="1" method = "post">
-出库站点： <select id="branchid" name="branchid" class="select1">
+<div style="float: left;">出库站点： <select id="branchid" name="branchid" class="select1">
                <option value =-1>请选择</option>
               <%for(Branch b : branchList){ %>
                 <option value ="<%=b.getBranchid()%>"><%=b.getBranchname() %></option>
               <%} %>
-              </select>
+              </select></div>
 <input type ="submit"  value ="查询" class="input_button2">
 <input type="button"  onclick="location.href='1'" value="返回" class="input_button2" />
 </form>

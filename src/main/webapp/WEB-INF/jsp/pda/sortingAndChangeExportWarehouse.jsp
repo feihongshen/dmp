@@ -1,4 +1,5 @@
 
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ include file="/WEB-INF/jsp/commonLib/header.jsp"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum,cn.explink.enumutil.ExceptionCwbErrorTypeEnum"%>
@@ -71,6 +72,7 @@ var g_data = {
 	showCustomerSign : ${showCustomerSign},
 	pageSize : <%=Page.DETAIL_PAGE_NUMBER%>
 };
+
 
 var requestContext = "<%=request.getContextPath()%>" ;
 
@@ -254,6 +256,7 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 	if(scancwb.indexOf("@zd_")>-1){
 		$("#branchid").val(scancwb.split('_')[1]);
 		if($("#branchid").val()!=scancwb.split('_')[1]){
+			
 			if(isOpenDialog){
 				$("#msg1").html("         （异常扫描）扫描站点失败");
 				$('#find').dialog('open');
@@ -621,7 +624,7 @@ function fengbao(){
 				errorvedioplay("<%=request.getContextPath()%>",data);
 			}
 			$("#scancwb").val("");
-			$("#carweightDesc").html("") ;
+			
 		}
 	});
 }
@@ -688,7 +691,9 @@ function chuku(){
 		}
 	});
 }
-
+$(function(){
+	$("#branchid").combobox();
+})
 function setNeedWeight(){
 	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
 	jQuery("#orderWeight").val("") ;
@@ -731,7 +736,6 @@ function saveOrderWeight(keyCode){
 	exportWarehouseForWeight(requestContext,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,needWeightFlag,orderWeight) ;
 	
 }
-
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
@@ -882,9 +886,6 @@ function saveOrderWeight(keyCode){
 						<%
 							}
 						%>
-					<p>
-						<span>称重:</span><input type="checkbox" id="needWeightFlag" name="needWeightFlag" onclick = "setNeedWeight()" />
-					</p>
 					<p style="display: none;">
 							<span>包号：</span><input type="text" class="saomiao_inputtxt2" name="baleno" id="baleno"
 								onKeyDown="if(event.keyCode==13&&$(this).val().length>0){if($(this).val().indexOf('@zd_')>-1){$('#branchid').val($(this).val().split('_')[1]);if($('#branchid').val()!=$(this).val().split('_')[1]){$('#msg').html('         （异常扫描）扫描站点失败');$('#branchid').val(0);}else{$('#msg').html('');}$(this).val('');return false;}if($('#branchid').val()==0){alert('请选择下一站');return;}$(this).attr('readonly','readonly');$('#scancwb').parent().show();$('#scancwb').show();$('#scancwb').focus();}" />
@@ -905,9 +906,6 @@ function saveOrderWeight(keyCode){
 								onclick="fengbao()" /> <input type="button" name="chuku" id="chuku" value="出库"
 								class="button" onclick="chuku()" />
 					</p>
-					<p>
-						<span>重量(Kg):</span><input type="text" class="saomiao_inputtxt1" id="orderWeight" name="orderWeight" disabled = "true"  onKeyDown = "saveOrderWeight(event.keyCode)" />
-					</p>
 				</div>
 				<c:if test="${isOpenDialog=='open'}">
 					<div  id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"  style="width:400px;height:200px;">
@@ -915,7 +913,6 @@ function saveOrderWeight(keyCode){
 								<p id="msg1" name="msg1" ></p>
 								<p id="showcwb" name="showcwb"></p>
 								<p id="excelbranch" name="excelbranch" ></p>
-								<p id="carweightDesc" name="carweightDesc" ></p>
 								<p id="cwbDetailshow" name="cwbDetailshow" ></p>
 									<div style="display: none" id="EMBED"></div>
 								<div style="display: none">
@@ -946,7 +943,6 @@ function saveOrderWeight(keyCode){
 					<p id="msg" name="msg" ></p>
 					<p id="showcwb" name="showcwb"></p>
 					<p id="excelbranch" name="excelbranch" ></p>
-					<p id="carweightDesc" name="carweightDesc" ></p>
 					<p id="cwbDetailshow" name="cwbDetailshow" ></p>
 						<div style="display: none" id="EMBED"></div>
 					<div style="display: none">

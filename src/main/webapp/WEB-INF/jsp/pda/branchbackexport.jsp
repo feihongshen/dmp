@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.enumutil.switchs.SwitchEnum"%>
@@ -37,7 +38,6 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <title>退货出站扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -556,6 +556,10 @@ function chuku(){
 		}
 	});
 }
+$(function(){
+	$("#branchid").combobox();
+	})
+
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">

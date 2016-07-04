@@ -218,5 +218,30 @@ public class JiontDAO {
 	public void updateCache(){
 		
 	}
+	//根据承运上编码查询接口设置
+	public JointEntity getJointEntityByShipperNo(String key, int joint_num) {
+		JointEntity jointEntity = null;
+		try {
+			String sql = "select * from express_set_joint where joint_property like '%\""+key+"\"%' "
+					+ "and joint_property like '%\"isTpsSendFlag\":1,%' and joint_num<>"+joint_num+" limit 0,1";
+			jointEntity = jdbcTemplate.queryForObject(sql, new PosMapper());
+		} catch (Exception e) {
+			 // e.printStackTrace();
+		}
+		return jointEntity;
+	}
 
+	//根据承运上编码查询有效接口设置
+	/*@Cacheable(value = "jointCache", key = "#key", condition = "#result ne null")*/
+	public JointEntity getJointEntityByShipperNoForUse(String key) {
+		JointEntity jointEntity = null;
+		try {
+			String sql = "select * from express_set_joint where joint_property like '%"+key+"%' "
+					+ "and joint_property like '%\"isTpsSendFlag\":1,%' and state=1 limit 0,1";
+			jointEntity = jdbcTemplate.queryForObject(sql, new PosMapper());
+		} catch (Exception e) {
+			 // e.printStackTrace();
+		}
+		return jointEntity;
+	}
 }

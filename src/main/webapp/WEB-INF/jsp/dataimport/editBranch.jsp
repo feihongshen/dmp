@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.Exportmould"%>
 <%@page import="cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
@@ -41,8 +42,8 @@
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css"
 	type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"
-	type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"
+	type="text/javascript"></script> --%>
 <script
 	src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js"
 	type="text/javascript"></script>
@@ -183,6 +184,9 @@ function bdbranchmatch(){
 		});
 	}
 }
+/* $(function(){
+	$("#customerid").combobox();
+	}) */
 </script>
 </head>
 <body style="background: #f5f5f5">
@@ -217,7 +221,7 @@ function bdbranchmatch(){
 								<%
 									}
 								%>
-						</select> 发货批次： <select id="emaildate" name="emaildate" class="select1"
+						</select>发货批次： <select id="emaildate" name="emaildate" class="select1"
 							style="height: 20px; width: 280px">
 								<option value='0' id="option2">请选择(供货商_供货商仓库_结算区域)</option>
 								<%

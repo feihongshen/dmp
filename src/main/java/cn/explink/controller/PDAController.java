@@ -2020,6 +2020,7 @@ public class PDAController {
 		long linghuoSuccessCount = 0;
 		String alertErrorMsg = "";
 		String alertWarnMsg = "";
+		String relatedShangMenTuiCwb = ""; // 配送单关联的上门退订单
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
 		for (String cwb : cwbs.split("\r\n")) {
@@ -2052,6 +2053,12 @@ public class PDAController {
 				obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 				obj.put("errorcode", "000000");
 				linghuoSuccessCount++;
+				
+				if (relatedShangMenTuiCwb.isEmpty()) {
+					relatedShangMenTuiCwb = cwbOrderService.haveRelatedShangMenTuiCwb(cwbOrder);
+				} else {
+					relatedShangMenTuiCwb += "," + cwbOrderService.haveRelatedShangMenTuiCwb(cwbOrder);
+				}
 			} catch (CwbException ce) {// 出现验证错误
 				this.logger.error("cwb="+cwb,ce);
 				if (ExceptionCwbErrorTypeEnum.LingHuo_ZhiFuXinxiWeiQueRen.equals(ce.getError())) { // 订单存在未确认的支付信息修改申请，终止领货，并且弹窗提示
@@ -2161,6 +2168,11 @@ public class PDAController {
 				alertWarnMsg = editCwbs.toString() + "有修改，请及时核对！";
 			}
 		}
+		if (alertErrorMsg.isEmpty() && alertWarnMsg.isEmpty()
+				&& !relatedShangMenTuiCwb.isEmpty()) {
+			alertWarnMsg = relatedShangMenTuiCwb + "有关联揽退单！";
+		}
+		
 		model.addAttribute("objList", objList);
 		model.addAttribute("customerlist", cList);
 
@@ -3442,7 +3454,7 @@ public class PDAController {
 			cwb = this.cwbOrderService.translateCwb(cwb);
 			obj.put("cwb", cwb);
 
-			try {// 成功订单				
+			try {// 成功订单
 				//有货无单校验
 				this.checkyouhuowudan(this.getSessionUser(), cwb, customerid, this.getSessionUser().getBranchid());
 				CwbOrder cwbOrder = this.cwbOrderService.intoWarehous(this.getSessionUser(), cwb, scancwb, customerid, driverid, 0, "", "", false);
@@ -4194,7 +4206,7 @@ public class PDAController {
 
 						boolean exportHouseFailed = false;
 						try {
-							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(), cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(),cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
 						} catch (Exception e) {
 							exportHouseFailed = true;
 							msg = "（异常扫描）" + e.getMessage();
@@ -5462,6 +5474,8 @@ public class PDAController {
 			obj.put("cwbdelivername", "");
 			obj.put("cwbdelivernamewav", "");
 		}
+		obj.put("guanlianlantuidan", cwbOrderService.haveRelatedShangMenTuiCwb(cwbOrder));
+		
 		// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
 		String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 		List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
@@ -10976,6 +10990,7 @@ public class PDAController {
 				/* thissuccess++; */
 				batchCount.setThissuccess(batchCount.getThissuccess() + 1);
 			} catch (CwbException ce) {// 出现验证错误
+				this.logger.error("cwb="+cwb,ce);
 				CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();

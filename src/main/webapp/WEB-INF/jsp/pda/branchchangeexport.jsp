@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@page import="cn.explink.domain.Reason"%>
 <%@page import="cn.explink.enumutil.switchs.SwitchEnum"%>
@@ -26,7 +26,6 @@ String wavPath=request.getContextPath()+"/images/wavnums/";
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -369,6 +368,11 @@ function chuku(){
 		}
 	});
 }
+$(function(){
+	$("#branchid").combobox();
+	$("#deliverybranchid").combobox();
+	})
+
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">

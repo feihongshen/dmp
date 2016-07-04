@@ -49,7 +49,7 @@ public class UserDAO {
 			user.setUserid(rs.getInt("userid"));
 			user.setUsername(rs.getString("username"));
 			user.setRealname(StringUtil.nullConvertToEmptyString(rs.getString("realname")));
-			user.setPassword(rs.getString("password"));//PDA登录密码
+			user.setPassword(rs.getString("password"));//POS登录密码
 			user.setBranchid(rs.getLong("branchid"));
 			user.setUsercustomerid(rs.getLong("usercustomerid"));
 			user.setIdcardno(StringUtil.nullConvertToEmptyString(rs.getString("idcardno")));
@@ -280,7 +280,7 @@ public class UserDAO {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement(sql, new String[] { "userid"});
 				ps.setString(1, user.getUsername());
-				ps.setString(2, user.getPassword());//PDA登录密码
+				ps.setString(2, user.getPassword());//POS登录密码
 				ps.setString(3, user.getRealname());
 				ps.setString(4, user.getIdcardno());
 				ps.setInt(5, user.getEmployeestatus());
@@ -321,7 +321,7 @@ public class UserDAO {
 //					@Override
 //					public void setValues(PreparedStatement ps) throws SQLException {
 //						ps.setString(1, user.getUsername());
-//						ps.setString(2, user.getPassword());//PDA登录密码
+//						ps.setString(2, user.getPassword());//POS登录密码
 //						ps.setString(3, user.getRealname());
 //						ps.setString(4, user.getIdcardno());
 //						ps.setInt(5, user.getEmployeestatus());
@@ -365,7 +365,7 @@ public class UserDAO {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, user.getUsername());
-						ps.setString(2, user.getPassword());//PDA登录密码
+						ps.setString(2, user.getPassword());//POS登录密码
 						ps.setString(3, user.getRealname());
 						ps.setString(4, user.getIdcardno());
 						ps.setInt(5, user.getEmployeestatus());

@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.logdto.*"%>
 <%@page import="cn.explink.domain.*"%>
@@ -9,7 +10,6 @@
 <title>库房今日日志</title>
 <link rel="stylesheet"	href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"	type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 </head>
 <%
@@ -49,6 +49,10 @@ $("#right_hideboxbtn").click(function(){
 	});
 });
 
+$(function(){
+	$("#branid").combobox();
+	$("span.combo-arrow").css({"margin-right":"-18px","margin-top":"-20px"});
+	})
 </script>
 
 
@@ -57,13 +61,13 @@ $("#right_hideboxbtn").click(function(){
 <div class="right_box">
 	<div class="inputselect_box" style="top: 0px; ">
 	<form id="searchForm" action ="<%=request.getContextPath()%>/warehouseLog/nowlog" method = "post">
-                      库房：<select name ="branchid" id="branid" class="select1" onchange="$('#searchForm').submit()">
+            <div style="float: left;">  库房：<select name ="branchid" id="branid" class="select1" onchange="$('#searchForm').submit()">
 	              <%if(branchnameList != null && branchnameList.size()>0){ %>
 	               <%for( Branch b:branchnameList){ %>
 	               		<option value ="<%=b.getBranchid()%>" 
 	               		<%if(b.getBranchid() == new Long(request.getParameter("branchid")==null?"-1":request.getParameter("branchid"))) {%>selected="selected"<%} %>><%=b.getBranchname() %></option>
 	               <%} }%>
-	              </select>
+	              </select></div>
 	               &nbsp;&nbsp;当前日期：<%=new SimpleDateFormat("yyyy-MM-dd").format(new Date()) %> &nbsp;&nbsp; 当前统计的是从
 			<font color="red"><%=request.getAttribute("startTime") %></font> 到当前时间
 	              </form> 

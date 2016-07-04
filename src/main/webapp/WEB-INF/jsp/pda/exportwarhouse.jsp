@@ -206,7 +206,6 @@ function addAndRemoval(cwb,tab,isRemoval,branchid){
  */
 var branchStr=[];
 var Cwbs="";
-
 /**
  * 输入单号后，
  */
@@ -968,7 +967,6 @@ function chuku(){
 		}
 	});
 }
-
 function setNeedWeight(){
 	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
 	jQuery("#orderWeight").val("") ;

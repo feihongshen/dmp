@@ -74,6 +74,7 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.JSONReslutUtil;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 
 @RequestMapping("/editcwb")
@@ -767,10 +768,11 @@ public class EditCwbController {
 
 	/**
 	 * 订单信息修改
+	 * @throws Exception 
 	 */
 	@RequestMapping("/editCwbInfo")
 	public String editCwbInfo(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb, @RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
-	) {
+	) throws Exception {
 
 		/*		List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
 				if (isshow > 0) {// 查询
@@ -803,6 +805,9 @@ public class EditCwbController {
 				}
 				cwbStr = cwbStr.trim();
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwbStr);
+				if(co!=null) {
+					co.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(co.getConsigneemobileOfkf()));
+				}
 				if (co != null) {
 					cwborderlist.add(co);
 				}
@@ -850,7 +855,7 @@ public class EditCwbController {
 			@RequestParam(value = "editshow", defaultValue = "0", required = false) long editshow, // 是否显示,
 			@RequestParam(value = "remark", defaultValue = "", required = false) String remark, // 订单备注
 			@RequestParam(value = "matchaddress", defaultValue = "", required = false) String branchname, // 匹配后站点
-			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress, @RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress, @RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname, @RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile, @RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname, @RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand) {// 地址
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress, @RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress, @RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname, @RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile, @RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname, @RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand) throws Exception {// 地址
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		cwb = cwb.trim();
@@ -870,7 +875,9 @@ public class EditCwbController {
 		CwbOrderDTO co = this.dataImportDAO_B2c.getCwbFromCwborder(cwb);// 运单号
 		co.setConsigneename(editname);
 		co.setCustomercommand(editcommand);
-		co.setConsigneemobile(editmobile);
+		if(!StringUtil.isEmpty(editmobile)) {
+			co.setConsigneemobile(SecurityUtil.getInstance().encrypt(editmobile));
+		}
 		co.setConsigneeaddress(editaddress);
 		co.setCwbremark(remark);
 

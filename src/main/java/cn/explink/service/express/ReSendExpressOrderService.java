@@ -20,9 +20,9 @@ import cn.explink.util.Tools;
 import cn.explink.util.express.ExpressTpsInterfaceException;
 
 import com.alibaba.fastjson.JSONObject;
-import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
-import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPResponse;
 import com.vip.osp.core.context.InvocationContext;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderResponse;
 
 @Transactional
 @Service
@@ -98,11 +98,11 @@ public class ReSendExpressOrderService extends ExpressCommonService {
 	 */
 
 	public void sendTps(ReSendExpressOrderVO vo, List<ReSendExpressOrderVO> resultVO, List<String> success, List<String> failure) {
-		List<PjDeliverOrder4DMPRequest> requestlist = new ArrayList<PjDeliverOrder4DMPRequest>();
+		List<PjDeliveryOrderRequest> requestlist = new ArrayList<PjDeliveryOrderRequest>();
 		ExpressOperationInfo params = new ExpressOperationInfo(ExpressOperationEnum.CreateTransNO);
 		params = (ExpressOperationInfo) Tools.json2Object(vo.getMethodParams(), ExpressOperationInfo.class, false);
 		requestlist.add(params.getRequestlist().get(0));
-		List<PjDeliveryOrder4DMPResponse> result = new ArrayList<PjDeliveryOrder4DMPResponse>();
+		List<PjDeliveryOrderResponse> result = new ArrayList<PjDeliveryOrderResponse>();
 		try {
 			result = this.ExpressTpsInterfaceService.createTransNo4Dmp(requestlist);
 			vo.setErrMsg("");
@@ -184,7 +184,7 @@ public class ReSendExpressOrderService extends ExpressCommonService {
 			this.logger.info("(快递单操作重推TPS)调用TPS接口正常，反馈操作的结果回传到Tps后的结果为：" + result);
 		} else if (ExpressOperationEnum.CreateTransNO.getValue().equals(operationInfo.getOperationType())) {
 			//创建运单接口
-			List<PjDeliveryOrder4DMPResponse> result = this.ExpressTpsInterfaceService.createTransNo4Dmp(operationInfo.getRequestlist());
+			List<PjDeliveryOrderResponse> result = this.ExpressTpsInterfaceService.createTransNo4Dmp(operationInfo.getRequestlist());
 			mapResult.put(ExpressOperationEnum.CreateTransNO.getUniqueCode(), result);
 			this.logger.info("(快递单操作重推TPS)调用TPS接口正常，创建运单接口请求Tps后的结果为：{}", result);
 		} else if (ExpressOperationEnum.TransNOFeedBack.getValue().equals(operationInfo.getOperationType())) {

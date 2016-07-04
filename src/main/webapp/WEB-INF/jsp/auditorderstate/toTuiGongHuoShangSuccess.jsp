@@ -4,6 +4,7 @@
 <%@page import="cn.explink.enumutil.*"%>
 <%@page import="cn.explink.controller.*"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 TuiGongHuoShangPage page_obj = (TuiGongHuoShangPage)request.getAttribute("page_obj");
 List<Customer> customerList = (List<Customer>)request.getAttribute("customerList");
@@ -20,7 +21,6 @@ String cwbs = request.getParameter("cwb")==null?"":request.getParameter("cwb");
 <%-- <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" /> --%>
 <%-- <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" /> --%>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -240,6 +240,9 @@ function resetData(){
 	$("#strtime").val("");
 	$("#endtime").val("");
 }
+$(function(){
+	/* $("#customerid").combobox(); */
+	})
 </script>
 </HEAD>
 <BODY style="background:#f5f5f5"  marginwidth="0" marginheight="0">
@@ -271,8 +274,8 @@ function resetData(){
 											</select>
 										</td>
 										<td>
-											&nbsp;&nbsp;
-											客户名称:
+											<div style="float: left;">&nbsp;&nbsp;
+											客户名称：
 											<select name ="customerid" id ="customerid">
 												<option  value ="0">全部</option>
 												<%if(customerList!=null){ %>
@@ -280,7 +283,7 @@ function resetData(){
 													<option value ="<%=cus.getCustomerid()%>"><%=cus.getCustomername()%></option>
 													<%} %>
 												<%} %>
-											</select>
+											</select></div>
 										</td>
 									</tr>
 									<tr>
