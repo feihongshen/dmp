@@ -25,7 +25,7 @@ public class AutoUserService {
 	}
 	
 	public long getPickBranch() {
-		JointEntity jointEntity=jointService.getObjectMethod(B2cEnum.VipShop_TPSAutomate.getKey());
+		JointEntity jointEntity=jointService.getObjectMethod(B2cEnum.TPS_MQ.getKey());
 		if(jointEntity==null){
 			throw new RuntimeException("找不到自动化分拣库相关配置");
 		}
@@ -38,5 +38,16 @@ public class AutoUserService {
 		}
 		
 		return vipshop.getWarehouseid();//?
+	}
+	
+	   //获取自动化开关,0关 1 开
+    public int getAutoFlag() {
+		JointEntity obj = this.jointService.getObjectMethod(B2cEnum.TPS_MQ.getKey());
+		if(obj == null){
+			return 0;
+		}
+		JSONObject jsonObj = JSONObject.fromObject(obj.getJoint_property());
+		VipShop vipshop = (VipShop) JSONObject.toBean(jsonObj, VipShop.class);
+		return vipshop.getIsAutoInterface();
 	}
 }

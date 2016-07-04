@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.logdto.*"%>
 <%@page import="cn.explink.domain.*"%>
@@ -9,7 +10,6 @@
 <title>站点日志（本站）</title>
 <link rel="stylesheet"	href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <link rel="stylesheet"	href="<%=request.getContextPath()%>/css/index.css" type="text/css">
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"	type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/branchLogAll.js" type="text/javascript"></script>
 </head>
@@ -70,6 +70,9 @@ $(function(){
 		}
 	});
 });
+$(function(){
+	$("#branid").combobox();
+	})
 </script>
 
 <script language="javascript">

@@ -16,6 +16,7 @@ import com.vip.platform.middleware.vms.VMSEventArgs;
 import cn.explink.b2c.auto.order.service.AutoExceptionService;
 import cn.explink.b2c.auto.order.service.AutoOrderStatusService;
 import cn.explink.b2c.auto.order.service.AutoPickStatusVo;
+import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.enumutil.AutoInterfaceEnum;
@@ -40,6 +41,8 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 	private JointService jointService;
 	@Autowired
 	private AutoOrderStatusService autoOrderStatusService;
+	@Autowired
+	private AutoUserService autoUserService;
 
 	private final static String MSG_ENCODE="utf-8";
 	@Override
@@ -51,7 +54,7 @@ public class AutoDispatchStatusCallback implements IVMSCallback{
 
 	        int isOpenFlag =0; 
 	        try {
-	        	isOpenFlag=this.jointService.getStateForJoint(B2cEnum.VipShop_TPSAutomate.getKey());
+	        	isOpenFlag=this.autoUserService.getAutoFlag();
 	           
 	        	if(isOpenFlag==1){
 		        	msg = new String(e.getPayload(), MSG_ENCODE);

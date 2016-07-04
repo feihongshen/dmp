@@ -380,7 +380,7 @@ public class SmsSendController {
 		return o.toString();
 	}
 
-	private Map<String, String> sendByOrderList(List<CwbOrder> list, Map<String, String> mapParm, String smsRemack, HttpServletRequest request) {
+	private Map<String, String> sendByOrderList(List<CwbOrder> list, Map<String, String> mapParm, String smsRemack, HttpServletRequest request) throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		String msg = "";
 		String errorMsg = mapParm.get("msg");

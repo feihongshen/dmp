@@ -1,5 +1,4 @@
-
-<%@ include file="/WEB-INF/jsp/commonLib/header.jsp"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
 <%@page import="net.sf.json.JSONObject"%>
@@ -396,7 +395,9 @@ function changevalue(){
 function tohome(){
 	window.location.href="<%=request.getContextPath() %>/PDA/cwbSortingAndChangeExportWarehouseBatch?branchid="+$("#branchid").val();	
 }
-
+$(function(){
+	$("#branchid").combobox();
+})
 
 </script>
 </head>

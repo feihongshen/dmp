@@ -39,6 +39,7 @@ import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.PayUpDAO;
 import cn.explink.dao.ReturnCwbsDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AccountCwbDetail;
 import cn.explink.domain.AccountCwbSummary;
@@ -67,6 +68,7 @@ import cn.explink.enumutil.FinanceDeliverPayUpDetailTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.PayMethodSwitchEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.JSONReslutUtil;
@@ -133,6 +135,8 @@ public class EditCwbService {
 	CwbOrderService cwborderService;
 	@Autowired
 	ThirdPartyOrder2DOCfgService thirdPartyOrder2DOCfgService;
+	@Autowired
+	private TransCwbDetailDAO transCwbDetailDAO;
 	
 	/**
 	 * 修改订单 之 重置审核状态
@@ -230,6 +234,8 @@ public class EditCwbService {
 		// branchDAO.getBranchByBranchid(co.getDeliverybranchid()).getZhongzhuanid();
 		Long nextbranchid = co.getNextbranchid();
 		this.cwbDAO.updateForChongZhiShenHe(co.getOpscwbid(), nextbranchid, FlowOrderTypeEnum.FenZhanLingHuo, 0L, CwbStateEnum.PeiShong, DeliveryStateEnum.WeiFanKui, BigDecimal.ZERO);
+		// 重置运单状态
+		transCwbDetailDAO.updateDetailTranscwbstate(co.getCwb(), TransCwbStateEnum.PEISONG);
 		this.logger.info("EditCwb_SQL:" + cwb + " select * from express_ops_cwb_detail where nextbranchid=" + nextbranchid + " and flowordertype=" + FlowOrderTypeEnum.FenZhanLingHuo.getValue()
 				+ " and currentbranchid=0 and cwbstate=" + CwbStateEnum.PeiShong.getValue() + " and deliverystate=" + DeliveryStateEnum.WeiFanKui.getValue() + " and opscwbid=" + co.getOpscwbid());
 

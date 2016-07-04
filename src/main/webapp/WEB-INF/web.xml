@@ -21,6 +21,20 @@
       <param-value>true</param-value>
     </init-param>
   </filter>
+  
+	<filter>
+		<filter-name>PDAAccessFilter</filter-name>
+		<filter-class>cn.explink.filter.CustomPDAAccessFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>PDAAccessFilter</filter-name>
+		<url-pattern>/resources/j_pda_check</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>PDAAccessFilter</filter-name>
+		<url-pattern>/cwborderPDA/*</url-pattern>
+	</filter-mapping>
+ 
   <filter>
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>

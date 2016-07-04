@@ -42,8 +42,8 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 					<li><span>登录用户名：</span><input type="text" id="username" name="username" value="" maxlength="50"/>*</li>
 			        <li><span>网页登录密码：</span><input type="password" id="webPassword" name="webPassword" value="" maxlength="50"/>*</li>
 			        <li><span>确认网页登录密码：</span><input type="password" id="webPassword1" name="webPassword1" value="" maxlength="50"/>*</li>
-					<li><span>PDA登录密码：</span><input type="password" id="password" name="password" value="" maxlength="50"/>*</li>
-			        <li><span>确认PDA登录密码：</span><input type="password" id="password1" name="password1" value="" maxlength="50"/>*</li>
+					<li><span>POS登录密码：</span><input type="password" id="password" name="password" value="" maxlength="50"/>*</li>
+			        <li><span>确认POS登录密码：</span><input type="password" id="password1" name="password1" value="" maxlength="50"/>*</li>
 				   	 <li><span>工作状态：</span>
 						<select id="employeestatus" name="employeestatus" onchange="changeJSstate('<%=request.getContextPath()%>/user/getjiesuanstate');">
 							<option value="<%=UserEmployeestatusEnum.GongZuo.getValue() %>" ><%=UserEmployeestatusEnum.GongZuo.getText() %></option>

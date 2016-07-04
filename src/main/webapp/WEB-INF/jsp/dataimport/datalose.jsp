@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.EmailDate"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
@@ -13,7 +14,6 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
@@ -30,6 +30,11 @@ function checkSel(){
 	}
 	return true;
 }
+$(function(){
+	$("#emaildate").combobox();
+	$("input[class='combo-text validatebox-text validatebox-f textbox']").css({"width":"500"});
+	$("div[class='combo-panel panel-body panel-body-noheader']").css({"height":"198px"});
+	})
 </script>
 </head>
 <body  style="background:#f5f5f5">

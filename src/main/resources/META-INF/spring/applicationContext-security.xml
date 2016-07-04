@@ -150,6 +150,7 @@
 		<intercept-url pattern="/health_check.jsp" access="permitAll" />
 				
 		<intercept-url pattern="/**" access="isAuthenticated()" />
+		<custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrentSessionFilter" />
 		<custom-filter before="FORM_LOGIN_FILTER" ref="loginFilter" />
 		<custom-filter position="FORM_LOGIN_FILTER" ref="PDALoginFilter" />
 
@@ -201,6 +202,19 @@
 	<beans:bean
 		class="org.springframework.security.core.context.SecurityContextHolder"
 		factory-method="getContextHolderStrategy" />
+		
+	<beans:bean id="concurrentSessionFilter"  
+	    class="org.springframework.security.web.session.ConcurrentSessionFilter">  
+	    <beans:property name="sessionRegistry" ref="sessionRegistry" />  
+	    <beans:property name="expiredUrl" value="/login?login_error=s" />  
+	    <beans:property name="logoutHandlers">  
+	        <beans:array>  
+	            <beans:bean id="logoutHandler"  
+			        class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">  
+			    </beans:bean>
+	        </beans:array>  
+	    </beans:property>  
+	</beans:bean>
 
 	<beans:bean id="loginFilter"
 		class="org.springframework.security.web.authentication.ValidateCodeAuthenticationFilter">

@@ -1323,26 +1323,26 @@ function check_user() {
 		return false;
 	}
 	// 网页登录密码, end
-	// PDA登录密码, start
-	if ($("#roleid").val() == 2 || $("#roleid").val() == 4){	// 小件员、站长可的PDA登录密码为必填
+	// POS登录密码, start
+	if ($("#roleid").val() == 2 || $("#roleid").val() == 4){	// 小件员、站长可的POS登录密码为必填
 		if ($("#password").val().length == 0) {
-			alert("PDA登录密码不能为空");
+			alert("POS登录密码不能为空");
 			return false;
 		}
 		if ($("#password1").val() != $("#password").val()) {
-			alert("PDA登录密码两次输入不一致");
+			alert("POS登录密码两次输入不一致");
 			return false;
 		}
 		if(!isPasswordValidForPDA($('#password').val())){
-			alert("PDA登录密码必须为数字，不能过于简单，至少要含三个不同数字，数字不能为日期，且长度至少需要六位");
+			alert("POS登录密码必须为数字，不能过于简单，至少要含三个不同数字，数字不能为日期，且长度至少需要六位");
 			return false;
 		}
 		if(!isUsernamePasswordNotContainEachOther($('#username').val(), $('#password').val())){
-			alert("用户名与PDA登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
+			alert("用户名与POS登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
 			return false;
 		}
 	}
-	// PDA登录密码, end
+	// POS登录密码, end
 		
 	if ($("#roleid").val() == 2 || $("#roleid").val() == 4){
 		if ($("#username").val().length > 9) {
@@ -4759,24 +4759,24 @@ function check_userbranch() {
 		return false;
 	}
 	// 网页登录密码, end
-	// PDA登录密码, start
+	// POS登录密码, start
 	if ($("#password").val().length == 0) {
-		alert("PDA登录密码不能为空");
+		alert("POS登录密码不能为空");
 		return false;
 	}
 	if ($("#password1").val() != $("#password").val()) {
-		alert("PDA登录密码两次输入不一致");
+		alert("POS登录密码两次输入不一致");
 		return false;
 	}
 	if(!isPasswordValidForPDA($('#password').val())){
-		alert("PDA登录密码必须为数字，不能过于简单，至少要含三个不同数字，数字不能为日期，且长度至少需要六位");
+		alert("POS登录密码必须为数字，不能过于简单，至少要含三个不同数字，数字不能为日期，且长度至少需要六位");
 		return false;
 	}
 	if(!isUsernamePasswordNotContainEachOther($('#username').val(), $('#password').val())){
-		alert("用户名与PDA登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
+		alert("用户名与POS登录密码的内容不能相互包含，包括倒序、忽略大小写等变化");
 		return false;
 	}
-	// PDA登录密码, end
+	// POS登录密码, end
 	
 	if ($("#usermobile").val().length == 0) {
 		alert("员工手机不能为空");

@@ -416,4 +416,12 @@ public class TransCwbDetailDAO {
 		String sql = "update express_ops_transcwb_detail set previousbranchid=? where cwb=?";
 		this.jdbcTemplate.update(sql, previousbranchid, cwb);
 	}
+	
+	/**
+	 * 更新运单状态
+	 */
+	public void updateDetailTranscwbstate(String cwb, TransCwbStateEnum transcwbstate){
+		String sql = "update express_ops_transcwb_detail set transcwbstate = ? where cwb=?";
+		jdbcTemplate.update(sql, transcwbstate.getValue(), cwb);
+	}
 }
