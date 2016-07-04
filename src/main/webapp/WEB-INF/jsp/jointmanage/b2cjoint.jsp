@@ -530,6 +530,10 @@ function delSuccess(data){
             $("#edit").val('<%=request.getContextPath()%>/tPSMQExpress/show/');
             $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
         }
+		else if(obj=='22503'){//跨境购单下发接口
+            $("#edit").val('<%=request.getContextPath()%>/kuaJingGou/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
 		else if(obj=='23001'){//哲盟_轨迹
 			$("#edit").val('<%=request.getContextPath()%>/zhemengTrack/show/');
 			$("#del").val('<%=request.getContextPath()%>/zhemengTrack/del/');
