@@ -2,6 +2,8 @@ package cn.explink.domain;
 
 import java.math.BigDecimal;
 
+import cn.explink.util.SecurityUtil;
+
 public class ShangMenTuiCwbDetail {
 
 	private long id; // 主键id
@@ -73,7 +75,7 @@ public class ShangMenTuiCwbDetail {
 	}
 
 	public String getConsigneephone() {
-		return consigneephone;
+		return SecurityUtil.getInstance().decrypt(consigneephone);
 	}
 
 	public void setConsigneephone(String consigneephone) {
@@ -81,7 +83,7 @@ public class ShangMenTuiCwbDetail {
 	}
 
 	public String getConsigneemobile() {
-		return consigneemobile;
+		return SecurityUtil.getInstance().decrypt(consigneemobile);
 	}
 
 	public void setConsigneemobile(String consigneemobile) {

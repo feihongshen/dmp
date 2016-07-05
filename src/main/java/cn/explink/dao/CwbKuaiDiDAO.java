@@ -18,6 +18,7 @@ import com.pjbest.splitting.routing.DatabaseType;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 
 @Component
@@ -85,7 +86,7 @@ public class CwbKuaiDiDAO {
 			cwbKuaiDi.setLanshoutime(StringUtil.nullConvertToEmptyString(rs.getString("lanshoutime")));
 			cwbKuaiDi.setSendconsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneeaddress")));
 			cwbKuaiDi.setSendconsigneecompany(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneecompany")));
-			cwbKuaiDi.setSendconsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneemobile")));
+			cwbKuaiDi.setSendconsigneemobile(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneemobile"))));
 			cwbKuaiDi.setSendconsigneename(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneename")));
 			cwbKuaiDi.setRemark(StringUtil.nullConvertToEmptyString(rs.getString("remark")));
 			cwbKuaiDi.setRealweight(rs.getBigDecimal("realweight"));
