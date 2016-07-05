@@ -493,7 +493,7 @@ CREATE TABLE `fn_df_rule_avg` (
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`rule_avg_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费阶梯价';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费均价';
 
 -- ----------------------------
 -- Table structure for fn_df_rule_cust
@@ -502,7 +502,7 @@ DROP TABLE IF EXISTS `fn_df_rule_cust`;
 CREATE TABLE `fn_df_rule_cust` (
   `rule_id` bigint(20) NOT NULL COMMENT '主键ID',
   `cust_id` bigint(20) NOT NULL COMMENT '适用客户'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费规则';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费客户';
 
 -- ----------------------------
 -- Table structure for fn_df_rule_range
