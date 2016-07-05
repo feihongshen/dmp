@@ -373,6 +373,9 @@ public class TranscwbOrderFlowDAO {
 		if (paramMap.get("branchid") != null) {
 			sql.append(" AND t.branchid = :branchid ");
 		}
+		if (paramMap.get("scancwb") != null) {
+			sql.append(" AND t.scancwb = :scancwb ");
+		}
 		if (orderBy != null) {
 			sql.append(" ORDER BY ");
 			sql.append(orderBy);
