@@ -6,6 +6,7 @@ import java.util.Date;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.poi.excel.annotation.Excel;
 
 public class ExpressCwbOrderForTakeGoodsQueryVO {
@@ -712,7 +713,7 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	}
 
 	public String getConsigneephone() {
-		return this.consigneephone;
+		return SecurityUtil.getInstance().decrypt(this.consigneephone);
 	}
 
 	public void setConsigneephone(String consigneephone, boolean guessMobile) {
@@ -724,7 +725,7 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 
 	public String getConsigneemobile() {
 
-		return this.consigneemobile;
+		return SecurityUtil.getInstance().decrypt(this.consigneemobile);
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
@@ -1398,7 +1399,7 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	}
 
 	public String getConsigneemobileOfkf() {
-		return this.consigneemobileOfkf;
+		return SecurityUtil.getInstance().decrypt(this.consigneemobileOfkf);
 	}
 
 	public void setConsigneemobileOfkf(String consigneemobileOfkf) {
@@ -1406,7 +1407,7 @@ public class ExpressCwbOrderForTakeGoodsQueryVO {
 	}
 
 	public String getConsigneephoneOfkf() {
-		return this.consigneephoneOfkf;
+		return SecurityUtil.getInstance().decrypt(this.consigneephoneOfkf);
 	}
 
 	public void setConsigneephoneOfkf(String consigneephoneOfkf) {

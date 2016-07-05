@@ -103,21 +103,21 @@ public class CwbDAO {
 		if (CwbDAO.this.getUser().getShowphoneflag() != 1) {
 			cwbOrder.setConsigneephone("******");
 		} else {
-			cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs
-					.getString("consigneephone")));
+			cwbOrder.setConsigneephone(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs
+					.getString("consigneephone"))));
 		}
 		if (CwbDAO.this.getUser().getShowmobileflag() != 1) {
 			cwbOrder.setConsigneemobile("******");
 		} else {
-			cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs
-					.getString("consigneemobile")));
+			cwbOrder.setConsigneemobile(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs
+					.getString("consigneemobile"))));
 		}
-		cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs
-				.getString("consigneemobile")));
+		cwbOrder.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs
+				.getString("consigneemobile"))));
 		cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs
 				.getString("consigneename")));
-		cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs
-				.getString("consigneephone")));
+		cwbOrder.setConsigneephoneOfkf(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs
+				.getString("consigneephone"))));
 
 	}
 
@@ -387,11 +387,11 @@ public class CwbDAO {
 				CwbDAO.this.setValueByUser(rs, cwbOrder);
 			} else {
 				cwbOrder.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
-				cwbOrder.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
-				cwbOrder.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
-				cwbOrder.setConsigneemobileOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+				cwbOrder.setConsigneephone(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone"))));
+				cwbOrder.setConsigneemobile(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile"))));
+				cwbOrder.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile"))));
 				cwbOrder.setConsigneenameOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
-				cwbOrder.setConsigneephoneOfkf(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+				cwbOrder.setConsigneephoneOfkf(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone"))));
 			}
 
 			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
@@ -879,13 +879,13 @@ public class CwbDAO {
 		public CwbOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CwbOrder cwbOrder = new CwbOrder();
 			cwbOrder.setOpscwbid(rs.getLong("opscwbid"));
-			cwbOrder.setConsigneemobileOfkf(StringUtil
-					.nullConvertToEmptyString(rs.getString("consigneemobile")));
+			cwbOrder.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(StringUtil
+					.nullConvertToEmptyString(rs.getString("consigneemobile"))));
 			;
 			if (CwbDAO.this.getUser().getShowmobileflag() == 1) {
-				cwbOrder.setConsigneemobile(StringUtil
+				cwbOrder.setConsigneemobile(SecurityUtil.getInstance().decrypt(StringUtil
 						.nullConvertToEmptyString(rs
-								.getString("consigneemobile")));
+								.getString("consigneemobile"))));
 			} else {
 				cwbOrder.setConsigneemobile("******");
 			}
@@ -1174,8 +1174,8 @@ public class CwbDAO {
 			co.setCwbprovince(rs.getString("cwbprovince"));
 			co.setReccityid(rs.getInt("reccityid"));
 			co.setCwbcity(rs.getString("cwbcity"));
-			co.setConsigneemobile(rs.getString("consigneemobile"));
-			co.setConsigneephone(rs.getString("consigneephone"));
+			co.setConsigneemobile(SecurityUtil.getInstance().decrypt(rs.getString("consigneemobile")));
+			co.setConsigneephone(SecurityUtil.getInstance().decrypt(rs.getString("consigneephone")));
 			co.setEntrustname(rs.getString("entrustname"));
 			co.setCredateTimestamp(rs.getLong("credateTimestamp"));
 			return co;
@@ -7908,7 +7908,7 @@ public class CwbDAO {
 				newOrder.setCustomerName("******");
 			}
 			if (CwbDAO.this.getUser().getShowphoneflag() == 1) {
-				newOrder.setPhone(rs.getString("consigneephone"));
+				newOrder.setPhone(SecurityUtil.getInstance().decrypt(rs.getString("consigneephone")));
 			} else {
 				newOrder.setPhone("******");
 			}
@@ -7921,8 +7921,8 @@ public class CwbDAO {
 		}
 
 		private String getPhoneNumber(ResultSet rs) throws SQLException {
-			String phone = rs.getString("consigneephone");
-			String mobile = rs.getString("consigneemobile");
+			String phone = SecurityUtil.getInstance().decrypt(rs.getString("consigneephone"));
+			String mobile = SecurityUtil.getInstance().decrypt(rs.getString("consigneemobile"));
 			boolean phoneNull = phone == null;
 			boolean mobileNull = mobile == null;
 			if (phoneNull && mobileNull) {
@@ -8014,7 +8014,7 @@ public class CwbDAO {
 				newOrder.setCustomerName("******");
 			}
 			if (CwbDAO.this.getUser().getShowphoneflag() == 1) {
-				newOrder.setCustomerPhone(rs.getString("consigneephone"));
+				newOrder.setCustomerPhone(SecurityUtil.getInstance().decrypt(rs.getString("consigneephone")));
 			} else {
 				newOrder.setCustomerPhone("******");
 			}
@@ -8027,8 +8027,8 @@ public class CwbDAO {
 		}
 
 		private String getPhoneNumber(ResultSet rs) throws SQLException {
-			String phone = rs.getString("consigneephone");
-			String mobile = rs.getString("consigneemobile");
+			String phone = SecurityUtil.getInstance().decrypt(rs.getString("consigneephone"));
+			String mobile = SecurityUtil.getInstance().decrypt(rs.getString("consigneemobile"));
 			boolean phoneNull = phone == null;
 			boolean mobileNull = mobile == null;
 			if (phoneNull && mobileNull) {
