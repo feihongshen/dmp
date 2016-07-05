@@ -178,7 +178,7 @@ public class DfBillFee {
     private String feeUpdateUser;
 
 
-//    private BigDecimal finalSubsidy;
+    private BigDecimal finalSubsidy;
 //    private DfPriceRule<DfBillFee> finalRule;
     private long backcarnum;// 取货数量
 
@@ -599,5 +599,13 @@ public class DfBillFee {
 
     public Date getPickTime() {
         return pickTime;
+    }
+
+    public BigDecimal getFinalSubsidy() {
+        return finalSubsidy;
+    }
+
+    public void setFinalSubsidy(BigDecimal finalSubsidy) {
+        this.finalSubsidy = finalSubsidy;
     }
 }

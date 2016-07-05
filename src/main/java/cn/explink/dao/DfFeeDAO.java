@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,19 +72,20 @@ public class DfFeeDAO {
             dfBillFee.setHugeorderSub(rs.getBigDecimal("hugeorder_sub"));
             dfBillFee.setCodSub(rs.getBigDecimal("cod_sub"));
             dfBillFee.setOthersSub(rs.getBigDecimal("others_sub"));
+            dfBillFee.setFinalSubsidy(rs.getBigDecimal("final_subsidy"));
             dfBillFee.setDeliverId(rs.getLong("deliver_id"));
             dfBillFee.setDeliverUsername(rs.getString("deliver_username"));
             dfBillFee.setDeliverybranchid(rs.getInt("deliverybranchid"));
             dfBillFee.setCwbstate(rs.getInt("cwbstate"));
             dfBillFee.setFlowordertype(rs.getInt("flowordertype"));
-            dfBillFee.setCreateTime(rs.getDate("create_time"));
-            dfBillFee.setOutstationDate(rs.getDate("outstationdatetime"));
+            dfBillFee.setCreateTime(rs.getTimestamp("create_time"));
+            dfBillFee.setOutstationDate(rs.getTimestamp("outstationdatetime"));
             dfBillFee.setDeliverystate(rs.getInt("deliverystate"));
-            dfBillFee.setEmaildate(rs.getDate("emaildate"));
-            dfBillFee.setCredate(rs.getDate("credate"));
-            dfBillFee.setPickTime(rs.getDate("pick_time"));
-            dfBillFee.setMobilepodtime(rs.getDate("mobilepodtime"));
-            dfBillFee.setAuditingtime(rs.getDate("auditingtime"));
+            dfBillFee.setEmaildate(rs.getTimestamp("emaildate"));
+            dfBillFee.setCredate(rs.getTimestamp("credate"));
+            dfBillFee.setPickTime(rs.getTimestamp("pick_time"));
+            dfBillFee.setMobilepodtime(rs.getTimestamp("mobilepodtime"));
+            dfBillFee.setAuditingtime(rs.getTimestamp("auditingtime"));
             dfBillFee.setIsCalculted(rs.getInt("is_calculted"));
             dfBillFee.setIsBilled(rs.getInt("is_billed"));
             dfBillFee.setAgtIds(rs.getString("agt_ids"));
@@ -92,9 +94,9 @@ public class DfFeeDAO {
             dfBillFee.setCwbprovince(rs.getString("cwbprovince"));
             dfBillFee.setCwbcity(rs.getString("cwbcity"));
             dfBillFee.setCwbcounty(rs.getString("cwbcounty"));
-            dfBillFee.setFeeCreateTime(rs.getDate("fee_create_time"));
+            dfBillFee.setFeeCreateTime(rs.getTimestamp("fee_create_time"));
             dfBillFee.setFeeCreateUser(rs.getString("fee_create_user"));
-            dfBillFee.setFeeUpdateTime(rs.getDate("fee_update_time"));
+            dfBillFee.setFeeUpdateTime(rs.getTimestamp("fee_update_time"));
             dfBillFee.setFeeUpdateUser(rs.getString("fee_update_user"));
 
             dfBillFee.setChargerType(chargerType);
@@ -121,7 +123,7 @@ public class DfFeeDAO {
                 "?,?,?,?,?,?,?,?,?,?," +
                 "?,?,?,?,?,?,?,?,?,?," +
                 "?,?,?,?,?,?,?,?,?,?," +
-                "now(),?)";
+                "?,now(),?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jdbcTemplate.update(new PreparedStatementCreator() {
             @Override
@@ -166,13 +168,13 @@ public class DfFeeDAO {
                 if (create_time == null) {
                     ps.setNull(17, Types.DATE);
                 } else {
-                    ps.setDate(17, new java.sql.Date(create_time.getTime()));
+                    ps.setTimestamp(17, new Timestamp(create_time.getTime()));
                 }
 
                 if (outstationdate == null) {
                     ps.setNull(18, Types.DATE);
                 } else {
-                    ps.setDate(18, new java.sql.Date(outstationdate.getTime()));
+                    ps.setTimestamp(18, new Timestamp(outstationdate.getTime()));
                 }
 
                 ps.setInt(19, deliverystate);
@@ -180,31 +182,31 @@ public class DfFeeDAO {
                 if (emaildateDate == null) {
                     ps.setNull(20, Types.DATE);
                 } else {
-                    ps.setDate(20, new java.sql.Date(create_time.getTime()));
+                    ps.setTimestamp(20, new Timestamp(create_time.getTime()));
                 }
 
                 if (credate == null) {
                     ps.setNull(21, Types.DATE);
                 } else {
-                    ps.setDate(21, new java.sql.Date(credate.getTime()));
+                    ps.setTimestamp(21, new Timestamp(credate.getTime()));
                 }
 
                 if (pickTime == null) {
                     ps.setNull(22, Types.DATE);
                 } else {
-                    ps.setDate(22, new java.sql.Date(pickTime.getTime()));
+                    ps.setTimestamp(22, new Timestamp(pickTime.getTime()));
                 }
 
                 if (mobilepodtime == null) {
                     ps.setNull(23, Types.DATE);
                 } else {
-                    ps.setDate(23, new java.sql.Date(mobilepodtime.getTime()));
+                    ps.setTimestamp(23, new Timestamp(mobilepodtime.getTime()));
                 }
 
                 if (auditingtimeDate == null) {
                     ps.setNull(24, Types.DATE);
                 } else {
-                    ps.setDate(24, new java.sql.Date(auditingtimeDate.getTime()));
+                    ps.setTimestamp(24, new Timestamp(auditingtimeDate.getTime()));
                 }
 
                 ps.setInt(25, isCal);
