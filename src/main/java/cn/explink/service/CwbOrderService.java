@@ -19,13 +19,11 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.camel.Consume;
 import org.apache.camel.Header;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -43,6 +41,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
 import cn.explink.aspect.OrderFlowOperation;
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
@@ -222,8 +222,8 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
-
-import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @Service
 @Transactional
@@ -472,6 +472,9 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	private MPSOptStateService mPSOptStateService;
+	@Autowired
+	private BaleService baleService;
+	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
@@ -1151,7 +1154,7 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}
 
-		this.baleDaoHuo(co);
+		this.baleDaoHuo(scancwb);
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
@@ -1429,7 +1432,7 @@ public class CwbOrderService extends BaseOrderService {
 			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
 		}
 
-		this.baleDaoHuo(co);
+		this.baleDaoHuo(scancwb);
 
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
@@ -1995,7 +1998,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao, -1L, currentbranchid, NextBranchid);
 
-		this.baleDaoHuo_fzdh(co);
+		this.baleDaoHuo_fzdh(scancwb);
 		EmailDate ed = this.emailDateDAO.getEmailDateById(co.getEmaildateid());
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
@@ -2452,22 +2455,17 @@ public class CwbOrderService extends BaseOrderService {
 		this.createFloworder(user, branchid, co.getCwb(), flowordertype, comment, credate, null);
 	}
 
-	public void baleDaoHuo(CwbOrder co) {
-		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
-			Bale isbale = this.baleDAO.getBaleOnway(co.getPackagecode());
-			if (isbale != null) {
-				this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
-			}
-		}
+	public void baleDaoHuo(String scancwb) {
+		baleService.disableBale(scancwb);
 	}
 
-	public void baleDaoHuo_fzdh(CwbOrder co) {
-		if ((co.getPackagecode() != null) && (co.getPackagecode().length() > 0)) {
-			Bale isbale = this.baleDAO.getBaleOnway(co.getPackagecode());
-			if (isbale != null) {
-				this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
-			}
-		}
+	/**
+	 * modify by jian_xie
+	 * 修改成通过id更新包状态
+	 * @param scancwb
+	 */
+	public void baleDaoHuo_fzdh(String scancwb) {
+		baleService.disableBale(scancwb);
 	}
 
 	private ObjectMapper om = JacksonMapper.getInstance();
@@ -2922,9 +2920,33 @@ public class CwbOrderService extends BaseOrderService {
 					.getBranchname());
 		}
 
-		if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
-				.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()))) && (co.getCurrentbranchid() != currentbranchid)) {
-			throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+		logger.info("changeOutWarehousHandle->订单信息：cwb:{}, scancwb:{}, sendcarnum:{}, flowordertype:{}, deliverystate:{}, currentbranchid:{}, userBranchId:{}", 
+				cwb, scancwb, co.getSendcarnum(), co.getFlowordertype(), co.getDeliverystate(), co.getCurrentbranchid(), currentbranchid);
+		if (co.getSendcarnum() <= 1 || 
+				org.apache.commons.lang3.StringUtils.isEmpty(org.apache.commons.lang3.StringUtils.trimToEmpty(co.getTranscwb()))) { //非一票多件
+			if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
+					.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()))) && (co.getCurrentbranchid() != currentbranchid)) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+			}
+		} else { //一票多件
+			
+			Map<String, Object> paramMap = new HashMap<String, Object>();
+			paramMap.put("cwb", co.getCwb());
+			paramMap.put("scancwb", scancwb);
+			paramMap.put("isnow", 1);
+			List<TranscwbOrderFlow> list = transcwborderFlowDAO.queryTranscwbOrderFlow(paramMap, null);
+			if (CollectionUtils.isNotEmpty(list)) {
+				TranscwbOrderFlow transcwbOrderFlow = list.get(0);
+				logger.info("changeOutWarehousHandle->运单信息：scancwb:{}, flowordertype:{}, branchid:{}",
+						transcwbOrderFlow.getScancwb(), transcwbOrderFlow.getFlowordertype(), transcwbOrderFlow.getBranchid());
+				if ( (transcwbOrderFlow.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() || 
+						transcwbOrderFlow.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() ||
+						(co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue() && co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()) ) && 
+						transcwbOrderFlow.getBranchid() != currentbranchid) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+				}
+			}
+			
 		}
 
 		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
