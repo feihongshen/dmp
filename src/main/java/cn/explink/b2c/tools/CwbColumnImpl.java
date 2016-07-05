@@ -35,6 +35,7 @@ import cn.explink.b2c.suning.CwbColumnSetSuNing;
 import cn.explink.b2c.telecomsc.CwbColumnSetTelecom;
 import cn.explink.b2c.tmall.CwbColumnSet;
 import cn.explink.b2c.tmall.CwbColumnSetTmall;
+import cn.explink.b2c.tps.CwbColumnSetTPS;
 import cn.explink.b2c.vipshop.CwbColumnSetVipShop;
 import cn.explink.b2c.wangjiu.CwbColumnSetWangjiu;
 import cn.explink.b2c.wenxuan.CwbColumnSetWenxuan;
@@ -131,6 +132,8 @@ public class CwbColumnImpl implements CwbColumnSet {
 	CwbColumnSetYH cwbColumnSetYH;
 	@Autowired
 	CwbColumnSetPinhaohuo cwbColumnSetPinhaohuo;
+	@Autowired
+	CwbColumnSetTPS cwbColumnSetTPS;
 
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
@@ -231,6 +234,8 @@ public class CwbColumnImpl implements CwbColumnSet {
 			return this.cwbColumnSetFNW.getEexcelColumnSetByB2c(b2cFlag);
 		}else if(b2cFlag.equals(B2cEnum.PinHaoHuo.getMethod())){
 			return this.cwbColumnSetPinhaohuo.getEexcelColumnSetByB2c(b2cFlag);
+		}else if (b2cFlag.contains("tps")) {
+			return this.cwbColumnSetTPS.getEexcelColumnSetByB2c(b2cFlag);
 		}
 
 		return null;

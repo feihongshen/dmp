@@ -531,7 +531,7 @@ public class MQGetOrderDataService {
 			}
 			cwbOrder.setRemark1(remark1);
 			
-			if (b2cFlag.contains("vipshop")) {
+			if (b2cFlag.contains("tps")) {
 				List<CwbOrderValidator> vailidators = importValidationManager.getVailidators(excelColumnSet);
 				for (CwbOrderValidator cwbOrderValidator : vailidators) {
 					cwbOrderValidator.validate(cwbOrderDTO);
