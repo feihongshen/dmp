@@ -401,8 +401,9 @@ public class CwbOrder {
 	 * 交接时间
 	 */
 	private String instationhandovertime;
+    private BigDecimal cargovolume;
 
-	public int getIshandover() {
+    public int getIshandover() {
 		return this.ishandover;
 	}
 
@@ -2048,4 +2049,11 @@ public class CwbOrder {
 		this.ismpsflag = ismpsflag;
 	}
 
+    public void setCargovolume(BigDecimal cargovolume) {
+        this.cargovolume = cargovolume;
+    }
+
+    public BigDecimal getCargovolume() {
+        return cargovolume;
+    }
 }

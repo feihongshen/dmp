@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.explink.service.DfFeeService;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -116,6 +117,8 @@ public class ApplyEditDeliverystateController {
 	FnDfAdjustmentRecordService fnDfAdjustmentRecordService;
 	@Autowired
 	OrgBillDetailDao orgBillDetailDao;
+    @Autowired
+    DfFeeService dfFeeService;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -312,7 +315,7 @@ public class ApplyEditDeliverystateController {
 							// 站内调整单逻辑入口
 							this.orgBillAdjustmentRecordService.createAdjustment4ReFeedBack(cwb, ec_dsd);
                             // 派费调整单逻辑入口
-							this.fnDfAdjustmentRecordService.createAdjustment4ReFeedBack(cwb);
+//							this.fnDfAdjustmentRecordService.createAdjustment4ReFeedBack(cwb);
 							
 							String auditingTime = ec_dsd.getDs().getAuditingtime();
 							if (StringUtils.isNotEmpty(auditingTime)) {
@@ -325,11 +328,14 @@ public class ApplyEditDeliverystateController {
 							}
 						}
 
+                        //added by Steve PENG. 重置反馈已生成派费的订单需要进行相关操作。 start
+                        dfFeeService.saveFeeRelativeAfterOrderReset(cwb, getSessionUser());
+                        //added by Steve PENG. 重置反馈已生成派费的订单需要进行相关操作。 end
 					} else {
 						cwbStr += cwb + ",";
 					}
 				} catch (Exception e) {
-					this.logger.error("订单号:" + cwb + "--审核产生异常原因:", e);
+					this.logger.error("订单号:" + cwb + "--产生异常原因:", e);
 					errorcount++;
 				}
 			}

@@ -377,6 +377,7 @@ public class CwbDAO {
 			cwbOrder.setInstationname(rs.getString("instationname"));
 			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
+            cwbOrder.setCargovolume(rs.getBigDecimal("cargovolume"));
 			if(isFilterUserInfo) {
 				CwbDAO.this.setValueByUser(rs, cwbOrder);
 			} else {
