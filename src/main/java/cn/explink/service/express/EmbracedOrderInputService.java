@@ -55,7 +55,8 @@ import cn.explink.util.StringUtil;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderCargoRequest;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
-
+import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPCargoInfo;
 @Transactional
 @Service
 public class EmbracedOrderInputService extends ExpressCommonService {
@@ -463,7 +464,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					consigneeaddress = cneeProv + consigneeaddress;
 				}
 			}
-			
+
 			params.put("consigneeaddress", consigneeaddress);
 			params.put("senderaddress", embracedOrderVO.getConsignee_adress() == null ? "" : StringUtil.nullConvertToEmptyString((String) (params.get("senderprovince"))) + StringUtil
 					.nullConvertToEmptyString((String) (params.get("sendercity"))) + StringUtil.nullConvertToEmptyString((String) (params.get("sendercounty"))) + StringUtil
@@ -493,6 +494,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("instationname", branch.getBranchname());
 
 			params.put("credate", Timestamp.valueOf(DateTimeUtil.getNowTime()));
+
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
 			System.out.println("补录：inset方法，补录标志位：" + embracedOrderVO.getIsadditionflag());
 			// 如果是新建运单，那么他的状态为入站，调用tps状态反馈接口 11.19 如果状态有改变，且变为揽件入站，则需要保存流程信息
@@ -790,7 +792,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 
 				doReq.setCneeProv(embracedOrderVO.getConsignee_provinceName());
 				doReq.setCneeCity(embracedOrderVO.getConsignee_cityName());
-				
+
 				//如果详细地址里面已经含省+市+区，则不再加入省市区
 				String consigneeProvinceName = embracedOrderVO.getConsignee_provinceName();
 				String consigneeCityName = embracedOrderVO.getConsignee_cityName();
@@ -906,7 +908,6 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("代收货款运单未输入代收货款金额");
 			return false;
 		}
-		
 		for (String key : keys) {
 			if ("OrderNo".equals(key) || "Monthly_account_number".equals(key) || "Sender_companyName".equals(key) || "Sender_townName".equals(key) || "Sender_cellphone".equals(key) || "Sender_telephone"
 					.equals(key) || "Goods_length".equals(key) || "Goods_width".equals(key) || "Goods_high".equals(key) || "Goods_other".equals(key) || "Consignee_townName".equals(key) || "Consignee_cellphone"

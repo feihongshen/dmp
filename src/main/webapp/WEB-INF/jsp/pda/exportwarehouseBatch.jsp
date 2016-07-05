@@ -350,13 +350,14 @@ $(function(){
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box2">
+<!--
 	<div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/exportwarhouse" >逐单操作</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/backbranchbackexport" >逐单操作</a></li>		
 			<li><a href="#" class="light" >批量操作</a></li>
 		</ul>
 	</div>
-
+-->
  
 	<div class="saomiao_topnum2">
 		<dl class="blue">
