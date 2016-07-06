@@ -159,7 +159,7 @@ CREATE TABLE `fn_df_confirm_rate` (
   `month` varchar(10) DEFAULT NULL COMMENT '月份',
   `charger_type` tinyint(2) DEFAULT NULL COMMENT '结算对象，0-站点，1-协议',
   PRIMARY KEY (`confirm_rate_id`)
-) ENGINE=InnoDB EFAULT CHARSET=utf8 COMMENT='妥投率报表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='妥投率报表';
 
 -- ----------------------------
 -- Table structure for fn_df_confirm_rate_detail
