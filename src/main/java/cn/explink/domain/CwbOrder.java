@@ -405,8 +405,9 @@ public class CwbOrder {
 	 * 交接时间
 	 */
 	private String instationhandovertime;
+    private BigDecimal cargovolume;
 
-	public int getIshandover() {
+    public int getIshandover() {
 		return this.ishandover;
 	}
 
@@ -2066,4 +2067,12 @@ public class CwbOrder {
 	public void setVipclub(int vipclub) {
 		this.vipclub = vipclub;
 	}
+
+    public void setCargovolume(BigDecimal cargovolume) {
+        this.cargovolume = cargovolume;
+    }
+
+    public BigDecimal getCargovolume() {
+        return cargovolume;
+    }
 }

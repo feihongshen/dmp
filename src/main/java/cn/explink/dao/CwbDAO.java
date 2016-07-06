@@ -167,7 +167,6 @@ public class CwbDAO {
             return null;
         }
     }
-
 	private final class CwbMapper implements RowMapper<CwbOrder> {
 		
 		//是否需要过滤用户信息
@@ -382,6 +381,7 @@ public class CwbDAO {
 			cwbOrder.setInstationname(rs.getString("instationname"));
 			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
+			cwbOrder.setCargovolume(rs.getBigDecimal("cargovolume"));
 			cwbOrder.setVipclub(rs.getInt("vipclub"));
 			if(isFilterUserInfo) {
 				CwbDAO.this.setValueByUser(rs, cwbOrder);
@@ -9090,6 +9090,7 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQueryByPage(
 			Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,
 			String userIds) {
+
 		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		
