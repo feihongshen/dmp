@@ -51,4 +51,12 @@ public class PrintOrderLabelVo {
 	public void setShouldReceiveTotal(BigDecimal shouldReceiveTotal) {
 		this.shouldReceiveTotal = shouldReceiveTotal;
 	}
+
+	public String getDestination() {
+		return destination;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
 }
