@@ -13,7 +13,7 @@ DELETE FROM `dmp40_function` WHERE `ID` = "809130";
 DELETE FROM `dmp40_function` WHERE `ID` = "809140";
 DELETE FROM `dmp40_function` WHERE `ID` = "809150";
 DELETE FROM `dmp40_function` WHERE `ID` = "809160";
-INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('8091', '1', '派费结算', '8091', '', '80');
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('8091', '1', '小件员派费结算', '8091', '', '80');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809101', '2', '新增派费协议', '809101', '${eapUrl}deliveryfeeagreement.do?add&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809102', '2', '派费协议管理', '809102', '${eapUrl}deliveryfeeagreement.do?manager&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809103', '2', '账单基础信息设置', '809103', '${eapUrl}dfBillPeriodController.do?index&', '8091');
