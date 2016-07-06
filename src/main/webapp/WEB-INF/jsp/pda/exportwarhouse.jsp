@@ -37,7 +37,7 @@ List<Reason> reasonlist = request.getAttribute("reasonlist")==null?null:(List<Re
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>出库扫描</title>
+<title>分拣库出库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css" />
@@ -1017,7 +1017,7 @@ function saveOrderWeight(keyCode){
 	<div class="saomiao_tab2">
 		<ul>
 			<li><a href="#"  class="light">逐单操作</a></li>		
-			<li><a href="<%=request.getContextPath()%>/PDA/cwbexportwarhouseBatch">批量操作</a></li>
+			<li><a href="<%=request.getContextPath()%>/PDA/exportwarhouseBatch">批量操作</a></li>
 		</ul>
 	</div>
 	
