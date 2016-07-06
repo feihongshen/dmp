@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.util.SecurityUtil;
 
 public class CwbOrder {
 
@@ -759,7 +760,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneephone() {
-		return this.consigneephone;
+		return SecurityUtil.getInstance().decrypt(this.consigneephone);
 	}
 
 	public void setConsigneephone(String consigneephone, boolean guessMobile) {
@@ -770,12 +771,11 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobile() {
-
-		return this.consigneemobile;
+		return SecurityUtil.getInstance().decrypt(this.consigneemobile);
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
-		this.consigneemobile = (consigneemobile);
+		this.consigneemobile = consigneemobile;
 	}
 
 	public BigDecimal getReceivablefee() {
@@ -1460,7 +1460,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobileOfkf() {
-		return this.consigneemobileOfkf;
+		return SecurityUtil.getInstance().decrypt(this.consigneemobileOfkf);
 	}
 
 	public void setConsigneemobileOfkf(String consigneemobileOfkf) {
@@ -1468,7 +1468,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneephoneOfkf() {
-		return this.consigneephoneOfkf;
+		return SecurityUtil.getInstance().decrypt(this.consigneephoneOfkf);
 	}
 
 	public void setConsigneephoneOfkf(String consigneephoneOfkf) {

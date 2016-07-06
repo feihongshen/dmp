@@ -77,6 +77,7 @@ import cn.explink.enumutil.RealFlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.enumutil.express.ExpressSettleWayEnum;
+import cn.explink.util.SecurityUtil;
 
 @Service
 public class ExportService {
@@ -639,7 +640,7 @@ public class ExportService {
 				}
 			} else if (cloumnName3[i].equals("consigneemobile")) {
 				if (this.getSessionUser().getShowmobileflag() == 1) {
-					a = views.get(k).getConsigneemobile();
+					a = SecurityUtil.getInstance().decrypt(views.get(k).getConsigneemobile());
 				} else {
 					a = "******";
 				}
@@ -1449,11 +1450,15 @@ public class ExportService {
 		if (cloumname.equals("consigneephone")) {
 			if (this.getSessionUser().getShowphoneflag() != 1) {
 				a = "******";
+			} else {
+				a = SecurityUtil.getInstance().decrypt(String.valueOf(a));
 			}
 		}
 		if (cloumname.equals("consigneemobile")) {
 			if (this.getSessionUser().getShowmobileflag() != 1) {
 				a = "******";
+			} else {
+				a = SecurityUtil.getInstance().decrypt(String.valueOf(a));
 			}
 		}
 		return a;
@@ -2627,9 +2632,9 @@ public class ExportService {
 			} else if (cloumnName3[i].equals("newconsigneename")) {
 				a = views.get(k).getNewconsigneename();
 			} else if (cloumnName3[i].equals("oldconsigneemobile")) {
-				a = views.get(k).getOldconsigneemobile();
+				a = SecurityUtil.getInstance().decrypt(views.get(k).getOldconsigneemobile());
 			} else if (cloumnName3[i].equals("newconsigneemoblie")) {
-				a = views.get(k).getNewconsigneemobile();
+				a = SecurityUtil.getInstance().decrypt(views.get(k).getNewconsigneemobile());
 			} else if (cloumnName3[i].equals("oldconsigneeaddress")) {
 				a = views.get(k).getOldconsigneeaddress();
 			} else if (cloumnName3[i].equals("newconsigneeaddress")) {
