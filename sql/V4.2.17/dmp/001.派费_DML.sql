@@ -2,9 +2,6 @@
 UPDATE eap_qrtz_triggers
 SET DESCRIPTION = "派费生成定时任务"
 WHERE TRIGGER_NAME = "dfCalculateServiceExecutorCronTrigger";
-# 增加妥投率定时器
-
-
 
 DELETE FROM `dmp40_function` WHERE `ID` = "8091";
 DELETE FROM `dmp40_function` WHERE `ID` = "809110";
@@ -18,7 +15,7 @@ INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionor
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809102', '2', '派费协议管理', '809102', '${eapUrl}deliveryfeeagreement.do?manager&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809103', '2', '账单基础信息设置', '809103', '${eapUrl}dfBillPeriodController.do?index&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809104', '2', '月度妥投率报表', '809104', '${eapUrl}confirmRateManager.do?index&', '8091');
-INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809105', '2', '奖罚登记管理', '809105', '${eapUrl}dfBillController.do?index&', '8091');
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809105', '2', '奖罚登记管理', '809105', '${eapUrl}orgDisciplineRecord.do?index&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809106', '2', '加盟站派费账单管理', '809106', '${eapUrl}orgDfBill.do?index&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809107', '2', '小件员派费账单管理', '809107', '${eapUrl}courierDfBill.do?index&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809108', '2', '加盟站点计费订单明细', '809108', '${eapUrl}branchDfFee.do?index&', '8091');
