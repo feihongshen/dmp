@@ -23,7 +23,7 @@ INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionor
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809107', '2', '小件员派费账单管理', '809107', '${eapUrl}courierDfBill.do?index&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809108', '2', '加盟站点计费订单明细', '809108', '${eapUrl}branchDfFee.do?index&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809109', '2', '小件员计费订单明细', '809109', '${eapUrl}courierDfFee.do?index&', '8091');
-INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809110', '2', '派费调整记录', '809110', '${eapUrl}branchFeeManager.do?index&', '8091');
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809110', '2', '派费调整记录', '809110', '${eapUrl}dfAdjustmentRecord.do?index&', '8091');
 
 
 
