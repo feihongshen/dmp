@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/express/extracedOrderInput.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/express/jquery.area.css" type="text/css" >
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/express/new-order.css" type="text/css" >
+<link id="skinlayercss" href="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/skin/layer.css" rel="stylesheet" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
@@ -25,7 +26,7 @@
 <script src="<%=request.getContextPath()%>/js/swfupload/swfupload.js" type="text/javascript" ></script>
 <script src="<%=request.getContextPath()%>/js/jquery.swfupload.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"  type="text/javascript"></script>
-
+<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
 <style>
 .RadioClass{
 	display: none;
@@ -43,12 +44,14 @@
 .RadioSelected{
 	background: url(<%=request.getContextPath()%>/images/express/btn_radio_on3.png) no-repeat;
 }
+.parent { background:#FFF38F;cursor:pointer;} 
+.selected{ background:#FF6500;color:#fff;} 
 </style>
 </head>
 <body>
 	<div id="flag" style="display:none;">${flag }</div>
 	<div id="orderNoValue" style="display:none;"> ${orderNo}</div>
-	<div id="BranchprovinceId" style="display:none;"> ${BranchprovinceId}</div>
+	<div id="BranchprovinceId" style="display:none;" > ${BranchprovinceId}</div>
 	<div id="BranchcityId" style="display:none;"> ${BranchcityId}</div>
 	<div id="BranchcountyId" style="display:none;"> ${BranchcountyId}</div>
 	<div id="sender_townId" style="display:none;"> </div>
@@ -62,9 +65,18 @@
 			<table width="100%" class="table1" style="margin: 10px;background-color:yellow;margin:0px;">
 				<tr style="height: 20px;">
 					<td></td>
-					<td  width="200px" class="tdrigth" style="padding-right: 180px;">未补录运单：<span style="color: red; text-decoration: underline; font-size: 25px;"><a style="font-size:25px;color:black;" onmouseover="this.style.cssText='font-size:25px;color:blue;'" onmouseout="this.style.cssText='font-size:25px;color:black;'" href="javascript:nonExtraInput(1);">${notExtraInputNumber}单</a></span></td>
-					<td width="100px" ><button onclick="$('#importBox').dialog('open');initImportBox();return false;">运单导入</button></td>
-					<td width="100px"><button onclick="downloadExcel();return false;">导入模版</button></td>
+	                <td width="200px" class="tdrigth" style="padding-right: 180px;">未补录运单：<span
+	                        style="color: red; text-decoration: underline; font-size: 25px;"><a
+	                        style="font-size:25px;color:black;"
+	                        onmouseover="this.style.cssText='font-size:25px;color:blue;'"
+	                        onmouseout="this.style.cssText='font-size:25px;color:black;'"
+	                        href="javascript:nonExtraInput(1);">${notExtraInputNumber}单</a></span></td>
+	                <td width="100px">
+	                    <button onclick="$('#importBox').dialog('open');initImportBox();return false;">运单导入</button>
+	                </td>
+	                <td width="100px">
+	                    <button onclick="downloadExcel();return false;">导入模版</button>
+	                </td>
 				</tr>
 			</table>
 		</fieldset>
@@ -100,8 +112,31 @@
 					<td class="tdrigth">寄件人证件号：</td>
 					<td><input type="text" name="sender_certificateNo" id="sender_certificateNo_id" style="width:100%;"/></td>
 				</tr>
+				<tr>
+	                <td class="tdrigth">预约单号:</td>
+	                <td class="tdleft"><input type="text" name="reserveOrderNo" id="reserveOrderNo"  
+	                      readonly="readonly" style="background:#EBEBE4;width:100%;" /></td>
+	                <td class="tdrigth">服务产品:</td>
+	                <td>
+	                	<select name="express_product_type" id="express_product_type"  style="width:100%;" onchange="getFeeByCondition()">
+							<option value="1" >标准</option>
+							<option value="2" >当日达</option>
+							<option value="3" >次日达</option>
+						</select>
+	                </td>
+	            </tr>
 			</table>
 		</fieldset>
+		<table width="99%" style="margin-top: 0px;">
+			<tr style="line-height: 25px;">
+				<td class="tdrigth"><input type="button" name="addImg" id="addImg" value="点击查看图片" /></td>
+			</tr>
+		</table>
+	   	<%-- <div id="showImg" style="display:none" ><img src="<%=request.getContextPath()%>/images/bg_3.gif "></div> --%>
+	    <div id="img" style="display: none">
+	    	<!-- <img src="http://10.199.195.25:8080/express/file/bookingOrder?date=2016-06-01&fileName=89890610006.jpg">  -->
+		</div>
+		<!-- <div id="img" style="display: none" ><img src="http://10.199.195.25:8080/express/file/bookingOrder?date=2016-06-01&fileName=89890610006.jpg"></div> -->
 		<table width="100%" class="table1">
 			<colgroup>
 				<col width="50%">
@@ -122,25 +157,18 @@
 								<col width="19%">
 							</colgroup>
 							<tr style="line-height: 35px;">
-								<td class="tdleft">寄件人<font>*</font>:</td>
+								<td class="tdrigth" >寄件人<font>*</font>:</td>
 								<td class="tdleft"><input type="text" name="sender_name" id="sender_name_id" /></td>
-								<td class="tdrigth">始发地<font>*</font>:</td>
-								<td colspan="2">
-									<div class="col-xs-4" >
-										<input readonly="readonly"  name="sender_cityselect"  placeholder="请选择地区" type="text"   style="width:100%" id="area_sender"/>
-									</div>
-									<input type="hidden" name="sender_provinceid" id="sender_provinceid_id"/>
-									<input type="hidden" name="sender_provinceName" id="sender_provinceName_id"/>
-									<input type="hidden" name="sender_cityid" id="sender_cityid_id"/>
-									<input type="hidden" name="sender_cityName" id="sender_cityName_id"/>
-									<input type="hidden" name="sender_countyid" id="sender_countyid_id"/>
-									<input type="hidden" name="sender_countyName" id="sender_countyName_id"/>
-									<input type="hidden" name="sender_townid" id="sender_townid_id"/>
-									<input type="hidden" name="sender_townName" id="sender_townName_id"/>									
-								</td>				
 							</tr>
 							<tr>
-								<td class="tdleft">单位名称:</td>
+								<td class="tdrigth">手机：</td>
+								<td class="tdleft"><input type="text" name="sender_cellphone" id="sender_cellphone_id" onblur="getReserveOrderBySenderPhone(this.value,1)"/></td>
+								<td class="tdrigth">固话：</td>
+								<td class="tdleft"><input type="text" name="sender_telephone" id="sender_telephone_id"  onblur="getReserveOrderBySenderPhone(this.value,2)"/></td>
+								<td class="tdcenter" colspan="2">（手机、固话必填1个）</td>
+							</tr>
+							<tr>
+								<td class="tdrigth">单位名称:</td>
 								<td colspan="3" class="tdleft">
 									<select name="sender_companyName" id="sender_companyName_id"  style="width:100%;" readonly="readonly" onchange="companyChange(this)">
 										<c:forEach items="${customers}" var="list">
@@ -152,15 +180,69 @@
 								<td style="display:none;"><input type="text" name="sender_customerid" id="sender_customerid_id"/></td>
 							</tr>
 							<tr>
-								<td class="tdleft">寄件地址<font>*</font>:</td>
-								<td class="tdleft" colspan="4"><input type="text" name="sender_adress" id="sender_adress_id"style="width:100%;"/></td>
+								<td class="tdrigth">始发地<font>*</font>:</td>
+	                            <td colspan="2">
+	                                <div class="col-xs-4">
+	                                    <input readonly="readonly" name="sender_cityselect" placeholder="请选择地区" type="text"
+	                                           style="width:100%" id="area_sender"/>
+	                                </div>
+	                                <input type="hidden" name="sender_provinceid" id="sender_provinceid_id"/>
+	                                <input type="hidden" name="sender_provinceName" id="sender_provinceName_id"/>
+	                                <input type="hidden" name="sender_cityid" id="sender_cityid_id"/>
+	                                <input type="hidden" name="sender_cityName" id="sender_cityName_id"/>
+	                                <input type="hidden" name="sender_countyid" id="sender_countyid_id"/>
+	                                <input type="hidden" name="sender_countyName" id="sender_countyName_id"/>
+	                                <input type="hidden" name="sender_townid" id="sender_townid_id"/>
+	                                <input type="hidden" name="sender_townName" id="sender_townName_id"/>
+	                            </td>
 							</tr>
-							<tr style="line-height: 35px;">
-								<td class="tdleft">手机：</td>
-								<td class="tdleft"><input type="text" name="sender_cellphone" id="sender_cellphone_id"/></td>
-								<td class="tdrigth">固话：</td>
-								<td class="tdleft"><input type="text" name="sender_telephone" id="sender_telephone_id"/></td>
-								<td class="tdcenter" colspan="2">（手机、固话必填1个）</td>					
+							<tr>
+								<td class="tdleft">寄件地址<font>*</font>:</td>
+								<td class="tdleft" colspan="4"><input type="text" name="sender_adress" id="sender_adress_id"style="width:100%;" value="${adressInfoDetailVO.getProvinceName()}${adressInfoDetailVO.getCityName()}" onchange="getFeeByCondition()"/></td>
+							</tr>
+							<tr><td colspan="6"><b>预约单：</b></font></td></tr>
+							<tr>
+							    <td colspan="6">
+									<table class="table1" border="1px" id="reserveOrderTable" width="100%">
+									  <thead>
+									  	<tr >
+											<th class="tdleft" width="20%">预约单号</th>
+									    	<th class="tdleft" width="20%">寄件人</th>
+									    	<th class="tdleft" width="40%">地址</th>
+									    	<th class="tdleft" width="20%">寄件时间</th>
+										</tr>
+									  </thead>
+									  
+									  <tbody>
+										   <tr class="parent" id="reserveOrderShow">
+										   		<td colspan="6">点击展开/隐藏table内容</td>
+										   </tr>
+									  </tbody>
+									 </table>
+								</td>
+							</tr>
+							<tr><td colspan="6"><b>寄件人历史信息：</b></font></td></tr>
+							<tr>
+							    <td colspan="6">
+									<table class="table1" border="1px" id="senderHistoryTable" width="100%">
+									  <thead>
+									  	<tr >
+											<th class="tdleft" width="15%">寄件人</th>
+									    	<th class="tdleft" width="15%">省</th>
+									    	<th class="tdleft" width="15%">市</th>
+									    	<th class="tdleft" width="15%">区</th>
+									    	<th class="tdleft" width="15%">街道</th>
+									    	<th class="tdleft" width="25%">详细地址</th>
+									    	<th class="tdleft" style="display:none">订单id</th>
+										</tr>
+									  </thead>
+									  <tbody>
+										   <tr class="parent" id="senderHistory">
+										   		<td colspan="6">点击展开/隐藏table内容</td>
+										   </tr>
+									  </tbody>
+									 </table>
+								</td>
 							</tr>
 						</table>
 					</fieldset>
@@ -179,8 +261,30 @@
 								<col width="19%">
 							</colgroup>
 							<tr style="line-height: 35px;">
-								<td class="tdcenter">收件人<font>*</font>:</td>
+								<td class="tdrigth">收件人<font>*</font>:</td>
 								<td class="tdleft"><input type="text" name="consignee_name" id="consignee_name_id" /></td>
+							</tr>
+							<tr>
+								<td class="tdrigth">手机：</td>
+								<td class="tdleft"><input type="text" name="consignee_cellphone" id="consignee_cellphone_id" onblur="getReserveOrderByConsignPhone(this.value,3)"/></td>
+								<td class="tdrigth">固话：</td>
+								<td class="tdleft"><input type="text" name="consignee_telephone" id="consignee_telephone_id" onblur="getReserveOrderByConsignPhone(this.value,4)"/></td>
+								<td class="tdcenter" colspan="2">（手机、固话必填1个）</td>					
+							</tr>
+							<tr>
+								<td class="tdrigth">单位名称:</td>
+								<td colspan="3" class="tdleft">
+									<select name="consignee_companyName" id="consignee_companyName_id" style="width:100%;" readonly="readonly" onchange="companyChange(this)">
+										<c:forEach items="${customers}" var="list">
+											<option value="${list.companyname}" code="${list.customercode}" id="${list.customerid}">${list.companyname}</option>
+										</c:forEach>
+									</select>
+								</td>
+								<td class="tdleft">
+									<input type="text" name="consignee_No" id="consignee_No_id" style="background:#EBEBE4;height:15px;vertical-align:text-top;" disabled>								
+								<td style="display:none;"><input type="text" name="consignee_customerid" id="consignee_customerid_id"/></td>
+							</tr>
+							<tr>
 								<td class="tdrigth">目的地<font>*</font>:</td>
 								<td colspan="2">
 									<div class="col-xs-4" >
@@ -194,37 +298,41 @@
 									<input type="hidden" name="consignee_countyName" id="consignee_countyName_id"/>
 									<input type="hidden" name="consignee_townid" id="consignee_townid_id"/>
 									<input type="hidden" name="consignee_townName" id="consignee_townName_id"/>									
-								</td>				
+								</td>	
 							</tr>
 							<tr>
-								<td class="tdleft">单位名称:</td>
-								<td colspan="3" class="tdleft">
-									<select name="consignee_companyName" id="consignee_companyName_id" style="width:100%;" readonly="readonly" onchange="companyChange(this)">
-										<c:forEach items="${customers}" var="list">
-											<option value="${list.companyname}" code="${list.customercode}" id="${list.customerid}">${list.companyname}</option>
-										</c:forEach>
-									</select>
+								<td class="tdrigth">收件地址<font>*</font>:</td>
+								<td class="tdleft" colspan="6"><input type="text" name="consignee_adress" id="consignee_adress_id" style="width:100%;" onchange="getFeeByCondition()"/></td>
+							</tr>
+							<tr><td colspan="6"><b>收件人历史信息：</b></font></td></tr>
+							<tr>
+							    <td colspan="6">
+									<table class="table1" border="1px" id="consigneeHistoryTable" width="100%">
+									  <thead>
+									  	<tr >
+											<th class="tdleft" width="15%">收件人</th>
+									    	<th class="tdleft" width="15%">省</th>
+									    	<th class="tdleft" width="15%">市</th>
+									    	<th class="tdleft" width="15%">区</th>
+									    	<th class="tdleft" width="15%">街道</th>
+									    	<th class="tdleft" width="25%">详细地址</th>
+									    	<th class="tdleft" style="display:none">订单id</th>
+										</tr>
+									  </thead>
+									  <tbody>
+										   <tr class="parent" id="consigneeHistory">
+										   		<td colspan="6">点击展开/隐藏table内容</td>
+										   </tr>
+									  </tbody>
+									 </table>
 								</td>
-								<td class="tdleft">
-									<input type="text" name="consignee_No" id="consignee_No_id" style="background:#EBEBE4;height:15px;vertical-align:text-top;" disabled>								
-								<td style="display:none;"><input type="text" name="consignee_customerid" id="consignee_customerid_id"/></td>
-							</tr>
-							<tr>
-								<td class="tdleft">收件地址<font>*</font>:</td>
-								<td class="tdleft" colspan="4"><input type="text" name="consignee_adress" id="consignee_adress_id" style="width:100%;" /></td>
-							</tr>
-							<tr style="line-height: 35px;">
-								<td class="tdleft">手机：</td>
-								<td class="tdleft"><input type="text" name="consignee_cellphone" id="consignee_cellphone_id"/></td>
-								<td class="tdrigth">固话：</td>
-								<td class="tdleft"><input type="text" name="consignee_telephone" id="consignee_telephone_id"/></td>
-								<td class="tdcenter" colspan="2">（手机、固话必填1个）</td>					
 							</tr>
 						</table>
 					</fieldset>
 				</td>
 			</tr>
-		</table>				
+		</table>
+		
 		<fieldset ID="goodsInfo" style="border:solid; border-width: 1px;margin-top: 5px;">
 			<legend>
 				<span style="color: red;font-size:16px;">&nbsp;&nbsp;托物资料</span>
@@ -335,22 +443,37 @@
 					<col width="15%">
 				</colgroup>
 					<tr>
-						<td class="tdleft" style="vertical-align:middle; text-align:center;"><font size="3px" color="red">付款方式:</font></td>
+						<td class="tdleft" style="vertical-align:middle; text-align:center;"><font size="3px" color="red">结算方式:</font></td>
 						<td class="tdcenter"  style="vertical-align:middle; text-align:center;">
-							<input id="Radio1" type="radio" class="RadioClass" name="payment_method"   value="1" />
+							<input id="Radio1" type="radio" class="RadioClass" name="payment_method"  value="1" onchange="getFeeByCondition()"/>
 							<label id="Label1" for="Radio1" class="RadioLabelClass" ><font size="6px" >现付</font></label>
 						</td>
 						<td class="tdcenter">
-							<input id="Radio2" type="radio" class="RadioClass" name="payment_method"   value="2" />
+							<input id="Radio2" type="radio" class="RadioClass" name="payment_method"  onchange="getFeeByCondition()" value="2"  />
 							<label id="Label2" for="Radio2" class="RadioLabelClass"><font size="6px">到付</font></label>
 						</td>
 						<td class="tdcenter">
-							<input id="Radio3" type="radio" class="RadioClass" name="payment_method"  value="0" checked/>
+							<input id="Radio3" type="radio" class="RadioClass" name="payment_method"  value="0"/>
 							<label id="Label3" for="Radio3" class="RadioLabelClass"><font size="6px">月结</font></label>
+						</td>
+						<td class="tdcenter">
+							<input id="Radio4" type="radio" class="RadioClass" name="payment_method"  value="3"/>
+							<label id="Label4" for="Radio4" class="RadioLabelClass" style="width:200px;"><font size="6px">第三方支付</font></label>
+						</td>
+						
+					</tr>
+					<tr>
+					    <td class="tdrigth" style="vertical-align:middle; text-align:center;">支付方式：</td>
+					   <td> 
+						   <select name="paywayid" id="paywayid"  style="width:100%;" >
+								<option value="1" >现金</option>
+								<option value="2" >pos支付扫描</option>
+								<option value="5" >cod支付扫描</option>
+							</select>
 						</td>
 						<td class="tdrigth" style="vertical-align:middle; text-align:center;">月结账号：</td>
 						<td class="tdleft" style="vertical-align:middle; text-align:center;"><input type="text" name="monthly_account_number" id="monthly_account_number_id" style="width:100%;" /></td>
-						<td class="tdcenter" style="vertical-align:middle; text-align:center;"><font color="red">月结：月结账户必填</font></td>
+						<td class="tdcenter" style="vertical-align:middle; text-align:center;" ><font color="red">月结：月结账户必填</font></td>
 					</tr>
 				</table>
 		</fieldset>	
@@ -514,7 +637,7 @@
 				$(this).next("label").addClass("RadioSelected");
 			}
 			
-			if($("input[name='payment_method']:checked").val() != 0){
+			if($("input[name='payment_method']:checked").val() != 0 && $("input[name='payment_method']:checked").val() != 3){
 				$("#monthly_account_number_id").css('background','#EBEBE4');
 				$("#monthly_account_number_id").attr("readonly",true);
 				$("#monthly_account_number_id").val("");
@@ -524,7 +647,18 @@
 			}
 	});
 	
+	function selected(value){
+		var all_options = document.getElementById("express_product_type").options;
+		for (i=0; i<all_options.length; i++){
+			if (all_options[i].value == value) // 根据option标签的ID来进行判断 测试的代码这里是两个等号
+			{
+				all_options[i].selected = true;
+			}
+		}
+	};
+	
 	$(function(){
+		$("#addImg").hide(); 
 		if($.trim($("#flag").html()) == "true"){
 			alert("保存成功");
 		}else if($.trim($("#flag").html()) == "false"){
@@ -539,8 +673,9 @@
 		}
 		$("#sender_No_id").val($("#sender_companyName_id  option:selected").attr("code"));
 		$("#consignee_No_id").val($("#consignee_companyName_id  option:selected").attr("code"));
-		$("#Radio1").attr('checked', 'checked'); 
-		$(".RadioClass").change();
+		//bug修改
+		/* $("#Radio1").attr('checked', 'checked'); 
+		$(".RadioClass").change(); */
 		
 	});
 	/*
@@ -972,8 +1107,8 @@
 	function checkPayMethod(){
 		var payment_method = $("input[name='payment_method']:checked").val();
 		var monthly_account_number = $("#monthly_account_number_id");
-		
-		if(payment_method == 0){
+		debugger;
+		if(payment_method == 0 || payment_method == 3){
 			//校验月结账号是否为空
 	        if(!nullValidater(monthly_account_number,"月结账号")){
 	        	confirmFunction("月结账号未填写");
@@ -1271,6 +1406,7 @@
 	 *获取运单号对应的信息，并判断是否已经补录
 	 */
 	function getCwbOrderEmbraced(){
+		debugger;
 		var orderNo = $.trim($("#orderNo_id").val());
 		if(!numberOrLetterValidater($("#orderNo_id"),"运单号")){
 			$("#orderNo_id").val("");
@@ -1286,10 +1422,9 @@
 					"orderNo":orderNo
 				},
 				success : function(data) {	
-					debugger
 					if(typeof(data.embracedOrderVO)  == "undefined" || data.embracedOrderVO.orderNo == ""){						
 				        	$("#isadditionflag_id").attr("value",0);
-				        	//根据运单号，去预订单表查数据，带出小件员
+				        	//根据运单号，去订单表查数据，带出小件员
 				        	var orderNo = $.trim($("#orderNo_id").val());
 				    		$.ajax({
 				    			type : "POST",
@@ -1343,12 +1478,13 @@
 					$("#BranchprovinceId").html(data.embracedOrderVO.sender_provinceid);
 					$("#BranchcityId").html( data.embracedOrderVO.sender_cityid);
 					$("#BranchcountyId").html( data.embracedOrderVO.sender_countyid);
-					$("#sender_townId").html( data.embracedOrderVO.sender_townid);
+					$("#sender_townId").html( data.embracedOrderVO.sender_townid); 
 					$("#receive_provinceId").html(data.embracedOrderVO.consignee_provinceid);
 					$("#receive_cityId").html(data.embracedOrderVO.consignee_cityid);
 					$("#receive_countyId").html(data.embracedOrderVO.consignee_countyid);
-					$("#receive_townId").html(data.embracedOrderVO.consignee_townid);
-					initArea();
+					$("#receive_townId").html(data.embracedOrderVO.consignee_townid); 
+					 initArea(); 
+					$("#reserveOrderNo").val(data.reserveOrderNo);
 					$("#sender_adress_id").val(data.embracedOrderVO.sender_adress);
 					$("#sender_cellphone_id").val(data.embracedOrderVO.sender_cellphone);
 					$("#sender_telephone_id").val(data.embracedOrderVO.sender_telephone);
@@ -1412,17 +1548,21 @@
 					}else{
 						$("#packing_amount_id").val(data.embracedOrderVO.packing_amount);
 					}
-					
 					//把付款方式给选上 $("#payment_method_id").val(); 完成
+					debugger;
 					if(data.embracedOrderVO.payment_method == 0){
 						$("#Radio3").attr("checked","checked");
-						$("#monthly_account_number_id").val(data.embracedOrderVO.monthly_account_number);
 						$(".RadioClass").change();
+						$("#monthly_account_number_id").val(data.embracedOrderVO.monthly_account_number);					
 					}else if(data.embracedOrderVO.payment_method == 1){
 						$("#Radio1").attr("checked","checked");
 						$(".RadioClass").change();
 					}else if(data.embracedOrderVO.payment_method == 2){
 						$("#Radio2").attr("checked","checked");
+						$(".RadioClass").change();
+					}else if(data.embracedOrderVO.payment_method == 3){
+						$("#Radio4").attr("checked","checked");
+						$("#monthly_account_number_id").val(data.embracedOrderVO.monthly_account_number);
 						$(".RadioClass").change();
 					}
 					$("#remarks_id").val(data.embracedOrderVO.remarks);
@@ -1450,6 +1590,33 @@
     					delivermanIdSelect.css('background','#ffffff');
     					delivermanIdSelect.attr("readonly",false);
     				}
+    				debugger;
+    				//图片按钮
+    				if(data.expressImage == null){
+    					$("#addImg").hide();
+    				}else{
+    					
+    					$("#addImg").show();
+    					var divshow = document.getElementById("img");
+    					//获取指定ID的DOM对象
+    					 var childnode=divshow.firstChild;
+    					if(childnode!=null && childnode!=undefined){
+    						//获取被删除的节点
+       					   divshow.removeChild(childnode);
+    					}
+    					
+    					var img = document.createElement("img");
+    					img.src = data.expressImage
+    				    //img.src = "http://10.199.195.25:8080/express/file/bookingOrder?date=2016-06-01&fileName=89890610006.jpg";
+    				    divshow.appendChild(img);
+    				}
+    				
+    				
+    				//快递二期增加字段
+    				/* selected(data.embracedOrderVO.express_product_type); */
+    				
+    				$("#express_product_type").val(data.embracedOrderVO.express_product_type);
+    				$("#paywayid").val(data.embracedOrderVO.paywayid);
 				}
 			});
 		}
@@ -1496,6 +1663,7 @@
 				if(goods_height != ""){
 					var kgs = (parseFloat(goods_longth)*parseFloat(goods_width)*parseFloat(goods_height))/6000;
 					$("#goods_kgs_id").val(kgs.toFixed(2));
+					getFeeByCondition();
 				}
 			}
 		}
@@ -1557,8 +1725,8 @@
 	function companyChange(obj){
 		if(obj.id.indexOf("sender") >= 0){
 			$("#sender_No_id").val($("#sender_companyName_id  option:selected").attr("code"));
-			//如果是月结，那么把寄件人公司的编码赋值给月结账号
-			if($("input[name='payment_method']:checked").val() == 0){
+			//如果是月结或者第三方支付，那么把寄件人公司的编码赋值给月结账号
+			if($("input[name='payment_method']:checked").val() == 0 || $("input[name='payment_method']:checked").val() == 3){
 				$("#monthly_account_number_id").val($("#sender_companyName_id  option:selected").attr("code"));
 			}
 			
@@ -1704,6 +1872,9 @@
 		var obj_val = $("#"+obj.id).val();
 		var number = new Number(obj_val);
 		$("#"+obj.id).val(number.toFixed(x));
+		if(obj.id=="actual_weight_id"){
+			getFeeByCondition();
+		}
 	}
 	
 	//uat后新加
@@ -1737,7 +1908,9 @@
 			}
 		}
 	}
-
+	
+	
+	
 	$(function() {
 		$("#importButton").click(function(){	
 			if($("#txtFileName").val() == ""){
@@ -1841,6 +2014,35 @@
 			$(this).swfupload('startUpload');
 		}).bind('uploadError', function(event, file, errorCode, message) {
 		});
+		
+	   //表格收缩与展开
+	   $('tr.parent').click(function(){   // 获取所谓的父行
+		    $(this)
+		    .toggleClass("selected")   // 添加/删除高亮  
+		    .siblings('.child_'+this.id).toggle();  // 隐藏/显示所谓的子行
+	   }).click();
+		
+	   //图片显示
+	   var selectImage;
+       $('#addImg').click(function () {
+           //图片显示
+           selectImage = $.layer({
+           	    type: 1,
+                title: '图片展示',
+                shadeClose: true,
+                maxmin: true,
+                fix: false,
+                shade: 0,
+                area: [600],
+                page: {
+                    dom: '#img'
+                } 
+           });
+           
+       });
+       
+    
+       
 	});
 	function confirmImport(){
 		if($("#successCount").html() == 0){
@@ -1926,6 +2128,195 @@
 			$("#actual_weight_id").val(weight);
 		}
 	}
+	
+	//根据寄件人手机号码获取对应的运单号
+	function getReserveOrderBySenderPhone(phone,flag){
+		var sender_phone = phone;
+		var reserveOrderTableRows = document.getElementById("reserveOrderTable").rows.length-2;
+		if(reserveOrderTableRows>0){
+			for(var i=0;i<reserveOrderTableRows;i++){
+				document.getElementById("reserveOrderTable").deleteRow(2);
+			}
+		}
+		var senderHistoryTableRows = document.getElementById("senderHistoryTable").rows.length-2;
+		if(senderHistoryTableRows>0){
+			for(var i=0;i<senderHistoryTableRows;i++){
+				document.getElementById("senderHistoryTable").deleteRow(2);
+			}
+		}
+		if(phone.trim()==""){
+			return;
+		}
+		$.ajax({
+			type : "POST",
+			url : "<%=request.getContextPath()%>/express2/reserveOrder/getReserveOrderBySenderPhone",
+			dataType : "json",
+			async: true,
+			data:{	
+				senderPhone : sender_phone,
+				phoneFlag : flag
+			},
+			success : function(data) {
+				if(data.reserveOrderList.length!=0){
+					for(var i=0;i<data.reserveOrderList.length;i++){
+						var reserveOrder=data.reserveOrderList[i];
+						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td><td>'+reserveOrder.cnorAddr+'</td><td>'+reserveOrder.requireTime+'</td></tr>');
+						
+					}
+				}
+				if(data.orderList.length!=0){
+					for(var i=0;i<data.orderList.length;i++){
+						var order=data.orderList[i];
+						//$('#senderHistoryTable').append('<tr class="child_senderHistory"><td>'+order.senderprovince+'</td><td>'+order.sendercity+'</td><td>'+order.sendercounty+'</td><td>'+order.senderstreet+'</td><td>'+order.senderaddress+'</td></tr>');
+						$('#senderHistoryTable').append('<tr class="child_senderHistory" ondblclick="senderHistoryTableDblClick(this)"><td>'+order.sendername+'</td><td>'+order.senderprovince+'</td><td>'+order.sendercity+'</td><td>'+order.sendercounty+'</td><td>'+order.senderstreet+'</td><td>'+order.senderaddress+'</td>'
+						+'<td style="display:none">'+order.senderprovinceid+'</td><td style="display:none">'+order.sendercityid+'</td><td style="display:none">'+order.sendercountyid+'</td><td style="display:none">'+order.senderstreetid+'</td></tr>'); 
+					}
+				}
+			}
+		}); 
+	}
+	
+	//根据收件人手机号码获取对应的运单号
+	function getReserveOrderByConsignPhone(phone,flag){
+		var consign_phone = phone;
+		var consigneeHistoryTableRows = document.getElementById("consigneeHistoryTable").rows.length-2;
+		if(consigneeHistoryTableRows>0){
+			for(var i=0;i<consigneeHistoryTableRows;i++){
+				document.getElementById("consigneeHistoryTable").deleteRow(2);
+			}
+		}	
+		if(phone.trim()==""){
+			return;
+		} 
+		$.ajax({
+			type : "POST",
+			url : "<%=request.getContextPath()%>/express2/reserveOrder/getReserveOrderByConsignPhone",
+			dataType : "json",
+			async: true,
+			data:{	
+				consignPhone : consign_phone,
+				phoneFlag : flag
+			},
+			success : function(data) {
+				for(var i=0;i<data.length;i++){
+					//$('#consigneeHistoryTable').append("<tr class='child_consigneeHistory' ondblclick='consigneeHistoryTableDblClick('+data[i].cwbprovince+')><td>'+data[i].consigneename+'</td><td>'+data[i].cwbprovince+'</td><td>'+data[i].cwbcity+'</td><td>'+data[i].cwbcounty+'</td><td>'+data[i].recstreet+'</td><td>'+data[i].consigneeaddress+'</td><td style="display:none">'+data[i].opscwbid+'</td></tr>'");
+					$('#consigneeHistoryTable').append('<tr class="child_consigneeHistory" ondblclick="consigneeHistoryTableDblClick(this)"><td>'+data[i].consigneename+'</td><td>'+data[i].cwbprovince+'</td><td>'+data[i].cwbcity+'</td><td>'+data[i].cwbcounty+'</td><td>'+data[i].recstreet+'</td><td>'+data[i].consigneeaddress+'</td>'
+					+'<td style="display:none">'+data[i].recprovinceid+'</td><td style="display:none">'+data[i].reccityid+'</td><td style="display:none">'+data[i].reccountyid+'</td><td style="display:none">'+data[i].recstreetid+'</td></tr>'); 
+				}
+			}
+		}); 
+	};
+	
+	//收件人历史信息双击事件
+	function consigneeHistoryTableDblClick(consignee){
+		$("#consignee_adress_id").val("");
+		$("#area_consignee").val("");
+		$("#receive_provinceId").html($(consignee).find("td").eq(6).text());
+		$("#receive_cityId").html($(consignee).find("td").eq(7).text());
+		$("#receive_countyId").html($(consignee).find("td").eq(8).text());
+		$("#receive_townId").html($(consignee).find("td").eq(9).text()); 
+		initArea(); 
+		$("#consignee_provinceid_id").val($(consignee).find("td").eq(6).text());
+		$("#consignee_provinceName_id").val($(consignee).find("td").eq(1).text());
+		$("#consignee_cityid_id").val($(consignee).find("td").eq(7).text());
+		$("#consignee_cityName_id").val($(consignee).find("td").eq(2).text());
+		$("#consignee_countyid_id").val($(consignee).find("td").eq(8).text());
+		$("#consignee_countyName_id").val($(consignee).find("td").eq(3).text());
+		$("#consignee_townid_id").val($(consignee).find("td").eq(9).text());
+		$("#consignee_townName_id").val($(consignee).find("td").eq(4).text());
+		$("#consignee_adress_id").val($(consignee).find("td").eq(5).text());
+		
+	}
+	
+	//寄件人历史信息双击事件
+	function senderHistoryTableDblClick(sender){
+		$("#area_sender").val("")
+		$("#sender_adress_id").val("");
+		$("#BranchprovinceId").html($(sender).find("td").eq(6).text());
+		$("#BranchcityId").html($(sender).find("td").eq(7).text());
+		$("#BranchcountyId").html($(sender).find("td").eq(8).text());
+		$("#sender_townId").html($(sender).find("td").eq(9).text()); 
+		initArea(); 
+		$("#sender_provinceid_id").val($(sender).find("td").eq(6).text());
+		$("#sender_provinceName_id").val($(sender).find("td").eq(1).text());
+		$("#sender_cityid_id").val($(sender).find("td").eq(7).text());
+		$("#sender_cityName_id").val($(sender).find("td").eq(2).text());
+		$("#sender_countyName_id").val($(sender).find("td").eq(3).text());
+		$("#consignee_townid_id").val($(sender).find("td").eq(9).text());
+		$("#sender_townName_id").val($(sender).find("td").eq(4).text());
+		$("#sender_adress_id").val($(sender).find("td").eq(5).text());
+	}
+	
+	//预约单信息双击事件
+	function reserveTableDblClick(reserve){
+		$("#reserveOrderNo").val($(reserve).find("td").eq(0).text());
+	}
+	
+	function getFeeByCondition(){
+		var productType = $.trim($("#express_product_type").val());
+		var actualWeight = $.trim($("#actual_weight_id").val());
+		var goodsLongth = $.trim($("#goods_longth_id").val());
+		var goodsWidth = $.trim($("#goods_width_id").val());
+		var goodsHeight = $.trim($("#goods_height_id").val());
+		var senderProvince = $.trim($("#sender_provinceName_id").val());
+		var senderCity = $.trim($("#sender_cityName_id").val());
+		var consigneeProvince = $.trim($("#consignee_provinceName_id").val());
+		var consigneeCity = $.trim($("#consignee_cityName_id").val());
+		var payMethod = $.trim($("input[name='payment_method']:checked").val());
+		//始发省份名称不能为空
+		if(senderProvince==""){
+			return;
+		}
+		//始发城市名称不能为空
+		if(senderCity==""){
+			return;
+		}
+		//目的省份名称不能为空
+		if(consigneeProvince==""){
+			return;
+		}
+		//目的城市名称不能为空
+		if(consigneeCity==""){
+			return;
+		}
+		//服务产品编码不能为空
+		if(productType==""){
+			return;
+		}
+		//支付类型不能为空，且只能为现金和到付
+		if(payMethod=="" || payMethod==0 || payMethod==3){
+			return;
+		}
+		//重量和体积二者必填其一
+		if((actualWeight==""||actualWeight<=0)&&($("#goods_kgs_id").val()==""||($("#goods_kgs_id").val()<=0))){
+			return;
+		}
+		$("#freight_id").val("");
+		$("#charge_weight_id").val("");
+		$.ajax({
+			type : "POST",
+			url : "<%=request.getContextPath()%>/express2/reserveOrder/getFeeByCondition",
+			dataType : "json",
+			async: false,
+			data:{
+				"productType":productType,
+			    "actualWeight":actualWeight,
+			    "goodsLongth":goodsLongth,
+			    "goodsWidth":goodsWidth,
+			    "goodsHeight":goodsHeight,
+			    "senderProvince":senderProvince,
+			    "senderCity":senderCity, 
+			    "consigneeProvince":consigneeProvince, 
+			    "consigneeCity":consigneeCity,
+		        "payMethod":payMethod 
+			},
+			success : function(data) {
+				$("#freight_id").val(data.price);
+				$("#charge_weight_id").val(data.calWeight);
+			}
+		});
+	}
+	
 </script>
 <script src="<%=request.getContextPath()%>/js/express/embraceInputExtra/jquery.area.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/express/embraceInputExtra/new-order.js" type="text/javascript"></script>

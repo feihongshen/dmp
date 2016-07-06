@@ -675,6 +675,12 @@
             <artifactId>tps-base-service-api</artifactId>
             <version>1.16.3_03</version>
         </dependency>
+        
+        <dependency>
+		     <groupId>com.pjbest.psp</groupId>
+		     <artifactId>psp-express-service-api</artifactId>
+		     <version>1.5.2-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>

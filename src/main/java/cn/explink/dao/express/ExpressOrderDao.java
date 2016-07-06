@@ -159,6 +159,9 @@ public class ExpressOrderDao {
 			embracedOrderVO.setInstationdatetime(StringUtil.nullConvertToEmptyString(rs.getString("instationdatetime")));
 			embracedOrderVO.setInstationid(rs.getInt("instationid"));
 			embracedOrderVO.setCarsize(StringUtil.nullConvertToEmptyString(rs.getString("carsize")));
+			//快递二期补录新增字段 --周欢
+			embracedOrderVO.setPaywayid(rs.getInt("paywayid"));
+			embracedOrderVO.setExpress_product_type(rs.getInt("express_product_type"));
 			return embracedOrderVO;
 		}
 

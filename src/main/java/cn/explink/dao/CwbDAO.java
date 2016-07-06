@@ -166,7 +166,6 @@ public class CwbDAO {
             return null;
         }
     }
-
 	private final class CwbMapper implements RowMapper<CwbOrder> {
 		
 		//是否需要过滤用户信息
@@ -9769,4 +9768,29 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set emaildate = ? where cwb = ? and state=1";
 		return this.jdbcTemplate.update(sql, emaildate,cwb);
 	}
+	
+	public List<Map<String, Object>> getCwbOrderByPhone(String phone, String flag) {
+		StringBuffer sql= new StringBuffer("");
+		new StringBuffer("");
+		if(flag.equals("1") || flag.equals("2")){
+			sql.append("SELECT DISTINCT sendername,senderprovince,sendercity,sendercounty,senderstreet,senderaddress,senderprovinceid,sendercityid,sendercountyid,senderstreetid from express_ops_cwb_detail where state=1 ");
+			if(flag.equals("1")){//根据寄件人手机号
+				sql.append(" and sendercellphone='"+phone+"' ");
+			}else if(flag.equals("2")){//根据寄件人固话
+				sql.append(" and sendertelephone='"+phone+"' ");
+			}
+			sql.append(" and cwbordertypeid=6 limit 0,3");
+		}else if(flag.equals("3") || flag.equals("4")){
+			sql.append("SELECT DISTINCT consigneename,cwbprovince,cwbcity,cwbcounty,recstreet,consigneeaddress,recprovinceid,reccityid,reccountyid,recstreetid from express_ops_cwb_detail where state=1 ");
+			if(flag.equals("3")){//根据收件人手机号
+				sql.append(" and consigneemobile='"+phone+"' ");
+			}else if(flag.equals("4")){//根据收件人固话
+				sql.append(" and consigneephone='"+phone+"' ");
+			}
+			sql.append(" and cwbordertypeid=6 limit 0,3");
+		}
+		
+		return this.jdbcTemplate.queryForList(sql.toString());
+	}
+
 }
