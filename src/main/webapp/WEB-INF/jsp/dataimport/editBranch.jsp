@@ -199,8 +199,8 @@ function bdbranchmatch(){
 		<div class="menucontant">
 			<div class="uc_midbg" id="uc_midbg">
 				<ul>
-					<li><a href="#" class="light">修改匹配站</a></li>
-					<li><a href="editBatchBranch">批量匹配站</a></li>
+					<li><a href="#" class="light">修改匹配信息</a></li>
+					<li><a href="editBatchBranch">批量匹配</a></li>
 					<li><a href="editBranchonBranch">匹配站按站</a></li>
 					<li><a href="addresslibrarymatching">手动匹配</a></li>
 					<!-- <li><a href="batchedit" >批量修改</a></li> -->
