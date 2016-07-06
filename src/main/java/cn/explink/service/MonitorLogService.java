@@ -264,7 +264,7 @@ public class MonitorLogService {
 		}
 		
 		if("yichukuzaitu".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorLogByType(" flowordertype in(6,14,40,27) ", branchid, page,branchids);
+			cwbList =   monitorKucunDAO.getMonitorLogByType(" op.flowordertype in(6,14,40,27) ", branchid, page,branchids);
 			String cwbs ="";
 			if (cwbList.size() > 0) {
 				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
