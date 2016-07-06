@@ -291,9 +291,9 @@ var file_id;
 	}
 	$(function(){
 		 $("#branchid").combobox();
-		 $("#customerid").combobox();
+		 /* $("#customerid").combobox(); */
 		 $("#serviceareaidflag").combobox();
-		 $("#warehouseidflag").combobox();
+		/*  $("#warehouseidflag").combobox(); */
 		$("div.panel.combo-p").css({"margin-top":"-78px","width":"155px"});
 		$("div[class='combo-panel panel-body panel-body-noheader']").css({"height":"198px"});
 	})
