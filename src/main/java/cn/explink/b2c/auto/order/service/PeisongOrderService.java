@@ -20,6 +20,7 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 
 /**
@@ -63,8 +64,16 @@ public class PeisongOrderService {
 			orderDTO.setCwbcounty(order.getCneeRegion());//收件人区
 			orderDTO.setConsigneename(order.getCneeContacts());//收件人
 			orderDTO.setConsigneeaddress(order.getCneeAddr());//收件人地址
-			orderDTO.setConsigneephone(order.getCneeTel());//收件人电话
-			orderDTO.setConsigneemobile(order.getCneeMobile());//收件人手机
+			String tel = order.getCneeTel();//收件人电话
+			if(!StringUtil.isEmpty(tel)) {
+				tel = SecurityUtil.getInstance().encrypt(tel);
+			}
+			orderDTO.setConsigneephone(tel);//寄件人电话
+			String mobile = order.getCneeMobile();
+			if(!StringUtil.isEmpty(mobile)) {
+				mobile = SecurityUtil.getInstance().encrypt(mobile);
+			}
+			orderDTO.setConsigneemobile(mobile);//收件人手机
 			orderDTO.setConsigneepostcode(order.getPostCode());//收件人邮编
 			String warehouseAddr = order.getWarehouseAddr();//仓库地址，拼接到remark5
 			//重量、体积自动化订单时设置为0，其余取上游数据
@@ -121,19 +130,7 @@ public class PeisongOrderService {
 			} else {
 				order_delivery_batch = "普通订单";
 			}
-			//
 			int order_source = order.getOrderSource();
-			// 服务类型：1.B2C， 2.仓配服务，3.配送服务
-			/*String service_type = order.getVip().getServiceType().toString();
-			String cargotype = "";
-			if ("1".equals(service_type)) {
-				cargotype = "B2C";
-			} else if ("2".equals(service_type)) {
-				cargotype = "仓配服务";
-			} else if ("3".equals(service_type)) {
-				cargotype = "配送服务";
-			}
-			orderDTO.setCargotype(cargotype);*/
 			orderDTO.setOrder_source(order_source);
 			
 			String createdTime = mQGetOrderDataService.toDateForm(order.getCreateTime());//记录生成时间
@@ -154,8 +151,8 @@ public class PeisongOrderService {
 			int is_gathercomp = order.getVip().getIsGatherComp();//最后一箱:1最后一箱 ，0默认 
 			
 			Integer total_pack = order.getTotalPack(); // 新增箱数
-			
-			if(is_gatherpack==0 && boxlist.size()!=total_pack){
+			int boxSize = (boxlist==null||boxlist.size()==0)?1:boxlist.size();
+			if(is_gatherpack==0 && boxSize!=total_pack){
 				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
 				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
 			}
