@@ -1840,6 +1840,7 @@ public class CwbOrderService extends BaseOrderService {
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
 					//同时，也要把当前站点的到错货的缺件记录，也一并删除
 					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), isypdjusetranscwb, 0);
+
 					//清除非本站的缺件记录，add by neo01.huang，2016-6-14
 					ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
 					
@@ -4685,9 +4686,8 @@ public class CwbOrderService extends BaseOrderService {
 			// added shenhongfei 小件员领货扫描 2016-1-12
 			this.orderInterceptService.checkTransCwbIsIntercept(transCwb, FlowOrderTypeEnum.FenZhanLingHuo);
 		}
-		// 是否放行订单号运单号都可以处理		
+		// 是否放行订单号运单号都可以处理
 		this.deliverTakeGoodsMPSReleaseService.validateReleaseCondition(scancwb);
-		
 
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 
@@ -9346,6 +9346,7 @@ public class CwbOrderService extends BaseOrderService {
 		list = this.cwbDAO.getCwbsBycwbs(inStr.substring(0, inStr.length() - 1) + ")");
 		return list;
 	}
+	
 	public List<CwbOrder> getLabelPrintCwbsByCwbs(List<String> cwbList) {
 		List<CwbOrder> list = new ArrayList<CwbOrder>();
 		StringBuffer inStr = new StringBuffer();
@@ -9913,3 +9914,4 @@ public class CwbOrderService extends BaseOrderService {
 		return false;
 	}
 }
+
