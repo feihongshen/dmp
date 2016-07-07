@@ -238,6 +238,7 @@ CREATE TABLE `fn_df_fee_adjustment_org` (
   `adjustment_create_user` varchar(50) DEFAULT NULL,
   `adjustment_update_time` datetime DEFAULT NULL,
   `adjustment_update_user` varchar(50) DEFAULT NULL,
+  `pick_time` datetime DEFAULT NULL COMMENT '领货时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='站点派费调整表';
 
@@ -292,6 +293,7 @@ CREATE TABLE `fn_df_fee_adjustment_staff` (
   `adjustment_create_user` varchar(50) DEFAULT NULL,
   `adjustment_update_time` datetime DEFAULT NULL,
   `adjustment_update_user` varchar(50) DEFAULT NULL,
+  `pick_time` datetime DEFAULT NULL COMMENT '领货时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='小件员派费调整表';
 
