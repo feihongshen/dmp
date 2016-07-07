@@ -109,7 +109,11 @@ public class CwbOrderDeliveryBindService {
 			// 把未完成MQ插入到数据库中, end
 		}
 	}
-	
+	/**
+	 * 配送单反馈拒收或者部分拒收时，揽退单已领货，即解绑。
+	 * @param parm
+	 * @throws Exception
+	 */
 	private void doCwbDeliveryBind(String parm) throws Exception{
 		try {
 			OrderFlow orderFlow = JsonUtil.readValue(parm, OrderFlow.class);
