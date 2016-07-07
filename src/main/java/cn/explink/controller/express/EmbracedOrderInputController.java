@@ -322,17 +322,19 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 		OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel();
 		String tpstransportNo = cwbDAO.getTpsTransportNoByCwb(orderNo);
          
-        String reserveOrderNo = "";
+		ReserveOrderVo  reserveOrder = null;
 		if(tpstransportNo!=null&&!tpstransportNo.isEmpty()){
-			omReserveOrderModel.setTransportNo(tpstransportNo);    
-			ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
-			reserveOrderNo = reserveOrder.getReserveOrderVoList().get(0).getReserveOrderNo();
+			omReserveOrderModel.setTransportNo(tpstransportNo);
+			ReserveOrderPageVo reserveOrderVO = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
+			if(reserveOrderVO.getReserveOrderVoList().size()!=0){
+				reserveOrder = reserveOrderVO.getReserveOrderVoList().get(0);
+			}
 		}
 		obj.put("embracedOrderVO", embracedOrderVO);
 		obj.put("expressWeigh", expressWeigh);
 		obj.put("branchid", this.getSessionUser().getBranchid());
 		obj.put("expressImage", expressImage);
-		obj.put("reserveOrderNo", reserveOrderNo);
+		obj.put("reserveOrder", reserveOrder);
 		return obj;
 	}
 
