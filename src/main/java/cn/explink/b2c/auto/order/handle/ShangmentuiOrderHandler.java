@@ -33,7 +33,7 @@ public class ShangmentuiOrderHandler implements IOrderHandler{
 	@Override
 	public void dealWith(InfDmpOrderSendVO order,VipShop vipshop) {
 		//上门退订单接口数据导入
-		if(vipshop.getIsGetPeisongFlag()==1){
+		if(vipshop.getIsGetShangmentuiFlag()==1){
 			Customer customer=customerDAO.getCustomerById(Long.valueOf(vipshop.getCustomerids()));
 			//返回的报文订单信息解析
 			MQCwbOrderDTO cwbOrder = shangmentuiService.ShangmentuiJsonDetailInfo(vipshop,order,customer.getMpsswitch());
@@ -48,8 +48,8 @@ public class ShangmentuiOrderHandler implements IOrderHandler{
 				}
 			}
 		}else{
-			this.logger.info("TPS接口为开启接收配送单开关");
-	    	throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"TPS接口为开启接收配送单开关");
+			this.logger.info("TPS接口未开启接收上门退订单开关");
+	    	throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"TPS接口未开启接收上门退订单开关");
 		}
 		
 	}

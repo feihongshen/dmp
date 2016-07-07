@@ -36,6 +36,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                             <input type ="radio" id="isopendownload1" name ="isopendownload" value="1" <%if(vipshop.getIsopendownload()==1){%>checked<%}%>  >开启
                             <input type ="radio" id="isopendownload2" name ="isopendownload" value="0"   <%if(vipshop.getIsopendownload()==0){%>checked<%}%>  >关闭
                         </li>
+                        <li style="display: none;"><span>是否订单下发接口：</span>
+                            <input type ="text" id="isTpsSendFlag" name ="isTpsSendFlag" value="1"  maxlength="300">
+                        </li>
                         <li><span>密码：</span>
                             <input type ="password" id="password" name ="password"  maxlength="30"    size="20"> 
                         </li>
@@ -46,6 +49,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                         <li style="display: none;"><span>是否订单下载：</span>
                             <input type ="radio" id="isopendownload1" name ="isopendownload" value="1"  checked>开启
                             <input type ="radio" id="isopendownload2" name ="isopendownload" value="0"   >关闭
+                        </li>
+                        <li style="display: none;"><span>是否订单下发接口：</span>
+                            <input type ="text" id="isTpsSendFlag" name ="isTpsSendFlag" value="1"  maxlength="300">
                         </li>
                         <li><span>密码：</span>
                             <input type ="password" id="password" name ="password"  maxlength="30"    size="20"> 
