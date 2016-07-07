@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import net.sf.json.JSONObject;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.Header;
 import org.apache.camel.builder.RouteBuilder;
@@ -30,6 +31,7 @@ import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.MqExceptionBuilder.MessageSourceEnum;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.JsonUtil;
 
@@ -107,7 +109,11 @@ public class CwbOrderDeliveryBindService {
 			// 把未完成MQ插入到数据库中, end
 		}
 	}
-	
+	/**
+	 * 配送单反馈拒收或者部分拒收时，揽退单已领货，即解绑。
+	 * @param parm
+	 * @throws Exception
+	 */
 	private void doCwbDeliveryBind(String parm) throws Exception{
 		try {
 			OrderFlow orderFlow = JsonUtil.readValue(parm, OrderFlow.class);
@@ -119,28 +125,31 @@ public class CwbOrderDeliveryBindService {
 			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = JsonUtil.readValue(orderFlow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
 			CwbOrder cwborder = cwbOrderWithDeliveryState.getCwbOrder();
 			if (cwborder != null && cwborder.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()) {
-				if (getShipper_no(cwborder) != null && !getShipper_no(cwborder).isEmpty()) {
-					List<CwbOrder> shangMenTuiCwbList = cwbDAO.queryRelatedShangMenTuiCwbList(cwborder.getCwb());
-					if (shangMenTuiCwbList != null && !shangMenTuiCwbList.isEmpty()) {
-						for (CwbOrder co : shangMenTuiCwbList) {
-							if (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {//配送关联揽退单已领货
-								logger.info("do 取消上门退订单绑定小件员 ，订单号：" + orderFlow.getCwb());
-								PjUpdateOrderRequest req = new PjUpdateOrderRequest();
-								
-								req.setCustOrderNo(co.getCwb());
-								req.setCarrierCode(getShipper_no(cwborder));
-								req.setOrgCode(getTpsBranchCode(co.getDeliverybranchid()));
-								req.setDistributer(null);//解绑
-								req.setUpdateTime(System.currentTimeMillis());
-								
-								InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
-								PjDeliveryOrderService service = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
-								RjUpdateOrderResponse response = service.updateOrderInfo(req);
-								if (response != null) {
-									if (response.getIsSucess()) {
-										logger.info("do 取消上门退订单绑定小件员 成功！ 订单号：" + response.getCustOrderNo());
-									} else {
-										logger.info("do 取消上门退订单绑定小件员 失败！ 订单号：" + response.getCustOrderNo()+ " 失败原因：" + response.getMsg());
+				if (DeliveryStateEnum.JuShou.getValue() == cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate()
+						|| DeliveryStateEnum.BuFenTuiHuo.getValue() == cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate()) {
+					if (getShipper_no(cwborder) != null && !getShipper_no(cwborder).isEmpty()) {
+						List<CwbOrder> shangMenTuiCwbList = cwbDAO.queryRelatedShangMenTuiCwbList(cwborder.getCwb());
+						if (shangMenTuiCwbList != null && !shangMenTuiCwbList.isEmpty()) {
+							for (CwbOrder co : shangMenTuiCwbList) {
+								if (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {//配送关联揽退单已领货
+									logger.info("do 取消上门退订单绑定小件员 ，订单号：" + orderFlow.getCwb());
+									PjUpdateOrderRequest req = new PjUpdateOrderRequest();
+									
+									req.setCustOrderNo(co.getCwb());
+									req.setCarrierCode(getShipper_no(cwborder));
+									req.setOrgCode(getTpsBranchCode(co.getDeliverybranchid()));
+									req.setDistributer(null);//解绑
+									req.setUpdateTime(System.currentTimeMillis());
+									
+									InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
+									PjDeliveryOrderService service = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
+									RjUpdateOrderResponse response = service.updateOrderInfo(req);
+									if (response != null) {
+										if (response.getIsSucess()) {
+											logger.info("do 取消上门退订单绑定小件员 成功！ 订单号：" + response.getCustOrderNo());
+										} else {
+											logger.info("do 取消上门退订单绑定小件员 失败！ 订单号：" + response.getCustOrderNo()+ " 失败原因：" + response.getMsg());
+										}
 									}
 								}
 							}
