@@ -404,6 +404,11 @@ public class CwbOrder {
 	 * 交接时间
 	 */
 	private String instationhandovertime;
+	
+	/**
+	 * 服务产品类型
+	 */
+	private int expressProductType;
 
 	public int getIshandover() {
 		return this.ishandover;
@@ -2068,7 +2073,14 @@ public class CwbOrder {
 	public void setVipclub(int vipclub) {
 		this.vipclub = vipclub;
 	}
+	
+		public int getExpressProductType() {
+		return expressProductType;
+	}
 
+	public void setExpressProductType(int expressProductType) {
+		this.expressProductType = expressProductType;
+	}
 	public String getTpstranscwb() {
 		return tpstranscwb;
 	}
@@ -2076,5 +2088,5 @@ public class CwbOrder {
 	public void setTpstranscwb(String tpstranscwb) {
 		this.tpstranscwb = tpstranscwb;
 	}
-	
+
 }
