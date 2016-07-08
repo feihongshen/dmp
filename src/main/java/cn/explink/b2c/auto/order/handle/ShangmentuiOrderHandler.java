@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.auto.order.service.MQGetOrderDataService;
 import cn.explink.b2c.auto.order.service.ShangmentuiOrderService;
@@ -31,6 +32,7 @@ public class ShangmentuiOrderHandler implements IOrderHandler{
 	protected Logger logger = LoggerFactory.getLogger(ShangmentuiOrderHandler.class);
 
 	@Override
+	@Transactional
 	public void dealWith(InfDmpOrderSendVO order,VipShop vipshop) {
 		//上门退订单接口数据导入
 		if(vipshop.getIsGetShangmentuiFlag()==1){

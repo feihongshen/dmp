@@ -181,8 +181,16 @@ public class ShangmentuiOrderService {
 			orderDTO.setCustomercommand("送货时间要求:" + required_time + ",订单配送批次:" + order_delivery_batch  + ",预约揽收时间："+go_get_return_time);
 			orderDTO.setSendcargoname("[发出商品]");
 			orderDTO.setCustomerid(Integer.parseInt(customerid));
-			
-			orderDTO.setRemark5(customer_name+"/"+warehouseAddr); // 仓库地址
+			String remark5="";
+			if(!StringUtil.isEmpty(customer_name)){
+				remark5+=customer_name;
+			}
+			if(!StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
+				remark5+="/"+customer_name;
+			}else if(StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
+				remark5+=customer_name;
+			}
+			orderDTO.setRemark5(remark5); // 仓库地址
 			orderDTO.setCwbordertypeid(cwbordertype);
 			
 			orderDTO.setExcelbranch(orderDTO.getExcelbranch()==null?"":orderDTO.getExcelbranch());//站点
@@ -194,19 +202,27 @@ public class ShangmentuiOrderService {
 			orderDTO.setIsmpsflag(mQGetOrderDataService.choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 			orderDTO.setMpsallarrivedflag(mQGetOrderDataService.choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
 			
-			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(cwb);
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(cwb);
+			CwbOrderDTO cwbOrderDTONoState = dataImportDAO_B2c.getCwbB2ctempByCwb(cwb);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
 			
 			//修改
 			if ("090".equalsIgnoreCase(cmd_type)) {
+				if (cwbOrderDTO == null ) {
+					this.logger.info("订单临时表中不存在该订单信息，无法进行修改操作，订单号为：cwb={}", cwb);
+					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"dmp订单临时表中不存在该订单信息，无法进行修改操作，订单号为：【"+cwb+"】");
+				}
 				//修改订单表
 				this.tPSOrderDao.updateBycwb(orderDTO);
 				//修改临时表
 				this.tPSOrderDao.updateTempBycwb(orderDTO);
 				return null;
 			}else if ("023".equalsIgnoreCase(cmd_type)) {// 订单取消
-				
+				if (cwbOrderDTO == null ) {
+					this.logger.info("订单临时表中不存在该订单信息，无法进行取消操作，订单号为：cwb={}", cwb);
+					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"dmp订单临时表中不存在该订单信息，无法进行取消操作，订单号为：【"+cwb+"】");
+				}
 				if(vipshop.getCancelOrIntercept()==0){ //取消
 					//cust_order_no订单号，根据订单号失效临时中订单数据
 					this.dataImportDAO_B2c.dataLoseB2ctempByCwb(cwb);
@@ -225,13 +241,14 @@ public class ShangmentuiOrderService {
 				}
 				return null;
 			}else if ("003".equalsIgnoreCase(cmd_type)) {//新增
+				if (cwbOrderDTONoState != null ) {
+					this.logger.info("订单临时表中已存在该订单信息，无法进行新增操作，订单号为：cwb={}", cwb);
+					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"dmp订单临时表中已存在该订单信息，无法进行新增操作，订单号为：【"+cwb+"】");
+				}
 				// 插入商品列表,try防止异常
 				this.insertOrderGoods(order.getDetails(), cwb);
 			}
-			if (cwbOrderDTO != null ) {
-				this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cwb);
-				return null;
-			}
+			
 			if ("".equals(cwb)) { // 若订单号为空，则继续。
 				this.logger.info("获取订单信息为空");
 				return null;
