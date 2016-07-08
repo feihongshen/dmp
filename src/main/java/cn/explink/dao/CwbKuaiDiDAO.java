@@ -228,7 +228,7 @@ public class CwbKuaiDiDAO {
 
 			sql += w.toString();
 		}
-		sql = sql + " and cd.state=1 and ds.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
+		sql = sql + " and cd.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
 		return sql;
 	}
 
@@ -347,7 +347,7 @@ public class CwbKuaiDiDAO {
 		if (timeType == 1) {
 			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' ";
 		} else if (timeType == 2) {
-			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' ";
+			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' and ds.state=1 ";
 		}
 		sql = this.getExpressOrderByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		return sql;
