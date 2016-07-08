@@ -15,6 +15,7 @@ import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
 
 import cn.explink.domain.ShangMenTuiCwbDetail;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 
 @Component
@@ -29,10 +30,10 @@ public class ShangMenTuiCwbDetailDAO {
 			shangMenTuiCwbDetail.setCustomerid(rs.getLong("customerid"));
 			shangMenTuiCwbDetail.setConsigneename(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 			shangMenTuiCwbDetail.setConsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
-			shangMenTuiCwbDetail.setConsigneephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+			shangMenTuiCwbDetail.setConsigneephone(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone"))));
 			shangMenTuiCwbDetail.setPaybackfee(rs.getBigDecimal("paybackfee"));
 			shangMenTuiCwbDetail.setCwb(StringUtil.nullConvertToEmptyString(rs.getString("cwb")));
-			shangMenTuiCwbDetail.setConsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
+			shangMenTuiCwbDetail.setConsigneemobile(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile"))));
 			shangMenTuiCwbDetail.setPrinttime(rs.getString("printtime"));
 			shangMenTuiCwbDetail.setRemark3(StringUtil.nullConvertToEmptyString(rs.getString("remark3")));
 			shangMenTuiCwbDetail.setRemark4(StringUtil.nullConvertToEmptyString(rs.getString("remark4")));
@@ -133,7 +134,7 @@ public class ShangMenTuiCwbDetailDAO {
 
 	public List<ShangMenTuiCwbDetail> getShangMenTuiCwbDetailByCwbs(String cwbs) {
 		return jdbcTemplate.query("SELECT * from shangmentuicwb_detail where cwb in(" + cwbs + ") ", new ShangMenTuiCwbDetailMapper());
-	}
+		}
 
 	// 同时更改上门退订单表中的字段
 	public void updateRemark5ByCwb(String cwb, String remark5, String consigneeName, String consigneMobile) {
