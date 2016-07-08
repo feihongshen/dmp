@@ -140,7 +140,13 @@ public class BranchController {
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
-			long branchid = this.branchDAO.creBranch(bh);
+			long branchid;
+			try {
+				branchid = branchService.creBranchAndSyncOsp(bh);
+			} catch (Exception e) {
+				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+				return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+			}
 			bh = branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if(!branchInfService.isCloseOldInterface()){					
@@ -193,7 +199,13 @@ public class BranchController {
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
-			long branchid = this.branchDAO.creBranch(bh);
+			long branchid;
+			try {
+				branchid = branchService.creBranchAndSyncOsp(bh);
+			} catch (Exception e) {
+				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+				return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+			}
 			bh = this.branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if(!branchInfService.isCloseOldInterface()){
@@ -260,7 +272,12 @@ public class BranchController {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
-			this.branchDAO.saveBranch(branch);
+			try {
+				branchService.saveBranchAndSyncOsp(branch);
+			} catch (Exception e) {
+				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+				return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+			}
 			branch = branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if(!branchInfService.isCloseOldInterface()){
@@ -321,7 +338,12 @@ public class BranchController {
 				this.cwbDAO.saveCwbOrderByExcelbranch(branchname, branchid);
 			}
 
-			this.branchDAO.saveBranch(branch);
+			try {
+				branchService.saveBranchAndSyncOsp(branch);
+			} catch (Exception e) {
+				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+				return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+			}
 			branch = this.branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if(!branchInfService.isCloseOldInterface()){
@@ -461,7 +483,12 @@ public class BranchController {
 
 	@RequestMapping("/del/{id}")
 	public @ResponseBody String del(@PathVariable("id") long branchid) {
-		this.branchDAO.delBranch(branchid);
+		try {
+			branchService.delBranchAndSyncOsp(branchid);
+		} catch (Exception e) {
+			String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+			return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+		}
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this.getSessionUser().getUsername(), branchid);
 		if (!branchInfService.isCloseOldInterface()) {

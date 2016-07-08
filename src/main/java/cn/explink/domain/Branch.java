@@ -1,6 +1,7 @@
 package cn.explink.domain;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import cn.explink.enumutil.BranchEnum;
 
@@ -135,6 +136,10 @@ public class Branch implements java.io.Serializable {
 	 * 站点缴款方式
 	 */
 	private int payinType;
+	
+	private String updateUser;
+	
+	private Date updateTime;
 	
 	/**
 	 * @return the pfruleid
@@ -786,5 +791,19 @@ public class Branch implements java.io.Serializable {
 		return serialVersionUID;
 	}
 
-	
+	public String getUpdateUser() {
+		return updateUser;
+	}
+
+	public void setUpdateUser(String updateUser) {
+		this.updateUser = updateUser;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
 }
