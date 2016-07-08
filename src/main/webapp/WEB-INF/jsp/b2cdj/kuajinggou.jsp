@@ -65,7 +65,8 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                             <input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==0){%>checked<%}%>  >关闭
                             <input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1" <%if(vipshop.getIsCreateTimeToEmaildateFlag()==1){%>checked<%}%>  >开启（订单出仓时间作为标识,开启必须关闭托运模式）
                         </li>
-                        
+                        <li style="display: none;"><span>是否订单下发接口：</span>
+                            <input type ="text" id="isTpsSendFlag" name ="isTpsSendFlag" value="1"  maxlength="300">
                         </li>
                         <li><span>订单导入库房：</span>
                             <select name="warehouseid">
@@ -115,6 +116,9 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                         <li><span>生成批次标识：</span>
                             <input type ="radio" id="isCreateTimeToEmaildateFlag1" name ="isCreateTimeToEmaildateFlag" value="0" checked >关闭
                             <input type ="radio" id="isCreateTimeToEmaildateFlag2" name ="isCreateTimeToEmaildateFlag" value="1"  >开启（订单生成时间作为标识）
+                        </li>
+                        <li style="display: none;"><span>是否订单下发接口：</span>
+                            <input type ="text" id="isTpsSendFlag" name ="isTpsSendFlag" value="1"  maxlength="300">
                         </li>
                         <li><span>订单导入库房：</span>
                             <select name="warehouseid">
