@@ -18,6 +18,7 @@ import com.pjbest.splitting.routing.DatabaseType;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 
 @Component
@@ -85,7 +86,7 @@ public class CwbKuaiDiDAO {
 			cwbKuaiDi.setLanshoutime(StringUtil.nullConvertToEmptyString(rs.getString("lanshoutime")));
 			cwbKuaiDi.setSendconsigneeaddress(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneeaddress")));
 			cwbKuaiDi.setSendconsigneecompany(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneecompany")));
-			cwbKuaiDi.setSendconsigneemobile(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneemobile")));
+			cwbKuaiDi.setSendconsigneemobile(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneemobile"))));
 			cwbKuaiDi.setSendconsigneename(StringUtil.nullConvertToEmptyString(rs.getString("sendconsigneename")));
 			cwbKuaiDi.setRemark(StringUtil.nullConvertToEmptyString(rs.getString("remark")));
 			cwbKuaiDi.setRealweight(rs.getBigDecimal("realweight"));
@@ -332,20 +333,23 @@ public class CwbKuaiDiDAO {
 	}
 
 	private String getQueryExpressSql(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
+		//将客户编号的取数逻辑改为从客户表里面取，而不是从主表里面----刘武强20160627
 		String sql = "SELECT DISTINCT cd.cwb as cwb, " + " cd.collectorid as lanshouuserid, " + " cd.instationid as lanshoubranchid, " + " cd.credate as lanshoutime, "
 				+ " cd.consigneename as sendconsigneename, " + " cd.consigneemobile as sendconsigneemobile, " + " cd.consigneeaddress as sendconsigneeaddress, " + " cd.shouldfare as transitfee, "
-				+ " cd.totalfee as allfee, " + " cd.flowordertype as flowordertype, " + " cd.cwbremark as remark, " + " cd.paymethod as paytype, " + " cd.monthsettleno as customercode, "
+				+ " cd.totalfee as allfee, " + " cd.flowordertype as flowordertype, " + " cd.cwbremark as remark, " + " cd.paymethod as paytype, " + " ci.customercode as customercode, "
 				+ " cd.customerid as sendconsigneecompany, " + " cd.reccustomerid as shoujianrencompany, " + " cd.carrealweight as realweight,cd.packagefee as packagefee,cd.insuredfee as insuredfee, "
 				+ " ds.deliverybranchid as deliverybrach, " + " cd.receivablefee as receivablefee"
 				+ " from express_ops_cwb_detail as cd ";
 //		if ((timeType == 2) || (paisongbranchids.length() > 0) || (paisonguserid > 0)) {
-			sql = sql + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb";
+			sql = sql + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb and ds.state=1";
+			sql = sql + " left join express_set_customer_info as ci on cd.customerid =ci.customerid ";
 //		}
 
+		//将反馈表和主表都加上state=1的条件，防止重复的计算同一个快递单---刘武强20160628	
 		if (timeType == 1) {
-			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' ";
+			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' and cd.state=1";
 		} else if (timeType == 2) {
-			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' ";
+			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' and ds.state=1 and cd.state=1";
 		}
 		sql = this.getExpressOrderByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		return sql;

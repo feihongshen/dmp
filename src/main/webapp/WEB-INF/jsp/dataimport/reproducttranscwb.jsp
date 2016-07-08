@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%@page import="cn.explink.domain.Exportmould"%>
 <%@page import="cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
@@ -25,7 +26,7 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
 <script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
@@ -68,6 +69,10 @@ function searchForm(){
 		$("#reproducttranscwbForm").submit();
 	}
 }
+$(function(){
+	$("#customerid").combobox();
+	$("div[class='combo-panel panel-body panel-body-noheader']").css({"height":"198px"});
+})
 </script>
 </head>
 <body  style="background:#f5f5f5">

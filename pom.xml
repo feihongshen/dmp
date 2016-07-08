@@ -76,6 +76,17 @@
   			</exclusions> 
 		</dependency>
 		<dependency>
+		     <groupId>com.pjbest</groupId> 
+			 <artifactId>id-allocation-service-api</artifactId> 
+			 <version>1.1.0_03</version>
+			 <exclusions>
+  				<exclusion>
+  					<groupId>org.springframework</groupId>
+      				<artifactId>spring-context-support</artifactId>
+  				</exclusion>
+  			</exclusions> 
+		</dependency>
+		<dependency>
   			<groupId>com.pjbest.pjorganization</groupId>
   			<artifactId>pjorganization-service-api</artifactId>
   			<version>1.1.0_03</version>
@@ -675,6 +686,27 @@
             <artifactId>tps-base-service-api</artifactId>
             <version>1.16.3_03</version>
         </dependency>
+        <dependency>
+			<groupId>com.vip.logistics</groupId>
+			<artifactId>vip-member-encrypt</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+        <dependency>
+		     <groupId>com.pjbest.psp</groupId>
+		     <artifactId>psp-express-service-api</artifactId>
+		     <version>1.5.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+		     <groupId>com.pjbest</groupId> 
+			 <artifactId>pjdeliveryorder-service-api</artifactId> 
+			 <version>1.20.0_07</version>
+			 <exclusions>
+  				<exclusion>
+  					<groupId>org.springframework</groupId>
+      				<artifactId>spring-context-support</artifactId>
+  				</exclusion>
+  			</exclusions> 
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>

@@ -192,7 +192,6 @@ public class MonitorKucunDAO {
 		
 		String sql = "SELECT de.*  FROM `express_ops_operation_time` as ot  left join express_ops_cwb_detail as de on ot.cwb=de.cwb where "+(branchid.length()>0?("ot.branchid in("+branchid+")  and"):" ot.branchid IN("+branchids+") and ")+"   ot.flowordertype in("+flowordertypes+")  and de.state=1  ";
 
-
 		return sql;
 	}
 	public String getMonitorKucunByTypeSql(String flowordertypes ,String branchid,String branchids) {

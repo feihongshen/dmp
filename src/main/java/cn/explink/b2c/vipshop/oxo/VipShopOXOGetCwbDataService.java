@@ -346,7 +346,25 @@ public class VipShopOXOGetCwbDataService {
 			orderMap.put("paywayid", "" + PaytypeEnum.Qita.getValue());
 		}
 		orderMap.put("cargotype", order.getTransportType());
-		orderMap.put("cwbordertypeid", "" + Long.valueOf(order.getBusinessType()));
+		
+		//Added by leoliao at 2016-06-21 转换为DMP的订单类型
+		String cwbOrderTypeId = String.valueOf(CwbOrderTypeIdEnum.OXO.getValue());
+		if(StringUtils.isNotBlank(order.getBusinessType())){
+			if(order.getBusinessType().equals("20")){
+				cwbOrderTypeId = String.valueOf(CwbOrderTypeIdEnum.OXO_JIT.getValue());
+			}else if(order.getBusinessType().equals("40")){
+				cwbOrderTypeId = String.valueOf(CwbOrderTypeIdEnum.OXO.getValue());
+			}else if(order.getBusinessType().equals("30")){
+				//保留类型
+				cwbOrderTypeId = String.valueOf(CwbOrderTypeIdEnum.OXO.getValue()); //default OXO
+			}else{
+				cwbOrderTypeId = String.valueOf(CwbOrderTypeIdEnum.OXO.getValue()); //default OXO
+			}
+		}
+		orderMap.put("cwbordertypeid", cwbOrderTypeId);
+		//Added end
+		
+		//orderMap.put("cwbordertypeid", "" + Long.valueOf(order.getBusinessType()));
 		orderMap.put("shouldfare", order.getFreight());
 		orderMap.put("cwb", order.getCustOrderNo());
 		

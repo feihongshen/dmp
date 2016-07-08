@@ -117,7 +117,6 @@ String.prototype.trim=function(){
 			submitInfo.streetCode=areaInfo.streetCode;
 			//生成显示数据
 			var showInfo=[];
-			debugger
 			if(areaInfo.provinceName&&areaInfo.isDirectly!='true'){
 				showInfo.push(areaInfo.provinceName);
 				if(that.context.id.indexOf("sender") != -1){
@@ -151,7 +150,6 @@ String.prototype.trim=function(){
 				}
 				
 			}else{
-				debugger
 				if(that.context.id.indexOf("sender") != -1){
 					$("#sender_cityid_id").val("");
 					$("#sender_cityName_id").val("");
@@ -302,7 +300,6 @@ String.prototype.trim=function(){
 		
 
 		function initAreaInfoBtn(){
-
 			$('.area-info',getContext()).on('click','li',function(){
 			
 				var that=$(this),

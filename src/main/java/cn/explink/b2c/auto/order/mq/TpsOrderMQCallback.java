@@ -1,8 +1,10 @@
 package cn.explink.b2c.auto.order.mq;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import net.sf.json.JSONObject;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +16,20 @@ import cn.explink.b2c.auto.order.constant.BusinessType;
 import cn.explink.b2c.auto.order.handle.IOrderHandler;
 import cn.explink.b2c.auto.order.service.AutoExceptionService;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendVO;
+import cn.explink.b2c.tools.JiontDAO;
+import cn.explink.b2c.tools.JointEntity;
+import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.enumutil.AutoExceptionStatusEnum;
 import cn.explink.enumutil.AutoInterfaceEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.exception.CwbException;
 
+import com.vip.platform.middleware.vms.IPublisher;
 import com.vip.platform.middleware.vms.ISubscriber;
 import com.vip.platform.middleware.vms.IVMSCallback;
+import com.vip.platform.middleware.vms.Message;
+import com.vip.platform.middleware.vms.VMSClient;
 import com.vip.platform.middleware.vms.VMSEventArgs;
 
 /**
@@ -58,8 +68,14 @@ public class TpsOrderMQCallback implements IVMSCallback {
 	@Qualifier("expressOrderHandler")
 	IOrderHandler expressOrderHandler;
 	
+	@Autowired
+	JiontDAO jiontDAO;
+	@Autowired
+	JointService jointService;
+	
 	private static ObjectMapper objectMapper = new ObjectMapper();
 	
+	@SuppressWarnings("unused")
 	@Override
 	public void onSuccess(Object sender, VMSEventArgs e) {
 		VipShop vipshop = null;
@@ -73,12 +89,32 @@ public class TpsOrderMQCallback implements IVMSCallback {
 			if(!verify(orderSend, msg)){
 				return;
 			};
-			orderHandler = getOrderHandler(orderSend);
-			if(orderHandler == null){
-				feedbackException(msg, "传入business_type不正确", orderSend.getCustOrderNo());
+			JointEntity jointEntityByShipper = this.jiontDAO.getJointEntityByShipperNoForUse("\""+orderSend.getCustCode()+"\"");
+			if(jointEntityByShipper == null){
+				this.logger.info("tps订单下发接口，承运商对应的配置不存在,承运商号：{}", orderSend.getCustCode());
+				feedbackException(msg, "tps订单下发接口，承运商对应的配置不存在", orderSend.getTransportNo());
+				return;
 			}
-			orderHandler.dealWith(orderSend);			
+			vipshop = this.getVipShop(jointEntityByShipper.getJoint_num());
+			int isOpenFlag = this.jointService.getStateForJoint(jointEntityByShipper.getJoint_num());
+			if (isOpenFlag == 1) {
+				if(jointEntityByShipper!=null){
+					orderHandler = getOrderHandler(orderSend);
+					if(orderHandler == null){
+						feedbackException(msg, "传入business_type不正确", orderSend.getCustOrderNo());
+					}
+					orderHandler.dealWith(orderSend,vipshop);	
+				}else{
+					this.logger.info("没有对应的承运商接口或者该承运商编码对应的接口未开启,承运上编码为：【"+orderSend.getCustCode()+"】");
+					throw new CwbException(orderSend.getCustOrderNo(),FlowOrderTypeEnum.DaoRuShuJu.getValue(),"没有对应的承运商接口或者该承运商编码对应的接口未开启,承运上编码为：【"+orderSend.getCustCode()+"】");
+				}
+			}else{
+		    	this.logger.info("未开启TPS订单下发接口[" + jointEntityByShipper.getJoint_num() + "]对接！");
+		    	throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"未开启TPS订单下发接口[" + jointEntityByShipper.getJoint_num() + "]对接！");
+		    }
+					
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			this.logger.error("消费TPS订单下发数据时解析异常!", ex);
 			feedbackException(msg, ex.getMessage(), null);
 		} finally {
@@ -97,7 +133,7 @@ public class TpsOrderMQCallback implements IVMSCallback {
 	private void feedbackException(String msg, String exceptionInfo, String cwb) {		
 		logger.info("tps订单下发异常:单号{},详情{}", cwb, exceptionInfo);
 		long msgid = this.autoExceptionService.createAutoExceptionMsg(msg, AutoInterfaceEnum.dingdanxiafa.getValue());
-		long detailId = this.autoExceptionService.createAutoExceptionDetail(cwb, "", "TPS自动化订单下发数据异常", AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0, "");
+		long detailId = this.autoExceptionService.createAutoExceptionDetail(cwb, "", "TPS订单下发数据异常", AutoExceptionStatusEnum.xinjian.getValue(), msgid, 0, "");
 		AutoMQExceptionDto mqe = new AutoMQExceptionDto();
 		mqe.setBusiness_id("");
 		mqe.setException_info(exceptionInfo);
@@ -143,11 +179,16 @@ public class TpsOrderMQCallback implements IVMSCallback {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
 		String date = String.valueOf(df.format(new Date()));
 		StringBuilder sub = new StringBuilder();
+		String routingKeyStr[] = consumerTemplate.getQueueName().split("_");
+		String routingKey = "*";
+		if(routingKeyStr.length>1){
+			routingKey = routingKeyStr[routingKeyStr.length-1];
+		}
 		sub.append("<root>");
 		sub.append("<system_name>ZDH_Order</system_name>");
 		sub.append("<queue_name>" + consumerTemplate.getQueueName() + "</queue_name>");
 		sub.append("<exchange_name>" + consumerTemplate.getExchangeName() + "</exchange_name>");
-		sub.append("<routing_key>*</routing_key>");
+		sub.append("<routing_key>"+routingKey+"</routing_key>");
 		sub.append("<exception_info>" + error.getException_info() + "</exception_info>");
 		sub.append("<business_id></business_id>");
 		sub.append("<create_time>" + date + "</create_time>");
@@ -184,4 +225,27 @@ public class TpsOrderMQCallback implements IVMSCallback {
     	return orderHandler;
     }
     
+    
+  //获取唯品会接口配置对象
+    public VipShop getVipShop(int key) {
+		JointEntity obj = this.jiontDAO.getJointEntity(key);
+		if(obj == null){
+			return null;
+		}
+		JSONObject jsonObj = JSONObject.fromObject(obj.getJoint_property());
+		VipShop vipshop = (VipShop) JSONObject.toBean(jsonObj, VipShop.class);
+		return vipshop;
+	}
+    
+    public static void main(String args[]){
+    	String str = "订单新下发";
+    	VMSClient client = VMSClient.getDefault();//new VMSClient();//消耗大量的资源,通过VMSClient.getDefault()获取单例????????
+        Message msg = Message.from(str);
+        msg.addRoutingKey("30113");
+        msg.qos().durable(true); // 非持久化的消息在宕机后消息会丢失。对于订单/运单类消息，必须设置为持久化。
+        // msg.qos().priority(0); // 数字大的表示优先级高。 在同一个topic中，优先级高的消息先于优先级低的消息被消费。可选设置。
+        // 推送到MQ
+        client.options().setConfirmable(true).setWaitingTimeout(2000).setFailFastEnabled(false);
+        IPublisher publisher = client.publish("channel.rabbitmq.tps.express.dmp", msg);// 要改回异常channel 
+    }
 }

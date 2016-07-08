@@ -1,5 +1,6 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Branch,cn.explink.domain.UserBranch,cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 	List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 	List<User> userlist = (List<User>)request.getAttribute("userlist");
@@ -16,7 +17,7 @@
 <title>用户区域权限设置</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<%-- <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script> --%>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
@@ -40,6 +41,11 @@ function editSuccess(data){
 function delSuccess(data){
 	$("#searchForm").submit();
 }
+$(function(){
+	$("#branchid").combobox();
+	$("#userid").combobox();
+	$("span.combo-arrow").css({"margin-right":"-18px","margin-top":"-20px"});
+})
 </script>
 </head>
 
@@ -56,20 +62,20 @@ function delSuccess(data){
 	<span><input name="" type="button" value="创建用户区域权限" class="input_button1"  id="add" onclick="location='<%=request.getContextPath()%>/userBranchControl/add'" />
 	</span>
 	<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm" method="post" >
-		用户：
+		<div style="float: left;">用户：
 			<select id="userid" name="userid" class="select1">
 				<option value="0" selected>----请选择----</option>
 				<%for(User u : userlist){ %>
 					<option value="<%=u.getUserid() %>" >(<%for(Branch b : branchlist){if(u.getBranchid()==b.getBranchid()){ out.print(b.getBranchname()); }} %>)<%=u.getRealname() %></option>
 				<%} %>
-			</select>
-		可查询站点：
+			</select></div>
+		<div style="float: left;">可查询站点：
          	<select id="branchid"  name="branchid" class="select1">
 				<option value="0" selected>----请选择----</option>
 				<%for(Branch b : branchlist){ %>
 					<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
 				<%} %>
-			</select>
+			</select></div>
 		<input type="submit" onclick="$('#searchForm').attr('action',1);return true;" id="find" value="查询" class="input_button2" />
 		<!-- <input type="button"  onclick="location.href='1'" value="返回" class="input_button2" /> -->
 	</form>

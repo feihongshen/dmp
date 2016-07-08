@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.util.SecurityUtil;
 
 public class CwbOrder {
 
@@ -140,6 +141,8 @@ public class CwbOrder {
 	private long oxodeliverystate; // oxo派件状态 。取值参考 CwbOXOStateEnum枚举类
 
 	private int branchfeebillexportflag;// 加盟商派费账单导出标志
+	
+	private int deliverypermit;//上门退订单是否可领货 0可领 1不可领
 	private int vipclub;// 是否团购标志
 
 	// 以下是快递业务新增字段
@@ -408,7 +411,9 @@ public class CwbOrder {
 	 */
 	private int expressProductType;
 
-	public int getIshandover() {
+    private BigDecimal cargovolume;
+
+    public int getIshandover() {
 		return this.ishandover;
 	}
 
@@ -762,7 +767,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneephone() {
-		return this.consigneephone;
+		return SecurityUtil.getInstance().decrypt(this.consigneephone);
 	}
 
 	public void setConsigneephone(String consigneephone, boolean guessMobile) {
@@ -773,12 +778,11 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobile() {
-
-		return this.consigneemobile;
+		return SecurityUtil.getInstance().decrypt(this.consigneemobile);
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
-		this.consigneemobile = (consigneemobile);
+		this.consigneemobile = consigneemobile;
 	}
 
 	public BigDecimal getReceivablefee() {
@@ -1463,7 +1467,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneemobileOfkf() {
-		return this.consigneemobileOfkf;
+		return SecurityUtil.getInstance().decrypt(this.consigneemobileOfkf);
 	}
 
 	public void setConsigneemobileOfkf(String consigneemobileOfkf) {
@@ -1471,7 +1475,7 @@ public class CwbOrder {
 	}
 
 	public String getConsigneephoneOfkf() {
-		return this.consigneephoneOfkf;
+		return SecurityUtil.getInstance().decrypt(this.consigneephoneOfkf);
 	}
 
 	public void setConsigneephoneOfkf(String consigneephoneOfkf) {
@@ -2054,6 +2058,14 @@ public class CwbOrder {
 		this.ismpsflag = ismpsflag;
 	}
 
+	public int getDeliverypermit() {
+		return deliverypermit;
+	}
+
+	public void setDeliverypermit(int deliverypermit) {
+		this.deliverypermit = deliverypermit;
+	}
+
 	public int getVipclub() {
 		return vipclub;
 	}
@@ -2069,4 +2081,12 @@ public class CwbOrder {
 	public void setExpressProductType(int expressProductType) {
 		this.expressProductType = expressProductType;
 	}
+	
+    public void setCargovolume(BigDecimal cargovolume) {
+        this.cargovolume = cargovolume;
+    }
+
+    public BigDecimal getCargovolume() {
+        return cargovolume;
+    }
 }

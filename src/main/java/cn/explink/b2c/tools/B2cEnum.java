@@ -113,8 +113,8 @@ public enum B2cEnum {
 	JingDong_cwbTrack(22001, "京东_订单跟踪", "jingdong_cwbtrack", 0),
 	Shenzhoushuma(20137,"神州数码","shenzhoushuma",0),
 	ZheMeng_track(23001, "哲盟_轨迹", "zhemeng_track", 0),
-	EMS(22010, "邮政速递", "EMS", 0); 
-
+	EMS(22010, "邮政速递", "EMS", 0), 
+	TPS_MQ(22501, "tps订单下发接口", "tpsvipshop_mq", 0);
 
 	 
 

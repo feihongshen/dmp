@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,10 @@ import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
+import cn.explink.exception.CwbException;
 
 @Service
 public class OrderBackCheckService {
@@ -237,6 +240,48 @@ public class OrderBackCheckService {
 			}
 		}
 		return cwb;
+	}
+	
+	/**
+	 * 校验是否存在退货出站审核中的记录
+	 * @param cwb 订单号
+	 * @param flowOrderTypeEnum 操作类型
+	 * @throws CwbException 如果存在待审核的记录，则会抛出异常
+	 */
+	public void validateCheckStateAuditing(String cwb, FlowOrderTypeEnum flowOrderTypeEnum) {
+		final String logPrefix = "校验是否存在退货审核中的记录->";
+		
+		cwb = org.apache.commons.lang3.StringUtils.trimToEmpty(cwb);
+		if (org.apache.commons.lang3.StringUtils.isEmpty(cwb)) {
+			logger.info("{}cwb is empty", logPrefix);
+			return;
+		}
+		
+		if (flowOrderTypeEnum == null) {
+			logger.info("{}flowOrderTypeEnum is null", logPrefix);
+			return;
+		}
+		
+		logger.info("{}cwb:{}, flowOrderTypeEnum:{}", logPrefix, cwb, flowOrderTypeEnum.getValue());
+		
+		List<OrderBackCheck> orderBackCheckList = orderBackCheckDAO.getOrderBackChecks("'" + cwb + "'", -1, -1, -1, -1, -1, "", "");
+		if (CollectionUtils.isEmpty(orderBackCheckList)) {
+			logger.info("{}orderBackCheckList is null or empty", logPrefix);
+			return;
+		}
+		
+		for (OrderBackCheck orderBackCheck : orderBackCheckList) {
+			if (orderBackCheck == null) {
+				continue;
+			}
+			
+			if (orderBackCheck.getCheckstate() == 1) { //待审核
+				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), 
+						ExceptionCwbErrorTypeEnum.TUI_HUO_CHU_ZHAN_SHEN_HE_ZHONG_LING_HUO, flowOrderTypeEnum.getText());
+			}
+		}
+		
+		logger.info("{}通过!", logPrefix);
 	}
 	
 }

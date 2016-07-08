@@ -6,6 +6,7 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Branch,cn.explink.domain.Truck,cn.explink.domain.Bale,cn.explink.domain.Switch"%>
 <%@page import="cn.explink.domain.CwbOrder,cn.explink.domain.Customer"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 List<CwbDetailView> weichukuList = (List<CwbDetailView>)request.getAttribute("weiChuKuList");
 List<CwbDetailView> yichukuList = (List<CwbDetailView>)request.getAttribute("yiChuKuList");
@@ -26,7 +27,6 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -343,7 +343,9 @@ function tohome(){
 	window.location.href="<%=request.getContextPath() %>/PDA/cwbexportwarhouseBatch?branchid="+$("#branchid").val();	
 }
 
-
+$(function(){
+	$("#branchid").combobox();
+}) 
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">

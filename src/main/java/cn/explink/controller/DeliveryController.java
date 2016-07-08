@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import cn.explink.service.DfFeeService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -137,6 +138,8 @@ public class DeliveryController {
 	AdjustmentRecordService adjustmentRecordService;
 	@Autowired
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
+    @Autowired
+    DfFeeService dfFeeService;
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -527,10 +530,14 @@ public class DeliveryController {
 			subAmountPos = subAmountPosAndCodPos + "";
 			deliverpayupamount_pos = deliverpayupamount_pos.add(deliverpayupamount_codpos);
 			GotoClassOld gotoClassOld = this.loadFormForGotoClass(request);
-			return this.cwborderService.deliverAuditok(this.getSessionUser(), subTrStr, okTime, subAmount, subAmountPos, deliverealuser, gotoClassOld, deliverpayuptype, deliverpayupamount,
+			String msg = this.cwborderService.deliverAuditok(this.getSessionUser(), subTrStr, okTime, subAmount, subAmountPos, deliverealuser, gotoClassOld, deliverpayuptype, deliverpayupamount,
 					deliverpayupbanknum, deliverpayupaddress, deliverpayupamount_pos, deliverAccount, deliverPosAccount);
 
-		} catch (CwbException e) {
+            // 插入派费表
+            dfFeeService.saveFeeRelativeAfterAuditConfirmed(subTrStr, getSessionUser());
+
+            return msg;
+        } catch (CwbException e) {
 			String[] cwbs = subTrStr.split(",");
 			for (String cwb : cwbs) {
 				if (cwb.trim().length() == 0) {

@@ -35,6 +35,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.express.ExpressCombineTypeEnum;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 import cn.explink.util.Tools;
 
@@ -117,8 +118,8 @@ public class ExpressOrderDao {
 			embracedOrderVO.setConsignee_townid(StringUtil.nullConvertToEmptyString(rs.getString("recstreetid")));
 			embracedOrderVO.setConsignee_townName(StringUtil.nullConvertToEmptyString(rs.getString("recstreet")));
 			embracedOrderVO.setConsignee_adress(StringUtil.nullConvertToEmptyString(rs.getString("consigneeaddress")));
-			embracedOrderVO.setConsignee_cellphone(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile")));
-			embracedOrderVO.setConsignee_telephone(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone")));
+			embracedOrderVO.setConsignee_cellphone(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("consigneemobile"))));
+			embracedOrderVO.setConsignee_telephone(SecurityUtil.getInstance().decrypt(StringUtil.nullConvertToEmptyString(rs.getString("consigneephone"))));
 			embracedOrderVO.setConsignee_customerid(rs.getString("reccustomerid") == null ? 0 : Long.parseLong(rs.getString("reccustomerid")));
 			embracedOrderVO.setConsignee_name(StringUtil.nullConvertToEmptyString(rs.getString("consigneename")));
 
@@ -159,6 +160,9 @@ public class ExpressOrderDao {
 			embracedOrderVO.setInstationdatetime(StringUtil.nullConvertToEmptyString(rs.getString("instationdatetime")));
 			embracedOrderVO.setInstationid(rs.getInt("instationid"));
 			embracedOrderVO.setCarsize(StringUtil.nullConvertToEmptyString(rs.getString("carsize")));
+			//快递二期补录新增字段 --周欢
+			embracedOrderVO.setPaywayid(rs.getInt("paywayid"));
+			embracedOrderVO.setExpress_product_type(rs.getInt("express_product_type"));
 			return embracedOrderVO;
 		}
 

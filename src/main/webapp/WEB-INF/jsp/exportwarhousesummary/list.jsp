@@ -29,9 +29,14 @@
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
+
 <script type="text/javascript">
 function check(){
-	if($(".multiSelectOptions input[name='warhouseid']:checked").size()==0){
+	if($("input[name='selectItemwarhouseid']:checked ").size()==0){
 		alert("请选择库房");
 		return false;
 	}
@@ -95,8 +100,12 @@ $(function() {
 	    timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	});
-	$("#warhouseid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择库房' });
-	$("input[name='warhouseid']").click(function(){//获得库房点击后的 被选择库房的值，用于删选批次，和控制
+	$("#warhouseid").multipleSelect({
+        placeholder: "请选择库房",
+        filter: true
+    });
+	
+	$("input[name='selectItemwarhouseid']").click(function(){//获得库房点击后的 被选择库房的值，用于删选批次，和控制
 		clickCustomerSelect();
 	});
 });
@@ -122,9 +131,7 @@ $("#find").click(function(){
 					<%for( Branch c:warhouseList){ %>
 					<option value="<%= c.getBranchid()%>"><%=c.getBranchname()%></option>
 					<%} }%>
-				</select> [<a href="javascript:multiSelectAll('warhouseid',1,'请选择');">全选</a>]
-				[<a href="javascript:multiSelectAll('warhouseid',0,'请选择');">取消全选</a>]
-
+				</select>
 				出库时间： <input type="text" name="strtime" id="strtime">
 				到 <input type="text" name="endtime" id="endtime">
 			<button type="button" id="find">查询</button>

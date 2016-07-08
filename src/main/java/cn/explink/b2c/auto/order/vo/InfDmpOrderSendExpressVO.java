@@ -1,6 +1,7 @@
 
 package cn.explink.b2c.auto.order.vo;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 /**
  * 运单下发DMP---快递专用vo
  * <p>
@@ -9,6 +10,7 @@ package cn.explink.b2c.auto.order.vo;
  * @author vince.zhou
  * @since 1.0
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InfDmpOrderSendExpressVO {
 
     private String accountId;// 月结账号
