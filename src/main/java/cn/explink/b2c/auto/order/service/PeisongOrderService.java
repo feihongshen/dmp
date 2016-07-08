@@ -177,8 +177,16 @@ public class PeisongOrderService {
 			orderDTO.setCustomercommand("送货时间要求:" + required_time + ",订单配送批次:" + order_delivery_batch + ",预约揽收时间："+go_get_return_time);
 			orderDTO.setSendcargoname("[发出商品]");
 			orderDTO.setCustomerid(Integer.parseInt(customerid));
-			
-			orderDTO.setRemark5(customer_name+"/"+warehouseAddr); // 仓库地址
+			String remark5="";
+			if(!StringUtil.isEmpty(customer_name)){
+				remark5+=customer_name;
+			}
+			if(!StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
+				remark5+="/"+customer_name;
+			}else if(StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
+				remark5+=customer_name;
+			}
+			orderDTO.setRemark5(remark5); // 仓库地址
 			orderDTO.setCwbordertypeid(cwbordertype);
 			
 			orderDTO.setExcelbranch(orderDTO.getExcelbranch()==null?"":orderDTO.getExcelbranch());//站点
