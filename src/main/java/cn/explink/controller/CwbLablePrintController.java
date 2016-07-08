@@ -80,6 +80,7 @@ import cn.explink.domain.SetExportField;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderPDAEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
@@ -90,6 +91,7 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StreamingStatementCreator;
+import cn.explink.util.StringUtil;
 
 @RequestMapping("/cwbLablePrint")
 @Controller
@@ -767,13 +769,17 @@ public class CwbLablePrintController {
 		List<PrintOrderLabelVo> printOrderLabelVoList = new ArrayList<PrintOrderLabelVo>();
 		for(CwbOrder cwbOrder : cwbOrderList) {
 			PrintOrderLabelVo vo = new PrintOrderLabelVo();
+			String senderDateStr;
+			if(cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) { // 快递单去入站日期
+				senderDateStr = cwbOrder.getInstationdatetime();
+			} else {
+				senderDateStr = cwbOrder.getEmaildate();
+			}
 			// 日期格式转换
-			if(StringUtils.isNotBlank(cwbOrder.getEmaildate())) {
+			if(StringUtils.isNotBlank(senderDateStr)) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				Date emaildate = sdf.parse(cwbOrder.getEmaildate());
-				sdf = new SimpleDateFormat("yyyy-M-d");
-				String emaildateStr = sdf.format(emaildate);
-				cwbOrder.setEmaildate(emaildateStr);
+				Date emaildate = sdf.parse(senderDateStr);
+				vo.setSenderDate(emaildate);
 			}
 			// 费用合计 = 运费+包装+保价
 			BigDecimal totalfee = BigDecimal.ZERO;
@@ -819,6 +825,20 @@ public class CwbLablePrintController {
 				destinationSb.append(cwbcity);
 			}
 			vo.setDestination(destinationSb.toString());
+			// 收件地址去省市区前缀
+			String consigneeaddressPrefix = StringUtil.nullConvertToEmptyString(cwbOrder.getCwbprovince())
+					+ StringUtil.nullConvertToEmptyString(cwbOrder.getCwbcity())
+					+ StringUtil.nullConvertToEmptyString(cwbOrder.getCwbcounty());
+			String consigneeaddress = StringUtil.nullConvertToEmptyString(cwbOrder.getConsigneeaddress());
+			consigneeaddress = consigneeaddress.replaceFirst(consigneeaddressPrefix, "");
+			cwbOrder.setConsigneeaddress(consigneeaddress);
+			// 寄件地址去省市区前缀
+			String senderaddressPrefix = StringUtil.nullConvertToEmptyString(cwbOrder.getSenderprovince())
+					+ StringUtil.nullConvertToEmptyString(cwbOrder.getSendercity())
+					+ StringUtil.nullConvertToEmptyString(cwbOrder.getSendercounty());
+			String senderaddress = StringUtil.nullConvertToEmptyString(cwbOrder.getSenderaddress());
+			senderaddress = senderaddress.replaceFirst(senderaddressPrefix, "");
+			cwbOrder.setSenderaddress(senderaddress);
 			printOrderLabelVoList.add(vo);
 		}
 		model.addAttribute("printOrderLabelVoList", printOrderLabelVoList);
