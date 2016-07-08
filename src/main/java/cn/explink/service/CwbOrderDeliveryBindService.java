@@ -82,7 +82,7 @@ public class CwbOrderDeliveryBindService {
 	public void init() {
 		try {
 
-			this.flowList.add(FlowOrderTypeEnum.YiFanKui.getValue()); // 反馈
+			this.flowList.add(FlowOrderTypeEnum.YiShenHe.getValue()); // 审核
 			this.camelContext.addRoutes(new RouteBuilder() {
 				@Override
 				public void configure() throws Exception {

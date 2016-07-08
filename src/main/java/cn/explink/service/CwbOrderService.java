@@ -5608,10 +5608,10 @@ public class CwbOrderService extends BaseOrderService {
 		this.ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(co.getCwb());
 		CwbOrderService.logger.info("归班反馈->清除缺件记录,订单号:{}", co.getCwb());
 
-		//配送拒收处理关联上门退订单    上门退未领货更新领货标识为不能领货，上门退已领货通知tps取消绑定关系   2016-6-17
-		if (CwbOrderTypeIdEnum.Peisong.getValue() == co.getCwbordertypeid() && podresultid == DeliveryStateEnum.JuShou.getValue()) {
-			handlePeiSongCwbDeliveryPermit(co, podresultid);
-		}
+		//配送拒收处理关联上门退订单    上门退未领货更新领货标识为不能领货，上门退已领货通知tps取消绑定关系   2016-6-17 ---> 2016-07-08 修改为审核才处理
+		//if (CwbOrderTypeIdEnum.Peisong.getValue() == co.getCwbordertypeid() && podresultid == DeliveryStateEnum.JuShou.getValue()) {
+		//	handlePeiSongCwbDeliveryPermit(co, podresultid);
+		//}
 		
 		CwbOrderService.logger
 				.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash + "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
@@ -6241,6 +6241,11 @@ public class CwbOrderService extends BaseOrderService {
 			} else {// 如果不是最终，则更新跟踪记录
 				this.operationTimeDAO.updateOperationTime(cwb, user.getBranchid(), FlowOrderTypeEnum.YiShenHe.getValue(), deliverystate.getDeliverystate(), co.getNextbranchid());
 			}
+			
+			//配送拒收处理关联上门退订单    上门退未领货更新领货标识为不能领货，上门退已领货通知tps取消绑定关系   2016-6-17 ---> 2016-07-08 修改为审核才处理 vic.liang@pjbest.com
+			this.handlePeiSongCwbDeliveryPermit(co, deliverystate.getDeliverystate());
+			//2016-07-08 修改为审核才处理 end 
+
 			amount = amount.add(deliverystate.getCash()).add(deliverystate.getCheckfee()).add(deliverystate.getOtherfee()).subtract(deliverystate.getReturnedfee()).add(deliverystate.getInfactfare());
 			amount_pos = amount_pos.add(deliverystate.getPos()).add(deliverystate.getCodpos());
 
@@ -9853,10 +9858,15 @@ public class CwbOrderService extends BaseOrderService {
 		}
 	}
 	
+	/**
+	 * 唯品会配送单拒收/部分拒收关联上门退订单不能领货
+	 */
 	public void handlePeiSongCwbDeliveryPermit(CwbOrder cwbOrder, long delivery_state) {
 		if (cwbOrder != null) {
 			String enumKey = this.getB2cEnumKeys(this.customerDAO.getCustomerById(cwbOrder.getCustomerid()), "vipshop");
-			if ((enumKey != null) && (CwbOrderTypeIdEnum.Peisong.getValue() == (int)cwbOrder.getCwbordertypeid()) && ((int)delivery_state == DeliveryStateEnum.JuShou.getValue())) {
+			if ((enumKey != null) && (CwbOrderTypeIdEnum.Peisong.getValue() == (int)cwbOrder.getCwbordertypeid()) 
+					&&((int)delivery_state == DeliveryStateEnum.JuShou.getValue() 
+					    || (int)delivery_state == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
 				List<CwbOrder> shangMenTuiCwbList = cwbDAO.queryRelatedShangMenTuiCwbList(cwbOrder.getCwb());
 				if (shangMenTuiCwbList != null && !shangMenTuiCwbList.isEmpty()) {
 					cwbDAO.updateCwbDeliveryPermitByPeiSong(cwbOrder.getCwb());//上门退订单有关联的拒收配送单更新领货标识为不可领货
