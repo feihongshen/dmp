@@ -9850,8 +9850,11 @@ public class CwbOrderService extends BaseOrderService {
 					if (order == null) { //没有关联的配送单
 						return;
 					}
-					if ((order.getDeliverystate() == DeliveryStateEnum.JuShou.getValue())) {
-						cwbDAO.updateCwbDeliveryPermit(cwbOrder.getCwb());//上门退订单有关联的拒收配送单更新领货标识为不可领货
+					if (order.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
+						if (order.getDeliverystate() == DeliveryStateEnum.JuShou.getValue()
+								|| order.getDeliverystate() == DeliveryStateEnum.BuFenTuiHuo.getValue()) {
+							cwbDAO.updateCwbDeliveryPermit(cwbOrder.getCwb());//上门退订单有关联的拒收配送单更新领货标识为不可领货
+						}
 					}
 				}
 			}
