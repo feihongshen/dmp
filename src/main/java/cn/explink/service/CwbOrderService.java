@@ -5673,7 +5673,7 @@ public class CwbOrderService extends BaseOrderService {
 	public String getB2cEnumKeys(Customer customer, String constainsStr) {
 		for (B2cEnum enums : B2cEnum.values()) {
 			if (enums.getMethod().contains(constainsStr)) {
-				if (customer.getB2cEnum().equals(String.valueOf(enums.getKey()))) {
+				if (customer.getB2cEnum() != null && customer.getB2cEnum().equals(String.valueOf(enums.getKey()))) {
 					return String.valueOf(enums.getKey());
 				}
 			}
