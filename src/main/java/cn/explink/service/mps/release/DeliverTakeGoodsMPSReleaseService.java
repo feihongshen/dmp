@@ -19,11 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.explink.core.utils.JsonUtil;
+import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.dao.YpdjHandleRecordDAO;
+import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.SystemInstall;
@@ -56,13 +58,13 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 	@Autowired
 	private TranscwbOrderFlowDAO transcwbOrderFlowDAO;
 	@Autowired
-	private YpdjHandleRecordDAO ypdjHandleRecordDAO;
-	@Autowired
 	private SystemInstallDAO systemInstallDAO;
 	@Autowired
 	private OrderBackCheckDAO orderBackCheckDAO;
 	@Autowired
 	private TransCwbDao transCwbDao;
+	@Autowired
+	private CustomerDAO customerDAO;
 	
 	@Override
 	public void validateReleaseCondition(String cwbOrTransCwb) throws CwbException {
@@ -97,12 +99,13 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 		long cwbstate = cwbOrder.getCwbstate(); //订单状态
 		long currentBranchid = cwbOrder.getCurrentbranchid(); //当前站点id
 		String transcwb = StringUtils.trim(cwbOrder.getTranscwb()); //运单号
+		long customerId = cwbOrder.getCustomerid(); //客户id
 		logger.info("{}scancwb:{}, currentUserBranchid:{}, flowordertype:{}, deliverystate:{}, \n"
 				+ "ismpsflag:{}, sendcarnum:{}, cwbordertypeid:{}, cwbstate:{}, transcwb:{}, \n"
-				+ "currentBranchid:{}", 
+				+ "currentBranchid:{}, customerId:{}", 
 				logPrefix, scancwb, currentUserBranchid, flowordertype, deliverystate, 
 				ismpsflag, sendcarnum, cwbordertypeid, cwbstate, transcwb,
-				currentBranchid);
+				currentBranchid, customerId);
 		
 		if (cwbordertypeid != CwbOrderTypeIdEnum.Peisong.getValue()) {
 			logger.info("{}{}不是配送订单，无需校验，跳过", logPrefix, cwbOrder.getCwb());
@@ -111,6 +114,18 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 		
 		if (sendcarnum <= 1) {
 			logger.info("{}{}非一票多件，无需校验，跳过", logPrefix, cwbOrder.getCwb());
+			return;
+		}
+		
+		Long isYpdjusetranscwb = null; //一票多件是否用运单号
+		//获取客户信息
+		Customer customer = customerDAO.getCustomerById(customerId);
+		logger.info("{}{}，客户信息:{}", logPrefix, cwbOrder.getCwb(), JsonUtil.translateToJson(customer));
+		if (customer != null) {
+			isYpdjusetranscwb = customer.getIsypdjusetranscwb();
+		}
+		if (isYpdjusetranscwb == null) {
+			logger.info("{}{}isYpdjusetranscwb为空", logPrefix, cwbOrder.getCwb());
 			return;
 		}
 		
@@ -157,12 +172,12 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 				currentBranchid == currentUserBranchid;
 		logger.info("{}是否拒收后退货出站审核为站点配送的情况:{}", logPrefix, isRejectAfterAudit);
 		
-		if (isAllArrived) {
+		if (isAllArrived && isYpdjusetranscwb.longValue() == 1) { //属于到站集齐领货 && 一票多件使用运单号
 			//校验是否所有运单都到齐同一个站点
 			validateOrderAllArrived(cwbOrder, currentUserBranchid);
 		} 
 		
-		if (isFirstReceiveGoodsFinished) {
+		if (isFirstReceiveGoodsFinished && isYpdjusetranscwb.longValue() == 1) { //已经进行第一次领货 && 一票多件使用运单号
 			//校验同一个站点领货（针对第一次已经领货）
 			validateSameBranchReceiveGood(cwbOrder, scancwb, currentUserBranchid);
 		}
@@ -176,9 +191,6 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 			//校验拒收后退货出站审核为站点配送的情况
 			validateRejectAfterAudit(cwbOrder);
 		}
-		
-		ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(cwbOrder.getCwb());
-		logger.info("归班反馈->清除缺件记录,订单号:{}", cwbOrder.getCwb());
 		
 	}
 	
