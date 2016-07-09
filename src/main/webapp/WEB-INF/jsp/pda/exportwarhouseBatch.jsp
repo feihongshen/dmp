@@ -340,7 +340,7 @@ function orderbyyichuku(type){
 	});
 };
 function tohome(){
-	window.location.href="<%=request.getContextPath() %>/PDA/cwbexportwarhouseBatch?branchid="+$("#branchid").val();	
+	window.location.href="<%=request.getContextPath() %>/PDA/exportwarhouseBatch?branchid="+$("#branchid").val();	
 }
 
 
@@ -379,7 +379,7 @@ function tohome(){
 	<div class="saomiao_info2">
 		<div class="saomiao_inbox2">
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
-			<form action="<%=request.getContextPath()%>/PDA/cwbexportwarhouseBatch" id="submitform" method="post">
+			<form action="<%=request.getContextPath()%>/PDA/exportwarhouseBatch" id="submitform" method="post">
 			<div class="saomiao_selet2">
 				下一站：
 				<select id="branchid" name="branchid" onchange="tohome();" class="select1">
