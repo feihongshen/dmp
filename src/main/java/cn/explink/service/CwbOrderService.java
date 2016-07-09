@@ -2321,7 +2321,14 @@ public class CwbOrderService extends BaseOrderService {
 		this.mpsOptStateService.updateMPSInfo(scancwb, FlowOrderTypeEnum.TuiHuoZhanRuKu, co.getStartbranchid(), currentbranchid, nextbranchid);
 		// ======按包出库时更新扫描件数为发货件数zs=====
 		if (!anbaochuku) {
-			this.cwbDAO.updateScannum(co.getCwb(), 1);
+			//原逻辑扫描数写死为1，需要改成动态计算
+			//this.cwbDAO.updateScannum(co.getCwb(), 1);
+			
+			// update by neo01.huang，2016-7-6，动态计算扫描数
+			int realscannum = transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(null, cwb, flowordertype, user.getBranchid());
+			logger.info("退货库入库->原扫描数:{}", realscannum);
+			this.cwbDAO.updateScannum(co.getCwb(), realscannum + 1);
+			
 		} else {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 		}
