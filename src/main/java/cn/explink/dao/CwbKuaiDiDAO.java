@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,6 +25,8 @@ import cn.explink.util.StringUtil;
 
 @Component
 public class CwbKuaiDiDAO {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -228,16 +232,22 @@ public class CwbKuaiDiDAO {
 
 			sql += w.toString();
 		}
-		sql = sql + " and cd.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
+		sql = sql + " and cd.state=1 and ds.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
 		return sql;
 	}
 
 	// 4.2快递使用
 	@DataSource(DatabaseType.REPLICA)
 	public long getExpressOrderListCount(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
+		/**
 		String sql =  this.getQueryExpressSql(timeType, begindate, enddate, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		List<CwbKuaiDi> list = this.jdbcTemplate.query(sql, new ExpressMapper());
 		return list.size();
+		**/
+		
+		String sql = this.getCountForQueryExpressSql(timeType, begindate, enddate, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		
+		return this.jdbcTemplate.queryForLong(sql);
 	}
 
 	/**
@@ -340,17 +350,55 @@ public class CwbKuaiDiDAO {
 				+ " cd.customerid as sendconsigneecompany, " + " cd.reccustomerid as shoujianrencompany, " + " cd.carrealweight as realweight,cd.packagefee as packagefee,cd.insuredfee as insuredfee, "
 				+ " ds.deliverybranchid as deliverybrach, " + " cd.receivablefee as receivablefee"
 				+ " from express_ops_cwb_detail as cd ";
-		sql = sql + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb ";
+		sql = sql + " left join express_ops_delivery_state as ds on (cd.cwb =ds.cwb and ds.state=1 ) ";
 		sql = sql + " left join express_set_customer_info as ci on cd.customerid =ci.customerid ";
 
 		//将反馈表和主表都加上state=1的条件，防止重复的计算同一个快递单---刘武强20160628	
 		if (timeType == 1) {
 			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' ";
 		} else if (timeType == 2) {
-			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' and ds.state=1 ";
+			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' ";
+		} else {
+			sql += " where 1=1 ";
 		}
 		sql = this.getExpressOrderByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		
+		logger.info("CwbKuaiDiDAO.getQueryExpressSql:{}", sql);
+		
 		return sql;
 	}
 
+	/**
+	 * 获取符合条件的记录总数
+	 * @author leo01.liao
+	 * @param timeType
+	 * @param begindate
+	 * @param enddate
+	 * @param lanshoubranchids
+	 * @param lanshouuserid
+	 * @param paisongbranchids
+	 * @param paisonguserid
+	 * @return
+	 */
+	private String getCountForQueryExpressSql(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
+		//将客户编号的取数逻辑改为从客户表里面取，而不是从主表里面----刘武强20160627
+		String sql = "SELECT count(DISTINCT cd.cwb) from express_ops_cwb_detail as cd ";
+		sql = sql + " left join express_ops_delivery_state as ds on (cd.cwb =ds.cwb and ds.state=1) ";
+		sql = sql + " left join express_set_customer_info as ci on cd.customerid =ci.customerid ";
+
+		//将反馈表和主表都加上state=1的条件，防止重复的计算同一个快递单---刘武强20160628	
+		if (timeType == 1) {
+			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' ";
+		} else if (timeType == 2) {
+			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' ";
+		} else {
+			sql += " where 1 = 1 ";
+		}
+		
+		sql = this.getExpressOrderByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
+		
+		logger.info("CwbKuaiDiDAO.getCountForQueryExpressSql:{}", sql);
+		
+		return sql;
+	}
 }
