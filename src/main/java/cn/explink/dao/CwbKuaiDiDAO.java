@@ -220,10 +220,10 @@ public class CwbKuaiDiDAO {
 				w.append(" and cd.collectorid = " + lanshouuserid);
 			}
 			if (paisongbranchids.length() > 0) {
-				w.append(" and cd.deliverybranchid in(" + paisongbranchids + ") and ds.state=1 ");
+				w.append(" and cd.deliverybranchid in(" + paisongbranchids + ")");
 			}
 			if (paisonguserid > 0) {
-				w.append(" and ds.deliveryid=" + paisonguserid + " and ds.state=1 ");
+				w.append(" and ds.deliveryid=" + paisonguserid);
 			}
 
 			sql += w.toString();
@@ -340,16 +340,14 @@ public class CwbKuaiDiDAO {
 				+ " cd.customerid as sendconsigneecompany, " + " cd.reccustomerid as shoujianrencompany, " + " cd.carrealweight as realweight,cd.packagefee as packagefee,cd.insuredfee as insuredfee, "
 				+ " ds.deliverybranchid as deliverybrach, " + " cd.receivablefee as receivablefee"
 				+ " from express_ops_cwb_detail as cd ";
-//		if ((timeType == 2) || (paisongbranchids.length() > 0) || (paisonguserid > 0)) {
-			sql = sql + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb and ds.state=1";
-			sql = sql + " left join express_set_customer_info as ci on cd.customerid =ci.customerid ";
-//		}
+		sql = sql + " left join express_ops_delivery_state as ds on cd.cwb =ds.cwb ";
+		sql = sql + " left join express_set_customer_info as ci on cd.customerid =ci.customerid ";
 
 		//将反馈表和主表都加上state=1的条件，防止重复的计算同一个快递单---刘武强20160628	
 		if (timeType == 1) {
-			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' and cd.state=1";
+			sql += " where cd.credate >= '" + begindate + "' and cd.credate <= '" + enddate + "' ";
 		} else if (timeType == 2) {
-			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' and ds.state=1 and cd.state=1";
+			sql += " where ds.deliverytime >= '" + begindate + "'  and ds.deliverytime <= '" + enddate + "' and ds.state=1 ";
 		}
 		sql = this.getExpressOrderByPageWhereSql(sql, lanshoubranchids, lanshouuserid, paisongbranchids, paisonguserid);
 		return sql;

@@ -264,7 +264,7 @@ public class MonitorLogService {
 		}
 		
 		if("yichukuzaitu".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorLogByType(" flowordertype in(6,14,40,27) ", branchid, page,branchids);
+			cwbList =   monitorKucunDAO.getMonitorLogByType(" op.flowordertype in(6,14,40,27) ", branchid, page,branchids);
 			String cwbs ="";
 			if (cwbList.size() > 0) {
 				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
@@ -282,14 +282,14 @@ public class MonitorLogService {
 		 
 		 if("all".equals(type)){
 			 
-			   cwbList =   monitorKucunDAO.getMonitorKucunByType("1", branchid, page,branchids);
+			   cwbList =   monitorKucunDAO.getMonitorKucunByTypeAll("1", branchid, page,branchids);
 				String cwbs1 ="";
 				if (cwbList.size() > 0) {
 					cwbs1 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
 				} else {
 					cwbs1 = "'--'";
 				}
-				cwbList =   monitorKucunDAO.getMonitorLogByType( " flowordertype in(6,14,40,27) ", branchid, page,branchids);
+				cwbList =   monitorKucunDAO.getMonitorLogByTypeAll( " op.flowordertype in(6,14,40,27) ", branchid, page,branchids);
 				String cwbs2 ="";
 				if (cwbList.size() > 0) {
 					cwbs2 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);

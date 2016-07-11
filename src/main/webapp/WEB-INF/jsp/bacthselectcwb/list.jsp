@@ -181,7 +181,7 @@ function remarkButton(){
 						<td  align="center" valign="middle" bgcolor="#eef6ff" >配送成功时间</td>
 						<td  align="center" valign="middle" bgcolor="#eef6ff" >反馈时间</td>
 						<td  align="center" valign="middle" bgcolor="#eef6ff" >归班时间</td>
-						<td  align="center" valign="middle" bgcolor="#eef6ff" >最后更新时间</td>
+						<td  align="center" valign="middle" bgcolor="#eef6ff" >最新流程操作时间</td>
 						<td  align="center" valign="middle" bgcolor="#eef6ff" >退货原因</td>
 						<td  align="center" valign="middle" bgcolor="#eef6ff" >滞留原因</td>
 						<td  align="center" valign="middle" bgcolor="#eef6ff" >供货商异常原因</td>

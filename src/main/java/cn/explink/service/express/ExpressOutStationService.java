@@ -452,7 +452,7 @@ public class ExpressOutStationService {
 	 */
 	private boolean validateIsIntoStation(CwbOrder order) {
 		if (FlowOrderTypeEnum.LanJianRuZhan.getValue() != order.getFlowordertype()) {
-			return false;
+			return false; 
 		}
 		return true;
 	}

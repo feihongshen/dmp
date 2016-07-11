@@ -70,6 +70,7 @@ public class ExptReasonController {
 		model.addAttribute("page_obj", new Page(exptReasonDAO.getExptReasonListCount(support_key, b2c_flag), page, Page.ONE_PAGE_NUMBER));
 		model.addAttribute("page", page);
 		model.addAttribute("support_key", support_key);
+		model.addAttribute("support_key_selected", support_keystr); //Added by leoliao at 2016-07-01 解决POSEnum枚举类里面的编码与客户ID冲突
 		model.addAttribute("customerlist", customerDAO.getAllCustomers());
 		return "jointmanage/exptreason";
 	}
