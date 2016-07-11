@@ -1804,9 +1804,9 @@ public class CwbOrderController {
 				//买单结算的客户订单失效需要判断是否已经生成客户账单，如果生成了客户账单，要生成客户调整账单
 				this.adjustmentRecordService.createAdjustmentForLosecwbBatch(co);
 
-                //added by Steve PENG. 重置反馈已生成派费的订单需要进行相关操作。 start
-                dfFeeService.saveFeeRelativeAfterOrderReset(co, getSessionUser());
-                //added by Steve PENG. 重置反馈已生成派费的订单需要进行相关操作。 end
+                //added by Steve PENG. 失效订单需要进行派费相关操作。 start
+                dfFeeService.saveFeeRelativeAfterOrderResetOrDisabled(co, getSessionUser(), false);
+                //added by Steve PENG. 失效订单需要进行派费相关操作。 end
 
 				successCount++;
 				obj.put("cwbOrder", JSONObject.fromObject(co));

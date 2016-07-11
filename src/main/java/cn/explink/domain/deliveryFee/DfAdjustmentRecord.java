@@ -180,6 +180,19 @@ public class DfAdjustmentRecord {
     private Date adjustmentUpdateTime;
     private String adjustmentUpdateUser;
 
+    /**
+     * 领货时间
+     */
+    private Date pickTime;
+    /**
+     * 重置反馈申请人id
+     */
+    private long applyuserid;
+    /**
+     * 重置反馈通过时间
+     */
+    private String edittime;
+
     public long getId() {
         return id;
     }
@@ -547,5 +560,29 @@ public class DfAdjustmentRecord {
 
     public void setAdjustAmount(BigDecimal adjustAmount) {
         this.adjustAmount = adjustAmount;
+    }
+
+    public Date getPickTime() {
+        return pickTime;
+    }
+
+    public void setPickTime(Date pickTime) {
+        this.pickTime = pickTime;
+    }
+
+    public long getApplyuserid() {
+        return applyuserid;
+    }
+
+    public void setApplyuserid(long applyuserid) {
+        this.applyuserid = applyuserid;
+    }
+
+    public String getEdittime() {
+        return edittime;
+    }
+
+    public void setEdittime(String edittime) {
+        this.edittime = edittime;
     }
 }

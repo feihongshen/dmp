@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 
 @Component
@@ -74,12 +75,16 @@ public class DfAdjustmentRecordDAO {
         sql.append("paybackfee, ");
         sql.append("receivablefee, ");
         sql.append("adjustment_create_time, ");
-        sql.append("adjustment_create_user");
+        sql.append("adjustment_create_user, ");
+        sql.append("pick_time, ");
+        sql.append("apply_userid, ");
+        sql.append("edit_time");
         sql.append(") VALUES (" +
                 "?,?,?,?,?,?,?,?,?,?," +
                 "?,?,?,?,?,?,?,?,?,?," +
                 "?,?,?,?,?,?,?,?,?,?," +
-                "?,?,?,?,?,?,?,?,?,now(),?" +
+                "?,?,?,?,?,?,?,?,?,now(),?," +
+                "?,?,?" +
                 ")");
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -120,35 +125,35 @@ public class DfAdjustmentRecordDAO {
                 if (record.getCreateTime() == null) {
                     ps.setNull(28, Types.DATE);
                 } else {
-                    ps.setDate(28, new java.sql.Date(record.getCreateTime().getTime()));
+                    ps.setTimestamp(28, new Timestamp(record.getCreateTime().getTime()));
                 }
 
                 if (record.getOutstationDate() == null) {
                     ps.setNull(29, Types.DATE);
                 } else {
-                    ps.setDate(29, new java.sql.Date(record.getOutstationDate().getTime()));
+                    ps.setTimestamp(29, new Timestamp(record.getOutstationDate().getTime()));
                 }
 
                 ps.setInt(30, record.getDeliverystate());
 
-                ps.setDate(31, new java.sql.Date(record.getEmaildate().getTime()));
+                ps.setTimestamp(31, new Timestamp(record.getEmaildate().getTime()));
 
                 if (record.getCredate() == null) {
                     ps.setNull(32, Types.DATE);
                 } else {
-                    ps.setDate(32, new java.sql.Date(record.getCredate().getTime()));
+                    ps.setTimestamp(32, new Timestamp(record.getCredate().getTime()));
                 }
 
                 if (record.getMobilepodtime() == null) {
                     ps.setNull(33, Types.DATE);
                 } else {
-                    ps.setDate(33, new java.sql.Date(record.getMobilepodtime().getTime()));
+                    ps.setTimestamp(33, new Timestamp(record.getMobilepodtime().getTime()));
                 }
 
                 if (record.getAuditingtime() == null) {
                     ps.setNull(34, Types.DATE);
                 } else {
-                    ps.setDate(34, new java.sql.Date(record.getAuditingtime().getTime()));
+                    ps.setTimestamp(34, new Timestamp(record.getAuditingtime().getTime()));
                 }
                 //is_billed
                 ps.setInt(35, 0);
@@ -158,6 +163,13 @@ public class DfAdjustmentRecordDAO {
                 ps.setBigDecimal(38, record.getPaybackfee());
                 ps.setBigDecimal(39, record.getReceivablefee());
                 ps.setString(40, createUserName);
+                if (record.getPickTime() == null) {
+                    ps.setNull(41, Types.DATE);
+                } else {
+                    ps.setTimestamp(41, new Timestamp(record.getPickTime().getTime()));
+                }
+                ps.setLong(42, record.getApplyuserid());
+                ps.setString(43, record.getEdittime());
 
                 return ps;
             }
