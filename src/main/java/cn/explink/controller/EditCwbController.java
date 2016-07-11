@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -792,6 +794,14 @@ public class EditCwbController {
 			}
 			List<CwbOrderBranchMatchVo> cwbOrderBranchMatchVoList = this.cwbOrderService.getCwbBranchMatchByCwbs(cwbList);
 			List<Branch> branchs = this.branchDAO.getBranchAllzhandian(String.valueOf(BranchEnum.ZhanDian.getValue()));
+			// 匹配站点名称
+			Map<Long, String> branchnameMap = new HashMap<Long, String>();
+			for (Branch branch : branchs) {
+				branchnameMap.put(branch.getBranchid(), branch.getBranchname());
+			}
+			for (CwbOrderBranchMatchVo vo : cwbOrderBranchMatchVoList) {
+				vo.getCwbOrder().setExcelbranch(branchnameMap.get(vo.getCwbOrder().getDeliverybranchid()));
+			}
 			model.addAttribute("cwbOrderBranchMatchVoList", cwbOrderBranchMatchVoList);
 			model.addAttribute("branchs", branchs);
 			if (cwbOrderBranchMatchVoList.size() > 0) {

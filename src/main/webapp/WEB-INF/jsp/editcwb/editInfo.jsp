@@ -182,7 +182,7 @@ function editInit(){
 													<textarea  cols="20"  name="editaddress" id="editaddress${vo.cwbOrder.cwb }" >${vo.cwbOrder.consigneeaddress }</textarea>
 												</td>
 												<td width="15%" valign="middle"  align="center"  >
-													<input type="text" onkeyup="findbranch('${vo.cwbOrder.cwb }')" value=""  name="matchaddress" id="matchaddress${vo.cwbOrder.cwb }" />
+													<input type="text" onkeyup="findbranch('${vo.cwbOrder.cwb }')" value="${vo.cwbOrder.excelbranch }"  name="matchaddress" id="matchaddress${vo.cwbOrder.cwb }" />
 													<select id="branchlist${vo.cwbOrder.cwb }" onchange="setMatchAddress(this,'${vo.cwbOrder.cwb }');getCourier('${vo.cwbOrder.cwb }');">
 														<option value="">请选择</option>
 														<c:forEach var="branch" items="${branchs }">
@@ -307,7 +307,7 @@ function editInit(){
 							if($("#matchaddress"+cwb).val().length>0){
 								$("#buttonMatch"+cwb).removeAttr('disabled');
 								$("#buttonMatch"+cwb).val('修改匹配站');
-								findbranch();
+								findbranch(cwb);
 							}
 							
 						}
@@ -327,7 +327,7 @@ function editInit(){
 						data:{"branchname":branchname},//参数
 						dataType:'json',//接受数据格式
 						success:function(data){
-							if(data.length>1)
+							if(data.length>0)
 								{
 								var options="";
 								for(var i=0;i<data.length;i++)
