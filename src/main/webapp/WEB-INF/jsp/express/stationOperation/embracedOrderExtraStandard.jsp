@@ -26,6 +26,7 @@
 <script src="<%=request.getContextPath()%>/js/swfupload/swfupload.js" type="text/javascript" ></script>
 <script src="<%=request.getContextPath()%>/js/jquery.swfupload.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"  type="text/javascript"></script>
+
 <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
 <style>
 .RadioClass{
@@ -412,7 +413,7 @@
 					<td class="tdcenter">费用合计：</td>
 					<td class="tdleft"><input type="text" name="freight_total" id="freight_total_id"  readonly="readonly" style=" font-size:22px;color:red;height:30px;background:#EBEBE4;width:100%;"/></td>
 					<td class="tdrigth">运费<font>*</font>:</td>
-					<td class="tdleft"><input type="text" name="freight" id="freight_id" style="width:100%;" onchange="toFix(this,2)"/></td>
+					<td class="tdleft"><input type="text" name="freight" id="freight_id" onblur="calculateFreight(this)" style="width:100%;" onchange="toFix(this,2)"/></td>
 					<td class="tdrigth">包装费用:</td>
 					<td class="tdleft"><input type="text" name="packing_amount" id="packing_amount_id" onblur="calculateFreight(this)" style="width:100%;" onchange="toFix(this,2)"/></td>
 					<td class="tdrigth">是否保价:</td>
@@ -1415,7 +1416,6 @@
 	 *获取运单号对应的信息，并判断是否已经补录
 	 */
 	function getCwbOrderEmbraced(){
-		debugger;
 		var orderNo = $.trim($("#orderNo_id").val());
 		if(!numberOrLetterValidater($("#orderNo_id"),"运单号")){
 			$("#orderNo_id").val("");
@@ -1431,6 +1431,7 @@
 					"orderNo":orderNo
 				},
 				success : function(data) {	
+					debugger
 					if(typeof(data.embracedOrderVO)  == "undefined" || data.embracedOrderVO.orderNo == ""){						
 				        	$("#isadditionflag_id").attr("value",0);
 				        	//根据运单号，去订单表查数据，带出小件员
@@ -1561,6 +1562,7 @@
 					}else{
 						$("#packing_amount_id").val(data.embracedOrderVO.packing_amount);
 					}
+					
 					//把付款方式给选上 $("#payment_method_id").val(); 完成
 					if(data.embracedOrderVO.payment_method == 0){
 						$("#Radio3").attr("checked","checked");
@@ -1928,6 +1930,7 @@
 			}
 		}
 	}
+
 	
 	
 	
@@ -2180,7 +2183,7 @@
 				if(data.reserveOrderList.length!=0){
 					for(var i=0;i<data.reserveOrderList.length;i++){
 						var reserveOrder=data.reserveOrderList[i];
-						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td><td>'+reserveOrder.cnorAddr+'</td><td>'+reserveOrder.requireTime+'</td><td style="display:none">'+reserveOrder.recordVersion+'</td></tr>');
+						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td><td>'+reserveOrder.cnorAddr+'</td><td>'+reserveOrder.requireTime+'</td></tr>');
 						
 					}
 				}
@@ -2246,7 +2249,6 @@
 		$("#consignee_townid_id").val($(consignee).find("td").eq(9).text());
 		$("#consignee_townName_id").val($(consignee).find("td").eq(4).text());
 		$("#consignee_adress_id").val($(consignee).find("td").eq(5).text());
-		$("#sender_adress_id").val(sender_adress);
 	}
 	
 	//寄件人历史信息双击事件
@@ -2272,7 +2274,6 @@
 	
 	//预约单信息双击事件
 	function reserveTableDblClick(reserve){
-		console.log($(reserve).find("td").eq(4).text());
 		$("#reserveOrderNo").val($(reserve).find("td").eq(0).text());
 		$("#recordVersion").val($(reserve).find("td").eq(4).text());
 	}

@@ -347,7 +347,9 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "islinghuo", defaultValue = "0", required = true) long islinghuo, @RequestParam(value = "currentdeliverid", defaultValue = "0", required = true) long deliverid,
 			@RequestParam(value = "nextbranchid", defaultValue = "-1", required = false) String nextbranchid,
 			@RequestParam(value = "printtemplateid", defaultValue = "", required = false) long printtemplateid, @RequestParam(value = "baleno", defaultValue = "", required = false) String baleno,
-			@RequestParam(value = "driverid", defaultValue = "0", required = false) long driverid, @RequestParam(value = "truckid", defaultValue = "0", required = false) long truckid) {
+			@RequestParam(value = "driverid", defaultValue = "0", required = false) long driverid, @RequestParam(value = "truckid", defaultValue = "0", required = false) long truckid,
+			@RequestParam(value = "cwbOrderTypeId", defaultValue = "", required = false) String cwbOrderTypeId
+			) {
 		model.addAttribute("mytruckid", truckid);
 		model.addAttribute("flowtype", request.getParameter("type") == null ? -1 : request.getParameter("type"));
 		String cwbs = "", cwbstr = "", cwbhuizongstr = "";
@@ -385,7 +387,7 @@ public class WarehouseGroup_detailController {
 			}
 			if(bale!=null){
 				baleid=bale.getId();
-				Map<String, List<CwbOrder>> cwbOrderListMap = this.handleQueryForBale(bale.getId(),nextbranchid,flowordertype);
+				Map<String, List<CwbOrder>> cwbOrderListMap = this.handleQueryForBale(bale.getId(),nextbranchid,flowordertype,cwbOrderTypeId);
 				cwbList = cwbOrderListMap.get("cwbList");
 				cwbListForBaleView = cwbOrderListMap.get("cwbListForBaleView");
 			}
@@ -394,7 +396,7 @@ public class WarehouseGroup_detailController {
 			
 //			cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype);
 		}else{
-			cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype);
+			cwbList = this.cwbDao.getCwbByCwbsAndcwbTypeForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype,cwbOrderTypeId);
 		}
 
 		StringBuffer sbf = new StringBuffer();
@@ -582,7 +584,7 @@ public class WarehouseGroup_detailController {
 				Bale bale=this.baleDAO.getBaleOnway(baleno);
 				List<CwbOrder> cwbOrders = new ArrayList<CwbOrder>();
 				if(bale!=null){
-					cwbOrders=this.cwbDao.getCwbByBaleid(bale.getId());
+					cwbOrders=this.cwbDao.getCwbByBaleid(bale.getId(),cwbOrderTypeId);
 				}
 				for (int i = 0; i < cwbOrders.size(); i++) {
 					jianshu += cwbOrders.get(i).getSendcarnum();
@@ -687,7 +689,7 @@ public class WarehouseGroup_detailController {
 					Bale bale=this.baleDAO.getBaleOnway(string);
 					List<CwbOrder> cwbOrders2 = new ArrayList<CwbOrder>();
 					if(bale!=null){
-						cwbOrders2=this.cwbDao.getCwbByBaleid(bale.getId());
+						cwbOrders2=this.cwbDao.getCwbByBaleid(bale.getId(),cwbOrderTypeId);
 					}		
 					WarehouseGroupPrintDto printDto2 = new WarehouseGroupPrintDto();
 					for (int i = 0; i < cwbOrders2.size(); i++) {
@@ -758,7 +760,7 @@ public class WarehouseGroup_detailController {
 	 * @param cwbList 实际对应订单明细
 	 * @param cwbListForBaleView 用于打印页面运单维度订单明细（一票多件多条记录，订单号由运单号替换）
 	 */
-	private Map<String,List<CwbOrder>> handleQueryForBale(long baleid, String nextbranchid, long flowordertype) {
+	private Map<String,List<CwbOrder>> handleQueryForBale(long baleid, String nextbranchid, long flowordertype,String cwbOrderTypeId) {
 		
 		Map<String,List<CwbOrder>> resultMap = new HashMap<String, List<CwbOrder>>();
 		//所有包中关联订/运单号 Str list
@@ -779,7 +781,7 @@ public class WarehouseGroup_detailController {
 //		List<CwbOrder> cwbList = this.cwbDao.getCwbListByAnyNo(orderNoStrs);
 //		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs, nextbranchid, this.getSessionUser().getBranchid(), flowordertype,baleno);
 		//dmp 4.2.8 修复分拣出库打印的bug
-		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs,this.getSessionUser().getBranchid(),baleid);
+		List<CwbOrder> cwbList = this.cwbDao.getCwbByCwbsForPrint(cwbs,this.getSessionUser().getBranchid(),baleid,cwbOrderTypeId);
 		
 		//显示用订单list
 		List<CwbOrder> cwbListForBaleView = new ArrayList<CwbOrder>();
@@ -921,6 +923,7 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "isshow", required = false, defaultValue = "0") long isshow, @RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid,
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
+			@RequestParam(value = "cwbOrderTypeId", required = false, defaultValue = "") String cwbOrderTypeId,
 			HttpServletRequest request) {
 		List<PrintView> printList = new ArrayList<PrintView>();
 		List<Branch> bList = this.getNextPossibleBranches();
@@ -995,10 +998,11 @@ public class WarehouseGroup_detailController {
 			if (!baleno.equals("")) {
 				//按包逻辑优化，查询关联表记录
 				if(bale!=null){
-					orderlist = this.cwbDao.getCwbByBaleid(bale.getId());
+					orderlist = this.cwbDao.getCwbByBaleid(bale.getId(),cwbOrderTypeId);
 				}
 			} else if (cwbs.length() > 0) {
-				orderlist = this.cwbDao.getCwbOrderByCwbs(cwbs);
+				//getCwbOrderByCwbs
+				orderlist = this.cwbDao.getCwbOrderByCwbsAndcwbOrderType(cwbs,cwbOrderTypeId);
 			}
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
 			List<Branch> branchList = this.branchDAO.getAllBranches();
@@ -1036,6 +1040,7 @@ public class WarehouseGroup_detailController {
 		 */
 		model.addAttribute("driverid", driverid);
 		model.addAttribute("truckid", truckid);
+		model.addAttribute("cwbOrderTypeId", cwbOrderTypeId);
 		return "warehousegroup/outdetaillist";
 	}
 
@@ -2325,7 +2330,7 @@ public class WarehouseGroup_detailController {
 						// 获取订单数量、代收总金额
 						List<Map<String, Object>> cwbList = this.cwbDao.getCwbByPrintCwbs(cwbs.substring(0, cwbs.lastIndexOf(",")));
 						
-						Map<String, Object> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, groupDetailList.get(0).getBaleno());
+						Map<String, Object> cwbListView = this.warehouseGroupDetailService.getChuKuBaleCwbView(cwbList, groupDetailList.get(0).getBaleno(),baleid);
 						map.put("cwbListView", cwbListView);
 						map.put("drivername", groupDetailList.get(0).getDriverid()>0? this.userDAO.getAllUserByid(groupDetailList.get(0).getDriverid()).getRealname():"");
 						bList.add(map);

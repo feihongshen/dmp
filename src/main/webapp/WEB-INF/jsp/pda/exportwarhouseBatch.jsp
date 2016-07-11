@@ -6,7 +6,6 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Branch,cn.explink.domain.Truck,cn.explink.domain.Bale,cn.explink.domain.Switch"%>
 <%@page import="cn.explink.domain.CwbOrder,cn.explink.domain.Customer"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 List<CwbDetailView> weichukuList = (List<CwbDetailView>)request.getAttribute("weiChuKuList");
 List<CwbDetailView> yichukuList = (List<CwbDetailView>)request.getAttribute("yiChuKuList");
@@ -23,10 +22,11 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>退货出库扫描</title>
+<title>分拣出库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -340,24 +340,20 @@ function orderbyyichuku(type){
 	});
 };
 function tohome(){
-	window.location.href="<%=request.getContextPath() %>/PDA/cwbexportwarhouseBatch?branchid="+$("#branchid").val();	
+	window.location.href="<%=request.getContextPath() %>/PDA/exportwarhouseBatch?branchid="+$("#branchid").val();	
 }
 
-$(function(){
-	$("#branchid").combobox();
-}) 
+
 </script>
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box2">
-<!--
 	<div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/backbranchbackexport" >逐单操作</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/exportwarhouse" >逐单操作</a></li>		
 			<li><a href="#" class="light" >批量操作</a></li>
 		</ul>
 	</div>
--->
  
 	<div class="saomiao_topnum2">
 		<dl class="blue">
@@ -383,7 +379,7 @@ $(function(){
 	<div class="saomiao_info2">
 		<div class="saomiao_inbox2">
 			<div class="saomiao_righttitle2" id="pagemsg"></div>
-			<form action="<%=request.getContextPath()%>/PDA/cwbexportwarhouseBatch" id="submitform" method="post">
+			<form action="<%=request.getContextPath()%>/PDA/exportwarhouseBatch" id="submitform" method="post">
 			<div class="saomiao_selet2">
 				下一站：
 				<select id="branchid" name="branchid" onchange="tohome();" class="select1">

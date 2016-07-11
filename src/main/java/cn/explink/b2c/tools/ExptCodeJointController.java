@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.domain.Reason;
-import cn.explink.enumutil.ReasonTypeEnum;
 
 @Controller
 @RequestMapping("/exptcodejoint")
@@ -130,6 +129,7 @@ public class ExptCodeJointController {
 		model.addAttribute("exptmatchlist", exptCodeJointDAO.getExpMatchListByKey(expt_type, support_key, b2c_flag));
 		model.addAttribute("expt_type", expt_type);
 		model.addAttribute("support_key", support_key);
+		model.addAttribute("support_key_selected", support_keystr); //Added by leoliao at 2016-07-01 解决POSEnum枚举类里面的编码与客户ID冲突
 		return "jointmanage/jointexptcode";
 	}
 

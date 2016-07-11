@@ -32,6 +32,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.VO.express.ExpressOpeAjaxResult;
 import cn.explink.domain.VO.express.ExpressOutStationParamsVO;
 import cn.explink.domain.express.ExpressOperationInfo;
+import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchTypeEnum;
@@ -428,19 +429,25 @@ public class ExpressOutStationService {
 			throw new CwbException(scanNo, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.CURRENT_BRANCH_NOT_MATCH, StringUtil.nullOrEmptyStringConvertToEmpty(nextBranch
 					.getBranchname()));
 		}
-		// 下一站校验
-		if ((order.getNextbranchid() != 0) && (order.getNextbranchid() != params.getNextBranch().longValue())) {// 页面下一站和订单的下一站是否一致
-			throw new CwbException(scanNo, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.NEXT_BRANCH_NOT_MATCH, StringUtil.nullOrEmptyStringConvertToEmpty(pageBranch
-					.getBranchname()), StringUtil.nullOrEmptyStringConvertToEmpty(nextBranch.getBranchname()));
-		}
+
 		// 非快递单不允许揽件出站
 		if (!this.validateIsExpressOrder(order)) {// 校验是否是快递类型的订单
 			throw new CwbException(scanNo, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.NOT_EXPRESS_CWB, scanNo);
 		}
 
-		// 没有做揽件入站的快递单不能操作出站
-		if (!this.validateIsIntoStation(order)) {
-			throw new CwbException(scanNo, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.NotIntoStation);
+		//如果快递单的上上一个状态是揽件出站，上一个状态站点到货，那么现在做揽件出站就不校验下一站和状态了，因为允许快递单在站点之间转移--刘武强20160706
+		boolean alowFlag =  this.getAlowFlag(scanNo);
+		
+		if(!alowFlag){
+			// 下一站校验
+			if ((order.getNextbranchid() != 0) && (order.getNextbranchid() != params.getNextBranch().longValue())) {// 页面下一站和订单的下一站是否一致
+				throw new CwbException(scanNo, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.NEXT_BRANCH_NOT_MATCH, StringUtil.nullOrEmptyStringConvertToEmpty(pageBranch
+						.getBranchname()), StringUtil.nullOrEmptyStringConvertToEmpty(nextBranch.getBranchname()));
+			}
+			// 没有做揽件入站的快递单不能操作出站
+			if (!this.validateIsIntoStation(order)) {
+				throw new CwbException(scanNo, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), ExceptionCwbErrorTypeEnum.NotIntoStation);
+			}
 		}
 	}
 
@@ -663,5 +670,21 @@ public class ExpressOutStationService {
 		}}
 		return nextBranchList;
 	}
-
+	/**
+		 * 
+		 * 判断订单上一个状态是否为站点到货，并且上上一个状态是揽件出站 
+		 * @author 刘武强
+		 * @date:2016年7月6日 上午9:23:15 
+		 * @params:@param scanNo
+		 * @params:@return
+	*/
+	private boolean getAlowFlag (String scanNo){
+		List<OrderFlow> of = this.orderFlowDAO.getOrderFlowByCwb(scanNo);//查询出轨迹list.并且按时间顺序排序
+		boolean flag = false;
+		//如果上一个状态站点到货，上上一个状态是揽件出站，那么返回true
+		if(of != null && of.size() >= 2 && of.get(of.size()-1).getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() && of.get(of.size()-2).getFlowordertype() == FlowOrderTypeEnum.LanJianChuZhan.getValue() ){
+			flag = true;
+		}
+		return flag;
+	}
 }

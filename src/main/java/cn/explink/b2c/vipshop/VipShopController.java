@@ -3,6 +3,8 @@ package cn.explink.b2c.vipshop;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,8 @@ import cn.explink.service.CwbOrderService;
 @Controller
 @RequestMapping("/vipshop")
 public class VipShopController {
+	
+	private Logger logger = LoggerFactory.getLogger(VipShopController.class);
 
 	@Autowired
 	VipShopGetCwbDataService vipshopService;
@@ -125,7 +129,7 @@ public class VipShopController {
 		this.cwbDAO.dataLoseByCwb(cwb);
 		orderGoodsDAO.loseOrderGoods(cwb);
 		cwbOrderService.datalose_vipshop(cwb);
-
+		logger.info("shixiao执行订单"+cwb+"失效成功");
 		return "执行订单"+cwb+"失效成功";
 
 	}

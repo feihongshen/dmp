@@ -1,3 +1,4 @@
+<%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
 <%@page import="cn.explink.print.template.PrintTemplate"%>
 <%@page import="net.sf.json.JSONObject"%>
 <%@page import="cn.explink.enumutil.FlowOrderTypeEnum"%>
@@ -212,6 +213,17 @@ $("#branchid").multipleSelect({
 						<input type ="text" name ="endtime" id="endtime"  value="<%=endtime %>" class="easyui-datetimebox" style="width: 141px;margin-top: auto;"/>
 						
 				</td>
+				<td>订单类型：<select name="cwbOrderTypeId">
+				<option value="0">--请选择--</option>
+				  <%
+				  for(int i :CwbOrderTypeIdEnum.getMap().keySet()){
+				  %>
+				 	 <option value="<%=i%>" <%=String.valueOf(i).equals(request.getParameter("cwbOrderTypeId"))?"selected='selected'":""%>><%=CwbOrderTypeIdEnum.getTextByValue(i)%></option>
+				 	 <%
+				  } 
+				  %>
+					
+				</select></td>
 				<td style="border-left: 0px">（未打印订单只保留15天）</td>
 				</tr>		
 			</table>	
@@ -262,8 +274,9 @@ $("#branchid").multipleSelect({
 						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作<a style="cursor: pointer;" onclick="isgetallcheck();">（全选）</a></td>
 						<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">订单号/包号</td>
 						<td width="25%" align="center" valign="middle" bgcolor="#eef6ff">出库站点</td>
-						<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">当前状态</td>
+						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">当前状态</td>
 						<td width="20%" align="center" valign="middle" bgcolor="#eef6ff">出库时间</td>
+						<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">订单类型</td>
 					</tr>
 				<!-- </table> -->
 				<form action="" method="post" id="selectforsmtbdprintForm" >
@@ -278,8 +291,9 @@ $("#branchid").multipleSelect({
 							<td width="25%" align="center" valign="middle"><%=pv.getCwb() %></td>
 							<%} %>
 							<td width="25%" align="center" valign="middle"><%=pv.getNextbranchname()%></td>
-						    <td width="20%" align="center" valign="middle"><%=pv.getFlowordertypeMethod()%></td>
+						    <td width="10%" align="center" valign="middle"><%=pv.getFlowordertypeMethod()%></td>
 						    <td width="20%" align="center" valign="middle"><%=pv.getOutstoreroomtime()%></td>
+						    <td width="10%" align="center" valign="middle"><%=CwbOrderTypeIdEnum.getTextByValue(pv.getCwbordertypeid())%></td>
 						</tr>
 					<%} %>
 					</table>
