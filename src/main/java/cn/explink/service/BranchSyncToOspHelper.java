@@ -54,9 +54,10 @@ public class BranchSyncToOspHelper {
 		SbOrgService sbOrgService = getSbOrgService();
 		String carrierCode = getContractCarrierCode();
 		String carrierSiteCode = branch.getTpsbranchcode();
-		
+		logger.info("查询机构服务 - 请求：carrierCode={}，carrierSiteCode={}", new Object[] { carrierCode , carrierSiteCode});
 		SbOrgModel model = sbOrgService.findOrgByCarrierAndSiteCode(
 				carrierCode, carrierSiteCode);
+		logger.info("查询机构服务 - 返回：" + JsonUtil.translateToJson(model));
 		if (model != null) {
 			updateBranchSyncToOsp(branch);
 		} else {
@@ -67,8 +68,9 @@ public class BranchSyncToOspHelper {
 	private SbOrgResponse addBranchSyncToOsp(Branch branch) throws Exception {
 		SbOrgService sbOrgService = getSbOrgService();
 		SbOrgModel model = getSbOrgModelFromBranch(branch);
-		logger.info("同步到机构服务：" + JsonUtil.translateToJson(model));
+		logger.info("同步到机构服务 - 请求：" + JsonUtil.translateToJson(model));
 		SbOrgResponse result = sbOrgService.addSbOrg(model);
+		logger.info("同步到机构服务 - 返回：" + JsonUtil.translateToJson(result));
 		if (result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
 			return result;
 		} else {
@@ -80,9 +82,10 @@ public class BranchSyncToOspHelper {
 		SbOrgService sbOrgService = getSbOrgService();
 		SbOrgModel model = getSbOrgModelFromBranch(branch);
 		
-		logger.info("同步到机构服务：" + JsonUtil.translateToJson(model));
+		logger.info("同步到机构服务 - 请求：" + JsonUtil.translateToJson(model));
 		SbOrgResponse result = sbOrgService
 				.updateSbOrgByCarrierAndSiteCode(model);
+		logger.info("同步到机构服务 - 返回：" + JsonUtil.translateToJson(result));
 		if (result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
 			return result;
 		} else {
@@ -100,9 +103,10 @@ public class BranchSyncToOspHelper {
 		model.setUpdatedByUser(CurrentUserHelper.getInstance().getUserName());
 		model.setUpdatedDtmLoc((new Date()).getTime());
 
-		logger.info("同步到机构服务：" + JsonUtil.translateToJson(model));
+		logger.info("同步到机构服务 - 请求：" + JsonUtil.translateToJson(model));
 		SbOrgResponse result = sbOrgService
 				.deleteSbOrgByCarrierAndSiteCode(model);
+		logger.info("同步到机构服务 - 返回：" + JsonUtil.translateToJson(result));
 		if (result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
 			return result;
 		} else {
