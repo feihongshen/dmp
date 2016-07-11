@@ -6044,6 +6044,8 @@ public class CwbOrderService extends BaseOrderService {
 			posremark = "现金支付";
 			newpaywayid = PaytypeEnum.Xianjin.getValue();
 		}
+		
+		logger.info("CwbOderService.posPay pay_type={},posremark={},cash={},pos={},check={}", pay_type, posremark, cash, pos, check);
 
 		// 执行支付的方法
 		if ((co.getFlowordertype() != CwbFlowOrderTypeEnum.FenZhanLingHuo.getValue()) && (co.getFlowordertype() != CwbFlowOrderTypeEnum.YiFanKui.getValue()) && (co.getFlowordertype() != CwbFlowOrderTypeEnum.YiZhiFu
