@@ -175,8 +175,8 @@ public class VipShopGetCwbDataService {
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		
 		//承运商编码重复的接口配置不允许保存
-		JointEntity jointEntityByShipper = this.jiontDAO.getJointEntityByShipperNo(request.getParameter("shipper_no"),joint_num);
-		if(jointEntityByShipper!=null){
+		JointEntity jointEntityByShipper = this.jiontDAO.getJointEntityByShipperNo(request.getParameter("shipper_no"),joint_num,vipshop.getIsTpsSendFlag());
+		if(jointEntityByShipper!=null&&vipshop.getIsTpsSendFlag()==1){
 			B2cEnum b2cEnmun = B2cEnum.getEnumByKey(jointEntityByShipper.getJoint_num());
 			throw new RuntimeException("该承运商已在【" + b2cEnmun.getText() + "】接口中设置对接");
 		}

@@ -186,9 +186,9 @@ public class ShangmentuiOrderService {
 				remark5+=customer_name;
 			}
 			if(!StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
-				remark5+="/"+customer_name;
+				remark5+="/"+warehouseAddr;
 			}else if(StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
-				remark5+=customer_name;
+				remark5+=warehouseAddr;
 			}
 			orderDTO.setRemark5(remark5); // 仓库地址
 			orderDTO.setCwbordertypeid(cwbordertype);
