@@ -1300,7 +1300,20 @@ public class PDAController {
 	 */
 	@RequestMapping("/changeexportwarhouse")
 	public String changeexportwarhouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> bList = new ArrayList<Branch>();
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		if(listNextBranch != null && !listNextBranch.isEmpty()){
+			for(Branch nextBranch : listNextBranch){
+				if(nextBranch.getBrancheffectflag() == null || nextBranch.getBrancheffectflag().trim().equals("0")){
+					continue;
+				}
+				
+				bList.add(nextBranch);
+			}
+		}
+		//Modified end
+		
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
 
