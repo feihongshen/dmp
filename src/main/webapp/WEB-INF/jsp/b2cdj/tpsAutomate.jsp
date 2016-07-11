@@ -127,10 +127,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="text" id="selb2cnum" name ="selb2cnum"   maxlength="300">
 						</li>	
 					
-						<li style="display: none;"><span>承运商编码：</span>
+						<li><span>承运商编码：</span>
 							<input type ="text" id="shipper_no" name ="shipper_no"  maxlength="300">
 						</li>
-						<li style="display: none;"><span>加密秘钥：</span>
+						<li><span>加密秘钥：</span>
 							<input type ="text" id="private_key" name ="private_key"  maxlength="300">
 						</li>
 						<li style="display: none;"><span>每次获取订单数量：</span>
