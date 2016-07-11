@@ -308,7 +308,7 @@ public class ApplyEditDeliverystateController {
 					ApplyEditDeliverystate aeds = this.applyEditDeliverystateDAO.getApplyED(cwb);
 					if (aeds != null) {
 						// 重置审核的最终方法
-						EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), this.getSessionUser().getUserid());
+						EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByChongZhiShenHe(cwb, aeds.getApplyuserid(), this.getSessionUser());
 						// add by bruce shangguan 20160413 重置反馈订单，添加应付甲方调整记录
 						this.orderPayChangeService.resetOrder(cwb,ec_dsd, edittime);
 						// end 20160413
