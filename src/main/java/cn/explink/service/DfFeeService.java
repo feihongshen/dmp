@@ -1,6 +1,7 @@
 package cn.explink.service;
 
 import cn.explink.core.utils.StringUtils;
+import cn.explink.dao.ApplyEditDeliverystateDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
@@ -11,6 +12,7 @@ import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
 import cn.explink.dao.express.CountyDAO;
 import cn.explink.dao.express.ProvinceDAO;
+import cn.explink.domain.ApplyEditDeliverystate;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
@@ -60,6 +62,8 @@ public class DfFeeService {
     private BranchDAO branchDAO;
     @Autowired
     DfAdjustmentRecordDAO dfAdjustmentRecordDAO;
+    @Autowired
+    ApplyEditDeliverystateDAO applyEditDeliverystateDAO;
 
     public enum DeliveryFeeRuleChargeType {
         GET(0, "揽件费"),
@@ -157,7 +161,7 @@ public class DfFeeService {
             if (create_time == null && FlowOrderTypeEnum.DaoRuShuJu.getValue() == orderFlow.getFlowordertype()) {
                 create_time = orderFlow.getCredate();
             }
-            if (credate == null && FlowOrderTypeEnum.FenZhanLingHuo.getValue() == orderFlow.getFlowordertype()) {
+            if (pick_time == null && FlowOrderTypeEnum.FenZhanLingHuo.getValue() == orderFlow.getFlowordertype()) {
                 pick_time = orderFlow.getCredate();
             }
             if (credate != null && create_time != null && pick_time != null) {
@@ -280,11 +284,11 @@ public class DfFeeService {
 
     public void saveFeeRelativeAfterOrderReset(String cwb, User currentUser) {
         CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-        saveFeeRelativeAfterOrderReset(cwbOrder, currentUser);
+        saveFeeRelativeAfterOrderResetOrDisabled(cwbOrder, currentUser, true);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveFeeRelativeAfterOrderReset(CwbOrder cwbOrder, User currentUser) {
+    public void saveFeeRelativeAfterOrderResetOrDisabled(CwbOrder cwbOrder, User currentUser, boolean isFromReset) {
         logger.info("重置反馈后插入派费相关表操作开始");
 
         Integer chargeType;
@@ -300,7 +304,7 @@ public class DfFeeService {
                 } else {
                     id = new Long(cwbOrder.getInstationhandlerid());
                 }
-                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser);
+                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, isFromReset);
             }
 
             if (cwbOrder.getDeliverybranchid() > 0) {
@@ -311,7 +315,7 @@ public class DfFeeService {
                 } else {
                     id = cwbOrder.getDeliverid();
                 }
-                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser);
+                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, isFromReset);
             }
         }
 
@@ -319,7 +323,7 @@ public class DfFeeService {
         logger.info("重置反馈后插入派费相关表操作结束");
     }
 
-    private void deleteFeeOrAddAdjust(DeliveryFeeChargerType chargerType, String cwb, Integer chargeType, Long branchOrUserId, User currentUser) {
+    private void deleteFeeOrAddAdjust(DeliveryFeeChargerType chargerType, String cwb, Integer chargeType, Long branchOrUserId, User currentUser, boolean isFromReset) {
         boolean isQulified = false;
         if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
             if (isJoinBranch(branchOrUserId))
@@ -335,8 +339,12 @@ public class DfFeeService {
                 if (fee.getIsBilled() == 1) {
                     DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee);
                     if (adjustment != null) {
-                        if (adjustment.getAdjustAmount() != null)
-                            adjustment.setAdjustAmount(adjustment.getAdjustAmount().multiply(new BigDecimal(-1)));
+                        if(isFromReset){
+                            //如果是重置反馈，需要记录反馈申请人和反馈通过时间。
+                            ApplyEditDeliverystate applyEditDeliverystateWithPass = applyEditDeliverystateDAO.getApplyEditDeliverystateWithPass(cwb);
+                            adjustment.setApplyuserid(applyEditDeliverystateWithPass.getApplyuserid());
+                            adjustment.setEdittime(applyEditDeliverystateWithPass.getEdittime());
+                        }
                         dfAdjustmentRecordDAO.saveAdjustmentRecord(chargerType.getValue(), adjustment, currentUser.getRealname());
                     }
                 } else {
@@ -416,11 +424,11 @@ public class DfFeeService {
             logger.error("生成调整派费订单错误" + e.getMessage());
             return null;
         }
-
-        adjustmentRecord.setAdjustAmount(fee.getFeeAmount());
+//        adjustmentRecord.setAdjustAmount(fee.getFeeAmount());
+        if (fee.getFeeAmount() != null)
+            adjustmentRecord.setAdjustAmount(fee.getFeeAmount().multiply(new BigDecimal(-1)));
 
         return adjustmentRecord;
     }
-
 
 }
