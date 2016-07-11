@@ -65,7 +65,8 @@ CREATE TABLE `fn_df_bill_org` (
   `gen_type` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '账单生成方式',
   PRIMARY KEY (`bill_id`),
   KEY `idx_period_date` (`period_date`),
-  KEY `idx_org_id` (`org_id`)
+  KEY `idx_org_id` (`org_id`),
+  KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='加盟站派费账单表';
 
 -- ----------------------------
@@ -128,7 +129,8 @@ CREATE TABLE `fn_df_bill_staff` (
   `gen_type` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '账单生成方式',
   PRIMARY KEY (`bill_id`),
   KEY `idx_period_date` (`period_date`),
-  KEY `idx_deliveryid` (`deliveryid`)
+  KEY `idx_deliveryid` (`deliveryid`),
+  KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费账单';
 
 -- ----------------------------
