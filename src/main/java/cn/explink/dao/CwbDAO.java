@@ -4696,7 +4696,7 @@ public class CwbDAO {
 						branchid, deliverystate);
 	}
 
-	public List<CwbOrder> getCwbByBaleid(long baleid) {
+	public List<CwbOrder> getCwbByBaleid(long baleid,String cwbOrderTypeId) {
 		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleid ="
 				+ baleid;
 		List<String> baleCwbList = this.jdbcTemplate.queryForList(baleCwbSql,
@@ -4713,7 +4713,10 @@ public class CwbDAO {
 			String quertStr = targetString.substring(0,
 					targetString.length() - 1);
 			String sql = " SELECT * FROM express_ops_cwb_detail "
-					+ " WHERE state = 1" + " AND cwb IN ( " + quertStr + " )";
+					+ " WHERE state = 1" + " AND cwb IN ( " + quertStr + " ) ";
+			if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
+				sql += " and cwbordertypeid = "+cwbOrderTypeId;
+			}
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} else {
 			return new ArrayList<CwbOrder>();
@@ -5480,6 +5483,15 @@ public class CwbDAO {
 				+ cwbs + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+	public List<CwbOrder> getCwbOrderByCwbsAndcwbOrderType(String cwbs,String cwbOrderTypeId){
+		String sql = "select * from express_ops_cwb_detail where state=1 and cwb in("
+				+ cwbs + ") ";
+		if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
+			sql += " and cwbordertypeid="+cwbOrderTypeId;
+		}
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+	
 
 	@DataSource(DatabaseType.REPLICA)
 	public long getCwbOrderByCwbsCount(String cwbs) {
@@ -7405,8 +7417,8 @@ public class CwbDAO {
 	 * @param nextbranchid
 	 * @return
 	 */
-	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs,
-			String nextbranchid, long branchid, long flowordertype) {
+	public List<CwbOrder> getCwbByCwbsAndcwbTypeForPrint(String cwbs,
+			String nextbranchid, long branchid, long flowordertype,String cwbOrderTypeId) {
 		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
 				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
 				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
@@ -7418,6 +7430,9 @@ public class CwbDAO {
 				+ ") and op.branchid="
 				+ branchid
 				+ " and cd.state=1 and op.flowordertype=" + flowordertype;
+		if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
+			sql+=" cwbordertypeid="+cwbOrderTypeId;
+		}
 		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
 	}
 
@@ -7454,7 +7469,7 @@ public class CwbDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs, long branchid,
-			long baleid) {
+			long baleid,String cwbOrderTypeId) {
 		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
 				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
 				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
@@ -7463,6 +7478,9 @@ public class CwbDAO {
 				+ ") and op.baleid="
 				+ baleid
 				+ "  and cd.state=1 ";
+		if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
+			sql +=" cwbordertypeid="+cwbOrderTypeId;
+		}
 		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
 	}
 

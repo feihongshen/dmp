@@ -95,6 +95,11 @@ public class OrderBackCheckDAO {
 	public void deleteOrderBackCheckByCwb(String cwb) {
 		jdbcTemplate.update("delete from ops_order_back_check where cwb = ?", cwb);
 	}
+	
+	public int deleteOrderBackCheckAndWeishenheByCwb(String cwb){
+		return jdbcTemplate.update("DELETE FROM ops_order_back_check WHERE cwb = ? AND checkstate=1",cwb);
+	}
+	
 
 	public OrderBackCheck getOrderBackCheckByCwb(String cwb) {
 		String sql = "select * from ops_order_back_check where cwb = ? and isstastics = 0  ";
@@ -123,6 +128,17 @@ public class OrderBackCheckDAO {
 			return null;
 		}
 	}
+	//已审核 Hps_Concerto
+	public List<OrderBackCheck> getOrderBackCheckByCheckstateAndYiShenhe(String cwb) {
+		String sql = "select * from ops_order_back_check where checkstate=2  and cwb = ? ";
+		try {
+			return jdbcTemplate.query(sql, new OrderBackCheckRowMapper(), cwb);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
 	//站点配送
 	public OrderBackCheck getOrderBackCheckByCheckresult(String cwb) {
 		String sql = "select * from ops_order_back_check where checkresult=2  and cwb = ? and isstastics=0 ";

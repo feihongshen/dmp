@@ -145,4 +145,12 @@ public class BaleCwbDao {
 			return null;
 		}
 	}
+	
+	public Object getCwbCountByBaleId(long baleid){
+		String sql = "SELECT COUNT(1) FROM express_ops_bale_cwb where baleid=?";
+		return this.jdbcTemplate.queryForObject(sql,Object.class,baleid);
+	}
+	
+	
+	
 }
