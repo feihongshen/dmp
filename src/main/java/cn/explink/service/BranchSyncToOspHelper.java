@@ -1,6 +1,7 @@
 package cn.explink.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,6 @@ import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.express.ProvinceDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.SystemInstall;
-import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.util.CurrentUserHelper;
@@ -24,6 +24,7 @@ import com.pjbest.pjorganization.bizservice.service.SbOrgRequest;
 import com.pjbest.pjorganization.bizservice.service.SbOrgResponse;
 import com.pjbest.pjorganization.bizservice.service.SbOrgService;
 import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
+import com.vip.osp.core.context.InvocationContext;
 
 @Service
 public class BranchSyncToOspHelper {
@@ -39,12 +40,12 @@ public class BranchSyncToOspHelper {
 	private final static String OSP_ORG_SOURCE_DMP = "DMP";
 	private final static String OSP_LESSEE_CODE_PJBEST = "001";
 	private final static byte IS_CARRIERS_DEFAULT = 1;
-	
+
 	private final static String RETURN_CODE_SUCCESS = "1";
-	
-	private final static byte OSP_ORG_TYPE_CARRIER_RDC = 4;		//承运商分拨中心
-	private final static byte OSP_ORG_TYPE_CARRIER_SITE = 5;	//承运商站点
-	private final static byte OSP_ORG_TYPE_ADMINISTRATION = 6;			//行政机构	
+
+	private final static byte OSP_ORG_TYPE_CARRIER_RDC = 4; // 承运商分拨中心
+	private final static byte OSP_ORG_TYPE_CARRIER_SITE = 5; // 承运商站点
+	private final static byte OSP_ORG_TYPE_ADMINISTRATION = 6; // 行政机构
 
 	private String provinceName;
 
@@ -54,11 +55,12 @@ public class BranchSyncToOspHelper {
 		SbOrgService sbOrgService = getSbOrgService();
 		String carrierCode = getContractCarrierCode();
 		String carrierSiteCode = branch.getTpsbranchcode();
-		logger.info("查询机构服务 - 请求：carrierCode={}，carrierSiteCode={}", new Object[] { carrierCode , carrierSiteCode});
-		SbOrgModel model = sbOrgService.findOrgByCarrierAndSiteCode(
-				carrierCode, carrierSiteCode);
-		logger.info("查询机构服务 - 返回：" + JsonUtil.translateToJson(model));
-		if (model != null) {
+		logger.info("查询机构服务 - 请求：carrierCode={}，carrierSiteCode={}",
+				new Object[] { carrierCode, carrierSiteCode });
+		List<SbOrgModel> models = sbOrgService
+				.findSbOrgByCarrierAndSelfStation(carrierCode, carrierSiteCode);
+		logger.info("查询机构服务 - 返回：" + JsonUtil.translateToJson(models));
+		if (models != null && models.size() > 0) {
 			updateBranchSyncToOsp(branch);
 		} else {
 			addBranchSyncToOsp(branch);
@@ -81,7 +83,7 @@ public class BranchSyncToOspHelper {
 	private SbOrgResponse updateBranchSyncToOsp(Branch branch) throws Exception {
 		SbOrgService sbOrgService = getSbOrgService();
 		SbOrgModel model = getSbOrgModelFromBranch(branch);
-		
+
 		logger.info("同步到机构服务 - 请求：" + JsonUtil.translateToJson(model));
 		SbOrgResponse result = sbOrgService
 				.updateSbOrgByCarrierAndSiteCode(model);
@@ -137,7 +139,7 @@ public class BranchSyncToOspHelper {
 		model.setIsCarriers(IS_CARRIERS_DEFAULT);
 		model.setIsActive(getOspIsActiveByBranch(branch));
 		model.setLesseeCode(OSP_LESSEE_CODE_PJBEST);
-		model.setCreatedByUser(branch.getBranchcontactman());		
+		model.setCreatedByUser(branch.getBranchcontactman());
 
 		model.setUpdatedByUser(CurrentUserHelper.getInstance().getUserName());
 		model.setUpdatedDtmLoc((new Date()).getTime());
