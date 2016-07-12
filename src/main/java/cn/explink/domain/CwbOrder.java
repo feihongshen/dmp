@@ -405,6 +405,11 @@ public class CwbOrder {
 	 * 交接时间
 	 */
 	private String instationhandovertime;
+	
+	/**
+	 * 服务产品类型
+	 */
+	private int expressProductType;
 
 	public int getIshandover() {
 		return this.ishandover;
@@ -422,6 +427,8 @@ public class CwbOrder {
 	private int mpsallarrivedflag;// 一票多件是否到齐（0：未到齐，1：到齐） MPSAllArrivedFlagEnum
 
 	private int ismpsflag; // 是否一票多件：0默认；1是一票多件 注意：这里只描述开启集单模式才起作用
+	
+	private String tpstranscwb;// tps运单号
 
 	public int getInstationhandoverid() {
 		return this.instationhandoverid;
@@ -2066,4 +2073,20 @@ public class CwbOrder {
 	public void setVipclub(int vipclub) {
 		this.vipclub = vipclub;
 	}
+	
+		public int getExpressProductType() {
+		return expressProductType;
+	}
+
+	public void setExpressProductType(int expressProductType) {
+		this.expressProductType = expressProductType;
+	}
+	public String getTpstranscwb() {
+		return tpstranscwb;
+	}
+
+	public void setTpstranscwb(String tpstranscwb) {
+		this.tpstranscwb = tpstranscwb;
+	}
+
 }
