@@ -53,8 +53,10 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.ScheduledTaskService;
 import cn.explink.service.SystemInstallService;
+import cn.explink.util.AjaxResult;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.JSONReslutUtil;
+import cn.explink.util.JSR303ValidationManager;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -137,6 +139,10 @@ public class BranchController {
 			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, file, functionids);
+			AjaxResult rs =JSR303ValidationManager.getInstance().doValidateAsAjaxResult(bh);
+			if (!rs.isResult()) {
+				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
+			}
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
@@ -195,7 +201,10 @@ public class BranchController {
 			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		}else {
 			Branch bh = this.branchService.loadFormForBranch(request, null, functionids);
-
+			AjaxResult rs =JSR303ValidationManager.getInstance().doValidateAsAjaxResult(bh);
+			if (!rs.isResult()) {
+				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
+			}
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
@@ -267,6 +276,10 @@ public class BranchController {
 			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, file, wavh, functionids);
+			AjaxResult rs =JSR303ValidationManager.getInstance().doValidateAsAjaxResult(branch);
+			if (!rs.isResult()) {
+				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
+			}
 			branch.setBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
@@ -337,7 +350,10 @@ public class BranchController {
 			if (!branchname.equals(oldBranch.getBranchname())) {
 				this.cwbDAO.saveCwbOrderByExcelbranch(branchname, branchid);
 			}
-
+			AjaxResult rs =JSR303ValidationManager.getInstance().doValidateAsAjaxResult(branch);
+			if (!rs.isResult()) {
+				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
+			}
 			try {
 				branchService.saveBranchAndSyncOsp(branch);
 			} catch (Exception e) {
@@ -556,4 +572,17 @@ public class BranchController {
 	
 	}
 
+//	@RequestMapping("/syncAllBranchToOsp")
+//	public @ResponseBody String syncAllBranchToOsp() {
+//		List<Branch> branchs = branchService.getBranchs();
+//		try {
+//			for (Branch b : branchs) {
+//				branchService.saveBranchAndSyncOsp(b);
+//			}
+//		} catch (Exception e) {
+//			String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+//			return "{\"errorCode\":1,\"error\":\"" + errorMessage + "\"}";
+//		}
+//		return "{\"errorCode\":0,\"error\":\"同步成功\",\"type\":\"sync\"}";
+//	}
 }

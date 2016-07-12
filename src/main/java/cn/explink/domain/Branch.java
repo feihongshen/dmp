@@ -3,6 +3,8 @@ package cn.explink.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.hibernate.validator.constraints.Length;
+
 import cn.explink.enumutil.BranchEnum;
 
 public class Branch implements java.io.Serializable {
@@ -10,19 +12,40 @@ public class Branch implements java.io.Serializable {
 	private static final long serialVersionUID = -7873112119688063347L;
 	
 	private long branchid;
+	
+	@Length(max = 50, message = "机构名称最多为50个字符")
 	private String branchname;
+	
+	@Length(max = 32, message = "省份最多为32个字符")
 	private String branchprovince;
+	
+	@Length(max = 32, message = "城市最多为32个字符")
 	private String branchcity;
-
+	
+	@Length(max = 32, message = "区/县最多为32个字符")
 	private String brancharea;
+	
+	@Length(max = 32, message = "街道最多为32个字符")
 	private String branchstreet;
-
+	
+	@Length(max = 50, message = "地址最多为50个字符")
 	private String branchaddress;
+	
+	@Length(max = 50, message = "负责人最多为50个字符")
 	private String branchcontactman;
+	
+	@Length(max = 50, message = "固定电话最多为50个字符")
 	private String branchphone;
+	
+	@Length(max = 50, message = "机构手机最多为50个字符")
 	private String branchmobile;
+	
+	@Length(max = 50, message = "传真最多为50个字符")
 	private String branchfax;
+	
+	@Length(max = 50, message = "邮箱最多为50个字符")
 	private String branchemail;
+	
 	private String contractflag;
 	private String bankcard;
 	private String cwbtobranchid;
@@ -35,7 +58,10 @@ public class Branch implements java.io.Serializable {
 	private BigDecimal creditamount;
 	private String brancheffectflag;
 	private BigDecimal contractrate;
+	
+	@Length(max = 32, message = "分拣码最多为32个字符")
 	private String branchcode;
+	
 	private String noemailimportflag;
 	private String errorcwbdeliverflag;
 	private String errorcwbbranchflag;
@@ -86,6 +112,7 @@ public class Branch implements java.io.Serializable {
 	
 	private long branchcityid;//站点所在市id
 	
+	@Length(max = 32, message = "机构编码最多为32个字符")
 	private String tpsbranchcode;//上传tps时所用的机构编码
 	
 	private String outputno;//自动化分拣使用的出货口编号
