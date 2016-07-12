@@ -6044,6 +6044,8 @@ public class CwbOrderService extends BaseOrderService {
 			posremark = "现金支付";
 			newpaywayid = PaytypeEnum.Xianjin.getValue();
 		}
+		
+		logger.info("CwbOderService.posPay pay_type={},posremark={},cash={},pos={},check={}", pay_type, posremark, cash, pos, check);
 
 		// 执行支付的方法
 		if ((co.getFlowordertype() != CwbFlowOrderTypeEnum.FenZhanLingHuo.getValue()) && (co.getFlowordertype() != CwbFlowOrderTypeEnum.YiFanKui.getValue()) && (co.getFlowordertype() != CwbFlowOrderTypeEnum.YiZhiFu
@@ -6524,6 +6526,11 @@ public class CwbOrderService extends BaseOrderService {
 		// //包号处理结束
 
 		this.mpsOptStateService.updateMPSInfo(scancwb, flowOrderTypeEnum, 0L, co.getCurrentbranchid(), 0L);
+		
+		//add by neo01.huang，2016-7-11，清除缺件记录
+		ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(cwb);
+		logger.info("退供货商出库->清除缺件记录,订单号:{}", cwb);
+		
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 

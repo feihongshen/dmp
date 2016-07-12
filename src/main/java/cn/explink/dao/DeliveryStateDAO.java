@@ -433,6 +433,9 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set sign_man=?,sign_time=?,sign_man_phone=? ";
 		sql = this.setDeliveyStateParmForSql(sql, cwb, deliverid, receivedfee, returnedfee, businessfee, deliverystate, cash, pos, posremark, checkfee, checkremark, otherfee, podremarkid,
 				deliverstateremark, createtime, sign_typeid, codpos, infactfare);
+		
+		logger.info("DeliveryStateDAO.saveForReFanKui sql:", sql);
+		
 		this.jdbcTemplate.update(sql, sign_man, sign_time,sign_man_phone);
 	}
 
@@ -458,12 +461,13 @@ public class DeliveryStateDAO {
 
 	public String setDeliveyStateParmForSql(String sql, String cwb, long deliverid, BigDecimal receivedfee, BigDecimal returnedfee, BigDecimal businessfee, long deliverystate, BigDecimal cash,
 			BigDecimal pos, String posremark, BigDecimal checkfee, String checkremark, BigDecimal otherfee, long podremarkid, String deliverstateremark, String createtime, int sign_typeid,
-			BigDecimal codpos, BigDecimal infactfare) {
+			BigDecimal codpos, BigDecimal infactfare) {		
+		StringBuffer w = new StringBuffer();		
 		if ((cwb.length() > 0) || (deliverid > 0) || (receivedfee.compareTo(new BigDecimal(0)) > -1) || (returnedfee.compareTo(new BigDecimal(0)) > -1)
 				|| (businessfee.compareTo(new BigDecimal(0)) > -1) || (deliverystate > 0) || (cash.compareTo(new BigDecimal(0)) > -1) || (pos.compareTo(new BigDecimal(0)) > -1)
 				|| (posremark.length() > 0) || (checkfee.compareTo(new BigDecimal(0)) > -1) || (checkremark.length() > 0) || (otherfee.compareTo(new BigDecimal(0)) > -1) || (podremarkid > 0)
 				|| (deliverstateremark.length() > 0) || (createtime.length() > 0) || (codpos.compareTo(new BigDecimal(0)) > -1) || (infactfare.compareTo(new BigDecimal(0)) > -1)) {
-			StringBuffer w = new StringBuffer();
+			
 
 			if (receivedfee.compareTo(new BigDecimal(0)) > -1) {
 				w.append(",receivedfee=" + receivedfee);
@@ -515,9 +519,12 @@ public class DeliveryStateDAO {
 			}
 			w.append(",sign_typeid=" + sign_typeid);
 
-			w.append(" where cwb='" + cwb + "' and state=1");
-			sql += w.toString();
+			
 		}
+		
+		w.append(" where cwb='" + cwb + "' and state=1");
+		sql += w.toString();
+		
 		return sql;
 	}
 

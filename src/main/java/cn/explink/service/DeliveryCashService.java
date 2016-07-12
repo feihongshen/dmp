@@ -68,56 +68,7 @@ public class DeliveryCashService {
 	@DataSource(DatabaseType.REPLICA)
 	public Map<String, Map<Long, Map<Long, BigDecimal>>> getSummary(List<Customer> customerList, List<User> deliverList, final long deliveryid, long flowordertype, String begindate, String enddate,
 			String[] deliverystate, Integer paybackfeeIsZero) {
-		StringBuffer deliveryids = new StringBuffer();
-		for (User u : deliverList) {
-			deliveryids = deliveryids.append(u.getUserid()).append(",");
-		}
-		if (deliveryids.length() > 0) {
-			deliveryids = deliveryids.append(deliveryids.substring(0, deliveryids.length() - 1));
-		}
-		if (deliveryids.length() == 0) {
-			deliveryids = deliveryids.append("0");
-		}
-
-		String sql = "select * from express_ops_deliver_cash ";
-
-		if (flowordertype > 0 || deliverystate.length > 0 || deliveryids.length() > 0) {
-			sql += " where ";
-			StringBuffer strsql = new StringBuffer();
-			String timeType = "";
-			if (flowordertype == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
-				strsql.append(" and linghuotime> '" + begindate + "' and linghuotime< '" + enddate + "'");
-				timeType = "linghuotime";
-			} else if (flowordertype == FlowOrderTypeEnum.YiFanKui.getValue()) {
-				strsql.append(" and fankuitime> '" + begindate + "' and fankuitime< '" + enddate + "'");
-				timeType = "fankuitime";
-			} else if (flowordertype == FlowOrderTypeEnum.YiShenHe.getValue()) {
-				strsql.append(" and guibantime> '" + begindate + "' and guibantime< '" + enddate + "'");
-				timeType = "guibantime";
-			}
-			if (deliverystate.length > 0) {
-				StringBuffer deliverystates = new StringBuffer();
-				for (int i = 0; i < deliverystate.length; i++) {
-					deliverystates = deliverystates.append(deliverystate[i]).append(",");
-				}
-				strsql.append(" and deliverystate in(" + deliverystates.substring(0, deliverystates.length() - 1) + ")");
-			}
-
-			if (deliveryids.length() > 0) {
-				strsql.append(" and deliverid in (" + deliveryids + ") ");
-			}
-			if (paybackfeeIsZero > -1) {
-				if (paybackfeeIsZero == 0) {
-					strsql.append(" and receivableNoPosfee=0 and receivablePosfee=0 ");
-				} else {
-					strsql.append(" and receivableNoPosfee + receivablePosfee >0  ");
-				}
-			}
-
-			strsql.append("and state=1  order by " + timeType + " desc");
-
-			sql += strsql.substring(4, strsql.length());
-		}
+		String sql = getSummarySQL(deliverList, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
 
 		final Map<String, Map<Long, Map<Long, BigDecimal>>> reMap = new HashMap<String, Map<Long, Map<Long, BigDecimal>>>();
 
@@ -192,6 +143,80 @@ public class DeliveryCashService {
 		});
 
 		return reMap;
+	}
+
+	private String getSummarySQL(List<User> deliverList, long flowordertype, String begindate, String enddate, String[] deliverystate, Integer paybackfeeIsZero) {
+		StringBuffer deliveryids = new StringBuffer();
+		for (User u : deliverList) {
+			deliveryids = deliveryids.append(u.getUserid()).append(",");
+		}
+		if (deliveryids.length() > 0) {
+			deliveryids = deliveryids.append(deliveryids.substring(0, deliveryids.length() - 1));
+		}
+		if (deliveryids.length() == 0) {
+			deliveryids = deliveryids.append("0");
+		}
+
+		String sql = "select * from express_ops_deliver_cash ";
+
+		if (flowordertype > 0 || deliverystate.length > 0 || deliveryids.length() > 0) {
+			sql += " where ";
+			StringBuffer strsql = new StringBuffer();
+			String timeType = "";
+			if (flowordertype == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+				strsql.append(" and linghuotime> '" + begindate + "' and linghuotime< '" + enddate + "'");
+				timeType = "linghuotime";
+			} else if (flowordertype == FlowOrderTypeEnum.YiFanKui.getValue()) {
+				strsql.append(" and fankuitime> '" + begindate + "' and fankuitime< '" + enddate + "'");
+				timeType = "fankuitime";
+			} else if (flowordertype == FlowOrderTypeEnum.YiShenHe.getValue()) {
+				strsql.append(" and guibantime> '" + begindate + "' and guibantime< '" + enddate + "'");
+				timeType = "guibantime";
+			}
+			if (deliverystate.length > 0) {
+				StringBuffer deliverystates = new StringBuffer();
+				for (int i = 0; i < deliverystate.length; i++) {
+					deliverystates = deliverystates.append(deliverystate[i]).append(",");
+				}
+				strsql.append(" and deliverystate in(" + deliverystates.substring(0, deliverystates.length() - 1) + ")");
+			}
+
+			if (deliveryids.length() > 0) {
+				strsql.append(" and deliverid in (" + deliveryids + ") ");
+			}
+			if (paybackfeeIsZero > -1) {
+				if (paybackfeeIsZero == 0) {
+					strsql.append(" and receivableNoPosfee=0 and receivablePosfee=0 ");
+				} else {
+					strsql.append(" and receivableNoPosfee + receivablePosfee >0  ");
+				}
+			}
+
+			strsql.append("and state=1  order by " + timeType + " desc");
+
+			sql += strsql.substring(4, strsql.length());
+		}
+		return sql;
+	}
+	
+	/**
+	 * 获取对应客户记录统计，
+	 * 降序
+	 * @param customerList
+	 * @param deliverList
+	 * @param flowordertype
+	 * @param begindate
+	 * @param enddate
+	 * @param deliverystate
+	 * @param paybackfeeIsZero
+	 *            代收金额是否大于0
+	 * @return 客户id
+	 */
+	public List<String> getCustomerListForSummary(List<Customer> customerList, List<User> deliverList, final long deliveryid, long flowordertype, String begindate, String enddate,
+			String[] deliverystate, Integer paybackfeeIsZero) {
+		String sql = getSummarySQL(deliverList, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
+		
+		return null;
 	}
 
 	/**

@@ -108,7 +108,7 @@ public class DeliveryCashController {
 			width = width + (100 * (customerList.size() - 3));
 		}
 		model.addAttribute("width", width);
-		String branchids = "0";
+		String branchids = "-1";
 		for (String branchid : dispatchbranchid) {
 			branchids = branchids + "," + branchid;
 		}
@@ -231,7 +231,7 @@ public class DeliveryCashController {
 			@RequestParam(value = "deliverystate1", defaultValue = "", required = false) String[] deliverystate,
 			@RequestParam(value = "paybackfeeIsZero1", defaultValue = "-1", required = false) Integer paybackfeeIsZero) {
 		List<Customer> customerList = customerDAO.getAllCustomers();
-		String branchids = "0";
+		String branchids = "-1";
 		for (String branchid : dispatchbranchid) {
 			branchids = branchids + "," + branchid;
 		}
