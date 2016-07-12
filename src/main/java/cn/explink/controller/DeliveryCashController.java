@@ -130,6 +130,8 @@ public class DeliveryCashController {
 		for (int i = 0; i < deliverystate.length; i++) {
 			deliverystates = deliverystates.append(deliverystate[i]).append(",");
 		}
+		List<String> customerSorList = deliveryCashService.getCustomerListForSummary(deliverList, deliveryid, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
+		customerList = deliveryCashService.resetCustomer(customerList, customerSorList);
 		model.addAttribute("deliverystate", deliverystates.toString());
 		model.addAttribute("branchList", branchnameList);
 		model.addAttribute("deliverList", deliverList);
@@ -242,7 +244,9 @@ public class DeliveryCashController {
 		if (summary.isEmpty()) {
 			return;
 		}
-		deliveryCashService.export(summary, response);
+		List<String> customerSorList = deliveryCashService.getCustomerListForSummary(deliverList, deliveryid, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
+		
+		deliveryCashService.export(summary, response, customerSorList);
 		
 		//以下处理打印日志
 		Map<Long, Map<Long, BigDecimal>> countMap = summary.get("count");
