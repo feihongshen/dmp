@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import cn.explink.b2c.auto.order.dao.ExpressOrderDao;
 import cn.explink.b2c.auto.order.dao.TPSOrderDao;
 import cn.explink.b2c.auto.order.util.MqOrderBusinessUtil;
+import cn.explink.b2c.auto.order.vo.InfDmpOrderSendBoxVO;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendDetailVO;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendVO;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.vipshop.VipShop;
+import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.controller.MQCwbOrderDTO;
 import cn.explink.dao.AccountCwbFareDetailDAO;
@@ -27,6 +29,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 
 /**
@@ -82,18 +85,20 @@ public class ShangmentuiOrderService {
 			orderDTO.setCwbcounty(order.getCnorRegion());//寄件人区
 			orderDTO.setConsigneename(order.getCnorContacts());//寄件人
 			orderDTO.setConsigneeaddress(order.getCnorAddr());//寄件人地址
-			orderDTO.setConsigneephone(order.getCnorTel());//寄件人电话
-			orderDTO.setConsigneemobile(order.getCnorMobile());//寄件人手机
+			String tel = order.getCnorTel();
+			if(!StringUtil.isEmpty(tel)) {
+				tel = SecurityUtil.getInstance().encrypt(tel);
+			}
+			orderDTO.setConsigneephone(tel);//寄件人电话
+			String mobile = order.getCnorMobile();
+			if(!StringUtil.isEmpty(mobile)) {
+				mobile = SecurityUtil.getInstance().encrypt(mobile);
+			}
+			orderDTO.setConsigneemobile(mobile);//寄件人手机
 			orderDTO.setConsigneepostcode(order.getPostCode());//寄件人邮编
 			String warehouseAddr = order.getWarehouseAddr();//仓库地址，拼接到remark5
-			//重量、体积自动化订单时设置为0，其余取上游数据
-			int isAutoInterface = vipshop.getIsAutoInterface();//是否自动化接口
-			BigDecimal original_weight = BigDecimal.ZERO;
-			BigDecimal original_volume = BigDecimal.ZERO;
-			if(isAutoInterface!=1){
-				original_weight = new BigDecimal(order.getOriginalWeight());
-				original_volume = new BigDecimal(order.getOriginalVolume());
-			}
+			BigDecimal original_weight = new BigDecimal(order.getOriginalWeight());
+			BigDecimal original_volume = new BigDecimal(order.getOriginalVolume());
 			orderDTO.setCargorealweight(original_weight);// 重量
 			orderDTO.setCargovolume(original_volume);//体积
 			orderDTO.setCargoamount((null==order.getOrderSum()||"".equals(order.getOrderSum().toString())) ? BigDecimal.ZERO : new BigDecimal(order.getOrderSum()));//货物金额
@@ -104,10 +109,34 @@ public class ShangmentuiOrderService {
 			orderDTO.setAnnouncedvalue(new BigDecimal(order.getValuationValue()));//保价价值
 			orderDTO.setPaywayid(MqOrderBusinessUtil.getPayTypeValue(order.getPayment()));//支付方式
 			orderDTO.setNewpaywayid(MqOrderBusinessUtil.getPayTypeValue(order.getPayment())+"");
-			//orderDTO.setTranscwb(order.getVip().getBoxNo());//运单号
-			//调试的时候注意时间格式是否符合要求
+			orderDTO.setPaymethod(order.getPayType());//付款方式
+			List<InfDmpOrderSendBoxVO> boxlist = order.getBoxs();
+			String transcwb = "";
+			String order_batch_no = "";//交接单号
+			if(boxlist!=null && boxlist.size()!=0){
+				for(int i=0; i<boxlist.size(); i++){
+					transcwb += boxlist.get(i).getBoxNo() + ",";
+					if(!StringUtil.isEmpty(boxlist.get(i).getBatchNo())){
+						order_batch_no += boxlist.get(i).getBatchNo() + ",";
+					}
+				}
+				if (transcwb.length() > 0) {
+					transcwb = transcwb.substring(0, transcwb.length() - 1);
+				}
+				if (order_batch_no.length() > 0) {
+					order_batch_no = order_batch_no.substring(0, order_batch_no.length() - 1);
+				}
+			}
+			orderDTO.setTranscwb(transcwb);//运单号
+			
 			String add_time = mQGetOrderDataService.toDateForm(order.getVip().getAddTime());// 出仓时间
-			orderDTO.setVipclub(Integer.parseInt(order.getVip().getVipClub()));//团购标识
+			
+			String vipClub = order.getVip().getVipClub();
+			if(StringUtil.isEmpty(vipClub)){
+				orderDTO.setVipclub(0);//团购标识
+			}else{
+				orderDTO.setVipclub(Integer.parseInt(vipClub));//团购标识
+			}
 			String order_delivery_batch = order.getVip().getOrderDeliveryBatch(); // 1（默认）-一配订单：2-二配订单
 			if ("1".equals(order_delivery_batch)) {
 				order_delivery_batch = "一配订单";
@@ -116,23 +145,15 @@ public class ShangmentuiOrderService {
 			} else {
 				order_delivery_batch = "普通订单";
 			}
-			// 服务类型：1.B2C， 2.仓配服务，3.配送服务
-			/*String service_type = order.getVip().getServiceType().toString();
-			String cargotype = "";
-			if ("1".equals(service_type)) {
-				cargotype = "B2C";
-			} else if ("2".equals(service_type)) {
-				cargotype = "仓配服务";
-			} else if ("3".equals(service_type)) {
-				cargotype = "配送服务";
-			}
-			orderDTO.setCargotype(cargotype);*/
-			//String createdTime = mQGetOrderDataService.toDateForm(order.getVip().getCreateTime());//记录生成时间
-			//orderDTO.setRemark2(vipshop.getIsCreateTimeToEmaildateFlag()==1?add_time:createdTime);// 如果开启生成批次，则remark2是出仓时间，否则是订单生成时间
-			//String order_batch_no = order.getVip().getOrderBatchNo();//交接单号
-			//orderDTO.setRemark1(order_batch_no);
+			int order_source = order.getOrderSource();
+			orderDTO.setOrder_source(order_source);
+			String createdTime = mQGetOrderDataService.toDateForm(order.getCreateTime());//记录生成时间
+			orderDTO.setRemark2(vipshop.getIsCreateTimeToEmaildateFlag()==1?add_time:createdTime);// 如果开启生成批次，则remark2是出仓时间，否则是订单生成时间
+			orderDTO.setRemark1(order_batch_no);
 			String attemper_no = order.getVip().getAttemperNo();//托运单号
-			orderDTO.setRemark3("托运单号:" + attemper_no);
+			if(!StringUtil.isEmpty(attemper_no)){
+				orderDTO.setRemark3(attemper_no);
+			}
 			String attemper_no_create_time = mQGetOrderDataService.toDateForm(order.getVip().getAttemperNoCreateTime());
 			if ((attemper_no_create_time == null) || attemper_no_create_time.isEmpty()) {
 				attemper_no_create_time = DateTimeUtil.getNowDate() + " 00:00:00";
@@ -140,15 +161,15 @@ public class ShangmentuiOrderService {
 			orderDTO.setRemark4(attemper_no_create_time);
 			int is_gatherpack = order.getVip().getIsGatherPack(); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
 			int is_gathercomp = order.getVip().getIsGatherComp();//最后一箱:1最后一箱 ，0默认 
+			String go_get_return_time = order.getVip().getGoGetReturnTime(); //预约上门揽退时间
 			
-			
-			
-			
-			Integer total_pack = order.getTotalPack(); // 新增箱数
 			int sendcarnum = order.getTotalPack();
-			
 			int cwbordertype = CwbOrderTypeIdEnum.Shangmentui.getValue();
-			
+			int boxSize = boxlist.size()==0?1:boxlist.size();
+			if(is_gatherpack==0 && boxSize!=sendcarnum){
+				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+			}
 			
 			String customer_name = order.getCustomerName();
 			String customerid=vipshop.getCustomerids();  //默认选择唯品会customerid
@@ -156,21 +177,20 @@ public class ShangmentuiOrderService {
 				customerid = (vipshop.getLefengCustomerid()==null || vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids() : vipshop.getLefengCustomerid());
 			}
 			//发货件数
-			/*if(isAutoInterface==1){
-				if(is_gatherpack==1 && total_pack!=null && total_pack==0){
-					int transcwbLength = order.getVip().getBoxNo().split(",").length;
-					orderDTO.setSendcargonum(transcwbLength);
-				}else{
-					orderDTO.setSendcargonum(total_pack.toString().isEmpty() ? 1 : total_pack);
-				}
-			}else{
-				orderDTO.setSendcargonum(total_pack==0 ? 1:total_pack);
-			}*/
-			orderDTO.setCustomercommand("送货时间要求:" + required_time + ",订单配送批次:" + order_delivery_batch );
+			orderDTO.setSendcargonum(sendcarnum==0 ? 1:sendcarnum);
+			orderDTO.setCustomercommand("送货时间要求:" + required_time + ",订单配送批次:" + order_delivery_batch  + ",预约揽收时间："+go_get_return_time);
 			orderDTO.setSendcargoname("[发出商品]");
 			orderDTO.setCustomerid(Integer.parseInt(customerid));
-			
-			orderDTO.setRemark5(customer_name+"/"+warehouseAddr); // 仓库地址
+			String remark5="";
+			if(!StringUtil.isEmpty(customer_name)){
+				remark5+=customer_name;
+			}
+			if(!StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
+				remark5+="/"+warehouseAddr;
+			}else if(StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
+				remark5+=warehouseAddr;
+			}
+			orderDTO.setRemark5(remark5); // 仓库地址
 			orderDTO.setCwbordertypeid(cwbordertype);
 			
 			orderDTO.setExcelbranch(orderDTO.getExcelbranch()==null?"":orderDTO.getExcelbranch());//站点
@@ -182,21 +202,27 @@ public class ShangmentuiOrderService {
 			orderDTO.setIsmpsflag(mQGetOrderDataService.choseIsmpsflag(is_gatherpack,is_gathercomp,sendcarnum,mpsswitch));
 			orderDTO.setMpsallarrivedflag(mQGetOrderDataService.choseMspallarrivedflag(is_gathercomp,is_gatherpack,sendcarnum,mpsswitch));
 			
-			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(cwb);
-			//集包相关代码处理
-			//mQGetOrderDataService.mpsallPackage(vipshop, cwb, is_gatherpack, is_gathercomp,order.getVip().getBoxNo(), total_pack, cwbOrderDTO,mpsswitch,orderDTO);
+			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbByCwbB2ctemp(cwb);
+			CwbOrderDTO cwbOrderDTONoState = dataImportDAO_B2c.getCwbB2ctempByCwb(cwb);
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
 			
 			//修改
 			if ("090".equalsIgnoreCase(cmd_type)) {
+				if (cwbOrderDTO == null ) {
+					this.logger.info("订单临时表中不存在该订单信息，无法进行修改操作，订单号为：cwb={}", cwb);
+					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"dmp订单临时表中不存在该订单信息，无法进行修改操作，订单号为：【"+cwb+"】");
+				}
 				//修改订单表
 				this.tPSOrderDao.updateBycwb(orderDTO);
 				//修改临时表
 				this.tPSOrderDao.updateTempBycwb(orderDTO);
 				return null;
 			}else if ("023".equalsIgnoreCase(cmd_type)) {// 订单取消
-				
+				if (cwbOrderDTO == null ) {
+					this.logger.info("订单临时表中不存在该订单信息，无法进行取消操作，订单号为：cwb={}", cwb);
+					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"dmp订单临时表中不存在该订单信息，无法进行取消操作，订单号为：【"+cwb+"】");
+				}
 				if(vipshop.getCancelOrIntercept()==0){ //取消
 					//cust_order_no订单号，根据订单号失效临时中订单数据
 					this.dataImportDAO_B2c.dataLoseB2ctempByCwb(cwb);
@@ -215,18 +241,14 @@ public class ShangmentuiOrderService {
 				}
 				return null;
 			}else if ("003".equalsIgnoreCase(cmd_type)) {//新增
+				if (cwbOrderDTONoState != null ) {
+					this.logger.info("订单临时表中已存在该订单信息，无法进行新增操作，订单号为：cwb={}", cwb);
+					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"dmp订单临时表中已存在该订单信息，无法进行新增操作，订单号为：【"+cwb+"】");
+				}
 				// 插入商品列表,try防止异常
 				this.insertOrderGoods(order.getDetails(), cwb);
 			}
-			if (cwbOrderDTO != null ) {
-				if(is_gatherpack==0){
-					this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cwb);
-					return null;
-				//集单模式校验重复
-				}else if(is_gatherpack==1){
-					return null;
-				}
-			}
+			
 			if ("".equals(cwb)) { // 若订单号为空，则继续。
 				this.logger.info("获取订单信息为空");
 				return null;

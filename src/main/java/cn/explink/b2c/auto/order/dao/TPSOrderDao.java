@@ -91,7 +91,7 @@ public class TPSOrderDao {
 	public void updateTempBycwb(final MQCwbOrderDTO order) {
 		String sql = "update express_ops_cwb_detail_b2ctemp set consigneename=? ,sendcarnum=?,consigneemobile=?,consigneephone=?,consigneepostcode=?,"
 				+ "consigneeaddress=?,receivablefee=?,customercommand=?,remark2=?,remark5=?,carrealweight=?,paywayid=?," 
-				+ "cartype=?,cwbordertypeid=?,shouldfare=?,cargovolume=? "
+				+ "cwbordertypeid=?,shouldfare=?,cargovolume=? "
 				+ " where cwb =? and state=1  ";
 		jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
@@ -110,11 +110,10 @@ public class TPSOrderDao {
 				ps.setString(11, order.getCargorealweight().toString());
 				ps.setLong(12, order.getPaywayid());
 
-				ps.setString(13, order.getCargotype().toString());
-				ps.setLong(14, order.getCwbordertypeid());
-				ps.setString(15, order.getShouldfare().toString());
-				ps.setFloat(16, order.getCargovolume().floatValue());
-				ps.setString(17, order.getCwb().toString());
+				ps.setLong(13, order.getCwbordertypeid());
+				ps.setString(14, order.getShouldfare().toString());
+				ps.setFloat(15, order.getCargovolume().floatValue());
+				ps.setString(16, order.getCwb().toString());
 			}
 		});
 
@@ -124,7 +123,7 @@ public class TPSOrderDao {
 	public void updateBycwb(final MQCwbOrderDTO order) {
 		String sql = "update express_ops_cwb_detail set consigneename=? ,sendcarnum=?,consigneemobile=?,consigneephone=?,consigneepostcode=?,"
 				+ "consigneeaddress=?,receivablefee=?,customercommand=?,remark2=?,remark5=?,carrealweight=?,paywayid=?," 
-				+ "cartype=?,cwbordertypeid=?,shouldfare=? "
+				+ "cwbordertypeid=?,shouldfare=? "
 				+ " where cwb =? and state=1  ";
 		this.jdbcTemplate.update(sql, new PreparedStatementSetter() {
 			@Override
@@ -143,10 +142,9 @@ public class TPSOrderDao {
 				ps.setString(11, order.getCargorealweight().toString());
 				ps.setLong(12, order.getPaywayid());
 
-				ps.setString(13, order.getCargotype().toString());
-				ps.setLong(14, order.getCwbordertypeid());
-				ps.setString(15, order.getShouldfare().toString());
-				ps.setString(16, order.getCwb().toString());
+				ps.setLong(13, order.getCwbordertypeid());
+				ps.setString(14, order.getShouldfare().toString());
+				ps.setString(15, order.getCwb().toString());
 			}
 		});
 
