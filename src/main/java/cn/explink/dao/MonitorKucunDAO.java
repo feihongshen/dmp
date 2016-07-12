@@ -114,15 +114,6 @@ public class MonitorKucunDAO {
 		return list;
 	}
 	
-	@DataSource(DatabaseType.REPLICA)
-	public List<String> getMonitorLogByTypeAll(String wheresql ,String branchid,long page,String branchids) {
-		
-		StringBuffer sql = new StringBuffer("SELECT op.cwb FROM  `express_ops_operation_time` op LEFT JOIN express_ops_cwb_detail AS de ON op.cwb = de.cwb WHERE  de.state=1 and "+wheresql+" and "+(branchid.length()>0?("op.branchid in("+branchid+") "):" op.branchid IN("+branchids+") "));
-
-		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
-
-		return list;
-	}
 	
 	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorLogByTypeNoPage(String wheresql ,String branchid,String branchids) {
@@ -146,14 +137,7 @@ public class MonitorKucunDAO {
 		return list;
 	}
 	
-	@DataSource(DatabaseType.REPLICA)
-	public List<String> getMonitorKucunByTypeAll(String flowordertypes ,String branchid,long page,String branchids) {
-		StringBuffer sql = new StringBuffer(
-				"SELECT op.cwb  FROM `express_ops_operation_time` op LEFT JOIN express_ops_cwb_detail AS de on op.cwb=de.cwb where  de.state=1 and "+(branchid.length()>0?("op.branchid in("+branchid+")  and"):" op.branchid IN("+branchids+") and ")+"  (op.flowordertype IN( 4,12,15,7,8,9,35) OR (op.flowordertype =36 AND op.deliverystate NOT IN(1,2,3)))");
-		List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class);
-		
-		return list;
-	}
+	
 	
 	@DataSource(DatabaseType.REPLICA)
 	public List<String> getMonitorKucunByTypeNoPage(String flowordertypes ,String branchid,String branchids) {
