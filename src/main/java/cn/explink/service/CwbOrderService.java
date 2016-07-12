@@ -3438,11 +3438,42 @@ public class CwbOrderService extends BaseOrderService {
 					.getBranchname());
 		}
 
+		/*Modified by leoliao at 2016-07-12 修改非本站货物判断逻辑
 		if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
 				.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()))) && (co.getCurrentbranchid() != currentbranchid) && !anbaochuku && (co
 				.getNextbranchid() == user.getBranchid())) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
 		}
+		*/
+		logger.info("outWarehousHandle->订单信息：cwb:{}, scancwb:{}, sendcarnum:{}, flowordertype:{}, deliverystate:{}, currentbranchid:{}, userBranchId:{}", 
+					cwb, scancwb, co.getSendcarnum(), co.getFlowordertype(), co.getDeliverystate(), co.getCurrentbranchid(), currentbranchid);
+		if(co.getSendcarnum() <= 1 || org.apache.commons.lang3.StringUtils.isEmpty(org.apache.commons.lang3.StringUtils.trimToEmpty(co.getTranscwb()))) {
+			//非一票多件
+			if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || 
+				 (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || 
+				 ((co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()))) && 
+				 (co.getCurrentbranchid() != currentbranchid) && !anbaochuku) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+			}
+		}else{
+			Map<String, Object> paramMap = new HashMap<String, Object>();
+			paramMap.put("cwb", co.getCwb());
+			paramMap.put("scancwb", scancwb);
+			paramMap.put("isnow", 1);
+			List<TranscwbOrderFlow> list = transcwborderFlowDAO.queryTranscwbOrderFlow(paramMap, null);
+			if (CollectionUtils.isNotEmpty(list)) {
+				TranscwbOrderFlow transcwbOrderFlow = list.get(0);
+				
+				logger.info("outWarehousHandle->运单信息：scancwb:{}, flowordertype:{}, branchid:{}", transcwbOrderFlow.getScancwb(), transcwbOrderFlow.getFlowordertype(), transcwbOrderFlow.getBranchid());
+				if ((transcwbOrderFlow.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() || 
+					 transcwbOrderFlow.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() ||
+					 (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue() && co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()) 
+					) && transcwbOrderFlow.getBranchid() != currentbranchid && !anbaochuku) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+				}
+			}
+		}
+		//Modified end by leoliao
 
 		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
 		Branch cwbBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid() == 0 ? co.getNextbranchid() : co.getCurrentbranchid());
