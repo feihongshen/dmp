@@ -83,7 +83,7 @@ public class BranchSyncToOspHelper {
 	private SbOrgResponse updateBranchSyncToOsp(Branch branch) throws Exception {
 		SbOrgService sbOrgService = getSbOrgService();
 		SbOrgModel model = getSbOrgModelFromBranch(branch);
-
+		
 		logger.info("同步到机构服务 - 请求：" + JsonUtil.translateToJson(model));
 		SbOrgResponse result = sbOrgService
 				.updateSbOrgByCarrierAndSiteCode(model);
@@ -134,8 +134,10 @@ public class BranchSyncToOspHelper {
 		model.setTelephone(branch.getBranchphone());
 		model.setAddress(branch.getBranchaddress());
 		model.setFax(branch.getBranchfax());
-		model.setEmail(branch.getBranchemail());
+		model.setEmail(getEmail(branch));
 		model.setProvinceName(getProvinceName());
+		model.setCityName(branch.getBranchcity());
+		model.setRegionName(branch.getBrancharea());
 		model.setIsCarriers(IS_CARRIERS_DEFAULT);
 		model.setIsActive(getOspIsActiveByBranch(branch));
 		model.setLesseeCode(OSP_LESSEE_CODE_PJBEST);
@@ -144,6 +146,19 @@ public class BranchSyncToOspHelper {
 		model.setUpdatedByUser(CurrentUserHelper.getInstance().getUserName());
 		model.setUpdatedDtmLoc((new Date()).getTime());
 		return model;
+	}
+	
+	private String getEmail(Branch branch){
+		String email = "";
+		int siteType = branch.getSitetype();
+		if(siteType == BranchEnum.ZhanDian.getValue()){
+			email = branch.getBranchemail();
+		} else if (siteType == BranchEnum.KeFu.getValue()
+				|| siteType == BranchEnum.YunYing.getValue()
+				|| siteType == BranchEnum.CaiWu.getValue()) {
+			email = branch.getBranchmatter();
+		}
+		return email;
 	}
 
 	private String getProvinceName() {
@@ -191,9 +206,9 @@ public class BranchSyncToOspHelper {
 		byte isActive = 1;
 		if (branch != null) {
 			String brancheffectflag = branch.getBrancheffectflag();
-			if (brancheffectflag.equals("0")) {
+			if (brancheffectflag.equals("1")) {
 				isActive = 1;
-			} else if (brancheffectflag.equals("1")) {
+			} else if (brancheffectflag.equals("0")) {
 				isActive = 0;
 			}
 		}
