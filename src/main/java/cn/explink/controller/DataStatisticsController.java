@@ -1188,6 +1188,12 @@ public class DataStatisticsController {
 
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			String kufangids = this.dataStatisticsService.getStrings(kufangid);
+			
+			//将发货仓库里面拼接上0，保持导出和查询一直
+			if(kufangids != null && kufangids.length() > 0){
+				kufangids += ",0";
+			}
+			
 			// 获取值
 			count = this.cwbDAO.getcwborderDaoHuoCount(customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
 
