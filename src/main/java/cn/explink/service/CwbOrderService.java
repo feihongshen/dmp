@@ -4679,10 +4679,12 @@ public class CwbOrderService extends BaseOrderService {
 		//add by neo01.huang，2016-6-29
 		//领货校验到齐、同站领货
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-		deliverTakeGoodsMPSReleaseService.validateReveiveGoodsAllArrivedAndSameBranch(cwbOrder, scancwb, user.getBranchid());
-		
-		ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(cwbOrder.getCwb());
-		logger.info("归班反馈->清除缺件记录,订单号:{}", cwbOrder.getCwb());
+		if (cwbOrder != null) {
+			deliverTakeGoodsMPSReleaseService.validateReveiveGoodsAllArrivedAndSameBranch(cwbOrder, scancwb, user.getBranchid());
+			
+			ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(cwbOrder.getCwb());
+			logger.info("归班反馈->清除缺件记录,订单号:{}", cwbOrder.getCwb());
+		}
 		
 		// 对于扫描订单号的，将运单号查询处理分别处理
 		List<String> transCwbList = new ArrayList<String>();
