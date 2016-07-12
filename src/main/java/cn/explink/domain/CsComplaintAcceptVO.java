@@ -69,6 +69,7 @@ public class CsComplaintAcceptVO {
 			private String city;
 			private int cuijianNum;
 			private int ifpunish; //是否扣罚
+			private String customerIds;//客户ID
 			
 			
 			
@@ -291,9 +292,10 @@ public class CsComplaintAcceptVO {
 			public void setPhoneOne(String phoneOne) {
 				this.phoneOne = phoneOne;
 			}
-			
-			
-			
-			
-			
+			public String getCustomerIds() {
+				return customerIds;
+			}
+			public void setCustomerIds(String customerIds) {
+				this.customerIds = customerIds;
+			}
 }

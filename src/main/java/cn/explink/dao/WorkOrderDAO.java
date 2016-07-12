@@ -349,6 +349,9 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBs(long page,String cwbs,CsCo
 		if((cv.getBeginRangeTime()!=null)&&(cv.getBeginRangeTime().length()>0)&&(cv.getEndRangeTime()!=null)&&(cv.getEndRangeTime().length()>0)){
 			sb.append(" and accpet_time between '"+cv.getBeginRangeTime()+"'" +" and '"+cv.getEndRangeTime()+"'");
 		}
+		if (cv.getCustomerIds() != null && !cv.getCustomerIds().isEmpty()) {
+			sb.append(" and customerid in (" + cv.getCustomerIds() + ")");
+		}
 
 		sql+=sb.toString();
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
@@ -431,6 +434,9 @@ public long findGoOnacceptWOByCWBsCount(String cwbs,CsComplaintAcceptVO cv,Strin
 	}
 	if((cv.getBeginRangeTime()!=null)&&(cv.getBeginRangeTime().length()>0)&&(cv.getEndRangeTime()!=null)&&(cv.getEndRangeTime().length()>0)){
 		sb.append(" and accpet_time between '"+cv.getBeginRangeTime()+"'" +" and '"+cv.getEndRangeTime()+"'");
+	}
+	if (cv.getCustomerIds() != null && !cv.getCustomerIds().isEmpty()) {
+		sb.append(" and customerid in (" + cv.getCustomerIds() + ")");
 	}
 
 	sql+=sb.toString();
@@ -712,6 +718,9 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		if((cv.getBeginRangeTime()!=null)&&(cv.getBeginRangeTime().length()>0)&&(cv.getEndRangeTime()!=null)&&(cv.getEndRangeTime().length()>0)){
 			sb.append(" and accpet_time between '"+cv.getBeginRangeTime()+"'" +" and '"+cv.getEndRangeTime()+"'");
 		}
+		if (cv.getCustomerIds() != null && !cv.getCustomerIds().isEmpty()) {
+			sb.append(" and customerid in (" + cv.getCustomerIds() + ")");
+		}
 
 		sql+=sb.toString();
 		sql += " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
@@ -798,6 +807,9 @@ public List<CsComplaintAccept> findGoOnacceptWOByCWBsAdd(String ncwbs,String gon
 		}
 		if((cv.getBeginRangeTime()!=null)&&(cv.getBeginRangeTime().length()>0)&&(cv.getEndRangeTime()!=null)&&(cv.getEndRangeTime().length()>0)){
 			sb.append(" and accpet_time between '"+cv.getBeginRangeTime()+"'" +" and '"+cv.getEndRangeTime()+"'");
+		}
+		if (cv.getCustomerIds() != null && !cv.getCustomerIds().isEmpty()) {
+			sb.append(" and customerid in (" + cv.getCustomerIds() + ")");
 		}
 
 		sql+=sb.toString();

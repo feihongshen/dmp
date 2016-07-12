@@ -378,7 +378,7 @@ public class CwbDAO {
 			// mpsallarrivedflag
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
-
+			cwbOrder.setExpressProductType(rs.getInt("express_product_type"));
 			cwbOrder.setInstationname(rs.getString("instationname"));
 			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
@@ -395,6 +395,7 @@ public class CwbDAO {
 			}
 
 			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
+			cwbOrder.setTpstranscwb(rs.getString("tpstranscwb"));
 			return cwbOrder;
 		}
 	}

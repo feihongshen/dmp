@@ -522,14 +522,26 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/shenzhoushuma/show/');
 			$("#del").val('<%=request.getContextPath()%>/shenzhoushuma/del/');
 		}
+		else if(obj=='22501'){//TPS订单下发接口
+            $("#edit").val('<%=request.getContextPath()%>/tPSMQ/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
+		else if(obj=='22502'){//TPS快递单下发接口
+            $("#edit").val('<%=request.getContextPath()%>/tPSMQExpress/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
+		else if(obj=='22503'){//跨境购单下发接口
+            $("#edit").val('<%=request.getContextPath()%>/kuaJingGou/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
 		else if(obj=='23001'){//哲盟_轨迹
 			$("#edit").val('<%=request.getContextPath()%>/zhemengTrack/show/');
 			$("#del").val('<%=request.getContextPath()%>/zhemengTrack/del/');
 		}
 		
-		else if(obj=='22501'){//TPS订单下发接口
-            $("#edit").val('<%=request.getContextPath()%>/tPSMQ/show/');
-            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+		else if(obj=='22601'){ //订单轨迹推送给tps
+            $("#edit").val('<%=request.getContextPath()%>/orderTraceToTPS/show/');
+            $("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
         }
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');

@@ -1,6 +1,7 @@
 package cn.explink.domain;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 面单打印
@@ -8,12 +9,30 @@ import java.math.BigDecimal;
  */
 public class PrintOrderLabelVo {
 	
+	/**
+	 *  订单主表
+	 */
 	private CwbOrder cwbOrder;
 	
+	/**
+	 * 站点
+	 */
 	private Branch branch;
 	
+	/**
+	 * 应收金额
+	 */
 	private BigDecimal shouldReceiveTotal;
-
+	
+	/**
+	 * 目的地
+	 */
+	private String destination;
+	
+	/**
+	 * 寄件日期
+	 */
+	private Date senderDate;
 
 	public CwbOrder getCwbOrder() {
 		return cwbOrder;
@@ -37,5 +56,21 @@ public class PrintOrderLabelVo {
 
 	public void setShouldReceiveTotal(BigDecimal shouldReceiveTotal) {
 		this.shouldReceiveTotal = shouldReceiveTotal;
+	}
+
+	public String getDestination() {
+		return destination;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+
+	public Date getSenderDate() {
+		return senderDate;
+	}
+
+	public void setSenderDate(Date senderDate) {
+		this.senderDate = senderDate;
 	}
 }
