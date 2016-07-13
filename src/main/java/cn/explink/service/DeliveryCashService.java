@@ -145,6 +145,16 @@ public class DeliveryCashService {
 		return reMap;
 	}
 
+	/**
+	 * 获取对应站点的小件员审核后的记录统计脚本
+	 * @param deliverList
+	 * @param flowordertype
+	 * @param begindate
+	 * @param enddate
+	 * @param deliverystate
+	 * @param paybackfeeIsZero
+	 * @return
+	 */
 	private String getSummarySQL(List<User> deliverList, long flowordertype, String begindate, String enddate, String[] deliverystate, Integer paybackfeeIsZero) {
 		StringBuffer deliveryids = new StringBuffer();
 		for (User u : deliverList) {
@@ -200,23 +210,75 @@ public class DeliveryCashService {
 	}
 	
 	/**
-	 * 获取对应客户记录统计，
-	 * 降序
-	 * @param customerList
-	 * @param deliverList
-	 * @param flowordertype
-	 * @param begindate
-	 * @param enddate
-	 * @param deliverystate
-	 * @param paybackfeeIsZero
+	 * 获取对应站点的小件员审核后的记录统计脚本，根据每个客户的合计降序
+	 * @Date 2016-07-12
+     * @author jian.xie
+	 * @return
+	 */
+	private String getSummaryForCustomerSQL(List<User> deliverList, long flowordertype, String begindate, String enddate, String[] deliverystate, Integer paybackfeeIsZero) {
+		StringBuffer deliveryids = new StringBuffer();
+		for (User u : deliverList) {
+			deliveryids = deliveryids.append(u.getUserid()).append(",");
+		}
+		if (deliveryids.length() > 0) {
+			deliveryids = deliveryids.append(deliveryids.substring(0, deliveryids.length() - 1));
+		}
+		if (deliveryids.length() == 0) {
+			deliveryids = deliveryids.append("0");
+		}
+
+		String sql = "select customerid from express_ops_deliver_cash ";
+
+		if (flowordertype > 0 || deliverystate.length > 0 || deliveryids.length() > 0) {
+			sql += " where ";
+			StringBuffer strsql = new StringBuffer();
+			if (flowordertype == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+				strsql.append(" and linghuotime> '" + begindate + "' and linghuotime< '" + enddate + "'");
+			} else if (flowordertype == FlowOrderTypeEnum.YiFanKui.getValue()) {
+				strsql.append(" and fankuitime> '" + begindate + "' and fankuitime< '" + enddate + "'");
+			} else if (flowordertype == FlowOrderTypeEnum.YiShenHe.getValue()) {
+				strsql.append(" and guibantime> '" + begindate + "' and guibantime< '" + enddate + "'");
+			}
+			if (deliverystate.length > 0) {
+				StringBuffer deliverystates = new StringBuffer();
+				for (int i = 0; i < deliverystate.length; i++) {
+					deliverystates = deliverystates.append(deliverystate[i]).append(",");
+				}
+				strsql.append(" and deliverystate in(" + deliverystates.substring(0, deliverystates.length() - 1) + ")");
+			}
+
+			if (deliveryids.length() > 0) {
+				strsql.append(" and deliverid in (" + deliveryids + ") ");
+			}
+			if (paybackfeeIsZero > -1) {
+				if (paybackfeeIsZero == 0) {
+					strsql.append(" and receivableNoPosfee=0 and receivablePosfee=0 ");
+				} else {
+					strsql.append(" and receivableNoPosfee + receivablePosfee >0  ");
+				}
+			}
+
+			strsql.append("and state=1 GROUP BY customerid  order by COUNT(customerid) desc");
+
+			sql += strsql.substring(4, strsql.length());
+		}
+		return sql;
+	}
+	
+	
+	/**
+	 * 获取对应客户记录统计，根据合计降序
+	 * @Date 2016-07-12
+	 * add by jian_xie
 	 *            代收金额是否大于0
 	 * @return 客户id
 	 */
-	public List<String> getCustomerListForSummary(List<Customer> customerList, List<User> deliverList, final long deliveryid, long flowordertype, String begindate, String enddate,
-			String[] deliverystate, Integer paybackfeeIsZero) {
-		String sql = getSummarySQL(deliverList, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
+	public List<String> getCustomerListForSummary(List<User> deliverList, final long deliveryid, long flowordertype, String begindate, String enddate, String[] deliverystate,
+			Integer paybackfeeIsZero) {
+		String sql = getSummaryForCustomerSQL(deliverList, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
+		List<String> list = jdbcTemplate.queryForList(sql, String.class);
 		
-		return null;
+		return list;
 	}
 
 	/**
@@ -417,11 +479,13 @@ public class DeliveryCashService {
 
 	/**
 	 * 小件员工作量统计 导出
-	 * 
+	 * modify by jian_xie
+	 * 2016-07-12
 	 * @param summary
 	 * @param response
+	 * @param customerSorList 
 	 */
-	public void export(Map<String, Map<Long, Map<Long, BigDecimal>>> summary, HttpServletResponse response) {
+	public void export(Map<String, Map<Long, Map<Long, BigDecimal>>> summary, HttpServletResponse response, List<String> customerSorList) {
 		SXSSFWorkbook wb = new SXSSFWorkbook(); // excel文件,一个excel文件包含多个表
 		Sheet sheet = wb.createSheet(); // 表，一个表包含多个行
 		String filename = "小件员工作量统计" + DateTimeUtil.getNowDate() + ".xlsx";
@@ -439,6 +503,7 @@ public class DeliveryCashService {
 		row.setHeightInPoints((float) 15); // 设置行高
 
 		List<Customer> customers = customerDAO.getAllCustomers();
+		customers = resetCustomer(customers, customerSorList);
 		String[] firstLine = new String[2];
 		firstLine[0] = "小件员";
 		firstLine[1] = "供货商";
@@ -665,6 +730,27 @@ public class DeliveryCashService {
 		}
 		return strs;
 
+	}
+	
+	/**
+	 * 根据已经排好的客户顺序，对所有的客户排序。
+	 * @return
+	 */
+	public List<Customer> resetCustomer(List<Customer> customerList, List<String> sortList){
+		List<Customer> newCustomer = new ArrayList<Customer>();
+		Customer customer = null;
+		for(String customerid : sortList){
+			for(int i = 0, size = customerList.size(); i < size; i++){
+				customer = customerList.get(i);
+				if(customerid.equals(customer.getCustomerid() + "")){
+					newCustomer.add(customer);
+					customerList.remove(i);
+					break;
+				}
+			}
+		}
+		newCustomer.addAll(customerList);
+		return newCustomer;
 	}
 	
 }
