@@ -342,8 +342,13 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getTransportNo());
 				ps.setString(++i, expressDetailTemp.getTransportNo());
 				//				ps.setString(++i, cwbOrderDTO.getCustCode());
-				ps.setString(++i, user.getUserid() + "");// 小件员id
-				ps.setString(++i, user.getRealname());// 小件员名称
+				if(expressDetailTemp.getIsAcceptProv() == 1){
+					ps.setString(++i, user != null ? user.getUserid() + "":"");// 小件员id
+					ps.setString(++i, user != null ? user.getRealname() : "");// 小件员名称
+				} else{
+					ps.setString(++i, "");// 小件员id
+					ps.setString(++i, "");// 小件员名称
+				}
 				ps.setString(++i, expressDetailTemp.getCnorProv());// 寄件人省
 
 				ps.setString(++i, expressDetailTemp.getCnorCity());// 市
@@ -395,12 +400,21 @@ public class ExpressOrderDao {
 
 				ps.setFloat(++i, expressDetailTemp.getTotalVolume().floatValue());
 				ps.setLong(++i, CwbStateEnum.PeiShong.getValue());
-				ps.setInt(++i, (int)acceptBranch.getBranchid());
-				ps.setString(++i, acceptBranch.getBranchname());//站点
+				if(expressDetailTemp.getIsAcceptProv() == 1){
+					ps.setInt(++i, acceptBranch != null ? (int)acceptBranch.getBranchid() : 0);
+					ps.setString(++i, acceptBranch != null ? acceptBranch.getBranchname() : "");//站点
+				}else{
+					ps.setInt(++i, 0);
+					ps.setString(++i, "");//站点
+				}
 				ps.setInt(++i, 1);
 
 				ps.setLong(++i, 0);//上一个机构id
-				ps.setLong(++i, acceptBranch.getBranchid());//当前机构
+				if(expressDetailTemp.getIsAcceptProv() == 1){
+					ps.setLong(++i, acceptBranch != null ? acceptBranch.getBranchid() : 0L);//当前机构
+				} else {
+					ps.setLong(++i, 0L);//当前机构
+				}
 				ps.setLong(++i, 0);//下一站目的机构id
 				ps.setLong(++i, ((null != branch)?branch.getBranchid():0L));//配送站点ID
 				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
