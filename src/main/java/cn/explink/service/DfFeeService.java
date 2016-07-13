@@ -22,6 +22,7 @@ import cn.explink.domain.deliveryFee.DfAdjustmentRecord;
 import cn.explink.domain.deliveryFee.DfBillFee;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchTypeEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -172,6 +173,13 @@ public class DfFeeService {
         int chargeType;
         String userName = "";
 
+        BigDecimal realWeight = BigDecimal.ZERO;
+
+        if (order.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue())
+            realWeight = BigDecimal.valueOf(order.getRealweight());
+        else
+            realWeight = order.getCarrealweight();
+
         if (order.getInstationid() > 0) {
             //如果揽件站点不为空，创建揽件费订单。
             chargeType = DeliveryFeeRuleChargeType.GET.getValue();
@@ -201,7 +209,7 @@ public class DfFeeService {
             DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, (long) order.getInstationhandlerid());
             if (null == fee) {
                 saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
-                        order.getBackcarnum(), order.getSenderaddress(), order.getConsigneeaddress(), order.getRealweight(), order.getCargovolume(),
+                        order.getBackcarnum(), order.getSenderaddress(), order.getConsigneeaddress(), realWeight, order.getCargovolume(),
                         chargeType, order.getInstationhandlerid(), userName, branchId, order.getCwbstate(),
                         order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
                         pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
@@ -215,7 +223,7 @@ public class DfFeeService {
                 fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
                 if (null == fee) {
                     saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
-                            order.getBackcarnum(), order.getSenderaddress(), order.getConsigneeaddress(), order.getRealweight(), order.getCargovolume(),
+                            order.getBackcarnum(), order.getSenderaddress(), order.getConsigneeaddress(), realWeight, order.getCargovolume(),
                             chargeType, order.getInstationhandlerid(), userName, branchId, order.getCwbstate(),
                             order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
@@ -257,7 +265,7 @@ public class DfFeeService {
                 DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, order.getDeliverid());
                 if (null == fee) {
                     saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
-                            order.getBackcarnum(), order.getSenderaddress(), order.getConsigneeaddress(), order.getRealweight(), order.getCargovolume(),
+                            order.getBackcarnum(), order.getSenderaddress(), order.getConsigneeaddress(), realWeight, order.getCargovolume(),
                             chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
                             order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
@@ -269,7 +277,7 @@ public class DfFeeService {
                     fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
                     if (null == fee) {
                         saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
-                                order.getBackcarnum(), order.getSenderaddress(), order.getConsigneeaddress(), order.getRealweight(), order.getCargovolume(),
+                                order.getBackcarnum(), order.getSenderaddress(), order.getConsigneeaddress(), realWeight, order.getCargovolume(),
                                 chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
                                 order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
@@ -366,7 +374,7 @@ public class DfFeeService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void saveDeliveryFee(DeliveryFeeChargerType chargerType, String cwb, String transcwb, int cwbordertypeid, long customerid, long sendcarnum, long backcarnum,
-                                 String senderaddress, String consigneeaddress, double realweight, BigDecimal cargovolume, int chargeType,
+                                 String senderaddress, String consigneeaddress, BigDecimal realweight, BigDecimal cargovolume, int chargeType,
                                  long handlerid, String userName, long branchId, long cwbstate, long flowordertype,
                                  Date create_time, String outstationdatetime, int deliverystate, String emaildate, Date credate, Date pickTime,
                                  Date mobilepodtime, String auditingtime, int isCal, int isBill, String province, String city, String county,

@@ -106,7 +106,7 @@ public class DfFeeDAO {
 
 
     public long saveDeliveryFee(int chargerType, final String cwb, final String transcwb, final int cwbordertypeid, final long customerid, final long sendcarnum, final long backcarnum,
-                                final String senderaddress, final String consigneeaddress, final double realweight, final BigDecimal cargovolume, final int chargeType,
+                                final String senderaddress, final String consigneeaddress, final BigDecimal realweight, final BigDecimal cargovolume, final int chargeType,
                                 final long deliverId, final String userName, final long branchId, final long cwbstate, final long flowordertype, final Date create_time,
                                 final String outstationdatetime, final int deliverystate, final String emaildate, final Date credate, final Date pickTime, final Date mobilepodtime,
                                 final String auditingtime, final int isCal, final int isBill, final String province, final String city, final String county, final BigDecimal paybackfee,
@@ -156,7 +156,7 @@ public class DfFeeDAO {
                 ps.setString(7, senderaddress);
 
                 ps.setString(8, consigneeaddress);
-                ps.setDouble(9, realweight);
+                ps.setBigDecimal(9, realweight);
                 ps.setBigDecimal(10, cargovolume);
                 ps.setInt(11, chargeType);
                 ps.setLong(12, deliverId);
