@@ -150,6 +150,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
+import cn.explink.service.UserService;
 import cn.explink.service.OrderBackCheckService;
 import cn.explink.service.docking.AutoAllocationService;
 import cn.explink.service.express.ExpressOutStationService;
@@ -313,7 +314,10 @@ public class PDAController {
 	
 	@Autowired
 	private MPSOptStateService mpsOptStateService ;
-	
+
+	@Autowired
+	private UserService userService;
+
 	@Autowired
 	private OrderBackCheckService orderBackCheckService;
 
@@ -1804,6 +1808,8 @@ public class PDAController {
 		historydaohuolist.addAll(historyzhiliulist);
 		historydaohuolist.addAll(historydaizhongzhuanlist);
 		historydaohuolist.addAll(historyjushoulist);
+		// 只显示选择小件员匹配到的件
+		historydaohuolist = this.cwbOrderService.filterCwbOrderByDeliver(historydaohuolist, deliverid);
 		historyweilinghuolist = this.getcwbDetail(historydaohuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		// 1.今日未领货======================================
@@ -1811,6 +1817,8 @@ public class PDAController {
 		todayweilinghuolist.addAll(todaydaizhongzhuanlist);// 今日待中转
 		todayweilinghuolist.addAll(todayzhiliulist);// 今日滞留
 		todayweilinghuolist.addAll(todaydaohuolist);// 今日到货
+		// 只显示选择小件员匹配到的件
+		todayweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(todayweilinghuolist, deliverid);
 		List<CwbDetailView> todayweilinghuoViewlist = this.getcwbDetail(todayweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		// 3.已领货明细==========================
@@ -1821,7 +1829,9 @@ public class PDAController {
 		} else {
 			yilinghuocwbs = "'--'";
 		}
+		
 		List<CwbOrder> yilinghuolist = this.cwbDAO.getYiLingHuoListbyBranchidformingxi(yilinghuocwbs, this.getSessionUser().getBranchid(), deliverid, 1);
+		
 		List<CwbDetailView> todayweilingCwbOrders = new ArrayList<CwbDetailView>();
 		for (int i = 0; (i < Page.DETAIL_PAGE_NUMBER) && (i < todayweilinghuoViewlist.size()); i++) {
 			todayweilingCwbOrders.add(todayweilinghuoViewlist.get(i));
@@ -1832,6 +1842,7 @@ public class PDAController {
 		}
 
 		List<CwbDetailView> yilinghuoViewlist = this.getcwbDetail(yilinghuolist, cList, showCustomerjSONArray, branchList, 3);
+		
 		model.addAttribute("showCustomerSign", showCustomerSign);
 		model.addAttribute("todayweilinghuoViewlist", todayweilingCwbOrders);
 		model.addAttribute("historyweilinghuolist", historylistCwbOrders);
@@ -2003,7 +2014,7 @@ public class PDAController {
 	 */
 	@RequestMapping("/branchdeliverBatch")
 	public String branchdeliverBatch(Model model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
+			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid, boolean isChaoqu) {
 		/*
 		 * String roleids = "2,4"; List<User> uList =
 		 * this.userDAO.getUserByRolesAndBranchid(roleids,
@@ -2045,7 +2056,7 @@ public class PDAController {
 				//校验是否存在退货出站审核中的记录
 				orderBackCheckService.validateCheckStateAuditing(cwb, FlowOrderTypeEnum.FenZhanLingHuo);
 				
-				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
+				CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
 				obj.put("flowordertype", cwbOrder.getFlowordertype());
 				obj.put("cwbstate", cwbOrder.getCwbstate());
@@ -2114,6 +2125,7 @@ public class PDAController {
 						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
+				obj.put("createtime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 				obj.put("errorinfo", ce.getMessage());
 				if (cwbOrder == null) {// 如果无此订单
 					obj.put("customername", "");
@@ -2252,6 +2264,7 @@ public class PDAController {
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 		// 未领货
+		todayweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(todayweilinghuolist, deliverid);
 		List<CwbDetailView> todayweilingViewlist = this.getcwbDetail(todayweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		// 已领货
@@ -2259,6 +2272,7 @@ public class PDAController {
 				showCustomerjSONArray, branchList, 3);
 
 		// 历史未领货
+		historyweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(historyweilinghuolist, deliverid);
 		List<CwbDetailView> historyweilinghuoViewList = this.getcwbDetail(historyweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		List<CwbDetailView> todayweilingCwbOrders = new ArrayList<CwbDetailView>();
@@ -3963,6 +3977,15 @@ public class PDAController {
 				obj.put("cwbdeliverybranchname", "");
 				obj.put("cwbdeliverybranchnamewav", "");
 			}
+			// 配送员
+			String deliverName = "";
+			if(cwbOrder.getExceldeliverid() != 0) {
+				User deliver = this.userService.getUserByUserid(cwbOrder.getExceldeliverid());
+				if(deliver != null) {
+					deliverName = deliver.getRealname();
+				}
+			}
+			obj.put("deliverName", deliverName);
 			// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
 			String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 			List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
@@ -5441,8 +5464,10 @@ public class PDAController {
 	 *
 	 */
 	@RequestMapping("/cwbbranchdeliver/{cwb}")
-	public @ResponseBody ExplinkResponse cwbbranchdeliver(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid) throws ParseException {
+	public @ResponseBody ExplinkResponse cwbbranchdeliver(Model model, HttpServletRequest request,
+			HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid, boolean isChaoqu)
+			throws ParseException {
 		String scancwb = cwb;
 		cwb = this.cwbOrderService.translateCwb(cwb);
 		
@@ -5455,7 +5480,7 @@ public class PDAController {
 		this.addSmtDeliverPickingExtraMsg(obj, cwb);
 
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
-		CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
+		CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 
 		String searchCwb = "'" + cwb + "'";
@@ -5508,7 +5533,18 @@ public class PDAController {
 				}
 			}
 		}
-
+		obj.put("isChaoqu", isChaoqu);
+		if(isChaoqu) {
+			String matchDeliver = "";
+			if (cwbOrder.getExceldeliverid() > 0) {
+				User matchDeliverUser = this.userDAO.getUserByUserid(cwbOrder.getExceldeliverid());
+				if (matchDeliverUser != null) {
+					matchDeliver = matchDeliverUser.getRealname();
+				}
+			}
+			obj.put("matchDeliver", matchDeliver); //匹配到的小件员
+			obj.put("receiveDeliver", deliveryUser.getRealname());
+		}
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		// 加入货物类型声音.
 		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
@@ -6495,6 +6531,8 @@ public class PDAController {
 		historyweilinghuolist.addAll(historydaizhongzhuanlist);
 		historyweilinghuolist.addAll(historyjushoulist);
 
+		todayweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(todayweilinghuolist, deliverid);
+		historyweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(historyweilinghuolist, deliverid);
 		obj.put("todayweilinghuocount", todayweilinghuolist.size());
 		obj.put("historyweilinghuocount", historyweilinghuolist.size());
 		obj.put("yilinghuo", this.cwbDAO.getYiLingHuoCountbyBranchid(yilinghuocwbs, this.getSessionUser().getBranchid(), deliverid));

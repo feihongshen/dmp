@@ -305,45 +305,48 @@ public class UserController {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
 		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
-		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
-		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
+		User oldUser = this.userDAO.getUserByUserid(userid);
+		String oldrealname = oldUser.getRealname();
+		long oldBranchid = oldUser.getBranchid();
+		int oldemployeestatus = oldUser.getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, null, userid);
 		user.setUserid(userid);
-			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
-				return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
-			} else {
-				this.userService.editUser(user);
-				if(!userInfService.isCloseOldInterface()){
-					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
-						this.courierService.courierUpdate(user);
-					}
-					if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
-						this.courierService.carrierDel(user);
-					}
+		if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
+			return "{\"errorCode\":1,\"error\":\"员工的登录用户名已存在\"}";
+		} else {
+			this.userService.editUser(user);
+			if (!userInfService.isCloseOldInterface()) {
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() != 3)) {
+					this.courierService.courierUpdate(user);
 				}
-				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
-				this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
-				// TODO 增加同步代码
-				if (roleid == 2) {
-					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
-					if ((adressenabled != null) && adressenabled.equals("1")) {
-						if (user.getEmployeestatus() != 3) {
-							if (oldemployeestatus != 3) {
-								if (!realname.equals(oldrealname)) {
-									this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
-								}
-							} else {
-								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
+					this.courierService.carrierDel(user);
+				}
+			}
+			// 新接口 add by jian_xie
+			userInfService.saveUserInf(user);
+			this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
+			// TODO 增加同步代码
+			if (roleid == 2) {
+				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
+				if ((adressenabled != null) && adressenabled.equals("1")) {
+					if (user.getEmployeestatus() != 3) {
+						if (oldemployeestatus != 3) {
+							// 2016-7-11 如果更改了名称或者站点，则更新地址库
+							if (!realname.equals(oldrealname) || oldBranchid != branchid) {
+								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID,String.valueOf(userid), true);
 							}
 						} else {
-							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
+							this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_CREATE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 						}
+					} else {
+						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 					}
 				}
-				this.userMonitorService.userMonitorById(userid);
-				return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 			}
+			this.userMonitorService.userMonitorById(userid);
+			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
+		}
 	}
 
 	@RequestMapping("updatepassword")

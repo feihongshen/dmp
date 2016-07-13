@@ -129,6 +129,8 @@ import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbApplyZhongZhuan;
+import cn.explink.domain.CwbDetailView;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbDiuShi;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.domain.CwbOrder;
@@ -477,7 +479,11 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	private MPSOptStateService mPSOptStateService;
 	@Autowired
-	private MqExceptionDAO mqExceptionDAO;
+	private MqExceptionDAO mqExceptionDAO; 
+	
+	@Autowired
+	private UserDAO userDao;
+	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
@@ -4616,6 +4622,39 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	/**
+	 * 小件员领货
+	 * 2016年6月23日 下午5:19:09
+	 * @param user
+	 * @param deliveryUser
+	 * @param cwb
+	 * @param scancwb
+	 * @return
+	 */
+	public CwbOrder receiveGoodsByDeliver(User user, User deliveryUser, String cwb, String scancwb, boolean isChaoqu) {
+		cwb = this.translateCwb(cwb);
+		if (isChaoqu == false) { //未选择超区
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+			if (co == null) {
+				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+						ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+			}
+			// 小件员地址库匹配领货优化
+			if (co.getExceldeliverid() > 0) { // 必须该小件员才能领货
+				if (co.getExceldeliverid() != deliveryUser.getUserid()) {
+					User coDeliver = this.userDao.getUserByUserid(co.getExceldeliverid());
+					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+							ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_BU_PI_PEI,
+							coDeliver == null ? "" : coDeliver.getRealname(), deliveryUser.getRealname());
+				}
+			} else { // 未匹配小件员
+				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+						ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_WEI_PI_PEI);
+			}
+		}
+		return this.receiveGoodsHandle(user, user.getBranchid(), deliveryUser, cwb, scancwb, false);
+	}
+	
+	/**
 	 * 领货扫描提交
 	 */
 	public CwbOrder receiveGoods(User user, User deliveryUser, String cwb, String scancwb) {
@@ -7269,7 +7308,28 @@ public class CwbOrderService extends BaseOrderService {
 		this.cwbDAO.updateTuihuoBranchid(branch.getBranchid(), cwbOrder.getCwb());
 		this.updateNextBranchId(cwbOrder.getCwb());
 	}
-
+	
+	/**
+	 * 更新站点和小件员
+	 * 2016年6月17日 下午12:00:37
+	 * @param user
+	 * @param cwbOrder
+	 * @param branch
+	 * @param addresscodeedittype
+	 * @throws Exception
+	 */
+	@Transactional
+	public void updateDeliveryBranchAndCourier(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype, User deliver) throws Exception {
+		this.updateDeliveryBranch(user, cwbOrder, branch, addresscodeedittype);
+		long exceldeliverid = 0;
+		String exceldeliver = null;
+		if(deliver != null) {
+			exceldeliverid = deliver.getUserid();
+			exceldeliver = deliver.getRealname();
+		}
+		this.cwbDAO.updateAddressDeliverByCwb(cwbOrder.getCwb(), exceldeliverid, exceldeliver);
+	}
+	
 	@Transactional
 	public void updateDeliveryBranch(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype) throws Exception {
 		CwbOrderService.logger.info("更新配送站点,cwb:{},站点:{}", cwbOrder.getCwb(), branch.getBranchid());
@@ -9850,5 +9910,95 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}		
 		return false;
+	}
+	
+	/**
+	 * 订单站点匹配到小件员-分页
+	 * 2016年6月15日 下午6:21:31
+	 * @param page
+	 * @param customerid
+	 * @param ordercwb
+	 * @param emaildateid
+	 * @param addressCodeEditType
+	 * @param onePageNumber
+	 * @param branchid
+	 * @return
+	 */
+	public List<CwbOrderBranchMatchVo> getCwbBranchMatchVoByPageMyWarehouse(long page, long customerid, String ordercwb,
+			long emaildateid, CwbOrderAddressCodeEditTypeEnum addressCodeEditType, long onePageNumber, long branchid) {
+		List<CwbOrder> cwbOrderList = this.cwbDAO.getcwbOrderByPageIsMyWarehouse(page, customerid, ordercwb, emaildateid,
+				addressCodeEditType, onePageNumber, branchid);
+		return this.cwbOrderToBranchMatchVo(cwbOrderList);
+	}
+	
+	/**
+	 * 订单站点匹配到小件员
+	 * 2016年6月17日 下午4:17:33
+	 * @param cwbList
+	 * @return
+	 */
+	public List<CwbOrderBranchMatchVo> getCwbBranchMatchByCwbs(List<String> cwbList) {
+		StringBuffer cwbBuffer = new StringBuffer();
+		String cwbstrs = "";
+		for (int i = 0; i < cwbList.size(); i++) {
+			cwbBuffer = cwbBuffer.append("'" + cwbList.get(i) + "',");
+		}
+		if (cwbBuffer.length() > 0) {
+			cwbstrs = cwbBuffer.toString().substring(0, cwbBuffer.length() - 1);
+		}
+		List<CwbOrder> cwbOrderList = this.cwbDAO.getCwbByCwbs(cwbstrs);
+		return this.cwbOrderToBranchMatchVo(cwbOrderList);
+	}
+	
+	/**
+	 * 订单转换
+	 * 2016年6月17日 下午4:16:51
+	 * @param cwbOrderList
+	 * @return
+	 */
+	private List<CwbOrderBranchMatchVo> cwbOrderToBranchMatchVo(List<CwbOrder> cwbOrderList) {
+		List<CwbOrderBranchMatchVo> voList = new ArrayList<CwbOrderBranchMatchVo>(cwbOrderList.size());
+		for(CwbOrder cwbOrder : cwbOrderList) {
+			voList.add(this.cwbOrderToBranchMatchVo(cwbOrder));
+		}
+		return voList;
+	}
+	
+	/**
+	 * 订单转换
+	 * 2016年6月17日 下午4:17:02
+	 * @param cwbOrder
+	 * @return
+	 */
+	private CwbOrderBranchMatchVo cwbOrderToBranchMatchVo(CwbOrder cwbOrder) {
+		CwbOrderBranchMatchVo vo = new CwbOrderBranchMatchVo();
+		vo.setCwbOrder(cwbOrder);
+		CwbFlowOrderTypeEnum cwbFlowOrderType =  CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
+		vo.setFlowordertypeVal(cwbFlowOrderType == null ? null : cwbFlowOrderType.getText());
+		CwbOrderTypeIdEnum cwbOrderType = CwbOrderTypeIdEnum.getByValue(cwbOrder.getCwbordertypeid());
+		vo.setOrderTypeVal(cwbOrderType == null ? null : cwbOrderType.getText());
+		if(cwbOrder.getDeliverybranchid() != 0) {
+			List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
+			vo.setCourierList(courierList);
+		}
+		return vo;
+	}
+	
+	/**
+	 * 根据小件员ID过滤
+	 * 2016年6月23日 下午3:36:53
+	 * @return
+	 */
+	public List<CwbOrder> filterCwbOrderByDeliver(List<CwbOrder> cwbOrderList, long deliverid) {
+		if (deliverid <= 0 || cwbOrderList == null) {
+			return cwbOrderList;
+		}
+		List<CwbOrder> cwbOrdersDeliver = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : cwbOrderList) {
+			if (cwb.getExceldeliverid() == deliverid) {
+				cwbOrdersDeliver.add(cwb);
+			}
+		}
+		return cwbOrdersDeliver;
 	}
 }
