@@ -22,6 +22,7 @@ import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.b2c.tps.CwbColumnSetTPS;
 import cn.explink.b2c.vipshop.ReaderXMLHandler;
 import cn.explink.b2c.vipshop.SOAPHandler;
 import cn.explink.b2c.vipshop.VipGathercompEnum;
@@ -106,6 +107,8 @@ public class MQGetOrderDataService {
 	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
+	@Autowired
+	CwbColumnSetTPS cwbColumnSetTPS;
 	
 	private Logger logger = LoggerFactory.getLogger(MQGetOrderDataService.class);
     
@@ -517,7 +520,7 @@ public class MQGetOrderDataService {
 			EmailDate ed) throws Exception {
 		
 		cwbOrder.setStartbranchid(warehouse_id);
-		ExcelColumnSet excelColumnSet = cwbColumnSet.getEexcelColumnSetByB2cJoint(b2cFlag);
+		ExcelColumnSet excelColumnSet = cwbColumnSetTPS.getTPSOrderColumnSetByB2c(b2cFlag);
 		CwbOrderDTO cwbOrderDTO = getCwbOrderAccordingtoConf(excelColumnSet, cwbOrder, warehouse_id);
 		User user = new User();
 		user.setUserid(1);
