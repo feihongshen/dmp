@@ -42,6 +42,7 @@ import cn.explink.service.DeliveryCashService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Controller
@@ -112,7 +113,7 @@ public class DeliveryCashController {
 		for (String branchid : dispatchbranchid) {
 			branchids = branchids + "," + branchid;
 		}
-		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids("2,4", branchids);
+		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids(branchids);
 		Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
 		List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
 
@@ -237,7 +238,7 @@ public class DeliveryCashController {
 		for (String branchid : dispatchbranchid) {
 			branchids = branchids + "," + branchid;
 		}
-		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids("2,4", branchids);
+		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids(branchids);
 		// 最外层的是变量存储 第二层是小件员 第三层是供货商 对应金额或者数量
 		Map<String, Map<Long, Map<Long, BigDecimal>>> summary = deliveryCashService.getSummary(customerList, deliverList, deliveryid, flowordertype, begindate, enddate, deliverystate,
 				paybackfeeIsZero);
@@ -302,5 +303,16 @@ public class DeliveryCashController {
 		}
 		return strs;
 
+	}
+	
+	@RequestMapping("/updateDeliverByBranchids")
+	public @ResponseBody String updateDeliverByBranchids(Model model, @RequestParam("branchid") String branchids) {
+		if (branchids.length() > 0) {
+			branchids = branchids.substring(0, branchids.length() - 1);
+			List<User> list = this.userDAO.getAllUserByRolesAndBranchids(branchids);
+			return JSONArray.fromObject(list).toString();
+		} else {
+			return "[]";
+		}
 	}
 }

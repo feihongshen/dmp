@@ -88,7 +88,7 @@ function changeBranchDeliver(){
 		        checkval+=$(this).val()+",";
 	       });
 			$.ajax({
-				url:"<%=request.getContextPath()%>/datastatistics/updateDeliverByBranchids",//后台处理程序
+				url:"<%=request.getContextPath()%>/deliverycash/updateDeliverByBranchids",//后台处理程序,需要是离职员工
 				type:"POST",//数据发送方式 
 				data:"branchid="+checkval,//参数
 				dataType:'json',//接受数据格式
