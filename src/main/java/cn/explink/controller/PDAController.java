@@ -492,12 +492,12 @@ public class PDAController {
 		model.addAttribute("showCustomerSign", showCustomerSign);
 		model.addAttribute("ifshowtag", this.systemInstallDAO.getSystemInstall("ifshowbudatag") == null ? null : this.systemInstallDAO.getSystemInstall("ifshowbudatag").getValue());
 		
-		/**
-		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
-		 */
-		if(autoAllocatingSwitch.equals("1")){
-			this.createSocketConnectMap(eList);
-		}
+//		/**
+//		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
+//		 */
+//		if(autoAllocatingSwitch.equals("1")){
+//			this.createSocketConnectMap(eList);
+//		}
 		this.logger.info("进入分拣库入库页面的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 		return "pda/intowarhouse";
 	}
@@ -543,12 +543,12 @@ public class PDAController {
 		model.addAttribute("RUKUPCandPDAaboutYJDPWAV",
 				this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue());
 		model.addAttribute("showCustomerSign", showCustomerSign);
-		/**
-		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
-		 */
-		if(autoAllocatingSwitch.equals("1")){
-			this.createSocketConnectMap(eList);
-		}
+//		/**
+//		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
+//		 */
+//		if(autoAllocatingSwitch.equals("1")){
+//			this.createSocketConnectMap(eList);
+//		}
 		return "pda/changeintowarhouse";
 	}
 
@@ -10954,26 +10954,30 @@ public class PDAController {
 
 	@RequestMapping("/connect")
 	public  void connectMiddleWare(@RequestParam(value = "entranceno") String entranceno) {
-		String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
-		Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
-		SocketClient sc=socketMap.get(entranceIP);
-		if(null==sc||sc.Clientstate.State!=2){
-			sc=this.autoAllocationService.startConnect(entranceIP, PORT);
-			socketMap.put(entranceIP, sc);
+		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
+			String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+			SocketClient sc=socketMap.get(entranceIP);
+			if(null==sc||sc.Clientstate.State!=2){
+				sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+				socketMap.put(entranceIP, sc);
+			}
 		}
 	}
 	
 	
 	@RequestMapping("/flush")
 	public  void flushQueue(@RequestParam(value = "entranceno") String entranceno) {
-		String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
-		Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
-		SocketClient sc=socketMap.get(entranceIP);
-		if(null==sc||sc.Clientstate.State!=2){
-			return;
-		}else{
-			AutoAllocationParam param=new AutoAllocationParam();
-			this.autoAllocationService.flushQueue(entranceIP, param);
+		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
+			String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+			SocketClient sc=socketMap.get(entranceIP);
+			if(null==sc||sc.Clientstate.State!=2){
+				return;
+			}else{
+				AutoAllocationParam param=new AutoAllocationParam();
+				this.autoAllocationService.flushQueue(entranceIP, param);
+			}
 		}
 		
 	}
@@ -11201,12 +11205,22 @@ public class PDAController {
 	 * 对接自动分拨的中间件,往队列中添加一个包裹
 	 */
 	private void addQueue(String outputNo,String entranceno,String cwb,String direction,String branchName){
-		String autoAllocatingSwitch=this.systemInstallDAO.getSystemInstallByName("AutoAllocating").getValue();
-		//启用并设置了出货口
-		if(autoAllocatingSwitch.equals("1")&&null!=outputNo&&!outputNo.isEmpty()){
-			String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
-			AutoAllocationParam param=new AutoAllocationParam(cwb,outputNo,direction,branchName);
-			this.autoAllocationService.addQueue(entranceIP, param);
+		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
+			String autoAllocatingSwitch=this.systemInstallDAO.getSystemInstallByName("AutoAllocating").getValue();
+			//启用并设置了出货口
+			if(autoAllocatingSwitch.equals("1")&&null!=outputNo&&!outputNo.isEmpty()){
+				String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+				//检查是否连接断开，若未连上则尝试重连
+				Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+				SocketClient sc=socketMap.get(entranceIP);
+				if(null==sc||sc.Clientstate.State!=2){
+					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+					socketMap.put(entranceIP, sc);
+				}
+				//发送消息
+				AutoAllocationParam param=new AutoAllocationParam(cwb,outputNo,direction,branchName);
+				this.autoAllocationService.addQueue(entranceIP, param);
+			}
 		}
 	}
 	
