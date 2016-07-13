@@ -33,5 +33,7 @@ drop TABLE `fn_vpal_record`;
 
 drop TABLE `fn_vpal_check_filelist`;
 
+drop TABLE `fn_cwb_state`;
+
 drop TABLE `fn_set_bank`;
 

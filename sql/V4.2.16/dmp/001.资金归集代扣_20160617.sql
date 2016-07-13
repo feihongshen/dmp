@@ -202,6 +202,24 @@ CREATE TABLE `fn_vpal_check_filelist` (
   KEY `idx_created_time` (`created_time`)
 ) ENGINE=InnoDB CHARSET=utf8;
 
+-- 新增订单财务结算状态表（fn_cwb_state）
+CREATE TABLE `fn_cwb_state` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `cwb` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '订单号',
+  `cwbordertypeid` INT(11) NOT NULL DEFAULT '-1' COMMENT '订单类型',
+  `customerid` BIGINT(20) NOT NULL DEFAULT '0' COMMENT '客户id',
+  `smtfreightflag` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '上门退运费收款状态。0.未收款，1.已收款，2.部分收款',
+  `smtfreight_time` DATETIME DEFAULT NULL COMMENT '上门退运费收款时间',
+  `receivablefeeflag` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '应收货款收款状态0.未收款，1.已收款，2.部分收款',
+  `receivablefee_time` DATETIME DEFAULT NULL COMMENT '应收货款收款时间',
+  `expressfreightflag` TINYINT(2) NOT NULL DEFAULT '0' COMMENT '快递运费收款状态0.未收款，1.已收款，2.部分收款',
+  `expressfreight_time` DATETIME DEFAULT NULL COMMENT '快递运费收款时间',
+  `created_time` DATETIME DEFAULT NULL COMMENT '创建时间',
+  `updated_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `un_idx_cwb` (`cwb`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8
+
 -- 新增各大银行信息字典表（fn_set_bank）
 CREATE TABLE `fn_set_bank`(  
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
