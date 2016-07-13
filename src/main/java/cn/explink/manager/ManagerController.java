@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,15 @@ import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.PayUpDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.domain.CwbOrder;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.PayUp;
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.IsmpsflagEnum;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.PayUpService;
 
 @Controller
@@ -56,6 +62,8 @@ public class ManagerController {
 
 	@RequestMapping("/resendFlowJms")
 	public @ResponseBody String resendFlowJms(@RequestParam("cwbs") String cwbs) {
+		ObjectMapper objMapper = JacksonMapper.getInstance();
+		
 		String[] split = cwbs.split("\n");
 		for (String cwb : split) {
 			if (cwb.trim().length() == 0) {
@@ -65,6 +73,28 @@ public class ManagerController {
 			List<OrderFlow> orderflows = orderFlowDAO.getOrderFlowListByCwb(cwb.trim());
 			for (OrderFlow orderFlow : orderflows) {
 				logger.info("resending flow for {} with state {} ", cwb, orderFlow.getFloworderdetail());
+				
+				//Added by leoliao at 2016-07-06集包一票多件的如果是领货，则把mpsoptstate值改为与订单的flowordertype值一致
+				String floworderdetail = orderFlow.getFloworderdetail();
+				try{
+					CwbOrderWithDeliveryState cwbOrderWithDeliveryState = JacksonMapper.getInstance().readValue(floworderdetail, CwbOrderWithDeliveryState.class);
+					if(cwbOrderWithDeliveryState != null){
+						CwbOrder cwbOrder = cwbOrderWithDeliveryState.getCwbOrder();
+						if(cwbOrder != null && cwbOrder.getIsmpsflag() == IsmpsflagEnum.yes.getValue() &&
+						   cwbOrder.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()){
+							cwbOrder.setMpsoptstate((int)cwbOrder.getFlowordertype());
+							
+							String newFloworderdetail = objMapper.writeValueAsString(cwbOrderWithDeliveryState).toString();
+							orderFlow.setFloworderdetail(newFloworderdetail);
+							
+							logger.info("resending flow for {} with new state {} ", cwb, newFloworderdetail);					
+						}
+					}
+				}catch(Exception ex){
+					logger.error("替换mpsoptstate出错", ex);
+				}
+				//Added end
+				
 				cwbOrderService.send(orderFlow);
 			}
 		}

@@ -23,7 +23,7 @@ boolean showCustomerSign= request.getAttribute("showCustomerSign")==null?false:(
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>出库扫描</title>
+<title>退货出库扫描</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/2.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
@@ -350,13 +350,14 @@ $(function(){
 </head>
 <body style="background:#f5f5f5" marginwidth="0" marginheight="0">
 <div class="saomiao_box2">
+<!--
 	<div class="saomiao_tab2">
 		<ul>
-			<li><a href="<%=request.getContextPath()%>/PDA/exportwarhouse" >逐单操作</a></li>		
+			<li><a href="<%=request.getContextPath()%>/PDA/backbranchbackexport" >逐单操作</a></li>		
 			<li><a href="#" class="light" >批量操作</a></li>
 		</ul>
 	</div>
-
+-->
  
 	<div class="saomiao_topnum2">
 		<dl class="blue">

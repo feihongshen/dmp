@@ -619,6 +619,4 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 	public void changeSenderAddr() {
 		this.embracedOrderInputService.changeSenderAddr();
 	}
-	
-	
 }

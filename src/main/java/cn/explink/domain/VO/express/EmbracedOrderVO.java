@@ -1,5 +1,6 @@
 package cn.explink.domain.VO.express;
 
+import cn.explink.util.SecurityUtil;
 public class EmbracedOrderVO {
 	/*
 	 * 运单号
@@ -458,7 +459,7 @@ public class EmbracedOrderVO {
 	}
 
 	public String getConsignee_telephone() {
-		return this.consignee_telephone;
+		return SecurityUtil.getInstance().decrypt(this.consignee_telephone);
 	}
 
 	public void setConsignee_telephone(String consignee_telephone) {
