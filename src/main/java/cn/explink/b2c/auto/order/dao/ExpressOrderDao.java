@@ -343,10 +343,10 @@ public class ExpressOrderDao {
 				ps.setString(++i, expressDetailTemp.getTransportNo());
 				//				ps.setString(++i, cwbOrderDTO.getCustCode());
 				if(expressDetailTemp.getIsAcceptProv() == 1){
-					ps.setString(++i, user != null ? user.getUserid() + "":"");// 小件员id
+					ps.setString(++i, user != null ? user.getUserid() + "":"0");// 小件员id
 					ps.setString(++i, user != null ? user.getRealname() : "");// 小件员名称
 				} else{
-					ps.setString(++i, "");// 小件员id
+					ps.setString(++i, "0");// 小件员id
 					ps.setString(++i, "");// 小件员名称
 				}
 				ps.setString(++i, expressDetailTemp.getCnorProv());// 寄件人省
