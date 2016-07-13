@@ -151,12 +151,7 @@ public class PeisongOrderService {
 			int is_gathercomp = order.getVip().getIsGatherComp();//最后一箱:1最后一箱 ，0默认 
 			
 			Integer total_pack = order.getTotalPack(); // 新增箱数
-			int boxSize = (boxlist==null||boxlist.size()==0)?1:boxlist.size();
-			if(is_gatherpack==0 && boxSize!=total_pack){
-				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
-				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
-			}
-			
+
 			int sendcarnum = order.getTotalPack();
 			
 			int cwbordertype = CwbOrderTypeIdEnum.Peisong.getValue();
@@ -201,6 +196,14 @@ public class PeisongOrderService {
 			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(cwb);
 			//集包相关代码处理
 			mQGetOrderDataService.mpsallPackage(vipshop, cwb, is_gatherpack, is_gathercomp,transcwb, total_pack, cwbOrderDTO,mpsswitch,orderDTO,order_batch_no);
+			//非集单模式：当boxlist不为空时，保存箱号与total_pack一致的订单信息，当boxlist为空时dmp只存第一次下发的订单数据
+			if(boxlist!=null && boxlist.size()!=0 && is_gatherpack==0 && boxlist.size()!=total_pack){
+				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+			}else if(boxlist==null||boxlist.size()==0 && is_gatherpack==0 && cwbOrderDTO != null){
+				this.logger.info("非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
+			}
 			if (cwbOrderDTO != null ) {
 				if(is_gatherpack==0){
 					this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cwb);
