@@ -101,6 +101,7 @@
 					<td class="tdrigth">揽件员<font>*</font>:</td>
 					<td>
 						<select id="delivermanId_show" style="width:100%;">
+						    <option value="">请选择</option>
 							<c:forEach items="${deliveryMansList}" var="list">
 								<option value="${list.userid}">${list.realname}</option>
 							</c:forEach>
@@ -209,8 +210,8 @@
 									  	<tr >
 											<th class="tdleft" width="20%">预约单号</th>
 									    	<th class="tdleft" width="20%">寄件人</th>
-									    	<th class="tdleft" width="40%">地址</th>
-									    	<th class="tdleft" width="20%">寄件时间</th>
+									    	<th class="tdleft" width="35%">地址</th>
+									    	<th class="tdleft" width="25%">寄件时间</th>
 										</tr>
 									  </thead>
 									  
@@ -691,8 +692,12 @@
 	 *提交form前的检验
 	 */
 	function toVaildForm(){	
+ 		//校验揽件人信息
+        if(!checkDeliverman()){
+        	return false;
+        } 
+    	
         //校验第一个框里的信息
-        
         if(!checkHead()){
         	return false;
         } 
@@ -761,6 +766,21 @@
 		$("#delivermanName_id").val($("#delivermanId_show  option:selected").text());
 		$("#goods_weight_id").val($("#actual_weight_id").val());
 	}
+	
+	/*
+	 *校验第一个框里的数据
+	 */
+	  function checkDeliverman(){
+		var delivermanId = $("#delivermanId_show");
+		
+		//校验揽件员id是否为空
+        if(!nullValidater(delivermanId,"揽件员")){
+        	$.messager.alert("提示","揽件员不能为空！", "warning");
+        	return false;
+        }
+		return true;
+	}
+	
 	/*
 	 *校验第一个框里的数据
 	 */
@@ -1116,7 +1136,6 @@
 	function checkPayMethod(){
 		var payment_method = $("input[name='payment_method']:checked").val();
 		var monthly_account_number = $("#monthly_account_number_id");
-		debugger;
 		if(payment_method == 0 || payment_method == 3){
 			//校验月结账号是否为空
 	        if(!nullValidater(monthly_account_number,"月结账号")){
@@ -1415,7 +1434,6 @@
 	 *获取运单号对应的信息，并判断是否已经补录
 	 */
 	function getCwbOrderEmbraced(){
-		debugger;
 		var orderNo = $.trim($("#orderNo_id").val());
 		if(!numberOrLetterValidater($("#orderNo_id"),"运单号")){
 			$("#orderNo_id").val("");
@@ -2137,12 +2155,10 @@
 	 *电子称数据的读取需要的两个方法
 	 */
 	function getWeightRepeatable() {
-		debugger
 		window.setInterval("setWeight()", 1);
 		$("#isRead").val("1");
 	}
 	function setWeight() {
-		debugger
 		var weight = window.parent.document.getElementById("scaleApplet").getWeight();
 		if (weight != null && weight != '') {
 			$("#actual_weight_id").val(weight);
@@ -2180,16 +2196,30 @@
 				if(data.reserveOrderList.length!=0){
 					for(var i=0;i<data.reserveOrderList.length;i++){
 						var reserveOrder=data.reserveOrderList[i];
-						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td><td>'+reserveOrder.cnorAddr+'</td><td>'+reserveOrder.requireTime+'</td><td style="display:none">'+reserveOrder.recordVersion+'</td></tr>');
-						
+						var requireTime = FormatDate(reserveOrder.requireTime);
+						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td>'
+						+'<td>'+reserveOrder.cnorAddr+'</td><td>'+requireTime+'</td><td style="display:none">'+reserveOrder.recordVersion+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorProvName+'</td><td style="display:none">'+reserveOrder.cnorProvCode+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorCityName+'</td><td style="display:none">'+reserveOrder.cnorCityCode+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorRegionName+'</td><td style="display:none">'+reserveOrder.cnorRegionCode+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorTownName+'</td><td style="display:none">'+reserveOrder.cnorTownCode+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorTel+'</td><td style="display:none">'+reserveOrder.cnorMobile+'</td></tr>');
 					}
 				}
 				if(data.orderList.length!=0){
 					for(var i=0;i<data.orderList.length;i++){
 						var order=data.orderList[i];
 						//$('#senderHistoryTable').append('<tr class="child_senderHistory"><td>'+order.senderprovince+'</td><td>'+order.sendercity+'</td><td>'+order.sendercounty+'</td><td>'+order.senderstreet+'</td><td>'+order.senderaddress+'</td></tr>');
-						$('#senderHistoryTable').append('<tr class="child_senderHistory" ondblclick="senderHistoryTableDblClick(this)"><td>'+order.sendername+'</td><td>'+order.senderprovince+'</td><td>'+order.sendercity+'</td><td>'+order.sendercounty+'</td><td>'+order.senderstreet+'</td><td>'+order.senderaddress+'</td>'
-						+'<td style="display:none">'+order.senderprovinceid+'</td><td style="display:none">'+order.sendercityid+'</td><td style="display:none">'+order.sendercountyid+'</td><td style="display:none">'+order.senderstreetid+'</td></tr>'); 
+						$('#senderHistoryTable').append('<tr class="child_senderHistory" ondblclick="senderHistoryTableDblClick(this)">'
+								+'<td>'+order.sendername+'</td><td>'+order.senderprovince+'</td>'
+								+'<td>'+order.sendercity+'</td><td>'+order.sendercounty+'</td>'
+								+'<td>'+order.senderstreet+'</td><td>'+order.senderaddress+'</td>'
+						        +'<td style="display:none">'+order.senderprovinceid+'</td>'
+						        +'<td style="display:none">'+order.sendercityid+'</td>'
+						        +'<td style="display:none">'+order.sendercountyid+'</td>'
+						        +'<td style="display:none">'+order.senderstreetid+'</td>'
+						        +'<td style="display:none">'+order.sendertelephone+'</td>'
+						        +'<td style="display:none">'+order.sendercellphone+'</td></tr>'); 
 					}
 				}
 			}
@@ -2220,8 +2250,13 @@
 			success : function(data) {
 				for(var i=0;i<data.length;i++){
 					//$('#consigneeHistoryTable').append("<tr class='child_consigneeHistory' ondblclick='consigneeHistoryTableDblClick('+data[i].cwbprovince+')><td>'+data[i].consigneename+'</td><td>'+data[i].cwbprovince+'</td><td>'+data[i].cwbcity+'</td><td>'+data[i].cwbcounty+'</td><td>'+data[i].recstreet+'</td><td>'+data[i].consigneeaddress+'</td><td style="display:none">'+data[i].opscwbid+'</td></tr>'");
-					$('#consigneeHistoryTable').append('<tr class="child_consigneeHistory" ondblclick="consigneeHistoryTableDblClick(this)"><td>'+data[i].consigneename+'</td><td>'+data[i].cwbprovince+'</td><td>'+data[i].cwbcity+'</td><td>'+data[i].cwbcounty+'</td><td>'+data[i].recstreet+'</td><td>'+data[i].consigneeaddress+'</td>'
-					+'<td style="display:none">'+data[i].recprovinceid+'</td><td style="display:none">'+data[i].reccityid+'</td><td style="display:none">'+data[i].reccountyid+'</td><td style="display:none">'+data[i].recstreetid+'</td></tr>'); 
+					$('#consigneeHistoryTable').append('<tr class="child_consigneeHistory" ondblclick="consigneeHistoryTableDblClick(this)">'
+							+'<td>'+data[i].consigneename+'</td><td>'+data[i].cwbprovince+'</td>'
+							+'<td>'+data[i].cwbcity+'</td><td>'+data[i].cwbcounty+'</td>'
+							+'<td>'+data[i].recstreet+'</td><td>'+data[i].consigneeaddress+'</td>'
+					+'<td style="display:none">'+data[i].recprovinceid+'</td><td style="display:none">'+data[i].reccityid+'</td>'
+					+'<td style="display:none">'+data[i].reccountyid+'</td><td style="display:none">'+data[i].recstreetid+'</td>'
+					+'<td style="display:none">'+data[i].consigneephone+'</td><td style="display:none">'+data[i].consigneemobile+'</td></tr>'); 
 				}
 			}
 		}); 
@@ -2230,6 +2265,8 @@
 	//收件人历史信息双击事件
 	function consigneeHistoryTableDblClick(consignee){
 		var sender_adress = $("#sender_adress_id").val();
+		var consigneeCellphone = $(consignee).find("td").eq(11).text();
+		var consigneeTellphone = $(consignee).find("td").eq(10).text();
 		$("#consignee_adress_id").val("");
 		$("#area_consignee").val("");
 		$("#receive_provinceId").html($(consignee).find("td").eq(6).text());
@@ -2246,14 +2283,26 @@
 		$("#consignee_townid_id").val($(consignee).find("td").eq(9).text());
 		$("#consignee_townName_id").val($(consignee).find("td").eq(4).text());
 		$("#consignee_adress_id").val($(consignee).find("td").eq(5).text());
+		$("#consignee_name_id").val($(consignee).find("td").eq(0).text());
+		if(consigneeCellphone.val() != ""){
+			$("#consignee_cellphone_id").val(consigneeCellphone);
+		}
+		if(consigneeTellphone.val() != ""){
+			$("#consignee_telephone_id").val(consigneeTellphone);
+		}
+		$("#consignee_name_id").val($(consignee).find("td").eq(0).text());
+		
 		$("#sender_adress_id").val(sender_adress);
 	}
 	
 	//寄件人历史信息双击事件
 	function senderHistoryTableDblClick(sender){
 		var consignee_adress = $("#consignee_adress_id").val();
+		var senderTelephone = $(sender).find("td").eq(10).text();
+		var senderCellphone = $(sender).find("td").eq(11).text();
 		$("#area_sender").val("")
 		$("#sender_adress_id").val("");
+		$("#sender_name_id").val($(sender).find("td").eq(0).text());
 		$("#BranchprovinceId").html($(sender).find("td").eq(6).text());
 		$("#BranchcityId").html($(sender).find("td").eq(7).text());
 		$("#BranchcountyId").html($(sender).find("td").eq(8).text());
@@ -2263,18 +2312,51 @@
 		$("#sender_provinceName_id").val($(sender).find("td").eq(1).text());
 		$("#sender_cityid_id").val($(sender).find("td").eq(7).text());
 		$("#sender_cityName_id").val($(sender).find("td").eq(2).text());
+		$("#sender_countyid_id").val($(sender).find("td").eq(8).text());
 		$("#sender_countyName_id").val($(sender).find("td").eq(3).text());
 		$("#sender_townid_id").val($(sender).find("td").eq(9).text());
 		$("#sender_townName_id").val($(sender).find("td").eq(4).text());
 		$("#sender_adress_id").val($(sender).find("td").eq(5).text());
+		if(senderCellphone.val() != ""){
+			$("#sender_cellphone_id").val(senderCellphone);
+		}
+		if(senderTelephone.val() != ""){
+			$("#sender_telephone_id").val(senderTelephone);
+		}
 		$("#consignee_adress_id").val(consignee_adress);
 	}
 	
 	//预约单信息双击事件
 	function reserveTableDblClick(reserve){
-		console.log($(reserve).find("td").eq(4).text());
+		var consignee_adress = $("#consignee_adress_id").val();
+		var senderTelephone = $(sender).find("td").eq(13).text();
+		var senderCellphone = $(sender).find("td").eq(14).text();
+		$("#area_sender").val("")
+		$("#sender_adress_id").val("");
+		$("#sender_name_id").val($(reserve).find("td").eq(1).text());
 		$("#reserveOrderNo").val($(reserve).find("td").eq(0).text());
 		$("#recordVersion").val($(reserve).find("td").eq(4).text());
+		$("#BranchprovinceId").html($(reserve).find("td").eq(6).text());
+		$("#BranchcityId").html($(reserve).find("td").eq(8).text());
+		$("#BranchcountyId").html($(reserve).find("td").eq(10).text());
+		$("#sender_townId").html($(reserve).find("td").eq(12).text()); 
+		initArea(); 
+		$("#sender_provinceid_id").val($(reserve).find("td").eq(6).text());
+		$("#sender_provinceName_id").val($(reserve).find("td").eq(5).text());
+		$("#sender_cityid_id").val($(reserve).find("td").eq(8).text());
+		$("#sender_cityName_id").val($(reserve).find("td").eq(7).text());
+		$("#sender_countyid_id").val($(reserve).find("td").eq(10).text());
+		$("#sender_countyName_id").val($(reserve).find("td").eq(9).text());
+		$("#sender_townid_id").val($(reserve).find("td").eq(12).text());
+		$("#sender_townName_id").val($(reserve).find("td").eq(11).text());
+		$("#sender_adress_id").val($(reserve).find("td").eq(2).text());
+		if(senderCellphone.val() != ""){
+			$("#sender_cellphone_id").val(senderCellphone);
+		}
+		if(senderTelephone.val() != ""){
+			$("#sender_telephone_id").val(senderTelephone);
+		}
+		//$("#consignee_adress_id").val(consignee_adress);
 	}
 	
 	function getFeeByCondition(){
@@ -2341,6 +2423,26 @@
 				 getFreightToal();
 			}
 		});
+	}
+	
+	//日期格式化
+	function FormatDate(strTime) {
+	    var date = new Date(strTime);
+	    var year = date.getFullYear(); //getFullYear getYear
+	    var month = date.getMonth();
+	    var day = date.getDate();
+	    var hour = date.getHours();
+	    var minu = date.getMinutes();
+	    var sec = date.getSeconds();
+	    month = month + 1;
+	    if (month < 10) month = "0" + month;
+	    if (day < 10) day = "0" + day;
+	    if (hour < 10) hour = "0" + hour;
+	    if (minu < 10) minu = "0" + minu;
+	    if (sec < 10) sec = "0" + sec;
+	    var time = "";
+	    time = year + "-" + month + "-" + day + " " + hour + ":" + minu + ":" + sec;
+	    return time;
 	}
 	
 </script>
