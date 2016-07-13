@@ -432,7 +432,7 @@ CREATE TABLE `fn_df_rule` (
   `rule_no` varchar(32) DEFAULT NULL COMMENT '规则编号',
   `rule_type` tinyint(1) DEFAULT NULL COMMENT '规则类型',
   `charge_type` tinyint(1) DEFAULT NULL COMMENT '费用类型:0-揽件费, 1-派费',
-  `order_type` varchar(16) DEFAULT NULL COMMENT '订单类型',
+  `order_type` varchar(50) DEFAULT NULL COMMENT '订单类型',
   `rule_desc` varchar(512) DEFAULT NULL COMMENT '规则内容',
   `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
