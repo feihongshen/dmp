@@ -15,6 +15,7 @@ public class CwbColumnSetVipShop {
 		ExcelColumnSet excelColumnSet = new ExcelColumnSet();
 
 		excelColumnSet.setCwbindex(1);
+		excelColumnSet.setTranscwbindex(1);
 		excelColumnSet.setSendcargonumindex(1);
 		excelColumnSet.setConsigneenameindex(1);
 		excelColumnSet.setConsigneeaddressindex(1);
