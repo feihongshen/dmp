@@ -98,6 +98,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.BaleCwbClassifyVo;
 import cn.explink.domain.VO.express.EmbracedOrderVO;
 import cn.explink.domain.VO.express.JoinMessageVO;
 import cn.explink.domain.orderflow.OrderFlow;
@@ -112,6 +113,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReturnCwbsTypeEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.BaleService;
 import cn.explink.service.ComplaintService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
@@ -222,6 +224,9 @@ public class OrderSelectController {
 	private ExpressOrderDao expressOrderDao;
 	@Autowired
 	OrderAddressReviseDao orderAddressReviseDao;
+	
+	@Autowired
+	private BaleService baleService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -2481,10 +2486,30 @@ public class OrderSelectController {
 		if (isshow != 0) {
 			String enddate = DateDayUtil.getDateAfter(begindate, 10);
 			clist = this.cwbOrderService.getListByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb, page);
+			List<String> cwbList = new ArrayList<String>();
 			for(CwbOrder c : clist) {
 				String consigneemobileOfkfDecrypted = SecurityUtil.getInstance().decrypt(c.getConsigneemobileOfkf());
 				consigneemobileOfkfDecrypted = hideMoiblePhoneCode(consigneemobileOfkfDecrypted);
 				c.setConsigneemobileOfkf(consigneemobileOfkfDecrypted);
+				cwbList.add(c.getCwb());
+			}
+			if(showLetfOrRight == 1) { // 按订单查询
+				Map<String, List<BaleCwbClassifyVo>> baleCwbClassifyVoListMap = new HashMap<String, List<BaleCwbClassifyVo>>();
+				Map<String, Integer> baleCwbSizeMap = new HashMap<String, Integer>();
+				for(CwbOrder c : clist) {
+					List<BaleCwbClassifyVo> baleCwbClassifyVoList = this.baleService.getBaleCwbClassifyVoList(c);
+					baleCwbClassifyVoListMap.put(c.getCwb(), baleCwbClassifyVoList);
+					int size = 0;
+					for(BaleCwbClassifyVo vo : baleCwbClassifyVoList) {
+						size += vo.getTranscwbList().size();
+					}
+					baleCwbSizeMap.put(c.getCwb(), size);
+				}
+			model.addAttribute("baleCwbClassifyVoListMap", baleCwbClassifyVoListMap);
+				model.addAttribute("baleCwbSizeMap", baleCwbSizeMap);
+			} else if(showLetfOrRight == 3) { // 按包号查询
+				Map<String, BaleCwbClassifyVo> baleCwbClassifyVoMap = this.baleService.getBaleCwbClassifyVoMapByBaleno(cwbList, baleno);
+				model.addAttribute("baleCwbClassifyVoMap", baleCwbClassifyVoMap);
 			}
 			model.addAttribute("customerMap", this.customerDAO.getAllCustomersToMap());
 			pageparm = new Page(this.cwbOrderService.getCountByCwbs(cwbs, begindate, enddate, customerid, consigneename, consigneemobile, consigneeaddress, baleno, transcwb), page,
