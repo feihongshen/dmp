@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib  prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -223,8 +224,13 @@ function nowprint(){
 			          			<td valign="middle" style="width:25mm;">
 					          		<div style="line-height:12px;font-family: 黑体;font-size: 8px;padding: 0 0 0 5px;">
 					          			服务类型：
+					          			<c:choose>
+					          				<c:when test="${cwb.expressProductType eq 1 }">标准</c:when>
+					          				<c:when test="${cwb.expressProductType eq 2 }">次日达</c:when>
+					          				<c:when test="${cwb.expressProductType eq 3 }">当日达</c:when>
+					          			</c:choose>
 					          		</div>
-					           		<div style="line-height:12px;font-family: 黑体;font-size: 8px;padding: 0 0 0 5px;">价保声明价值：${cwb.announcedvalue }元</div>
+					           		<div style="line-height:12px;font-family: 黑体;font-size: 8px;padding: 0 0 0 5px;">保价声明价值：<c:if test="${cwb.paymethod ne 0 }">${cwb.announcedvalue }元</c:if></div>
 					            	<div style="line-height:12px;font-family: 黑体;font-size: 8px;padding: 0 0 0 5px;">重量：${cwb.carrealweight }kg</div>
 					            	<div style="line-height:12px;font-family: 黑体;font-size: 8px;padding: 0 0 0 5px;">
 					            		付款方式：
@@ -283,7 +289,7 @@ function nowprint(){
 			        		<tr>
 			        			<td style="border-right:1px solid #585656;width:24.3mm">
 			       					<div style="line-height:14px;font-family: 黑体;font-size: 8px;">收件员：${cwb.collectorname }</div>
-              						<div style="line-height:14px;font-family: 黑体;font-size: 8px;">寄件日期：${cwb.emaildate }</div>
+              						<div style="line-height:14px;font-family: 黑体;font-size: 8px;">寄件日期：<fmt:formatDate value="${vo.senderDate }" pattern="yyyy-M-d"/></div>
               						<div style="line-height:14px;font-family: 黑体;font-size: 8px;">派件员：${cwb.exceldeliver }</div>
 			       				</td>
 			       				<td style="border-right:1px solid #585656;width:30.5mm">
