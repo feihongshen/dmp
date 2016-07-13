@@ -34,6 +34,7 @@ import com.pjbest.splitting.routing.DatabaseType;
 
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.MatchExceptionOrder;
@@ -262,6 +263,7 @@ public class CwbDAO {
 					.getString("cwbdelivertypeid")));
 			cwbOrder.setExceldeliver(StringUtil.nullConvertToEmptyString(rs
 					.getString("exceldeliver")));
+			cwbOrder.setExceldeliverid(rs.getLong("exceldeliverid"));
 			cwbOrder.setExcelbranch(StringUtil.nullConvertToEmptyString(rs
 					.getString("excelbranch")));
 			cwbOrder.setTimelimited(StringUtil.nullConvertToEmptyString(rs
@@ -2186,6 +2188,12 @@ public class CwbDAO {
 				.update("update express_ops_cwb_detail set state=1  where state =0 and emaildateid=?",
 						emaildateid);
 	}
+	
+	public void updateAddressDeliverByCwb(String cwb, long deliverid, String exceldeliver) {
+		this.jdbcTemplate.update(
+				"update express_ops_cwb_detail set exceldeliverid=?, exceldeliver=? where state =1 and cwb=?", deliverid,
+				exceldeliver, cwb);
+	}
 
 	public void updateDeliveryBranchid(String excelbranch, long branchid,
 			String cwb, CwbOrderAddressCodeEditTypeEnum addressCodeEditType) {
@@ -2221,7 +2229,7 @@ public class CwbDAO {
 		StringBuffer sql = new StringBuffer();
 		sql.append("update express_ops_cwb_detail set excelbranch = ? ,deliverybranchid = ? ,addresscodeedittype = ? ");
 		if ((delivererList != null) && (delivererList.size() == 1)) {
-			sql.append(" ,deliverid = ")
+			sql.append(" ,exceldeliverid = ")
 					.append(delivererList.get(0).getExternalId())
 					.append(",exceldeliver = '")
 					.append(delivererList.get(0).getName()).append("'");

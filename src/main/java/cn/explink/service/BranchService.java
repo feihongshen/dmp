@@ -21,16 +21,12 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.OrgPayInTypeEnum;
 import cn.explink.util.CurrentUserHelper;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StringUtil;
-
-import com.pjbest.pjorganization.bizservice.service.SbOrgModel;
-import com.pjbest.pjorganization.bizservice.service.SbOrgService;
-import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
-import com.vip.osp.core.exception.OspException;
 
 @Service
 public class BranchService {
@@ -319,7 +315,7 @@ public class BranchService {
 	}
 
     @Transactional(rollbackFor=Exception.class)
-	public long creBranchAndSyncOsp(final Branch branch) throws Exception{
+    public long creBranchAndSyncOsp(final Branch branch) throws Exception{
     	branch.setUpdateUser(CurrentUserHelper.getInstance().getUserName());
     	long branchid = this.branchDao.creBranch(branch);
     	Branch savedBranch = branchDao.getBranchByBranchid(branchid);
@@ -357,5 +353,35 @@ public class BranchService {
     		logger.error(e.getMessage());
     		throw e;
     	}
+    }
+    
+    public Branch getBranchByBranchcode(String branchcode) {
+    	List<Branch> branchList = this.branchDao.getBranchByBranchcode(branchcode);
+    	if(branchList == null || branchList.size() == 0) {
+    		return null;
+    	}
+		return branchList.get(0);
+    }
+    
+    /**
+     * 获取站点
+     * 2016年6月21日 下午4:37:05
+     * @param branchId
+     * @return
+     */
+    public Branch getZhanDianByBranchId(long branchid) {
+    	Branch branch = this.getBranchByBranchid(branchid);
+    	if(branch != null && branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+    		return branch;
+    	}
+    	return null;
+    }
+    
+    public Branch getBranchByBranchname(String branchname) {
+    	Branch branch = this.branchDao.getBranchByBranchname(branchname);
+    	if(branch != null && branch.getBranchid() == 0) {
+    		return null;
+    	}
+    	return branch;
     }
 }
