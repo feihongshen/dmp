@@ -273,8 +273,8 @@ public class ExpressOrderDao {
 	 */
 	public List<ExpressDetailTemp> getExpressDetailTempListNotOver(String provinceType) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov in (?) order by create_time limit 0,2000 ");
-		List<ExpressDetailTemp> transOrderList = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper(), provinceType);
+		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov in (" + provinceType + ") order by create_time limit 0,2000 ");
+		List<ExpressDetailTemp> transOrderList = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper());
 		return transOrderList;
 	}
 	
