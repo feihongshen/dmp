@@ -51,7 +51,6 @@ import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.tools.RestHttpServiceHanlder;
-import cn.explink.b2c.tps.TpsCwbFlowService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.ExplinkResponse;
@@ -480,11 +479,11 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	private MPSOptStateService mPSOptStateService;
 	@Autowired
-	private MqExceptionDAO mqExceptionDAO;
+	private MqExceptionDAO mqExceptionDAO; 
+	
 	@Autowired
 	private UserDAO userDao;
-	@Autowired
-	private TpsCwbFlowService tpsCwbFlowService;
+	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
@@ -1753,9 +1752,7 @@ public class CwbOrderService extends BaseOrderService {
 			this.tpsInterfaceExecutor.executTpsInterface(paramObj);
 		}
 		CwbOrderService.logger.info("快递流程状态反馈接口======结束");
-		
-		//add by huangzh 2016-6-27 在站点的扫描、批量、合包到货操作，都需要添加数据到临时表express_ops_tps_flow_tmp
-		this.tpsCwbFlowService.save(co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,user.getBranchid(),null,true,null,null);
+
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -1845,8 +1842,6 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
 		}
-		//add by huangzh 2016-6-27 在站点的扫描、批量、合包到货操作，都需要添加数据到临时表express_ops_tps_flow_tmp
-		this.tpsCwbFlowService.save(co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,user.getBranchid(),null,true,null,null);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -4854,18 +4849,6 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}
 
-		/* String usedeliverpay = "no";
-		 * 小件员领货质控使用的代码，目前先不实现 try { usedeliverpay =
-		 * systemInstallDAO.getSystemInstallByName
-		 * ("usedeliverpayup").getValue(); } catch (Exception e) {
-		 * logger.error("领货时，小件员交款系统配置获取失败"); } if (usedeliverpay.equals("yes")
-		 * &&
-		 * gotoClassAuditingDAO.getDeliverPayUpAndArrearageByDeliverid(deliveryUser
-		 * .getUserid()) > 0) { throw new
-		 * CwbException(cwb,FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
-		 * ExceptionCwbErrorTypeEnum.XiaoJianYuanYouQianKuan); }
-		 */
-
 		// 校验配送状态
 		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 
@@ -5340,20 +5323,6 @@ public class CwbOrderService extends BaseOrderService {
 					throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 				}
 			}
-
-		}else{
-			//Hps_Concerto   如果 不是 批量反馈 如果 反馈为分站滞留。 那么 也需要加上时间前缀。
-			if(podresultid==DeliveryStateEnum.FenZhanZhiLiu.getValue()&&deliverstateremark.length()>0){
-				String oldcwbremark = co.getCwbremark().length() > 0 ? co.getCwbremark() + "\n" : "";
-				String newcwbremark = oldcwbremark + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "[" + user.getRealname() + "]" + zhiliuremark;
-				try {
-					this.cwbDAO.updateCwbRemark(co.getCwb(), newcwbremark);
-					co.setCwbremark(newcwbremark);
-				} catch (Exception e) {
-					CwbOrderService.logger.error("error while saveing cwbremark,cwb:" + co.getCwb() + "cwbremark:" + newcwbremark, e);
-					throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
-				}
-			}
 		}
 
 		if (((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenTuiChengGong
@@ -5425,37 +5394,34 @@ public class CwbOrderService extends BaseOrderService {
 		if ((backreasonid != 0) && ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui
 				.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(backreasonid);
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,false);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
 			this.cwbDAO.saveCwbForBackreason(co.getCwb(), reason.getReasoncontent(), backreasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 
 		if ((firstlevelreasonid != 0) && ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(leavedreasonid);
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,true);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
 			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid, firstlevelreasonid);
-			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
-		}else if((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue())&&(deliverstateremark.length()>0)){
-			cwbremark = this.creCwbremark(co.getCwbremark(), null, deliverstateremark,true);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 		if ((changereasonid != 0) && (podresultid == DeliveryStateEnum.DaiZhongZhuan.getValue())) {
 			reason = this.reasonDAO.getReasonByReasonid(changereasonid);
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,false);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
 			this.cwbDAO.saveCwbForChangereason(co.getCwb(), reason.getReasoncontent(), changereasonid, firstchangereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 
 		// 配送成功添加到历史备注中======LX====ADD====
 		if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) {
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,false);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 
 		// 为货物丢失添加的
 		if ((losereasonid != 0) && ((podresultid == DeliveryStateEnum.HuoWuDiuShi.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(losereasonid);
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,false);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
 			this.cwbDAO.saveCwbForDiushireason(co.getCwb(), reason.getReasoncontent(), losereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
@@ -6356,7 +6322,7 @@ public class CwbOrderService extends BaseOrderService {
 			if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) || (deliverystate.getDeliverystate() == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (deliverystate
 					.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
 				this.orgBillAdjustmentRecordService.createAdjustment4GoToClassConfirm(co, deliverystate);
-				this.fnDfAdjustmentRecordService.createAdjustment4GoToClassConfirm(co);//派费调整记录
+//				this.fnDfAdjustmentRecordService.createAdjustment4GoToClassConfirm(co);//派费调整记录
 			}
 
 			/**
@@ -7342,7 +7308,28 @@ public class CwbOrderService extends BaseOrderService {
 		this.cwbDAO.updateTuihuoBranchid(branch.getBranchid(), cwbOrder.getCwb());
 		this.updateNextBranchId(cwbOrder.getCwb());
 	}
-
+	
+	/**
+	 * 更新站点和小件员
+	 * 2016年6月17日 下午12:00:37
+	 * @param user
+	 * @param cwbOrder
+	 * @param branch
+	 * @param addresscodeedittype
+	 * @throws Exception
+	 */
+	@Transactional
+	public void updateDeliveryBranchAndCourier(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype, User deliver) throws Exception {
+		this.updateDeliveryBranch(user, cwbOrder, branch, addresscodeedittype);
+		long exceldeliverid = 0;
+		String exceldeliver = null;
+		if(deliver != null) {
+			exceldeliverid = deliver.getUserid();
+			exceldeliver = deliver.getRealname();
+		}
+		this.cwbDAO.updateAddressDeliverByCwb(cwbOrder.getCwb(), exceldeliverid, exceldeliver);
+	}
+	
 	@Transactional
 	public void updateDeliveryBranch(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype) throws Exception {
 		CwbOrderService.logger.info("更新配送站点,cwb:{},站点:{}", cwbOrder.getCwb(), branch.getBranchid());
@@ -8931,34 +8918,16 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param deliverstateremark
 	 * @return
 	 */
-	private String creCwbremark(String cwbremark, String reasoncontent, String deliverstateremark,boolean flag) {
+	private String creCwbremark(String cwbremark, String reasoncontent, String deliverstateremark) {
 		StringBuilder strBuilder = new StringBuilder();
 		if ((null != cwbremark) && (cwbremark.length() > 0)) {
 			strBuilder.append(cwbremark + ",");
 		}
-		/*if ((null != deliverstateremark) && (deliverstateremark.length() > 0)) {
-			strBuilder.append(deliverstateremark + ",");
-		}
 		if ((null != reasoncontent) && (reasoncontent.length() > 0)) {
 			strBuilder.append(reasoncontent + ",");
-		}*/
-		//Hps_Concerto  这么做的原因是如果是分站滞留的 那就让其的remark 样式和 批量的一致 就是deliverstateremark在前 reasoncontent在后
-		// 不想复制一个新的 因为改动又不大， 所以这么写了。
-		int i = 0;
-		while(i<2){
-			if(flag){
-				if ((null != deliverstateremark) && (deliverstateremark.length() > 0)) {
-					strBuilder.append(deliverstateremark + ",");
-				}
-			}else{
-				if ((null != reasoncontent) && (reasoncontent.length() > 0)) {
-					strBuilder.append(reasoncontent + ",");
-				}
-				
-			}
-			flag=!flag;
-			i++;	
-			
+		}
+		if ((null != deliverstateremark) && (deliverstateremark.length() > 0)) {
+			strBuilder.append(deliverstateremark + ",");
 		}
 		if (strBuilder.length() > 0) {
 			if (strBuilder.lastIndexOf(",") == (strBuilder.length() - 1)) {
@@ -9941,5 +9910,95 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}		
 		return false;
+	}
+	
+	/**
+	 * 订单站点匹配到小件员-分页
+	 * 2016年6月15日 下午6:21:31
+	 * @param page
+	 * @param customerid
+	 * @param ordercwb
+	 * @param emaildateid
+	 * @param addressCodeEditType
+	 * @param onePageNumber
+	 * @param branchid
+	 * @return
+	 */
+	public List<CwbOrderBranchMatchVo> getCwbBranchMatchVoByPageMyWarehouse(long page, long customerid, String ordercwb,
+			long emaildateid, CwbOrderAddressCodeEditTypeEnum addressCodeEditType, long onePageNumber, long branchid) {
+		List<CwbOrder> cwbOrderList = this.cwbDAO.getcwbOrderByPageIsMyWarehouse(page, customerid, ordercwb, emaildateid,
+				addressCodeEditType, onePageNumber, branchid);
+		return this.cwbOrderToBranchMatchVo(cwbOrderList);
+	}
+	
+	/**
+	 * 订单站点匹配到小件员
+	 * 2016年6月17日 下午4:17:33
+	 * @param cwbList
+	 * @return
+	 */
+	public List<CwbOrderBranchMatchVo> getCwbBranchMatchByCwbs(List<String> cwbList) {
+		StringBuffer cwbBuffer = new StringBuffer();
+		String cwbstrs = "";
+		for (int i = 0; i < cwbList.size(); i++) {
+			cwbBuffer = cwbBuffer.append("'" + cwbList.get(i) + "',");
+		}
+		if (cwbBuffer.length() > 0) {
+			cwbstrs = cwbBuffer.toString().substring(0, cwbBuffer.length() - 1);
+		}
+		List<CwbOrder> cwbOrderList = this.cwbDAO.getCwbByCwbs(cwbstrs);
+		return this.cwbOrderToBranchMatchVo(cwbOrderList);
+	}
+	
+	/**
+	 * 订单转换
+	 * 2016年6月17日 下午4:16:51
+	 * @param cwbOrderList
+	 * @return
+	 */
+	private List<CwbOrderBranchMatchVo> cwbOrderToBranchMatchVo(List<CwbOrder> cwbOrderList) {
+		List<CwbOrderBranchMatchVo> voList = new ArrayList<CwbOrderBranchMatchVo>(cwbOrderList.size());
+		for(CwbOrder cwbOrder : cwbOrderList) {
+			voList.add(this.cwbOrderToBranchMatchVo(cwbOrder));
+		}
+		return voList;
+	}
+	
+	/**
+	 * 订单转换
+	 * 2016年6月17日 下午4:17:02
+	 * @param cwbOrder
+	 * @return
+	 */
+	private CwbOrderBranchMatchVo cwbOrderToBranchMatchVo(CwbOrder cwbOrder) {
+		CwbOrderBranchMatchVo vo = new CwbOrderBranchMatchVo();
+		vo.setCwbOrder(cwbOrder);
+		CwbFlowOrderTypeEnum cwbFlowOrderType =  CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype());
+		vo.setFlowordertypeVal(cwbFlowOrderType == null ? null : cwbFlowOrderType.getText());
+		CwbOrderTypeIdEnum cwbOrderType = CwbOrderTypeIdEnum.getByValue(cwbOrder.getCwbordertypeid());
+		vo.setOrderTypeVal(cwbOrderType == null ? null : cwbOrderType.getText());
+		if(cwbOrder.getDeliverybranchid() != 0) {
+			List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
+			vo.setCourierList(courierList);
+		}
+		return vo;
+	}
+	
+	/**
+	 * 根据小件员ID过滤
+	 * 2016年6月23日 下午3:36:53
+	 * @return
+	 */
+	public List<CwbOrder> filterCwbOrderByDeliver(List<CwbOrder> cwbOrderList, long deliverid) {
+		if (deliverid <= 0 || cwbOrderList == null) {
+			return cwbOrderList;
+		}
+		List<CwbOrder> cwbOrdersDeliver = new ArrayList<CwbOrder>();
+		for (CwbOrder cwb : cwbOrderList) {
+			if (cwb.getExceldeliverid() == deliverid) {
+				cwbOrdersDeliver.add(cwb);
+			}
+		}
+		return cwbOrdersDeliver;
 	}
 }
