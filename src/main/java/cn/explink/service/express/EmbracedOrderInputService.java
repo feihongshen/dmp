@@ -403,7 +403,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		params.put("sendername", StringUtils.isNotBlank(embracedOrderVO.getSender_name()) ? embracedOrderVO.getSender_name() : null);
 		params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
 		params.put("sendercounty", StringUtils.isNotBlank(embracedOrderVO.getSender_countyName()) ? embracedOrderVO.getSender_countyName() : null);
-		params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getSender_townid())){
+			params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
+		}
 		params.put("senderstreet", StringUtils.isNotBlank(embracedOrderVO.getSender_townName()) ? embracedOrderVO.getSender_townName() : null);
 		params.put("senderid", StringUtils.isNotBlank(embracedOrderVO.getSender_certificateNo()) ? embracedOrderVO.getSender_certificateNo() : null);
 		// params.put("consigneeno",
