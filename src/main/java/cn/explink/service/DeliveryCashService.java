@@ -275,6 +275,16 @@ public class DeliveryCashService {
 	 */
 	public List<String> getCustomerListForSummary(List<User> deliverList, final long deliveryid, long flowordertype, String begindate, String enddate, String[] deliverystate,
 			Integer paybackfeeIsZero) {
+		if(deliveryid > 0){
+			List<User> userList = new ArrayList<User>();
+			for(User user : deliverList){
+				if(deliveryid == user.getUserid()){
+					userList.add(user);
+					deliverList = userList;
+					break;
+				}
+			}
+		}
 		String sql = getSummaryForCustomerSQL(deliverList, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
 		List<String> list = jdbcTemplate.queryForList(sql, String.class);
 		
