@@ -288,8 +288,8 @@ public class ExpressCwbOrderDataImportDAO {
 		sql.append(" cwbordertypeid,orderflowid,flowordertype,");
 		sql.append(" cargovolume,cwbstate,instationname,state,");
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
-		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate) ");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate,customerid,paymethod) ");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -385,6 +385,9 @@ public class ExpressCwbOrderDataImportDAO {
 
 				ps.setInt(++i, 1);//补录完成标识，标识=1
 				ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
+				//给快递一期转业务定时器doTime_expressTransOrder加上customerid和paymethod的转化
+				ps.setInt(++i, 1000);// customerid
+				ps.setInt(++i, cwbOrderDTO.getPayType());
 				return ps;
 			}
 		}, key);
