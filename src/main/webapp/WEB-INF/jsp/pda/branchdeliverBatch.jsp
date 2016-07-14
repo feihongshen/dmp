@@ -200,7 +200,10 @@ function todayweilinghuo(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"' >"
@@ -209,7 +212,10 @@ function todayweilinghuo(){
 					+"<td width='140' align='center'> "+data[i].inSitetime+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 				}
@@ -245,7 +251,10 @@ function  historyweilinghuo(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"' >"
@@ -254,7 +263,10 @@ function  historyweilinghuo(){
 					+"<td width='140' align='center'> "+data[i].inSitetime+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 				}
@@ -290,7 +302,10 @@ function yiling(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"'>"
@@ -299,7 +314,10 @@ function yiling(){
 					+"<td width='140' align='center'> "+data[i].pickGoodstime+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 				}
@@ -366,7 +384,6 @@ function tohome(){
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected=selected<%} %> ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
-			               超区领货：<input type="checkbox" id="isChaoqu" name="isChaoqu"/>
 				</p>
 			    <p><span>订单号：</span>
 					<textarea name="cwbs" cols="45" rows="3" id="cwbs"></textarea>

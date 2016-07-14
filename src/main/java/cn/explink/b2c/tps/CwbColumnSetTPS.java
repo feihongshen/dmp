@@ -1,16 +1,16 @@
-package cn.explink.b2c.vipshop;
+package cn.explink.b2c.tps;
 
 import org.springframework.stereotype.Service;
 
 import cn.explink.domain.ExcelColumnSet;
 
 @Service
-public class CwbColumnSetVipShop {
+public class CwbColumnSetTPS {
 
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
 	 */
-	public ExcelColumnSet getEexcelColumnSetByB2c(String b2cFlag) {
+	public ExcelColumnSet getTPSOrderColumnSetByB2c(String b2cFlag) {
 		// TODO Auto-generated method stub
 		ExcelColumnSet excelColumnSet = new ExcelColumnSet();
 

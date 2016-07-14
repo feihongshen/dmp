@@ -122,6 +122,25 @@ public class CwbDetailView {
 	private String cwbordertype;//订单类型
 	private String checkstateresultname; //审核状态
 	
+	
+	//Hps_Concerto add 2016年6月27日 11:19:53
+	private String cwbstatetext;
+	private String flowordertypetext;
+	public String getCwbstatetext() {
+		return cwbstatetext;
+	}
+
+	public void setCwbstatetext(String cwbstatetext) {
+		this.cwbstatetext = cwbstatetext;
+	}
+	public String getFlowordertypetext() {
+		return flowordertypetext;
+	}
+
+	public void setFlowordertypetext(String flowordertypetext) {
+		this.flowordertypetext = flowordertypetext;
+	}
+	//***********
 	public String getCheckstateresultname() {
 		return checkstateresultname;
 	}

@@ -144,7 +144,7 @@ public class CwbOrder {
 	private int branchfeebillexportflag;// 加盟商派费账单导出标志
 	
 	private int deliverypermit;//上门退订单是否可领货 0可领 1不可领
-	private int vipclub;// 是否团购标志
+	private int vipclub;// 业务类型
 
 	// 以下是快递业务新增字段
 
@@ -430,6 +430,10 @@ public class CwbOrder {
 	private int mpsallarrivedflag;// 一票多件是否到齐（0：未到齐，1：到齐） MPSAllArrivedFlagEnum
 
 	private int ismpsflag; // 是否一票多件：0默认；1是一票多件 注意：这里只描述开启集单模式才起作用
+	
+	private String tpstranscwb;// tps运单号
+	
+	private String orderSource;// 订单类型
 
 	public int getInstationhandoverid() {
 		return this.instationhandoverid;
@@ -2074,7 +2078,6 @@ public class CwbOrder {
 	public void setVipclub(int vipclub) {
 		this.vipclub = vipclub;
 	}
-
 	public int getExpressProductType() {
 		return expressProductType;
 	}
@@ -2097,5 +2100,20 @@ public class CwbOrder {
 
 	public void setExceldeliverid(long exceldeliverid) {
 		this.exceldeliverid = exceldeliverid;
+	}
+		public String getTpstranscwb() {
+		return tpstranscwb;
+	}
+
+	public void setTpstranscwb(String tpstranscwb) {
+		this.tpstranscwb = tpstranscwb;
+	}
+
+	public String getOrderSource() {
+		return orderSource;
+	}
+
+	public void setOrderSource(String orderSource) {
+		this.orderSource = orderSource;
 	}
 }

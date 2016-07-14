@@ -277,7 +277,10 @@ function todayweilinghuo(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
@@ -286,7 +289,10 @@ function todayweilinghuo(){
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 				}
@@ -321,7 +327,10 @@ function  historyweilinghuo(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"' >"
@@ -330,7 +339,10 @@ function  historyweilinghuo(){
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 				}
@@ -365,7 +377,10 @@ function yiling(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"' >"
@@ -374,7 +389,10 @@ function yiling(){
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 					

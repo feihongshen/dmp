@@ -397,6 +397,8 @@ public class CwbDAO {
 			}
 
 			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
+			cwbOrder.setTpstranscwb(rs.getString("tpstranscwb"));
+			cwbOrder.setOrderSource(rs.getString("order_source"));
 			return cwbOrder;
 		}
 	}
@@ -9819,11 +9821,14 @@ public class CwbDAO {
 		return this.jdbcTemplate.update(sql, emaildate,cwb);
 	}
 
+	//【修改】根据电话号码获取寄件人或收件人信息：信息内容增加电话号码【周欢】2016-07-13
 	public List<Map<String, Object>> getCwbOrderByPhone(String phone, String flag) {
 		StringBuffer sql= new StringBuffer("");
 		new StringBuffer("");
 		if(flag.equals("1") || flag.equals("2")){
-			sql.append("SELECT DISTINCT sendername,senderprovince,sendercity,sendercounty,senderstreet,senderaddress,senderprovinceid,sendercityid,sendercountyid,senderstreetid from express_ops_cwb_detail where state=1 ");
+			sql.append("SELECT DISTINCT sendername,senderprovince,sendercity,sendercounty,senderstreet,senderaddress,"
+					+ "senderprovinceid,sendercityid,sendercountyid,senderstreetid,sendercellphone,"
+					+ "sendertelephone from express_ops_cwb_detail where state=1 ");
 			if(flag.equals("1")){//根据寄件人手机号
 				sql.append(" and sendercellphone='"+phone+"' ");
 			}else if(flag.equals("2")){//根据寄件人固话
@@ -9831,7 +9836,8 @@ public class CwbDAO {
 			}
 			sql.append(" and cwbordertypeid=6 limit 0,3");
 		}else if(flag.equals("3") || flag.equals("4")){
-			sql.append("SELECT DISTINCT consigneename,cwbprovince,cwbcity,cwbcounty,recstreet,consigneeaddress,recprovinceid,reccityid,reccountyid,recstreetid from express_ops_cwb_detail where state=1 ");
+			sql.append("SELECT DISTINCT consigneename,cwbprovince,cwbcity,cwbcounty,recstreet,consigneeaddress,"
+					+ "recprovinceid,reccityid,reccountyid,recstreetid,consigneemobile,consigneephone from express_ops_cwb_detail where state=1 ");
 			if(flag.equals("3")){//根据收件人手机号
 				sql.append(" and consigneemobile='"+phone+"' ");
 			}else if(flag.equals("4")){//根据收件人固话

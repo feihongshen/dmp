@@ -20,6 +20,7 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 
 /**
@@ -63,8 +64,16 @@ public class PeisongOrderService {
 			orderDTO.setCwbcounty(order.getCneeRegion());//收件人区
 			orderDTO.setConsigneename(order.getCneeContacts());//收件人
 			orderDTO.setConsigneeaddress(order.getCneeAddr());//收件人地址
-			orderDTO.setConsigneephone(order.getCneeTel());//收件人电话
-			orderDTO.setConsigneemobile(order.getCneeMobile());//收件人手机
+			String tel = order.getCneeTel();//收件人电话
+			if(!StringUtil.isEmpty(tel)) {
+				tel = SecurityUtil.getInstance().encrypt(tel);
+			}
+			orderDTO.setConsigneephone(tel);//寄件人电话
+			String mobile = order.getCneeMobile();
+			if(!StringUtil.isEmpty(mobile)) {
+				mobile = SecurityUtil.getInstance().encrypt(mobile);
+			}
+			orderDTO.setConsigneemobile(mobile);//收件人手机
 			orderDTO.setConsigneepostcode(order.getPostCode());//收件人邮编
 			String warehouseAddr = order.getWarehouseAddr();//仓库地址，拼接到remark5
 			//重量、体积自动化订单时设置为0，其余取上游数据
@@ -121,19 +130,7 @@ public class PeisongOrderService {
 			} else {
 				order_delivery_batch = "普通订单";
 			}
-			//
 			int order_source = order.getOrderSource();
-			// 服务类型：1.B2C， 2.仓配服务，3.配送服务
-			/*String service_type = order.getVip().getServiceType().toString();
-			String cargotype = "";
-			if ("1".equals(service_type)) {
-				cargotype = "B2C";
-			} else if ("2".equals(service_type)) {
-				cargotype = "仓配服务";
-			} else if ("3".equals(service_type)) {
-				cargotype = "配送服务";
-			}
-			orderDTO.setCargotype(cargotype);*/
 			orderDTO.setOrder_source(order_source);
 			
 			String createdTime = mQGetOrderDataService.toDateForm(order.getCreateTime());//记录生成时间
@@ -153,10 +150,8 @@ public class PeisongOrderService {
 			int is_gatherpack = order.getVip().getIsGatherPack(); //1：表示此订单需要承运商站点集包 0：表示唯品会仓库整单出仓
 			int is_gathercomp = order.getVip().getIsGatherComp();//最后一箱:1最后一箱 ，0默认 
 			
-			
-			
-			
 			Integer total_pack = order.getTotalPack(); // 新增箱数
+
 			int sendcarnum = order.getTotalPack();
 			
 			int cwbordertype = CwbOrderTypeIdEnum.Peisong.getValue();
@@ -177,8 +172,16 @@ public class PeisongOrderService {
 			orderDTO.setCustomercommand("送货时间要求:" + required_time + ",订单配送批次:" + order_delivery_batch + ",预约揽收时间："+go_get_return_time);
 			orderDTO.setSendcargoname("[发出商品]");
 			orderDTO.setCustomerid(Integer.parseInt(customerid));
-			
-			orderDTO.setRemark5(customer_name+"/"+warehouseAddr); // 仓库地址
+			String remark5="";
+			if(!StringUtil.isEmpty(customer_name)){
+				remark5+=customer_name;
+			}
+			if(!StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
+				remark5+="/"+customer_name;
+			}else if(StringUtil.isEmpty(remark5)&&!StringUtil.isEmpty(warehouseAddr)){
+				remark5+=customer_name;
+			}
+			orderDTO.setRemark5(remark5); // 仓库地址
 			orderDTO.setCwbordertypeid(cwbordertype);
 			
 			orderDTO.setExcelbranch(orderDTO.getExcelbranch()==null?"":orderDTO.getExcelbranch());//站点
@@ -193,6 +196,14 @@ public class PeisongOrderService {
 			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(cwb);
 			//集包相关代码处理
 			mQGetOrderDataService.mpsallPackage(vipshop, cwb, is_gatherpack, is_gathercomp,transcwb, total_pack, cwbOrderDTO,mpsswitch,orderDTO,order_batch_no);
+			//非集单模式：当boxlist不为空时，保存箱号与total_pack一致的订单信息，当boxlist为空时dmp只存第一次下发的订单数据
+			if(boxlist!=null && boxlist.size()!=0 && is_gatherpack==0 && boxlist.size()!=total_pack){
+				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+			}else if(boxlist==null||boxlist.size()==0 && is_gatherpack==0 && cwbOrderDTO != null){
+				this.logger.info("非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
+			}
 			if (cwbOrderDTO != null ) {
 				if(is_gatherpack==0){
 					this.logger.info("获取唯品会订单有重复,已过滤...cwb={}", cwb);
