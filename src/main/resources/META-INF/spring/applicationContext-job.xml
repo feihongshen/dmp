@@ -101,9 +101,9 @@
 				<ref bean="doTime_yonghui" />
 				<ref bean="doTime_pinhaohuo" />
 				<ref bean="doTime_sendFlow" />
-				<ref bean="doTime_expressPreOrder" />
 				<!--有两个快递单转业务的定时器：doTime_expressTransOrder、doTime_expressOrderTransfer，保留后者（字段更全）-刘武强20160712  -->
-				<!-- <ref bean="doTime_expressTransOrder" /> -->
+				<!-- <ref bean="doTime_expressPreOrder" /> -->
+				<ref bean="doTime_expressTransOrder" />
 				<ref bean="doTime_createBackTimeLog"/>
 				<ref bean="doTime_dailyDayLogByTuihuoGenerate"/>
 				<ref bean="doTime_dailyDayLogByWareHouseGenerate"/>
