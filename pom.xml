@@ -707,13 +707,6 @@
   				</exclusion>
   			</exclusions> 
 		</dependency>
-		<dependency>
-	       <groupId>com.sun</groupId>
-	       <artifactId>tools</artifactId>
-	       <scope>system</scope>
-	       <version>1.7</version>
-	       <systemPath>C:\Java\jdk1.7.0_13/lib/tools.jar</systemPath>
- 		 </dependency>
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>
