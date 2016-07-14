@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS `fn_df_rule_cust`;
 DROP TABLE IF EXISTS `fn_df_rule_range`;
 DROP TABLE IF EXISTS `fn_df_rule_subsidy`;
 DROP TABLE IF EXISTS `fn_df_sanction`;
+DROP TABLE IF EXISTS `fn_df_agreement_lock`;
 
 ALTER TABLE fn_df_agreement_backup RENAME TO fn_df_agreement;
 ALTER TABLE fn_df_bill_detail_backup RENAME TO fn_df_bill_detail;

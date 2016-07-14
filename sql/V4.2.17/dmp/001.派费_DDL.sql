@@ -546,6 +546,7 @@ CREATE TABLE `fn_df_rule_subsidy` (
   `item` tinyint(4) DEFAULT NULL COMMENT '补贴项',
   `price` decimal(18,2) DEFAULT NULL COMMENT '补贴金额',
   `price_unit` tinyint(4) DEFAULT NULL COMMENT '补贴单位',
+  `range_num` int(11) DEFAULT NULL COMMENT '补贴范围',
   `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -583,3 +584,14 @@ CREATE TABLE `fn_df_sanction` (
   KEY `index_discipline_credate` (`create_time`),
   KEY `index_discipline_org_id` (`org_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费奖罚记录';
+
+-- ----------------------------
+-- Table structure for fn_df_agreement_lock
+-- ----------------------------
+CREATE TABLE `fn_df_agreement_lock` (
+   `id` int(11) NOT NULL COMMENT '主键ID',
+   `remark` varchar(50) NULL COMMENT '备注',
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='协议并发锁';
+
+INSERT INTO `fn_df_agreement_lock` (`id`, `remark`) values('1',NULL);
