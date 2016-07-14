@@ -12,9 +12,9 @@
 		brokerURL="${jms.brokerURL}" />
 
 	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
-		<!-- <property name="maxConnections" value="8" />
+		<property name="maxConnections" value="8" />
 		<property name="maximumActive" value="500" />
-		<property name="connectionFactory" ref="jmsConnectionFactory" /> -->
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
 	</bean>
 
 
