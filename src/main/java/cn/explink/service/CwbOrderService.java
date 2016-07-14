@@ -51,6 +51,7 @@ import cn.explink.b2c.maisike.stores.StoresDAO;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.b2c.tools.RestHttpServiceHanlder;
+import cn.explink.b2c.tps.TpsCwbFlowService;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.controller.ExplinkResponse;
@@ -483,6 +484,8 @@ public class CwbOrderService extends BaseOrderService {
 	
 	@Autowired
 	private UserDAO userDao;
+	@Autowired
+	private TpsCwbFlowService tpsCwbFlowService;
 	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
@@ -1753,6 +1756,8 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		CwbOrderService.logger.info("快递流程状态反馈接口======结束");
 
+		//add by huangzh 2016-6-27 在站点的扫描、批量、合包到货操作，都需要添加数据到临时表express_ops_tps_flow_tmp
+		this.tpsCwbFlowService.save(co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,user.getBranchid(),null,true,null,null);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -1842,6 +1847,8 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
 		}
+		//add by huangzh 2016-6-27 在站点的扫描、批量、合包到货操作，都需要添加数据到临时表express_ops_tps_flow_tmp
+		this.tpsCwbFlowService.save(co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,user.getBranchid(),null,true,null,null);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -4849,6 +4856,18 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}
 
+		/* String usedeliverpay = "no";
+		 * 小件员领货质控使用的代码，目前先不实现 try { usedeliverpay =
+		 * systemInstallDAO.getSystemInstallByName
+		 * ("usedeliverpayup").getValue(); } catch (Exception e) {
+		 * logger.error("领货时，小件员交款系统配置获取失败"); } if (usedeliverpay.equals("yes")
+		 * &&
+		 * gotoClassAuditingDAO.getDeliverPayUpAndArrearageByDeliverid(deliveryUser
+		 * .getUserid()) > 0) { throw new
+		 * CwbException(cwb,FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+		 * ExceptionCwbErrorTypeEnum.XiaoJianYuanYouQianKuan); }
+		 */
+
 		// 校验配送状态
 		DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 
@@ -5323,6 +5342,19 @@ public class CwbOrderService extends BaseOrderService {
 					throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 				}
 			}
+		}else{
+			//Hps_Concerto   如果 不是 批量反馈 如果 反馈为分站滞留。 那么 也需要加上时间前缀。
+			if(podresultid==DeliveryStateEnum.FenZhanZhiLiu.getValue()&&deliverstateremark.length()>0){
+				String oldcwbremark = co.getCwbremark().length() > 0 ? co.getCwbremark() + "\n" : "";
+				String newcwbremark = oldcwbremark + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "[" + user.getRealname() + "]" + zhiliuremark;
+				try {
+					this.cwbDAO.updateCwbRemark(co.getCwb(), newcwbremark);
+					co.setCwbremark(newcwbremark);
+				} catch (Exception e) {
+					CwbOrderService.logger.error("error while saveing cwbremark,cwb:" + co.getCwb() + "cwbremark:" + newcwbremark, e);
+					throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
+				}
+			}
 		}
 
 		if (((podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenHuanChengGong.getValue()) || (podresultid == DeliveryStateEnum.ShangMenTuiChengGong
@@ -5394,34 +5426,37 @@ public class CwbOrderService extends BaseOrderService {
 		if ((backreasonid != 0) && ((podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.BuFenTuiHuo.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui
 				.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(backreasonid);
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,false);
 			this.cwbDAO.saveCwbForBackreason(co.getCwb(), reason.getReasoncontent(), backreasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 
 		if ((firstlevelreasonid != 0) && ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(leavedreasonid);
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,true);
 			this.cwbDAO.saveCwbForLeavereason(co.getCwb(), reason.getReasoncontent(), leavedreasonid, firstlevelreasonid);
+			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
+		}else if((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue())&&(deliverstateremark.length()>0)){
+			cwbremark = this.creCwbremark(co.getCwbremark(), null, deliverstateremark,true);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 		if ((changereasonid != 0) && (podresultid == DeliveryStateEnum.DaiZhongZhuan.getValue())) {
 			reason = this.reasonDAO.getReasonByReasonid(changereasonid);
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,false);
 			this.cwbDAO.saveCwbForChangereason(co.getCwb(), reason.getReasoncontent(), changereasonid, firstchangereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 
 		// 配送成功添加到历史备注中======LX====ADD====
 		if (podresultid == DeliveryStateEnum.PeiSongChengGong.getValue()) {
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,false);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
 
 		// 为货物丢失添加的
 		if ((losereasonid != 0) && ((podresultid == DeliveryStateEnum.HuoWuDiuShi.getValue()))) {
 			reason = this.reasonDAO.getReasonByReasonid(losereasonid);
-			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark);
+			cwbremark = this.creCwbremark(co.getCwbremark(), reason.getReasoncontent(), deliverstateremark,false);
 			this.cwbDAO.saveCwbForDiushireason(co.getCwb(), reason.getReasoncontent(), losereasonid);
 			this.cwbDAO.updateCwbRemark(co.getCwb(), cwbremark);
 		}
@@ -8918,16 +8953,34 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param deliverstateremark
 	 * @return
 	 */
-	private String creCwbremark(String cwbremark, String reasoncontent, String deliverstateremark) {
+	private String creCwbremark(String cwbremark, String reasoncontent, String deliverstateremark,boolean flag) {
 		StringBuilder strBuilder = new StringBuilder();
 		if ((null != cwbremark) && (cwbremark.length() > 0)) {
 			strBuilder.append(cwbremark + ",");
 		}
+		/*if ((null != deliverstateremark) && (deliverstateremark.length() > 0)) {
+			strBuilder.append(deliverstateremark + ",");
+		}
 		if ((null != reasoncontent) && (reasoncontent.length() > 0)) {
 			strBuilder.append(reasoncontent + ",");
-		}
-		if ((null != deliverstateremark) && (deliverstateremark.length() > 0)) {
-			strBuilder.append(deliverstateremark + ",");
+		}*/
+		//Hps_Concerto  这么做的原因是如果是分站滞留的 那就让其的remark 样式和 批量的一致 就是deliverstateremark在前 reasoncontent在后
+		// 不想复制一个新的 因为改动又不大， 所以这么写了。
+		int i = 0;
+		while(i<2){
+			if(flag){
+				if ((null != deliverstateremark) && (deliverstateremark.length() > 0)) {
+					strBuilder.append(deliverstateremark + ",");
+				}
+			}else{
+				if ((null != reasoncontent) && (reasoncontent.length() > 0)) {
+					strBuilder.append(reasoncontent + ",");
+				}
+				
+			}
+			flag=!flag;
+			i++;	
+			
 		}
 		if (strBuilder.length() > 0) {
 			if (strBuilder.lastIndexOf(",") == (strBuilder.length() - 1)) {
