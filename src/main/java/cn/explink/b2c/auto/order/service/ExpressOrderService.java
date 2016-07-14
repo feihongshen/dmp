@@ -162,13 +162,13 @@ public class ExpressOrderService {
 			if(!CollectionUtils.isEmpty(listBranch)){
 				acceptBranch = listBranch.get(0);				
 			}
-			if(acceptBranch == null){
+			if(acceptBranch == null && expressDetailTemp.getIsAcceptProv() == 1){
 				logger.info("insertSigleCwbOrder,站点为空,单号{}", expressDetailTemp.getTransportNo());
 				return;
 			}
 			// 小件员
 			User user = userDAO.getUserByUsername(expressDetailTemp.getAcceptOperator());
-			if(user == null){
+			if(user == null && expressDetailTemp.getIsAcceptProv() == 1){
 				logger.info("insertSigleCwbOrder小件员为空,单号{}", expressDetailTemp.getTransportNo());
 				return;
 			}

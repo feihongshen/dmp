@@ -62,7 +62,7 @@ public class MonitorKucunDAO {
 	 */
 	@DataSource(DatabaseType.REPLICA)
 	public List<MonitorKucunSim> getMonitorLogByBranchid(String branchids ,String wheresql,String branchname) {
-		StringBuffer sql = new StringBuffer("SELECT "+branchname+" as branchid,COUNT(1) as dcount, SUM(op.receivablefee+op.paybackfee) as dsum FROM  `express_ops_cwb_detail` op left join express_ops_cwb_detail as de on op.cwb=de.cwb   WHERE de.state=1 and  "+wheresql+" GROUP BY "+branchname+"");
+		StringBuffer sql = new StringBuffer("SELECT "+branchname+" as branchid,COUNT(1) as dcount, SUM(op.receivablefee+op.paybackfee) as dsum FROM  `express_ops_cwb_detail` op   WHERE op.state=1 and  "+wheresql+" GROUP BY "+branchname+"");
 
 		System.out.println("-- 生命周期监控:\n"+sql);
 		List<MonitorKucunSim> list = jdbcTemplate.query(sql.toString(), new MonitorKucunSimMapper());
