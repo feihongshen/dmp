@@ -384,6 +384,7 @@ function tohome(){
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected=selected<%} %> ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
+			               超区领货：<input type="checkbox" id="isChaoqu" name="isChaoqu"/>
 				</p>
 			    <p><span>订单号：</span>
 					<textarea name="cwbs" cols="45" rows="3" id="cwbs"></textarea>
@@ -427,7 +428,7 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -449,7 +450,7 @@ function tohome(){
 											<%if(showCustomerSign){ %>
 													<td width="100"><%=co.getRemarkView() %></td>
 												<%} %>
-											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<td width="230" align="left"><%=co.getConsigneeaddress() %></td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
 											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
@@ -495,7 +496,7 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -517,7 +518,7 @@ function tohome(){
 											<%if(showCustomerSign){ %>
 													<td width="100"><%=co.getRemarkView() %></td>
 												<%} %>
-											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<td width="230" align="left"><%=co.getConsigneeaddress() %></td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
 											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
@@ -562,7 +563,7 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -582,7 +583,7 @@ function tohome(){
 											<%if(showCustomerSign){ %>
 													<td width="100"><%=co.getRemarkView()==null?"":co.getRemarkView() %></td>
 												<%} %>
-											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<td width="230" align="left"><%=co.getConsigneeaddress() %></td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
 											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
@@ -621,7 +622,7 @@ function tohome(){
 									class="table_5">
 									<tr>
 										<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
-										<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
+										<td width="80" align="center" bgcolor="#f1f1f1">供货商</td>
 										<td width="120" align="center" bgcolor="#f1f1f1">到货时间</td>
 										<td width="120" align="center" bgcolor="#f1f1f1">批量处理操作时间</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
@@ -629,7 +630,7 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="160" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -644,7 +645,7 @@ function tohome(){
 											<%JSONObject cwbOrder =  obj.get("cwbOrder")==null?null:JSONObject.fromObject(obj.get("cwbOrder"));%>
 											<tr id="TR<%=obj.get("cwb") %>"  <%if(!obj.get("errorinfo").equals("无此单号")){ %> name="export" <%} %>  cwb="<%=obj.get("cwb") %>" customerid="<%=cwbOrder==null?"":cwbOrder.getString("customerid") %>"  deliverid="<%=cwbOrder==null?"":cwbOrder.getString("deliverid")%>">
 												<td width="100" align="center"><%=obj.get("cwb") %></td>
-												<td width="100" align="center"><%=obj.getString("customername") %></td>
+												<td width="80" align="center"><%=obj.getString("customername") %></td>
 												<td width="120" align="center"><%=obj.getString("inSitetime") %></td>
 												<td width="120" align="center"><%=obj.getString("createtime") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getString("consigneename") %></td>
@@ -660,8 +661,6 @@ function tohome(){
 											<% }}%>
 											</td>
 											<td width="60" align="center"><%
-											System.out.print(obj.get("flowordertype"));
-											System.out.print(obj.get("deliverystate"));
 											if(obj.get("flowordertype")!=null){
 											if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已审核"){%>
 											审核为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
