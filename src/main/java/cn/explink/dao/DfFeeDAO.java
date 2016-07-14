@@ -54,7 +54,7 @@ public class DfFeeDAO {
             dfBillFee.setOrderNo(rs.getString("order_no"));
             dfBillFee.setTranscwb(rs.getString("transcwb"));
             dfBillFee.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-            dfBillFee.setCustomerid(rs.getString("customerid"));
+            dfBillFee.setCustomerid(rs.getLong("customerid"));
             dfBillFee.setSendcarnum(rs.getInt("sendcarnum"));
             dfBillFee.setSenderaddress(rs.getString("senderaddress"));
             dfBillFee.setConsigneeaddress(rs.getString("consigneeaddress"));
