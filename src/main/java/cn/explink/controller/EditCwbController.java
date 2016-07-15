@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,12 +25,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tools.DataImportDAO_B2c;
+import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.AppearWindowDao;
 import cn.explink.dao.BranchDAO;
@@ -164,41 +168,7 @@ public class EditCwbController {
 		model.addAttribute("cwbArray", cwbArray);
 		String cwbsSql = cwbsSqlBuffer.substring(0, cwbsSqlBuffer.length() - 1);
 		List<CwbOrder> cwbList = this.cwbDAO.getCwbByCwbs(cwbsSql);
-		//	Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(cwbsSql);
-
-		/*// 做重置审核状态更改的操作 start
-		if (type == EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue()) {
-			List<CwbOrder> allowCwb = new ArrayList<CwbOrder>();// 允许更改订单
-			List<CwbOrder> prohibitedCwb = new ArrayList<CwbOrder>(); // 禁止更改的订单
-			for (CwbOrder co : cwbList) {
-
-				// 判断订单当前状态为36 已审核状态的订单才能重置审核状态
-				if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
-					// 判断订单号是否为POS刷卡 posremark=POS刷卡 POS刷卡的订单不允许重置审核状态
-					DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb(co.getCwb()).get(0);
-					if ((co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) && ((accountCwbFareDetailMap.get(co.getCwb()) == null ? 0 : accountCwbFareDetailMap.get(co.getCwb()).getFareid()) > 0)) {
-						// 暂借对象中的备注1字段输出一些提示语
-						co.setRemark1("当前订单运费已交款，不可重置审核状态");
-						prohibitedCwb.add(co);
-					} else if (ds.getPosremark().indexOf("POS刷卡") == -1) {
-						allowCwb.add(co);
-					} else {
-						// 暂借对象中的备注1字段输出一些提示语
-						co.setRemark1("POS刷卡签收的订单审核后不允许重置审核状态");
-						prohibitedCwb.add(co);
-					}
-				} else {
-					// 暂借对象中的备注1字段输出一些提示语
-					co.setRemark1("当前订单状态为[" + FlowOrderTypeEnum.getText(co.getFlowordertype()).getText() + "],不允许重置审核状态");
-					prohibitedCwb.add(co);
-				}
-
-			}
-			model.addAttribute("allowCwb", allowCwb);
-			model.addAttribute("prohibitedCwb", prohibitedCwb);
-			return "editcwb/ChongZhiShenHe";
-			// 做重置审核状态更改的操作 end
-		}*/
+		
 		if (type == EditCwbTypeEnum.XiuGaiJinE.getValue()) {// 修改订单金额更改操作
 															// Start
 			List<CwbOrderWithDeliveryState> allowCods = new ArrayList<CwbOrderWithDeliveryState>();
@@ -1100,5 +1070,37 @@ public class EditCwbController {
 		List<OrderAddressRevise> orderAddressRevise = this.orderAddressReviseDao.getAddressReviseDetails(cwb);
 		model.addAttribute("orderAddressRevises", orderAddressRevise);
 		return "editcwb/addressReviseDetail";
+	}
+	
+	/**
+	 * 添加验证，如果存在未审核的修改申请，则不允许申请。
+	 * @author jian.xie
+	 * @date 2016-07-14
+	 */
+	@RequestMapping("/checkIsExist")
+	@ResponseBody
+	public String checkIsExist(@RequestParam(value="cwbs", defaultValue="-1") String cwbs){
+		if(StringUtils.isEmpty(cwbs)){
+			return "";
+		}
+		List<ZhiFuApplyView> list = zhiFuApplyDao.getNotAudiByCwbs(cwbs);
+		StringBuilder result = new StringBuilder();
+		Set<String> setCwb = new HashSet<String>();
+		if(!CollectionUtils.isEmpty(list)){
+			ZhiFuApplyView view = null;
+			for(int i = 0, size = list.size(); i < size; i++){
+				view = list.get(i);
+				// 去重
+				if(setCwb.contains(view.getCwb())){
+					break;
+				}
+				if(i != 0){
+					result.append(",");
+				}
+				result.append(view.getCwb());
+				setCwb.add(view.getCwb());
+			}
+		}
+		return result.toString(); 
 	}
 }

@@ -40,14 +40,40 @@ function sub(){
 	$.each($("input[name='cwbs']"),function(i,cwb){
 		
 		if(!isFloat($("input[name='Shouldfare_"+cwb.value+"']").val())){
-			alert("订单号"+cwb.value+"的修修改为运费金额内容不是数字！");
+			alert("订单号"+cwb.value+"的修改为运费金额内容不是数字！");
 			isSubmit=false;
 			return false;
 		}	
 	});
+	if(!checkCwbs(cwbs)){
+        isSubmit=false;
+        return false;
+    }
 	if(isSubmit){
 		$("#searchForm").submit();
 	}
+}
+
+/**
+ * 添加验证，如果存在未审核的修改申请，则不允许申请。
+ * @author jian.xie
+ * @date 2016-07-14
+ */
+function checkCwbs(cwbs){
+    var result = true;
+    $.ajax({ 
+        'url':'<%=request.getContextPath() %>/editcwb/checkIsExist',
+        'data':{'cwbs':cwbs}, 
+        'type':'POST', 
+        'async': false,
+        'success':function(data){ 
+            if(data){
+                alert("提交失败，订单【" + data + "】存在未确认的支付信息修改申请");
+                result = false;
+            }
+        }        
+    });
+    return result;
 }
 </script>
 </HEAD>
