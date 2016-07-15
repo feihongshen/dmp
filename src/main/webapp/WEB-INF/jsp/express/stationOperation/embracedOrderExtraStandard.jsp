@@ -2263,11 +2263,13 @@
 		}); 
 	};
 	
-	//收件人历史信息双击事件
+	/*****************edit by 周欢  修改双击tabel内容填充异常  2016-7-15 *******************/
+	//收件人历史信息双击事件    
 	function consigneeHistoryTableDblClick(consignee){
 		var sender_adress = $("#sender_adress_id").val();
 		var consigneeCellphone = $(consignee).find("td").eq(11).text();
 		var consigneeTellphone = $(consignee).find("td").eq(10).text();
+		var consigneeName = $(consignee).find("td").eq(0).text();
 		$("#consignee_adress_id").val("");
 		$("#area_consignee").val("");
 		$("#receive_provinceId").html($(consignee).find("td").eq(6).text());
@@ -2284,26 +2286,36 @@
 		$("#consignee_townid_id").val($(consignee).find("td").eq(9).text());
 		$("#consignee_townName_id").val($(consignee).find("td").eq(4).text());
 		$("#consignee_adress_id").val($(consignee).find("td").eq(5).text());
-		$("#consignee_name_id").val($(consignee).find("td").eq(0).text());
-		if(consigneeCellphone.val() != ""){
+		
+		if(consigneeName != "null"){
+			$("#consignee_name_id").val(consigneeName);
+		}else{
+			$("#consignee_name_id").val("");
+		}
+		if(consigneeCellphone != "null"){
 			$("#consignee_cellphone_id").val(consigneeCellphone);
+		}else{
+			$("#consignee_cellphone_id").val("");
 		}
-		if(consigneeTellphone.val() != ""){
+		if(consigneeTellphone != "null"){
 			$("#consignee_telephone_id").val(consigneeTellphone);
+		}else{
+			$("#consignee_telephone_id").val("");
 		}
-		$("#consignee_name_id").val($(consignee).find("td").eq(0).text());
+		//$("#consignee_name_id").val($(consignee).find("td").eq(0).text());
 		
 		$("#sender_adress_id").val(sender_adress);
 	}
 	
+	/*****************edit by 周欢  修改双击tabel内容填充异常  2016-7-15 *******************/
 	//寄件人历史信息双击事件
 	function senderHistoryTableDblClick(sender){
 		var consignee_adress = $("#consignee_adress_id").val();
 		var senderTelephone = $(sender).find("td").eq(10).text();
 		var senderCellphone = $(sender).find("td").eq(11).text();
+		var senderName = $(sender).find("td").eq(0).text();
 		$("#area_sender").val("")
 		$("#sender_adress_id").val("");
-		$("#sender_name_id").val($(sender).find("td").eq(0).text());
 		$("#BranchprovinceId").html($(sender).find("td").eq(6).text());
 		$("#BranchcityId").html($(sender).find("td").eq(7).text());
 		$("#BranchcountyId").html($(sender).find("td").eq(8).text());
@@ -2318,23 +2330,33 @@
 		$("#sender_townid_id").val($(sender).find("td").eq(9).text());
 		$("#sender_townName_id").val($(sender).find("td").eq(4).text());
 		$("#sender_adress_id").val($(sender).find("td").eq(5).text());
-		if(senderCellphone.val() != ""){
-			$("#sender_cellphone_id").val(senderCellphone);
+		if(senderName != "null"){
+			$("#sender_name_id").val(senderName);
+		}else{
+			$("#sender_name_id").val("");
 		}
-		if(senderTelephone.val() != ""){
+		if(senderCellphone != "null"){
+			$("#sender_cellphone_id").val(senderCellphone);
+		}else{
+			$("#sender_cellphone_id").val("");
+		}
+		if(senderTelephone != "null"){
 			$("#sender_telephone_id").val(senderTelephone);
+		}else{
+			$("#sender_telephone_id").val("");
 		}
 		$("#consignee_adress_id").val(consignee_adress);
 	}
 	
+	/*****************edit by 周欢  修改双击tabel内容填充异常  2016-7-15 *******************/
 	//预约单信息双击事件
 	function reserveTableDblClick(reserve){
 		var consignee_adress = $("#consignee_adress_id").val();
 		var senderTelephone = $(sender).find("td").eq(13).text();
 		var senderCellphone = $(sender).find("td").eq(14).text();
+		var senderName = $(reserve).find("td").eq(1).text()
 		$("#area_sender").val("")
 		$("#sender_adress_id").val("");
-		$("#sender_name_id").val($(reserve).find("td").eq(1).text());
 		$("#reserveOrderNo").val($(reserve).find("td").eq(0).text());
 		$("#recordVersion").val($(reserve).find("td").eq(4).text());
 		$("#BranchprovinceId").html($(reserve).find("td").eq(6).text());
@@ -2351,11 +2373,20 @@
 		$("#sender_townid_id").val($(reserve).find("td").eq(12).text());
 		$("#sender_townName_id").val($(reserve).find("td").eq(11).text());
 		$("#sender_adress_id").val($(reserve).find("td").eq(2).text());
-		if(senderCellphone.val() != ""){
-			$("#sender_cellphone_id").val(senderCellphone);
+		if(senderName != "null"){
+			$("#sender_name_id").val(senderName);
+		}else{
+			$("#sender_name_id").val("");
 		}
-		if(senderTelephone.val() != ""){
+		if(senderCellphone != "null"){
+			$("#sender_cellphone_id").val(senderCellphone);
+		}else{
+			$("#sender_cellphone_id").val("");
+		}
+		if(senderTelephone != "null"){
 			$("#sender_telephone_id").val(senderTelephone);
+		}else{
+			$("#sender_telephone_id").val("");
 		}
 		//$("#consignee_adress_id").val(consignee_adress);
 	}
