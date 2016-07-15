@@ -403,7 +403,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		params.put("sendername", StringUtils.isNotBlank(embracedOrderVO.getSender_name()) ? embracedOrderVO.getSender_name() : null);
 		params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
 		params.put("sendercounty", StringUtils.isNotBlank(embracedOrderVO.getSender_countyName()) ? embracedOrderVO.getSender_countyName() : null);
-		params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getSender_townid())){
+			params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
+		}
 		params.put("senderstreet", StringUtils.isNotBlank(embracedOrderVO.getSender_townName()) ? embracedOrderVO.getSender_townName() : null);
 		params.put("senderid", StringUtils.isNotBlank(embracedOrderVO.getSender_certificateNo()) ? embracedOrderVO.getSender_certificateNo() : null);
 		// params.put("consigneeno",
@@ -418,7 +420,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		params.put("consigneename", StringUtils.isNotBlank(embracedOrderVO.getConsignee_name()) ? embracedOrderVO.getConsignee_name() : null);
 		params.put("reccountyid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid()) ? embracedOrderVO.getConsignee_countyid() : null);
 		params.put("cwbcounty", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyName()) ? embracedOrderVO.getConsignee_countyName() : null);
-		params.put("recstreetid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid()) ? embracedOrderVO.getConsignee_townid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid())){
+			params.put("recstreetid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid()) ? embracedOrderVO.getConsignee_townid() : null);
+		}
 		params.put("recstreet", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townName()) ? embracedOrderVO.getConsignee_townName() : null);
 		params.put("recid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_certificateNo()) ? embracedOrderVO.getConsignee_certificateNo() : null);
 		params.put("entrustname", StringUtils.isNotBlank(embracedOrderVO.getGoods_name()) ? embracedOrderVO.getGoods_name() : null);

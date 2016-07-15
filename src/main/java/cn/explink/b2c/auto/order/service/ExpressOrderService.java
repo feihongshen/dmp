@@ -105,6 +105,7 @@ public class ExpressOrderService {
 	    }
 		
 		List<ExpressDetailTemp> expressDetailTempList = expressOrderDao.getExpressDetailTempListNotOver(provinceType);
+		logger.info("provinceType:{}, 数量：{}", provinceType, expressDetailTempList.size());
 		if (CollectionUtils.isEmpty(expressDetailTempList)) {
 			logger.info("无快递订单需要转业务");
 			return;

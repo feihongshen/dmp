@@ -1248,7 +1248,11 @@ public class PDAController {
 	@RequestMapping("/exportwarhouse")
 	public String exportwarhouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
 		long startTime = System.currentTimeMillis();
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.filterNoEffectBranch(listNextBranch);
+		//Modified end
+		
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
 
@@ -1300,7 +1304,11 @@ public class PDAController {
 	 */
 	@RequestMapping("/changeexportwarhouse")
 	public String changeexportwarhouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.filterNoEffectBranch(listNextBranch);
+		//Modified end
+		
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
 
@@ -7461,8 +7469,12 @@ public class PDAController {
 		List<CwbDetailView> weichukuViewlist = this.getcwbDetail(weiChuKuList, cList, showCustomerjSONArray, null, 0);
 		// 已出库明细
 		List<CwbDetailView> yichukuViewlist = this.getcwbDetail(yiChuKuList, cList, showCustomerjSONArray, null, 0);
-
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.filterNoEffectBranch(listNextBranch);
+		//Modified end
+		
 		model.addAttribute("branchList", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
@@ -7663,7 +7675,11 @@ public class PDAController {
 		// 已出库明细
 		List<CwbDetailView> yichukuViewlist = this.getcwbDetail(yiChuKuList, cList, showCustomerjSONArray, null, 0);
 
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.filterNoEffectBranch(listNextBranch);
+		//Modified end
+		
 		model.addAttribute("branchList", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
@@ -11414,6 +11430,27 @@ public class PDAController {
 		}
 	}
 	
-	
+	/**
+	 * 过滤停用的站点
+	 * @author leo01.liao
+	 * @param listBranchBeFiltered
+	 * @return
+	 */
+	private List<Branch> filterNoEffectBranch(List<Branch> listBranchBeFiltered){
+		List<Branch> listBranch = new ArrayList<Branch>();
+		if(listBranchBeFiltered == null || listBranchBeFiltered.isEmpty()){
+			return listBranch;
+		}
+		
+		for(Branch branch : listBranchBeFiltered){
+			if(branch.getBrancheffectflag() == null || branch.getBrancheffectflag().trim().equals("0")){
+				continue;
+			}
+			
+			listBranch.add(branch);
+		}
+		
+		return listBranch;
+	}
 
 }

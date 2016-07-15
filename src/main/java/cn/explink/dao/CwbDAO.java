@@ -8403,11 +8403,32 @@ public class CwbDAO {
 		StringBuffer sql = new StringBuffer(
 				"SELECT * FROM  `express_ops_cwb_detail` WHERE  "
 						+ wheresql
-						+ " and "
+						+ " or ( flowordertype in(1,2) and "
 						+ (branchid.length() > 0 ? (" nextbranchid in("
 								+ branchid + ")  and") : " nextbranchid IN("
 								+ branchids + ") and ")
-						+ " nextbranchid>0 AND state=1  " + " limit "
+						+ " nextbranchid>0) AND state=1  " + " limit "
+						+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
+						+ Page.ONE_PAGE_NUMBER);
+
+		List<CwbOrder> list = this.jdbcTemplate.query(sql.toString(),
+				new CwbMapper());
+
+		return list;
+	}
+	
+	@DataSource(DatabaseType.REPLICA)
+	public List<CwbOrder> getMonitorLogByTypeAll(String wheresql, String branchid,
+			long page, String branchids) {
+
+		StringBuffer sql = new StringBuffer(
+				"SELECT * FROM  `express_ops_cwb_detail` WHERE  "
+						+ wheresql
+						+ " or ( flowordertype in(1,2) and "
+						+ (branchid.length() > 0 ? (" nextbranchid in("
+								+ branchid + ")  and") : " nextbranchid IN("
+								+ branchids + ") and ")
+						+ " nextbranchid>0) AND state=1  " + " limit "
 						+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
 						+ Page.ONE_PAGE_NUMBER);
 

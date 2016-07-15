@@ -232,7 +232,8 @@ public class CwbKuaiDiDAO {
 
 			sql += w.toString();
 		}
-		sql = sql + " and cd.state=1 and ds.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
+		//sql = sql + " and cd.state=1 and ds.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
+		sql = sql + " and cd.state=1 and  cd.cwbordertypeid = " + CwbOrderTypeIdEnum.Express.getValue();
 		return sql;
 	}
 
