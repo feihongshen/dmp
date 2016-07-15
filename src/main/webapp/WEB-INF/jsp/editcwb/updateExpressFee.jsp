@@ -37,8 +37,12 @@ List<CwbOrderWithDeliveryState> allowCods = (List<CwbOrderWithDeliveryState>)req
 <script type="text/javascript">
 function sub(){
 	var isSubmit = true;
+	var cwbs = "";
 	$.each($("input[name='cwbs']"),function(i,cwb){
-		
+		if(i != 0){
+            cwbs += ","
+        }
+        cwbs += cwb.value;
 		if(!isFloat($("input[name='Shouldfare_"+cwb.value+"']").val())){
 			alert("订单号"+cwb.value+"的修改为运费金额内容不是数字！");
 			isSubmit=false;
@@ -116,7 +120,7 @@ function checkCwbs(cwbs){
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2" id="gd_table2">
 	<tr>
 		<td colspan="10" align="center">
- 			<input type="button" class="buttonnew" onclick="sub()"  value="修改快递运费金额申请" />　<input type="button" class="buttonnew"  onclick="location.href='<%=request.getContextPath()%>/editcwb/start'"  value="返回" />
+ 			<input type="button" class="buttonnew" onclick="sub();"  value="修改快递运费金额申请" />　<input type="button" class="buttonnew"  onclick="location.href='<%=request.getContextPath()%>/editcwb/start'"  value="返回" />
 		</td>
  			 
  	</tr>
