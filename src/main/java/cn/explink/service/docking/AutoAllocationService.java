@@ -3,19 +3,30 @@
  */
 package cn.explink.service.docking;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.explink.dao.AutoIntowarehouseMessageDAO;
 import cn.explink.dao.EntranceDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.domain.AutoIntowarehouseMessage;
 import cn.explink.domain.Entrance;
 import cn.explink.param.AutoAllocationParam;
+import cn.explink.schedule.Constants;
+import cn.explink.util.CurrentUserHelper;
+import cn.explink.util.DateTimeUtil;
+import cn.explink.util.StringUtil;
 import cn.explink.util.Tools;
 import cn.explink.util.Tongxing.SocketClient;
 
@@ -31,6 +42,8 @@ public class AutoAllocationService  {
 	EntranceDAO entranceDAO;
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
+	@Autowired
+	AutoIntowarehouseMessageDAO autoIntowarehouseMessageDAO;
 	
 	//模拟多个客户端，每个客户端的socketclient存放在map中，key是上货口ip
 	private Map<String,SocketClient> socketMap =new HashMap<String,SocketClient>();
@@ -90,6 +103,7 @@ public class AutoAllocationService  {
 	 */
 	private void sendMsg(String IP, AutoAllocationParam param) {
 		String sendMsg=Tools.getCurrentTime(null)+" 向中间件发送消息"
+							+",序列号:"+param.getSerialNo()
 							+",订单号:"+param.getOrderid()
 							+",动作："+AutoAllocationParam.getActName(param.getAct())
 							+",出货口："+param.getExport()
@@ -98,7 +112,25 @@ public class AutoAllocationService  {
 		this.logger.info(sendMsg);
 		SocketClient sc=this.socketMap.get(IP);
 		sc.sendMessage(param.toString());
+		// added by wangwei, 20160713
+		saveSendMsg(param);
 	}
+	
+	// added by wangwei, 20160713, start
+	private void saveSendMsg(AutoAllocationParam param){
+		AutoIntowarehouseMessage autoIntowarehouseMessage = new AutoIntowarehouseMessage();
+		autoIntowarehouseMessage.setSerialNo(param.getSerialNo());
+		autoIntowarehouseMessage.setCwb(param.getOrderid());
+		autoIntowarehouseMessage.setSendContent(param.toString());
+		autoIntowarehouseMessage.setSendTime(DateTimeUtil.getNowTime());
+		autoIntowarehouseMessage.setReceiveContent("");
+		autoIntowarehouseMessage.setReceiveTime("0000-00-00 00:00:00");
+		autoIntowarehouseMessage.setHandleStatus(Constants.AUTO_ALLOC_STATUS_SENT);
+		autoIntowarehouseMessage.setCreatedByUser(CurrentUserHelper.getInstance().getUserName());
+		autoIntowarehouseMessage.setCreatedDtmLoc(new Date());
+		autoIntowarehouseMessageDAO.creAutoIntowarehouseMessage(autoIntowarehouseMessage);
+	}
+	// added by wangwei, 20160713, end
 	
 	/**
 	 *  处理返回结果
@@ -139,6 +171,50 @@ public class AutoAllocationService  {
 //        
 //        
 //	}
+	// added by wangwei, 20160713, start
+	/**
+	 *  处理返回结果
+	 *  成功响应举例
+	 *< root > <state>0</state><message>已添加队列</message><queue>2</queue></ root >
+	 *  失败响应举例
+	 *< root ><state>-3</state><message>队列处理中，无法处理！！！</message><queue>2</queue></ root >
+
+	 * @param result
+	 */
+	public void handleResult(String result) {
+		this.logger.info("接收自动分拨返回报文：" + result);
+		String serialNo = "";
+		String state = "";
+		try {
+			Document doc = DocumentHelper.parseText(result);
+			Element rootElt = doc.getRootElement();
+			serialNo = rootElt.elementTextTrim("serialno");
+			state = rootElt.elementTextTrim("state");			
+		} catch (DocumentException e) {
+			logger.error("解析自动分拨返回报文错误：" + result);
+			return;
+		}
+		
+		if (StringUtil.isEmpty(serialNo)){
+			return;
+		}
+		AutoIntowarehouseMessage autoIntowarehouseMessage = autoIntowarehouseMessageDAO.getAutoIntowarehouseMessageBySerialNo(serialNo);
+		if (autoIntowarehouseMessage != null){
+			autoIntowarehouseMessage.setReceiveContent(result);
+			autoIntowarehouseMessage.setReceiveTime(DateTimeUtil.getNowTime());
+			String handleStatus = Constants.AUTO_ALLOC_STATUS_HANDLE_FAIL;
+			if(state.equals("0")){
+				handleStatus = Constants.AUTO_ALLOC_STATUS_HANDLE_SUCCESS;
+			} else {
+				handleStatus = Constants.AUTO_ALLOC_STATUS_HANDLE_FAIL;
+			}
+			autoIntowarehouseMessage.setHandleStatus(handleStatus);
+			autoIntowarehouseMessage.setUpdatedByUser(autoIntowarehouseMessage.getCreatedByUser());
+			autoIntowarehouseMessage.setUpdatedDtmLoc(new Date());
+			autoIntowarehouseMessageDAO.saveAutoIntowarehouseMessage(autoIntowarehouseMessage);
+		}
+	}
+	// added by wangwei, 20160713, end
 	
 	/**
 	 * 启动与服务器的通信
@@ -162,7 +238,12 @@ public class AutoAllocationService  {
 		
 	}
 
-
-	
-
+	// added by wangwei, 20160713, start
+	public void updateStatus(String serialNo, String handleStatus) {
+		AutoIntowarehouseMessage autoIntowarehouseMessage = autoIntowarehouseMessageDAO.getAutoIntowarehouseMessageBySerialNo(serialNo);
+		autoIntowarehouseMessage.setHandleStatus(handleStatus);
+		autoIntowarehouseMessage.setUpdatedByUser(autoIntowarehouseMessage.getCreatedByUser());
+		autoIntowarehouseMessageDAO.saveAutoIntowarehouseMessage(autoIntowarehouseMessage);
+	}
+	// added by wangwei, 20160713, end
 }
