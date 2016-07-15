@@ -2088,5 +2088,4 @@ public class CwbOrder {
 	public void setTpstranscwb(String tpstranscwb) {
 		this.tpstranscwb = tpstranscwb;
 	}
-
 }
