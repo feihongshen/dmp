@@ -55,6 +55,7 @@ import cn.explink.domain.ExcelImportEdit;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
@@ -787,6 +788,25 @@ public class DataImportController {
 	@RequestMapping("/exportExcleToNoPIPei")
 	public void exportExcleToNoPIPei(Model model, HttpServletResponse response, HttpServletRequest request) {
 		String cwbs = this.excelImportEditDao.getEditInfoByBranch("0", 0);
+		
+		//Added by leoliao at 2016-06-29 漏了条件
+		if(!cwbs.equals("'--'")){
+			List<CwbOrder> listCwbOrder = this.cwbDAO.getCwbOrderByDelivery(cwbs, "WEIPIPEI");
+			if(listCwbOrder == null || listCwbOrder.isEmpty()){
+				// 如果没有数据，则返回--保证查询结果中不会跳过这一条件
+				cwbs =  "'--'";
+			}else{
+				StringBuffer sbCwb = new StringBuffer();
+				 for(CwbOrder cwbOrder : listCwbOrder){
+					 sbCwb.append("'");
+					 sbCwb.append(cwbOrder.getCwb());
+					 sbCwb.append("',");
+				 }
+				 cwbs = sbCwb.substring(0, sbCwb.length() - 1).toString();
+			}
+		}
+		//Added end
+		
 		this.dataImportService.ExportExcelMethod(response, request, cwbs, 0, 0, 0, 0);
 	}
 
@@ -950,6 +970,23 @@ public class DataImportController {
 		}
 		String cwbs = sb.substring(0, sb.toString().length() - 1).toString();
 		cwblist = this.cwbDAO.getCwbOrderByCwbs(cwbs);
+		
+		//Added by leoliao at 2016-06-30 未匹配的需要过滤已审核和已有配送站点的订单
+		if((cwb == null || cwb.trim().equals("")) && (cwblist != null) && String.valueOf(CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()).equals(type)){
+			List<CwbOrder> listCwbOrderRemove = new ArrayList<CwbOrder>();
+			
+			for(CwbOrder tmpCwbOrder : cwblist){
+				if(tmpCwbOrder.getFlowordertype() == CwbFlowOrderTypeEnum.YiShenHe.getValue() || tmpCwbOrder.getDeliverybranchid() != 0){
+					listCwbOrderRemove.add(tmpCwbOrder);
+				}
+			}
+			
+			if(listCwbOrderRemove.size() > 0){
+				cwblist.removeAll(listCwbOrderRemove);
+			}
+		}
+		//Added end
+		
 		return cwblist;
 	}
 

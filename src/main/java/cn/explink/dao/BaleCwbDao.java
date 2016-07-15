@@ -147,7 +147,12 @@ public class BaleCwbDao {
 		}
 	}
 	
-	/**
+	public Object getCwbCountByBaleId(long baleid){
+		String sql = "SELECT COUNT(1) FROM express_ops_bale_cwb where baleid=?";
+		return this.jdbcTemplate.queryForObject(sql,Object.class,baleid);
+	}
+	
+		/**
 	 * 查询订单对应的最后使用的包号
 	 * @date 2016年7月13日 下午5:30:18
 	 * @param cwbList
@@ -186,4 +191,7 @@ public class BaleCwbDao {
 		}
 		return list;
 	}
+	
+	
+	
 }

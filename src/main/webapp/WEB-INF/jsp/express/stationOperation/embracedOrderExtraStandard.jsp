@@ -698,6 +698,7 @@
         } 
     	
         //校验第一个框里的信息
+        
         if(!checkHead()){
         	return false;
         } 

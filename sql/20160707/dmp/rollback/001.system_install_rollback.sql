@@ -1,0 +1,1 @@
+update express_ops_setexportfield set fieldname='最后更新时间' where fieldenglishname='Newchangetime'

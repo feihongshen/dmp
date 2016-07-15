@@ -105,6 +105,7 @@ public class ExpressOrderService {
 	    }
 		
 		List<ExpressDetailTemp> expressDetailTempList = expressOrderDao.getExpressDetailTempListNotOver(provinceType);
+		logger.info("provinceType:{}, 数量：{}", provinceType, expressDetailTempList.size());
 		if (CollectionUtils.isEmpty(expressDetailTempList)) {
 			logger.info("无快递订单需要转业务");
 			return;
@@ -161,13 +162,13 @@ public class ExpressOrderService {
 			if(!CollectionUtils.isEmpty(listBranch)){
 				acceptBranch = listBranch.get(0);				
 			}
-			if(acceptBranch == null){
+			if(acceptBranch == null && expressDetailTemp.getIsAcceptProv() == 1){
 				logger.info("insertSigleCwbOrder,站点为空,单号{}", expressDetailTemp.getTransportNo());
 				return;
 			}
 			// 小件员
 			User user = userDAO.getUserByUsername(expressDetailTemp.getAcceptOperator());
-			if(user == null){
+			if(user == null && expressDetailTemp.getIsAcceptProv() == 1){
 				logger.info("insertSigleCwbOrder小件员为空,单号{}", expressDetailTemp.getTransportNo());
 				return;
 			}

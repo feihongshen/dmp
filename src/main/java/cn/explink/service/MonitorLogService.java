@@ -264,7 +264,7 @@ public class MonitorLogService {
 		}
 		
 		if("yichukuzaitu".equals(type)){
-			cwbList =   monitorKucunDAO.getMonitorLogByType(" flowordertype in(6,14,40,27) ", branchid, page,branchids);
+			cwbList =   monitorKucunDAO.getMonitorLogByType(" op.flowordertype in(6,14,40,27) ", branchid, page,branchids);
 			String cwbs ="";
 			if (cwbList.size() > 0) {
 				cwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
@@ -281,24 +281,23 @@ public class MonitorLogService {
 		 }
 		 
 		 if("all".equals(type)){
-			 
-			   cwbList =   monitorKucunDAO.getMonitorKucunByType("1", branchid, page,branchids);
-				String cwbs1 ="";
-				if (cwbList.size() > 0) {
-					cwbs1 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
-				} else {
-					cwbs1 = "'--'";
-				}
-				cwbList =   monitorKucunDAO.getMonitorLogByType( " flowordertype in(6,14,40,27) ", branchid, page,branchids);
-				String cwbs2 ="";
-				if (cwbList.size() > 0) {
-					cwbs2 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
-				} else {
-					cwbs2 = "'--'";
-				}
-				 clist = cwbDAO.getMonitorLogByType(" (flowordertype in(1,2) " +
-				 		" or cwb in("+cwbs1+")" +
-				 		" or cwb in("+cwbs2+"))", branchid, page, branchids);
+			cwbList =   monitorKucunDAO.getMonitorKucunByTypeNoPage("1", branchid,branchids);
+			String cwbs1 ="";
+			if (cwbList.size() > 0) {
+				cwbs1 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+			} else {
+				cwbs1 = "'--'";
+			}
+			cwbList =   monitorKucunDAO.getMonitorLogByTypeNoPage( " op.flowordertype in(6,14,40,27) ", branchid,branchids);
+			String cwbs2 ="";
+			if (cwbList.size() > 0) {
+				cwbs2 = this.dataStatisticsService.getOrderFlowCwbs(cwbList);
+			} else {
+				cwbs2 = "'--'";
+			}
+			
+			clist = cwbDAO.getMonitorLogByType(" (cwb in("+cwbs1+")" +
+			 		" or cwb in("+cwbs2+"))", branchid, page, branchids);
 		}
 		 
 		List<Customer> customerList = this.customerDAO.getAllCustomersNew();

@@ -9,23 +9,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import cn.explink.core.utils.JsonUtil;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.util.StreamingStatementCreator;
 
 @Component
 public class TranscwbOrderFlowDAO {
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static final String SCANNUM_MAP_SCANCWB = "scancwb";
 
@@ -54,6 +60,9 @@ public class TranscwbOrderFlowDAO {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	/**
 	 * 创建一条操作记录
@@ -336,5 +345,45 @@ public class TranscwbOrderFlowDAO {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * 查询express_ops_transcwb_orderflow
+	 * @param param 参数map
+	 * @param orderBy 排序
+	 * @return
+	 */
+	public List<TranscwbOrderFlow> queryTranscwbOrderFlow(Map<String, Object> paramMap, String orderBy) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * FROM express_ops_transcwb_orderflow t ");
+		sql.append(" WHERE 1=1 ");
+		
+		if (paramMap.get("flowordertype") != null) {
+			sql.append(" AND t.flowordertype = :flowordertype ");
+		}
+		if (paramMap.get("flowordertypeIn") != null) {
+			sql.append(" AND t.flowordertype IN (" + paramMap.get("flowordertypeIn").toString() + ") ");
+		}
+		if (paramMap.get("isnow") != null) {
+			sql.append(" AND t.isnow = :isnow ");
+		}
+		if (paramMap.get("cwb") != null) {
+			sql.append(" AND t.cwb = :cwb ");
+		}
+		if (paramMap.get("branchid") != null) {
+			sql.append(" AND t.branchid = :branchid ");
+		}
+		if (paramMap.get("scancwb") != null) {
+			sql.append(" AND t.scancwb = :scancwb ");
+		}
+		if (orderBy != null) {
+			sql.append(" ORDER BY ");
+			sql.append(orderBy);
+			sql.append(" ");
+		}
+		String sqlStr = sql.toString();
+		logger.info("queryTranscwbOrderFlow->sqlStr:{}", sqlStr);
+		logger.info("queryTranscwbOrderFlow->paramMap:{}", JsonUtil.translateToJson(paramMap));
+		return namedParameterJdbcTemplate.query(sqlStr, paramMap, new TranscwbOrderFlowRowMapper());
 	}
 }

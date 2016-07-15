@@ -160,7 +160,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					}
 					
 					$("#guanlianlantuidan").hide();
-					if(data.body.guanlianlantuidan != ""){
+					if(data.body.guanlianlantuidan){
 						$("#guanlianlantuidan").show();
 					}
 					

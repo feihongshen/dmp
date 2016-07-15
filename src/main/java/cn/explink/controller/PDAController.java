@@ -999,14 +999,7 @@ public class PDAController {
 	@RequestMapping("/branchbackexport")
 	public String branchbackexport(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag// 为包号修改
 	) {
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
-		List<Branch> removeList = new ArrayList<Branch>();
-		for (Branch b : bList) {// 去掉中转站和库房
-			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
-				removeList.add(b);
-			}
-		}
-		bList.removeAll(removeList);
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser(), BranchEnum.TuiHuo);
 
 		// TODO只有做了订单拦截的订单才是待退货
 		List<CwbOrder> cwbAllList = this.getAuditTuiHuo();
@@ -1259,7 +1252,11 @@ public class PDAController {
 	@RequestMapping("/exportwarhouse")
 	public String exportwarhouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
 		long startTime = System.currentTimeMillis();
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.filterNoEffectBranch(listNextBranch);
+		//Modified end
+		
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
 
@@ -1311,7 +1308,11 @@ public class PDAController {
 	 */
 	@RequestMapping("/changeexportwarhouse")
 	public String changeexportwarhouse(Model model, @RequestParam(value = "branchid", defaultValue = "0") long branchid, @RequestParam(value = "isscanbaleTag", defaultValue = "0") long isscanbaleTag) {
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.filterNoEffectBranch(listNextBranch);
+		//Modified end
+		
 		List<User> uList = this.userDAO.getUserByRole(3);
 		List<Truck> tlist = this.truckDAO.getAllTruck();
 
@@ -5395,14 +5396,7 @@ public class PDAController {
 		}
 		model.addAttribute("msg", msg);
 
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
-		List<Branch> removeList = new ArrayList<Branch>();
-		for (Branch b : bList) {// 去掉中转站
-			if ((b.getSitetype() == BranchEnum.ZhongZhuan.getValue()) || (b.getSitetype() == BranchEnum.ZhanDian.getValue()) || (b.getSitetype() == BranchEnum.KuFang.getValue())) {
-				removeList.add(b);
-			}
-		}
-		bList.removeAll(removeList);
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser(), BranchEnum.TuiHuo);
 
 		List<CwbOrder> weichuzhanlist = this.getAuditTuiHuo();
 		List<CwbOrder> yichuzhanlist = this.cwbDAO.getCwbByFlowOrderTypeAndNextbranchidAndStartbranchidList(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), this.getSessionUser().getBranchid(), branchid);
@@ -7388,7 +7382,7 @@ public class PDAController {
 	}
 
 	/**
-	 * 出库批量功能======================================
+	 * 退货出库批量功能======================================
 	 *
 	 * @param model
 	 * @param cwbs
@@ -7443,7 +7437,7 @@ public class PDAController {
 		// 已出库明细
 		List<CwbDetailView> yichukuViewlist = this.getcwbDetail(yiChuKuList, cList, showCustomerjSONArray, null, 0);
 
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser(), BranchEnum.TuiHuo);
 		model.addAttribute("branchList", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
@@ -7463,6 +7457,82 @@ public class PDAController {
 		model.addAttribute("showCustomerSign", showCustomerSign);
 		return "pda/exportwarehouseBatch";
 	}
+	
+	/**
+	 * 分拣库出库出库批量功能======================================
+	 *
+	 * @param model
+	 * @param cwbs
+	 * @param branchid
+	 * @param driverid
+	 * @param truckid
+	 * @param confirmflag
+	 * @param SuccessCount
+	 * @return
+	 */
+	@RequestMapping("/exportwarhouseBatch")
+	public String exportwarhouseBatch(Model model, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "branchid", required = false, defaultValue = "0") long branchid, @RequestParam(value = "driverid", required = true, defaultValue = "0") long driverid,
+			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid, @RequestParam(value = "confirmflag", required = false, defaultValue = "0") long confirmflag) {
+		BatchCount batchCount = new BatchCount(0, 0, 0);
+		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
+		List<User> uList = this.userDAO.getUserByRole(3);
+		List<Truck> tlist = this.truckDAO.getAllTruck();
+
+		List<JSONObject> objList = new ArrayList<JSONObject>();
+		this.processBatchExportHouse(cwbs, branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+		model.addAttribute("objList", objList);
+
+		Branch localbranch = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
+		int cwbstate = CwbStateEnum.PeiShong.getValue();
+
+		List<CwbOrder> weiChuKuList = this.cwbDAO.getChukuForCwbOrderByBranchid(localbranch.getBranchid(), cwbstate, 1, branchid);
+		Branch b = this.branchDAO.getBranchById(this.getSessionUser().getBranchid());
+		List<Map<String, Object>> cwbObj = this.cwbDAO.getChukubyBranchid(this.getSessionUser().getBranchid(), branchid, cwbstate);
+
+		List<String> cwbyichukuList = this.operationTimeDAO.getOperationTimeByFlowordertypeAndBranchidAndNext(b.getBranchid(), branchid, FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
+		String yicwbs = "";
+		if (cwbyichukuList.size() > 0) {
+			yicwbs = this.dataStatisticsService.getOrderFlowCwbs(cwbyichukuList);
+		} else {
+			yicwbs = "'--'";
+		}
+		List<CwbOrder> yiChuKuList = this.cwbDAO.getCwbByCwbsPage(1, yicwbs, Page.DETAIL_PAGE_NUMBER);
+
+		// 系统设置是否显示订单备注
+		String showCustomer = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
+		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
+		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
+		// 未出库明细
+		List<CwbDetailView> weichukuViewlist = this.getcwbDetail(weiChuKuList, cList, showCustomerjSONArray, null, 0);
+		// 已出库明细
+		List<CwbDetailView> yichukuViewlist = this.getcwbDetail(yiChuKuList, cList, showCustomerjSONArray, null, 0);
+		
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.filterNoEffectBranch(listNextBranch);
+		//Modified end
+		
+		model.addAttribute("branchList", bList);
+		model.addAttribute("userList", uList);
+		model.addAttribute("truckList", tlist);
+		model.addAttribute("customerList", cList);
+		model.addAttribute("weiChuKuList", weichukuViewlist);// 待出库数据
+		model.addAttribute("yiChuKuList", yichukuViewlist);
+		model.addAttribute("count", cwbObj.get(0).get("count"));// 待出库总数
+		model.addAttribute("sum", cwbObj.get(0).get("sum"));// 待出库件数总数
+		model.addAttribute("yichukucount", cwbyichukuList.size());
+		model.addAttribute("lesscwbnum", this.ypdjHandleRecordDAO.getChukuQuejianbyBranchid(this.getSessionUser().getBranchid(), branchid));// 缺货件数
+
+		String msg = "";
+		if (cwbs.length() > 0) {
+			msg = "成功扫描" + batchCount.getThissuccess() + "单，异常" + (batchCount.getAllcwbnum() - batchCount.getThissuccess()) + "单";
+		}
+		model.addAttribute("msg", msg);
+		model.addAttribute("showCustomerSign", showCustomerSign);
+		return "pda/exportwarhouseBatch";
+	}
+	
 
 	private void processBatchExportHouse(String cwbs, long branchid, long driverid, long truckid, long confirmflag, BatchCount batchCount, List<Customer> cList, List<JSONObject> objList) {
 		for (String cwb : cwbs.split("\r\n")) {
@@ -7643,7 +7713,11 @@ public class PDAController {
 		// 已出库明细
 		List<CwbDetailView> yichukuViewlist = this.getcwbDetail(yiChuKuList, cList, showCustomerjSONArray, null, 0);
 
-		List<Branch> bList = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		//Modified by leoliao at 2016-07-11 把已停用的站点过滤
+		List<Branch> listNextBranch = this.cwbOrderService.getNextPossibleBranches(this.getSessionUser());
+		List<Branch> bList = this.filterNoEffectBranch(listNextBranch);
+		//Modified end
+		
 		model.addAttribute("branchList", bList);
 		model.addAttribute("userList", uList);
 		model.addAttribute("truckList", tlist);
@@ -11394,6 +11468,27 @@ public class PDAController {
 		}
 	}
 	
-	
+	/**
+	 * 过滤停用的站点
+	 * @author leo01.liao
+	 * @param listBranchBeFiltered
+	 * @return
+	 */
+	private List<Branch> filterNoEffectBranch(List<Branch> listBranchBeFiltered){
+		List<Branch> listBranch = new ArrayList<Branch>();
+		if(listBranchBeFiltered == null || listBranchBeFiltered.isEmpty()){
+			return listBranch;
+		}
+		
+		for(Branch branch : listBranchBeFiltered){
+			if(branch.getBrancheffectflag() == null || branch.getBrancheffectflag().trim().equals("0")){
+				continue;
+			}
+			
+			listBranch.add(branch);
+		}
+		
+		return listBranch;
+	}
 
 }
