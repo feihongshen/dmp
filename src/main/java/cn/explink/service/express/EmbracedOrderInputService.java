@@ -374,15 +374,23 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			}
 		}
 		params.put("transcwb", embracedOrderVO.getOrderNo());// 将订单号写入transcwb
-		params.put("senderprovinceid", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid()) ? embracedOrderVO.getSender_provinceid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid())){
+			params.put("senderprovinceid", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid()) ? embracedOrderVO.getSender_provinceid() : null);
+		}
 		params.put("senderprovince", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceName()) ? embracedOrderVO.getSender_provinceName() : null);
-		params.put("sendercityid", StringUtils.isNotBlank(embracedOrderVO.getSender_cityid()) ? embracedOrderVO.getSender_cityid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getSender_cityid())){
+			params.put("sendercityid", StringUtils.isNotBlank(embracedOrderVO.getSender_cityid()) ? embracedOrderVO.getSender_cityid() : null);
+		}
 		params.put("sendercity", StringUtils.isNotBlank(embracedOrderVO.getSender_cityName()) ? embracedOrderVO.getSender_cityName() : null);
 		params.put("sendercellphone", StringUtils.isNotBlank(embracedOrderVO.getSender_cellphone()) ? embracedOrderVO.getSender_cellphone() : null);
 		params.put("sendertelephone", StringUtils.isNotBlank(embracedOrderVO.getSender_telephone()) ? embracedOrderVO.getSender_telephone() : null);
-		params.put("recprovinceid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceid()) ? embracedOrderVO.getConsignee_provinceid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceid())){
+			params.put("recprovinceid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceid()) ? embracedOrderVO.getConsignee_provinceid() : null);
+		}
 		params.put("cwbprovince", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceName()) ? embracedOrderVO.getConsignee_provinceName() : null);
-		params.put("reccityid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityid()) ? embracedOrderVO.getConsignee_cityid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityid())){
+			params.put("reccityid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityid()) ? embracedOrderVO.getConsignee_cityid() : null);
+		}
 		params.put("cwbcity", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityName()) ? embracedOrderVO.getConsignee_cityName() : null);
 		params.put("consigneemobile", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone()) ? embracedOrderVO.getConsignee_cellphone() : null);
 		params.put("consigneephone", StringUtils.isNotBlank(embracedOrderVO.getConsignee_telephone()) ? embracedOrderVO.getConsignee_telephone() : null);
@@ -401,7 +409,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("customerid", embracedOrderVO.getSender_customerid());
 		}
 		params.put("sendername", StringUtils.isNotBlank(embracedOrderVO.getSender_name()) ? embracedOrderVO.getSender_name() : null);
-		params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getSender_countyid())){
+			params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
+		}
 		params.put("sendercounty", StringUtils.isNotBlank(embracedOrderVO.getSender_countyName()) ? embracedOrderVO.getSender_countyName() : null);
 		if(!StringUtils.isNotBlank(embracedOrderVO.getSender_townid())){
 			params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
@@ -418,7 +428,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("reccustomerid", embracedOrderVO.getConsignee_customerid());
 		}
 		params.put("consigneename", StringUtils.isNotBlank(embracedOrderVO.getConsignee_name()) ? embracedOrderVO.getConsignee_name() : null);
-		params.put("reccountyid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid()) ? embracedOrderVO.getConsignee_countyid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid())){
+			params.put("reccountyid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid()) ? embracedOrderVO.getConsignee_countyid() : null);
+		}
 		params.put("cwbcounty", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyName()) ? embracedOrderVO.getConsignee_countyName() : null);
 		if(!StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid())){
 			params.put("recstreetid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid()) ? embracedOrderVO.getConsignee_townid() : null);
