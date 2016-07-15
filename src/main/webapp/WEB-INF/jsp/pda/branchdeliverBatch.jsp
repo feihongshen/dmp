@@ -456,7 +456,13 @@ function tohome(){
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
 											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 										</tr>
@@ -518,7 +524,14 @@ function tohome(){
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
+											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 										</tr>
 										<%} %>
@@ -576,7 +589,13 @@ function tohome(){
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
 											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 										</tr>
@@ -638,8 +657,17 @@ function tohome(){
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=obj.get("flowordertypetext")==null?"":obj.get("flowordertypetext") %>
-											</td>
+											<td width="60" align="center"><%
+											System.out.print(obj.get("flowordertype"));
+											System.out.print(obj.get("deliverystate"));
+											if(obj.get("flowordertype")!=null){
+											if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype"))==null?"":CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()%>
+											<%}} %></td>
 											<td width="120" align="center"><%=obj.get("checkstateresultname")==null?"":obj.get("checkstateresultname")%></td>
 											<!-- ****************************** -->
 												<td align="center"><%=obj.get("errorinfo") %></td>
