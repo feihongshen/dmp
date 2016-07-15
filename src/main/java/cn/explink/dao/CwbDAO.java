@@ -381,6 +381,8 @@ public class CwbDAO {
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
 			cwbOrder.setExpressProductType(rs.getInt("express_product_type"));
 			cwbOrder.setInstationname(rs.getString("instationname"));
+            //added by steve.peng 2016/07/15, 新增揽件站点id的mapping，用于识别是否需要揽件费的基础数据生成。
+            cwbOrder.setInstationid(rs.getLong("instationid"));
 			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
 			cwbOrder.setCargovolume(rs.getBigDecimal("cargovolume"));
