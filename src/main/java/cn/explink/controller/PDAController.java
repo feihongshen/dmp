@@ -2048,9 +2048,22 @@ public class PDAController {
 				
 				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
-				obj.put("flowordertype", cwbOrder.getFlowordertype());
+				try{
+					if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype())!=null){
+						if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已审核"){
+							obj.put("flowordertypetext","审核为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText());
+						 }else if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已反馈") {
+							 obj.put("flowordertypetext","反馈为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText()); 
+							/*hps*/ }else{
+								obj.put("flowordertypetext",CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText());
+						 }
+					}else{
+						obj.put("flowordertypetext","");
+					}
+				}catch(Exception e){
+					obj.put("flowordertypetext","");
+				}
 				obj.put("cwbstate", cwbOrder.getCwbstate());
-				obj.put("deliverystate", cwbOrder.getDeliverystate());
 				OrderBackCheck oc = orderBackCheckDAO.getOrderBackCheckOnlyCwb(cwbOrder.getCwb());
 				if(oc==null){ 
 					obj.put("checkstateresultname", "");
@@ -2097,12 +2110,24 @@ public class PDAController {
 						}
 					}
 					obj.put("showRemark", a);
-					DeliveryState dc = deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 					//*******Hps_Concerto*****2016年5月26日17:23:11
-					obj.put("flowordertype", cwbOrder.getFlowordertype());
 					obj.put("cwbstate", cwbOrder.getCwbstate());
 					//如果dc为空，那么增加判断，防止出现异常 ---刘武强20160612
-					obj.put("deliverystate", dc == null ? "" : dc.getDeliverystate());
+					try{
+						if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype())!=null){
+							if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已审核"){
+								obj.put("flowordertypetext","审核为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText());
+							 }else if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已反馈") {
+								 obj.put("flowordertypetext","反馈为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText()); 
+								/*hps*/ }else{
+									obj.put("flowordertypetext",CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText());
+							 }
+						}else{
+							obj.put("flowordertypetext","");
+						}
+					}catch(Exception e){
+						obj.put("flowordertypetext","");
+					}
 					OrderBackCheck oc = orderBackCheckDAO.getOrderBackCheckOnlyCwb(cwbOrder.getCwb());
 					if(oc==null){ 
 						obj.put("checkstateresultname", "");
@@ -3479,13 +3504,21 @@ public class PDAController {
 							 cwbstatetext = ce.getText();
 						 }
 					 } 
-					if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已审核"){
-						flowordertypetext="审核为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText();
-					 }else if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已反馈") {
-						 flowordertypetext=DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText(); 
-						/*hps*/ }else{
-							 flowordertypetext=CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText();
-					 }
+					try{
+						if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype())!=null){
+							if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已审核"){
+									flowordertypetext="审核为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText();
+							 }else if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已反馈") {
+									flowordertypetext="反馈为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText(); 
+								/*hps*/ }else{
+									 flowordertypetext=CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText();
+							 }
+						}else{
+							flowordertypetext="";
+						}
+					}catch(Exception e){
+						flowordertypetext="";
+					}
 					cwbstatetext=CwbOrderTypeIdEnum.getTextByValue(cwbOrder.getCwbordertypeid());
 				}
 				obj.put("cwbordertype", cwbordertype);
@@ -3515,13 +3548,21 @@ public class PDAController {
 							 cwbstatetext = cr.getText();
 						 }
 					 } 
-					if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已审核"){
-						flowordertypetext="审核为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText();
-					 }else if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已反馈") {
-						 flowordertypetext=DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText(); 
-						/*hps*/ }else{
-							 flowordertypetext=CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText();
-					 }
+					try{
+						if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype())!=null){
+							if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已审核"){
+									flowordertypetext="审核为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText();
+							 }else if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText()=="已反馈") {
+									flowordertypetext="反馈为："+DeliveryStateEnum.getByValue(cwbOrder.getDeliverystate()).getText(); 
+								/*hps*/ }else{
+									 flowordertypetext=CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText();
+							 }
+						}else{
+							flowordertypetext="";
+						}
+					}catch(Exception e){
+						flowordertypetext="";
+					}
 					cwbordertype=CwbOrderTypeIdEnum.getTextByValue(cwbOrder.getCwbordertypeid());
 				}
 				obj.put("cwbordertype", cwbordertype);
@@ -6978,13 +7019,21 @@ public class PDAController {
 			 } 
 			long flowordertype=cwborder.getFlowordertype();
 			int deliverystate = cwborder.getDeliverystate();
-			if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
-				flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
-			 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
-				 flowordertypetext=DeliveryStateEnum.getByValue(deliverystate).getText(); 
-			 }else{
-				 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
-			 }
+			try{
+				if(CwbFlowOrderTypeEnum.getText(flowordertype)!=null){
+					if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
+							flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
+					 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
+						 flowordertypetext="反馈为："+DeliveryStateEnum.getByValue(deliverystate).getText();
+						/*hps*/ }else{
+							 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
+					 }
+				}else{
+					flowordertypetext="";
+				}
+			}catch(Exception e){
+				flowordertypetext="";
+			}
 			cwbordertypetext = CwbOrderTypeIdEnum.getTextByValue(cwborder.getCwbordertypeid());
 				}
 			}
@@ -7097,13 +7146,21 @@ public class PDAController {
 			 } 
 			long flowordertype=cwborder.getFlowordertype();
 			int deliverystate = cwborder.getDeliverystate();
-			if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
-				flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
-			 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
-				 flowordertypetext=DeliveryStateEnum.getByValue(deliverystate).getText(); 
-			 }else{
-				 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
-			 }
+			try{
+				if(CwbFlowOrderTypeEnum.getText(flowordertype)!=null){
+					if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
+							flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
+					 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
+							flowordertypetext="反馈为："+DeliveryStateEnum.getByValue(deliverystate).getText(); 
+						/*hps*/ }else{
+							 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
+					 }
+				}else{
+					flowordertypetext="";
+				}
+			}catch(Exception e){
+				flowordertypetext="";
+			}
 			cwbordertypetext = CwbOrderTypeIdEnum.getTextByValue(cwborder.getCwbordertypeid());
 				}
 			}
@@ -10329,13 +10386,21 @@ public class PDAController {
 			 } 
 			long flowordertype=cwborder.getFlowordertype();
 			int deliverystate = cwborder.getDeliverystate();
-			if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
-				flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
-			 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
-				 flowordertypetext=DeliveryStateEnum.getByValue(deliverystate).getText(); 
-			 }else{
-				 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
-			 }
+			try{
+				if(CwbFlowOrderTypeEnum.getText(flowordertype)!=null){
+					if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
+							flowordertypetext="审核为："+DeliveryStateEnum.getByValue(deliverystate).getText();
+					 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
+							flowordertypetext="反馈为："+DeliveryStateEnum.getByValue(deliverystate).getText(); 
+						/*hps*/ }else{
+							 flowordertypetext=CwbFlowOrderTypeEnum.getText(flowordertype).getText();
+					 }
+				}else{
+					flowordertypetext="";
+				}
+			}catch(Exception e){
+				flowordertypetext="";
+			}
 			cwbordertypetext = CwbOrderTypeIdEnum.getTextByValue(cwborder.getCwbordertypeid());
 				}
 			}
