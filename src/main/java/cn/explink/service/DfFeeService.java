@@ -118,7 +118,7 @@ public class DfFeeService {
         logger.info("OXO/OXOJIT 导入后插入派费相关表操作开始");
 
         List<AdressVO> allProvince = provinceDAO.getAllProvince();
-        List<AdressVO> allCity = cityDAO.getAllCity();
+        List<AdressVO> allCity = cityDAO.getAllCityWithParentCode();
         List<AdressVO> allCounty = countyDAO.getAllCounty();
 
         saveFeeRelative(cwb, currentUser, allProvince, allCity, allCounty);
@@ -130,7 +130,7 @@ public class DfFeeService {
         logger.info("归班审核后插入派费相关表操作开始");
 
         List<AdressVO> allProvince = provinceDAO.getAllProvince();
-        List<AdressVO> allCity = cityDAO.getAllCity();
+        List<AdressVO> allCity = cityDAO.getAllCityWithParentCode();
         List<AdressVO> allCounty = countyDAO.getAllCounty();
 
         String[] cwbs = cwbsStr.split(",");
@@ -197,13 +197,15 @@ public class DfFeeService {
             String county = order.getSendercounty();
 
             if (StringUtils.isBlank(province)) {
-                province = getEffectiveAddressId(address, allProvince);
+                province = getEffectiveAddressId(address, allProvince, null);
             }
-            if (StringUtils.isBlank(city)) {
-                city = getEffectiveAddressId(address, allCity);
+            if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
+                String parentCode = getAddressCode(province, allProvince);
+                city = getEffectiveAddressId(address, allCity, parentCode);
             }
-            if (StringUtils.isBlank(county)) {
-                county = getEffectiveAddressId(address, allCounty);
+            if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
+                String parentCode = getAddressCode(city, allCity);
+                county = getEffectiveAddressId(address, allCounty, parentCode);
             }
 
             DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, (long) order.getInstationhandlerid());
@@ -255,12 +257,17 @@ public class DfFeeService {
                 String city = order.getCwbcity();
                 String county = order.getCwbcounty();
 
-                if (StringUtils.isBlank(province))
-                    province = getEffectiveAddressId(address, allProvince);
-                if (StringUtils.isBlank(city))
-                    city = getEffectiveAddressId(address, allCity);
-                if (StringUtils.isBlank(county))
-                    county = getEffectiveAddressId(address, allCounty);
+                if (StringUtils.isBlank(province)) {
+                    province = getEffectiveAddressId(address, allProvince, null);
+                }
+                if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
+                    String parentCode = getAddressCode(province, allProvince);
+                    city = getEffectiveAddressId(address, allCity, parentCode);
+                }
+                if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
+                    String parentCode = getAddressCode(city, allCity);
+                    county = getEffectiveAddressId(address, allCounty, parentCode);
+                }
 
                 DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, order.getDeliverid());
                 if (null == fee) {
@@ -288,6 +295,19 @@ public class DfFeeService {
                 }
             }
         }
+    }
+
+    private String getAddressCode(String addressName, List<AdressVO> addresses) {
+        if (StringUtils.isNotBlank(addressName)) {
+            if (CollectionUtils.isNotEmpty(addresses)) {
+                for (AdressVO adressVO : addresses) {
+                    if (addressName.equals(adressVO.getName())) {
+                        return adressVO.getCode();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void saveFeeRelativeAfterOrderReset(String cwb, User currentUser) {
@@ -347,7 +367,7 @@ public class DfFeeService {
                 if (fee.getIsBilled() == 1) {
                     DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee);
                     if (adjustment != null) {
-                        if(isFromReset){
+                        if (isFromReset) {
                             //如果是重置反馈，需要记录反馈申请人和反馈通过时间。
                             ApplyEditDeliverystate applyEditDeliverystateWithPass = applyEditDeliverystateDAO.getApplyEditDeliverystateWithPass(cwb);
                             adjustment.setApplyuserid(applyEditDeliverystateWithPass.getApplyuserid());
@@ -405,9 +425,14 @@ public class DfFeeService {
     }
 
 
-    private String getEffectiveAddressId(String address, List<AdressVO> addresses) {
+    private String getEffectiveAddressId(String address, List<AdressVO> addresses, String parentCode) {
         if (CollectionUtils.isNotEmpty(addresses)) {
             for (AdressVO adressVO : addresses) {
+                if (StringUtils.isNotBlank(parentCode)) {
+                    if (!parentCode.equals(adressVO.getParentCode())) {
+                        continue;
+                    }
+                }
                 if (StringUtils.contains(address, adressVO.getName())) {
                     return adressVO.getName();
                 }

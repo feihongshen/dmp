@@ -116,4 +116,15 @@ public class CityDAO {
 		return adressVO;
 	}
 
+
+    /**
+     * @return AdressVO with parentCode
+     */
+    public List<AdressVO> getAllCityWithParentCode() {
+        StringBuffer sql = new StringBuffer();
+        List<AdressVO> list = new ArrayList<AdressVO>();
+        sql.append("select id,code,name,province_code as parentCode from express_set_city order by code desc;");
+        list = this.jdbcTemplate.query(sql.toString(), new CityRowMapper());
+        return list;
+    }
 }
