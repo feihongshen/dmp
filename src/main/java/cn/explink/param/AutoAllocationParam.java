@@ -1,5 +1,6 @@
 package cn.explink.param;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import cn.explink.util.MD5.MD5Util;
  */
 public class AutoAllocationParam {
 
+	private String serialNo;//序列号
 	private String act;//动作
 	private String orderid;//订单号
 	private String export;//出口
@@ -22,6 +24,7 @@ public class AutoAllocationParam {
 	
 	private static final String GRANTDIRECTION="whfy";
 	
+	public static final String SERIALNO="serialno";
 	public static final String ACT="act";
 	public static final String ORDERID="orderid";
 	public static final String EXPORT="export";
@@ -37,9 +40,11 @@ public class AutoAllocationParam {
 	
 	public AutoAllocationParam(){
 		super();
+		this.serialNo = String.valueOf((new Date().getTime()));
 	}
 	
 	public AutoAllocationParam(String orderid,String export,String direction,String station){
+		this.serialNo = String.valueOf((new Date().getTime()));
 		this.orderid=orderid;
 		this.export=export;
 		this.direction=direction;
@@ -54,6 +59,7 @@ public class AutoAllocationParam {
 	 */
 	public Map<String,String> toMap(){
 		Map<String,String> map=new HashMap<String,String>();
+		map.put(SERIALNO,this.getSerialNo());
 		map.put(ACT,this.getAct());
 		map.put(ORDERID,this.getOrderid());
 		map.put(EXPORT,this.getExport());
@@ -65,12 +71,13 @@ public class AutoAllocationParam {
 	
 	/**
 	 * 把参数转换为String格式
-	 * <root><act>0</act><orderid>123456</orderid><export>950</export><direction>0</direction><station>光谷</station></root>
+	 * <root><serialno>1234567890</serialno><act>0</act><orderid>123456</orderid><export>950</export><direction>0</direction><station>光谷</station></root>
 	 * @return
 	 */
 	public String toString(){
 		StringBuilder sb=new StringBuilder();
 		sb.append("<root>");
+		sb.append("<"+SERIALNO+">").append(this.getSerialNo()).append("</"+SERIALNO+">");
 		sb.append("<"+ACT+">").append(this.getAct()).append("</"+ACT+">");
 		sb.append("<"+ORDERID+">").append(this.getOrderid()).append("</"+ORDERID+">");
 		sb.append("<"+EXPORT+">").append(this.getExport()).append("</"+EXPORT+">");
@@ -121,6 +128,18 @@ public class AutoAllocationParam {
 		}else{
 			return "";
 		}
+	}
+	/**
+	 * @return the serialNo
+	 */
+	public String getSerialNo() {
+		return serialNo;
+	}
+	/**
+	 * @param act the serialNo to set
+	 */
+	public void setSerialNo(String serialNo) {
+		this.serialNo = serialNo;
 	}
 	/**
 	 * @return the act
