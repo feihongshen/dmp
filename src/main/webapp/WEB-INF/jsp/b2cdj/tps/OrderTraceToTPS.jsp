@@ -31,6 +31,10 @@ List<Customer> customerList = request.getAttribute("customerList") == null ? new
 						<li><span>推送轨迹客户id：</span>
 							<input type ="text" id="customerids" name ="customerids" value="<%=orderTraceToTPS.getCustomerids()%>" maxlength="500">*多个客户id之间以逗号隔开
 						</li>
+					    <!--add by 周欢 2016-07-15 -->
+						<li><span>每次推送轨迹数量：</span>
+							<input type ="text" id="sendMaxCount" name ="sendMaxCount" onblur="validate('sendMaxCount')"  value="<%=orderTraceToTPS.getSendMaxCount() %>"  maxlength="300">
+						</li>
 						<li><span>轨迹尝试推送次数：</span>
 							<input type ="text" id="trackMaxTryTime" name ="trackMaxTryTime" value="<%=orderTraceToTPS.getTrackMaxTryTime()%>" maxlength="4" >*
 						</li>
@@ -41,6 +45,10 @@ List<Customer> customerList = request.getAttribute("customerList") == null ? new
 					<%}else{ %>
 						<li><span>外单客户id：</span>
 							<input type ="text" id="customerids" name ="customerids"  maxlength="500">*多个客户id之间以逗号隔开
+						</li>
+						<!--add by 周欢 2016-07-15 -->
+						<li><span>每次推送轨迹数量：</span>
+							<input type ="text" id="sendMaxCount" name ="sendMaxCount" onblur="validate('sendMaxCount')" maxlength="300">
 						</li>
 						<li><span>轨迹尝试推送次数：</span>
 							<input type ="text" id="trackMaxTryTime" name ="trackMaxTryTime"  maxlength="4" >*
