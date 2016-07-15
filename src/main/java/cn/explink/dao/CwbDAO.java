@@ -9834,7 +9834,8 @@ public class CwbDAO {
 			}else if(flag.equals("2")){//根据寄件人固话
 				sql.append(" and sendertelephone='"+phone+"' ");
 			}
-			sql.append(" and cwbordertypeid=6 limit 0,3");
+			//edit by 周欢 查询的信息根据订单id排序 2016-07-15
+			sql.append(" and cwbordertypeid=6 ORDER BY opscwbid limit 0,3");
 		}else if(flag.equals("3") || flag.equals("4")){
 			sql.append("SELECT DISTINCT consigneename,cwbprovince,cwbcity,cwbcounty,recstreet,consigneeaddress,"
 					+ "recprovinceid,reccityid,reccountyid,recstreetid,consigneemobile,consigneephone from express_ops_cwb_detail where state=1 ");
@@ -9843,7 +9844,8 @@ public class CwbDAO {
 			}else if(flag.equals("4")){//根据收件人固话
 				sql.append(" and consigneephone='"+phone+"' ");
 			}
-			sql.append(" and cwbordertypeid=6 limit 0,3");
+			//edit by 周欢 查询的信息根据订单id排序 2016-07-15
+			sql.append(" and cwbordertypeid=6 ORDER BY opscwbid limit 0,3");
 		}
 		
 		return this.jdbcTemplate.queryForList(sql.toString());
