@@ -97,7 +97,7 @@ public class DfAdjustmentRecordDAO {
                 ps.setString(1, record.getOrderNo());
                 ps.setString(2, record.getTranscwb());
                 ps.setInt(3, record.getCwbordertypeid());
-                ps.setString(4, record.getCustomerid());
+                ps.setLong(4, record.getCustomerid());
                 ps.setInt(5, record.getSendcarnum());
                 ps.setLong(6, record.getBackcarnum());
                 ps.setString(7, record.getSenderaddress());
