@@ -381,8 +381,9 @@ public class DfFeeService {
                             adjustment.setApplyuserid(applyEditDeliverystateWithPass.getApplyuserid());
                             adjustment.setEdittime(applyEditDeliverystateWithPass.getEdittime());
                         }
-                        logger.info("插入重置反馈数据");
-                        dfAdjustmentRecordDAO.saveAdjustmentRecord(chargerType.getValue(), adjustment, currentUser.getRealname());
+                        long id = dfAdjustmentRecordDAO.saveAdjustmentRecord(chargerType.getValue(), adjustment, currentUser.getRealname());
+
+                        logger.debug("插入调整记录表成功，Id为" + id + "，结算对象为" + chargerType.getText());
                     }
                 } else {
                     logger.info("删除计费明细ID为{}" + fee.getId());
