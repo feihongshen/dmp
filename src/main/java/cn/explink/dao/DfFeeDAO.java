@@ -94,6 +94,8 @@ public class DfFeeDAO {
             dfBillFee.setCwbprovince(rs.getString("cwbprovince"));
             dfBillFee.setCwbcity(rs.getString("cwbcity"));
             dfBillFee.setCwbcounty(rs.getString("cwbcounty"));
+            dfBillFee.setPaybackfee(rs.getBigDecimal("paybackfee"));
+            dfBillFee.setReceivablefee(rs.getBigDecimal("receivablefee"));
             dfBillFee.setFeeCreateTime(rs.getTimestamp("fee_create_time"));
             dfBillFee.setFeeCreateUser(rs.getString("fee_create_user"));
             dfBillFee.setFeeUpdateTime(rs.getTimestamp("fee_update_time"));
