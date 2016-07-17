@@ -220,7 +220,7 @@ public class DfFeeService {
 
             } else {
                 logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 能找到计费明细", order.getInstationhandlerid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
-                saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
+                saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname(), false);
             }
 
             if (isJoinBranch(branchId)) {
@@ -235,7 +235,7 @@ public class DfFeeService {
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname());
                 } else {
                     logger.info("相同站点ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
-                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
+                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname(), false);
                 }
             }
         }
@@ -284,7 +284,7 @@ public class DfFeeService {
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname());
                 } else {
                     logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 能找到计费明细", order.getDeliverid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
-                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
+                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname(), false);
                 }
                 if (isJoinBranch(branchId)) {
                     fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
@@ -298,7 +298,7 @@ public class DfFeeService {
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname());
                     } else {
                         logger.info("相同站点ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
-                        saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
+                        saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname(), false);
                     }
                 }
             }
@@ -373,7 +373,7 @@ public class DfFeeService {
 
             if (fee != null) {
                 if (fee.getIsBilled() == 1) {
-                    DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee);
+                    DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee, isFromReset);
                     if (adjustment != null) {
                         if (isFromReset) {
                             //如果是重置反馈，需要记录反馈申请人和反馈通过时间。
@@ -394,8 +394,8 @@ public class DfFeeService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType chargerType, DfBillFee fee, String currentUser) {
-        DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee);
+    private void saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType chargerType, DfBillFee fee, String currentUser, boolean isFromReset) {
+        DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee, isFromReset);
 
         if (adjustment == null)
             return;
@@ -455,7 +455,7 @@ public class DfFeeService {
         return null;
     }
 
-    private DfAdjustmentRecord transformFeeToAdjustment(DfBillFee fee) {
+    private DfAdjustmentRecord transformFeeToAdjustment(DfBillFee fee, boolean isFromReset) {
 
         DfAdjustmentRecord adjustmentRecord = new DfAdjustmentRecord();
 
@@ -472,8 +472,12 @@ public class DfFeeService {
             return null;
         }
 //        adjustmentRecord.setAdjustAmount(fee.getFeeAmount());
-        if (fee.getFeeAmount() != null)
-            adjustmentRecord.setAdjustAmount(fee.getFeeAmount().multiply(new BigDecimal(-1)));
+        if (fee.getFeeAmount() != null) {
+            if (isFromReset)
+                adjustmentRecord.setAdjustAmount(fee.getFeeAmount().multiply(new BigDecimal(-1)));
+            else
+                adjustmentRecord.setAdjustAmount(fee.getFeeAmount());
+        }
 
         return adjustmentRecord;
     }
