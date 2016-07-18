@@ -242,7 +242,7 @@ public class UserInfService {
 		return prestr;
 	}
 	
-	public void saveUserInf(User user){
+	public void saveUserInf(User user, User sessionUser){
 		if(user.getRoleid() != 2 && user.getRoleid() != 4){
 			return;
 		}
@@ -261,7 +261,11 @@ public class UserInfService {
 			userInf.setStatus((byte) 0);
 		}		
 		userInf.setCreateDate(new Date());
-		userInf.setCreateUser("");
+		if (sessionUser != null) {
+			userInf.setCreateUser(sessionUser.getUserid() + "");
+		} else {
+			userInf.setCreateUser("");
+		}
 		userInf.setBranchid(user.getBranchid());
 		userInf.setOldusername(user.getOldusername());
 		userInfDao.saveUserInf(userInf);

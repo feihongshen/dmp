@@ -146,7 +146,7 @@ public class BranchController {
 				if(!branchInfService.isCloseOldInterface()){					
 					this.branchService.addzhandianToAddress(branchid, bh,null);
 				}
-				branchInfService.saveBranchInf(bh);
+				branchInfService.saveBranchInf(bh, getSessionUser());
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -205,7 +205,7 @@ public class BranchController {
 					this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 				}
 				// add by jian_xie
-				branchInfService.saveBranchInf(bh);
+				branchInfService.saveBranchInf(bh, getSessionUser());
 			}
 
 			try {
@@ -273,7 +273,7 @@ public class BranchController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 					}
 				}
-				branchInfService.saveBranchInf(branch);
+				branchInfService.saveBranchInf(branch, getSessionUser());
 			}
 
 			try {
@@ -335,7 +335,7 @@ public class BranchController {
 					}
 				}
 				// 同步站点新接口 add by jian_xie
-				branchInfService.saveBranchInf(branch);
+				branchInfService.saveBranchInf(branch, getSessionUser());
 			}
 
 			try {
@@ -483,7 +483,7 @@ public class BranchController {
 		}
 		// 同步站点机构，使用新接口
 		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-			branchInfService.saveBranchInf(branch);
+			branchInfService.saveBranchInf(branch, getSessionUser());
 		}
 		
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
