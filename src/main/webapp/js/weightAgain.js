@@ -9,6 +9,7 @@ function updateOrderWeight(keyCode){
 		return ;
 	}
 	var carrealweight = 0.00 ; // 获取电子秤数据
+	jQuery("#weightNotice").text("正在称重中,请稍等......") ;
 	var weightIntervalId = window.setInterval("setWeight()", 1);
     console.log("weightTime:" + weightTime) ;
     window.setTimeout(function waitForWeight(){
@@ -47,6 +48,7 @@ function updateCarrealweight(orderNumber , carrealweight){
 		dataType:"json",
 		success : function(rs) {
 			var errorMsg = rs.errorMsg ;
+			jQuery("#weightNotice").text("");
 			if(errorMsg != undefined && errorMsg != ""){
 				$.messager.alert("提示" , errorMsg , "warning") ;
 				return ;
