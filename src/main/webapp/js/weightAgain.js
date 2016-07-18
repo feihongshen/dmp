@@ -9,13 +9,32 @@ function updateOrderWeight(keyCode){
 		return ;
 	}
 	var carrealweight = 0.00 ; // 获取电子秤数据
-	if(carrealweight == undefined || carrealweight == null ||parseFloat(carrealweight) <= 0){
-		$.messager.alert("提示" , orderNumber + "(获取不到重量)，请手动输入重量！" , "warning") ;
-    	return false ;
-	}
-	updateCarrealweight(orderNumber , carrealweight) ;
+	jQuery("#weightNotice").text("正在称重中,请稍等......") ;
+	var weightIntervalId = window.setInterval("setWeight()", 1);
+    console.log("weightTime:" + weightTime) ;
+    window.setTimeout(function waitForWeight(){
+    	carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
+    	window.clearInterval(weightIntervalId) ;
+    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
+    		alert(orderNumber + "(获取不到重量)，请手动输入重量！") ;
+    		jQuery("#orderWeight").focus() ;
+        	return false ;
+    	}
+    	updateCarrealweight(orderNumber , carrealweight) ;
+    },(weightTime + 3) * 1000) ;	
 }
 
+function setWeight() {
+	try{
+		var weight = window.parent.document.getElementById("scaleApplet").getWeight();
+        if (weight != null && weight != '') {
+	       document.getElementById("weightSpan").innerHTML = weight;
+         }
+	}catch(e){
+		jQuery("#weightSpan").text("0.00") ;
+	}
+	console.log("setWeight") ;
+}
 
 function updateCarrealweight(orderNumber , carrealweight){
 	var params = {
@@ -29,6 +48,7 @@ function updateCarrealweight(orderNumber , carrealweight){
 		dataType:"json",
 		success : function(rs) {
 			var errorMsg = rs.errorMsg ;
+			jQuery("#weightNotice").text("");
 			if(errorMsg != undefined && errorMsg != ""){
 				$.messager.alert("提示" , errorMsg , "warning") ;
 				return ;

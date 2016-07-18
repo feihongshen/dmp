@@ -431,4 +431,12 @@ public class ZhiFuApplyDao {
 		String sql  = "select * from express_ops_zhifu_apply where applystate = 2 and applyresult = 2 and confirmstate = 2 and confirmresult = 2 and cwb in ("+cwbs+")";
 		return this.jdbcTemplate.query(sql, new ZhiFuApplyMapper());
 	}
+	
+	/**
+	 * 查询未审批的申请数据
+	 */
+	public List<ZhiFuApplyView> getNotAudiByCwbs(String cwbs){
+		String sql = "select * from express_ops_zhifu_apply where applystate=1 and  cwb in ("+cwbs+")";
+		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
+	}
 }
