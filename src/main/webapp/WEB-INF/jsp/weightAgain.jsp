@@ -37,6 +37,9 @@ form select,input[type="text"],input[type="number"]{
 </HEAD>
 <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/js/eapTools.js"></script>
+<script type="text/javascript">
+   var weightTime = <%=request.getAttribute("weightTime") == null ?10:Integer.parseInt(request.getAttribute("weightTime").toString())%> ;
+</script>
 <body class="easyui-layout" leftmargin="0" topmargin="0">
   <div  data-options="region:'center'" style="overflow-x:auto;overflow-y:auto;width:100%;height:100%;">
       <table id = "weightAgainTab" class="table" style="border: 1px;align:center; margin-bottom:100px;width:100%;padding-left:10px;background-color:#f5f5f5;">
@@ -54,6 +57,13 @@ form select,input[type="text"],input[type="number"]{
              </td>
          </tr>
           -->
+          <tr style = "height:40px;">
+             <td style="border: 0px; text-align: right; vertical-align: middle; width:20%;"> 实际重量(Kg):</td>
+             <td style="border: 0px; vertical-align: middle;width:80%;padding:2px;">
+                 <label id = "weightSpan" style = "text-align:left">0.00</label>
+                 <label id="weightNotice" > </label> 
+             </td>                                
+         </tr>
          <tr style = "height:40px;">
              <td style="border: 0px; text-align: right; vertical-align: middle; width:20%;"> 重量(Kg):</td>
              <td style="border: 0px; vertical-align: middle;width:80%;padding:0px;">
