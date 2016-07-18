@@ -32,7 +32,8 @@ CREATE TABLE `fn_df_agreement` (
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `charger_type` tinyint(2) DEFAULT NULL COMMENT '结算对象，0-站点，1-协议',
-  PRIMARY KEY (`agt_id`)
+  PRIMARY KEY (`agt_id`),
+  KEY `agtNoIdx` (`agt_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费协议';
 
 -- ----------------------------
@@ -442,7 +443,8 @@ CREATE TABLE `fn_df_rule` (
   `subsidy_flag` tinyint(1) DEFAULT NULL COMMENT '是否有补贴，0是有,1为没有',
   `cust_flag` tinyint(1) DEFAULT NULL COMMENT '是否区分客户，0是，1否',
   `area_flag` tinyint(1) DEFAULT NULL COMMENT '是否区分地区，0是，1否',
-  PRIMARY KEY (`rule_id`)
+  PRIMARY KEY (`rule_id`),
+  KEY `ruleNoIdx` (`rule_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费规则';
 
 -- ----------------------------
