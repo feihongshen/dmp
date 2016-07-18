@@ -167,7 +167,7 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->create", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -206,7 +206,7 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -273,7 +273,7 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
@@ -322,7 +322,7 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				if (roleid == 2) {
