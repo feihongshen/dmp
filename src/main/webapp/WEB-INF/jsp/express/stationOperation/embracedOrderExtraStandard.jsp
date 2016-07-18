@@ -2347,12 +2347,12 @@
 		$("#consignee_adress_id").val(consignee_adress);
 	}
 	
-	/*****************edit by 周欢  修改双击tabel内容填充异常  2016-7-15 *******************/
+	/*****************edit by 周欢  修改双击预约单tabel内容填充异常  2016-7-18 *******************/
 	//预约单信息双击事件
 	function reserveTableDblClick(reserve){
 		var consignee_adress = $("#consignee_adress_id").val();
-		var senderTelephone = $(sender).find("td").eq(13).text();
-		var senderCellphone = $(sender).find("td").eq(14).text();
+		var senderTelephone = $(reserve).find("td").eq(13).text();
+		var senderCellphone = $(reserve).find("td").eq(14).text();
 		var senderName = $(reserve).find("td").eq(1).text()
 		$("#area_sender").val("")
 		$("#sender_adress_id").val("");
@@ -2377,12 +2377,12 @@
 		}else{
 			$("#sender_name_id").val("");
 		}
-		if(senderCellphone != "null"){
+		if(senderCellphone != "null"  && senderCellphone.trim() !="-"){
 			$("#sender_cellphone_id").val(senderCellphone);
 		}else{
 			$("#sender_cellphone_id").val("");
 		}
-		if(senderTelephone != "null"){
+		if(senderTelephone != "null" && senderTelephone.trim() !="-"){
 			$("#sender_telephone_id").val(senderTelephone);
 		}else{
 			$("#sender_telephone_id").val("");
