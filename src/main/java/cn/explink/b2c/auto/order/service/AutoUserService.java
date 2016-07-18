@@ -42,6 +42,11 @@ public class AutoUserService {
 	
 	   //获取自动化开关,0关 1 开
     public int getAutoFlag() {
+    	int openState = this.jointService.getStateForJoint(B2cEnum.TPS_AUTO.getKey());//
+		if(openState==0){
+			return 0;
+		}
+		
 		JointEntity obj = this.jointService.getObjectMethod(B2cEnum.TPS_AUTO.getKey());
 		if(obj == null){
 			return 0;
@@ -53,6 +58,11 @@ public class AutoUserService {
     
 	//获取交接单号开关,0关 1 开
     public int getBatchnoOpenFlag() {
+    	int openState = this.jointService.getStateForJoint(B2cEnum.TPS_AUTO.getKey());//
+		if(openState==0){
+			return 0;
+		}
+		
 		JointEntity obj = this.jointService.getObjectMethod(B2cEnum.TPS_AUTO.getKey());
 		if(obj == null){
 			return 0;
