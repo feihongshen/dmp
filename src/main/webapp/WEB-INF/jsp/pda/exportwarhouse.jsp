@@ -224,6 +224,7 @@ var Cwbs="";
 	    	carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
 	    	window.clearInterval(weightIntervalId) ;
 	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
+	    		jQuery("#weightNotice").text("") ;
 	    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
@@ -814,6 +815,7 @@ function baleaddcwbCheck(){
    			if(data.body.errorcode=="111111"){
    				jQuery("#weightSpan").text("0.00") ;
    				jQuery("#weightNotice").text("") ;
+   				$("#carweightDesc").html("") ;
    				if(data.body.errorenum=="Bale_ChongXinFengBao"){//此订单已在包号：XXX中封包，确认要重新封包吗?
    					/* if(confirm(data.body.errorinfo)){
    						baleaddcwb();//出库根据包号扫描订单
