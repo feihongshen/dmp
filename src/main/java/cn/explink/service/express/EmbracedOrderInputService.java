@@ -753,6 +753,10 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					// doReq.setPayment("0".equals(embracedOrderVO.getPayment_method().trim())
 					// ? "0" : "-1");
 					doReq.setPayment(-1);// 11.13 马哥说运单里任何情况都传-1
+					//月结账号----刘武强20160718
+					if(StringUtils.isNotBlank(embracedOrderVO.getMonthly_account_number())){
+						doReq.setAccountId(embracedOrderVO.getMonthly_account_number());
+					}
 					doReq.setCnorRemark(embracedOrderVO.getRemarks());
 					//快递二期新增：运费
 					doReq.setActualFee(Double.parseDouble(embracedOrderVO.getFreight()));
