@@ -814,6 +814,7 @@ function baleaddcwbCheck(){
    			if(data.body.errorcode=="111111"){
    				jQuery("#weightSpan").text("0.00") ;
    				jQuery("#weightNotice").text("") ;
+   				$("#carweightDesc").html("") ;
    				if(data.body.errorenum=="Bale_ChongXinFengBao"){//此订单已在包号：XXX中封包，确认要重新封包吗?
    					/* if(confirm(data.body.errorinfo)){
    						baleaddcwb();//出库根据包号扫描订单
