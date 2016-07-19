@@ -256,8 +256,10 @@ public class UserController {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
 		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
-		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
-		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
+		User oldUser = this.userDAO.getUserByUserid(userid);
+		String oldrealname = oldUser.getRealname();
+		long oldBranchid = oldUser.getBranchid();
+		int oldemployeestatus = oldUser.getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, file, userid);
 		user.setUserid(userid);
 			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
@@ -276,12 +278,14 @@ public class UserController {
 				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				if (roleid == 2) {
+				// 新增站长修改同步地址库 2016-07-19 chunlei05.li
+				if (roleid == 2 || roleid == 4) {
 					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
 							if (oldemployeestatus != 3) {
-								if (!realname.equals(oldrealname)) {
+								// 2016-7-11 如果更改了名称或者站点，则更新地址库
+								if (!realname.equals(oldrealname) || oldBranchid != branchid) {
 									this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 								}
 							} else {
@@ -327,7 +331,8 @@ public class UserController {
 			userInfService.saveUserInf(user);
 			this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 			// TODO 增加同步代码
-			if (roleid == 2) {
+			// 新增站长修改同步地址库 2016-07-19 chunlei05.li
+			if (roleid == 2 || roleid == 4) {
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
 					if (user.getEmployeestatus() != 3) {
