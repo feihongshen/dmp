@@ -180,11 +180,15 @@ public class DfFeeService {
         else
             realWeight = order.getCarrealweight();
 
-        if (order.getInstationid() > 0) {
+        long branchId = 0;
+        if (order.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue() || order.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue())
+            branchId = order.getPickbranchid();
+        else
+            branchId = order.getInstationid();
+
+        if (branchId > 0 ) {
             //如果揽件站点不为空，创建揽件费订单。
             chargeType = DeliveryFeeRuleChargeType.GET.getValue();
-
-            long branchId = order.getInstationid();
 
             List<User> deliver = userDAO.getUserByid(order.getInstationhandlerid());
             if (deliver.size() > 0) {
@@ -249,7 +253,7 @@ public class DfFeeService {
 
                 chargeType = DeliveryFeeRuleChargeType.SEND.getValue();
 
-                long branchId = order.getDeliverybranchid();
+                branchId = order.getDeliverybranchid();
 
                 List<User> deliver = userDAO.getUserByid(order.getDeliverid());
                 if (deliver.size() > 0) {
