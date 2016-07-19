@@ -224,6 +224,7 @@ var Cwbs="";
 	    	carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
 	    	window.clearInterval(weightIntervalId) ;
 	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
+	    		jQuery("#weightNotice").text("") ;
 	    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
@@ -869,6 +870,7 @@ function baleaddcwb(scancwb,baleno){
 			$("#orderWeight").val("") ;
 			jQuery("#weightSpan").text("0.00") ;
 			jQuery("#weightNotice").text("") ;
+			console.log("success") ;
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
 				<%-- numbervedioplay("<%=request.getContextPath()%>",data.body.successCount); --%>
@@ -888,6 +890,9 @@ function baleaddcwb(scancwb,baleno){
 			}else{
 				$("#carweightDesc").html("") ;
 			}
+		},
+		failed:function(data){
+			console.log("failed") ;
 		}
 	});
 }

@@ -1092,7 +1092,7 @@ public class EditCwbController {
 				view = list.get(i);
 				// 去重
 				if(setCwb.contains(view.getCwb())){
-					break;
+					continue;
 				}
 				if(i != 0){
 					result.append(",");
