@@ -9222,7 +9222,9 @@ public class CwbDAO {
 		if (!Tools.isEmpty(cwb4TakeGoodsQuery.getCollectorid())) {
 			sql.append(" and collectorid="
 					+ cwb4TakeGoodsQuery.getCollectorid() + "");
-		} else {
+		} else if(Tools.isEmpty(userIds)){//如果这个userIds为null或者""，那么就直接拼接上'',防止sql报异常--刘武强20160719
+			sql.append(" and collectorid in ('')");
+		}else {
 			sql.append(" and collectorid in (" + userIds + ")");
 		}
 		// 付款方式
