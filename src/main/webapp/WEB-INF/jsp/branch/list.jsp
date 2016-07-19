@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jq-plugin/jquery.form.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
 function thisCheck(){
@@ -100,6 +101,12 @@ function editSuccess(data){
 function delSuccess(data){
 	$("#searchForm").submit();
 }
+$(function() {
+	$("#sync_button").click(function() {
+		$("#exportForm").submit();
+		alert("正在同步中，请稍等几分钟。同步结果将输出到excel文件中.");
+	});
+});
 </script>
 </head>
 
@@ -107,6 +114,11 @@ function delSuccess(data){
 
 <div class="right_box">
 	<div class="inputselect_box">
+		<span>
+			<form action="<%=request.getContextPath()%>/branch/syncAllBranchToOsp" method="post" id="exportForm">
+				<input name="" type="button" value="同步机构" class="input_button1"  id="sync_button"  />
+			</form>
+		</span>
 		<span><input name="" type="button" value="创建机构" class="input_button1"  id="add_button"  />
 		</span>
 		<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">
