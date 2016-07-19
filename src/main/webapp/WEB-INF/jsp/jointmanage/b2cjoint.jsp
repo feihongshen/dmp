@@ -543,6 +543,10 @@ function delSuccess(data){
             $("#edit").val('<%=request.getContextPath()%>/orderTraceToTPS/show/');
             $("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
         }
+		else if(obj=='20230'){
+			$("#edit").val('<%=request.getContextPath()%>/tpsAutoFlowCfg/show/');
+			$("#del").val('<%=request.getContextPath()%>/tpsAutoFlowCfg/del/');
+		}
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

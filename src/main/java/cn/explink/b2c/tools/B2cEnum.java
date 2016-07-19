@@ -99,6 +99,7 @@ public enum B2cEnum {
 	VipShop_TPSAutomate(20227, "TPS自动化", "vipshop_tps_automate",0),	
 	TPS_CarrierOrderStatus(20228, "唯品会_TPS_运单状态", "TPS_CarrierOrderStatus",0),
 	TPS_Cwb_Flow(20229, "唯品会_TPS_反馈体积重量", "TPS_Cwb_Flow",0),
+	TPS_AUTO(20230, "TPS_华东自动化分拣状态", "TPS_Auto",0),
 	SuNing(20127, "苏宁易购", "suning", 0), YiGuoShengXian(20128, "易果生鲜", "yiguoshengxian", 0),
 	Yihaodian_bakup1(20130, "一号店_备用1", "yihaodian_bakup1", 0), 
 	Yihaodian_bakup2(20131, "一号店_备用2", "yihaodian_bakup2", 0), 
