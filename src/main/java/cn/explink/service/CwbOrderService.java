@@ -4394,6 +4394,7 @@ public class CwbOrderService extends BaseOrderService {
 		 * if(co.getCurrentbranchid()!=currentbranchid) { throw new
 		 * CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),
 		 * ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO); }
+		 * 不是这个目的地的货,除非强制出库
 		 */
 		if ((co.getNextbranchid() != 0) && (co.getNextbranchid() != branchid) && (branchid > 0) && !forceOut) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, this.branchDAO.getBranchByBranchid(co.getNextbranchid())
