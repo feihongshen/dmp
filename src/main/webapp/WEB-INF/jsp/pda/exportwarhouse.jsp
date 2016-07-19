@@ -224,6 +224,7 @@ var Cwbs="";
 	    	carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
 	    	window.clearInterval(weightIntervalId) ;
 	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
+	    		jQuery("#weightNotice").text("") ;
 	    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
