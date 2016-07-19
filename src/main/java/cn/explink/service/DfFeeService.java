@@ -186,7 +186,7 @@ public class DfFeeService {
         else
             branchId = order.getInstationid();
 
-        if (branchId > 0 ) {
+        if (branchId > 0) {
             //如果揽件站点不为空，创建揽件费订单。
             chargeType = DeliveryFeeRuleChargeType.GET.getValue();
 
@@ -195,11 +195,18 @@ public class DfFeeService {
                 userName = deliver.get(0).getRealname();
             }
 
-            String address = order.getSenderaddress();
-            String province = order.getSenderprovince();
-            String city = order.getSendercity();
-            String county = order.getSendercounty();
-
+            String address = "";
+            String province = "";
+            String city = "";
+            String county = "";
+            if (order.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue() || order.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue()) {
+                address = order.getSenderaddress();
+                province = order.getSenderprovince();
+                city = order.getSendercity();
+                county = order.getSendercounty();
+            } else {
+                address = StringUtils.remove(order.getRemark4(), "&");
+            }
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(address, allProvince, null);
             }
@@ -245,7 +252,9 @@ public class DfFeeService {
         }
 
         //如果派件站点不为空，创建派件费订单。
-        if (order.getDeliverybranchid() > 0) {
+        if (order.getDeliverybranchid() > 0)
+
+        {
             if ((deliveryState.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue())
                     || (deliveryState.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())
                     || (deliveryState.getDeliverystate() == DeliveryStateEnum.BuFenTuiHuo.getValue())
@@ -307,6 +316,7 @@ public class DfFeeService {
                 }
             }
         }
+
     }
 
     private String getAddressCode(String addressName, List<AdressVO> addresses) {
