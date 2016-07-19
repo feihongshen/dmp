@@ -890,9 +890,6 @@ function baleaddcwb(scancwb,baleno){
 			}else{
 				$("#carweightDesc").html("") ;
 			}
-		},
-		failed:function(data){
-			console.log("failed") ;
 		}
 	});
 }
