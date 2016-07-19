@@ -17,6 +17,8 @@ import cn.explink.b2c.auto.order.mq.TpsOrderMQCallback;
 import cn.explink.b2c.auto.order.service.ExpressOrderService;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendDetailVO;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendVO;
+import cn.explink.b2c.tools.JiontDAO;
+import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -39,40 +41,44 @@ public class ExpressOrderHandler implements IOrderHandler {
 	
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
-	
+	@Autowired
+	JiontDAO jiontDAO;
 	@Override
 	@Transactional
 	public void dealWith(InfDmpOrderSendVO orderSend,VipShop vipshop) {		
-		if (vipshop.getIsGetExpressFlag() == 1) {
-			// 针对快递类型的判断
-			if(!verify(orderSend)){
-				return ;
+		/************************add start******************/
+		//add by 周欢     根据承运商编码和客户id筛选订单    2016-07-15
+		JointEntity jointEntityByShipper = this.jiontDAO.getDetialJointEntityByShipperNoForUse("\""+orderSend.getCustCode()+"\"",vipshop.getCustomerids());
+		if(jointEntityByShipper == null){
+			this.logger.info("tps订单下发接口，承运商对应的配置与接口设置客户id不符,承运商号：{},客户id:{}", orderSend.getCustCode(),vipshop.getCustomerids());
+			throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"TPS接口未开启接收配送单开关");
+		}
+		/************************add end******************/
+		// 针对快递类型的判断
+		if(!verify(orderSend)){
+			return ;
+		}
+		
+		ExpressDetailTemp expressDetailTemp = expressOrderService.getCwbOrderExpresstemp(orderSend.getMessageId());		
+		ExpressDetailTemp expressDetailTemp_New = getExprssDetailTemp(orderSend);
+		//新增
+		if(CmdType.NEW.equals(orderSend.getCmdType())){
+			if(expressDetailTemp != null){
+				// 已存在，不能新增
+				logger.info("快递已存在，单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
+				return;
 			}
-			
-			ExpressDetailTemp expressDetailTemp = expressOrderService.getCwbOrderExpresstemp(orderSend.getMessageId());		
-			ExpressDetailTemp expressDetailTemp_New = getExprssDetailTemp(orderSend);
-			//新增
-			if(CmdType.NEW.equals(orderSend.getCmdType())){
-				if(expressDetailTemp != null){
-					// 已存在，不能新增
-					logger.info("快递已存在，单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
-					return;
-				}
-				expressOrderService.insertExpressDetailTemp(expressDetailTemp_New);
-				// 更新明细
-			}else if (CmdType.EDIT.equals(orderSend.getCmdType())){// 更新
-				if(expressDetailTemp == null){
-					// 不存在，不能更新
-					logger.info("快递不存在, 单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
-					return ;				
-				} 
-				expressOrderService.updateExpressDetailTemp(expressDetailTemp_New);
-			} else {
-				logger.info("不存在对应的cmdtype:{},订单号：{}", orderSend.getCmdType(), orderSend.getTransportNo());
-			}
+			expressOrderService.insertExpressDetailTemp(expressDetailTemp_New);
+			// 更新明细
+		}else if (CmdType.EDIT.equals(orderSend.getCmdType())){// 更新
+			if(expressDetailTemp == null){
+				// 不存在，不能更新
+				logger.info("快递不存在, 单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
+				return ;				
+			} 
+			expressOrderService.updateExpressDetailTemp(expressDetailTemp_New);
 		} else {
-			this.logger.info("TPS接口未开启接收快递单开关");
-			throw new CwbException("", FlowOrderTypeEnum.DaoRuShuJu.getValue(), "TPS接口未开启接收快递单开关");
+			logger.info("不存在对应的cmdtype:{},订单号：{}", orderSend.getCmdType(), orderSend.getTransportNo());
 		}
 				
 	}

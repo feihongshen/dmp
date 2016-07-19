@@ -31,6 +31,9 @@ public class PDAResponse {
 	private PopupConfig popupConfig;
 	private long scannum;
 	String serverversion = "3.0";
+	//中浩乐宠@上海江苏
+	private String deliverybranchname;
+	private String branchid;
 
 	public String getStatuscode() {
 		return statuscode;
@@ -102,6 +105,22 @@ public class PDAResponse {
 
 	public void setScannum(long scannum) {
 		this.scannum = scannum;
+	}
+
+	public String getDeliverybranchname() {
+		return deliverybranchname;
+	}
+
+	public void setDeliverybranchname(String deliverybranchname) {
+		this.deliverybranchname = deliverybranchname;
+	}
+
+	public String getBranchid() {
+		return branchid;
+	}
+
+	public void setBranchid(String branchid) {
+		this.branchid = branchid;
 	}
 
 }

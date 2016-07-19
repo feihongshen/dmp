@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -295,5 +296,31 @@ public class UserService {
 	 */
 	public User getUserByUserid(long userid) {
 		return this.userDAO.getUserByUserid(userid);
+	}
+	
+	/**
+	 * 根据站点ID获取用户
+	 * 2016年6月16日 下午5:20:05
+	 * @param roleid
+	 * @param branchid
+	 * @return
+	 */
+	public List<User> getUserByRoleAndBranchid(int roleid, long branchid) {
+		return this.userDAO.getUserByRoleAndBranchid(roleid, branchid);
+	}
+	
+	/**
+	 * 查询站点小件员
+	 * 2016年6月17日 下午3:59:36
+	 * @param branchId
+	 * @param deliverName
+	 * @return
+	 */
+	public User getBranchDeliverByDeliverName(long branchId, String deliverName) {
+		User deliver = this.userDAO.getUserByUsername(deliverName);
+		if(deliver == null || deliver.getBranchid() != branchId || deliver.getRoleid() != 2) {
+			return null;
+		}
+		return deliver;
 	}
 }

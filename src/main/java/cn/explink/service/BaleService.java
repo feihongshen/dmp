@@ -7,8 +7,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.b2c.auto.order.service.AutoUserService;
-import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.controller.CwbOrderView;
 import cn.explink.dao.BaleCwbDao;
@@ -74,10 +76,10 @@ import cn.explink.domain.SetExportField;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.BaleCwbClassifyVo;
 import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BaleStateEnum;
-import cn.explink.enumutil.BaleUseStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -2072,5 +2074,112 @@ public class BaleService {
 		if(bale.getBalestate()!=nowBale.getBalestate()){
 			this.baleDAO.updateBalesate(bale.getId(), bale.getBalestate());
 		}
+	}
+	
+	/**
+	 *  按订单查询运单对应的包号
+	 * @date 2016年7月13日 下午5:29:38
+	 * @param cwbList
+	 * @return
+	 */
+	public List<BaleCwbClassifyVo> getBaleCwbClassifyVoList(CwbOrder order) {
+		List<BaleCwbClassifyVo> voList = new ArrayList<BaleCwbClassifyVo>();
+		if (((order.getSendcarnum() > 1) || (order.getBackcarnum() > 1))
+				&& (order.getTranscwb().contains(",") || order.getTranscwb().contains(":"))) { // 一票多件
+			// 获取运单号
+			String[] transcwbArray = order.getTranscwb().split(",|:");
+			List<String> transcwbs= new ArrayList<String>();
+			for (String transcwb : transcwbArray) {
+				transcwbs.add(transcwb);
+			}
+			// 查询包
+			List<BaleCwb> baleCwbList = this.baleCwbDAO.getLastBaleCwbList(transcwbs);
+			if(baleCwbList != null && baleCwbList.size() > 0) {
+				// 根据订单号分类
+				Map<String, List<String>> baleCwbMap = new LinkedHashMap<String, List<String>>(); //保证排序
+				for(BaleCwb baleCwb : baleCwbList) {
+					List<String> baleCwbs = baleCwbMap.get(baleCwb.getBaleno());
+					if(baleCwbs == null) {
+						baleCwbs = new ArrayList<String>();
+					}
+					baleCwbs.add(baleCwb.getCwb());
+					baleCwbMap.put(baleCwb.getBaleno(), baleCwbs);
+					transcwbs.remove(baleCwb.getCwb());
+				}
+				// 转VO
+				for(Map.Entry<String, List<String>> entry : baleCwbMap.entrySet()) {
+					BaleCwbClassifyVo vo = new BaleCwbClassifyVo();
+					vo.setBaleno(entry.getKey());
+					vo.setTranscwbList(entry.getValue());
+					voList.add(vo);
+				}
+				//添加未匹配的包号
+				if (transcwbs.size() > 0) {
+					BaleCwbClassifyVo vo = new BaleCwbClassifyVo();
+					vo.setBaleno("");
+					vo.setTranscwbList(transcwbs);
+					voList.add(vo);
+				}
+			} else { // 如果没有查到，则使用绑定的包号
+				BaleCwbClassifyVo vo = new BaleCwbClassifyVo();
+				vo.setBaleno(order.getPackagecode());
+				vo.setTranscwbList(new ArrayList<String>(transcwbs));
+				voList.add(vo);
+			}
+			
+		}
+		if(voList.isEmpty()) { //非一票多件，则直接使用绑定的运单号和包号
+			BaleCwbClassifyVo vo = new BaleCwbClassifyVo();
+			List<String> transcwbList = new ArrayList<String>();
+			transcwbList.add(order.getTranscwb());
+			vo.setBaleno(order.getPackagecode());
+			vo.setTranscwbList(transcwbList);
+			voList.add(vo);
+		}
+		return voList;
+	}
+	
+	/**
+	 * 根据包号查询订单与包的集合
+	 * @date 2016年7月13日 下午5:33:52
+	 * @param cwbList
+	 * @param baleno
+	 * @return
+	 */
+	public Map<String, BaleCwbClassifyVo> getBaleCwbClassifyVoMapByBaleno(List<String> cwbList, String baleno) {
+		Set<String> cwbSet = new HashSet<String>(cwbList);
+		Map<String,BaleCwbClassifyVo> voMap = new HashMap<String, BaleCwbClassifyVo>();
+		if(cwbList == null || cwbList.size() == 0) {
+			return voMap;
+		}
+		// 查询最近一次使用的包
+		Bale bale = this.baleDAO.getLastBaleByBaleno(baleno);
+		if (bale != null) {
+			List<BaleCwb> baleCwbList = this.baleCwbDAO.getBaleCwbListByBaleId(bale.getId());
+			for(BaleCwb baleCwb : baleCwbList) { // 根据订单号分类
+				String cwb = this.cwbOrderService.translateCwb(baleCwb.getCwb());
+				if(cwbSet.contains(cwb)) {
+					BaleCwbClassifyVo vo = voMap.get(cwb);
+					if(vo == null) {
+						vo = new BaleCwbClassifyVo();
+						vo.setBaleno(baleno);
+					}
+					vo.getTranscwbList().add(baleCwb.getCwb());
+					voMap.put(cwb, vo);
+				}
+			}
+		}
+		for(String cwb : cwbSet) { //处理未匹配的订单
+			BaleCwbClassifyVo vo = voMap.get(cwb);
+			if(vo == null) {
+				vo = new BaleCwbClassifyVo();
+				vo.setBaleno(baleno);
+				List<String> transcwbList = new ArrayList<String>();
+				transcwbList.add(""); // 运单号未空
+				vo.setTranscwbList(transcwbList);
+				voMap.put(cwb, vo);
+			}
+		}
+		return voMap;
 	}
 }

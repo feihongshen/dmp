@@ -147,4 +147,12 @@ public class Constants {
 	 * 登录来源是否为PDA
 	 */
 	public static final String IS_ACCESS_SOURCE_FROM_PDA = "isAccessSourceFromPDA";
+	
+	/*
+	 * 武汉自动化分拨报文处理状态
+	 */
+	public static final String AUTO_ALLOC_STATUS_UNSENT = "0";			//未发送
+	public static final String AUTO_ALLOC_STATUS_SENT = "1";			//已发送
+	public static final String AUTO_ALLOC_STATUS_HANDLE_SUCCESS = "2";	//处理成功
+	public static final String AUTO_ALLOC_STATUS_HANDLE_FAIL = "3";		//处理失败
 }

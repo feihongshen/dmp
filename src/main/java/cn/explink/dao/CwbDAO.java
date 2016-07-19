@@ -34,6 +34,7 @@ import com.pjbest.splitting.routing.DatabaseType;
 
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.MatchExceptionOrder;
@@ -167,7 +168,6 @@ public class CwbDAO {
             return null;
         }
     }
-
 	private final class CwbMapper implements RowMapper<CwbOrder> {
 		
 		//是否需要过滤用户信息
@@ -263,6 +263,7 @@ public class CwbDAO {
 					.getString("cwbdelivertypeid")));
 			cwbOrder.setExceldeliver(StringUtil.nullConvertToEmptyString(rs
 					.getString("exceldeliver")));
+			cwbOrder.setExceldeliverid(rs.getLong("exceldeliverid"));
 			cwbOrder.setExcelbranch(StringUtil.nullConvertToEmptyString(rs
 					.getString("excelbranch")));
 			cwbOrder.setTimelimited(StringUtil.nullConvertToEmptyString(rs
@@ -378,10 +379,13 @@ public class CwbDAO {
 			// mpsallarrivedflag
 			cwbOrder.setMpsoptstate(rs.getInt("mpsoptstate"));
 			cwbOrder.setMpsallarrivedflag(rs.getInt("mpsallarrivedflag"));
-
+			cwbOrder.setExpressProductType(rs.getInt("express_product_type"));
 			cwbOrder.setInstationname(rs.getString("instationname"));
+            //added by steve.peng 2016/07/15, 新增揽件站点id的mapping，用于识别是否需要揽件费的基础数据生成。
+            cwbOrder.setInstationid(rs.getLong("instationid"));
 			cwbOrder.setMonthsettleno(rs.getString("monthsettleno"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
+			cwbOrder.setCargovolume(rs.getBigDecimal("cargovolume"));
 			cwbOrder.setVipclub(rs.getInt("vipclub"));
 			if(isFilterUserInfo) {
 				CwbDAO.this.setValueByUser(rs, cwbOrder);
@@ -395,6 +399,8 @@ public class CwbDAO {
 			}
 
 			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
+			cwbOrder.setTpstranscwb(rs.getString("tpstranscwb"));
+			cwbOrder.setOrderSource(rs.getString("order_source"));
 			return cwbOrder;
 		}
 	}
@@ -2186,6 +2192,12 @@ public class CwbDAO {
 				.update("update express_ops_cwb_detail set state=1  where state =0 and emaildateid=?",
 						emaildateid);
 	}
+	
+	public void updateAddressDeliverByCwb(String cwb, long deliverid, String exceldeliver) {
+		this.jdbcTemplate.update(
+				"update express_ops_cwb_detail set exceldeliverid=?, exceldeliver=? where state =1 and cwb=?", deliverid,
+				exceldeliver, cwb);
+	}
 
 	public void updateDeliveryBranchid(String excelbranch, long branchid,
 			String cwb, CwbOrderAddressCodeEditTypeEnum addressCodeEditType) {
@@ -2221,7 +2233,7 @@ public class CwbDAO {
 		StringBuffer sql = new StringBuffer();
 		sql.append("update express_ops_cwb_detail set excelbranch = ? ,deliverybranchid = ? ,addresscodeedittype = ? ");
 		if ((delivererList != null) && (delivererList.size() == 1)) {
-			sql.append(" ,deliverid = ")
+			sql.append(" ,exceldeliverid = ")
 					.append(delivererList.get(0).getExternalId())
 					.append(",exceldeliver = '")
 					.append(delivererList.get(0).getName()).append("'");
@@ -4696,7 +4708,7 @@ public class CwbDAO {
 						branchid, deliverystate);
 	}
 
-	public List<CwbOrder> getCwbByBaleid(long baleid) {
+	public List<CwbOrder> getCwbByBaleid(long baleid,String cwbOrderTypeId) {
 		String baleCwbSql = " SELECT c.cwb FROM express_ops_bale_cwb AS c WHERE c.baleid ="
 				+ baleid;
 		List<String> baleCwbList = this.jdbcTemplate.queryForList(baleCwbSql,
@@ -4713,7 +4725,10 @@ public class CwbDAO {
 			String quertStr = targetString.substring(0,
 					targetString.length() - 1);
 			String sql = " SELECT * FROM express_ops_cwb_detail "
-					+ " WHERE state = 1" + " AND cwb IN ( " + quertStr + " )";
+					+ " WHERE state = 1" + " AND cwb IN ( " + quertStr + " ) ";
+			if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
+				sql += " and cwbordertypeid = "+cwbOrderTypeId;
+			}
 			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} else {
 			return new ArrayList<CwbOrder>();
@@ -5480,6 +5495,15 @@ public class CwbDAO {
 				+ cwbs + ")";
 		return this.jdbcTemplate.query(sql, new CwbMapper());
 	}
+	public List<CwbOrder> getCwbOrderByCwbsAndcwbOrderType(String cwbs,String cwbOrderTypeId){
+		String sql = "select * from express_ops_cwb_detail where state=1 and cwb in("
+				+ cwbs + ") ";
+		if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
+			sql += " and cwbordertypeid="+cwbOrderTypeId;
+		}
+		return this.jdbcTemplate.query(sql, new CwbMapper());
+	}
+	
 
 	@DataSource(DatabaseType.REPLICA)
 	public long getCwbOrderByCwbsCount(String cwbs) {
@@ -7405,8 +7429,8 @@ public class CwbDAO {
 	 * @param nextbranchid
 	 * @return
 	 */
-	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs,
-			String nextbranchid, long branchid, long flowordertype) {
+	public List<CwbOrder> getCwbByCwbsAndcwbTypeForPrint(String cwbs,
+			String nextbranchid, long branchid, long flowordertype,String cwbOrderTypeId) {
 		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
 				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
 				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
@@ -7418,6 +7442,9 @@ public class CwbDAO {
 				+ ") and op.branchid="
 				+ branchid
 				+ " and cd.state=1 and op.flowordertype=" + flowordertype;
+		if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
+			sql+=" cwbordertypeid="+cwbOrderTypeId;
+		}
 		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
 	}
 
@@ -7454,7 +7481,7 @@ public class CwbDAO {
 	 * @return
 	 */
 	public List<CwbOrder> getCwbByCwbsForPrint(String cwbs, long branchid,
-			long baleid) {
+			long baleid,String cwbOrderTypeId) {
 		String sql = "SELECT cd.cwb,cd.transcwb,cd.customerid,cd.cwbordertypeid,cd.sendcarnum,cd.backcarnum,cd.caramount,cd.consigneename,"
 				+ "cd.consigneeaddress,cd.consigneepostcode,cd.consigneemobile,cd.consigneephone,"
 				+ "cd.receivablefee,cd.paybackfee,cd.carsize,cd.paywayid,cd.cwbremark,cd.carrealweight, op.nextbranchid AS nextbranchid "
@@ -7463,6 +7490,9 @@ public class CwbDAO {
 				+ ") and op.baleid="
 				+ baleid
 				+ "  and cd.state=1 ";
+		if(cwbOrderTypeId.length()>0&&(!cwbOrderTypeId.equals("0"))){
+			sql +=" cwbordertypeid="+cwbOrderTypeId;
+		}
 		return this.jdbcTemplate.query(sql, new CwbForChuKuPrintMapper());
 	}
 
@@ -7664,16 +7694,23 @@ public class CwbDAO {
 	public List<CwbOrder> getCwbOrderByDelivery(String...params) {
 		StringBuffer sql = new StringBuffer();
 		String cwbs = params[0];
-		if(params.length>1 && "WEIPIPEI".equals(params[1]))
+		if(params.length>1 && "WEIPIPEI".equals(params[1])){
 			sql.append("select * from express_ops_cwb_detail where state=1 and flowordertype<>"+CwbFlowOrderTypeEnum.YiShenHe.getValue());
-		else
+			//Added by leoliao at 2016-06-29 加上配送站点为0的条件			
+			sql.append(" and deliverybranchid=0 ");
+			//Added end
+		}else{
 			sql.append("select * from express_ops_cwb_detail where state=1 ");
+		}
 			
 		if (!"".equals(cwbs)) {
 			sql.append(" and cwb in(" + cwbs + ")");
 			String ordercwbs = "'" + cwbs.replace("'", "") + "'";
 			sql.append(" ORDER BY FIND_IN_SET(cwb," + ordercwbs + ")");
 		}
+		
+		logger.info("CwbDAO getCwbOrderByDelivery sql:{}", sql);
+		
 		return this.jdbcTemplate.query(sql.toString(), new CwbMapper());
 	}
 
@@ -8377,11 +8414,32 @@ public class CwbDAO {
 		StringBuffer sql = new StringBuffer(
 				"SELECT * FROM  `express_ops_cwb_detail` WHERE  "
 						+ wheresql
-						+ " and "
+						+ " or ( flowordertype in(1,2) and "
 						+ (branchid.length() > 0 ? (" nextbranchid in("
 								+ branchid + ")  and") : " nextbranchid IN("
 								+ branchids + ") and ")
-						+ " nextbranchid>0 AND state=1  " + " limit "
+						+ " nextbranchid>0) AND state=1  " + " limit "
+						+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
+						+ Page.ONE_PAGE_NUMBER);
+
+		List<CwbOrder> list = this.jdbcTemplate.query(sql.toString(),
+				new CwbMapper());
+
+		return list;
+	}
+	
+	@DataSource(DatabaseType.REPLICA)
+	public List<CwbOrder> getMonitorLogByTypeAll(String wheresql, String branchid,
+			long page, String branchids) {
+
+		StringBuffer sql = new StringBuffer(
+				"SELECT * FROM  `express_ops_cwb_detail` WHERE  "
+						+ wheresql
+						+ " or ( flowordertype in(1,2) and "
+						+ (branchid.length() > 0 ? (" nextbranchid in("
+								+ branchid + ")  and") : " nextbranchid IN("
+								+ branchids + ") and ")
+						+ " nextbranchid>0) AND state=1  " + " limit "
 						+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
 						+ Page.ONE_PAGE_NUMBER);
 
@@ -9090,6 +9148,7 @@ public class CwbDAO {
 	public List<ExpressCwbOrderForTakeGoodsQueryVO> queryCwbExpressTakeGoodsQueryByPage(
 			Long page, ExpressCwb4TakeGoodsQuery cwb4TakeGoodsQuery,
 			String userIds) {
+
 		String sqll = "SELECT cwb,instationdatetime,sendnum,sendcarnum,collectorid,collectorname,paymethod,totalfee,shouldfare,packagefee,insuredfee,receivablefee,senderid,sendername,customerid,senderprovinceid,senderprovince,sendercityid,sendercity,sendercellphone,sendertelephone,consigneename,recid,reccustomerid,recprovinceid,cwbprovince,reccityid,cwbcity,consigneemobile,consigneephone,entrustname,unix_timestamp(credate) credateTimestamp FROM express_ops_cwb_detail where cwbordertypeid="
 				+ CwbOrderTypeIdEnum.Express.getValue() + "";
 		
@@ -9810,25 +9869,31 @@ public class CwbDAO {
 		return this.jdbcTemplate.update(sql, emaildate,cwb);
 	}
 
+	//【修改】根据电话号码获取寄件人或收件人信息：信息内容增加电话号码【周欢】2016-07-13
 	public List<Map<String, Object>> getCwbOrderByPhone(String phone, String flag) {
 		StringBuffer sql= new StringBuffer("");
 		new StringBuffer("");
 		if(flag.equals("1") || flag.equals("2")){
-			sql.append("SELECT DISTINCT sendername,senderprovince,sendercity,sendercounty,senderstreet,senderaddress,senderprovinceid,sendercityid,sendercountyid,senderstreetid from express_ops_cwb_detail where state=1 ");
+			sql.append("SELECT DISTINCT sendername,senderprovince,sendercity,sendercounty,senderstreet,senderaddress,"
+					+ "senderprovinceid,sendercityid,sendercountyid,senderstreetid,sendercellphone,"
+					+ "sendertelephone from express_ops_cwb_detail where state=1 ");
 			if(flag.equals("1")){//根据寄件人手机号
 				sql.append(" and sendercellphone='"+phone+"' ");
 			}else if(flag.equals("2")){//根据寄件人固话
 				sql.append(" and sendertelephone='"+phone+"' ");
 			}
-			sql.append(" and cwbordertypeid=6 limit 0,3");
+			//edit by 周欢 查询的信息根据订单id排序 2016-07-15
+			sql.append(" and cwbordertypeid=6 ORDER BY opscwbid limit 0,3");
 		}else if(flag.equals("3") || flag.equals("4")){
-			sql.append("SELECT DISTINCT consigneename,cwbprovince,cwbcity,cwbcounty,recstreet,consigneeaddress,recprovinceid,reccityid,reccountyid,recstreetid from express_ops_cwb_detail where state=1 ");
+			sql.append("SELECT DISTINCT consigneename,cwbprovince,cwbcity,cwbcounty,recstreet,consigneeaddress,"
+					+ "recprovinceid,reccityid,reccountyid,recstreetid,consigneemobile,consigneephone from express_ops_cwb_detail where state=1 ");
 			if(flag.equals("3")){//根据收件人手机号
 				sql.append(" and consigneemobile='"+phone+"' ");
 			}else if(flag.equals("4")){//根据收件人固话
 				sql.append(" and consigneephone='"+phone+"' ");
 			}
-			sql.append(" and cwbordertypeid=6 limit 0,3");
+			//edit by 周欢 查询的信息根据订单id排序 2016-07-15
+			sql.append(" and cwbordertypeid=6 ORDER BY opscwbid limit 0,3");
 		}
 		
 		return this.jdbcTemplate.queryForList(sql.toString());

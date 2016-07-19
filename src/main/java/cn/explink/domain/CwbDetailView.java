@@ -26,6 +26,7 @@ public class CwbDetailView {
 	String backcarname; // 取回商品名称
 	String sendcarname;// 发出商品名称
 	long deliverid; // 小件员id
+	long exceldliverid; // 地址库匹配小件员ID
 	int deliverystate;
 	int emailfinishflag;// 库房入库状态 1正常入库 2有货无单 3有单无货 默认值为-1
 	int reacherrorflag;// 站点入库状态 1正常入库 2有货无单 3有单无货 默认值为-1
@@ -121,6 +122,25 @@ public class CwbDetailView {
 	private String cwbordertype;//订单类型
 	private String checkstateresultname; //审核状态
 	
+	
+	//Hps_Concerto add 2016年6月27日 11:19:53
+	private String cwbstatetext;
+	private String flowordertypetext;
+	public String getCwbstatetext() {
+		return cwbstatetext;
+	}
+
+	public void setCwbstatetext(String cwbstatetext) {
+		this.cwbstatetext = cwbstatetext;
+	}
+	public String getFlowordertypetext() {
+		return flowordertypetext;
+	}
+
+	public void setFlowordertypetext(String flowordertypetext) {
+		this.flowordertypetext = flowordertypetext;
+	}
+	//***********
 	public String getCheckstateresultname() {
 		return checkstateresultname;
 	}
@@ -987,5 +1007,23 @@ public class CwbDetailView {
 		this.cwbordertype = cwbordertype;
 	}
 
-	
+	public long getExceldliverid() {
+		return exceldliverid;
+	}
+
+	public void setExceldliverid(long exceldliverid) {
+		this.exceldliverid = exceldliverid;
+	}
+
+	public void setPodfeetoheadtime(String podfeetoheadtime) {
+		this.podfeetoheadtime = podfeetoheadtime;
+	}
+
+	public void setPodfeetoheadchecktime(String podfeetoheadchecktime) {
+		this.podfeetoheadchecktime = podfeetoheadchecktime;
+	}
+
+	public void setDeliversubscribeday(String deliversubscribeday) {
+		this.deliversubscribeday = deliversubscribeday;
+	}
 }

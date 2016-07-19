@@ -376,7 +376,7 @@ function clearSelect(){
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >出库时间</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >支付方式</td>
 				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >服务类型</td>
-				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >是否团购</td>
+				<td  align="center" valign="middle" bgcolor="#eef6ff" onclick="orderForm('cwb');" >业务类型</td>
 				
 		</tr>
 		

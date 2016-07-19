@@ -114,7 +114,10 @@ public enum B2cEnum {
 	Shenzhoushuma(20137,"神州数码","shenzhoushuma",0),
 	ZheMeng_track(23001, "哲盟_轨迹", "zhemeng_track", 0),
 	EMS(22010, "邮政速递", "EMS", 0), 
-	TPS_MQ(22501, "tps订单下发接口", "tpsvipshop_mq", 0);
+	TPS_MQ(22501, "tps订单下发接口", "tpsvipshop_mq", 0),
+	TPS_MQExpress(22502, "tps快递单下发接口", "tpsvipshop_mqExpress", 0),
+	TPS_kuajinggou(22503, "跨境购订单下发接口", "kuajinggouvipshop_mq", 0),
+	TPS_TraceFeedback(22601, "订单轨迹回传给tps接口", "tps_traceFeedback", 0);
 
 	 
 

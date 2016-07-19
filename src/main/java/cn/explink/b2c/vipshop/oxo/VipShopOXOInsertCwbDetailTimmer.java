@@ -3,6 +3,7 @@ package cn.explink.b2c.vipshop.oxo;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.explink.service.DfFeeService;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +56,8 @@ public class VipShopOXOInsertCwbDetailTimmer {
 
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
+    @Autowired
+    private DfFeeService dfFeeService;
 	
 	/**
 	 * OXO定时器，查询临时表，插入数据到detail表中。
@@ -123,6 +126,11 @@ public class VipShopOXOInsertCwbDetailTimmer {
 
 			cwbOrderService.insertCwbOrder(cwbOrder, cwbOrder.getCustomerid(), ed.getWarehouseid(), user, ed);
 			logger.info("定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
+
+            //added by Steve PENG. OXO/OXOJIT 导入后生需要成派费订单的相关操作。 start
+            //commented by Steve PENG. OXO的单将会在归班审核后导入， OXOJIT 目前业务不会计费。
+//            dfFeeService.saveFeeRelativeAfterOXOImport(cwbOrder.getCwb(), user);
+            //added by Steve PENG. OXO/OXOJIT 导入后生需要成派费订单的相关操作。 end
 
 			if(StringUtils.isNotBlank(cwbOrder.getRemark4())){
 				String pickAddress = cwbOrder.getRemark4().replaceAll("&", "");

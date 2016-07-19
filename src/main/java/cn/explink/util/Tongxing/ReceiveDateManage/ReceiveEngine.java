@@ -114,6 +114,9 @@ private ClientState state;
             	sc.Sendmessage.SendDate(stateCode.ReplyDate);
             	//System.out.println(stateCode.Datestring);
             	//sc.iTxClient.AcceptString(stateCode.Datestring);//接收到文本信息给外部调用
+            	// added by wangwei, 20160713, start
+            	sc.AcceptString(stateCode.Datestring);//接收到文本信息给外部调用
+            	// added by wangwei, 20160713, end
                 break;
             case PasswordCode._photographCode://图片信息
             	sc.Sendmessage.SendDate(stateCode.ReplyDate);
@@ -121,7 +124,7 @@ private ClientState state;
                 break;
             case PasswordCode._dateSuccess://数据发送成功
             	state.SendDate = null;
-            	System.out.println("发送成功");
+            	//System.out.println("发送成功");
                 //我的数据已经成功收到,给外部调用
                 break;
             case 0://说明这个数据只要直接回复给对方就可以了

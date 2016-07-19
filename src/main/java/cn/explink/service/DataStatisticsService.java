@@ -1868,7 +1868,8 @@ public class DataStatisticsService {
 
 				// 添加揽件省 added by songkaojun 2015-11-17
 				cwbOrderView.setSenderprovince(c.getSenderprovince());
-				cwbOrderView.setVipclub(c.getVipclub()==0?"否":"是");
+				//【修改】vipclu更名为业务类型，上游给什么dmp存什么，同样界面也显示什么 【周欢】 --2016-07-12
+				cwbOrderView.setVipclub(c.getVipclub()+"");
 				cwbOrderViewList.add(cwbOrderView);
 
 			}
