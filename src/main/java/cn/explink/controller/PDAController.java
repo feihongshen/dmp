@@ -10853,6 +10853,16 @@ public class PDAController {
 		String isOpenDialog = this.systemInstallDAO.getSystemInstallByName("Dialog").getValue();// 是否显示提示框
 		String isConfigZhongZhuan = zzBranchid != 0 ? "true" : "false";
 
+		/***************add****************/
+		// add by bruce shangguan 20160712 获取电子秤称重时长
+		SystemInstall systemInstall = this.systemInstallDAO.getSystemInstall("weightTime") ;
+		String weightTime = "10" ; // 电子秤称重时长默认为10秒
+		if(systemInstall != null && !StringUtils.isEmpty(systemInstall.getValue()) && systemInstall.getValue().trim().matches("^[1-9][0-9]*$")){
+			weightTime = systemInstall.getValue() ;
+		}
+		model.addAttribute("weightTime", weightTime);
+		// end 20160718
+		/**************end****************/
 		model.addAttribute("customerlist", cList);
 		model.addAttribute("isConfigZhongZhuan", isConfigZhongZhuan);// “区域权限设置”是否配置了中转站
 		model.addAttribute("isOpenDialog", isOpenDialog);
