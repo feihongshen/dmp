@@ -9663,7 +9663,7 @@ public class CwbOrderService extends BaseOrderService {
 					}
 					//Added end
 				}else if(temp.getCurrentbranchid() == 0 && temp.getPreviousbranchid() == 0 && temp.getNextbranchid() != 0){
-					//Added by leoliao at 2016-07-20 当前站为0则，取上一站，然后获取其对应的退货组。订单拦截即使是出库未到站，也需要进行拦截，此时可以在站点直接进行退货出站操作！
+					//Added by leoliao at 2016-07-20 当前站、上一站都为0则，取下一站，然后获取其对应的退货组。订单拦截即使是出库未到站，也需要进行拦截，此时可以在站点直接进行退货出站操作！
 					Branch transNextBranch = this.branchDAO.getBranchByBranchid(temp.getNextbranchid());
 					if(transNextBranch != null){
 						List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(temp.getNextbranchid());// 根据站点的流向配置，找到他对应的退货组
