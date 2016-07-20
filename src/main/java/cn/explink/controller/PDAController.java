@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -139,6 +140,7 @@ import cn.explink.exception.CwbException;
 import cn.explink.param.AutoAllocationParam;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
+import cn.explink.schedule.Constants;
 import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderTypeService;
@@ -3214,7 +3216,7 @@ public class PDAController {
 				/**
 				 * 对接自动分拨的中间件
 				 */
-				this.addQueue(outputNo, entranceno, cwb, direction, branchName);		
+				this.addQueue(outputNo, entranceno, cwb, direction, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_INTOWAHOUSE);		
 			
 				this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 				return resp;
@@ -3618,7 +3620,7 @@ public class PDAController {
 			/**
 			 * 对接自动分拨的中间件
 			 */
-			this.addQueue(outputNo, entranceno, cwb, direction, branchName);
+			this.addQueue(outputNo, entranceno, cwb, direction, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_CHANGE_INTOWAHOUSE);
 			
 			return explinkResponse;
 		} catch (CwbException e) {
@@ -11204,7 +11206,7 @@ public class PDAController {
 	/**
 	 * 对接自动分拨的中间件,往队列中添加一个包裹
 	 */
-	private void addQueue(String outputNo,String entranceno,String cwb,String direction,String branchName){
+	private void addQueue(String outputNo,String entranceno,String cwb,String direction,String branchName, String scancwb, byte intowarehouseType){
 		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
 			String autoAllocatingSwitch=this.systemInstallDAO.getSystemInstallByName("AutoAllocating").getValue();
 			//启用并设置了出货口
@@ -11217,8 +11219,12 @@ public class PDAController {
 					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
 					socketMap.put(entranceIP, sc);
 				}
-				//发送消息
+				
+				
 				AutoAllocationParam param=new AutoAllocationParam(cwb,outputNo,direction,branchName);
+				//createEmptyMsgLog
+				this.autoAllocationService.createEmptyMsgLog(param, cwb, scancwb, intowarehouseType);
+				//发送消息
 				this.autoAllocationService.addQueue(entranceIP, param);
 			}
 		}

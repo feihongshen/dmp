@@ -33,6 +33,9 @@ public class AutoIntowarehouseMessageDAO {
 			AutoIntowarehouseMessage autoIntowarehouseMessage = new AutoIntowarehouseMessage();
 			autoIntowarehouseMessage.setId(rs.getLong("id"));
 			autoIntowarehouseMessage.setSerialNo(rs.getString("serialNo"));
+			autoIntowarehouseMessage.setIntowarehouseType(rs
+					.getByte("intowarehouseType"));
+			autoIntowarehouseMessage.setScancwb(rs.getString("scancwb"));
 			autoIntowarehouseMessage.setCwb(rs.getString("cwb"));
 			autoIntowarehouseMessage
 					.setSendContent(rs.getString("sendContent"));
@@ -41,8 +44,8 @@ public class AutoIntowarehouseMessageDAO {
 					.getString("receiveContent"));
 			autoIntowarehouseMessage
 					.setReceiveTime(rs.getString("receiveTime"));
-			autoIntowarehouseMessage.setHandleStatus(rs
-					.getString("handleStatus"));
+			autoIntowarehouseMessage
+					.setHandleStatus(rs.getByte("handleStatus"));
 
 			autoIntowarehouseMessage.setCreatedByUser(rs
 					.getString("created_by_user"));
@@ -69,25 +72,27 @@ public class AutoIntowarehouseMessageDAO {
 					java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
 				ps = con.prepareStatement(
-						"insert into express_ops_auto_intowarehouse_message(id,serialNo,cwb,sendContent,sendTime,receiveContent,receiveTime,handleStatus,"
+						"insert into express_ops_auto_intowarehouse_message(id,serialNo,intowarehouseType,scancwb,cwb,sendContent,sendTime,receiveContent,receiveTime,handleStatus,"
 								+ "created_by_user,created_dtm_loc,updated_by_user,updated_dtm_loc) "
-								+ "values(?,?,?,?,?,?,?,?," + "?,?,?,?)",
+								+ "values(?,?,?,?,?,?,?,?,?,?," + "?,?,?,?)",
 						new String[] { "id" });
 				ps.setLong(1, autoIntowarehouseMessage.getId());
 				ps.setString(2, autoIntowarehouseMessage.getSerialNo());
-				ps.setString(3, autoIntowarehouseMessage.getCwb());
-				ps.setString(4, autoIntowarehouseMessage.getSendContent());
-				ps.setString(5, autoIntowarehouseMessage.getSendTime());
-				ps.setString(6, autoIntowarehouseMessage.getReceiveContent());
-				ps.setString(7, autoIntowarehouseMessage.getReceiveTime());
-				ps.setString(8, autoIntowarehouseMessage.getHandleStatus());
+				ps.setByte(3, autoIntowarehouseMessage.getIntowarehouseType());
+				ps.setString(4, autoIntowarehouseMessage.getScancwb());
+				ps.setString(5, autoIntowarehouseMessage.getCwb());
+				ps.setString(6, autoIntowarehouseMessage.getSendContent());
+				ps.setString(7, autoIntowarehouseMessage.getSendTime());
+				ps.setString(8, autoIntowarehouseMessage.getReceiveContent());
+				ps.setString(9, autoIntowarehouseMessage.getReceiveTime());
+				ps.setByte(10, autoIntowarehouseMessage.getHandleStatus());
 
-				ps.setString(9, autoIntowarehouseMessage.getCreatedByUser());
-				ps.setString(10, DateTimeUtil
+				ps.setString(11, autoIntowarehouseMessage.getCreatedByUser());
+				ps.setString(12, DateTimeUtil
 						.parseDateToString(autoIntowarehouseMessage
 								.getCreatedDtmLoc()));
-				ps.setString(11, autoIntowarehouseMessage.getUpdatedByUser());
-				ps.setString(12, DateTimeUtil
+				ps.setString(13, autoIntowarehouseMessage.getUpdatedByUser());
+				ps.setString(14, DateTimeUtil
 						.parseDateToString(autoIntowarehouseMessage
 								.getUpdatedDtmLoc()));
 				return ps;
@@ -101,7 +106,7 @@ public class AutoIntowarehouseMessageDAO {
 			final AutoIntowarehouseMessage autoIntowarehouseMessage) {
 		this.jdbcTemplate
 				.update("update express_ops_auto_intowarehouse_message "
-						+ "set serialNo=?,cwb=?,sendContent=?,sendTime=?,receiveContent=?,receiveTime=?,handleStatus=?,"
+						+ "set serialNo=?,intowarehouseType=?,scancwb=?,cwb=?,sendContent=?,sendTime=?,receiveContent=?,receiveTime=?,handleStatus=?,"
 						+ "created_by_user=?,created_dtm_loc=?,updated_by_user=?,updated_dtm_loc=? "
 						+ "where id =? ", new PreparedStatementSetter() {
 
@@ -109,29 +114,32 @@ public class AutoIntowarehouseMessageDAO {
 					public void setValues(PreparedStatement ps)
 							throws SQLException {
 						ps.setString(1, autoIntowarehouseMessage.getSerialNo());
-						ps.setString(2, autoIntowarehouseMessage.getCwb());
-						ps.setString(3,
-								autoIntowarehouseMessage.getSendContent());
-						ps.setString(4, autoIntowarehouseMessage.getSendTime());
+						ps.setByte(2,
+								autoIntowarehouseMessage.getIntowarehouseType());
+						ps.setString(3, autoIntowarehouseMessage.getScancwb());
+						ps.setString(4, autoIntowarehouseMessage.getCwb());
 						ps.setString(5,
-								autoIntowarehouseMessage.getReceiveContent());
-						ps.setString(6,
-								autoIntowarehouseMessage.getReceiveTime());
+								autoIntowarehouseMessage.getSendContent());
+						ps.setString(6, autoIntowarehouseMessage.getSendTime());
 						ps.setString(7,
+								autoIntowarehouseMessage.getReceiveContent());
+						ps.setString(8,
+								autoIntowarehouseMessage.getReceiveTime());
+						ps.setByte(9,
 								autoIntowarehouseMessage.getHandleStatus());
 
-						ps.setString(8,
+						ps.setString(10,
 								autoIntowarehouseMessage.getCreatedByUser());
-						ps.setString(9, DateTimeUtil
+						ps.setString(11, DateTimeUtil
 								.parseDateToString(autoIntowarehouseMessage
 										.getCreatedDtmLoc()));
-						ps.setString(10,
+						ps.setString(12,
 								autoIntowarehouseMessage.getUpdatedByUser());
-						ps.setString(11, DateTimeUtil
+						ps.setString(13, DateTimeUtil
 								.parseDateToString(autoIntowarehouseMessage
 										.getUpdatedDtmLoc()));
 
-						ps.setLong(12, autoIntowarehouseMessage.getId());
+						ps.setLong(14, autoIntowarehouseMessage.getId());
 					}
 				});
 	}

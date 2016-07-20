@@ -10,12 +10,19 @@ package cn.explink.domain;
  *  
  */
 public class AutoIntowarehouseMessage extends BaseEntity{
+	
 	private long id;
 	
 	private String serialNo;
 	
+	private byte intowarehouseType;
+	
+	private String scancwb;
+	
 	private String cwb;
 	
+	private String baleno;
+		
 	private String sendContent;
 	
 	private String sendTime;
@@ -24,7 +31,7 @@ public class AutoIntowarehouseMessage extends BaseEntity{
 	
 	private String receiveTime;
 	
-	private String handleStatus;
+	private byte handleStatus;
 
 	public long getId() {
 		return id;
@@ -42,12 +49,36 @@ public class AutoIntowarehouseMessage extends BaseEntity{
 		this.serialNo = serialNo;
 	}
 
+	public byte getIntowarehouseType() {
+		return intowarehouseType;
+	}
+
+	public void setIntowarehouseType(byte intowarehouseType) {
+		this.intowarehouseType = intowarehouseType;
+	}
+
+	public String getScancwb() {
+		return scancwb;
+	}
+
+	public void setScancwb(String scancwb) {
+		this.scancwb = scancwb;
+	}
+
 	public String getCwb() {
 		return cwb;
 	}
 
 	public void setCwb(String cwb) {
 		this.cwb = cwb;
+	}
+
+	public String getBaleno() {
+		return baleno;
+	}
+
+	public void setBaleno(String baleno) {
+		this.baleno = baleno;
 	}
 
 	public String getSendContent() {
@@ -82,11 +113,11 @@ public class AutoIntowarehouseMessage extends BaseEntity{
 		this.receiveTime = receiveTime;
 	}
 
-	public String getHandleStatus() {
+	public byte getHandleStatus() {
 		return handleStatus;
 	}
 
-	public void setHandleStatus(String handleStatus) {
+	public void setHandleStatus(byte handleStatus) {
 		this.handleStatus = handleStatus;
 	}
 
