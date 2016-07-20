@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -259,6 +260,7 @@ public class UserController {
 		User oldUser = this.userDAO.getUserByUserid(userid);
 		String oldrealname = oldUser.getRealname();
 		long oldBranchid = oldUser.getBranchid();
+		String oldUsername = oldUser.getUsername();
 		int oldemployeestatus = oldUser.getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, file, userid);
 		user.setUserid(userid);
@@ -278,14 +280,14 @@ public class UserController {
 				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				// 新增站长修改同步地址库 2016-07-19 chunlei05.li
-				if (roleid == 2 || roleid == 4) {
+				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
+				if (this.userService.isDeliver(roleid)) {
 					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
 							if (oldemployeestatus != 3) {
-								// 2016-7-11 如果更改了名称或者站点，则更新地址库
-								if (!realname.equals(oldrealname) || oldBranchid != branchid) {
+								// 2016-7-20 如果更改了名称、登录名或者站点，则更新地址库
+								if (!StringUtils.equals(oldrealname, realname) || oldBranchid != branchid || !StringUtils.equals(oldUsername, username)) {
 									this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 								}
 							} else {
@@ -312,6 +314,7 @@ public class UserController {
 		User oldUser = this.userDAO.getUserByUserid(userid);
 		String oldrealname = oldUser.getRealname();
 		long oldBranchid = oldUser.getBranchid();
+		String oldUsername = oldUser.getUsername();
 		int oldemployeestatus = oldUser.getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, null, userid);
 		user.setUserid(userid);
@@ -331,14 +334,14 @@ public class UserController {
 			userInfService.saveUserInf(user);
 			this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 			// TODO 增加同步代码
-			// 新增站长修改同步地址库 2016-07-19 chunlei05.li
-			if (roleid == 2 || roleid == 4) {
+			// 同步地址库逻辑修改 2016-07-20 chunlei05.li
+			if (this.userService.isDeliver(roleid)) {
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
 					if (user.getEmployeestatus() != 3) {
 						if (oldemployeestatus != 3) {
-							// 2016-7-11 如果更改了名称或者站点，则更新地址库
-							if (!realname.equals(oldrealname) || oldBranchid != branchid) {
+							// 2016-7-20 如果更改了名称、登录名或者站点，则更新地址库
+							if (!StringUtils.equals(oldrealname, realname) || oldBranchid != branchid || !StringUtils.equals(oldUsername, username)) {
 								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID,String.valueOf(userid), true);
 							}
 						} else {
