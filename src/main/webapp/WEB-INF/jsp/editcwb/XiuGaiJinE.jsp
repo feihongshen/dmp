@@ -57,12 +57,18 @@ function sub(){
 		if(i != 0){
 			cwbs += ","
 		}
+		// 订单类型--是否上门退
+		var isShangmentui = "上门退" == $("#cwbOrderType_"+cwb.value).html().trim();
 		cwbs += cwb.value;
-		if($("input[name='Receivablefee_"+cwb.value+"']").val() == Number($("input[name='Receivablefee_"+cwb.value+"']").parent().prev().html())){
+		if(!isShangmentui && $("input[name='Receivablefee_"+cwb.value+"']").val() == Number($("input[name='Receivablefee_"+cwb.value+"']").parent().prev().html())){
 			alert("订单号" + cwb.value + "的代收金额与原内容没有变化，不能申请！")
 			isSubmit=false;
             return false;
-		}else if(!isFloat($("input[name='Receivablefee_"+cwb.value+"']").val())){
+		} else if (isShangmentui && $("input[name='Paybackfee_"+cwb.value+"']").val() == Number($("input[name='Paybackfee_"+cwb.value+"']").parent().prev().html())){
+			alert("订单号" + cwb.value + "的代退金额与原内容没有变化，不能申请！")
+            isSubmit=false;
+            return false;
+		} else if(!isFloat($("input[name='Receivablefee_"+cwb.value+"']").val())){
 			alert("订单号"+cwb.value+"的修改为代收金额内容不是数字！");
 			isSubmit=false;
 			return false;
@@ -179,7 +185,11 @@ function checkCwbs(cwbs){
 		<input type="hidden" name="cwbs" value="<%=cods.getCwbOrder().getCwb() %>" />
 		<input type="hidden" name="isDeliveryState_<%=cods.getCwbOrder().getCwb() %>" value="no" />
 		</td>
- 		<td align="center" valign="middle" bgcolor="#EEF6FF"><%=CwbOrderTypeIdEnum.getByValue(cods.getCwbOrder().getCwbordertypeid()).getText() %></td>
+ 		<td align="center" valign="middle" bgcolor="#EEF6FF">
+ 		     <span id="cwbOrderType_<%=cods.getCwbOrder().getCwb()%>">
+                 <%=CwbOrderTypeIdEnum.getByValue(cods.getCwbOrder().getCwbordertypeid()).getText() %>
+             </span>
+ 		</td>
  		<td align="center" valign="middle" bgcolor="#EEF6FF"><%=cods.getCwbOrder().getReceivablefee() %></td>
  		<td align="center" valign="middle" bgcolor="#EEF6FF">
  		<%if(cods.getCwbOrder().getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()
@@ -226,7 +236,9 @@ function checkCwbs(cwbs){
 		<input type="hidden" name="cwbs" value="<%=cods.getCwbOrder().getCwb() %>" />
 		<input type="hidden" name="isDeliveryState_<%=cods.getCwbOrder().getCwb() %>" value="yes" />
 		</td>
- 		<td align="center" valign="middle" bgcolor="#EEF6FF"><%=CwbOrderTypeIdEnum.getByValue(cods.getCwbOrder().getCwbordertypeid()).getText() %></td>
+ 		<td align="center" valign="middle" bgcolor="#EEF6FF">
+ 		     <%=CwbOrderTypeIdEnum.getByValue(cods.getCwbOrder().getCwbordertypeid()).getText() %>
+ 		</td>
  		<td align="center" valign="middle" bgcolor="#EEF6FF"><%=cods.getCwbOrder().getReceivablefee() %></td>
  		<td align="center" valign="middle" bgcolor="#EEF6FF">
  		<%if(cods.getCwbOrder().getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()

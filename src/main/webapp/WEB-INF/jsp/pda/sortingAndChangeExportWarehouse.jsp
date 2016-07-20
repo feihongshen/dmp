@@ -349,6 +349,7 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 					}
 					$("#responsebatchno").val(data.responsebatchno);
 					jQuery("#orderWeight").val("") ;
+					jQuery("#orderWeight").attr("disabled" , true) ;
 					batchPlayWav(data.wavList);
 				}
 			});
@@ -374,6 +375,7 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
 	    		jQuery("#weightNotice").text("") ;
 	    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
+	    		jQuery("#orderWeight").attr("disabled" , false) ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
 	    	}
@@ -543,6 +545,7 @@ function baleaddcwbCheck(needWeightFlag,carrealweight){
    			$("#msg").html("");
    			$("#carweightDesc").html("") ;
    			$("#orderWeight").val("") ;
+   			jQuery("#orderWeight").attr("disabled" , true) ;
    			if(data.body.errorcode=="111111"){
    				jQuery("#weightSpan").text("0.00") ;
 				jQuery("#weightNotice").text("") ;
@@ -590,6 +593,7 @@ function baleaddcwb(scancwb,baleno,needWeightFlag,carrealweight){
 			$("#msg").html("");
 			$("#scancwb").val("");
 			$("#orderWeight").val("") ;
+			jQuery("#orderWeight").attr("disabled" , true) ;
 			$("#carweightDesc").html("") ;
 			jQuery("#weightSpan").text("0.00") ;
 			jQuery("#weightNotice").text("") ;
@@ -626,6 +630,7 @@ function fengbao(){
 		success : function(data) {
 			$("#msg").html("");
 			$("#orderWeight").val("") ;
+			jQuery("#orderWeight").attr("disabled" , true) ;
 			if(data.body.errorcode=="000000"){
 				$("#msg").html($("#baleno").val()+"包号封包成功！");
 				successvedioplay("<%=request.getContextPath()%>",data);
@@ -661,7 +666,7 @@ function chuku(){
 			$("#errorTable").html("");
 			$("#carweightDesc").html("") ;
 			$("#orderWeight").val("") ;
-			
+			jQuery("#orderWeight").attr("disabled" , true) ;
 			if(data.body.errorListView!=null){
 	 			$.each(data.body.errorListView, function(key, value) {
 	 				var tr = document.getElementById("errorTable").insertRow();
@@ -722,19 +727,14 @@ function setWeight() {
 		jQuery("#weightSpan").text("0.00") ;
 		jQuery("#weightNotice").text("实际重量为空，检查电子称！"); 
 	}
-	console.log("setWeight") ;
 }
 
 function setNeedWeight(){
 	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
 	jQuery("#orderWeight").val("") ;
-	if(needWeightFlag){
-		jQuery("#orderWeight").attr("disabled" , false) ;
-	}else{
-		jQuery("#orderWeight").attr("disabled" , true) ;
-		jQuery("#weightSpan").text("0.00") ;
-		jQuery("#weightNotice").text("") ;
-	}
+	jQuery("#orderWeight").attr("disabled" , true) ;
+	jQuery("#weightSpan").text("0.00") ;
+	jQuery("#weightNotice").text("") ;
 	
 }
 
@@ -746,7 +746,7 @@ function saveOrderWeight(keyCode){
 		return ;
 	}
 	var orderWeight = jQuery("#orderWeight").val().trim() ;
-	var weightExp = /^\d+(\.\d+)?$/ ;
+	var weightExp = /^[1-9]\d*(\.\d*)?|0\.\d*[1-9]\d*$/ ;
 	if(!weightExp.test(orderWeight)){
 		alert("请输入重量") ;
 		jQuery("#orderWeight").focus() ;
@@ -957,6 +957,7 @@ function saveOrderWeight(keyCode){
 								<p id="msg1" name="msg1" ></p>
 								<p id="showcwb" name="showcwb"></p>
 								<p id="excelbranch" name="excelbranch" ></p>
+								<p id="carweightDesc" name="carweightDesc" ></p>
 								<p id="cwbDetailshow" name="cwbDetailshow" ></p>
 									<div style="display: none" id="EMBED"></div>
 								<div style="display: none">
@@ -987,6 +988,7 @@ function saveOrderWeight(keyCode){
 					<p id="msg" name="msg" ></p>
 					<p id="showcwb" name="showcwb"></p>
 					<p id="excelbranch" name="excelbranch" ></p>
+					<p id="carweightDesc" name = "carweightDesc"/>
 					<p id="cwbDetailshow" name="cwbDetailshow" ></p>
 						<div style="display: none" id="EMBED"></div>
 					<div style="display: none">

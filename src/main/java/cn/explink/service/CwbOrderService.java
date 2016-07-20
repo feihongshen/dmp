@@ -19,6 +19,9 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.camel.Consume;
 import org.apache.camel.Header;
 import org.apache.camel.Produce;
@@ -41,8 +44,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
 import cn.explink.aspect.OrderFlowOperation;
 import cn.explink.b2c.auto.order.service.AutoUserService;
@@ -224,8 +225,8 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
 @Service
 @Transactional
@@ -794,7 +795,7 @@ public class CwbOrderService extends BaseOrderService {
 				
 				+ "carwarehouse=?,remark1=?,remark2=?,remark3=?,remark4=?,"
 				+ "remark5=?,paywayid=?,newpaywayid=?,addresscodeedittype=?,printtime=?,"
-				+ "shouldfare=?,cwbstate =1 where cwb=? and state=1";
+				+ "shouldfare=? where cwb=? and state=1";
 
 		this.jdbcTemplate
 				.update(sql, cwbOrderDTO.getConsigneename(), cwbOrderDTO.getConsigneeaddress(), cwbOrderDTO.getConsigneepostcode(), cwbOrderDTO.getConsigneephone(), cwbOrderDTO.getSendcargoname(), 
@@ -7015,14 +7016,27 @@ public class CwbOrderService extends BaseOrderService {
 			Branch currentBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid());
 			if(co.getCurrentbranchid() == 0 || currentBranch == null){
 				Branch startBranch = this.branchDAO.getBranchByBranchid(co.getStartbranchid());
-				if(startBranch == null){
-					//没上一站
-					blnNeedUpdateCurrentBranch = false;
+				if(co.getStartbranchid() == 0 || startBranch == null){
+					//如果上一站、当前站都为0，则表明订单处于导入状态，需要根据下一站找到对应的退货组
+					CwbOrder cwbOrderNew = this.cwbDAO.getCwbByCwb(co.getCwb());
+					long   nextBranchId = (cwbOrderNew==null?0 : cwbOrderNew.getNextbranchid());
+					Branch nextBranch   = this.branchDAO.getBranchByBranchid(nextBranchId);
+					if(nextBranchId == 0 || nextBranch == null){
+						//下一站也为0
+						blnNeedUpdateCurrentBranch = false;
+						logger.error("订单(订单号={},下一站={})下一站为空", co.getCwb(), nextBranchId);
+					}else{
+						//根据站点的流向配置，找到对应的退货组
+						nextInterceptBranchId = this.getNextInterceptBranchId(nextBranchId);
+						if(nextInterceptBranchId <= 0){
+							logger.error("订单(订单号={},下一站={})没有配置逆向退货组", co.getCwb(), nextBranch.getBranchname());
+							//throw new Exception("订单[订单号="+co.getCwb()+",下一站="+nextBranch.getBranchname()+"]没有配置逆向退货组");
+						}
+					}
 				}else if(startBranch.getSitetype() != BranchEnum.TuiHuo.getValue()){
-					List<Branch> listNextInterceptBranch = this.cwbRouteService.getNextInterceptBranch(startBranch.getBranchid()); // 根据站点的流向配置，找到对应的退货组
-					if(listNextInterceptBranch != null && !listNextInterceptBranch.isEmpty()){
-						nextInterceptBranchId = listNextInterceptBranch.get(0).getBranchid(); //默认取第一个
-					}else {
+					//根据站点的流向配置，找到对应的退货组
+					nextInterceptBranchId = this.getNextInterceptBranchId(startBranch.getBranchid());
+					if(nextInterceptBranchId <= 0){
 						logger.error("订单(订单号={},上一站={})没有配置逆向退货组", co.getCwb(), startBranch.getBranchname());
 						//throw new Exception("订单[订单号="+co.getCwb()+",上一站="+startBranch.getBranchname()+"]没有配置逆向退货组");
 					}
@@ -7030,16 +7044,16 @@ public class CwbOrderService extends BaseOrderService {
 					nextInterceptBranchId = startBranch.getBranchid();
 				}
 			}else if(currentBranch.getSitetype() != BranchEnum.TuiHuo.getValue()){
-				List<Branch> listNextInterceptBranch = this.cwbRouteService.getNextInterceptBranch(currentBranch.getBranchid()); // 根据站点的流向配置，找到对应的退货组
-				if(listNextInterceptBranch != null && !listNextInterceptBranch.isEmpty()){
-					nextInterceptBranchId = listNextInterceptBranch.get(0).getBranchid(); //默认取第一个
-				}else {
+				//根据站点的流向配置，找到对应的退货组
+				nextInterceptBranchId = this.getNextInterceptBranchId(currentBranch.getBranchid());
+				if(nextInterceptBranchId <= 0){
 					logger.error("订单(订单号={},当前站={})没有配置逆向退货组", co.getCwb(), currentBranch.getBranchname());
 					//throw new Exception("订单[订单号="+co.getCwb()+",当前站="+currentBranch.getBranchname()+"]没有配置逆向退货组");
 				}
 			}else if(currentBranch.getSitetype() == BranchEnum.TuiHuo.getValue()){
 				//当前branch是退货组不用变下一站
 				blnNeedUpdateCurrentBranch = false;
+				logger.info("订单(订单号={},当前站={})当前站是退货组不用修改下一站", co.getCwb(), currentBranch.getBranchname());
 			}
 			
 			logger.info("订单拦截：订单(订单号={}),blnNeedUpdateCurrentBranch={},nextInterceptBranchId={})", co.getCwb(), blnNeedUpdateCurrentBranch, nextInterceptBranchId);
@@ -9686,7 +9700,25 @@ public class CwbOrderService extends BaseOrderService {
 						temp.setNextbranchid(nextBranchid);
 					}
 					//Added end
+				}else if(temp.getCurrentbranchid() == 0 && temp.getPreviousbranchid() == 0 && temp.getNextbranchid() != 0){
+					//Added by leoliao at 2016-07-20 当前站、上一站都为0则，取下一站，然后获取其对应的退货组。订单拦截即使是出库未到站，也需要进行拦截，此时可以在站点直接进行退货出站操作！
+					Branch transNextBranch = this.branchDAO.getBranchByBranchid(temp.getNextbranchid());
+					if(transNextBranch != null){
+						List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(temp.getNextbranchid());// 根据站点的流向配置，找到他对应的退货组
+						if ((branchidList.size() == 0)) {
+							// 如果没有配置的退货组，则异常
+							logger.error("运单(运单号={},下一站={})没有配置逆向退货组", temp.getTranscwb(), transNextBranch.getBranchname());
+							throw new Exception("运单[运单号="+temp.getTranscwb()+",下一站="+transNextBranch.getBranchname()+"]没有配置逆向退货组");
+						}
+						
+						// 如果配置的退货组大于1，那么默认取第一个
+						nextBranchid = branchidList.get(0).getBranchid();
+						
+						temp.setNextbranchid(nextBranchid);
+					}					
+					//Added end
 				}
+				
 				// 如果运单状态为入库、中转入库，那么当前站改为0----应鹏凯要求
 				if ((temp.getTranscwboptstate() == FlowOrderTypeEnum.RuKu.getValue()) || (temp.getTranscwboptstate() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue())) {
 					temp.setCurrentbranchid(0);
@@ -10030,6 +10062,24 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}		
 		return false;
+	}
+	
+	/**
+	 * 根据站点的流向配置，找到对应的退货组
+	 * @author leo01.liao
+	 * @param branchId
+	 * @return
+	 */
+	private long getNextInterceptBranchId(long branchId){
+		long nextInterceptBranchId = 0;
+		
+		// 根据站点的流向配置，找到对应的退货组
+		List<Branch> listNextInterceptBranch = this.cwbRouteService.getNextInterceptBranch(branchId); 
+		if(listNextInterceptBranch != null && !listNextInterceptBranch.isEmpty()){
+			nextInterceptBranchId = listNextInterceptBranch.get(0).getBranchid(); //默认取第一个
+		}
+		
+		return nextInterceptBranchId;
 	}
 }
 

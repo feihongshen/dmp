@@ -407,4 +407,15 @@ public class BaleDao {
 		String sql = "update express_ops_bale set cwbcount=cwbcount+1 where id=? ";
 		this.jdbcTemplate.update(sql, baleid);
 	}
+	
+	/**
+	 * 修改当前站点id
+	 * @param baleid 包id
+	 * @param branchid 站点id
+	 * @author neo01.huang 2016-7-19
+	 */
+	public void updateBranchid(long baleid, long branchid) {
+		String sql = "update express_ops_bale set branchid=? where id=?";
+		this.jdbcTemplate.update(sql, branchid, baleid);
+	}
 }
