@@ -186,6 +186,8 @@ public class DfBillFee {
     private BigDecimal receivablefee;
     private Date pickTime;
 
+    private String cartype;// 货物类别
+
     public long getId() {
         return id;
     }
@@ -607,5 +609,13 @@ public class DfBillFee {
 
     public void setFinalSubsidy(BigDecimal finalSubsidy) {
         this.finalSubsidy = finalSubsidy;
+    }
+
+    public String getCartype() {
+        return cartype;
+    }
+
+    public void setCartype(String cartype) {
+        this.cartype = cartype;
     }
 }

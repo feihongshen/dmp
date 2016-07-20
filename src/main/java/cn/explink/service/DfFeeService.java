@@ -186,7 +186,7 @@ public class DfFeeService {
         else
             branchId = order.getInstationid();
 
-        if (branchId > 0 ) {
+        if (branchId > 0) {
             //如果揽件站点不为空，创建揽件费订单。
             chargeType = DeliveryFeeRuleChargeType.GET.getValue();
 
@@ -195,11 +195,18 @@ public class DfFeeService {
                 userName = deliver.get(0).getRealname();
             }
 
-            String address = order.getSenderaddress();
-            String province = order.getSenderprovince();
-            String city = order.getSendercity();
-            String county = order.getSendercounty();
-
+            String address = "";
+            String province = "";
+            String city = "";
+            String county = "";
+            if (order.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue() || order.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue()) {
+                address = order.getSenderaddress();
+                province = order.getSenderprovince();
+                city = order.getSendercity();
+                county = order.getSendercounty();
+            } else {
+                address = StringUtils.remove(order.getRemark4(), "&");
+            }
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(address, allProvince, null);
             }
@@ -220,7 +227,7 @@ public class DfFeeService {
                         chargeType, order.getInstationhandlerid(), userName, branchId, order.getCwbstate(),
                         order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
                         pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
-                        order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname());
+                        order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
 
             } else {
                 logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 能找到计费明细", order.getInstationhandlerid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
@@ -236,7 +243,7 @@ public class DfFeeService {
                             chargeType, order.getInstationhandlerid(), userName, branchId, order.getCwbstate(),
                             order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
-                            order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname());
+                            order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                 } else {
                     logger.info("相同站点ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
                     saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname(), false);
@@ -245,7 +252,9 @@ public class DfFeeService {
         }
 
         //如果派件站点不为空，创建派件费订单。
-        if (order.getDeliverybranchid() > 0) {
+        if (order.getDeliverybranchid() > 0)
+
+        {
             if ((deliveryState.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue())
                     || (deliveryState.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue())
                     || (deliveryState.getDeliverystate() == DeliveryStateEnum.BuFenTuiHuo.getValue())
@@ -285,7 +294,7 @@ public class DfFeeService {
                             chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
                             order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
-                            order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname());
+                            order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                 } else {
                     logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 能找到计费明细", order.getDeliverid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
                     saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname(), false);
@@ -299,7 +308,7 @@ public class DfFeeService {
                                 chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
                                 order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
-                                order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname());
+                                order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
                         logger.info("相同站点ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
                         saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname(), false);
@@ -307,6 +316,7 @@ public class DfFeeService {
                 }
             }
         }
+
     }
 
     private String getAddressCode(String addressName, List<AdressVO> addresses) {
@@ -416,14 +426,14 @@ public class DfFeeService {
                                  long handlerid, String userName, long branchId, long cwbstate, long flowordertype,
                                  Date create_time, String outstationdatetime, int deliverystate, String emaildate, Date credate, Date pickTime,
                                  Date mobilepodtime, String auditingtime, int isCal, int isBill, String province, String city, String county,
-                                 BigDecimal paybackfee, BigDecimal receivablefee, String realname) {
+                                 BigDecimal paybackfee, BigDecimal receivablefee, String realname, String cartype) {
 
         long feeId = dfFeeDAO.saveDeliveryFee(chargerType.getValue(), cwb, transcwb, cwbordertypeid, customerid, sendcarnum, backcarnum,
                 senderaddress, consigneeaddress, realweight, cargovolume, chargeType,
                 handlerid, userName, branchId, cwbstate, flowordertype,
                 create_time, outstationdatetime, deliverystate, emaildate, credate, pickTime,
                 mobilepodtime, auditingtime, isCal, isBill, province, city, county,
-                paybackfee, receivablefee, realname);
+                paybackfee, receivablefee, realname, cartype);
 
         logger.debug("插入派费明细表成功，Id为" + feeId + "，结算对象为" + chargerType.getText());
 
