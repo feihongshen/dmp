@@ -200,12 +200,12 @@ public class DfFeeService {
             String city = "";
             String county = "";
             if (order.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue() || order.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue()) {
+                address = StringUtils.remove(order.getRemark4(), "&");
+            } else {
                 address = order.getSenderaddress();
                 province = order.getSenderprovince();
                 city = order.getSendercity();
                 county = order.getSendercounty();
-            } else {
-                address = StringUtils.remove(order.getRemark4(), "&");
             }
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(address, allProvince, null);
