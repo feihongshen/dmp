@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import cn.explink.controller.UserView;
 import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.FinanceDeliverPayupDetail;
@@ -42,6 +45,9 @@ public class UserService {
 	FinanceDeliverPayUpDetailDAO financeDeliverPayUpDetailDAO;
 	@Autowired
 	GotoClassAuditingDAO gotoClassAuditingDAO;
+	
+	@Autowired
+	private RoleDAO roleDAO;
 
 	public void addUser(User user) {
 		this.userDAO.creUser(user);
@@ -322,5 +328,24 @@ public class UserService {
 			return null;
 		}
 		return deliver;
+	}
+	
+	/**
+	 * 判断是否配送员
+	 * @date 2016年7月20日 下午5:18:45
+	 * @param roleid
+	 * @return
+	 */
+	public boolean isDeliver(long roleid) {
+		// 小件员和站长属于配送员
+		if(roleid == 2 || roleid == 4) {
+			return true;
+		}
+		// 其它类型
+		Role role = this.roleDAO.getRolesByRoleid(roleid);
+		if(role != null && role.getIsdelivery() == 1) {
+			return true;
+		}
+		return false;
 	}
 }
