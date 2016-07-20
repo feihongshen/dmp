@@ -244,7 +244,7 @@ public class AutoAllocationService {
 	public SocketClient startConnect(String IP, int port) {
 		SocketClient sc = new SocketClient();
 		sc.StartEngine(IP, port);
-		this.logger.info("连接状态：：" + sc.Clientstate);
+		this.logger.info("连接状态：" + sc.Clientstate.State + "，（0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎）。");
 		return sc;
 	}
 
