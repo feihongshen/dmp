@@ -436,6 +436,7 @@ public class UserController {
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
 		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
 		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
+		String oldUsername = this.userDAO.getUserByUserid(userid).getUsername();
 		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, 2, this.getSessionUser().getBranchid(), null, userid);
 		user.setUserid(userid);
@@ -455,7 +456,8 @@ public class UserController {
 				if ((adressenabled != null) && adressenabled.equals("1")) {
 					if (user.getEmployeestatus() != 3) {
 						if (oldemployeestatus != 3) {
-							if (!realname.equals(oldrealname)) {
+							// 2016-7-20 如果更改了名称、登录名，则更新地址库
+							if (!StringUtils.equals(oldrealname, realname) || !StringUtils.equals(oldUsername, username)) {
 								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 							}
 						} else {
