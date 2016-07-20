@@ -367,14 +367,20 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 	    	exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
 	    	return ;
 	    }
-	    var weightIntervalId = window.setInterval("setWeight()", 1);
+	    $("#msg").html("") ;
+	    $("#showcwb").html("") ;
+	    $("#excelbranch").html("") ;
+	    $("#carweightDesc").html("") ;
+	    $("#cwbDetailshow").html("") ;
+	    $("#carweightDesc").html("") ;
 	    jQuery("#weightNotice").text("正在称重中,请稍等......") ;
+	    var weightIntervalId = window.setInterval("setWeight()", 1);
 	    window.setTimeout(function waitForWeight(){
 	    	carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
 	    	window.clearInterval(weightIntervalId) ;
 	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
 	    		jQuery("#weightNotice").text("") ;
-	    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
+	    		jQuery("#msg").html(scancwb + "(获取不到重量)，请手动输入重量！") ;
 	    		jQuery("#orderWeight").attr("disabled" , false) ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
@@ -948,7 +954,7 @@ function saveOrderWeight(keyCode){
 					     <label id="weightNotice" > </label> 
 					</p>
 					<p>
-						<span>重量(Kg):</span><input type="text" class="saomiao_inputtxt1" id="orderWeight" name="orderWeight" disabled = "true"  onKeyDown = "saveOrderWeight(event.keyCode)" />
+						<span>重量(Kg):</span><input type="text" class="saomiao_inputtxt1" id="orderWeight" name="orderWeight" disabled = "true"  onKeyDown = "saveOrderWeight(event.keyCode)" maxlength = "7" />
 					</p>
 				</div>
 				<c:if test="${isOpenDialog=='open'}">
