@@ -2777,6 +2777,11 @@ public class CwbOrderPDAController {
 			PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), errorinfo);
 			pDAResponse.setScannum(co.getScannum());
 			pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+			//中浩乐宠@上海江苏 2016-6-27
+			pDAResponse.setBranchid(""+co.getDeliverybranchid());
+			Branch tempBr = branchDAO.getBranchById(co.getDeliverybranchid());
+			pDAResponse.setDeliverybranchname(tempBr==null?null:tempBr.getBranchname());
+			
 			String RUKUPCandPDAaboutYJDPWAV = this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV")
 					.getValue();
 

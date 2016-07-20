@@ -55,6 +55,9 @@ import cn.explink.util.StringUtil;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderCargoRequest;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPCargoInfo;
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
 @Transactional
 @Service
@@ -400,7 +403,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		params.put("sendername", StringUtils.isNotBlank(embracedOrderVO.getSender_name()) ? embracedOrderVO.getSender_name() : null);
 		params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
 		params.put("sendercounty", StringUtils.isNotBlank(embracedOrderVO.getSender_countyName()) ? embracedOrderVO.getSender_countyName() : null);
-		params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getSender_townid())){
+			params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
+		}
 		params.put("senderstreet", StringUtils.isNotBlank(embracedOrderVO.getSender_townName()) ? embracedOrderVO.getSender_townName() : null);
 		params.put("senderid", StringUtils.isNotBlank(embracedOrderVO.getSender_certificateNo()) ? embracedOrderVO.getSender_certificateNo() : null);
 		// params.put("consigneeno",
@@ -415,7 +420,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		params.put("consigneename", StringUtils.isNotBlank(embracedOrderVO.getConsignee_name()) ? embracedOrderVO.getConsignee_name() : null);
 		params.put("reccountyid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid()) ? embracedOrderVO.getConsignee_countyid() : null);
 		params.put("cwbcounty", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyName()) ? embracedOrderVO.getConsignee_countyName() : null);
-		params.put("recstreetid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid()) ? embracedOrderVO.getConsignee_townid() : null);
+		if(!StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid())){
+			params.put("recstreetid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid()) ? embracedOrderVO.getConsignee_townid() : null);
+		}
 		params.put("recstreet", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townName()) ? embracedOrderVO.getConsignee_townName() : null);
 		params.put("recid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_certificateNo()) ? embracedOrderVO.getConsignee_certificateNo() : null);
 		params.put("entrustname", StringUtils.isNotBlank(embracedOrderVO.getGoods_name()) ? embracedOrderVO.getGoods_name() : null);
@@ -463,7 +470,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					consigneeaddress = cneeProv + consigneeaddress;
 				}
 			}
-			
+
 			params.put("consigneeaddress", consigneeaddress);
 			params.put("senderaddress", embracedOrderVO.getConsignee_adress() == null ? "" : StringUtil.nullConvertToEmptyString((String) (params.get("senderprovince"))) + StringUtil
 					.nullConvertToEmptyString((String) (params.get("sendercity"))) + StringUtil.nullConvertToEmptyString((String) (params.get("sendercounty"))) + StringUtil
@@ -493,6 +500,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("instationname", branch.getBranchname());
 
 			params.put("credate", Timestamp.valueOf(DateTimeUtil.getNowTime()));
+
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
 			System.out.println("补录：inset方法，补录标志位：" + embracedOrderVO.getIsadditionflag());
 			// 如果是新建运单，那么他的状态为入站，调用tps状态反馈接口 11.19 如果状态有改变，且变为揽件入站，则需要保存流程信息
@@ -790,7 +798,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 
 				doReq.setCneeProv(embracedOrderVO.getConsignee_provinceName());
 				doReq.setCneeCity(embracedOrderVO.getConsignee_cityName());
-				
+
 				//如果详细地址里面已经含省+市+区，则不再加入省市区
 				String consigneeProvinceName = embracedOrderVO.getConsignee_provinceName();
 				String consigneeCityName = embracedOrderVO.getConsignee_cityName();
@@ -811,6 +819,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 						address = consigneeProvinceName + address;
 					}
 				}
+
 	
 				doReq.setCneeAddr(address);
 				if (StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone())) {
@@ -906,7 +915,6 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("代收货款运单未输入代收货款金额");
 			return false;
 		}
-		
 		for (String key : keys) {
 			if ("OrderNo".equals(key) || "Monthly_account_number".equals(key) || "Sender_companyName".equals(key) || "Sender_townName".equals(key) || "Sender_cellphone".equals(key) || "Sender_telephone"
 					.equals(key) || "Goods_length".equals(key) || "Goods_width".equals(key) || "Goods_high".equals(key) || "Goods_other".equals(key) || "Consignee_townName".equals(key) || "Consignee_cellphone"

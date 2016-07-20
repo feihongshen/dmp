@@ -32,7 +32,8 @@ CREATE TABLE `fn_df_agreement` (
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `charger_type` tinyint(2) DEFAULT NULL COMMENT '结算对象，0-站点，1-协议',
-  PRIMARY KEY (`agt_id`)
+  PRIMARY KEY (`agt_id`),
+  KEY `agtNoIdx` (`agt_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费协议';
 
 -- ----------------------------
@@ -139,23 +140,23 @@ CREATE TABLE `fn_df_bill_staff` (
 DROP TABLE IF EXISTS `fn_df_confirm_rate`;
 CREATE TABLE `fn_df_confirm_rate` (
   `confirm_rate_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'confirm_rate_id',
-  `org_id` bigint(20) NOT NULL COMMENT '站点id',
-  `org_type` int(11) NOT NULL COMMENT '站点性质 0-直营 1-直营二级 2-直营三级 3-加盟 4-加盟二级 5-加盟三级',
-  `period_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '账期',
+  `org_id` bigint(20) DEFAULT NULL COMMENT '站点id',
+  `org_type` int(11) DEFAULT NULL COMMENT '站点性质 0-直营 1-直营二级 2-直营三级 3-加盟 4-加盟二级 5-加盟三级',
+  `period_id` bigint(20) DEFAULT '0' COMMENT '账期',
   `start_time` datetime DEFAULT NULL COMMENT '起始时间',
   `end_time` datetime DEFAULT NULL COMMENT '结束时间',
-  `bill_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '账单',
-  `total_order` bigint(11) NOT NULL DEFAULT '0' COMMENT '总单量',
-  `total_confirm` bigint(11) NOT NULL DEFAULT '0' COMMENT '妥投单量',
-  `confirm_rate` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '妥投率',
-  `cr_base` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '妥投率保底值',
-  `cr_expect` decimal(8,2) NOT NULL DEFAULT '0.00' COMMENT '妥投率期望值',
-  `kpi_result` int(11) NOT NULL COMMENT 'KPI结果',
-  `sanction_amount` decimal(18,2) NOT NULL COMMENT '奖罚总额',
-  `sanction_price` decimal(8,2) NOT NULL COMMENT '奖罚单价',
-  `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
+  `bill_id` bigint(20) DEFAULT '0' COMMENT '账单',
+  `total_order` bigint(11) DEFAULT '0' COMMENT '总单量',
+  `total_confirm` bigint(11) DEFAULT '0' COMMENT '妥投单量',
+  `confirm_rate` decimal(8,2) DEFAULT '0.00' COMMENT '妥投率',
+  `cr_base` decimal(8,2) DEFAULT '0.00' COMMENT '妥投率保底值',
+  `cr_expect` decimal(8,2) DEFAULT '0.00' COMMENT '妥投率期望值',
+  `kpi_result` int(11) DEFAULT NULL COMMENT 'KPI结果',
+  `sanction_amount` decimal(18,2) DEFAULT NULL COMMENT '奖罚总额',
+  `sanction_price` decimal(8,2) DEFAULT NULL COMMENT '奖罚单价',
+  `create_user` varchar(50) DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_user` varchar(50) DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `deliver_id` bigint(20) DEFAULT NULL COMMENT '小件员id',
   `month` varchar(10) DEFAULT NULL COMMENT '月份',
@@ -171,10 +172,10 @@ CREATE TABLE `fn_df_confirm_rate_detail` (
   `detail_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '明细ID',
   `confirm_rate_id` bigint(20) NOT NULL COMMENT '妥投率报表ID',
   `order_no` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '订单号',
-  `order_status` tinyint(4) NOT NULL COMMENT '订单状态',
-  `order_type` tinyint(4) NOT NULL COMMENT '订单类型',
-  `flowordertype` int(10) NOT NULL COMMENT '订单操作状态',
-  `deliverybranchid` int(11) NOT NULL COMMENT ' 配送站点',
+  `order_status` tinyint(4) DEFAULT NULL COMMENT '订单状态',
+  `order_type` tinyint(4) DEFAULT NULL COMMENT '订单类型',
+  `flowordertype` int(10) DEFAULT NULL COMMENT '订单操作状态',
+  `deliverybranchid` int(11) DEFAULT NULL COMMENT ' 配送站点',
   `arrive_time` datetime DEFAULT NULL COMMENT '到站时间',
   `arrive_userid` int(11) DEFAULT NULL COMMENT '到站扫描人',
   `deliverystate` int(2) DEFAULT NULL COMMENT '反馈结果',
@@ -182,9 +183,9 @@ CREATE TABLE `fn_df_confirm_rate_detail` (
   `sign_time` datetime DEFAULT NULL COMMENT '反馈时间',
   `auditing_userid` int(11) DEFAULT NULL COMMENT '审核人',
   `auditingtime` datetime DEFAULT NULL COMMENT '审核时间',
-  `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_user` varchar(50) DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_user` varchar(50) DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`detail_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='妥投率报表明细';
@@ -198,7 +199,7 @@ CREATE TABLE `fn_df_fee_adjustment_org` (
   `order_no` varchar(100) NOT NULL COMMENT '订单号',
   `transcwb` mediumtext NOT NULL COMMENT '运单号',
   `cwbordertypeid` varchar(11) DEFAULT NULL COMMENT '订单类型',
-  `customerid` varchar(100) DEFAULT NULL COMMENT '发货客户',
+  `customerid` bigint(20) DEFAULT NULL COMMENT '发货客户',
   `sendcarnum` int(11) DEFAULT NULL COMMENT '发货件数',
   `backcarnum` int(11) DEFAULT NULL COMMENT '取货数量',
   `senderaddress` varchar(200) DEFAULT NULL COMMENT '发货地址',
@@ -255,7 +256,7 @@ CREATE TABLE `fn_df_fee_adjustment_staff` (
   `order_no` varchar(100) NOT NULL COMMENT '订单号',
   `transcwb` mediumtext NOT NULL COMMENT '运单号',
   `cwbordertypeid` varchar(11) DEFAULT NULL COMMENT '订单类型',
-  `customerid` varchar(100) DEFAULT NULL COMMENT '发货客户',
+  `customerid` bigint(20) DEFAULT NULL COMMENT '发货客户',
   `sendcarnum` int(11) DEFAULT NULL COMMENT '发货件数',
   `backcarnum` int(11) DEFAULT NULL COMMENT '取货数量',
   `senderaddress` varchar(200) DEFAULT NULL COMMENT '发货地址',
@@ -312,7 +313,7 @@ CREATE TABLE `fn_df_fee_org` (
   `order_no` varchar(100) NOT NULL COMMENT '订单号',
   `transcwb` mediumtext NOT NULL COMMENT '运单号',
   `cwbordertypeid` varchar(11) DEFAULT NULL COMMENT '订单类型',
-  `customerid` varchar(100) DEFAULT NULL COMMENT '发货客户',
+  `customerid` bigint(20) DEFAULT NULL COMMENT '发货客户',
   `sendcarnum` int(11) DEFAULT NULL COMMENT '发货件数',
   `backcarnum` int(11) DEFAULT NULL COMMENT '取货数量',
   `senderaddress` varchar(200) DEFAULT NULL COMMENT '发货地址',
@@ -372,7 +373,7 @@ CREATE TABLE `fn_df_fee_staff` (
   `order_no` varchar(100) NOT NULL COMMENT '订单号',
   `transcwb` mediumtext NOT NULL COMMENT '运单号',
   `cwbordertypeid` varchar(11) DEFAULT NULL COMMENT '订单类型',
-  `customerid` varchar(100) DEFAULT NULL COMMENT '发货客户',
+  `customerid` bigint(20) DEFAULT NULL COMMENT '发货客户',
   `sendcarnum` int(11) DEFAULT NULL COMMENT '发货件数',
   `backcarnum` int(11) DEFAULT NULL COMMENT '取件数量',
   `senderaddress` varchar(200) DEFAULT NULL COMMENT '发货地址',
@@ -432,7 +433,7 @@ CREATE TABLE `fn_df_rule` (
   `rule_no` varchar(32) DEFAULT NULL COMMENT '规则编号',
   `rule_type` tinyint(1) DEFAULT NULL COMMENT '规则类型',
   `charge_type` tinyint(1) DEFAULT NULL COMMENT '费用类型:0-揽件费, 1-派费',
-  `order_type` varchar(16) DEFAULT NULL COMMENT '订单类型',
+  `order_type` varchar(50) DEFAULT NULL COMMENT '订单类型',
   `rule_desc` varchar(512) DEFAULT NULL COMMENT '规则内容',
   `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -442,7 +443,8 @@ CREATE TABLE `fn_df_rule` (
   `subsidy_flag` tinyint(1) DEFAULT NULL COMMENT '是否有补贴，0是有,1为没有',
   `cust_flag` tinyint(1) DEFAULT NULL COMMENT '是否区分客户，0是，1否',
   `area_flag` tinyint(1) DEFAULT NULL COMMENT '是否区分地区，0是，1否',
-  PRIMARY KEY (`rule_id`)
+  PRIMARY KEY (`rule_id`),
+  KEY `ruleNoIdx` (`rule_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费规则';
 
 -- ----------------------------
@@ -471,14 +473,14 @@ DROP TABLE IF EXISTS `fn_df_rule_area`;
 CREATE TABLE `fn_df_rule_area` (
   `rule_area_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `rule_id` bigint(20) DEFAULT NULL COMMENT '规则编码',
-  `city` varchar(16) DEFAULT NULL COMMENT '城市',
-  `region` varchar(16) DEFAULT NULL COMMENT '区县',
-  `town` varchar(16) DEFAULT NULL COMMENT '镇/街道',
-  `province` varchar(16) DEFAULT NULL COMMENT '省份',
-  `province_code` varchar(16) DEFAULT NULL COMMENT '省份代码',
-  `city_code` varchar(16) DEFAULT NULL COMMENT '城市代码',
-  `region_code` varchar(16) DEFAULT NULL COMMENT '区县代码',
-  `town_code` varchar(16) DEFAULT NULL COMMENT '镇/街道代码',
+  `city` varchar(50) DEFAULT NULL COMMENT '城市',
+  `region` varchar(50) DEFAULT NULL COMMENT '区县',
+  `town` varchar(50) DEFAULT NULL COMMENT '镇/街道',
+  `province` varchar(50) DEFAULT NULL COMMENT '省份',
+  `province_code` varchar(50) DEFAULT NULL COMMENT '省份代码',
+  `city_code` varchar(50) DEFAULT NULL COMMENT '城市代码',
+  `region_code` varchar(50) DEFAULT NULL COMMENT '区县代码',
+  `town_code` varchar(50) DEFAULT NULL COMMENT '镇/街道代码',
   `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -546,6 +548,7 @@ CREATE TABLE `fn_df_rule_subsidy` (
   `item` tinyint(4) DEFAULT NULL COMMENT '补贴项',
   `price` decimal(18,2) DEFAULT NULL COMMENT '补贴金额',
   `price_unit` tinyint(4) DEFAULT NULL COMMENT '补贴单位',
+  `range_num` int(11) DEFAULT NULL COMMENT '补贴范围',
   `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -564,10 +567,10 @@ CREATE TABLE `fn_df_sanction` (
   `discipline_no` varchar(50) NOT NULL DEFAULT '' COMMENT '奖罚单号',
   `org_id` bigint(20) NOT NULL COMMENT '站点id',
   `sanction_type` tinyint(4) NOT NULL COMMENT '奖罚类型',
-  `sanction_amount` decimal(18,2) NOT NULL COMMENT '罚款总额',
+  `sanction_amount` decimal(18,2) DEFAULT NULL COMMENT '罚款总额',
   `sanction_price` decimal(18,2) DEFAULT NULL COMMENT '罚款单价',
   `sanction_order` int(11) DEFAULT NULL COMMENT '罚款单量',
-  `reward_amount` decimal(18,2) NOT NULL COMMENT '奖励总额',
+  `reward_amount` decimal(18,2) DEFAULT NULL COMMENT '奖励总额',
   `reward_price` decimal(18,2) DEFAULT NULL COMMENT '奖励单价',
   `reward_order` int(11) DEFAULT NULL COMMENT '奖励单量',
   `verify_state` tinyint(4) NOT NULL DEFAULT '0' COMMENT '奖罚单状态。默认为0.待生成账单',
@@ -583,3 +586,14 @@ CREATE TABLE `fn_df_sanction` (
   KEY `index_discipline_credate` (`create_time`),
   KEY `index_discipline_org_id` (`org_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费奖罚记录';
+
+-- ----------------------------
+-- Table structure for fn_df_agreement_lock
+-- ----------------------------
+CREATE TABLE `fn_df_agreement_lock` (
+   `id` int(11) NOT NULL COMMENT '主键ID',
+   `remark` varchar(50) NULL COMMENT '备注',
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='协议并发锁';
+
+INSERT INTO `fn_df_agreement_lock` (`id`, `remark`) values('1',NULL);

@@ -86,6 +86,9 @@ public class TPSCarrierOrderStatusTimmer {
 			request.setCarrierCode(property.getShipper_no());
 			request.setCount(property.getGetMaxCount());
 			request.setSeq(property.getSeq());
+			
+			this.logger.info("从TPS获取物流状态数据请求参数：CarrierCode={},Count={},Seq={}", property.getShipper_no(), property.getGetMaxCount(), property.getSeq());
+			
 			// 调用接口方法获得运单状态数据
 			carrierOrderStatusList = pdomService.getCarrierOrderStatus(request);
 			

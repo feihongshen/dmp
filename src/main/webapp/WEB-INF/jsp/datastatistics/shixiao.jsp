@@ -69,11 +69,11 @@ $(function() {
 });
 
 function check(){
-	if($("#strtime1").val()==""){
-		alert("请选择开始失效时间");
+	if($("#strtime1").val()=="" &&  $.trim($("#cwb").val())==""){
+		alert("请填写订单号或失效时间");
 		return false;
 	}
-	if($("#endtime1").val()==""){
+	if($("#endtime1").val()=="" &&  $.trim($("#cwb").val())==""){
 		alert("请选择结束失效时间");
 		return false;
 	}
@@ -191,7 +191,7 @@ function clearSelect(){
 			<table width="100%" border="0" cellspacing="0" cellpadding="2">
 				<tbody> 
 					<tr>
-						<td>订单号&nbsp;&nbsp;&nbsp;：<input type="text" name="cwb" value="<%=cwb==null?"":cwb%>" /> </td>
+						<td>订单号&nbsp;&nbsp;&nbsp;：<input type="text" id="cwb" name="cwb" value="<%=cwb==null?"":cwb%>" /> </td>
 						<td>订单类型：<select name="cwbordertypeid" id="cwbordertypeid" multiple="multiple">
 							<% for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ 
 								if(c.getValue()==-1) continue;

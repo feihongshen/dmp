@@ -484,6 +484,15 @@ public class UserDAO {
 			return null;
 		}
 	}
+	
+	public List<User> getUserByRoleAndBranchName(int roleid, String branchName) {
+		try {
+			String sql = "SELECT * FROM express_set_user u, express_set_branch b WHERE u.branchid = b.branchid and u.roleid=? and b.branchname=? and u.userDeleteFlag=1 and u.employeestatus=1";
+			return this.jdbcTemplate.query(sql, new UserRowMapper(), roleid, branchName);
+		} catch (EmptyResultDataAccessException ee) {
+			return null;
+		}
+	}
 
 	public List<User> getUserByRolesAndBranchid(String roleids, long branchid) {
 		try {
@@ -551,6 +560,22 @@ public class UserDAO {
 	public List<User> getAllUserByRolesAndBranchids(String roleids, String branchids) {
 		try {
 			String sql = "SELECT * FROM express_set_user WHERE roleid in(" + roleids + ") and branchid in(" + branchids + ") and userDeleteFlag=1 ";
+			return this.jdbcTemplate.query(sql, new UserRowMapper());
+		} catch (EmptyResultDataAccessException ee) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 获取非离职的该站上的小件员与站长
+	 * @author jian.xie 
+	 * @date 2016-07-13
+	 * @param branchids
+	 * @return
+	 */
+	public List<User> getAllUserByRolesAndBranchids(String branchids) {
+		try {
+			String sql = "SELECT * FROM express_set_user WHERE roleid in(2,4) and branchid in(" + branchids + ") and userDeleteFlag=1 and employeestatus != 3 ";
 			return this.jdbcTemplate.query(sql, new UserRowMapper());
 		} catch (EmptyResultDataAccessException ee) {
 			return null;
@@ -630,7 +655,7 @@ public class UserDAO {
 	}
 
 	/**
-	 * 根据站点 查询该站点下所有的小件员
+	 * 根据站点 查询该站点下所有的非离职的小件员
 	 *
 	 * @param branchids
 	 * @return

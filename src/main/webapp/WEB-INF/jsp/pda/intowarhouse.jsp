@@ -1,4 +1,7 @@
 l<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@page import="cn.explink.enumutil.DeliveryStateEnum"%>
+<%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
+<%@page import="cn.explink.enumutil.CwbStateEnum"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <%@page import="cn.explink.domain.CwbDetailView"%>
 <%@page import="cn.explink.util.Page"%>
@@ -40,8 +43,10 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintNew.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintFor3025.js" type="text/javascript"></script>
+
 <link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 
 var App = {ctx:"${pageContext.request.contextPath}"};
@@ -597,6 +602,9 @@ function weiruku(){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
@@ -608,6 +616,9 @@ function weiruku(){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='120' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
@@ -643,6 +654,9 @@ function orderbyweiruku(type)
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
@@ -654,6 +668,9 @@ function orderbyweiruku(type)
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
@@ -689,6 +706,9 @@ function yiruku(){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
@@ -700,6 +720,9 @@ function yiruku(){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
@@ -734,6 +757,9 @@ function orderbyyiruku(type){
 					<%if(showCustomerSign){ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
@@ -745,6 +771,9 @@ function orderbyyiruku(type){
 					<%}else{ %>
 						optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' >"
 						+"<td width='120' align='center'>"+data[i].cwb+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbordertype+"</td>"
+						+"<td width='80' align='center'>"+data[i].cwbstatetext+"</td>"
+						+"<td width='120' align='center'>"+data[i].flowordertypetext+"</td>"
 						+"<td width='100' align='center'>"+data[i].packagecode+"</td>"
 						+"<td width='100' align='center'> "+data[i].customername+"</td>"
 						+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
@@ -1110,6 +1139,9 @@ function flush(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单类型</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单状态</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单当前状态</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyweiruku('customerid')">供货商</span></td>
 											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyweiruku('emaildate')">发货时间</span></td>
@@ -1127,6 +1159,9 @@ function flush(){
 											<%for(CwbDetailView co : weirukuList){ %>
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" class="cwbids">
 												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="80" align="center"><%=co.getCwbordertype() %></td>
+												<td width="80" align="center"><%=co.getCwbstatetext() %></td>
+												<td width="120" align="center"><%=co.getFlowordertypetext() %></td>
 												<td width="100" align="center"><%=co.getPackagecode() %></td>
 												<td width="100" align="center"><%=co.getCustomername() %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
@@ -1160,6 +1195,9 @@ function flush(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单类型</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单状态</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单当前状态</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyyiruku('customerid')">供货商</span></td>
 											<td width="140" align="center" bgcolor="#f1f1f1"><span style="cursor: pointer;" onclick="orderbyyiruku('emaildate')">发货时间</span></td>
@@ -1176,6 +1214,9 @@ function flush(){
 											<%for(CwbDetailView co : yirukulist){ %>
 											<tr id="TR<%=co.getCwb() %>" cwb="<%=co.getCwb() %>" customerid="<%=co.getCustomerid() %>" class="yirukucwbids">
 												<td width="120" align="center"><%=co.getCwb() %></td>
+												<td width="80" align="center"><%=co.getCwbordertype() %></td>
+												<td width="80" align="center"><%=co.getCwbstatetext() %></td>
+												<td width="120" align="center"><%=co.getFlowordertypetext() %></td>
 												<td width="100" align="center"><%=co.getPackagecode() %></td>
 												<td width="100" align="center"><%=co.getCustomername() %></td>
 												<td width="140"><%=co.getEmaildate() %></td>
@@ -1237,6 +1278,9 @@ function flush(){
 										class="table_5">
 										<tr>
 											<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单类型</td>
+											<td width="80" align="center" bgcolor="#f1f1f1">订单状态</td>
+											<td width="120" align="center" bgcolor="#f1f1f1">订单当前状态</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">包号</td>
 											<td width="100" align="center" bgcolor="#f1f1f1">供货商</td>
 											<td width="140" align="center" bgcolor="#f1f1f1">发货时间</td>

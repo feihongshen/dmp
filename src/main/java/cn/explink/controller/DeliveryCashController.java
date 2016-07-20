@@ -42,6 +42,7 @@ import cn.explink.service.DeliveryCashService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Controller
@@ -108,11 +109,11 @@ public class DeliveryCashController {
 			width = width + (100 * (customerList.size() - 3));
 		}
 		model.addAttribute("width", width);
-		String branchids = "0";
+		String branchids = "-1";
 		for (String branchid : dispatchbranchid) {
 			branchids = branchids + "," + branchid;
 		}
-		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids("2,4", branchids);
+		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids(branchids);
 		Branch branch = branchDAO.getBranchByBranchid(getSessionUser().getBranchid());
 		List<Branch> branchnameList = branchDAO.getQueryBranchByBranchsiteAndUserid(getSessionUser().getUserid(), String.valueOf(BranchEnum.ZhanDian.getValue()));
 
@@ -130,6 +131,8 @@ public class DeliveryCashController {
 		for (int i = 0; i < deliverystate.length; i++) {
 			deliverystates = deliverystates.append(deliverystate[i]).append(",");
 		}
+		List<String> customerSorList = deliveryCashService.getCustomerListForSummary(deliverList, deliveryid, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
+		customerList = deliveryCashService.resetCustomer(customerList, customerSorList);
 		model.addAttribute("deliverystate", deliverystates.toString());
 		model.addAttribute("branchList", branchnameList);
 		model.addAttribute("deliverList", deliverList);
@@ -231,18 +234,20 @@ public class DeliveryCashController {
 			@RequestParam(value = "deliverystate1", defaultValue = "", required = false) String[] deliverystate,
 			@RequestParam(value = "paybackfeeIsZero1", defaultValue = "-1", required = false) Integer paybackfeeIsZero) {
 		List<Customer> customerList = customerDAO.getAllCustomers();
-		String branchids = "0";
+		String branchids = "-1";
 		for (String branchid : dispatchbranchid) {
 			branchids = branchids + "," + branchid;
 		}
-		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids("2,4", branchids);
+		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids(branchids);
 		// 最外层的是变量存储 第二层是小件员 第三层是供货商 对应金额或者数量
 		Map<String, Map<Long, Map<Long, BigDecimal>>> summary = deliveryCashService.getSummary(customerList, deliverList, deliveryid, flowordertype, begindate, enddate, deliverystate,
 				paybackfeeIsZero);
 		if (summary.isEmpty()) {
 			return;
 		}
-		deliveryCashService.export(summary, response);
+		List<String> customerSorList = deliveryCashService.getCustomerListForSummary(deliverList, deliveryid, flowordertype, begindate, enddate, deliverystate, paybackfeeIsZero);
+		
+		deliveryCashService.export(summary, response, customerSorList);
 		
 		//以下处理打印日志
 		Map<Long, Map<Long, BigDecimal>> countMap = summary.get("count");
@@ -298,5 +303,16 @@ public class DeliveryCashController {
 		}
 		return strs;
 
+	}
+	
+	@RequestMapping("/updateDeliverByBranchids")
+	public @ResponseBody String updateDeliverByBranchids(Model model, @RequestParam("branchid") String branchids) {
+		if (branchids.length() > 0) {
+			branchids = branchids.substring(0, branchids.length() - 1);
+			List<User> list = this.userDAO.getAllUserByRolesAndBranchids(branchids);
+			return JSONArray.fromObject(list).toString();
+		} else {
+			return "[]";
+		}
 	}
 }

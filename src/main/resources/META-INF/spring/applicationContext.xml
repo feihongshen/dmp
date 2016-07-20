@@ -88,6 +88,7 @@
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 		<property name="nestedTransactionAllowed" value="true"></property>
+		
 	</bean>
 
 	<!--1:配置一个JdbcTemplate实例，并将这个“共享的”，“安全的”实例注入到不同的DAO类中去 -->
