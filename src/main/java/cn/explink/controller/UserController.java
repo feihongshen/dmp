@@ -171,7 +171,8 @@ public class UserController {
 				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->create", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				if (roleid == 2) {
+				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
+				if (this.userService.isDeliver(roleid)) {
 					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
@@ -210,7 +211,8 @@ public class UserController {
 				userInfService.saveUserInf(user);
 				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				if (roleid == 2) {
+				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
+				if (this.userService.isDeliver(roleid)) {
 					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
