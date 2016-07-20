@@ -6978,7 +6978,7 @@ public class CwbOrderService extends BaseOrderService {
 			Branch currentBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid());
 			if(co.getCurrentbranchid() == 0 || currentBranch == null){
 				Branch startBranch = this.branchDAO.getBranchByBranchid(co.getStartbranchid());
-				if(startBranch == null){
+				if(co.getStartbranchid() == 0 || startBranch == null){
 					//如果上一站、当前站都为0，则表明订单处于导入状态，需要根据下一站找到对应的退货组
 					CwbOrder cwbOrderNew = this.cwbDAO.getCwbByCwb(co.getCwb());
 					long   nextBranchId = (cwbOrderNew==null?0 : cwbOrderNew.getNextbranchid());

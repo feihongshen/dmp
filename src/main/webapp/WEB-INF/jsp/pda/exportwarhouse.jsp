@@ -226,6 +226,7 @@ var Cwbs="";
 	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
 	    		jQuery("#weightNotice").text("") ;
 	    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
+	    		jQuery("#orderWeight").attr("disabled" , false) ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
 	    	}
@@ -462,6 +463,7 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 									//errorvedioplay(pname,data);
 								}
 								jQuery("#orderWeight").val("") ;
+								jQuery("#orderWeight").attr("disabled" , true) ;
 								$("#responsebatchno").val(data.responsebatchno);
 								batchPlayWav(data.wavList);
 							}
@@ -816,6 +818,8 @@ function baleaddcwbCheck(){
    				jQuery("#weightSpan").text("0.00") ;
    				jQuery("#weightNotice").text("") ;
    				$("#carweightDesc").html("") ;
+   				$("#orderWeight").val("") ;
+   				jQuery("#orderWeight").attr("disabled" , true) ;
    				if(data.body.errorenum=="Bale_ChongXinFengBao"){//此订单已在包号：XXX中封包，确认要重新封包吗?
    					/* if(confirm(data.body.errorinfo)){
    						baleaddcwb();//出库根据包号扫描订单
@@ -868,9 +872,9 @@ function baleaddcwb(scancwb,baleno){
 			$("#scancwb").val("");
 			$("#scancwb").focus() ;
 			$("#orderWeight").val("") ;
+			jQuery("#orderWeight").attr("disabled" , true) ;
 			jQuery("#weightSpan").text("0.00") ;
 			jQuery("#weightNotice").text("") ;
-			console.log("success") ;
 			if(data.body.errorcode=="000000"){
 				$("#msg").html("（扫描成功）"+$("#baleno").val()+"包号共"+data.body.successCount+"单,共"+data.body.scannum+"件");
 				<%-- numbervedioplay("<%=request.getContextPath()%>",data.body.successCount); --%>
@@ -998,19 +1002,14 @@ function setWeight() {
 		jQuery("#weightSpan").text("0.00") ;
 		jQuery("#weightNotice").text("实际重量为空，检查电子称！"); 
 	}
-	console.log("setWeight") ;
 }
 
 function setNeedWeight(){
 	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
 	jQuery("#orderWeight").val("") ;
-	if(needWeightFlag){
-		jQuery("#orderWeight").attr("disabled" , false) ;
-	}else{
-		jQuery("#orderWeight").attr("disabled" , true) ;
-		jQuery("#weightSpan").text("0.00") ;
-		jQuery("#weightNotice").text("") ;
-	}
+	jQuery("#orderWeight").attr("disabled" , true) ;
+	jQuery("#weightSpan").text("0.00") ;
+	jQuery("#weightNotice").text("") ;
 	
 }
 /**
@@ -1021,9 +1020,9 @@ function saveOrderWeight(keyCode){
 		return ;
 	}
 	var orderWeight = jQuery("#orderWeight").val().trim() ;
-	var weightExp = /^\d+(\.\d+)?$/ ;
+	var weightExp = /^[1-9]\d*(\.\d*)?|0\.\d*[1-9]\d*$/ ;
 	if(!weightExp.test(orderWeight)){
-		alert("请输入重量") ;
+		alert("请输入重量");
 		jQuery("#orderWeight").focus() ;
 		return ;
 	}
