@@ -22,8 +22,7 @@ CREATE TABLE `express_ops_auto_intowarehouse_message` (
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `serialNo_unique` (`serialNo`),
 	INDEX `cwb_idx` (`cwb`),
-	INDEX `transcwb_idx` (`scancwb`),
-	INDEX `baleno_idx` (`baleno`)
+	INDEX `scancwb_idx` (`scancwb`)
 )
 COMMENT='入库自动化消息记录表'
 COLLATE='utf8_general_ci'
