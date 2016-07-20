@@ -374,7 +374,7 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 	    	window.clearInterval(weightIntervalId) ;
 	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
 	    		jQuery("#weightNotice").text("") ;
-	    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
+	    		alert(scancwb + "(获取不到重量)，请手动输入重量，然后按Enter键！") ;
 	    		jQuery("#orderWeight").attr("disabled" , false) ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;

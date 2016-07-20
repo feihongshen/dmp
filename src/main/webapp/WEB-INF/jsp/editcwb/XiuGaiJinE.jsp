@@ -237,7 +237,9 @@ function checkCwbs(cwbs){
 		<input type="hidden" name="isDeliveryState_<%=cods.getCwbOrder().getCwb() %>" value="yes" />
 		</td>
  		<td align="center" valign="middle" bgcolor="#EEF6FF">
- 		     <%=CwbOrderTypeIdEnum.getByValue(cods.getCwbOrder().getCwbordertypeid()).getText() %>
+ 		     <span id="cwbOrderType_<%=cods.getCwbOrder().getCwb()%>">
+ 		             <%=CwbOrderTypeIdEnum.getByValue(cods.getCwbOrder().getCwbordertypeid()).getText() %>
+ 		     </span>
  		</td>
  		<td align="center" valign="middle" bgcolor="#EEF6FF"><%=cods.getCwbOrder().getReceivablefee() %></td>
  		<td align="center" valign="middle" bgcolor="#EEF6FF">
