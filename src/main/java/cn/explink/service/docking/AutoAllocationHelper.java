@@ -30,6 +30,6 @@ public class AutoAllocationHelper {
 	private static AutoAllocationHelper singleton;
 
 	public static void handleResult(String msg) {
-		singleton.autoAllocationService.handleResult(msg);
+		singleton.autoAllocationService.handleResultWhenReceiveReply(msg);
 	}
 }
