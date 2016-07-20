@@ -9662,7 +9662,25 @@ public class CwbOrderService extends BaseOrderService {
 						temp.setNextbranchid(nextBranchid);
 					}
 					//Added end
+				}else if(temp.getCurrentbranchid() == 0 && temp.getPreviousbranchid() == 0 && temp.getNextbranchid() != 0){
+					//Added by leoliao at 2016-07-20 当前站、上一站都为0则，取下一站，然后获取其对应的退货组。订单拦截即使是出库未到站，也需要进行拦截，此时可以在站点直接进行退货出站操作！
+					Branch transNextBranch = this.branchDAO.getBranchByBranchid(temp.getNextbranchid());
+					if(transNextBranch != null){
+						List<Branch> branchidList = this.cwbRouteService.getNextInterceptBranch(temp.getNextbranchid());// 根据站点的流向配置，找到他对应的退货组
+						if ((branchidList.size() == 0)) {
+							// 如果没有配置的退货组，则异常
+							logger.error("运单(运单号={},下一站={})没有配置逆向退货组", temp.getTranscwb(), transNextBranch.getBranchname());
+							throw new Exception("运单[运单号="+temp.getTranscwb()+",下一站="+transNextBranch.getBranchname()+"]没有配置逆向退货组");
+						}
+						
+						// 如果配置的退货组大于1，那么默认取第一个
+						nextBranchid = branchidList.get(0).getBranchid();
+						
+						temp.setNextbranchid(nextBranchid);
+					}					
+					//Added end
 				}
+				
 				// 如果运单状态为入库、中转入库，那么当前站改为0----应鹏凯要求
 				if ((temp.getTranscwboptstate() == FlowOrderTypeEnum.RuKu.getValue()) || (temp.getTranscwboptstate() == FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue())) {
 					temp.setCurrentbranchid(0);

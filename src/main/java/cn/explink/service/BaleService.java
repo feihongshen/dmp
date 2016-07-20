@@ -162,6 +162,8 @@ public class BaleService {
 	TpsInterfaceExecutor tpsInterfaceExecutor;
 	@Autowired
 	AutoUserService autoUserService;
+	@Autowired
+	UserService userService;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -1617,6 +1619,11 @@ public class BaleService {
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
 
+			/* ***************add begin*********************/
+			//add by neo01.huang，2016-7-19，转换session用户的branchid
+			userService.convertSessionUserBranchId(user);
+			/* ***************add end***********************/
+			
 			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			/**
@@ -1632,6 +1639,19 @@ public class BaleService {
 		
 			//出库时有可能自动补环节令包失效,恢复它的状态
 			this.restoreBaleState(bale);
+			
+			/* ***************add begin*********************/
+			//add by neo01.huang，2016-7-19，确保出库后branchid不会被修改成0
+			Bale nowBale=this.baleDAO.getBaleById(bale.getId());
+			if (nowBale != null && nowBale.getBranchid() <= 0) {
+				//转换session用户的branchid
+				userService.convertSessionUserBranchId(user);
+				logger.info("确保出库后branchid不会被修改成0->nowBale.branchId:{}, userBranchId:{}", 
+						nowBale.getBranchid(), user.getBranchid());
+				baleDAO.updateBranchid(bale.getId(), user.getBranchid());
+			}
+			/* ***************add end***********************/
+			
 		}
 		return cwbOrder;
 	}
@@ -1813,6 +1833,11 @@ public class BaleService {
 				// 包号不存在
 				throw new CwbException("", FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BaoHaoBuZhengQue);
 			}
+			
+			/* ***************add begin*********************/
+			//add by neo01.huang，2016-7-19，转换session用户的branchid
+			userService.convertSessionUserBranchId(user);
+			/* ***************add end***********************/
 
 			// 非本站包
 			if (bale.getBranchid() != user.getBranchid()) {
