@@ -197,6 +197,11 @@ String.prototype.trim=function(){
 			}
 			that.val(showInfo.join('-'));
 			setting.onFinish.call(that,areaInfo);
+			if(that.context.id.indexOf("sender") != -1){
+				$("#sender_adress_id").val("");
+			}else{
+				$("#consignee_adress_id").val("");
+			}
 		}
 	
 		

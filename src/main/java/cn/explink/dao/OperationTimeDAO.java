@@ -315,19 +315,29 @@ public class OperationTimeDAO {
 	}
 
 	public List<String> getOperationTimeByFlowordertypeAndBranchidAndNext(long branchid, long nextbranchid, long flowordertype) {
-		String sql = "SELECT cwb FROM express_ops_operation_time WHERE branchid=? AND flowordertype=?";
+		String sql = "SELECT cwb FROM express_ops_operation_time a WHERE a.branchid=? AND a.flowordertype=?";
 		if (nextbranchid > 0) {
-			sql += " and nextbranchid=" + nextbranchid;
+			sql += " and a.nextbranchid=" + nextbranchid;
 		}
+		
+		//Added by leoliao at 2016-07-06 排除已经被归档的订单
+		sql += " AND EXISTS (SELECT 1 FROM express_ops_cwb_detail WHERE cwb = a.cwb AND state=1) ";
+		//Added end
+		
 		sql += " limit 0,1000";
 		return this.jdbcTemplate.queryForList(sql, String.class, branchid, flowordertype);
 	}
 
 	public long getOperationTimeByFlowordertypeAndBranchidAndNextCount(long branchid, long nextbranchid, long flowordertype) {
-		String sql = "SELECT count(1) FROM express_ops_operation_time WHERE branchid=? AND flowordertype=?";
+		String sql = "SELECT count(1) FROM express_ops_operation_time a WHERE a.branchid=? AND a.flowordertype=?";
 		if (nextbranchid > 0) {
-			sql += " and nextbranchid=" + nextbranchid;
+			sql += " and a.nextbranchid=" + nextbranchid;
 		}
+		
+		//Added by leoliao at 2016-07-06 排除已经被归档的订单
+		sql += " AND EXISTS (SELECT 1 FROM express_ops_cwb_detail WHERE cwb = a.cwb AND state=1) ";
+		//Added end
+		
 		return this.jdbcTemplate.queryForLong(sql, branchid, flowordertype);
 	}
 

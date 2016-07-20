@@ -219,11 +219,11 @@ public class JiontDAO {
 		
 	}
 	//根据承运上编码查询接口设置
-	public JointEntity getJointEntityByShipperNo(String key, int joint_num) {
+	public JointEntity getJointEntityByShipperNo(String key, int joint_num, int isTpsSendFlag) {
 		JointEntity jointEntity = null;
 		try {
 			String sql = "select * from express_set_joint where joint_property like '%\""+key+"\"%' "
-					+ "and joint_property like '%\"isTpsSendFlag\":1,%' and joint_num<>"+joint_num+" limit 0,1";
+					+ "and joint_property like '%\"isTpsSendFlag\":"+isTpsSendFlag+",%' and joint_num<>"+joint_num+" limit 0,1";
 			jointEntity = jdbcTemplate.queryForObject(sql, new PosMapper());
 		} catch (Exception e) {
 			 // e.printStackTrace();
@@ -231,8 +231,8 @@ public class JiontDAO {
 		return jointEntity;
 	}
 
-	//根据承运上编码查询有效接口设置
-	/*@Cacheable(value = "jointCache", key = "#key", condition = "#result ne null")*/
+	//根据承运商编码查询有效接口设置    【修改】去掉缓存注释【周欢】2016-07-15
+	@Cacheable(value = "jointCache", key = "#key", condition = "#result ne null")
 	public JointEntity getJointEntityByShipperNoForUse(String key) {
 		JointEntity jointEntity = null;
 		try {
@@ -243,5 +243,13 @@ public class JiontDAO {
 			 // e.printStackTrace();
 		}
 		return jointEntity;
+	}
+
+	//【新增】根据承运商编码和客户id查询接口设置【周欢】2016-07-13
+	@Cacheable(value = "jointCache", key = "#shipperNo+#customerids", condition = "#result ne null")
+	public JointEntity getDetialJointEntityByShipperNoForUse(String shipperNo,String customerids) {
+		String sql = "select * from express_set_joint where joint_property like '%"+shipperNo+"%' "
+				+ "and joint_property like '%\"isTpsSendFlag\":1,%' and joint_property like '%"+customerids+"%' and state=1 limit 0,1";
+		return this.jdbcTemplate.queryForObject(sql,new PosMapper());
 	}
 }

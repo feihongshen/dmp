@@ -119,11 +119,18 @@ function submitBranchImport(pname,scancwb,driverid,requestbatchno,rk_switch,comm
 						$("#damage").show();
 						$("#multicwbnum").show();
 						$("#dingdanlanjie").hide();
-						
 						if(data.body.cwbOrder.deliverybranchid!=0){
-							$("#excelbranch").html("目的站："+data.body.cwbdeliverybranchname+"<br/>下一站："+data.body.cwbbranchname);
+							var html = "目的站：" + data.body.cwbdeliverybranchname;
+							html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+							if(data.body.cwbOrder.exceldeliverid != 0) {
+								html += "配送员：" + data.body.deliverName;
+							} else {
+								html += "尚未匹配配送员";
+							}
+							html += "<br/>下一站："+data.body.cwbbranchname;
+							$("#excelbranch").html(html);
 						}else{
-							$("#excelbranch").html("尚未匹配站点");
+							$("#excelbranch").html("尚未匹配站点和配送员");
 						}
 						if(data.body.dingdanlanjie != ""){
 							$("#dingdanlanjie").show();

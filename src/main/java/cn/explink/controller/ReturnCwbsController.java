@@ -100,15 +100,7 @@ public class ReturnCwbsController {
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "timetype", required = false, defaultValue = "3") long timetype,
 			@RequestParam(value = "starttime", required = false, defaultValue = "") String starttime, @RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
 		List<Customer> customerList = customerDAO.getAllCustomers();
-		List<Branch> bList = cwborderService.getNextPossibleBranches(getSessionUser());
-		List<Branch> removeList = new ArrayList<Branch>();
-		for (Branch b : bList) {// 去掉中转站
-			if (b.getSitetype() == BranchEnum.KuFang.getValue() || b.getSitetype() == BranchEnum.ZhongZhuan.getValue() || b.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-				removeList.add(b);
-			}
-		}
-
-		bList.removeAll(removeList);
+		List<Branch> bList = cwborderService.getNextPossibleBranches(getSessionUser(), BranchEnum.TuiHuo);
 		// 显示每天截止到”当前时间”的数据。
 		String nowtime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00";
 

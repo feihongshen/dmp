@@ -128,7 +128,8 @@ public class VipShopOXOInsertCwbDetailTimmer {
 			logger.info("定时器临时表插入detail表成功!cwb={},shipcwb={}", cwbOrder.getCwb(), cwbOrder.getShipcwb());
 
             //added by Steve PENG. OXO/OXOJIT 导入后生需要成派费订单的相关操作。 start
-            dfFeeService.saveFeeRelativeAfterOXOImport(cwbOrder.getCwb(), user);
+            //commented by Steve PENG. OXO的单将会在归班审核后导入， OXOJIT 目前业务不会计费。
+//            dfFeeService.saveFeeRelativeAfterOXOImport(cwbOrder.getCwb(), user);
             //added by Steve PENG. OXO/OXOJIT 导入后生需要成派费订单的相关操作。 end
 
 			if(StringUtils.isNotBlank(cwbOrder.getRemark4())){

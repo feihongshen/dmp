@@ -23,7 +23,7 @@ public class DfBillFee {
     /**
      * 发货客户
      */
-    private String customerid;
+    private long customerid;
     /**
      * 发货件数
      */
@@ -218,11 +218,11 @@ public class DfBillFee {
         this.cwbordertypeid = cwbordertypeid;
     }
 
-    public String getCustomerid() {
+    public long getCustomerid() {
         return customerid;
     }
 
-    public void setCustomerid(String customerid) {
+    public void setCustomerid(long customerid) {
         this.customerid = customerid;
     }
 

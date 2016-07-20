@@ -1,3 +1,4 @@
+<%@page import="cn.explink.domain.Customer"%>
 <%@page import="cn.explink.enumutil.ComplaintStateEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="cn.explink.domain.CsComplaintAccept"%>
@@ -23,7 +24,9 @@
 	Integer heshiTime =(Integer)request.getAttribute("heshiTime");
 	List<CsComplaintAccept> lcsa=request.getAttribute("lcsa")==null?null:(List<CsComplaintAccept>)request.getAttribute("lcsa");
 	long currentuser =(Long)request.getAttribute("currentuser");
-	 String roleids = request.getAttribute("roleids")==null?null:(String)request.getAttribute("roleids"); 
+	String roleids = request.getAttribute("roleids")==null?null:(String)request.getAttribute("roleids"); 
+	List<Customer> customers = (List<Customer>)request.getAttribute("customers"); 
+	String[] customerStr = request.getAttribute("customerStr")==null?null:(String[])request.getAttribute("customerStr"); 
 %> 
 	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -40,6 +43,8 @@
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
 <script type="text/javascript">
 
 function getReasonValueV(){
@@ -183,7 +188,11 @@ $(function() {
 		$(this).css("backgroundColor","yellow");
 		$(this).siblings().css("backgroundColor","#ffffff");
 	});
-
+	
+	$("#customerIds").multipleSelect({
+		placeholder: "全部",
+	    filter: true,
+    });
 });
 
 function getAddBoxx01() {
@@ -322,8 +331,6 @@ function chongZhiAnNiu(){
 	$('#handleUser').val("");
 	$('#beginRangeTime').val('');
 	$('#endRangeTime').val('');
-
-
 }
 
 </script>
@@ -432,6 +439,25 @@ function chongZhiAnNiu(){
 					</td>
 					<td>
 					<input style="width: 44%;" type="text" name="beginRangeTime" id="beginRangeTime" class="input_text1"/>—<input style="width: 44%;" type="text" name="endRangeTime" id="endRangeTime" class="input_text1"/>
+					</td>
+					
+					<td align="right">
+					客户：
+					</td>
+					
+					<td>
+					
+					<select style="width: 170%;" name="customerIds"  id="customerIds" multiple="multiple">
+						<%for(Customer c : customers){ %>
+				           <option value ="<%=c.getCustomerid() %>" 
+				            <%for(int i=0;i<customerStr.length;i++){
+					            	if(c.getCustomerid()== new Long(customerStr[i])){
+					            		%>selected="selected"<%
+					            	}
+					         }
+						     %>><%=c.getCustomername() %></option>
+				          <%} %>
+					</select>
 					</td>
 </tr>
 <tr>

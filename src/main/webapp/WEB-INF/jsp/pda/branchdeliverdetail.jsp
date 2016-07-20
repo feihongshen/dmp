@@ -110,10 +110,10 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		return ;
 	}else if(scancwb.length>0){
 		var allnum = 0;
-		
+		var isChaoqu = $("#isChaoqu").is(":checked");
 		$.ajax({
 			type: "POST",
-			url:pname+"/PDA/cwbbranchdeliver/"+scancwb+"?deliverid="+deliverid+"&requestbatchno="+requestbatchno,
+			url:pname+"/PDA/cwbbranchdeliver/"+scancwb+"?deliverid="+deliverid+"&requestbatchno="+requestbatchno + "&isChaoqu=" + isChaoqu,
 			dataType:"json",
 			success : function(data) {
 				
@@ -126,6 +126,14 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#scansuccesscwb").val(scancwb);
 					$("#showcwb").html("订 单 号："+data.body.cwbOrder.cwb);
 					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);
+					if(data.body.isChaoqu == true) {
+						if(data.body.matchDeliver == "") {
+							$("#matchDeliver").html("尚未匹配小件员");
+						} else {
+							$("#matchDeliver").html("订单匹配小件员：" + data.body.matchDeliver);
+						}
+						$("#receiveDeliver").html("领货小件员：" + data.body.receiveDeliver);
+					}
 					if(data.body.cwbOrder.customercommand.indexOf('预约')>=0&&data.yuyuedaService=='yes')
 					{	
 						$("#customercommand").html("预约派送");
@@ -152,7 +160,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					}
 					
 					$("#guanlianlantuidan").hide();
-					if(data.body.guanlianlantuidan != ""){
+					if(data.body.guanlianlantuidan){
 						$("#guanlianlantuidan").show();
 					}
 					
@@ -175,6 +183,8 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#exceldeliverid").html("");
 					$("#showcwb").html("");
 					$("#consigneeaddress").html("");
+					$("#matchDeliver").html("");
+					$("#receiveDeliver").html("");
 					$("#cwbordertype").html("");
 					$("#cwbDetailshow").html("");
 					$("#deliver").html("已领货");
@@ -267,7 +277,10 @@ function todayweilinghuo(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' nextbranchid='"+data[i].nextbranchid+"' >"
@@ -276,7 +289,10 @@ function todayweilinghuo(){
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 				}
@@ -311,7 +327,10 @@ function  historyweilinghuo(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"' >"
@@ -320,7 +339,10 @@ function  historyweilinghuo(){
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 				}
@@ -355,7 +377,10 @@ function yiling(){
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
 					+"<td width='100' align='center'> "+data[i].remarkView+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%}else{ %>
 					optionstring += "<tr id='TR"+data[i].cwb+"'  cwb='"+data[i].cwb+"' customerid='"+data[i].customerid+"' deliverid='"+data[i].deliverid+"' >"
@@ -364,7 +389,10 @@ function yiling(){
 					+"<td width='140' align='center'> "+data[i].emaildate+"</td>"
 					+"<td width='100' align='center'> "+data[i].consigneename+"</td>"
 					+"<td width='100' align='center'> "+data[i].receivablefee+"</td>"
-					+"<td  align='left'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='230' align='center'> "+data[i].consigneeaddress+"</td>"
+					+"<td width='60' align='center'>"+data[i].cwbstatetext+"</td>"
+					+"<td width='60' align='center'>"+data[i].flowordertypetext+"</td>"
+					+"<td align='center'>"+data[i].checkstateresultname+"</td>"
 					+ "</tr>";
 				<%} %>
 					
@@ -459,6 +487,7 @@ function scancwbKeyDownAction(event) {
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected=selected<%} %>    ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
+			        超区领货：<input type="checkbox" id="isChaoqu" name="isChaoqu"/>
 			</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
@@ -473,6 +502,8 @@ function scancwbKeyDownAction(event) {
 					<p id="cwbgaojia" name="cwbgaojia" style="display: none" >高价</p>
 					<p id="guanlianlantuidan" name="guanlianlantuidan" style="display: none" ><font color="red" size="12">关联揽退单</font></p>
 					<p id="consigneeaddress" name="consigneeaddress"></p>
+					<p id="matchDeliver" name="matchDeliver"></p>
+					<p id="receiveDeliver" name="receiveDeliver"></p>
 					<p id="fee" name="fee"></p>
 					<p id="exceldeliverid" name="exceldeliverid"></p>
 					<p id="cwbDetailshow" name="cwbDetailshow"></p>
@@ -523,7 +554,7 @@ function scancwbKeyDownAction(event) {
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
 										
-										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -544,7 +575,7 @@ function scancwbKeyDownAction(event) {
 											<%if(showCustomerSign){ %>
 													<td width="100"><%=co.getRemarkView() %></td>
 												<%} %>
-											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<td width="230" align="left"><%=co.getConsigneeaddress() %></td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
 											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
@@ -590,7 +621,7 @@ function scancwbKeyDownAction(event) {
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
 										<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -611,7 +642,7 @@ function scancwbKeyDownAction(event) {
 											<%if(showCustomerSign){ %>
 													<td width="100"><%=co.getRemarkView() %></td>
 												<%} %>
-											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<td width="230" align="left"><%=co.getConsigneeaddress() %></td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
 											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
@@ -656,7 +687,7 @@ function scancwbKeyDownAction(event) {
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
 										<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -677,7 +708,7 @@ function scancwbKeyDownAction(event) {
 													<td width="100"><%=co.getRemarkView() %></td>
 												<%} %>
 										
-											<td width="350" align="left"><%=co.getConsigneeaddress() %></td>
+											<td width="230" align="left"><%=co.getConsigneeaddress() %></td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
 											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if (cwb.getValue()==co.getCwbstate()) {%>
@@ -723,7 +754,7 @@ function scancwbKeyDownAction(event) {
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="350" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
 										<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>

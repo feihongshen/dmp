@@ -59,7 +59,8 @@ public class TpsCwbFlowService {
 	public void save(CwbOrder co,String scancwb, FlowOrderTypeEnum flowordertype,long currentbranchid,String operateTime,boolean fromPage,BigDecimal weight,BigDecimal volume) {
 		try {
 			if (flowordertype.getValue() == FlowOrderTypeEnum.RuKu.getValue()||
-				flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) {
+				flowordertype.getValue() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()||
+				flowordertype.getValue() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {//add by huangzh 2016-6-23 分站到货扫描也需要添加上
 				int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.TPS_Cwb_Flow.getKey());//
 				if(isOpenFlag!=1){
 					this.logger.info("订单体积重量反馈tps开关未开启.");
@@ -77,7 +78,8 @@ public class TpsCwbFlowService {
 				}
 				
 				Branch currentbranch = this.branchDAO.getBranchById(currentbranchid);
-				if(currentbranch==null||currentbranch.getSitetype()!=BranchEnum.KuFang.getValue()){
+				//add by huangzh 2016-6-23  站点的操作也需要加入到临时表
+				if(currentbranch==null||(currentbranch.getSitetype()!=BranchEnum.KuFang.getValue()&&currentbranch.getSitetype()!=BranchEnum.ZhanDian.getValue())){
 					return;
 				}
 				
@@ -91,6 +93,15 @@ public class TpsCwbFlowService {
 					boolean scancwbExist= this.tpsCwbFlowDao.checkScancwbExist(co.getCwb(), scancwb);
 					if(scancwbExist){
 						this.logger.info("入库时保存过,cwb="+co.getCwb());
+						return;
+					}
+				}
+				
+				//add by huangzh 2016-6-23 分站扫描到货也需要校验临时表是否有数据
+				if (flowordertype.getValue() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) {
+					boolean scancwbExist= this.tpsCwbFlowDao.checkScancwbExist(co.getCwb(), scancwb);
+					if(scancwbExist){
+						this.logger.info("分站到货扫描时保存过,cwb="+co.getCwb());
 						return;
 					}
 				}
