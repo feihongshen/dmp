@@ -376,15 +376,23 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			}
 		}
 		params.put("transcwb", embracedOrderVO.getOrderNo());// 将订单号写入transcwb
-		params.put("senderprovinceid", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid()) ? embracedOrderVO.getSender_provinceid() : null);
+		if(!"null".equals(embracedOrderVO.getSender_provinceid().trim()) ){
+			params.put("senderprovinceid", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid()) ? embracedOrderVO.getSender_provinceid() : null);
+		}
 		params.put("senderprovince", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceName()) ? embracedOrderVO.getSender_provinceName() : null);
-		params.put("sendercityid", StringUtils.isNotBlank(embracedOrderVO.getSender_cityid()) ? embracedOrderVO.getSender_cityid() : null);
+		if(!"null".equals(embracedOrderVO.getSender_cityid().trim())){
+			params.put("sendercityid", StringUtils.isNotBlank(embracedOrderVO.getSender_cityid()) ? embracedOrderVO.getSender_cityid() : null);
+		}
 		params.put("sendercity", StringUtils.isNotBlank(embracedOrderVO.getSender_cityName()) ? embracedOrderVO.getSender_cityName() : null);
 		params.put("sendercellphone", StringUtils.isNotBlank(embracedOrderVO.getSender_cellphone()) ? embracedOrderVO.getSender_cellphone() : null);
 		params.put("sendertelephone", StringUtils.isNotBlank(embracedOrderVO.getSender_telephone()) ? embracedOrderVO.getSender_telephone() : null);
-		params.put("recprovinceid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceid()) ? embracedOrderVO.getConsignee_provinceid() : null);
+		if(!"null".equals(embracedOrderVO.getConsignee_provinceid().trim())){
+			params.put("recprovinceid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceid()) ? embracedOrderVO.getConsignee_provinceid() : null);
+		}
 		params.put("cwbprovince", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceName()) ? embracedOrderVO.getConsignee_provinceName() : null);
-		params.put("reccityid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityid()) ? embracedOrderVO.getConsignee_cityid() : null);
+		if(!"null".equals(embracedOrderVO.getConsignee_cityid().trim())){
+			params.put("reccityid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityid()) ? embracedOrderVO.getConsignee_cityid() : null);
+		}
 		params.put("cwbcity", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityName()) ? embracedOrderVO.getConsignee_cityName() : null);
 		params.put("consigneemobile", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone()) ? embracedOrderVO.getConsignee_cellphone() : null);
 		params.put("consigneephone", StringUtils.isNotBlank(embracedOrderVO.getConsignee_telephone()) ? embracedOrderVO.getConsignee_telephone() : null);
@@ -403,9 +411,13 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("customerid", embracedOrderVO.getSender_customerid());
 		}
 		params.put("sendername", StringUtils.isNotBlank(embracedOrderVO.getSender_name()) ? embracedOrderVO.getSender_name() : null);
-		params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
+		if( !"null".equals(embracedOrderVO.getSender_countyid().trim())){
+			params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
+		}
 		params.put("sendercounty", StringUtils.isNotBlank(embracedOrderVO.getSender_countyName()) ? embracedOrderVO.getSender_countyName() : null);
-		params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
+		if( !"null".equals(embracedOrderVO.getSender_townid().trim())){
+			params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
+		}
 		params.put("senderstreet", StringUtils.isNotBlank(embracedOrderVO.getSender_townName()) ? embracedOrderVO.getSender_townName() : null);
 		params.put("senderid", StringUtils.isNotBlank(embracedOrderVO.getSender_certificateNo()) ? embracedOrderVO.getSender_certificateNo() : null);
 		// params.put("consigneeno",
@@ -418,9 +430,13 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("reccustomerid", embracedOrderVO.getConsignee_customerid());
 		}
 		params.put("consigneename", StringUtils.isNotBlank(embracedOrderVO.getConsignee_name()) ? embracedOrderVO.getConsignee_name() : null);
-		params.put("reccountyid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid()) ? embracedOrderVO.getConsignee_countyid() : null);
+		if(!"null".equals(embracedOrderVO.getConsignee_countyid().trim())){
+			params.put("reccountyid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid()) ? embracedOrderVO.getConsignee_countyid() : null);
+		}
 		params.put("cwbcounty", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyName()) ? embracedOrderVO.getConsignee_countyName() : null);
-		params.put("recstreetid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid()) ? embracedOrderVO.getConsignee_townid() : null);
+		if(!"null".equals(embracedOrderVO.getConsignee_townid().trim())){
+			params.put("recstreetid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid()) ? embracedOrderVO.getConsignee_townid() : null);
+		}
 		params.put("recstreet", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townName()) ? embracedOrderVO.getConsignee_townName() : null);
 		params.put("recid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_certificateNo()) ? embracedOrderVO.getConsignee_certificateNo() : null);
 		params.put("entrustname", StringUtils.isNotBlank(embracedOrderVO.getGoods_name()) ? embracedOrderVO.getGoods_name() : null);
@@ -763,7 +779,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					if(StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) && "0".equals(embracedOrderVO.getPayment_method().trim())){
 						doReq.setAccountId(embracedOrderVO.getMonthly_account_number());
 						doReq.setAccountCustName(embracedOrderVO.getSender_companyName());
-						doReq.setAccountMark(embracedOrderVO.getSender_customerid()+"");
+						doReq.setAccountCustCode(embracedOrderVO.getMonthly_account_number());
 					}
 					doReq.setCnorRemark(embracedOrderVO.getRemarks());
 					//快递二期新增：运费
