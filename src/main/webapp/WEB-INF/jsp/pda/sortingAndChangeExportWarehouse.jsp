@@ -385,8 +385,8 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
 	    	}
-	    	exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
-	    },(weightTime + 3) * 1000) ;
+	    exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
+     },(weightTime + 3) * 1000) ;
 }
 
 function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,needWeightFlag,carrealweight){
