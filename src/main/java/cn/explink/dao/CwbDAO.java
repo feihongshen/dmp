@@ -9903,4 +9903,10 @@ public class CwbDAO {
 		this.jdbcTemplate.update(
 				"update express_ops_cwb_detail set remark1=?,remark3=?,remark4=? where cwb=? and state = 1 ",batchNo,attemperNo,attemperTime,cwb);		
 	}
+	
+	/**add by yurong.liang 2016-7-21 **/
+	public void saveTranscwbAndTpsTranscwbByCwb(String transcwb, String cwb) {
+		String sql = "update express_ops_cwb_detail set transcwb=?,tpstranscwb=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, transcwb,transcwb, cwb);
+	}
 }
