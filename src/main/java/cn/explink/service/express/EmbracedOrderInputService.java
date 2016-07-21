@@ -354,7 +354,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("inputdatetime", date);
 			embracedOrderVO.setInputdatetime(date.toString());
 			params.put("cwbordertypeid", CwbOrderTypeIdEnum.Express.getValue());
-			params.put("customerid", 1000);// 默认1000，代表快递单
+			if(!"0".equals(embracedOrderVO.getPayment_method())){
+				params.put("customerid", 1000);// 默认1000，代表快递单
+			}
 			params.put("completehandlerid", user.getUserid());
 			params.put("completehandlername", user.getUsername());
 			params.put("completedatetime", date);
@@ -761,6 +763,10 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					if(StringUtils.isNotBlank(embracedOrderVO.getMonthly_account_number())){
 						doReq.setAccountId(embracedOrderVO.getMonthly_account_number());
 					}
+					//寄件人单位----刘武强20160719 ---如果是月结方式，那么tps要求月结账号和寄件人公司都必填
+					if(StringUtils.isNotBlank(embracedOrderVO.getSender_companyName())){
+						doReq.setAccountCustName(embracedOrderVO.getSender_companyName());
+					}
 					doReq.setCnorRemark(embracedOrderVO.getRemarks());
 					//快递二期新增：运费
 					doReq.setActualFee(Double.parseDouble(embracedOrderVO.getFreight()));
@@ -892,9 +898,14 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("付款方式未输入");
 			return false;
 		}
-		// 如果为月结，那么校验客户是否填写
-		if ("0".equals(embracedOrderVO.getPayment_method()) && (embracedOrderVO.getSender_customerid() == null)) {
+		// 如果为月结，那么校验送检人客户id是否填写
+		if ("0".equals(embracedOrderVO.getPayment_method()) && ((embracedOrderVO.getSender_customerid() == null) || embracedOrderVO.getSender_customerid() == -1)) {
 			this.logger.info("月结运单客户未输入");
+			return false;
+		}
+		// 如果为月结，那么校验送检人单位是否填写 ---刘武强20160721（如果tps传月结账号的话，要求送件人单位不为空或""）
+		if ("0".equals(embracedOrderVO.getPayment_method()) && ((embracedOrderVO.getSender_companyName() == null) || "".equals(embracedOrderVO.getSender_companyName().trim()))) {
+			this.logger.info("月结运单寄件人单位未输入");
 			return false;
 		}
 		// 如果为月结，那么校验月结账号
