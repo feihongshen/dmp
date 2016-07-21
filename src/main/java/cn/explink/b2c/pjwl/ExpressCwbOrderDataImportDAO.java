@@ -323,10 +323,10 @@ public class ExpressCwbOrderDataImportDAO {
 
 				//如果详细地址里面已经含省+市+区，则不再加入省市区
 				// modify by jian_xie 2016-07-18,DMP地址拼接去重逻辑的修改何欣伟需求
-				String cneeProv = cwbOrderDTO.getCneeProv();
-				String cneeCity = cwbOrderDTO.getCneeCity();
-				String cneeRegion = cwbOrderDTO.getCneeRegion();
-				String cneeTown = cwbOrderDTO.getCneeTown();
+//				String cneeProv = cwbOrderDTO.getCneeProv();
+//				String cneeCity = cwbOrderDTO.getCneeCity();
+//				String cneeRegion = cwbOrderDTO.getCneeRegion();
+//				String cneeTown = cwbOrderDTO.getCneeTown();
 				String cneeAddr = cwbOrderDTO.getCneeAddr();
 //				if(null != cneeAddr){
 //					if(null != cneeTown && cneeAddr.indexOf(cneeTown) < 0){//从地址小的开始处理
@@ -342,7 +342,6 @@ public class ExpressCwbOrderDataImportDAO {
 //						cneeAddr = cneeProv + cneeAddr;
 //					}
 //				}
-				cneeAddr = cneeProv + cneeCity + cneeRegion + cneeTown + cneeAddr;
 				ps.setString(++i, cneeAddr);
 				ps.setString(++i, cwbOrderDTO.getCneeMobile());
 				ps.setString(++i, cwbOrderDTO.getCneeTel());
