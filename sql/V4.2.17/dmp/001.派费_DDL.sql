@@ -33,7 +33,8 @@ CREATE TABLE `fn_df_agreement` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `charger_type` tinyint(2) DEFAULT NULL COMMENT '结算对象，0-站点，1-协议',
   PRIMARY KEY (`agt_id`),
-  KEY `agtNoIdx` (`agt_no`)
+  KEY `agtNoIdx` (`agt_no`),
+  KEY `orgIdIdx` (`org_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费协议';
 
 -- ----------------------------
@@ -446,7 +447,8 @@ CREATE TABLE `fn_df_rule` (
   `cust_flag` tinyint(1) DEFAULT NULL COMMENT '是否区分客户，0是，1否',
   `area_flag` tinyint(1) DEFAULT NULL COMMENT '是否区分地区，0是，1否',
   PRIMARY KEY (`rule_id`),
-  KEY `ruleNoIdx` (`rule_no`)
+  KEY `ruleNoIdx` (`rule_no`),
+  KEY `agtIdIdx` (`agt_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费规则';
 
 -- ----------------------------
@@ -465,7 +467,8 @@ CREATE TABLE `fn_df_rule_add` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`rule_add_id`)
+  PRIMARY KEY (`rule_add_id`),
+  KEY `ruleIdIdx` (`rule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费续价';
 
 -- ----------------------------
@@ -487,7 +490,8 @@ CREATE TABLE `fn_df_rule_area` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`rule_area_id`)
+  PRIMARY KEY (`rule_area_id`),
+  KEY `ruleIdIdx` (`rule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费地区';
 
 -- ----------------------------
@@ -506,7 +510,8 @@ CREATE TABLE `fn_df_rule_avg` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`rule_avg_id`)
+  PRIMARY KEY (`rule_avg_id`),
+  KEY `ruleIdIdx` (`rule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费均价';
 
 -- ----------------------------
@@ -515,7 +520,8 @@ CREATE TABLE `fn_df_rule_avg` (
 DROP TABLE IF EXISTS `fn_df_rule_cust`;
 CREATE TABLE `fn_df_rule_cust` (
   `rule_id` bigint(20) NOT NULL COMMENT '主键ID',
-  `cust_id` bigint(20) NOT NULL COMMENT '适用客户'
+  `cust_id` bigint(20) NOT NULL COMMENT '适用客户',
+  KEY `ruleIdIdx` (`rule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费客户';
 
 -- ----------------------------
@@ -537,7 +543,8 @@ CREATE TABLE `fn_df_rule_range` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`rule_range_id`)
+  PRIMARY KEY (`rule_range_id`),
+  KEY `ruleIdIdx` (`rule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费范围价';
 
 -- ----------------------------
@@ -555,7 +562,8 @@ CREATE TABLE `fn_df_rule_subsidy` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`subsidy_id`)
+  PRIMARY KEY (`subsidy_id`),
+  KEY `ruleIdIdx` (`rule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='派费补贴';
 
 -- ----------------------------
