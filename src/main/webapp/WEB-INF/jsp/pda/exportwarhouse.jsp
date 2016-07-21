@@ -218,19 +218,25 @@ var Cwbs="";
 	    	exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
 	    	return ;
 	    }
-	    var weightIntervalId = window.setInterval("setWeight()", 1);
+	    $("#msg").html("") ;
+	    $("#showcwb").html("") ;
+	    $("#excelbranch").html("") ;
+	    $("#carweightDesc").html("") ;
+	    $("#cwbDetailshow").html("") ;
 	    jQuery("#weightNotice").text("正在称重中,请稍等......") ;
+	    var weightIntervalId = window.setInterval("setWeight()", 1);
 	    window.setTimeout(function waitForWeight(){
 	    	carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
 	    	window.clearInterval(weightIntervalId) ;
 	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
 	    		jQuery("#weightNotice").text("") ;
-	    		alert(scancwb + "(获取不到重量)，请手动输入重量！") ;
+	    		jQuery("#msg").html(scancwb + "(获取不到重量)，请手动输入重量！") ;
+	    		jQuery("#orderWeight").attr("disabled" , false) ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
 	    	}
-	    	exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
-	    },(weightTime + 3) * 1000) ;
+	    exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
+	},(weightTime + 3) * 1000) ;
 }
 
 function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight){
@@ -462,6 +468,7 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 									//errorvedioplay(pname,data);
 								}
 								jQuery("#orderWeight").val("") ;
+								jQuery("#orderWeight").attr("disabled" , true) ;
 								$("#responsebatchno").val(data.responsebatchno);
 								batchPlayWav(data.wavList);
 							}
@@ -816,6 +823,8 @@ function baleaddcwbCheck(){
    				jQuery("#weightSpan").text("0.00") ;
    				jQuery("#weightNotice").text("") ;
    				$("#carweightDesc").html("") ;
+   				$("#orderWeight").val("") ;
+   				jQuery("#orderWeight").attr("disabled" , true) ;
    				if(data.body.errorenum=="Bale_ChongXinFengBao"){//此订单已在包号：XXX中封包，确认要重新封包吗?
    					/* if(confirm(data.body.errorinfo)){
    						baleaddcwb();//出库根据包号扫描订单
@@ -868,6 +877,7 @@ function baleaddcwb(scancwb,baleno){
 			$("#scancwb").val("");
 			$("#scancwb").focus() ;
 			$("#orderWeight").val("") ;
+			jQuery("#orderWeight").attr("disabled" , true) ;
 			jQuery("#weightSpan").text("0.00") ;
 			jQuery("#weightNotice").text("") ;
 			if(data.body.errorcode=="000000"){
@@ -997,19 +1007,14 @@ function setWeight() {
 		jQuery("#weightSpan").text("0.00") ;
 		jQuery("#weightNotice").text("实际重量为空，检查电子称！"); 
 	}
-	console.log("setWeight") ;
 }
 
 function setNeedWeight(){
 	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
 	jQuery("#orderWeight").val("") ;
-	if(needWeightFlag){
-		jQuery("#orderWeight").attr("disabled" , false) ;
-	}else{
-		jQuery("#orderWeight").attr("disabled" , true) ;
-		jQuery("#weightSpan").text("0.00") ;
-		jQuery("#weightNotice").text("") ;
-	}
+	jQuery("#orderWeight").attr("disabled" , true) ;
+	jQuery("#weightSpan").text("0.00") ;
+	jQuery("#weightNotice").text("") ;
 	
 }
 /**
@@ -1020,9 +1025,9 @@ function saveOrderWeight(keyCode){
 		return ;
 	}
 	var orderWeight = jQuery("#orderWeight").val().trim() ;
-	var weightExp = /^\d+(\.\d+)?$/ ;
+	var weightExp = /^[1-9]\d*(\.\d*)?|0\.\d*[1-9]\d*$/ ;
 	if(!weightExp.test(orderWeight)){
-		alert("请输入重量") ;
+		alert("请输入重量");
 		jQuery("#orderWeight").focus() ;
 		return ;
 	}
@@ -1032,6 +1037,7 @@ function saveOrderWeight(keyCode){
 		jQuery("#scancwb").focus() ;
 		return ;
 	}
+	jQuery("#msg").html("") ;
 	var branchid = $("#branchid").combobox("getValue") ;
 	var driverid = $("#driverid").val() ;
 	var truckid = $("#truckid").val() ;
@@ -1191,7 +1197,7 @@ function saveOrderWeight(keyCode){
 					     <label id="weightNotice" > </label> 
 					</p>
 					<p>
-						<span>重量(Kg):</span><input type="text" class="saomiao_inputtxt1" id="orderWeight" name="orderWeight" disabled = "true"  onKeyDown = "saveOrderWeight(event.keyCode)" />
+						<span>重量(Kg):</span><input type="text" class="saomiao_inputtxt1" id="orderWeight" name="orderWeight" disabled = "true"  onKeyDown = "saveOrderWeight(event.keyCode)" maxlength = "7" />
 					</p>
 					</div>
 					<c:if test="${isOpenDialog=='open'}">

@@ -98,7 +98,7 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	}
 
 	public Map<String, Object> exeTpsInterface(@Header("executeTpsInterfaceHeader") String param, @Header("MessageHeaderUUID") String messageHeaderUUID) throws Exception {
-		this.logger.debug("dmp execute tps interface  调用环节信息处理,{}", param);
+		this.logger.info("dmp execute tps interface  调用环节信息处理,{}", param);
 		try{
 			ExpressOperationInfo operationInfo = this.expressOperationInfoReader.readValue(param);
 			Map<String, Object> resultMap = this.tpsInterfaceHandlePorcess(operationInfo);

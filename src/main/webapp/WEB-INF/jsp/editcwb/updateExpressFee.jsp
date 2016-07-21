@@ -43,13 +43,17 @@ function sub(){
             cwbs += ","
         }
         cwbs += cwb.value;
-		if(!isFloat($("input[name='Shouldfare_"+cwb.value+"']").val())){
+        if(!isFloat($("input[name='Shouldfare_"+cwb.value+"']").val())){
 			alert("订单号"+cwb.value+"的修改为运费金额内容不是数字！");
 			isSubmit=false;
 			return false;
+		} else if($("input[name='Shouldfare_"+cwb.value+"']").val() == Number($("input[name='Shouldfare_"+cwb.value+"']").parent().prev().html())){
+			alert("订单号"+cwb.value+"的运费金额与原内容没有变化，不能申请！");
+            isSubmit=false;
+            return false;
 		}	
 	});
-	if(!checkCwbs(cwbs)){
+	if(isSubmit && !checkCwbs(cwbs)){
         isSubmit=false;
         return false;
     }
