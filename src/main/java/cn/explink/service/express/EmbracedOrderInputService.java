@@ -779,7 +779,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					if(StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) && "0".equals(embracedOrderVO.getPayment_method().trim())){
 						doReq.setAccountId(embracedOrderVO.getMonthly_account_number());
 						doReq.setAccountCustName(embracedOrderVO.getSender_companyName());
-						doReq.setAccountMark(embracedOrderVO.getSender_customerid()+"");
+						doReq.setAccountCustCode(embracedOrderVO.getSender_customerid()+"");
 					}
 					doReq.setCnorRemark(embracedOrderVO.getRemarks());
 					//快递二期新增：运费
