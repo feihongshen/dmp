@@ -3010,6 +3010,10 @@ public class PDAController {
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
 			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate, @RequestParam(value = "youhuowudanflag", defaultValue = "-1") String youhuowudanflag,
 			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno,@RequestParam(value = "direction", defaultValue = "-1") String direction) {
+		if(isAutoAllocatingButDisconnected(entranceno)){
+			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
+		}
+		
 		long startTime = System.currentTimeMillis();
 		ExplinkResponse resp = null;
 		JSONArray promt = null;
@@ -3603,6 +3607,9 @@ public class PDAController {
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
 			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno,@RequestParam(value = "direction", defaultValue = "-1") String direction) {
+		if(isAutoAllocatingButDisconnected(entranceno)){
+			throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
+		}
 		String scancwb = cwb;
 		String branchName="";//配送站点名称
 		String outputNo="";//出货口编号
@@ -11225,6 +11232,20 @@ public class PDAController {
 		}
 	}
 	
+	@RequestMapping("/autoConnectAll")
+	public void autoConnectAllMiddleWare() {
+		List<Entrance> eList=this.entranceDAO.getAllEnableEntrances();//分拨入口查询
+		//是否开启自动分拣设置
+		String autoAllocatingSwitch = this.systemInstallDAO.getSystemInstall("AutoAllocating").getValue();
+		/**
+		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
+		 */
+		if(autoAllocatingSwitch.equals("1")){
+			this.createSocketConnectMap(eList);
+		}
+		
+	}
+	
 	
 	@RequestMapping("/flush")
 	public  void flushQueue(@RequestParam(value = "entranceno") String entranceno) {
@@ -11470,22 +11491,34 @@ public class PDAController {
 			//启用并设置了出货口
 			if(autoAllocatingSwitch.equals("1")&&null!=outputNo&&!outputNo.isEmpty()){
 				String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
-				//检查是否连接断开，若未连上则尝试重连
-				Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
-				SocketClient sc=socketMap.get(entranceIP);
-				if(null==sc||sc.Clientstate.State!=2){
-					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
-					socketMap.put(entranceIP, sc);
-				}
-				
 				
 				AutoAllocationParam param=new AutoAllocationParam(cwb,outputNo,direction,branchName);
-				//createEmptyMsgLog
-				this.autoAllocationService.createEmptyMsgLog(param, cwb, scancwb, intowarehouseType);
+				this.autoAllocationService.createEmptyMsgLog(param, cwb, scancwb, intowarehouseType, entranceIP);
 				//发送消息
 				this.autoAllocationService.addQueue(entranceIP, param);
 			}
 		}
+	}
+	
+	/*
+	 * 检查是否：使用了自动分拨功能，却未能连上分拨机
+	 */
+	private boolean isAutoAllocatingButDisconnected(String entranceno) {
+		boolean isAutoAllocatingButDisconnected = false;
+		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
+			String autoAllocatingSwitch=this.systemInstallDAO.getSystemInstallByName("AutoAllocating").getValue();
+			//启用自动分拨并设置了出货口
+			if(autoAllocatingSwitch.equals("1")){
+				String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+				//检查是否连接断开，若未连上则不能入库
+				Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+				SocketClient sc=socketMap.get(entranceIP);
+				if(null==sc||sc.Clientstate.State!=2){
+					isAutoAllocatingButDisconnected = true;
+				}
+			}
+		}
+		return isAutoAllocatingButDisconnected;
 	}
 	
 	/**

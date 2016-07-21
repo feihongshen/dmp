@@ -80,6 +80,16 @@ function moreOpt(){
 var emaildate=0;
 	$(function(){
 		if('${auto_allocat}'=="1"){
+			$.ajax({
+				type: "POST",
+				url:"<%=request.getContextPath()%>/PDA/autoConnectAll",
+				dataType:"json",
+				success : function() {
+				}                 
+			});
+		}
+		
+		if('${auto_allocat}'=="1"){
 			$('#autoallocating_use').show();	
 		}
 		else if('${auto_allocat}'=="0"){

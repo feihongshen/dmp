@@ -52,6 +52,16 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 var App = {ctx:"${pageContext.request.contextPath}"};
 
 $(function(){
+	if('${auto_allocat}'=="1"){
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/PDA/autoConnectAll",
+			dataType:"json",
+			success : function() {
+			}                 
+		});	
+	}
+	
 	if('${isOpenDialog}'=='open'){
 		$('#find').dialog('close');
 	}
