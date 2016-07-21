@@ -68,6 +68,8 @@ import cn.explink.dao.RemarkDAO;
 import cn.explink.dao.ShangMenTuiCwbDetailDAO;
 import cn.explink.dao.ShiXiaoDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.TransCwbDetailDAO;
+import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.dao.TruckDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
@@ -209,6 +211,10 @@ public class CwbOrderController {
 	OrderBackRukuRecordDao orderBackRukuRecordDao;
 	@Autowired
 	AdjustmentRecordService adjustmentRecordService;
+	@Autowired
+	TransCwbDetailDAO transCwbDetailDAO;
+	@Autowired
+	TranscwbOrderFlowDAO transcwbOrderFlowDAO;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -1780,6 +1786,12 @@ public class CwbOrderController {
 				this.exportwarhousesummaryDAO.dataLoseByCwb(cwb);
 				this.exportwarhousesummaryDAO.LoseintowarhouseByCwb(cwb);
 				this.transCwbDao.deleteTranscwb(cwb);
+				
+				//Added by leoliao at 2016-07-21 订单失效时删除运单明细和运单轨迹
+				this.transCwbDetailDAO.deleteByCwb(cwb);
+				this.transcwbOrderFlowDAO.deleteByCwb(cwb);
+				//Added end
+				
 				// 失效订单删除
 				this.cwborderService.deletecwb(cwb);
 				// 删除倒车时间表的订单
