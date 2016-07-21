@@ -386,4 +386,19 @@ public class TranscwbOrderFlowDAO {
 		logger.info("queryTranscwbOrderFlow->paramMap:{}", JsonUtil.translateToJson(paramMap));
 		return namedParameterJdbcTemplate.query(sqlStr, paramMap, new TranscwbOrderFlowRowMapper());
 	}
+	
+	/**
+	 * 根据订单号删除运单轨迹
+	 * @author leo01.liao
+	 * @param cwb
+	 */
+	public void deleteByCwb(String cwb) {
+		try {
+			if(cwb == null || cwb.trim().equals("")){
+				return;
+			}
+			
+			this.jdbcTemplate.update("delete from express_ops_transcwb_orderflow where cwb=?", cwb.trim());
+		} catch (Exception ex) {}
+	}
 }
