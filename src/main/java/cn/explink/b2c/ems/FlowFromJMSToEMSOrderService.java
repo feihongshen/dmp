@@ -199,8 +199,8 @@ public class FlowFromJMSToEMSOrderService {
 					this.logger.info("发送给ems的对应数据在接口临时表中已存在，运单号为：{}",transcwb);
 					return;
 				}
-				//每个运单号对应临时表中一条记录
-				eMSDAO.saveOrderInfo(orderflow.getCwb(),transcwb,credate,addTranscwbFlag,data);
+				//每个运单号对应临时表中一条记录 edit by zhouhuan 2016-07-21
+				eMSDAO.saveOrderInfo(orderflow.getCwb(),transcwb,credate,addTranscwbFlag,data,0l);
 				List<TranscwbView> transcwbList = transCwbDao.getcwbBytranscwb(transcwb);
 				
 				if(transcwbList.size()==0){

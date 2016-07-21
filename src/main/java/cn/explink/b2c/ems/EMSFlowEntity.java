@@ -13,6 +13,7 @@ public class EMSFlowEntity implements java.io.Serializable {
 	private String properdelivery;
 	private String notproperdelivery;
 	private int handleCount;
+	private Long orderDirection;//订单去向  add by zhouhuan 2016-07-21
 	
 	public String getTranscwb() {
 		return transcwb;
@@ -73,6 +74,12 @@ public class EMSFlowEntity implements java.io.Serializable {
 	}
 	public void setHandleCount(int handleCount) {
 		this.handleCount = handleCount;
+	}
+	public Long getOrderDirection() {
+		return orderDirection;
+	}
+	public void setOrderDirection(Long orderDirection) {
+		this.orderDirection = orderDirection;
 	}
 	
 }

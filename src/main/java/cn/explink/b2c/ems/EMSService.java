@@ -249,8 +249,8 @@ public class EMSService {
 			//eMSDAO.updateFlowInfoByCondition(transcwb,emsFlowordertype,listexpressmail,credate,expressMail);
 			throw new CwbException("","轨迹数据重复！运单号["+transcwb+"]");
 		}
-		 //保存获取的ems运单轨迹报文
-        eMSDAO.saveEMSFlowInfo(transcwb,mailnum,listexpressmail,action,emsFlowordertype, properdelivery,notproperdelivery,credate);
+		 //保存获取的ems运单轨迹报文 eidt by zhouhuan 2016-07-21
+        eMSDAO.saveEMSFlowInfo(transcwb,mailnum,listexpressmail,action,emsFlowordertype, properdelivery,notproperdelivery,credate,0l);
         return 1;
 	}
 	

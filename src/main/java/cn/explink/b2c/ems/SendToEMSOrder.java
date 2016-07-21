@@ -11,6 +11,7 @@ public class SendToEMSOrder {
 	private String getMailnumFlag;//获取ems运单号标志
 	private String addTranscwbFlag;//生成运单号标志
 	private String data;//发送给ems的报文
+	private Long orderDirection;//订单去向 add by zhouhuan 2016-07-21
 	public String getCwb() {
 		return cwb;
 	}
@@ -46,6 +47,12 @@ public class SendToEMSOrder {
 	}
 	public void setData(String data) {
 		this.data = data;
+	}
+	public Long getOrderDirection() {
+		return orderDirection;
+	}
+	public void setOrderDirection(Long orderDirection) {
+		this.orderDirection = orderDirection;
 	}
 	
 }
