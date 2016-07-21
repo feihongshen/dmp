@@ -775,13 +775,11 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					// doReq.setPayment("0".equals(embracedOrderVO.getPayment_method().trim())
 					// ? "0" : "-1");
 					doReq.setPayment(-1);// 11.13 马哥说运单里任何情况都传-1
-					//月结账号----刘武强20160718
-					if(StringUtils.isNotBlank(embracedOrderVO.getMonthly_account_number())){
+					//月结方式，需要把月结账号，寄件人单位名称，寄件人单位编码传过tps----刘武强20160718
+					if(StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) && "0".equals(embracedOrderVO.getPayment_method().trim())){
 						doReq.setAccountId(embracedOrderVO.getMonthly_account_number());
-					}
-					//寄件人单位----刘武强20160719 ---如果是月结方式，那么tps要求月结账号和寄件人公司都必填
-					if(StringUtils.isNotBlank(embracedOrderVO.getSender_companyName())){
 						doReq.setAccountCustName(embracedOrderVO.getSender_companyName());
+						doReq.setAccountMark(embracedOrderVO.getSender_customerid()+"");
 					}
 					doReq.setCnorRemark(embracedOrderVO.getRemarks());
 					//快递二期新增：运费
