@@ -231,7 +231,7 @@ public class BranchSyncToOspHelper {
 
 			List<SbOrgModel> models = findOrgByCarrierAndSiteCode(carrierCode,
 					carrierSiteCode);
-			if (models == null && models.size() > 0) {
+			if (models != null && models.size() > 0) {
 				// osp中已经存在的机构不需要同步
 				resultVo.setResult("机构已存在，不需要同步");
 			} else {
