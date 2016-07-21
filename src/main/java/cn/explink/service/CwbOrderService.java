@@ -4612,10 +4612,10 @@ public class CwbOrderService extends BaseOrderService {
 							ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_BU_PI_PEI,
 							coDeliver == null ? "" : coDeliver.getRealname(), deliveryUser.getRealname());
 				}
-			} else { // 未匹配小件员
+			} /*else { // 未匹配小件员
 				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
 						ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_WEI_PI_PEI);
-			}
+			}*/
 		}
 		return this.receiveGoodsHandle(user, user.getBranchid(), deliveryUser, cwb, scancwb, false);
 	}
