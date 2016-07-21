@@ -1079,6 +1079,11 @@ public class BaleService {
 			throw new CwbException(cwb, flowOrderTypeEnum, ExceptionCwbErrorTypeEnum.Bale_Error, baleno, BaleStateEnum.YiFengBao.getText());
 		}
 		
+		/* ***************add begin*********************/
+		//add by neo01.huang，2016-7-21，转换session用户的branchid
+		userService.convertSessionUserBranchId(user);
+		/* ***************add end***********************/
+		
 		// 根据包号查找
 		Bale bale = this.baleDAO.getBaleWeifengbaoByLock(baleno);
 		if (bale != null) {
