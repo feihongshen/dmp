@@ -3448,16 +3448,22 @@ public class CwbOrderService extends BaseOrderService {
 					.getBranchname());
 		}
 
-		/*Modified by leoliao at 2016-07-12 修改非本站货物判断逻辑
+		/*Modified by leoliao at 2016-07-22 修改非本站货物判断逻辑
 		if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((co
 				.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue()))) && (co.getCurrentbranchid() != currentbranchid) && !anbaochuku && (co
 				.getNextbranchid() == user.getBranchid())) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
 		}
 		*/
-		logger.info("outWarehousHandle->订单信息：cwb:{}, scancwb:{}, sendcarnum:{}, flowordertype:{}, deliverystate:{}, currentbranchid:{}, userBranchId:{}", 
-					cwb, scancwb, co.getSendcarnum(), co.getFlowordertype(), co.getDeliverystate(), co.getCurrentbranchid(), currentbranchid);
-		if(co.getSendcarnum() <= 1 || org.apache.commons.lang3.StringUtils.isEmpty(org.apache.commons.lang3.StringUtils.trimToEmpty(co.getTranscwb()))) {
+		long     isypdjusetranscwb = 0;
+		Customer customer          = this.customerDAO.getCustomerById(co.getCustomerid());
+		if(customer != null){
+			isypdjusetranscwb = customer.getIsypdjusetranscwb();
+		}
+		
+		logger.info("outWarehousHandle->订单信息：cwb:{}, scancwb:{}, sendcarnum:{}, flowordertype:{}, deliverystate:{}, currentbranchid:{}, userBranchId:{}, isypdjusetranscwb={}", 
+					cwb, scancwb, co.getSendcarnum(), co.getFlowordertype(), co.getDeliverystate(), co.getCurrentbranchid(), currentbranchid, isypdjusetranscwb);
+		if(isypdjusetranscwb == 0 || co.getSendcarnum() <= 1 || org.apache.commons.lang3.StringUtils.isEmpty(org.apache.commons.lang3.StringUtils.trimToEmpty(co.getTranscwb()))) {
 			//非一票多件
 			if (((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || 
 				 (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || 
@@ -3491,7 +3497,7 @@ public class CwbOrderService extends BaseOrderService {
 			throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.ZHONG_ZHUAN_HUO);
 		}
 
-		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
+		//long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 		FlowOrderTypeEnum flowOrderTypeEnum = FlowOrderTypeEnum.ChuKuSaoMiao;
 		// 验证是否已经封包(按包出校验订单是否在包中)
 		if (!anbaochuku) {
