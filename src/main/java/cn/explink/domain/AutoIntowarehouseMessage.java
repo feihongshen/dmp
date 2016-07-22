@@ -22,6 +22,8 @@ public class AutoIntowarehouseMessage extends BaseEntity{
 	private String cwb;
 	
 	private String baleno;
+	
+	private String entranceIP;
 		
 	private String sendContent;
 	
@@ -79,6 +81,14 @@ public class AutoIntowarehouseMessage extends BaseEntity{
 
 	public void setBaleno(String baleno) {
 		this.baleno = baleno;
+	}
+
+	public String getEntranceIP() {
+		return entranceIP;
+	}
+
+	public void setEntranceIP(String entranceIP) {
+		this.entranceIP = entranceIP;
 	}
 
 	public String getSendContent() {

@@ -114,12 +114,13 @@ public class AutoAllocationService {
 
 	// added by wangwei, 20160713, start
 	public void createEmptyMsgLog(AutoAllocationParam param, String cwb,
-			String scancwb, byte intowarehouseType) {
+			String scancwb, byte intowarehouseType, String entranceIP) {
 		AutoIntowarehouseMessage autoIntowarehouseMessage = new AutoIntowarehouseMessage();
 		autoIntowarehouseMessage.setSerialNo(param.getSerialNo());
 		autoIntowarehouseMessage.setIntowarehouseType(intowarehouseType);
 		autoIntowarehouseMessage.setScancwb(scancwb);
 		autoIntowarehouseMessage.setCwb(cwb);
+		autoIntowarehouseMessage.setEntranceIP(entranceIP);;
 		autoIntowarehouseMessage.setSendContent("");
 		autoIntowarehouseMessage.setSendTime("0000-00-00 00:00:00");
 		autoIntowarehouseMessage.setReceiveContent("");
@@ -244,7 +245,6 @@ public class AutoAllocationService {
 	public SocketClient startConnect(String IP, int port) {
 		SocketClient sc = new SocketClient();
 		sc.StartEngine(IP, port);
-		this.logger.info("连接状态：" + sc.Clientstate.State + "，（0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎）。");
 		return sc;
 	}
 
