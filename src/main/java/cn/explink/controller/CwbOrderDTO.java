@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 import cn.explink.domain.Common;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.PaytypeEnum;
-import cn.explink.util.JMath;
 
 public class CwbOrderDTO {
 	long opscwbid;
@@ -40,6 +39,7 @@ public class CwbOrderDTO {
 	long emaildateid;
 	String emaildate;
 	long excelbranchid;
+	long exceldeliverid;
 	String shipcwb;
 	String exceldeliver;
 	String consigneeno;
@@ -857,5 +857,13 @@ public class CwbOrderDTO {
 
 	public void setTpsTranscwb(String tpsTranscwb) {
 		this.tpsTranscwb = tpsTranscwb;
+	}
+
+	public long getExceldeliverid() {
+		return exceldeliverid;
+	}
+
+	public void setExceldeliverid(long exceldeliverid) {
+		this.exceldeliverid = exceldeliverid;
 	}
 }

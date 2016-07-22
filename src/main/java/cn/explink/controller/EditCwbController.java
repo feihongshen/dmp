@@ -831,14 +831,21 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/updateCwbInfo/{cwb}")
-	public @ResponseBody String updateCwbInfo(Model model, @PathVariable("cwb") String cwb, @RequestParam(value = "editname", required = false, defaultValue = "") String editname,// 修改的姓名
-			@RequestParam(value = "editmobile", required = false, defaultValue = "") String editmobile,// 修改的电话
+	public @ResponseBody String updateCwbInfo(Model model, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "editname", required = false, defaultValue = "") String editname, // 修改的姓名
+			@RequestParam(value = "editmobile", required = false, defaultValue = "") String editmobile, // 修改的电话
 			@RequestParam(value = "editcommand", defaultValue = "", required = false) String editcommand, // 需求
 			@RequestParam(value = "editshow", defaultValue = "0", required = false) long editshow, // 是否显示,
 			@RequestParam(value = "remark", defaultValue = "", required = false) String remark, // 订单备注
 			@RequestParam(value = "matchaddress", defaultValue = "", required = false) String branchname, // 匹配后站点
-			String courierName, //配送员ID
-			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress, @RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress, @RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname, @RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile, @RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname, @RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand) {// 地址
+			String courierName, // 配送员ID
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+			@RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress,
+			@RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress,
+			@RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname,
+			@RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile,
+			@RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname,
+			@RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand) {// 地址
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		cwb = cwb.trim();
@@ -856,6 +863,7 @@ public class EditCwbController {
 		
 		// 构建新的订单信息
 		CwbOrderDTO co = this.dataImportDAO_B2c.getCwbFromCwborder(cwb);// 运单号
+		long checkExceldeliverid = co.getExceldeliverid();
 		co.setConsigneename(editname);
 		co.setCustomercommand(editcommand);
 		co.setConsigneemobile(editmobile);
@@ -937,7 +945,7 @@ public class EditCwbController {
 								.getCustomercommand(), old.getExceldeliver());
 			}
 
-			if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand)) || (!branchname
+			if ((exceldeliverid != checkExceldeliverid) || (!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand)) || (!branchname
 					.equals(""))) {
 				/**
 				 * 关于站点的一点判断
@@ -951,7 +959,7 @@ public class EditCwbController {
 							.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand, exceldeliver);
 
 				} else {
-					if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand))) {
+					if ((exceldeliverid != checkExceldeliverid) || (!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand))) {
 
 						this.orderAddressReviseDao
 								.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand, exceldeliver);

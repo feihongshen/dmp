@@ -129,7 +129,7 @@ function exportField(){
 											<td valign="middle"  align="left"  bgcolor="#e7f4e3">地址（修改）</td>
 											<!-- <td valign="middle"  align="center" width="10%"  bgcolor="#e7f4e3">配送时间（修改）</td> -->
 											<td valign="middle"  align="center"   width="10%"  bgcolor="#e7f4e3">配送站点（修改）</td>
-											<td valign="middle"  align="center"   width="10%"  bgcolor="#e7f4e3">配送员（修改）</td>
+											<td valign="middle"  align="center"   width="10%"  bgcolor="#e7f4e3">小件员（修改）</td>
 											<td valign="middle"  align="center"   width="10%"  bgcolor="#e7f4e3">电商要求（修改）</td>
 											<td valign="middle"  align="center"   width="15%"  bgcolor="#e7f4e3">备注（修改）</td>
 											<td valign="middle"  align="center" width="5%" bgcolor="#e7f4e3">修改人</td>
