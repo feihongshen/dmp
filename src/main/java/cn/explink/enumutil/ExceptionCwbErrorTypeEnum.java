@@ -67,7 +67,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			DING_DAN_ZHAN_DIAN_YU_YONG_HU_ZHAN_DIAN_BU_YI_ZHI(206, "订单所在站点与当前用户所在站点不一致"),
 			BU_CUN_ZAI_TUI_HUO_CHU_ZHAN_SHEN_HE_JI_LU(207, "不存在退货出站审核记录"),
 			BU_CUN_ZAI_TUI_HUO_CHU_ZHAN_SHEN_HE_WEI_ZHAN_DIAN_PEI_SONG(208, "不存在退货出站审核为站点配送的记录"),
-			YUN_DAN_ZHUANG_TAI_BU_SHI_PEI_SONG(209, "运单{0}状态不是配送，不允许领货")
+			YUN_DAN_ZHUANG_TAI_BU_SHI_PEI_SONG(209, "运单{0}状态不是配送，不允许领货"),
+			DIFF_TUI_HUO_KU_ZUO_BACK_TO_CUSTOMER(210, "不在同一个退货库做退供货商出库")
 			;
 	
 

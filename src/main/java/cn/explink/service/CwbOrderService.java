@@ -6543,6 +6543,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @param customerid
 	 * @return
 	 */
+	@Transactional
 	public CwbOrder backtocustom(User user, String cwb, String scancwb, long requestbatchno, String baleno, boolean anbaochuku, long customerid) {
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.TuiGongYingShangChuKu);
 
@@ -6582,6 +6583,12 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateIsSubCwb(scancwb, co, flowOrderTypeEnum.getValue());
 			//针对一票多件多个运单号的订单，如果一个运单号同样的机构下同样的环节重复扫描的验证
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), 0, user.getBranchid(), 0, ExceptionCwbErrorTypeEnum.CHONG_FU_CHU_KU);
+			
+			/* ***************add begin*********************/
+			//add by neo01.huang，2016-7-12
+			//校验退供货商出库是否到齐
+			customerReleaseService.validateBackToCustomerAllArrived(cwb, user.getBranchid(), scancwb);
+			/* ***************add end***********************/
 		}
 		if ((co.getStartbranchid() == user.getBranchid()) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) {
 			if (co.getScannum() < 1) {
