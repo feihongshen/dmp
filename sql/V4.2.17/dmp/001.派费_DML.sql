@@ -1,7 +1,7 @@
 # 更新订单计费定时器描述
 UPDATE eap_qrtz_triggers
-SET DESCRIPTION = "派费生成定时任务"
-WHERE TRIGGER_NAME = "dfCalculateServiceExecutorCronTrigger";
+SET DESCRIPTION = '派费生成定时任务'
+WHERE TRIGGER_NAME = 'dfCalculateServiceExecutorCronTrigger';
 
 DELETE FROM `dmp40_function` WHERE `ID` = "8091";
 DELETE FROM `dmp40_function` WHERE `ID` = "809110";
