@@ -355,15 +355,23 @@ public class DfFeeService {
         logger.info("重置反馈后插入派费相关表操作开始");
 
         Integer chargeType;
-        Long id;
+        Long id = null;
 
         String cwb = cwbOrder.getCwb();
 
         for (DeliveryFeeChargerType chargerType : DeliveryFeeChargerType.values()) {
-            if (cwbOrder.getInstationid() > 0) {
+            Long senderAddrId;
+
+            if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue()
+                    || cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue())
+                senderAddrId = cwbOrder.getPickbranchid();
+            else
+                senderAddrId = cwbOrder.getInstationid();
+
+            if (senderAddrId > 0) {
                 chargeType = DeliveryFeeRuleChargeType.GET.getValue();
                 if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                    id = cwbOrder.getInstationid();
+                    id = senderAddrId;
                 } else {
                     id = new Long(cwbOrder.getInstationhandlerid());
                 }
@@ -388,11 +396,13 @@ public class DfFeeService {
 
     private void deleteFeeOrAddAdjust(DeliveryFeeChargerType chargerType, String cwb, Integer chargeType, Long branchOrUserId, User currentUser, boolean isFromReset) {
         boolean isQulified = false;
-        if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-            if (isJoinBranch(branchOrUserId))
+        if (branchOrUserId != null && branchOrUserId > 0) {
+            if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
+                if (isJoinBranch(branchOrUserId))
+                    isQulified = true;
+            } else
                 isQulified = true;
-        } else
-            isQulified = true;
+        }
 
         if (isQulified) {
             //费用类型，同一配送站点或小件员
