@@ -568,6 +568,9 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						json.put("itemno", itemno);
 						json.put("netid", b.getBranchid());
 						json.put("netpoint", (printflag == 0 ? b.getBranchname() : b.getBranchcode()));
+						// 匹配小件员结果，非必须 2016-7-22 chunlei05.li
+						String exceldeliverid = addressList.getJSONObject(0).containsKey("exceldeliverid") ? addressList.getJSONObject(0).getString("exceldeliverid") : "";
+						json.put("exceldeliverid", exceldeliverid);
 						json.put("tpsnetpoint", b.getTpsbranchcode());
 						json.put("remark", "已匹配到站点");
 						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, b.getBranchname());
@@ -575,6 +578,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						json.put("itemno", itemno);
 						json.put("netid", "");
 						json.put("netpoint", "");
+						json.put("exceldeliverid", "");
 						json.put("tpsnetpoint", "");
 						json.put("remark", "未匹配到站点");
 						this.logger.info("唯品会匹配站点: 地址：{},匹配结果:{}", Address, "返回的站点不属于系统中站点类型");
@@ -584,6 +588,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 					json.put("netid", "");
 					json.put("netpoint", "");
 					json.put("tpsnetpoint", "");
+					json.put("exceldeliverid", "");
 					json.put("remark", "未匹配到站点");
 					this.logger.info("唯品会匹配站点: 地址：{},未匹配到站点", Address);
 				}
@@ -641,6 +646,12 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 				if (set.size() == 1) {
 					JSONObject jsonobj = new JSONObject();
 					jsonobj.put("station", deliveryStationList.get(0).getExternalId());
+					// 2016-07-22  小件员匹配结果
+					List<DelivererVo> delivererList = mappingresult.getDelivererList();
+					// 匹配结果必须唯一，否则认为匹配失败
+					if ((delivererList != null) && (delivererList.size() == 1)) {
+						jsonobj.put("exceldeliverid", delivererList.get(0).getExternalId());
+					}
 					addressList.add(jsonobj);
 					return addressList;
 				}

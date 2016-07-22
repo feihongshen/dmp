@@ -64,6 +64,7 @@ public class DataImportDAO_B2c {
 			cwbOrder.setDestination(StringUtil.nullConvertToEmptyString(rs.getString("destination")));
 			cwbOrder.setCwbdelivertypeid(rs.getLong("cwbdelivertypeid"));
 			cwbOrder.setExceldeliver(StringUtil.nullConvertToEmptyString(rs.getString("exceldeliver")));
+			cwbOrder.setExceldeliverid(rs.getLong("exceldeliverid"));
 			cwbOrder.setExcelbranch(StringUtil.nullConvertToEmptyString(rs.getString("excelbranch")));
 			cwbOrder.setCargorealweight(rs.getBigDecimal("carrealweight"));
 			cwbOrder.setModelname(rs.getString("modelname"));
