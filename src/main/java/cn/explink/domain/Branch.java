@@ -3,6 +3,8 @@ package cn.explink.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.constraints.Pattern;
+
 import org.hibernate.validator.constraints.Length;
 
 import cn.explink.enumutil.BranchEnum;
@@ -115,7 +117,8 @@ public class Branch implements java.io.Serializable {
 	@Length(max = 32, message = "机构编码最多为32个字符")
 	private String tpsbranchcode;//上传tps时所用的机构编码
 	
-	private String outputno;//自动化分拣使用的出货口编号
+	@Pattern(regexp = "^([0-9]{3}[01]{1})?$", message = "对应滑槽口号要么为空，要么为0或1结尾的4位数字")
+	private String outputno;	//自动化分拣使用的出货口编号
 	
 	//自动核销用到的字段
 	/*
