@@ -1,3 +1,4 @@
+-- 入库自动化消息记录表
 CREATE TABLE `express_ops_auto_intowarehouse_message` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
 	`serialNo` VARCHAR(20) NULL DEFAULT '' COMMENT '序列号',
@@ -28,3 +29,6 @@ CREATE TABLE `express_ops_auto_intowarehouse_message` (
 COMMENT='入库自动化消息记录表'
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB;
+
+-- 武汉自动化连接中间件等候返回状态时间间隔（毫秒）
+INSERT INTO `express_set_system_install` (`name`, `value`, `chinesename`) VALUES ('autoAllocatingConnecteWaitIntervalInMs', '200', '武汉自动化连接中间件等候返回状态时间间隔（毫秒）');

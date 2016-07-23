@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.AutoIntowarehouseMessageDAO;
 import cn.explink.dao.EntranceDAO;
@@ -87,6 +88,7 @@ public class AutoAllocationService {
 	/**
 	 * 在队列中增加一个元素
 	 */
+	@Transactional
 	public void addQueue(String ip, AutoAllocationParam param) {
 		param.setAct(AutoAllocationParam.ADDQUEUE);
 		this.sendMsg(ip, param);
@@ -106,10 +108,14 @@ public class AutoAllocationService {
 				+ param.getStation();
 		this.logger.info(sendMsg);
 		SocketClient sc = this.socketMap.get(IP);
-		sc.sendMessage(param.toString());
+
 		// added by wangwei, 20160713
-		this.logger.info("发送自动分拨报文：" + param.toString());
+		/* 因为发送报文与接收报文是在两个线程中处理，为确保先保存sendContent再保存receiveContent，需要在发送前就把sendContent存入数据库。
+		 * 此处使用了事务，如果 发送失败，sendContent将撤销保存。
+		 */
 		updateMsgLogAfterSend(param);
+		sc.sendMessage(param.toString());
+		this.logger.info("发送自动分拨报文：" + param.toString());
 	}
 
 	// added by wangwei, 20160713, start
@@ -134,7 +140,7 @@ public class AutoAllocationService {
 				.creAutoIntowarehouseMessage(autoIntowarehouseMessage);
 	}
 
-	public void updateMsgLogAfterSend(AutoAllocationParam param) {
+	private void updateMsgLogAfterSend(AutoAllocationParam param) {
 		AutoIntowarehouseMessage autoIntowarehouseMessage = autoIntowarehouseMessageDAO
 				.getAutoIntowarehouseMessageBySerialNo(param.getSerialNo());
 		autoIntowarehouseMessage.setCwb(param.getOrderid());
