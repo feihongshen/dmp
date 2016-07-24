@@ -61,7 +61,7 @@ form select,input[type="text"],input[type="number"]{
              <td style="border: 0px; text-align: right; vertical-align: middle; width:20%;"> 实际重量(Kg):</td>
              <td style="border: 0px; vertical-align: middle;width:80%;padding:2px;">
                  <label id = "weightSpan" style = "text-align:left">0.00</label>
-                 <label id="weightNotice" > </label> 
+                 <label id="weightNotice" style = "width:250px;" > </label> 
              </td>                                
          </tr>
          <tr style = "height:40px;">
