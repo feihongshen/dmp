@@ -152,7 +152,9 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					if(data.body.showRemark!=null){
 					$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
 					}
-					$("#exceldeliverid").html(data.body.cwbdelivername);
+					if(data.body.isChaoqu != true) {
+						$("#exceldeliverid").html(data.body.cwbdelivername);
+					}
 					$("#deliver").html("已领货（"+data.body.cwbdelivername+"）");
 					
 					if (data.body.editCwb != null && data.body.editCwb != "") {
