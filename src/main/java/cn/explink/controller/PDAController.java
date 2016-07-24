@@ -11225,10 +11225,19 @@ public class PDAController {
 			String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
 			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 			SocketClient sc=socketMap.get(entranceIP);
+			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 			if(null==sc||sc.Clientstate.State!=2){
-				logger.info("尝试连接自动分拨机"+entranceIP);
+				logger.info("尝试连接中间件 ："+entranceIP);
 				sc=this.autoAllocationService.startConnect(entranceIP, PORT);
 				socketMap.put(entranceIP, sc);
+			}
+			
+			sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+			socketMap=this.autoAllocationService.getSocketMap();
+			sc=socketMap.get(entranceIP);
+			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+			if(null==sc||sc.Clientstate.State!=2){
+				throw new CwbException("", FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
 			}
 		}
 	}
@@ -11472,16 +11481,24 @@ public class PDAController {
 	 * @param eList
 	 */
 	private void createSocketConnectMap(List<Entrance> eList) {
-		logger.info("初始化自动连接所有自动分拨机");
+		logger.info("初始化自动连接所有中间件");
 		for(Entrance e:eList){
 			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 			SocketClient sc=socketMap.get(e.getEntranceip());
 			if(null==sc||sc.Clientstate.State!=2){
-				logger.info("尝试连接自动分拨机"+e.getEntranceip());
+				logger.info("尝试连接中间件："+e.getEntranceip());
 				sc=this.autoAllocationService.startConnect(e.getEntranceip(), PORT);
 				socketMap.put(e.getEntranceip(), sc);
 			}
 		}
+		
+		sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+		for(Entrance e:eList){
+			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+			SocketClient sc=socketMap.get(e.getEntranceip());
+			logger.info("中间件[" + e.getEntranceip() + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+		}
+		
 		
 	}
 	
@@ -11521,35 +11538,43 @@ public class PDAController {
 				//检查是否连接断开，若未连上先尝试重连一次，并休眠一段时间以等待状态异步更新
 				Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 				SocketClient sc=socketMap.get(entranceIP);
+				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 				if(null==sc||sc.Clientstate.State!=2){
-					logger.info("尝试连接自动分拨机"+entranceIP);
+					logger.info("尝试连接中间件："+entranceIP);
 					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
 					socketMap.put(entranceIP, sc);
 					
-					//武汉自动化连接中间件等候返回状态时间间隔（毫秒）
-					int intervalInMs = 200;
-					SystemInstall intervalInMsSystemInstall = this.systemInstallDAO.getSystemInstall("autoAllocatingConnecteWaitIntervalInMs");
-					if(intervalInMsSystemInstall != null){
-						intervalInMs = Integer.parseInt(intervalInMsSystemInstall.getValue());
-					}
-					try {
-						Thread.sleep(intervalInMs);
-						logger.info("连接自动分拨机后等候"+intervalInMs+"毫秒");
-					} catch (InterruptedException e) {
-						// do nothing
-					}
+					sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
 				}
 				
 				//再次检查是否连接断开，若仍然未连上则抛出异常，不能入库
 				socketMap=this.autoAllocationService.getSocketMap();
 				sc=socketMap.get(entranceIP);
+				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 				if(null==sc||sc.Clientstate.State!=2){
 					isAutoAllocatingButDisconnected = true;
 				}
-				logger.info("连接自动分拨机状态：" + (sc==null? "" : sc.Clientstate.State));
 			}
 		}
 		return isAutoAllocatingButDisconnected;
+	}
+	
+	/*
+	 * 连接后线程睡眠一段时间，以获得准确的连接状态
+	 */
+	private void sleepAfterConnect() {
+		//武汉自动化连接中间件等候返回状态时间间隔（毫秒）
+		int intervalInMs = 200;
+		SystemInstall intervalInMsSystemInstall = this.systemInstallDAO.getSystemInstall("autoAllocatingConnecteWaitIntervalInMs");
+		if(intervalInMsSystemInstall != null){
+			intervalInMs = Integer.parseInt(intervalInMsSystemInstall.getValue());
+		}
+		try {
+			Thread.sleep(intervalInMs);
+			logger.info("连接中间件后等候"+intervalInMs+"毫秒");
+		} catch (InterruptedException e) {
+			// do nothing
+		}
 	}
 	
 	/**

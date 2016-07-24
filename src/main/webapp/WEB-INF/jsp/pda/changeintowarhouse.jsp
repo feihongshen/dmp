@@ -693,7 +693,7 @@ function connect(){
 		},
  		dataType : "json",
  		success : function(data) {
- 			
+ 			alert(data.errorinfo);
  		}
  	});
 }
