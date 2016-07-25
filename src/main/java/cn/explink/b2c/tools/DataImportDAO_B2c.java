@@ -165,6 +165,7 @@ public class DataImportDAO_B2c {
 			cwbOrder.setTpsTranscwb(rs.getString("tpsTranscwb"));
 			cwbOrder.setDoType(rs.getInt("do_type"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
+			cwbOrder.setOrderSource(rs.getInt("order_source"));
 			return cwbOrder;
 		}
 	}
