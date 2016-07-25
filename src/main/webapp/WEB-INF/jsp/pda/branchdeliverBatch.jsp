@@ -630,7 +630,7 @@ function tohome(){
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="230" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="160" align="center" bgcolor="#f1f1f1">地址</td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
