@@ -5678,7 +5678,16 @@ public class CwbOrderService extends BaseOrderService {
 				feedbakOperateType = FeedbackOperateTypeEnum.ExceptionScan.getValue();
 			}
 			co.setNewpaywayid(newpaywayid + "");
-			this.executeTpsTransInterface(co, deliveryUser, feedbakOperateType, deliverstateremark, sign_man, freight.doubleValue());
+			
+			//Modified by leoliao at 2016-07-25 完善快递单备注信息
+			String expressReason = "";
+			if(reason != null && reason.getReasoncontent() != null && !reason.getReasoncontent().trim().equals("")){
+				expressReason = reason.getReasoncontent().trim() + " " + deliverstateremark;
+			}else{
+				expressReason = (deliverstateremark==null?"":deliverstateremark.trim());
+			}
+			this.executeTpsTransInterface(co, deliveryUser, feedbakOperateType, expressReason.trim(), sign_man, freight.doubleValue());
+			//Modified end
 		}
 		//Added by leoliao at 2016-03-22 归班审核后清除集包一票多件对应的处理记录
 		try {
