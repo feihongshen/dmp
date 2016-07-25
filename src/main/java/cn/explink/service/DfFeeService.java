@@ -254,8 +254,7 @@ public class DfFeeService {
             }
             //如果站点是加盟站点
             if (isJoinBranch(branchId)) {
-                DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
-                if (null == fee) {
+                DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);               if (null == fee) {
                     logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
                     saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
@@ -358,7 +357,7 @@ public class DfFeeService {
 
     public void saveFeeRelativeAfterOrderDisabled(String cwb) {
         User currentUser = userDAO.getUserByUsername("admin");
-        CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+        CwbOrder cwbOrder = cwbDAO.getDisabledCwbByCwb(cwb);
         saveFeeRelativeAfterOrderResetOrDisabled(cwbOrder, currentUser, FROM_DISABLE_ORDER);
     }
 
@@ -367,37 +366,38 @@ public class DfFeeService {
 
         Integer chargeType;
         Long id = null;
+        if (cwbOrder != null) {
+            String cwb = cwbOrder.getCwb();
 
-        String cwb = cwbOrder.getCwb();
+            for (DeliveryFeeChargerType chargerType : DeliveryFeeChargerType.values()) {
+                Long senderAddrId;
 
-        for (DeliveryFeeChargerType chargerType : DeliveryFeeChargerType.values()) {
-            Long senderAddrId;
+                if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue()
+                        || cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue())
+                    senderAddrId = cwbOrder.getPickbranchid();
+                else
+                    senderAddrId = cwbOrder.getInstationid();
 
-            if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue()
-                    || cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue())
-                senderAddrId = cwbOrder.getPickbranchid();
-            else
-                senderAddrId = cwbOrder.getInstationid();
-
-            if (senderAddrId > 0) {
-                chargeType = DeliveryFeeRuleChargeType.GET.getValue();
-                if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                    id = senderAddrId;
-                } else {
-                    id = new Long(cwbOrder.getCollectorid());
+                if (senderAddrId > 0) {
+                    chargeType = DeliveryFeeRuleChargeType.GET.getValue();
+                    if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
+                        id = senderAddrId;
+                    } else {
+                        id = new Long(cwbOrder.getCollectorid());
+                    }
+                    deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
                 }
-                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
-            }
 
-            if (cwbOrder.getDeliverybranchid() > 0) {
-                chargeType = DeliveryFeeRuleChargeType.SEND.getValue();
+                if (cwbOrder.getDeliverybranchid() > 0) {
+                    chargeType = DeliveryFeeRuleChargeType.SEND.getValue();
 
-                if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                    id = cwbOrder.getDeliverybranchid();
-                } else {
-                    id = cwbOrder.getDeliverid();
+                    if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
+                        id = cwbOrder.getDeliverybranchid();
+                    } else {
+                        id = cwbOrder.getDeliverid();
+                    }
+                    deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
                 }
-                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
             }
         }
 

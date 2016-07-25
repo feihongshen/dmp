@@ -1,4 +1,4 @@
-# 备份已有的表， 重命名为*_backup, 系统上线后，需要drop掉
+-- 备份已有的表， 重命名为*_backup, 系统上线后，需要drop掉
 ALTER TABLE fn_df_agreement RENAME TO fn_df_agreement_backup;
 ALTER TABLE fn_df_bill RENAME TO fn_df_bill_backup;
 ALTER TABLE fn_df_bill_detail RENAME TO fn_df_bill_detail_backup;
@@ -363,7 +363,14 @@ CREATE TABLE `fn_df_fee_org` (
   `fee_create_user` varchar(50) DEFAULT NULL,
   `fee_update_time` datetime DEFAULT NULL,
   `fee_update_user` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `fee_org_deliverybranchid_idx` (`deliverybranchid`),
+  KEY `fee_org_charge_type_idx` (`charge_type`),
+  KEY `fee_org_cwbordertypeid_idx` (`cwbordertypeid`),
+  KEY `fee_org_customerid_idx` (`customerid`),
+  KEY `fee_org_outstationdatetime_idx` (`outstationdatetime`),
+  KEY `fee_org_fee_create_time_idx` (`fee_create_time`),
+  KEY `fee_org_order_no_idx` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='站点派费明细表';
 
 -- ----------------------------
@@ -424,7 +431,14 @@ CREATE TABLE `fn_df_fee_staff` (
   `fee_create_user` varchar(50) DEFAULT NULL,
   `fee_update_time` datetime DEFAULT NULL,
   `fee_update_user` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `fee_staff_deliverybranchid_idx` (`deliverybranchid`),
+  KEY `fee_staff_charge_type_idx` (`charge_type`),
+  KEY `fee_staff_cwbordertypeid_idx` (`cwbordertypeid`),
+  KEY `fee_staff_customerid_idx` (`customerid`),
+  KEY `fee_staff_outstationdatetime_idx` (`outstationdatetime`),
+  KEY `fee_staff_fee_create_time_idx` (`fee_create_time`),
+  KEY `fee_staff_order_no_idx` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='小件员派费明细表';
 
 -- ----------------------------
@@ -557,7 +571,7 @@ CREATE TABLE `fn_df_rule_subsidy` (
   `item` tinyint(4) DEFAULT NULL COMMENT '补贴项',
   `price` decimal(18,2) DEFAULT NULL COMMENT '补贴金额',
   `price_unit` tinyint(4) DEFAULT NULL COMMENT '补贴单位',
-  `range_num` int(11) DEFAULT NULL COMMENT '补贴范围',
+  `range_num` int(11) DEFAULT '0' COMMENT '补贴范围',
   `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
@@ -584,7 +598,7 @@ CREATE TABLE `fn_df_sanction` (
   `reward_price` decimal(18,2) DEFAULT NULL COMMENT '奖励单价',
   `reward_order` int(11) DEFAULT NULL COMMENT '奖励单量',
   `verify_state` tinyint(4) NOT NULL DEFAULT '0' COMMENT '奖罚单状态。默认为0.待生成账单',
-  `sanction_reason` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '0' COMMENT '奖罚原因',
+  `sanction_reason` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '0' COMMENT '奖罚原因',
   `create_user` varchar(50) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) NOT NULL DEFAULT '' COMMENT '更新人',
