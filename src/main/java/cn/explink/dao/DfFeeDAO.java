@@ -111,7 +111,7 @@ public class DfFeeDAO {
     public long saveDeliveryFee(int chargerType, final String cwb, final String transcwb, final int cwbordertypeid, final long customerid, final long sendcarnum, final long backcarnum,
                                 final String senderaddress, final String consigneeaddress, final BigDecimal realweight, final BigDecimal cargovolume, final int chargeType,
                                 final long deliverId, final String userName, final long branchId, final long cwbstate, final long flowordertype, final Date create_time,
-                                final String outstationdatetime, final int deliverystate, final String emaildate, final Date credate, final Date pickTime, final Date mobilepodtime,
+                                final Date outstationdatetime, final int deliverystate, final String emaildate, final Date credate, final Date pickTime, final Date mobilepodtime,
                                 final String auditingtime, final int isCal, final int isBill, final String province, final String city, final String county, final BigDecimal paybackfee,
                                 final BigDecimal receivablefee, final String createUserName, final String cartype) {
 
@@ -133,13 +133,13 @@ public class DfFeeDAO {
             public PreparedStatement createPreparedStatement(Connection connection)
                     throws SQLException {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date outstationdate = null;
+//                Date outstationdate = null;
                 Date emaildateDate = null;
                 Date auditingtimeDate = null;
-                try {
-                    outstationdate = sdf.parse(outstationdatetime);
-                } catch (ParseException e) {
-                }
+//                try {
+//                    outstationdate = sdf.parse(outstationdatetime);
+//                } catch (ParseException e) {
+//                }
                 try {
                     emaildateDate = sdf.parse(emaildate);
                 } catch (ParseException e) {
@@ -174,11 +174,16 @@ public class DfFeeDAO {
                     ps.setTimestamp(17, new Timestamp(create_time.getTime()));
                 }
 
-                if (outstationdate == null) {
+//                if (outstationdate == null) {
+//                    ps.setNull(18, Types.DATE);
+//                } else {
+//                    ps.setTimestamp(18, new Timestamp(outstationdate.getTime()));
+//                }
+
+                if (outstationdatetime == null) {
                     ps.setNull(18, Types.DATE);
                 } else {
-                    ps.setTimestamp(18, new Timestamp(outstationdate.getTime()));
-                }
+                    ps.setTimestamp(18, new Timestamp(outstationdatetime.getTime()));                }
 
                 ps.setInt(19, deliverystate);
 

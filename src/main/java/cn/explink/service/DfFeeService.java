@@ -156,6 +156,8 @@ public class DfFeeService {
         Date create_time = null;
         //领货时间
         Date pick_time = null;
+        //揽件出站时间
+        Date outstationdatetime = null;
         for (OrderFlow orderFlow : orderFlows) {
             if (credate == null && FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() == orderFlow.getFlowordertype()) {
                 credate = orderFlow.getCredate();
@@ -166,7 +168,11 @@ public class DfFeeService {
             if (pick_time == null && FlowOrderTypeEnum.FenZhanLingHuo.getValue() == orderFlow.getFlowordertype()) {
                 pick_time = orderFlow.getCredate();
             }
-            if (credate != null && create_time != null && pick_time != null) {
+            if (outstationdatetime == null && FlowOrderTypeEnum.LanJianChuZhan.getValue() == orderFlow.getFlowordertype()) {
+                outstationdatetime = orderFlow.getCredate();
+            }
+
+            if (credate != null && create_time != null && pick_time != null && outstationdatetime != null) {
                 break;
             }
         }
@@ -237,7 +243,7 @@ public class DfFeeService {
                     saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                             chargeType, order.getCollectorid(), userName, branchId, order.getCwbstate(),
-                            order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
+                            order.getFlowordertype(), create_time, outstationdatetime, order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
 
@@ -254,7 +260,7 @@ public class DfFeeService {
                     saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                             chargeType, order.getCollectorid(), userName, branchId, order.getCwbstate(),
-                            order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
+                            order.getFlowordertype(), create_time, outstationdatetime, order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                 } else {
@@ -304,7 +310,7 @@ public class DfFeeService {
                         saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                                 order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                                 chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
-                                order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
+                                order.getFlowordertype(), create_time, outstationdatetime, order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
@@ -320,7 +326,7 @@ public class DfFeeService {
                         saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                                 order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                                 chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
-                                order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
+                                order.getFlowordertype(), create_time, outstationdatetime, order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
@@ -450,7 +456,7 @@ public class DfFeeService {
     private void saveDeliveryFee(DeliveryFeeChargerType chargerType, String cwb, String transcwb, int cwbordertypeid, long customerid, long sendcarnum, long backcarnum,
                                  String senderaddress, String consigneeaddress, BigDecimal realweight, BigDecimal cargovolume, int chargeType,
                                  long handlerid, String userName, long branchId, long cwbstate, long flowordertype,
-                                 Date create_time, String outstationdatetime, int deliverystate, String emaildate, Date credate, Date pickTime,
+                                 Date create_time, Date outstationdatetime, int deliverystate, String emaildate, Date credate, Date pickTime,
                                  Date mobilepodtime, String auditingtime, int isCal, int isBill, String province, String city, String county,
                                  BigDecimal paybackfee, BigDecimal receivablefee, String realname, String cartype) {
 
