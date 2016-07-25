@@ -145,5 +145,9 @@ public class JointController {
 
 		return "jointmanage/epaiApi_down/epaiapi";
 	}
-
+	
+	@RequestMapping("/address/{page}")
+	public String address(@PathVariable("page") long page, Model model) {
+		return "jointmanage/address";
+	}
 }

@@ -434,8 +434,6 @@ function getCourier(_this, index) {
 	$.ajax({
 		type: "GET",
         url: "<%=request.getContextPath() %>/dataimport/getCourierByBranch",
-        data: {branchcode:branchcode},
-        dataType: "json",
         success: function(data) {
         	initCourier(index, data);
         },

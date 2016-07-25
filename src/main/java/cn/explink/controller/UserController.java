@@ -1,8 +1,11 @@
 package cn.explink.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +36,11 @@ import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Menu;
+import cn.explink.domain.Role;
 import cn.explink.domain.User;
+import cn.explink.domain.addressvo.AddressSyncServiceResult;
+import cn.explink.domain.addressvo.ApplicationVo;
+import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.schedule.Constants;
@@ -45,8 +52,10 @@ import cn.explink.service.SystemInstallService;
 import cn.explink.service.UserInfService;
 import cn.explink.service.UserMonitorService;
 import cn.explink.service.UserService;
+import cn.explink.service.addressmatch.AddressSyncService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
+import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.StringUtil;
 
 @Controller
@@ -83,6 +92,9 @@ public class UserController {
 	ExportService exportService;
 	@Autowired
 	UserInfService userInfService;
+	
+	@Autowired
+	private AddressSyncService addressService;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -560,4 +572,65 @@ public class UserController {
 		
 	}
 	
+	/**
+	 * 同步地址库
+	 * @date 2016年7月25日 下午5:49:05
+	 * @return
+	 */
+	@RequestMapping(value="/batchSyncAdress")
+	@ResponseBody
+	public String batchSyncAdress() {
+		Set<Long> roleidSet = new HashSet<Long>();
+		// 小件员和站长属于配送员
+		roleidSet.add(2l);
+		roleidSet.add(4l);
+		// 其它类型
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if(roles != null) {
+			for(Role role : roles) {
+				roleidSet.add(role.getRoleid());
+			}
+		}
+		// 获取站点用户
+		List<User> deliverList = this.userService.getAllUserByRole(new ArrayList<Long>(roleidSet));
+		// 同步地址库
+		long addresscustomerid = Long.parseLong(ResourceBundleUtil.addresscustomerid);
+		// 生成applicationVo
+		ApplicationVo applicationVo = new ApplicationVo();
+		applicationVo.setCustomerId(addresscustomerid);
+		applicationVo.setId(Long.parseLong(ResourceBundleUtil.addressid));
+		applicationVo.setPassword(ResourceBundleUtil.addresspassword);
+		
+		int success = 0; // 成功数量
+		int failure = 0; // 失败数量
+		for (User deliver : deliverList) {
+			// 正常状态，更新地址库。
+			DelivererVo delivererVo = new DelivererVo();
+			delivererVo.setCustomerId(addresscustomerid);
+			delivererVo.setExternalId(deliver.getUserid());
+			delivererVo.setName(deliver.getRealname());
+			delivererVo.setExternalStationId(deliver.getBranchid());
+			delivererVo.setUserCode(deliver.getUsername());
+			
+			try {
+				AddressSyncServiceResult addressSyncServiceResult;
+				if (deliver.getUserDeleteFlag() == 1 && deliver.getEmployeestatus() == 1) { // 地址库逻辑：saveOrUpdate
+					addressSyncServiceResult = this.addressService.updateDeliverer(applicationVo, delivererVo);
+				} else { // 删除
+					addressSyncServiceResult = this.addressService.deleteDeliverer(applicationVo, delivererVo);
+	
+				}
+				if (addressSyncServiceResult.getResultCode().getCode() == 0) {
+					logger.info("[成功]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());
+					success++;
+				} else {
+					logger.info("[失败]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());
+					failure++;
+				}
+			} catch (Exception e) {
+				return e.getMessage();
+			}
+		}
+		return "完成同步!成功：" + success + "，失败：" + failure;
+	}
 }
