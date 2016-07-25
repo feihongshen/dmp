@@ -5683,7 +5683,9 @@ public class CwbOrderService extends BaseOrderService {
 			String expressReason = "";
 			if(reason != null && reason.getReasoncontent() != null && !reason.getReasoncontent().trim().equals("")){
 				expressReason = reason.getReasoncontent().trim() + " " + deliverstateremark;
-			}			
+			}else{
+				expressReason = (deliverstateremark==null?"":deliverstateremark.trim());
+			}
 			this.executeTpsTransInterface(co, deliveryUser, feedbakOperateType, expressReason.trim(), sign_man, freight.doubleValue());
 			//Modified end
 		}
