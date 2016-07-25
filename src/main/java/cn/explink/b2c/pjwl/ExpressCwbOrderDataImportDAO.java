@@ -322,26 +322,26 @@ public class ExpressCwbOrderDataImportDAO {
 				ps.setString(++i, cwbOrderDTO.getCneeTown());
 
 				//如果详细地址里面已经含省+市+区，则不再加入省市区
-				String cneeProv = cwbOrderDTO.getCneeProv();
-				String cneeCity = cwbOrderDTO.getCneeCity();
-				String cneeRegion = cwbOrderDTO.getCneeRegion();
-				String cneeTown = cwbOrderDTO.getCneeTown();
+				// modify by jian_xie 2016-07-18,DMP地址拼接去重逻辑的修改何欣伟需求
+//				String cneeProv = cwbOrderDTO.getCneeProv();
+//				String cneeCity = cwbOrderDTO.getCneeCity();
+//				String cneeRegion = cwbOrderDTO.getCneeRegion();
+//				String cneeTown = cwbOrderDTO.getCneeTown();
 				String cneeAddr = cwbOrderDTO.getCneeAddr();
-				if(null != cneeAddr){
-					if(null != cneeTown && cneeAddr.indexOf(cneeTown) < 0){//从地址小的开始处理
-						cneeAddr = cneeTown + cneeAddr;
-					}
-					if(null != cneeRegion && cneeAddr.indexOf(cneeRegion) < 0){
-						cneeAddr = cneeRegion + cneeAddr;
-					}
-					if(null != cneeCity && cneeAddr.indexOf(cneeCity) < 0){
-						cneeAddr = cneeCity + cneeAddr;
-					}
-					if(null != cneeProv && cneeAddr.indexOf(cneeProv) < 0){
-						cneeAddr = cneeProv + cneeAddr;
-					}
-				}
-				
+//				if(null != cneeAddr){
+//					if(null != cneeTown && cneeAddr.indexOf(cneeTown) < 0){//从地址小的开始处理
+//						cneeAddr = cneeTown + cneeAddr;
+//					}
+//					if(null != cneeRegion && cneeAddr.indexOf(cneeRegion) < 0){
+//						cneeAddr = cneeRegion + cneeAddr;
+//					}
+//					if(null != cneeCity && cneeAddr.indexOf(cneeCity) < 0){
+//						cneeAddr = cneeCity + cneeAddr;
+//					}
+//					if(null != cneeProv && cneeAddr.indexOf(cneeProv) < 0){
+//						cneeAddr = cneeProv + cneeAddr;
+//					}
+//				}
 				ps.setString(++i, cneeAddr);
 				ps.setString(++i, cwbOrderDTO.getCneeMobile());
 				ps.setString(++i, cwbOrderDTO.getCneeTel());

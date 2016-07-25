@@ -131,13 +131,23 @@ public class BaseOrderService {
 						 view.setCwbstatetext(cwb.getText());
 					 }
 				 } 
-				 if(CwbFlowOrderTypeEnum.getText(wco.getFlowordertype()).getText()=="已审核"){
-					 view.setFlowordertypetext("审核为："+DeliveryStateEnum.getByValue(wco.getDeliverystate()).getText());
-				 }else if(CwbFlowOrderTypeEnum.getText(wco.getFlowordertype()).getText()=="已反馈") {
-					view.setFlowordertypetext(DeliveryStateEnum.getByValue(wco.getDeliverystate()).getText()); 
-				 }else{
-					view.setFlowordertypetext(CwbFlowOrderTypeEnum.getText(wco.getFlowordertype()).getText());
-				 }
+				 long flowordertype = wco.getFlowordertype();
+				 int deliverystate = wco.getDeliverystate();
+				 try{
+						if(CwbFlowOrderTypeEnum.getText(flowordertype)!=null){
+							if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已审核"){
+									view.setFlowordertypetext("审核为："+DeliveryStateEnum.getByValue(deliverystate).getText());
+							 }else if(CwbFlowOrderTypeEnum.getText(flowordertype).getText()=="已反馈") {
+								 view.setFlowordertypetext(DeliveryStateEnum.getByValue(deliverystate).getText()); 
+								/*hps*/ }else{
+									view.setFlowordertypetext(CwbFlowOrderTypeEnum.getText(flowordertype).getText());
+							 }
+						}else{
+							view.setFlowordertypetext("");
+						}
+					}catch(Exception e){
+						view.setFlowordertypetext("");
+					}
 				//*************
 				//****Hps_Concerto create 2016年5月26日16:24:30
 				view.setFlowordertype(wco.getFlowordertype());

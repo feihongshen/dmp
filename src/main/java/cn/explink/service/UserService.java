@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -343,5 +344,36 @@ public class UserService {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * 转换session用户的branchid
+	 * @param sessionUser Session用户
+	 * @author neo01.huang 2016-7-19
+	 */
+	public void convertSessionUserBranchId(User sessionUser) {
+		final String logPrefix = "转换session用户的branchid->";
+		if (sessionUser == null) {
+			logger.info("{}sessionUser为空", logPrefix);
+			return;
+		}		
+		logger.info("{}branchId:{}, userid:{}", logPrefix, sessionUser.getBranchid(), sessionUser.getUserid());
+		if (sessionUser.getBranchid() > 0) {
+			logger.info("{}sessionUser的branchId大于0，无需转换", logPrefix);
+			return;
+		}
+		
+		List<User> userList = this.userDAO.getUserByid(sessionUser.getUserid());
+		if (userList == null || userList.size() == 0) {
+			logger.info("{}userList为空，转换失败", logPrefix);
+			return;
+		}
+		
+		User dbUser = userList.get(0);
+		if (dbUser.getBranchid() <= 0) {
+			logger.info("{}dbUser的branchId小于或等于0，转换失败", logPrefix);
+			return;
+		}
+		sessionUser.setBranchid(dbUser.getBranchid());
 	}
 }

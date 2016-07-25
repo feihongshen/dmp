@@ -5,15 +5,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,12 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tools.DataImportDAO_B2c;
+import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.AccountCwbFareDetailDAO;
 import cn.explink.dao.AppearWindowDao;
 import cn.explink.dao.BranchDAO;
@@ -825,6 +829,7 @@ public class EditCwbController {
 			}
 		}
 		return "editcwb/editInfo";
+
 	}
 
 	@RequestMapping("/searchCwbInfo/{cwb}")
@@ -884,6 +889,7 @@ public class EditCwbController {
 		}
 		co.setConsigneeaddress(editaddress);
 		co.setCwbremark(remark);
+
 		// 3.匹配地址库
 		try {
 			co.setExcelbranch(null);
@@ -1111,5 +1117,37 @@ public class EditCwbController {
 		List<OrderAddressRevise> orderAddressRevise = this.orderAddressReviseDao.getAddressReviseDetails(cwb);
 		model.addAttribute("orderAddressRevises", orderAddressRevise);
 		return "editcwb/addressReviseDetail";
+	}
+	
+	/**
+	 * 添加验证，如果存在未审核的修改申请，则不允许申请。
+	 * @author jian.xie
+	 * @date 2016-07-14
+	 */
+	@RequestMapping("/checkIsExist")
+	@ResponseBody
+	public String checkIsExist(@RequestParam(value="cwbs", defaultValue="-1") String cwbs){
+		if(StringUtils.isEmpty(cwbs)){
+			return "";
+		}
+		List<ZhiFuApplyView> list = zhiFuApplyDao.getNotAudiByCwbs(cwbs);
+		StringBuilder result = new StringBuilder();
+		Set<String> setCwb = new HashSet<String>();
+		if(!CollectionUtils.isEmpty(list)){
+			ZhiFuApplyView view = null;
+			for(int i = 0, size = list.size(); i < size; i++){
+				view = list.get(i);
+				// 去重
+				if(setCwb.contains(view.getCwb())){
+					continue;
+				}
+				if(i != 0){
+					result.append(",");
+				}
+				result.append(view.getCwb());
+				setCwb.add(view.getCwb());
+			}
+		}
+		return result.toString(); 
 	}
 }

@@ -32,6 +32,9 @@
 
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script type="text/javascript">
+var weightTime = <%=request.getAttribute("weightTime") == null ?10:Integer.parseInt(request.getAttribute("weightTime").toString())%> ;
+var requestContext = "<%=request.getContextPath()%>" ;
+var weightIntervalId = null ;
 	$(function() {
 		var $menuli = $(".kfsh_tabbtn ul li");
 		var $menulilink = $(".kfsh_tabbtn ul li a");
@@ -75,51 +78,80 @@
 		}
 	}
 
-	function submitWeight(waybillNo) {
-		var weight = $('#weightSpan').text();
-		$('#weight').val($('#weightSpan').text());
-		if (weight == null || weight == "") {
-			showHintInfo("实际重量为空，检查电子称！");
-			return;
+	
+	function submitWeight(keyCode) {
+		var waybillNo = jQuery("#waybillNo").val().trim()  ;
+		if(keyCode!=13 || waybillNo.length <= 0){
+			return ;
 		}
-		$('#submitForm').attr("action", $("#submitWeight").val());
-		$('#submitForm').submit();
+		jQuery("#weightNotice").text("正在称重中,请稍等......") ;
+		weightIntervalId = window.setInterval("setWeight()", 1);
+		window.setTimeout(function waitForWeight(){
+			window.clearInterval(weightIntervalId) ;
+			console.log("weightTime:" + weightTime) ;
+			var weight = jQuery('#weightSpan').text();
+			$('#weight').val($('#weightSpan').text());
+			if (weight == null || weight == "" || weight == undefined || weight == "0.00") {
+				jQuery("#weightNotice").text("实际重量为空，检查电子称！");
+				return;
+			}
+			saveOrUpdateWeight(waybillNo,weight) ;
+		} , (weightTime + 3) * 1000) ;
 	};
-	function showHintInfo(info) {
-		$(".tishi_box").html(info);
-		$(".tishi_box").show();
-		setTimeout("$(\".tishi_box\").hide(1000)", 2000);
-	};
-</script>
-<script type="text/javascript">
-	function getWeightRepeatable() {
-		window.setInterval("setWeight()", 1);
-	}
-	function setWeight() {
-		var weight = window.parent.document.getElementById("scaleApplet")
-				.getWeight();
 
-		if (weight != null && weight != '') {
-			document.getElementById("weightSpan").innerHTML = weight;
-		}
+	function saveOrUpdateWeight(waybillNo,weight){
+		var params = {
+				waybillNo:waybillNo,
+				weight:weight	
+		};
+		$.ajax({
+			type: "POST",
+			url:requestContext + "/stationOperation/submitWeight",
+			data:params,
+			dataType:"json",
+			success : function(rs) {
+				jQuery("#waybillNo").val("") ;
+				jQuery("#weightNotice").text("");
+				jQuery("#weightSpan").text("0.00") ;
+				jQuery("#waybillNoSpan").html(waybillNo) ;
+				jQuery("#lastWeightSpan").html(weight) ;
+			}}) ;
 	}
+	
+
+	function setWeight() {
+		console.log("setWeight") ;
+        try{
+        	var scaleApplet  =  window.parent.document.getElementById("scaleApplet") ;
+        	var weight = scaleApplet.getWeight();
+        	if (weight != null && weight != '' &&　weight != undefined ) {
+    			document.getElementById("weightSpan").innerHTML = weight;
+    		}
+        }catch(e){
+        	document.getElementById("weightSpan").innerHTML = "0.00" ;
+        	jQuery("#weightNotice").text("实际重量为空，检查电子称！"); 
+        	window.clearInterval(weightIntervalId) ;
+        }
+	}
+	
 </script>
 </head>
-<body style="background: #f5f5f5" marginwidth="0" marginheight="0" onload="getWeightRepeatable();">
+<body style="background: #f5f5f5" marginwidth="0" marginheight="0" >
 	<div class="inputselect_box">
-		<form method="post" id="submitForm">
-			<table width="60%">
+			<table width="80%">
 				<tr>
 					<td>运单号<input type="text" id="waybillNo" name="waybillNo"
 						style="height: 30px; font-size: x-large; font-weight: bold;"
-						onKeyDown='if(event.keyCode==13&&$(this).val().length>0){submitWeight($(this).val());}' />
+						onKeyDown='submitWeight(event.keyCode)' />
 					</td>
-					<td style="color: red; font-size: x-large; font-weight: bold;">实际重量（kg）：<span
-						id="weightSpan">0.00</span> <input type="hidden" id="weight" name="weight" />
+					<td style="color: red; font-size: x-large; font-weight: bold;">实际重量（kg）：<label
+						id="weightSpan">0.00</label> <input type="hidden" id="weight" name="weight" />
+					</td>
+					<td style="color: red; font-size: x-large; font-weight: bold;">
+					   <label id="weightNotice" > </label> 
 					</td>
 				</tr>
 			</table>
-		</form>
 		<hr />
 		<h1 style="font-weight: bold; font-size: xx-large;">上一次扫描结果：</h1>
 		<table width="50%">
@@ -131,12 +163,5 @@
 			</tr>
 		</table>
 	</div>
-
-	<!-- 提交重量 -->
-	<input type="hidden" id="submitWeight"
-		value="<%=request.getContextPath()%>/stationOperation/submitWeight" />
-	<!-- 查询运单是否存在 -->
-	<input type="hidden" id="isExpressOrderExist"
-		value="<%=request.getContextPath()%>/stationOperation/isExpressOrderExist" />
 </body>
 </html>

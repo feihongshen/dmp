@@ -29,7 +29,7 @@ import cn.explink.b2c.weisuda.WeisudsInterfaceEnum;
 import cn.explink.dao.BranchInfDao;
 import cn.explink.domain.Branch;
 import cn.explink.domain.BranchInf;
-import cn.explink.domain.SystemInstall;
+import cn.explink.domain.User;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.util.MD5.MD5Util;
 
@@ -246,7 +246,7 @@ public class BranchInfService {
 		return prestr;
 	}
 	
-	public void saveBranchInf(Branch branch){
+	public void saveBranchInf(Branch branch, User sessionUser){
 		BranchInf branchInf = new BranchInf();
 		branchInf.setBranchid(branch.getBranchid());
 		branchInf.setBranchname(branch.getBranchname());
@@ -257,7 +257,11 @@ public class BranchInfService {
 		branchInf.setPassword("");
 		branchInf.setRecBranchid(0);
 		branchInf.setCreateDate(new Date());
-		branchInf.setCreateUser("");
+		if (sessionUser != null) {
+			branchInf.setCreateUser(sessionUser.getUserid() + "");
+		} else {
+			branchInf.setCreateUser("");
+		}
 		branchInf.setIsSync(false);
 		if("1".equals(branch.getBrancheffectflag())){
 			// 有效

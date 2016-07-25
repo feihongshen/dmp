@@ -488,19 +488,21 @@ public class WeisudaService {
 		//订单类型：上门退 ==>更新自动化分拣项目商品信息表
 		} else if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
 			List<OrderGoods> orderGoods = this.orderGoodsDAO.getOrderGoodsList(orderFlowDto.getCwb());
-			Goods goods = JacksonMapper.getInstance().readValue(orderFlowDto.getReamrk1(), Goods.class);
-			List<Good> goodlist = goods.getGood();
-			if ((orderGoods != null) && (orderGoods.size() > 0) && (goodlist != null) && (goodlist.size() > 0)) {
-				for (Good good : goodlist) {
-					for (OrderGoods orderGood : orderGoods) {
-						if (orderGood.getGoods_code().equals(good.getCode())) {
-							orderGood.setShituicount(good.getFetch_num());
-							orderGood.setTepituicount(good.getSpecial_num());
-							orderGood.setRemark1(good.getRemark());
+			if (orderFlowDto.getReamrk1() != null) {
+				Goods goods = JacksonMapper.getInstance().readValue(orderFlowDto.getReamrk1(), Goods.class);
+				List<Good> goodlist = goods.getGood();
+				if ((orderGoods != null) && (orderGoods.size() > 0) && (goodlist != null) && (goodlist.size() > 0)) {
+					for (Good good : goodlist) {
+						for (OrderGoods orderGood : orderGoods) {
+							if (orderGood.getGoods_code().equals(good.getCode())) {
+								orderGood.setShituicount(good.getFetch_num());
+								orderGood.setTepituicount(good.getSpecial_num());
+								orderGood.setRemark1(good.getRemark());
+							}
 						}
 					}
+					this.orderPartGoodsReturnService.updateOrderGoods(orderGoods);
 				}
-				this.orderPartGoodsReturnService.updateOrderGoods(orderGoods);
 			}
 		}
 		//单票结果反馈

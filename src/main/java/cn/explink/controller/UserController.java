@@ -168,7 +168,7 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->create", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
@@ -208,7 +208,7 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
@@ -279,7 +279,7 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
@@ -333,7 +333,7 @@ public class UserController {
 				}
 			}
 			// 新接口 add by jian_xie
-			userInfService.saveUserInf(user);
+			userInfService.saveUserInf(user, getSessionUser());
 			this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 			// TODO 增加同步代码
 			// 同步地址库逻辑修改 2016-07-20 chunlei05.li
@@ -353,6 +353,8 @@ public class UserController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 					}
 				}
+				this.userMonitorService.userMonitorById(userid);
+				return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 			}
 			this.userMonitorService.userMonitorById(userid);
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";

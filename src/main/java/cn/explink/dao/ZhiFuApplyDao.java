@@ -2,6 +2,7 @@ package cn.explink.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import cn.explink.core.utils.StringUtils;
 import cn.explink.domain.ZhiFuApplyView;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
@@ -430,5 +432,26 @@ public class ZhiFuApplyDao {
 	public List<ZhiFuApplyView> getCheckConfirmZFAVByCwbs(String cwbs) {
 		String sql  = "select * from express_ops_zhifu_apply where applystate = 2 and applyresult = 2 and confirmstate = 2 and confirmresult = 2 and cwb in ("+cwbs+")";
 		return this.jdbcTemplate.query(sql, new ZhiFuApplyMapper());
+	}
+	
+	/**
+	 * 查询未审批的申请数据
+	 */
+	public List<ZhiFuApplyView> getNotAudiByCwbs(String cwbs){
+		if(StringUtils.isEmpty(cwbs)){
+			return new ArrayList<ZhiFuApplyView>();
+		}
+		String[] cwbArr = cwbs.split(",");
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0, len = cwbArr.length; i < len; i++){
+			if(i != 0){
+				sb.append(",");
+			}
+			sb.append("'");
+			sb.append(cwbArr[i]);
+			sb.append("'");
+		}
+		String sql = "select * from express_ops_zhifu_apply where applystate=1 and  cwb in (" + sb.toString() + ")";
+		return jdbcTemplate.query(sql, new ZhiFuApplyMapper());
 	}
 }
