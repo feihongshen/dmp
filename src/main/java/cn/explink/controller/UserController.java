@@ -353,8 +353,6 @@ public class UserController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_DELETE, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 					}
 				}
-				this.userMonitorService.userMonitorById(userid);
-				return "{\"errorCode\":0,\"error\":\"保存成功\"}";
 			}
 			this.userMonitorService.userMonitorById(userid);
 			return "{\"errorCode\":0,\"error\":\"保存成功\"}";
