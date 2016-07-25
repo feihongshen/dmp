@@ -620,10 +620,11 @@ public class UserController {
 					addressSyncServiceResult = this.addressService.deleteDeliverer(applicationVo, delivererVo);
 	
 				}
-				logger.info("小件员同步地址库 modify：{}", addressSyncServiceResult.toString());
 				if (addressSyncServiceResult.getResultCode().getCode() == 0) {
+					logger.info("[成功]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());
 					success++;
 				} else {
+					logger.info("[失败]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());
 					failure++;
 				}
 			} catch (Exception e) {
