@@ -74,6 +74,7 @@ import cn.explink.domain.SetExportField;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.express.BatchCount;
 import cn.explink.domain.express.ExpressOperationInfo;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BaleStateEnum;
@@ -95,6 +96,7 @@ import cn.explink.service.express.tps.enums.FeedbackOperateTypeEnum;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
+import net.sf.json.JSONObject;
 
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
@@ -2102,5 +2104,37 @@ public class BaleService {
 		if(bale.getBalestate()!=nowBale.getBalestate()){
 			this.baleDAO.updateBalesate(bale.getId(), bale.getBalestate());
 		}
+	}
+	
+	/**
+	 * 出库扫描包号处理
+	 * @param user 当前登录的用户
+	 * @param isbale 扫描的包
+	 * @param cwb 这里是包号
+	 * @param branchid 下一站id
+	 * @param cwbList 与包号关联的订单号list
+	 * @param driverid 驾驶员id
+	 * @param truckid 车辆id
+	 * @param confirmflag 强制出库
+	 * @param cwbs 模拟订单号文本框
+	 * @param batchCount 结果统计计数器
+	 * @author neo01.huang，2016-7-25
+	 */
+	@Transactional
+	public void cwbexportwarhouseScanBaleNo(User user, Bale isbale, String cwb, long branchid, List<String> cwbList,
+			long driverid, long truckid, long confirmflag, StringBuilder cwbs, BatchCount batchCount) {
+		// 更新包的下一站为用户选择的下一站，当前站为0
+		this.baleDAO.updateBranchIdAndNextBranchId(isbale.getId(), branchid, 0);
+
+		for (String cwbStr : cwbList) {
+			cwbs.append(cwbStr).append("\r\n");
+		}
+		
+		List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
+
+		List<JSONObject> objList = new ArrayList<JSONObject>();
+
+		cwbOrderService.exportHouseForExpressPackage(user,cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+		
 	}
 }
