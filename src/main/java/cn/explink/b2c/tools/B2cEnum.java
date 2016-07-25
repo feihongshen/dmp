@@ -118,7 +118,9 @@ public enum B2cEnum {
 	TPS_MQ(22501, "tps订单下发接口", "tpsvipshop_mq", 0),
 	TPS_MQExpress(22502, "tps快递单下发接口", "tpsvipshop_mqExpress", 0),
 	TPS_kuajinggou(22503, "跨境购订单下发接口", "kuajinggouvipshop_mq", 0),
-	TPS_TraceFeedback(22601, "订单轨迹回传给tps接口", "tps_traceFeedback", 0);
+	TPS_TraceFeedback(22601, "订单轨迹回传给tps接口", "tps_traceFeedback", 0),
+	TPS_qilekang(22504, "七乐康订单下发接口", "qilekangvipshop_mq", 0),
+	TPS_dajiafen(22505, "大家分订单下发接口", "dajiafenvipshop_mq", 0);
 
 	 
 
