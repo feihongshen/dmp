@@ -1,2 +1,1 @@
-insert into express_set_system_install (`chinesename`,`name`,`value`) values ('电子秤称重定时','weightTime','10&*') ;
-INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('5070', '1', '补录重量', '5070', 'weightAgainManager.do?isIframe&index&', '50');
+insert into express_set_system_install (`chinesename`,`name`,`value`) values ('电子秤称重定时','weightTime','10') ;

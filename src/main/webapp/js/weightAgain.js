@@ -16,7 +16,7 @@ function updateOrderWeight(keyCode){
     	carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
     	window.clearInterval(weightIntervalId) ;
     	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
-    		alert(orderNumber + "(获取不到重量)，请手动输入重量！") ;
+    		jQuery("#weightNotice").text(orderNumber + "(获取不到重量)，请手动输入重量！") ;
     		jQuery("#orderWeight").focus() ;
         	return false ;
     	}

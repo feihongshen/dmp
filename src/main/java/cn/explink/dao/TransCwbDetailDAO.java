@@ -424,4 +424,20 @@ public class TransCwbDetailDAO {
 		String sql = "update express_ops_transcwb_detail set transcwbstate = ? where cwb=?";
 		jdbcTemplate.update(sql, transcwbstate.getValue(), cwb);
 	}
+	
+	/**
+	 * 根据订单号删除运单明细
+	 * @author leo01.liao
+	 * @param cwb
+	 */
+	public void deleteByCwb(String cwb) {
+		try {
+			if(cwb == null || cwb.trim().equals("")){
+				return;
+			}
+			
+			String sql = "delete from express_ops_transcwb_detail where cwb=?";
+			this.jdbcTemplate.update(sql, cwb.trim());
+		}catch(Exception ex){}
+	}
 }
