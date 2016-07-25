@@ -407,6 +407,21 @@ public class UserDAO {
 		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper(), roleid);
 		return userList;
 	}
+	
+	public List<User> getAllUserByRole(List<Long> roleidList) {
+		StringBuilder roleidsSb = new StringBuilder("");
+		for(int i = 0; i < roleidList.size();i++) {
+			Long roleid = roleidList.get(i);
+			if(i != 0) {
+				roleidsSb.append(",");
+			}
+			roleidsSb.append(roleid);
+		}
+		String roleids = roleidsSb.toString();
+		String sql = "SELECT * FROM express_set_user WHERE roleid in(" + roleids + " )";
+		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper());
+		return userList;
+	}
 
 	public List<User> getUserByRole(String roleids, long branchid) {
 		String sql = "SELECT * FROM express_set_user WHERE  branchid=? and roleid in(" + roleids + " ) and userDeleteFlag=1 and employeestatus=1";

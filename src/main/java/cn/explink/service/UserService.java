@@ -344,4 +344,12 @@ public class UserService {
 		}
 		return false;
 	}
+	
+	public List<User> getAllUserByRole(List<Long> roleidList) {
+		List<User> userList = this.userDAO.getAllUserByRole(roleidList);
+		if(userList == null) {
+			userList = new ArrayList<User>();
+		}
+		return userList;
+	}
 }
