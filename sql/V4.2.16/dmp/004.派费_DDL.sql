@@ -1,4 +1,4 @@
-# 备份已有的表， 重命名为*_backup, 系统上线后，需要drop掉
+-- 备份已有的表， 重命名为*_backup, 系统上线后，需要drop掉
 ALTER TABLE fn_df_agreement RENAME TO fn_df_agreement_backup;
 ALTER TABLE fn_df_bill RENAME TO fn_df_bill_backup;
 ALTER TABLE fn_df_bill_detail RENAME TO fn_df_bill_detail_backup;
