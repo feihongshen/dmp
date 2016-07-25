@@ -254,7 +254,8 @@ public class DfFeeService {
             }
             //如果站点是加盟站点
             if (isJoinBranch(branchId)) {
-                DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);               if (null == fee) {
+                DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
+                if (null == fee) {
                     logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
                     saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
@@ -431,10 +432,10 @@ public class DfFeeService {
                         }
                         long id = dfAdjustmentRecordDAO.saveAdjustmentRecord(chargerType.getValue(), adjustment, currentUser.getRealname());
 
-                        logger.debug("插入调整记录表成功，Id为" + id + "，结算对象为" + chargerType.getText());
+                        logger.info("插入调整记录表成功，Id为{}，结算对象为{}", id, chargerType.getText());
                     }
                 } else {
-                    logger.info("删除计费明细ID为{}" + fee.getId());
+                    logger.info("删除计费明细ID为{}", fee.getId());
                     dfFeeDAO.deleteFeeById(chargerType.getValue(), fee.getId());
                 }
             }
@@ -449,7 +450,7 @@ public class DfFeeService {
 
         long id = dfAdjustmentRecordDAO.saveAdjustmentRecord(chargerType.getValue(), adjustment, currentUser);
 
-        logger.debug("插入调整记录表成功，Id为" + id + "，结算对象为" + chargerType.getText());
+        logger.debug("插入调整记录表成功，Id为{}，结算对象为{}", id, chargerType.getText());
 
     }
 
@@ -467,7 +468,7 @@ public class DfFeeService {
                 mobilepodtime, auditingtime, isCal, isBill, province, city, county,
                 paybackfee, receivablefee, realname, cartype);
 
-        logger.debug("插入派费明细表成功，Id为" + feeId + "，结算对象为" + chargerType.getText());
+        logger.debug("插入派费明细表成功，Id为{}，结算对象为{}", feeId, chargerType.getText());
 
     }
 
