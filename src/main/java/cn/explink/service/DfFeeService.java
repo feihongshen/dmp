@@ -358,7 +358,7 @@ public class DfFeeService {
 
     public void saveFeeRelativeAfterOrderDisabled(String cwb) {
         User currentUser = userDAO.getUserByUsername("admin");
-        CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+        CwbOrder cwbOrder = cwbDAO.getDisabledCwbByCwb(cwb);
         saveFeeRelativeAfterOrderResetOrDisabled(cwbOrder, currentUser, FROM_DISABLE_ORDER);
     }
 
