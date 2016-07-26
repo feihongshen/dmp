@@ -8404,7 +8404,6 @@ public class CwbDAO {
 				"SELECT * FROM  `express_ops_cwb_detail` WHERE  "
 						+ wheresql
 						+ " and "
-						//存货监控统计sql修复 ----刘武强20160719
 						+ (branchid.length() > 0 ? (" nextbranchid in("
 								+ branchid + ")  and") : " nextbranchid IN("
 								+ branchids + ") and ")

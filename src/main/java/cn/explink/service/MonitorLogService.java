@@ -296,7 +296,7 @@ public class MonitorLogService {
 				cwbs2 = "'--'";
 			}
 			
-			clist = cwbDAO.getMonitorLogByType(" (cwb in("+cwbs1+")" +
+			clist = cwbDAO.getMonitorLogByTypeAll(" (cwb in("+cwbs1+")" +
 			 		" or cwb in("+cwbs2+"))", branchid, page, branchids);
 		}
 		 
