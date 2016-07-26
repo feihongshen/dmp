@@ -5686,6 +5686,9 @@ public class CwbOrderService extends BaseOrderService {
 			}else{
 				expressReason = (deliverstateremark==null?"":deliverstateremark.trim());
 			}
+			if(zhiliuremark != null && !zhiliuremark.trim().equals("")){
+				expressReason += " " + zhiliuremark;
+			}
 			this.executeTpsTransInterface(co, deliveryUser, feedbakOperateType, expressReason.trim(), sign_man, freight.doubleValue());
 			//Modified end
 		}
