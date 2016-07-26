@@ -48,7 +48,7 @@
 	    });
 	});
 	
-	function getCourier(cwb) {
+	function getCourier(cwb, matchExceldeliverid) {
 		var branchname = $("#branchlist" + cwb).val();
 		if(branchname == null || branchname == "") {
 			initCourier(cwb);
@@ -60,7 +60,7 @@
 	        data: {branchname:branchname},
 	        dataType: "json",
 	        success: function(data) {
-	        	initCourier(cwb, data);
+	        	initCourier(cwb, data, matchExceldeliverid);
 	        },
 	        error: function() {
 	        	initCourier(cwb);
@@ -68,15 +68,22 @@
 	        }    
 	    });
 	}
-	function initCourier(cwb, courierList) {
+	function initCourier(cwb, courierList, matchExceldeliverid) {
 		if(courierList == null) {
 			courierList = new Array();
+		}
+		if(matchExceldeliverid == null) {
+			matchExceldeliverid = "";
 		}
 		var $courier = $("#courier" + cwb);
 		$courier.empty();
 		$courier[0].add(new Option("请选择", ""));
 		$.each(courierList, function(i, courier) { 
-			$courier[0].add(new Option(courier.realname, courier.username));
+			if(courier.userid == matchExceldeliverid) { // 选中
+				$courier[0].add(new Option(courier.realname, courier.username, true, true));
+			} else {
+				$courier[0].add(new Option(courier.realname, courier.username));
+			}
 		});
 		$courier.multipleSelect("refresh");
 	}
@@ -162,7 +169,7 @@ function editInit(){
 											<td bgcolor="#e7f4e3">手机（修改）</td>
 											<td bgcolor="#e7f4e3">地址（修改）</td>
 											<td bgcolor="#e7f4e3">配送站点（修改）</td>
-											<td bgcolor="#e7f4e3">配送员（修改）</td>
+											<td bgcolor="#e7f4e3">小件员（修改）</td>
 											<td bgcolor="#e7f4e3">电商要求</td>
 											<td bgcolor="#e7f4e3">备注</td>
 											<td bgcolor="#e7f4e3">操作</td>
@@ -235,6 +242,7 @@ function editInit(){
 	</div>
 </div>
 <script type="text/javascript">
+
 	function selectForm(a){
 		if($("#branchlist"+a).val() == "") {
 			alert("请选择站点！");
@@ -307,7 +315,7 @@ function editInit(){
 							if($("#matchaddress"+cwb).val().length>0){
 								$("#buttonMatch"+cwb).removeAttr('disabled');
 								$("#buttonMatch"+cwb).val('修改匹配站');
-								findbranch(cwb);
+								findbranch(cwb, data.exceldeliverid);
 							}
 							
 						}
@@ -318,7 +326,7 @@ function editInit(){
 			alert("请检查收件人地址！");
 		}
 }
-	function findbranch(cwb){
+	function findbranch(cwb, matchExceldeliverid){
 		var branchname=$("#matchaddress"+cwb).val();
 		if(branchname.length>0){
 					$.ajax({
@@ -343,7 +351,7 @@ function editInit(){
 										  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist"+cwb);
 										  }); 
 								}
-							getCourier(cwb);
+							getCourier(cwb, matchExceldeliverid);
 						}
 						   
 					});

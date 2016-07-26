@@ -3009,7 +3009,7 @@ public class PDAController {
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
 			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate, @RequestParam(value = "youhuowudanflag", defaultValue = "-1") String youhuowudanflag,
-			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno,@RequestParam(value = "direction", defaultValue = "-1") String direction) {
+			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno) {
 		if(isAutoAllocatingButDisconnected(entranceno)){
 			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
 		}
@@ -3235,7 +3235,7 @@ public class PDAController {
 				/**
 				 * 对接自动分拨的中间件
 				 */
-				this.addQueue(outputNo, entranceno, cwb, direction, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_INTOWAHOUSE);		
+				this.addQueue(outputNo, entranceno, cwb, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_INTOWAHOUSE);		
 			
 				this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 				return resp;
@@ -3606,7 +3606,7 @@ public class PDAController {
 	public @ResponseBody ExplinkResponse cwbChangeintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
-			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno,@RequestParam(value = "direction", defaultValue = "-1") String direction) {
+			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno) {
 		if(isAutoAllocatingButDisconnected(entranceno)){
 			throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
 		}
@@ -3689,7 +3689,7 @@ public class PDAController {
 			/**
 			 * 对接自动分拨的中间件
 			 */
-			this.addQueue(outputNo, entranceno, cwb, direction, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_CHANGE_INTOWAHOUSE);
+			this.addQueue(outputNo, entranceno, cwb, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_CHANGE_INTOWAHOUSE);
 			
 			return explinkResponse;
 		} catch (CwbException e) {
@@ -11225,9 +11225,19 @@ public class PDAController {
 			String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
 			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 			SocketClient sc=socketMap.get(entranceIP);
+			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 			if(null==sc||sc.Clientstate.State!=2){
+				logger.info("尝试连接中间件 ："+entranceIP);
 				sc=this.autoAllocationService.startConnect(entranceIP, PORT);
 				socketMap.put(entranceIP, sc);
+			}
+			
+			sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+			socketMap=this.autoAllocationService.getSocketMap();
+			sc=socketMap.get(entranceIP);
+			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+			if(null==sc||sc.Clientstate.State!=2){
+				throw new CwbException("", FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
 			}
 		}
 	}
@@ -11471,31 +11481,45 @@ public class PDAController {
 	 * @param eList
 	 */
 	private void createSocketConnectMap(List<Entrance> eList) {
+		logger.info("初始化自动连接所有中间件");
 		for(Entrance e:eList){
 			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 			SocketClient sc=socketMap.get(e.getEntranceip());
 			if(null==sc||sc.Clientstate.State!=2){
+				logger.info("尝试连接中间件："+e.getEntranceip());
 				sc=this.autoAllocationService.startConnect(e.getEntranceip(), PORT);
 				socketMap.put(e.getEntranceip(), sc);
-}
+			}
 		}
+		
+		sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+		for(Entrance e:eList){
+			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+			SocketClient sc=socketMap.get(e.getEntranceip());
+			logger.info("中间件[" + e.getEntranceip() + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+		}
+		
 		
 	}
 	
 	/**
 	 * 对接自动分拨的中间件,往队列中添加一个包裹
 	 */
-	private void addQueue(String outputNo,String entranceno,String cwb,String direction,String branchName, String scancwb, byte intowarehouseType){
+	private void addQueue(String outputNo,String entranceno,String cwb,String branchName, String scancwb, byte intowarehouseType){
 		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
 			String autoAllocatingSwitch=this.systemInstallDAO.getSystemInstallByName("AutoAllocating").getValue();
-			//启用并设置了出货口
-			if(autoAllocatingSwitch.equals("1")&&null!=outputNo&&!outputNo.isEmpty()){
-				String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+			//启用了自动分拨功能
+			if(autoAllocatingSwitch.equals("1")){
+				if(null!=outputNo && outputNo.length()==4 && outputNo.matches("^[0-9]{3}[01]{1}$")){		// 并设置了机构的对应滑槽口号为“0或1结尾的4位数字”
+					String export = outputNo.substring(0, 3);	//滑槽口编号前3位为出货口
+					String direction = outputNo.substring(3);	//滑槽口编号第4位定义出货为正向/反向
+					String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+					AutoAllocationParam param=new AutoAllocationParam(cwb,export,direction,branchName);
+					this.autoAllocationService.createEmptyMsgLog(param, cwb, scancwb, intowarehouseType, entranceIP);
+					//发送消息
+					this.autoAllocationService.addQueue(entranceIP, param);
+				}
 				
-				AutoAllocationParam param=new AutoAllocationParam(cwb,outputNo,direction,branchName);
-				this.autoAllocationService.createEmptyMsgLog(param, cwb, scancwb, intowarehouseType, entranceIP);
-				//发送消息
-				this.autoAllocationService.addQueue(entranceIP, param);
 			}
 		}
 	}
@@ -11510,15 +11534,47 @@ public class PDAController {
 			//启用自动分拨并设置了出货口
 			if(autoAllocatingSwitch.equals("1")){
 				String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
-				//检查是否连接断开，若未连上则不能入库
+				
+				//检查是否连接断开，若未连上先尝试重连一次，并休眠一段时间以等待状态异步更新
 				Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 				SocketClient sc=socketMap.get(entranceIP);
+				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+				if(null==sc||sc.Clientstate.State!=2){
+					logger.info("尝试连接中间件："+entranceIP);
+					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+					socketMap.put(entranceIP, sc);
+					
+					sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+				}
+				
+				//再次检查是否连接断开，若仍然未连上则抛出异常，不能入库
+				socketMap=this.autoAllocationService.getSocketMap();
+				sc=socketMap.get(entranceIP);
+				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 				if(null==sc||sc.Clientstate.State!=2){
 					isAutoAllocatingButDisconnected = true;
 				}
 			}
 		}
 		return isAutoAllocatingButDisconnected;
+	}
+	
+	/*
+	 * 连接后线程睡眠一段时间，以获得准确的连接状态
+	 */
+	private void sleepAfterConnect() {
+		//武汉自动化连接中间件等候返回状态时间间隔（毫秒）
+		int intervalInMs = 200;
+		SystemInstall intervalInMsSystemInstall = this.systemInstallDAO.getSystemInstall("autoAllocatingConnecteWaitIntervalInMs");
+		if(intervalInMsSystemInstall != null){
+			intervalInMs = Integer.parseInt(intervalInMsSystemInstall.getValue());
+		}
+		try {
+			Thread.sleep(intervalInMs);
+			logger.info("连接中间件后等候"+intervalInMs+"毫秒");
+		} catch (InterruptedException e) {
+			// do nothing
+		}
 	}
 	
 	/**

@@ -1805,7 +1805,8 @@ public class CwbOrderController {
 				this.adjustmentRecordService.createAdjustmentForLosecwbBatch(co);
 
                 //added by Steve PENG. 失效订单需要进行派费相关操作。 start
-                dfFeeService.saveFeeRelativeAfterOrderResetOrDisabled(co, getSessionUser(), true);
+                //注释掉因为手动失效订单不需要执行相关的派费的操作。所有失效操作只在接口完成。
+//                dfFeeService.saveFeeRelativeAfterOrderResetOrDisabled(co, getSessionUser(), true);
                 //added by Steve PENG. 失效订单需要进行派费相关操作。 end
 
 				successCount++;

@@ -313,8 +313,8 @@ function checkUseAutoAllocating() {
 									+ "&requestbatchno=" + requestbatchno,
 							data : {
 								"comment" : comment,
-								"autoallocatid": $("#entryselect").val(),
-								"direction" :$("input[name='direction']:checked").val()
+								"autoallocatid": $("#entryselect").val()
+								//, "direction" :$("input[name='direction']:checked").val()
 							},
 							dataType : "json",
 							success : function(data) {
@@ -693,7 +693,7 @@ function connect(){
 		},
  		dataType : "json",
  		success : function(data) {
- 			
+ 			alert(data.errorinfo);
  		}
  	});
 }
@@ -822,8 +822,8 @@ function flush(){
 						</select> 
 						<input type="button" id="connect" onclick="connect()"  value="连接" />
 						<!-- <input type="button" id="flush" onclick="flush()"  value="清空队列" /> -->
-						<input type="radio" name="direction" id="forward" value="0" checked="checked" />正向
-						<input type="radio"  name="direction" id="backward" value="1" />逆向
+						<!-- <input type="radio" name="direction" id="forward" value="0" checked="checked" />正向 -->
+						<!-- <input type="radio"  name="direction" id="backward" value="1" />逆向 -->
 						</span>					
 					</div>
 				<div class="saomiao_inwrith2">

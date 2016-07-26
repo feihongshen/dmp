@@ -29,7 +29,7 @@
 											<td valign="middle"  align="center" width="10%" align="center" bgcolor="#e7f4e3">收件人电话修改信息</td>
 											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">收件人地址修改信息</td>
 											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">配送站点修改信息</td>
-											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">配送员修改信息</td>
+											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">小件员修改信息</td>
 											<td valign="middle" align="center"  width="10%"   align="center" bgcolor="#e7f4e3">电商要求修改信息</td>
 											<td valign="middle"  align="center" width="10%" bgcolor="#e7f4e3">修改人</td>
 											<td valign="middle"  align="center" width="10%" bgcolor="#e7f4e3">修改时间</td>

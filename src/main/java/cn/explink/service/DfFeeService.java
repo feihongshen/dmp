@@ -31,8 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -40,7 +38,6 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@Transactional
 public class DfFeeService {
 
     @Autowired
@@ -62,9 +59,13 @@ public class DfFeeService {
     @Autowired
     private BranchDAO branchDAO;
     @Autowired
-    DfAdjustmentRecordDAO dfAdjustmentRecordDAO;
+    private DfAdjustmentRecordDAO dfAdjustmentRecordDAO;
     @Autowired
-    ApplyEditDeliverystateDAO applyEditDeliverystateDAO;
+    private ApplyEditDeliverystateDAO applyEditDeliverystateDAO;
+
+    private static final int FROM_RESET_ORDER = 0;
+    private static final int FROM_DISABLE_ORDER = 1;
+    private static final int FROM_AUDIT_CONFIRMED = 2;
 
     public enum DeliveryFeeRuleChargeType {
         GET(0, "揽件费"),
@@ -199,7 +200,7 @@ public class DfFeeService {
             //如果揽件站点不为空，创建揽件费订单。
             chargeType = DeliveryFeeRuleChargeType.GET.getValue();
 
-            List<User> deliver = userDAO.getUserByid(order.getInstationhandlerid());
+            List<User> deliver = userDAO.getUserByid(order.getCollectorid());
             if (deliver.size() > 0) {
                 userName = deliver.get(0).getRealname();
             }
@@ -229,36 +230,36 @@ public class DfFeeService {
             }
 
             //如果有揽件员才生成基础数据。
-            if (order.getInstationhandlerid() > 0) {
-                DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, (long) order.getInstationhandlerid());
+            if (order.getCollectorid() > 0) {
+                DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, (long) order.getCollectorid());
                 if (null == fee) {
-                    logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", order.getInstationhandlerid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
+                    logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", order.getCollectorid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
                     saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
-                            chargeType, order.getInstationhandlerid(), userName, branchId, order.getCwbstate(),
+                            chargeType, order.getCollectorid(), userName, branchId, order.getCwbstate(),
                             order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate,//order_flow, flow ordertype = 7
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
 
                 } else {
-                    logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 能找到计费明细", order.getInstationhandlerid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
-                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname(), false);
+                    logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", order.getCollectorid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
+                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
                 }
             }
             //如果站点是加盟站点
             if (isJoinBranch(branchId)) {
                 DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
                 if (null == fee) {
-                    logger.info("相同站点ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
+                    logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
                     saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
-                            chargeType, order.getInstationhandlerid(), userName, branchId, order.getCwbstate(),
+                            chargeType, order.getCollectorid(), userName, branchId, order.getCwbstate(),
                             order.getFlowordertype(), create_time, order.getOutstationdatetime(), order.getDeliverystate(), order.getEmaildate(), credate, //order_flow, flow ordertype = 7
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                 } else {
-                    logger.info("相同站点ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
-                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname(), false);
+                    logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
+                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
                 }
             }
         }
@@ -299,7 +300,7 @@ public class DfFeeService {
                 if (order.getDeliverid() > 0) {
                     DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, order.getDeliverid());
                     if (null == fee) {
-                        logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", order.getDeliverid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
+                        logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", order.getDeliverid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
                         saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                                 order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                                 chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
@@ -307,14 +308,14 @@ public class DfFeeService {
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
-                        logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 能找到计费明细", order.getDeliverid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
-                        saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname(), false);
+                        logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", order.getDeliverid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
+                        saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
                     }
                 }
 
                 if (isJoinBranch(branchId)) {
                     DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
-                    logger.info("相同小件员ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
+                    logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
                     if (null == fee) {
                         saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                                 order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
@@ -323,13 +324,12 @@ public class DfFeeService {
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
-                        logger.info("相同站点ID{}，相同订单号{}，相同结算状态{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
-                        saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname(), false);
+                        logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
+                        saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
                     }
                 }
             }
         }
-
     }
 
     private String getAddressCode(String addressName, List<AdressVO> addresses) {
@@ -347,27 +347,40 @@ public class DfFeeService {
 
     public void saveFeeRelativeAfterOrderReset(String cwb, User currentUser) {
         CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
-        saveFeeRelativeAfterOrderResetOrDisabled(cwbOrder, currentUser, true);
+        saveFeeRelativeAfterOrderResetOrDisabled(cwbOrder, currentUser, FROM_RESET_ORDER);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveFeeRelativeAfterOrderResetOrDisabled(CwbOrder cwbOrder, User currentUser, boolean isFromReset) {
-        logger.info("重置反馈后插入派费相关表操作开始");
+    public void saveFeeRelativeAfterOrderDisabled(String cwb) {
+        User currentUser = userDAO.getUserByUsername("admin");
+        CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+        saveFeeRelativeAfterOrderResetOrDisabled(cwbOrder, currentUser, FROM_DISABLE_ORDER);
+    }
+
+    private void saveFeeRelativeAfterOrderResetOrDisabled(CwbOrder cwbOrder, User currentUser, int fromWhere) {
+        logger.info("重置反馈或失效后插入派费相关表操作开始");
 
         Integer chargeType;
-        Long id;
+        Long id = null;
 
         String cwb = cwbOrder.getCwb();
 
         for (DeliveryFeeChargerType chargerType : DeliveryFeeChargerType.values()) {
-            if (cwbOrder.getInstationid() > 0) {
+            Long senderAddrId;
+
+            if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue()
+                    || cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue())
+                senderAddrId = cwbOrder.getPickbranchid();
+            else
+                senderAddrId = cwbOrder.getInstationid();
+
+            if (senderAddrId > 0) {
                 chargeType = DeliveryFeeRuleChargeType.GET.getValue();
                 if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                    id = cwbOrder.getInstationid();
+                    id = senderAddrId;
                 } else {
-                    id = new Long(cwbOrder.getInstationhandlerid());
+                    id = new Long(cwbOrder.getCollectorid());
                 }
-                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, isFromReset);
+                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
             }
 
             if (cwbOrder.getDeliverybranchid() > 0) {
@@ -378,7 +391,7 @@ public class DfFeeService {
                 } else {
                     id = cwbOrder.getDeliverid();
                 }
-                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, isFromReset);
+                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
             }
         }
 
@@ -386,13 +399,15 @@ public class DfFeeService {
         logger.info("重置反馈后插入派费相关表操作结束");
     }
 
-    private void deleteFeeOrAddAdjust(DeliveryFeeChargerType chargerType, String cwb, Integer chargeType, Long branchOrUserId, User currentUser, boolean isFromReset) {
+    private void deleteFeeOrAddAdjust(DeliveryFeeChargerType chargerType, String cwb, Integer chargeType, Long branchOrUserId, User currentUser, int fromWhere) {
         boolean isQulified = false;
-        if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-            if (isJoinBranch(branchOrUserId))
+        if (branchOrUserId != null && branchOrUserId > 0) {
+            if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
+                if (isJoinBranch(branchOrUserId))
+                    isQulified = true;
+            } else
                 isQulified = true;
-        } else
-            isQulified = true;
+        }
 
         if (isQulified) {
             //费用类型，同一配送站点或小件员
@@ -400,9 +415,9 @@ public class DfFeeService {
 
             if (fee != null) {
                 if (fee.getIsBilled() == 1) {
-                    DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee, isFromReset);
+                    DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee, fromWhere);
                     if (adjustment != null) {
-                        if (isFromReset) {
+                        if (fromWhere == FROM_RESET_ORDER) {
                             //如果是重置反馈，需要记录反馈申请人和反馈通过时间。
                             ApplyEditDeliverystate applyEditDeliverystateWithPass = applyEditDeliverystateDAO.getApplyEditDeliverystateWithPass(cwb);
                             adjustment.setApplyuserid(applyEditDeliverystateWithPass.getApplyuserid());
@@ -420,9 +435,8 @@ public class DfFeeService {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType chargerType, DfBillFee fee, String currentUser, boolean isFromReset) {
-        DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee, isFromReset);
+    private void saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType chargerType, DfBillFee fee, String currentUser) {
+        DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee, FROM_AUDIT_CONFIRMED);
 
         if (adjustment == null)
             return;
@@ -433,7 +447,6 @@ public class DfFeeService {
 
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void saveDeliveryFee(DeliveryFeeChargerType chargerType, String cwb, String transcwb, int cwbordertypeid, long customerid, long sendcarnum, long backcarnum,
                                  String senderaddress, String consigneeaddress, BigDecimal realweight, BigDecimal cargovolume, int chargeType,
                                  long handlerid, String userName, long branchId, long cwbstate, long flowordertype,
@@ -482,7 +495,7 @@ public class DfFeeService {
         return null;
     }
 
-    private DfAdjustmentRecord transformFeeToAdjustment(DfBillFee fee, boolean isFromReset) {
+    private DfAdjustmentRecord transformFeeToAdjustment(DfBillFee fee, int fromWhere) {
 
         DfAdjustmentRecord adjustmentRecord = new DfAdjustmentRecord();
 
@@ -500,10 +513,12 @@ public class DfFeeService {
         }
 //        adjustmentRecord.setAdjustAmount(fee.getFeeAmount());
         if (fee.getFeeAmount() != null) {
-            if (isFromReset)
+            if (fromWhere == FROM_DISABLE_ORDER || fromWhere == FROM_RESET_ORDER) {
+                //如果是来自失效订单或重置反馈,插入负数数据
                 adjustmentRecord.setAdjustAmount(fee.getFeeAmount().multiply(new BigDecimal(-1)));
-            else
+            } else {
                 adjustmentRecord.setAdjustAmount(fee.getFeeAmount());
+            }
         }
 
         return adjustmentRecord;
