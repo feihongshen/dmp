@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -46,6 +48,8 @@ import cn.explink.util.Tools;
  */
 @Repository
 public class ExpressOrderDao {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
@@ -626,6 +630,10 @@ public class ExpressOrderDao {
 					public void setValues(PreparedStatement ps, int i) throws SQLException {
 						int j = 1;
 						EmbracedOrderVO embracedOrder = tempList.get(i);
+						
+						//Added by leoliao at 2016-07-26 输出日志
+						logger.info("ExpressOrderDao.importEmbracedData:cwb={}", embracedOrder.getOrderNo());
+						
 						ps.setString(j++, embracedOrder.getOrderNo());
 						ps.setInt(j++, FlowOrderTypeEnum.LanJianRuZhan.getValue());
 						ps.setInt(j++, CwbStateEnum.PeiShong.getValue());
@@ -745,6 +753,10 @@ public class ExpressOrderDao {
 					public void setValues(PreparedStatement ps, int i) throws SQLException {
 						int j = 1;
 						EmbracedOrderVO embracedOrder = tempList.get(i);
+						
+						//Added by leoliao at 2016-07-26 输出日志
+						logger.info("ExpressOrderDao.updateImportEmbracedData={}", embracedOrder.getOrderNo());
+						
 						ps.setString(j++, embracedOrder.getOrderNo());
 						ps.setString(j++, embracedOrder.getFlowordertype());
 						ps.setInt(j++, CwbStateEnum.PeiShong.getValue());

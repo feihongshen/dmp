@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 
 import cn.explink.domain.User;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.UserService;
 
 /**
  * @author songkaojun 2015年7月30日
@@ -42,10 +43,20 @@ public class ExpressCommonController {
 	private SecurityContextHolderStrategy securityContextHolderStrategy;
 
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	private UserService userService;
 
 	protected User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		return userDetail.getUser();
+		
+		//Modified by leoliao at 2016-07-26 如果session用户的branchid为0则重新获取用户branchid
+		User currUser = userDetail.getUser();
+		userService.convertSessionUserBranchId(currUser);
+		
+		return currUser;
+		//return userDetail.getUser();
+		//Modified end
 	}
 
 	protected boolean isAdmin() {
