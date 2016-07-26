@@ -27,8 +27,6 @@ import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.exception.CwbException;
-import cn.explink.support.transcwb.TransCwbDao;
-import cn.explink.support.transcwb.TranscwbView;
 
 /**
  *
@@ -43,8 +41,6 @@ public final class ReturnToCustomerReleaseService extends AbstractMPSReleaseServ
 	
 	@Autowired
 	private CwbDAO cwbDAO;
-	@Autowired
-	private TransCwbDao transCwbDao;
 	@Autowired
 	private SystemInstallDAO systemInstallDAO;
 	@Autowired
@@ -124,6 +120,9 @@ public final class ReturnToCustomerReleaseService extends AbstractMPSReleaseServ
 			return;
 		}
 		
+		/* ***************modify begin*********************/
+		//commented by neo01.huang，2016-7-26，放开对express_ops_transcwb的校验，express_ops_transcwb的记录条数有可能跟sendcarnum不一致
+		/*
 		List<TranscwbView> transcwbViewList = transCwbDao.getTransCwbByCwb(cwb);
 		if (CollectionUtils.isEmpty(transcwbViewList)) {
 			logger.info("{}{}订单号没有绑定运单号，无需校验，跳过", logPrefix, cwb);
@@ -134,6 +133,8 @@ public final class ReturnToCustomerReleaseService extends AbstractMPSReleaseServ
 			logger.info("{}{}运单号数量与发货数量不一致，无需校验，跳过", logPrefix, cwb);
 			return;
 		}
+		*/
+		/* ***************modify end*********************/
 		
 		if (flowordertype != FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) {
 			//一件都还没退供货商出库校验
