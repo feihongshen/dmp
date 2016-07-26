@@ -463,25 +463,8 @@ $(function(){
 								</tr>
 							<%}} %>
 						<%}else{ %>
-							<%if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("1")) {%>
-								<tr>
-									<td width="90" align="center" bgcolor="#F1F1F1">订单号</td>
-									<td width="80" align="center" bgcolor="#F1F1F1">运单号</td>
-									<td width="80" align="center" bgcolor="#F1F1F1">包号</td>
-									<td width="80" align="center" bgcolor="#F1F1F1">客户</td>
-									<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
-									<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
-								</tr>
-							<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("3")) {%>
-								<tr>
-									<td width="80" align="center" bgcolor="#F1F1F1">包号</td>
-									<td width="90" align="center" bgcolor="#F1F1F1">订单号</td>
-									<td width="80" align="center" bgcolor="#F1F1F1">运单号</td>
-									<td width="80" align="center" bgcolor="#F1F1F1">客户</td>
-									<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
-									<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
-								</tr>
-							<%} else if(request.getAttribute("isAmazonOpen") != null && "1".equals(request.getAttribute("isAmazonOpen").toString()) ){ %>
+						
+						<%if(request.getAttribute("isAmazonOpen") != null && "1".equals(request.getAttribute("isAmazonOpen").toString()) ){ %>
 							  <tr>
 								<td width="80" align="center" bgcolor="#F1F1F1">订&nbsp;单&nbsp;号</td>
 								<td width="80" align="center" bgcolor="#F1F1F1">运单号</td>
@@ -491,6 +474,24 @@ $(function(){
 								<td width="80" align="center" bgcolor="#F1F1F1">电话</td>
 								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
 								</tr>
+						<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("1")) {%>
+							<tr>
+								<td width="90" align="center" bgcolor="#F1F1F1">订单号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">运单号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">包号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">客户</td>
+								<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
+								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
+							</tr>
+						<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("3")) {%>
+							<tr>
+								<td width="80" align="center" bgcolor="#F1F1F1">包号</td>
+								<td width="90" align="center" bgcolor="#F1F1F1">订单号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">运单号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">客户</td>
+								<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
+								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
+							</tr>
 						<%}else{ %>
 						<tr>
 								<td width="90" align="center" bgcolor="#F1F1F1">订单号</td>
@@ -509,7 +510,25 @@ $(function(){
 						<tbody> -->
 						<%if(orderlist != null && orderlist.size()>0){ %>
 						<%for(CwbOrder order : orderlist){ %>
-							<% if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("1")) {
+							<%if(request.getAttribute("isAmazonOpen") != null && "1".equals(request.getAttribute("isAmazonOpen").toString()) ){ %>
+							<tr onclick="goForm('<%=order.getCwb() %>');" >
+								<td width="90" align="center"><%=order.getCwb() %></td>
+								<td width="80" align="center"><%=order.getTranscwb()%></td>
+								<td width="80" align="center"><%=CwbOrderTypeIdEnum.getByValue(order.getCwbordertypeid()).getText() %></td>
+								<td width="120" align="center"><%=order.getEmaildate() %></td>
+								<td width="80" align="center"><%=order.getConsigneenameOfkf() %></td>
+								<td width="80" align="center"><%=order.getConsigneemobileOfkf() %></td>
+								<td align="center">
+									<%if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已审核"){%>
+										审核为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
+									else if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已反馈") {%>
+										反馈为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
+									else{ %>
+										<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
+									<%} %>
+								</td>
+							</tr>
+							<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("1")) {
 								int size = baleCwbSizeMap.get(order.getCwb());
 								List<BaleCwbClassifyVo> voList = baleCwbClassifyVoListMap.get(order.getCwb());
 								for(int i = 0; i < voList.size(); i++) {
@@ -575,24 +594,6 @@ $(function(){
 							<%
 								}
 							   }%>
-							<%} else if(request.getAttribute("isAmazonOpen") != null && "1".equals(request.getAttribute("isAmazonOpen").toString()) ){ %>
-							<tr onclick="goForm('<%=order.getCwb() %>');" >
-								<td width="90" align="center"><%=order.getCwb() %></td>
-								<td width="80" align="center"><%=order.getTranscwb()%></td>
-								<td width="80" align="center"><%=CwbOrderTypeIdEnum.getByValue(order.getCwbordertypeid()).getText() %></td>
-								<td width="120" align="center"><%=order.getEmaildate() %></td>
-								<td width="80" align="center"><%=order.getConsigneenameOfkf() %></td>
-								<td width="80" align="center"><%=order.getConsigneemobileOfkf() %></td>
-								<td align="center">
-									<%if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已审核"){%>
-										审核为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
-									else if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已反馈") {%>
-										反馈为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
-									else{ %>
-										<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
-									<%} %>
-								</td>
-							</tr>
 							<% }else{ %>
 								<tr onclick="goForm('<%=order.getCwb() %>');" >
 									<td width="80" align="center"><%=order.getCwb() %></td>
