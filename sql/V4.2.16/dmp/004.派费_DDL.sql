@@ -1,22 +1,17 @@
 -- 备份已有的表， 重命名为*_backup, 系统上线后，需要drop掉
 ALTER TABLE fn_df_agreement RENAME TO fn_df_agreement_backup;
-ALTER TABLE fn_df_bill RENAME TO fn_df_bill_backup;
-ALTER TABLE fn_df_bill_detail RENAME TO fn_df_bill_detail_backup;
 ALTER TABLE fn_df_bill_period RENAME TO fn_df_bill_period_backup;
 ALTER TABLE fn_df_confirm_rate RENAME TO fn_df_confirm_rate_backup;
 ALTER TABLE fn_df_confirm_rate_detail RENAME TO fn_df_confirm_rate_detail_backup;
 ALTER TABLE fn_df_rule RENAME TO fn_df_rule_backup;
 ALTER TABLE fn_df_rule_area RENAME TO fn_df_rule_area_backup;
 ALTER TABLE fn_df_rule_range RENAME TO fn_df_rule_range_backup;
-ALTER TABLE fn_df_rule_step RENAME TO fn_df_rule_step_backup;
 ALTER TABLE fn_df_rule_subsidy RENAME TO fn_df_rule_subsidy_backup;
 ALTER TABLE fn_df_sanction RENAME TO fn_df_sanction_backup;
-ALTER TABLE fn_df_adjustment_record RENAME TO fn_df_adjustment_record_backup;
 
 -- ----------------------------
 -- Table structure for fn_df_agreement
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_agreement`;
 CREATE TABLE `fn_df_agreement` (
   `agt_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `agt_no` varchar(32) DEFAULT NULL COMMENT '协议编号',
@@ -40,7 +35,6 @@ CREATE TABLE `fn_df_agreement` (
 -- ----------------------------
 -- Table structure for fn_df_bill_org
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_bill_org`;
 CREATE TABLE `fn_df_bill_org` (
   `bill_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `bill_no` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '账单编号',
@@ -74,7 +68,6 @@ CREATE TABLE `fn_df_bill_org` (
 -- ----------------------------
 -- Table structure for fn_df_bill_period
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_bill_period`;
 CREATE TABLE `fn_df_bill_period` (
   `period_id` bigint(10) NOT NULL AUTO_INCREMENT,
   `org_id` bigint(20) DEFAULT NULL COMMENT '站点',
@@ -103,7 +96,6 @@ CREATE TABLE `fn_df_bill_period` (
 -- ----------------------------
 -- Table structure for fn_df_bill_staff
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_bill_staff`;
 CREATE TABLE `fn_df_bill_staff` (
   `bill_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `bill_no` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '账单编号',
@@ -138,7 +130,6 @@ CREATE TABLE `fn_df_bill_staff` (
 -- ----------------------------
 -- Table structure for fn_df_confirm_rate
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_confirm_rate`;
 CREATE TABLE `fn_df_confirm_rate` (
   `confirm_rate_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'confirm_rate_id',
   `org_id` bigint(20) DEFAULT NULL COMMENT '站点id',
@@ -168,7 +159,6 @@ CREATE TABLE `fn_df_confirm_rate` (
 -- ----------------------------
 -- Table structure for fn_df_confirm_rate_detail
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_confirm_rate_detail`;
 CREATE TABLE `fn_df_confirm_rate_detail` (
   `detail_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '明细ID',
   `confirm_rate_id` bigint(20) NOT NULL COMMENT '妥投率报表ID',
@@ -194,7 +184,6 @@ CREATE TABLE `fn_df_confirm_rate_detail` (
 -- ----------------------------
 -- Table structure for fn_df_fee_adjustment_org
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_fee_adjustment_org`;
 CREATE TABLE `fn_df_fee_adjustment_org` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `order_no` varchar(100) NOT NULL COMMENT '订单号',
@@ -251,7 +240,6 @@ CREATE TABLE `fn_df_fee_adjustment_org` (
 -- ----------------------------
 -- Table structure for fn_df_fee_adjustment_staff
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_fee_adjustment_staff`;
 CREATE TABLE `fn_df_fee_adjustment_staff` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `order_no` varchar(100) NOT NULL COMMENT '订单号',
@@ -308,7 +296,6 @@ CREATE TABLE `fn_df_fee_adjustment_staff` (
 -- ----------------------------
 -- Table structure for fn_df_fee_org
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_fee_org`;
 CREATE TABLE `fn_df_fee_org` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `order_no` varchar(100) NOT NULL COMMENT '订单号',
@@ -376,7 +363,6 @@ CREATE TABLE `fn_df_fee_org` (
 -- ----------------------------
 -- Table structure for fn_df_fee_staff
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_fee_staff`;
 CREATE TABLE `fn_df_fee_staff` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `order_no` varchar(100) NOT NULL COMMENT '订单号',
@@ -444,7 +430,6 @@ CREATE TABLE `fn_df_fee_staff` (
 -- ----------------------------
 -- Table structure for fn_df_rule
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_rule`;
 CREATE TABLE `fn_df_rule` (
   `rule_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `rule_no` varchar(32) DEFAULT NULL COMMENT '规则编号',
@@ -468,7 +453,6 @@ CREATE TABLE `fn_df_rule` (
 -- ----------------------------
 -- Table structure for fn_df_rule_add
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_rule_add`;
 CREATE TABLE `fn_df_rule_add` (
   `rule_add_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `rule_id` bigint(20) DEFAULT NULL COMMENT '规则编号ID',
@@ -488,7 +472,6 @@ CREATE TABLE `fn_df_rule_add` (
 -- ----------------------------
 -- Table structure for fn_df_rule_area
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_rule_area`;
 CREATE TABLE `fn_df_rule_area` (
   `rule_area_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `rule_id` bigint(20) DEFAULT NULL COMMENT '规则编码',
@@ -511,7 +494,6 @@ CREATE TABLE `fn_df_rule_area` (
 -- ----------------------------
 -- Table structure for fn_df_rule_avg
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_rule_avg`;
 CREATE TABLE `fn_df_rule_avg` (
   `rule_avg_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `rule_id` bigint(20) DEFAULT NULL COMMENT '规则编号ID',
@@ -531,7 +513,6 @@ CREATE TABLE `fn_df_rule_avg` (
 -- ----------------------------
 -- Table structure for fn_df_rule_cust
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_rule_cust`;
 CREATE TABLE `fn_df_rule_cust` (
   `rule_id` bigint(20) NOT NULL COMMENT '主键ID',
   `cust_id` bigint(20) NOT NULL COMMENT '适用客户',
@@ -541,7 +522,6 @@ CREATE TABLE `fn_df_rule_cust` (
 -- ----------------------------
 -- Table structure for fn_df_rule_range
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_rule_range`;
 CREATE TABLE `fn_df_rule_range` (
   `rule_range_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `rule_id` bigint(20) DEFAULT NULL COMMENT '规则编号ID',
@@ -564,7 +544,6 @@ CREATE TABLE `fn_df_rule_range` (
 -- ----------------------------
 -- Table structure for fn_df_rule_subsidy
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_rule_subsidy`;
 CREATE TABLE `fn_df_rule_subsidy` (
   `subsidy_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `rule_id` bigint(20) DEFAULT NULL COMMENT '规则编码',
@@ -583,7 +562,6 @@ CREATE TABLE `fn_df_rule_subsidy` (
 -- ----------------------------
 -- Table structure for fn_df_sanction
 -- ----------------------------
-DROP TABLE IF EXISTS `fn_df_sanction`;
 CREATE TABLE `fn_df_sanction` (
   `sanction_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `period_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '账期id',
