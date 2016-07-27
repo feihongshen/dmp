@@ -9750,10 +9750,10 @@ public class CwbDAO {
 		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb , count});
 	}
 	
-	public void updateCwbDeliveryPermitByPeiSong(String cwb) {
-		String sql = "update express_ops_cwb_detail set delivery_permit=1 where cwb like '"+cwb+"-T_' and state=1";
+	public void updateCwbDeliveryPermitByPeiSong(String cwb, int delivery_permit) {
+		String sql = "update express_ops_cwb_detail set delivery_permit= " + delivery_permit + " where cwb like '" + cwb + "-T_' and state=1";
 		int count = this.jdbcTemplate.update(sql);
-		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb , count});
+		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb, count });
 	}
 	
 	public String queryRelatedShangMenTuiCwb (String cwb ) {
