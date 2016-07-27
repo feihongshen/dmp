@@ -134,7 +134,7 @@ public class BranchDAO {
 			branch.setOutputno(rs.getString("outputno"));
 			
 			branch.setUpdateUser(rs.getString("update_user"));
-			branch.setUpdateTime(DateTimeUtil.parseStringToDate(rs.getString("update_time")));
+			branch.setUpdateTime(rs.getString("update_time"));
 			return branch;
 		}
 	}
