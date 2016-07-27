@@ -810,12 +810,12 @@ function flush(){
 				</div>
 				<div>					
 						<span id='autoallocating_use' type="text" style="display:none"><input type="checkbox" id="useAutoAllocating" name="useAutoAllocating" onclick="checkUseAutoAllocating();" />启用自动分拨</span>
-						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 150px">
+						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 200px">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Entrance e : eList) {
 						%>
-						<option value="<%=e.getEntranceno()%>"><%=e.getEntranceno()+"("+e.getEntranceip()+")"%></option>
+						<option value="<%=e.getEntranceno()%>"><%=e.getEntranceno()+" - ("+e.getEntranceip()+")"%></option>
 						<%
 							}
 						%>
