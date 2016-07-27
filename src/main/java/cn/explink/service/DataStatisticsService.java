@@ -1755,10 +1755,7 @@ public class DataStatisticsService {
 		
 		//优化方法，将循环中的sql查询放到循环外部--刘武强20160725
 		StringBuffer cwbStr = new StringBuffer();//订单里面cwb的集合
-		cwbStr.append(StringUtils.join(cwbs, ","));
-		if("".equals(cwbStr.toString())){
-			cwbStr.append("''");
-		}
+		cwbStr.append("'").append(StringUtils.join(cwbs, "','")).append("'");
 		List<DeliveryState> deliveryStateListByCwbs = this.deliveryStateDAO.getLastDeliveryStateByCwbs(cwbStr.toString());
 		List<OrderFlow> orderflowListByCwbsAndFlowordertype_tuihuozhaoruku = this.orderFlowDAO.getOrderFlowByCwbsAndFlowordertype(cwbStr.toString(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), begindate, enddate);
 		List<OrderFlow> orderflowListByCwbsAndFlowordertype_fenzhandaohuo = this.orderFlowDAO.getOrderFlowByCwbsAndFlowordertype(cwbStr.toString(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), "", "");
