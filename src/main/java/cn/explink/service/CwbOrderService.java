@@ -6445,7 +6445,7 @@ public class CwbOrderService extends BaseOrderService {
 
 				this.adjustmentRecordService.createAdjustment4GoToClassConfirm(co, deliverystate);
 			}
-
+			
 		}
 
 		// =======结算逻辑 配送结果结算归班审核产生记录==========
@@ -10025,16 +10025,17 @@ public class CwbOrderService extends BaseOrderService {
 	
 	/**
 	 * 唯品会配送单拒收/部分拒收关联上门退订单不能领货
+	 * 配送成功更新订单可以领揽退单 modify by jian_xie 2016-07-27
 	 */
 	public void handlePeiSongCwbDeliveryPermit(CwbOrder cwbOrder, long delivery_state) {
 		if (cwbOrder != null) {
 			String enumKey = this.getB2cEnumKeys(this.customerDAO.getCustomerById(cwbOrder.getCustomerid()), "vipshop");
-			if ((enumKey != null) && (CwbOrderTypeIdEnum.Peisong.getValue() == (int)cwbOrder.getCwbordertypeid()) 
-					&&((int)delivery_state == DeliveryStateEnum.JuShou.getValue() 
-					    || (int)delivery_state == DeliveryStateEnum.BuFenTuiHuo.getValue())) {
-				List<CwbOrder> shangMenTuiCwbList = cwbDAO.queryRelatedShangMenTuiCwbList(cwbOrder.getCwb());
-				if (shangMenTuiCwbList != null && !shangMenTuiCwbList.isEmpty()) {
-					cwbDAO.updateCwbDeliveryPermitByPeiSong(cwbOrder.getCwb());//上门退订单有关联的拒收配送单更新领货标识为不可领货
+			// 唯品会的配送单
+			if(enumKey != null && CwbOrderTypeIdEnum.Peisong.getValue() == cwbOrder.getCwbordertypeid()){
+				if(delivery_state == DeliveryStateEnum.JuShou.getValue() || delivery_state == DeliveryStateEnum.BuFenTuiHuo.getValue()){
+					cwbDAO.updateCwbDeliveryPermitByPeiSong(cwbOrder.getCwb(), 1);//上门退订单有关联的拒收配送单更新领货标识为不可领货
+				}else if(delivery_state == DeliveryStateEnum.PeiSongChengGong.getValue()){
+					cwbDAO.updateCwbDeliveryPermitByPeiSong(cwbOrder.getCwb(), 0);//上门退订单有关联的拒收配送单更新领货标识为可领货
 				}
 			}
 		}
