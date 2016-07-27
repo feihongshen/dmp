@@ -4382,7 +4382,12 @@ public class CwbOrderService extends BaseOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-
+		
+		// 非本站货 add by jian_xie 2016-07-27
+		if(co.getCurrentbranchid() != user.getBranchid()){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+		}
+		
 		// added by jiangyu begin 快递订单不允许做退货出站操作
 		if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.ExpressNotAllowTUIHUOCHUZHAN);
