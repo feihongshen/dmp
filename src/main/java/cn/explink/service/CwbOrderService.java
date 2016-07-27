@@ -4608,9 +4608,15 @@ public class CwbOrderService extends BaseOrderService {
 			if (co.getExceldeliverid() > 0) { // 必须该小件员才能领货
 				if (co.getExceldeliverid() != deliveryUser.getUserid()) {
 					User coDeliver = this.userDao.getUserByUserid(co.getExceldeliverid());
-					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
-							ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_BU_PI_PEI,
-							coDeliver == null ? "" : coDeliver.getRealname(), deliveryUser.getRealname());
+					// 如果地址库匹配的小件员不存在，则按未匹配处理
+					if (coDeliver != null && coDeliver.getUserid() != 0) {
+						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+								ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_BU_PI_PEI, coDeliver.getRealname(),
+								deliveryUser.getRealname());
+					} /*else { // 未匹配小件员
+						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
+								ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_WEI_PI_PEI);
+					}*/
 				}
 			} /*else { // 未匹配小件员
 				throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
