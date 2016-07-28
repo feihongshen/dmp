@@ -235,7 +235,7 @@ public class CwbColumnImpl implements CwbColumnSet {
 		}else if(b2cFlag.equals(B2cEnum.PinHaoHuo.getMethod())){
 			return this.cwbColumnSetPinhaohuo.getEexcelColumnSetByB2c(b2cFlag);
 		}else if (b2cFlag.contains("tps")) {
-			return this.cwbColumnSetTPS.getEexcelColumnSetByB2c(b2cFlag);
+			return this.cwbColumnSetTPS.getTPSOrderColumnSetByB2c(b2cFlag);
 		}
 
 		return null;

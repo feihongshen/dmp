@@ -123,7 +123,8 @@ public class BaseOrderService {
 				view.setTranscwb(wco.getTranscwb());
 				view.setCustomerid(wco.getCustomerid());
 				view.setNextbranchid(wco.getNextbranchid());
-
+				view.setDeliverid(wco.getDeliverid());
+				view.setExceldliverid(wco.getExceldeliverid());
 				//***Hps_Concerto create 2016年6月27日 11:17:07
 				 for (CwbStateEnum  cwb   : CwbStateEnum.values()){
 					 if(cwb.getValue()==wco.getCwbstate()){

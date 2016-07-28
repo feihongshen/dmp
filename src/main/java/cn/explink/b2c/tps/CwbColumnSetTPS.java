@@ -10,12 +10,11 @@ public class CwbColumnSetTPS {
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
 	 */
-	public ExcelColumnSet getEexcelColumnSetByB2c(String b2cFlag) {
+	public ExcelColumnSet getTPSOrderColumnSetByB2c(String b2cFlag) {
 		// TODO Auto-generated method stub
 		ExcelColumnSet excelColumnSet = new ExcelColumnSet();
 
 		excelColumnSet.setCwbindex(1);
-		excelColumnSet.setTranscwbindex(1);
 		excelColumnSet.setSendcargonumindex(1);
 		excelColumnSet.setConsigneenameindex(1);
 		excelColumnSet.setConsigneeaddressindex(1);

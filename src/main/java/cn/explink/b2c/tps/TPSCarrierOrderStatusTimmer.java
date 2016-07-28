@@ -165,7 +165,10 @@ public class TPSCarrierOrderStatusTimmer {
 					this.transCwbDao.saveTranscwb(transcwbTmp, cwb);
 				}
 				this.transCwbDao.saveTranscwb(cwb, cwb);
-				this.cwbDAO.saveTranscwbByCwb(transcwb, cwb);//更新运单号
+				/** mod begin by yurong.liang 2016-7-21 **/
+				//this.cwbDAO.saveTranscwbByCwb(transcwb, cwb);//更新运单号
+				this.cwbDAO.saveTranscwbAndTpsTranscwbByCwb(transcwb, cwb);
+				/************** mod end *****************/
 				this.cwbDAO.saveBackcarnum(transcwbList.size(),cwb);//更新取货数量
 				this.cwbDAO.saveSendcarnum(transcwbList.size(),cwb);//更新发货数量
 			}

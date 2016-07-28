@@ -1,0 +1,1 @@
+select count(1) cnt from INFORMATION_SCHEMA.STATISTICS where TABLE_SCHEMA = schema() and TABLE_NAME = 'express_ops_ordertrack_to_tps' and INDEX_NAME = 'ordertrack_customerid_idx' and COLUMN_NAME = 'customerid';	-- 结果为1

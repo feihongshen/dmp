@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -139,6 +140,7 @@ import cn.explink.exception.CwbException;
 import cn.explink.param.AutoAllocationParam;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
+import cn.explink.schedule.Constants;
 import cn.explink.service.BaleService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderTypeService;
@@ -150,6 +152,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
+import cn.explink.service.UserService;
 import cn.explink.service.OrderBackCheckService;
 import cn.explink.service.docking.AutoAllocationService;
 import cn.explink.service.express.ExpressOutStationService;
@@ -313,7 +316,10 @@ public class PDAController {
 	
 	@Autowired
 	private MPSOptStateService mpsOptStateService ;
-	
+
+	@Autowired
+	private UserService userService;
+
 	@Autowired
 	private OrderBackCheckService orderBackCheckService;
 
@@ -492,12 +498,12 @@ public class PDAController {
 		model.addAttribute("showCustomerSign", showCustomerSign);
 		model.addAttribute("ifshowtag", this.systemInstallDAO.getSystemInstall("ifshowbudatag") == null ? null : this.systemInstallDAO.getSystemInstall("ifshowbudatag").getValue());
 		
-		/**
-		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
-		 */
-		if(autoAllocatingSwitch.equals("1")){
-			this.createSocketConnectMap(eList);
-		}
+//		/**
+//		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
+//		 */
+//		if(autoAllocatingSwitch.equals("1")){
+//			this.createSocketConnectMap(eList);
+//		}
 		this.logger.info("进入分拣库入库页面的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 		return "pda/intowarhouse";
 	}
@@ -543,12 +549,12 @@ public class PDAController {
 		model.addAttribute("RUKUPCandPDAaboutYJDPWAV",
 				this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV") == null ? "yes" : this.systemInstallDAO.getSystemInstall("RUKUPCandPDAaboutYJDPWAV").getValue());
 		model.addAttribute("showCustomerSign", showCustomerSign);
-		/**
-		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
-		 */
-		if(autoAllocatingSwitch.equals("1")){
-			this.createSocketConnectMap(eList);
-		}
+//		/**
+//		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
+//		 */
+//		if(autoAllocatingSwitch.equals("1")){
+//			this.createSocketConnectMap(eList);
+//		}
 		return "pda/changeintowarhouse";
 	}
 
@@ -1815,6 +1821,8 @@ public class PDAController {
 		historydaohuolist.addAll(historyzhiliulist);
 		historydaohuolist.addAll(historydaizhongzhuanlist);
 		historydaohuolist.addAll(historyjushoulist);
+		// 只显示选择小件员匹配到的件
+		historydaohuolist = this.cwbOrderService.filterCwbOrderByDeliver(historydaohuolist, deliverid);
 		historyweilinghuolist = this.getcwbDetail(historydaohuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		// 1.今日未领货======================================
@@ -1822,6 +1830,8 @@ public class PDAController {
 		todayweilinghuolist.addAll(todaydaizhongzhuanlist);// 今日待中转
 		todayweilinghuolist.addAll(todayzhiliulist);// 今日滞留
 		todayweilinghuolist.addAll(todaydaohuolist);// 今日到货
+		// 只显示选择小件员匹配到的件
+		todayweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(todayweilinghuolist, deliverid);
 		List<CwbDetailView> todayweilinghuoViewlist = this.getcwbDetail(todayweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		// 3.已领货明细==========================
@@ -1832,7 +1842,9 @@ public class PDAController {
 		} else {
 			yilinghuocwbs = "'--'";
 		}
+		
 		List<CwbOrder> yilinghuolist = this.cwbDAO.getYiLingHuoListbyBranchidformingxi(yilinghuocwbs, this.getSessionUser().getBranchid(), deliverid, 1);
+		
 		List<CwbDetailView> todayweilingCwbOrders = new ArrayList<CwbDetailView>();
 		for (int i = 0; (i < Page.DETAIL_PAGE_NUMBER) && (i < todayweilinghuoViewlist.size()); i++) {
 			todayweilingCwbOrders.add(todayweilinghuoViewlist.get(i));
@@ -1843,6 +1855,7 @@ public class PDAController {
 		}
 
 		List<CwbDetailView> yilinghuoViewlist = this.getcwbDetail(yilinghuolist, cList, showCustomerjSONArray, branchList, 3);
+		
 		model.addAttribute("showCustomerSign", showCustomerSign);
 		model.addAttribute("todayweilinghuoViewlist", todayweilingCwbOrders);
 		model.addAttribute("historyweilinghuolist", historylistCwbOrders);
@@ -2014,7 +2027,7 @@ public class PDAController {
 	 */
 	@RequestMapping("/branchdeliverBatch")
 	public String branchdeliverBatch(Model model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
+			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid, boolean isChaoqu) {
 		/*
 		 * String roleids = "2,4"; List<User> uList =
 		 * this.userDAO.getUserByRolesAndBranchid(roleids,
@@ -2056,7 +2069,7 @@ public class PDAController {
 				//校验是否存在退货出站审核中的记录
 				orderBackCheckService.validateCheckStateAuditing(cwb, FlowOrderTypeEnum.FenZhanLingHuo);
 				
-				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
+				CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
 				try{
 					if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype())!=null){
@@ -2150,6 +2163,7 @@ public class PDAController {
 						: cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 				obj.put("cwbOrder", cwbOrder);
 				obj.put("errorcode", ce.getError().getValue());
+				obj.put("createtime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 				obj.put("errorinfo", ce.getMessage());
 				if (cwbOrder == null) {// 如果无此订单
 					obj.put("customername", "");
@@ -2288,6 +2302,7 @@ public class PDAController {
 		JSONArray showCustomerjSONArray = JSONArray.fromObject("[" + showCustomer + "]");
 		boolean showCustomerSign = ((showCustomerjSONArray.size() > 0) && !showCustomerjSONArray.getJSONObject(0).getString("customerid").equals("0")) ? true : false;
 		// 未领货
+		todayweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(todayweilinghuolist, deliverid);
 		List<CwbDetailView> todayweilingViewlist = this.getcwbDetail(todayweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		// 已领货
@@ -2295,6 +2310,7 @@ public class PDAController {
 				showCustomerjSONArray, branchList, 3);
 
 		// 历史未领货
+		historyweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(historyweilinghuolist, deliverid);
 		List<CwbDetailView> historyweilinghuoViewList = this.getcwbDetail(historyweilinghuolist, cList, showCustomerjSONArray, branchList, 2);
 
 		List<CwbDetailView> todayweilingCwbOrders = new ArrayList<CwbDetailView>();
@@ -3028,7 +3044,11 @@ public class PDAController {
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid, @RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
 			@RequestParam(value = "emaildate", defaultValue = "0") long emaildate, @RequestParam(value = "youhuowudanflag", defaultValue = "-1") String youhuowudanflag,
-			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno,@RequestParam(value = "direction", defaultValue = "-1") String direction) {
+			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno) {
+		if(isAutoAllocatingButDisconnected(entranceno)){
+			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
+		}
+		
 		long startTime = System.currentTimeMillis();
 		ExplinkResponse resp = null;
 		JSONArray promt = null;
@@ -3250,7 +3270,7 @@ public class PDAController {
 				/**
 				 * 对接自动分拨的中间件
 				 */
-				this.addQueue(outputNo, entranceno, cwb, direction, branchName);		
+				this.addQueue(outputNo, entranceno, cwb, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_INTOWAHOUSE);		
 			
 				this.logger.info("分拣库入库扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
 				return resp;
@@ -3637,7 +3657,10 @@ public class PDAController {
 	public @ResponseBody ExplinkResponse cwbChangeintowarhouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
 			@RequestParam(value = "requestbatchno", required = true, defaultValue = "0") long requestbatchno, @RequestParam(value = "comment", required = true, defaultValue = "") String comment,
-			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno,@RequestParam(value = "direction", defaultValue = "-1") String direction) {
+			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno) {
+		if(isAutoAllocatingButDisconnected(entranceno)){
+			throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
+		}
 		String scancwb = cwb;
 		String branchName="";//配送站点名称
 		String outputNo="";//出货口编号
@@ -3717,7 +3740,7 @@ public class PDAController {
 			/**
 			 * 对接自动分拨的中间件
 			 */
-			this.addQueue(outputNo, entranceno, cwb, direction, branchName);
+			this.addQueue(outputNo, entranceno, cwb, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_CHANGE_INTOWAHOUSE);
 			
 			return explinkResponse;
 		} catch (CwbException e) {
@@ -4062,6 +4085,15 @@ public class PDAController {
 				obj.put("cwbdeliverybranchname", "");
 				obj.put("cwbdeliverybranchnamewav", "");
 			}
+			// 配送员
+			String deliverName = "";
+			if(cwbOrder.getExceldeliverid() != 0) {
+				User deliver = this.userService.getUserByUserid(cwbOrder.getExceldeliverid());
+				if(deliver != null) {
+					deliverName = deliver.getRealname();
+				}
+			}
+			obj.put("deliverName", deliverName);
 			// 查询系统设置，得到name=showCustomer的express_set_system_install表中的value,加入到obj中
 			String jyp = this.systemInstallDAO.getSystemInstall("showCustomer").getValue();
 			List<JsonContext> list = PDAController.test("[" + jyp + "]", JsonContext.class);// 把json转换成list
@@ -5593,8 +5625,10 @@ public class PDAController {
 	 *
 	 */
 	@RequestMapping("/cwbbranchdeliver/{cwb}")
-	public @ResponseBody ExplinkResponse cwbbranchdeliver(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
-			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid) throws ParseException {
+	public @ResponseBody ExplinkResponse cwbbranchdeliver(Model model, HttpServletRequest request,
+			HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "deliverid", required = true, defaultValue = "0") long deliverid, boolean isChaoqu)
+			throws ParseException {
 		String scancwb = cwb;
 		cwb = this.cwbOrderService.translateCwb(cwb);
 		
@@ -5607,7 +5641,7 @@ public class PDAController {
 		this.addSmtDeliverPickingExtraMsg(obj, cwb);
 
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
-		CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
+		CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 
 		String searchCwb = "'" + cwb + "'";
@@ -5660,7 +5694,18 @@ public class PDAController {
 				}
 			}
 		}
-
+		obj.put("isChaoqu", isChaoqu);
+		if(isChaoqu) {
+			String matchDeliver = "";
+			if (cwbOrder.getExceldeliverid() > 0) {
+				User matchDeliverUser = this.userDAO.getUserByUserid(cwbOrder.getExceldeliverid());
+				if (matchDeliverUser != null) {
+					matchDeliver = matchDeliverUser.getRealname();
+				}
+			}
+			obj.put("matchDeliver", matchDeliver); //匹配到的小件员
+			obj.put("receiveDeliver", deliveryUser.getRealname());
+		}
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		// 加入货物类型声音.
 		this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
@@ -6647,6 +6692,8 @@ public class PDAController {
 		historyweilinghuolist.addAll(historydaizhongzhuanlist);
 		historyweilinghuolist.addAll(historyjushoulist);
 
+		todayweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(todayweilinghuolist, deliverid);
+		historyweilinghuolist = this.cwbOrderService.filterCwbOrderByDeliver(historyweilinghuolist, deliverid);
 		obj.put("todayweilinghuocount", todayweilinghuolist.size());
 		obj.put("historyweilinghuocount", historyweilinghuolist.size());
 		obj.put("yilinghuo", this.cwbDAO.getYiLingHuoCountbyBranchid(yilinghuocwbs, this.getSessionUser().getBranchid(), deliverid));
@@ -11319,26 +11366,54 @@ public class PDAController {
 
 	@RequestMapping("/connect")
 	public  void connectMiddleWare(@RequestParam(value = "entranceno") String entranceno) {
-		String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
-		Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
-		SocketClient sc=socketMap.get(entranceIP);
-		if(null==sc||sc.Clientstate.State!=2){
-			sc=this.autoAllocationService.startConnect(entranceIP, PORT);
-			socketMap.put(entranceIP, sc);
+		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
+			String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+			SocketClient sc=socketMap.get(entranceIP);
+			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+			if(null==sc||sc.Clientstate.State!=2){
+				logger.info("尝试连接中间件 ："+entranceIP);
+				sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+				socketMap.put(entranceIP, sc);
+			}
+			
+			sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+			socketMap=this.autoAllocationService.getSocketMap();
+			sc=socketMap.get(entranceIP);
+			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+			if(null==sc||sc.Clientstate.State!=2){
+				throw new CwbException("", FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
+			}
 		}
+	}
+	
+	@RequestMapping("/autoConnectAll")
+	public void autoConnectAllMiddleWare() {
+		List<Entrance> eList=this.entranceDAO.getAllEnableEntrances();//分拨入口查询
+		//是否开启自动分拣设置
+		String autoAllocatingSwitch = this.systemInstallDAO.getSystemInstall("AutoAllocating").getValue();
+		/**
+		 * 对接自动分拨的中间件,放在进入页面的时机是因为在系统启动时很有可能没有打开中间件客户端
+		 */
+		if(autoAllocatingSwitch.equals("1")){
+			this.createSocketConnectMap(eList);
+		}
+		
 	}
 	
 	
 	@RequestMapping("/flush")
 	public  void flushQueue(@RequestParam(value = "entranceno") String entranceno) {
-		String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
-		Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
-		SocketClient sc=socketMap.get(entranceIP);
-		if(null==sc||sc.Clientstate.State!=2){
-			return;
-		}else{
-			AutoAllocationParam param=new AutoAllocationParam();
-			this.autoAllocationService.flushQueue(entranceIP, param);
+		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
+			String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+			SocketClient sc=socketMap.get(entranceIP);
+			if(null==sc||sc.Clientstate.State!=2){
+				return;
+			}else{
+				AutoAllocationParam param=new AutoAllocationParam();
+				this.autoAllocationService.flushQueue(entranceIP, param);
+			}
 		}
 		
 	}
@@ -11551,27 +11626,99 @@ public class PDAController {
 	 * @param eList
 	 */
 	private void createSocketConnectMap(List<Entrance> eList) {
+		logger.info("初始化自动连接所有中间件");
 		for(Entrance e:eList){
 			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 			SocketClient sc=socketMap.get(e.getEntranceip());
 			if(null==sc||sc.Clientstate.State!=2){
+				logger.info("尝试连接中间件："+e.getEntranceip());
 				sc=this.autoAllocationService.startConnect(e.getEntranceip(), PORT);
 				socketMap.put(e.getEntranceip(), sc);
-}
+			}
 		}
+		
+		sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+		for(Entrance e:eList){
+			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+			SocketClient sc=socketMap.get(e.getEntranceip());
+			logger.info("中间件[" + e.getEntranceip() + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+		}
+		
 		
 	}
 	
 	/**
 	 * 对接自动分拨的中间件,往队列中添加一个包裹
 	 */
-	private void addQueue(String outputNo,String entranceno,String cwb,String direction,String branchName){
-		String autoAllocatingSwitch=this.systemInstallDAO.getSystemInstallByName("AutoAllocating").getValue();
-		//启用并设置了出货口
-		if(autoAllocatingSwitch.equals("1")&&null!=outputNo&&!outputNo.isEmpty()){
-			String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
-			AutoAllocationParam param=new AutoAllocationParam(cwb,outputNo,direction,branchName);
-			this.autoAllocationService.addQueue(entranceIP, param);
+	private void addQueue(String outputNo,String entranceno,String cwb,String branchName, String scancwb, byte intowarehouseType){
+		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
+			String autoAllocatingSwitch=this.systemInstallDAO.getSystemInstallByName("AutoAllocating").getValue();
+			//启用了自动分拨功能
+			if(autoAllocatingSwitch.equals("1")){
+				if(null!=outputNo && outputNo.length()==4 && outputNo.matches("^[0-9]{3}[01]{1}$")){		// 并设置了机构的对应滑槽口号为“0或1结尾的4位数字”
+					String export = outputNo.substring(0, 3);	//滑槽口编号前3位为出货口
+					String direction = outputNo.substring(3);	//滑槽口编号第4位定义出货为正向/反向
+					String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+					AutoAllocationParam param=new AutoAllocationParam(cwb,export,direction,branchName);
+					this.autoAllocationService.createEmptyMsgLog(param, cwb, scancwb, intowarehouseType, entranceIP);
+					//发送消息
+					this.autoAllocationService.addQueue(entranceIP, param);
+				}
+				
+			}
+		}
+	}
+	
+	/*
+	 * 检查是否：使用了自动分拨功能，却未能连上分拨机
+	 */
+	private boolean isAutoAllocatingButDisconnected(String entranceno) {
+		boolean isAutoAllocatingButDisconnected = false;
+		if(!entranceno.isEmpty() && !entranceno.equals("-1")) {
+			String autoAllocatingSwitch=this.systemInstallDAO.getSystemInstallByName("AutoAllocating").getValue();
+			//启用自动分拨并设置了出货口
+			if(autoAllocatingSwitch.equals("1")){
+				String entranceIP=this.entranceDAO.getEntranceByNo(entranceno).getEntranceip();
+				
+				//检查是否连接断开，若未连上先尝试重连一次，并休眠一段时间以等待状态异步更新
+				Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
+				SocketClient sc=socketMap.get(entranceIP);
+				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+				if(null==sc||sc.Clientstate.State!=2){
+					logger.info("尝试连接中间件："+entranceIP);
+					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+					socketMap.put(entranceIP, sc);
+					
+					sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+				}
+				
+				//再次检查是否连接断开，若仍然未连上则抛出异常，不能入库
+				socketMap=this.autoAllocationService.getSocketMap();
+				sc=socketMap.get(entranceIP);
+				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
+				if(null==sc||sc.Clientstate.State!=2){
+					isAutoAllocatingButDisconnected = true;
+				}
+			}
+		}
+		return isAutoAllocatingButDisconnected;
+	}
+	
+	/*
+	 * 连接后线程睡眠一段时间，以获得准确的连接状态
+	 */
+	private void sleepAfterConnect() {
+		//武汉自动化连接中间件等候返回状态时间间隔（毫秒）
+		int intervalInMs = 200;
+		SystemInstall intervalInMsSystemInstall = this.systemInstallDAO.getSystemInstall("autoAllocatingConnecteWaitIntervalInMs");
+		if(intervalInMsSystemInstall != null){
+			intervalInMs = Integer.parseInt(intervalInMsSystemInstall.getValue());
+		}
+		try {
+			Thread.sleep(intervalInMs);
+			logger.info("连接中间件后等候"+intervalInMs+"毫秒");
+		} catch (InterruptedException e) {
+			// do nothing
 		}
 	}
 	

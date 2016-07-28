@@ -22,6 +22,7 @@ public class SocketClient implements ISendTx{
 	public HeartBeat Heartbeat;
 	public LoginTimeOut LoginTimeout;
 	public ClientState Clientstate;
+	public SendClient SendClient;
 	/**
 	 * 启动连接
 	 */
@@ -86,4 +87,11 @@ public class SocketClient implements ISendTx{
 			return;
 		this.Sendmessage.sendMessage(data);
 	}
+
+	// added by wangwei, 20160714, start
+	public void AcceptString(String Message) {
+		SendClient=new SendClient();
+		this.SendClient.AcceptString(Message);
+	}
+	// added by wangwei, 20160714, end
 }

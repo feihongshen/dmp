@@ -894,4 +894,29 @@ public class DateTimeUtil {
 			return "";
 		}
 	}
+	
+	// added by wangwei, 20160714, start
+	public static java.util.Date parseStringToDate(String dateStr){
+		if (dateStr == null){
+			return null;
+		}
+		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat(DEF_DATETIME_FORMAT);
+		java.util.Date date = null;
+		try {
+			date = df.parse(dateStr);
+		} catch (ParseException e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+		return  date;
+	}
+	
+	public static String parseDateToString(java.util.Date date){
+		if (date == null){
+			return null;
+		}
+		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat(DEF_DATETIME_FORMAT);
+		return df.format(date);
+	}
+	// added by wangwei, 20160714, end
 }

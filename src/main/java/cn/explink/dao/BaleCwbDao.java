@@ -3,6 +3,7 @@ package cn.explink.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +150,46 @@ public class BaleCwbDao {
 	public Object getCwbCountByBaleId(long baleid){
 		String sql = "SELECT COUNT(1) FROM express_ops_bale_cwb where baleid=?";
 		return this.jdbcTemplate.queryForObject(sql,Object.class,baleid);
+	}
+	
+		/**
+	 * 查询订单对应的最后使用的包号
+	 * @date 2016年7月13日 下午5:30:18
+	 * @param cwbList
+	 * @return
+	 */
+	public List<BaleCwb> getLastBaleCwbList(List<String> cwbList) {
+		StringBuilder cwbsSb = new StringBuilder();
+		for(int i = 0; i < cwbList.size(); i++) {
+			cwbsSb.append("'");
+			cwbsSb.append(cwbList.get(i));
+			cwbsSb.append("'");
+			if(i != cwbList.size() - 1) {
+				cwbsSb.append(",");
+			}
+		}
+		String cwbs = cwbsSb.toString();
+		String sql = "SELECT bc.* FROM express_ops_bale_cwb bc"
+				+ " WHERE bc.cwb IN  (" + cwbs + ")"
+				+ " AND bc.baleid = (SELECT max(bc2.baleid) FROM express_ops_bale_cwb bc2 WHERE bc2.cwb = bc.cwb)"
+				+ " GROUP BY bc.baleid, bc.cwb"
+				+ " ORDER BY bc.baleid ASC, bc.cwb ASC";
+		return this.jdbcTemplate.query(sql, new BaleMapper());
+	}
+	
+	/**
+	 * 根据包ID查询
+	 * @date 2016年7月13日 下午5:30:50
+	 * @param baleid
+	 * @return
+	 */
+	public List<BaleCwb> getBaleCwbListByBaleId(long baleid) {
+		String sql = "select * from express_ops_bale_cwb where baleid = ?";
+		List<BaleCwb> list = this.jdbcTemplate.query(sql, new BaleMapper(), baleid);
+		if(list == null) {
+			list = new ArrayList<BaleCwb>();
+		}
+		return list;
 	}
 	
 	

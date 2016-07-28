@@ -26,7 +26,6 @@
 <script src="<%=request.getContextPath()%>/js/swfupload/swfupload.js" type="text/javascript" ></script>
 <script src="<%=request.getContextPath()%>/js/jquery.swfupload.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"  type="text/javascript"></script>
-
 <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
 <style>
 .RadioClass{
@@ -102,6 +101,7 @@
 					<td class="tdrigth">揽件员<font>*</font>:</td>
 					<td>
 						<select id="delivermanId_show" style="width:100%;">
+						    <option value="">请选择</option>
 							<c:forEach items="${deliveryMansList}" var="list">
 								<option value="${list.userid}">${list.realname}</option>
 							</c:forEach>
@@ -210,8 +210,8 @@
 									  	<tr >
 											<th class="tdleft" width="20%">预约单号</th>
 									    	<th class="tdleft" width="20%">寄件人</th>
-									    	<th class="tdleft" width="40%">地址</th>
-									    	<th class="tdleft" width="20%">寄件时间</th>
+									    	<th class="tdleft" width="35%">地址</th>
+									    	<th class="tdleft" width="25%">寄件时间</th>
 										</tr>
 									  </thead>
 									  
@@ -413,7 +413,7 @@
 					<td class="tdcenter">费用合计：</td>
 					<td class="tdleft"><input type="text" name="freight_total" id="freight_total_id"  readonly="readonly" style=" font-size:22px;color:red;height:30px;background:#EBEBE4;width:100%;"/></td>
 					<td class="tdrigth">运费<font>*</font>:</td>
-					<td class="tdleft"><input type="text" name="freight" id="freight_id" onblur="calculateFreight(this)" style="width:100%;" onchange="toFix(this,2)"/></td>
+					<td class="tdleft"><input type="text" name="freight" id="freight_id" style="width:100%;" onchange="toFix(this,2)"/></td>
 					<td class="tdrigth">包装费用:</td>
 					<td class="tdleft"><input type="text" name="packing_amount" id="packing_amount_id" onblur="calculateFreight(this)" style="width:100%;" onchange="toFix(this,2)"/></td>
 					<td class="tdrigth">是否保价:</td>
@@ -692,6 +692,11 @@
 	 *提交form前的检验
 	 */
 	function toVaildForm(){	
+ 		//校验揽件人信息
+        if(!checkDeliverman()){
+        	return false;
+        } 
+    	
         //校验第一个框里的信息
         
         if(!checkHead()){
@@ -762,6 +767,21 @@
 		$("#delivermanName_id").val($("#delivermanId_show  option:selected").text());
 		$("#goods_weight_id").val($("#actual_weight_id").val());
 	}
+	
+	/*
+	 *校验第一个框里的数据
+	 */
+	  function checkDeliverman(){
+		var delivermanId = $("#delivermanId_show");
+		
+		//校验揽件员id是否为空
+        if(!nullValidater(delivermanId,"揽件员")){
+        	$.messager.alert("提示","揽件员不能为空！", "warning");
+        	return false;
+        }
+		return true;
+	}
+	
 	/*
 	 *校验第一个框里的数据
 	 */
@@ -1117,7 +1137,6 @@
 	function checkPayMethod(){
 		var payment_method = $("input[name='payment_method']:checked").val();
 		var monthly_account_number = $("#monthly_account_number_id");
-		debugger;
 		if(payment_method == 0 || payment_method == 3){
 			//校验月结账号是否为空
 	        if(!nullValidater(monthly_account_number,"月结账号")){
@@ -1431,7 +1450,6 @@
 					"orderNo":orderNo
 				},
 				success : function(data) {	
-					debugger
 					if(typeof(data.embracedOrderVO)  == "undefined" || data.embracedOrderVO.orderNo == ""){						
 				        	$("#isadditionflag_id").attr("value",0);
 				        	//根据运单号，去订单表查数据，带出小件员
@@ -1562,7 +1580,6 @@
 					}else{
 						$("#packing_amount_id").val(data.embracedOrderVO.packing_amount);
 					}
-					
 					//把付款方式给选上 $("#payment_method_id").val(); 完成
 					if(data.embracedOrderVO.payment_method == 0){
 						$("#Radio3").attr("checked","checked");
@@ -1930,7 +1947,6 @@
 			}
 		}
 	}
-
 	
 	
 	
@@ -2140,12 +2156,10 @@
 	 *电子称数据的读取需要的两个方法
 	 */
 	function getWeightRepeatable() {
-		debugger
 		window.setInterval("setWeight()", 1);
 		$("#isRead").val("1");
 	}
 	function setWeight() {
-		debugger
 		var weight = window.parent.document.getElementById("scaleApplet").getWeight();
 		if (weight != null && weight != '') {
 			$("#actual_weight_id").val(weight);
@@ -2183,16 +2197,30 @@
 				if(data.reserveOrderList.length!=0){
 					for(var i=0;i<data.reserveOrderList.length;i++){
 						var reserveOrder=data.reserveOrderList[i];
-						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td><td>'+reserveOrder.cnorAddr+'</td><td>'+reserveOrder.requireTime+'</td></tr>');
-						
+						var requireTime = FormatDate(reserveOrder.requireTime);
+						$('#reserveOrderTable').append('<tr class="child_reserveOrderShow" ondblclick="reserveTableDblClick(this)"><td>'+reserveOrder.reserveOrderNo+'</td><td>'+reserveOrder.cnorName+'</td>'
+						+'<td>'+reserveOrder.cnorAddr+'</td><td>'+requireTime+'</td><td style="display:none">'+reserveOrder.recordVersion+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorProvName+'</td><td style="display:none">'+reserveOrder.cnorProvCode+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorCityName+'</td><td style="display:none">'+reserveOrder.cnorCityCode+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorRegionName+'</td><td style="display:none">'+reserveOrder.cnorRegionCode+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorTownName+'</td><td style="display:none">'+reserveOrder.cnorTownCode+'</td>'
+						+'<td style="display:none">'+reserveOrder.cnorTel+'</td><td style="display:none">'+reserveOrder.cnorMobile+'</td></tr>');
 					}
 				}
 				if(data.orderList.length!=0){
 					for(var i=0;i<data.orderList.length;i++){
 						var order=data.orderList[i];
 						//$('#senderHistoryTable').append('<tr class="child_senderHistory"><td>'+order.senderprovince+'</td><td>'+order.sendercity+'</td><td>'+order.sendercounty+'</td><td>'+order.senderstreet+'</td><td>'+order.senderaddress+'</td></tr>');
-						$('#senderHistoryTable').append('<tr class="child_senderHistory" ondblclick="senderHistoryTableDblClick(this)"><td>'+order.sendername+'</td><td>'+order.senderprovince+'</td><td>'+order.sendercity+'</td><td>'+order.sendercounty+'</td><td>'+order.senderstreet+'</td><td>'+order.senderaddress+'</td>'
-						+'<td style="display:none">'+order.senderprovinceid+'</td><td style="display:none">'+order.sendercityid+'</td><td style="display:none">'+order.sendercountyid+'</td><td style="display:none">'+order.senderstreetid+'</td></tr>'); 
+						$('#senderHistoryTable').append('<tr class="child_senderHistory" ondblclick="senderHistoryTableDblClick(this)">'
+								+'<td>'+order.sendername+'</td><td>'+order.senderprovince+'</td>'
+								+'<td>'+order.sendercity+'</td><td>'+order.sendercounty+'</td>'
+								+'<td>'+order.senderstreet+'</td><td>'+order.senderaddress+'</td>'
+						        +'<td style="display:none">'+order.senderprovinceid+'</td>'
+						        +'<td style="display:none">'+order.sendercityid+'</td>'
+						        +'<td style="display:none">'+order.sendercountyid+'</td>'
+						        +'<td style="display:none">'+order.senderstreetid+'</td>'
+						        +'<td style="display:none">'+order.sendertelephone+'</td>'
+						        +'<td style="display:none">'+order.sendercellphone+'</td></tr>'); 
 					}
 				}
 			}
@@ -2223,16 +2251,25 @@
 			success : function(data) {
 				for(var i=0;i<data.length;i++){
 					//$('#consigneeHistoryTable').append("<tr class='child_consigneeHistory' ondblclick='consigneeHistoryTableDblClick('+data[i].cwbprovince+')><td>'+data[i].consigneename+'</td><td>'+data[i].cwbprovince+'</td><td>'+data[i].cwbcity+'</td><td>'+data[i].cwbcounty+'</td><td>'+data[i].recstreet+'</td><td>'+data[i].consigneeaddress+'</td><td style="display:none">'+data[i].opscwbid+'</td></tr>'");
-					$('#consigneeHistoryTable').append('<tr class="child_consigneeHistory" ondblclick="consigneeHistoryTableDblClick(this)"><td>'+data[i].consigneename+'</td><td>'+data[i].cwbprovince+'</td><td>'+data[i].cwbcity+'</td><td>'+data[i].cwbcounty+'</td><td>'+data[i].recstreet+'</td><td>'+data[i].consigneeaddress+'</td>'
-					+'<td style="display:none">'+data[i].recprovinceid+'</td><td style="display:none">'+data[i].reccityid+'</td><td style="display:none">'+data[i].reccountyid+'</td><td style="display:none">'+data[i].recstreetid+'</td></tr>'); 
+					$('#consigneeHistoryTable').append('<tr class="child_consigneeHistory" ondblclick="consigneeHistoryTableDblClick(this)">'
+							+'<td>'+data[i].consigneename+'</td><td>'+data[i].cwbprovince+'</td>'
+							+'<td>'+data[i].cwbcity+'</td><td>'+data[i].cwbcounty+'</td>'
+							+'<td>'+data[i].recstreet+'</td><td>'+data[i].consigneeaddress+'</td>'
+					+'<td style="display:none">'+data[i].recprovinceid+'</td><td style="display:none">'+data[i].reccityid+'</td>'
+					+'<td style="display:none">'+data[i].reccountyid+'</td><td style="display:none">'+data[i].recstreetid+'</td>'
+					+'<td style="display:none">'+data[i].consigneephone+'</td><td style="display:none">'+data[i].consigneemobile+'</td></tr>'); 
 				}
 			}
 		}); 
 	};
 	
-	//收件人历史信息双击事件
+	/*****************edit by 周欢  修改双击tabel内容填充异常  2016-7-15 *******************/
+	//收件人历史信息双击事件    
 	function consigneeHistoryTableDblClick(consignee){
 		var sender_adress = $("#sender_adress_id").val();
+		var consigneeCellphone = $(consignee).find("td").eq(11).text();
+		var consigneeTellphone = $(consignee).find("td").eq(10).text();
+		var consigneeName = $(consignee).find("td").eq(0).text();
 		$("#consignee_adress_id").val("");
 		$("#area_consignee").val("");
 		$("#receive_provinceId").html($(consignee).find("td").eq(6).text());
@@ -2249,11 +2286,34 @@
 		$("#consignee_townid_id").val($(consignee).find("td").eq(9).text());
 		$("#consignee_townName_id").val($(consignee).find("td").eq(4).text());
 		$("#consignee_adress_id").val($(consignee).find("td").eq(5).text());
+		
+		if(consigneeName != "null"){
+			$("#consignee_name_id").val(consigneeName);
+		}else{
+			$("#consignee_name_id").val("");
+		}
+		if(consigneeCellphone != "null"){
+			$("#consignee_cellphone_id").val(consigneeCellphone);
+		}else{
+			$("#consignee_cellphone_id").val("");
+		}
+		if(consigneeTellphone != "null"){
+			$("#consignee_telephone_id").val(consigneeTellphone);
+		}else{
+			$("#consignee_telephone_id").val("");
+		}
+		//$("#consignee_name_id").val($(consignee).find("td").eq(0).text());
+		
+		$("#sender_adress_id").val(sender_adress);
 	}
 	
+	/*****************edit by 周欢  修改双击tabel内容填充异常  2016-7-15 *******************/
 	//寄件人历史信息双击事件
 	function senderHistoryTableDblClick(sender){
 		var consignee_adress = $("#consignee_adress_id").val();
+		var senderTelephone = $(sender).find("td").eq(10).text();
+		var senderCellphone = $(sender).find("td").eq(11).text();
+		var senderName = $(sender).find("td").eq(0).text();
 		$("#area_sender").val("")
 		$("#sender_adress_id").val("");
 		$("#BranchprovinceId").html($(sender).find("td").eq(6).text());
@@ -2265,17 +2325,70 @@
 		$("#sender_provinceName_id").val($(sender).find("td").eq(1).text());
 		$("#sender_cityid_id").val($(sender).find("td").eq(7).text());
 		$("#sender_cityName_id").val($(sender).find("td").eq(2).text());
+		$("#sender_countyid_id").val($(sender).find("td").eq(8).text());
 		$("#sender_countyName_id").val($(sender).find("td").eq(3).text());
 		$("#sender_townid_id").val($(sender).find("td").eq(9).text());
 		$("#sender_townName_id").val($(sender).find("td").eq(4).text());
 		$("#sender_adress_id").val($(sender).find("td").eq(5).text());
+		if(senderName != "null"){
+			$("#sender_name_id").val(senderName);
+		}else{
+			$("#sender_name_id").val("");
+		}
+		if(senderCellphone != "null"){
+			$("#sender_cellphone_id").val(senderCellphone);
+		}else{
+			$("#sender_cellphone_id").val("");
+		}
+		if(senderTelephone != "null"){
+			$("#sender_telephone_id").val(senderTelephone);
+		}else{
+			$("#sender_telephone_id").val("");
+		}
 		$("#consignee_adress_id").val(consignee_adress);
 	}
 	
+	/*****************edit by 周欢  修改双击预约单tabel内容填充异常  2016-7-18 *******************/
 	//预约单信息双击事件
 	function reserveTableDblClick(reserve){
+		var consignee_adress = $("#consignee_adress_id").val();
+		var senderTelephone = $(reserve).find("td").eq(13).text();
+		var senderCellphone = $(reserve).find("td").eq(14).text();
+		var senderName = $(reserve).find("td").eq(1).text()
+		$("#area_sender").val("")
+		$("#sender_adress_id").val("");
 		$("#reserveOrderNo").val($(reserve).find("td").eq(0).text());
 		$("#recordVersion").val($(reserve).find("td").eq(4).text());
+		$("#BranchprovinceId").html($(reserve).find("td").eq(6).text());
+		$("#BranchcityId").html($(reserve).find("td").eq(8).text());
+		$("#BranchcountyId").html($(reserve).find("td").eq(10).text());
+		$("#sender_townId").html($(reserve).find("td").eq(12).text()); 
+		initArea(); 
+		$("#sender_provinceid_id").val($(reserve).find("td").eq(6).text());
+		$("#sender_provinceName_id").val($(reserve).find("td").eq(5).text());
+		$("#sender_cityid_id").val($(reserve).find("td").eq(8).text());
+		$("#sender_cityName_id").val($(reserve).find("td").eq(7).text());
+		$("#sender_countyid_id").val($(reserve).find("td").eq(10).text());
+		$("#sender_countyName_id").val($(reserve).find("td").eq(9).text());
+		$("#sender_townid_id").val($(reserve).find("td").eq(12).text());
+		$("#sender_townName_id").val($(reserve).find("td").eq(11).text());
+		$("#sender_adress_id").val($(reserve).find("td").eq(2).text());
+		if(senderName != "null"){
+			$("#sender_name_id").val(senderName);
+		}else{
+			$("#sender_name_id").val("");
+		}
+		if(senderCellphone != "null"  && senderCellphone.trim() !="-"){
+			$("#sender_cellphone_id").val(senderCellphone);
+		}else{
+			$("#sender_cellphone_id").val("");
+		}
+		if(senderTelephone != "null" && senderTelephone.trim() !="-"){
+			$("#sender_telephone_id").val(senderTelephone);
+		}else{
+			$("#sender_telephone_id").val("");
+		}
+		//$("#consignee_adress_id").val(consignee_adress);
 	}
 	
 	function getFeeByCondition(){
@@ -2342,6 +2455,26 @@
 				 getFreightToal();
 			}
 		});
+	}
+	
+	//日期格式化
+	function FormatDate(strTime) {
+	    var date = new Date(strTime);
+	    var year = date.getFullYear(); //getFullYear getYear
+	    var month = date.getMonth();
+	    var day = date.getDate();
+	    var hour = date.getHours();
+	    var minu = date.getMinutes();
+	    var sec = date.getSeconds();
+	    month = month + 1;
+	    if (month < 10) month = "0" + month;
+	    if (day < 10) day = "0" + day;
+	    if (hour < 10) hour = "0" + hour;
+	    if (minu < 10) minu = "0" + minu;
+	    if (sec < 10) sec = "0" + sec;
+	    var time = "";
+	    time = year + "-" + month + "-" + day + " " + hour + ":" + minu + ":" + sec;
+	    return time;
 	}
 	
 </script>

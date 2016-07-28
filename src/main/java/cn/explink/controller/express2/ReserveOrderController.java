@@ -915,7 +915,7 @@ public class ReserveOrderController extends ExpressCommonController {
         OmReserveOrderModel omReserveOrderModel = new OmReserveOrderModel ();
         omReserveOrderModel.setCnorMobile(senderPhone);
         omReserveOrderModel.setReserveOrderStatusList("20,30,70,90");
-        ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,3);
+        ReserveOrderPageVo reserveOrder = this.reserveOrderService.getReserveOrder(omReserveOrderModel);
         List<Map<String, Object>>  orderList = cwbDAO.getCwbOrderByPhone(senderPhone,phoneFlag);
         obj.put("reserveOrderList", reserveOrder.getReserveOrderVoList());
         obj.put("orderList", orderList);

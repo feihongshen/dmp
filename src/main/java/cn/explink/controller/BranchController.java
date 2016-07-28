@@ -1,6 +1,7 @@
 package cn.explink.controller;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +17,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
+import cn.explink.core.utils.PoiExcelUtils;
+import cn.explink.core.utils.PoiExcelUtils.ColDef;
 import cn.explink.dao.AccountAreaDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
@@ -39,6 +43,7 @@ import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.BranchSyncResultVo;
 import cn.explink.domain.Menu;
 import cn.explink.domain.PaiFeiRule;
 import cn.explink.domain.SystemInstall;
@@ -53,8 +58,10 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.ScheduledTaskService;
 import cn.explink.service.SystemInstallService;
+import cn.explink.util.AjaxResult;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.JSONReslutUtil;
+import cn.explink.util.JSR303ValidationManager;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -137,10 +144,20 @@ public class BranchController {
 			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch bh = this.branchService.loadFormForBranch(request, file, functionids);
+			AjaxResult rs =JSR303ValidationManager.getInstance().doValidateAsAjaxResult(bh);
+			if (!rs.isResult()) {
+				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
+			}
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
-			long branchid = this.branchDAO.creBranch(bh);
+			long branchid;
+			try {
+				branchid = branchService.creBranchAndSyncOsp(bh);
+			} catch (Exception e) {
+				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+				return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+			}
 			bh = branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if(!branchInfService.isCloseOldInterface()){					
@@ -189,11 +206,20 @@ public class BranchController {
 			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		}else {
 			Branch bh = this.branchService.loadFormForBranch(request, null, functionids);
-
+			AjaxResult rs =JSR303ValidationManager.getInstance().doValidateAsAjaxResult(bh);
+			if (!rs.isResult()) {
+				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
+			}
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
-			long branchid = this.branchDAO.creBranch(bh);
+			long branchid;
+			try {
+				branchid = branchService.creBranchAndSyncOsp(bh);
+			} catch (Exception e) {
+				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+				return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+			}
 			bh = this.branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if(!branchInfService.isCloseOldInterface()){
@@ -255,12 +281,21 @@ public class BranchController {
 			return "{\"errorCode\":1,\"error\":\"机构编码已存在\"}";
 		} else {
 			Branch branch = this.branchService.loadFormForBranch(request, file, wavh, functionids);
+			AjaxResult rs =JSR303ValidationManager.getInstance().doValidateAsAjaxResult(branch);
+			if (!rs.isResult()) {
+				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
+			}
 			branch.setBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
-			this.branchDAO.saveBranch(branch);
+			try {
+				branchService.saveBranchAndSyncOsp(branch);
+			} catch (Exception e) {
+				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+				return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+			}
 			branch = branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if(!branchInfService.isCloseOldInterface()){
@@ -320,8 +355,16 @@ public class BranchController {
 			if (!branchname.equals(oldBranch.getBranchname())) {
 				this.cwbDAO.saveCwbOrderByExcelbranch(branchname, branchid);
 			}
-
-			this.branchDAO.saveBranch(branch);
+			AjaxResult rs =JSR303ValidationManager.getInstance().doValidateAsAjaxResult(branch);
+			if (!rs.isResult()) {
+				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
+			}
+			try {
+				branchService.saveBranchAndSyncOsp(branch);
+			} catch (Exception e) {
+				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+				return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+			}
 			branch = this.branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if(!branchInfService.isCloseOldInterface()){
@@ -461,7 +504,12 @@ public class BranchController {
 
 	@RequestMapping("/del/{id}")
 	public @ResponseBody String del(@PathVariable("id") long branchid) {
-		this.branchDAO.delBranch(branchid);
+		try {
+			branchService.delBranchAndSyncOsp(branchid);
+		} catch (Exception e) {
+			String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
+			return "{\"errorCode\":1,\"error\":\"" + errorMessage +"\"}";
+		}
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this.getSessionUser().getUsername(), branchid);
 		if (!branchInfService.isCloseOldInterface()) {
@@ -529,4 +577,24 @@ public class BranchController {
 	
 	}
 
+	@RequestMapping("/syncAllBranchToOsp")
+	public void syncAllBranchToOsp(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		List<BranchSyncResultVo> result = branchService.batchSyncBranchOsp();
+		List<ColDef> colDefs = getBranchSyncResultColDefs();
+		Workbook workbook = PoiExcelUtils.createExcelSheet(colDefs, (List) result);
+		PoiExcelUtils.setExcelResponseHeader(response, "batch_sync_branch_result.xlsx");
+		OutputStream out = response.getOutputStream();
+		workbook.write(out);
+		out.flush();
+	}
+	
+	private List<ColDef> getBranchSyncResultColDefs() {
+		List<ColDef> colDefs = new ArrayList<ColDef>();
+		colDefs.add(new ColDef("branchName", "机构名称", 100));
+		colDefs.add(new ColDef("carrierCode", "承运商编码", 100));
+		colDefs.add(new ColDef("carrierSiteCode", "机构编码", 100));
+		colDefs.add(new ColDef("result", "结果", 200));
+		colDefs.add(new ColDef("message", "原因", 500));
+		return colDefs;
+	}
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.core.utils.StringUtils;
+import cn.explink.util.Tools;
 
 /**
  * 外单 推送给DO服务 service
@@ -38,11 +39,15 @@ public class OrderTraceToTPSService {
 	 */
 	public void edit(HttpServletRequest request, int joint_num) {
 		OrderTraceToTPSCfg orderTraceToTPSCfg =new OrderTraceToTPSCfg();
-		String customerIds = StringUtils.isEmpty(request.getParameter("customerids")) ? "" : request.getParameter("customerids");
-		Integer trackMaxTryTime= StringUtils.isEmpty(request.getParameter("trackMaxTryTime"))? 0 :Integer.parseInt(request.getParameter("trackMaxTryTime"));
-		
+		/********************edit start*******************/
+		//edit by 周欢  反馈轨迹给tps接口配置增加每次反馈轨迹数量属性
+		String customerIds = Tools.dealEmptyValue(request.getParameter("customerids"),"");
+		Integer trackMaxTryTime= Integer.parseInt(Tools.dealEmptyValue(request.getParameter("trackMaxTryTime"),"0"));
+		Integer sendMaxCount= Integer.parseInt(Tools.dealEmptyValue(request.getParameter("sendMaxCount"),"0"));
 		orderTraceToTPSCfg.setCustomerids(customerIds);
 		orderTraceToTPSCfg.setTrackMaxTryTime(trackMaxTryTime);
+		orderTraceToTPSCfg.setSendMaxCount(sendMaxCount);
+		/********************edit end*******************/
 		JSONObject jsonObj = JSONObject.fromObject(orderTraceToTPSCfg);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
 		if (jointEntity == null) {//新增
@@ -93,4 +98,5 @@ public class OrderTraceToTPSService {
 		}
 		return isTPCust;
 	}
+	
 }

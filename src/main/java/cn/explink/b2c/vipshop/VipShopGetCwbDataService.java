@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.explink.service.DfFeeService;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.vip.logistics.memberencrypt.Decryption;
 import com.vip.logistics.memberencrypt.Encryption;
+
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -56,6 +58,7 @@ import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
+import cn.explink.util.Tools;
 
 @Service
 public class VipShopGetCwbDataService {
@@ -99,6 +102,8 @@ public class VipShopGetCwbDataService {
 	CustomerService customerService;
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
+    @Autowired
+    DfFeeService dfFeeService;
 
 	private static Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -119,7 +124,58 @@ public class VipShopGetCwbDataService {
 	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		VipShop vipshop = new VipShop();
-		vipshop.setDaysno((request.getParameter("daysno")==null||("".equals(request.getParameter("daysno"))))?5:(Integer.valueOf(request.getParameter("daysno"))));
+		/******************************edit start ********************************/
+		//edit by 周欢    判断字段是否为空，如果为空则采用默认值    2016-07-14
+		vipshop.setDaysno(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("daysno"),"5")));
+		vipshop.setSelb2cnum(Long.parseLong(Tools.dealEmptyValue(request.getParameter("selb2cnum"),"200")));
+		vipshop.setShipper_no(Tools.dealEmptyValue(request.getParameter("shipper_no"),""));
+		vipshop.setPrivate_key(Tools.dealEmptyValue(request.getParameter("private_key"),""));
+		vipshop.setGetMaxCount(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("getMaxCount"),"0")));
+		vipshop.setSendMaxCount(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("sendMaxCount"),"0")));
+		vipshop.setGetCwb_URL(Tools.dealEmptyValue(request.getParameter("getCwb_URL"),""));
+		vipshop.setSendCwb_URL(Tools.dealEmptyValue(request.getParameter("sendCwb_URL"),""));
+		vipshop.setCustomerids(Tools.dealEmptyValue(request.getParameter("customerids"),""));
+		vipshop.setWarehouseid(Long.parseLong(Tools.dealEmptyValue(request.getParameter("warehouseid"),"0")));
+		vipshop.setVipshop_seq(Long.parseLong(Tools.dealEmptyValue(request.getParameter("vipshop_seq"),"0")));
+		String customerids = request.getParameter("customerids");
+		vipshop.setIsopendownload(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isopendownload"),"0")));
+		vipshop.setForward_hours(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("forward_hours"),"0")));
+		vipshop.setIsTuoYunDanFlag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isTuoYunDanFlag"),"0")));
+		vipshop.setIsShangmentuiFlag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isShangmentuiFlag"),"0")));
+		
+		String cancelOrIntercept=Tools.dealEmptyValue(request.getParameter("cancelOrIntercept"),"0");
+		vipshop.setCancelOrIntercept(Integer.parseInt(cancelOrIntercept));
+		
+		String isOpenLefengflag=Tools.dealEmptyValue(request.getParameter("isOpenLefengflag"),"0");
+		vipshop.setIsOpenLefengflag(Integer.parseInt(isOpenLefengflag));
+
+		String resuseReasonFlag=Tools.dealEmptyValue(request.getParameter("resuseReasonFlag"),"0");
+		vipshop.setResuseReasonFlag(Integer.parseInt(resuseReasonFlag));
+		String lefengCustomerid=Tools.dealEmptyValue(request.getParameter("lefengCustomerid"),"");
+		vipshop.setLefengCustomerid(lefengCustomerid);
+		String isCreateTimeToEmaildateFlag=Tools.dealEmptyValue(request.getParameter("isCreateTimeToEmaildateFlag"),"0");
+		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
+		/*String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
+		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
+		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
+		vipshop.setDaysno(Integer.parseInt(daysno));*/
+		//MQ接口改造，新增字段
+		vipshop.setIsGetExpressFlag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isGetExpressFlag"),"0")));
+		vipshop.setIsGetOXOFlag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isGetOXOFlag"),"0")));
+		vipshop.setIsGetPeisongFlag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isGetPeisongFlag"),"0")));
+		vipshop.setIsGetShangmenhuanFlag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isGetShangmenhuanFlag"),"0")));
+		vipshop.setIsGetShangmentuiFlag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isGetShangmentuiFlag"),"0")));
+		vipshop.setOpenmpspackageflag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("openmpspackageflag"),"0")));
+		vipshop.setTransflowUrl(Tools.dealEmptyValue(request.getParameter("transflowUrl"),""));
+		vipshop.setOxoState_URL(Tools.dealEmptyValue(request.getParameter("oxoState_URL"),""));
+		if(request.getParameter("isTpsSendFlag")!=null){
+			vipshop.setIsTpsSendFlag(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isTpsSendFlag"),"0")));
+		}
+		if(request.getParameter("isAutoInterface")!=null){
+			vipshop.setIsAutoInterface(Integer.parseInt(Tools.dealEmptyValue(request.getParameter("isAutoInterface"),"0")));
+		}
+		/******************************edit end ********************************/
+		/*vipshop.setDaysno((request.getParameter("daysno")==null||("".equals(request.getParameter("daysno"))))?5:(Integer.valueOf(request.getParameter("daysno"))));
 		vipshop.setSelb2cnum((request.getParameter("selb2cnum")==null||("".equals(request.getParameter("selb2cnum"))))?200:(Long.valueOf(request.getParameter("selb2cnum"))));
 		vipshop.setShipper_no(request.getParameter("shipper_no"));
 		vipshop.setPrivate_key(request.getParameter("private_key"));
@@ -148,10 +204,10 @@ public class VipShopGetCwbDataService {
 		vipshop.setLefengCustomerid(lefengCustomerid);
 		String isCreateTimeToEmaildateFlag=request.getParameter("isCreateTimeToEmaildateFlag")==null||request.getParameter("isCreateTimeToEmaildateFlag").equals("")?"0":request.getParameter("isCreateTimeToEmaildateFlag");
 		vipshop.setIsCreateTimeToEmaildateFlag(Integer.parseInt(isCreateTimeToEmaildateFlag));
-		/*String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
+		String daysno=request.getParameter("daysno").equals("")?"3":request.getParameter("daysno");
 		String selb2cnum=request.getParameter("selb2cnum").equals("")?"0":request.getParameter("selb2cnum");
 		vipshop.setSelb2cnum(Integer.parseInt(selb2cnum));
-		vipshop.setDaysno(Integer.parseInt(daysno));*/
+		vipshop.setDaysno(Integer.parseInt(daysno));
 		//MQ接口改造，新增字段
 		vipshop.setIsGetExpressFlag((request.getParameter("isGetExpressFlag")==null||request.getParameter("isGetExpressFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetExpressFlag")));
 		vipshop.setIsGetOXOFlag((request.getParameter("isGetOXOFlag")==null||request.getParameter("isGetOXOFlag").equals(""))?0:Integer.parseInt(request.getParameter("isGetOXOFlag")));
@@ -166,7 +222,7 @@ public class VipShopGetCwbDataService {
 		}
 		if(request.getParameter("isAutoInterface")!=null){
 			vipshop.setIsAutoInterface(request.getParameter("isAutoInterface").trim().equals("")?0:Integer.parseInt(request.getParameter("isAutoInterface")));
-		}
+		}*/
 		String oldLefengCustomerids = ""; //乐蜂customerid
 		
 		String oldCustomerids = "";
@@ -1019,6 +1075,10 @@ public class VipShopGetCwbDataService {
 				// add by bruce shangguan 20160608  报障编号:1729 ,揽退成功之后失效的订单在运费交款存在
 				this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(order_sn) ;
 				// end 20160608  报障编号:1729
+
+                // added by Steve PENG 20160722 start TMS 上门退, 订单失效后，需要对派费操作
+                dfFeeService.saveFeeRelativeAfterOrderDisabled(order_sn);
+                // added by Steve PENG 20160722 end
 			}else{ //拦截
 				//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 				cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);

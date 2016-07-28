@@ -292,6 +292,21 @@ public class Tools {
 	public static boolean isEmpty(String[] source) {
 		return ((source == null) || (source.length <= 0));
 	}
+	
+	/**
+	 * add by 周欢   2016-07-15
+	 * 判断个字符是否为,如果为空则返回默认值
+	 * @param source要判断字符串
+	 * @param value要判断字符串
+	 * @return 如果为空返回期望值
+	 */
+	public static String dealEmptyValue(String source,String value) {
+		if((source == null) || source.trim().equals("")){
+			return value;
+		}else{;
+			return source;
+		}
+	}
 
 	/**
 	 * 获取输入流内容变成字节流

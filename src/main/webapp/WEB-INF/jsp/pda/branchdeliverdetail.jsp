@@ -110,10 +110,10 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		return ;
 	}else if(scancwb.length>0){
 		var allnum = 0;
-		
+		var isChaoqu = $("#isChaoqu").is(":checked");
 		$.ajax({
 			type: "POST",
-			url:pname+"/PDA/cwbbranchdeliver/"+scancwb+"?deliverid="+deliverid+"&requestbatchno="+requestbatchno,
+			url:pname+"/PDA/cwbbranchdeliver/"+scancwb+"?deliverid="+deliverid+"&requestbatchno="+requestbatchno + "&isChaoqu=" + isChaoqu,
 			dataType:"json",
 			success : function(data) {
 				
@@ -126,6 +126,14 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#scansuccesscwb").val(scancwb);
 					$("#showcwb").html("订 单 号："+data.body.cwbOrder.cwb);
 					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);
+					if(data.body.isChaoqu == true) {
+						if(data.body.matchDeliver == "") {
+							$("#matchDeliver").html("尚未匹配小件员");
+						} else {
+							$("#matchDeliver").html("订单匹配小件员：" + data.body.matchDeliver);
+						}
+						$("#receiveDeliver").html("领货小件员：" + data.body.receiveDeliver);
+					}
 					if(data.body.cwbOrder.customercommand.indexOf('预约')>=0&&data.yuyuedaService=='yes')
 					{	
 						$("#customercommand").html("预约派送");
@@ -144,7 +152,9 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					if(data.body.showRemark!=null){
 					$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
 					}
-					$("#exceldeliverid").html(data.body.cwbdelivername);
+					if(data.body.isChaoqu != true) {
+						$("#exceldeliverid").html(data.body.cwbdelivername);
+					}
 					$("#deliver").html("已领货（"+data.body.cwbdelivername+"）");
 					
 					if (data.body.editCwb != null && data.body.editCwb != "") {
@@ -175,6 +185,8 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#exceldeliverid").html("");
 					$("#showcwb").html("");
 					$("#consigneeaddress").html("");
+					$("#matchDeliver").html("");
+					$("#receiveDeliver").html("");
 					$("#cwbordertype").html("");
 					$("#cwbDetailshow").html("");
 					$("#deliver").html("已领货");
@@ -477,6 +489,7 @@ function scancwbKeyDownAction(event) {
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected=selected<%} %>    ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
+			        超区领货：<input type="checkbox" id="isChaoqu" name="isChaoqu"/>
 			</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">
@@ -491,6 +504,8 @@ function scancwbKeyDownAction(event) {
 					<p id="cwbgaojia" name="cwbgaojia" style="display: none" >高价</p>
 					<p id="guanlianlantuidan" name="guanlianlantuidan" style="display: none" ><font color="red" size="12">关联揽退单</font></p>
 					<p id="consigneeaddress" name="consigneeaddress"></p>
+					<p id="matchDeliver" name="matchDeliver"></p>
+					<p id="receiveDeliver" name="receiveDeliver"></p>
 					<p id="fee" name="fee"></p>
 					<p id="exceldeliverid" name="exceldeliverid"></p>
 					<p id="cwbDetailshow" name="cwbDetailshow"></p>
@@ -569,7 +584,13 @@ function scancwbKeyDownAction(event) {
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
 											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 											
@@ -630,7 +651,13 @@ function scancwbKeyDownAction(event) {
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
 											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 										</tr>
@@ -690,7 +717,13 @@ function scancwbKeyDownAction(event) {
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
 											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 										</tr>

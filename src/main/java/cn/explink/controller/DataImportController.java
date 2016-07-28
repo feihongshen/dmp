@@ -49,6 +49,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.ExcelImportEdit;
 import cn.explink.domain.SystemInstall;
@@ -58,6 +59,7 @@ import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.BranchService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbTranslator;
 import cn.explink.service.DataImportService;
@@ -67,6 +69,7 @@ import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ResultCollector;
 import cn.explink.service.ResultCollectorManager;
+import cn.explink.service.UserService;
 import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.Page;
@@ -151,6 +154,12 @@ public class DataImportController {
 	ExcelImportEditDao excelImportEditDao;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private BranchService branchService;
 
 	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -413,7 +422,7 @@ public class DataImportController {
 		model.addAttribute("branchs", branchDAO.getBanchByBranchidForStock("" + BranchEnum.ZhanDian.getValue()));
 		model.addAttribute("customers", customerDAO.getAllCustomers());
 		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-		List<CwbOrder> cwborderList = new ArrayList<CwbOrder>();
+		List<CwbOrderBranchMatchVo> cwbOrderBranchMatchVoList = new ArrayList<CwbOrderBranchMatchVo>();
 		Page pageobj = new Page();
 		long NotSuccess = 0;
 		long SuccessAddress = 0;
@@ -434,8 +443,7 @@ public class DataImportController {
 		}
 		
 		if (isshow != 0) {
-			
-			cwborderList = cwbDAO.getcwbOrderByPageIsMyWarehouse(page, customerid, cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), onePageNumber, branchid);
+			cwbOrderBranchMatchVoList = this.cwbOrderService.getCwbBranchMatchVoByPageMyWarehouse(page, customerid, cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), onePageNumber, branchid);
 			pageobj = new Page(cwbDAO.getcwborderCountIsMyWarehouse(customerid, cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.getText(addressCodeEditType), branchid), page, onePageNumber);
 			NotSuccess = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.WeiPiPei);
 			SuccessAddress = cwbDAO.getcwborderCountIsNotAddress(customerid, "", "", cwbstrs, emaildate, CwbOrderAddressCodeEditTypeEnum.DiZhiKu);
@@ -444,7 +452,7 @@ public class DataImportController {
 			
 		}
 		
-		model.addAttribute("Order", cwborderList);
+		model.addAttribute("cwbOrderBranchMatchVoList", cwbOrderBranchMatchVoList);
 		model.addAttribute("page_obj", pageobj);
 		model.addAttribute("page", page);
 		model.addAttribute("NotSuccess", NotSuccess);
@@ -491,7 +499,10 @@ public class DataImportController {
 		// 处理批次完毕
 		model.addAttribute("emaildateList", eList);
 		model.addAttribute("exportmouldlist", exportmouldDAO.getAllExportmouldByUser(getSessionUser().getRoleid()));
-
+		
+		//获取站点
+		List<Branch> branchList = this.branchDAO.getBanchByBranchidForStock(String.valueOf(BranchEnum.ZhanDian.getValue()));
+		model.addAttribute("branchList", branchList);
 		return "dataimport/editBranch";
 	}
 
@@ -549,24 +560,24 @@ public class DataImportController {
 	}
 
 	@RequestMapping("/editBatchBranch")
-	public String editBatchBranch(Model model, HttpServletRequest request, @RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
-			@RequestParam(value = "excelbranch", required = false, defaultValue = "") String excelbranch, @RequestParam(value = "branchcode", required = false, defaultValue = "") String branchcode,
+	public String editBatchBranch(Model model, HttpServletRequest request,
+			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
+			@RequestParam(value = "courierName", required = false, defaultValue = "") String courierName,
+			@RequestParam(value = "branchcode", required = false, defaultValue = "") String branchcode,
 			@RequestParam(value = "onePageNumber", defaultValue = "10", required = false) long onePageNumber, // 每页记录数
 			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示
 	) throws Exception {
 		int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
-		List<CwbOrder> cwborderList = new ArrayList<CwbOrder>();
+		List<CwbOrderBranchMatchVo> cwbOrderBranchMatchVoList = new ArrayList<CwbOrderBranchMatchVo>();
 		Page pageobj = new Page();
 		long count = 0;
 		if (isshow != 0) {
-			List<Branch> lb = new ArrayList<Branch>();
-			List<Branch> branchnamelist = this.branchDAO.getBranchByBranchnameCheck(branchcode.length() > 0 ? branchcode : excelbranch);
-			if (branchnamelist.size() > 0) {
-				lb = branchnamelist;
-			} else {
-				lb = this.branchDAO.getBranchByBranchcode(branchcode.length() > 0 ? branchcode : excelbranch);
-			}
-			if (lb.size() > 0) {
+			Branch branch = this.branchService.getBranchByBranchcode(branchcode);
+			if (branch != null) {
+				User deliver = null;
+				if(StringUtils.isNotBlank(courierName)) { //小件员非必须
+					deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
+				}
 				String[] cwbstr = cwbs.trim().split("\r\n");
 				List<String> cwbStrList = new ArrayList<String>();
 				for (int i = 0; i < cwbstr.length; i++) {
@@ -600,18 +611,18 @@ public class DataImportController {
 							addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 						}
 						try {
-							this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), cwbOrder, lb.get(0), addressCodeEditType);
+							this.cwbOrderService.updateDeliveryBranchAndCourier(this.getSessionUser(), cwbOrder, branch, addressCodeEditType, deliver);
 							count += 1;
 						} catch (CwbException ce) {
 							model.addAttribute("error", "匹配失败，" + ce.getMessage() + "!");
 						}
 					}
 				}
-				cwborderList = this.cwbDAO.getCwbByCwbs(cwbstrs);
+				cwbOrderBranchMatchVoList = this.cwbOrderService.getCwbBranchMatchByCwbs(cwbStrList);
 				pageobj = new Page(count, page, onePageNumber);
 			} else {
 				model.addAttribute("branchs", this.branchDAO.getBanchByBranchidForStock("" + BranchEnum.ZhanDian.getValue()));
-				model.addAttribute("Order", cwborderList);
+				model.addAttribute("cwbOrderBranchMatchVoList", cwbOrderBranchMatchVoList);
 				model.addAttribute("page_obj", pageobj);
 				model.addAttribute("page", page);
 				model.addAttribute("msg", "1");
@@ -621,7 +632,7 @@ public class DataImportController {
 
 		}
 		model.addAttribute("branchs", this.branchDAO.getBanchByBranchidForStock("" + BranchEnum.ZhanDian.getValue()));
-		model.addAttribute("Order", cwborderList);
+		model.addAttribute("cwbOrderBranchMatchVoList", cwbOrderBranchMatchVoList);
 		model.addAttribute("page_obj", pageobj);
 		model.addAttribute("page", page);
 		model.addAttribute("count", count);
@@ -1114,5 +1125,71 @@ public class DataImportController {
 
 		}
 		return infolist;
+	}
+	
+	/**
+	 * 根据站点获取小件员
+	 * 2016年6月16日 下午5:04:35
+	 * @param branchId
+	 * @return
+	 */
+	@RequestMapping("/getCourierByBranch")
+	@ResponseBody
+	public List<User> getCourierByBranch(String branchcode, String branchname) {
+		Branch branch = null;
+		if(StringUtils.isNotBlank(branchcode)) { //优先编码
+			branch = this.branchService.getBranchByBranchcode(branchcode);
+		} else if(StringUtils.isNotBlank(branchname)) {
+			branch = this.branchService.getBranchByBranchname(branchname);
+		}
+		List<User> courierList;
+		if(branch != null) {
+			courierList = this.userService.getUserByRoleAndBranchid(2, branch.getBranchid());
+		} else {
+			courierList = new ArrayList<User>();
+		}
+		return courierList;
+	}
+	
+	/**
+	 * 保存站点跟小件员
+	 * 2016年6月17日 上午10:50:16
+	 * @return
+	 * @throws Exception 
+	 */
+	@RequestMapping("/saveBranchAndCourier")
+	@ResponseBody
+	public String saveBranchAndCourier(String cwb, String branchcode, String courierName) throws Exception {
+		Branch branch = this.branchService.getBranchByBranchcode(branchcode);
+		if (branch == null) {
+			return "{\"errorCode\":1,\"error\":\"没有找到指定站点\"}";
+		}
+		User deliver = null;
+		if(StringUtils.isNotBlank(courierName)) { //小件员非必须
+			deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
+			if(deliver == null) {
+				return "{\"errorCode\":1,\"error\":\"站点“" + branch.getBranchname() + "”不存在该小件员\"}";
+			}
+		}
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+		if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue())
+				|| (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+			// 都将匹配状态变更为修改
+			addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+		} else if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue())
+				|| (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是为匹配的
+																											// 或者是人工匹配的
+																											// 都将匹配状态变更为人工修改
+			addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
+		}
+		try {
+			this.cwbOrderService.updateDeliveryBranchAndCourier(this.getSessionUser(), co, branch, addressCodeEditType, deliver);
+			return "{\"errorCode\":0,\"error\":\"操作成功\",\"cwb\":\"" + cwb + "\",\"excelbranch\":\""
+					+ branch.getBranchname() + "\"}";
+		} catch (CwbException ce) {
+			return "{\"errorCode\":" + ce.getError().getValue() + ",\"error\":\"" + ce.getMessage() + "\",\"cwb\":\""
+					+ cwb + "\",\"excelbranch\":\"" + branch.getBranchname() + "\"}";
+		}
 	}
 }

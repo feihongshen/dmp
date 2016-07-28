@@ -68,7 +68,10 @@ public enum ExceptionCwbErrorTypeEnum {
 			BU_CUN_ZAI_TUI_HUO_CHU_ZHAN_SHEN_HE_JI_LU(207, "不存在退货出站审核记录"),
 			BU_CUN_ZAI_TUI_HUO_CHU_ZHAN_SHEN_HE_WEI_ZHAN_DIAN_PEI_SONG(208, "不存在退货出站审核为站点配送的记录"),
 			YUN_DAN_ZHUANG_TAI_BU_SHI_PEI_SONG(209, "运单{0}状态不是配送，不允许领货"),
-			DIFF_TUI_HUO_KU_ZUO_BACK_TO_CUSTOMER(210, "不在同一个退货库做退供货商出库")
+			DIFF_TUI_HUO_KU_ZUO_BACK_TO_CUSTOMER(213, "不在同一个退货库做退供货商出库"),
+			PEI_SONG_YUAN_BU_PI_PEI(211, "此订单匹配的是{0}，{1}不能进行领货！"),
+			PEI_SONG_YUAN_WEI_PI_PEI(212, "此订单未匹配配送员，不能进行领货！"),
+			AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE(220, "连接自动分拨机失败，不能入库！请取消自动分拨功能，或重新连接。")
 			;
 	
 

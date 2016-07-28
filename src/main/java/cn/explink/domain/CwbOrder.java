@@ -67,6 +67,7 @@ public class CwbOrder {
 	String destination;// 目的地
 	String cwbdelivertypeid;// 订单入库机构id
 	String exceldeliver;// 指定小件员（用于地址库匹配）
+	long exceldeliverid; //指定小件员ID
 	String excelbranch;// 指定派送分站（用于地址库匹配）
 	long excelimportuserid;// 导入操作员id
 	long state;// 是否显示的状态
@@ -143,7 +144,7 @@ public class CwbOrder {
 	private int branchfeebillexportflag;// 加盟商派费账单导出标志
 	
 	private int deliverypermit;//上门退订单是否可领货 0可领 1不可领
-	private int vipclub;// 是否团购标志
+	private int vipclub;// 业务类型
 
 	// 以下是快递业务新增字段
 
@@ -411,7 +412,9 @@ public class CwbOrder {
 	 */
 	private int expressProductType;
 
-	public int getIshandover() {
+    private BigDecimal cargovolume;
+
+    public int getIshandover() {
 		return this.ishandover;
 	}
 
@@ -429,6 +432,8 @@ public class CwbOrder {
 	private int ismpsflag; // 是否一票多件：0默认；1是一票多件 注意：这里只描述开启集单模式才起作用
 	
 	private String tpstranscwb;// tps运单号
+	
+	private String orderSource;// 订单类型
 
 	public int getInstationhandoverid() {
 		return this.instationhandoverid;
@@ -2073,19 +2078,42 @@ public class CwbOrder {
 	public void setVipclub(int vipclub) {
 		this.vipclub = vipclub;
 	}
-	
-		public int getExpressProductType() {
+	public int getExpressProductType() {
 		return expressProductType;
 	}
 
 	public void setExpressProductType(int expressProductType) {
 		this.expressProductType = expressProductType;
 	}
-	public String getTpstranscwb() {
+	
+    public void setCargovolume(BigDecimal cargovolume) {
+        this.cargovolume = cargovolume;
+    }
+
+    public BigDecimal getCargovolume() {
+        return cargovolume;
+    }
+
+	public long getExceldeliverid() {
+		return exceldeliverid;
+	}
+
+	public void setExceldeliverid(long exceldeliverid) {
+		this.exceldeliverid = exceldeliverid;
+	}
+		public String getTpstranscwb() {
 		return tpstranscwb;
 	}
 
 	public void setTpstranscwb(String tpstranscwb) {
 		this.tpstranscwb = tpstranscwb;
+	}
+
+	public String getOrderSource() {
+		return orderSource;
+	}
+
+	public void setOrderSource(String orderSource) {
+		this.orderSource = orderSource;
 	}
 }

@@ -39,6 +39,10 @@ public class searchEditCwbInfoDao {
 			info.setOldconsigneename(rs.getString("oldconsigneename"));// 姓名
 			info.setOldremark(rs.getString("oldremark"));// 备注
 			info.setNewbranchid(rs.getLong("newbranchid"));//修改的配送站点
+			info.setOldexceldeliverid(rs.getLong("oldexceldeliverid")); //匹配小件员ID
+			info.setOldexceldeliver(rs.getString("oldexceldeliver")); //匹配小件员
+			info.setNewexceldeliverid(rs.getLong("newexceldeliverid")); //匹配小件员ID
+			info.setNewexceldeliver(rs.getString("newexceldeliver")); //匹配小件员
 			return info;
 		}
 	}
@@ -74,12 +78,12 @@ public class searchEditCwbInfoDao {
 	 * @param resendtime
 	 * @param userid
 	 */
-	public void createEditInfo(CwbOrder info,long newbranchid, String editname, String editmobile, String editcommand, String editaddress, String resendtime, long userid, String remark) {
+	public void createEditInfo(CwbOrder info,long newbranchid, String editname, String editmobile, String editcommand, String editaddress, String resendtime, long userid, String remark, long newexceldeliverid, String newexceldeliver) {
 		jdbcTemplate
-				.update("insert into express_ops_editcwbinfo(cwb,deliverybranchid,oldconsigneename,newconsigneename,oldconsigneemobile,newconsigneemobile,oldconsigneeaddress,newconsigneeaddress,oldResendtime,newResendtime,oldcommand,newcommand,cretime,crename,oldremark,newremark,newbranchid) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", info.getCwb(), info.getDeliverybranchid() == 0 ? info.getNextbranchid() : info.getDeliverybranchid(), info.getConsigneename(),
+				.update("insert into express_ops_editcwbinfo(cwb,deliverybranchid,oldconsigneename,newconsigneename,oldconsigneemobile,newconsigneemobile,oldconsigneeaddress,newconsigneeaddress,oldResendtime,newResendtime,oldcommand,newcommand,cretime,crename,oldremark,newremark,newbranchid,oldexceldeliverid,oldexceldeliver,newexceldeliverid,newexceldeliver) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", info.getCwb(), info.getDeliverybranchid() == 0 ? info.getNextbranchid() : info.getDeliverybranchid(), info.getConsigneename(),
 						editname, info.getConsigneemobile(), editmobile, info.getConsigneeaddress(), editaddress, info.getResendtime(), resendtime, info.getCustomercommand(), editcommand,
-						DateTimeUtil.getNowTime(), userid, info.getCwbremark(), remark,newbranchid);
+						DateTimeUtil.getNowTime(), userid, info.getCwbremark(), remark,newbranchid,info.getExceldeliverid(), info.getExceldeliver(), newexceldeliverid, newexceldeliver);
 	}
 
 	/**

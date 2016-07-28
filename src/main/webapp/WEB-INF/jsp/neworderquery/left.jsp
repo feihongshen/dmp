@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@page import="cn.explink.domain.VO.BaleCwbClassifyVo"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.domain.Exportmould"%>
@@ -27,6 +28,21 @@
   String chukubegindate = request.getParameter("chukubegindate")==null?"":request.getParameter("chukubegindate");
   String chukuenddate = request.getParameter("chukuenddate")==null?"":request.getParameter("chukuenddate");
   String cwbs=request.getAttribute("cwbs")==null?"":request.getAttribute("cwbs").toString();
+  
+  Map<String, List<BaleCwbClassifyVo>> baleCwbClassifyVoListMap = (Map<String, List<BaleCwbClassifyVo>>) request.getAttribute("baleCwbClassifyVoListMap");
+  if(baleCwbClassifyVoListMap == null) {
+	  baleCwbClassifyVoListMap = new HashMap<String, List<BaleCwbClassifyVo>>();
+  }
+  
+  Map<String, Integer> baleCwbSizeMap = (Map<String, Integer>) request.getAttribute("baleCwbSizeMap");
+  if(baleCwbSizeMap == null) {
+	  baleCwbSizeMap = new HashMap<String, Integer>();
+  }
+  
+  Map<String, BaleCwbClassifyVo> baleCwbClassifyVoMap = (Map<String, BaleCwbClassifyVo>) request.getAttribute("baleCwbClassifyVoMap");
+  if(baleCwbClassifyVoMap == null) {
+	  baleCwbClassifyVoMap = new HashMap<String, BaleCwbClassifyVo>();
+  }
 %>
 
 <head>
@@ -458,6 +474,24 @@ $(function(){
 								<td width="80" align="center" bgcolor="#F1F1F1">电话</td>
 								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
 								</tr>
+						<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("1")) {%>
+							<tr>
+								<td width="90" align="center" bgcolor="#F1F1F1">订单号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">运单号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">包号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">客户</td>
+								<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
+								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
+							</tr>
+						<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("3")) {%>
+							<tr>
+								<td width="80" align="center" bgcolor="#F1F1F1">包号</td>
+								<td width="90" align="center" bgcolor="#F1F1F1">订单号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">运单号</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">客户</td>
+								<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
+								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
+							</tr>
 						<%}else{ %>
 						<tr>
 								<td width="90" align="center" bgcolor="#F1F1F1">订单号</td>
@@ -494,7 +528,73 @@ $(function(){
 									<%} %>
 								</td>
 							</tr>
-							<%}else{ %>
+							<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("1")) {
+								int size = baleCwbSizeMap.get(order.getCwb());
+								List<BaleCwbClassifyVo> voList = baleCwbClassifyVoListMap.get(order.getCwb());
+								for(int i = 0; i < voList.size(); i++) {
+									BaleCwbClassifyVo vo = voList.get(i);
+									for(int j = 0; j < vo.getTranscwbList().size();j++) {
+										String transcwb = vo.getTranscwbList().get(j);
+										if(i == 0 && j == 0) {
+									%>
+											<tr onclick="goForm('<%=order.getCwb() %>');" >
+												<td width="80" rowspan="<%=size %>" align="center" valign="middle"><%=order.getCwb() %></td>
+												<td width="80" rowspan="1" align="center" valign="middle"><%=transcwb%></td>
+												<td width="80" rowspan="<%=vo.getTranscwbList().size() %>" align="center" valign="middle"><%=vo.getBaleno()%></td>
+												<td width="80" rowspan="<%=size %>" align="center" valign="middle"><%=customerMap.get(order.getCustomerid())==null?"":customerMap.get(order.getCustomerid()).getCustomername() %></td>
+												<td width="120" rowspan="<%=size %>" align="center" valign="middle"><%=order.getEmaildate() %></td>
+												<td rowspan="<%=size %>" align="center" valign="middle">
+													<%if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已审核"){%>
+														审核为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
+													else if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已反馈") {%>
+														反馈为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
+													else{ %>
+														<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
+													<%} %>
+												</td>
+												</tr>
+										<%	} else if(j == 0) { %>
+												<tr onclick="goForm('<%=order.getCwb() %>');" >
+													<td width="80" rowspan="1" align="center" valign="middle"><%=transcwb%></td>
+													<td width="80" rowspan="<%=vo.getTranscwbList().size() %>" align="center" valign="middle"><%=vo.getBaleno()%></td>
+												</tr>
+										<%	} else { %>
+											<tr onclick="goForm('<%=order.getCwb() %>');" >
+												<td width="80" rowspan="1" align="center" valign="middle"><%=transcwb%></td>
+											</tr>
+									<% } 
+									} 
+								}%>
+							<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("3")) {
+								BaleCwbClassifyVo vo = baleCwbClassifyVoMap.get(order.getCwb());
+								for(int i = 0; i < vo.getTranscwbList().size(); i++) {
+									int size = vo.getTranscwbList().size();
+									if(i==0) {
+							%>
+									<tr onclick="goForm('<%=order.getCwb() %>');" >
+										<td width="80" rowspan="<%=size %>" align="center" valign="middle"><%=vo.getBaleno()%></td>
+										<td width="80" rowspan="<%=size %>" align="center" valign="middle"><%=order.getCwb() %></td>
+										<td width="80" rowspan="1" align="center" valign="middle"><%=vo.getTranscwbList().get(i) %></td>	
+										<td width="80" rowspan="<%=size %>" align="center" valign="middle"><%=customerMap.get(order.getCustomerid())==null?"":customerMap.get(order.getCustomerid()).getCustomername() %></td>
+										<td width="120" rowspan="<%=size %>" align="center" valign="middle"><%=order.getEmaildate() %></td>
+										<td rowspan="<%=size %>" align="center" valign="middle">
+											<%if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已审核"){%>
+												审核为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
+											else if(CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText()=="已反馈") {%>
+												反馈为：<%= DeliveryStateEnum.getByValue(order.getDeliverystate()).getText() %><%}
+											else{ %>
+												<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
+											<%} %>
+										</td>
+									</tr>
+							<% 	   } else { %>
+									<tr onclick="goForm('<%=order.getCwb() %>');" >
+										<td width="80" rowspan="1" align="center" valign="middle"><%=vo.getTranscwbList().get(i) %></td>	
+									</tr>
+							<%
+								}
+							   }%>
+							<% }else{ %>
 								<tr onclick="goForm('<%=order.getCwb() %>');" >
 									<td width="80" align="center"><%=order.getCwb() %></td>
 									<td width="80" align="center"><%=order.getPackagecode()%></td>

@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.explink.service.DfFeeService;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -61,6 +62,7 @@ import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
@@ -125,6 +127,9 @@ public class ApplyEditDeliverystateController {
 	
 	@Autowired
 	OrderBackCheckDAO orderBackCheckDao;
+
+	@Autowired
+    DfFeeService dfFeeService;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -323,7 +328,7 @@ public class ApplyEditDeliverystateController {
 							// 站内调整单逻辑入口
 							this.orgBillAdjustmentRecordService.createAdjustment4ReFeedBack(cwb, ec_dsd);
                             // 派费调整单逻辑入口
-							this.fnDfAdjustmentRecordService.createAdjustment4ReFeedBack(cwb);
+//							this.fnDfAdjustmentRecordService.createAdjustment4ReFeedBack(cwb);
 							
 							String auditingTime = ec_dsd.getDs().getAuditingtime();
 							if (StringUtils.isNotEmpty(auditingTime)) {
@@ -335,6 +340,10 @@ public class ApplyEditDeliverystateController {
 								}
 							}
 						}
+
+                        //added by Steve PENG. 重置反馈已生成派费的订单需要进行相关操作。 start
+                        dfFeeService.saveFeeRelativeAfterOrderReset(cwb, getSessionUser());
+                        //added by Steve PENG. 重置反馈已生成派费的订单需要进行相关操作。 end
 					} else {
 						cwbStr += cwb + ",";
 					}
@@ -963,6 +972,7 @@ public class ApplyEditDeliverystateController {
 			model.addAttribute("covList", covList);
 		}
 		model.addAttribute("page_obj", new Page(count, page, Page.ONE_PAGE_NUMBER));
+
 		return "applyeditdeliverystate/createApplyEditDeliverystate";
 	}
 	

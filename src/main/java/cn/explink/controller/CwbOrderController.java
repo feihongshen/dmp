@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.explink.service.DfFeeService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -211,6 +212,10 @@ public class CwbOrderController {
 	OrderBackRukuRecordDao orderBackRukuRecordDao;
 	@Autowired
 	AdjustmentRecordService adjustmentRecordService;
+	
+    @Autowired
+    DfFeeService dfFeeService;
+
 	@Autowired
 	TransCwbDetailDAO transCwbDetailDAO;
 	@Autowired
@@ -1812,6 +1817,11 @@ public class CwbOrderController {
 
 				//买单结算的客户订单失效需要判断是否已经生成客户账单，如果生成了客户账单，要生成客户调整账单
 				this.adjustmentRecordService.createAdjustmentForLosecwbBatch(co);
+
+                //added by Steve PENG. 失效订单需要进行派费相关操作。 start
+                //注释掉因为手动失效订单不需要执行相关的派费的操作。所有失效操作只在接口完成。
+//                dfFeeService.saveFeeRelativeAfterOrderResetOrDisabled(co, getSessionUser(), true);
+                //added by Steve PENG. 失效订单需要进行派费相关操作。 end
 
 				successCount++;
 				obj.put("cwbOrder", JSONObject.fromObject(co));

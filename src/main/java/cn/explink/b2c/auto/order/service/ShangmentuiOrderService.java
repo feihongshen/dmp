@@ -3,6 +3,7 @@ package cn.explink.b2c.auto.order.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import cn.explink.service.DfFeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,9 @@ public class ShangmentuiOrderService {
 	UserDAO userDAO;
 	@Autowired
 	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
-	
+    @Autowired
+    DfFeeService dfFeeService;
+
 	private Logger logger = LoggerFactory.getLogger(ShangmentuiOrderService.class);
 	//上门退订单数据解析
 	public MQCwbOrderDTO ShangmentuiJsonDetailInfo(VipShop vipshop, InfDmpOrderSendVO order, int mpsswitch) {
@@ -166,10 +169,6 @@ public class ShangmentuiOrderService {
 			int sendcarnum = order.getTotalPack();
 			int cwbordertype = CwbOrderTypeIdEnum.Shangmentui.getValue();
 			int boxSize = boxlist.size()==0?1:boxlist.size();
-			if(is_gatherpack==0 && boxSize!=sendcarnum){
-				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
-				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
-			}
 			
 			String customer_name = order.getCustomerName();
 			String customerid=vipshop.getCustomerids();  //默认选择唯品会customerid
@@ -207,6 +206,19 @@ public class ShangmentuiOrderService {
 			
 			String cmd_type = order.getCmdType(); // 操作指令new
 			
+			/*if(is_gatherpack==0 && boxSize!=sendcarnum){
+				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+			}*/
+			/******************************edit by 周欢 2016-07-15*********************/
+			//非集单模式：当boxlist不为空时，保存箱号与total_pack一致的订单信息，当boxlist为空时dmp只存第一次下发的订单数据
+			if(boxlist!=null && boxlist.size()!=0 && is_gatherpack==0 && boxlist.size()!=sendcarnum){
+				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+			}else if(boxlist==null||boxlist.size()==0 && is_gatherpack==0 && cwbOrderDTO != null){
+				this.logger.info("非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
+				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
+			}
 			//修改
 			if ("090".equalsIgnoreCase(cmd_type)) {
 				if (cwbOrderDTO == null ) {
@@ -235,6 +247,10 @@ public class ShangmentuiOrderService {
 					// add by bruce shangguan 20160608  报障编号:1729 ,揽退成功之后失效的订单在运费交款存在
 					this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(cwb) ;
 					// end 20160608  报障编号:1729
+
+                    // added by Steve PENG 20160722 start TPS 上门退, 订单失效后，需要对派费操作
+                    dfFeeService.saveFeeRelativeAfterOrderDisabled(order.getCustOrderNo());
+                    // added by Steve PENG 20160722 end
 				}else{ //拦截
 					//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 					cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), cwb, cwb,0);

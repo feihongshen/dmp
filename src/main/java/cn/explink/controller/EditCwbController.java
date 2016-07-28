@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +50,7 @@ import cn.explink.dao.ZhiFuApplyDao;
 import cn.explink.dao.searchEditCwbInfoDao;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.EmailDate;
 import cn.explink.domain.FeeWayTypeRemark;
@@ -65,6 +68,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.AdjustmentRecordService;
+import cn.explink.service.BranchService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
 import cn.explink.service.DataImportService;
@@ -72,6 +76,7 @@ import cn.explink.service.EditCwbService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.OrgBillAdjustmentRecordService;
+import cn.explink.service.UserService;
 import cn.explink.service.addressmatch.AddressMatchService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
@@ -135,6 +140,13 @@ public class EditCwbController {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	OrderAddressReviseDao orderAddressReviseDao;
+	
+	@Autowired
+	private BranchService branchService;
+	
+	@Autowired
+	private UserService userService;
+	
 	private Logger logger = LoggerFactory.getLogger(EditCwbController.class);
 
 	private User getSessionUser() {
@@ -168,7 +180,41 @@ public class EditCwbController {
 		model.addAttribute("cwbArray", cwbArray);
 		String cwbsSql = cwbsSqlBuffer.substring(0, cwbsSqlBuffer.length() - 1);
 		List<CwbOrder> cwbList = this.cwbDAO.getCwbByCwbs(cwbsSql);
-		
+		//	Map<String, AccountCwbFareDetail> accountCwbFareDetailMap = this.accountCwbFareDetailDAO.getAccountCwbFareDetailMapByCwbs(cwbsSql);
+
+		/*// 做重置审核状态更改的操作 start
+		if (type == EditCwbTypeEnum.ChongZhiShenHeZhuangTai.getValue()) {
+			List<CwbOrder> allowCwb = new ArrayList<CwbOrder>();// 允许更改订单
+			List<CwbOrder> prohibitedCwb = new ArrayList<CwbOrder>(); // 禁止更改的订单
+			for (CwbOrder co : cwbList) {
+
+				// 判断订单当前状态为36 已审核状态的订单才能重置审核状态
+				if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
+					// 判断订单号是否为POS刷卡 posremark=POS刷卡 POS刷卡的订单不允许重置审核状态
+					DeliveryState ds = this.deliveryStateDAO.getDeliveryStateByCwb(co.getCwb()).get(0);
+					if ((co.getInfactfare().compareTo(BigDecimal.ZERO) > 0) && ((accountCwbFareDetailMap.get(co.getCwb()) == null ? 0 : accountCwbFareDetailMap.get(co.getCwb()).getFareid()) > 0)) {
+						// 暂借对象中的备注1字段输出一些提示语
+						co.setRemark1("当前订单运费已交款，不可重置审核状态");
+						prohibitedCwb.add(co);
+					} else if (ds.getPosremark().indexOf("POS刷卡") == -1) {
+						allowCwb.add(co);
+					} else {
+						// 暂借对象中的备注1字段输出一些提示语
+						co.setRemark1("POS刷卡签收的订单审核后不允许重置审核状态");
+						prohibitedCwb.add(co);
+					}
+				} else {
+					// 暂借对象中的备注1字段输出一些提示语
+					co.setRemark1("当前订单状态为[" + FlowOrderTypeEnum.getText(co.getFlowordertype()).getText() + "],不允许重置审核状态");
+					prohibitedCwb.add(co);
+				}
+
+			}
+			model.addAttribute("allowCwb", allowCwb);
+			model.addAttribute("prohibitedCwb", prohibitedCwb);
+			return "editcwb/ChongZhiShenHe";
+			// 做重置审核状态更改的操作 end
+		}*/
 		if (type == EditCwbTypeEnum.XiuGaiJinE.getValue()) {// 修改订单金额更改操作
 															// Start
 			List<CwbOrderWithDeliveryState> allowCods = new ArrayList<CwbOrderWithDeliveryState>();
@@ -741,39 +787,20 @@ public class EditCwbController {
 	 * @throws Exception 
 	 */
 	@RequestMapping("/editCwbInfo")
-	public String editCwbInfo(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb, @RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
+	public String editCwbInfo(Model model, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
+			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示,
 	) throws Exception {
-
-		/*		List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
-				if (isshow > 0) {// 查询
-
-					StringBuffer sb1 = new StringBuffer();
-					String cwbs="";
-					if(!StringUtils.isEmpty(cwb)){
-					String cwbss[]=cwb.trim().split("\r\n");
-					for(String str1:cwbss){
-						sb1=sb1.append("'"+str1+"',");
-					}
-					cwbs=sb1.substring(0, sb1.length()-1);
-					}
-
-						List<CwbOrder> co = this.cwbDAO.getCwbByCwbs(cwbs);
-						if (co != null) {
-							cwborderlist=co;
-						}
-					}
-
-
-				*/
-
-		if (isshow > 0) {// 查询
+		if (isshow > 0) { // 查询
 			List<CwbOrder> cwborderlist = new ArrayList<CwbOrder>();
-
+			List<String> cwbList = new ArrayList<String>();
 			for (String cwbStr : cwb.split("\r\n")) {
 				if (cwbStr.trim().length() == 0) {
 					continue;
 				}
 				cwbStr = cwbStr.trim();
+				if (StringUtils.isNotBlank(cwbStr)) {
+					cwbList.add(cwbStr);
+				}
 				CwbOrder co = this.cwbDAO.getCwbByCwb(cwbStr);
 				if(co!=null) {
 					co.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(co.getConsigneemobileOfkf()));
@@ -782,20 +809,23 @@ public class EditCwbController {
 					cwborderlist.add(co);
 				}
 			}
-			String destinationName = "";
-			List<Branch> branchs = this.branchDAO.getBranchAllzhandian(BranchEnum.ZhanDian.getValue() + "");
-			if (cwborderlist.size() > 0) {
-				for (Iterator<Branch> iterator = branchs.iterator(); iterator.hasNext();) {
-					Branch branch = iterator.next();
-					if (branch.getBranchid() == cwborderlist.get(0).getDeliverybranchid()) {
-						destinationName = branch.getBranchname();
-					}
-				}
+			List<CwbOrderBranchMatchVo> cwbOrderBranchMatchVoList = this.cwbOrderService.getCwbBranchMatchByCwbs(cwbList);
+			List<Branch> branchs = this.branchDAO.getBranchAllzhandian(String.valueOf(BranchEnum.ZhanDian.getValue()));
+			// 匹配站点名称
+			Map<Long, String> branchnameMap = new HashMap<Long, String>();
+			for (Branch branch : branchs) {
+				branchnameMap.put(branch.getBranchid(), branch.getBranchname());
 			}
-			model.addAttribute("cwbList", cwborderlist);
+			for (CwbOrderBranchMatchVo vo : cwbOrderBranchMatchVoList) {
+				vo.getCwbOrder().setExcelbranch(branchnameMap.get(vo.getCwbOrder().getDeliverybranchid()));
+			}
+			model.addAttribute("cwbOrderBranchMatchVoList", cwbOrderBranchMatchVoList);
 			model.addAttribute("branchs", branchs);
-			if (!destinationName.equals("")) {
-				model.addAttribute("destinationName", destinationName);
+			if (cwbOrderBranchMatchVoList.size() > 0) {
+				Branch branch = this.branchService.getZhanDianByBranchId(cwbOrderBranchMatchVoList.get(0).getCwbOrder().getDeliverybranchid());
+				if(branch != null) {
+					model.addAttribute("destinationName", branch.getBranchname());
+				}
 			}
 		}
 		return "editcwb/editInfo";
@@ -819,13 +849,21 @@ public class EditCwbController {
 	}
 
 	@RequestMapping("/updateCwbInfo/{cwb}")
-	public @ResponseBody String updateCwbInfo(Model model, @PathVariable("cwb") String cwb, @RequestParam(value = "editname", required = false, defaultValue = "") String editname,// 修改的姓名
-			@RequestParam(value = "editmobile", required = false, defaultValue = "") String editmobile,// 修改的电话
+	public @ResponseBody String updateCwbInfo(Model model, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "editname", required = false, defaultValue = "") String editname, // 修改的姓名
+			@RequestParam(value = "editmobile", required = false, defaultValue = "") String editmobile, // 修改的电话
 			@RequestParam(value = "editcommand", defaultValue = "", required = false) String editcommand, // 需求
 			@RequestParam(value = "editshow", defaultValue = "0", required = false) long editshow, // 是否显示,
 			@RequestParam(value = "remark", defaultValue = "", required = false) String remark, // 订单备注
 			@RequestParam(value = "matchaddress", defaultValue = "", required = false) String branchname, // 匹配后站点
-			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate, @RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress, @RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress, @RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname, @RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile, @RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname, @RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand) throws Exception {// 地址
+			String courierName, // 配送员ID
+			@RequestParam(value = "begindate", defaultValue = "", required = false) String begindate,
+			@RequestParam(value = "editaddress", required = false, defaultValue = "") String editaddress,
+			@RequestParam(value = "checkeditaddress", required = false, defaultValue = "") String checkeditaddress,
+			@RequestParam(value = "checkeditname", required = false, defaultValue = "") String checkeditname,
+			@RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile,
+			@RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname,
+			@RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand) {// 地址
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		cwb = cwb.trim();
@@ -843,6 +881,7 @@ public class EditCwbController {
 		
 		// 构建新的订单信息
 		CwbOrderDTO co = this.dataImportDAO_B2c.getCwbFromCwborder(cwb);// 运单号
+		long checkExceldeliverid = co.getExceldeliverid();
 		co.setConsigneename(editname);
 		co.setCustomercommand(editcommand);
 		if(!StringUtil.isEmpty(editmobile)) {
@@ -862,8 +901,13 @@ public class EditCwbController {
 			}
 			// 修改匹配站
 			Branch branch = this.branchDAO.getBranchByBranchname(branchname);
+			User deliver = null;
 			if ((co != null) && (branch.getBranchid() > 0)) {
-
+				deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
+				if(deliver != null) {
+					co.setExcelbranchid(deliver.getUserid());
+					co.setExceldeliver(deliver.getRealname());
+				}
 				CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
 				if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) || (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
 					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
@@ -873,7 +917,7 @@ public class EditCwbController {
 					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 				}
 				try {
-					this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), old, branch, addressCodeEditType);
+					this.cwbOrderService.updateDeliveryBranchAndCourier(this.getSessionUser(), old, branch, addressCodeEditType, deliver);
 					this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, branchname);
 				} catch (Exception e) {
 					return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
@@ -895,9 +939,12 @@ public class EditCwbController {
 					this.appearWindowDao.creWindowTime(jsonInfo, "2", userlist.get(0).getUserid(), "1");
 				}
 			}
-			Branch branch2 = this.branchDAO.getBranchByBranchname(checkbranchname);
-			long branchid = branch2.getBranchid();
-			this.cwbInfoDao.createEditInfo(old, branchid, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark);
+//			Branch branch2 = this.branchDAO.getBranchByBranchname(checkbranchname);
+//			long branchid = branch2.getBranchid();
+			long branchid = branch.getBranchid();
+			long exceldeliverid = deliver == null ? 0 : deliver.getUserid();
+			String exceldeliver = deliver == null ? null : deliver.getRealname();
+			this.cwbInfoDao.createEditInfo(old, branchid, editname, editmobile, editcommand, editaddress, begindate, userDetail.getUser().getUserid(), remark, exceldeliverid, exceldeliver);
 			/**
 			 * 修改云订单信息  add gordon.zhou 2016/5/26
 			 */
@@ -916,10 +963,10 @@ public class EditCwbController {
 			if (count == 0) {
 				this.orderAddressReviseDao
 						.createReviseAddressInfo(cwb, old.getConsigneeaddress(), old.getEmaildate(), "系统导入", old.getConsigneenameOfkf(), old.getConsigneemobileOfkf(), "", checkbranchname, old
-								.getCustomercommand());
+								.getCustomercommand(), old.getExceldeliver());
 			}
 
-			if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand)) || (!branchname
+			if ((exceldeliverid != checkExceldeliverid) || (!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand)) || (!branchname
 					.equals(""))) {
 				/**
 				 * 关于站点的一点判断
@@ -930,13 +977,13 @@ public class EditCwbController {
 						revisebranchName = branchname;
 					}
 					this.orderAddressReviseDao
-							.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand);
+							.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand, exceldeliver);
 
 				} else {
-					if ((!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand))) {
+					if ((exceldeliverid != checkExceldeliverid) || (!checkeditaddress.equals(editaddress)) || (!editname.equals(checkeditname)) || (!editmobile.equals(checkeditmobile)) || (!editcommand.equals(checkeditcommand))) {
 
 						this.orderAddressReviseDao
-								.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand);
+								.createReviseAddressInfo(cwb, editaddress, DateTimeUtil.getNowTime(), userDetail.getUser().getRealname(), editname, editmobile, begindate, revisebranchName, editcommand, exceldeliver);
 
 					}
 

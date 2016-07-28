@@ -17,6 +17,7 @@
 		<database.driverClassName>com.mysql.jdbc.Driver</database.driverClassName>
 		<spring-security.version>3.1.0.RELEASE</spring-security.version>
 		<aspectj.version>1.8.8</aspectj.version>
+		<struts2-jsr303-validation-plugin.version>1.0</struts2-jsr303-validation-plugin.version>		
 	</properties>
 	<repositories>
 		<repository>
@@ -89,7 +90,7 @@
 		<dependency>
   			<groupId>com.pjbest.pjorganization</groupId>
   			<artifactId>pjorganization-service-api</artifactId>
-  			<version>1.1.0_03</version>
+  			<version>1.21.0_04</version>
   			<exclusions>
   				<exclusion>
   					<groupId>org.springframework</groupId>
@@ -270,6 +271,16 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.2.0.Final</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jboss-logging</artifactId>
+					<groupId>org.jboss.logging</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -707,6 +718,16 @@
   				</exclusion>
   			</exclusions> 
 		</dependency>
+		
+		<!-- JSR 303  Validator begin -->
+		<dependency>
+            <groupId>com.github.umeshawasthi</groupId>
+            <artifactId>struts2-jsr303-validation-plugin</artifactId>
+            <version>${struts2-jsr303-validation-plugin.version}</version>
+        </dependency>
+        <!-- JSR 303  Validator end -->
+		
+		
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>

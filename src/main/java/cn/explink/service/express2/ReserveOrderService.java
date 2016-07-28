@@ -4,9 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.explink.util.ResourceBundleUtil;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -34,6 +37,7 @@ import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
 import cn.explink.dao.express.CountyDAO;
 import cn.explink.dao.express.ProvinceDAO;
+import cn.explink.dao.express.TownDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
@@ -109,6 +113,8 @@ public class ReserveOrderService extends ExpressCommonService {
     ProvinceDAO provinceDAO;
     @Autowired
     SystemInstallDAO systemInstallDAO;
+    @Autowired
+    TownDAO townDAO;
 
     private static final String MAX_ROW_SIZE_DB_IN_DB  = "Express2ROExcelRows";
 	
@@ -652,4 +658,144 @@ public class ReserveOrderService extends ExpressCommonService {
         	logger.error(e.getMessage(), e);
         }
     }
+
+	public ReserveOrderPageVo getReserveOrder(
+			OmReserveOrderModel omReserveOrderModel) {
+		Map<String, String> orderField = new HashMap();
+		orderField.put("appoint_Time", "desc");
+		ReserveOrderPageVo reserveOrderPageVo = this.getReserveOrderList(omReserveOrderModel,orderField,1, 3);
+		List<ReserveOrderVo> reserveOrderList = reserveOrderPageVo.getReserveOrderVoList();
+		for(int i=0;i<reserveOrderList.size();i++){
+			int provinceId = 0;
+			int cityId = 0;
+			int countyId = 0;
+			int townId = 0;
+			AdressVO provinceVo =  provinceDAO.getProviceByName(reserveOrderList.get(i).getCnorProvName());
+			AdressVO cityVo = null;
+			AdressVO contyVo = null;
+			AdressVO townVo = null;
+			if(provinceVo!=null&&provinceVo.getId()!=0){
+				provinceId = provinceVo.getId();
+			}
+			if(provinceVo!=null&&provinceId!=0){
+				cityVo = cityDAO.getCityByNameAndProvice(reserveOrderList.get(i).getCnorCityName(),provinceVo);
+				cityId=cityVo.getId();
+			}
+			if(cityVo!=null&&cityId!=0){
+				contyVo = countyDAO.getCountyByNameAndCity(reserveOrderList.get(i).getCnorRegionName(),cityVo);
+				countyId=contyVo.getId();
+			}
+			if(cityVo!=null&&countyId!=0){
+				townVo = townDAO.getTownByNameAndCounty(reserveOrderList.get(i).getCnorRegionName(),cityVo);
+				townId=cityVo.getId();
+			}
+			reserveOrderList.get(i).setCnorProvCode(provinceId+"");
+			reserveOrderList.get(i).setCnorCityCode(cityId+"");
+			reserveOrderList.get(i).setCnorRegionCode(countyId+"");
+			reserveOrderList.get(i).setCnorTownCode(townId+"");
+		}
+		return reserveOrderPageVo;
+	}
+	
+	/**
+	 * 获取预约单列表
+	 * @date 2016年7月13日 下午2:13:22
+	 * @author zhouhuan
+	 * @param orderField 
+	 * @return
+	 */
+	public ReserveOrderPageVo getReserveOrderList(OmReserveOrderModel omReserveOrderModel, Map<String, String> orderField, int page, int rows) {
+        logger.info("调用TPS查询接口开始");
+
+        // 记录入库数据
+//		try {
+//			logger.info("omReserveOrderModel:{}", JsonUtil.translateToJson(omReserveOrderModel));
+//		} catch (Exception e) {
+//			logger.error(e.getMessage(), e);
+//		}
+
+        InvocationContext.Factory.getInstance().setTimeout(OSP_INVOKE_TIMEOUT);
+		PjReserveOrderService pjReserveOrderService = new PjReserveOrderServiceHelper.PjReserveOrderServiceClient();
+		PjReserveOrderPageModel pjReserveOrderPageModel = null;
+		try {
+			PjReserveOrderQueryModel pjReserveOrderQueryModel = new PjReserveOrderQueryModel();
+			pjReserveOrderQueryModel.setPageNo(page);
+			pjReserveOrderQueryModel.setPageSize(rows);
+			pjReserveOrderQueryModel.setCondition(omReserveOrderModel);
+			pjReserveOrderQueryModel.setOrderByProps(orderField);
+            logger.info("查询报文: " + toInfoString(omReserveOrderModel));
+            pjReserveOrderPageModel = pjReserveOrderService.getReserveOrders(pjReserveOrderQueryModel);
+			// 返回数据记录
+			logger.info("查询成功: 总条数：{}", pjReserveOrderPageModel.getReserveOrders().size());
+            logger.debug("查询结果: " + toInfoString(pjReserveOrderPageModel));
+		} catch (OspException e) {
+            logger.info("查询报错： ");
+			logger.error(e.getMessage(), e);
+		}
+		List<OmReserveOrderModel> poList = pjReserveOrderPageModel.getReserveOrders();
+		List<ReserveOrderVo> voList = new ArrayList<ReserveOrderVo>(poList.size());
+		// po转vo
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		for (OmReserveOrderModel po : poList) {
+			ReserveOrderVo vo = new ReserveOrderVo();
+			vo.setOmReserveOrderId(po.getOmReserveOrderId());
+			vo.setReserveOrderNo(po.getReserveOrderNo());
+			Long appointTimeMs = po.getAppointTime();
+			if (appointTimeMs != null) {
+				Date appointTime = new Date(appointTimeMs);
+				vo.setAppointTime(appointTime);
+				vo.setAppointTimeStr(sdf.format(appointTime));
+			}
+			vo.setCnorName(po.getCnorName());
+			vo.setCnorMobile(po.getCnorMobile());
+			vo.setCnorTel(po.getCnorTel());
+			vo.setCnorAddr(po.getCnorAddr());
+			vo.setCnorDetailAddr(po.getCnorProvName() + po.getCnorCityName() + po.getCnorRegionName() + po.getCnorAddr());
+			Long requireTimeMs = po.getRequireTime();
+			if (requireTimeMs != null) {
+				Date requireTime = new Date(requireTimeMs);
+				vo.setRequireTime(requireTime);
+				vo.setRequireTimeStr(sdf.format(requireTime));
+			}
+			vo.setReserveOrderStatus(po.getReserveOrderStatus());
+			// 转换成本地状态名称
+			Integer reserveOrderStatus = po.getReserveOrderStatus() == null ? null : po.getReserveOrderStatus().intValue();
+			vo.setReserveOrderStatusName(ReserveOrderDmpStatusEnum.getNameByIndex(reserveOrderStatus));
+			vo.setReason(po.getReason());
+			vo.setTransportNo(po.getTransportNo());
+//			vo.setAcceptOrg(po.getAcceptOrg());
+//			vo.setAcceptOrgName(po.getAcceptOrgName());
+            List<Branch> acceptBranches = branchDAO.getBranchByTpsBranchcode(po.getCarrierSiteCode());
+            if (acceptBranches != null && acceptBranches.size() > 0) {
+                vo.setAcceptOrgName(acceptBranches.get(0).getBranchname());
+            }
+            vo.setCnorRemark(po.getCnorRemark());
+            vo.setCourier(po.getCourier());
+            vo.setCustName(po.getCustName());
+            User user = this.userDao.getUserByUsername(po.getCourier());
+            if(user != null) {
+            	vo.setCourierName(user.getRealname());
+            }
+            vo.setRecordVersion(po.getRecordVersion());
+			vo.setCnorProvName(po.getCnorProvName());
+            vo.setCnorCityName(po.getCnorCityName());
+            vo.setCnorRegionName(po.getCnorRegionName());
+            vo.setCarrierSiteCode(po.getCarrierSiteCode());
+//            vo.setRemark(po.getRemark());
+            vo.setCnorRemark(po.getCnorRemark());
+            
+            vo.setCnorProvCode(po.getCnorProv());
+            vo.setCnorCityCode(po.getCnorCity());
+            vo.setCnorRegionCode(po.getCnorRegion());
+            voList.add(vo);
+		}
+		// 封装分页信息
+		ReserveOrderPageVo reserveOrderPageVo = new ReserveOrderPageVo();
+		reserveOrderPageVo.setTotalRecord(pjReserveOrderPageModel.getTotalRecord());
+		reserveOrderPageVo.setReserveOrderVoList(voList);
+
+        logger.info("调用TPS查询接口结束");
+
+		return reserveOrderPageVo;
+	}
 }

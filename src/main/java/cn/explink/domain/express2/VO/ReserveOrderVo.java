@@ -142,7 +142,18 @@ public class ReserveOrderVo {
      * 寄件公司
      */
     private String custName;
-
+    
+    //寄件省份编码
+    private String cnorProvCode;
+    //寄件城市编码
+    private String cnorCityCode;
+    //寄件区域编码
+    private String cnorRegionCode;
+    //寄件街道编码
+    private String cnorTownCode;
+    //寄件街道
+    private String cnorTownName;
+    
 	public Integer getOmReserveOrderId() {
 		return omReserveOrderId;
 	}
@@ -365,6 +376,47 @@ public class ReserveOrderVo {
 
 	public void setCustName(String custName) {
 		this.custName = custName;
+	}
+
+	public String getCnorProvCode() {
+		return cnorProvCode;
+	}
+
+	public void setCnorProvCode(String cnorProvCode) {
+		this.cnorProvCode = cnorProvCode;
+	}
+
+	public String getCnorCityCode() {
+		return cnorCityCode;
+	}
+
+	public void setCnorCityCode(String cnorCityCode) {
+		this.cnorCityCode = cnorCityCode;
+	}
+
+	public String getCnorRegionCode() {
+		return cnorRegionCode;
+	}
+
+	public void setCnorRegionCode(String cnorRegionCode) {
+		this.cnorRegionCode = cnorRegionCode;
+	}
+
+	public String getCnorTownCode() {
+		return cnorTownCode;
+	}
+
+	public void setCnorTownCode(String cnorTownCode) {
+		this.cnorTownCode = cnorTownCode;
+	}
+
+
+	public String getCnorTownName() {
+		return cnorTownName;
+	}
+
+	public void setCnorTownName(String cnorTownName) {
+		this.cnorTownName = cnorTownName;
 	}
 
 	@Override

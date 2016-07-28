@@ -13,14 +13,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.BranchSyncResultVo;
 import cn.explink.domain.MqExceptionBuilder;
+import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.OrgPayInTypeEnum;
+import cn.explink.util.CurrentUserHelper;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StringUtil;
@@ -33,6 +37,9 @@ public class BranchService {
 	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
+	
+	@Autowired
+	BranchSyncToOspHelper branchSyncToOspHelper;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -308,4 +315,79 @@ public class BranchService {
 		return this.branchDao.getAllBranches();
 	}
 
+    @Transactional(rollbackFor=Exception.class)
+    public long creBranchAndSyncOsp(final Branch branch) throws Exception{
+    	branch.setUpdateUser(CurrentUserHelper.getInstance().getUserName());
+    	long branchid = this.branchDao.creBranch(branch);
+    	Branch savedBranch = branchDao.getBranchByBranchid(branchid);
+		try {
+			branchSyncToOspHelper.saveBranchSyncToOsp(savedBranch);
+			return branchid;
+		} catch (Exception e) {
+    		logger.error(e.getMessage());
+    		throw e;
+    	}
+    }
+    
+    @Transactional(rollbackFor=Exception.class)
+	public void saveBranchAndSyncOsp(final Branch branch) throws Exception{
+    	branch.setUpdateUser(CurrentUserHelper.getInstance().getUserName());
+    	long branchid = branch.getBranchid();
+    	this.branchDao.saveBranch(branch);
+    	Branch savedBranch = branchDao.getBranchByBranchid(branchid);
+		try {
+			branchSyncToOspHelper.saveBranchSyncToOsp(savedBranch);
+		} catch (Exception e) {
+    		logger.error(e.getMessage());
+    		throw e;
+    	}
+    }
+    
+    @Transactional(rollbackFor=Exception.class)
+	public void delBranchAndSyncOsp(long branchid) throws Exception{
+    	this.branchDao.delBranch(branchid, CurrentUserHelper.getInstance().getUserName());
+    	Branch branch = this.branchDao.getBranchByBranchid(branchid);
+    	try {
+    		//dmp只是将机构的字段标记为停用，不是真正删除
+    		branchSyncToOspHelper.saveBranchSyncToOsp(branch);
+    	} catch (Exception e) {
+    		logger.error(e.getMessage());
+    		throw e;
+    	}
+    }
+    
+    public Branch getBranchByBranchcode(String branchcode) {
+    	List<Branch> branchList = this.branchDao.getBranchByBranchcode(branchcode);
+    	if(branchList == null || branchList.size() == 0) {
+    		return null;
+    	}
+		return branchList.get(0);
+    }
+    
+    /**
+     * 获取站点
+     * 2016年6月21日 下午4:37:05
+     * @param branchId
+     * @return
+     */
+    public Branch getZhanDianByBranchId(long branchid) {
+    	Branch branch = this.getBranchByBranchid(branchid);
+    	if(branch != null && branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+    		return branch;
+    	}
+    	return null;
+    }
+    
+    public Branch getBranchByBranchname(String branchname) {
+    	Branch branch = this.branchDao.getBranchByBranchname(branchname);
+    	if(branch != null && branch.getBranchid() == 0) {
+    		return null;
+    	}
+    	return branch;
+    }
+
+	public List<BranchSyncResultVo> batchSyncBranchOsp() throws Exception {
+		List<Branch> branchs = this.getBranchs();
+		return branchSyncToOspHelper.batchSyncBranchOsp(branchs);
+	}
 }

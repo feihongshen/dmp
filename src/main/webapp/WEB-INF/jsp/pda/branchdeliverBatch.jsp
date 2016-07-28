@@ -384,6 +384,7 @@ function tohome(){
 							<option value="<%=u.getUserid() %>"  <%if(deliverid==u.getUserid()) {%>selected=selected<%} %> ><%=u.getRealname() %></option>
 						<%} %>
 			        </select>*
+			               超区领货：<input type="checkbox" id="isChaoqu" name="isChaoqu"/>
 				</p>
 			    <p><span>订单号：</span>
 					<textarea name="cwbs" cols="45" rows="3" id="cwbs"></textarea>
@@ -456,7 +457,13 @@ function tohome(){
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
 											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 										</tr>
@@ -518,7 +525,14 @@ function tohome(){
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
+											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 										</tr>
 										<%} %>
@@ -576,7 +590,13 @@ function tohome(){
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=co.getFlowordertypetext()==null?"":co.getFlowordertypetext()%></td>
+											<td width="60" align="center"><%
+											if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue(co.getDeliverystate()).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText()%><%} %></td>
 											<td align="center"><%=co.getCheckstateresultname() %></td>
 											<!-- ****************************** -->
 										</tr>
@@ -601,15 +621,16 @@ function tohome(){
 								<table width="100%" border="0" cellspacing="0" cellpadding="2"
 									class="table_5">
 									<tr>
-										<td width="120" align="center" bgcolor="#f1f1f1">订单号</td>
+										<td width="100" align="center" bgcolor="#f1f1f1">订单号</td>
 										<td width="80" align="center" bgcolor="#f1f1f1">供货商</td>
-										<td width="140" align="center" bgcolor="#f1f1f1">到货时间</td>
+										<td width="120" align="center" bgcolor="#f1f1f1">到货时间</td>
+										<td width="120" align="center" bgcolor="#f1f1f1">批量处理操作时间</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">收件人</td>
 										<td width="100" align="center" bgcolor="#f1f1f1">代收金额</td>
 										<%if(showCustomerSign){ %>
 												<td width="100" align="center" bgcolor="#f1f1f1">订单备注</td>
 											<%} %>
-										<td width="170" align="center" bgcolor="#f1f1f1">地址</td>
+										<td width="160" align="center" bgcolor="#f1f1f1">地址</td>
 											<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 										<td width="60" align="center" bgcolor="#f1f1f1">订单状态</td>
 										<td width="60" align="center" bgcolor="#f1f1f1">操作状态</td>
@@ -623,23 +644,31 @@ function tohome(){
 										<%if(objList!=null)for(JSONObject obj : objList){if(!obj.get("errorcode").equals("000000")){ %>
 											<%JSONObject cwbOrder =  obj.get("cwbOrder")==null?null:JSONObject.fromObject(obj.get("cwbOrder"));%>
 											<tr id="TR<%=obj.get("cwb") %>"  <%if(!obj.get("errorinfo").equals("无此单号")){ %> name="export" <%} %>  cwb="<%=obj.get("cwb") %>" customerid="<%=cwbOrder==null?"":cwbOrder.getString("customerid") %>"  deliverid="<%=cwbOrder==null?"":cwbOrder.getString("deliverid")%>">
-												<td width="120" align="center"><%=obj.get("cwb") %></td>
+												<td width="100" align="center"><%=obj.get("cwb") %></td>
 												<td width="80" align="center"><%=obj.getString("customername") %></td>
-												<td width="140" align="center"><%=obj.getString("inSitetime") %></td>
+												<td width="120" align="center"><%=obj.getString("inSitetime") %></td>
+												<td width="120" align="center"><%=obj.getString("createtime") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getString("consigneename") %></td>
 												<td width="100" align="center"><%=cwbOrder==null?"":cwbOrder.getDouble("receivablefee") %></td>
 												<%if(showCustomerSign){ %>
 												<td width="100"><%=obj.get("showRemark")==null?"":obj.get("showRemark") %></td>
 											<%} %>
-												<td width="170" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
+												<td width="160" align="left"><%=cwbOrder==null?"":cwbOrder.getString("consigneeaddress") %></td>
 												<!-- hps_Concerto create 2016年5月25日11:57:40 -->
 											<td width="60" align="center">
 											<% for (CwbStateEnum  cwb   : CwbStateEnum.values()) {if ((obj.get("cwbstate")!=null&&cwb.getValue()==(Integer)obj.get("cwbstate"))) {%>
 											<%=cwb.getText()%>
 											<% }}%>
 											</td>
-											<td width="60" align="center"><%=obj.get("flowordertypetext")==null?"":obj.get("flowordertypetext") %>
-											</td>
+											<td width="60" align="center"><%
+											if(obj.get("flowordertype")!=null){
+											if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已审核"){%>
+											审核为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
+											<%}else if(CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()=="已反馈") {%>
+											反馈为：<%=DeliveryStateEnum.getByValue((Integer)obj.get("deliverystate")).getText() %>
+											<%}else{ %>
+											<%=CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype"))==null?"":CwbFlowOrderTypeEnum.getText((Integer)obj.get("flowordertype")).getText()%>
+											<%}} %></td>
 											<td width="120" align="center"><%=obj.get("checkstateresultname")==null?"":obj.get("checkstateresultname")%></td>
 											<!-- ****************************** -->
 												<td align="center"><%=obj.get("errorinfo") %></td>

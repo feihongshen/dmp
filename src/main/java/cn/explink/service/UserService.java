@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import cn.explink.controller.UserView;
 import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.FinanceDeliverPayupDetail;
@@ -41,6 +42,9 @@ public class UserService {
 	FinanceDeliverPayUpDetailDAO financeDeliverPayUpDetailDAO;
 	@Autowired
 	GotoClassAuditingDAO gotoClassAuditingDAO;
+	
+	@Autowired
+	private RoleDAO roleDAO;
 
 	public void addUser(User user) {
 		this.userDAO.creUser(user);
@@ -298,6 +302,51 @@ public class UserService {
 	}
 	
 	/**
+	 * 根据站点ID获取用户
+	 * 2016年6月16日 下午5:20:05
+	 * @param roleid
+	 * @param branchid
+	 * @return
+	 */
+	public List<User> getUserByRoleAndBranchid(int roleid, long branchid) {
+		return this.userDAO.getUserByRoleAndBranchid(roleid, branchid);
+	}
+	
+	/**
+	 * 查询站点小件员
+	 * 2016年6月17日 下午3:59:36
+	 * @param branchId
+	 * @param deliverName
+	 * @return
+	 */
+	public User getBranchDeliverByDeliverName(long branchId, String deliverName) {
+		User deliver = this.userDAO.getUserByUsername(deliverName);
+		if(deliver == null || deliver.getBranchid() != branchId || deliver.getRoleid() != 2) {
+			return null;
+		}
+		return deliver;
+	}
+	
+	/**
+	 * 判断是否配送员
+	 * @date 2016年7月20日 下午5:18:45
+	 * @param roleid
+	 * @return
+	 */
+	public boolean isDeliver(long roleid) {
+		// 小件员和站长属于配送员
+		if (roleid == 2 || roleid == 4) {
+			return true;
+		}
+		// 其它类型
+		Role role = this.roleDAO.getRolesByRoleid(roleid);
+		if (role != null && role.getIsdelivery() == 1) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * 转换session用户的branchid
 	 * @param sessionUser Session用户
 	 * @author neo01.huang 2016-7-19
@@ -326,5 +375,13 @@ public class UserService {
 			return;
 		}
 		sessionUser.setBranchid(dbUser.getBranchid());
+	}
+
+	public List<User> getAllUserByRole(List<Long> roleidList) {
+		List<User> userList = this.userDAO.getAllUserByRole(roleidList);
+		if(userList == null) {
+			userList = new ArrayList<User>();
+		}
+		return userList;
 	}
 }

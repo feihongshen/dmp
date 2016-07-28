@@ -10,6 +10,7 @@ import cn.explink.b2c.auto.order.service.MQGetOrderDataService;
 import cn.explink.b2c.auto.order.service.PeisongOrderService;
 import cn.explink.b2c.auto.order.vo.InfDmpOrderSendVO;
 import cn.explink.b2c.tools.JiontDAO;
+import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.controller.MQCwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
@@ -35,6 +36,14 @@ public class PeisongOrderHandler implements IOrderHandler{
 	@Override
 	@Transactional
 	public void dealWith(InfDmpOrderSendVO order,VipShop vipshop){
+		/*****************************add start ********************************/
+		//add by 周欢     根据承运商编码和客户id筛选订单    2016-07-15
+		JointEntity jointEntityByShipper = this.jiontDAO.getDetialJointEntityByShipperNoForUse("\""+order.getCustCode()+"\"",vipshop.getCustomerids());
+		if(jointEntityByShipper == null){
+			this.logger.info("tps订单下发接口，承运商对应的配置与接口设置客户id不符,承运商号：{},客户id:{}", order.getCustCode(),vipshop.getCustomerids());
+			throw new CwbException("",FlowOrderTypeEnum.DaoRuShuJu.getValue(),"TPS接口未开启接收配送单开关");
+		}
+		/*****************************add end ********************************/
 		//配送单接口数据导入
 		if(vipshop.getIsGetPeisongFlag()==1){
 			Customer customer=customerDAO.getCustomerById(Long.valueOf(vipshop.getCustomerids()));

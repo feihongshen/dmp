@@ -1,0 +1,1 @@
+select '修改dmp40_function' AS '脚本注释', if((select count(1) from dmp40_function where functionname = '小件员关联维护' and ID = '153030') = 1, 'success', 'failed') as '执行结果'

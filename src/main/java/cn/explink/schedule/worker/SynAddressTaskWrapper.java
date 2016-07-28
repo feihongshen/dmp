@@ -153,6 +153,8 @@ public class SynAddressTaskWrapper {
 		delivererVo.setCustomerId(vendorid);
 		delivererVo.setExternalId(user.getUserid());
 		delivererVo.setName(user.getRealname());
+		delivererVo.setExternalStationId(user.getBranchid());
+		delivererVo.setUserCode(user.getUsername());
 		return delivererVo;
 	}
 

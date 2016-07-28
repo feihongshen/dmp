@@ -16,7 +16,6 @@
 	List<Branch> branchlist = (List<Branch>) request.getAttribute("branchs");
 	
 	Page page_obj = request.getAttribute("page_obj")==null?new Page():(Page)request.getAttribute("page_obj");
-	List<CwbOrder> List = request.getAttribute("Order")==null?new ArrayList<CwbOrder>():(List<CwbOrder>)request.getAttribute("Order");
 	//String showphoneflag = session.getAttribute("showphoneflag")==null?"0":(String)session.getAttribute("showphoneflag");
 	String error = request.getAttribute("error")==null?"":request.getAttribute("error").toString();
 %>
@@ -33,6 +32,8 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
 <script>
 function subEdit(form){
 	if(form.excelbranch.value.length==0){
@@ -62,6 +63,65 @@ function subEdit(form){
 	});
 }
 
+function getCourier(_this, index) {
+	var branchcode = $(_this).val();
+	if(branchcode == null || branchcode == "") {
+		initCourier(index);
+		return;
+	}
+	$.ajax({
+		type: "GET",
+        url: "<%=request.getContextPath() %>/dataimport/getCourierByBranch",
+        data: {branchcode:branchcode},
+        dataType: "json",
+        success: function(data) {
+        	initCourier(index, data);
+        },
+        error: function() {
+        	initCourier(index);
+        	$.messager.alert("错误", "获取小件员时发生错误！", "error"); 
+        }    
+    });
+}
+
+function initCourier(index, courierList) {
+	if(courierList == null) {
+		courierList = new Array();
+	}
+	var $courier;
+	if(index == null) {
+		$courier = $("#courierName");
+	} else {
+		$courier = $("#courier_" + index);
+	}
+	$courier.empty();
+	$courier[0].add(new Option("请选择", ""));
+	$.each(courierList, function(i, courier) { 
+		$courier[0].add(new Option(courier.realname, courier.username));
+	});
+	$courier.multipleSelect("refresh");
+}
+
+function saveBranchAndCourier(cwb, index) {
+	var branchcode = $("#branch_" + index).val();
+	var courierName = $("#courier_" + index).val();
+	if(branchcode == null || branchcode == "") {
+		$.messager.alert("提示", "请选择站点！", "warning");
+		return;
+	}
+	$.ajax({
+		type: "POST",
+        url: "<%=request.getContextPath() %>/dataimport/saveBranchAndCourier",
+        data: {cwb:cwb, branchcode:branchcode, courierName:courierName},
+        dataType: "json",
+        success: function(data) {
+        	$(".tishi_box",parent.document).html(data.error);
+			$(".tishi_box",parent.document).show();
+			setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+        }    
+    });
+}
+
 function selectPage(page){
 		$("#page").val(page);
 		$("#isshow").val("1");
@@ -74,31 +134,31 @@ function showMsg(){
 }
  function selectForm(){
 	 if($("#cwbs").val() == ''){
-		 alert("请输入订单号");
+		 $.messager.alert("提示", "请输入订单号！", "warning");
 		 return false;
 	 }
-	 var branchid=$("#branchcode").combobox("getValue");
-	 var branch=$("#excelbranch").val().replace(/(^\s*)|(\s*$)/g,"");
-	 if(branchid.length>0&&branch.length>0){
-		 if(branch!='输入站点名称或者站点编号'){
-			 alert("下拉框与输入框只能选一个");
-			 return false;
-		 }
-		
-	 } 
-	 if(branch == '输入站点名称或者站点编号' || $("#excelbranch").val() == '' ){
-		 if(!branchid.length>0){
-			 alert("请输入站点或者站点编号");
-			 return false;
-		 }
+	 var branchcode=$("#branchcode").val();
+	 var courierName = $("#courierName").val();
+	 if(branchcode == null || branchcode == "") {
+		 $.messager.alert("提示", "请选择站点！", "warning");
+		 return false;
 	 }
 	 $("#selectButton").attr("disabled","disabled");
-	  $("#selectButton").val("请稍候");
+	 $("#selectButton").val("请稍候");
 	 $("#editBranchForm").submit();
  }
  $(function(){
-	 $("#branchcode").combobox();
+	 	$("#branchcode, #courierName").multipleSelect({
+	        placeholder: "请选择",
+	        filter: true,
+	        single: true
+	    });
 	 
+	 	$("#Order select[name='branch'], #Order select[name='courier']").multipleSelect({
+	        placeholder: "请选择",
+	        filter: true,
+	        single: true
+	    });
 	 
 		$("#excelbranch").keydown(function(event){
 			if(event.keyCode==13) {
@@ -115,8 +175,8 @@ function showMsg(){
 	<div class="menucontant">
 	<div class="uc_midbg">
 		<ul>	
-			<li><a href="editBranch">修改匹配站</a></li>
-			<li><a href="editBatchBranch" class="light">批量匹配站</a></li>
+			<li><a href="editBranch">修改匹配信息</a></li>
+			<li><a href="editBatchBranch" class="light">批量匹配</a></li>
 			<li><a href="editBranchonBranch">匹配站按站</a></li>
 			<li><a href="addresslibrarymatching">手动匹配</a></li>
 			<!-- <li><a href="batchedit" >批量修改</a></li> -->
@@ -128,17 +188,17 @@ function showMsg(){
 					<td width="100%" colspan="2">
 					订单号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ><%if("1".equals(request.getAttribute("msg"))){ %><%=request.getParameter("cwbs")%><%} %></textarea>
 					匹配站点：<%if(branchlist!=null&&branchlist.size()>0){%>
-						<select id="branchcode" name="branchcode" style="width:150px;">
-								<option value="">--请选择站点-- </option>
+						<select id="branchcode" name="branchcode" onchange="getCourier(this)">
+								<option value="">请选择</option>
 								<%for( Branch b:branchlist){ %>
 									<option value="<%=b.getBranchcode() %>"><%=b.getBranchname() %></option>
 								<%}%>
 								</select>
 															
 							<%}%>
-						<input type="text" id="excelbranch" name="excelbranch" size="40" 
-							onblur="if(this.value==''){this.value='输入站点名称或者站点编号'}"
-							onfocus="if(this.value=='输入站点名称或者站点编号'){this.value=''}" value="输入站点名称或者站点编号"  />
+						<select id="courierName" name="courierName" style="width:150px;">
+								<option value="">请选择</option>
+						</select>
 							<input type="button"  class='input_button2' value="确认匹配"  onclick="selectForm();" id="selectButton"/>
 							<!-- <input style="width: 130px; height:20px; border:none; background-color: #ADEAEA ; cursor:pointer; padding:0; text-align:left;" type="button" id="btnval0" value="导出所有未匹配订单" onclick="exportField();"/><br/> -->
 					<%if(error.length()>0 ){ %><br/><font color="red"><%=error %> </font><%} %>
@@ -164,30 +224,46 @@ function showMsg(){
 						<td width="8%" align="center" align="center" valign="middle" bgcolor="#eef6ff">订单状态</td>
 						<td width="5%" align="center" align="center" valign="middle" bgcolor="#eef6ff">邮编</td>
 						<td width="29%" align="center" align="center" valign="middle" bgcolor="#eef6ff">收件地址</td>
-						<td width="10%" align="center" align="center" valign="middle" bgcolor="#eef6ff">匹配到站（回车保存）</td>
-						<!-- <td width="10%" align="center" height="38" align="center" valign="middle" bgcolor="#eef6ff">匹配到小件员</td> -->
-						
-<!-- 						<td width="9%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
- -->					</tr>
-					<%for(CwbOrder co : List){ %>
-					
+						<td width="10%" align="center" align="center" valign="middle" bgcolor="#eef6ff">匹配到站</td>
+						<td width="10%" align="center" height="38" align="center" valign="middle" bgcolor="#eef6ff">匹配到小件员</td>
+ 						<td width="9%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
+ 					</tr>
+					<c:forEach var="vo" varStatus="voStatus" items="${cwbOrderBranchMatchVoList}">
 						<tr>
-						<form id="f<%=co.getCwb() %>" method="POST" onSubmit="subEdit(this);return false;" action="editexcel/<%=co.getCwb() %>" >
-							<td width="10%"  align="center" height="19" ><%=co.getCwb() %></td>
-							<td width="10%"  align="center"  ><%=co.getConsigneename() %></td>
-							
-							<td width="10%"  align="center"  ><%=co.getConsigneemobile() %></td>
-							<td width="8%"   align="center"  ><%=CwbOrderTypeIdEnum.getByValue(co.getCwbordertypeid()).getText() %></td>
-							<td width="8%"   align="center"  ><%=CwbFlowOrderTypeEnum.getText(co.getFlowordertype()).getText() %></td>
-							<td width="5%"   align="center"  ><%=co.getConsigneepostcode() %></td>
-							<td width="29%"  align="left" id="add<%=co.getCwb() %>" ><%=co.getConsigneeaddress() %></td>
-							<td width="10%"  align="center"  ><input type="text" name="excelbranch" value="<%=co.getExcelbranch() %>" onfocus="$('#add<%=co.getCwb() %>').css('background','#bbffaa');" onblur="$('#add<%=co.getCwb() %>').css('background','#ffffff');" /></td>
-							<%-- <td width="10%"   align="center" height="38" ><input type="text" name="exceldeliver" value="<%=co.getExceldeliver() %>" /></td> --%>
-							<!-- <td width="9%" align="center" ><input type="submit"  value="保存" class="input_button2"></td> -->
-						</form>
+							<form id="f${vo.cwbOrder.cwb }" method="POST">
+								<td align="center" height="19">${vo.cwbOrder.cwb }</td>
+								<td align="center">${vo.cwbOrder.consigneename}</td>
+								<td align="center">${vo.cwbOrder.consigneemobile}</td>
+								<td align="center">${vo.flowordertypeVal }</td>
+								<td align="center">${vo.orderTypeVal }</td>
+								<td align="center">${vo.cwbOrder.consigneepostcode}</td>
+								<td align="left" id="add${vo.cwbOrder.cwb }">${vo.cwbOrder.consigneeaddress}</td>
+								<td align="left">
+									<select id="branch_${voStatus.index }" name="branch" onchange="getCourier(this, '${voStatus.index }')"
+										onfocus="$('#add${vo.cwbOrder.cwb}').css('background','#bbffaa');"
+										onblur="$('#add${vo.cwbOrder.cwb}').css('background','#ffffff');">
+										<option value="" selected="selected">请选择</option>
+										<c:forEach var="branch" items="${branchs }">
+											<option value="${branch.branchcode }" <c:if test="${vo.cwbOrder.deliverybranchid eq branch.branchid }">selected="selected"</c:if>>${branch.branchname }</option>
+										</c:forEach>
+									</select>
+								</td>
+								<td align="left">
+									<select id="courier_${voStatus.index }" name="courier" style="width:120px;"
+										onfocus="$('#add${vo.cwbOrder.cwb}').css('background','#bbffaa');"
+										onblur="$('#add${vo.cwbOrder.cwb}').css('background','#ffffff');">
+										<option value="" selected="selected">请选择</option>
+										<c:forEach var="courier" items="${vo.courierList }">
+											<option value="${courier.username }" <c:if test="${vo.cwbOrder.exceldeliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
+										</c:forEach>
+									</select>
+								</td>
+								<td width="10%" align="center">
+									<input type="button" class="input_button2" onclick="saveBranchAndCourier('${vo.cwbOrder.cwb }', '${voStatus.index }')" value="保存"/>
+								</td>
+							</form>
 						</tr>
-					
-					<%} %>
+					</c:forEach>
 				</table>
 				<div class="jg_10"></div>
 				<div class="jg_10"></div>

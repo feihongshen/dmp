@@ -1795,7 +1795,8 @@ public class DataStatisticsService {
 				cwbOrderView.setReceivablefee(c.getReceivablefee());
 				cwbOrderView.setCaramount(c.getCaramount());
 				cwbOrderView.setPaybackfee(c.getPaybackfee());
-		
+
+				//DeliveryState deliverystate = this.getDeliveryByCwb(c.getCwb());
 				cwbOrderView.setPaytype(this.getOldPayWayType(Long.parseLong(c.getNewpaywayid())));// 新支付方式
 				cwbOrderView.setPaytype_old(this.getOldPayWayType(c.getPaywayid()));// 原支付方式
 				cwbOrderView.setRemark1(c.getRemark1());
@@ -1911,7 +1912,8 @@ public class DataStatisticsService {
 
 				// 添加揽件省 added by songkaojun 2015-11-17
 				cwbOrderView.setSenderprovince(c.getSenderprovince());
-				cwbOrderView.setVipclub(c.getVipclub()==0?"否":"是");
+				//【修改】vipclu更名为业务类型，上游给什么dmp存什么，同样界面也显示什么 【周欢】 --2016-07-12
+				cwbOrderView.setVipclub(c.getVipclub()+"");
 				cwbOrderViewList.add(cwbOrderView);
 				
 

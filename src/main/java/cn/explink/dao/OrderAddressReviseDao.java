@@ -29,6 +29,7 @@ public class OrderAddressReviseDao {
 			info.setPeisongtime(rs.getString("peisongtime"));
 			info.setPhone(rs.getString("phone"));
 			info.setReceivemen(rs.getString("receivemen"));
+			info.setExceldeliver(rs.getString("exceldeliver"));
 			return info;
 		}
 	}
@@ -69,10 +70,10 @@ public class OrderAddressReviseDao {
 		 * @param resendtime
 		 * @param userid
 		 */
-		public void createReviseAddressInfo(String cwb,String address,String revisetime,String modifiername,String receivemen,String phone,String peisongtime,String  destination,String customerrequest) {
+		public void createReviseAddressInfo(String cwb,String address,String revisetime,String modifiername,String receivemen,String phone,String peisongtime,String  destination,String customerrequest, String exceldeliver) {
 			jdbcTemplate
-					.update("insert into express_service_revise_address(cwb,receivemen,phone,address,peisongtime,destination,customerrequest,revisetime,modifiername) "
-							+ "values(?,?,?,?,?,?,?,?,?)", cwb,receivemen,phone,address,peisongtime,destination,customerrequest,revisetime,modifiername);
+					.update("insert into express_service_revise_address(cwb,receivemen,phone,address,peisongtime,destination,customerrequest,revisetime,modifiername,exceldeliver) "
+							+ "values(?,?,?,?,?,?,?,?,?,?)", cwb,receivemen,phone,address,peisongtime,destination,customerrequest,revisetime,modifiername,exceldeliver);
 		}
 		
 		
