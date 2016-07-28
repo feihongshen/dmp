@@ -9807,7 +9807,8 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		List<CwbOrder> cwbOrdersDeliver = new ArrayList<CwbOrder>();
 		for (CwbOrder cwb : cwbOrderList) {
-			if (cwb.getExceldeliverid() == deliverid) {
+			// 显示未匹配的小件员和匹配相同的小件员
+			if (cwb.getExceldeliverid() == 0 || cwb.getExceldeliverid() == deliverid) {
 				cwbOrdersDeliver.add(cwb);
 			}
 		}
