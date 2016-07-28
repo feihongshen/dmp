@@ -4383,10 +4383,10 @@ public class CwbOrderService extends BaseOrderService {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 		
-		// 非本站货 add by jian_xie 2016-07-27
-		if(co.getCurrentbranchid() != user.getBranchid()){
-			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
-		}
+		// 非本站货 add by jian_xie 2016-07-27， 逻辑有问题，一票多件出了第一单后，订单当前站点为空。
+//		if(co.getCurrentbranchid() != user.getBranchid()){
+//			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+//		}
 		
 		// added by jiangyu begin 快递订单不允许做退货出站操作
 		if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
