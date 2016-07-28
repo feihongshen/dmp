@@ -269,7 +269,7 @@ public class TranscwbOrderFlowDAO {
 	 */
 	private List<Map<String, Object>> getScanCwbCountMapByTranscwbOrderFlow(String cwb, long flowordertype, long branchid) {
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_CWB + ",count(DISTINCT cwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
+		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_CWB + ",count(DISTINCT scancwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
 				+ " FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND branchid=? and isnow=1 ";
 		try {
 			result = this.jdbcTemplate.queryForList(sql, cwb, flowordertype, branchid);

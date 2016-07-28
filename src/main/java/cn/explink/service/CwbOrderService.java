@@ -1700,7 +1700,7 @@ public class CwbOrderService extends BaseOrderService {
 			//集包一票多件重设扫描件数
 			this.resetScannumForSubStationGoods(user, userbranch, cwb, scancwb);
 		}
-
+		co = this.cwbDAO.getCwbByCwbLock(cwb);
 		// added shenhongfei 分站到货验证 2016-1-21
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao);
 		/*
