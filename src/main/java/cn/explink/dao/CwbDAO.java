@@ -1264,7 +1264,24 @@ public class CwbDAO {
 			return null;
 		}
 	}
-	
+
+
+    /**
+     * 根据订单号查找失效的订单
+     * @param cwb
+     * @return
+     */
+    public CwbOrder getDisabledCwbByCwb(String cwb) {
+        try {
+            return this.jdbcTemplate
+                    .queryForObject(
+                            "SELECT * from express_ops_cwb_detail where cwb=? and state=0 limit 0,1",
+                            new CwbMapper(), cwb);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
 	/**
 	 * 是否存在这个订单在正式表
 	 */

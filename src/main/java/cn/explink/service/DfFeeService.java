@@ -358,7 +358,7 @@ public class DfFeeService {
 
     public void saveFeeRelativeAfterOrderDisabled(String cwb) {
         User currentUser = userDAO.getUserByUsername("admin");
-        CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+        CwbOrder cwbOrder = cwbDAO.getDisabledCwbByCwb(cwb);
         saveFeeRelativeAfterOrderResetOrDisabled(cwbOrder, currentUser, FROM_DISABLE_ORDER);
     }
 
@@ -367,37 +367,38 @@ public class DfFeeService {
 
         Integer chargeType;
         Long id = null;
+        if (cwbOrder != null) {
+            String cwb = cwbOrder.getCwb();
 
-        String cwb = cwbOrder.getCwb();
+            for (DeliveryFeeChargerType chargerType : DeliveryFeeChargerType.values()) {
+                Long senderAddrId;
 
-        for (DeliveryFeeChargerType chargerType : DeliveryFeeChargerType.values()) {
-            Long senderAddrId;
+                if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue()
+                        || cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue())
+                    senderAddrId = cwbOrder.getPickbranchid();
+                else
+                    senderAddrId = cwbOrder.getInstationid();
 
-            if (cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO.getValue()
-                    || cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.OXO_JIT.getValue())
-                senderAddrId = cwbOrder.getPickbranchid();
-            else
-                senderAddrId = cwbOrder.getInstationid();
-
-            if (senderAddrId > 0) {
-                chargeType = DeliveryFeeRuleChargeType.GET.getValue();
-                if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                    id = senderAddrId;
-                } else {
-                    id = new Long(cwbOrder.getCollectorid());
+                if (senderAddrId > 0) {
+                    chargeType = DeliveryFeeRuleChargeType.GET.getValue();
+                    if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
+                        id = senderAddrId;
+                    } else {
+                        id = new Long(cwbOrder.getCollectorid());
+                    }
+                    deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
                 }
-                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
-            }
 
-            if (cwbOrder.getDeliverybranchid() > 0) {
-                chargeType = DeliveryFeeRuleChargeType.SEND.getValue();
+                if (cwbOrder.getDeliverybranchid() > 0) {
+                    chargeType = DeliveryFeeRuleChargeType.SEND.getValue();
 
-                if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                    id = cwbOrder.getDeliverybranchid();
-                } else {
-                    id = cwbOrder.getDeliverid();
+                    if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
+                        id = cwbOrder.getDeliverybranchid();
+                    } else {
+                        id = cwbOrder.getDeliverid();
+                    }
+                    deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
                 }
-                deleteFeeOrAddAdjust(chargerType, cwb, chargeType, id, currentUser, fromWhere);
             }
         }
 
@@ -431,10 +432,10 @@ public class DfFeeService {
                         }
                         long id = dfAdjustmentRecordDAO.saveAdjustmentRecord(chargerType.getValue(), adjustment, currentUser.getRealname());
 
-                        logger.debug("插入调整记录表成功，Id为" + id + "，结算对象为" + chargerType.getText());
+                        logger.info("插入调整记录表成功，Id为{}，结算对象为{}", id, chargerType.getText());
                     }
                 } else {
-                    logger.info("删除计费明细ID为{}" + fee.getId());
+                    logger.info("删除计费明细ID为{}", fee.getId());
                     dfFeeDAO.deleteFeeById(chargerType.getValue(), fee.getId());
                 }
             }
@@ -449,7 +450,7 @@ public class DfFeeService {
 
         long id = dfAdjustmentRecordDAO.saveAdjustmentRecord(chargerType.getValue(), adjustment, currentUser);
 
-        logger.debug("插入调整记录表成功，Id为" + id + "，结算对象为" + chargerType.getText());
+        logger.debug("插入调整记录表成功，Id为{}，结算对象为{}", id, chargerType.getText());
 
     }
 
@@ -467,7 +468,7 @@ public class DfFeeService {
                 mobilepodtime, auditingtime, isCal, isBill, province, city, county,
                 paybackfee, receivablefee, realname, cartype);
 
-        logger.debug("插入派费明细表成功，Id为" + feeId + "，结算对象为" + chargerType.getText());
+        logger.debug("插入派费明细表成功，Id为{}，结算对象为{}", feeId, chargerType.getText());
 
     }
 
