@@ -374,7 +374,6 @@ public class BaleController {
 	 * @return
 	 */
 	@RequestMapping("/baletuihuochuzhanaddcwb/{cwb}/{baleno}")
-	@Transactional
 	public @ResponseBody ExplinkResponse baletuihuochuzhanaddcwb(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "cwb") String cwb,
 			@PathVariable(value = "baleno") String baleno, @RequestParam(value = "branchid", required = true, defaultValue = "0") long branchid) {
 		JSONObject obj = new JSONObject();
