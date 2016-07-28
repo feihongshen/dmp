@@ -81,6 +81,7 @@ function delSuccess(data){
 					href="<%=request.getContextPath()%>/jointManage/epaiApi/1">系统环形对接</a></li>
 				<li><a
 					href="<%=request.getContextPath()%>/jointManage/encodingsetting/1">供货商编码设置</a></li>
+				<li><a href="<%=request.getContextPath()%>/jointManage/address/1">地址库同步</a></li>
 			</ul>
 		</div>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
