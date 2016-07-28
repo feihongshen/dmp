@@ -83,7 +83,7 @@ public class SmtService {
 			obj.put("msg", "订单不存在");
 		} else if(CwbOrderTypeIdEnum.Shangmentui.getValue() != order.getCwbordertypeid()){
 			obj.put("successed", false);
-			obj.put("msg", "非上门退订单，不允许做超区");
+			obj.put("msg", "非上门退订单，不允许做超区"); 
 		}else {
 			DeliveryState deliverSate = this.getDeliverStateDAO().getDeliveryByCwb(cwb);
 			FlowOrderTypeEnum flowOrderType = FlowOrderTypeEnum.getText(order.getFlowordertype());
