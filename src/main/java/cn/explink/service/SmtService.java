@@ -15,6 +15,8 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.enumutil.CwbFlowOrderTypeEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 
@@ -79,7 +81,10 @@ public class SmtService {
 		if (order == null) {
 			obj.put("successed", false);
 			obj.put("msg", "订单不存在");
-		} else {
+		} else if(CwbOrderTypeIdEnum.Shangmentui.getValue() != order.getCwbordertypeid()){
+			obj.put("successed", false);
+			obj.put("msg", "非上门退订单，不允许做超区");
+		}else {
 			DeliveryState deliverSate = this.getDeliverStateDAO().getDeliveryByCwb(cwb);
 			FlowOrderTypeEnum flowOrderType = FlowOrderTypeEnum.getText(order.getFlowordertype());
 			boolean cond1 = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.equals(flowOrderType);
