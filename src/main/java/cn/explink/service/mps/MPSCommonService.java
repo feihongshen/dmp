@@ -73,28 +73,28 @@ public final class MPSCommonService extends AbstractMPSService {
 	 * @author neo01.huang
 	 * @createDate 2016-4-21
 	 */
-	public void resetScannumByTranscwbForArrive(String transCwb, long flowordertype, long branchid) {
-		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, MPSCommonService.UPDATE_MPS_STATE);
-		if (cwbOrder == null) {
-			return;
-		}
-		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
-		if (transCwbDetail == null) {
-			MPSCommonService.LOGGER.debug(MPSCommonService.UPDATE_MPS_STATE + "没有查询到运单号为" + transCwb + "的运单！");
-			return;
-		}
+	public void resetScannumByTranscwbForArrive(String cwb, String transCwb, long flowordertype, long branchid) {
+//		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, MPSCommonService.UPDATE_MPS_STATE);
+//		if (cwbOrder == null) {
+//			return;
+//		}
+//		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
+//		if (transCwbDetail == null) {
+//			MPSCommonService.LOGGER.debug(MPSCommonService.UPDATE_MPS_STATE + "没有查询到运单号为" + transCwb + "的运单！");
+//			return;
+//		}
 		
 		/*
 		 * 正常到货扫描和到错货的扫描次数都要算上
 		 */
 		// 一票多件使用运单号时，扫描次数需要计算
-		long realscannum = this.transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(transCwbDetail.getTranscwb(), transCwbDetail.getCwb(), flowordertype, branchid);
+		long realscannum = this.transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(transCwb, cwb, flowordertype, branchid);
 		//到错货扫描次数
-		long realscannumForErrorArrive = this.transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(transCwbDetail.getTranscwb(), transCwbDetail.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
+		long realscannumForErrorArrive = this.transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(transCwb, cwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), branchid);
 		
 		LOGGER.info("resetScannumByTranscwbForArride->transCwb:{}, branchid:{}, realscannum:{}, realscannumForErrorArrive:{}", 
 				transCwb, branchid, realscannum, realscannumForErrorArrive);
-		this.getCwbDAO().updateScannum(cwbOrder.getCwb(), realscannum + realscannumForErrorArrive);
+		this.getCwbDAO().updateScannum(cwb, realscannum + realscannumForErrorArrive);
 	}
 
 }

@@ -1690,11 +1690,16 @@ public class CwbOrderService extends BaseOrderService {
 		this.cwbOrderBranchInfoModificationService.modifyBranchInfo(scancwb);
 		// 根据当前站点查询list
 		Branch userbranch = this.branchDAO.getBranchById(currentbranchid);
-		//集包一票多件重设扫描件数
-		this.resetScannumForSubStationGoods(user, userbranch, cwb, scancwb);
-
-		// 查询有没有该订单
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		// 查询有没有该订单
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
+		if(isypdjusetranscwb == 1){
+			//集包一票多件重设扫描件数
+			this.resetScannumForSubStationGoods(user, userbranch, cwb, scancwb);
+		}
 
 		// added shenhongfei 分站到货验证 2016-1-21
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao);
@@ -1705,9 +1710,7 @@ public class CwbOrderService extends BaseOrderService {
 		 * ExceptionCwbErrorTypeEnum.BAO_HAO_BU_CUN_ZAI); }
 		 */
 
-		if (co == null) {
-			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
-		}
+		
 
 		Branch cwbBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid() == 0 ? co.getNextbranchid() : co.getCurrentbranchid());
 
@@ -1722,7 +1725,6 @@ public class CwbOrderService extends BaseOrderService {
 			flowOrderTypeEnum = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao;
 		}
 
-		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
 		if (isypdjusetranscwb == 1) {
 			this.validateIsSubCwb(scancwb, co, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
 		}
@@ -1778,11 +1780,11 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private void resetScannumForSubStationGoods(User user, Branch userbranch, String cwb, String scancwb) {
-		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+//		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
 		int flowOrderType = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue();
-		long nextbranchid = 0L;
-		if (cwbOrder != null) {
-			nextbranchid = cwbOrder.getNextbranchid();
+//		long nextbranchid = 0L;
+//		if (cwbOrder != null) {
+//			nextbranchid = cwbOrder.getNextbranchid();
 			//Added by leoliao at 2016-03-30 到货扫描在到错货的情况计算扫描次数需要把flowordertype改为8(到错货)
 			//			if ((nextbranchid != 0) && (nextbranchid != userbranch.getBranchid()) && (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
 			//				&& (cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())
@@ -1793,12 +1795,12 @@ public class CwbOrderService extends BaseOrderService {
 			//				flowOrderType = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
 			//			}
 			//Added end
-		}
+//		}
 
 		//		this.mpsCommonService.resetScannumByTranscwb(scancwb, flowOrderType, user.getBranchid(), nextbranchid);
 		//update neo01.huang,2016-4-21
 		//重设扫描次数（分站到货扫描）
-		this.mpsCommonService.resetScannumByTranscwbForArrive(scancwb, flowOrderType, user.getBranchid());
+		this.mpsCommonService.resetScannumByTranscwbForArrive(cwb, scancwb, flowOrderType, user.getBranchid());
 	}
 
 	private CwbOrder handleSubstationGoodsYipiaoduojian(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, Branch userbranch, long isypdjusetranscwb, Long credate, boolean isAutoSupplyLink) {
