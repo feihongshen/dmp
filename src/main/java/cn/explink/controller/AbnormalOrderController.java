@@ -235,65 +235,81 @@ public class AbnormalOrderController {
 		String quot = "'", quotAndComma = "',";
 		List<CwbOrder> cwbList = new ArrayList<CwbOrder>();
         List<Customer> customerList = this.customerDAO.getAllCustomers();
-		if (cwb.length() > 0) {
-
-            List<String> cwbs =  Arrays.asList(StringUtils.split(cwb,"\r\n") );
-
-            StringBuffer cwbsStr = new StringBuffer();
-
-            Iterator<String> it = cwbs.iterator();
-            while (it.hasNext()) {
-                String cwbTemp = it.next();
-                if (cwbTemp.trim().length() == 0) {
-                    it.remove();
+        //commented by Steve PENG, 2017/7/28, 注释掉区分大小写的需求，回滚到之前的代码 start
+//		if (cwb.length() > 0) {
+//
+//            List<String> cwbs =  Arrays.asList(StringUtils.split(cwb,"\r\n") );
+//
+//            StringBuffer cwbsStr = new StringBuffer();
+//
+//            Iterator<String> it = cwbs.iterator();
+//            while (it.hasNext()) {
+//                String cwbTemp = it.next();
+//                if (cwbTemp.trim().length() == 0) {
+//                    it.remove();
+//                }
+//                cwbTemp = cwbTemp.trim();
+//                cwbsStr = cwbsStr.append(quot).append(cwbTemp).append(quotAndComma);
+//            }
+//            //1. 先通过区分大小写查询
+//            List<CwbOrder> resultWithCaseSensitive = this.cwbDAO.getCwbByCwbs(cwbsStr.substring(0, cwbsStr.length() - 1));
+//
+//            cwbList.addAll(resultWithCaseSensitive);
+//
+//            //2. 如果区分大小写查不到全部订单，就需要不区分大小写查询。
+//            if (cwbs.size() != resultWithCaseSensitive.size()) {
+//                //准备客户基本信息， key : customerId, value : isqufendaxiaxie
+//                Map<Long,Long> customerIDandIgnoreCaseMap = new HashMap<Long, Long>();
+//
+//                for (Customer customer : customerList) {
+//                    customerIDandIgnoreCaseMap.put(customer.getCustomerid(), customer.getIsqufendaxiaoxie());
+//                }
+//                // 没有被匹配的订单号
+//                List<String> cwbNeedNonCaseSensitiveSearch = new ArrayList<String>();
+//
+//                for (String cwbTemp : cwbs) {
+//                    boolean isContainCwb = false;
+//                    for (int i = 0; i < resultWithCaseSensitive.size(); i++) {
+//                        CwbOrder result = resultWithCaseSensitive.get(i);
+//                        if (cwbTemp.equals(result.getCwb())) {
+//                            isContainCwb = true;
+//                            break;
+//                        }
+//                    }
+//                    if (!isContainCwb)
+//                        cwbNeedNonCaseSensitiveSearch.add(cwbTemp);
+//                }
+//
+//                //通过不区分大小写的单号查找
+//                List<CwbOrder> cwbOrders = this.cwbDAO.getCwbByCwbsLowerCase(cwbNeedNonCaseSensitiveSearch);
+//
+//                if (cwbOrders != null) {
+//                    for (CwbOrder cwbOrder : cwbOrders) {
+//                        //如果客户基本信息，定义了单好区分大小写, 0 : 不区分大小写
+//                        if (customerIDandIgnoreCaseMap.get(cwbOrder.getCustomerid()) == 0) {
+//                            //不区分大小写的情况， 显示
+//                            cwbList.add(cwbOrder);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        //回滚的代码
+        if (cwb.length() > 0) {
+			/*			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						Date date = new Date();
+						String nowtime = df.format(date);*/
+            StringBuffer cwbs = new StringBuffer();
+            for (String cwbStr : cwb.split("\r\n")) {
+                if (cwbStr.trim().length() == 0) {
+                    continue;
                 }
-                cwbTemp = cwbTemp.trim();
-                cwbsStr = cwbsStr.append(quot).append(cwbTemp).append(quotAndComma);
+                cwbStr = cwbStr.trim();
+                cwbs = cwbs.append(quot).append(cwbStr).append(quotAndComma);
             }
-            //1. 先通过区分大小写查询
-            List<CwbOrder> resultWithCaseSensitive = this.cwbDAO.getCwbByCwbs(cwbsStr.substring(0, cwbsStr.length() - 1));
-
-            cwbList.addAll(resultWithCaseSensitive);
-
-            //2. 如果区分大小写查不到全部订单，就需要不区分大小写查询。
-            if (cwbs.size() != resultWithCaseSensitive.size()) {
-                //准备客户基本信息， key : customerId, value : isqufendaxiaxie
-                Map<Long,Long> customerIDandIgnoreCaseMap = new HashMap<Long, Long>();
-
-                for (Customer customer : customerList) {
-                    customerIDandIgnoreCaseMap.put(customer.getCustomerid(), customer.getIsqufendaxiaoxie());
-                }
-                // 没有被匹配的订单号
-                List<String> cwbNeedNonCaseSensitiveSearch = new ArrayList<String>();
-
-                for (String cwbTemp : cwbs) {
-                    boolean isContainCwb = false;
-                    for (int i = 0; i < resultWithCaseSensitive.size(); i++) {
-                        CwbOrder result = resultWithCaseSensitive.get(i);
-                        if (cwbTemp.equals(result.getCwb())) {
-                            isContainCwb = true;
-                            break;
-                        }
-                    }
-                    if (!isContainCwb)
-                        cwbNeedNonCaseSensitiveSearch.add(cwbTemp);
-                }
-
-                //通过不区分大小写的单号查找
-                List<CwbOrder> cwbOrders = this.cwbDAO.getCwbByCwbsLowerCase(cwbNeedNonCaseSensitiveSearch);
-
-                if (cwbOrders != null) {
-                    for (CwbOrder cwbOrder : cwbOrders) {
-                        //如果客户基本信息，定义了单好区分大小写, 0 : 不区分大小写
-                        if (customerIDandIgnoreCaseMap.get(cwbOrder.getCustomerid()) == 0) {
-                            //不区分大小写的情况， 显示
-                            cwbList.add(cwbOrder);
-                        }
-                    }
-                }
-            }
+            cwbList.addAll(this.cwbDAO.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1)));
         }
-
+        //changed by Steve PENG, 2017/7/28, end
 		model.addAttribute("cwbList", cwbList);
 		model.addAttribute("abnormalTypeList", this.abnormalTypeDAO.getAllAbnormalTypeByName());
 		model.addAttribute("branchList", this.branchDAO.getAllEffectBranches());
