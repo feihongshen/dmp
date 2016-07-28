@@ -2056,6 +2056,14 @@ public class PDAController {
 				//校验是否存在退货出站审核中的记录
 				orderBackCheckService.validateCheckStateAuditing(cwb, FlowOrderTypeEnum.FenZhanLingHuo);
 				
+				//Added by leoliao at 2016-07-28 快递单未补录全则不允许领货
+				CwbOrder cwbOrderTmp = cwbOrderService.getCwbByCwb(cwb);
+				if(cwbOrderTmp != null && cwbOrderTmp.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue() && cwbOrderTmp.getIsadditionflag() == 0){
+					logger.info("快递单(cwb={})未补录全不允许领货", cwb);
+					continue;
+				}
+				//Added end
+				
 				CwbOrder cwbOrder = this.cwbOrderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
 				try{
