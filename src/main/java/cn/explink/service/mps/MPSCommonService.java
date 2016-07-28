@@ -74,15 +74,15 @@ public final class MPSCommonService extends AbstractMPSService {
 	 * @createDate 2016-4-21
 	 */
 	public void resetScannumByTranscwbForArrive(String cwb, String transCwb, long flowordertype, long branchid) {
-//		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, MPSCommonService.UPDATE_MPS_STATE);
-//		if (cwbOrder == null) {
-//			return;
-//		}
-//		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
-//		if (transCwbDetail == null) {
-//			MPSCommonService.LOGGER.debug(MPSCommonService.UPDATE_MPS_STATE + "没有查询到运单号为" + transCwb + "的运单！");
-//			return;
-//		}
+		CwbOrder cwbOrder = this.getMPSCwbOrderByTransCwb(transCwb, MPSCommonService.UPDATE_MPS_STATE);
+		if (cwbOrder == null) {
+			return;
+		}
+		TransCwbDetail transCwbDetail = this.getTransCwbDetailDAO().findTransCwbDetailByTransCwb(transCwb);
+		if (transCwbDetail == null) {
+			MPSCommonService.LOGGER.debug(MPSCommonService.UPDATE_MPS_STATE + "没有查询到运单号为" + transCwb + "的运单！");
+			return;
+		}
 		
 		/*
 		 * 正常到货扫描和到错货的扫描次数都要算上

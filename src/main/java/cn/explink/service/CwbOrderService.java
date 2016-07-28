@@ -1702,10 +1702,10 @@ public class CwbOrderService extends BaseOrderService {
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 		long isypdjusetranscwb = this.customerDAO.getCustomerById(co.getCustomerid()).getCustomerid() == 0 ? 0 : this.customerDAO.getCustomerById(co.getCustomerid()).getIsypdjusetranscwb();
-		if(isypdjusetranscwb == 1){
+//		if(isypdjusetranscwb == 1 && co.getFlowordertype() == ){
 			//集包一票多件重设扫描件数
-			this.resetScannumForSubStationGoods(user, userbranch, cwb, scancwb);
-		}
+		this.resetScannumForSubStationGoods(user, userbranch, cwb, scancwb);
+//		}
 		co = this.cwbDAO.getCwbByCwbLock(cwb);
 		// added shenhongfei 分站到货验证 2016-1-21
 		this.orderInterceptService.checkTransCwbIsIntercept(scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao);
