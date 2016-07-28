@@ -62,7 +62,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			Weishenhebuxutuihuozaitou(201,"未审核的订单不允许退货再投！！"),
 			SHANG_MEN_TUI_CHENG_GONG_TUI_HUO_CHU_ZHAN(203, "上门退成功的订单，不能做 “{0}” 的操作"),
 			TUI_HUO_CHU_ZHAN_SHEN_HE_ZHONG_LING_HUO(204, "退货出站审核中，不能做“{0}”操作"),
-	        SHANG_MEN_TUI_PEI_SONG_JU_SHOU(205 ,"上门退订单关联的配送订单反馈拒收不能领货！ ");
+	        SHANG_MEN_TUI_PEI_SONG_JU_SHOU(205 ,"上门退订单关联的配送订单反馈拒收不能领货！ "),
+	        Ling_huo_EXPRESS_LIMIT(206,"非本站揽收/配送的快递单不能领货！");
 	
 
 	private int value;

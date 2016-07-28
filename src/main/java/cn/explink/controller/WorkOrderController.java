@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -56,6 +57,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.CsComplaintAccept;
 import cn.explink.domain.CsComplaintAcceptExportVO;
 import cn.explink.domain.CsComplaintAcceptVO;
+import cn.explink.domain.CsComplaintAcceptViewVo;
 import cn.explink.domain.CsConsigneeInfo;
 import cn.explink.domain.CsConsigneeInfoVO;
 import cn.explink.domain.CsShenSuChat;
@@ -73,6 +75,9 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.Excel2003Extractor;
+import cn.explink.service.Excel2007Extractor;
+import cn.explink.service.ExcelExtractor;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.SmsSendService;
@@ -80,6 +85,7 @@ import cn.explink.service.WorkOrderService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.HttpUtil;
+import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.SecurityUtil;
@@ -125,9 +131,14 @@ public class WorkOrderController {
 	SmsManageDao smsManageDao;
 	@Autowired
 	private CsPushSmsDao csPushSmsDao;
-	
+	@Autowired
+	private CustomerDAO customerDao;
 	@Autowired
 	private RedisTemplate<String, Serializable> redisTemplate;
+	@Autowired
+	private Excel2007Extractor excel2007Extractor;
+	@Autowired
+	private Excel2003Extractor excel2003Extractor;
 	
 	/**工单号锁缓存超时时间，单位：秒*/
 	public static final int ACCEPTNO_LOCK_CACHE_TIMEOUT = 5;
@@ -1362,4 +1373,90 @@ public class WorkOrderController {
 		
 	}
 	
+	@RequestMapping("/WorkManageBatch")
+	public String workManageBatch(Model model){
+		return "workorder/WorkManageBatch";
+	}
+	
+	@RequestMapping("/WorkManageBatchUploadFile")
+	public @ResponseBody String WorkManageBatchUploadFile(
+			HttpServletRequest request,
+			@RequestParam(value = "Filedata", required = false) MultipartFile file) {
+		String jsonString = "";
+		try {
+			AjaxJson ajaxJson = new AjaxJson();
+			long bTime = new Date().getTime();
+			this.logger.info("工单导入开始...");
+			String typeValue = request.getParameter("type");
+			if (StringUtils.isBlank(typeValue)) {
+				ajaxJson.setStatus(false);
+				ajaxJson.setMsg("导入处理类型为空！");
+				return JsonUtil.translateToJson(ajaxJson);
+			}
+			int type = Integer.valueOf(typeValue);
+			ExcelExtractor extractor = getExcelExtractor(file);
+			Map<String, List<CsComplaintAcceptViewVo>> result = workorderservice
+					.importWorkOrders(file.getInputStream(), extractor,
+							getSessionUser().getUsername(), type);
+			ajaxJson.setMap(result);
+			jsonString = JsonUtil.translateToJson(ajaxJson);
+			long eTime = new Date().getTime();
+			this.logger.info("工单导入结束，耗时" + (eTime - bTime) + "ms");
+		} catch (Exception e) {
+			this.logger.error("导入工单时出现异常", e);
+		}
+		return jsonString;
+	}
+	
+	/*
+	 * 新建模板下载
+	 */
+	@RequestMapping("/DownloadTemplateNew")
+	public void DownloadTemplateNew(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		downloadTemplate(request, response, true);
+	}
+	
+	/*
+	 * 处理模板下载
+	 */
+	@RequestMapping("/DownloadTemplateHandle")
+	public void DownloadTemplateHandle(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		downloadTemplate(request, response, false);
+	}
+	
+	private void downloadTemplate(HttpServletRequest request, HttpServletResponse response, boolean isNew) {
+		try {
+			String name = isNew ? "ImportTemplate_new.xlsx" : "ImportTemplate_handle.xlsx";
+	        String filePath = request.getSession().getServletContext().getRealPath("/") + "/uppda/" + name;
+	        File file = new File(filePath);
+			// 以流的形式下载文件。
+			InputStream fis;
+			fis = new BufferedInputStream(new FileInputStream(file));
+			byte[] buffer = new byte[fis.available()];
+			fis.read(buffer);
+			fis.close();
+			// 清空response
+			response.reset();
+			// 设置response的Header
+			response.setContentType("application/ms-excel");
+			response.addHeader("Content-Disposition", "attachment;filename=" + new String(name.getBytes(), "iso8859-1"));
+			response.addHeader("Content-Length", "" + file.length());
+			OutputStream out = new BufferedOutputStream(response.getOutputStream());
+			out.write(buffer);
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			logger.error("工单导入下载模板发送异常", e);
+		}
+	}
+	
+	private ExcelExtractor getExcelExtractor(MultipartFile file) {
+		String originalFilename = file.getOriginalFilename();
+		if (originalFilename.endsWith("xlsx")) {
+			return this.excel2007Extractor;
+		} else if (originalFilename.endsWith(".xls")) {
+			return this.excel2003Extractor;
+		}
+		return null;
+	}
 }

@@ -4793,6 +4793,10 @@ public class CwbOrderService extends BaseOrderService {
 		 */
 		this.validateAppTuihuoCheckStatus(cwb, flowOrderTypeEnum);// 退货领货校验
 
+		//快递单揽件入站   揽件站点和匹配站点一致，该站点可以领该快递单 2016-07-05 vic.liang@pjbest.com
+		validateExpress(co, deliveryUser);	
+		//快递单揽件入站   揽件站点和匹配站点一致，该站点可以领该快递单 end
+				
 		Branch userbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
 		// 扣款结算 流程检查 (到错货不允许做领货扫描)
 
@@ -4832,11 +4836,18 @@ public class CwbOrderService extends BaseOrderService {
 
 		// 2013-8-14 鞠牧 !(当前站点 是 是领货站点 并（订单流程是 分站到货
 		// 、到错货、到错货处理、已审核的）||当前环节是领货/反馈的 并 配送站点是领货站点的)
-		if (!(((co.getCurrentbranchid() == deliveryUser.getBranchid()) && ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao
-				.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.LanShouDaoHuo
-				.getValue()))) || ((co.getDeliverybranchid() == deliveryUser.getBranchid()) && ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.YiFanKui
-				.getValue()))))) {
-			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.QING_ZUO_DAO_HUO_SAO_MIAO, co.getCurrentbranchid(), deliveryUser.getBranchid());
+		if (!( ((co.getCurrentbranchid() == deliveryUser.getBranchid())
+				&& ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue())
+				    || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue())
+				    || (co.getFlowordertype() == FlowOrderTypeEnum.DaoCuoHuoChuLi.getValue())
+				    || (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) 
+				    || (co.getFlowordertype() == FlowOrderTypeEnum.LanShouDaoHuo.getValue())
+				    || (co.getFlowordertype() == FlowOrderTypeEnum.LanJianRuZhan.getValue()))) 
+			|| ((co.getDeliverybranchid() == deliveryUser.getBranchid()) 
+			    && ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) 
+					|| (co.getFlowordertype() == FlowOrderTypeEnum.YiFanKui.getValue()))))) {
+			
+			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.QING_ZUO_DAO_HUO_SAO_MIAO,co.getCurrentbranchid(), deliveryUser.getBranchid());
 		}
 
 		if (ds != null) {
@@ -9850,5 +9861,27 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}		
 		return false;
+	}
+	
+	/**
+	 * 判断快递单是否是本站揽收/配送
+	 * @param co
+	 * @param deliveryUser
+	 */
+	private void validateExpress(CwbOrder co, User deliveryUser) {
+		String cwb  = co.getCwb();
+		OrderFlow orderFlow = orderFlowDAO.getOrderCurrentFlowByCwb(cwb);
+		if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()
+				&& orderFlow != null
+				&& orderFlow.getFlowordertype() == FlowOrderTypeEnum.LanJianRuZhan
+						.getValue()) { // 揽件入站的快递单
+				long lanjianBranchid = orderFlow.getBranchid(); //揽件站点
+				long deliveryBranchid = co.getDeliverybranchid();//匹配站点
+				long operateBranchid = deliveryUser.getBranchid();//当前操作站点
+				if (!(deliveryBranchid == operateBranchid && deliveryBranchid == lanjianBranchid)) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), 
+							ExceptionCwbErrorTypeEnum.Ling_huo_EXPRESS_LIMIT);
+				}
+		} 
 	}
 }

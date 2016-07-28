@@ -82,6 +82,26 @@ List<CsShenSuChat> cschatlist=request.getAttribute("cschatlist")==null?null:(Lis
 								<td><font color="croci"><%=co.getConsigneemobile() %></font></td>
 						</tr>
 						
+						
+						<tr>
+								<%if(cci!=null){ %>
+								<td align="right"><span>联系邮箱:</span></td><td><font color="croci"><%=cci.getMailBox()==null?"":cci.getMailBox()%></font></td>
+								<%}else{ %>
+								<td align="right"><span>联系邮箱:</span><td>
+								<%} %>
+								<td align="right"><span>收件人:</span></td>
+								<td><font color="croci"><%=co.getConsigneename() %></font></td>
+								<td></td> 
+								<td></td> 
+						</tr>
+						
+						
+						
+						
+						
+						
+						
+						
 							<tr>
 								<td align="right"><span>工单内容:</span></td>
 								<td><font color="croci"><textarea cols="10"><%=cca.getContent()%></textarea></font></td>

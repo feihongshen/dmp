@@ -261,10 +261,17 @@ function addCci(){
 	if($('#phoneonOne').val()==""){
 		alert('请输入电话号码');
 		return false;
-	}else if($('#consigneeType').val()=="-1"){
+	}else if($('#dname').val()==""){
+		alert('请输入姓名');
+		return false;
+	}
+	
+	/****begin****/
+	//vic.liang@pjbest.com 2016-07-13 工单导入修改必填项
+	/* else if($('#consigneeType').val()=="-1"){
 		alert('请选择客户类型');
 		return false;
-/* 	}else if($('#sex1').val()==""&&$('#sex').val()==""){ */
+ 	}else if($('#sex1').val()==""&&$('#sex').val()==""){
 	}else if($("input[name='sex']:checked").val() == undefined ){
 		alert('请选择性别');
 		return false;
@@ -274,10 +281,8 @@ function addCci(){
 	}else if($('#city').val()==""){
 		alert('请输入城市');
 		return false;
-	}else if($('#dname').val()==""){
-		alert('请输入姓名');
-		return false;
-	}
+	} */
+	/****end*****/
 
 	/* else if($('#contactLastTime').val()==""){
 		alert('请输入来电时间');
@@ -590,7 +595,7 @@ function submitselect2(page){    //通过手机号查询工单
 					onkeypress="if (event.keyCode == 13){verifyphoneonOne();}"  
 					class="input_text1" maxlength="11"/>
 					</td>
-					<td><font color="red">*</font>客户分类:
+					<td>客户分类:
 					<select name="consigneeType" id="consigneeType" class="select1">
 						<option value="-1">选择客户分类</option>
 						<%for(Reason r:reasonList) {%>
@@ -598,19 +603,17 @@ function submitselect2(page){    //通过手机号查询工单
 						<%} %>				
 					</select>
 					</td>				
-					<td noWrap="noWrap"><font color="red">*</font>性别:
+					<td noWrap="noWrap">性别:
 					男<input type="radio" name="sex" value="1" id="sex1">
 					女<input type="radio" name="sex" value="0" id="sex">
 					</td>
-					<td noWrap="noWrap"><font color="red">*</font>归属省份:<input type="text" name="province" class="input_text1" id="province" onblur="isChineseValue(this.value)"></td>
-					<td noWrap="noWrap"><font color="red">*</font>归属城市:<input type="text" name="city" id="city" class="input_text1" onblur="isChineseValue1(this.value)"></td>
+					<td noWrap="noWrap">归属省份:<input type="text" name="province" class="input_text1" id="province" onblur="isChineseValue(this.value)"></td>
+					<td noWrap="noWrap">归属城市:<input type="text" name="city" id="city" class="input_text1" onblur="isChineseValue1(this.value)"></td>
 				</tr>
 				<tr>									
 					<td noWrap="noWrap"><font color="red">*</font>来电姓名:<input type="text" name="name" class="input_text1" id="dname" maxlength="15"></td>
-					<td noWrap="noWrap"><font color="red">*</font>最后联系时间:<input type="text" id="contactLastTime" disabled="disabled" style="display: none"/></td>
-					<td noWrap="noWrap"><font color="red">*</font>联系次数:<input type="text" id="contactNum" disabled="disabled" style="display: none"></td>
-					
-					</td>
+					<td noWrap="noWrap">最后联系时间:<input type="text" id="contactLastTime" disabled="disabled" style="display: none"/></td>
+					<td noWrap="noWrap">联系次数:<input type="text" id="contactNum" disabled="disabled" style="display: none"></td>
 				</tr>	
 				</form>
 				<tr>

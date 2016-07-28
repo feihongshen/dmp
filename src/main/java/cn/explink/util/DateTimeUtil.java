@@ -32,6 +32,7 @@ public class DateTimeUtil {
 	
 	public static final String DEF_DATE_FORMAT = "yyyy-MM-dd";
 	public static final String DEF_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final String DEF_DATETIME_NUM_FORMAT = "yyyyMMddHHmmss";
 
 	/**
 	 * 按指定日期单位计算两个日期间的间隔
@@ -894,4 +895,19 @@ public class DateTimeUtil {
 			return "";
 		}
 	}
+	
+	/**
+	 * 获取下一秒时刻格式化字符串
+	 * @param date
+	 */
+	public static java.util.Date getNextSecondDateTime(java.util.Date date) {
+		if (date == null)
+			return null;
+
+		Calendar calender = Calendar.getInstance();
+		calender.setTime(date);
+		calender.add(Calendar.SECOND, 1);
+		return calender.getTime();
+	}
+	
 }
