@@ -96,6 +96,7 @@ public class DfFeeDAO {
             dfBillFee.setCwbcounty(rs.getString("cwbcounty"));
             dfBillFee.setPaybackfee(rs.getBigDecimal("paybackfee"));
             dfBillFee.setReceivablefee(rs.getBigDecimal("receivablefee"));
+            dfBillFee.setCartype(rs.getString("cartype"));
             dfBillFee.setFeeCreateTime(rs.getTimestamp("fee_create_time"));
             dfBillFee.setFeeCreateUser(rs.getString("fee_create_user"));
             dfBillFee.setFeeUpdateTime(rs.getTimestamp("fee_update_time"));
@@ -110,9 +111,9 @@ public class DfFeeDAO {
     public long saveDeliveryFee(int chargerType, final String cwb, final String transcwb, final int cwbordertypeid, final long customerid, final long sendcarnum, final long backcarnum,
                                 final String senderaddress, final String consigneeaddress, final BigDecimal realweight, final BigDecimal cargovolume, final int chargeType,
                                 final long deliverId, final String userName, final long branchId, final long cwbstate, final long flowordertype, final Date create_time,
-                                final String outstationdatetime, final int deliverystate, final String emaildate, final Date credate, final Date pickTime, final Date mobilepodtime,
+                                final Date outstationdatetime, final int deliverystate, final String emaildate, final Date credate, final Date pickTime, final Date mobilepodtime,
                                 final String auditingtime, final int isCal, final int isBill, final String province, final String city, final String county, final BigDecimal paybackfee,
-                                final BigDecimal receivablefee, final String createUserName) {
+                                final BigDecimal receivablefee, final String createUserName, final String cartype) {
 
         final String sql = "INSERT INTO " + getTableName(chargerType) +
                 "(order_no, transcwb, cwbordertypeid, customerid, sendcarnum, backcarnum, " +
@@ -120,25 +121,25 @@ public class DfFeeDAO {
                 "deliver_id, deliver_username, deliverybranchid, cwbstate, flowordertype, " +
                 "create_time, outstationdatetime, deliverystate, emaildate, credate, pick_time, mobilepodtime, " +
                 "auditingtime, is_calculted, is_billed, cwbprovince, cwbcity, cwbcounty, paybackfee, " +
-                "receivablefee, fee_create_time, fee_create_user)" +
+                "receivablefee, fee_create_time, fee_create_user, cartype)" +
                 "VALUES (" +
                 "?,?,?,?,?,?,?,?,?,?," +
                 "?,?,?,?,?,?,?,?,?,?," +
                 "?,?,?,?,?,?,?,?,?,?," +
-                "?,now(),?)";
+                "?,now(),?,?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         this.jdbcTemplate.update(new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection connection)
                     throws SQLException {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date outstationdate = null;
+//                Date outstationdate = null;
                 Date emaildateDate = null;
                 Date auditingtimeDate = null;
-                try {
-                    outstationdate = sdf.parse(outstationdatetime);
-                } catch (ParseException e) {
-                }
+//                try {
+//                    outstationdate = sdf.parse(outstationdatetime);
+//                } catch (ParseException e) {
+//                }
                 try {
                     emaildateDate = sdf.parse(emaildate);
                 } catch (ParseException e) {
@@ -173,11 +174,16 @@ public class DfFeeDAO {
                     ps.setTimestamp(17, new Timestamp(create_time.getTime()));
                 }
 
-                if (outstationdate == null) {
+//                if (outstationdate == null) {
+//                    ps.setNull(18, Types.DATE);
+//                } else {
+//                    ps.setTimestamp(18, new Timestamp(outstationdate.getTime()));
+//                }
+
+                if (outstationdatetime == null) {
                     ps.setNull(18, Types.DATE);
                 } else {
-                    ps.setTimestamp(18, new Timestamp(outstationdate.getTime()));
-                }
+                    ps.setTimestamp(18, new Timestamp(outstationdatetime.getTime()));                }
 
                 ps.setInt(19, deliverystate);
 
@@ -219,6 +225,7 @@ public class DfFeeDAO {
                 ps.setBigDecimal(30, paybackfee);
                 ps.setBigDecimal(31, receivablefee);
                 ps.setString(32, createUserName);
+                ps.setString(33, cartype);
 
                 return ps;
             }

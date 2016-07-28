@@ -1,6 +1,7 @@
 package cn.explink.controller;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +17,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
 import cn.explink.b2c.maisike.stores.StoresDAO;
+import cn.explink.core.utils.PoiExcelUtils;
+import cn.explink.core.utils.PoiExcelUtils.ColDef;
 import cn.explink.dao.AccountAreaDAO;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CwbDAO;
@@ -39,6 +43,7 @@ import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.BranchSyncResultVo;
 import cn.explink.domain.Menu;
 import cn.explink.domain.PaiFeiRule;
 import cn.explink.domain.SystemInstall;
@@ -158,7 +163,7 @@ public class BranchController {
 				if(!branchInfService.isCloseOldInterface()){					
 					this.branchService.addzhandianToAddress(branchid, bh,null);
 				}
-				branchInfService.saveBranchInf(bh);
+				branchInfService.saveBranchInf(bh, getSessionUser());
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
@@ -226,7 +231,7 @@ public class BranchController {
 					this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_CREATE, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 				}
 				// add by jian_xie
-				branchInfService.saveBranchInf(bh);
+				branchInfService.saveBranchInf(bh, getSessionUser());
 			}
 
 			try {
@@ -303,7 +308,7 @@ public class BranchController {
 						this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_BRANCH_MODIFY, Constants.REFERENCE_TYPE_BRANCH_ID, String.valueOf(branchid), true);
 					}
 				}
-				branchInfService.saveBranchInf(branch);
+				branchInfService.saveBranchInf(branch, getSessionUser());
 			}
 
 			try {
@@ -373,7 +378,7 @@ public class BranchController {
 					}
 				}
 				// 同步站点新接口 add by jian_xie
-				branchInfService.saveBranchInf(branch);
+				branchInfService.saveBranchInf(branch, getSessionUser());
 			}
 
 			try {
@@ -526,7 +531,7 @@ public class BranchController {
 		}
 		// 同步站点机构，使用新接口
 		if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-			branchInfService.saveBranchInf(branch);
+			branchInfService.saveBranchInf(branch, getSessionUser());
 		}
 		
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
@@ -572,17 +577,24 @@ public class BranchController {
 	
 	}
 
-//	@RequestMapping("/syncAllBranchToOsp")
-//	public @ResponseBody String syncAllBranchToOsp() {
-//		List<Branch> branchs = branchService.getBranchs();
-//		try {
-//			for (Branch b : branchs) {
-//				branchService.saveBranchAndSyncOsp(b);
-//			}
-//		} catch (Exception e) {
-//			String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
-//			return "{\"errorCode\":1,\"error\":\"" + errorMessage + "\"}";
-//		}
-//		return "{\"errorCode\":0,\"error\":\"同步成功\",\"type\":\"sync\"}";
-//	}
+	@RequestMapping("/syncAllBranchToOsp")
+	public void syncAllBranchToOsp(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		List<BranchSyncResultVo> result = branchService.batchSyncBranchOsp();
+		List<ColDef> colDefs = getBranchSyncResultColDefs();
+		Workbook workbook = PoiExcelUtils.createExcelSheet(colDefs, (List) result);
+		PoiExcelUtils.setExcelResponseHeader(response, "batch_sync_branch_result.xlsx");
+		OutputStream out = response.getOutputStream();
+		workbook.write(out);
+		out.flush();
+	}
+	
+	private List<ColDef> getBranchSyncResultColDefs() {
+		List<ColDef> colDefs = new ArrayList<ColDef>();
+		colDefs.add(new ColDef("branchName", "机构名称", 100));
+		colDefs.add(new ColDef("carrierCode", "承运商编码", 100));
+		colDefs.add(new ColDef("carrierSiteCode", "机构编码", 100));
+		colDefs.add(new ColDef("result", "结果", 200));
+		colDefs.add(new ColDef("message", "原因", 500));
+		return colDefs;
+	}
 }

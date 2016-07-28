@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.explink.service.DfFeeService;
 import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
@@ -77,6 +78,8 @@ public class VipShopOXOGetCwbDataService {
 	CwbOrderService cwbOrderService;
 	@Autowired
 	CustomerService customerService;
+    @Autowired
+    DfFeeService dfFeeService;
 
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
@@ -496,6 +499,10 @@ public class VipShopOXOGetCwbDataService {
 					dataImportDAO_B2c.dataLoseB2ctempByCwb(order.getCustOrderNo());
 					this.cwbDAO.dataLoseByCwb(order.getCustOrderNo());
 					cwbOrderService.datalose_vipshop(order.getCustOrderNo());
+
+                    // added by Steve PENG 20160722 start TMS OXO, 订单失效后，需要对派费操作
+                    dfFeeService.saveFeeRelativeAfterOrderDisabled(order.getCustOrderNo());
+                    // added by Steve PENG 20160722 end
 				}
 			
 			}catch(Exception e){

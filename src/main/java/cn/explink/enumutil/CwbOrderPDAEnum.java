@@ -30,7 +30,11 @@ public enum CwbOrderPDAEnum {
 			"200051", "非本库房货物", "fail.wav"), BU_SHI_ZHE_GE_XIAO_JIAN_YUAN_DE_HUO(252, "200052", "不是这个小件员的货", "fail.wav"), WEI_GUI_BAN_BU_NENG_ZAI_LING(253, "200053", "未归班的订单不能再领", "fali.wav"), WU_FA_ZI_DONG_PAN_DUAN_XIA_YI_ZHAN(
 			254, "200054", "无法自动判断下一站", "fali.wav"), BAO_HAO_BU_CUN_ZAI(255, "200055", "包号不可以为0", "fali.wav"), BU_SHI_ZHE_GE_MU_DI_DI(256, "200056", "不是这个目的地的货", "fali.wav"), FEI_BEN_ZHAN_HUO(258,
 			"200058", "非本站货", "fail.wav"), Wei_Shua_Ka_Yuan_Yin(260, "200060", "请选择未刷卡原因", "fail.wav"), Feng_Bao(261, "200061", "封包异常", "fail.wav"),
-			TUI_HUO_RU_KU(262, "200062", "退货", "return.wav"),ZHONG_ZHUAN_RU_KU(263, "200063", "中转", "change.wav"),Gui_Ping(264,"200064","贵品","gp.wav"),Gao_Jia(265,"200065","高价","gj.wav");
+			TUI_HUO_RU_KU(262, "200062", "退货", "return.wav"),ZHONG_ZHUAN_RU_KU(263, "200063", "中转", "change.wav"),Gui_Ping(264,"200064","贵品","gp.wav"),Gao_Jia(265,"200065","高价","gj.wav"),
+			
+			
+			LOGIN_ERROR(266,"200066","账号或密码错误，请重新输入","fail.wav"),
+			LOGIN_TIMEOUT(267,"200067","登录超时，请重新登录","fail.wav");
 
 	private int value;
 	private String code;

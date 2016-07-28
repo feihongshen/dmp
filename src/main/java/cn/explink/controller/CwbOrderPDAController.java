@@ -229,9 +229,15 @@ public class CwbOrderPDAController {
 	}
 
 	@RequestMapping("/loginError")
-	public @ResponseBody PDAResponse loginError(HttpServletResponse response, String error) {
-		PDAResponse PDAResponse = new StringBodyPdaResponse(CwbOrderPDAEnum.WU_CAO_ZUO_QUAN_XIAN.getCode(), CwbOrderPDAEnum.WU_CAO_ZUO_QUAN_XIAN.getError(), "");
-		return PDAResponse;
+	public @ResponseBody PDAResponse loginError(HttpServletRequest request, HttpServletResponse response, String error) {
+		logger.info(error);
+		/*****开始******/
+		//APP返回值修改   vic.liang@pjbest.com 2016-07-19
+		if (StringUtil.isEmpty(error)) {
+			return new StringBodyPdaResponse(CwbOrderPDAEnum.LOGIN_ERROR.getCode(), CwbOrderPDAEnum.LOGIN_ERROR.getError(), "");
+		} 
+		return new StringBodyPdaResponse(CwbOrderPDAEnum.LOGIN_TIMEOUT.getCode(), CwbOrderPDAEnum.LOGIN_TIMEOUT.getError(), "");
+		/******结束******/
 	}
 
 	@RequestMapping("/login")
@@ -294,7 +300,7 @@ public class CwbOrderPDAController {
 		try {
 			User u = this.getSessionUser();
 		} catch (Exception e) {
-			return this.loginError(response, "");
+			return this.loginError(request,response,CwbOrderPDAEnum.LOGIN_TIMEOUT.getError());
 		}
 		try {
 			if (requestparam.equals("transf_warehouse_submit")) { // 中转入库
@@ -471,7 +477,7 @@ public class CwbOrderPDAController {
 		try {
 			User u = this.getSessionUser();
 		} catch (Exception e) {
-			return this.loginError(response, "");
+			return this.loginError(request, response, CwbOrderPDAEnum.LOGIN_TIMEOUT.getError());
 		}
 
 		try {
@@ -1954,7 +1960,9 @@ public class CwbOrderPDAController {
 
 	}
 
+	
 	private String getErrorInfoForIntoWarehouse(CwbOrder co) {
+		//修改APP提示声音   vic.liang@pjbest.com 2016-07-19  
 		String successPattern = this.systemInstallService.getParameter("prompt.intoWarehouse.successPattern", "<co.cwb><fenge><yipiaoduojian><branch.branchname><gaojia>");
 		ST errorInfoST = new ST(successPattern);
 		errorInfoST.add("co", co);
@@ -1975,6 +1983,7 @@ public class CwbOrderPDAController {
 			errorInfoST.add("gaojia", CwbOrderPDAEnum.GAO_JIA.getError());
 		}
 
+		logger.info("入库/出库 返回app的errorinfo:  "+errorInfoST.render());
 		return errorInfoST.render();
 	}
 
@@ -2556,7 +2565,7 @@ public class CwbOrderPDAController {
 		CwbOrder co = this.cwbDAO.getCwbByCwb(ex.getCwb());
 		this.exceptionCwbDAO.createExceptionCwbScan(ex.getCwb(), ex.getFlowordertye(), ex.getMessage(), this.getSessionUser().getBranchid(), this.getSessionUser().getUserid(),
 				co == null ? 0 : co.getCustomerid(), 0, 0, 0, "", ex.getCwb());
-		PDAResponse explinkResponse = new StringBodyPdaResponse(ex.getError().getValue() + "", ex.getMessage(), null);
+		PDAResponse explinkResponse = new StringBodyPdaResponse(ex.getError().getValue() + "", ex.getMessage(), "");
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 		} else {
@@ -2569,7 +2578,7 @@ public class CwbOrderPDAController {
 	public PDAResponse handleException(Exception ex, HttpServletRequest request) {
 		this.logger.error("系统异常", ex);
 
-		PDAResponse explinkResponse = new StringBodyPdaResponse("000001", ex.getMessage(), null);
+		PDAResponse explinkResponse = new StringBodyPdaResponse("000001", ex.getMessage(), "");
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 		} else {
@@ -2582,7 +2591,7 @@ public class CwbOrderPDAController {
 	public PDAResponse explinkException(Exception ex, HttpServletRequest request) {
 		this.logger.error("系统异常", ex);
 
-		PDAResponse explinkResponse = new StringBodyPdaResponse("000001", ex.getMessage(), null);
+		PDAResponse explinkResponse = new StringBodyPdaResponse("000001", ex.getMessage(), "");
 		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 		} else {
@@ -2805,13 +2814,14 @@ public class CwbOrderPDAController {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 				}
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " 站点：" + branch.getBranchname() + " 编号：" + branch.getBranchcode());
-				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo().substring(0, errorinfo.indexOf("#")) + "##站点：" + branch.getBranchname() + "#编号：" + branch.getBranchcode() + "#");
+				//pDAResponse.setErrorinfo(pDAResponse.getErrorinfo().substring(0, errorinfo.indexOf("#")) + "##站点：" + branch.getBranchname() + "#编号：" + branch.getBranchcode() + "#");
 			}
 			if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setShouldShock(true);
 			}
+			logger.info("返回"+pDAResponse.getErrorinfo());
 			return pDAResponse;
 		} catch (CwbException e) {
 			co = this.cwbDAO.getCwbByCwb(cwb);
@@ -2832,13 +2842,13 @@ public class CwbOrderPDAController {
 
 	/* 新增站点编号字段 */
 	private String getErrorInfoForIntoWarehouseAPP(CwbOrder co) {
+		// APP入库出库声音修改 vic.liang@pjbest.com 2016-07-19
 		String successPattern = this.systemInstallService.getParameter("prompt.intoWarehouse.successPattern", "<co.cwb><fenge><yipiaoduojian><fenge><branch.branchname><branch.branchcode><gaojia>");
 		ST errorInfoST = new ST(successPattern);
 		errorInfoST.add("co", co);
 		errorInfoST.add("fenge", " ");
-		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) { // 发货数量 ||
-																	// 取货数量;
-			errorInfoST.add("yipiaoduojian", CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
+		if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) { // 发货数量 ||  取货数量;
+		    errorInfoST.add("yipiaoduojian", CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 		}
 		/*
 		 * if(co.getDeliverid()!=0){ User user =
@@ -2851,9 +2861,10 @@ public class CwbOrderPDAController {
 		}
 		// 待收货款 应收金额
 		if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
-			errorInfoST.add("gaojia", CwbOrderPDAEnum.GAO_JIA.getError());
+		    errorInfoST.add("gaojia", CwbOrderPDAEnum.GAO_JIA.getError());
 		}
 
+		logger.info("入库出库 返回errorinfo: "+errorInfoST.render());
 		return errorInfoST.render();
 	}
 
@@ -2877,7 +2888,7 @@ public class CwbOrderPDAController {
 			pDAResponse.setWavPath(errorinfovediurl);
 			if ((co.getSendcarnum() > 1) || (co.getBackcarnum() > 1)) {
 				pDAResponse.setShouldShock(true);
-				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
+				//pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
 			}
@@ -2886,23 +2897,23 @@ public class CwbOrderPDAController {
 				if ((user.getUserwavfile() != null) && (user.getUserwavfile().length() > 0)) {
 					pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + user.getUserwavfile());
 				}
-				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + user.getRealname());
+				//pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + user.getRealname());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + user.getRealname());
 			}
 			if (co.getNextbranchid() != 0) {
 				Branch branch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.wavPath + (branch.getBranchwavfile() == null ? "" : branch.getBranchwavfile()));
-				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo().substring(0, errorinfo.indexOf("#")) + "##站点：" + branch.getBranchname() + "#编号：" + branch.getBranchcode() + "#");
+				//pDAResponse.setErrorinfo(pDAResponse.getErrorinfo().substring(0, errorinfo.indexOf("#")) + "##站点：" + branch.getBranchname() + "#编号：" + branch.getBranchcode() + "#");
 				// pDAResponse.setPrintinfo(branch.getBranchid()+"");
 				pDAResponse.setPrintinfo(branch.getBranchname());
 			}
 			if ((co.getReceivablefee() != null) && (co.getReceivablefee().compareTo(this.exceedFeeDAO.getExceedFee().getExceedfee()) > 0)) {
 				pDAResponse.setShouldShock(true);
-				pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
+				//pDAResponse.setErrorinfo(pDAResponse.getErrorinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setPrintinfo(pDAResponse.getPrintinfo() + " " + CwbOrderPDAEnum.GAO_JIA.getError());
 				pDAResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.GAO_JIA.getVediourl());
 			}
-			logger.info(pDAResponse.getPrintinfo());
+			logger.info("返回"+pDAResponse.getErrorinfo());
 			return pDAResponse;
 
 		} catch (CwbException e) {

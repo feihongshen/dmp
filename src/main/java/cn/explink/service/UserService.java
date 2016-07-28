@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import cn.explink.controller.UserView;
 import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.FinanceDeliverPayupDetail;
@@ -42,6 +42,9 @@ public class UserService {
 	FinanceDeliverPayUpDetailDAO financeDeliverPayUpDetailDAO;
 	@Autowired
 	GotoClassAuditingDAO gotoClassAuditingDAO;
+	
+	@Autowired
+	private RoleDAO roleDAO;
 
 	public void addUser(User user) {
 		this.userDAO.creUser(user);
@@ -322,5 +325,63 @@ public class UserService {
 			return null;
 		}
 		return deliver;
+	}
+	
+	/**
+	 * 判断是否配送员
+	 * @date 2016年7月20日 下午5:18:45
+	 * @param roleid
+	 * @return
+	 */
+	public boolean isDeliver(long roleid) {
+		// 小件员和站长属于配送员
+		if (roleid == 2 || roleid == 4) {
+			return true;
+		}
+		// 其它类型
+		Role role = this.roleDAO.getRolesByRoleid(roleid);
+		if (role != null && role.getIsdelivery() == 1) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 转换session用户的branchid
+	 * @param sessionUser Session用户
+	 * @author neo01.huang 2016-7-19
+	 */
+	public void convertSessionUserBranchId(User sessionUser) {
+		final String logPrefix = "转换session用户的branchid->";
+		if (sessionUser == null) {
+			logger.info("{}sessionUser为空", logPrefix);
+			return;
+		}		
+		logger.info("{}branchId:{}, userid:{}", logPrefix, sessionUser.getBranchid(), sessionUser.getUserid());
+		if (sessionUser.getBranchid() > 0) {
+			logger.info("{}sessionUser的branchId大于0，无需转换", logPrefix);
+			return;
+		}
+		
+		List<User> userList = this.userDAO.getUserByid(sessionUser.getUserid());
+		if (userList == null || userList.size() == 0) {
+			logger.info("{}userList为空，转换失败", logPrefix);
+			return;
+		}
+		
+		User dbUser = userList.get(0);
+		if (dbUser.getBranchid() <= 0) {
+			logger.info("{}dbUser的branchId小于或等于0，转换失败", logPrefix);
+			return;
+		}
+		sessionUser.setBranchid(dbUser.getBranchid());
+	}
+
+	public List<User> getAllUserByRole(List<Long> roleidList) {
+		List<User> userList = this.userDAO.getAllUserByRole(roleidList);
+		if(userList == null) {
+			userList = new ArrayList<User>();
+		}
+		return userList;
 	}
 }

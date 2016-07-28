@@ -61,6 +61,7 @@ function delSuccess(data){
 				<li><a href="<%=request.getContextPath()%>/jointManage/exptcodejoint/1">异常码关联</a></li>
 				<li><a href="<%=request.getContextPath()%>/jointManage/epaiApi/1">系统环形对接</a></li>
 				<li><a href="<%=request.getContextPath()%>/jointManage/encodingsetting/1">供货商编码设置</a></li>
+				<li><a href="<%=request.getContextPath()%>/jointManage/address/1">地址库同步</a></li>
 			</ul>
 		</div>
 		<form action="<%=request.getContextPath()%>/jointManage/jointb2c" method="post" id="searchForm"></form>
@@ -543,6 +544,10 @@ function delSuccess(data){
             $("#edit").val('<%=request.getContextPath()%>/orderTraceToTPS/show/');
             $("#del").val('<%=request.getContextPath()%>/thirdPartyOrder2DO/del/');
         }
+		else if(obj=='20230'){
+			$("#edit").val('<%=request.getContextPath()%>/tpsAutoFlowCfg/show/');
+			$("#del").val('<%=request.getContextPath()%>/tpsAutoFlowCfg/del/');
+		}
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

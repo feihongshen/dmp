@@ -38,6 +38,47 @@ a{
 }
 
 </style>
+<script type="text/javascript">
+function sub(){
+    var isSubmit = true;
+    var cwbs = "";
+    $.each($("input[name='cwbs']"),function(i,cwb){
+        if(i != 0){
+            cwbs += ","
+        }
+        cwbs += cwb.value;
+    });
+    if(!checkCwbs(cwbs)){
+        isSubmit=false;
+        return false;
+    }
+    if(isSubmit){
+        $("#searchForm").submit();
+    }
+}
+
+/**
+ * 添加验证，如果存在未审核的修改申请，则不允许申请。
+ * @author jian.xie
+ * @date 2016-07-14
+ */
+function checkCwbs(cwbs){
+    var result = true;
+    $.ajax({ 
+        'url':'<%=request.getContextPath() %>/editcwb/checkIsExist',
+        'data':{'cwbs':cwbs}, 
+        'type':'POST', 
+        'async': false,
+        'success':function(data){ 
+            if(data){
+                alert("提交失败，订单【" + data + "】存在未确认的支付信息修改申请");
+                result = false;
+            }
+        }        
+    });
+    return result;
+}
+</script>
 </HEAD>
 <BODY style="background:#f5f5f5">
 <form id="searchForm" action ="<%=request.getContextPath()%>/editcwb/editXiuGaiZhiFuFangShi" method = "post">
@@ -82,7 +123,7 @@ a{
  		<td align="center" valign="middle" bgcolor="#EEF6FF">
  		<select name="Newpaywayid_<%=cods.getCwbOrder().getCwb() %>">
  		<%for(PaytypeEnum paytypeEnum:PaytypeEnum.values()){ %>
- 		    <%if(paytypeEnum.getValue() != PaytypeEnum.CodPos.getValue()){ %>
+ 		    <%if(paytypeEnum.getValue() != PaytypeEnum.CodPos.getValue() && paytypeEnum.getValue() != PaytypeEnum.getByValue(Integer.valueOf(cods.getCwbOrder().getNewpaywayid())).getValue()){ %>
  			<option value="<%=paytypeEnum.getValue() %>" <%=(Integer.valueOf(cods.getCwbOrder().getNewpaywayid())==paytypeEnum.getValue())?"selected":"" %>><%=paytypeEnum.getText() %></option>
  			<%} %>
  		<%} %>
@@ -92,7 +133,7 @@ a{
  	<%} %>
 	<tr>
 		<td colspan="10" align="center">
- 			<input type="submit"  class="buttonnew" value="修改订单支付方式申请" /><input type="button" class="buttonnew"  onclick="location.href='<%=request.getContextPath()%>/editcwb/start'"  value="返回" />
+ 			<input type="button" onclick="sub();" class="buttonnew" value="修改订单支付方式申请" /><input type="button" class="buttonnew"  onclick="location.href='<%=request.getContextPath()%>/editcwb/start'"  value="返回" />
 		</td>
  	</tr>
 </table>

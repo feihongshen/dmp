@@ -169,7 +169,7 @@ public class Branch implements java.io.Serializable {
 	
 	private String updateUser;
 	
-	private Date updateTime;
+	private String updateTime;
 	
 	/**
 	 * @return the pfruleid
@@ -829,11 +829,11 @@ public class Branch implements java.io.Serializable {
 		this.updateUser = updateUser;
 	}
 
-	public Date getUpdateTime() {
+	public String getUpdateTime() {
 		return updateTime;
 	}
 
-	public void setUpdateTime(Date updateTime) {
+	public void setUpdateTime(String updateTime) {
 		this.updateTime = updateTime;
 	}
 }

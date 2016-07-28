@@ -1,15 +1,15 @@
-# 更新订单计费定时器描述
+-- 更新订单计费定时器描述
 UPDATE eap_qrtz_triggers
-SET DESCRIPTION = "派费生成定时任务"
-WHERE TRIGGER_NAME = "dfCalculateServiceExecutorCronTrigger";
+SET DESCRIPTION = '派费生成定时任务'
+WHERE TRIGGER_NAME = 'dfCalculateServiceExecutorCronTrigger';
 
-DELETE FROM `dmp40_function` WHERE `ID` = "8091";
-DELETE FROM `dmp40_function` WHERE `ID` = "809110";
-DELETE FROM `dmp40_function` WHERE `ID` = "809120";
-DELETE FROM `dmp40_function` WHERE `ID` = "809130";
-DELETE FROM `dmp40_function` WHERE `ID` = "809140";
-DELETE FROM `dmp40_function` WHERE `ID` = "809150";
-DELETE FROM `dmp40_function` WHERE `ID` = "809160";
+DELETE FROM `dmp40_function` WHERE `ID` = '8091';
+DELETE FROM `dmp40_function` WHERE `ID` = '809110';
+DELETE FROM `dmp40_function` WHERE `ID` = '809120';
+DELETE FROM `dmp40_function` WHERE `ID` = '809130';
+DELETE FROM `dmp40_function` WHERE `ID` = '809140';
+DELETE FROM `dmp40_function` WHERE `ID` = '809150';
+DELETE FROM `dmp40_function` WHERE `ID` = '809160';
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('8091', '1', '小件员派费结算', '8091', '', '80');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809101', '2', '新增派费协议', '809101', '${eapUrl}deliveryfeeagreement.do?add&', '8091');
 INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) VALUES ('809102', '2', '派费协议管理', '809102', '${eapUrl}deliveryfeeagreement.do?manager&', '8091');

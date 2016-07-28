@@ -1,12 +1,16 @@
 package cn.explink.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -32,7 +36,11 @@ import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Menu;
+import cn.explink.domain.Role;
 import cn.explink.domain.User;
+import cn.explink.domain.addressvo.AddressSyncServiceResult;
+import cn.explink.domain.addressvo.ApplicationVo;
+import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.schedule.Constants;
@@ -44,8 +52,10 @@ import cn.explink.service.SystemInstallService;
 import cn.explink.service.UserInfService;
 import cn.explink.service.UserMonitorService;
 import cn.explink.service.UserService;
+import cn.explink.service.addressmatch.AddressSyncService;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
+import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.StringUtil;
 
 @Controller
@@ -82,6 +92,9 @@ public class UserController {
 	ExportService exportService;
 	@Autowired
 	UserInfService userInfService;
+	
+	@Autowired
+	private AddressSyncService addressService;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -167,10 +180,11 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->create", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				if (roleid == 2) {
+				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
+				if (this.userService.isDeliver(roleid)) {
 					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
@@ -206,10 +220,11 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				if (roleid == 2) {
+				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
+				if (this.userService.isDeliver(roleid)) {
 					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
@@ -256,8 +271,11 @@ public class UserController {
 		String username = StringUtil.nullConvertToEmptyString(request.getParameter("username"));
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
 		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
-		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
-		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
+		User oldUser = this.userDAO.getUserByUserid(userid);
+		String oldrealname = oldUser.getRealname();
+		long oldBranchid = oldUser.getBranchid();
+		String oldUsername = oldUser.getUsername();
+		int oldemployeestatus = oldUser.getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, file, userid);
 		user.setUserid(userid);
 			if ((list.size() > 0) && (list.get(0).getUserid() != userid)) {
@@ -273,15 +291,17 @@ public class UserController {
 					}
 				}
 				//  新接口 add by jian_xie
-				userInfService.saveUserInf(user);
+				userInfService.saveUserInf(user, getSessionUser());
 				this.logger.info("operatorUser={},用户管理->saveFile", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
-				if (roleid == 2) {
+				// 同步地址库逻辑修改 2016-07-20 chunlei05.li
+				if (this.userService.isDeliver(roleid)) {
 					String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 					if ((adressenabled != null) && adressenabled.equals("1")) {
 						if (user.getEmployeestatus() != 3) {
 							if (oldemployeestatus != 3) {
-								if (!realname.equals(oldrealname)) {
+								// 2016-7-20 如果更改了名称、登录名或者站点，则更新地址库
+								if (!StringUtils.equals(oldrealname, realname) || oldBranchid != branchid || !StringUtils.equals(oldUsername, username)) {
 									this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 								}
 							} else {
@@ -308,6 +328,7 @@ public class UserController {
 		User oldUser = this.userDAO.getUserByUserid(userid);
 		String oldrealname = oldUser.getRealname();
 		long oldBranchid = oldUser.getBranchid();
+		String oldUsername = oldUser.getUsername();
 		int oldemployeestatus = oldUser.getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, roleid, branchid, null, userid);
 		user.setUserid(userid);
@@ -324,16 +345,17 @@ public class UserController {
 				}
 			}
 			// 新接口 add by jian_xie
-			userInfService.saveUserInf(user);
+			userInfService.saveUserInf(user, getSessionUser());
 			this.logger.info("operatorUser={},用户管理->save", this.getSessionUser().getUsername());
 			// TODO 增加同步代码
-			if (roleid == 2) {
+			// 同步地址库逻辑修改 2016-07-20 chunlei05.li
+			if (this.userService.isDeliver(roleid)) {
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
 					if (user.getEmployeestatus() != 3) {
 						if (oldemployeestatus != 3) {
-							// 2016-7-11 如果更改了名称或者站点，则更新地址库
-							if (!realname.equals(oldrealname) || oldBranchid != branchid) {
+							// 2016-7-20 如果更改了名称、登录名或者站点，则更新地址库
+							if (!StringUtils.equals(oldrealname, realname) || oldBranchid != branchid || !StringUtils.equals(oldUsername, username)) {
 								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID,String.valueOf(userid), true);
 							}
 						} else {
@@ -428,6 +450,7 @@ public class UserController {
 		String realname = StringUtil.nullConvertToEmptyString(request.getParameter("realname"));
 		List<User> list = this.userDAO.getUsersByUsernameToUpper(username);
 		String oldrealname = this.userDAO.getUserByUserid(userid).getRealname();
+		String oldUsername = this.userDAO.getUserByUserid(userid).getUsername();
 		int oldemployeestatus = this.userDAO.getUserByUserid(userid).getEmployeestatus();
 		User user = this.userService.loadFormForUserToEdit(request, 2, this.getSessionUser().getBranchid(), null, userid);
 		user.setUserid(userid);
@@ -447,7 +470,8 @@ public class UserController {
 				if ((adressenabled != null) && adressenabled.equals("1")) {
 					if (user.getEmployeestatus() != 3) {
 						if (oldemployeestatus != 3) {
-							if (!realname.equals(oldrealname)) {
+							// 2016-7-20 如果更改了名称、登录名，则更新地址库
+							if (!StringUtils.equals(oldrealname, realname) || !StringUtils.equals(oldUsername, username)) {
 								this.scheduledTaskService.createScheduledTask(Constants.TASK_TYPE_SYN_ADDRESS_USER_MODIFY, Constants.REFERENCE_TYPE_USER_ID, String.valueOf(userid), true);
 							}
 						} else {
@@ -548,4 +572,65 @@ public class UserController {
 		
 	}
 	
+	/**
+	 * 同步地址库
+	 * @date 2016年7月25日 下午5:49:05
+	 * @return
+	 */
+	@RequestMapping(value="/batchSyncAdress")
+	@ResponseBody
+	public String batchSyncAdress() {
+		Set<Long> roleidSet = new HashSet<Long>();
+		// 小件员和站长属于配送员
+		roleidSet.add(2l);
+		roleidSet.add(4l);
+		// 其它类型
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if(roles != null) {
+			for(Role role : roles) {
+				roleidSet.add(role.getRoleid());
+			}
+		}
+		// 获取站点用户
+		List<User> deliverList = this.userService.getAllUserByRole(new ArrayList<Long>(roleidSet));
+		// 同步地址库
+		long addresscustomerid = Long.parseLong(ResourceBundleUtil.addresscustomerid);
+		// 生成applicationVo
+		ApplicationVo applicationVo = new ApplicationVo();
+		applicationVo.setCustomerId(addresscustomerid);
+		applicationVo.setId(Long.parseLong(ResourceBundleUtil.addressid));
+		applicationVo.setPassword(ResourceBundleUtil.addresspassword);
+		
+		int success = 0; // 成功数量
+		int failure = 0; // 失败数量
+		for (User deliver : deliverList) {
+			// 正常状态，更新地址库。
+			DelivererVo delivererVo = new DelivererVo();
+			delivererVo.setCustomerId(addresscustomerid);
+			delivererVo.setExternalId(deliver.getUserid());
+			delivererVo.setName(deliver.getRealname());
+			delivererVo.setExternalStationId(deliver.getBranchid());
+			delivererVo.setUserCode(deliver.getUsername());
+			
+			try {
+				AddressSyncServiceResult addressSyncServiceResult;
+				if (deliver.getUserDeleteFlag() == 1 && deliver.getEmployeestatus() == 1) { // 地址库逻辑：saveOrUpdate
+					addressSyncServiceResult = this.addressService.updateDeliverer(applicationVo, delivererVo);
+				} else { // 删除
+					addressSyncServiceResult = this.addressService.deleteDeliverer(applicationVo, delivererVo);
+	
+				}
+				if (addressSyncServiceResult.getResultCode().getCode() == 0) {
+					logger.info("[成功]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());
+					success++;
+				} else {
+					logger.info("[失败]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());
+					failure++;
+				}
+			} catch (Exception e) {
+				return e.getMessage();
+			}
+		}
+		return "完成同步!成功：" + success + "，失败：" + failure;
+	}
 }

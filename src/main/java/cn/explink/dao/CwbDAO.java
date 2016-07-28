@@ -168,7 +168,8 @@ public class CwbDAO {
             return null;
         }
     }
-	private final class CwbMapper implements RowMapper<CwbOrder> {
+
+    private final class CwbMapper implements RowMapper<CwbOrder> {
 		
 		//是否需要过滤用户信息
 		private boolean isFilterUserInfo = true;
@@ -1264,6 +1265,23 @@ public class CwbDAO {
 			return null;
 		}
 	}
+
+
+    /**
+     * 根据订单号查找失效的订单
+     * @param cwb
+     * @return
+     */
+    public CwbOrder getDisabledCwbByCwb(String cwb) {
+        try {
+            return this.jdbcTemplate
+                    .queryForObject(
+                            "SELECT * from express_ops_cwb_detail where cwb=? and state=0 limit 0,1",
+                            new CwbMapper(), cwb);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 	
 	/**
 	 * 是否存在这个订单在正式表
@@ -8414,11 +8432,12 @@ public class CwbDAO {
 		StringBuffer sql = new StringBuffer(
 				"SELECT * FROM  `express_ops_cwb_detail` WHERE  "
 						+ wheresql
-						+ " or ( flowordertype in(1,2) and "
+						+ " and "
+						//存货监控统计sql修复 ----刘武强20160719
 						+ (branchid.length() > 0 ? (" nextbranchid in("
 								+ branchid + ")  and") : " nextbranchid IN("
 								+ branchids + ") and ")
-						+ " nextbranchid>0) AND state=1  " + " limit "
+						+ " nextbranchid>0 AND state=1  " + " limit "
 						+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
 						+ Page.ONE_PAGE_NUMBER);
 
@@ -9234,7 +9253,9 @@ public class CwbDAO {
 		if (!Tools.isEmpty(cwb4TakeGoodsQuery.getCollectorid())) {
 			sql.append(" and collectorid="
 					+ cwb4TakeGoodsQuery.getCollectorid() + "");
-		} else {
+		} else if(Tools.isEmpty(userIds)){//如果这个userIds为null或者""，那么就直接拼接上'',防止sql报异常--刘武强20160719
+			sql.append(" and collectorid in ('')");
+		}else {
 			sql.append(" and collectorid in (" + userIds + ")");
 		}
 		// 付款方式
@@ -9902,5 +9923,11 @@ public class CwbDAO {
 	public void updateBatchNo(String cwb, String batchNo,String attemperNo,String attemperTime) {
 		this.jdbcTemplate.update(
 				"update express_ops_cwb_detail set remark1=?,remark3=?,remark4=? where cwb=? and state = 1 ",batchNo,attemperNo,attemperTime,cwb);		
+	}
+	
+	/**add by yurong.liang 2016-7-21 **/
+	public void saveTranscwbAndTpsTranscwbByCwb(String transcwb, String cwb) {
+		String sql = "update express_ops_cwb_detail set transcwb=?,tpstranscwb=? where cwb=? and state=1";
+		this.jdbcTemplate.update(sql, transcwb,transcwb, cwb);
 	}
 }

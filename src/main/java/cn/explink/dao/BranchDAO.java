@@ -30,6 +30,7 @@ import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.domain.Branch;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.BranchTypeEnum;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -133,6 +134,7 @@ public class BranchDAO {
 			branch.setOutputno(rs.getString("outputno"));
 			
 			branch.setUpdateUser(rs.getString("update_user"));
+			branch.setUpdateTime(rs.getString("update_time"));
 			return branch;
 		}
 	}

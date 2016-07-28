@@ -354,7 +354,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("inputdatetime", date);
 			embracedOrderVO.setInputdatetime(date.toString());
 			params.put("cwbordertypeid", CwbOrderTypeIdEnum.Express.getValue());
-			params.put("customerid", 1000);// 默认1000，代表快递单
+			if(!"0".equals(embracedOrderVO.getPayment_method())){
+				params.put("customerid", 1000);// 默认1000，代表快递单
+			}
 			params.put("completehandlerid", user.getUserid());
 			params.put("completehandlername", user.getUsername());
 			params.put("completedatetime", date);
@@ -374,15 +376,23 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			}
 		}
 		params.put("transcwb", embracedOrderVO.getOrderNo());// 将订单号写入transcwb
-		params.put("senderprovinceid", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid()) ? embracedOrderVO.getSender_provinceid() : null);
+		if(!"null".equals(embracedOrderVO.getSender_provinceid().trim()) ){
+			params.put("senderprovinceid", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceid()) ? embracedOrderVO.getSender_provinceid() : null);
+		}
 		params.put("senderprovince", StringUtils.isNotBlank(embracedOrderVO.getSender_provinceName()) ? embracedOrderVO.getSender_provinceName() : null);
-		params.put("sendercityid", StringUtils.isNotBlank(embracedOrderVO.getSender_cityid()) ? embracedOrderVO.getSender_cityid() : null);
+		if(!"null".equals(embracedOrderVO.getSender_cityid().trim())){
+			params.put("sendercityid", StringUtils.isNotBlank(embracedOrderVO.getSender_cityid()) ? embracedOrderVO.getSender_cityid() : null);
+		}
 		params.put("sendercity", StringUtils.isNotBlank(embracedOrderVO.getSender_cityName()) ? embracedOrderVO.getSender_cityName() : null);
 		params.put("sendercellphone", StringUtils.isNotBlank(embracedOrderVO.getSender_cellphone()) ? embracedOrderVO.getSender_cellphone() : null);
 		params.put("sendertelephone", StringUtils.isNotBlank(embracedOrderVO.getSender_telephone()) ? embracedOrderVO.getSender_telephone() : null);
-		params.put("recprovinceid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceid()) ? embracedOrderVO.getConsignee_provinceid() : null);
+		if(!"null".equals(embracedOrderVO.getConsignee_provinceid().trim())){
+			params.put("recprovinceid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceid()) ? embracedOrderVO.getConsignee_provinceid() : null);
+		}
 		params.put("cwbprovince", StringUtils.isNotBlank(embracedOrderVO.getConsignee_provinceName()) ? embracedOrderVO.getConsignee_provinceName() : null);
-		params.put("reccityid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityid()) ? embracedOrderVO.getConsignee_cityid() : null);
+		if(!"null".equals(embracedOrderVO.getConsignee_cityid().trim())){
+			params.put("reccityid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityid()) ? embracedOrderVO.getConsignee_cityid() : null);
+		}
 		params.put("cwbcity", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cityName()) ? embracedOrderVO.getConsignee_cityName() : null);
 		params.put("consigneemobile", StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone()) ? embracedOrderVO.getConsignee_cellphone() : null);
 		params.put("consigneephone", StringUtils.isNotBlank(embracedOrderVO.getConsignee_telephone()) ? embracedOrderVO.getConsignee_telephone() : null);
@@ -401,9 +411,11 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("customerid", embracedOrderVO.getSender_customerid());
 		}
 		params.put("sendername", StringUtils.isNotBlank(embracedOrderVO.getSender_name()) ? embracedOrderVO.getSender_name() : null);
-		params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
+		if( !"null".equals(embracedOrderVO.getSender_countyid().trim())){
+			params.put("sendercountyid", StringUtils.isNotBlank(embracedOrderVO.getSender_countyid()) ? embracedOrderVO.getSender_countyid() : null);
+		}
 		params.put("sendercounty", StringUtils.isNotBlank(embracedOrderVO.getSender_countyName()) ? embracedOrderVO.getSender_countyName() : null);
-		if(!StringUtils.isNotBlank(embracedOrderVO.getSender_townid())){
+		if( !"null".equals(embracedOrderVO.getSender_townid().trim())){
 			params.put("senderstreetid", StringUtils.isNotBlank(embracedOrderVO.getSender_townid()) ? embracedOrderVO.getSender_townid() : null);
 		}
 		params.put("senderstreet", StringUtils.isNotBlank(embracedOrderVO.getSender_townName()) ? embracedOrderVO.getSender_townName() : null);
@@ -418,9 +430,11 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("reccustomerid", embracedOrderVO.getConsignee_customerid());
 		}
 		params.put("consigneename", StringUtils.isNotBlank(embracedOrderVO.getConsignee_name()) ? embracedOrderVO.getConsignee_name() : null);
-		params.put("reccountyid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid()) ? embracedOrderVO.getConsignee_countyid() : null);
+		if(!"null".equals(embracedOrderVO.getConsignee_countyid().trim())){
+			params.put("reccountyid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyid()) ? embracedOrderVO.getConsignee_countyid() : null);
+		}
 		params.put("cwbcounty", StringUtils.isNotBlank(embracedOrderVO.getConsignee_countyName()) ? embracedOrderVO.getConsignee_countyName() : null);
-		if(!StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid())){
+		if(!"null".equals(embracedOrderVO.getConsignee_townid().trim())){
 			params.put("recstreetid", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townid()) ? embracedOrderVO.getConsignee_townid() : null);
 		}
 		params.put("recstreet", StringUtils.isNotBlank(embracedOrderVO.getConsignee_townName()) ? embracedOrderVO.getConsignee_townName() : null);
@@ -456,21 +470,25 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			String cneeRegion = StringUtil.nullConvertToEmptyString((String) (params.get("cwbcounty")));
 			String cneeTown = StringUtil.nullConvertToEmptyString((String) params.get("recstreet"));
 			String consigneeaddress = StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_adress());
-			if (null != consigneeaddress) {
-				if ((null != cneeTown) && (consigneeaddress.indexOf(cneeTown) < 0)) {//从地址小的开始处理
-					consigneeaddress = cneeTown + consigneeaddress;
-				}
-				if ((null != cneeRegion) && (consigneeaddress.indexOf(cneeRegion) < 0)) {
-					consigneeaddress = cneeRegion + consigneeaddress;
-				}
-				if ((null != cneeCity) && (consigneeaddress.indexOf(cneeCity) < 0)) {
-					consigneeaddress = cneeCity + consigneeaddress;
-				}
-				if ((null != cneeProv) && (consigneeaddress.indexOf(cneeProv) < 0)) {
-					consigneeaddress = cneeProv + consigneeaddress;
-				}
+			String temp = cneeProv + cneeCity + cneeRegion + cneeTown;
+//			if (null != consigneeaddress) {
+//				if ((null != cneeTown) && (consigneeaddress.indexOf(cneeTown) < 0)) {//从地址小的开始处理
+//					consigneeaddress = cneeTown + consigneeaddress;
+//				}
+//				if ((null != cneeRegion) && (consigneeaddress.indexOf(cneeRegion) < 0)) {
+//					consigneeaddress = cneeRegion + consigneeaddress;
+//				}
+//				if ((null != cneeCity) && (consigneeaddress.indexOf(cneeCity) < 0)) {
+//					consigneeaddress = cneeCity + consigneeaddress;
+//				}
+//				if ((null != cneeProv) && (consigneeaddress.indexOf(cneeProv) < 0)) {
+//					consigneeaddress = cneeProv + consigneeaddress;
+//				}
+//			}
+			// add by jian_xie 2016-07-19，如果省市区街道，整个没有包含在详细中，就在左边拼接
+			if(consigneeaddress.indexOf(temp) == -1){
+				consigneeaddress = temp + consigneeaddress;
 			}
-
 			params.put("consigneeaddress", consigneeaddress);
 			params.put("senderaddress", embracedOrderVO.getConsignee_adress() == null ? "" : StringUtil.nullConvertToEmptyString((String) (params.get("senderprovince"))) + StringUtil
 					.nullConvertToEmptyString((String) (params.get("sendercity"))) + StringUtil.nullConvertToEmptyString((String) (params.get("sendercounty"))) + StringUtil
@@ -757,6 +775,12 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					// doReq.setPayment("0".equals(embracedOrderVO.getPayment_method().trim())
 					// ? "0" : "-1");
 					doReq.setPayment(-1);// 11.13 马哥说运单里任何情况都传-1
+					//月结方式，需要把月结账号，寄件人单位名称，寄件人单位编码传过tps----刘武强20160718
+					if(StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) && "0".equals(embracedOrderVO.getPayment_method().trim())){
+						doReq.setAccountId(embracedOrderVO.getMonthly_account_number());
+						doReq.setAccountCustName(embracedOrderVO.getSender_companyName());
+						doReq.setAccountCustCode(embracedOrderVO.getMonthly_account_number());
+					}
 					doReq.setCnorRemark(embracedOrderVO.getRemarks());
 					//快递二期新增：运费
 					doReq.setActualFee(Double.parseDouble(embracedOrderVO.getFreight()));
@@ -805,22 +829,25 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				String consigneeCountyName = embracedOrderVO.getConsignee_countyName();
 				String consigneeTownName = embracedOrderVO.getConsignee_townName();
 				String address = embracedOrderVO.getConsignee_adress();
-				if(null != address){
-					if(null != consigneeTownName && address.indexOf(consigneeTownName) < 0){//从地址小的开始处理
-						address = consigneeTownName + address;
-					}
-					if(null != consigneeCountyName && address.indexOf(consigneeCountyName) < 0){
-						address = consigneeCountyName + address;
-					}
-					if(null != consigneeCityName && address.indexOf(consigneeCityName) < 0){
-						address = consigneeCityName + address;
-					}
-					if(null != consigneeProvinceName && address.indexOf(consigneeProvinceName) < 0){
-						address = consigneeProvinceName + address;
-					}
+//				if(null != address){
+//					if(null != consigneeTownName && address.indexOf(consigneeTownName) < 0){//从地址小的开始处理
+//						address = consigneeTownName + address;
+//					}
+//					if(null != consigneeCountyName && address.indexOf(consigneeCountyName) < 0){
+//						address = consigneeCountyName + address;
+//					}
+//					if(null != consigneeCityName && address.indexOf(consigneeCityName) < 0){
+//						address = consigneeCityName + address;
+//					}
+//					if(null != consigneeProvinceName && address.indexOf(consigneeProvinceName) < 0){
+//						address = consigneeProvinceName + address;
+//					}
+//				}
+				String temp = consigneeProvinceName + consigneeCityName + consigneeCountyName + consigneeTownName;
+				// add by jian_xie 2016-07-19，如果省市区街道，整个没有包含在详细中，就在左边拼接
+				if(address.indexOf(temp) == -1){
+					address = temp + address;
 				}
-
-	
 				doReq.setCneeAddr(address);
 				if (StringUtils.isNotBlank(embracedOrderVO.getConsignee_cellphone())) {
 					doReq.setCneeMobile(embracedOrderVO.getConsignee_cellphone());
@@ -885,9 +912,14 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("付款方式未输入");
 			return false;
 		}
-		// 如果为月结，那么校验客户是否填写
-		if ("0".equals(embracedOrderVO.getPayment_method()) && (embracedOrderVO.getSender_customerid() == null)) {
+		// 如果为月结，那么校验送检人客户id是否填写
+		if ("0".equals(embracedOrderVO.getPayment_method()) && ((embracedOrderVO.getSender_customerid() == null) || embracedOrderVO.getSender_customerid() == -1)) {
 			this.logger.info("月结运单客户未输入");
+			return false;
+		}
+		// 如果为月结，那么校验送检人单位是否填写 ---刘武强20160721（如果tps传月结账号的话，要求送件人单位不为空或""）
+		if ("0".equals(embracedOrderVO.getPayment_method()) && ((embracedOrderVO.getSender_companyName() == null) || "".equals(embracedOrderVO.getSender_companyName().trim()))) {
+			this.logger.info("月结运单寄件人单位未输入");
 			return false;
 		}
 		// 如果为月结，那么校验月结账号

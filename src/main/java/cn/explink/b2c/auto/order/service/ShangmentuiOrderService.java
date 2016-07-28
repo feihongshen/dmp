@@ -3,6 +3,7 @@ package cn.explink.b2c.auto.order.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import cn.explink.service.DfFeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,9 @@ public class ShangmentuiOrderService {
 	UserDAO userDAO;
 	@Autowired
 	AccountCwbFareDetailDAO accountCwbFareDetailDAO;
-	
+    @Autowired
+    DfFeeService dfFeeService;
+
 	private Logger logger = LoggerFactory.getLogger(ShangmentuiOrderService.class);
 	//上门退订单数据解析
 	public MQCwbOrderDTO ShangmentuiJsonDetailInfo(VipShop vipshop, InfDmpOrderSendVO order, int mpsswitch) {
@@ -244,6 +247,10 @@ public class ShangmentuiOrderService {
 					// add by bruce shangguan 20160608  报障编号:1729 ,揽退成功之后失效的订单在运费交款存在
 					this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(cwb) ;
 					// end 20160608  报障编号:1729
+
+                    // added by Steve PENG 20160722 start TPS 上门退, 订单失效后，需要对派费操作
+                    dfFeeService.saveFeeRelativeAfterOrderDisabled(order.getCustOrderNo());
+                    // added by Steve PENG 20160722 end
 				}else{ //拦截
 					//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 					cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), cwb, cwb,0);

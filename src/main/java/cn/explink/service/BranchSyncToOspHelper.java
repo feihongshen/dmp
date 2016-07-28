@@ -1,5 +1,6 @@
 package cn.explink.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.express.ProvinceDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.BranchSyncResultVo;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.enumutil.BranchEnum;
@@ -25,6 +27,7 @@ import com.pjbest.pjorganization.bizservice.service.SbOrgResponse;
 import com.pjbest.pjorganization.bizservice.service.SbOrgService;
 import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
 import com.vip.osp.core.context.InvocationContext;
+import com.vip.osp.core.exception.OspException;
 
 @Service
 public class BranchSyncToOspHelper {
@@ -52,19 +55,31 @@ public class BranchSyncToOspHelper {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public void saveBranchSyncToOsp(Branch branch) throws Exception {
-		SbOrgService sbOrgService = getSbOrgService();
 		String carrierCode = getContractCarrierCode();
 		String carrierSiteCode = branch.getTpsbranchcode();
+		List<SbOrgModel> models = findOrgByCarrierAndSiteCode(carrierCode,
+				carrierSiteCode);
+		SbOrgResponse result = null;
+		if (models != null && models.size() > 0) {
+			result = updateBranchSyncToOsp(branch);
+		} else {
+			result = addBranchSyncToOsp(branch);
+		}
+		if (result != null
+				&& !result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
+			throw new Exception(result.getResultMsg());
+		}
+	}
+
+	private List<SbOrgModel> findOrgByCarrierAndSiteCode(String carrierCode,
+			String carrierSiteCode) throws Exception {
+		SbOrgService sbOrgService = getSbOrgService();
 		logger.info("查询机构服务 - 请求：carrierCode={}，carrierSiteCode={}",
 				new Object[] { carrierCode, carrierSiteCode });
 		List<SbOrgModel> models = sbOrgService
 				.findSbOrgByCarrierAndSelfStation(carrierCode, carrierSiteCode);
 		logger.info("查询机构服务 - 返回：" + JsonUtil.translateToJson(models));
-		if (models != null && models.size() > 0) {
-			updateBranchSyncToOsp(branch);
-		} else {
-			addBranchSyncToOsp(branch);
-		}
+		return models;
 	}
 
 	private SbOrgResponse addBranchSyncToOsp(Branch branch) throws Exception {
@@ -73,26 +88,18 @@ public class BranchSyncToOspHelper {
 		logger.info("同步到机构服务 - 请求：" + JsonUtil.translateToJson(model));
 		SbOrgResponse result = sbOrgService.addSbOrg(model);
 		logger.info("同步到机构服务 - 返回：" + JsonUtil.translateToJson(result));
-		if (result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
-			return result;
-		} else {
-			throw new Exception(result.getResultMsg());
-		}
+		return result;
 	}
 
 	private SbOrgResponse updateBranchSyncToOsp(Branch branch) throws Exception {
 		SbOrgService sbOrgService = getSbOrgService();
 		SbOrgModel model = getSbOrgModelFromBranch(branch);
-		
+
 		logger.info("同步到机构服务 - 请求：" + JsonUtil.translateToJson(model));
 		SbOrgResponse result = sbOrgService
 				.updateSbOrgByCarrierAndSiteCode(model);
 		logger.info("同步到机构服务 - 返回：" + JsonUtil.translateToJson(result));
-		if (result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
-			return result;
-		} else {
-			throw new Exception(result.getResultMsg());
-		}
+		return result;
 	}
 
 	private SbOrgResponse deleteBranchSyncToOsp(Branch branch) throws Exception {
@@ -109,11 +116,7 @@ public class BranchSyncToOspHelper {
 		SbOrgResponse result = sbOrgService
 				.deleteSbOrgByCarrierAndSiteCode(model);
 		logger.info("同步到机构服务 - 返回：" + JsonUtil.translateToJson(result));
-		if (result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
-			return result;
-		} else {
-			throw new Exception(result.getResultMsg());
-		}
+		return result;
 	}
 
 	private SbOrgService getSbOrgService() {
@@ -147,11 +150,11 @@ public class BranchSyncToOspHelper {
 		model.setUpdatedDtmLoc((new Date()).getTime());
 		return model;
 	}
-	
-	private String getEmail(Branch branch){
+
+	private String getEmail(Branch branch) {
 		String email = "";
 		int siteType = branch.getSitetype();
-		if(siteType == BranchEnum.ZhanDian.getValue()){
+		if (siteType == BranchEnum.ZhanDian.getValue()) {
 			email = branch.getBranchemail();
 		} else if (siteType == BranchEnum.KeFu.getValue()
 				|| siteType == BranchEnum.YunYing.getValue()
@@ -213,5 +216,44 @@ public class BranchSyncToOspHelper {
 			}
 		}
 		return isActive;
+	}
+
+	public List<BranchSyncResultVo> batchSyncBranchOsp(List<Branch> branchs)
+			throws Exception {
+		List<BranchSyncResultVo> batchSyncResultVos = new ArrayList<BranchSyncResultVo>();
+		for (Branch branch : branchs) {
+			String carrierCode = getContractCarrierCode();
+			String carrierSiteCode = branch.getTpsbranchcode();
+			BranchSyncResultVo resultVo = new BranchSyncResultVo();
+			resultVo.setBranchName(branch.getBranchname());
+			resultVo.setCarrierCode(carrierCode);
+			resultVo.setCarrierSiteCode(carrierSiteCode);
+
+			List<SbOrgModel> models = findOrgByCarrierAndSiteCode(carrierCode,
+					carrierSiteCode);
+			if (models != null && models.size() > 0) {
+				// osp中已经存在的机构不需要同步
+				resultVo.setResult("机构已存在，不需要同步");
+			} else {
+				// osp中未存在此机构，新增
+				try {
+					SbOrgResponse result = addBranchSyncToOsp(branch);
+					if (result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
+						// 同步新增成功
+						resultVo.setResult("机构未存在，同步成功");
+					} else {
+						// 同步新增失败
+						resultVo.setResult("机构未存在，同步但不成功");
+						resultVo.setMessage(result.getResultMsg());
+					}
+				} catch (Exception e) {
+					resultVo.setResult("机构未存在，同步但不成功");
+					resultVo.setMessage(e.getMessage());
+				}
+				
+			}
+			batchSyncResultVos.add(resultVo);
+		}
+		return batchSyncResultVos;
 	}
 }

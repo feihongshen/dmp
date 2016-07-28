@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.service.CwbOrderService;
@@ -31,6 +33,9 @@ public class WeightAgainManagerController {
 	private WeightAgainService weightAgainService ;
 	
 	@Autowired
+	private SystemInstallDAO systemInstallDAO;
+	
+	@Autowired
 	private CwbOrderService cwbOrderService;
 	
 	
@@ -39,6 +44,16 @@ public class WeightAgainManagerController {
 	 */
 	@RequestMapping(params = "index")
 	public String index(Model model){
+		//****************add*********************
+		// add by bruce shangguan 20160712 获取电子秤称重时长
+		SystemInstall systemInstall = this.systemInstallDAO.getSystemInstall("weightTime") ;
+		String weightTime = "10" ; // 电子秤称重时长默认为10秒
+		if(systemInstall != null && !StringUtils.isEmpty(systemInstall.getValue()) && systemInstall.getValue().trim().matches("^[1-9][0-9]*$")){
+			weightTime = systemInstall.getValue() ;
+		}
+		model.addAttribute("weightTime", weightTime);
+		// end 20160712
+		//************end**************************
 		return "weightAgain";
 	}
 	

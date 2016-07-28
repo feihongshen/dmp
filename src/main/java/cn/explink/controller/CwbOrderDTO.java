@@ -40,6 +40,7 @@ public class CwbOrderDTO {
 	long emaildateid;
 	String emaildate;
 	long excelbranchid;
+	long exceldeliverid;
 	String shipcwb;
 	String exceldeliver;
 	String consigneeno;
@@ -371,7 +372,6 @@ public class CwbOrderDTO {
 	}
 
 	public void setConsigneemobile(String consigneemobile) {
-//		this.consigneemobile = JMath.getmobileinstr(consigneemobile);
 		this.consigneemobile = consigneemobile;
 	}
 
@@ -894,5 +894,12 @@ public class CwbOrderDTO {
 
 	public void setAnnouncedvalue(BigDecimal announcedvalue) {
 		this.announcedvalue = announcedvalue;
+	}
+		public long getExceldeliverid() {
+		return exceldeliverid;
+	}
+
+	public void setExceldeliverid(long exceldeliverid) {
+		this.exceldeliverid = exceldeliverid;
 	}
 }

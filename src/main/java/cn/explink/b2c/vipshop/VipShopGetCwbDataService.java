@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.explink.service.DfFeeService;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -101,6 +102,8 @@ public class VipShopGetCwbDataService {
 	CustomerService customerService;
 	@Autowired
 	DeliveryStateDAO deliveryStateDAO;
+    @Autowired
+    DfFeeService dfFeeService;
 
 	private static Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -1072,6 +1075,10 @@ public class VipShopGetCwbDataService {
 				// add by bruce shangguan 20160608  报障编号:1729 ,揽退成功之后失效的订单在运费交款存在
 				this.accountCwbFareDetailDAO.deleteAccountCwbFareDetailByCwb(order_sn) ;
 				// end 20160608  报障编号:1729
+
+                // added by Steve PENG 20160722 start TMS 上门退, 订单失效后，需要对派费操作
+                dfFeeService.saveFeeRelativeAfterOrderDisabled(order_sn);
+                // added by Steve PENG 20160722 end
 			}else{ //拦截
 				//cwbOrderService.auditToTuihuo(userDAO.getAllUserByid(1), order_sn, order_sn, FlowOrderTypeEnum.DingDanLanJie.getValue(),1);
 				cwbOrderService.tuihuoHandleVipshop(userDAO.getAllUserByid(1), order_sn, order_sn,0);

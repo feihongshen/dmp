@@ -58,7 +58,7 @@ public class TpsBatchNoCallback implements IVMSCallback{
         	String cwb="";
         	String transcwb="";
 	        try {
-	        	isOpenFlag=this.autoUserService.getAutoFlag();
+	        	isOpenFlag=this.autoUserService.getBatchnoOpenFlag();
 
 	        	if(isOpenFlag==1){
 		        	msg = new String(e.getPayload(), MSG_ENCODE);

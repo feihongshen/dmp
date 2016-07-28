@@ -25,6 +25,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.RoleDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
 import cn.explink.dao.express.ExpressOrderDao;
@@ -34,6 +35,7 @@ import cn.explink.domain.Bale;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.Role;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.VO.express.CombineQueryView;
@@ -115,6 +117,9 @@ public class StationOperationController extends ExpressCommonController {
 
 	@Autowired
 	private ExpressWeighService expressWeighService;
+	
+	@Autowired
+	private SystemInstallDAO systemInstallDAO;
 
 	/**
 	 * 进入揽件分配/调整的功能页面
@@ -607,6 +612,16 @@ public class StationOperationController extends ExpressCommonController {
 	 */
 	@RequestMapping("/weighByScale")
 	public String weighByScale(Model model) {
+		//*************add*****************
+		// add by bruce shangguan 20160712 获取电子秤称重时长
+		SystemInstall systemInstall = this.systemInstallDAO.getSystemInstall("weightTime") ;
+		String weightTime = "10" ; // 电子秤称重时长默认为10秒
+		if(systemInstall != null && !StringUtils.isEmpty(systemInstall.getValue()) && systemInstall.getValue().trim().matches("^[1-9][0-9]*$")){
+			weightTime = systemInstall.getValue() ;
+		}
+		model.addAttribute("weightTime", weightTime);
+		// end 20160712
+		//************end******************
 		return "express/stationOperation/weighByScale";
 	}
 
@@ -617,16 +632,16 @@ public class StationOperationController extends ExpressCommonController {
 	}
 
 	@RequestMapping("/submitWeight")
-	public String submitWeight(Model model, @RequestParam(value = "waybillNo", required = false) String waybillNo, @RequestParam(value = "weight", required = false) Double weight) {
+	@ResponseBody
+	public  boolean submitWeight(Model model, @RequestParam(value = "waybillNo", required = false) String waybillNo, @RequestParam(value = "weight", required = false) Double weight) {
+		boolean successFlag = false ;
 		if (!this.expressWeighService.isWeightExist(waybillNo)) {
 			this.expressWeighService.saveWeight(this.constructExpressWeigh(waybillNo, weight));
 		} else {
 			this.expressWeighService.updateWeight(this.constructExpressWeigh(waybillNo, weight));
 		}
-		model.addAttribute("waybillNo", waybillNo);
-		model.addAttribute("weight", weight);
-
-		return "express/stationOperation/weighByScale";
+		successFlag = true ;
+		return successFlag ;
 	}
 
 	private ExpressWeigh constructExpressWeigh(String waybillNo, Double weight) {

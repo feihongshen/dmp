@@ -20,6 +20,7 @@ import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MqExceptionDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.BranchSyncResultVo;
 import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.OrgPayInTypeEnum;
@@ -384,4 +385,9 @@ public class BranchService {
     	}
     	return branch;
     }
+
+	public List<BranchSyncResultVo> batchSyncBranchOsp() throws Exception {
+		List<Branch> branchs = this.getBranchs();
+		return branchSyncToOspHelper.batchSyncBranchOsp(branchs);
+	}
 }
