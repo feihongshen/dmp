@@ -12,6 +12,9 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import cn.explink.b2c.emsSmallPakage.EmsSmallPackageViewVo;
+import cn.explink.util.StringUtil;
+
 @Component
 public class EMSDAO {
 	@Autowired
@@ -64,6 +67,37 @@ public class EMSDAO {
 		}
 	}
 	
+	/**
+	 * 订单运单对照表mapper 2016-07-25
+	 */
+	private final class EMSTranscwbMapper implements RowMapper<SendToEMSOrder> {
+		@Override
+		public SendToEMSOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
+			SendToEMSOrder obj = new SendToEMSOrder();
+			obj.setCwb(rs.getString("cwb"));
+			obj.setTranscwb(rs.getString("transcwb"));
+			obj.setEmail_num(rs.getString("email_num"));
+			return obj; 
+		}
+	}
+	
+	/**
+	 * 查询绑定关系展示信息mapper 2016-07-25
+	 */
+	private final class EMSCwbInfoViewMapper implements RowMapper<EmsSmallPackageViewVo> {
+		@Override
+		public EmsSmallPackageViewVo mapRow(ResultSet rs, int rowNum) throws SQLException {
+			EmsSmallPackageViewVo obj = new EmsSmallPackageViewVo();
+			obj.setCwb(rs.getString("cwb"));
+			obj.setTranscwb(rs.getString("transcwb"));
+			obj.setEmail_num(rs.getString("email_num"));
+			obj.setOutWarehouseTime(rs.getString("outwarehousetime"));
+			obj.setDeliveryBranchName(rs.getString("branchname"));
+			obj.setConsigneename(rs.getString("consigneename"));
+			obj.setConsigneeaddress(rs.getString("consigneeaddress"));
+			return obj; 
+		}
+	}
 	
 	
     //保存ems运单轨迹报文信息  edit by zhouhuan 2016-07-21
@@ -262,5 +296,66 @@ public class EMSDAO {
 		String sql = "SELECT * FROM express_ems_order_b2ctemp a JOIN express_ems_dmp_transcwb b ON a.transcwb=b.transcwb where transcwb='"+transcwb+"'";
 		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new SendToEMSOrderMapper());
 		return list;
+	}
+	
+	/**
+	 * 根据订单查询订单邮政运单关系集合   add by vic.liang@pjbest.com 2016-07-26
+	 * @param cwb
+	 * @return
+	 */
+	public List<SendToEMSOrder> getTransListByCwb(String cwb) {
+		String sql  = "select * from express_ems_dmp_transcwb where cwb = ?";
+		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new EMSTranscwbMapper(), cwb);
+		return list;
+	}
+	
+	/**
+	 * 根据订单查询订单邮政运单关系集合   add by vic.liang@pjbest.com 2016-07-26
+	 * @param cwb
+	 * @return
+	 */
+	public List<SendToEMSOrder> getTransListByTransCwb(String transcwb) {
+		String sql  = "select * from express_ems_dmp_transcwb where transcwb = ?";
+		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new EMSTranscwbMapper(), transcwb);
+		return list;
+	}
+	/**
+	 * 根据订单查询订单邮政运单关系集合   add by vic.liang@pjbest.com 2016-07-26
+	 * @param cwb
+	 * @return
+	 */
+	public List<EmsSmallPackageViewVo> getEMSViewListByTransCwb(String cwbType,String cwb, String starttime,String endtime,String status) {
+		String sql  = "select ems.*,date_format(flow.credate,'%Y-%c-%d %h:%i:%s') as outwarehousetime,branch.branchname ,cwb.consigneename,cwb.consigneeaddress" 
+                      +" from express_ems_dmp_transcwb ems inner join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
+                      +" left join express_ops_order_flow flow on cwb.cwb = flow.cwb and flow.flowordertype = 6"
+                      +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
+                      +" where 1=1";
+                      if (!StringUtil.isEmpty(cwb)) {
+                    	  if ("0".equals(cwbType)) {
+                    		  sql += " and ems.cwb = '"+cwb+"'";
+                    	  } else if ("1".equals(cwbType)) {
+                    		  sql += " and ems.transcwb = '"+cwb+"'";
+                    	  }
+                      }
+                      if (!StringUtil.isEmpty(starttime)) {
+                    	  sql += " and flow.credate > '"+starttime+"'";
+                      }
+                      if (!StringUtil.isEmpty(endtime)) {
+                    	  sql += " and flow.credate <= '"+endtime+"'";
+                      }
+                      sql += " order by flow.credate desc ";
+		List<EmsSmallPackageViewVo> list = this.jdbcTemplate.query(sql, new EMSCwbInfoViewMapper());
+		return list;
+	}
+	
+	/**
+	 * 更新订单/运单号绑定邮政运单号   add by vic.liang@pjbest.com 2016-07-25
+	 * @param emscwb
+	 * @param emscwbOld
+	 * @return
+	 */
+	public int updateEmscwb (String emscwb, String emscwbOld) {
+		String sql = "update express_ems_dmp_transcwb set email_num = ? where email_num = ?";
+		return this.jdbcTemplate.update(sql,emscwb,emscwbOld);
 	}
 }

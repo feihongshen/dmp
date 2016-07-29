@@ -7,6 +7,7 @@ package cn.explink.b2c.ems;
 public class SendToEMSOrder {
 	private String cwb;//订单号
 	private String transcwb;//运单号
+	private String email_num;//邮政运单号
 	private String credate;//记录生产时间
 	private String getMailnumFlag;//获取ems运单号标志
 	private String addTranscwbFlag;//生成运单号标志
@@ -54,5 +55,10 @@ public class SendToEMSOrder {
 	public void setOrderDirection(Long orderDirection) {
 		this.orderDirection = orderDirection;
 	}
-	
+	public String getEmail_num() {
+		return email_num;
+	}
+	public void setEmail_num(String email_num) {
+		this.email_num = email_num;
+	}
 }
