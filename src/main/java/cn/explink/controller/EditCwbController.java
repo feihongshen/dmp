@@ -917,7 +917,11 @@ public class EditCwbController {
 					addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 				}
 				try {
-					this.cwbOrderService.updateDeliveryBranchAndCourier(this.getSessionUser(), old, branch, addressCodeEditType, deliver);
+					if(!branch.getBranchname().equals(old.getExcelbranch())){
+						this.cwbOrderService.updateDeliveryBranchAndCourier(this.getSessionUser(), old, branch, addressCodeEditType, deliver);
+						co.setExcelbranch(branch.getBranchname());
+						co.setAddresscodeedittype(addressCodeEditType.getValue());
+					}
 					this.logger.info("客服管理--订单信息修改--地址库匹配订单号:{},站点{}", cwb, branchname);
 				} catch (Exception e) {
 					return "{\"errorCode\":1,\"error\":\"" + e.getMessage() + "\"}";
