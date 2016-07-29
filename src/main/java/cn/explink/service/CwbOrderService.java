@@ -10238,5 +10238,26 @@ public class CwbOrderService extends BaseOrderService {
 		
 		return nextInterceptBranchId;
 	}
-}
 
+	/**
+	 * 判断快递单是否是本站揽收/配送
+	 * @param co
+	 * @param deliveryUser
+	 */
+	private void validateExpress(CwbOrder co, User deliveryUser) {
+		String cwb  = co.getCwb();
+		OrderFlow orderFlow = orderFlowDAO.getOrderCurrentFlowByCwb(cwb);
+		if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()
+				&& orderFlow != null
+				&& orderFlow.getFlowordertype() == FlowOrderTypeEnum.LanJianRuZhan
+						.getValue()) { // 揽件入站的快递单
+				long lanjianBranchid = orderFlow.getBranchid(); //揽件站点
+				long deliveryBranchid = co.getDeliverybranchid();//匹配站点
+				long operateBranchid = deliveryUser.getBranchid();//当前操作站点
+				if (!(deliveryBranchid == operateBranchid && deliveryBranchid == lanjianBranchid)) {
+					throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(), 
+							ExceptionCwbErrorTypeEnum.Ling_huo_EXPRESS_LIMIT);
+				}
+		} 
+	}
+}

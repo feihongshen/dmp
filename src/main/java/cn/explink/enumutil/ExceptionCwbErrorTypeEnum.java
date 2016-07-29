@@ -70,7 +70,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			YUN_DAN_ZHUANG_TAI_BU_SHI_PEI_SONG(209, "运单{0}状态不是配送，不允许领货"),
 			PEI_SONG_YUAN_BU_PI_PEI(211, "此订单匹配的是{0}，{1}不能进行领货！"),
 			PEI_SONG_YUAN_WEI_PI_PEI(212, "此订单未匹配配送员，不能进行领货！"),
-			AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE(220, "连接自动分拨机失败，不能入库！请取消自动分拨功能，或重新连接。")
+			AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE(220, "连接自动分拨机失败，不能入库！请取消自动分拨功能，或重新连接。"),
+			Ling_huo_EXPRESS_LIMIT(221,"非本站揽收/配送的快递单不能领货！");
 			;
 	
 
