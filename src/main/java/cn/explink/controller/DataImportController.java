@@ -564,6 +564,7 @@ public class DataImportController {
 			@RequestParam(value = "cwbs", defaultValue = "", required = false) String cwbs,
 			@RequestParam(value = "courierName", required = false, defaultValue = "") String courierName,
 			@RequestParam(value = "branchcode", required = false, defaultValue = "") String branchcode,
+			@RequestParam(value = "excelbranch", required = false, defaultValue = "") String excelbranch,
 			@RequestParam(value = "onePageNumber", defaultValue = "10", required = false) long onePageNumber, // 每页记录数
 			@RequestParam(value = "isshow", defaultValue = "0", required = false) long isshow // 是否显示
 	) throws Exception {
@@ -572,7 +573,14 @@ public class DataImportController {
 		Page pageobj = new Page();
 		long count = 0;
 		if (isshow != 0) {
-			Branch branch = this.branchService.getBranchByBranchcode(branchcode);
+			List<Branch> lb = new ArrayList<Branch>();
+			List<Branch> branchnamelist = this.branchDAO.getBranchByBranchnameCheck(branchcode.length() > 0 ? branchcode : excelbranch);
+			if (branchnamelist.size() > 0) {
+				lb = branchnamelist;
+			} else {
+				lb = this.branchDAO.getBranchByBranchcode(branchcode.length() > 0 ? branchcode : excelbranch);
+			}
+			Branch branch = lb.size() > 0 ? lb.get(0) : null;
 			if (branch != null) {
 				User deliver = null;
 				if(StringUtils.isNotBlank(courierName)) { //小件员非必须
@@ -663,7 +671,7 @@ public class DataImportController {
 		}
 		try {
 			this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), co, lb.get(0), addressCodeEditType);
-			return "{\"errorCode\":0,\"error\":\"操作成功\",\"cwb\":\"" + cwb + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\"}";
+			return "{\"errorCode\":0,\"error\":\"操作成功\",\"cwb\":\"" + cwb + "\",\"branchcode\":\"" + lb.get(0).getBranchcode() + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\"}";
 		} catch (CwbException ce) {
 			return "{\"errorCode\":" + ce.getError().getValue() + ",\"error\":\"" + ce.getMessage() + "\",\"cwb\":\"" + cwb + "\",\"excelbranch\":\"" + lb.get(0).getBranchname() + "\"}";
 		}
@@ -1137,13 +1145,17 @@ public class DataImportController {
 	@ResponseBody
 	public List<User> getCourierByBranch(String branchcode, String branchname) {
 		Branch branch = null;
-		if(StringUtils.isNotBlank(branchcode)) { //优先编码
+		if (StringUtils.isNotBlank(branchcode)) { // 优先编码
 			branch = this.branchService.getBranchByBranchcode(branchcode);
-		} else if(StringUtils.isNotBlank(branchname)) {
+			// 兼容名称
+			if (branch == null) {
+				branch = this.branchService.getBranchByBranchname(branchcode);
+			}
+		} else if (StringUtils.isNotBlank(branchname)) {
 			branch = this.branchService.getBranchByBranchname(branchname);
 		}
 		List<User> courierList;
-		if(branch != null) {
+		if (branch != null) {
 			courierList = this.userService.getUserByRoleAndBranchid(2, branch.getBranchid());
 		} else {
 			courierList = new ArrayList<User>();
@@ -1191,5 +1203,35 @@ public class DataImportController {
 			return "{\"errorCode\":" + ce.getError().getValue() + ",\"error\":\"" + ce.getMessage() + "\",\"cwb\":\""
 					+ cwb + "\",\"excelbranch\":\"" + branch.getBranchname() + "\"}";
 		}
+	}
+	
+	/**
+	 * 保存小件员
+	 * @date 2016年7月29日 下午12:01:01
+	 * @param cwb
+	 * @param courierName
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/saveCourier")
+	@ResponseBody
+	public String saveCourier(String cwb, String courierName) throws Exception {
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if (co.getDeliverybranchid() == 0) {
+			return "{\"errorCode\":1,\"error\":\"未匹配站点\"}";
+		}
+		Branch branch = this.branchService.getBranchByBranchid(co.getDeliverybranchid());
+		if (branch == null) {
+			return "{\"errorCode\":1,\"error\":\"匹配站点不存在\"}";
+		}
+		User deliver = null;
+		if (StringUtils.isNotBlank(courierName)) {
+			deliver = this.userService.getBranchDeliverByDeliverName(branch.getBranchid(), courierName);
+			if(deliver == null) {
+				return "{\"errorCode\":1,\"error\":\"匹配站点“" + branch.getBranchname() + "”不存在该小件员\"}";
+			}
+		}
+		this.cwbOrderService.updateDeliveryCourier(cwb, deliver);
+		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
 	}
 }

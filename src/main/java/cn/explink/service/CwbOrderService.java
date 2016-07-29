@@ -7489,6 +7489,22 @@ public class CwbOrderService extends BaseOrderService {
 		this.cwbDAO.updateAddressDeliverByCwb(cwbOrder.getCwb(), exceldeliverid, exceldeliver);
 	}
 	
+	/**
+	 * 更新小件员
+	 * @date 2016年7月29日 下午12:16:00
+	 * @param cwb
+	 * @param deliver
+	 * @throws Exception
+	 */
+	@Transactional
+	public void updateDeliveryCourier(String cwb, User deliver) throws Exception {
+		if (deliver == null) {
+			this.cwbDAO.updateAddressDeliverByCwb(cwb,  0, null);
+		} else {
+			this.cwbDAO.updateAddressDeliverByCwb(cwb,  deliver.getUserid(), deliver.getRealname());
+		}
+	}
+	
 	@Transactional
 	public void updateDeliveryBranch(User user, CwbOrder cwbOrder, Branch branch, CwbOrderAddressCodeEditTypeEnum addresscodeedittype) throws Exception {
 		CwbOrderService.logger.info("更新配送站点,cwb:{},站点:{}", cwbOrder.getCwb(), branch.getBranchid());
@@ -10215,7 +10231,8 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		List<CwbOrder> cwbOrdersDeliver = new ArrayList<CwbOrder>();
 		for (CwbOrder cwb : cwbOrderList) {
-			if (cwb.getExceldeliverid() == deliverid) {
+			// 显示未匹配的小件员和匹配相同的小件员
+			if (cwb.getExceldeliverid() == 0 || cwb.getExceldeliverid() == deliverid) {
 				cwbOrdersDeliver.add(cwb);
 			}
 		}

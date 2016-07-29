@@ -63,9 +63,10 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
-<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
-<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.css" rel="stylesheet">
+<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.css" rel="stylesheet">
+<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
+<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.jquery.js" type="text/javascript"></script>
 <script>
 function subEdit(form){
 	if(form.excelbranch.value.length==0){
@@ -82,12 +83,15 @@ function subEdit(form){
 			$(".tishi_box",parent.document).html(data.error);
 			$(".tishi_box",parent.document).show();
 			setTimeout("$(\".tishi_box\",parent.document).hide(1000)", 2000);
+			var branchcode;
 			if(data.errorCode==0){
+				branchcode = data.branchcode;
 				form.excelbranch.value=data.excelbranch;
 				//form.exceldeliver.value=data.exceldeliver;
-				var $inp = $('input:text');
+				var $inp = $("input:text[name='excelbranch']");
 				var nxtIdx = $inp.index(form.excelbranch) + 1;
-	             $(":input:text:eq(" + nxtIdx + ")").focus();
+	            $("input:text[name='excelbranch']:eq(" + nxtIdx + ")").focus();
+	            getCourier(branchcode, form.index.value);
 			}else{
 				form.excelbranch.value="";
 			}
@@ -215,7 +219,8 @@ function bdbranchmatch(){
 				<table width="100%" height="23" border="0" cellpadding="0"
 					cellspacing="5" class="right_set1">
 					<tr id="customertr" class=VwCtr style="display:">
-						<td>订单编号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ></textarea>
+						<td>
+						订单编号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ></textarea>
 									<textarea cols="24" rows="4"  style="display:none" name ="cwbstr1"  >${cwbs}</textarea>
 							 客户：<select
 							name="customerid" id="customerid" class="select1"
@@ -309,44 +314,38 @@ function bdbranchmatch(){
 									bgcolor="#eef6ff">订单状态</td>
 								<!-- <td width="5%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">邮编</td> -->
-							 	<td width="30%" align="center" align="center" valign="middle"
+							 	<td width="25%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">收件地址</td> 
 								<td width="15%" align="center" align="center" valign="middle"
-									bgcolor="#eef6ff">匹配到站</td>
-								<td width="15%" align="center" align="center" valign="middle"
+									bgcolor="#eef6ff">匹配到站（回车保存）</td>
+								<td width="20%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">匹配到小件员</td>
 								<td width="10%" align="center" align="center" valign="middle"
 									bgcolor="#eef6ff">操作</td>
 							</tr>
 							<c:forEach var="vo" varStatus="voStatus" items="${cwbOrderBranchMatchVoList}">
 								<tr>
-									<form id="f${vo.cwbOrder.cwb }" method="POST">
+									<form id="f${vo.cwbOrder.cwb }" method="POST" onSubmit="subEdit(this);return false;" action="editexcel/${vo.cwbOrder.cwb }">
+										<input type="hidden" name="index" value="${voStatus.index }">
 										<td width="10%" align="center" ><input id="machbranch" name="machbranch" type="checkbox" value="${vo.cwbOrder.cwb }" /></td>
 										<td width="10%" align="center" height="19">${vo.cwbOrder.cwb }</td>
 										<td width="10%" align="center">${vo.flowordertypeVal }</td>
-										<td width="30%" align="left" id="add${vo.cwbOrder.cwb }">${vo.cwbOrder.consigneeaddress}</td>
-										<td width="15%" align="left">
-											<select id="branch_${voStatus.index }" name="branch" onchange="getCourier(this, '${voStatus.index }')"
-												onfocus="$('#add${vo.cwbOrder.cwb}').css('background','#bbffaa');"
-												onblur="$('#add${vo.cwbOrder.cwb}').css('background','#ffffff');">
-												<option value="" selected="selected">请选择</option>
-												<c:forEach var="branch" items="${branchList }">
-													<option value="${branch.branchcode }" <c:if test="${vo.cwbOrder.deliverybranchid eq branch.branchid }">selected="selected"</c:if>>${branch.branchname }</option>
-												</c:forEach>
-											</select>
+										<td width="25%" align="left" id="add${vo.cwbOrder.cwb }">${vo.cwbOrder.consigneeaddress}</td>
+										<td width="15%" align="center">
+											<input type="text" style="width:100px;" id="ladd${vo.cwbOrder.cwb }" name="excelbranch" value="${vo.cwbOrder.excelbranch }"
+												onfocus="$('#add${vo.cwbOrder.cwb }').css('background','#bbffaa');"
+												onblur="$('#add${vo.cwbOrder.cwb }').css('background','#ffffff');" />
 										</td>
-										<td width="15%" align="left">
-											<select id="courier_${voStatus.index }" name="courier" style="width:120px;"
-												onfocus="$('#add${vo.cwbOrder.cwb}').css('background','#bbffaa');"
-												onblur="$('#add${vo.cwbOrder.cwb}').css('background','#ffffff');">
-												<option value="" selected="selected">请选择</option>
+										<td width="20%" align="left">
+											<select id="courier_${voStatus.index }" name="courier" style="width:120px;" data-placeholder="请选择" class="chosen-select-deselect" tabindex="12">
+												<option value="" selected="selected"></option>
 												<c:forEach var="courier" items="${vo.courierList }">
 													<option value="${courier.username }" <c:if test="${vo.cwbOrder.exceldeliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
 												</c:forEach>
 											</select>
 										</td>
 										<td width="10%" align="center">
-											<input type="button" class="input_button2" onclick="saveBranchAndCourier('${vo.cwbOrder.cwb }', '${voStatus.index }')" value="保存"/>
+											<input type="button" class="input_button2" onclick="saveBranchAndCourier('${vo.cwbOrder.cwb }', '${voStatus.index }')" value="保存小件员"/>
 										</td>
 									</form>
 								</tr>
@@ -418,28 +417,24 @@ $(function(){
 	$("#onePageNumber").val(<%=request.getParameter("onePageNumber")==null?"10":request.getParameter("onePageNumber")%>);
 	$("#emaildate").val(<%=emaildateidParam%>);
 	$("#branchid").val(<%=branchidParam%>);
-	$("#Order select[name='branch'], #Order select[name='courier']").multipleSelect({
-        placeholder: "请选择",
-        filter: true,
-        single: true
-    });
+	$(".chosen-select-deselect").chosen({allow_single_deselect:true, search_contains: true});
 });
 
-function getCourier(_this, index) {
-	var branchcode = $(_this).val();
+function getCourier(branchcode, index) {
 	if(branchcode == null || branchcode == "") {
 		initCourier(index);
 		return;
 	}
 	$.ajax({
-		type: "GET",
+		type: "POST",
         url: "<%=request.getContextPath() %>/dataimport/getCourierByBranch",
+        data: {branchcode:branchcode},
         success: function(data) {
         	initCourier(index, data);
         },
         error: function() {
         	initCourier(index);
-        	$.messager.alert("错误", "获取小件员时发生错误！", "error"); 
+        	alert("获取小件员时发生错误！"); 
         }    
     });
 }
@@ -450,24 +445,20 @@ function initCourier(index, courierList) {
 	}
 	var $courier = $("#courier_" + index);
 	$courier.empty();
-	$courier[0].add(new Option("请选择", ""));
+	$courier[0].add(new Option("", "", true, true));
 	$.each(courierList, function(i, courier) { 
 		$courier[0].add(new Option(courier.realname, courier.username));
 	});
-	$courier.multipleSelect("refresh");
+	$courier.chosen("destroy");
+	$courier.chosen({allow_single_deselect:true, search_contains: true});
 }
 
 function saveBranchAndCourier(cwb, index) {
-	var branchcode = $("#branch_" + index).val();
 	var courierName = $("#courier_" + index).val();
-	if(branchcode == null || branchcode == "") {
-		$.messager.alert("提示", "请选择站点！", "warning");
-		return;
-	}
 	$.ajax({
 		type: "POST",
-        url: "<%=request.getContextPath() %>/dataimport/saveBranchAndCourier",
-        data: {cwb:cwb, branchcode:branchcode, courierName:courierName},
+        url: "<%=request.getContextPath() %>/dataimport/saveCourier",
+        data: {cwb:cwb, courierName:courierName},
         dataType: "json",
         success: function(data) {
         	$(".tishi_box",parent.document).html(data.error);
