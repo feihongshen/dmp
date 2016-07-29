@@ -68,8 +68,14 @@ public enum ExceptionCwbErrorTypeEnum {
 			BU_CUN_ZAI_TUI_HUO_CHU_ZHAN_SHEN_HE_JI_LU(207, "不存在退货出站审核记录"),
 			BU_CUN_ZAI_TUI_HUO_CHU_ZHAN_SHEN_HE_WEI_ZHAN_DIAN_PEI_SONG(208, "不存在退货出站审核为站点配送的记录"),
 			YUN_DAN_ZHUANG_TAI_BU_SHI_PEI_SONG(209, "运单{0}状态不是配送，不允许领货"),
-			PEI_SONG_YUAN_BU_PI_PEI(211, "此订单匹配的是{0}，{1}不能进行领货！"),
-			PEI_SONG_YUAN_WEI_PI_PEI(212, "此订单未匹配配送员，不能进行领货！"),
+			FEI_PEI_SONG_BANG_DING_EMS_TRANS(216,"非配送单不允许绑定邮政运单号！"),
+			BU_SHI_GAI_PEI_SONG_ZHAN_EMS_CWB(211,"订单目的站点不是邮政站点！"),
+			DAI_SHOU_HUO_KUAN_DA_LING(212,"订单代收货款大于0或者到付运费大0，不能绑定邮政运单号！"),
+			DING_DAN_ZHUANG_TAI_BU_SHI_CHU_KU(213,"订单当前操作状态不是出库，不能绑定邮政运单号！"),
+			JI_DAN_BU_FA_SONG_YOU_ZHENG(214,"订单为集单模式，不能绑定邮政运单号！"),
+			DING_DAN_BANG_DING_SHU_CHAO_CHU(215,"一票多件绑定次数已经超出订单发货数量！"),
+			PEI_SONG_YUAN_BU_PI_PEI(218, "此订单匹配的是{0}，{1}不能进行领货！"),
+			PEI_SONG_YUAN_WEI_PI_PEI(217, "此订单未匹配配送员，不能进行领货！"),
 			AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE(220, "连接自动分拨机失败，不能入库！请取消自动分拨功能，或重新连接。"),
 			Ling_huo_EXPRESS_LIMIT(221,"非本站揽收/配送的快递单不能领货！");
 			;
