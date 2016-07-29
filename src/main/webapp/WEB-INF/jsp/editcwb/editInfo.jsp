@@ -22,8 +22,10 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
-<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
+<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.css" rel="stylesheet">
+<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.css" rel="stylesheet">
+<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
+<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.jquery.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -40,12 +42,7 @@
 		    timeFormat: 'hh:mm:ss',
 		    dateFormat: 'yy-mm-dd'
 		});
-		
-		$("#order select[name='courier']").multipleSelect({
-	        placeholder: "请选择",
-	        filter: true,
-	        single: true
-	    });
+		$(".chosen-select-deselect").chosen({allow_single_deselect:true});
 	});
 	
 	function getCourier(cwb, matchExceldeliverid) {
@@ -77,15 +74,17 @@
 		}
 		var $courier = $("#courier" + cwb);
 		$courier.empty();
-		$courier[0].add(new Option("请选择", ""));
+		$courier[0].add(new Option("", "", true, true));
 		$.each(courierList, function(i, courier) { 
 			if(courier.userid == matchExceldeliverid) { // 选中
+				alert(1);
 				$courier[0].add(new Option(courier.realname, courier.username, true, true));
 			} else {
 				$courier[0].add(new Option(courier.realname, courier.username));
 			}
 		});
-		$courier.multipleSelect("refresh");
+		$courier.chosen("destroy");
+		$courier.chosen({allow_single_deselect:true});
 	}
 	
 	function setMatchAddress(obj,cwb){
@@ -198,8 +197,8 @@ function editInit(){
 													</select>
 												</td>
 												<td width="10%"valign="middle"  align="left">
-													<select id="courier${vo.cwbOrder.cwb }" name="courier" style="width:120px;">
-														<option value="" selected="selected">请选择</option>
+													<select id="courier${vo.cwbOrder.cwb }" name="courier" style="width:120px;" data-placeholder="请选择" class="chosen-select-deselect" tabindex="12">
+														<option value="" selected="selected"></option>
 														<c:forEach var="courier" items="${vo.courierList }">
 															<option value="${courier.username }" <c:if test="${vo.cwbOrder.exceldeliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
 														</c:forEach>
@@ -351,6 +350,7 @@ function editInit(){
 										  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist"+cwb);
 										  }); 
 								}
+							
 							getCourier(cwb, matchExceldeliverid);
 						}
 						   

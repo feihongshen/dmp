@@ -285,7 +285,11 @@ public class BranchService {
 	}
 	
 	public Branch getBranchByBranchid(long branchid) {
-		return this.branchDao.getBranchByBranchid(branchid);
+		Branch branch = this.branchDao.getBranchByBranchid(branchid);
+		if (branch == null || branch.getBranchid() == 0) {
+			return null;
+		}
+		return branch;
 	}
 	
 	public List<Branch> getBranchByTpsBranchcode(String tpsbranchcode) {
