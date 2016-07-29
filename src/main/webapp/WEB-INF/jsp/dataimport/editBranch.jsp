@@ -413,7 +413,7 @@ $(function(){
 	$("#onePageNumber").val(<%=request.getParameter("onePageNumber")==null?"10":request.getParameter("onePageNumber")%>);
 	$("#emaildate").val(<%=emaildateidParam%>);
 	$("#branchid").val(<%=branchidParam%>);
-	$(".chosen-select-deselect").chosen({allow_single_deselect:true});
+	$(".chosen-select-deselect").chosen({allow_single_deselect:true, search_contains: true});
 });
 
 function getCourier(branchcode, index) {
@@ -446,7 +446,7 @@ function initCourier(index, courierList) {
 		$courier[0].add(new Option(courier.realname, courier.username));
 	});
 	$courier.chosen("destroy");
-	$courier.chosen({allow_single_deselect:true});
+	$courier.chosen({allow_single_deselect:true, search_contains: true});
 }
 
 function saveBranchAndCourier(cwb, index) {

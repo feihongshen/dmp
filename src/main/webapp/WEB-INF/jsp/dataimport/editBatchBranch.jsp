@@ -131,7 +131,7 @@ function initCourier(index, courierList) {
 		$courier[0].add(new Option(courier.realname, courier.username));
 	});
 	$courier.chosen("destroy");
-	$courier.chosen({allow_single_deselect:true});
+	$courier.chosen({allow_single_deselect:true, search_contains: true});
 }
 
 function saveBranchAndCourier(cwb, index) {
@@ -183,7 +183,7 @@ function showMsg(){
 	 $("#editBranchForm").submit();
  }
  $(function(){
-	 	$(".chosen-select-deselect").chosen({allow_single_deselect:true});
+	 	$(".chosen-select-deselect").chosen({allow_single_deselect:true, search_contains: true});
 	});
 </script>
 </head>

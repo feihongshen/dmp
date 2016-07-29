@@ -42,7 +42,7 @@
 		    timeFormat: 'hh:mm:ss',
 		    dateFormat: 'yy-mm-dd'
 		});
-		$(".chosen-select-deselect").chosen({allow_single_deselect:true});
+		$(".chosen-select-deselect").chosen({allow_single_deselect:true, search_contains: true});
 	});
 	
 	function getCourier(cwb, matchExceldeliverid) {
@@ -84,7 +84,7 @@
 			}
 		});
 		$courier.chosen("destroy");
-		$courier.chosen({allow_single_deselect:true});
+		$courier.chosen({allow_single_deselect:true, search_contains: true});
 	}
 	
 	function setMatchAddress(obj,cwb){
