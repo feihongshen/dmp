@@ -997,7 +997,13 @@ public class EditCwbController {
 
 			// 2.更新到主表
 			EmailDate ed = this.dataImportService.getEmailDate_B2CByEmaildate(co.getCustomerid(), co.getCustomerwarehouseid(), co.getCustomerwarehouseid(), co.getEmaildate());
-			userDetail.getUser().setBranchid(Long.valueOf(ed.getWarehouseid()));
+			
+			/* ***************modify begin*********************/
+			//commented by neo01.huang，2016-7-27，这行代码自古已经存在，可以追溯到2014年11月
+			//现在去掉这行代码，避免sesseionUser的branchid被误改为0
+			//userDetail.getUser().setBranchid(Long.valueOf(ed.getWarehouseid()));
+			/* ***************modify end*********************/
+			
 			this.emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
 			this.cwbOrderService.updateExcelCwb(co, co.getCustomerid(), (old == null || "".equals(old.getCarwarehouse()))?0:Long.valueOf(old.getCarwarehouse()), userDetail.getUser(), ed, true);
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
