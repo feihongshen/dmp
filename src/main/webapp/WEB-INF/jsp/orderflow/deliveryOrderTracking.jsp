@@ -18,6 +18,7 @@
 <%
 QuickSelectView view = (QuickSelectView)request.getAttribute("view");
 Branch nextbranch=(Branch)request.getAttribute("nextbranch");
+Branch deliverybranch=(Branch)request.getAttribute("deliverybranch");
 DeliveryState deliveryChengGong =(DeliveryState)request.getAttribute("deliveryChengGong");
 DeliveryState rejectiontime =(DeliveryState)request.getAttribute("rejectiontime");
 CwbOrder cwborder = (CwbOrder)request.getAttribute("cwborder");
@@ -81,7 +82,7 @@ Customer consineerBranch = (Customer)request.getAttribute("consineerCustomer");
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>下一站：</b><%=nextbranch.getBranchname()==null?"":nextbranch.getBranchname()%></td>
-										<td bgcolor="#EBFFD7"><b></b></td>
+										<td bgcolor="#EBFFD7"><b>配送站点：</b><%=deliverybranch.getBranchname()==null?"":deliverybranch.getBranchname()%></td>
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>托物内容：</b><%=embracedOrderVO.getGoods_name()%></td>
