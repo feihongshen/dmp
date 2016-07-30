@@ -210,11 +210,12 @@ public class BaleController {
 
 		try {
 			if (co != null) {
+				/***************mod by yurong.liang 2016-07-08 ********/
 				// 合包出库扫描快递单时提示：不允许在这里操作快递单！
-				if (this.isExpressOrder(co)) {
+				/*if (this.isExpressOrder(co)) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), "不允许在这里操作快递单！");
-				}
-
+				}*/
+				/****************mod end******************************/
 				long nextbranchid = co.getNextbranchid();
 				String nextbranchname = "";
 				long deliverybranchid = co.getDeliverybranchid();
@@ -538,9 +539,9 @@ public class BaleController {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			} else {
 				// 合包出库扫描快递单时提示：不允许在这里操作快递单！
-				if (this.isExpressOrder(co)) {
+				/*if (this.isExpressOrder(co)) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), "不允许在这里操作快递单！");
-				}
+				}*/
 			
 				long nextbranchid = co.getNextbranchid();
 				String nextbranchname = "";
