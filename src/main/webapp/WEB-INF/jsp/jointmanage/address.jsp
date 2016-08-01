@@ -58,17 +58,17 @@
 		        success: function(data) {
 		        	$("#batchSyncAddress").val("同步");
 		        	$("#batchSyncAddress").attr("disabled", false);
-		        	var $sync_table = $("#sync_table");
-		        	$sync_table.find("tr:gt(0)").remove();
-		        	$.each(data.batchSyncAdressResultVoList, function(index, item) {
-		        		$sync_table.append('<tr>'
-								+ '<td valign="middle">' + item.username + '</td>'
-								+ '<td valign="middle">' + item.realname + '</td>'
-								+ '<td valign="middle">' + item.result  + '</td>'
-								+ '<td valign="middle">' + item.message + '</td>'
-								+ '</tr>');
-		        	});
 		        	if(data.code == 0) {
+		        		var $sync_table = $("#sync_table");
+			        	$sync_table.find("tr:gt(0)").remove();
+			        	$.each(data.batchSyncAdressResultVoList, function(index, item) {
+			        		$sync_table.append('<tr>'
+									+ '<td valign="middle">' + item.username + '</td>'
+									+ '<td valign="middle">' + item.realname + '</td>'
+									+ '<td valign="middle">' + item.result  + '</td>'
+									+ '<td valign="middle">' + item.message + '</td>'
+									+ '</tr>');
+			        	});
 		        		$.layer({
 		                    type: 1,
 		                    title: "同步成功！成功：" + data.success + "，失败：" + data.failure + "。失败明细如下：",
