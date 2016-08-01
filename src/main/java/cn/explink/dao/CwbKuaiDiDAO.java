@@ -345,11 +345,12 @@ public class CwbKuaiDiDAO {
 
 	private String getQueryExpressSql(long timeType, String begindate, String enddate, String lanshoubranchids, long lanshouuserid, String paisongbranchids, long paisonguserid) {
 		//将客户编号的取数逻辑改为从客户表里面取，而不是从主表里面----刘武强20160627
+		//将配送站点取数逻辑改为从主表去，而不是从归班反馈表取---梁宇荣 20160730
 		String sql = "SELECT DISTINCT cd.cwb as cwb, " + " cd.collectorid as lanshouuserid, " + " cd.instationid as lanshoubranchid, " + " cd.credate as lanshoutime, "
 				+ " cd.consigneename as sendconsigneename, " + " cd.consigneemobile as sendconsigneemobile, " + " cd.consigneeaddress as sendconsigneeaddress, " + " cd.shouldfare as transitfee, "
 				+ " cd.totalfee as allfee, " + " cd.flowordertype as flowordertype, " + " cd.cwbremark as remark, " + " cd.paymethod as paytype, " + " ci.customercode as customercode, "
 				+ " cd.customerid as sendconsigneecompany, " + " cd.reccustomerid as shoujianrencompany, " + " cd.carrealweight as realweight,cd.packagefee as packagefee,cd.insuredfee as insuredfee, "
-				+ " ds.deliverybranchid as deliverybrach, " + " cd.receivablefee as receivablefee"
+				+ " cd.deliverybranchid as deliverybrach, " + " cd.receivablefee as receivablefee"
 				+ " from express_ops_cwb_detail as cd ";
 		sql = sql + " left join express_ops_delivery_state as ds on (cd.cwb =ds.cwb and ds.state=1 ) ";
 		sql = sql + " left join express_set_customer_info as ci on cd.customerid =ci.customerid ";

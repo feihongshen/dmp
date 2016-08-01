@@ -728,6 +728,9 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 	 * @throws
 	 */
 	public void saveExbracedImport(List<EmbracedImportOrderVO> cwbImportOrders, User user) {
+		//Added by leoliao at 2016-07-26 输出日志
+		logger.info("批量导入方式揽件入站");
+		
 		List<EmbracedOrderVO> EmbracedOrders = new ArrayList<EmbracedOrderVO>();
 		EmbracedImportResult resultCollector = new EmbracedImportResult();
 		List<EmbracedOrderVO> EmbracedOrdersTps = new ArrayList<EmbracedOrderVO>();

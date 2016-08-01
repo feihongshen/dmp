@@ -251,7 +251,9 @@ public class TranscwbOrderFlowDAO {
 	 * @return 返回扫描次数
 	 * @author neo01.huang
 	 * 2016-4-28
+	 * modify by jian_xie @date 2016-07-25
 	 */
+	@Deprecated
 	public int getScanNumByTranscwbOrderFlow(String scancwb, String cwb, long flowordertype, long branchid, int isNow) {
 		List<Map<String, Object>> resultList = this.getScanCwbCountMapByTranscwbOrderFlow(cwb, flowordertype, branchid, isNow);
 		// 当前运单扫描次数
@@ -304,7 +306,7 @@ public class TranscwbOrderFlowDAO {
 //		} catch (DataAccessException e) {
 //		}
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_CWB + ",count(cwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
+		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_CWB + ",count(DISTINCT scancwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
 				+ " FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND branchid=? and isnow=1 ";
 		try {
 			result = this.jdbcTemplate.queryForList(sql, cwb, flowordertype, branchid);
@@ -321,6 +323,7 @@ public class TranscwbOrderFlowDAO {
 	 * @param isNow 是否为当前操作，0否，1是
 	 * @return key:运单号 value:扫描次数
 	 */
+	@Deprecated
 	private List<Map<String, Object>> getScanCwbCountMapByTranscwbOrderFlow(String cwb, long flowordertype, long branchid, int isNow) {
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB + ",count(scancwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
@@ -394,5 +397,20 @@ public class TranscwbOrderFlowDAO {
 	public int getTransScanTimeByCwbFlowordertype(String cwb, int flowordertype) {
 		String sql = "select count(1) from express_ops_transcwb_orderflow where cwb = ? and flowordertype = ? and isnow = 1";
 		return this.jdbcTemplate.queryForInt(sql, cwb, flowordertype);
+	}
+	
+		/**
+	 * 根据订单号删除运单轨迹
+	 * @author leo01.liao
+	 * @param cwb
+	 */
+	public void deleteByCwb(String cwb) {
+		try {
+			if(cwb == null || cwb.trim().equals("")){
+				return;
+			}
+			
+			this.jdbcTemplate.update("delete from express_ops_transcwb_orderflow where cwb=?", cwb.trim());
+		} catch (Exception ex) {}
 	}
 }

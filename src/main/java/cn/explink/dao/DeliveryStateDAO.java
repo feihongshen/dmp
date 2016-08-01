@@ -1762,5 +1762,16 @@ public class DeliveryStateDAO {
 		String sql = "update express_ops_delivery_state set deliverystate=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, deliverystate, cwb);
 	}
-	
+	/**
+	 * 
+	 * 根据运单号集合，找最后一条反馈信息
+	 * @author 刘武强
+	 * @date:2016年7月22日 下午5:52:14 
+	 * @params:@param cwb
+	 * @params:@return
+	 */
+	public List<DeliveryState> getLastDeliveryStateByCwbs(String cwbs) {
+		String sql = "select * from express_ops_delivery_state where  state=1 and cwb in(" + cwbs + ")";
+		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
+	}
 }

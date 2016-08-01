@@ -504,7 +504,59 @@ public class OrderFlowDAO {
 		sql = this.getOrderFlowByCwbAndFlowordertypeWhereSql(sql, cwb, flowordertype, begindate, enddate);
 		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail());
 	}
-
+	
+	/**
+	 * 
+	 * 根据订单号集合，到流程表中查找符合条件的数据 
+	 * @author 刘武强
+	 * @date:2016年7月22日 下午6:06:33 
+	 * @params:@param cwb
+	 * @params:@param flowordertype
+	 * @params:@param begindate
+	 * @params:@param enddate
+	 * @params:@return
+	 */
+	public List<OrderFlow> getOrderFlowByCwbsAndFlowordertype(String cwbs, long flowordertype, String begindate, String enddate) {
+		String sql = "select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow ";
+		sql = this.getOrderFlowByCwbsAndFlowordertypeWhereSql(sql, cwbs, flowordertype, begindate, enddate);
+		return this.jdbcTemplate.query(sql, new OrderFlowRowMapperNotDetail());
+	}
+	/**
+	 * 
+	 * 拼接条件
+	 * @author 刘武强
+	 * @date:2016年7月22日 下午6:12:09 
+	 * @params:@param sql
+	 * @params:@param cwbs
+	 * @params:@param flowordertype
+	 * @params:@param begindate
+	 * @params:@param enddate
+	 * @params:@return
+	 */
+	public String getOrderFlowByCwbsAndFlowordertypeWhereSql(String sql, String cwbs, long flowordertype, String begindate, String enddate) {
+		if ((cwbs.length() > 0) || (flowordertype > 0) || (begindate.length() > 0) || (enddate.length() > 0)) {
+			StringBuffer w = new StringBuffer();
+			sql += " where 1=1 ";
+			if (cwbs.trim().length() > 0) {
+				w.append(" and cwb in (" + cwbs + ")");
+			}
+			if (flowordertype > 0) {
+				w.append(" and flowordertype=" + flowordertype);
+			}
+			if (begindate.length() > 0) {
+				w.append(" and credate >= '" + begindate + "'");
+			}
+			if (enddate.length() > 0) {
+				w.append(" and credate <= '" + enddate + "'");
+			}
+			
+			w.append(" order by floworderid ");
+			sql += w;
+		} else {
+			sql += " where cwb in (" + cwbs + ") order by floworderid  ";
+		}
+		return sql;
+	}
 	// 2013-10-09 5196版本临时去掉到货明细、到货批量页面中的“出库时间”
 	/*
 	 * public OrderFlow getOrderFlowByCwbAndFlowordertype(String cwb,long

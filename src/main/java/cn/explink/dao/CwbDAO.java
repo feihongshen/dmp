@@ -8432,7 +8432,6 @@ public class CwbDAO {
 				"SELECT * FROM  `express_ops_cwb_detail` WHERE  "
 						+ wheresql
 						+ " and "
-						//存货监控统计sql修复 ----刘武强20160719
 						+ (branchid.length() > 0 ? (" nextbranchid in("
 								+ branchid + ")  and") : " nextbranchid IN("
 								+ branchids + ") and ")
@@ -8451,13 +8450,13 @@ public class CwbDAO {
 			long page, String branchids) {
 
 		StringBuffer sql = new StringBuffer(
-				"SELECT * FROM  `express_ops_cwb_detail` WHERE  "
+				"SELECT * FROM  `express_ops_cwb_detail` WHERE ( "
 						+ wheresql
 						+ " or ( flowordertype in(1,2) and "
 						+ (branchid.length() > 0 ? (" nextbranchid in("
 								+ branchid + ")  and") : " nextbranchid IN("
 								+ branchids + ") and ")
-						+ " nextbranchid>0) AND state=1  " + " limit "
+						+ " nextbranchid>0)) AND state=1  " + " limit "
 						+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
 						+ Page.ONE_PAGE_NUMBER);
 
@@ -9780,10 +9779,10 @@ public class CwbDAO {
 		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb , count});
 	}
 	
-	public void updateCwbDeliveryPermitByPeiSong(String cwb) {
-		String sql = "update express_ops_cwb_detail set delivery_permit=1 where cwb like '"+cwb+"-T_' and state=1";
+	public void updateCwbDeliveryPermitByPeiSong(String cwb, int delivery_permit) {
+		String sql = "update express_ops_cwb_detail set delivery_permit= " + delivery_permit + " where cwb like '" + cwb + "-T_' and state=1";
 		int count = this.jdbcTemplate.update(sql);
-		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb , count});
+		logger.info("修改上门退订单是否可领货标识为不能领货：订单{}，影响行数：{}", new Object[] { cwb, count });
 	}
 	
 	public String queryRelatedShangMenTuiCwb (String cwb ) {

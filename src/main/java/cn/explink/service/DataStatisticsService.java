@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -1743,7 +1744,7 @@ public class DataStatisticsService {
 
 	// 给CwbOrderView赋值
 	public List<CwbOrderView> getCwbOrderView(List<CwbOrder> clist, List<Customer> customerList, List<CustomWareHouse> customerWareHouseList, List<Branch> branchList, List<User> userList,
-			List<Reason> reasonList, String begindate, String enddate, List<Remark> remarkList) {
+			List<Reason> reasonList, String begindate, String enddate, List<Remark> remarkList){
 		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
 
 		List<String> cwbs = new ArrayList<String>();
@@ -1751,7 +1752,15 @@ public class DataStatisticsService {
 			cwbs.add(co.getCwb());
 		}
 		Map<String, Map<String, String>> orderflowList = this.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, branchList);
-
+		
+		//优化方法，将循环中的sql查询放到循环外部--刘武强20160725
+		StringBuffer cwbStr = new StringBuffer();//订单里面cwb的集合
+		cwbStr.append("'").append(StringUtils.join(cwbs, "','")).append("'");
+		List<DeliveryState> deliveryStateListByCwbs = this.deliveryStateDAO.getLastDeliveryStateByCwbs(cwbStr.toString());
+		List<OrderFlow> orderflowListByCwbsAndFlowordertype_tuihuozhaoruku = this.orderFlowDAO.getOrderFlowByCwbsAndFlowordertype(cwbStr.toString(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), begindate, enddate);
+		List<OrderFlow> orderflowListByCwbsAndFlowordertype_fenzhandaohuo = this.orderFlowDAO.getOrderFlowByCwbsAndFlowordertype(cwbStr.toString(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), "", "");
+		List<OrderFlow> orderflowListByCwbsAndFlowordertype_fenzhandaohuoyouhuowudan = this.orderFlowDAO.getOrderFlowByCwbsAndFlowordertype(cwbStr.toString(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), "", "");
+		List<OrderFlow> orderflowListByCwbsAndFlowordertype_gongyingshangjushoufanku = this.orderFlowDAO.getOrderFlowByCwbsAndFlowordertype(cwbStr.toString(), FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), "", "");
 		if (clist.size() > 0) {
 			for (CwbOrder c : clist) {
 				CwbOrderView cwbOrderView = new CwbOrderView();
@@ -1779,14 +1788,15 @@ public class DataStatisticsService {
 				cwbOrderView.setNextbranchname(this.getQueryBranchName(branchList, c.getNextbranchid()));// 下一站机构名称
 				cwbOrderView.setDeliverybranch(this.getQueryBranchName(branchList, c.getDeliverybranchid()));// 配送站点
 				cwbOrderView.setDelivername(this.getQueryUserName(userList, c.getDeliverid()));
-				cwbOrderView.setJobnum(this.userDAO.getUserByUserid(c.getDeliverid()).getJobnum());
+				//刘武强优化 -- 20160725
+				cwbOrderView.setJobnum(this.getQueryUser(userList, c.getDeliverid()).getJobnum());
 				cwbOrderView.setRealweight(c.getCarrealweight());
 				cwbOrderView.setCwbremark(c.getCwbremark());
 				cwbOrderView.setReceivablefee(c.getReceivablefee());
 				cwbOrderView.setCaramount(c.getCaramount());
 				cwbOrderView.setPaybackfee(c.getPaybackfee());
 
-				DeliveryState deliverystate = this.getDeliveryByCwb(c.getCwb());
+				//DeliveryState deliverystate = this.getDeliveryByCwb(c.getCwb());
 				cwbOrderView.setPaytype(this.getOldPayWayType(Long.parseLong(c.getNewpaywayid())));// 新支付方式
 				cwbOrderView.setPaytype_old(this.getOldPayWayType(c.getPaywayid()));// 原支付方式
 				cwbOrderView.setRemark1(c.getRemark1());
@@ -1797,7 +1807,14 @@ public class DataStatisticsService {
 				cwbOrderView.setFlowordertype(c.getFlowordertype());
 				cwbOrderView.setSendcarnum(c.getSendcarnum());
 				cwbOrderView.setScannum(c.getScannum());
-				cwbOrderView.setReturngoodsremark(this.getOrderFlowByCwbAndType(c.getCwb(), FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(), begindate, enddate).getComment());
+				//刘武强优化 -- 20160725
+				try {
+					cwbOrderView.setReturngoodsremark((this.getLastObject(orderflowListByCwbsAndFlowordertype_tuihuozhaoruku, OrderFlow.class)).getComment());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					this.logger.info(e1.getMessage());
+					cwbOrderView.setReturngoodsremark("");
+				}
 				String currentBranch = this.getQueryBranchName(branchList, c.getCurrentbranchid());
 				cwbOrderView.setCurrentbranchname(currentBranch);
 
@@ -1810,10 +1827,20 @@ public class DataStatisticsService {
 				// FlowOrderTypeEnum.RuKu.getValue(),"","").getCredate();
 				// Date chukusaomiao =this.getOrderFlowByCwbAndType(c.getCwb(),
 				// FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"","").getCredate();
+				
 				// 到货扫描
-				OrderFlow daohuosaomiao = this.getOrderFlowByCwbAndType(c.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), "", "");
-				if (daohuosaomiao.getCwb() == null) {
-					daohuosaomiao = this.getOrderFlowByCwbAndType(c.getCwb(), FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), "", "");
+				//刘武强优化 -- 20160725
+				OrderFlow daohuosaomiao = null;
+				try {
+					daohuosaomiao = this.getLastObject(orderflowListByCwbsAndFlowordertype_fenzhandaohuo, OrderFlow.class);
+					if (daohuosaomiao.getCwb() == null) {
+						//刘武强优化 -- 20160725
+						daohuosaomiao = this.getLastObject(orderflowListByCwbsAndFlowordertype_fenzhandaohuoyouhuowudan, OrderFlow.class);
+					}
+				}catch (Exception e1) {
+					e1.printStackTrace();
+					this.logger.info(e1.getMessage());
+					daohuosaomiao = new OrderFlow();
 				}
 				// Date fenzhanlinghuo
 				// =this.getOrderFlowByCwbAndType(c.getCwb(),
@@ -1830,7 +1857,8 @@ public class DataStatisticsService {
 				cwbOrderView.setOutstoreroomtime(orderflowList.get(c.getCwb()).get("Outstoreroomtime"));// 出库时间
 				cwbOrderView.setInSitetime(orderflowList.get(c.getCwb()).get("InSitetime"));// 到站时间
 				long currentbranchid = daohuosaomiao.getBranchid();
-				Branch thisbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
+				//刘武强优化 -- 20160725
+				Branch thisbranch = this.getQueryBranch(branchList,currentbranchid);
 				String branchname = thisbranch != null ? thisbranch.getBranchname() : "";
 				cwbOrderView.setInSiteBranchname(branchname);
 				cwbOrderView.setPickGoodstime(orderflowList.get(c.getCwb()).get("PickGoodstime"));// 小件员领货时间
@@ -1847,7 +1875,16 @@ public class DataStatisticsService {
 				cwbOrderView.setInwarhouseremark(this.exportService.getInwarhouseRemarks(remarkList).get(c.getCwb()) == null ? "" : this.exportService.getInwarhouseRemarks(remarkList).get(c.getCwb())
 						.get(ReasonTypeEnum.RuKuBeiZhu.getText()));
 				cwbOrderView.setCwbordertypeid(c.getCwbordertypeid() + "");// 订单类型
-
+				
+				//刘武强优化 -- 20160725
+				DeliveryState deliverystate = null;
+				try {
+					deliverystate = this.getLastObject(deliveryStateListByCwbs, DeliveryState.class);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					this.logger.info(e1.getMessage());
+					deliverystate = new DeliveryState();
+				}
 				if (deliverystate != null) {
 					cwbOrderView.setSigninman(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() ? c.getConsigneename() : "");
 					cwbOrderView
@@ -1856,7 +1893,14 @@ public class DataStatisticsService {
 					cwbOrderView.setPosremark(deliverystate.getPosremark());
 					cwbOrderView.setCheckremark(deliverystate.getCheckremark());
 					cwbOrderView.setDeliverstateremark(deliverystate.getDeliverstateremark());
-					cwbOrderView.setCustomerbrackhouseremark(this.getOrderFlowByCwbAndType(c.getCwb(), FlowOrderTypeEnum.GongYingShangJuShouFanKu.getValue(), begindate, enddate).getComment());
+					//刘武强优化 -- 20160725
+					try{
+						cwbOrderView.setCustomerbrackhouseremark(this.getLastObject(orderflowListByCwbsAndFlowordertype_gongyingshangjushoufanku, OrderFlow.class).getComment());
+					}catch (Exception e){
+						e.printStackTrace();
+						this.logger.info(e.getMessage());
+						cwbOrderView.setCustomerbrackhouseremark("");
+					}
 					cwbOrderView.setDeliverystate(deliverystate.getDeliverystate());
 					if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) && (orderflowList.get(c.getCwb()).get("Gobacktime") != null)) {
 						cwbOrderView.setSendSuccesstime(orderflowList.get(c.getCwb()).get("Gobacktime"));// 配送成功时间
@@ -1871,6 +1915,7 @@ public class DataStatisticsService {
 				//【修改】vipclu更名为业务类型，上游给什么dmp存什么，同样界面也显示什么 【周欢】 --2016-07-12
 				cwbOrderView.setVipclub(c.getVipclub()+"");
 				cwbOrderViewList.add(cwbOrderView);
+				
 
 			}
 		}
@@ -1958,6 +2003,42 @@ public class DataStatisticsService {
 		}
 		return username;
 	}
+	
+	/**
+	 * 
+	 * 根据userid从userlist中找到对应的对象
+	 * @author 刘武强
+	 * @date:2016年7月25日 上午10:53:15 
+	 * @params:@param reasonList
+	 * @params:@param reasonid
+	 * @params:@return
+	 */
+	public User getQueryUser(List<User> userList, long userid) {
+		for (User u : userList) {
+			if (u.getUserid() == userid) {
+				return u;
+			}
+		}
+		return new User();
+	}
+	
+	/**
+	 * 
+	 * 根据branchid从branchlist中找到对应的对象(统一使用同一个方法的话，需要用到反射机制，考虑到性能，所以就不用了)
+	 * @author 刘武强
+	 * @date:2016年7月25日 下午5:24:42 
+	 * @params:@param branchList
+	 * @params:@param branchid
+	 * @params:@return
+	 */
+	public Branch getQueryBranch(List<Branch> branchList, long branchid) {
+		for (Branch u : branchList) {
+			if (u.getBranchid() == branchid) {
+				return u;
+			}
+		}
+		return new Branch();
+	}
 
 	public String getQueryReason(List<Reason> reasonList, long reasonid) {
 		String reasoncontent = "";
@@ -1976,7 +2057,21 @@ public class DataStatisticsService {
 		OrderFlow orderflow = orderflowList.size() > 0 ? orderflowList.get(orderflowList.size() - 1) : new OrderFlow();
 		return orderflow;
 	}
-
+	
+	/**
+	 *  从集合中获取最后一个对象 
+	 * @author 刘武强
+	 * @date:2016年7月25日 上午11:27:17 
+	 * @params:@param objectList
+	 * @params:@param c
+	 * @params:@return
+	 */
+	
+	public  <T> T getLastObject(List<T> objectList, Class<T> c)throws Exception {
+		T object = objectList.size() > 0 ? objectList.get(objectList.size() - 1) : c.newInstance();
+		return object;
+	}
+	
 	public OrderFlow getOrderFlowByCwb(String cwb) {
 		List<OrderFlow> orderflowList = new ArrayList<OrderFlow>();
 		orderflowList = this.orderFlowDAO.getAdvanceOrderFlowByCwb(cwb);
