@@ -88,6 +88,14 @@ public class DfFeeService {
             this.text = text;
         }
 
+        public static String getTextByValue(int value) {
+            for (DeliveryFeeRuleChargeType chargeType : DeliveryFeeRuleChargeType.values()) {
+                if (chargeType.getValue() == value)
+                    return chargeType.getText();
+            }
+            return "";
+        }
+
     }
 
     public enum DeliveryFeeChargerType {
@@ -422,6 +430,31 @@ public class DfFeeService {
 
             if (fee != null) {
                 if (fee.getIsBilled() == 1) {
+                    //added by Steve PENG, 2016/07/29, 查找同一订单号，同一配送站点或小件员，同一费用类型的调整记录。
+                    //调整记录表，失效订单时，会插入负数的记录，先判断现在相同条件的记录的总数是否已经小于零，若是，则不插入。
+                    //现在不对归班审核和重置反馈加上如此校验，因为假设进入这个方法前（归班审核或重置反馈后），上游业务已经有不能重复插入的验证逻辑，这里不做对重复插入的校验。
+                    if (fromWhere == FROM_DISABLE_ORDER) {
+                        List<DfAdjustmentRecord> existingRecords = dfAdjustmentRecordDAO.findByAdjustCondition(chargerType.getValue(),
+                                cwb, chargeType, branchOrUserId);
+
+                        BigDecimal existingAdjustFee = BigDecimal.ZERO;
+                        if (CollectionUtils.isNotEmpty(existingRecords)) {
+                            for (DfAdjustmentRecord existingRecord : existingRecords) {
+                                existingAdjustFee = existingAdjustFee.add(existingRecord.getAdjustAmount());
+                            }
+                        }
+                        if (existingAdjustFee.compareTo(BigDecimal.ZERO) < 0) {
+                            if (DfFeeService.DeliveryFeeChargerType.ORG.equals(chargerType)) {
+                                logger.info("失效订单时，插入调整记录失败，订单号为{}，费用类型为{}，站点ID为{}的订单在调整记录表里的总金额小于零，所以不在插入调整记录。", cwb,
+                                        DeliveryFeeRuleChargeType.getTextByValue(chargeType), branchOrUserId);
+                            } else {
+                                logger.info("失效订单时，插入调整记录失败，订单号为{}，费用类型为{}，小件员ID为{}的订单在调整记录表里的总金额小于零，所以不在插入调整记录。", cwb,
+                                        DeliveryFeeRuleChargeType.getTextByValue(chargeType), branchOrUserId);
+                            }
+                            return;
+                        }
+                    }
+                    //added by Steve PENG, 2016/07/29, end
                     DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee, fromWhere);
                     if (adjustment != null) {
                         if (fromWhere == FROM_RESET_ORDER) {
