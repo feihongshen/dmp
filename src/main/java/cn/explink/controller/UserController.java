@@ -639,8 +639,10 @@ public class UserController {
 					failure++;
 				}
 			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
 				resultMap.put("code", 1);
 				resultMap.put("errorMsg", e.getMessage());
+				return resultMap;
 			}
 		}
 		resultMap.put("code", 0);
